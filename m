@@ -2,115 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F8BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232417AbiFWQry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:47:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48500 "EHLO
+        id S232663AbiFWQr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232647AbiFWQq6 (ORCPT
+        with ESMTP id S232665AbiFWQrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:46:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8D049FA5;
+        Thu, 23 Jun 2022 12:47:01 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A8D49CAE
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:46:58 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id cs6so188771qvb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:46:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=poorly.run; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=B1jvVdluJ66W41UOcamwBo/85mg4sSq7LE7oRZc9/Ws=;
+        b=CQgpPxqnnpqAloyO7Cx3oS7JP5gZQB3Qg0Mw2O4cWqw3cPSl/gs3pEoUgwTf3F2ERo
+         dqIndkVy6qNbaczXA18ui/W1Uf2EYbUGkmckXM1NOGViyBpaCUtGPOXa2WE1WTX9e1SY
+         WML0WjDpL/clGTLZdmKiq6o2tGLLrdlI9gHCS10Mi/kIkpec+p5IdmoZ1XFY7puK4uUH
+         BOawN171/X8635YxQHiPx4XzloEvkwByWBIBZEK6EdI0XLNGOUpp6hZiKZvi2jJngvF0
+         B9azYvIFMbctnuc1A9kMbnzp+BAbHnl6yOUVoDpD9sY5t2AHKxM4D6ijomMyR/wV0j+M
+         MQlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=B1jvVdluJ66W41UOcamwBo/85mg4sSq7LE7oRZc9/Ws=;
+        b=oEdJzSxPcA7T8Kwl40lcfSh97BdTOe+//kevggijG3XBZYHIrTWJYD+eIqDMyKZABK
+         LqOiOu6ML5qWrxJjDN8/c7SXrpRJwlaryR6J6BNa/fQR0A3vz0sb9nVutcooXKY2GWMq
+         Pi454Xcw77lUfBCV+qzGcRPiKNLBxOncj2rYJCT5CzhTzxv67taoa/Kl10v6+UZEwkuJ
+         W6i5Lj8XPdMyLTjg7MWC1vCjNkEWmJ4S6qKZ4eynQGR6jNAImKTHv7dq7MJUR+K+2UJC
+         s+c62agKSngSVYXUfdXaTkOBajXSB0gL1IqJ5rofPanbQ0zx6go1OKggx2/y9EntOEpg
+         QkSA==
+X-Gm-Message-State: AJIora+de/wzEertCpWIZnRUiCwoj3zCjH7g6LAB3z+FC7xiezPjFJMz
+        S2Zo3JzhyjGFyiAxyx5Lm5t8JA==
+X-Google-Smtp-Source: AGRyM1vxTXHu+RcB3wUEKbXav6TTh4Vf0ZudnPRdRYthYM9mf8uEoaiSOtHZwJ2Xro3RBhPUjeOqUA==
+X-Received: by 2002:ac8:5a04:0:b0:304:f19e:5fe4 with SMTP id n4-20020ac85a04000000b00304f19e5fe4mr8951799qta.374.1656002817837;
         Thu, 23 Jun 2022 09:46:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1F3761F4A;
-        Thu, 23 Jun 2022 16:46:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B58BAC3411B;
-        Thu, 23 Jun 2022 16:46:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002816;
-        bh=vcaw1O1U8dw3vGJ+TA0XmhbFsmq/CW3ZjtBhy7G3Uzg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uhvj5tBq8pLHMIi26SEInHvtLOBTYaiAUHs6FxF8dYFBsY3UbANLAoZG9DuScxqWe
-         SaCIewGiAAoBaaaEiO3bXbYqJ3G0ct89LqFRSnOhzcDQm4I/YDsvTPxghwIpl6Hjpb
-         p0XlwMWc+IEOtnF27TB3Ly1TUfyTWNPaIkmXgQcY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.9 034/264] random: Make crng state queryable
-Date:   Thu, 23 Jun 2022 18:40:27 +0200
-Message-Id: <20220623164345.034265418@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
-References: <20220623164344.053938039@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from localhost (115.25.199.35.bc.googleusercontent.com. [35.199.25.115])
+        by smtp.gmail.com with ESMTPSA id x28-20020ac8701c000000b00316022dcc08sm3157121qtm.11.2022.06.23.09.46.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 09:46:57 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 16:46:56 +0000
+From:   Sean Paul <sean@poorly.run>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
+        Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
+        Doug Anderson <dianders@chromium.org>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        Sandy Huang <hjc@rock-chips.com>,
+        Sean Paul <seanpaul@chromium.org>
+Subject: Re: [PATCH] drm/rockchip: vop: Don't crash for invalid
+ duplicate_state()
+Message-ID: <YrSZAMYzEkXUExNG@art_vandelay>
+References: <20220617172623.1.I62db228170b1559ada60b8d3e1637e1688424926@changeid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220617172623.1.I62db228170b1559ada60b8d3e1637e1688424926@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+On Fri, Jun 17, 2022 at 05:26:52PM -0700, Brian Norris wrote:
+> It's possible for users to try to duplicate the CRTC state even when the
+> state doesn't exist. drm_atomic_helper_crtc_duplicate_state() (and other
+> users of __drm_atomic_helper_crtc_duplicate_state()) already guard this
+> with a WARN_ON() instead of crashing, so let's do that here too.
+> 
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
 
-commit 9a47249d444d344051c7c0e909fad0e88515a5c2 upstream.
+Thanks for this patch!
 
-It is very useful to be able to know whether or not get_random_bytes_wait
-/ wait_for_random_bytes is going to block or not, or whether plain
-get_random_bytes is going to return good randomness or bad randomness.
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
 
-The particular use case is for mitigating certain attacks in WireGuard.
-A handshake packet arrives and is queued up. Elsewhere a worker thread
-takes items from the queue and processes them. In replying to these
-items, it needs to use some random data, and it has to be good random
-data. If we simply block until we can have good randomness, then it's
-possible for an attacker to fill the queue up with packets waiting to be
-processed. Upon realizing the queue is full, WireGuard will detect that
-it's under a denial of service attack, and behave accordingly. A better
-approach is just to drop incoming handshake packets if the crng is not
-yet initialized.
+> ---
+> 
+>  drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+> index 74562d40f639..daf192881353 100644
+> --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+> +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+> @@ -1570,6 +1570,9 @@ static struct drm_crtc_state *vop_crtc_duplicate_state(struct drm_crtc *crtc)
+>  {
+>  	struct rockchip_crtc_state *rockchip_state;
+>  
+> +	if (WARN_ON(!crtc->state))
+> +		return NULL;
+> +
+>  	rockchip_state = kzalloc(sizeof(*rockchip_state), GFP_KERNEL);
+>  	if (!rockchip_state)
+>  		return NULL;
+> -- 
+> 2.36.1.476.g0c4daa206d-goog
+> 
 
-This patch, therefore, makes that information directly accessible.
-
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c  |   15 +++++++++++++++
- include/linux/random.h |    1 +
- 2 files changed, 16 insertions(+)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1722,6 +1722,21 @@ int wait_for_random_bytes(void)
- EXPORT_SYMBOL(wait_for_random_bytes);
- 
- /*
-+ * Returns whether or not the urandom pool has been seeded and thus guaranteed
-+ * to supply cryptographically secure random numbers. This applies to: the
-+ * /dev/urandom device, the get_random_bytes function, and the get_random_{u32,
-+ * ,u64,int,long} family of functions.
-+ *
-+ * Returns: true if the urandom pool has been seeded.
-+ *          false if the urandom pool has not been seeded.
-+ */
-+bool rng_is_initialized(void)
-+{
-+	return crng_ready();
-+}
-+EXPORT_SYMBOL(rng_is_initialized);
-+
-+/*
-  * Add a callback function that will be invoked when the nonblocking
-  * pool is initialised.
-  *
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -35,6 +35,7 @@ extern void add_interrupt_randomness(int
- 
- extern void get_random_bytes(void *buf, int nbytes);
- extern int wait_for_random_bytes(void);
-+extern bool rng_is_initialized(void);
- extern int add_random_ready_callback(struct random_ready_callback *rdy);
- extern void del_random_ready_callback(struct random_ready_callback *rdy);
- extern int __must_check get_random_bytes_arch(void *buf, int nbytes);
-
-
+-- 
+Sean Paul, Software Engineer, Google / Chromium OS
