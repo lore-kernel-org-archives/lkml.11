@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1429FCCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EF5CCA488
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233807AbiFWQ6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
+        id S233833AbiFWQ6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233448AbiFWQu6 (ORCPT
+        with ESMTP id S233421AbiFWQuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:50:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8ADF4F47A;
-        Thu, 23 Jun 2022 09:48:55 -0700 (PDT)
+        Thu, 23 Jun 2022 12:50:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7264F456;
+        Thu, 23 Jun 2022 09:48:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4CA261FBE;
-        Thu, 23 Jun 2022 16:48:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 906B6C3411B;
-        Thu, 23 Jun 2022 16:48:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95C1C61F4A;
+        Thu, 23 Jun 2022 16:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A5DFC3411B;
+        Thu, 23 Jun 2022 16:48:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002934;
-        bh=IX4mseEFuNwBYpCLfcO/81qGoeM9zNi0j4CsRWggGjU=;
+        s=korg; t=1656002930;
+        bh=X0ausAnTkxkVNlUSvePP3bPHa7VhO6PfAU1PS/t+u08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QebB3EltTGxxgnLvdEO0uOcvlvKxl9VEd/9Wsmby3ecTbH/TBM0yGw9PNrMyfnkZC
-         pjCS3mOJPI0RYociyaLRpkYeNmZvthscmczSZqlYM/kdT0QPNGT6W9Vrmiafo3Hpde
-         kNbjlWnAXcFVPEGOCh3QK4rVSdP+FpgnNX/nDky8=
+        b=cyuMAxc7QzXR+Hajp8PiuwrYSlzzQbZAChlSSuWRSZLCr8zLqNcvRoJmjzQUlFapN
+         OgDObm2WslfNUU62Wan3CqXiIAVZFkQHfLaq4ZWkvYJBRvX6FqKnlq62TTm+SFj91A
+         QWKzyHPT1kuaMx0ouyCwM2Glp3E0B9J8f4le8aYY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Richard Henderson <rth@twiddle.net>,
         Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 073/264] linux/random.h: Mark CONFIG_ARCH_RANDOM functions __must_check
-Date:   Thu, 23 Jun 2022 18:41:06 +0200
-Message-Id: <20220623164346.137289222@linuxfoundation.org>
+Subject: [PATCH 4.9 072/264] linux/random.h: Use false with bool
+Date:   Thu, 23 Jun 2022 18:41:05 +0200
+Message-Id: <20220623164346.109087886@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,15 +52,15 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Richard Henderson <richard.henderson@linaro.org>
 
-commit 904caa6413c87aacbf7d0682da617c39ca18cf1a upstream.
+commit 66f5ae899ada79c0e9a3d8d954f93a72344cd350 upstream.
 
-We must not use the pointer output without validating the
-success of the random read.
+Keep the generic fallback versions in sync with the other architecture
+specific implementations and use the proper name for false.
 
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Suggested-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Richard Henderson <rth@twiddle.net>
 Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20200110145422.49141-7-broonie@kernel.org
+Link: https://lore.kernel.org/r/20200110145422.49141-6-broonie@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -70,29 +70,29 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/include/linux/random.h
 +++ b/include/linux/random.h
-@@ -96,19 +96,19 @@ unsigned long randomize_page(unsigned lo
- #ifdef CONFIG_ARCH_RANDOM
- # include <asm/archrandom.h>
+@@ -98,19 +98,19 @@ unsigned long randomize_page(unsigned lo
  #else
--static inline bool arch_get_random_long(unsigned long *v)
-+static inline bool __must_check arch_get_random_long(unsigned long *v)
+ static inline bool arch_get_random_long(unsigned long *v)
  {
- 	return false;
+-	return 0;
++	return false;
  }
--static inline bool arch_get_random_int(unsigned int *v)
-+static inline bool __must_check arch_get_random_int(unsigned int *v)
+ static inline bool arch_get_random_int(unsigned int *v)
  {
- 	return false;
+-	return 0;
++	return false;
  }
--static inline bool arch_get_random_seed_long(unsigned long *v)
-+static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
+ static inline bool arch_get_random_seed_long(unsigned long *v)
  {
- 	return false;
+-	return 0;
++	return false;
  }
--static inline bool arch_get_random_seed_int(unsigned int *v)
-+static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
+ static inline bool arch_get_random_seed_int(unsigned int *v)
  {
- 	return false;
+-	return 0;
++	return false;
  }
+ #endif
+ 
 
 
