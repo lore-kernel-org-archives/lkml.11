@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3A2CCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1364BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236828AbiFWSSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41854 "EHLO
+        id S236851AbiFWSS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:18:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236787AbiFWSQk (ORCPT
+        with ESMTP id S236741AbiFWSQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:16:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89098137;
-        Thu, 23 Jun 2022 10:22:51 -0700 (PDT)
+        Thu, 23 Jun 2022 14:16:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0AF4F465;
+        Thu, 23 Jun 2022 10:22:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 210A361EB7;
-        Thu, 23 Jun 2022 17:22:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3755C341C4;
-        Thu, 23 Jun 2022 17:22:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99B6CB824B8;
+        Thu, 23 Jun 2022 17:22:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 118C0C3411B;
+        Thu, 23 Jun 2022 17:22:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004970;
-        bh=KRnyYm02/M04mY5xe4aX4sVWRy2Xqe+5jAymsdFwhho=;
+        s=korg; t=1656004952;
+        bh=qvQ+DoApFMSYGyUqTdbIgWetXlmQvXHjNbqiyeHETKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1+v7DcLlygmYsZ0Ko3d3IGiLdalDbjsAglP41Zelb/9QQIPNCuL+MQXsFdoeCagY7
-         GBN2f3bZqFfWq2O7lxinat2RHZQd4D+4+AqwwiwCCkB3xnfagGmOluQtm30eKicDAG
-         OvZTn/YPtOrT1jqlUQSRG4jl5+BFJxIQVBtBwbiE=
+        b=fS9rltE3QuWPp7uiKh7tqCEHoyQ41Pgimw3oGD3bruula+xtapZWJ5Q7DTxQJJKWs
+         nF+bjFTpZ3Uk/evLLPuXbVMpmDjQaVMWXouCU3LE0ctMsyJwWKIM3nKDunGb3vsqoJ
+         5zXHknaaSQVzG+1X3BUwoKRXAQBpHLpOxwJTyrvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>,
+        stable@vger.kernel.org,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 207/234] certs/blacklist_hashes.c: fix const confusion in certs blacklist
-Date:   Thu, 23 Jun 2022 18:44:34 +0200
-Message-Id: <20220623164348.908685918@linuxfoundation.org>
+Subject: [PATCH 4.19 202/234] tty: goldfish: Fix free_irq() on remove
+Date:   Thu, 23 Jun 2022 18:44:29 +0200
+Message-Id: <20220623164348.767165728@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -50,47 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
-[ Upstream commit 6a1c3767d82ed8233de1263aa7da81595e176087 ]
+[ Upstream commit 499e13aac6c762e1e828172b0f0f5275651d6512 ]
 
-This file fails to compile as follows:
+Pass the correct dev_id to free_irq() to fix this splat when the driver
+is unbound:
 
-  CC      certs/blacklist_hashes.o
-certs/blacklist_hashes.c:4:1: error: ignoring attribute ‘section (".init.data")’ because it conflicts with previous ‘section (".init.rodata")’ [-Werror=attributes]
-    4 | const char __initdata *const blacklist_hashes[] = {
-      | ^~~~~
-In file included from certs/blacklist_hashes.c:2:
-certs/blacklist.h:5:38: note: previous declaration here
-    5 | extern const char __initconst *const blacklist_hashes[];
-      |                                      ^~~~~~~~~~~~~~~~
+ WARNING: CPU: 0 PID: 30 at kernel/irq/manage.c:1895 free_irq
+ Trying to free already-free IRQ 65
+ Call Trace:
+  warn_slowpath_fmt
+  free_irq
+  goldfish_tty_remove
+  platform_remove
+  device_remove
+  device_release_driver_internal
+  device_driver_detach
+  unbind_store
+  drv_attr_store
+  ...
 
-Apply the same fix as commit 2be04df5668d ("certs/blacklist_nohashes.c:
-fix const confusion in certs blacklist").
-
-Fixes: 734114f8782f ("KEYS: Add a system blacklist keyring")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: 465893e18878e119 ("tty: goldfish: support platform_device with id -1")
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Link: https://lore.kernel.org/r/20220609141704.1080024-1-vincent.whitchurch@axis.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- certs/blacklist_hashes.c | 2 +-
+ drivers/tty/goldfish.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
-index 344892337be0..d5961aa3d338 100644
---- a/certs/blacklist_hashes.c
-+++ b/certs/blacklist_hashes.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include "blacklist.h"
- 
--const char __initdata *const blacklist_hashes[] = {
-+const char __initconst *const blacklist_hashes[] = {
- #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
- 	, NULL
- };
+diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
+index abc84d84f638..9180ca5e4dcd 100644
+--- a/drivers/tty/goldfish.c
++++ b/drivers/tty/goldfish.c
+@@ -428,7 +428,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
+ 	tty_unregister_device(goldfish_tty_driver, qtty->console.index);
+ 	iounmap(qtty->base);
+ 	qtty->base = NULL;
+-	free_irq(qtty->irq, pdev);
++	free_irq(qtty->irq, qtty);
+ 	tty_port_destroy(&qtty->port);
+ 	goldfish_tty_current_line_count--;
+ 	if (goldfish_tty_current_line_count == 0)
 -- 
 2.35.1
 
