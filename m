@@ -2,109 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54924CCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3B8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiFWIrF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:47:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56306 "EHLO
+        id S230527AbiFWIss (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230472AbiFWIrC (ORCPT
+        with ESMTP id S230138AbiFWIsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:47:02 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD9C49263
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:46:57 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id q9so26895249wrd.8
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:46:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=yuZRIg16hgWgvyLgcyb1djhvkqhq6ELp3GvATbp3wU4=;
-        b=IPyFvhxKXms2uxVdYCFhGSLzGeNTDdVbl+GzCUpzlIZFsGOviclFqParLyBgfEmkdL
-         OHX4LmbzNiWDaTcxZ9ep55ys3WBCfqmrOUXzuHfFwYUL+j0fWVL+zjbfB6mNONbtlCBZ
-         2ORGkqIw+I33Hq8xn4209LpHnwaSxhuxJDf2fTY4xG55A1qkUTte5yT7uMKH1PoQCPoi
-         EaypG3LSqBwMUyUmnnHfl2jry+4ElfViEW+vkj8XYqG9KU5r9pVcO+4sfuyQqzWcRRmj
-         3Zjopzmjq4O2EIKiKaormwRF5J1rIfO8CbQRarWzvpbTR8t1QxxQEqm2kZA9K2EWcM+t
-         Xs/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=yuZRIg16hgWgvyLgcyb1djhvkqhq6ELp3GvATbp3wU4=;
-        b=SIy7UmFDOoaydCO5HSgRNXo36oin3+E8H1KhzAgN2b7RqAgvYJ7qFAD5xQj0VjL6Gd
-         PUSEhVl9EbAT2pTxvHCbqWs8RRRJmi6S8GcNGThbdUJP8M1N4Cnz18XGcR3hER0X/6Kj
-         YSG0ojxZI6fawFHks/vlt/ftHzlW8tc7MJbkGOwOETL3JucByI2d5CpRhXwPr6I0DR8L
-         Qm7ievIM1KAJGH0r4GwRWpgxFd2w+eyGY16umZOrgz/vYptUW3DjOTlXcNiq/PceLVly
-         pcnGxKWgf9J55BuX3vGLmStWubTlmV862N/LSvler3PQG5CS52EHTgFTZyvq6qHrO3vd
-         F22w==
-X-Gm-Message-State: AJIora8G92IuIxF0D7gGBLyZnGDO9/NvLEl9ZgbF7a7eY8JV1uCTIslS
-        jeIeVIKHWIWLvUgWkaiQE3vMMQ==
-X-Google-Smtp-Source: AGRyM1tAO9KV+qTetpje4rU4OMUWuh4fswkS5Bu3Wxjp7FLiryhsmjKpmvyh00en80vqsC7j8F/tIQ==
-X-Received: by 2002:a05:6000:1447:b0:21a:278a:181c with SMTP id v7-20020a056000144700b0021a278a181cmr7396898wrx.161.1655974015758;
-        Thu, 23 Jun 2022 01:46:55 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id v6-20020adfa1c6000000b0021b8905e797sm15391550wrv.69.2022.06.23.01.46.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 01:46:55 -0700 (PDT)
-Date:   Thu, 23 Jun 2022 09:46:53 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Satya Priya <quic_c_skakit@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        quic_tsoni@quicinc.com
-Subject: Re: [PATCH 1/2] dt-bindings: mfd: qcom-pm8xxx: Update the
- maintainers section
-Message-ID: <YrQofT4lvwO/K/2k@google.com>
-References: <1655874639-11273-1-git-send-email-quic_c_skakit@quicinc.com>
- <1655874639-11273-2-git-send-email-quic_c_skakit@quicinc.com>
- <c54b9423-10cb-e174-44e6-61468efd333f@linaro.org>
+        Thu, 23 Jun 2022 04:48:47 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3BE4924E;
+        Thu, 23 Jun 2022 01:48:46 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LTDQG0PFWzkWTY;
+        Thu, 23 Jun 2022 16:47:02 +0800 (CST)
+Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
+ dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 23 Jun 2022 16:48:11 +0800
+Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
+ (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 23 Jun
+ 2022 16:48:11 +0800
+From:   Ren Zhijie <renzhijie2@huawei.com>
+To:     <kishon@ti.com>, <lpieralisi@kernel.org>, <kw@linux.com>,
+        <bhelgaas@google.com>, <jdmason@kudzu.us>, <Frank.Li@nxp.com>
+CC:     <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Ren Zhijie <renzhijie2@huawei.com>
+Subject: [PATCH -next] NTB: EPF: Fix Kconfig dependency
+Date:   Thu, 23 Jun 2022 16:46:29 +0800
+Message-ID: <20220623084629.260822-1-renzhijie2@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c54b9423-10cb-e174-44e6-61468efd333f@linaro.org>
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.34]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500008.china.huawei.com (7.185.36.147)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 22 Jun 2022, Krzysztof Kozlowski wrote:
+If CONFIG_NTB is not set and CONFIG_PCI_EPF_VNTB is y.
 
-> On 22/06/2022 07:10, Satya Priya wrote:
-> > Update the maintainers section with latest mail ID.
-> > 
-> > Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-> > ---
-> >  Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml b/Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml
-> > index 2568736..61bd0b3 100644
-> > --- a/Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml
-> > +++ b/Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml
-> > @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
-> >  title: Qualcomm PM8xxx PMIC multi-function devices
-> >  
-> 
-> Both patches can be squashed and then applied by Rob.
+make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-, will be failed, like this:
 
-Nope. :)
+drivers/pci/endpoint/functions/pci-epf-vntb.o: In function `epf_ntb_cmd_handler':
+pci-epf-vntb.c:(.text+0x95e): undefined reference to `ntb_db_event'
+pci-epf-vntb.c:(.text+0xa1f): undefined reference to `ntb_link_event'
+pci-epf-vntb.c:(.text+0xa42): undefined reference to `ntb_link_event'
+drivers/pci/endpoint/functions/pci-epf-vntb.o: In function `pci_vntb_probe':
+pci-epf-vntb.c:(.text+0x1250): undefined reference to `ntb_register_device'
 
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The functions ntb_*() are defined in drivers/ntb/core.c, which need CONFIG_NTB setting y to be build-in.
+To fix this build error, add depends on NTB.
 
-Thanks.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: ff32fac00d97("NTB: EPF: support NTB transfer between PCI RC and EP connection")
+Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
+---
+ drivers/pci/endpoint/functions/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/pci/endpoint/functions/Kconfig b/drivers/pci/endpoint/functions/Kconfig
+index 362555b024e8..9beee4f0f4ee 100644
+--- a/drivers/pci/endpoint/functions/Kconfig
++++ b/drivers/pci/endpoint/functions/Kconfig
+@@ -29,6 +29,7 @@ config PCI_EPF_NTB
+ config PCI_EPF_VNTB
+         tristate "PCI Endpoint NTB driver"
+         depends on PCI_ENDPOINT
++        depends on NTB
+         select CONFIGFS_FS
+         help
+           Select this configuration option to enable the Non-Transparent
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.17.1
+
