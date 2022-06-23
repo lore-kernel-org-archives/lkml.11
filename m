@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E40CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:48:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCA8CCA481
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232571AbiFWQs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49322 "EHLO
+        id S231837AbiFWQw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232574AbiFWQr1 (ORCPT
+        with ESMTP id S233868AbiFWQvr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:47:27 -0400
+        Thu, 23 Jun 2022 12:51:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E514A3E6;
-        Thu, 23 Jun 2022 09:47:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A5BCE1A;
+        Thu, 23 Jun 2022 09:50:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B921B8248E;
-        Thu, 23 Jun 2022 16:47:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76E58C3411B;
-        Thu, 23 Jun 2022 16:47:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 553D9B8248E;
+        Thu, 23 Jun 2022 16:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB919C3411B;
+        Thu, 23 Jun 2022 16:50:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002842;
-        bh=7TBRMasfWnekyJfM7+liwVZ+Uk19yIeiAXsr8VsIe9E=;
+        s=korg; t=1656003018;
+        bh=iKj0d19AD6khnTYeBRFaztB0HYd0A7RuvG1Teazl0+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UNal6WLVJjocTUwefNNFC2R70zMNr084z7UsexgqnaQvkuQSByJPk0NR+Dn573Klw
-         1t8AZP47JaSYw2aSl0AaksPNFa8pVhO7i9onD8UPDXv2cSAjFcOdbhD7UGfZt7nO2z
-         gKUnVxwaRTZgAJjSV057MHQSbB4HJuix0WdJzF0c=
+        b=dPPuCOHQ5aQk54o/7o4L8Ulv0kZV7kRFo8WJC0wn0j7A6G+UADF8eY1w0xXd4HdrS
+         FCnra/BdYNx8sTqYwmm9O+bQQxBix2vuXR9kZTHt6AHQWZ5Cy/AGryh2Yu3z9Bs1Kh
+         QevOkmsKa/2+sfbtL6Y3aG/CQf1z3I9wQcTfz5kY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.9 009/264] random: silence compiler warnings and fix race
-Date:   Thu, 23 Jun 2022 18:40:02 +0200
-Message-Id: <20220623164344.324630862@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 102/264] random: de-duplicate INPUT_POOL constants
+Date:   Thu, 23 Jun 2022 18:41:35 +0200
+Message-Id: <20220623164346.957134437@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,86 +51,72 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 4a072c71f49b0a0e495ea13423bdb850da73c58c upstream.
+commit 5b87adf30f1464477169a1d653e9baf8c012bbfe upstream.
 
-Odd versions of gcc for the sh4 architecture will actually warn about
-flags being used while uninitialized, so we set them to zero. Non crazy
-gccs will optimize that out again, so it doesn't make a difference.
+We already had the POOL_* constants, so deduplicate the older INPUT_POOL
+ones. As well, fold EXTRACT_SIZE into the poolinfo enum, since it's
+related.
 
-Next, over aggressive gccs could inline the expression that defines
-use_lock, which could then introduce a race resulting in a lock
-imbalance. By using READ_ONCE, we prevent that fate. Finally, we make
-that assignment const, so that gcc can still optimize a nice amount.
-
-Finally, we fix a potential deadlock between primary_crng.lock and
-batched_entropy_reset_lock, where they could be called in opposite
-order. Moving the call to invalidate_batched_entropy to outside the lock
-rectifies this issue.
-
-Fixes: b169c13de473a85b3c859bb36216a4cb5f00a54a
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@vger.kernel.org
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/char/random.c |   17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -815,13 +815,13 @@ static int crng_fast_load(const char *cp
- 		p[crng_init_cnt % CHACHA20_KEY_SIZE] ^= *cp;
- 		cp++; crng_init_cnt++; len--;
- 	}
-+	spin_unlock_irqrestore(&primary_crng.lock, flags);
- 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
- 		invalidate_batched_entropy();
- 		crng_init = 1;
- 		wake_up_interruptible(&crng_init_wait);
- 		pr_notice("random: fast init done\n");
- 	}
--	spin_unlock_irqrestore(&primary_crng.lock, flags);
- 	return 1;
+@@ -360,13 +360,6 @@
+ /* #define ADD_INTERRUPT_BENCH */
+ 
+ /*
+- * Configuration information
+- */
+-#define INPUT_POOL_SHIFT	12
+-#define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
+-#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
+-
+-/*
+  * To allow fractional bits to be tracked, the entropy_count field is
+  * denominated in units of 1/8th bits.
+  *
+@@ -441,7 +434,9 @@ enum poolinfo {
+ 	POOL_TAP2 = 76,
+ 	POOL_TAP3 = 51,
+ 	POOL_TAP4 = 25,
+-	POOL_TAP5 = 1
++	POOL_TAP5 = 1,
++
++	EXTRACT_SIZE = BLAKE2S_HASH_SIZE / 2
+ };
+ 
+ /*
+@@ -504,7 +499,7 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
+  *
+  **********************************************************************/
+ 
+-static u32 input_pool_data[INPUT_POOL_WORDS] __latent_entropy;
++static u32 input_pool_data[POOL_WORDS] __latent_entropy;
+ 
+ static struct {
+ 	/* read-only data: */
+@@ -2009,7 +2004,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ #include <linux/sysctl.h>
+ 
+ static int min_write_thresh;
+-static int max_write_thresh = INPUT_POOL_WORDS * 32;
++static int max_write_thresh = POOL_BITS;
+ static int random_min_urandom_seed = 60;
+ static char sysctl_bootid[16];
+ 
+@@ -2066,7 +2061,7 @@ static int proc_do_entropy(struct ctl_ta
+ 	return proc_dointvec(&fake_table, write, buffer, lenp, ppos);
  }
  
-@@ -904,6 +904,7 @@ static void crng_reseed(struct crng_stat
- 	}
- 	memzero_explicit(&buf, sizeof(buf));
- 	WRITE_ONCE(crng->init_time, jiffies);
-+	spin_unlock_irqrestore(&crng->lock, flags);
- 	if (crng == &primary_crng && crng_init < 2) {
- 		numa_crng_init();
- 		invalidate_batched_entropy();
-@@ -924,7 +925,6 @@ static void crng_reseed(struct crng_stat
- 			urandom_warning.missed = 0;
- 		}
- 	}
--	spin_unlock_irqrestore(&crng->lock, flags);
- }
- 
- static inline void crng_wait_ready(void)
-@@ -2108,8 +2108,8 @@ static DEFINE_PER_CPU(struct batched_ent
- u64 get_random_u64(void)
- {
- 	u64 ret;
--	bool use_lock = crng_init < 2;
--	unsigned long flags;
-+	bool use_lock = READ_ONCE(crng_init) < 2;
-+	unsigned long flags = 0;
- 	struct batched_entropy *batch;
- 
- #if BITS_PER_LONG == 64
-@@ -2140,8 +2140,8 @@ static DEFINE_PER_CPU(struct batched_ent
- u32 get_random_u32(void)
- {
- 	u32 ret;
--	bool use_lock = crng_init < 2;
--	unsigned long flags;
-+	bool use_lock = READ_ONCE(crng_init) < 2;
-+	unsigned long flags = 0;
- 	struct batched_entropy *batch;
- 
- 	if (arch_get_random_int(&ret))
+-static int sysctl_poolsize = INPUT_POOL_WORDS * 32;
++static int sysctl_poolsize = POOL_BITS;
+ extern struct ctl_table random_table[];
+ struct ctl_table random_table[] = {
+ 	{
 
 
