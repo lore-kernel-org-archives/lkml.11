@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 400E4C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbiFWRKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55950 "EHLO
+        id S229949AbiFWRKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233478AbiFWRHr (ORCPT
+        with ESMTP id S233523AbiFWRHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:07:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D34E52E65;
-        Thu, 23 Jun 2022 09:56:33 -0700 (PDT)
+        Thu, 23 Jun 2022 13:07:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA98532CF;
+        Thu, 23 Jun 2022 09:56:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A887FB82495;
-        Thu, 23 Jun 2022 16:56:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E81C341C4;
-        Thu, 23 Jun 2022 16:56:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D94FECE25D9;
+        Thu, 23 Jun 2022 16:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A92C3411B;
+        Thu, 23 Jun 2022 16:56:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003381;
-        bh=tVbxje2GoVXfy09EV+sn+bBxzkWmFnKhuanUt5iEoyY=;
+        s=korg; t=1656003391;
+        bh=vJPXOeeC3FCKT/u6V/OCG3+dTJvaDL4jhwrp+j1TVh4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rr6/wVY8ZchZQ+YIfLG9rwkrz2lb6cR5a4MRfutWhD0g0T4CBC6QmWRezYc915dKG
-         Tj98VDuZ9+/2JBYxykaAlLPOZEmNe5IyI5kFKCFOgg5gEjPpajJhgk896axwV8SRj/
-         rui1MhT3JxBKRUHCHTVi/NAVWL5ynrhuLK5Ji4eg=
+        b=rwskWJTxgDvoQhTqBK2+OMoO4yIgM4ZZQ9zwOJYwDbQxOJJbXYMFuUkMcukzkmXD1
+         whzJDTXwJQzSssai4Yg1mww7kzwTFePzIYToF8jxqn6TlWQxMXEzdnTBTazmNhpnCM
+         0AB/GWuchfExgoyCeTWihPbRnRbvrGWTH92ldEWE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 169/264] random: mix build-time latent entropy into pool at init
-Date:   Thu, 23 Jun 2022 18:42:42 +0200
-Message-Id: <20220623164348.845907841@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 224/264] random: account for arch randomness in bits
+Date:   Thu, 23 Jun 2022 18:43:37 +0200
+Message-Id: <20220623164350.416389763@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,41 +49,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 1754abb3e7583c570666fa1e1ee5b317e88c89a0 upstream.
+commit 77fc95f8c0dc9e1f8e620ec14d2fb65028fb7adc upstream.
 
-Prior, the "input_pool_data" array needed no real initialization, and so
-it was easy to mark it with __latent_entropy to populate it during
-compile-time. In switching to using a hash function, this required us to
-specifically initialize it to some specific state, which means we
-dropped the __latent_entropy attribute. An unfortunate side effect was
-this meant the pool was no longer seeded using compile-time random data.
-In order to bring this back, we declare an array in rand_initialize()
-with __latent_entropy and call mix_pool_bytes() on that at init, which
-accomplishes the same thing as before. We make this __initconst, so that
-it doesn't take up space at runtime after init.
+Rather than accounting in bytes and multiplying (shifting), we can just
+account in bits and avoid the shift. The main motivation for this is
+there are other patches in flux that expand this code a bit, and
+avoiding the duplication of "* 8" everywhere makes things a bit clearer.
 
-Fixes: 6e8ec2552c7d ("random: use computational hash for entropy extraction")
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@vger.kernel.org
+Fixes: 12e45a2a6308 ("random: credit architectural init the exact amount")
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/char/random.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -968,6 +968,11 @@ int __init rand_initialize(void)
- 	bool arch_init = true;
- 	unsigned long rv;
+@@ -810,7 +810,7 @@ early_param("random.trust_bootloader", p
+ int __init random_init(const char *command_line)
+ {
+ 	ktime_t now = ktime_get_real();
+-	unsigned int i, arch_bytes;
++	unsigned int i, arch_bits;
+ 	unsigned long entropy;
  
-+#if defined(LATENT_ENTROPY_PLUGIN)
-+	static const u8 compiletime_seed[BLAKE2S_BLOCK_SIZE] __initconst __latent_entropy;
-+	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
-+#endif
-+
- 	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
- 		if (!arch_get_random_seed_long_early(&rv) &&
- 		    !arch_get_random_long_early(&rv)) {
+ #if defined(LATENT_ENTROPY_PLUGIN)
+@@ -818,12 +818,12 @@ int __init random_init(const char *comma
+ 	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
+ #endif
+ 
+-	for (i = 0, arch_bytes = BLAKE2S_BLOCK_SIZE;
++	for (i = 0, arch_bits = BLAKE2S_BLOCK_SIZE * 8;
+ 	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(entropy)) {
+ 		if (!arch_get_random_seed_long_early(&entropy) &&
+ 		    !arch_get_random_long_early(&entropy)) {
+ 			entropy = random_get_entropy();
+-			arch_bytes -= sizeof(entropy);
++			arch_bits -= sizeof(entropy) * 8;
+ 		}
+ 		_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	}
+@@ -835,7 +835,7 @@ int __init random_init(const char *comma
+ 	if (crng_ready())
+ 		crng_reseed();
+ 	else if (trust_cpu)
+-		_credit_init_bits(arch_bytes * 8);
++		_credit_init_bits(arch_bits);
+ 
+ 	return 0;
+ }
 
 
