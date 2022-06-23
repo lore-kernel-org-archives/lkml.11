@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 649F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31631C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233456AbiFWRva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41252 "EHLO
+        id S232723AbiFWRvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235293AbiFWRvF (ORCPT
+        with ESMTP id S232985AbiFWRvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:51:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77BD56386;
-        Thu, 23 Jun 2022 10:12:12 -0700 (PDT)
+        Thu, 23 Jun 2022 13:51:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7DBB183;
+        Thu, 23 Jun 2022 10:12:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1B9EB82497;
-        Thu, 23 Jun 2022 17:12:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 525C2C3411B;
-        Thu, 23 Jun 2022 17:12:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCC5361D22;
+        Thu, 23 Jun 2022 17:12:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91EBEC3411B;
+        Thu, 23 Jun 2022 17:12:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004325;
-        bh=2ryfSX4qxq90PCO2LuZsxbghPTixgSxfWmOv8vE6IIc=;
+        s=korg; t=1656004335;
+        bh=ktRa0vwLQt+bKZc2atLCV0HkD+INFK+dCtmFBzs6wHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=znQdIGEA0AUNM+vWqAuIWR3imNa+bUOQozazDLvrU5Xh6xSy88mlNBn0908lqztlT
-         0NT/N8DbBg2w18xpWbmy4tH1kAV2u4aG+EduYoJHcQJS/BJU7pck2Ye8pikk8/y6R9
-         nOL1x9u8rs8nONwTrfBKWsQfJNdXiY3H9EaJCQMs=
+        b=Gy+3/fvfiJl4cOZ1qUIdBzcUHtGGnJSRf6NyL2zziK0ukBZoN1MtO4KocLjUgj2Ys
+         ROJA6mf5vE/DiDdFth+1Z7UEa6gJn5h48AvOWbjDUI8X5gU0M1eGgq3uqFcQZzwQ+y
+         TpBqdLtK/a+46swobnZP2ESKOYgf4Af0PB52rlio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jorgen Hansen <Jorgen.Hansen@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Subject: [PATCH 5.15 4/9] zonefs: fix zonefs_iomap_begin() for reads
-Date:   Thu, 23 Jun 2022 18:44:47 +0200
-Message-Id: <20220623164322.419678554@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.15 7/9] selftests/bpf: Add selftest for calling global functions from freplace
+Date:   Thu, 23 Jun 2022 18:44:50 +0200
+Message-Id: <20220623164322.505686885@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164322.288837280@linuxfoundation.org>
 References: <20220623164322.288837280@linuxfoundation.org>
@@ -50,261 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-commit c1c1204c0d0c1dccc1310b9277fb2bd8b663d8fe upstream.
+commit 2cf7b7ffdae519b284f1406012b52e2282fa36bf upstream.
 
-If a readahead is issued to a sequential zone file with an offset
-exactly equal to the current file size, the iomap type is set to
-IOMAP_UNWRITTEN, which will prevent an IO, but the iomap length is
-calculated as 0. This causes a WARN_ON() in iomap_iter():
+Add a selftest that calls a global function with a context object parameter
+from an freplace function to check that the program context type is
+correctly converted to the freplace target when fetching the context type
+from the kernel BTF.
 
-[17309.548939] WARNING: CPU: 3 PID: 2137 at fs/iomap/iter.c:34 iomap_iter+0x9cf/0xe80
-[...]
-[17309.650907] RIP: 0010:iomap_iter+0x9cf/0xe80
-[...]
-[17309.754560] Call Trace:
-[17309.757078]  <TASK>
-[17309.759240]  ? lock_is_held_type+0xd8/0x130
-[17309.763531]  iomap_readahead+0x1a8/0x870
-[17309.767550]  ? iomap_read_folio+0x4c0/0x4c0
-[17309.771817]  ? lockdep_hardirqs_on_prepare+0x400/0x400
-[17309.778848]  ? lock_release+0x370/0x750
-[17309.784462]  ? folio_add_lru+0x217/0x3f0
-[17309.790220]  ? reacquire_held_locks+0x4e0/0x4e0
-[17309.796543]  read_pages+0x17d/0xb60
-[17309.801854]  ? folio_add_lru+0x238/0x3f0
-[17309.807573]  ? readahead_expand+0x5f0/0x5f0
-[17309.813554]  ? policy_node+0xb5/0x140
-[17309.819018]  page_cache_ra_unbounded+0x27d/0x450
-[17309.825439]  filemap_get_pages+0x500/0x1450
-[17309.831444]  ? filemap_add_folio+0x140/0x140
-[17309.837519]  ? lock_is_held_type+0xd8/0x130
-[17309.843509]  filemap_read+0x28c/0x9f0
-[17309.848953]  ? zonefs_file_read_iter+0x1ea/0x4d0 [zonefs]
-[17309.856162]  ? trace_contention_end+0xd6/0x130
-[17309.862416]  ? __mutex_lock+0x221/0x1480
-[17309.868151]  ? zonefs_file_read_iter+0x166/0x4d0 [zonefs]
-[17309.875364]  ? filemap_get_pages+0x1450/0x1450
-[17309.881647]  ? __mutex_unlock_slowpath+0x15e/0x620
-[17309.888248]  ? wait_for_completion_io_timeout+0x20/0x20
-[17309.895231]  ? lock_is_held_type+0xd8/0x130
-[17309.901115]  ? lock_is_held_type+0xd8/0x130
-[17309.906934]  zonefs_file_read_iter+0x356/0x4d0 [zonefs]
-[17309.913750]  new_sync_read+0x2d8/0x520
-[17309.919035]  ? __x64_sys_lseek+0x1d0/0x1d0
+v2:
+- Trim includes
+- Get rid of global function
+- Use __noinline
 
-Furthermore, this causes iomap_readahead() to loop forever as
-iomap_readahead_iter() always returns 0, making no progress.
-
-Fix this by treating reads after the file size as access to holes,
-setting the iomap type to IOMAP_HOLE, the iomap addr to IOMAP_NULL_ADDR
-and using the length argument as is for the iomap length. To simplify
-the code with this change, zonefs_iomap_begin() is split into the read
-variant, zonefs_read_iomap_begin() and zonefs_read_iomap_ops, and the
-write variant, zonefs_write_iomap_begin() and zonefs_write_iomap_ops.
-
-Reported-by: Jorgen Hansen <Jorgen.Hansen@wdc.com>
-Fixes: 8dcc1a9d90c1 ("fs: New zonefs file system")
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Jorgen Hansen <Jorgen.Hansen@wdc.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/r/20220606075253.28422-2-toke@redhat.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+[ backport: fix conflict because tests were not serialised ]
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/zonefs/super.c |   94 ++++++++++++++++++++++++++++++++++++------------------
- 1 file changed, 64 insertions(+), 30 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c   |   14 +++++++++++
+ tools/testing/selftests/bpf/progs/freplace_global_func.c |   18 +++++++++++++++
+ 2 files changed, 32 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/freplace_global_func.c
 
---- a/fs/zonefs/super.c
-+++ b/fs/zonefs/super.c
-@@ -72,15 +72,51 @@ static inline void zonefs_i_size_write(s
- 		zi->i_flags &= ~ZONEFS_ZONE_OPEN;
+--- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
++++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
+@@ -371,6 +371,18 @@ static void test_func_map_prog_compatibi
+ 				     "./test_attach_probe.o");
  }
  
--static int zonefs_iomap_begin(struct inode *inode, loff_t offset, loff_t length,
--			      unsigned int flags, struct iomap *iomap,
--			      struct iomap *srcmap)
-+static int zonefs_read_iomap_begin(struct inode *inode, loff_t offset,
-+				   loff_t length, unsigned int flags,
-+				   struct iomap *iomap, struct iomap *srcmap)
- {
- 	struct zonefs_inode_info *zi = ZONEFS_I(inode);
- 	struct super_block *sb = inode->i_sb;
- 	loff_t isize;
- 
--	/* All I/Os should always be within the file maximum size */
-+	/*
-+	 * All blocks are always mapped below EOF. If reading past EOF,
-+	 * act as if there is a hole up to the file maximum size.
-+	 */
-+	mutex_lock(&zi->i_truncate_mutex);
-+	iomap->bdev = inode->i_sb->s_bdev;
-+	iomap->offset = ALIGN_DOWN(offset, sb->s_blocksize);
-+	isize = i_size_read(inode);
-+	if (iomap->offset >= isize) {
-+		iomap->type = IOMAP_HOLE;
-+		iomap->addr = IOMAP_NULL_ADDR;
-+		iomap->length = length;
-+	} else {
-+		iomap->type = IOMAP_MAPPED;
-+		iomap->addr = (zi->i_zsector << SECTOR_SHIFT) + iomap->offset;
-+		iomap->length = isize - iomap->offset;
-+	}
-+	mutex_unlock(&zi->i_truncate_mutex);
++static void test_func_replace_global_func(void)
++{
++	const char *prog_name[] = {
++		"freplace/test_pkt_access",
++	};
 +
-+	trace_zonefs_iomap_begin(inode, iomap);
-+
-+	return 0;
++	test_fexit_bpf2bpf_common("./freplace_global_func.o",
++				  "./test_pkt_access.o",
++				  ARRAY_SIZE(prog_name),
++				  prog_name, false, NULL);
 +}
 +
-+static const struct iomap_ops zonefs_read_iomap_ops = {
-+	.iomap_begin	= zonefs_read_iomap_begin,
-+};
+ void test_fexit_bpf2bpf(void)
+ {
+ 	if (test__start_subtest("target_no_callees"))
+@@ -391,4 +403,6 @@ void test_fexit_bpf2bpf(void)
+ 		test_func_replace_multi();
+ 	if (test__start_subtest("fmod_ret_freplace"))
+ 		test_fmod_ret_freplace();
++	if (test__start_subtest("func_replace_global_func"))
++		test_func_replace_global_func();
+ }
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/freplace_global_func.c
+@@ -0,0 +1,18 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
 +
-+static int zonefs_write_iomap_begin(struct inode *inode, loff_t offset,
-+				    loff_t length, unsigned int flags,
-+				    struct iomap *iomap, struct iomap *srcmap)
++__noinline
++int test_ctx_global_func(struct __sk_buff *skb)
 +{
-+	struct zonefs_inode_info *zi = ZONEFS_I(inode);
-+	struct super_block *sb = inode->i_sb;
-+	loff_t isize;
++	volatile int retval = 1;
++	return retval;
++}
 +
-+	/* All write I/Os should always be within the file maximum size */
- 	if (WARN_ON_ONCE(offset + length > zi->i_max_size))
- 		return -EIO;
- 
-@@ -90,7 +126,7 @@ static int zonefs_iomap_begin(struct ino
- 	 * operation.
- 	 */
- 	if (WARN_ON_ONCE(zi->i_ztype == ZONEFS_ZTYPE_SEQ &&
--			 (flags & IOMAP_WRITE) && !(flags & IOMAP_DIRECT)))
-+			 !(flags & IOMAP_DIRECT)))
- 		return -EIO;
- 
- 	/*
-@@ -99,47 +135,44 @@ static int zonefs_iomap_begin(struct ino
- 	 * write pointer) and unwriten beyond.
- 	 */
- 	mutex_lock(&zi->i_truncate_mutex);
-+	iomap->bdev = inode->i_sb->s_bdev;
-+	iomap->offset = ALIGN_DOWN(offset, sb->s_blocksize);
-+	iomap->addr = (zi->i_zsector << SECTOR_SHIFT) + iomap->offset;
- 	isize = i_size_read(inode);
--	if (offset >= isize)
-+	if (iomap->offset >= isize) {
- 		iomap->type = IOMAP_UNWRITTEN;
--	else
-+		iomap->length = zi->i_max_size - iomap->offset;
-+	} else {
- 		iomap->type = IOMAP_MAPPED;
--	if (flags & IOMAP_WRITE)
--		length = zi->i_max_size - offset;
--	else
--		length = min(length, isize - offset);
-+		iomap->length = isize - iomap->offset;
-+	}
- 	mutex_unlock(&zi->i_truncate_mutex);
- 
--	iomap->offset = ALIGN_DOWN(offset, sb->s_blocksize);
--	iomap->length = ALIGN(offset + length, sb->s_blocksize) - iomap->offset;
--	iomap->bdev = inode->i_sb->s_bdev;
--	iomap->addr = (zi->i_zsector << SECTOR_SHIFT) + iomap->offset;
--
- 	trace_zonefs_iomap_begin(inode, iomap);
- 
- 	return 0;
- }
- 
--static const struct iomap_ops zonefs_iomap_ops = {
--	.iomap_begin	= zonefs_iomap_begin,
-+static const struct iomap_ops zonefs_write_iomap_ops = {
-+	.iomap_begin	= zonefs_write_iomap_begin,
- };
- 
- static int zonefs_readpage(struct file *unused, struct page *page)
- {
--	return iomap_readpage(page, &zonefs_iomap_ops);
-+	return iomap_readpage(page, &zonefs_read_iomap_ops);
- }
- 
- static void zonefs_readahead(struct readahead_control *rac)
- {
--	iomap_readahead(rac, &zonefs_iomap_ops);
-+	iomap_readahead(rac, &zonefs_read_iomap_ops);
- }
- 
- /*
-  * Map blocks for page writeback. This is used only on conventional zone files,
-  * which implies that the page range can only be within the fixed inode size.
-  */
--static int zonefs_map_blocks(struct iomap_writepage_ctx *wpc,
--			     struct inode *inode, loff_t offset)
-+static int zonefs_write_map_blocks(struct iomap_writepage_ctx *wpc,
-+				   struct inode *inode, loff_t offset)
- {
- 	struct zonefs_inode_info *zi = ZONEFS_I(inode);
- 
-@@ -153,12 +186,12 @@ static int zonefs_map_blocks(struct ioma
- 	    offset < wpc->iomap.offset + wpc->iomap.length)
- 		return 0;
- 
--	return zonefs_iomap_begin(inode, offset, zi->i_max_size - offset,
--				  IOMAP_WRITE, &wpc->iomap, NULL);
-+	return zonefs_write_iomap_begin(inode, offset, zi->i_max_size - offset,
-+					IOMAP_WRITE, &wpc->iomap, NULL);
- }
- 
- static const struct iomap_writeback_ops zonefs_writeback_ops = {
--	.map_blocks		= zonefs_map_blocks,
-+	.map_blocks		= zonefs_write_map_blocks,
- };
- 
- static int zonefs_writepage(struct page *page, struct writeback_control *wbc)
-@@ -188,7 +221,8 @@ static int zonefs_swap_activate(struct s
- 		return -EINVAL;
- 	}
- 
--	return iomap_swapfile_activate(sis, swap_file, span, &zonefs_iomap_ops);
-+	return iomap_swapfile_activate(sis, swap_file, span,
-+				       &zonefs_read_iomap_ops);
- }
- 
- static const struct address_space_operations zonefs_file_aops = {
-@@ -607,7 +641,7 @@ static vm_fault_t zonefs_filemap_page_mk
- 
- 	/* Serialize against truncates */
- 	filemap_invalidate_lock_shared(inode->i_mapping);
--	ret = iomap_page_mkwrite(vmf, &zonefs_iomap_ops);
-+	ret = iomap_page_mkwrite(vmf, &zonefs_write_iomap_ops);
- 	filemap_invalidate_unlock_shared(inode->i_mapping);
- 
- 	sb_end_pagefault(inode->i_sb);
-@@ -862,7 +896,7 @@ static ssize_t zonefs_file_dio_write(str
- 	if (append)
- 		ret = zonefs_file_dio_append(iocb, from);
- 	else
--		ret = iomap_dio_rw(iocb, from, &zonefs_iomap_ops,
-+		ret = iomap_dio_rw(iocb, from, &zonefs_write_iomap_ops,
- 				   &zonefs_write_dio_ops, 0, 0);
- 	if (zi->i_ztype == ZONEFS_ZTYPE_SEQ &&
- 	    (ret > 0 || ret == -EIOCBQUEUED)) {
-@@ -904,7 +938,7 @@ static ssize_t zonefs_file_buffered_writ
- 	if (ret <= 0)
- 		goto inode_unlock;
- 
--	ret = iomap_file_buffered_write(iocb, from, &zonefs_iomap_ops);
-+	ret = iomap_file_buffered_write(iocb, from, &zonefs_write_iomap_ops);
- 	if (ret > 0)
- 		iocb->ki_pos += ret;
- 	else if (ret == -EIO)
-@@ -997,7 +1031,7 @@ static ssize_t zonefs_file_read_iter(str
- 			goto inode_unlock;
- 		}
- 		file_accessed(iocb->ki_filp);
--		ret = iomap_dio_rw(iocb, to, &zonefs_iomap_ops,
-+		ret = iomap_dio_rw(iocb, to, &zonefs_read_iomap_ops,
- 				   &zonefs_read_dio_ops, 0, 0);
- 	} else {
- 		ret = generic_file_read_iter(iocb, to);
++SEC("freplace/test_pkt_access")
++int new_test_pkt_access(struct __sk_buff *skb)
++{
++	return test_ctx_global_func(skb);
++}
++
++char _license[] SEC("license") = "GPL";
 
 
