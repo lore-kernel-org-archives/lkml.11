@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 202C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28598C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232689AbiFWReJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
+        id S234320AbiFWReO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234577AbiFWRdB (ORCPT
+        with ESMTP id S234590AbiFWRdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:33:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999A45159D;
-        Thu, 23 Jun 2022 10:05:41 -0700 (PDT)
+        Thu, 23 Jun 2022 13:33:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AC086AC5;
+        Thu, 23 Jun 2022 10:05:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90ECFB824B4;
-        Thu, 23 Jun 2022 17:05:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1363C3411B;
-        Thu, 23 Jun 2022 17:05:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4318D6159A;
+        Thu, 23 Jun 2022 17:05:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF7E4C3411B;
+        Thu, 23 Jun 2022 17:05:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003936;
-        bh=nwXc3XpthjYp9ixcMlB2623mIkpfvu/MjJP9HCed4NU=;
+        s=korg; t=1656003939;
+        bh=okNb7qxX9pzDwpptb3CnaqhHEgUqiLR2hlWi9j3HNaU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XDXbOmNcMOm3G25Cts3yvTwB3WKerhADZZait/L5z/TttEQ7+exTfjdjIaHS/63J2
-         S/rDyfaOPxQ6H2K8bgMMZvHIp+NXIE9/D26ZGYlWtMUbvDeHUJaYyomAVbNDtSB5sR
-         MxoxEegRPF9buyr7AWfEnOq8KgW18+uROhmtxW+8=
+        b=kGW0oEg38pr1pqJ3Ia6rKhbi27VcbXFqnaZZTwTpamH7l4hOy6kTNYWNDgIV2eZyD
+         alo9amMb5BR4sDRaesdVljvdsLp7ALvLEMJxlVegEZxAf1uLFeAhRxLZchd1ik4V8J
+         kIk51pqkcyqMCnBq8UbNtaRf7ExVPcZAiXeOdnXo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 133/237] random: make consistent usage of crng_ready()
-Date:   Thu, 23 Jun 2022 18:42:47 +0200
-Message-Id: <20220623164346.980965593@linuxfoundation.org>
+Subject: [PATCH 4.14 095/237] random: fix locking in crng_fast_load()
+Date:   Thu, 23 Jun 2022 18:42:09 +0200
+Message-Id: <20220623164345.882784457@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,91 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-commit a96cfe2d427064325ecbf56df8816c6b871ec285 upstream.
+commit 7c2fe2b32bf76441ff5b7a425b384e5f75aa530a upstream.
 
-Rather than sometimes checking `crng_init < 2`, we should always use the
-crng_ready() macro, so that should we change anything later, it's
-consistent. Additionally, that macro already has a likely() around it,
-which means we don't need to open code our own likely() and unlikely()
-annotations.
+crng_init is protected by primary_crng->lock, so keep holding that lock
+when incrementing crng_init from 0 to 1 in crng_fast_load(). The call to
+pr_notice() can wait until the lock is released; this code path cannot
+be reached twice, as crng_fast_load() aborts early if crng_init > 0.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+ drivers/char/random.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -125,18 +125,13 @@ static void try_to_generate_entropy(void
-  */
- int wait_for_random_bytes(void)
- {
--	if (likely(crng_ready()))
--		return 0;
--
--	do {
-+	while (!crng_ready()) {
- 		int ret;
- 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
- 		if (ret)
- 			return ret > 0 ? 0 : ret;
--
- 		try_to_generate_entropy();
--	} while (!crng_ready());
--
-+	}
- 	return 0;
- }
- EXPORT_SYMBOL(wait_for_random_bytes);
-@@ -291,7 +286,7 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (crng_init < 2) {
-+	if (!crng_ready()) {
- 		crng_init = 2;
- 		finalize_init = true;
+@@ -646,12 +646,13 @@ static size_t crng_fast_load(const u8 *c
+ 		p[crng_init_cnt % CHACHA20_KEY_SIZE] ^= *cp;
+ 		cp++; crng_init_cnt++; len--; ret++;
  	}
-@@ -359,7 +354,7 @@ static void crng_make_state(u32 chacha_s
- 	 * ready, we do fast key erasure with the base_crng directly, because
- 	 * this is what crng_pre_init_inject() mutates during early init.
- 	 */
--	if (unlikely(!crng_ready())) {
-+	if (!crng_ready()) {
- 		bool ready;
- 
- 		spin_lock_irqsave(&base_crng.lock, flags);
-@@ -799,7 +794,7 @@ static void credit_entropy_bits(size_t n
- 		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
- 
--	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
-+	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
- 		crng_reseed();
+-	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+ 		invalidate_batched_entropy();
+ 		crng_init = 1;
+-		pr_notice("fast init done\n");
+ 	}
++	spin_unlock_irqrestore(&primary_crng.lock, flags);
++	if (crng_init == 1)
++		pr_notice("fast init done\n");
+ 	return ret;
  }
  
-@@ -956,7 +951,7 @@ int __init rand_initialize(void)
- 	extract_entropy(base_crng.key, sizeof(base_crng.key));
- 	++base_crng.generation;
- 
--	if (arch_init && trust_cpu && crng_init < 2) {
-+	if (arch_init && trust_cpu && !crng_ready()) {
- 		crng_init = 2;
- 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
- 	}
-@@ -1545,7 +1540,7 @@ static long random_ioctl(struct file *f,
- 	case RNDRESEEDCRNG:
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
--		if (crng_init < 2)
-+		if (!crng_ready())
- 			return -ENODATA;
- 		crng_reseed();
- 		return 0;
 
 
