@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C66CBCCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A38C43334
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235688AbiFWR50 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:57:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42220 "EHLO
+        id S235672AbiFWR5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235404AbiFWRwa (ORCPT
+        with ESMTP id S235407AbiFWRwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:52:30 -0400
+        Thu, 23 Jun 2022 13:52:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4224D62F;
-        Thu, 23 Jun 2022 10:13:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429525001F;
+        Thu, 23 Jun 2022 10:13:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E6CB61D1E;
-        Thu, 23 Jun 2022 17:13:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E98CDC3411B;
-        Thu, 23 Jun 2022 17:13:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D21A61D18;
+        Thu, 23 Jun 2022 17:13:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B95C3411B;
+        Thu, 23 Jun 2022 17:13:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004386;
-        bh=xEFS7WKF2mhfj6xLCCztcYkN4GBh0XNUfvf5TIeRvZE=;
+        s=korg; t=1656004389;
+        bh=7LoDRDsOjAOBXC925WysFwrZ1mHlsKEmoJU7RPNDbEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uHnOcaB6WR/Ik2Bt8EcFGjFC+F31t3vV1m+A0KHb9G9QBrF3VokiGyZpnpxZ7oQOM
-         KFYJG09uU5b7f3f+txdn7V8wv+gz2L67OposvABFesNEU4A6Hujq0XR5xYMLwdBjv/
-         uZ90fpTrqxj+jT3fSQIfmXsvpXk6v7gtqrjEWlJw=
+        b=OclBGaaHtYpIq/bL2PV/qY591NGubxNvYaDTvYmcw0eS53xsvs6IWwiPPLH+fqbU7
+         ZQ4ngpCIk6NcmrUoaKb7UX2uezke7Lwu3K7Hx+ojZmPff+k+WyFmBuzdAeJrN8gfLT
+         SJHf99wdznS1nRHEyX0a3jGPTCy0ovGQGxsoEnKc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 021/234] random: ignore GRND_RANDOM in getentropy(2)
-Date:   Thu, 23 Jun 2022 18:41:28 +0200
-Message-Id: <20220623164343.662908866@linuxfoundation.org>
+Subject: [PATCH 4.19 022/234] random: make /dev/random be almost like /dev/urandom
+Date:   Thu, 23 Jun 2022 18:41:29 +0200
+Message-Id: <20220623164343.691152260@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -51,46 +51,114 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andy Lutomirski <luto@kernel.org>
 
-commit 48446f198f9adcb499b30332488dfd5bc3f176f6 upstream.
+commit 30c08efec8884fb106b8e57094baa51bb4c44e32 upstream.
 
-The separate blocking pool is going away.  Start by ignoring
-GRND_RANDOM in getentropy(2).
+This patch changes the read semantics of /dev/random to be the same
+as /dev/urandom except that reads will block until the CRNG is
+ready.
 
-This should not materially break any API.  Any code that worked
-without this change should work at least as well with this change.
+None of the cleanups that this enables have been done yet.  As a
+result, this gives a warning about an unused function.
 
 Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/705c5a091b63cc5da70c99304bb97e0109be0a26.1577088521.git.luto@kernel.org
+Link: https://lore.kernel.org/r/5e6ac8831c6cf2e56a7a4b39616d1732b2bdd06c.1577088521.git.luto@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c       |    3 ---
- include/uapi/linux/random.h |    2 +-
- 2 files changed, 1 insertion(+), 4 deletions(-)
+ drivers/char/random.c |   54 ++++++++++++--------------------------------------
+ 1 file changed, 13 insertions(+), 41 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2210,9 +2210,6 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if (count > INT_MAX)
- 		count = INT_MAX;
+@@ -354,7 +354,6 @@
+ #define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
+ #define OUTPUT_POOL_SHIFT	10
+ #define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
+-#define SEC_XFER_SIZE		512
+ #define EXTRACT_SIZE		10
  
--	if (flags & GRND_RANDOM)
--		return _random_read(flags & GRND_NONBLOCK, buf, count);
+ 
+@@ -804,7 +803,6 @@ retry:
+ 		if (entropy_bits >= random_read_wakeup_bits &&
+ 		    wq_has_sleeper(&random_read_wait)) {
+ 			wake_up_interruptible(&random_read_wait);
+-			kill_fasync(&fasync, SIGIO, POLL_IN);
+ 		}
+ 		/* If the input pool is getting full, and the blocking
+ 		 * pool has room, send some entropy to the blocking
+@@ -1988,43 +1986,6 @@ void rand_initialize_disk(struct gendisk
+ #endif
+ 
+ static ssize_t
+-_random_read(int nonblock, char __user *buf, size_t nbytes)
+-{
+-	ssize_t n;
 -
- 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
---- a/include/uapi/linux/random.h
-+++ b/include/uapi/linux/random.h
-@@ -48,7 +48,7 @@ struct rand_pool_info {
-  * Flags for getrandom(2)
-  *
-  * GRND_NONBLOCK	Don't block and return EAGAIN instead
-- * GRND_RANDOM		Use the /dev/random pool instead of /dev/urandom
-+ * GRND_RANDOM		No effect
-  * GRND_INSECURE	Return non-cryptographic random bytes
-  */
- #define GRND_NONBLOCK	0x0001
+-	if (nbytes == 0)
+-		return 0;
+-
+-	nbytes = min_t(size_t, nbytes, SEC_XFER_SIZE);
+-	while (1) {
+-		n = extract_entropy_user(&blocking_pool, buf, nbytes);
+-		if (n < 0)
+-			return n;
+-		trace_random_read(n*8, (nbytes-n)*8,
+-				  ENTROPY_BITS(&blocking_pool),
+-				  ENTROPY_BITS(&input_pool));
+-		if (n > 0)
+-			return n;
+-
+-		/* Pool is (near) empty.  Maybe wait and retry. */
+-		if (nonblock)
+-			return -EAGAIN;
+-
+-		wait_event_interruptible(random_read_wait,
+-		    blocking_pool.initialized &&
+-		    (ENTROPY_BITS(&input_pool) >= random_read_wakeup_bits));
+-		if (signal_pending(current))
+-			return -ERESTARTSYS;
+-	}
+-}
+-
+-static ssize_t
+-random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+-{
+-	return _random_read(file->f_flags & O_NONBLOCK, buf, nbytes);
+-}
+-
+-static ssize_t
+ urandom_read_nowarn(struct file *file, char __user *buf, size_t nbytes,
+ 		    loff_t *ppos)
+ {
+@@ -2056,15 +2017,26 @@ urandom_read(struct file *file, char __u
+ 	return urandom_read_nowarn(file, buf, nbytes, ppos);
+ }
+ 
++static ssize_t
++random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
++{
++	int ret;
++
++	ret = wait_for_random_bytes();
++	if (ret != 0)
++		return ret;
++	return urandom_read_nowarn(file, buf, nbytes, ppos);
++}
++
+ static __poll_t
+ random_poll(struct file *file, poll_table * wait)
+ {
+ 	__poll_t mask;
+ 
+-	poll_wait(file, &random_read_wait, wait);
++	poll_wait(file, &crng_init_wait, wait);
+ 	poll_wait(file, &random_write_wait, wait);
+ 	mask = 0;
+-	if (ENTROPY_BITS(&input_pool) >= random_read_wakeup_bits)
++	if (crng_ready())
+ 		mask |= EPOLLIN | EPOLLRDNORM;
+ 	if (ENTROPY_BITS(&input_pool) < random_write_wakeup_bits)
+ 		mask |= EPOLLOUT | EPOLLWRNORM;
 
 
