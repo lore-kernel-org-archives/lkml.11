@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B39FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C94D9CCA481
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233934AbiFWR10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
+        id S230313AbiFWR3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232823AbiFWR0s (ORCPT
+        with ESMTP id S229852AbiFWR0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:26:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67E421E;
-        Thu, 23 Jun 2022 10:02:52 -0700 (PDT)
+        Thu, 23 Jun 2022 13:26:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B51C63;
+        Thu, 23 Jun 2022 10:02:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14BE5B8248E;
-        Thu, 23 Jun 2022 17:02:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62A67C3411B;
-        Thu, 23 Jun 2022 17:02:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9693F60AD7;
+        Thu, 23 Jun 2022 17:02:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D197C3411B;
+        Thu, 23 Jun 2022 17:02:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003769;
-        bh=FVoklwHoaif6skF6ZNQ0PhKLX1SQCzoMxKM0Oy/Qa4A=;
+        s=korg; t=1656003775;
+        bh=1gYXjOiQ/z90nRzb8U321OxJ4EeK2vYVDyO9CPVnJcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eO58Yj7zNFC8sk0Rpxx/gIDuTNM6coarTctMPZImsKn5az1U8za7x0K175kXQn+Pk
-         Zcz27Q71JWlORVkTB2NlgUbZJaenq10llySZUS3KhBcybh4OexN94QBcOBEYoxdmIz
-         qqmUnWcG7Maa6X7sSUKQquACoFAYuTpFo04jSyCE=
+        b=McXGMqJrZb02GoXnVYQXzULIKIRziPG1RyAmBmQSPy00c/uPxIj6XhLqfmHR2WmSY
+         xQsXobWJBh4JxOV9JRvpPgn+T85yIuAzPTzrNT900rAITPJMKt7txGBAcgiwvjs/yo
+         7RxvP5cjOuq8ziC737ZU32RG6a5aBwtNgw/TE/pI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 080/237] random: de-duplicate INPUT_POOL constants
-Date:   Thu, 23 Jun 2022 18:41:54 +0200
-Message-Id: <20220623164345.454587098@linuxfoundation.org>
+Subject: [PATCH 4.14 082/237] random: cleanup fractional entropy shift constants
+Date:   Thu, 23 Jun 2022 18:41:56 +0200
+Message-Id: <20220623164345.511013966@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,72 +51,82 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 5b87adf30f1464477169a1d653e9baf8c012bbfe upstream.
+commit 18263c4e8e62f7329f38f5eadc568751242ca89c upstream.
 
-We already had the POOL_* constants, so deduplicate the older INPUT_POOL
-ones. As well, fold EXTRACT_SIZE into the poolinfo enum, since it's
-related.
+The entropy estimator is calculated in terms of 1/8 bits, which means
+there are various constants where things are shifted by 3. Move these
+into our pool info enum with the other relevant constants. While we're
+at it, move an English assertion about sizes into a proper BUILD_BUG_ON
+so that the compiler can ensure this invariant.
 
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/char/random.c |   28 +++++++++++++---------------
+ 1 file changed, 13 insertions(+), 15 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -359,13 +359,6 @@
+@@ -359,16 +359,6 @@
  /* #define ADD_INTERRUPT_BENCH */
  
  /*
-- * Configuration information
+- * To allow fractional bits to be tracked, the entropy_count field is
+- * denominated in units of 1/8th bits.
+- *
+- * 2*(POOL_ENTROPY_SHIFT + poolbitshift) must <= 31, or the multiply in
+- * credit_entropy_bits() needs to be 64 bits wide.
 - */
--#define INPUT_POOL_SHIFT	12
--#define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
--#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
+-#define POOL_ENTROPY_SHIFT 3
+-#define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
 -
 -/*
-  * To allow fractional bits to be tracked, the entropy_count field is
-  * denominated in units of 1/8th bits.
-  *
-@@ -440,7 +433,9 @@ enum poolinfo {
- 	POOL_TAP2 = 76,
- 	POOL_TAP3 = 51,
- 	POOL_TAP4 = 25,
--	POOL_TAP5 = 1
-+	POOL_TAP5 = 1,
+  * If the entropy count falls under this number of bits, then we
+  * should wake up processes which are selecting or polling on write
+  * access to /dev/random.
+@@ -425,8 +415,13 @@ enum poolinfo {
+ 	POOL_WORDMASK = POOL_WORDS - 1,
+ 	POOL_BYTES = POOL_WORDS * sizeof(u32),
+ 	POOL_BITS = POOL_BYTES * 8,
+-	POOL_BITSHIFT = ilog2(POOL_WORDS) + 5,
+-	POOL_FRACBITS = POOL_WORDS << (POOL_ENTROPY_SHIFT + 5),
++	POOL_BITSHIFT = ilog2(POOL_BITS),
 +
-+	EXTRACT_SIZE = BLAKE2S_HASH_SIZE / 2
- };
++	/* To allow fractional bits to be tracked, the entropy_count field is
++	 * denominated in units of 1/8th bits. */
++	POOL_ENTROPY_SHIFT = 3,
++#define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
++	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT,
  
- /*
-@@ -503,7 +498,7 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
-  *
-  **********************************************************************/
+ 	/* x^128 + x^104 + x^76 + x^51 +x^25 + x + 1 */
+ 	POOL_TAP1 = 104,
+@@ -652,6 +647,9 @@ static void credit_entropy_bits(int nbit
+ 	int entropy_count, entropy_bits, orig;
+ 	int nfrac = nbits << POOL_ENTROPY_SHIFT;
  
--static u32 input_pool_data[INPUT_POOL_WORDS] __latent_entropy;
-+static u32 input_pool_data[POOL_WORDS] __latent_entropy;
++	/* Ensure that the multiplication can avoid being 64 bits wide. */
++	BUILD_BUG_ON(2 * (POOL_ENTROPY_SHIFT + POOL_BITSHIFT) > 31);
++
+ 	if (!nbits)
+ 		return;
  
- static struct {
- 	/* read-only data: */
-@@ -1958,7 +1953,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- #include <linux/sysctl.h>
+@@ -687,13 +685,13 @@ retry:
+ 		/* The +2 corresponds to the /4 in the denominator */
  
- static int min_write_thresh;
--static int max_write_thresh = INPUT_POOL_WORDS * 32;
-+static int max_write_thresh = POOL_BITS;
- static int random_min_urandom_seed = 60;
- static char sysctl_bootid[16];
+ 		do {
+-			unsigned int anfrac = min(pnfrac, POOL_FRACBITS/2);
++			unsigned int anfrac = min(pnfrac, POOL_FRACBITS / 2);
+ 			unsigned int add =
+-				((POOL_FRACBITS - entropy_count)*anfrac*3) >> s;
++				((POOL_FRACBITS - entropy_count) * anfrac * 3) >> s;
  
-@@ -2015,7 +2010,7 @@ static int proc_do_entropy(struct ctl_ta
- 	return proc_dointvec(&fake_table, write, buffer, lenp, ppos);
- }
+ 			entropy_count += add;
+ 			pnfrac -= anfrac;
+-		} while (unlikely(entropy_count < POOL_FRACBITS-2 && pnfrac));
++		} while (unlikely(entropy_count < POOL_FRACBITS - 2 && pnfrac));
+ 	}
  
--static int sysctl_poolsize = INPUT_POOL_WORDS * 32;
-+static int sysctl_poolsize = POOL_BITS;
- extern struct ctl_table random_table[];
- struct ctl_table random_table[] = {
- 	{
+ 	if (WARN_ON(entropy_count < 0)) {
 
 
