@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B5EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A0AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232029AbiFWO12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 10:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
+        id S232053AbiFWO1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 10:27:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231929AbiFWO1M (ORCPT
+        with ESMTP id S231820AbiFWO1O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 10:27:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135CE3DDC4
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:27:12 -0700 (PDT)
+        Thu, 23 Jun 2022 10:27:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC67943390;
+        Thu, 23 Jun 2022 07:27:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A404461E0E
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:27:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 18D14C3411D;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 621F7B823F1;
+        Thu, 23 Jun 2022 14:27:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2DEF5C341C6;
         Thu, 23 Jun 2022 14:27:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1655994431;
-        bh=xfRCvAE+e/PW1dBExT/88qXEsZv0NNJVoFgTymZw394=;
+        bh=wXp4b/fdsI8fouQID9fsgJBAuJKNHquWmIaZNRase/o=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=W37Bw7F1A6/EarlChY3FitCxl/fQuse5TI/TPt5IpTvyb1Dh+706k4eC18GpRtxwa
-         rrPGI949IDc4ouZWqdo3kVsmNlBPew5mh6BCquisyPH1vykncUkAdm2Fyn6CSpaIUB
-         VbCmyI1e+R9z4sx0V6o18j3YhGYSziaDGfAqfC3EuPzf3icu2nhdgNrhMVLFpStqMB
-         rrJtfgnSBs/oaBe1SwBSshxS3fVm/sPev/BaY4FCT/kz+QWrJO4xvhEA6BmbhTpE6I
-         N6UvIWq06fA0+JxQOolTH/nFZ4X9ugvKIEqSlmfSRWOZimdxXyR4Mjjw6yUuMykOQW
-         d0JZzrUgTlJ3g==
+        b=fknNj4TcB3l9d5bSvBMwgbNPzVMW1ml5BWRnMxNSFo2CFZOA8A4M4uFDdbevUo1Qb
+         ml9AvW1e4KF+Pmg/OK7YzfwSq934is38dzW1KNNU2PUC6RqXYXhSc3nqAkv2B3bVpt
+         V+7v6jK+IFYWCDFMePTf3ikq9QtLc8Y9Z9keYz1MaW7NrvWZHw92F52jzUvbj8YmCJ
+         JxBJZkHXMQ/qn55ZlA9q5WMZuQvhQAWaBKttl1HNKE2Fnk0N6FyUotYFiLhbWC2LiV
+         Og2cqKLioDekJMZK8eKSy948RK3xTCsfY9k6nDD+Z+l+p0Yy/8GT3d4+IRmcYUji2W
+         v8oF21X/7F/TA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 04855E73856;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1553EE73875;
         Thu, 23 Jun 2022 14:27:11 +0000 (UTC)
-Subject: Re: [GIT PULL] sound fixes for 5.19-rc4
+Subject: Re: [GIT PULL] MMC fixes for v5.19-rc4
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <874k0bn8jm.wl-tiwai@suse.de>
-References: <874k0bn8jm.wl-tiwai@suse.de>
+In-Reply-To: <20220623115720.44690-1-ulf.hansson@linaro.org>
+References: <20220623115720.44690-1-ulf.hansson@linaro.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <874k0bn8jm.wl-tiwai@suse.de>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.19-rc4
-X-PR-Tracked-Commit-Id: 627ce0d68eb4b53e995b08089fa9da1e513ec5ba
+X-PR-Tracked-Message-Id: <20220623115720.44690-1-ulf.hansson@linaro.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v5.19-rc2
+X-PR-Tracked-Commit-Id: 89bcd9a64b849380ef57e3032b307574e48db524
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ddfe80311b81a83d3fde7e59fddc6aa822a5188d
-Message-Id: <165599443101.515.1463818827761593002.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: f410c3e000a3ced328b2c4c8bb6d121ff5572dde
+Message-Id: <165599443108.515.2649624135065269135.pr-tracker-bot@kernel.org>
 Date:   Thu, 23 Jun 2022 14:27:11 +0000
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Linus <torvalds@linux-foundation.org>, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 23 Jun 2022 09:27:57 +0200:
+The pull request you sent on Thu, 23 Jun 2022 13:57:20 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.19-rc4
+> git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v5.19-rc2
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ddfe80311b81a83d3fde7e59fddc6aa822a5188d
+https://git.kernel.org/torvalds/c/f410c3e000a3ced328b2c4c8bb6d121ff5572dde
 
 Thank you!
 
