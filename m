@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E0BCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 389DFCCA486
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233265AbiFWRCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
+        id S233318AbiFWRCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:02:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233797AbiFWQ6d (ORCPT
+        with ESMTP id S233803AbiFWQ6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 12:58:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4024EDEF;
-        Thu, 23 Jun 2022 09:53:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B404EDEA;
+        Thu, 23 Jun 2022 09:53:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 263E961F90;
-        Thu, 23 Jun 2022 16:53:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D087BC3411B;
-        Thu, 23 Jun 2022 16:53:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFE9D61F80;
+        Thu, 23 Jun 2022 16:53:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748AEC36AE3;
+        Thu, 23 Jun 2022 16:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003230;
-        bh=dFCsBs52RyVBTsB4B2q01Ax5YZX+Pkr7BvVsGXWOwUo=;
+        s=korg; t=1656003226;
+        bh=dcTr+3Cc/f8ArMXb7czVoUP7tPV4aeG9yNZI3oE3oZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jTjTPuCSmGplDHeiixThvAnfhhwmjbPQLmLakrB8IwtnOq+7Fh/abAqkutmJnGbDN
-         gaiQJAqSlrCk+WP0gigK2RQoKFb70NipSlIgGx5xbv5YBN5WJ3I7IpPatPiOwi3Bpi
-         /nIy6sluns91bRR5qPtXd1XqynyFRN/I4Mr35p8g=
+        b=O+ZQ7wwiwrz1p4QSM7tROFQ8qhXoWSzSYuU0HaPUa8YH+RQGVcM8CkbmqsSKaqNBk
+         +1L3ylUJ3I1A3IFv0GWHBGOo1ScXvWW6DRLc5+QQX48GvK3dK3OvsXGgVm+jM7bgTn
+         /zXp1SjWaq6hL7btK6ZcDv6JbtMn0XHBAptgDjYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 132/264] random: remove useless header comment
-Date:   Thu, 23 Jun 2022 18:42:05 +0200
-Message-Id: <20220623164347.801089853@linuxfoundation.org>
+Subject: [PATCH 4.9 131/264] random: introduce drain_entropy() helper to declutter crng_reseed()
+Date:   Thu, 23 Jun 2022 18:42:04 +0200
+Message-Id: <20220623164347.772843859@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,9 +52,12 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 6071a6c0fba2d747742cadcbb3ba26ed756ed73b upstream.
+commit 246c03dd899164d0186b6d685d6387f228c28d93 upstream.
 
-This really adds nothing at all useful.
+In preparation for separating responsibilities, break out the entropy
+count management part of crng_reseed() into its own function.
+
+No functional changes.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
@@ -62,21 +65,71 @@ Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/char/random.c |   36 +++++++++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 13 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -1,8 +1,5 @@
--/*
-- * include/linux/random.h
-- *
-- * Include file for the random number generator.
-- */
-+/* SPDX-License-Identifier: GPL-2.0 */
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -261,6 +261,7 @@ static struct {
+ };
+ 
+ static void extract_entropy(void *buf, size_t nbytes);
++static bool drain_entropy(void *buf, size_t nbytes);
+ 
+ static void crng_reseed(void);
+ 
+@@ -506,23 +507,13 @@ static void crng_slow_load(const void *c
+ static void crng_reseed(void)
+ {
+ 	unsigned long flags;
+-	int entropy_count;
+ 	unsigned long next_gen;
+ 	u8 key[CHACHA20_KEY_SIZE];
+ 	bool finalize_init = false;
+ 
+-	/*
+-	 * First we make sure we have POOL_MIN_BITS of entropy in the pool,
+-	 * and then we drain all of it. Only then can we extract a new key.
+-	 */
+-	do {
+-		entropy_count = READ_ONCE(input_pool.entropy_count);
+-		if (entropy_count < POOL_MIN_BITS)
+-			return;
+-	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
+-	extract_entropy(key, sizeof(key));
+-	wake_up_interruptible(&random_write_wait);
+-	kill_fasync(&fasync, SIGIO, POLL_OUT);
++	/* Only reseed if we can, to prevent brute forcing a small amount of new bits. */
++	if (!drain_entropy(key, sizeof(key)))
++		return;
+ 
+ 	/*
+ 	 * We copy the new key into the base_crng, overwriting the old one,
+@@ -950,6 +941,25 @@ static void extract_entropy(void *buf, s
+ 	memzero_explicit(&block, sizeof(block));
+ }
+ 
++/*
++ * First we make sure we have POOL_MIN_BITS of entropy in the pool, and then we
++ * set the entropy count to zero (but don't actually touch any data). Only then
++ * can we extract a new key with extract_entropy().
++ */
++static bool drain_entropy(void *buf, size_t nbytes)
++{
++	unsigned int entropy_count;
++	do {
++		entropy_count = READ_ONCE(input_pool.entropy_count);
++		if (entropy_count < POOL_MIN_BITS)
++			return false;
++	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
++	extract_entropy(buf, nbytes);
++	wake_up_interruptible(&random_write_wait);
++	kill_fasync(&fasync, SIGIO, POLL_OUT);
++	return true;
++}
 +
- #ifndef _LINUX_RANDOM_H
- #define _LINUX_RANDOM_H
+ #define warn_unseeded_randomness(previous) \
+ 	_warn_unseeded_randomness(__func__, (void *)_RET_IP_, (previous))
  
 
 
