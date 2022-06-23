@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64BDECCA487
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C42A5CCA482
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232307AbiFWQ6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
+        id S232584AbiFWQ6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233397AbiFWQux (ORCPT
+        with ESMTP id S233367AbiFWQut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:50:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744E24F1FD;
-        Thu, 23 Jun 2022 09:48:48 -0700 (PDT)
+        Thu, 23 Jun 2022 12:50:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A5B4F1ED;
+        Thu, 23 Jun 2022 09:48:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F2A661FC7;
-        Thu, 23 Jun 2022 16:48:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B4B6C341C4;
-        Thu, 23 Jun 2022 16:48:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D8C161FB8;
+        Thu, 23 Jun 2022 16:48:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66840C3411B;
+        Thu, 23 Jun 2022 16:48:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002927;
-        bh=5OCB9WZDVzf64RzH25Gvi4oTWqzDrDM4m6NIaJJb5Pg=;
+        s=korg; t=1656002921;
+        bh=sXL19wqCbyr+cbKWaI19FppbVCfkIQcc2wyE5ao7Vyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r5WwkEll/neEBEzLOz78hdDMIs8D8LJLKlP6b6psLcatq4RrbIeESarYim6K3as2k
-         5wtE8f7obw7D/vDMTSmMROyBcTbozVfOTJD3C0SNHA0GVejMbtsnDP22n13FJkgK6M
-         g9z+0NZ0jxGOKcL5caT8k9Q9eBFKC+rpf7+80FQM=
+        b=AjMw9MBnRARioDErIYx3zNksb8nk9ht99kCkEE2GYK+MkPEdDxFVFdkr8sfQ8nUZK
+         a9o0CKNgF/EsiUA8/f1oFJ04QZWAR+1SadoUnhg41YnpkGmJirgIV92CZn9Z9yg0uc
+         NV1sBx2dhBzEOgAePI+xxoMKMtnnvS8+8tJeit9o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
         Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 071/264] linux/random.h: Remove arch_has_random, arch_has_random_seed
-Date:   Thu, 23 Jun 2022 18:41:04 +0200
-Message-Id: <20220623164346.080963030@linuxfoundation.org>
+Subject: [PATCH 4.9 069/264] x86: Remove arch_has_random, arch_has_random_seed
+Date:   Thu, 23 Jun 2022 18:41:02 +0200
+Message-Id: <20220623164346.023739431@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,47 +51,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Richard Henderson <richard.henderson@linaro.org>
 
-commit 647f50d5d9d933b644b29c54f13ac52af1b1774d upstream.
+commit 5f2ed7f5b99b54389b74e53309677831ac9cb9d7 upstream.
 
-The arm64 version of archrandom.h will need to be able to test for
-support and read the random number without preemption, so a separate
-query predicate is not practical.
+Use the expansion of these macros directly in arch_get_random_*.
 
-Since this part of the generic interface is unused, remove it.
+These symbols are currently part of the generic archrandom.h
+interface, but are currently unused and can be removed.
 
 Signed-off-by: Richard Henderson <rth@twiddle.net>
 Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20200110145422.49141-5-broonie@kernel.org
+Link: https://lore.kernel.org/r/20200110145422.49141-2-broonie@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |    8 --------
- 1 file changed, 8 deletions(-)
+ arch/x86/include/asm/archrandom.h |   12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -104,10 +104,6 @@ static inline bool arch_get_random_int(u
- {
- 	return 0;
+--- a/arch/x86/include/asm/archrandom.h
++++ b/arch/x86/include/asm/archrandom.h
+@@ -86,10 +86,6 @@ static inline bool rdseed_int(unsigned i
+ 	return ok;
  }
--static inline bool arch_has_random(void)
--{
--	return 0;
--}
+ 
+-/* Conditional execution based on CPU type */
+-#define arch_has_random()	static_cpu_has(X86_FEATURE_RDRAND)
+-#define arch_has_random_seed()	static_cpu_has(X86_FEATURE_RDSEED)
+-
+ /*
+  * These are the generic interfaces; they must not be declared if the
+  * stubs in <linux/random.h> are to be invoked,
+@@ -99,22 +95,22 @@ static inline bool rdseed_int(unsigned i
+ 
+ static inline bool arch_get_random_long(unsigned long *v)
+ {
+-	return arch_has_random() ? rdrand_long(v) : false;
++	return static_cpu_has(X86_FEATURE_RDRAND) ? rdrand_long(v) : false;
+ }
+ 
+ static inline bool arch_get_random_int(unsigned int *v)
+ {
+-	return arch_has_random() ? rdrand_int(v) : false;
++	return static_cpu_has(X86_FEATURE_RDRAND) ? rdrand_int(v) : false;
+ }
+ 
  static inline bool arch_get_random_seed_long(unsigned long *v)
  {
- 	return 0;
-@@ -116,10 +112,6 @@ static inline bool arch_get_random_seed_
- {
- 	return 0;
+-	return arch_has_random_seed() ? rdseed_long(v) : false;
++	return static_cpu_has(X86_FEATURE_RDSEED) ? rdseed_long(v) : false;
  }
--static inline bool arch_has_random_seed(void)
--{
--	return 0;
--}
- #endif
  
- #endif /* _LINUX_RANDOM_H */
+ static inline bool arch_get_random_seed_int(unsigned int *v)
+ {
+-	return arch_has_random_seed() ? rdseed_int(v) : false;
++	return static_cpu_has(X86_FEATURE_RDSEED) ? rdseed_int(v) : false;
+ }
+ 
+ extern void x86_init_rdrand(struct cpuinfo_x86 *c);
 
 
