@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29596C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B29C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:09:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236210AbiFWSJT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
+        id S236230AbiFWSJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236279AbiFWSHf (ORCPT
+        with ESMTP id S236456AbiFWSHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:07:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE97A5871;
-        Thu, 23 Jun 2022 10:19:15 -0700 (PDT)
+        Thu, 23 Jun 2022 14:07:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D6D7A1A0;
+        Thu, 23 Jun 2022 10:19:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E41A61DC6;
-        Thu, 23 Jun 2022 17:19:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A83ABC3411B;
-        Thu, 23 Jun 2022 17:19:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1C0FB82490;
+        Thu, 23 Jun 2022 17:19:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39033C3411B;
+        Thu, 23 Jun 2022 17:19:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004754;
-        bh=uP/QVG/guUfIKIDx8jFB8uEfS/Num49/2baXTsmsSSQ=;
+        s=korg; t=1656004760;
+        bh=xx+KKT3SJF3BLuWqc0e56SpWJ4CoXX325SYZ1RIsBns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fev3b0vNVcHct+7FwfGz/ooL+GVge1DVSt6ZIvx+d3e+vMQsl9G8aGM4EHO4ZzhWq
-         PI85x93110lil6zqtK0ku/QB73NEp9cyc0c7xecXVx5krUOUuWF/dmRqaGINht6Aft
-         FryCFRvcZlJpZr7EzcgEYrXNtcqUpVVnp9SU9okU=
+        b=N1OlPeKOjCJV7EDxcYxysAnREeTVVdP7t3Q33VptX7+KzimgkLnCgdluU9mvrX6+J
+         JWx0n1NEAXmkUEzArmUIIWpFBnajaqV8WU+z5wy4NTmd7wFjEZWohCE4g8iUMQHSNI
+         F0rv+Ys+L8Ol4j50GP/UwAiHqtDZx+RS2a1J/FpQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Arnd Bergmann <arnd@arndb.de>, Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.19 140/234] timekeeping: Add raw clock fallback for random_get_entropy()
-Date:   Thu, 23 Jun 2022 18:43:27 +0200
-Message-Id: <20220623164347.017587811@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Graham Christensen <graham@grahamc.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 124/234] random: treat bootloader trust toggle the same way as cpu trust toggle
+Date:   Thu, 23 Jun 2022 18:43:11 +0200
+Message-Id: <20220623164346.565775931@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -51,98 +53,86 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 1366992e16bddd5e2d9a561687f367f9f802e2e4 upstream.
+commit d97c68d178fbf8aaaf21b69b446f2dfb13909316 upstream.
 
-The addition of random_get_entropy_fallback() provides access to
-whichever time source has the highest frequency, which is useful for
-gathering entropy on platforms without available cycle counters. It's
-not necessarily as good as being able to quickly access a cycle counter
-that the CPU has, but it's still something, even when it falls back to
-being jiffies-based.
+If CONFIG_RANDOM_TRUST_CPU is set, the RNG initializes using RDRAND.
+But, the user can disable (or enable) this behavior by setting
+`random.trust_cpu=0/1` on the kernel command line. This allows system
+builders to do reasonable things while avoiding howls from tinfoil
+hatters. (Or vice versa.)
 
-In the event that a given arch does not define get_cycles(), falling
-back to the get_cycles() default implementation that returns 0 is really
-not the best we can do. Instead, at least calling
-random_get_entropy_fallback() would be preferable, because that always
-needs to return _something_, even falling back to jiffies eventually.
-It's not as though random_get_entropy_fallback() is super high precision
-or guaranteed to be entropic, but basically anything that's not zero all
-the time is better than returning zero all the time.
+CONFIG_RANDOM_TRUST_BOOTLOADER is basically the same thing, but regards
+the seed passed via EFI or device tree, which might come from RDRAND or
+a TPM or somewhere else. In order to allow distros to more easily enable
+this while avoiding those same howls (or vice versa), this commit adds
+the corresponding `random.trust_bootloader=0/1` toggle.
 
-Finally, since random_get_entropy_fallback() is used during extremely
-early boot when randomizing freelists in mm_init(), it can be called
-before timekeeping has been initialized. In that case there really is
-nothing we can do; jiffies hasn't even started ticking yet. So just give
-up and return 0.
-
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
 Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Graham Christensen <graham@grahamc.com>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Link: https://github.com/NixOS/nixpkgs/pull/165355
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/timex.h     |    8 ++++++++
- kernel/time/timekeeping.c |   15 +++++++++++++++
- 2 files changed, 23 insertions(+)
+ Documentation/admin-guide/kernel-parameters.txt |    6 ++++++
+ drivers/char/Kconfig                            |    3 ++-
+ drivers/char/random.c                           |    8 +++++++-
+ 3 files changed, 15 insertions(+), 2 deletions(-)
 
---- a/include/linux/timex.h
-+++ b/include/linux/timex.h
-@@ -62,6 +62,8 @@
- #include <linux/types.h>
- #include <linux/param.h>
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3697,6 +3697,12 @@
+ 			fully seed the kernel's CRNG. Default is controlled
+ 			by CONFIG_RANDOM_TRUST_CPU.
  
-+unsigned long random_get_entropy_fallback(void);
++	random.trust_bootloader={on,off}
++			[KNL] Enable or disable trusting the use of a
++			seed passed by the bootloader (if available) to
++			fully seed the kernel's CRNG. Default is controlled
++			by CONFIG_RANDOM_TRUST_BOOTLOADER.
 +
- #include <asm/timex.h>
+ 	ras=option[,option,...]	[KNL] RAS-specific options
  
- #ifndef random_get_entropy
-@@ -74,8 +76,14 @@
-  *
-  * By default we use get_cycles() for this purpose, but individual
-  * architectures may override this in their asm/timex.h header file.
-+ * If a given arch does not have get_cycles(), then we fallback to
-+ * using random_get_entropy_fallback().
-  */
-+#ifdef get_cycles
- #define random_get_entropy()	((unsigned long)get_cycles())
-+#else
-+#define random_get_entropy()	random_get_entropy_fallback()
-+#endif
- #endif
+ 		cec_disable	[X86]
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -576,4 +576,5 @@ config RANDOM_TRUST_BOOTLOADER
+ 	device randomness. Say Y here to assume the entropy provided by the
+ 	booloader is trustworthy so it will be added to the kernel's entropy
+ 	pool. Otherwise, say N here so it will be regarded as device input that
+-	only mixes the entropy pool.
+\ No newline at end of file
++	only mixes the entropy pool. This can also be configured at boot with
++	"random.trust_bootloader=on/off".
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -940,11 +940,17 @@ static bool drain_entropy(void *buf, siz
+  **********************************************************************/
+ 
+ static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
++static bool trust_bootloader __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
+ static int __init parse_trust_cpu(char *arg)
+ {
+ 	return kstrtobool(arg, &trust_cpu);
+ }
++static int __init parse_trust_bootloader(char *arg)
++{
++	return kstrtobool(arg, &trust_bootloader);
++}
+ early_param("random.trust_cpu", parse_trust_cpu);
++early_param("random.trust_bootloader", parse_trust_bootloader);
  
  /*
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -22,6 +22,7 @@
- #include <linux/clocksource.h>
- #include <linux/jiffies.h>
- #include <linux/time.h>
-+#include <linux/timex.h>
- #include <linux/tick.h>
- #include <linux/stop_machine.h>
- #include <linux/pvclock_gtod.h>
-@@ -2308,6 +2309,20 @@ static int timekeeping_validate_timex(co
- 	return 0;
- }
- 
-+/**
-+ * random_get_entropy_fallback - Returns the raw clock source value,
-+ * used by random.c for platforms with no valid random_get_entropy().
-+ */
-+unsigned long random_get_entropy_fallback(void)
-+{
-+	struct tk_read_base *tkr = &tk_core.timekeeper.tkr_mono;
-+	struct clocksource *clock = READ_ONCE(tkr->clock);
-+
-+	if (unlikely(timekeeping_suspended || !clock))
-+		return 0;
-+	return clock->read(clock);
-+}
-+EXPORT_SYMBOL_GPL(random_get_entropy_fallback);
- 
- /**
-  * do_adjtimex() - Accessor function to NTP __do_adjtimex function
+  * The first collection of entropy occurs at system boot while interrupts
+@@ -1152,7 +1158,7 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
+  */
+ void add_bootloader_randomness(const void *buf, size_t size)
+ {
+-	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
++	if (trust_bootloader)
+ 		add_hwgenerator_randomness(buf, size, size * 8);
+ 	else
+ 		add_device_randomness(buf, size);
 
 
