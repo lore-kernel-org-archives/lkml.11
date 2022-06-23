@@ -2,138 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74640C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229832AbiFWVVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 17:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
+        id S229593AbiFWVVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 17:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiFWVVc (ORCPT
+        with ESMTP id S229581AbiFWVVc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 17:21:32 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FCB4D258
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9594C4DF46
         for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:21:31 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id eo8so839896edb.0
+Received: by mail-ej1-x630.google.com with SMTP id u15so759307ejc.10
         for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:21:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7XXr3wvfzyPEEB6ageHJZCwuCmEqrP5Y6OCseOgyEFs=;
-        b=1taa7fGzS0gwwiZZZMghFVWNNBD1llCsgooIA2VHj0ACeTQSu5DJsqavaUQLBx/GNc
-         oveXSh33asHduJoA8f87sIF4sYudQi/oKjL+1cYTd7cYb1k05SJ/u/9jeyZoJBkBC7PU
-         mE+/aREHomvvpd5YRJmbQKmErtLQZ09ocAyhX22DvzoAp705CBEgs1Uy83W/KN5vlTDW
-         stRGodkF253VTTmAfgTgtAdH3vnnsSQ/A/iKfzsPziEvqwL+RE5GdfRwZw7ZHSanz/ED
-         Ycluk1Gn1hTjoF3E+tFattpXKMs4v7Hyo+dN7f/a/aeZQJkCeQwNcUiVsOQDKvSPeLlV
-         t50g==
+        bh=kOwhwkA5mmXw3hkTfHa38fc0GYwltKnM7rb5bb5xfwY=;
+        b=K6N2zpb6B0fPuw75VVTJv5/Iau7yInQabYZ/WS1X3wrgt+vdkOMKnLtdS1F/b5AfDa
+         140WIQmRymqMN3Q5DWpYinTh3T/DzER4L2BidCyIHe3rYDTU5vsJLWrRGg46TkW6E/0n
+         thhTOrvDKW5qUCS1Vy7Qg71Lprh1ozNoVAVbPm6ZWDW0IsaD7Px2sO+fafVYr/yGmqhK
+         bEZHeIifHM4KZJtWj/BL9IigNmh+Lz8vXVQwnrGaqeqqn84K1FEKAbzZRWE04tMqGFZR
+         6odJwWPIegCI8l3F7oqvstsrjS7YLG7VUHcSVWeh3lFzAj1F6Uxaxoplu4M1Q/kgV5WD
+         3BXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7XXr3wvfzyPEEB6ageHJZCwuCmEqrP5Y6OCseOgyEFs=;
-        b=P4hD5KqK5sbwjErqvbiXmECihG0Hvn1vsmdJ4HPlywi9UqyHDXVj16m7Z92MIjOyAS
-         +5gKHPqPTcM+2rvrQHR5MyHLdqu5OxaUK6yVwYQUS/zQb+TVJVPdyEQdfHCZ7ezsBgVW
-         hfGhTEY07qf9qvs0dsBZfIB9TMwRZklu+ob90TSHA3WlHA0cW3eb6KuIUfHJrPgJNwCC
-         opyMXoW5Ga9tKcXjK4pWBtr0KkINiN+w6I8NSEHD1RfVEs0gqKB7wpSg7rgqxKaZLq5a
-         goPoWCnO64YAms3f2mr6OKaUkNrK7K3M4nGoUQGgwpnEmVs/bddvy5CmeaBYdGVOym6K
-         jjFQ==
-X-Gm-Message-State: AJIora/rf+FuHLK/aNtXRes2qmjKvDNFR6DfohhokdOl+sd25ep9sB9x
-        9ZSkN0P52fVf+nWVJ0SMltArykTMxkxYwZ4F2uG93g==
-X-Google-Smtp-Source: AGRyM1tIomF/CV81BQAJ3q4sAaFjsJj+DjqtGKsjlsj/RS3fVXAqHWOMzY1sdoaCaCn4BhusN8e2ERzS4C62EHigcTM=
-X-Received: by 2002:a05:6402:18:b0:435:9a79:9a40 with SMTP id
- d24-20020a056402001800b004359a799a40mr13135974edu.328.1656019289606; Thu, 23
+        bh=kOwhwkA5mmXw3hkTfHa38fc0GYwltKnM7rb5bb5xfwY=;
+        b=qPTzmuYcmUtlNZHh+XqUD69cgbPnV0Yiz5djWSAVbQcpt8kjga3K1+GuWio/oLHSCM
+         OdEWfgcXCn3B+Wyvavqgw3tjvf3w4vsnvB+pS/6IVXFCGvp8IPpRjYJYlKT2a40KcMTQ
+         grMX14NL9Zm52RaYpH1BnQRe8L8edaS6pv2k2lAm8BtDqSmpZtGgmMeR4yPfFtyiF7d2
+         1rwAeZpRVBUW2Hr48prBtHfyInMeFeSRmXuIHYBCISawvFUok0PEvZZU+F4eyw5iRiTx
+         63kDM12yBWqLPUMA5VmZMbSs1flOMf2aqrDJivKlyVT4HCI5l/VF1iqJSMODtJODSINo
+         8PUw==
+X-Gm-Message-State: AJIora8U4f4RO5OKUrEgT18aZeDAYp3abGNtWbM6zln5Ia8fLvR6ZCpY
+        Rh5vkxD/F4kmfI1e4VNscUdoGxjbELQpDsI7ixI=
+X-Google-Smtp-Source: AGRyM1uoYqqSYjAVeHYAlR6Uez4eMhH3clKFNosLdDojQKG+unYQyjNftVHnB9lfhiDL6K3fSsG4goeUohnXhQUa8LA=
+X-Received: by 2002:a17:907:2d09:b0:722:f0bf:ac26 with SMTP id
+ gs9-20020a1709072d0900b00722f0bfac26mr10248592ejc.77.1656019289957; Thu, 23
  Jun 2022 14:21:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <YrSnkBodv7TYvtMb@posteo.de>
-In-Reply-To: <YrSnkBodv7TYvtMb@posteo.de>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Thu, 23 Jun 2022 23:21:19 +0200
-Message-ID: <CAMRc=MfT__UTcVx8r84qFTh3raroB1Cyp0dPrbJ9L6eYO_LGRg@mail.gmail.com>
-Subject: Re: [PATCH] docs: driver-api: gpio: Fix some typos
-To:     Tom Schwindl <schwindl@posteo.de>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-doc <linux-doc@vger.kernel.org>,
+References: <cover.1655975970.git.f3sch.git@outlook.com> <13b32131cd00a1f0b8793657a24ada71240a8350.1655975970.git.f3sch.git@outlook.com>
+In-Reply-To: <13b32131cd00a1f0b8793657a24ada71240a8350.1655975970.git.f3sch.git@outlook.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 23 Jun 2022 23:20:49 +0200
+Message-ID: <CAHp75VcQcKaYUP_JsmTFOY-pbOR39+TMw=5ADbb2BRGoMijCMw@mail.gmail.com>
+Subject: Re: [PATCH v4 3/3] Staging: rtl8192e: Cleaning up error handling
+To:     Felix Schlepper <f3sch.git@outlook.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 7:49 PM Tom Schwindl <schwindl@posteo.de> wrote:
+On Thu, Jun 23, 2022 at 10:44 PM Felix Schlepper <f3sch.git@outlook.com> wrote:
 >
+> Moved error handling to one common block.
+> This removes double checking if all txb->fragments[]
+> were initialized.
+> The original code worked fine, but this is cleaner.
 
-Please add some description here as is customary in kernel git messages.
+...
 
-Bart
+> +err_free:
+> +       while (--i >= 0)
 
-> Signed-off-by: Tom Schwindl <schwindl@posteo.de>
-> ---
->  Documentation/driver-api/gpio/consumer.rst   | 2 +-
->  Documentation/driver-api/gpio/driver.rst     | 6 +++---
->  Documentation/driver-api/gpio/using-gpio.rst | 2 +-
->  3 files changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/Documentation/driver-api/gpio/consumer.rst b/Documentation/driver-api/gpio/consumer.rst
-> index 72bcf5f5e3a2..de6fc79ad6f0 100644
-> --- a/Documentation/driver-api/gpio/consumer.rst
-> +++ b/Documentation/driver-api/gpio/consumer.rst
-> @@ -114,7 +114,7 @@ For a function using multiple GPIOs all of those can be obtained with one call::
->
->  This function returns a struct gpio_descs which contains an array of
->  descriptors.  It also contains a pointer to a gpiolib private structure which,
-> -if passed back to get/set array functions, may speed up I/O proocessing::
-> +if passed back to get/set array functions, may speed up I/O processing::
->
->         struct gpio_descs {
->                 struct gpio_array *info;
-> diff --git a/Documentation/driver-api/gpio/driver.rst b/Documentation/driver-api/gpio/driver.rst
-> index 70ff43ac4fcc..6baaeab79534 100644
-> --- a/Documentation/driver-api/gpio/driver.rst
-> +++ b/Documentation/driver-api/gpio/driver.rst
-> @@ -119,7 +119,7 @@ GPIO lines with debounce support
->  Debouncing is a configuration set to a pin indicating that it is connected to
->  a mechanical switch or button, or similar that may bounce. Bouncing means the
->  line is pulled high/low quickly at very short intervals for mechanical
-> -reasons. This can result in the value being unstable or irqs fireing repeatedly
-> +reasons. This can result in the value being unstable or irqs firing repeatedly
->  unless the line is debounced.
->
->  Debouncing in practice involves setting up a timer when something happens on
-> @@ -219,7 +219,7 @@ use a trick: when a line is set as output, if the line is flagged as open
->  drain, and the IN output value is low, it will be driven low as usual. But
->  if the IN output value is set to high, it will instead *NOT* be driven high,
->  instead it will be switched to input, as input mode is high impedance, thus
-> -achieveing an "open drain emulation" of sorts: electrically the behaviour will
-> +achieving an "open drain emulation" of sorts: electrically the behaviour will
->  be identical, with the exception of possible hardware glitches when switching
->  the mode of the line.
->
-> @@ -642,7 +642,7 @@ In this case the typical set-up will look like this:
->
->  As you can see pretty similar, but you do not supply a parent handler for
->  the IRQ, instead a parent irqdomain, an fwnode for the hardware and
-> -a funcion .child_to_parent_hwirq() that has the purpose of looking up
-> +a function .child_to_parent_hwirq() that has the purpose of looking up
->  the parent hardware irq from a child (i.e. this gpio chip) hardware irq.
->  As always it is good to look at examples in the kernel tree for advice
->  on how to find the required pieces.
-> diff --git a/Documentation/driver-api/gpio/using-gpio.rst b/Documentation/driver-api/gpio/using-gpio.rst
-> index 64c8d3f76c3a..894d88855d73 100644
-> --- a/Documentation/driver-api/gpio/using-gpio.rst
-> +++ b/Documentation/driver-api/gpio/using-gpio.rst
-> @@ -44,7 +44,7 @@ These devices will appear on the system as ``/dev/gpiochip0`` thru
->  found in the kernel tree ``tools/gpio`` subdirectory.
->
->  For structured and managed applications, we recommend that you make use of the
-> -libgpiod_ library. This provides helper abstractions, command line utlities
-> +libgpiod_ library. This provides helper abstractions, command line utilities
->  and arbitration for multiple simultaneous consumers on the same GPIO chip.
->
->  .. _libgpiod: https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/
-> --
-> 2.36.1
->
+  while (i--)
+
+will suffice.
+
+> +               dev_kfree_skb_any(txb->fragments[i]);
+> +       kfree(txb);
+> +
+> +       return NULL;
+
+-- 
+With Best Regards,
+Andy Shevchenko
