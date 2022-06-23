@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B597DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85135C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230301AbiFWTei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
+        id S230219AbiFWTfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229789AbiFWTcR (ORCPT
+        with ESMTP id S229838AbiFWTeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:32:17 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E638D50;
-        Thu, 23 Jun 2022 12:08:00 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id t24so609592lfr.4;
-        Thu, 23 Jun 2022 12:08:00 -0700 (PDT)
+        Thu, 23 Jun 2022 15:34:46 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B11467E5C
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 12:15:54 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id d5so714166yba.5
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 12:15:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kcVKIksrL1T9nYsJOsA85D5uEfgk6mbUZ7YHZbbcbN4=;
-        b=YLPURpU4e3oBJ33JI7xttyZBFe4Act4JNht8wrBLjKuBYBMcrppJKSi8AXi0XgLok0
-         rIKC3DrIkcTVqA6Hr3F5LbPqMXbo04MRzQ4Ytfe7VYweJnThC1VIkbq2EBBBCWIj/PjJ
-         g4zdjBq11kfQpWrRVseXGvsYxfo1L/fMeti4ZT7lpF2p2VykEl8GOrzExc3wvO/hAMr+
-         vCJE7GFSd2OuPdl9lum4rjlVdVICVtp2mE+nxaAjZmYy84pJICtLdq5SD+OUYHwUhW0X
-         xYw0vRwHL8vugBMW0b31rvxqrzoBVTE3128XPvUAKqyC9jP0hflcmMZRpzyQ0LbasQzY
-         veeg==
+        bh=icBv02YthTFvrtUFWz0nh/9bhPVkmRsemm78ezrfeog=;
+        b=O+7rr+XqABJcGtIev7QuTB6drGNOp0FepFlPL9QPhSNPXGIt3f7U4DTmMg9xIEHhKZ
+         uTsyrzAeqt3Tu0JjNpXw1NwLXmH8BI895ef+JPO5kn8Lr2RsyoARbK33Ko1ZYta+uF3e
+         VkUFUxb84/ecefpxjKQWFURfIRjRbjiFwBW6w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kcVKIksrL1T9nYsJOsA85D5uEfgk6mbUZ7YHZbbcbN4=;
-        b=4ZPVoxghmafawKbBTm860NqGkJJmZ4lA5ExnNm4hY1UR0oaaygFl2QT1/JGiAR9MdE
-         Y/2l7zguArcs8O41l+FdMDanR3VEnapCM+xk1sHySgpOUl5vtGIXxBhM+tUB209jwO/t
-         iDxSNPK9nH5nPRlnnAzutSHHV9TVkXu2Zgbtx4yRTiMMNQ04JTdvSIE92p/aMj9w1YK4
-         4+O8XjujD4sOoMwR4X1JJCvYTqgLeuEwK35UL8CA5RyBXZQCssijt1/seq8W9DKhD9ZR
-         3Diqg/6JcdQdwxAuyX2KSz133VNmwdcLAiUrqTRt2LkZ9IKgmCyW3aVuZxik7S8jFntH
-         6T7Q==
-X-Gm-Message-State: AJIora8EN8Eb2j1BFOjyLkTg00AvSf+7tPESZqiFwB3x6lfhuo9wVAPm
-        d54iJEFivRUgcBvrE01VGbuyNGbnenICcrxVsts=
-X-Google-Smtp-Source: AGRyM1srxBiZJnoeW2LP8XpRvRJZ8NqpI3EulE0sHB8fUpDhYoHJxxfLDe54HLUbME86mkm/rjSfaRteU/g8cM97fiE=
-X-Received: by 2002:a05:6512:ea5:b0:47f:785c:7031 with SMTP id
- bi37-20020a0565120ea500b0047f785c7031mr6529346lfb.35.1656011278838; Thu, 23
- Jun 2022 12:07:58 -0700 (PDT)
+        bh=icBv02YthTFvrtUFWz0nh/9bhPVkmRsemm78ezrfeog=;
+        b=6gn8ttPqf2BjyB9JrxjwrZsvIC5rd/z7U3G5gc6atdL6h+kJFXRUiQh8okOKEf/sgS
+         L4J65LF7ryonlFYa2o9GKsWkTRK02yAaNaP3rnHHms/t3inWCCl5KgRf4EpVMnYCWJ9s
+         TGlPBmtBNUUguGxbgw9eQgbO2H4l/AG/edTpVMgstayQu5ZS8oFCK+NahMBM4ugHu/hI
+         Im3hCLbVsv5kSbMOD01H2phvVq9lqcZr9MN2oAgmEmFIYZ4WnZhA5pYx6EGlUoR/1KR9
+         TUoish/wyprSRYN2SgWv/XpKvD71UpkI4xB3TtuhtudIrmjln2GygLIpLBaQAdH9bwHr
+         sAHQ==
+X-Gm-Message-State: AJIora+/lIAPvDYKm+P6h/zq6fw7fU4Ow5AUhPahwLxFtw2ufeeB7nn3
+        /7a+rorf7DlNchuoDWjRpVbnw9vPgQ0eSDjiaY7yRw==
+X-Google-Smtp-Source: AGRyM1vo9eclvYKWlnI8Z1IzhZDtiALcpS4DTk5sKAvdnhcBIHH5/5ayi+8XWmysWgoIxmF1Fz9B2bQ3stMqDTeW3yQ=
+X-Received: by 2002:a25:540a:0:b0:669:b4cb:41d7 with SMTP id
+ i10-20020a25540a000000b00669b4cb41d7mr3084875ybb.196.1656011753251; Thu, 23
+ Jun 2022 12:15:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220623170844.2189814-1-marcus.folkesson@gmail.com> <20220623170844.2189814-8-marcus.folkesson@gmail.com>
-In-Reply-To: <20220623170844.2189814-8-marcus.folkesson@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 23 Jun 2022 21:07:21 +0200
-Message-ID: <CAHp75Vff8Avpxany=5j3e+4gmAAefJgDVX3riONN-=VLwj1HNQ@mail.gmail.com>
-Subject: Re: [PATCH 08/10] iio: adc: mcp3911: add support for phase
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc:     Kent Gustavsson <kent@minoris.se>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
+References: <20220622173605.1168416-1-pmalani@chromium.org>
+ <20220622173605.1168416-7-pmalani@chromium.org> <CAE-0n51d4S3T+_f+YXsu3es7AMxuyFORSXFQe2LTSkZB4C56Ng@mail.gmail.com>
+ <CACeCKaduttgNfxyzE2_7eD1N4NLNp_8J1EaWTnn+eqp+_P-i1A@mail.gmail.com> <CAE-0n53Y4pe3TvNQVKZsqLU4cA-Vs4zH3HHV5U97W_6qCNsEow@mail.gmail.com>
+In-Reply-To: <CAE-0n53Y4pe3TvNQVKZsqLU4cA-Vs4zH3HHV5U97W_6qCNsEow@mail.gmail.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Thu, 23 Jun 2022 12:15:42 -0700
+Message-ID: <CACeCKaem-b5ePtkeR2njS9ZgX3Ez1GViArPxS92fk7eF0=NmFA@mail.gmail.com>
+Subject: Re: [PATCH v5 6/9] dt/bindings: drm/bridge: it6505: Add mode-switch support
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Allen Chen <allen.chen@ite.com.tw>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 7:42 PM Marcus Folkesson
-<marcus.folkesson@gmail.com> wrote:
+On Thu, Jun 23, 2022 at 12:08 PM Stephen Boyd <swboyd@chromium.org> wrote:
 >
-> The MCP3911 incorporates a phase delay generator,
-> which ensures that the two ADCs are converting the
-> inputs with a fixed delay between them.
-> Expose it to userspace.
+> Quoting Prashant Malani (2022-06-23 11:37:08)
+> > On Thu, Jun 23, 2022 at 11:24 AM Stephen Boyd <swboyd@chromium.org> wrote:
+> > >
+> > > Quoting Prashant Malani (2022-06-22 10:34:35)
+> > > > From: Pin-Yen Lin <treapking@chromium.org>
+> > > >
+> > > > ITE IT6505 can be used in systems to switch USB Type-C DisplayPort
+> > > > alternate mode lane traffic between 2 Type-C ports.
+> > >
+> > > How does it work? From what I can tell from the information I find when
+> > > googling this part[1] and looking at the existing binding doc is that
+> > > this device is a DPI to DP bridge, and it outputs DP (probably 4 lanes
+> > > of it?). Does the 2 type-c port design work by transmitting DP on two
+> > > lanes of DP for one type-c port and another two lanes of DP for the
+> > > other type-c port?
+> > >
+> > > DP could be one lane, so if this device is able to output one lane on
+> > > any output differential pair then I suspect it could support 4 type-c
+> > > ports if the hardware engineer connected it that way. Can you confirm my
+> > > suspicion?
+> >
+> > I will let Pin-Yen comment re: this hardware, but 1-lane DP is not a
+> > supported Type-C Pin assignment
+> > (as per VESA DP Alternate Mode Spec version 2.0 [2]), so the H/W
+>
+> Some missing link?
 
-...
+My bad. I tried to find a publicly accessible link to the DP altmode
+spec, but it
+seems like one needs to be a VESA member to access it :/
 
-> +       case IIO_CHAN_INFO_PHASE:
-> +               if (val2 != 0 || val > 0xfff) {
+>
+> > configuration you are suggesting shouldn't be possible.
+> >
+>
+> Alright, cool. But it is possible in the DP spec. So it seems like if
+> this is connected to 4 DP connectors it could be used to mux between DP
+> on 4 DP ports.
 
->= BIT(12) will show better the intention
-
-> +                       ret = -EINVAL;
-> +                       goto out;
-> +               }
-
-...
-
-> +               ret = mcp3911_write(adc, MCP3911_REG_PHASE, val,
-> +                                   2);
-
-One line.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Ack. In that case, no "typec-switches" should be added to the DT.
