@@ -2,101 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50005C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F74C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbiFWJ4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57582 "EHLO
+        id S231210AbiFWJ6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:58:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231365AbiFWJ4G (ORCPT
+        with ESMTP id S229741AbiFWJ6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:56:06 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F78C4615F;
-        Thu, 23 Jun 2022 02:56:05 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id s1so27142426wra.9;
-        Thu, 23 Jun 2022 02:56:05 -0700 (PDT)
+        Thu, 23 Jun 2022 05:58:10 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF885F54;
+        Thu, 23 Jun 2022 02:58:07 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id u9so24761399ybq.3;
+        Thu, 23 Jun 2022 02:58:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=6Cgf9hVSkM/EuU/G5NtEggFm/5gYU2/ohft6Hi2iUoM=;
-        b=DLmoXC2LYtmMgIH+URO1IHtjbJCkAlV59T4EGENzDuHw84VK8aoJRf91/NSWhHmkLq
-         la7BekdDXIMQn5158NIifoyNSxZ8rOGLI4tmMtNQuFu09+Je2Cxuo7h8SQQMIVXThZMs
-         8VT/86TI0kDnTa4ob3cL1JI/mU9v/1Gz51zfzHYQ8A/8LW2xVMxzdv4Ob9qaA8GOv6xS
-         Yi4R3/5NY9nOtFNzri5fKyCDwKG0PRRndmIRvK8O17szrd38RoIwjZMS2x+ZesVzcP2F
-         5+3Gn513loHRpcMpd3PgraUPt+wVBI+8OrOXqaF5u2M7VX29rSW+A5iNjl/6PBL0wYKs
-         dCIQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ZeGspWw1vye6pac9s6w/497q8ma6W6rlqTLSFeJT8gs=;
+        b=grzSBAhI0jduNUJ9+2cpo7BJRoLi94CoDBjPQMBoU6GTYtG+lguB6B9m8ibDpLS9WN
+         1+na+djFc5Pgv85PGvcVltvtA7WEHSZcBy5j6uSyMl4djKY7E/pGSn6VmHffPHHjlC5E
+         OzJBEDB/+M3wi4E33UyKUVOSeCTDiukjbIWLh1b3fdh/keCZ8nPZiZDr29MELzQ2Gi5z
+         1rp482ZtekzQ0GuoQjSQps41hCgMXImuXttWtxwevTzTVTHV68tSv0z6LpN/SI8Yl7vT
+         Up18u6N5dpjNlurzt1Bbm0l/e4EPbd9vJ6McpAptJFi5hRJRmRQWfT6N2LcBJTVBqWRm
+         WXvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=6Cgf9hVSkM/EuU/G5NtEggFm/5gYU2/ohft6Hi2iUoM=;
-        b=b+qEexuLvQEmLtIUFiBRosWADih45Zu3iIzuFMVrd5QltGgsOgjb5/So4aKXFbxXRB
-         Kz006KsYPjWWsy2LO3HYCt4bY9a2E89EpaNPUvM76ypHaST1vHOuY9SqjJXceD6tCX4+
-         gnlFWWzbGi3xTZFYSkRule/nW6VdX2EShd0zQd0tfXSDGr+NooszkvEqRUiZeZNOhnV8
-         fOT2kJnGasLpVpYToDUz4FKpGohIlEkaI1Nq3INbA3Ra9N4NhVmETFdpphHD2cWYygDL
-         68pizVV7pNWzcIeTGHBWw6RTE6tZO/8qgB6eTtoAng4zjRY4XAegtfywAoS7/QBcHsqx
-         MRnw==
-X-Gm-Message-State: AJIora/kK6BMb9aCxttFJ1inNR4V1ArynBGPKnRQBtkh+wmJr/R8cBx0
-        n1AGCaOUZG2znNdWsCvHB/sy7L/M4zI=
-X-Google-Smtp-Source: AGRyM1vZrhIfv6R1QkV1NYPXd8xWwai/oZGPfNY5LyQaTGsyWgUNU53R1OmMZyCCfCJniSdsnvSlzA==
-X-Received: by 2002:a05:6000:1a89:b0:21b:83a9:aa6f with SMTP id f9-20020a0560001a8900b0021b83a9aa6fmr7545833wry.33.1655978163774;
-        Thu, 23 Jun 2022 02:56:03 -0700 (PDT)
-Received: from felia.fritz.box (200116b826a89a00b5a52346a320d486.dip.versatel-1u1.de. [2001:16b8:26a8:9a00:b5a5:2346:a320:d486])
-        by smtp.gmail.com with ESMTPSA id bp17-20020a5d5a91000000b0021b9870049dsm7938326wrb.82.2022.06.23.02.56.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 02:56:03 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: rectify entry for NVIDIA TEGRA DRM and VIDEO DRIVER
-Date:   Thu, 23 Jun 2022 11:54:52 +0200
-Message-Id: <20220623095452.30745-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZeGspWw1vye6pac9s6w/497q8ma6W6rlqTLSFeJT8gs=;
+        b=2dOLx06PAXNNMriGWCkflDorRhuK8RhkM341JtR1Ed6YVrnTkuamjovjIK+9/GuLHj
+         O8LROH7BUn45bGDGt/k2wiRkaebCmoO+/txpFMmNcTVIjyKbFWe8MteWzsE/N3gWljJh
+         AGOdwXnNhF9OgLjARWhEJ/vYNYmLiLwVUn05W8SQvGFBQfTD65gGk7pv1epNBo1pex3x
+         sqLwnBsX+jy+RyK9BlSXO2G6fnPCbcz5+zsHE0RumKso3RyOmhqImsuIrMh4da2WkxjB
+         xCUBEvYfgOlV7xAtA5W8eOU9Q/vKxYvBWGkIlcSL4t/2qt2Nn47PUxmOsus2dfSBQQDp
+         Irqg==
+X-Gm-Message-State: AJIora/Ms4lBqShuAvw/gQmiEFqOsWwqZOCxBIqV9cPXk7oi2Vwxn/HQ
+        wr+vtI5LhIpoADSnx48s8YpFYzq49qnI6+5OkGRgOvMrOqY5
+X-Google-Smtp-Source: AGRyM1sz6gRPcCXM02hk0EqlRMXw+uAPQphLu6qe68SYbq4vpjnAI69MEKDfRrgpmGQop2LZI+rHzoCJf2v4/Eyh0rw=
+X-Received: by 2002:a05:6902:124a:b0:669:2154:aa15 with SMTP id
+ t10-20020a056902124a00b006692154aa15mr8569924ybu.53.1655978287152; Thu, 23
+ Jun 2022 02:58:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220622085146.444516-1-sunliming@kylinos.cn> <YrLwU27DNm0YWOvB@ZenIV>
+ <CAJncD7RuTTLoRS_pzvn729_SX5Xsv6Pub44eCD_RbbANjn9joA@mail.gmail.com> <YrPinPcHHNfv3E3B@ZenIV>
+In-Reply-To: <YrPinPcHHNfv3E3B@ZenIV>
+From:   sunliming <kelulanainsley@gmail.com>
+Date:   Thu, 23 Jun 2022 17:57:56 +0800
+Message-ID: <CAJncD7SiqoXEKhT8D8OivNz96M4h=0NTs+jZtKF00gnFnrVxsw@mail.gmail.com>
+Subject: Re: [PATCH] walk_component(): get inode in lookup_slow branch
+ statement block
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sunliming@kylino.cn
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit fd27de58b0ad ("dt-bindings: display: tegra: Convert to json-schema")
-converts nvidia,tegra20-host1x.txt to yaml, but missed to adjust its
-references in MAINTAINERS.
-
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-broken reference.
-
-Repair these file references in NVIDIA TEGRA DRM and VIDEO DRIVER.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Thierry, please pick this minor non-urgent clean-up on top of the commit above.
-
- MAINTAINERS | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1e99a4249dba..f84dba7ee301 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6767,7 +6767,7 @@ L:	dri-devel@lists.freedesktop.org
- L:	linux-tegra@vger.kernel.org
- S:	Supported
- T:	git git://anongit.freedesktop.org/tegra/linux.git
--F:	Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
-+F:	Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
- F:	Documentation/devicetree/bindings/gpu/host1x/
- F:	drivers/gpu/drm/tegra/
- F:	drivers/gpu/host1x/
-@@ -19757,7 +19757,7 @@ M:	Sowjanya Komatineni <skomatineni@nvidia.com>
- L:	linux-media@vger.kernel.org
- L:	linux-tegra@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
-+F:	Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
- F:	drivers/staging/media/tegra-video/
- 
- TEGRA XUSB PADCTL DRIVER
--- 
-2.17.1
-
+Al Viro <viro@zeniv.linux.org.uk> =E4=BA=8E2022=E5=B9=B46=E6=9C=8823=E6=97=
+=A5=E5=91=A8=E5=9B=9B 11:48=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Thu, Jun 23, 2022 at 11:44:29AM +0800, sunliming wrote:
+> > Al Viro <viro@zeniv.linux.org.uk> =E4=BA=8E2022=E5=B9=B46=E6=9C=8822=E6=
+=97=A5=E5=91=A8=E4=B8=89 18:35=E5=86=99=E9=81=93=EF=BC=9A
+> > >
+> > > On Wed, Jun 22, 2022 at 04:51:46PM +0800, sunliming wrote:
+> > > > The inode variable is used as a parameter by the step_into function=
+,
+> > > > but is not assigned a value in the sub-lookup_slow branch path. So
+> > > > get the inode in the sub-lookup_slow branch path.
+> > >
+> > > Take a good look at handle_mounts() and the things it does when
+> > > *not* in RCU mode (i.e. LOOKUP_RCU is not set).  Specifically,
+> > >                 *inode =3D d_backing_inode(path->dentry);
+> > >                 *seqp =3D 0; /* out of RCU mode, so the value doesn't=
+ matter */
+> > > this part.
+> > >
+> > > IOW, the values passed to step_into() in inode/seq are overridden unl=
+ess
+> > > we stay in RCU mode.  And if we'd been through lookup_slow(), we'd be=
+en
+> > > out of RCU mode since before we called step_into().
+> >
+> > It might be more appropriate and easier to understand to do this
+> > before parameter passing in the top-level  walk_component function=EF=
+=BC=9F
+>
+> It's possible to fall out of RCU mode *inside* step_into(), so we need
+> it done there anyway.  Unfortunately ;-/
+Thanks for your explanation
