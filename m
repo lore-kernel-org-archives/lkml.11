@@ -2,66 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9B3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 01:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 01:08:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231913AbiFWBIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 21:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39394 "EHLO
+        id S232875AbiFWBI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 21:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbiFWBIE (ORCPT
+        with ESMTP id S230101AbiFWBIX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 21:08:04 -0400
-Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC371583B
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 18:08:00 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id RXE00156;
-        Thu, 23 Jun 2022 09:07:56 +0800
-Received: from localhost.localdomain (10.200.104.82) by
- jtjnmail201610.home.langchao.com (10.100.2.10) with Microsoft SMTP Server id
- 15.1.2308.27; Thu, 23 Jun 2022 09:07:56 +0800
-From:   Deming Wang <wangdeming@inspur.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, Deming Wang <wangdeming@inspur.com>
-Subject: [PATCH] virtio_ring: make vring_create_virtqueue_split prettier
-Date:   Wed, 22 Jun 2022 15:23:06 -0400
-Message-ID: <20220622192306.4371-1-wangdeming@inspur.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 22 Jun 2022 21:08:23 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864E82FE41;
+        Wed, 22 Jun 2022 18:08:21 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VH95W38_1655946498;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VH95W38_1655946498)
+          by smtp.aliyun-inc.com;
+          Thu, 23 Jun 2022 09:08:18 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     balbi@kernel.org
+Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH -next] usb: gadget: u_ether: Remove duplicated include in u_ether.c
+Date:   Thu, 23 Jun 2022 09:08:08 +0800
+Message-Id: <20220623010808.9816-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.200.104.82]
-tUid:   20226230907568af21d148a5d01932852da3492cca449
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add some spaces to vring_alloc_queue(make it look prettier).
+Fix following includecheck warning:
+./drivers/usb/gadget/function/u_ether.c: linux/etherdevice.h is included
+more than once.
 
-Signed-off-by: Deming Wang <wangdeming@inspur.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/gadget/function/u_ether.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 13a7348cedff..4474c13bda4a 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -933,7 +933,7 @@ static struct virtqueue *vring_create_virtqueue_split(
- 	for (; num && vring_size(num, vring_align) > PAGE_SIZE; num /= 2) {
- 		queue = vring_alloc_queue(vdev, vring_size(num, vring_align),
- 					  &dma_addr,
--					  GFP_KERNEL|__GFP_NOWARN|__GFP_ZERO);
-+					  GFP_KERNEL | __GFP_NOWARN | __GFP_ZERO);
- 		if (queue)
- 			break;
- 		if (!may_reduce_num)
+diff --git a/drivers/usb/gadget/function/u_ether.c b/drivers/usb/gadget/function/u_ether.c
+index f51694f29de9..7887def05dc2 100644
+--- a/drivers/usb/gadget/function/u_ether.c
++++ b/drivers/usb/gadget/function/u_ether.c
+@@ -17,7 +17,6 @@
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
+ #include <linux/if_vlan.h>
+-#include <linux/etherdevice.h>
+ 
+ #include "u_ether.h"
+ 
 -- 
-2.27.0
+2.20.1.7.g153144c
 
