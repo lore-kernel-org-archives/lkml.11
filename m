@@ -2,94 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 247B3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C77FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231547AbiFWRLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39214 "EHLO
+        id S231329AbiFWRLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234105AbiFWRIq (ORCPT
+        with ESMTP id S234119AbiFWRIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:08:46 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B5C55353;
-        Thu, 23 Jun 2022 09:57:24 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id o16-20020a05600c379000b003a02eaea815so1367183wmr.0;
-        Thu, 23 Jun 2022 09:57:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e3U0JvexK71NTNZkmX0NIsRWRyI4BPMxyMDkrutu/XI=;
-        b=PlGKEfs2QZJui/v+gDPXf87JqHxXFHLJ1YzIZsM5GVST3Fym+W4HJLW7lSGfKRzNh5
-         s5LxljZzyQCDtTVTk5WQ5SMXJbkPzJ+408oUftaJ2zskfP0ilQIezQ/hEnRF0LYvTHD8
-         prQo+p6LaPhWsJcAW8r1jj1NqF/s2A3J2gprJJTPFTF/jqmWeRbeGOqKWrSQYebwEXnH
-         FLTz5x5QgqmEX/1UREMMBGR/f6EceUGn8C4Lo2A8l7npCYnQdWoXkrA+dXChs+OexcpF
-         BdYqJn7CQMtZT+/pBJuPIUUz6Gttfu/EmBU96WixCQVByRUTdUPGDnaVNBFXaUjZrnVx
-         br+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e3U0JvexK71NTNZkmX0NIsRWRyI4BPMxyMDkrutu/XI=;
-        b=Bnlf1B/lnUngkZjN0TKzLOPOsysTOrHnoXEOWyuHpwpUruY6wV0DTqn7cSIGDUpj64
-         kxgzN7UswXEkSZaiLotj4Y6z+Bh0oZOvWtlDt+Zltwbjxa/OhLQf+4kLsaiVZmcV6x5w
-         9PFBPTiZ2QYju98kbrOLPtyMdsqd5oIoKhijuJ8dOnXoOMkEU4oVGgEtwz5PAUAmNDLj
-         rBTp4qGo6zKhQHXp/tlCtXxcbQ3kJUAgXp82Bm9eF78Ki5AYKbKPEfZbdFheTjaprrrF
-         3lyjh3WQweD6130AnHq4mXKr3h5osF1Rr3W0zyvKOFBnyY224bZ97zy253VdlPsk85ok
-         9ppA==
-X-Gm-Message-State: AJIora/XMJulfNMCPkxMmtcKMP1wxFNojOzfTaKKAyTQVxdkIul9K4Dg
-        GYSciN78FHACVHBEl2kbjyQ=
-X-Google-Smtp-Source: AGRyM1vOnY+XPrdkmfg3FiuwdduapQjCO/zQGdKRk02eOow6Z1ktaEfsJfb1f/ZWqebxM5JEn8htBw==
-X-Received: by 2002:a1c:f213:0:b0:39b:ad32:5e51 with SMTP id s19-20020a1cf213000000b0039bad325e51mr5107372wmc.72.1656003430485;
-        Thu, 23 Jun 2022 09:57:10 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id m25-20020a7bca59000000b0039746638d6esm3602006wml.33.2022.06.23.09.57.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 09:57:09 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jon Mason <jdmason@kudzu.us>, Frank Li <Frank.Li@nxp.com>,
-        linux-pci@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] NTB: EPF: set pointer addr to null using NULL rather than 0
-Date:   Thu, 23 Jun 2022 17:57:09 +0100
-Message-Id: <20220623165709.77229-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Thu, 23 Jun 2022 13:08:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D079655361;
+        Thu, 23 Jun 2022 09:57:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 713C260FFA;
+        Thu, 23 Jun 2022 16:57:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E83AC3411B;
+        Thu, 23 Jun 2022 16:57:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656003424;
+        bh=r8lvdLrTRpr0JO0BJ5yTk+PV/xkIpP+MsXfGHsZLz0I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SIYex9ktTNMzi3Wod2BTZND8kJG2Xb2rhw6/XZ+in/57ZDXZWIZp1+NokJ1fA9Sdq
+         JN4JSYF9GQhnDSVeNHquNtY8ZdkX4oGAV/dux2OsxVEYO8lzL3Dhwr8ZYn9fqNTQvK
+         W6zkj0PHjPIaObaTkt5m9Xy6fM2tk6zMlM8ZkcNQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 234/264] nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
+Date:   Thu, 23 Jun 2022 18:43:47 +0200
+Message-Id: <20220623164350.698303931@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
+References: <20220623164344.053938039@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pointer addr is being set to null using 0. Use NULL instead.
+From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 
-Cleans up sparse warning:
-warning: Using plain integer as NULL pointer
+[ Upstream commit 8a4d480702b71184fabcf379b80bf7539716752e ]
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Similar to the handling of play_deferred in commit 19cfe912c37b
+("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
+a patch might be needed here as well.
+
+Currently usb_submit_urb is called directly to submit deferred tx
+urbs after unanchor them.
+
+So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
+and cause memory leak.
+
+Put those urbs in tx_anchor to avoid the leak, and also fix the error
+handling.
+
+Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220607083230.6182-1-xiaohuizhang@ruc.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/endpoint/functions/pci-epf-vntb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nfc/nfcmrvl/usb.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-index ebf7e243eefa..fb31c868af6a 100644
---- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-@@ -605,7 +605,7 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
+diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
+index 585a0f20835b..3263e2a2bdfd 100644
+--- a/drivers/nfc/nfcmrvl/usb.c
++++ b/drivers/nfc/nfcmrvl/usb.c
+@@ -401,13 +401,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
+ 	int err;
  
- 		ntb->epf->bar[barno].barno = barno;
- 		ntb->epf->bar[barno].size = size;
--		ntb->epf->bar[barno].addr = 0;
-+		ntb->epf->bar[barno].addr = NULL;
- 		ntb->epf->bar[barno].phys_addr = 0;
- 		ntb->epf->bar[barno].flags |= upper_32_bits(size) ?
- 				PCI_BASE_ADDRESS_MEM_TYPE_64 :
+ 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
++		usb_anchor_urb(urb, &drv_data->tx_anchor);
++
+ 		err = usb_submit_urb(urb, GFP_ATOMIC);
+-		if (err)
++		if (err) {
++			kfree(urb->setup_packet);
++			usb_unanchor_urb(urb);
++			usb_free_urb(urb);
+ 			break;
++		}
+ 
+ 		drv_data->tx_in_flight++;
++		usb_free_urb(urb);
++	}
++
++	/* Cleanup the rest deferred urbs. */
++	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
++		kfree(urb->setup_packet);
++		usb_free_urb(urb);
+ 	}
+-	usb_scuttle_anchored_urbs(&drv_data->deferred);
+ }
+ 
+ static int nfcmrvl_resume(struct usb_interface *intf)
 -- 
-2.35.3
+2.35.1
+
+
 
