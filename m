@@ -2,109 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AB9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E746C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237012AbiFWSVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
+        id S235293AbiFWSVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237173AbiFWSR4 (ORCPT
+        with ESMTP id S237210AbiFWSSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:17:56 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16515B3C1C;
-        Thu, 23 Jun 2022 10:24:18 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id i18so111624lfu.8;
-        Thu, 23 Jun 2022 10:24:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Vd6I47XVnnsBhvyCl3F2FOHX4RVw1fOk5Ka4rUmvOyw=;
-        b=AfKR0c24ywYANVT/yo48pwbD67+tfKAyJ5mxn73xIoJZFyu1YGuFdFJAD3avh68hHf
-         L9mG2F4voRL2y8BD4ffFqMytVW6zDLtNFU1OyahEiYd+0W961n8howXJhbrYRim8pKnS
-         TsJ107hrjN4/VPbCfTiRNIh1nKzxwTM7mftm7IyVU3dmJZRX+tFBzLzlf9OirlkDGLPK
-         XH+DYiAuqGPryc78DuqNHDUckevTjKEC+Izsm+Ck8I6XnB8pTGGnpN1r7gO/SNSeBpzT
-         FHP+6upHqMjsGC9xp79r1Rw2W4gDheEuLSHeVz4CozYrWvlO8KkLmGdGRHECYw0GHHkR
-         BV4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Vd6I47XVnnsBhvyCl3F2FOHX4RVw1fOk5Ka4rUmvOyw=;
-        b=CdFQbQ5DcboTglYypdlV+OY8WmZdAi++9mj4vmWWZRC4RByfUVIKAzJECgTlcruPmd
-         9nexaiuqg5oR+tWeiqSG9ErY4dIUbWfCKpsxsjQU049RGLdnF/4akpVJ+J308QMzgZUj
-         YLGmYwxgNA1nJgHt+p2pjlWCcH+ft/F7AhvDlxfHGL/nQtnGBx4Fme8bn+NAOKDjY8KE
-         rS+6oVcXTN5gkp9qGWj8eLyGAx8uyGD3nldK+3YrXFixhzKi+qtBZretZZk/la6saDkP
-         T+IGS3XsAmhPVPPJDzmPUBKRh8N6GVdEKJLItarWK3i8XV9OTBZHx/x3ZJ9SggjpbUXR
-         /cuw==
-X-Gm-Message-State: AJIora/9J/OExdGf7nFPulhkOHO3RsufiOaXvWGdzmRb55Cyvu8PW8+p
-        p5aq+0Tav81hKkbjhYCajnM=
-X-Google-Smtp-Source: AGRyM1uGcwmA4B2BYgcxHcSU64lGKl2lkAP50JWq/nzLH/mLaOoHxPa9gArlBKjn55ukt20bk9e+Wg==
-X-Received: by 2002:a05:6512:2241:b0:479:6426:15af with SMTP id i1-20020a056512224100b00479642615afmr6111281lfu.631.1656005057043;
-        Thu, 23 Jun 2022 10:24:17 -0700 (PDT)
-Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id v6-20020a05651203a600b0047f9cfa914csm677369lfp.18.2022.06.23.10.24.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 10:24:15 -0700 (PDT)
-Date:   Thu, 23 Jun 2022 19:26:05 +0200
-From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     Kent Gustavsson <kent@minoris.se>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 10/10] iio: adc: mcp3911: add support to set PGA
-Message-ID: <YrSiLdFzkXtCZIBi@gmail.com>
-References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
- <20220623170844.2189814-10-marcus.folkesson@gmail.com>
+        Thu, 23 Jun 2022 14:18:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0942AB6209;
+        Thu, 23 Jun 2022 10:24:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8FAC5B82497;
+        Thu, 23 Jun 2022 17:24:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8D1BC3411B;
+        Thu, 23 Jun 2022 17:24:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656005063;
+        bh=+ev7b5Tng0pjzXvF7E4/mKjC4b0fZ2hLUBdwI0VmWD8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sS8RKDgveBKWQuOOrKPzQwGM4CcAi56u78qpKlUuUDrDEy+O25Xk9950BGCeWFCxD
+         mtKAvrI+0I/DTSZCY2Oo8trTpEXP3Gr5lxXXBtur1Fe4OHfO1BxLCdZOzSyNzS+rQc
+         qx/Xi/Hoq0PJr+6goVNtvkrmFwjnQDScw2qMxo14=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, stable@kernel.org,
+        Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.19 217/234] ext4: fix bug_on ext4_mb_use_inode_pa
+Date:   Thu, 23 Jun 2022 18:44:44 +0200
+Message-Id: <20220623164349.192007557@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="lGrmasrXvQkSs9iU"
-Content-Disposition: inline
-In-Reply-To: <20220623170844.2189814-10-marcus.folkesson@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Baokun Li <libaokun1@huawei.com>
 
---lGrmasrXvQkSs9iU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+commit a08f789d2ab5242c07e716baf9a835725046be89 upstream.
 
-On Thu, Jun 23, 2022 at 07:08:44PM +0200, Marcus Folkesson wrote:
-> -		.info_mask_shared_by_type_available =		\
-> -			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
-> +		.info_mask_shared_by_type_available =           \
-> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO)	\
+Hulk Robot reported a BUG_ON:
+==================================================================
+kernel BUG at fs/ext4/mballoc.c:3211!
+[...]
+RIP: 0010:ext4_mb_mark_diskspace_used.cold+0x85/0x136f
+[...]
+Call Trace:
+ ext4_mb_new_blocks+0x9df/0x5d30
+ ext4_ext_map_blocks+0x1803/0x4d80
+ ext4_map_blocks+0x3a4/0x1a10
+ ext4_writepages+0x126d/0x2c30
+ do_writepages+0x7f/0x1b0
+ __filemap_fdatawrite_range+0x285/0x3b0
+ file_write_and_wait_range+0xb1/0x140
+ ext4_sync_file+0x1aa/0xca0
+ vfs_fsync_range+0xfb/0x260
+ do_fsync+0x48/0xa0
+[...]
+==================================================================
 
-This change was not supposed to sneak in. Removed in v2.
+Above issue may happen as follows:
+-------------------------------------
+do_fsync
+ vfs_fsync_range
+  ext4_sync_file
+   file_write_and_wait_range
+    __filemap_fdatawrite_range
+     do_writepages
+      ext4_writepages
+       mpage_map_and_submit_extent
+        mpage_map_one_extent
+         ext4_map_blocks
+          ext4_mb_new_blocks
+           ext4_mb_normalize_request
+            >>> start + size <= ac->ac_o_ex.fe_logical
+           ext4_mb_regular_allocator
+            ext4_mb_simple_scan_group
+             ext4_mb_use_best_found
+              ext4_mb_new_preallocation
+               ext4_mb_new_inode_pa
+                ext4_mb_use_inode_pa
+                 >>> set ac->ac_b_ex.fe_len <= 0
+           ext4_mb_mark_diskspace_used
+            >>> BUG_ON(ac->ac_b_ex.fe_len <= 0);
 
-/Marcus
+we can easily reproduce this problem with the following commands:
+	`fallocate -l100M disk`
+	`mkfs.ext4 -b 1024 -g 256 disk`
+	`mount disk /mnt`
+	`fsstress -d /mnt -l 0 -n 1000 -p 1`
+
+The size must be smaller than or equal to EXT4_BLOCKS_PER_GROUP.
+Therefore, "start + size <= ac->ac_o_ex.fe_logical" may occur
+when the size is truncated. So start should be the start position of
+the group where ac_o_ex.fe_logical is located after alignment.
+In addition, when the value of fe_logical or EXT4_BLOCKS_PER_GROUP
+is very large, the value calculated by start_off is more accurate.
+
+Cc: stable@kernel.org
+Fixes: cd648b8a8fd5 ("ext4: trim allocation requests to group size")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Link: https://lore.kernel.org/r/20220528110017.354175-2-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ext4/mballoc.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -3170,6 +3170,15 @@ ext4_mb_normalize_request(struct ext4_al
+ 	size = size >> bsbits;
+ 	start = start_off >> bsbits;
+ 
++	/*
++	 * For tiny groups (smaller than 8MB) the chosen allocation
++	 * alignment may be larger than group size. Make sure the
++	 * alignment does not move allocation to a different group which
++	 * makes mballoc fail assertions later.
++	 */
++	start = max(start, rounddown(ac->ac_o_ex.fe_logical,
++			(ext4_lblk_t)EXT4_BLOCKS_PER_GROUP(ac->ac_sb)));
++
+ 	/* don't cover already allocated blocks in selected range */
+ 	if (ar->pleft && start <= ar->lleft) {
+ 		size -= ar->lleft + 1 - start;
 
 
-
---lGrmasrXvQkSs9iU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmK0oicACgkQiIBOb1ld
-UjJvmQ/+O1qb9I5+2vmxERYd3bqBZ7uUt0KqGiSxxvQJ8ZkEhN95leqvOtCicSsl
-9zRV1VyQc6z6dB4Hwol4FZ27FKPL3bzNQatSnBIbDqX7nQKGGT0uY2UWwrhcqm/I
-dRgc5WBODVjjpqcZPR/KkWhHBBO+qDhPTRVq6Q2OZIueKNcG26+5XIsNo5Uhw1dB
-p2yj3jfySqp4Q4FIQlcM7wB72/0rc9T4BbvQDRNcdin7UaSl4rWmtfxg7ZPOje1p
-9O6ek1soQKuEDqj18h7N2VD3zuG2FN4DtBNxPERqRF9rqkgiyf4/pvpYl9ontZp1
-zEJujWE0aUodxaN9A8q3RvDRPT2TbmE5OxcBdYvUot9tHX99NNiscZjdV1Wp61Wt
-pbZklmGOiQ0PcwNsakZRRer9+e6JGSm5KpC3ssckadejOVOT32C/v1iErGBuvlru
-vA18SDq3ZvPmO5s/WybjIGnpmqJ/YK9khZSn247/YOiOC8IgcDKWIv8SfItOhJN/
-mQLqmHXDZPH9Mhf7rM/EnvjVUjBDZyBwt0guZMkgMS45iS9eEvSoWyMXgC6fmgtJ
-i4jmRNTXc3IbBibdvuX4xIEjEeLJJjmlQZWL0F/TTAuL1Xxx0FC1WaTcKWYD141S
-eMbTVMPXie6rK8p8pGx5OTv+6fJe6A5BO0uxf6g2CSW+FlVAb5U=
-=DB3I
------END PGP SIGNATURE-----
-
---lGrmasrXvQkSs9iU--
