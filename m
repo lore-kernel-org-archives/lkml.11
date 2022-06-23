@@ -2,135 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E343CCA481
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A960C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:05:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235904AbiFWSFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41020 "EHLO
+        id S235912AbiFWSFk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:05:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235745AbiFWSEM (ORCPT
+        with ESMTP id S235747AbiFWSEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 14:04:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7859EB85AA;
-        Thu, 23 Jun 2022 10:17:23 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7A7B85A6;
+        Thu, 23 Jun 2022 10:17:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AD8C61DB6;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A17D61E48;
         Thu, 23 Jun 2022 17:17:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D252C341C5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05AC4C3411B;
         Thu, 23 Jun 2022 17:17:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004641;
-        bh=y66o9BTVBkbK+F/NodmtUgMmHUzfj/z/NRAOGSJy/Ac=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w2HtYg+y4pIz1UobrVJdkYpOwlZtGpvHwNQ0iv0K4km/0mfgBtcZmzQWjcwk50H3x
-         /mdvS9pcyOJDZ3X3OtSo11nzVDO2AcdVLy0UfHXxr22QXrEdOcqdz9dlUmjF5MQJEt
-         Rl/+a1deSIIzv1Kl6mC/dq4UXmIxYmGpg6AwU3pw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 103/234] random: group sysctl functions
-Date:   Thu, 23 Jun 2022 18:42:50 +0200
-Message-Id: <20220623164345.973793097@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
-References: <20220623164343.042598055@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656004641;
+        bh=ECl0+thSGaC6aSTo4aDyPUB/qSChvQhdGO/voCXF0rw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZDCUMclpM1j1gNt6R5tv7+I6GS+Uen+mRM4eVYaL3jd1t98CZBGVgF5FUBEC+7UgL
+         rc0ScSbWK5cIvvH+s9C4CwFPCteIXHLfYtz0CIQEe4WOarBKQ9qpGqTb2RHRhVhIeq
+         oII0mlUrL8XXsxxRIPaEfrLk60a+jXmymeJQ07RKTlG/n8HzFlvNhagWNKBDny4Yen
+         U4Bdd+j7QdoUNQRcTMxSnusu0QAGAtVuDPR7wYybD2WrTwBMXz2JpkDn33fFjBhnO8
+         rEP8UgQkNPDebXQJfkG7yzfmdOKNsxnlsF2mFvAbg3YfTpzKOrLTUlmJxEqjGESkS1
+         8Ox+pt32FSUow==
+Date:   Thu, 23 Jun 2022 10:17:19 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Qian Cai <quic_qiancai@quicinc.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-crypto@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64/crypto: Select AEAD2 for GHASH_ARM64_CE
+Message-ID: <YrSgH//ysOd/Qumo@sol.localdomain>
+References: <20220622142557.144536-1-quic_qiancai@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622142557.144536-1-quic_qiancai@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+On Wed, Jun 22, 2022 at 10:25:57AM -0400, Qian Cai wrote:
+> Otherwise, we could fail to compile.
+> 
+> ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_exit':
+> ghash-ce-glue.c:(.exit.text+0x24): undefined reference to 'crypto_unregister_aead'
+> ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_init':
+> ghash-ce-glue.c:(.init.text+0x34): undefined reference to 'crypto_register_aead'
+> 
+> Fixes: 37b6aab68fae ("crypto: arm64/ghash - drop PMULL based shash")
 
-commit 0deff3c43206c24e746b1410f11125707ad3040e upstream.
+I don't see how the Fixes commit is related.  Hasn't this been a problem since
+commit 537c1445ab0b, which added an AEAD algorithm to this module?
 
-This pulls all of the sysctl-focused functions into the sixth labeled
-section.
+> diff --git a/arch/arm64/crypto/Kconfig b/arch/arm64/crypto/Kconfig
+> index 4391a463abd7..6b2ecc193bc0 100644
+> --- a/arch/arm64/crypto/Kconfig
+> +++ b/arch/arm64/crypto/Kconfig
+> @@ -71,6 +71,7 @@ config CRYPTO_GHASH_ARM64_CE
+>  	select CRYPTO_HASH
+>  	select CRYPTO_GF128MUL
+>  	select CRYPTO_LIB_AES
+> +	select CRYPTO_AEAD2
 
-No functional changes.
+I don't think CRYPTO_AEAD2 is meant to be selected directly.  It should be
+CRYPTO_AEAD instead.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |   35 ++++++++++++++++++++++++++++++-----
- 1 file changed, 30 insertions(+), 5 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1686,9 +1686,34 @@ const struct file_operations urandom_fop
- 	.llseek = noop_llseek,
- };
- 
-+
- /********************************************************************
-  *
-- * Sysctl interface
-+ * Sysctl interface.
-+ *
-+ * These are partly unused legacy knobs with dummy values to not break
-+ * userspace and partly still useful things. They are usually accessible
-+ * in /proc/sys/kernel/random/ and are as follows:
-+ *
-+ * - boot_id - a UUID representing the current boot.
-+ *
-+ * - uuid - a random UUID, different each time the file is read.
-+ *
-+ * - poolsize - the number of bits of entropy that the input pool can
-+ *   hold, tied to the POOL_BITS constant.
-+ *
-+ * - entropy_avail - the number of bits of entropy currently in the
-+ *   input pool. Always <= poolsize.
-+ *
-+ * - write_wakeup_threshold - the amount of entropy in the input pool
-+ *   below which write polls to /dev/random will unblock, requesting
-+ *   more entropy, tied to the POOL_MIN_BITS constant. It is writable
-+ *   to avoid breaking old userspaces, but writing to it does not
-+ *   change any behavior of the RNG.
-+ *
-+ * - urandom_min_reseed_secs - fixed to the meaningless value "60".
-+ *   It is writable to avoid breaking old userspaces, but writing
-+ *   to it does not change any behavior of the RNG.
-  *
-  ********************************************************************/
- 
-@@ -1696,8 +1721,8 @@ const struct file_operations urandom_fop
- 
- #include <linux/sysctl.h>
- 
--static int random_min_urandom_seed = 60;
--static int random_write_wakeup_bits = POOL_MIN_BITS;
-+static int sysctl_random_min_urandom_seed = 60;
-+static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
- static int sysctl_poolsize = POOL_BITS;
- static char sysctl_bootid[16];
- 
-@@ -1755,14 +1780,14 @@ struct ctl_table random_table[] = {
- 	},
- 	{
- 		.procname	= "write_wakeup_threshold",
--		.data		= &random_write_wakeup_bits,
-+		.data		= &sysctl_random_write_wakeup_bits,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
- 	{
- 		.procname	= "urandom_min_reseed_secs",
--		.data		= &random_min_urandom_seed,
-+		.data		= &sysctl_random_min_urandom_seed,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
-
-
+- Eric
