@@ -2,76 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F079C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A1A0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:51:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231300AbiFWKu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47716 "EHLO
+        id S231334AbiFWKvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiFWKu4 (ORCPT
+        with ESMTP id S231285AbiFWKv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:50:56 -0400
-Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF8D4B1E2;
-        Thu, 23 Jun 2022 03:50:50 -0700 (PDT)
-X-QQ-mid: bizesmtp85t1655981365t8g78aiu
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 23 Jun 2022 18:49:21 +0800 (CST)
-X-QQ-SSF: 01000000008000B0C000D00A0000000
-X-QQ-FEAT: ZHWZeLXy+8efjliGw0J+4mgi5XMlzqjYXS1kQ9yhRyp8gNMRFxisYHk4hJi6O
-        taHYdyTx4fRauf2pEpyCg4ZgLlsPACDR7zHo+ZE4YORkjVZ9JateavsPdLvQ8Oz3UkrNzjq
-        scjr+61sHBlMQcdMr3U3aulfyjkI2h7vyNtDZuSGrFiJGEeMyBx685u9/kjZaXzFfltQ1EI
-        aBkr763mto5E9cYSTG5ZgHwxw4C7IIJ3VPoZmHi+GF8GR+kpU6FDGJyTzwc1mtLSWa6yLZi
-        N86F2cr7A+0ReqNCYzbCvitdMmK9M2Owjd2YptCfcS4Hm/73M69Giu8/exe84tW6OYjb50Y
-        tdyiN/d+SlDcjfn2i2QOReV3nstMg==
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] ixgbe: drop unexpected word 'for' in comments
-Date:   Thu, 23 Jun 2022 18:49:19 +0800
-Message-Id: <20220623104919.49600-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam8
+        Thu, 23 Jun 2022 06:51:28 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 039194B40E
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:51:27 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25N5GHiB005483;
+        Thu, 23 Jun 2022 05:51:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=/KMdNgvK919ZnJ9flHhc+i1/TBwfUv8p+bUtvxB42DA=;
+ b=kYp4xgTOuU8asrOn0xLmi/cGG0HuZ88JFQ9lxN2nYQlV5Ct/qh41wWHkwVZ3AB9h4W3O
+ P97UbxI9EkuSpCLNUUqeKec8jlZSTkBVYWGtBXyvQAPeFXlqnsRk3g1y+eeKv+imSR5m
+ McCZhUE1Kk34d9q7GPE3CYk3Asmy+cQgbg10L5oXa5We/0+CSApY+wBvmHxZso5GpOpL
+ kyHuUJFuHwV1L+Gh7ipelfxohIBR16aXGIuQoGakBYsKeueGe8+gcfwv0uqdLAC6OYjn
+ //7tUr9nGcZI6hgBK0c/Emx8Sct6WLHaBKeZiCgQcP06hssXPpSzmjVaQNfXEUe5Lc98 uw== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gsb4p6pkd-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 23 Jun 2022 05:51:22 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 23 Jun
+ 2022 11:51:20 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Thu, 23 Jun 2022 11:51:20 +0100
+Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 42CA911D4;
+        Thu, 23 Jun 2022 10:51:20 +0000 (UTC)
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     <broonie@kernel.org>
+CC:     <james.schulman@cirrus.com>, <david.rhodes@cirrus.com>,
+        <lgirdwood@gmail.com>, <alsa-devel@alsa-project.org>,
+        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 4/6] ASoC: madera: Fix event generation for OUT1 demux
+Date:   Thu, 23 Jun 2022 11:51:18 +0100
+Message-ID: <20220623105120.1981154-4-ckeepax@opensource.cirrus.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220623105120.1981154-1-ckeepax@opensource.cirrus.com>
+References: <20220623105120.1981154-1-ckeepax@opensource.cirrus.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: 9sf7aQNJYu2op5mjUflJmFq8-WQ9MxcI
+X-Proofpoint-ORIG-GUID: 9sf7aQNJYu2op5mjUflJmFq8-WQ9MxcI
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word 'for' in the comments that need to be dropped
+madera_out1_demux_put returns the value of
+snd_soc_dapm_mux_update_power, which returns a 1 if a path was found for
+the kcontrol. This is obviously different to the expected return a 1 if
+the control was updated value. This results in spurious notifications to
+user-space. Update the handling to only return a 1 when the value is
+changed.
 
-file - drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-line - 5164
-
- * ixgbe_lpbthresh - calculate low water mark for for flow control
-
-changed to:
-
- * ixgbe_lpbthresh - calculate low water mark for flow control
-
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/madera.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 5c62e9963650..0493326a0d6b 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -5161,7 +5161,7 @@ static int ixgbe_hpbthresh(struct ixgbe_adapter *adapter, int pb)
- }
+diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
+index 272041c6236a9..8095a87117cf8 100644
+--- a/sound/soc/codecs/madera.c
++++ b/sound/soc/codecs/madera.c
+@@ -618,7 +618,13 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
+ end:
+ 	snd_soc_dapm_mutex_unlock(dapm);
  
- /**
-- * ixgbe_lpbthresh - calculate low water mark for for flow control
-+ * ixgbe_lpbthresh - calculate low water mark for flow control
-  *
-  * @adapter: board private structure to calculate for
-  * @pb: packet buffer to calculate
+-	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	if (ret < 0) {
++		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
++		return ret;
++	}
++
++	return change;
+ }
+ EXPORT_SYMBOL_GPL(madera_out1_demux_put);
+ 
 -- 
-2.17.1
+2.30.2
 
