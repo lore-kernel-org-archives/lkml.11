@@ -2,141 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 460C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07CB3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233595AbiFWSdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46816 "EHLO
+        id S234589AbiFWSeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237565AbiFWSdC (ORCPT
+        with ESMTP id S237492AbiFWScy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:33:02 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48433515AE;
-        Thu, 23 Jun 2022 10:34:35 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id u12so42536257eja.8;
-        Thu, 23 Jun 2022 10:34:35 -0700 (PDT)
+        Thu, 23 Jun 2022 14:32:54 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F27D1917
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:34:18 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id a10-20020a170902ecca00b0016a50049af0so2292684plh.10
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:34:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=StaOvFslk0m+dKjepijTVYAfivMfIONPjbCLyZTW4N4=;
-        b=ppoAqXTrOEh7t1yD6clZoj2QYqGpEfRfaUPEbprI4huv/LwzstWKH+TRw7yP7LIlD1
-         srxISJP4erkJSkXBAvSPfRYMVs0jv2SLhy70QQk/l1fkKrsNxM+RLJwpGBIURELxSuLW
-         qPXz9Hk2CevAWZyFeJoTh+0T0hcpj/Iri+RTwNZPmlVUvR/74THS2o14h85h+XxQA30j
-         Rja4f9GJ2DdMH2ydNwRxY7Vq4jUcq8EvAYfasZj/r9YRYbg8e3BS3tkpwRq+m1CyOKQU
-         NLGa+Z+IwbIzW0sizAVKx9TdkHPcvsQpm5sIEaghD6LgfFF60ZW4jqkaRNYiHLvvHzUe
-         d6TA==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=YzBiLCY4klTYtqAR87IAA6VD+HxSLPVS13bS8WvciXc=;
+        b=sKnXVkJcT/HWTdp8+iZMbVnsW11LhtEvgOwL4zayP6rwcEwEVSw5XjC4Pc6bVQggsu
+         CWbJgUKzOLz7sYZMfFaw3MKvLlkoX6OZ6GS4bewHNc0TZBqwpNGuy5a0WMEi7EetJlhd
+         NycAp0WSqSK9tX9WTMon+6/phpGY2LodBWt7jf1LKijODwfjN0eSpMiqjgRmKBJf6N0r
+         oeUG90uhZQWqp5yG8KrsoDcjaAKENVm2KRA4r6jgeW8v5HoRLPD6BX1tFihCkxBDRJGr
+         0C3E8b7LDbjhzIXXlMIGtnv53sq3giEH62PsnQ676AVr4EBflodtXY9U+FPCRLlB34AG
+         /ZDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=StaOvFslk0m+dKjepijTVYAfivMfIONPjbCLyZTW4N4=;
-        b=SERMOHvIZDmhNvDOdVVNmHi3HCavQPooE6E/Ubf0KUSKZY1duxtwBPom3urVhJKhg5
-         T81xz79p6EchnmBJq20lZxuftfSfZWQWK/H0snC9bdZQyKDQ8ZyNFUNhak+hXUcazhx/
-         lqYSOYtHgz/21JXIZi/1upKxD+n+Aq/am/flNz3pnELQm8s7gWp9J5fcS5Z2bcPXTViG
-         QzHHUZ29TdrR63WShW/IPbBZfXWs9FLGOTnHTMdwbVaU4Bk7SlmRlIkcuudjQLlm4Amj
-         1v+at4MfYRGslGXT3shMEIDOtt4ZxXbSS54vAJnFg0b9iSRFe9sOSiViVu8dauPMCPvC
-         TWuw==
-X-Gm-Message-State: AJIora9Xge+KglS1JAxH/CyTHmnSx3jb/v/EYaM7KNlniv0WLphB8IOS
-        /U7Y25wSYL8ByxZRInXJOhoYZF22Hf7i6wJSBfaQyhJJ2W5SAA==
-X-Google-Smtp-Source: AGRyM1vgwgYNmYAbTlPj5EBqvUwvQ4xZRF6kkTNk8PmhpEDTStQku06Gc0Vam6zA78Y9OXdkGSCDWJBgwyM9Wl2Zi28=
-X-Received: by 2002:a17:907:9620:b0:722:fc5e:3259 with SMTP id
- gb32-20020a170907962000b00722fc5e3259mr6150250ejc.579.1656005662167; Thu, 23
- Jun 2022 10:34:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220620162059.1097264-1-cosmin.tanislav@analog.com>
- <20220620162059.1097264-3-cosmin.tanislav@analog.com> <CAHp75VcBJkQ+CwyoDaTJ_AD+mv9d0tEd_txqHwkPRy4-xvnyKg@mail.gmail.com>
- <2aa93eab-de6d-866b-a829-36b47ff00982@gmail.com> <CAHp75Vc_fcAP6gGwMkYZUoMM6jKeUoQr8J+zYCUz8inSHnTF_w@mail.gmail.com>
- <54bfff70-938f-16e1-198d-47ed9ba95db4@gmail.com>
-In-Reply-To: <54bfff70-938f-16e1-198d-47ed9ba95db4@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 23 Jun 2022 19:33:45 +0200
-Message-ID: <CAHp75VeRgnCLP0YqiOe8OkW3hQ178ia+Y3PjFtCMW4Sh7JfCZQ@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] iio: adc: ad4130: add AD4130 driver
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=YzBiLCY4klTYtqAR87IAA6VD+HxSLPVS13bS8WvciXc=;
+        b=QdCuSmEhV/A0M255gM/TRPEKvyVV05Hd42KOzZAuLP/pNEc1Rcy26Z0iYRxSGH/IZo
+         ETBsU9mU1t2OUAVRx33tSXM8bLh18TJ65E4ePHkmDL49m655C90eHgOgeWr+tz830f86
+         qYH5dkuAFccjxP0iN4DCLblkQntG3tb+r5lvChJvhjVzazPV4McJhZdaTkVxGrGaDOBG
+         rd4PJQenphHgEjZBwfuCPVTaNAZacvympxjKu6QXw34jr0tQ9JO0eshn/uZmV8gds78E
+         uJE6714UmxLq6LfSXKcBicYjD4Dp8K9e7GhtHleEnSB16m5xa1KU71XeomFDYOn2qC98
+         AESA==
+X-Gm-Message-State: AJIora/aIHQqWTXPDB5uKsV+J/bnT9UmTWEy6FFFysusqQ+e8Ot6Avnt
+        BCpFlzP/aGQ+OprEHRSWaIv1mej6WpI=
+X-Google-Smtp-Source: AGRyM1s7DibOnE7Mbl6KtMM0c/TJRvFVMdwV6LfruY9B46xoaSSmTP191nkYGoiaR70UiIkHPnHJKO9AUic=
+X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:9b6a:a8a1:3593:35c2])
+ (user=pgonda job=sendgmr) by 2002:a05:6a00:1683:b0:4f7:e497:6a55 with SMTP id
+ k3-20020a056a00168300b004f7e4976a55mr41576663pfc.21.1656005652667; Thu, 23
+ Jun 2022 10:34:12 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 10:34:06 -0700
+Message-Id: <20220623173406.744645-1-pgonda@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
+Subject: [PATCH V2] KVM: SEV: Init target VMCBs in sev_migrate_from
+From:   Peter Gonda <pgonda@google.com>
+To:     kvm@vger.kernel.org
+Cc:     Peter Gonda <pgonda@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Marc Orr <marcorr@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 6:14 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
-> On 6/23/22 18:39, Andy Shevchenko wrote:
-> > On Thu, Jun 23, 2022 at 5:27 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
-> >> On 6/20/22 21:29, Andy Shevchenko wrote:
-> >>> On Mon, Jun 20, 2022 at 6:27 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
+The target VMCBs during an intra-host migration need to correctly setup
+for running SEV and SEV-ES guests. Add sev_init_vmcb() function and make
+sev_es_init_vmcb() static. sev_init_vmcb() uses the now private function
+to init SEV-ES guests VMCBs when needed.
 
-...
+Fixes: 0b020f5af092 ("KVM: SEV: Add support for SEV-ES intra host migration")
+Fixes: b56639318bb2 ("KVM: SEV: Add support for SEV intra host migration")
 
-> >>>> +       /*
-> >>>> +        * DMA (thus cache coherency maintenance) requires the
-> >>>> +        * transfer buffers to live in their own cache lines.
-> >>>> +        */
-> >>>
-> >>> This is a good comment, but what fields does it apply to?
-> >>
-> >> Whatever is below it, grouped together. This is not hard to
-> >> understand.
-> >
-> > It's hard to understand what exactly is DMA-aware here. I see only one
-> > buffer that is aligned properly for DMA, the rest are not, except the
-> > case if all of them are going in one DMA transaction. Is this the case
-> > here?
-> >
-> >>>> +       u8                      reset_buf[AD4130_RESET_BUF_SIZE] __aligned(IIO_DMA_MINALIGN);
-> >
-> > This is aligned.
-> >
-> >>>> +       u8                      reg_write_tx_buf[4];
-> >
-> > This one is aligned + offset (== AD4130_RESET_BUF_SIZE + 0).
-> >
-> >>>> +       u8                      reg_read_tx_buf[1];
-> >
-> > This one is aligned + offset (== AD4130_RESET_BUF_SIZE + 0 + 4).
-> >
-> >>>> +       u8                      reg_read_rx_buf[3];
-> >
-> > This one is aligned + offset (== AD4130_RESET_BUF_SIZE + 0 + 4 + 1).
-> > And this is Rx.
-> >
-> >>>> +       u8                      fifo_tx_buf[2];
-> >
-> > Here is Tx again which is most likely is not aligned...
-> >
-> >>>> +       u8                      fifo_rx_buf[AD4130_FIFO_SIZE *
-> >>>> +                                           AD4130_FIFO_MAX_SAMPLE_SIZE];
-> >>>> +};
-> >
->
-> This has been mentioned before by Jonathan as a reply to V6 of my
-> AD74413R driver.
->
->  > I'm surprised I didn't mention this before but you only need to
-> ensure  > that any memory used for DMA is not in a cacheline with memory
-> used
->  > for other things that might change concurrently.
->
-> To my understanding, as long as the DMA buffers will all be accessed by
-> the same DMA-compatible SPI controller, you only need to align them so
-> they're not in the same cacheline with memory that will not be accessed
-> by the SPI controller.
+Signed-off-by: Peter Gonda <pgonda@google.com>
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Cc: Marc Orr <marcorr@google.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
 
-SPI is synchronous by nature, what will happen if the Tx and Rx
-buffers are sharing the same cache line? Anybody to shed a light here?
+V2
+* Refactor of sev_es_init_vmcb() and sev_migrate_from suggested by Sean.
 
-(I.o.w. I'm not sure that we don't need to split the Rx and Tx buffers
-of the same transfer.)
+---
+ arch/x86/kvm/svm/sev.c | 68 ++++++++++++++++++++++++++++--------------
+ arch/x86/kvm/svm/svm.c | 11 ++-----
+ arch/x86/kvm/svm/svm.h |  2 +-
+ 3 files changed, 48 insertions(+), 33 deletions(-)
 
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 309bcdb2f929..d45868031954 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -1662,19 +1662,24 @@ static void sev_migrate_from(struct kvm *dst_kvm, struct kvm *src_kvm)
+ {
+ 	struct kvm_sev_info *dst = &to_kvm_svm(dst_kvm)->sev_info;
+ 	struct kvm_sev_info *src = &to_kvm_svm(src_kvm)->sev_info;
++	struct kvm_vcpu *dst_vcpu, *src_vcpu;
++	struct vcpu_svm *dst_svm, *src_svm;
+ 	struct kvm_sev_info *mirror;
++	unsigned long i;
+ 
+ 	dst->active = true;
+ 	dst->asid = src->asid;
+ 	dst->handle = src->handle;
+ 	dst->pages_locked = src->pages_locked;
+ 	dst->enc_context_owner = src->enc_context_owner;
++	dst->es_active = src->es_active;
+ 
+ 	src->asid = 0;
+ 	src->active = false;
+ 	src->handle = 0;
+ 	src->pages_locked = 0;
+ 	src->enc_context_owner = NULL;
++	src->es_active = false;
+ 
+ 	list_cut_before(&dst->regions_list, &src->regions_list, &src->regions_list);
+ 
+@@ -1701,26 +1706,21 @@ static void sev_migrate_from(struct kvm *dst_kvm, struct kvm *src_kvm)
+ 		list_del(&src->mirror_entry);
+ 		list_add_tail(&dst->mirror_entry, &owner_sev_info->mirror_vms);
+ 	}
+-}
+ 
+-static int sev_es_migrate_from(struct kvm *dst, struct kvm *src)
+-{
+-	unsigned long i;
+-	struct kvm_vcpu *dst_vcpu, *src_vcpu;
+-	struct vcpu_svm *dst_svm, *src_svm;
++	kvm_for_each_vcpu(i, dst_vcpu, dst_kvm) {
++		dst_svm = to_svm(dst_vcpu);
+ 
+-	if (atomic_read(&src->online_vcpus) != atomic_read(&dst->online_vcpus))
+-		return -EINVAL;
++		sev_init_vmcb(dst_svm);
+ 
+-	kvm_for_each_vcpu(i, src_vcpu, src) {
+-		if (!src_vcpu->arch.guest_state_protected)
+-			return -EINVAL;
+-	}
++		if (!dst->es_active)
++			continue;
+ 
+-	kvm_for_each_vcpu(i, src_vcpu, src) {
++		/*
++		 * Note, the source is not required to have the same number of
++		 * vCPUs as the destination when migrating a vanilla SEV VM.
++		 */
++		src_vcpu = kvm_get_vcpu(dst_kvm, i);
+ 		src_svm = to_svm(src_vcpu);
+-		dst_vcpu = kvm_get_vcpu(dst, i);
+-		dst_svm = to_svm(dst_vcpu);
+ 
+ 		/*
+ 		 * Transfer VMSA and GHCB state to the destination.  Nullify and
+@@ -1737,8 +1737,23 @@ static int sev_es_migrate_from(struct kvm *dst, struct kvm *src)
+ 		src_svm->vmcb->control.vmsa_pa = INVALID_PAGE;
+ 		src_vcpu->arch.guest_state_protected = false;
+ 	}
+-	to_kvm_svm(src)->sev_info.es_active = false;
+-	to_kvm_svm(dst)->sev_info.es_active = true;
++}
++
++static int sev_check_source_vcpus(struct kvm *dst, struct kvm *src)
++{
++	struct kvm_vcpu *src_vcpu;
++	unsigned long i;
++
++	if (!sev_es_guest(src))
++		return 0;
++
++	if (atomic_read(&src->online_vcpus) != atomic_read(&dst->online_vcpus))
++		return -EINVAL;
++
++	kvm_for_each_vcpu(i, src_vcpu, src) {
++		if (!src_vcpu->arch.guest_state_protected)
++			return -EINVAL;
++	}
+ 
+ 	return 0;
+ }
+@@ -1786,11 +1801,9 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
+ 	if (ret)
+ 		goto out_dst_vcpu;
+ 
+-	if (sev_es_guest(source_kvm)) {
+-		ret = sev_es_migrate_from(kvm, source_kvm);
+-		if (ret)
+-			goto out_source_vcpu;
+-	}
++	ret = sev_check_source_vcpus(kvm, source_kvm);
++	if (ret)
++		goto out_source_vcpu;
+ 
+ 	sev_migrate_from(kvm, source_kvm);
+ 	kvm_vm_dead(source_kvm);
+@@ -2911,7 +2924,7 @@ int sev_es_string_io(struct vcpu_svm *svm, int size, unsigned int port, int in)
+ 				    count, in);
+ }
+ 
+-void sev_es_init_vmcb(struct vcpu_svm *svm)
++static void sev_es_init_vmcb(struct vcpu_svm *svm)
+ {
+ 	struct kvm_vcpu *vcpu = &svm->vcpu;
+ 
+@@ -2964,6 +2977,15 @@ void sev_es_init_vmcb(struct vcpu_svm *svm)
+ 	}
+ }
+ 
++void sev_init_vmcb(struct vcpu_svm *svm)
++{
++	svm->vmcb->control.nested_ctl |= SVM_NESTED_CTL_SEV_ENABLE;
++	clr_exception_intercept(svm, UD_VECTOR);
++
++	if (sev_es_guest(svm->vcpu.kvm))
++		sev_es_init_vmcb(svm);
++}
++
+ void sev_es_vcpu_reset(struct vcpu_svm *svm)
+ {
+ 	/*
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 136298cfb3fb..3c0e581676c3 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -1259,15 +1259,8 @@ static void init_vmcb(struct kvm_vcpu *vcpu)
+ 		svm->vmcb->control.int_ctl |= V_GIF_ENABLE_MASK;
+ 	}
+ 
+-	if (sev_guest(vcpu->kvm)) {
+-		svm->vmcb->control.nested_ctl |= SVM_NESTED_CTL_SEV_ENABLE;
+-		clr_exception_intercept(svm, UD_VECTOR);
+-
+-		if (sev_es_guest(vcpu->kvm)) {
+-			/* Perform SEV-ES specific VMCB updates */
+-			sev_es_init_vmcb(svm);
+-		}
+-	}
++	if (sev_guest(vcpu->kvm))
++		sev_init_vmcb(svm);
+ 
+ 	svm_hv_init_vmcb(vmcb);
+ 	init_vmcb_after_set_cpuid(vcpu);
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index d51de3c9264a..0897ce8a4863 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -649,10 +649,10 @@ void __init sev_set_cpu_caps(void);
+ void __init sev_hardware_setup(void);
+ void sev_hardware_unsetup(void);
+ int sev_cpu_init(struct svm_cpu_data *sd);
++void sev_init_vmcb(struct vcpu_svm *svm);
+ void sev_free_vcpu(struct kvm_vcpu *vcpu);
+ int sev_handle_vmgexit(struct kvm_vcpu *vcpu);
+ int sev_es_string_io(struct vcpu_svm *svm, int size, unsigned int port, int in);
+-void sev_es_init_vmcb(struct vcpu_svm *svm);
+ void sev_es_vcpu_reset(struct vcpu_svm *svm);
+ void sev_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector);
+ void sev_es_prepare_switch_to_guest(struct sev_es_save_area *hostsa);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.37.0.rc0.104.g0611611a94-goog
+
