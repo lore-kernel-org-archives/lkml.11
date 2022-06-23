@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 025CFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:16:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A725C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233006AbiFWRQh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        id S230421AbiFWRQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233335AbiFWRMp (ORCPT
+        with ESMTP id S233394AbiFWRMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:12:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D53050013;
-        Thu, 23 Jun 2022 09:58:43 -0700 (PDT)
+        Thu, 23 Jun 2022 13:12:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470724EDF0;
+        Thu, 23 Jun 2022 09:58:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9891615F4;
-        Thu, 23 Jun 2022 16:58:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF8E4C3411B;
-        Thu, 23 Jun 2022 16:58:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 256686159B;
+        Thu, 23 Jun 2022 16:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E26A9C36AE2;
+        Thu, 23 Jun 2022 16:58:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003522;
-        bh=GLC9E95aK2WnDeYRY9JZ5cRMLmuy/5ynGlZZ4TSsH4k=;
+        s=korg; t=1656003525;
+        bh=LvSXorcf4yO/v5ARjHDikb+sJXhPDzAvBgn1B7wUuG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Em9SKihjysFvJ3JK28sZRUZV10Fcgcak/CqvegTogbAPSL9gKsNUEMy1TVvCXEgGZ
-         bA/bH7d9pdN1tAjajHl6ihrXheRjUcVDBffg6x/UXJKPuZDsdomg3y/DUlbRjm4Sp5
-         opvg8fJUACOJpM2tN3iXBrdBH6SJYHML3luPdnvY=
+        b=g2HcYMLdeEwKeRAMHxodVawj+M3wunsEUguw1Esrv2g0CZV/WsZ7hJ6ZXOsZQERZD
+         dqEtXGANssSxZwstucNC3u/SelWkm+rGrGN3/RJ7VrkfM00OT7mNgAkVdWg4ON/iMd
+         em2xw/Q8ZU5+8RSQfTMWJuUY02ab4ZIMvgSG6HeE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,9 +39,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
         Jakub Kicinski <kuba@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 259/264] secure_seq: use the 64 bits of the siphash for port offset calculation
-Date:   Thu, 23 Jun 2022 18:44:12 +0200
-Message-Id: <20220623164351.393458192@linuxfoundation.org>
+Subject: [PATCH 4.9 260/264] tcp: use different parts of the port_offset for index and offset
+Date:   Thu, 23 Jun 2022 18:44:13 +0200
+Message-Id: <20220623164351.421561769@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -55,15 +55,11 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-commit b2d057560b8107c633b39aabe517ff9d93f285e3 upstream.
+commit 9e9b70ae923baf2b5e8a0ea4fd0c8451801ac526 upstream.
 
-SipHash replaced MD5 in secure_ipv{4,6}_port_ephemeral() via commit
-7cd23e5300c1 ("secure_seq: use SipHash in place of MD5"), but the output
-remained truncated to 32-bit only. In order to exploit more bits from the
-hash, let's make the functions return the full 64-bit of siphash_3u32().
-We also make sure the port offset calculation in __inet_hash_connect()
-remains done on 32-bit to avoid the need for div_u64_rem() and an extra
-cost on 32-bit systems.
+Amit Klein suggests that we use different parts of port_offset for the
+table's index and the port offset so that there is no direct relation
+between them.
 
 Cc: Jason A. Donenfeld <Jason@zx2c4.com>
 Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
@@ -75,116 +71,19 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/inet_hashtables.h |    2 +-
- include/net/secure_seq.h      |    4 ++--
- net/core/secure_seq.c         |    4 ++--
- net/ipv4/inet_hashtables.c    |   10 ++++++----
- net/ipv6/inet6_hashtables.c   |    4 ++--
- 5 files changed, 13 insertions(+), 11 deletions(-)
+ net/ipv4/inet_hashtables.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -382,7 +382,7 @@ static inline void sk_rcv_saddr_set(stru
- }
- 
- int __inet_hash_connect(struct inet_timewait_death_row *death_row,
--			struct sock *sk, u32 port_offset,
-+			struct sock *sk, u64 port_offset,
- 			int (*check_established)(struct inet_timewait_death_row *,
- 						 struct sock *, __u16,
- 						 struct inet_timewait_sock **));
---- a/include/net/secure_seq.h
-+++ b/include/net/secure_seq.h
-@@ -3,8 +3,8 @@
- 
- #include <linux/types.h>
- 
--u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
--u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
-+u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
-+u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
- 			       __be16 dport);
- __u32 secure_tcp_sequence_number(__be32 saddr, __be32 daddr,
- 				 __be16 sport, __be16 dport);
---- a/net/core/secure_seq.c
-+++ b/net/core/secure_seq.c
-@@ -62,7 +62,7 @@ __u32 secure_tcpv6_sequence_number(const
- }
- EXPORT_SYMBOL(secure_tcpv6_sequence_number);
- 
--u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
-+u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
- 			       __be16 dport)
- {
- 	u32 secret[MD5_MESSAGE_BYTES / 4];
-@@ -102,7 +102,7 @@ __u32 secure_tcp_sequence_number(__be32
- 	return seq_scale(hash[0]);
- }
- 
--u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
-+u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
- {
- 	u32 hash[MD5_DIGEST_WORDS];
- 
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
-@@ -382,7 +382,7 @@ not_unique:
- 	return -EADDRNOTAVAIL;
- }
- 
--static u32 inet_sk_port_offset(const struct sock *sk)
-+static u64 inet_sk_port_offset(const struct sock *sk)
- {
- 	const struct inet_sock *inet = inet_sk(sk);
- 
-@@ -549,7 +549,7 @@ EXPORT_SYMBOL_GPL(inet_unhash);
- static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
- 
- int __inet_hash_connect(struct inet_timewait_death_row *death_row,
--		struct sock *sk, u32 port_offset,
-+		struct sock *sk, u64 port_offset,
- 		int (*check_established)(struct inet_timewait_death_row *,
- 			struct sock *, __u16, struct inet_timewait_sock **))
- {
-@@ -589,7 +589,9 @@ int __inet_hash_connect(struct inet_time
+@@ -589,7 +589,7 @@ int __inet_hash_connect(struct inet_time
  	net_get_random_once(table_perturb, sizeof(table_perturb));
  	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
  
--	offset = (READ_ONCE(table_perturb[index]) + port_offset) % remaining;
-+	offset = READ_ONCE(table_perturb[index]) + port_offset;
-+	offset %= remaining;
-+
+-	offset = READ_ONCE(table_perturb[index]) + port_offset;
++	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
+ 
  	/* In first pass we try ports of @low parity.
- 	 * inet_csk_get_port() does the opposite choice.
- 	 */
-@@ -670,7 +672,7 @@ ok:
- int inet_hash_connect(struct inet_timewait_death_row *death_row,
- 		      struct sock *sk)
- {
--	u32 port_offset = 0;
-+	u64 port_offset = 0;
- 
- 	if (!inet_sk(sk)->inet_num)
- 		port_offset = inet_sk_port_offset(sk);
---- a/net/ipv6/inet6_hashtables.c
-+++ b/net/ipv6/inet6_hashtables.c
-@@ -242,7 +242,7 @@ not_unique:
- 	return -EADDRNOTAVAIL;
- }
- 
--static u32 inet6_sk_port_offset(const struct sock *sk)
-+static u64 inet6_sk_port_offset(const struct sock *sk)
- {
- 	const struct inet_sock *inet = inet_sk(sk);
- 
-@@ -254,7 +254,7 @@ static u32 inet6_sk_port_offset(const st
- int inet6_hash_connect(struct inet_timewait_death_row *death_row,
- 		       struct sock *sk)
- {
--	u32 port_offset = 0;
-+	u64 port_offset = 0;
- 
- 	if (!inet_sk(sk)->inet_num)
- 		port_offset = inet6_sk_port_offset(sk);
 
 
