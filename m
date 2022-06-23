@@ -2,163 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99275C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 795DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbiFWHBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 03:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
+        id S229674AbiFWHDb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 03:03:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiFWHBv (ORCPT
+        with ESMTP id S230042AbiFWHDY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 03:01:51 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6103645065;
-        Thu, 23 Jun 2022 00:01:50 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id B6087804D;
-        Thu, 23 Jun 2022 06:56:47 +0000 (UTC)
-Date:   Thu, 23 Jun 2022 10:01:48 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
- driver_deferred_probe_check_state()
-Message-ID: <YrQP3OZbe8aCQxKU@atomide.com>
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com>
- <YrFzK6EiVvXmzVG6@atomide.com>
- <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
- <YrKhkmj3jCQA39X/@atomide.com>
- <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
+        Thu, 23 Jun 2022 03:03:24 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70C243AE2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:03:23 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id 184so18282098pga.12
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:03:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=aw6abvU+RPzbpQ8yEGTaFOYy5BKz6zLvhQlXywKJAts=;
+        b=21tn1zwaXhP0ni7W1wrOh//pEXWMkviVafEg0WOvGlHNk+RbUMN4MF/wvq9kmiim68
+         tj0BJgSvhCXNbmSkSDbCs1nm5ug3sW6IW+NXRJ3Veh/eTWUxC5aVbdXyPbXZswq8MXsd
+         FdyM4XC08GIB4CDLUZFifoNxZ1Eyi/XPAZFiz3V6kX19HH5w6KBHMC2blBfI8YOM7dLk
+         +aU6lF6AOpZC27jlnEQGGBsVVVo/YAihTpOF76TfhTzUq3JPpmgY5hlgOOhKxQFPGqUW
+         ECdn3kUIXXx/WMkCUIaJAUi4iOSwHq3VCi+b4shJ4BDnf/0qjA1EIntzauMAezBrOL2o
+         XIJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aw6abvU+RPzbpQ8yEGTaFOYy5BKz6zLvhQlXywKJAts=;
+        b=p/UBXeMU6cHBgSmqdE+MpQzmVD86QpC8cEDTij/8vkh19pH4CKYea9T07aXPPILU9F
+         eRAhG95q5KClLBgwMiP7AXivZqQZBqir01EcbGAkdw1jWNcsYuz1DCl5NnHNwjSKZrOw
+         FmM20t5kTu/C7FLHZKnv93mETDe3+TS6jz/P1h2hT5af/Ughg+8g2M1WDDnwCpwLNJ8w
+         sgwiWO0cRiC0K4sKwabXS4WekYDObgsS5cTfOEic+Io/IU4k4bsdIydNDPRUeWzR2rDO
+         j3+t+qXAcrhzHX0RqqGqCfZusIDtUrMou6jL0qE8cMV0bCxffugSAdq3eSE+Tcx7RKXy
+         bDXg==
+X-Gm-Message-State: AJIora93XfOASTHeNTujutqs/l4Ec39zOBrDTzznk1ubyeQAzzF8lF+u
+        /xEboKDOPYTl89TUL9lcGwC/1RvW/1D6iiuvYI4=
+X-Google-Smtp-Source: AGRyM1uD5dXjR9FOuAYlSZOsFirIagjIw4HW8RiDBf7Bfm4Lodi0/bba/WnFntnJWaDIMstTpr1sWQ==
+X-Received: by 2002:a05:6a00:1584:b0:51c:7932:975a with SMTP id u4-20020a056a00158400b0051c7932975amr39474941pfk.80.1655967803360;
+        Thu, 23 Jun 2022 00:03:23 -0700 (PDT)
+Received: from localhost ([139.177.225.231])
+        by smtp.gmail.com with ESMTPSA id y21-20020a056a00191500b005252867671esm5485715pfi.66.2022.06.23.00.03.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 00:03:23 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 15:03:18 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, shy828301@gmail.com,
+        willy@infradead.org, zokeefe@google.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 13/16] mm/huge_memory: add helper
+ __get_deferred_split_queue
+Message-ID: <YrQQNs42R519/P8X@FVFYT0MHHV2J.usts.net>
+References: <20220622170627.19786-1-linmiaohe@huawei.com>
+ <20220622170627.19786-14-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
+In-Reply-To: <20220622170627.19786-14-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Saravana Kannan <saravanak@google.com> [220622 19:05]:
-> On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
-> >
-> > Hi,
-> >
-> > * Saravana Kannan <saravanak@google.com> [220621 19:29]:
-> > > On Tue, Jun 21, 2022 at 12:28 AM Tony Lindgren <tony@atomide.com> wrote:
-> > > >
-> > > > Hi,
-> > > >
-> > > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > > > Now that fw_devlink=on by default and fw_devlink supports
-> > > > > "power-domains" property, the execution will never get to the point
-> > > > > where driver_deferred_probe_check_state() is called before the supplier
-> > > > > has probed successfully or before deferred probe timeout has expired.
-> > > > >
-> > > > > So, delete the call and replace it with -ENODEV.
-> > > >
-> > > > Looks like this causes omaps to not boot in Linux next.
-> > >
-> > > Can you please point me to an example DTS I could use for debugging
-> > > this? I'm assuming you are leaving fw_devlink=on and not turning it
-> > > off or putting it in permissive mode.
-> >
-> > Sure, this seems to happen at least with simple-pm-bus as the top
-> > level interconnect with a configured power-domains property:
-> >
-> > $ git grep -A10 "ocp {" arch/arm/boot/dts/*.dtsi | grep -B3 -A4 simple-pm-bus
+On Thu, Jun 23, 2022 at 01:06:24AM +0800, Miaohe Lin wrote:
+> Add helper __get_deferred_split_queue to remove the duplicated codes of
+> getting ds_queue. No functional change intended.
+>
+
+Sorry, I suggest dropping this change since I have reworked the code here [1].
+
+[1] https://lore.kernel.org/all/20220621125658.64935-7-songmuchun@bytedance.com/
+
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/huge_memory.c | 35 ++++++++++++-----------------------
+>  1 file changed, 12 insertions(+), 23 deletions(-)
 > 
-> Thanks for the example. I generally start looking from dts (not dtsi)
-> files in case there are some DT property override/additions after the
-> dtsi files are included in the dts file. But I'll assume for now
-> that's not the case. If there's a specific dts file for a board I can
-> look from that'd be helpful to rule out those kinds of issues.
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index 0030b4f67cd9..de8155ff584c 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -555,25 +555,23 @@ pmd_t maybe_pmd_mkwrite(pmd_t pmd, struct vm_area_struct *vma)
+>  	return pmd;
+>  }
+>  
+> -#ifdef CONFIG_MEMCG
+> -static inline struct deferred_split *get_deferred_split_queue(struct page *page)
+> +static inline struct deferred_split *__get_deferred_split_queue(struct pglist_data *pgdat,
+> +								struct mem_cgroup *memcg)
+>  {
+> -	struct mem_cgroup *memcg = page_memcg(compound_head(page));
+> -	struct pglist_data *pgdat = NODE_DATA(page_to_nid(page));
+> -
+> +#ifdef CONFIG_MEMCG
+>  	if (memcg)
+>  		return &memcg->deferred_split_queue;
+> -	else
+> -		return &pgdat->deferred_split_queue;
+> +#endif
+> +	return &pgdat->deferred_split_queue;
+>  }
+> -#else
+> +
+>  static inline struct deferred_split *get_deferred_split_queue(struct page *page)
+>  {
+> +	struct mem_cgroup *memcg = page_memcg(compound_head(page));
+>  	struct pglist_data *pgdat = NODE_DATA(page_to_nid(page));
+>  
+> -	return &pgdat->deferred_split_queue;
+> +	return __get_deferred_split_queue(pgdat, memcg);
+>  }
+> -#endif
+>  
+>  void prep_transhuge_page(struct page *page)
+>  {
+> @@ -2774,31 +2772,22 @@ void deferred_split_huge_page(struct page *page)
+>  static unsigned long deferred_split_count(struct shrinker *shrink,
+>  		struct shrink_control *sc)
+>  {
+> -	struct pglist_data *pgdata = NODE_DATA(sc->nid);
+> -	struct deferred_split *ds_queue = &pgdata->deferred_split_queue;
+> +	struct deferred_split *ds_queue;
+>  
+> -#ifdef CONFIG_MEMCG
+> -	if (sc->memcg)
+> -		ds_queue = &sc->memcg->deferred_split_queue;
+> -#endif
+> +	ds_queue = __get_deferred_split_queue(NODE_DATA(sc->nid), sc->memcg);
+>  	return READ_ONCE(ds_queue->split_queue_len);
+>  }
+>  
+>  static unsigned long deferred_split_scan(struct shrinker *shrink,
+>  		struct shrink_control *sc)
+>  {
+> -	struct pglist_data *pgdata = NODE_DATA(sc->nid);
+> -	struct deferred_split *ds_queue = &pgdata->deferred_split_queue;
+> +	struct deferred_split *ds_queue;
+>  	unsigned long flags;
+>  	LIST_HEAD(list), *pos, *next;
+>  	struct page *page;
+>  	int split = 0;
+>  
+> -#ifdef CONFIG_MEMCG
+> -	if (sc->memcg)
+> -		ds_queue = &sc->memcg->deferred_split_queue;
+> -#endif
+> -
+> +	ds_queue = __get_deferred_split_queue(NODE_DATA(sc->nid), sc->memcg);
+>  	spin_lock_irqsave(&ds_queue->split_queue_lock, flags);
+>  	/* Take pin on all head pages to avoid freeing them under us */
+>  	list_for_each_safe(pos, next, &ds_queue->split_queue) {
+> -- 
+> 2.23.0
 > 
-> For now, I looked at arch/arm/boot/dts/omap4.dtsi.
-
-OK it should be very similar for all the affected SoCs.
-
-> > This issue is no directly related fw_devlink. It is a side effect of
-> > removing driver_deferred_probe_check_state(). We no longer return
-> > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
 > 
-> Yes, I understand the issue. But driver_deferred_probe_check_state()
-> was deleted because fw_devlink=on should have short circuited the
-> probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
-> probe function and hitting this -ENOENT failure. That's why I was
-> asking the other questions.
-
-OK. So where is the -EPROBE_DEFER supposed to happen without
-driver_deferred_probe_check_state() then?
-
-> > > > On platform_probe() genpd_get_from_provider() returns
-> > > > -ENOENT.
-> > >
-> > > This error is with the series I assume?
-> >
-> > On the first probe genpd_get_from_provider() will return -ENOENT in
-> > both cases. The list is empty on the first probe and there are no
-> > genpd providers at this point.
-> >
-> > Earlier with driver_deferred_probe_check_state(), the initial -ENOENT
-> > ends up getting changed to -EPROBE_DEFER at the end of
-> > driver_deferred_probe_check_state(), we are now missing that.
-> 
-> Right, I was aware -ENOENT would be returned if we got this far. But
-> the point of this series is that you shouldn't have gotten that far
-> before your pm domain device is ready. Hence my questions from the
-> earlier reply.
-
-OK
-
-> Can I get answers to rest of my questions in the first reply please?
-> That should help us figure out why fw_devlink let us get this far.
-> Summarize them here to make it easy:
-> * Are you running with fw_devlink=on?
-
-Yes with the default with no specific kernel params so looks like
-FW_DEVLINK_FLAGS_ON.
-
-> * Is the"ti,omap4-prm-inst"/"ti,omap-prm-inst" built-in in this case?
-
-Yes
-
-> * If it's not built-in, can you please try deferred_probe_timeout=0
-> and deferred_probe_timeout=30 and see if either one of them help?
-
-It's built in so I did not try these.
-
-> * Can I get the output of "ls -d supplier:*" and "cat
-> supplier:*/status" output from the sysfs dir for the ocp device
-> without this series where it boots properly.
-
-Hmm so I'm not seeing any supplier for the top level ocp device in
-the booting case without your patches. I see the suppliers for the
-ocp child device instances only.
-
-Without your patches I see simple-pm-bus probe initially with
-EPROBE_DEFER like I described earlier, and then simple-pm-bus probes
-on the second try.
-
-Regards,
-
-Tony
