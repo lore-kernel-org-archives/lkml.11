@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7887C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 520D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232300AbiFWQ5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
+        id S232896AbiFWQ5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233776AbiFWQvh (ORCPT
+        with ESMTP id S233747AbiFWQve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA9150B03;
-        Thu, 23 Jun 2022 09:49:41 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294744BFFB;
+        Thu, 23 Jun 2022 09:49:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D10DAB82490;
-        Thu, 23 Jun 2022 16:49:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D83C3411B;
-        Thu, 23 Jun 2022 16:49:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9217B82491;
+        Thu, 23 Jun 2022 16:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22123C3411B;
+        Thu, 23 Jun 2022 16:49:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002978;
-        bh=oybuJme2cmBln+oj51ula7SjNcFLHu41dB7ZU0zJptQ=;
+        s=korg; t=1656002975;
+        bh=wELGr6wfnEeJMKhlZ+9+4rWjcNU9BYgROo8OgipK76I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QGlblKj0CokZrI1/v5izy6KMe3x8Gw4rs3oCgOZZtKt/l/9JfuekPGOrNYDLhITHl
-         hg6BBvEBrdGoatpIkyqXb5dCr5NBH5GgQHFgqZqCIp2Q/I2b8/5S++8MbqlKbUred1
-         EQsluSSM5KIKVLF5GQqpHZO1deEYuZnPnuOoiUOw=
+        b=JQFJzoPf+KR+nNv+/3s0FUdCAX8H3UM/D++jX7V3c+ZzrqsMSJXXy096KfYLQY3oh
+         A5IDh44C16hQGPVvRN4BFDaAbPRj4JgH5ZYjiNDL52k5vt+rHxSC1voyBhx26EzOA/
+         efQaoXihN1acdaW7VniWr7Id44Z62ou1GvowtTUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Theodore Tso <tytso@mit.edu>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 038/264] drivers/char/random.c: make primary_crng static
-Date:   Thu, 23 Jun 2022 18:40:31 +0200
-Message-Id: <20220623164345.147190185@linuxfoundation.org>
+Subject: [PATCH 4.9 047/264] char/random: Add a newline at the end of the file
+Date:   Thu, 23 Jun 2022 18:40:40 +0200
+Message-Id: <20220623164345.402094704@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,16 +49,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+From: Borislav Petkov <bp@alien8.de>
 
-commit 764ed189c82090c1d85f0e30636156736d8f09a8 upstream.
+commit 3fd57e7a9e66b9a8bcbf0560ff09e84d0b8de1bd upstream.
 
-Since the definition of struct crng_state is private to random.c, and
-primary_crng is neither declared or used elsewhere, there's no reason
-for that symbol to have external linkage.
+On Tue, Oct 01, 2019 at 10:14:40AM -0700, Linus Torvalds wrote:
+> The previous state of the file didn't have that 0xa at the end, so you get that
+>
+>
+>   -EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+>   \ No newline at end of file
+>   +EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+>
+> which is "the '-' line doesn't have a newline, the '+' line does" marker.
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Aaha, that makes total sense, thanks for explaining. Oh well, let's fix
+it then so that people don't scratch heads like me.
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
@@ -68,14 +75,12 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -416,7 +416,7 @@ struct crng_state {
- 	spinlock_t	lock;
- };
- 
--struct crng_state primary_crng = {
-+static struct crng_state primary_crng = {
- 	.lock = __SPIN_LOCK_UNLOCKED(primary_crng.lock),
- };
- 
+@@ -2504,4 +2504,4 @@ void add_bootloader_randomness(const voi
+ 	else
+ 		add_device_randomness(buf, size);
+ }
+-EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+\ No newline at end of file
++EXPORT_SYMBOL_GPL(add_bootloader_randomness);
 
 
