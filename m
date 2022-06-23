@@ -2,81 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3302FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00EEECCA481
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236053AbiFWSGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
+        id S236258AbiFWSHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235931AbiFWSF4 (ORCPT
+        with ESMTP id S235901AbiFWSGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:05:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41FA6159;
-        Thu, 23 Jun 2022 10:17:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39348B824B8;
-        Thu, 23 Jun 2022 17:17:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D189C341C4;
-        Thu, 23 Jun 2022 17:17:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004672;
-        bh=Fks3+OFrDCp2LBtgm5CxPt8bbalF/wsU+t94FuobBRA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HO5Gj6g4ImEtIPQTgvHZSZzAzQ8JYGJFMdLRFDiFSYkEQf0ZQpkUSdZ2CDbi6xIAV
-         F4ZkpOICda9A2XsEWnyL3MJ+6W1nX5uUa2CSGmofZ9SlUuIianIO8eeYISfY/uLNmu
-         NM/rf01peDYUGnqkagf3n6gsSn5J3zOWGKSKHSQU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 112/234] random: only wake up writers after zap if threshold was passed
-Date:   Thu, 23 Jun 2022 18:42:59 +0200
-Message-Id: <20220623164346.227877336@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
-References: <20220623164343.042598055@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 14:06:18 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF4EDA5;
+        Thu, 23 Jun 2022 10:18:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+        MIME-Version:Date:Message-ID:content-disposition;
+        bh=TGE5JNxKMzOY+twQ6t/ggEoZZmn0rKO8MkEsEl3K3GA=; b=XqLEFa8uXRGl7xk0sbFLSCsx5B
+        eRC2cYkqiK7rxv6P+gT78b7WFTJgs9CDKOy7EmP/mjfq2HvYNK1jQeHkMLxUNCUuVAE8QnWMzGMN2
+        Ua3BTzZkr/X4y7lOWzdy+Oa8nR2fFoEuXK3pL/xU/HKV1km6RdHIzz+gnpRVwnBsQO55Y8GD4huuq
+        7my+4fZOYjPjAuXWzmtCtDA9qta2IEGYnwf+Sp/AGOfBCAB5aR8fbRjUkiyLaVq1PuRaUKYKt1rQG
+        9wIrdK7hR9/QxaYvzbqjRHpvtt7x2NbGA7beFIM0JOPaeW/sbRaKkST4Sk4232EJXiMLCZDWU7UAq
+        uzbbwbuw==;
+Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200] helo=[192.168.0.10])
+        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <logang@deltatee.com>)
+        id 1o4QTd-00F5TU-9V; Thu, 23 Jun 2022 11:18:46 -0600
+Message-ID: <09153aee-f05e-22ae-dcf5-0fbfb3b9823c@deltatee.com>
+Date:   Thu, 23 Jun 2022 11:18:42 -0600
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-CA
+To:     Song Liu <song@kernel.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        linux-raid <linux-raid@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>
+References: <20220623165552.38645-1-logang@deltatee.com>
+ <CAPhsuW50vG=M6JhBEe3qwef10GQt84cg9p_ji5tqyRnMA1-xRQ@mail.gmail.com>
+From:   Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <CAPhsuW50vG=M6JhBEe3qwef10GQt84cg9p_ji5tqyRnMA1-xRQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 24.64.144.200
+X-SA-Exim-Rcpt-To: song@kernel.org, linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, lkp@intel.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [PATCH] md/raid5: Fix divide type in raid5_make_request()
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-
-commit a3f9e8910e1584d7725ef7d5ac870920d42d0bb4 upstream.
-
-The only time that we need to wake up /dev/random writers on
-RNDCLEARPOOL/RNDZAPPOOL is when we're changing from a value that is
-greater than or equal to POOL_MIN_BITS to zero, because if we're
-changing from below POOL_MIN_BITS to zero, the writers are already
-unblocked.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1577,7 +1577,7 @@ static long random_ioctl(struct file *f,
- 		 */
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
--		if (xchg(&input_pool.entropy_count, 0)) {
-+		if (xchg(&input_pool.entropy_count, 0) >= POOL_MIN_BITS) {
- 			wake_up_interruptible(&random_write_wait);
- 			kill_fasync(&fasync, SIGIO, POLL_OUT);
- 		}
 
 
+On 2022-06-23 11:15, Song Liu wrote:
+> On Thu, Jun 23, 2022 at 9:56 AM Logan Gunthorpe <logang@deltatee.com> wrote:
+>>
+>> 0day reports a build failure on the hexagon architecture:
+>>
+>>   ld.lld: error: undefined symbol: __hexagon_udivdi3
+>>      referenced by raid5.c
+>>         md/raid5.o:(raid5_make_request) in archive drivers/built-in.a
+>>      referenced by raid5.c
+>>         md/raid5.o:(raid5_make_request) in archive drivers/built-in.a
+>>      did you mean: __hexagon_udivsi3
+>>         defined in: arch/hexagon/built-in.a(lib/udivsi3.o)
+>>
+>> This is caused by using DIV_ROUND_UP on a sector_t type.
+>>
+>> The actual value is known to be less than 256 so a wide 64bit divide
+>> here is not desirable. Thus cast the argument to an int to ensure it
+>> uses a 32bit divide.
+> 
+> I force pushed an update that uses DIV_ROUND_UP_SECTOR_T instead.
+> I guess that should also work?
+
+Ah, yes, that'll also fix the bug. I chose to cast to minimize the
+performance impact of an unnecessarily wide divide. But I don't have any
+strong basis to suggest the performance will be worse with the wider
+division. So fix it whichever way you think is best.
+
+Logan
