@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D26AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B50ADC43334
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237180AbiFWSWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
+        id S237419AbiFWSWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237331AbiFWSSN (ORCPT
+        with ESMTP id S234933AbiFWSSe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:18:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93546B628E;
-        Thu, 23 Jun 2022 10:24:38 -0700 (PDT)
+        Thu, 23 Jun 2022 14:18:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0DF68021;
+        Thu, 23 Jun 2022 10:24:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 166D2B82497;
-        Thu, 23 Jun 2022 17:24:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76FE4C341C4;
-        Thu, 23 Jun 2022 17:24:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 999CA61F06;
+        Thu, 23 Jun 2022 17:24:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760EDC341C5;
+        Thu, 23 Jun 2022 17:24:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005075;
-        bh=GJjPzaE1Xp4leBAxjdOS0+AqdSMbVLMu+pd/8Sgp3ck=;
+        s=korg; t=1656005096;
+        bh=wp9EquvNPqrrsJ/Y1NFOY6uknM5N6T0rAZv5vmCLvqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tu+8pbMaDgg++sYzcFDKGXk2ltF/7lgXlG+aqgGX24VIFDaHhUWm6kDDhvAkiBl7n
-         JbtCZ1b9hTfaQTiPv5LPmYO+uC9hAJMkXwnMvyUov12na4q62QqHDqtT+AVg8lad3X
-         ivD9VEpvAm1IiMzcWFNSPWemLY1sUa5DRNtB76M0=
+        b=riS+em0i3Fjo8zyg1AkKiULncZBRZqtFCiL7gktucAlYTRSKTJtsqea1PdfSxUwBt
+         bIp5Lfr61de6wc4YmOROhO9sqs7gNEQdF1ZWS5X0QytwOMZnagaCCtjuU30w5gJaaU
+         dzMoHo4e6TnC90G3DFY+5Zf1SDj7JIv6kPWFplNU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Subject: [PATCH 5.4 01/11] s390/mm: use non-quiescing sske for KVM switch to keyed guest
-Date:   Thu, 23 Jun 2022 18:45:05 +0200
-Message-Id: <20220623164321.239935415@linuxfoundation.org>
+        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.4 07/11] tcp: dynamically allocate the perturb table used by source ports
+Date:   Thu, 23 Jun 2022 18:45:11 +0200
+Message-Id: <20220623164321.412902424@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164321.195163701@linuxfoundation.org>
 References: <20220623164321.195163701@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,35 +52,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Borntraeger <borntraeger@linux.ibm.com>
+From: Willy Tarreau <w@1wt.eu>
 
-commit 3ae11dbcfac906a8c3a480e98660a823130dc16a upstream.
+commit e9261476184be1abd486c9434164b2acbe0ed6c2 upstream.
 
-The switch to a keyed guest does not require a classic sske as the other
-guest CPUs are not accessing the key before the switch is complete.
-By using the NQ SSKE things are faster especially with multiple guests.
+We'll need to further increase the size of this table and it's likely
+that at some point its size will not be suitable anymore for a static
+table. Let's allocate it on boot from inet_hashinfo2_init(), which is
+called from tcp_init().
 
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Suggested-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220530092706.11637-3-borntraeger@linux.ibm.com
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/mm/pgtable.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/inet_hashtables.c |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
---- a/arch/s390/mm/pgtable.c
-+++ b/arch/s390/mm/pgtable.c
-@@ -716,7 +716,7 @@ void ptep_zap_key(struct mm_struct *mm,
- 	pgste_val(pgste) |= PGSTE_GR_BIT | PGSTE_GC_BIT;
- 	ptev = pte_val(*ptep);
- 	if (!(ptev & _PAGE_INVALID) && (ptev & _PAGE_WRITE))
--		page_set_storage_key(ptev & PAGE_MASK, PAGE_DEFAULT_KEY, 1);
-+		page_set_storage_key(ptev & PAGE_MASK, PAGE_DEFAULT_KEY, 0);
- 	pgste_set_unlock(ptep, pgste);
- 	preempt_enable();
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -680,7 +680,8 @@ EXPORT_SYMBOL_GPL(inet_unhash);
+  * privacy, this only consumes 1 KB of kernel memory.
+  */
+ #define INET_TABLE_PERTURB_SHIFT 8
+-static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
++#define INET_TABLE_PERTURB_SIZE (1 << INET_TABLE_PERTURB_SHIFT)
++static u32 *table_perturb;
+ 
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 		struct sock *sk, u64 port_offset,
+@@ -723,7 +724,8 @@ int __inet_hash_connect(struct inet_time
+ 	if (likely(remaining > 1))
+ 		remaining &= ~1U;
+ 
+-	net_get_random_once(table_perturb, sizeof(table_perturb));
++	net_get_random_once(table_perturb,
++			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
+ 
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+@@ -861,6 +863,12 @@ void __init inet_hashinfo2_init(struct i
+ 					    low_limit,
+ 					    high_limit);
+ 	init_hashinfo_lhash2(h);
++
++	/* this one is used for source ports of outgoing connections */
++	table_perturb = kmalloc_array(INET_TABLE_PERTURB_SIZE,
++				      sizeof(*table_perturb), GFP_KERNEL);
++	if (!table_perturb)
++		panic("TCP: failed to alloc table_perturb");
  }
+ 
+ int inet_hashinfo2_init_mod(struct inet_hashinfo *h)
 
 
