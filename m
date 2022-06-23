@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 384ABCCA482
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:49:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235127AbiFWRtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:49:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
+        id S235153AbiFWRtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235245AbiFWRro (ORCPT
+        with ESMTP id S235265AbiFWRrq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:47:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2213FA14BD;
+        Thu, 23 Jun 2022 13:47:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E50A562D9;
         Thu, 23 Jun 2022 10:11:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2DF85B824B6;
-        Thu, 23 Jun 2022 17:10:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A41CC3411B;
-        Thu, 23 Jun 2022 17:10:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFF8361D1E;
+        Thu, 23 Jun 2022 17:11:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85F6CC3411B;
+        Thu, 23 Jun 2022 17:11:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004257;
-        bh=+3Vb5uCzVRbG+5aje9N5PGNINbJuKtDLlWJr/AUROAM=;
+        s=korg; t=1656004270;
+        bh=pCp7IVxODdpcqHvBse8OkNnCn/xuI4O2c7dNVJ60fCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oR8K8KAcqFAtXGoUP656ObhjeGGAM5nfSff60b9hq6vJTKDim4lAGUogN56bbYAy+
-         kTFb5t1FIyxBoyO54cfGdiIkHIjGMWCSJxNY8RxPT50lEk+HYUEWOMaPsyKCrIQGL8
-         Wu7TuLa0j4VP5ZrJyS1H86UkSofq2GrkX5R0eqGQ=
+        b=EAOfC6B4FOCal9dO0jgb266bMzRtal65YzkcJyTSJamVF8n1WuY0MQRlsIeWqpGNe
+         dFcOJ55os4a5HTH0eVAFgBHSUcr/SxX6iw10hkNDiyapWLMlY1/LPJ9e9TMwpFzH/r
+         0RRsitagPoFymHifx69GQKwPiRC/vFbljyPSkc7c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.14 226/237] virtio-pci: Remove wrong address verification in vp_del_vqs()
-Date:   Thu, 23 Jun 2022 18:44:20 +0200
-Message-Id: <20220623164349.653871343@linuxfoundation.org>
+        stable@vger.kernel.org, Marian Postevca <posteuca@mutex.one>
+Subject: [PATCH 4.14 230/237] usb: gadget: u_ether: fix regression in setting fixed MAC address
+Date:   Thu, 23 Jun 2022 18:44:24 +0200
+Message-Id: <20220623164349.769665381@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,49 +47,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+From: Marian Postevca <posteuca@mutex.one>
 
-commit 7e415282b41bf0d15c6e0fe268f822d9b083f2f7 upstream.
+commit b337af3a4d6147000b7ca6b3438bf5c820849b37 upstream.
 
-GCC 12 enhanced -Waddress when comparing array address to null [0],
-which warns:
+In systemd systems setting a fixed MAC address through
+the "dev_addr" module argument fails systematically.
+When checking the MAC address after the interface is created
+it always has the same but different MAC address to the one
+supplied as argument.
 
-    drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
-    drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison will always evaluate as ‘true’ for the pointer operand in ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 256)’ must not be NULL [-Waddress]
-      257 |                         if (vp_dev->msix_affinity_masks[i])
-          |                             ^~~~~~
+This is partially caused by systemd which by default will
+set an internally generated permanent MAC address for interfaces
+that are marked as having a randomly generated address.
 
-In fact, the verification is comparing the result of a pointer
-arithmetic, the address "msix_affinity_masks + i", which will always
-evaluate to true.
+Commit 890d5b40908bfd1a ("usb: gadget: u_ether: fix race in
+setting MAC address in setup phase") didn't take into account
+the fact that the interface must be marked as having a set
+MAC address when it's set as module argument.
 
-Under the hood, free_cpumask_var() calls kfree(), which is safe to pass
-NULL, not requiring non-null verification.  So remove the verification
-to make compiler happy (happy compiler, happy life).
+Fixed by marking the interface with NET_ADDR_SET when
+the "dev_addr" module argument is supplied.
 
-[0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102103
-
-Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-Message-Id: <20220415023002.49805-1-muriloo@linux.ibm.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Christophe de Dinechin <dinechin@redhat.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Fixes: 890d5b40908bfd1a ("usb: gadget: u_ether: fix race in setting MAC address in setup phase")
+Cc: stable@vger.kernel.org
+Signed-off-by: Marian Postevca <posteuca@mutex.one>
+Link: https://lore.kernel.org/r/20220603153459.32722-1-posteuca@mutex.one
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio_pci_common.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/usb/gadget/function/u_ether.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -256,8 +256,7 @@ void vp_del_vqs(struct virtio_device *vd
+--- a/drivers/usb/gadget/function/u_ether.c
++++ b/drivers/usb/gadget/function/u_ether.c
+@@ -776,9 +776,13 @@ struct eth_dev *gether_setup_name(struct
+ 	dev->qmult = qmult;
+ 	snprintf(net->name, sizeof(net->name), "%s%%d", netname);
  
- 	if (vp_dev->msix_affinity_masks) {
- 		for (i = 0; i < vp_dev->msix_vectors; i++)
--			if (vp_dev->msix_affinity_masks[i])
--				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
-+			free_cpumask_var(vp_dev->msix_affinity_masks[i]);
- 	}
+-	if (get_ether_addr(dev_addr, net->dev_addr))
++	if (get_ether_addr(dev_addr, net->dev_addr)) {
++		net->addr_assign_type = NET_ADDR_RANDOM;
+ 		dev_warn(&g->dev,
+ 			"using random %s ethernet address\n", "self");
++	} else {
++		net->addr_assign_type = NET_ADDR_SET;
++	}
+ 	if (get_ether_addr(host_addr, dev->host_mac))
+ 		dev_warn(&g->dev,
+ 			"using random %s ethernet address\n", "host");
+@@ -835,6 +839,9 @@ struct net_device *gether_setup_name_def
+ 	INIT_LIST_HEAD(&dev->tx_reqs);
+ 	INIT_LIST_HEAD(&dev->rx_reqs);
  
- 	if (vp_dev->msix_enabled) {
++	/* by default we always have a random MAC address */
++	net->addr_assign_type = NET_ADDR_RANDOM;
++
+ 	skb_queue_head_init(&dev->rx_frames);
+ 
+ 	/* network device setup */
+@@ -872,7 +879,6 @@ int gether_register_netdev(struct net_de
+ 	g = dev->gadget;
+ 
+ 	memcpy(net->dev_addr, dev->dev_mac, ETH_ALEN);
+-	net->addr_assign_type = NET_ADDR_RANDOM;
+ 
+ 	status = register_netdev(net);
+ 	if (status < 0) {
+@@ -912,6 +918,7 @@ int gether_set_dev_addr(struct net_devic
+ 	if (get_ether_addr(dev_addr, new_addr))
+ 		return -EINVAL;
+ 	memcpy(dev->dev_mac, new_addr, ETH_ALEN);
++	net->addr_assign_type = NET_ADDR_SET;
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(gether_set_dev_addr);
 
 
