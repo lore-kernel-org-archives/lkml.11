@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE81C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E32C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231357AbiFWKvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
+        id S231401AbiFWKvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231349AbiFWKvk (ORCPT
+        with ESMTP id S231352AbiFWKvk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 06:51:40 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FB64B425
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:51:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301EE4B428
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:51:39 -0700 (PDT)
 Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25NAKUqD006859;
-        Thu, 23 Jun 2022 05:51:22 -0500
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25NAKUqF006859;
+        Thu, 23 Jun 2022 05:51:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=bNlM6ExkPAMQh4YAtjnCAor0Jwtg9hW9tj0kYJzlsTk=;
- b=LcGVKAgDLNNQSEVhWS7LDRQ+mZM8gCuUOUYLCiXBkcNa48a5pTkRy6ZWp5ELZXd7krof
- 9iJxUXr97k9mhMj8eIEuPsuGq3A/OP9/nEWhqO+nPz9V2OariGc9oK0rHyMGy4Fv3EWl
- FRo6OsMYul1uywVRS3fm1Y/ilWwaiLWaDdNeLztX75tQwhJ5WCPD1Xq7PqPH9FEQX1Vh
- +g0DCf7PES2zS/ZyAre9PxVYA2f3JUYDY0Ay/fKFKpecLVTk2BlwfEaipEVN+wBK02HB
- WAlvdESK1SEFu28hKdWrcKcGkjVbSsnKZkTKAWOM8V3A0361Tn2uXxtZQxR7vwqG2LyC ag== 
+ bh=spwI6sAhpzo+8xV2qTuPti6l56+juOG2iCl+GRXgx6Y=;
+ b=YWTCg5gwM6HNsL65S8x+ByDROJzBjEfDXslKcVsKpC68nrFMzeAHWHMwaXfQKtH+awqK
+ Uv3IRazjoT8cu0EcFOdMh6h9IEvtK+o9pLpggDOHIbAYdzyZvnBusfPcrBH6Vc5MXrTC
+ Bc1ANrSAIMvpbcvRpSXGq9zNHg4ITTNlW5wl3tS38LU/Pj1BC6dFfF7OECLEykd/lpnA
+ /uME74/99UrDGT2/NGn/2FM4e4htX154qZMbSIq56mb3UAuylf0/SmROFdvd0bnpkWoJ
+ DogLwUE5fb9/Ia4CxHm+tPtHQnWSk3uSuGq56O3rakggs30Z7WfpejcQu4JudaG/MOL5 jw== 
 Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gsc41f17q-1
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gsc41f17q-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 23 Jun 2022 05:51:22 -0500
+        Thu, 23 Jun 2022 05:51:23 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
  (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 23 Jun
@@ -39,83 +39,62 @@ Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
  Transport; Thu, 23 Jun 2022 11:51:20 +0100
 Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 316F1475;
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 60B1A475;
         Thu, 23 Jun 2022 10:51:20 +0000 (UTC)
 From:   Charles Keepax <ckeepax@opensource.cirrus.com>
 To:     <broonie@kernel.org>
 CC:     <james.schulman@cirrus.com>, <david.rhodes@cirrus.com>,
         <lgirdwood@gmail.com>, <alsa-devel@alsa-project.org>,
         <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/6] ASoC: cs35l41: Add ASP TX3/4 source to register patch
-Date:   Thu, 23 Jun 2022 11:51:16 +0100
-Message-ID: <20220623105120.1981154-2-ckeepax@opensource.cirrus.com>
+Subject: [PATCH 6/6] ASoC: dapm: Move stereo autodisable check
+Date:   Thu, 23 Jun 2022 11:51:20 +0100
+Message-ID: <20220623105120.1981154-6-ckeepax@opensource.cirrus.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220623105120.1981154-1-ckeepax@opensource.cirrus.com>
 References: <20220623105120.1981154-1-ckeepax@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: Yb22yhiQAqv62OHWXfOuIbfANN5Br6ho
-X-Proofpoint-ORIG-GUID: Yb22yhiQAqv62OHWXfOuIbfANN5Br6ho
+X-Proofpoint-GUID: JgCLQNmst0Kq0Pq3_XSo28iJj41Qufod
+X-Proofpoint-ORIG-GUID: JgCLQNmst0Kq0Pq3_XSo28iJj41Qufod
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The mixer controls for ASP TX3/4 are set to values that are not included
-in their enumeration control. This will cause spurious event
-notifications when the controls are first changed, as the register value
-changes whilst the actual visible enumeration value does not. Use the
-register patch to set them to a known value, zero, which equates to zero
-fill, thereby avoiding the spurious notifications.
+Tidy up the code a little, rather than repeating the check of
+mc->autodisable move the stereo error check to be under the
+existing if for mc->autodisable.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 ---
- sound/soc/codecs/cs35l41-lib.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ sound/soc/soc-dapm.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
-index 0c7d1c7912798..04be71435491e 100644
---- a/sound/soc/codecs/cs35l41-lib.c
-+++ b/sound/soc/codecs/cs35l41-lib.c
-@@ -37,8 +37,8 @@ static const struct reg_default cs35l41_reg[] = {
- 	{ CS35L41_DAC_PCM1_SRC,			0x00000008 },
- 	{ CS35L41_ASP_TX1_SRC,			0x00000018 },
- 	{ CS35L41_ASP_TX2_SRC,			0x00000019 },
--	{ CS35L41_ASP_TX3_SRC,			0x00000020 },
--	{ CS35L41_ASP_TX4_SRC,			0x00000021 },
-+	{ CS35L41_ASP_TX3_SRC,			0x00000000 },
-+	{ CS35L41_ASP_TX4_SRC,			0x00000000 },
- 	{ CS35L41_DSP1_RX1_SRC,			0x00000008 },
- 	{ CS35L41_DSP1_RX2_SRC,			0x00000009 },
- 	{ CS35L41_DSP1_RX3_SRC,			0x00000018 },
-@@ -644,6 +644,8 @@ static const struct reg_sequence cs35l41_reva0_errata_patch[] = {
- 	{ CS35L41_DSP1_XM_ACCEL_PL0_PRI, 0x00000000 },
- 	{ CS35L41_PWR_CTRL2,		 0x00000000 },
- 	{ CS35L41_AMP_GAIN_CTRL,	 0x00000000 },
-+	{ CS35L41_ASP_TX3_SRC,		 0x00000000 },
-+	{ CS35L41_ASP_TX4_SRC,		 0x00000000 },
- };
+diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
+index a8e842e02cdc2..b05231414c1d0 100644
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -370,14 +370,14 @@ static int dapm_kcontrol_data_alloc(struct snd_soc_dapm_widget *widget,
+ 	case snd_soc_dapm_mixer_named_ctl:
+ 		mc = (struct soc_mixer_control *)kcontrol->private_value;
  
- static const struct reg_sequence cs35l41_revb0_errata_patch[] = {
-@@ -655,6 +657,8 @@ static const struct reg_sequence cs35l41_revb0_errata_patch[] = {
- 	{ CS35L41_DSP1_XM_ACCEL_PL0_PRI, 0x00000000 },
- 	{ CS35L41_PWR_CTRL2,		 0x00000000 },
- 	{ CS35L41_AMP_GAIN_CTRL,	 0x00000000 },
-+	{ CS35L41_ASP_TX3_SRC,		 0x00000000 },
-+	{ CS35L41_ASP_TX4_SRC,		 0x00000000 },
- };
+-		if (mc->autodisable && snd_soc_volsw_is_stereo(mc))
+-			dev_warn(widget->dapm->dev,
+-				 "ASoC: Unsupported stereo autodisable control '%s'\n",
+-				 ctrl_name);
+-
+ 		if (mc->autodisable) {
+ 			struct snd_soc_dapm_widget template;
  
- static const struct reg_sequence cs35l41_revb2_errata_patch[] = {
-@@ -666,6 +670,8 @@ static const struct reg_sequence cs35l41_revb2_errata_patch[] = {
- 	{ CS35L41_DSP1_XM_ACCEL_PL0_PRI, 0x00000000 },
- 	{ CS35L41_PWR_CTRL2,		 0x00000000 },
- 	{ CS35L41_AMP_GAIN_CTRL,	 0x00000000 },
-+	{ CS35L41_ASP_TX3_SRC,		 0x00000000 },
-+	{ CS35L41_ASP_TX4_SRC,		 0x00000000 },
- };
- 
- static const struct reg_sequence cs35l41_fs_errata_patch[] = {
++			if (snd_soc_volsw_is_stereo(mc))
++				dev_warn(widget->dapm->dev,
++					 "ASoC: Unsupported stereo autodisable control '%s'\n",
++					 ctrl_name);
++
+ 			name = kasprintf(GFP_KERNEL, "%s %s", ctrl_name,
+ 					 "Autodisable");
+ 			if (!name) {
 -- 
 2.30.2
 
