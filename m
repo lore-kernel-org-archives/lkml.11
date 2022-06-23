@@ -2,137 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63995CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5097BCCA481
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234589AbiFWRkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
+        id S234530AbiFWRkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234545AbiFWRht (ORCPT
+        with ESMTP id S234559AbiFWRhu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:37:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C0A9215D;
+        Thu, 23 Jun 2022 13:37:50 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B791892172;
+        Thu, 23 Jun 2022 10:07:10 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id z13so3958104lfj.13;
+        Thu, 23 Jun 2022 10:07:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vjncueEDEOXI1ZZ67zcML01m1fkxgPmoKbICq2roG2s=;
+        b=Nbfpp64GCIC3Ssb2kIy30hSg2CvRnj7k5371N7oDJcy9yRrzXfWPlihKCsqH7PcIE5
+         V/ELtiN4T5onBwd8yDHruPhe3sX3Eq4thg1QJPmXD/i0/2y72IabKcnZGQQkg7uwNEdW
+         3xHKi9EFhWI7Pxs/aCSKK6I5xH3hLbiyIO7Jx9p+B2hVPglBA389cXxNok+pouJXyMff
+         exqPyt/wkdciq0nqxpAVakavthyUR1FqPoZ6I352Jxlg2nhFIom+fz0/xOFU6ALT5Fn2
+         yjzTqT9kipZ49qQLAl4obHCmZlBjTkjiy9ULvFgOK2m0pujrSo9vG8Sq7IDu7jRbKWSc
+         /chw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vjncueEDEOXI1ZZ67zcML01m1fkxgPmoKbICq2roG2s=;
+        b=d3ZrhNcmIDjfBj5qmAWOYgZ00uxZHY1sk81SeoAJHYUicMZxnhLTaANBaBJf77D8d/
+         FEi8g2DTPgsxbUA3ypDjXNDhZMNFfQC04UX75Yx7bWj9qaXc+9+09xrefjyFrGJmln7+
+         jej2HfPVE9Pd5/IFCXZkLTP+JZCGL7LPwjQdPKgDh8UtwNTWKtq11aqWhouS2qsGxfHW
+         QfPhLyMyQtpMqtjoXdNbTonOtERyLBszvWZBS+j27moTqgS/hplFiDPWuissNLtd49w6
+         B8dALZL1FAEVSaXMoLAb7aMDnO/jxRH9vBcvzACVh/X5CigBUEXwttf8yMHi7UTXpiFt
+         OYMA==
+X-Gm-Message-State: AJIora9J2k2TJ5SXXwlHe7s3kORJnsjBa7XC9PLebNYUnEfvuw8ch9YR
+        8smQOLOsXU2YI0tehqygZ68=
+X-Google-Smtp-Source: AGRyM1uz5elafW+BeYQYajDTPcNuwwsjDMnR5Qto7IrVP4vWW/8kdHK+rUwI23w6aY4oIrYIGwWBNg==
+X-Received: by 2002:a05:6512:31d5:b0:47f:718a:3459 with SMTP id j21-20020a05651231d500b0047f718a3459mr6103570lfe.480.1656004028467;
         Thu, 23 Jun 2022 10:07:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F29F8B82490;
-        Thu, 23 Jun 2022 17:07:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60075C3411B;
-        Thu, 23 Jun 2022 17:07:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004025;
-        bh=V7VZQRAeVjdGBfQAq7pOoLj/uayn7MvBnfbjcr7tSXI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eDv9qxi/KRenDGuo1/ECCycS3bp2oRExjnrK7P4QVIsspDKkfnTm4hcMXWYfymcO2
-         U6foBEafCCm6DKPCmSxA/XaMfHC0S14uOllKnosNC7QBlwFeYfCQOdbYWjXiSfjnyB
-         M0sNG9rKSxZQpLEUDc5X5y8QJBVDCDPFdJDME098=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Graham Christensen <graham@grahamc.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 137/237] random: treat bootloader trust toggle the same way as cpu trust toggle
-Date:   Thu, 23 Jun 2022 18:42:51 +0200
-Message-Id: <20220623164347.095574362@linuxfoundation.org>
+Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id w27-20020a19491b000000b0047a0bf9540asm3060405lfa.213.2022.06.23.10.07.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 10:07:07 -0700 (PDT)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 04/10] iio: adc: mcp3911: add support for interrupts
+Date:   Thu, 23 Jun 2022 19:08:38 +0200
+Message-Id: <20220623170844.2189814-4-marcus.folkesson@gmail.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
-References: <20220623164343.132308638@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
+References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Make it possible to read values upon interrupts.
+Configure Data Ready Signal Output Pin to either HiZ or push-pull and
+use it as interrupt source.
 
-commit d97c68d178fbf8aaaf21b69b446f2dfb13909316 upstream.
-
-If CONFIG_RANDOM_TRUST_CPU is set, the RNG initializes using RDRAND.
-But, the user can disable (or enable) this behavior by setting
-`random.trust_cpu=0/1` on the kernel command line. This allows system
-builders to do reasonable things while avoiding howls from tinfoil
-hatters. (Or vice versa.)
-
-CONFIG_RANDOM_TRUST_BOOTLOADER is basically the same thing, but regards
-the seed passed via EFI or device tree, which might come from RDRAND or
-a TPM or somewhere else. In order to allow distros to more easily enable
-this while avoiding those same howls (or vice versa), this commit adds
-the corresponding `random.trust_bootloader=0/1` toggle.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Graham Christensen <graham@grahamc.com>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Link: https://github.com/NixOS/nixpkgs/pull/165355
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt |    6 ++++++
- drivers/char/Kconfig                            |    3 ++-
- drivers/char/random.c                           |    8 +++++++-
- 3 files changed, 15 insertions(+), 2 deletions(-)
+ drivers/iio/adc/mcp3911.c | 69 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 69 insertions(+)
 
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3532,6 +3532,12 @@
- 			fully seed the kernel's CRNG. Default is controlled
- 			by CONFIG_RANDOM_TRUST_CPU.
+diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+index 768cb0203f52..e761feed5303 100644
+--- a/drivers/iio/adc/mcp3911.c
++++ b/drivers/iio/adc/mcp3911.c
+@@ -26,6 +26,7 @@
+ #define MCP3911_REG_GAIN		0x09
  
-+	random.trust_bootloader={on,off}
-+			[KNL] Enable or disable trusting the use of a
-+			seed passed by the bootloader (if available) to
-+			fully seed the kernel's CRNG. Default is controlled
-+			by CONFIG_RANDOM_TRUST_BOOTLOADER.
-+
- 	ras=option[,option,...]	[KNL] RAS-specific options
+ #define MCP3911_REG_STATUSCOM		0x0a
++#define MCP3911_STATUSCOM_DRHIZ         BIT(12)
+ #define MCP3911_STATUSCOM_CH1_24WIDTH	BIT(4)
+ #define MCP3911_STATUSCOM_CH0_24WIDTH	BIT(3)
+ #define MCP3911_STATUSCOM_EN_OFFCAL	BIT(2)
+@@ -58,6 +59,7 @@ struct mcp3911 {
+ 	struct regulator *vref;
+ 	struct clk *clki;
+ 	u32 dev_addr;
++	struct iio_trigger *trig;
+ 	struct {
+ 		u32 channels[2];
+ 		s64 ts __aligned(8);
+@@ -252,6 +254,17 @@ static const struct iio_info mcp3911_info = {
+ 	.write_raw = mcp3911_write_raw,
+ };
  
- 		cec_disable	[X86]
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -612,4 +612,5 @@ config RANDOM_TRUST_BOOTLOADER
- 	device randomness. Say Y here to assume the entropy provided by the
- 	booloader is trustworthy so it will be added to the kernel's entropy
- 	pool. Otherwise, say N here so it will be regarded as device input that
--	only mixes the entropy pool.
-\ No newline at end of file
-+	only mixes the entropy pool. This can also be configured at boot with
-+	"random.trust_bootloader=on/off".
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -940,11 +940,17 @@ static bool drain_entropy(void *buf, siz
-  **********************************************************************/
- 
- static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
-+static bool trust_bootloader __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
- static int __init parse_trust_cpu(char *arg)
- {
- 	return kstrtobool(arg, &trust_cpu);
- }
-+static int __init parse_trust_bootloader(char *arg)
++static irqreturn_t mcp3911_interrupt(int irq, void *dev_id)
 +{
-+	return kstrtobool(arg, &trust_bootloader);
-+}
- early_param("random.trust_cpu", parse_trust_cpu);
-+early_param("random.trust_bootloader", parse_trust_bootloader);
- 
- /*
-  * The first collection of entropy occurs at system boot while interrupts
-@@ -1152,7 +1158,7 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
-  */
- void add_bootloader_randomness(const void *buf, size_t size)
++	struct iio_dev *indio_dev = dev_id;
++	struct mcp3911 *adc = iio_priv(indio_dev);
++
++	if (iio_buffer_enabled(indio_dev))
++		iio_trigger_poll(adc->trig);
++
++	return IRQ_HANDLED;
++};
++
+ static int mcp3911_config(struct mcp3911 *adc)
  {
--	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
-+	if (trust_bootloader)
- 		add_hwgenerator_randomness(buf, size, size * 8);
- 	else
- 		add_device_randomness(buf, size);
-
+ 	struct device *dev = &adc->spi->dev;
+@@ -292,11 +305,30 @@ static int mcp3911_config(struct mcp3911 *adc)
+ 	return  mcp3911_write(adc, MCP3911_REG_CONFIG, configreg, 2);
+ }
+ 
++
++static int mcp3911_set_trigger_state(struct iio_trigger *trig, bool enable)
++{
++	struct mcp3911 *adc = iio_trigger_get_drvdata(trig);
++
++	if (enable)
++		enable_irq(adc->spi->irq);
++	else
++		disable_irq(adc->spi->irq);
++
++	return 0;
++}
++
++static const struct iio_trigger_ops mcp3911_trigger_ops = {
++	.validate_device = iio_trigger_validate_own_device,
++	.set_trigger_state = mcp3911_set_trigger_state,
++};
++
+ static int mcp3911_probe(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct mcp3911 *adc;
+ 	int ret;
++	bool dr_hiz;
+ 
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+ 	if (!indio_dev)
+@@ -346,6 +378,17 @@ static int mcp3911_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto clk_disable;
+ 
++	dr_hiz = device_property_read_bool(&adc->spi->dev, "microchip,data-ready-hiz");
++	if (dr_hiz)
++		ret = mcp3911_update(adc, MCP3911_REG_STATUSCOM, MCP3911_STATUSCOM_DRHIZ,
++				0, 2);
++	else
++		ret = mcp3911_update(adc, MCP3911_REG_STATUSCOM, MCP3911_STATUSCOM_DRHIZ,
++				MCP3911_STATUSCOM_DRHIZ, 2);
++
++	if (ret < 0)
++		goto clk_disable;
++
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
+ 	indio_dev->info = &mcp3911_info;
+@@ -356,6 +399,32 @@ static int mcp3911_probe(struct spi_device *spi)
+ 
+ 	mutex_init(&adc->lock);
+ 
++	if (spi->irq > 0) {
++		adc->trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
++				indio_dev->name,
++				iio_device_id(indio_dev));
++		if (!adc->trig)
++			goto clk_disable;
++
++		adc->trig->ops = &mcp3911_trigger_ops;
++		iio_trigger_set_drvdata(adc->trig, adc);
++		ret = devm_iio_trigger_register(&spi->dev, adc->trig);
++		if (ret)
++			goto clk_disable;
++
++		/*
++		 * The device generates interrupts as long as it is powered up.
++		 * Some platforms might not allow the option to power it down so
++		 * don't enable the interrupt to avoid extra load on the system
++		 */
++		ret = devm_request_irq(&spi->dev, spi->irq,
++				&mcp3911_interrupt,
++				IRQF_TRIGGER_FALLING | IRQF_NO_AUTOEN | IRQF_ONESHOT,
++				indio_dev->name, indio_dev);
++		if (ret)
++			goto clk_disable;
++	}
++
+ 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
+ 			NULL,
+ 			mcp3911_trigger_handler, NULL);
+-- 
+2.36.1
 
