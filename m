@@ -2,52 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 479DDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A853C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231836AbiFWMoz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 08:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56072 "EHLO
+        id S231838AbiFWMo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 08:44:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231803AbiFWMom (ORCPT
+        with ESMTP id S231804AbiFWMom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 08:44:42 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F4637A93
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 05:44:40 -0700 (PDT)
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A99F3DA7B
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 05:44:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655988280; x=1687524280;
+  t=1655988281; x=1687524281;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BFbAMACBm8TDlyXmQJtQstcYXw4c11FwG4ToNhazoJg=;
-  b=UHMoR5LVi1uU6Jeut52h8a3xPnQ/rk1bQHYv7fDvyU1TUAIJvEgoiELR
-   /PnaitzN5IfrQ3VX66QMpiar3JSHmIjBvG4S5XiMxAtY8RBSfwZFfWFIN
-   6pUZf02vCG+zjnWJyoGKdpRrGjrURiPTUVAMuyu9/TaYCmYrFLES2ttYA
-   oH0Prb/3M4VmYuFVpjDKpUEDVffbx4mMewmg82/UQVH+Y/AnNIwWjfVsv
-   RiaNm6hGYJk53DGIy3+RAdbGTHrXU/SMGh0zm8I3PPWwrGEvHp/4yg+1p
-   eUv81oMAxFGceZm7+STenbkeyYB3asEa4JRlawgY+X8rIgtSVFetZ0wV8
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="281437808"
+  bh=T5MFRciMFQm/Vz9Jf8VerHzvU2pKofTMWXjJeG4rfVE=;
+  b=JiWJUAVY6iwzLwIMBpfpS1p4RLELvJBft872BuqYzkm7UACVV18g32Fx
+   HrVwkT8mZokSvEMIoAQPgfqQ6R8Xsrn5bwWbVXYEMsOIn3kwy7yPKoyHU
+   Z1kDld6A5s7aajUDfr7KLu7KaaLlsGi2zLs6f/mxArglig0xG/YwDDi/G
+   RQdtCAodcBMAQlmIwBCj68X1YVLTWRNT/x9pnjMgSvIB+XCmetYO7iiN1
+   q5H9brXAxbzuXaY6VCZvgkDmA48aQoU8htYD/2YnwrRXGwkltoSjEcIBB
+   h1gmP64zUqnkX6szmVgpFosjqmJ4x7CmlqACosu/NrFpWArO/RNqBBGtX
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="269432551"
 X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="281437808"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 05:44:40 -0700
+   d="scan'208";a="269432551"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 05:44:40 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="765282867"
+   d="scan'208";a="834623556"
 Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 23 Jun 2022 05:44:39 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 23 Jun 2022 05:44:38 -0700
 Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1o4MCM-0001GU-7b;
+        id 1o4MCM-0001GM-5p;
         Thu, 23 Jun 2022 12:44:38 +0000
-Date:   Thu, 23 Jun 2022 20:44:24 +0800
+Date:   Thu, 23 Jun 2022 20:44:27 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Bart Van Assche <bvanassche@acm.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [bvanassche:block-bitwise-opf 12/50] fs/ntfs3/fsntfs.c:1488:60:
- sparse: sparse: incorrect type in argument 3 (different base types)
-Message-ID: <202206231848.pQZIrKC6-lkp@intel.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     kbuild-all@lists.01.org,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        linux-kernel@vger.kernel.org, Ben Widawsky <bwidawsk@kernel.org>
+Subject: [cxl:preview 42/49] port.c:undefined reference to `cxl_region_rwsem'
+Message-ID: <202206231921.bj93USvP-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -55,136 +60,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/bvanassche/linux block-bitwise-opf
-head:   cdae45bfee03111b49b421b4c01dcddb643f64a2
-commit: 7852822e9b1bd84a693fa1d56b7c872f6c0cf6ba [12/50] block: Use the new blk_opf_t type
-config: x86_64-randconfig-s021 (https://download.01.org/0day-ci/archive/20220623/202206231848.pQZIrKC6-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-31-g4880bd19-dirty
-        # https://github.com/bvanassche/linux/commit/7852822e9b1bd84a693fa1d56b7c872f6c0cf6ba
-        git remote add bvanassche https://github.com/bvanassche/linux
-        git fetch --no-tags bvanassche block-bitwise-opf
-        git checkout 7852822e9b1bd84a693fa1d56b7c872f6c0cf6ba
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
+head:   b2d4fd5c97b59f622e6c45ac51020cdcd66bb022
+commit: 26b65f41272efb6f9c691f56f02fe4159985d187 [42/49] cxl/region: Enable the assignment of endpoint decoders to regions
+config: arc-randconfig-r032-20220622 (https://download.01.org/0day-ci/archive/20220623/202206231921.bj93USvP-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=26b65f41272efb6f9c691f56f02fe4159985d187
+        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
+        git fetch --no-tags cxl preview
+        git checkout 26b65f41272efb6f9c691f56f02fe4159985d187
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/ntfs3/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
 
-sparse warnings: (new ones prefixed by >>)
->> fs/ntfs3/fsntfs.c:1488:60: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted blk_opf_t [usertype] opf @@     got unsigned int [usertype] op @@
-   fs/ntfs3/fsntfs.c:1488:60: sparse:     expected restricted blk_opf_t [usertype] opf
-   fs/ntfs3/fsntfs.c:1488:60: sparse:     got unsigned int [usertype] op
-
-vim +1488 fs/ntfs3/fsntfs.c
-
-82cae269cfa953 Konstantin Komarov 2021-08-13  1445  
-e8b8e97f91b80f Kari Argillander   2021-08-03  1446  /*
-e8b8e97f91b80f Kari Argillander   2021-08-03  1447   * ntfs_bio_pages - Read/write pages from/to disk.
-e8b8e97f91b80f Kari Argillander   2021-08-03  1448   */
-82cae269cfa953 Konstantin Komarov 2021-08-13  1449  int ntfs_bio_pages(struct ntfs_sb_info *sbi, const struct runs_tree *run,
-82cae269cfa953 Konstantin Komarov 2021-08-13  1450  		   struct page **pages, u32 nr_pages, u64 vbo, u32 bytes,
-82cae269cfa953 Konstantin Komarov 2021-08-13  1451  		   u32 op)
-82cae269cfa953 Konstantin Komarov 2021-08-13  1452  {
-82cae269cfa953 Konstantin Komarov 2021-08-13  1453  	int err = 0;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1454  	struct bio *new, *bio = NULL;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1455  	struct super_block *sb = sbi->sb;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1456  	struct block_device *bdev = sb->s_bdev;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1457  	struct page *page;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1458  	u8 cluster_bits = sbi->cluster_bits;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1459  	CLST lcn, clen, vcn, vcn_next;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1460  	u32 add, off, page_idx;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1461  	u64 lbo, len;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1462  	size_t run_idx;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1463  	struct blk_plug plug;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1464  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1465  	if (!bytes)
-82cae269cfa953 Konstantin Komarov 2021-08-13  1466  		return 0;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1467  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1468  	blk_start_plug(&plug);
-82cae269cfa953 Konstantin Komarov 2021-08-13  1469  
-e8b8e97f91b80f Kari Argillander   2021-08-03  1470  	/* Align vbo and bytes to be 512 bytes aligned. */
-82cae269cfa953 Konstantin Komarov 2021-08-13  1471  	lbo = (vbo + bytes + 511) & ~511ull;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1472  	vbo = vbo & ~511ull;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1473  	bytes = lbo - vbo;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1474  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1475  	vcn = vbo >> cluster_bits;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1476  	if (!run_lookup_entry(run, vcn, &lcn, &clen, &run_idx)) {
-82cae269cfa953 Konstantin Komarov 2021-08-13  1477  		err = -ENOENT;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1478  		goto out;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1479  	}
-82cae269cfa953 Konstantin Komarov 2021-08-13  1480  	off = vbo & sbi->cluster_mask;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1481  	page_idx = 0;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1482  	page = pages[0];
-82cae269cfa953 Konstantin Komarov 2021-08-13  1483  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1484  	for (;;) {
-82cae269cfa953 Konstantin Komarov 2021-08-13  1485  		lbo = ((u64)lcn << cluster_bits) + off;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1486  		len = ((u64)clen << cluster_bits) - off;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1487  new_bio:
-07888c665b405b Christoph Hellwig  2022-01-24 @1488  		new = bio_alloc(bdev, nr_pages - page_idx, op, GFP_NOFS);
-82cae269cfa953 Konstantin Komarov 2021-08-13  1489  		if (bio) {
-82cae269cfa953 Konstantin Komarov 2021-08-13  1490  			bio_chain(bio, new);
-82cae269cfa953 Konstantin Komarov 2021-08-13  1491  			submit_bio(bio);
-82cae269cfa953 Konstantin Komarov 2021-08-13  1492  		}
-82cae269cfa953 Konstantin Komarov 2021-08-13  1493  		bio = new;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1494  		bio->bi_iter.bi_sector = lbo >> 9;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1495  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1496  		while (len) {
-82cae269cfa953 Konstantin Komarov 2021-08-13  1497  			off = vbo & (PAGE_SIZE - 1);
-82cae269cfa953 Konstantin Komarov 2021-08-13  1498  			add = off + len > PAGE_SIZE ? (PAGE_SIZE - off) : len;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1499  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1500  			if (bio_add_page(bio, page, add, off) < add)
-82cae269cfa953 Konstantin Komarov 2021-08-13  1501  				goto new_bio;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1502  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1503  			if (bytes <= add)
-82cae269cfa953 Konstantin Komarov 2021-08-13  1504  				goto out;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1505  			bytes -= add;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1506  			vbo += add;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1507  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1508  			if (add + off == PAGE_SIZE) {
-82cae269cfa953 Konstantin Komarov 2021-08-13  1509  				page_idx += 1;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1510  				if (WARN_ON(page_idx >= nr_pages)) {
-82cae269cfa953 Konstantin Komarov 2021-08-13  1511  					err = -EINVAL;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1512  					goto out;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1513  				}
-82cae269cfa953 Konstantin Komarov 2021-08-13  1514  				page = pages[page_idx];
-82cae269cfa953 Konstantin Komarov 2021-08-13  1515  			}
-82cae269cfa953 Konstantin Komarov 2021-08-13  1516  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1517  			if (len <= add)
-82cae269cfa953 Konstantin Komarov 2021-08-13  1518  				break;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1519  			len -= add;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1520  			lbo += add;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1521  		}
-82cae269cfa953 Konstantin Komarov 2021-08-13  1522  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1523  		vcn_next = vcn + clen;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1524  		if (!run_get_entry(run, ++run_idx, &vcn, &lcn, &clen) ||
-82cae269cfa953 Konstantin Komarov 2021-08-13  1525  		    vcn != vcn_next) {
-82cae269cfa953 Konstantin Komarov 2021-08-13  1526  			err = -ENOENT;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1527  			goto out;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1528  		}
-82cae269cfa953 Konstantin Komarov 2021-08-13  1529  		off = 0;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1530  	}
-82cae269cfa953 Konstantin Komarov 2021-08-13  1531  out:
-82cae269cfa953 Konstantin Komarov 2021-08-13  1532  	if (bio) {
-82cae269cfa953 Konstantin Komarov 2021-08-13  1533  		if (!err)
-82cae269cfa953 Konstantin Komarov 2021-08-13  1534  			err = submit_bio_wait(bio);
-82cae269cfa953 Konstantin Komarov 2021-08-13  1535  		bio_put(bio);
-82cae269cfa953 Konstantin Komarov 2021-08-13  1536  	}
-82cae269cfa953 Konstantin Komarov 2021-08-13  1537  	blk_finish_plug(&plug);
-82cae269cfa953 Konstantin Komarov 2021-08-13  1538  
-82cae269cfa953 Konstantin Komarov 2021-08-13  1539  	return err;
-82cae269cfa953 Konstantin Komarov 2021-08-13  1540  }
-82cae269cfa953 Konstantin Komarov 2021-08-13  1541  
-
-:::::: The code at line 1488 was first introduced by commit
-:::::: 07888c665b405b1cd3577ddebfeb74f4717a84c4 block: pass a block_device and opf to bio_alloc
-
-:::::: TO: Christoph Hellwig <hch@lst.de>
-:::::: CC: Jens Axboe <axboe@kernel.dk>
+   arc-elf-ld: drivers/cxl/core/port.o: in function `cxld_unregister':
+>> port.c:(.text+0x33e): undefined reference to `cxl_region_rwsem'
+>> arc-elf-ld: port.c:(.text+0x33e): undefined reference to `cxl_region_rwsem'
+>> arc-elf-ld: port.c:(.text+0x34e): undefined reference to `cxl_region_detach'
+>> arc-elf-ld: port.c:(.text+0x34e): undefined reference to `cxl_region_detach'
+   arc-elf-ld: port.c:(.text+0x356): undefined reference to `cxl_region_rwsem'
+   arc-elf-ld: port.c:(.text+0x356): undefined reference to `cxl_region_rwsem'
+   arc-elf-ld: drivers/cxl/core/port.o: in function `cxl_root_decoder_visible':
+   port.c:(.text+0xd5e): undefined reference to `dev_attr_create_pmem_region'
+   arc-elf-ld: port.c:(.text+0xd5e): undefined reference to `dev_attr_create_pmem_region'
+   arc-elf-ld: port.c:(.text+0xd7c): undefined reference to `dev_attr_delete_region'
+   arc-elf-ld: port.c:(.text+0xd7c): undefined reference to `dev_attr_delete_region'
+   arc-elf-ld: drivers/cxl/core/port.o: in function `region_show':
+   port.c:(.text+0xe34): undefined reference to `cxl_region_rwsem'
+   arc-elf-ld: port.c:(.text+0xe34): undefined reference to `cxl_region_rwsem'
+   arc-elf-ld: port.c:(.text+0xe62): undefined reference to `cxl_region_rwsem'
+   arc-elf-ld: port.c:(.text+0xe62): undefined reference to `cxl_region_rwsem'
+   arc-elf-ld: drivers/cxl/core/port.o:(.data+0x1a0): undefined reference to `dev_attr_create_pmem_region'
+   arc-elf-ld: drivers/cxl/core/port.o:(.data+0x1a0): undefined reference to `dev_attr_create_pmem_region'
+   arc-elf-ld: drivers/cxl/core/port.o:(.data+0x1a4): undefined reference to `dev_attr_delete_region'
+   arc-elf-ld: drivers/cxl/core/port.o:(.data+0x1a4): undefined reference to `dev_attr_delete_region'
+   `.exit.text' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
 
 -- 
 0-DAY CI Kernel Test Service
