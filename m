@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3BB0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB95C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbiFWRAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
+        id S233016AbiFWRAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232985AbiFWQuA (ORCPT
+        with ESMTP id S232773AbiFWQt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:50:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40CF4B879;
-        Thu, 23 Jun 2022 09:48:05 -0700 (PDT)
+        Thu, 23 Jun 2022 12:49:58 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17CA2BE3;
+        Thu, 23 Jun 2022 09:47:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B71E8B82493;
-        Thu, 23 Jun 2022 16:48:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1885DC3411B;
-        Thu, 23 Jun 2022 16:48:01 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2F0E6CE25D9;
+        Thu, 23 Jun 2022 16:47:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35B1FC341C4;
+        Thu, 23 Jun 2022 16:47:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002882;
-        bh=gQpeCEp3qHtpD3/DJHsBlr7qJreT5DuqSKFRftgTxlY=;
+        s=korg; t=1656002870;
+        bh=lyf7a//WFOH0mnpMYj+NUszJabjWPn0lwSpZWcIxuH4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=egnxixb5QQsE8mGFvwMZw+zMA2W2laxBNyJYOGZ/J16oT9J3OQlsY4KgGrpGB2Whs
-         MPjOocHXKXxkpIUTa2FymQZ0YGVl5s07uJWSH0Q6hCkgGOZua6+UHTgsV95xgw57Nb
-         f3rg4J/d7HqDQlCSlzoD9X1yYw2gUBbHGcZOmU3g=
+        b=kBgGnlckW07wcySnzhzMAN6AQ7tFEUkCSKzw3tLexKze1FgfZn3JS7QxGbTByZJDG
+         aCLl3zlt2M2mxAnCLVzII96mCKyjfSNtKFLLKtVz5pXA57N2Xk55FknDC3fze4MxAZ
+         q3YLJmfm231Y4M93qXgAOiYsMjL0BpTlmzQElgVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 040/264] random: move rand_initialize() earlier
-Date:   Thu, 23 Jun 2022 18:40:33 +0200
-Message-Id: <20220623164345.203575295@linuxfoundation.org>
+Subject: [PATCH 4.9 054/264] random: Add a urandom_read_nowait() for random APIs that dont warn
+Date:   Thu, 23 Jun 2022 18:40:47 +0200
+Message-Id: <20220623164345.601401823@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,95 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Andy Lutomirski <luto@kernel.org>
 
-commit d55535232c3dbde9a523a9d10d68670f5fe5dec3 upstream.
+commit c6f1deb158789abba02a7eba600747843eeb3a57 upstream.
 
-Right now rand_initialize() is run as an early_initcall(), but it only
-depends on timekeeping_init() (for mixing ktime_get_real() into the
-pools). However, the call to boot_init_stack_canary() for stack canary
-initialization runs earlier, which triggers a warning at boot:
+/dev/random and getrandom() never warn.  Split the meat of
+urandom_read() into urandom_read_nowarn() and leave the warning code
+in urandom_read().
 
-random: get_random_bytes called from start_kernel+0x357/0x548 with crng_init=0
+This has no effect on kernel behavior, but it makes subsequent
+patches more straightforward.  It also makes the fact that
+getrandom() never warns more obvious.
 
-Instead, this moves rand_initialize() to after timekeeping_init(), and moves
-canary initialization here as well.
-
-Note that this warning may still remain for machines that do not have
-UEFI RNG support (which initializes the RNG pools during setup_arch()),
-or for x86 machines without RDRAND (or booting without "random.trust=on"
-or CONFIG_RANDOM_TRUST_CPU=y).
-
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Link: https://lore.kernel.org/r/c87ab200588de746431d9f916501ef11e5242b13.1577088521.git.luto@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c  |    5 ++---
- include/linux/random.h |    1 +
- init/main.c            |   14 ++++++++++++++
- 3 files changed, 17 insertions(+), 3 deletions(-)
+ drivers/char/random.c |   21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1842,7 +1842,7 @@ EXPORT_SYMBOL(get_random_bytes_arch);
-  * data into the pool to prepare it for use. The pool is not cleared
-  * as that can only decrease the entropy in the pool.
-  */
--static void init_std_data(struct entropy_store *r)
-+static void __init init_std_data(struct entropy_store *r)
- {
- 	int i;
- 	ktime_t now = ktime_get_real();
-@@ -1869,7 +1869,7 @@ static void init_std_data(struct entropy
-  * take care not to overwrite the precious per platform data
-  * we were given.
-  */
--static int rand_initialize(void)
-+int __init rand_initialize(void)
- {
- 	init_std_data(&input_pool);
- 	init_std_data(&blocking_pool);
-@@ -1881,7 +1881,6 @@ static int rand_initialize(void)
- 	}
- 	return 0;
+@@ -2015,11 +2015,22 @@ random_read(struct file *file, char __us
  }
--early_initcall(rand_initialize);
  
- #ifdef CONFIG_BLOCK
- void rand_initialize_disk(struct gendisk *disk)
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -35,6 +35,7 @@ extern void add_interrupt_randomness(int
+ static ssize_t
++urandom_read_nowarn(struct file *file, char __user *buf, size_t nbytes,
++		    loff_t *ppos)
++{
++	int ret;
++
++	nbytes = min_t(size_t, nbytes, INT_MAX >> (ENTROPY_SHIFT + 3));
++	ret = extract_crng_user(buf, nbytes);
++	trace_urandom_read(8 * nbytes, 0, ENTROPY_BITS(&input_pool));
++	return ret;
++}
++
++static ssize_t
+ urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+ {
+ 	unsigned long flags;
+ 	static int maxwarn = 10;
+-	int ret;
  
- extern void get_random_bytes(void *buf, int nbytes);
- extern int wait_for_random_bytes(void);
-+extern int __init rand_initialize(void);
- extern bool rng_is_initialized(void);
- extern int add_random_ready_callback(struct random_ready_callback *rdy);
- extern void del_random_ready_callback(struct random_ready_callback *rdy);
---- a/init/main.c
-+++ b/init/main.c
-@@ -570,6 +570,20 @@ asmlinkage __visible void __init start_k
- 	hrtimers_init();
- 	softirq_init();
- 	timekeeping_init();
+ 	if (!crng_ready() && maxwarn > 0) {
+ 		maxwarn--;
+@@ -2031,10 +2042,8 @@ urandom_read(struct file *file, char __u
+ 		crng_init_cnt = 0;
+ 		spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	}
+-	nbytes = min_t(size_t, nbytes, INT_MAX >> (ENTROPY_SHIFT + 3));
+-	ret = extract_crng_user(buf, nbytes);
+-	trace_urandom_read(8 * nbytes, 0, ENTROPY_BITS(&input_pool));
+-	return ret;
 +
-+	/*
-+	 * For best initial stack canary entropy, prepare it after:
-+	 * - setup_arch() for any UEFI RNG entropy and boot cmdline access
-+	 * - timekeeping_init() for ktime entropy used in rand_initialize()
-+	 * - rand_initialize() to get any arch-specific entropy like RDRAND
-+	 * - add_latent_entropy() to get any latent entropy
-+	 * - adding command line entropy
-+	 */
-+	rand_initialize();
-+	add_latent_entropy();
-+	add_device_randomness(command_line, strlen(command_line));
-+	boot_init_stack_canary();
-+
- 	time_init();
- 	sched_clock_postinit();
- 	printk_nmi_init();
++	return urandom_read_nowarn(file, buf, nbytes, ppos);
+ }
+ 
+ static unsigned int
+@@ -2194,7 +2203,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ 		if (unlikely(ret))
+ 			return ret;
+ 	}
+-	return urandom_read(NULL, buf, count, NULL);
++	return urandom_read_nowarn(NULL, buf, count, NULL);
+ }
+ 
+ /********************************************************************
 
 
