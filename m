@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FCBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A01C43334
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236170AbiFWSHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45368 "EHLO
+        id S236183AbiFWSHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236017AbiFWSGR (ORCPT
+        with ESMTP id S235983AbiFWSGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 14:06:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6AFD885A3;
-        Thu, 23 Jun 2022 10:18:45 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCD94F1F8;
+        Thu, 23 Jun 2022 10:18:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F1CBB82498;
-        Thu, 23 Jun 2022 17:18:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C52C3411B;
-        Thu, 23 Jun 2022 17:18:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88CA6B82490;
+        Thu, 23 Jun 2022 17:18:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA35BC3411B;
+        Thu, 23 Jun 2022 17:18:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004723;
-        bh=c46pAXHq4U0E+vspwdos/oVmYZ8r+eZfjQNMySlGohs=;
+        s=korg; t=1656004726;
+        bh=kLu6oEFnz7kWzqySjKoPppP6306WDVKu2D0M9xJxpzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vnw1HFHHuNZoW1T4RTZddl2WyvoNvFZXFwmGQckce59vtWiOdKIDbBP43Mo3ionVs
-         gcVf8kFgOTcVglIkPIOBgqufk8jzsX+/bjSP9q7h+oZjf+fopHFjkVTyeY2BU7wzZD
-         S6L9TpYZvla2Cf+V7ikrzAhWUlPr4wdJtHiujfkU=
+        b=PvO65BHhOVoVcgD1J8KAvNoDz/gkeLkRULzLhZugRWXlNRkgbqfnTOn8qVSBLK5Mm
+         3ds5dJVx98bOGMjHHCzmU0Q0akzX2/2taJHYqB3xAodTwwdjLQbOYZ9tZbyvvmbeqS
+         bpXWxDNhCmlZ+QzJPGslOsFESJNt2eEX5iv8uxnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 078/234] random: always wake up entropy writers after extraction
-Date:   Thu, 23 Jun 2022 18:42:25 +0200
-Message-Id: <20220623164345.266205691@linuxfoundation.org>
+Subject: [PATCH 4.19 123/234] random: skip fast_init if hwrng provides large chunk of entropy
+Date:   Thu, 23 Jun 2022 18:43:10 +0200
+Message-Id: <20220623164346.537703214@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -53,176 +51,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 489c7fc44b5740d377e8cfdbf0851036e493af00 upstream.
+commit af704c856e888fb044b058d731d61b46eeec499d upstream.
 
-Now that POOL_BITS == POOL_MIN_BITS, we must unconditionally wake up
-entropy writers after every extraction. Therefore there's no point of
-write_wakeup_threshold, so we can move it to the dustbin of unused
-compatibility sysctls. While we're at it, we can fix a small comparison
-where we were waking up after <= min rather than < min.
+At boot time, EFI calls add_bootloader_randomness(), which in turn calls
+add_hwgenerator_randomness(). Currently add_hwgenerator_randomness()
+feeds the first 64 bytes of randomness to the "fast init"
+non-crypto-grade phase. But if add_hwgenerator_randomness() gets called
+with more than POOL_MIN_BITS of entropy, there's no point in passing it
+off to the "fast init" stage, since that's enough entropy to bootstrap
+the real RNG. The "fast init" stage is just there to provide _something_
+in the case where we don't have enough entropy to properly bootstrap the
+RNG. But if we do have enough entropy to bootstrap the RNG, the current
+logic doesn't serve a purpose. So, in the case where we're passed
+greater than or equal to POOL_MIN_BITS of entropy, this commit makes us
+skip the "fast init" phase.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Suggested-by: Eric Biggers <ebiggers@kernel.org>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/sysctl/kernel.txt |   44 ++++++++++++++++++++++++++++++++++++++--
- drivers/char/random.c           |   36 ++++++++++++--------------------
- 2 files changed, 56 insertions(+), 24 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/sysctl/kernel.txt
-+++ b/Documentation/sysctl/kernel.txt
-@@ -821,9 +821,49 @@ The kernel command line parameter printk
- a one-time setting until next reboot: once set, it cannot be changed by
- this sysctl interface anymore.
- 
--==============================================================
-+pty
-+===
- 
--randomize_va_space:
-+See Documentation/filesystems/devpts.rst.
-+
-+
-+random
-+======
-+
-+This is a directory, with the following entries:
-+
-+* ``boot_id``: a UUID generated the first time this is retrieved, and
-+  unvarying after that;
-+
-+* ``entropy_avail``: the pool's entropy count, in bits;
-+
-+* ``poolsize``: the entropy pool size, in bits;
-+
-+* ``urandom_min_reseed_secs``: obsolete (used to determine the minimum
-+  number of seconds between urandom pool reseeding). This file is
-+  writable for compatibility purposes, but writing to it has no effect
-+  on any RNG behavior.
-+
-+* ``uuid``: a UUID generated every time this is retrieved (this can
-+  thus be used to generate UUIDs at will);
-+
-+* ``write_wakeup_threshold``: when the entropy count drops below this
-+  (as a number of bits), processes waiting to write to ``/dev/random``
-+  are woken up. This file is writable for compatibility purposes, but
-+  writing to it has no effect on any RNG behavior.
-+
-+If ``drivers/char/random.c`` is built with ``ADD_INTERRUPT_BENCH``
-+defined, these additional entries are present:
-+
-+* ``add_interrupt_avg_cycles``: the average number of cycles between
-+  interrupts used to feed the pool;
-+
-+* ``add_interrupt_avg_deviation``: the standard deviation seen on the
-+  number of cycles between interrupts used to feed the pool.
-+
-+
-+randomize_va_space
-+==================
- 
- This option can be used to select the type of process address
- space randomization that is used in the system, for architectures
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -296,12 +296,6 @@ enum {
-  */
- static DECLARE_WAIT_QUEUE_HEAD(random_write_wait);
- static struct fasync_struct *fasync;
--/*
-- * If the entropy count falls under this number of bits, then we
-- * should wake up processes which are selecting or polling on write
-- * access to /dev/random.
-- */
--static int random_write_wakeup_bits = POOL_MIN_BITS;
- 
- static DEFINE_SPINLOCK(random_ready_list_lock);
- static LIST_HEAD(random_ready_list);
-@@ -739,10 +733,8 @@ static void crng_reseed(struct crng_stat
- 				return;
- 		} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
- 		extract_entropy(buf.key, sizeof(buf.key));
--		if (random_write_wakeup_bits) {
--			wake_up_interruptible(&random_write_wait);
--			kill_fasync(&fasync, SIGIO, POLL_OUT);
--		}
-+		wake_up_interruptible(&random_write_wait);
-+		kill_fasync(&fasync, SIGIO, POLL_OUT);
- 	} else {
- 		_extract_crng(&primary_crng, buf.block);
- 		_crng_backtrack_protect(&primary_crng, buf.block,
-@@ -1471,7 +1463,7 @@ static __poll_t random_poll(struct file
- 	mask = 0;
- 	if (crng_ready())
- 		mask |= EPOLLIN | EPOLLRDNORM;
--	if (input_pool.entropy_count < random_write_wakeup_bits)
-+	if (input_pool.entropy_count < POOL_MIN_BITS)
- 		mask |= EPOLLOUT | EPOLLWRNORM;
- 	return mask;
- }
-@@ -1556,7 +1548,10 @@ static long random_ioctl(struct file *f,
- 		 */
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
--		input_pool.entropy_count = 0;
-+		if (xchg(&input_pool.entropy_count, 0)) {
-+			wake_up_interruptible(&random_write_wait);
-+			kill_fasync(&fasync, SIGIO, POLL_OUT);
-+		}
- 		return 0;
- 	case RNDRESEEDCRNG:
- 		if (!capable(CAP_SYS_ADMIN))
-@@ -1631,9 +1626,9 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 
- #include <linux/sysctl.h>
- 
--static int min_write_thresh;
--static int max_write_thresh = POOL_BITS;
- static int random_min_urandom_seed = 60;
-+static int random_write_wakeup_bits = POOL_MIN_BITS;
-+static int sysctl_poolsize = POOL_BITS;
- static char sysctl_bootid[16];
- 
- /*
-@@ -1672,7 +1667,6 @@ static int proc_do_uuid(struct ctl_table
- 	return proc_dostring(&fake_table, write, buffer, lenp, ppos);
- }
- 
--static int sysctl_poolsize = POOL_BITS;
- extern struct ctl_table random_table[];
- struct ctl_table random_table[] = {
- 	{
-@@ -1694,9 +1688,7 @@ struct ctl_table random_table[] = {
- 		.data		= &random_write_wakeup_bits,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
--		.extra1		= &min_write_thresh,
--		.extra2		= &max_write_thresh,
-+		.proc_handler	= proc_dointvec,
- 	},
- 	{
- 		.procname	= "urandom_min_reseed_secs",
-@@ -1877,13 +1869,13 @@ void add_hwgenerator_randomness(const ch
- 	}
- 
- 	/* Throttle writing if we're above the trickle threshold.
--	 * We'll be woken up again once below random_write_wakeup_thresh,
--	 * when the calling thread is about to terminate, or once
--	 * CRNG_RESEED_INTERVAL has lapsed.
-+	 * We'll be woken up again once below POOL_MIN_BITS, when
-+	 * the calling thread is about to terminate, or once
-+	 * CRNG_RESEED_INTERVAL has elapsed.
- 	 */
- 	wait_event_interruptible_timeout(random_write_wait,
- 			!system_wq || kthread_should_stop() ||
--			input_pool.entropy_count <= random_write_wakeup_bits,
-+			input_pool.entropy_count < POOL_MIN_BITS,
- 			CRNG_RESEED_INTERVAL);
- 	mix_pool_bytes(buffer, count);
- 	credit_entropy_bits(entropy);
+@@ -1120,7 +1120,7 @@ void rand_initialize_disk(struct gendisk
+ void add_hwgenerator_randomness(const void *buffer, size_t count,
+ 				size_t entropy)
+ {
+-	if (unlikely(crng_init == 0)) {
++	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
+ 		size_t ret = crng_pre_init_inject(buffer, count, true);
+ 		mix_pool_bytes(buffer, ret);
+ 		count -= ret;
 
 
