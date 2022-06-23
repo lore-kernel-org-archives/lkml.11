@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCC9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233024AbiFWRYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
+        id S233862AbiFWRYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233956AbiFWRWx (ORCPT
+        with ESMTP id S233987AbiFWRW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:22:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AD6B6288;
-        Thu, 23 Jun 2022 10:01:28 -0700 (PDT)
+        Thu, 23 Jun 2022 13:22:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3795B62A0;
+        Thu, 23 Jun 2022 10:01:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE7B6B8248E;
-        Thu, 23 Jun 2022 17:01:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EFC3C3411B;
-        Thu, 23 Jun 2022 17:01:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7661E61408;
+        Thu, 23 Jun 2022 17:01:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4973FC3411B;
+        Thu, 23 Jun 2022 17:01:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003685;
-        bh=IRArbYD6t1efifI8AEPgeWzmvyXU3WSmW9IZMAI750Y=;
+        s=korg; t=1656003688;
+        bh=nvgdiBJ7BD3uKpg5Q+GCBeISfW/+zmEsuUGDmnbJQAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1IFbcu1RogDGbpRBFmAHyNHwaR4UN+d0y2F9yL2R2mt+6YrxzjeLOmsIHUXaNEHKm
-         yi+TyKD5+IrM1JhvMx61r5D7HW++QRAqbXhSz/zr1z3CgKOsQYRz1pmJ4YED+Mo0tZ
-         bTYo5ltgn0NR7nYtGWZ+yWdGmibcizfyJqvzbDvY=
+        b=xQ3F8pW0bSC/Du/rUUfY0Q/L93GmEgJ1ulhPYbzhcuCuFNMEvsehjz5WKc33GRMXl
+         F1yGj0n80gmc4peXLkl6FlZI8YKkY1umxb4rJSJsr/cxjb0+S6CYpoX91jupczO3Y0
+         +oYHvRZLrUXA9m7/vYxI/ElEhnMkE43qsD+IjuZ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.14 003/237] random: always fill buffer in get_random_bytes_wait
-Date:   Thu, 23 Jun 2022 18:40:37 +0200
-Message-Id: <20220623164343.240272190@linuxfoundation.org>
+        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
+        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 048/237] s390: Remove arch_has_random, arch_has_random_seed
+Date:   Thu, 23 Jun 2022 18:41:22 +0200
+Message-Id: <20220623164344.535968271@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -48,39 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Richard Henderson <richard.henderson@linaro.org>
 
-commit 25e3fca492035a2e1d4ac6e3b1edd9c1acd48897 upstream.
+commit 5e054c820f59bbb9714d5767f5f476581c309ca8 upstream.
 
-In the unfortunate event that a developer fails to check the return
-value of get_random_bytes_wait, or simply wants to make a "best effort"
-attempt, for whatever that's worth, it's much better to still fill the
-buffer with _something_ rather than catastrophically failing in the case
-of an interruption. This is both a defense in depth measure against
-inevitable programming bugs, as well as a means of making the API a bit
-more useful.
+These symbols are currently part of the generic archrandom.h
+interface, but are currently unused and can be removed.
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Richard Henderson <rth@twiddle.net>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20200110145422.49141-4-broonie@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/s390/include/asm/archrandom.h |   12 ------------
+ 1 file changed, 12 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -85,10 +85,8 @@ static inline unsigned long get_random_c
- static inline int get_random_bytes_wait(void *buf, int nbytes)
- {
- 	int ret = wait_for_random_bytes();
--	if (unlikely(ret))
--		return ret;
- 	get_random_bytes(buf, nbytes);
--	return 0;
-+	return ret;
+--- a/arch/s390/include/asm/archrandom.h
++++ b/arch/s390/include/asm/archrandom.h
+@@ -26,18 +26,6 @@ static void s390_arch_random_generate(u8
+ 	atomic64_add(nbytes, &s390_arch_random_counter);
  }
  
- #define declare_get_random_var_wait(var) \
+-static inline bool arch_has_random(void)
+-{
+-	if (static_branch_likely(&s390_arch_random_available))
+-		return true;
+-	return false;
+-}
+-
+-static inline bool arch_has_random_seed(void)
+-{
+-	return arch_has_random();
+-}
+-
+ static inline bool arch_get_random_long(unsigned long *v)
+ {
+ 	if (static_branch_likely(&s390_arch_random_available)) {
 
 
