@@ -2,169 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4696FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ADDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237244AbiFWSY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:24:58 -0400
+        id S232008AbiFWSZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:25:54 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237695AbiFWSXT (ORCPT
+        with ESMTP id S237175AbiFWSZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:23:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429A9C2C52;
-        Thu, 23 Jun 2022 10:25:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBD80B824BC;
-        Thu, 23 Jun 2022 17:25:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20BF6C341C7;
-        Thu, 23 Jun 2022 17:25:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005144;
-        bh=fktVbGTudoPPT+gPcMTm5EPC1UpCzHAWbOUnYQ07HBo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B/VnkOzYYUwnuXVTKHD7CZJlUhPJdMsU24+1drSP+qo/WwqGH+9SrznXLP8wUf33L
-         VHhiW9a+apynP2hQLFLRhdLca884TT7msThNMfzktxW7B30gS2Gn5cFqg9xWvC78q7
-         Wj8x3sjXr6W5piI1G+gNUvK1MxWOHzM4IGK7RFh8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.com>,
-        Amir Goldstein <amir73il@gmail.com>, Jan Kara <jack@suse.cz>
-Subject: [PATCH 5.18 08/11] fsnotify: consistent behavior for parent not watching children
-Date:   Thu, 23 Jun 2022 18:45:20 +0200
-Message-Id: <20220623164322.557676906@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164322.315085512@linuxfoundation.org>
-References: <20220623164322.315085512@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 14:25:02 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C714FC4C
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:26:49 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id g18so3099296wrb.10
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:26:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7TDx1GAcTZr/mKBq1FDoJ+WDlWvqn8HIrUeDOsFdpYQ=;
+        b=ligNsGWDaeaYYd/G23On/R6o4SOm7zU5YC8HoZNU95O944imBcwrspvEgFwN/jGZhy
+         BsqxtmSbvZWbeBbv+nhfMCexAkXOJe09iXp5EF8jD89itp1j+SwO0SyJqwT+axErD/Gb
+         RLoYBG7mmML1wacS5w7d+BkAOcQFmQvKA/pXN1LSgzFGqLrJ4uawFe8Xc42ASPtIkwoj
+         q/6hAWrCjPXdsSiMhicJLxhTYSpzYoslUad6fyTGV1PSr25ZDlw/QK7ERDUClaOKrabX
+         8w8zveECT9r55DBweEavza7Ov5K5Z06nVub55c0/iBZGS/2SSDgVQZKOHdoAbnjZ1yMl
+         AZdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7TDx1GAcTZr/mKBq1FDoJ+WDlWvqn8HIrUeDOsFdpYQ=;
+        b=fKmodEUmop3+x69iYLOlUJB3PEqxrIv3d3i71DlnGg99ij7ouaZQUFZnLxb+WyZ2MD
+         U6gYZ49wN7UX5mNLSepEkIZpqQT0CmOxAq8goRj/jGLunNby3xaLz3IH1RUawvJDCMBT
+         rR7GpVaFTF1IrN+aj9nqfVGM8OSwknkWzXRVDejcQuudCGXetdbCkMMfp6jF3cqa0u8/
+         3pEB3O3xP2Soj3b9xrZQODbFcl8nB2jSTVEOXpsR8A7Dsz7GWAVWmlcsa+Ma9MVOMfLe
+         SDAacH0Igk7Bf5u97UmsvIbn+MqSAxueuVXHyoqAVqik7rluxxF34Tz9ltXLw+dKBTUp
+         JDNw==
+X-Gm-Message-State: AJIora8eEdL66DmBkg3pIIDYolgF7hoWhQUNOdx3Zw5h9TV69IzHkq3y
+        S31SCQvsAkhZI+58j/aaTlStVmeo/IialsEcHR4N8w==
+X-Google-Smtp-Source: AGRyM1ttFuXoFy+5+a07+hGzPPAvBJtwjefc2vBhdtGeCPnt72+WyG79pmSWHqGSSZGfFhRIy7loD1VK/eM0VISVIT4=
+X-Received: by 2002:a5d:4308:0:b0:219:e5a4:5729 with SMTP id
+ h8-20020a5d4308000000b00219e5a45729mr9194972wrq.210.1656005207539; Thu, 23
+ Jun 2022 10:26:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220623000530.1194226-1-yosryahmed@google.com>
+ <YrQe5A+FXnbgOR1f@dhcp22.suse.cz> <CAJD7tkanavKpKrQr8-jA8pukgD7OY4eOwJRZufJ2NoThD12G+Q@mail.gmail.com>
+ <YrQ1o3CeaZWhm+h4@dhcp22.suse.cz> <CAJD7tkadsLOV7GMFAm+naX4Y1WpZ-4=NkAhAMxNw60iaRPWx=w@mail.gmail.com>
+ <YrSWruhPlJV1X9kp@dhcp22.suse.cz> <CALvZod6eLa1X1FJ2Qi6FXhFA-qBCP4mN2SB31MSgjj+g8hKo6Q@mail.gmail.com>
+ <YrSdFy3qYdG+rGR6@dhcp22.suse.cz>
+In-Reply-To: <YrSdFy3qYdG+rGR6@dhcp22.suse.cz>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Thu, 23 Jun 2022 10:26:11 -0700
+Message-ID: <CAJD7tkZNEtzJMDsLMHuNHkxFfurS37UuK=zFcPCkOkWfN-dbJQ@mail.gmail.com>
+Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
+ memory pressure
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Hildenbrand <david@redhat.com>,
+        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+On Thu, Jun 23, 2022 at 10:04 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Thu 23-06-22 09:42:43, Shakeel Butt wrote:
+> > On Thu, Jun 23, 2022 at 9:37 AM Michal Hocko <mhocko@suse.com> wrote:
+> > >
+> > > On Thu 23-06-22 09:22:35, Yosry Ahmed wrote:
+> > > > On Thu, Jun 23, 2022 at 2:43 AM Michal Hocko <mhocko@suse.com> wrote:
+> > > > >
+> > > > > On Thu 23-06-22 01:35:59, Yosry Ahmed wrote:
+> > > [...]
+> > > > > > In our internal version of memory.reclaim that we recently upstreamed,
+> > > > > > we do not account vmpressure during proactive reclaim (similar to how
+> > > > > > psi is handled upstream). We want to make sure this behavior also
+> > > > > > exists in the upstream version so that consolidating them does not
+> > > > > > break our users who rely on vmpressure and will start seeing increased
+> > > > > > pressure due to proactive reclaim.
+> > > > >
+> > > > > These are good reasons to have this patch in your tree. But why is this
+> > > > > patch benefitial for the upstream kernel? It clearly adds some code and
+> > > > > some special casing which will add a maintenance overhead.
+> > > >
+> > > > It is not just Google, any existing vmpressure users will start seeing
+> > > > false pressure notifications with memory.reclaim. The main goal of the
+> > > > patch is to make sure memory.reclaim does not break pre-existing users
+> > > > of vmpressure, and doing it in a way that is consistent with psi makes
+> > > > sense.
+> > >
+> > > memory.reclaim is v2 only feature which doesn't have vmpressure
+> > > interface. So I do not see how pre-existing users of the upstream kernel
+> > > can see any breakage.
+> > >
+> >
+> > Please note that vmpressure is still being used in v2 by the
+> > networking layer (see mem_cgroup_under_socket_pressure()) for
+> > detecting memory pressure.
+>
+> I have missed this. It is hidden quite good. I thought that v2 is
+> completely vmpressure free. I have to admit that the effect of
+> mem_cgroup_under_socket_pressure is not really clear to me. Not to
+> mention whether it should or shouldn't be triggered for the user
+> triggered memory reclaim. So this would really need some explanation.
 
-commit e730558adffb88a52e562db089e969ee9510184a upstream.
+vmpressure was tied into socket pressure by 8e8ae645249b ("mm:
+memcontrol: hook up vmpressure to socket pressure"). A quick look at
+the commit log and the code suggests that this is used all over the
+socket and tcp code to throttles the memory consumption of the
+networking layer if we are under pressure.
 
-The logic for handling events on child in groups that have a mark on
-the parent inode, but without FS_EVENT_ON_CHILD flag in the mask is
-duplicated in several places and inconsistent.
+However, for proactive reclaim like memory.reclaim, the target is to
+probe the memcg for cold memory. Reclaiming such memory should not
+have a visible effect on the workload performance. I don't think that
+any network throttling side effects are correct here.
 
-Move the logic into the preparation of mark type iterator, so that the
-parent mark type will be excluded from all mark type iterations in that
-case.
-
-This results in several subtle changes of behavior, hopefully all
-desired changes of behavior, for example:
-
-- Group A has a mount mark with FS_MODIFY in mask
-- Group A has a mark with ignore mask that does not survive FS_MODIFY
-  and does not watch children on directory D.
-- Group B has a mark with FS_MODIFY in mask that does watch children
-  on directory D.
-- FS_MODIFY event on file D/foo should not clear the ignore mask of
-  group A, but before this change it does
-
-And if group A ignore mask was set to survive FS_MODIFY:
-- FS_MODIFY event on file D/foo should be reported to group A on account
-  of the mount mark, but before this change it is wrongly ignored
-
-Fixes: 2f02fd3fa13e ("fanotify: fix ignore mask logic for events on child and on dir")
-Reported-by: Jan Kara <jack@suse.com>
-Link: https://lore.kernel.org/linux-fsdevel/20220314113337.j7slrb5srxukztje@quack3.lan/
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220511190213.831646-3-amir73il@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/notify/fanotify/fanotify.c |   10 +---------
- fs/notify/fsnotify.c          |   34 +++++++++++++++++++---------------
- 2 files changed, 20 insertions(+), 24 deletions(-)
-
---- a/fs/notify/fanotify/fanotify.c
-+++ b/fs/notify/fanotify/fanotify.c
-@@ -320,7 +320,7 @@ static u32 fanotify_group_event_mask(str
- 	}
- 
- 	fsnotify_foreach_iter_mark_type(iter_info, mark, type) {
--		/* Apply ignore mask regardless of ISDIR and ON_CHILD flags */
-+		/* Apply ignore mask regardless of mark's ISDIR flag */
- 		marks_ignored_mask |= mark->ignored_mask;
- 
- 		/*
-@@ -330,14 +330,6 @@ static u32 fanotify_group_event_mask(str
- 		if (event_mask & FS_ISDIR && !(mark->mask & FS_ISDIR))
- 			continue;
- 
--		/*
--		 * If the event is on a child and this mark is on a parent not
--		 * watching children, don't send it!
--		 */
--		if (type == FSNOTIFY_ITER_TYPE_PARENT &&
--		    !(mark->mask & FS_EVENT_ON_CHILD))
--			continue;
--
- 		marks_mask |= mark->mask;
- 
- 		/* Record the mark types of this group that matched the event */
---- a/fs/notify/fsnotify.c
-+++ b/fs/notify/fsnotify.c
-@@ -290,22 +290,15 @@ static int fsnotify_handle_event(struct
- 	}
- 
- 	if (parent_mark) {
--		/*
--		 * parent_mark indicates that the parent inode is watching
--		 * children and interested in this event, which is an event
--		 * possible on child. But is *this mark* watching children and
--		 * interested in this event?
--		 */
--		if (parent_mark->mask & FS_EVENT_ON_CHILD) {
--			ret = fsnotify_handle_inode_event(group, parent_mark, mask,
--							  data, data_type, dir, name, 0);
--			if (ret)
--				return ret;
--		}
--		if (!inode_mark)
--			return 0;
-+		ret = fsnotify_handle_inode_event(group, parent_mark, mask,
-+						  data, data_type, dir, name, 0);
-+		if (ret)
-+			return ret;
- 	}
- 
-+	if (!inode_mark)
-+		return 0;
-+
- 	if (mask & FS_EVENT_ON_CHILD) {
- 		/*
- 		 * Some events can be sent on both parent dir and child marks
-@@ -422,8 +415,19 @@ static bool fsnotify_iter_select_report_
- 	iter_info->report_mask = 0;
- 	fsnotify_foreach_iter_type(type) {
- 		mark = iter_info->marks[type];
--		if (mark && mark->group == iter_info->current_group)
-+		if (mark && mark->group == iter_info->current_group) {
-+			/*
-+			 * FSNOTIFY_ITER_TYPE_PARENT indicates that this inode
-+			 * is watching children and interested in this event,
-+			 * which is an event possible on child.
-+			 * But is *this mark* watching children?
-+			 */
-+			if (type == FSNOTIFY_ITER_TYPE_PARENT &&
-+			    !(mark->mask & FS_EVENT_ON_CHILD))
-+				continue;
-+
- 			fsnotify_iter_set_report_type(iter_info, type);
-+		}
- 	}
- 
- 	return true;
-
-
+>
+> > Though IMO we should deprecate vmpressure altogether.
+>
+> Yes it should be really limited to v1. But as I've said the effect on
+> mem_cgroup_under_socket_pressure is not really clear to me. It really
+> seems the v2 support has been introduced deliberately.
+>
+> --
+> Michal Hocko
+> SUSE Labs
