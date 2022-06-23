@@ -2,114 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B0ECCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B713CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbiFWTvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
+        id S230002AbiFWTvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiFWTu5 (ORCPT
+        with ESMTP id S229547AbiFWTvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:50:57 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DACB7
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 12:50:56 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-317741c86fdso4956267b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 12:50:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A0c0cqma89+9GUKY/iVUbbVU1cNPUk0oJ5cVoRl/jck=;
-        b=ZyyNFMRx5E/9vt53oa8zxARaSY/cuXaXex0tUYjxfFMVjar+zI2VF0BhKLrJb7oK39
-         CYgTLmmqeQ+sWk0jH1Bcj78r3PASgzRRZy2XLkpZ8qiChRHGj2+hb4vNUUVT1INj8yA6
-         LT1EPXm7Cul0FfmXNy/6qvRJyCF6EtUorIhTRySZqmOZ8ZIGWZoaAmrqdFylW8YNttUj
-         M9TWmpBtuLJxaI9V0RbPatHmrILiHD/rJUrbsE/zYlY6oHeeK2gKAN7lzpvhoofhDlxg
-         Zk4AEK0cpx1IwnW+3LJRs8qcK52k+sP9i0PTMtVIm56LBPuC7Ozz4FMiUvfSQqEL7Li1
-         lc2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A0c0cqma89+9GUKY/iVUbbVU1cNPUk0oJ5cVoRl/jck=;
-        b=7COVaOyOBDWk4gXpL3O41gNtkyctBsNcUK3hqEO9IZ7PimbyaYpF16bMRy9elRgBPS
-         6T8xsiICUbeNbStFdsyU4fC4RcvUZFpJ51n+ADyH+4eEY3y82zCR/zVtq63XUl0EtIiB
-         IAK34L2GibUESyUwlqabdFlvwwhF0Y1C9Na9LXbv9/tnUE6Urmz5Tm3iZRFwGh213bw8
-         5njySoeIXkTSoV3YXHIXAAtLLklZ8RePqrftElUS2l0Bwoa4lYHIP1i8e0L/ust6I1Zf
-         plOXpQevNhZxFXdX4HhLe8oPXuNl6aFeB+wuPMqpl7CUGM/VZFBNIgz/e/pL412gSRib
-         jJzQ==
-X-Gm-Message-State: AJIora+qwXgFJALbGWFLczNnzXf9hIiPVpm3RclcrowB0/ua2OGRyFqk
-        MSO1IUMQJmwkULaW3ltjUEFP2+D0sIEuGef00gu/Eg==
-X-Google-Smtp-Source: AGRyM1tzrobr2NzAtujqB5kVrNJZt5e0DxPVJogaxye2ERCF+QHcMFNh9iBbGIqmKcu24EEvO9jCEWNRrFH7KHoPhXg=
-X-Received: by 2002:a81:c44b:0:b0:317:5a3b:3fc5 with SMTP id
- s11-20020a81c44b000000b003175a3b3fc5mr12474505ywj.39.1656013855437; Thu, 23
- Jun 2022 12:50:55 -0700 (PDT)
+        Thu, 23 Jun 2022 15:51:16 -0400
+X-Greylist: delayed 3597 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Jun 2022 12:51:15 PDT
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 533CB1E7;
+        Thu, 23 Jun 2022 12:51:15 -0700 (PDT)
+Received: from [127.0.0.1] ([73.223.250.219])
+        (authenticated bits=0)
+        by mail.zytor.com (8.17.1/8.15.2) with ESMTPSA id 25NIMqIa1294203
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+        Thu, 23 Jun 2022 11:22:52 -0700
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 25NIMqIa1294203
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+        s=2022060401; t=1656008574;
+        bh=yPR8n8gQ6dVLtX830iKeJU5ojINLZInrepZE/uEszNU=;
+        h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+        b=er7qtRymZfIxZTCmBzdiQOaT9sgecnfHHau1qec/d4ZsNGp1S4IbzlkDm4wm2DzyD
+         RcffhT2oLnHYmNbDQJKdr+8JDECqsW7mBl6QPIfENIGnsD4Cip/YkKWVWfgsXN59BN
+         BZ2VQuXZnu2MwPrxSMpYXRfKaLRQDNuF6iVfLyq/tB8SSt4bdIezjsoh+oO8rhmieU
+         dDvX+Gup28nAvZFrgFOsOzlsKUB6nbTnltY1xlPbI2f6FK73oHFFAzph6QJWYDFLYk
+         Adg4LCSNbEuBI4uEGEBQGmjStLROs6fCVh7A3LiyZVhbpHfanTbzG7ANa2iSENnC6d
+         FJX9mkpSn6gig==
+Date:   Thu, 23 Jun 2022 11:22:52 -0700
+From:   "H. Peter Anvin" <hpa@zytor.com>
+To:     Dave Hansen <dave.hansen@intel.com>, lizhe.67@bytedance.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org
+CC:     lizefan.x@bytedance.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5BRFC=5D_memmap=3A_introduce_cmdline_param?= =?US-ASCII?Q?eter_=22memmap=3Dnn=5BKMG=5D=24=22_without_start_addr?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <de2500c4-fce4-31dc-29bc-aa3007027eb9@intel.com>
+References: <20220623062402.12392-1-lizhe.67@bytedance.com> <de2500c4-fce4-31dc-29bc-aa3007027eb9@intel.com>
+Message-ID: <0EA9CBD4-D083-4546-BFAC-9C3A97420E5B@zytor.com>
 MIME-Version: 1.0
-References: <20220623191147.1916067-1-masahiroy@kernel.org>
-In-Reply-To: <20220623191147.1916067-1-masahiroy@kernel.org>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Thu, 23 Jun 2022 12:50:19 -0700
-Message-ID: <CABCJKucFQtqKqZTdF06cCuLJqSp6f6NBmffsU4jGC05XOPqFrg@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS
- (2nd attempt)
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild <linux-kbuild@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Pitre <nico@fluxnic.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 12:12 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+On June 23, 2022 7:06:36 AM PDT, Dave Hansen <dave=2Ehansen@intel=2Ecom> wr=
+ote:
+>On 6/22/22 23:24, lizhe=2E67@bytedance=2Ecom wrote:
+>> In our scenario, we need reserve or alloc large continous memory like
+>> 256M in machine which have different memory specification at just
+>> boot phase for a user land process=2E
 >
-> If CONFIG_TRIM_UNUSED_KSYMS is enabled and the kernel is built from
-> a pristine state, the vmlinux is linked twice.
+>Just marking the memory reserved doesn't do any good by itself=2E  There
+>must be some *other* kernel code to find this reserved area and make it
+>available to userspace=2E
 >
-> Commit 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for
-> CONFIG_TRIM_UNUSED_KSYMS") explains why this happens, but it did not fix
-> the issue at all.
->
-> Now I realized I had applied a wrong patch.
->
-> In v1 patch [1], the autoksyms_recursive target correctly recurses to
-> "$(MAKE) -f $(srctree)/Makefile autoksyms_recursive".
->
-> In v2 patch [2], I accidentally dropped the diff line, and it recurses to
-> "$(MAKE) -f $(srctree)/Makefile vmlinux".
->
-> Restore the code I intended in v1.
->
-> [1]: https://lore.kernel.org/linux-kbuild/1521045861-22418-8-git-send-email-yamada.masahiro@socionext.com/
-> [2]: https://lore.kernel.org/linux-kbuild/1521166725-24157-8-git-send-email-yamada.masahiro@socionext.com/
->
-> Fixes: 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS")
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
->
->  Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/Makefile b/Makefile
-> index 513c1fbf7888..a3ff166c5035 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1141,7 +1141,7 @@ KBUILD_MODULES := 1
->
->  autoksyms_recursive: descend modules.order
->         $(Q)$(CONFIG_SHELL) $(srctree)/scripts/adjust_autoksyms.sh \
-> -         "$(MAKE) -f $(srctree)/Makefile vmlinux"
-> +         "$(MAKE) -f $(srctree)/Makefile autoksyms_recursive"
->  endif
->
->  autoksyms_h := $(if $(CONFIG_TRIM_UNUSED_KSYMS), include/generated/autoksyms.h)
+>It seems kinda silly to add this to the kernel without also adding the
+>other half of the solution=2E  Plus, we don't really even know what this
+>is for=2E  Are there other, better solutions?  I certainly can't offer an=
+y
+>because this changelog did not provide a full picture of the problem
+>this solves=2E
 
-Thanks for looking into this, Masahiro! I can confirm that this patch
-fixes the issue with vmlinux getting linked twice in our use case.
-
-Tested-by: Sami Tolvanen <samitolvanen@google.com>
-
-Sami
+Don't we already have a large contiguous physical memory allocator for thi=
+s reason (misdesigned hardware?)
