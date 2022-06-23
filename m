@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1986C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9772DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235446AbiFWR76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
+        id S235459AbiFWSAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235979AbiFWR6S (ORCPT
+        with ESMTP id S235986AbiFWR6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:58:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BBFB01DF;
-        Thu, 23 Jun 2022 10:15:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5F2B01F2;
+        Thu, 23 Jun 2022 10:16:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0D5561DE5;
-        Thu, 23 Jun 2022 17:15:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE761C3411B;
-        Thu, 23 Jun 2022 17:15:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2F0C61E07;
+        Thu, 23 Jun 2022 17:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C57D9C3411B;
+        Thu, 23 Jun 2022 17:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004556;
-        bh=dI4qzF7w/Q2TNL1Pmo70s4Lwm8qtiWZFZoBlD9iNMLU=;
+        s=korg; t=1656004559;
+        bh=cU4v9cxY2ZRL2hjxOHLz3BTe1f4WKimpk7DcIKzUNLY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cjsNz3dw8FxRYpKPw49yTBXDDwtR5tw9EE21D0fDyPopoTdaJ8DTS3pJS65atlzV8
-         f6UGo/lMUygRUZBK0y2TtnUE7TWh7KYaqjRUbEdWO0O0X1cRGsio6V9AGiTdpNQTyf
-         6kNPYvGIUqjEWAzCsVy1EywMVUkCyOSsi7KDZAIM=
+        b=of3spjlCjLJ/Ip6pqmQBwBKZxU+JLfpf2Ia116ZH1aLsBXFAhp0r4Of5cOU+yzTJm
+         bCTW+ukqrccRitQqxIrzgFHGWFVWQF7OvhBDmoB7Gvw1ZaQDqIdxLcR/CzLwc6vH6X
+         p3BeZXKsdB2E+HhppB6oLzkTD4Gp3BWkm9NdV3qM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
-        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 038/234] linux/random.h: Remove arch_has_random, arch_has_random_seed
-Date:   Thu, 23 Jun 2022 18:41:45 +0200
-Message-Id: <20220623164344.143378905@linuxfoundation.org>
+Subject: [PATCH 4.19 074/234] random: only call crng_finalize_init() for primary_crng
+Date:   Thu, 23 Jun 2022 18:42:21 +0200
+Message-Id: <20220623164345.154389102@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,49 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Henderson <richard.henderson@linaro.org>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-commit 647f50d5d9d933b644b29c54f13ac52af1b1774d upstream.
+commit 9d5505f1eebeca778074a0260ed077fd85f8792c upstream.
 
-The arm64 version of archrandom.h will need to be able to test for
-support and read the random number without preemption, so a separate
-query predicate is not practical.
+crng_finalize_init() returns instantly if it is called for another pool
+than primary_crng. The test whether crng_finalize_init() is still required
+can be moved to the relevant caller in crng_reseed(), and
+crng_need_final_init can be reset to false if crng_finalize_init() is
+called with workqueues ready. Then, no previous callsite will call
+crng_finalize_init() unless it is needed, and we can get rid of the
+superfluous function parameter.
 
-Since this part of the generic interface is unused, remove it.
-
-Signed-off-by: Richard Henderson <rth@twiddle.net>
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20200110145422.49141-5-broonie@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |    8 --------
- 1 file changed, 8 deletions(-)
+ drivers/char/random.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -126,10 +126,6 @@ static inline bool arch_get_random_int(u
- {
- 	return 0;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -800,10 +800,8 @@ static void __init crng_initialize_prima
+ 	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
  }
--static inline bool arch_has_random(void)
--{
--	return 0;
--}
- static inline bool arch_get_random_seed_long(unsigned long *v)
- {
- 	return 0;
-@@ -138,10 +134,6 @@ static inline bool arch_get_random_seed_
- {
- 	return 0;
- }
--static inline bool arch_has_random_seed(void)
--{
--	return 0;
--}
- #endif
  
- #endif /* _LINUX_RANDOM_H */
+-static void crng_finalize_init(struct crng_state *crng)
++static void crng_finalize_init(void)
+ {
+-	if (crng != &primary_crng || crng_init >= 2)
+-		return;
+ 	if (!system_wq) {
+ 		/* We can't call numa_crng_init until we have workqueues,
+ 		 * so mark this for processing later. */
+@@ -814,6 +812,7 @@ static void crng_finalize_init(struct cr
+ 	invalidate_batched_entropy();
+ 	numa_crng_init();
+ 	crng_init = 2;
++	crng_need_final_init = false;
+ 	process_random_ready_list();
+ 	wake_up_interruptible(&crng_init_wait);
+ 	kill_fasync(&fasync, SIGIO, POLL_IN);
+@@ -980,7 +979,8 @@ static void crng_reseed(struct crng_stat
+ 	memzero_explicit(&buf, sizeof(buf));
+ 	WRITE_ONCE(crng->init_time, jiffies);
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+-	crng_finalize_init(crng);
++	if (crng == &primary_crng && crng_init < 2)
++		crng_finalize_init();
+ }
+ 
+ static void _extract_crng(struct crng_state *crng, u8 out[CHACHA20_BLOCK_SIZE])
+@@ -1697,7 +1697,7 @@ int __init rand_initialize(void)
+ {
+ 	init_std_data();
+ 	if (crng_need_final_init)
+-		crng_finalize_init(&primary_crng);
++		crng_finalize_init();
+ 	crng_initialize_primary();
+ 	crng_global_init_time = jiffies;
+ 	if (ratelimit_disable) {
 
 
