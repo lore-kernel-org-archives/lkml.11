@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5241DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA92C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232681AbiFWRPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
+        id S232708AbiFWRP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233279AbiFWRMo (ORCPT
+        with ESMTP id S233264AbiFWRMn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:12:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D432241FBE;
-        Thu, 23 Jun 2022 09:58:28 -0700 (PDT)
+        Thu, 23 Jun 2022 13:12:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECEB4EA11;
+        Thu, 23 Jun 2022 09:58:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86C5AB8248F;
-        Thu, 23 Jun 2022 16:58:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5434C3411B;
-        Thu, 23 Jun 2022 16:58:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA0AE60AD7;
+        Thu, 23 Jun 2022 16:58:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2AE0C341C6;
+        Thu, 23 Jun 2022 16:58:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003506;
-        bh=isyO/DTQYlF73FEx2d7UejnaUEw+tJ7LlnZ7gQHbFIM=;
+        s=korg; t=1656003497;
+        bh=qOxbimxBQ+BB2CE/6f3pBmDmBtSD3l6gkMENxniCBQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SBmJ0Wy60MBljBQiMkwaeiIH9yZQ2XcxKx4DKE38raQ68kyoH68ljiR0x+k+W4j7C
-         Z9NZI7dZ780nobH1/NE80Vrv2TExBx+1q+RIXn8zDlZDpuVCqF03TUd58XPelIThJM
-         9d0Xlao159iwb0yiEdTF/A3RrodPehIBylNIB8n0=
+        b=Q9ZKw9hVjkwi4cU40zEZRE2bYkTgc6fldWY05QSRWUBeL/i0hgJZ0+CHr33NHt3K6
+         ur9ae/QlFItQIY/iY5a9CcvgGQx76LUiWLeZlBBrPGmp6Xx4Uy4npTQw24Xx8GEIjk
+         sva4aj6v0QzocJqcpeXOAsMzd3GnVSKkrCL6gjQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+2e635807decef724a1fa@syzkaller.appspotmail.com,
-        Stephan Mueller <smueller@chronox.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 220/264] crypto: drbg - always try to free Jitter RNG instance
-Date:   Thu, 23 Jun 2022 18:43:33 +0200
-Message-Id: <20220623164350.302121396@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Miklos Szeredi <mszeredi@redhat.com>,
+        Zach OKeefe <zokeefe@google.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.9 256/264] fuse: fix pipe buffer lifetime for direct_io
+Date:   Thu, 23 Jun 2022 18:44:09 +0200
+Message-Id: <20220623164351.308519608@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,39 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Stephan Müller" <smueller@chronox.de>
+From: Miklos Szeredi <mszeredi@redhat.com>
 
-commit 819966c06b759022e9932f328284314d9272b9f3 upstream.
+commit 0c4bcfdecb1ac0967619ee7ff44871d93c08c909 upstream.
 
-The Jitter RNG is unconditionally allocated as a seed source follwoing
-the patch 97f2650e5040. Thus, the instance must always be deallocated.
+In FOPEN_DIRECT_IO mode, fuse_file_write_iter() calls
+fuse_direct_write_iter(), which normally calls fuse_direct_io(), which then
+imports the write buffer with fuse_get_user_pages(), which uses
+iov_iter_get_pages() to grab references to userspace pages instead of
+actually copying memory.
 
-Reported-by: syzbot+2e635807decef724a1fa@syzkaller.appspotmail.com
-Fixes: 97f2650e5040 ("crypto: drbg - always seeded with SP800-90B ...")
-Signed-off-by: Stephan Mueller <smueller@chronox.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+On the filesystem device side, these pages can then either be read to
+userspace (via fuse_dev_read()), or splice()d over into a pipe using
+fuse_dev_splice_read() as pipe buffers with &nosteal_pipe_buf_ops.
+
+This is wrong because after fuse_dev_do_read() unlocks the FUSE request,
+the userspace filesystem can mark the request as completed, causing write()
+to return. At that point, the userspace filesystem should no longer have
+access to the pipe buffer.
+
+Fix by copying pages coming from the user address space to new pipe
+buffers.
+
+Reported-by: Jann Horn <jannh@google.com>
+Fixes: c3021629a0d8 ("fuse: support splice() reading from fuse device")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Zach O'Keefe <zokeefe@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/drbg.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/fuse/dev.c    |   12 +++++++++++-
+ fs/fuse/file.c   |    1 +
+ fs/fuse/fuse_i.h |    2 ++
+ 3 files changed, 14 insertions(+), 1 deletion(-)
 
---- a/crypto/drbg.c
-+++ b/crypto/drbg.c
-@@ -1646,10 +1646,12 @@ static int drbg_uninstantiate(struct drb
- 	if (drbg->random_ready.notifier_call) {
- 		unregister_random_ready_notifier(&drbg->random_ready);
- 		cancel_work_sync(&drbg->seed_work);
--		crypto_free_rng(drbg->jent);
--		drbg->jent = NULL;
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -992,7 +992,17 @@ static int fuse_copy_page(struct fuse_co
+ 
+ 	while (count) {
+ 		if (cs->write && cs->pipebufs && page) {
+-			return fuse_ref_page(cs, page, offset, count);
++			/*
++			 * Can't control lifetime of pipe buffers, so always
++			 * copy user pages.
++			 */
++			if (cs->req->user_pages) {
++				err = fuse_copy_fill(cs);
++				if (err)
++					return err;
++			} else {
++				return fuse_ref_page(cs, page, offset, count);
++			}
+ 		} else if (!cs->len) {
+ 			if (cs->move_pages && page &&
+ 			    offset == 0 && count == PAGE_SIZE) {
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -1319,6 +1319,7 @@ static int fuse_get_user_pages(struct fu
+ 			(PAGE_SIZE - ret) & (PAGE_SIZE - 1);
  	}
  
-+	if (!IS_ERR_OR_NULL(drbg->jent))
-+		crypto_free_rng(drbg->jent);
-+	drbg->jent = NULL;
++	req->user_pages = true;
+ 	if (write)
+ 		req->in.argpages = 1;
+ 	else
+--- a/fs/fuse/fuse_i.h
++++ b/fs/fuse/fuse_i.h
+@@ -310,6 +310,8 @@ struct fuse_req {
+ 	/** refcount */
+ 	atomic_t count;
+ 
++	bool user_pages;
 +
- 	if (drbg->d_ops)
- 		drbg->d_ops->crypto_fini(drbg);
- 	drbg_dealloc_state(drbg);
+ 	/** Unique ID for the interrupt request */
+ 	u64 intr_unique;
+ 
 
 
