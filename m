@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5821DCCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B1DC43334
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233015AbiFWQ5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+        id S232959AbiFWQ5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233721AbiFWQv3 (ORCPT
+        with ESMTP id S233732AbiFWQvc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C73506DC;
-        Thu, 23 Jun 2022 09:49:28 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605AF4BFEC;
+        Thu, 23 Jun 2022 09:49:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54C8661F90;
-        Thu, 23 Jun 2022 16:49:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36664C3411B;
-        Thu, 23 Jun 2022 16:49:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 946BFB8248E;
+        Thu, 23 Jun 2022 16:49:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0DA4C3411B;
+        Thu, 23 Jun 2022 16:49:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002966;
-        bh=wvFpbs1M7ItDJ+3maBjTlk+lo8NuZRntPs7fyIL4zXU=;
+        s=korg; t=1656002972;
+        bh=m+4I8Wt7LY4EGLT+WjU98XGZ8KiRB/EpIDEz6vD3vKI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=od1hafUwmZCbu7wFm2P307TOQ/rg3/7Po+FOUDfDzxvsywxnFVJ4pjARY0O9bsYOh
-         CNIKDmMOlGRoOwnmqciFq1XrKvxEB8CNRKKinRKYESVUGiSozCq92msuMUANvAHC42
-         2IASxK9aPJyFzIBGd7VpjYHnvhNbAjK4gqZxJC3o=
+        b=q63w84JmQYXhAv1pt/AQNDVuh2s3DYjdzfHhS1cMf36mjHz6BJyoy1mYRNXvt5uZa
+         kBA3Sq7RGEa53bngBw1IvIzrcG/h+/FBYV9AbtvDNr18tlcNKms5pNyCFavpZDkm5S
+         1TtwP+ItgUtqExKjsMJbwvEpn8jP+TdfdgR5imaw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Keerthy <j-keerthy@ti.com>,
-        Stephen Boyd <swboyd@chromium.org>,
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Keerthy <j-keerthy@ti.com>, Stephen Boyd <swboyd@chromium.org>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 044/264] random: Support freezable kthreads in add_hwgenerator_randomness()
-Date:   Thu, 23 Jun 2022 18:40:37 +0200
-Message-Id: <20220623164345.316194775@linuxfoundation.org>
+Subject: [PATCH 4.9 046/264] random: Use wait_event_freezable() in add_hwgenerator_randomness()
+Date:   Thu, 23 Jun 2022 18:40:39 +0200
+Message-Id: <20220623164345.372822842@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,70 +53,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Stephen Boyd <swboyd@chromium.org>
 
-commit ff296293b3538d19278a7f7cd1f3aa600ad9164c upstream.
+commit 59b569480dc8bb9dce57cdff133853a842dfd805 upstream.
 
-The kthread calling this function is freezable after commit 03a3bb7ae631
-("hwrng: core - Freeze khwrng thread during suspend") is applied.
-Unfortunately, this function uses wait_event_interruptible() but doesn't
-check for the kthread being woken up by the fake freezer signal. When a
-user suspends the system, this kthread will wake up and if it fails the
-entropy size check it will immediately go back to sleep and not go into
-the freezer. Eventually, suspend will fail because the task never froze
-and a warning message like this may appear:
+Sebastian reports that after commit ff296293b353 ("random: Support freezable
+kthreads in add_hwgenerator_randomness()") we can call might_sleep() when the
+task state is TASK_INTERRUPTIBLE (state=1). This leads to the following warning.
 
- PM: suspend entry (deep)
- Filesystems sync: 0.000 seconds
- Freezing user space processes ... (elapsed 0.001 seconds) done.
- OOM killer disabled.
- Freezing remaining freezable tasks ...
- Freezing of tasks failed after 20.003 seconds (1 tasks refusing to freeze, wq_busy=0):
- hwrng           R  running task        0   289      2 0x00000020
- [<c08c64c4>] (__schedule) from [<c08c6a10>] (schedule+0x3c/0xc0)
- [<c08c6a10>] (schedule) from [<c05dbd8c>] (add_hwgenerator_randomness+0xb0/0x100)
- [<c05dbd8c>] (add_hwgenerator_randomness) from [<bf1803c8>] (hwrng_fillfn+0xc0/0x14c [rng_core])
- [<bf1803c8>] (hwrng_fillfn [rng_core]) from [<c015abec>] (kthread+0x134/0x148)
- [<c015abec>] (kthread) from [<c01010e8>] (ret_from_fork+0x14/0x2c)
+ do not call blocking ops when !TASK_RUNNING; state=1 set at [<00000000349d1489>] prepare_to_wait_event+0x5a/0x180
+ WARNING: CPU: 0 PID: 828 at kernel/sched/core.c:6741 __might_sleep+0x6f/0x80
+ Modules linked in:
 
-Check for a freezer signal here and skip adding any randomness if the
-task wakes up because it was frozen. This should make the kthread freeze
-properly and suspend work again.
+ CPU: 0 PID: 828 Comm: hwrng Not tainted 5.3.0-rc7-next-20190903+ #46
+ RIP: 0010:__might_sleep+0x6f/0x80
 
-Fixes: 03a3bb7ae631 ("hwrng: core - Freeze khwrng thread during suspend")
-Reported-by: Keerthy <j-keerthy@ti.com>
-Tested-by: Keerthy <j-keerthy@ti.com>
+ Call Trace:
+  kthread_freezable_should_stop+0x1b/0x60
+  add_hwgenerator_randomness+0xdd/0x130
+  hwrng_fillfn+0xbf/0x120
+  kthread+0x10c/0x140
+  ret_from_fork+0x27/0x50
+
+We shouldn't call kthread_freezable_should_stop() from deep within the
+wait_event code because the task state is still set as
+TASK_INTERRUPTIBLE instead of TASK_RUNNING and
+kthread_freezable_should_stop() will try to call into the freezer with
+the task in the wrong state. Use wait_event_freezable() instead so that
+it calls schedule() in the right place and tries to enter the freezer
+when the task state is TASK_RUNNING instead.
+
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Tested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Keerthy <j-keerthy@ti.com>
+Fixes: ff296293b353 ("random: Support freezable kthreads in add_hwgenerator_randomness()")
 Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/char/random.c |   12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2473,6 +2473,7 @@ void add_hwgenerator_randomness(const ch
+@@ -327,6 +327,7 @@
+ #include <linux/percpu.h>
+ #include <linux/cryptohash.h>
+ #include <linux/fips.h>
++#include <linux/freezer.h>
+ #include <linux/ptrace.h>
+ #include <linux/kmemcheck.h>
+ #include <linux/workqueue.h>
+@@ -2473,7 +2474,6 @@ void add_hwgenerator_randomness(const ch
  				size_t entropy)
  {
  	struct entropy_store *poolp = &input_pool;
-+	bool frozen = false;
+-	bool frozen = false;
  
  	if (unlikely(crng_init == 0)) {
  		crng_fast_load(buffer, count);
-@@ -2483,9 +2484,12 @@ void add_hwgenerator_randomness(const ch
+@@ -2484,13 +2484,11 @@ void add_hwgenerator_randomness(const ch
  	 * We'll be woken up again once below random_write_wakeup_thresh,
  	 * or when the calling thread is about to terminate.
  	 */
--	wait_event_interruptible(random_write_wait, kthread_should_stop() ||
-+	wait_event_interruptible(random_write_wait,
-+			kthread_freezable_should_stop(&frozen) ||
+-	wait_event_interruptible(random_write_wait,
+-			kthread_freezable_should_stop(&frozen) ||
++	wait_event_freezable(random_write_wait,
++			kthread_should_stop() ||
  			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
--	mix_pool_bytes(poolp, buffer, count);
--	credit_entropy_bits(poolp, entropy);
-+	if (!frozen) {
-+		mix_pool_bytes(poolp, buffer, count);
-+		credit_entropy_bits(poolp, entropy);
-+	}
+-	if (!frozen) {
+-		mix_pool_bytes(poolp, buffer, count);
+-		credit_entropy_bits(poolp, entropy);
+-	}
++	mix_pool_bytes(poolp, buffer, count);
++	credit_entropy_bits(poolp, entropy);
  }
  EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
+ 
 
 
