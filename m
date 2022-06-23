@@ -2,135 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB08C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F278DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234241AbiFWRcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
+        id S234257AbiFWRcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233895AbiFWR3x (ORCPT
+        with ESMTP id S233768AbiFWR3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:29:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0527FD2E;
-        Thu, 23 Jun 2022 10:04:50 -0700 (PDT)
+        Thu, 23 Jun 2022 13:29:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8BE7FD2A;
+        Thu, 23 Jun 2022 10:04:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95DF06159A;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80BFFB82490;
         Thu, 23 Jun 2022 17:04:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EB65C341C4;
-        Thu, 23 Jun 2022 17:04:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656003888;
-        bh=BP4Xv9dfnQL4kdsgB8BI3/j5qp9scN2TAD2M43SlNGc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=q72PuRrXL7nDVD9DV1RLOXs8DwuEn3Kgm5QD5hV37f02hNz22kxfEz8XcLkDd45N4
-         n0PtknVBeTm8Xmsc/ZGvqA5xItJ+kxtXDNHJiUkFOqrQIaerDorlGZAx5Lqaw1GdA3
-         /Kjh767WR5eWM2JDFKm7I1yYJVQ6F1RRkOOQPDeK+5BQTzcW6gsJiij85mVqVNGgNp
-         Ewa+Baj13XAlVHtay+FaYcByFCjCuChzMeUe6AcEjiQNOHBB7dL870JmcM31ee20d9
-         cW9EbjD0RKNNHD7N5Icv2BdSYCHk9fXvtJk/x4RX+FQzb1J7mnUvQ28RSACeUr+R1y
-         9MuANq23ru/fQ==
-Date:   Thu, 23 Jun 2022 12:04:47 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     marek.vasut+renesas@gmail.com, yoshihiro.shimoda.uh@renesas.com,
-        lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
-        bhelgaas@google.com, linux-renesas-soc@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Subject: Re: [PATCH] PCI: rcar-ep: Simplify bitmap allocation.
-Message-ID: <20220623170447.GA1458028@bhelgaas>
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE70DC3411B;
+        Thu, 23 Jun 2022 17:04:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656003888;
+        bh=/S1iYXeszMNaRYv4XNqtEEGXovrfJyB6SAipvJMmfqI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hfA2DsTRL8Fk8kefxOMCwzN8RWt4/cXVNshOn3vesj3Ep2q7OfXijw8l/3CZC3idr
+         F0NPKZlapYMPhXGReghtyAJ+s9rTwgcmEjTK5qhVkUp8l8x1suXraRYQ2Kg4f0AUA2
+         Cx4Bm//5LjCWsWOAjDUGc+Ak8GmNv2QBGTd5Pwow=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 119/237] random: do not take pool spinlock at boot
+Date:   Thu, 23 Jun 2022 18:42:33 +0200
+Message-Id: <20220623164346.578536073@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
+References: <20220623164343.132308638@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0fd98d56871f6f08ca82dcc76bfa2052368a8926.1655814557.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+cc Jingoo, Gustavo, Serge, in case dwc should do something similar]
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-On Tue, Jun 21, 2022 at 02:31:46PM +0200, Christophe JAILLET wrote:
-> MAX_NR_INBOUND_MAPS is small (i.e. 6), so there is no real point in
-> dynamic allocation for a bitmap of this size.
-> Moreover, it is linked with the use of the 'bar_to_atu' field which is
-> already statically declared.
-> 
-> Declare it statically instead.
-> 
-> This saves some LoC, reduces the size of the module and saves a few bytes
-> of memory at run-time.
-> 
-> Before: (gcc 11.2.0 / allyesconfig)
->    text	   data	    bss	    dec	    hex	filename
->   11514	   5232	      0	  16746	   416a	drivers/pci/controller/pcie-rcar-ep.o
-> 
-> After: (gcc 11.2.0 / allyesconfig)
->    text	   data	    bss	    dec	    hex	filename
->   11183	   5064	      0	  16247	   3f77	drivers/pci/controller/pcie-rcar-ep.o
-> 
-> 
-> Also replace the mostly useless 'num_ib_windows' and use
-> MAX_NR_INBOUND_MAPS directly instead.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+commit afba0b80b977b2a8f16234f2acd982f82710ba33 upstream.
 
-Looking for an ack from Marek or Yoshihiro here ...
+Since rand_initialize() is run while interrupts are still off and
+nothing else is running, we don't need to repeatedly take and release
+the pool spinlock, especially in the RDSEED loop.
 
-I'm guessing struct dw_pcie.ib_window_map and .ob_window_map are
-probably similar, though the limit is not hard-coded as it is for
-rcar-ep.
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> ---
->  drivers/pci/controller/pcie-rcar-ep.c | 17 ++++-------------
->  1 file changed, 4 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/pcie-rcar-ep.c b/drivers/pci/controller/pcie-rcar-ep.c
-> index f9682df1da61..64682876e93e 100644
-> --- a/drivers/pci/controller/pcie-rcar-ep.c
-> +++ b/drivers/pci/controller/pcie-rcar-ep.c
-> @@ -25,8 +25,7 @@ struct rcar_pcie_endpoint {
->  	struct pci_epc_mem_window *ob_window;
->  	u8			max_functions;
->  	unsigned int		bar_to_atu[MAX_NR_INBOUND_MAPS];
-> -	unsigned long		*ib_window_map;
-> -	u32			num_ib_windows;
-> +	DECLARE_BITMAP(ib_window_map, MAX_NR_INBOUND_MAPS);
->  	u32			num_ob_windows;
->  };
->  
-> @@ -205,8 +204,8 @@ static int rcar_pcie_ep_set_bar(struct pci_epc *epc, u8 func_no, u8 vfunc_no,
->  	int idx;
->  	int err;
->  
-> -	idx = find_first_zero_bit(ep->ib_window_map, ep->num_ib_windows);
-> -	if (idx >= ep->num_ib_windows) {
-> +	idx = find_first_zero_bit(ep->ib_window_map, MAX_NR_INBOUND_MAPS);
-> +	if (idx >= MAX_NR_INBOUND_MAPS) {
->  		dev_err(pcie->dev, "no free inbound window\n");
->  		return -EINVAL;
->  	}
-> @@ -502,15 +501,7 @@ static int rcar_pcie_ep_probe(struct platform_device *pdev)
->  		goto err_pm_put;
->  	}
->  
-> -	ep->num_ib_windows = MAX_NR_INBOUND_MAPS;
-> -	ep->ib_window_map =
-> -			devm_kcalloc(dev, BITS_TO_LONGS(ep->num_ib_windows),
-> -				     sizeof(long), GFP_KERNEL);
-> -	if (!ep->ib_window_map) {
-> -		err = -ENOMEM;
-> -		dev_err(dev, "failed to allocate memory for inbound map\n");
-> -		goto err_pm_put;
-> -	}
-> +	bitmap_zero(ep->ib_window_map, MAX_NR_INBOUND_MAPS);
->  
->  	ep->ob_mapped_addr = devm_kcalloc(dev, ep->num_ob_windows,
->  					  sizeof(*ep->ob_mapped_addr),
-> -- 
-> 2.32.0
-> 
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -973,10 +973,10 @@ int __init rand_initialize(void)
+ 			rv = random_get_entropy();
+ 			arch_init = false;
+ 		}
+-		mix_pool_bytes(&rv, sizeof(rv));
++		_mix_pool_bytes(&rv, sizeof(rv));
+ 	}
+-	mix_pool_bytes(&now, sizeof(now));
+-	mix_pool_bytes(utsname(), sizeof(*(utsname())));
++	_mix_pool_bytes(&now, sizeof(now));
++	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
+ 
+ 	extract_entropy(base_crng.key, sizeof(base_crng.key));
+ 	++base_crng.generation;
+
+
