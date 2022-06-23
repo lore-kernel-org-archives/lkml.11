@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8365DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14990C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231646AbiFWRNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
+        id S231812AbiFWRN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiFWRLk (ORCPT
+        with ESMTP id S229547AbiFWRLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:11:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AFE18364;
-        Thu, 23 Jun 2022 09:51:11 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D78D220E2;
+        Thu, 23 Jun 2022 09:51:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C06AA61F62;
-        Thu, 23 Jun 2022 16:51:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABE2FC3411B;
-        Thu, 23 Jun 2022 16:51:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F273B8248F;
+        Thu, 23 Jun 2022 16:51:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6695AC3411B;
+        Thu, 23 Jun 2022 16:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003070;
-        bh=B+p7EtKRj9a5tVfJTGyiXDhd9taRre9xiGKcJXTVWl0=;
+        s=korg; t=1656003100;
+        bh=ul0Tr7WeKZRZ2zms9/BEfRG9dytBHmQ8wW4LyYO8XdA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=faVrZObDdenQTWRpEl9shrcppjtgsEAiZsq5CZp3Npl5bTCIn9Z50djTEQQpiqwdX
-         f3hGIYAiFiObvl7A7Bpar+Ptk8CYQBAAWUGMSw8zc0tLkVcB8xaoQlCJpDEqkLcws2
-         ylNyprP6kqyixzbCgyWmKhmApnvwL4y/4kJRWn6k=
+        b=dD/CDDrmPhMEcjaCJnRGTHI5UNol/I2u/KVD6gbARWFdfBQDJBZ2uNCcODKpXJae7
+         VhHJlfSDf2F76FTzbHQx4ZZNw5nAEPQFRCSLjCozqdk9Q6U0itXEJvXGcRDmLCCS/N
+         8sb2JpVGzpZkwYlDyU7/WB+ObIrTze6gLQciti3Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Andy Lutomirski <luto@kernel.org>,
+        Jann Horn <jannh@google.com>, Theodore Tso <tytso@mit.edu>,
+        Ard Biesheuvel <ardb@kernel.org>,
         Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 119/264] random: inline leaves of rand_initialize()
-Date:   Thu, 23 Jun 2022 18:41:52 +0200
-Message-Id: <20220623164347.434462658@linuxfoundation.org>
+Subject: [PATCH 4.9 089/264] random: initialize ChaCha20 constants with correct endianness
+Date:   Thu, 23 Jun 2022 18:41:22 +0200
+Message-Id: <20220623164346.589601245@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,144 +53,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 8566417221fcec51346ec164e920dacb979c6b5f upstream.
+commit a181e0fdb2164268274453b5b291589edbb9b22d upstream.
 
-This is a preparatory commit for the following one. We simply inline the
-various functions that rand_initialize() calls that have no other
-callers. The compiler was doing this anyway before. Doing this will
-allow us to reorganize this after. We can then move the trust_cpu and
-parse_trust_cpu definitions a bit closer to where they're actually used,
-which makes the code easier to read.
+On big endian CPUs, the ChaCha20-based CRNG is using the wrong
+endianness for the ChaCha20 constants.
 
+This doesn't matter cryptographically, but technically it means it's not
+ChaCha20 anymore.  Fix it to always use the standard constants.
+
+Cc: linux-crypto@vger.kernel.org
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Jann Horn <jannh@google.com>
 Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   90 ++++++++++++++++++--------------------------------
- 1 file changed, 33 insertions(+), 57 deletions(-)
+ drivers/char/random.c     |    4 ++--
+ include/crypto/chacha20.h |    8 ++++++++
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -477,42 +477,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init
+@@ -817,7 +817,7 @@ static bool __init crng_init_try_arch_ea
  
- static void invalidate_batched_entropy(void);
- 
--static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
--static int __init parse_trust_cpu(char *arg)
--{
--	return kstrtobool(arg, &trust_cpu);
--}
--early_param("random.trust_cpu", parse_trust_cpu);
--
--static bool __init crng_init_try_arch_early(void)
--{
--	int i;
--	bool arch_init = true;
--	unsigned long rv;
--
--	for (i = 4; i < 16; i++) {
--		if (!arch_get_random_seed_long_early(&rv) &&
--		    !arch_get_random_long_early(&rv)) {
--			rv = random_get_entropy();
--			arch_init = false;
--		}
--		primary_crng.state[i] ^= rv;
--	}
--
--	return arch_init;
--}
--
--static void __init crng_initialize(void)
--{
--	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
--	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
--		invalidate_batched_entropy();
--		crng_init = 2;
--		pr_notice("crng init done (trusting CPU's manufacturer)\n");
--	}
--	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
--}
--
- /*
-  * crng_fast_load() can be called by code in the interrupt service
-  * path.  So we can't afford to dilly-dally. Returns the number of
-@@ -1272,17 +1236,28 @@ int __must_check get_random_bytes_arch(v
- }
- EXPORT_SYMBOL(get_random_bytes_arch);
- 
-+static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
-+static int __init parse_trust_cpu(char *arg)
-+{
-+	return kstrtobool(arg, &trust_cpu);
-+}
-+early_param("random.trust_cpu", parse_trust_cpu);
-+
- /*
-- * init_std_data - initialize pool with system data
-- *
-- * This function clears the pool's entropy count and mixes some system
-- * data into the pool to prepare it for use. The pool is not cleared
-- * as that can only decrease the entropy in the pool.
-+ * Note that setup_arch() may call add_device_randomness()
-+ * long before we get here. This allows seeding of the pools
-+ * with some platform dependent data very early in the boot
-+ * process. But it limits our options here. We must use
-+ * statically allocated structures that already have all
-+ * initializations complete at compile time. We should also
-+ * take care not to overwrite the precious per platform data
-+ * we were given.
-  */
--static void __init init_std_data(void)
-+int __init rand_initialize(void)
+ static void crng_initialize_secondary(struct crng_state *crng)
  {
- 	int i;
- 	ktime_t now = ktime_get_real();
-+	bool arch_init = true;
- 	unsigned long rv;
+-	memcpy(&crng->state[0], "expand 32-byte k", 16);
++	chacha_init_consts(crng->state);
+ 	_get_random_bytes(&crng->state[4], sizeof(__u32) * 12);
+ 	crng_init_try_arch(crng);
+ 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+@@ -825,7 +825,7 @@ static void crng_initialize_secondary(st
  
- 	mix_pool_bytes(&now, sizeof(now));
-@@ -1293,22 +1268,23 @@ static void __init init_std_data(void)
- 		mix_pool_bytes(&rv, sizeof(rv));
- 	}
- 	mix_pool_bytes(utsname(), sizeof(*(utsname())));
--}
+ static void __init crng_initialize_primary(struct crng_state *crng)
+ {
+-	memcpy(&crng->state[0], "expand 32-byte k", 16);
++	chacha_init_consts(crng->state);
+ 	_extract_entropy(&input_pool, &crng->state[4], sizeof(__u32) * 12, 0);
+ 	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
+ 		invalidate_batched_entropy();
+--- a/include/crypto/chacha20.h
++++ b/include/crypto/chacha20.h
+@@ -24,4 +24,12 @@ int crypto_chacha20_setkey(struct crypto
+ int crypto_chacha20_crypt(struct blkcipher_desc *desc, struct scatterlist *dst,
+ 			  struct scatterlist *src, unsigned int nbytes);
  
--/*
-- * Note that setup_arch() may call add_device_randomness()
-- * long before we get here. This allows seeding of the pools
-- * with some platform dependent data very early in the boot
-- * process. But it limits our options here. We must use
-- * statically allocated structures that already have all
-- * initializations complete at compile time. We should also
-- * take care not to overwrite the precious per platform data
-- * we were given.
-- */
--int __init rand_initialize(void)
--{
--	init_std_data();
--	crng_initialize();
-+	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
-+	for (i = 4; i < 16; i++) {
-+		if (!arch_get_random_seed_long_early(&rv) &&
-+		    !arch_get_random_long_early(&rv)) {
-+			rv = random_get_entropy();
-+			arch_init = false;
-+		}
-+		primary_crng.state[i] ^= rv;
-+	}
-+	if (arch_init && trust_cpu && crng_init < 2) {
-+		invalidate_batched_entropy();
-+		crng_init = 2;
-+		pr_notice("crng init done (trusting CPU's manufacturer)\n");
-+	}
-+	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
++static inline void chacha_init_consts(u32 *state)
++{
++	state[0]  = 0x61707865; /* "expa" */
++	state[1]  = 0x3320646e; /* "nd 3" */
++	state[2]  = 0x79622d32; /* "2-by" */
++	state[3]  = 0x6b206574; /* "te k" */
++}
 +
- 	if (ratelimit_disable) {
- 		urandom_warning.interval = 0;
- 		unseeded_warning.interval = 0;
+ #endif
 
 
