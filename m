@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E19C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DB1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235089AbiFWRqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        id S235098AbiFWRqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235178AbiFWRnH (ORCPT
+        with ESMTP id S234143AbiFWRnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:43:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39069D32D;
-        Thu, 23 Jun 2022 10:10:27 -0700 (PDT)
+        Thu, 23 Jun 2022 13:43:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0519D33F;
+        Thu, 23 Jun 2022 10:10:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BA50B82499;
-        Thu, 23 Jun 2022 17:10:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D11C3411B;
-        Thu, 23 Jun 2022 17:10:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2822B8249B;
+        Thu, 23 Jun 2022 17:10:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 551C6C3411B;
+        Thu, 23 Jun 2022 17:10:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004224;
-        bh=2goHVwbk9mKBRuXvhvhtF7Suji4GpOaNtXY66FgdJ/U=;
+        s=korg; t=1656004227;
+        bh=74nHEB/SvvOY1D+necQOByXj3zd+MR6+TdfHJdc0j70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jG7lqFJkWUcShdb9Mddq6qmol4/bYpnCiHDra/o7pmzO/52GWo9Opj3hkMGGyMndD
-         Ra60px79Wlzjg6p9ld6ItLB88DGUzSDBCGFQLTFky7Hytt1eA/svA1M/wpLwaopTjG
-         fXh8yUFTjmxeTx739Vr1s3nBmPXydk4l4ekGEzKs=
+        b=V1eenT/fo3KtWV+diOe4Kw11hm6Bu8P1NIYWhtTDZsNSKYRpUhQdwgvrvhGzuYdmf
+         H0Dx5ltvtD1NdN1OWiIIdsTJ/lsxskZb7h4fNFWwjxFp+oDt21x42Le3yPHL5NTTlV
+         7m5Oq8YsqzHLxQRjf2s4sXvVaz4W0LM8A9uW8UsQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 187/237] crypto: drbg - track whether DRBG was seeded with !rng_is_initialized()
-Date:   Thu, 23 Jun 2022 18:43:41 +0200
-Message-Id: <20220623164348.527351769@linuxfoundation.org>
+Subject: [PATCH 4.14 178/237] random: move initialization functions out of hot pages
+Date:   Thu, 23 Jun 2022 18:43:32 +0200
+Message-Id: <20220623164348.271379476@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -50,132 +49,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolai Stange <nstange@suse.de>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 2bcd25443868aa8863779a6ebc6c9319633025d2 upstream.
+commit 560181c27b582557d633ecb608110075433383af upstream.
 
-Currently, the DRBG implementation schedules asynchronous works from
-random_ready_callbacks for reseeding the DRBG instances with output from
-get_random_bytes() once the latter has sufficient entropy available.
+Much of random.c is devoted to initializing the rng and accounting for
+when a sufficient amount of entropy has been added. In a perfect world,
+this would all happen during init, and so we could mark these functions
+as __init. But in reality, this isn't the case: sometimes the rng only
+finishes initializing some seconds after system init is finished.
 
-However, as the get_random_bytes() initialization state can get queried by
-means of rng_is_initialized() now, there is no real need for this
-asynchronous reseeding logic anymore and it's better to keep things simple
-by doing it synchronously when needed instead, i.e. from drbg_generate()
-once rng_is_initialized() has flipped to true.
+For this reason, at the moment, a whole host of functions that are only
+used relatively close to system init and then never again are intermixed
+with functions that are used in hot code all the time. This creates more
+cache misses than necessary.
 
-Of course, for this to work, drbg_generate() would need some means by which
-it can tell whether or not rng_is_initialized() has flipped to true since
-the last seeding from get_random_bytes(). Or equivalently, whether or not
-the last seed from get_random_bytes() has happened when
-rng_is_initialized() was still evaluating to false.
+In order to pack the hot code closer together, this commit moves the
+initialization functions that can't be marked as __init into
+.text.unlikely by way of the __cold attribute.
 
-As it currently stands, enum drbg_seed_state allows for the representation
-of two different DRBG seeding states: DRBG_SEED_STATE_UNSEEDED and
-DRBG_SEED_STATE_FULL. The former makes drbg_generate() to invoke a full
-reseeding operation involving both, the rather expensive jitterentropy as
-well as the get_random_bytes() randomness sources. The DRBG_SEED_STATE_FULL
-state on the other hand implies that no reseeding at all is required for a
-!->pr DRBG variant.
+Of particular note is moving credit_init_bits() into a macro wrapper
+that inlines the crng_ready() static branch check. This avoids a
+function call to a nop+ret, and most notably prevents extra entropy
+arithmetic from being computed in mix_interrupt_randomness().
 
-Introduce the new DRBG_SEED_STATE_PARTIAL state to enum drbg_seed_state for
-representing the condition that a DRBG was being seeded when
-rng_is_initialized() had still been false. In particular, this new state
-implies that
-- the given DRBG instance has been fully seeded from the jitterentropy
-  source (if enabled)
-- and drbg_generate() is supposed to reseed from get_random_bytes()
-  *only* once rng_is_initialized() turns to true.
-
-Up to now, the __drbg_seed() helper used to set the given DRBG instance's
-->seeded state to constant DRBG_SEED_STATE_FULL. Introduce a new argument
-allowing for the specification of the to be written ->seeded value instead.
-Make the first of its two callers, drbg_seed(), determine the appropriate
-value based on rng_is_initialized(). The remaining caller,
-drbg_async_seed(), is known to get invoked only once rng_is_initialized()
-is true, hence let it pass constant DRBG_SEED_STATE_FULL for the new
-argument to __drbg_seed().
-
-There is no change in behaviour, except for that the pr_devel() in
-drbg_generate() would now report "unseeded" for ->pr DRBG instances which
-had last been seeded when rng_is_initialized() was still evaluating to
-false.
-
-Signed-off-by: Nicolai Stange <nstange@suse.de>
-Reviewed-by: Stephan Müller <smueller@chronox.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+[ Jason: for stable, made sure the printk_deferred was a pr_notice,
+  because those caused problems on ≤ 4.19 according to commit logs. ]
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/drbg.c         |   12 ++++++++----
- include/crypto/drbg.h |    1 +
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ drivers/char/random.c |   40 ++++++++++++++++++----------------------
+ 1 file changed, 18 insertions(+), 22 deletions(-)
 
---- a/crypto/drbg.c
-+++ b/crypto/drbg.c
-@@ -1037,14 +1037,14 @@ static const struct drbg_state_ops drbg_
-  ******************************************************************/
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -109,7 +109,7 @@ bool rng_is_initialized(void)
+ }
+ EXPORT_SYMBOL(rng_is_initialized);
  
- static inline int __drbg_seed(struct drbg_state *drbg, struct list_head *seed,
--			      int reseed)
-+			      int reseed, enum drbg_seed_state new_seed_state)
+-static void crng_set_ready(struct work_struct *work)
++static void __cold crng_set_ready(struct work_struct *work)
  {
- 	int ret = drbg->d_ops->update(drbg, seed, reseed);
+ 	static_branch_enable(&crng_is_ready);
+ }
+@@ -148,7 +148,7 @@ EXPORT_SYMBOL(wait_for_random_bytes);
+  * returns: 0 if callback is successfully added
+  *	    -EALREADY if pool is already initialised (callback not called)
+  */
+-int register_random_ready_notifier(struct notifier_block *nb)
++int __cold register_random_ready_notifier(struct notifier_block *nb)
+ {
+ 	unsigned long flags;
+ 	int ret = -EALREADY;
+@@ -167,7 +167,7 @@ EXPORT_SYMBOL(register_random_ready_noti
+ /*
+  * Delete a previously registered readiness callback function.
+  */
+-int unregister_random_ready_notifier(struct notifier_block *nb)
++int __cold unregister_random_ready_notifier(struct notifier_block *nb)
+ {
+ 	unsigned long flags;
+ 	int ret;
+@@ -179,7 +179,7 @@ int unregister_random_ready_notifier(str
+ }
+ EXPORT_SYMBOL(unregister_random_ready_notifier);
  
- 	if (ret)
- 		return ret;
+-static void process_random_ready_list(void)
++static void __cold process_random_ready_list(void)
+ {
+ 	unsigned long flags;
  
--	drbg->seeded = DRBG_SEED_STATE_FULL;
-+	drbg->seeded = new_seed_state;
- 	/* 10.1.1.2 / 10.1.1.3 step 5 */
- 	drbg->reseed_ctr = 1;
+@@ -189,15 +189,9 @@ static void process_random_ready_list(vo
+ }
  
-@@ -1094,7 +1094,7 @@ static void drbg_async_seed(struct work_
- 	 */
- 	drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
+ #define warn_unseeded_randomness() \
+-	_warn_unseeded_randomness(__func__, (void *)_RET_IP_)
+-
+-static void _warn_unseeded_randomness(const char *func_name, void *caller)
+-{
+-	if (!IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) || crng_ready())
+-		return;
+-	printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n",
+-			func_name, caller, crng_init);
+-}
++	if (IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) && !crng_ready()) \
++		pr_notice("%s called from %pS with crng_init=%d\n", \
++			  __func__, (void *)_RET_IP_, crng_init)
  
--	__drbg_seed(drbg, &seedlist, true);
-+	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
  
- 	if (drbg->seeded == DRBG_SEED_STATE_FULL)
- 		drbg->reseed_threshold = drbg_max_requests(drbg);
-@@ -1124,6 +1124,7 @@ static int drbg_seed(struct drbg_state *
- 	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
- 	struct drbg_string data1;
- 	LIST_HEAD(seedlist);
-+	enum drbg_seed_state new_seed_state = DRBG_SEED_STATE_FULL;
+ /*********************************************************************
+@@ -611,7 +605,7 @@ EXPORT_SYMBOL(get_random_u32);
+  * This function is called when the CPU is coming up, with entry
+  * CPUHP_RANDOM_PREPARE, which comes before CPUHP_WORKQUEUE_PREP.
+  */
+-int random_prepare_cpu(unsigned int cpu)
++int __cold random_prepare_cpu(unsigned int cpu)
+ {
+ 	/*
+ 	 * When the cpu comes back online, immediately invalidate both
+@@ -786,13 +780,15 @@ static void extract_entropy(void *buf, s
+ 	memzero_explicit(&block, sizeof(block));
+ }
  
- 	/* 9.1 / 9.2 / 9.3.1 step 3 */
- 	if (pers && pers->len > (drbg_max_addtl(drbg))) {
-@@ -1151,6 +1152,9 @@ static int drbg_seed(struct drbg_state *
- 		BUG_ON((entropylen * 2) > sizeof(entropy));
- 
- 		/* Get seed from in-kernel /dev/urandom */
-+		if (!rng_is_initialized())
-+			new_seed_state = DRBG_SEED_STATE_PARTIAL;
+-static void credit_init_bits(size_t bits)
++#define credit_init_bits(bits) if (!crng_ready()) _credit_init_bits(bits)
 +
- 		ret = drbg_get_random_bytes(drbg, entropy, entropylen);
- 		if (ret)
- 			goto out;
-@@ -1207,7 +1211,7 @@ static int drbg_seed(struct drbg_state *
- 		memset(drbg->C, 0, drbg_statelen(drbg));
- 	}
++static void __cold _credit_init_bits(size_t bits)
+ {
+ 	static struct execute_work set_ready;
+ 	unsigned int new, orig, add;
+ 	unsigned long flags;
  
--	ret = __drbg_seed(drbg, &seedlist, reseed);
-+	ret = __drbg_seed(drbg, &seedlist, reseed, new_seed_state);
+-	if (crng_ready() || !bits)
++	if (!bits)
+ 		return;
  
- out:
- 	memzero_explicit(entropy, entropylen * 2);
---- a/include/crypto/drbg.h
-+++ b/include/crypto/drbg.h
-@@ -107,6 +107,7 @@ struct drbg_test_data {
+ 	add = min_t(size_t, bits, POOL_BITS);
+@@ -971,7 +967,7 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
+  * Handle random seed passed by bootloader, and credit it if
+  * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+  */
+-void add_bootloader_randomness(const void *buf, size_t len)
++void __cold add_bootloader_randomness(const void *buf, size_t len)
+ {
+ 	mix_pool_bytes(buf, len);
+ 	if (trust_bootloader)
+@@ -1017,7 +1013,7 @@ static void fast_mix(unsigned long s[4],
+  * This function is called when the CPU has just come online, with
+  * entry CPUHP_AP_RANDOM_ONLINE, just after CPUHP_AP_WORKQUEUE_ONLINE.
+  */
+-int random_online_cpu(unsigned int cpu)
++int __cold random_online_cpu(unsigned int cpu)
+ {
+ 	/*
+ 	 * During CPU shutdown and before CPU onlining, add_interrupt_
+@@ -1172,7 +1168,7 @@ static void add_timer_randomness(struct
+ 	if (in_irq())
+ 		this_cpu_ptr(&irq_randomness)->count += max(1u, bits * 64) - 1;
+ 	else
+-		credit_init_bits(bits);
++		_credit_init_bits(bits);
+ }
  
- enum drbg_seed_state {
- 	DRBG_SEED_STATE_UNSEEDED,
-+	DRBG_SEED_STATE_PARTIAL, /* Seeded with !rng_is_initialized() */
- 	DRBG_SEED_STATE_FULL,
- };
+ void add_input_randomness(unsigned int type, unsigned int code, unsigned int value)
+@@ -1200,7 +1196,7 @@ void add_disk_randomness(struct gendisk
+ }
+ EXPORT_SYMBOL_GPL(add_disk_randomness);
  
+-void rand_initialize_disk(struct gendisk *disk)
++void __cold rand_initialize_disk(struct gendisk *disk)
+ {
+ 	struct timer_rand_state *state;
+ 
+@@ -1229,7 +1225,7 @@ void rand_initialize_disk(struct gendisk
+  *
+  * So the re-arming always happens in the entropy loop itself.
+  */
+-static void entropy_timer(unsigned long data)
++static void __cold entropy_timer(unsigned long data)
+ {
+ 	credit_init_bits(1);
+ }
+@@ -1238,7 +1234,7 @@ static void entropy_timer(unsigned long
+  * If we have an actual cycle counter, see if we can
+  * generate enough entropy with timing noise
+  */
+-static void try_to_generate_entropy(void)
++static void __cold try_to_generate_entropy(void)
+ {
+ 	struct {
+ 		unsigned long entropy;
 
 
