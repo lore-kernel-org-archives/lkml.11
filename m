@@ -2,99 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 912C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 02:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B263AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 02:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377618AbiFWCwR (ORCPT
+        id S1377899AbiFWCws (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 22:52:17 -0400
+        Wed, 22 Jun 2022 22:52:48 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377600AbiFWCv4 (ORCPT
+        with ESMTP id S1377757AbiFWCwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 22:51:56 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79E143AE0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 19:51:46 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id x1-20020a17090abc8100b001ec7f8a51f5so1225359pjr.0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 19:51:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=lIFW9cAuPlwQZ+C7VMU14IUSbtewdAOYVyCoJAKjzlQ=;
-        b=Puw8ineJwyWfy8K7QUYI04Wr8Nb2t3lWIHkFlB1hQQLzT5swZYV1wxZgu3zdmjVfn/
-         L0HlSvtZI7htiCUE58+bs7E4/4+tXAl4qPsIqzEL5CBx2z2FY3FCEiyOZy4dNWbEFGfJ
-         ublFUOJMhKzwCTubtZVlrCy4E/Nj68znJFRH22pBgRivO+6M2+5YmEof4fmthJB7pQ8J
-         kUm32nyX6wMxLFRWHwDB2kb0DFF1JqhQvwdym6WuLQDI+QPltciJAr3kqmKG3RZ4UMoA
-         yDoPULmJp2SmYl4/CECuVR+sWJJTkK1B1xyYqgojOt/3YvgnoPXmBGlVAYVPTb/tfVNC
-         E1Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=lIFW9cAuPlwQZ+C7VMU14IUSbtewdAOYVyCoJAKjzlQ=;
-        b=Mwsg3QxelWofyilP7/TtII33NFWak1yVapq6Q5YC8FlBpd1dJWxUwEy5I8obf90zX7
-         JFIJmTynpOG50I30OGtxmXIjuw8y8APlGrFcBTu3/LHnG1RQ8fpBnghX1CNTb6e9TfgK
-         t+K6NAMIetfOOH8ZZlITn3rBhdO5Cm9LNpLV/0dWkaxjE+w7vzvHrJJ0gaPmcjUv+71s
-         FQiFR941t1lZmIXh4dyKVj3/bXudSh4iVLKje20tGIipgiSM8g/wwfVynWOt5OeMSlH1
-         xulvbn/f20YIeg95HwLMheGpmEUNympBZSUmFaHIsmfW0tlqE5Vk7JFxupmPNDXXSCLC
-         9/hw==
-X-Gm-Message-State: AJIora9wKnfgypSJJIM9wc4HXGDJSxjwRC9l7sKLPA8F+d/Gb8HzPm9o
-        1V/wW0lKuZW1GMdVy8bLa0Q=
-X-Google-Smtp-Source: AGRyM1tGh13XWNJDm/Ne6cIvj9Kvnz3BzixxtTYVsFdR6x6xDxp58nyO22rT2LXODqdOE+tQ9eT2JA==
-X-Received: by 2002:a17:90a:8d02:b0:1ec:a006:ea13 with SMTP id c2-20020a17090a8d0200b001eca006ea13mr1595429pjo.229.1655952706208;
-        Wed, 22 Jun 2022 19:51:46 -0700 (PDT)
-Received: from [192.168.50.116] (c-24-4-73-83.hsd1.ca.comcast.net. [24.4.73.83])
-        by smtp.gmail.com with ESMTPSA id c18-20020a170902b69200b00166423df3cdsm13510665pls.209.2022.06.22.19.51.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 19:51:45 -0700 (PDT)
-Message-ID: <09ae5fd3-2276-5d76-a0bf-46dbffeeeade@gmail.com>
-Date:   Wed, 22 Jun 2022 19:51:42 -0700
+        Wed, 22 Jun 2022 22:52:08 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA7443488
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 19:52:06 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LT4VD4hzZz1KC7y;
+        Thu, 23 Jun 2022 10:49:56 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 23 Jun 2022 10:52:04 +0800
+Received: from zelda.huawei.com (10.175.103.14) by
+ dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 23 Jun 2022 10:52:03 +0800
+From:   Jin Xiaoyun <jinxiaoyun2@huawei.com>
+To:     <matthias.bgg@gmail.com>,
+        <angelogioacchino.delregno@collabora.com>, <khilman@baylibre.com>,
+        <zhengbin13@huawei.com>, <gaochao49@huawei.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Jin Xiaoyun" <jinxiaoyun2@huawei.com>
+Subject: [PATCH v2 -next] soc: mediatek: SVS: Use the new PM macros
+Date:   Thu, 23 Jun 2022 11:09:31 +0800
+Message-ID: <20220623030931.2816013-1-jinxiaoyun2@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220622013410.2786760-1-jinxiaoyun2@huawei.com>
+References: <20220622013410.2786760-1-jinxiaoyun2@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] ARC:kernel:Fix typos in comments
-Content-Language: en-US
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>,
-        linux-snps-arc@lists.infradead.org, linux-kernel@vger.kernel.org,
-        vgupta@kernel.org, Julia.Lawall@inria.fr,
-        deng.changcheng@zte.com.cn, libang.linuxer@gmail.com
-References: <20220622075204.35329-1-yuanjilin@cdjrlc.com>
-From:   Vineet Gupta <vineetg76@gmail.com>
-In-Reply-To: <20220622075204.35329-1-yuanjilin@cdjrlc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.103.14]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Use DEFINE_SIMPLE_DEV_PM_OPS() instead of the SIMPLE_DEV_PM_OPS()
+macro, along with using pm_sleep_ptr() as this driver doesn't handle
+runtime PM.
 
+Fix build error:
+drivers/soc/mediatek/mtk-svs.c:1515:12: error: ‘svs_resume’ defined but not used [-Werror=unused-function]
+drivers/soc/mediatek/mtk-svs.c:1481:12: error: ‘svs_suspend’ defined but not used [-Werror=unused-function]
 
-On 6/22/22 00:52, Jilin Yuan wrote:
-> Delete the redundant word 'call'.
->
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
-> ---
->   arch/arc/kernel/smp.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arc/kernel/smp.c b/arch/arc/kernel/smp.c
-> index d947473f1e6d..6c22a53711e9 100644
-> --- a/arch/arc/kernel/smp.c
-> +++ b/arch/arc/kernel/smp.c
-> @@ -393,7 +393,7 @@ irqreturn_t do_IPI(int irq, void *dev_id)
->    * API called by platform code to hookup arch-common ISR to their IPI IRQ
->    *
->    * Note: If IPI is provided by platform (vs. say ARC MCIP), their intc setup/map
-> - * function needs to call call irq_set_percpu_devid() for IPI IRQ, otherwise
-> + * function needs to call irq_set_percpu_devid() for IPI IRQ, otherwise
->    * request_percpu_irq() below will fail
->    */
->   static DEFINE_PER_CPU(int, ipi_dev);
+Signed-off-by: Jin Xiaoyun <jinxiaoyun2@huawei.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+---
+v1->v2:
+- Remove the #ifdef CONFIG_PM guard around the suspend/resume functions
+- Use DEFINE_SIMPLE_DEV_PM_OPS along with using pm_sleep_ptr()
+---
+ drivers/soc/mediatek/mtk-svs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I'd prefer to have this is the other fix in a single change. No point 
-increasing commits for trivial things.
+diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
+index 606a00a2e57d..fae7376bd083 100644
+--- a/drivers/soc/mediatek/mtk-svs.c
++++ b/drivers/soc/mediatek/mtk-svs.c
+@@ -2381,13 +2381,13 @@ static int svs_probe(struct platform_device *pdev)
+ 	return ret;
+ }
 
--Vineet
+-static SIMPLE_DEV_PM_OPS(svs_pm_ops, svs_suspend, svs_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(svs_pm_ops, svs_suspend, svs_resume);
+
+ static struct platform_driver svs_driver = {
+ 	.probe	= svs_probe,
+ 	.driver	= {
+ 		.name		= "mtk-svs",
+-		.pm		= &svs_pm_ops,
++		.pm		= pm_sleep_ptr(&svs_pm_ops),
+ 		.of_match_table	= of_match_ptr(svs_of_match),
+ 	},
+ };
+--
+2.25.1
+
