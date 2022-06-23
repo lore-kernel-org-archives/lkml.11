@@ -2,85 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E45BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EEAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232394AbiFWQkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
+        id S232296AbiFWQm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232098AbiFWQku (ORCPT
+        with ESMTP id S232245AbiFWQmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:40:50 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 670B846C97;
-        Thu, 23 Jun 2022 09:40:49 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1o4Psl-0004rv-00; Thu, 23 Jun 2022 18:40:39 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 3F66BC01EF; Thu, 23 Jun 2022 18:40:32 +0200 (CEST)
-Date:   Thu, 23 Jun 2022 18:40:32 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     torvalds@linux-foundation.org
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] MIPS fixes vor v5.19
-Message-ID: <20220623164032.GA14476@alpha.franken.de>
+        Thu, 23 Jun 2022 12:42:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08DD4925B;
+        Thu, 23 Jun 2022 09:42:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63436B82488;
+        Thu, 23 Jun 2022 16:42:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24836C3411B;
+        Thu, 23 Jun 2022 16:42:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656002529;
+        bh=O1Z6UxVXZFs09xPqqQhhlSwoeIGwkaDbXBSQz7fNh1c=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=N9rMhkT0nvkRSev4tITmZo6OeLr5YTufc7RwR1ErdDA9NR/h+iLI+p7lJ3C7v8Qq9
+         /MvupL506VpFUNr0nxk8AFs2Kn+yiklC3WMqHBfmLj9xQ3TPFn9GR6acd5AZfvqkSg
+         G4pqrIRFEKFOm2wxniViy+2cy675GyP43iTjI8OXeqonsQ6oy5Od7ucLLRyHo/xAK4
+         nzdphtKwlpvaKpj7yCO0/x3Z/yDNdFf4zsa8wbAAPcZchmuBh1goP11+6bbrZoQbnp
+         GXIL62g+34lcvW6NXDUIAbCbKlB0NlCBPjkFm1aNPSUFsaocJOczDHeud0KImge5i2
+         qlBu6D7s+/xkQ==
+Message-ID: <850ef2bc-f70d-afb2-a12f-8cc4c795dac8@kernel.org>
+Date:   Thu, 23 Jun 2022 11:41:56 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH V4 00/20] The Runtime Verification (RV) interface
+Content-Language: en-US
+To:     Song Liu <song@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>
+References: <cover.1655368610.git.bristot@kernel.org>
+ <CAPhsuW4eDhVs2iu0y40LiFyKweJ+3d82-748kavGg5KXWsRuZg@mail.gmail.com>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <CAPhsuW4eDhVs2iu0y40LiFyKweJ+3d82-748kavGg5KXWsRuZg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit a111daf0c53ae91e71fd2bfe7497862d14132e3e:
+On 6/22/22 09:24, Song Liu wrote:
+> This is interesting work!
+> 
+> I applied the series on top of commit 78ca55889a549a9a194c6ec666836329b774ab6d
+> in upstream. Then, I got some compile/link error for CONFIG_RV_MON_WIP and
+> CONFIG_RV_MON_SAFE_WTD. I was able to compile the kernel with these two
+> configs disabled.
 
-  Linux 5.19-rc3 (2022-06-19 15:06:47 -0500)
+I rebased the code and... it compiled. Maybe it was missing some
+config options that I forgot to set as "depends on" in the Kconfig.
 
-are available in the Git repository at:
+Can you check if it was the same problem automatically reported?
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/ tags/mips-fixes_5.19_2
+Any further information here would help. I will revisit this.
 
-for you to fetch changes up to 3748d2185ac4c2c6f80989672253aad909ecaf95:
+However, I hit the some issue with monitors/wwnr/enabled :
+> 
+>     [root@eth50-1 ~]# cd /sys/kernel/debug/tracing/rv/
+>     [root@eth50-1 rv]# cat available_monitors
+>     wwnr
+>     [root@eth50-1 rv]# echo wwnr > enabled_monitors
+>     [root@eth50-1 rv]# cd monitors/
+>     [root@eth50-1 monitors]# cd wwnr/
+>     [root@eth50-1 wwnr]# ls
+>     desc  enable  reactors
+>     [root@eth50-1 wwnr]# cat enable
+>     1
+>     [root@eth50-1 wwnr]# echo 0 > enable   <<< hangs
+> 
+> The last echo command hangs forever on a qemu vm. I haven't figured out why
+> this happens though.
 
-  mips: lantiq: Add missing of_node_put() in irq.c (2022-06-21 22:34:03 +0200)
+I could reproduce it. It is an error in the return code of monitor_enable_write_data(),
+I fixed it locally (return retval ? retval : count; // needs more test), and
+will add it to the next version. Thanks!
 
-----------------------------------------------------------------
-- several refcount fixes
-- added missing clock for ingenic
-- fix wrong irq_err_count for vr41xx
+> I also have a more general question: can we do RV with BPF and simplify the
+> work? AFAICT, the idea of RV is to maintain a state machine based on events.
+> If something unexpected happens, call the reactor.
+> 
+> IIUC, BPF has most of these building blocks ready for use. With BPF, we
+> can ship many RV monitors without much kernel changes.
 
-----------------------------------------------------------------
-Aidan MacDonald (1):
-      mips: dts: ingenic: Add TCU clock to x1000/x1830 tcu device node
+I am aware of bpftrace and bpf + libbpf, and I have a PoC tool doing most of the
+work I do in C/kernel in C/bpf.
 
-Liang He (7):
-      arch: mips: generic: Add missing of_node_put() in board-ranchu.c
-      mips: mti-malta: Fix refcount leak in malta-time.c
-      mips: ralink: Fix refcount leak in of.c
-      mips: lantiq: falcon: Fix refcount leak bug in sysctrl
-      mips: lantiq: xway: Fix refcount leak bug in sysctrl
-      mips/pic32/pic32mzda: Fix refcount leak bugs
-      mips: lantiq: Add missing of_node_put() in irq.c
+From the cover letter:
 
-huhai (1):
-      MIPS: Remove repetitive increase irq_err_count
+"Things kept for a second moment (after this patchset):
+[...]
+	- dot2bpf"
 
- arch/mips/boot/dts/ingenic/x1000.dtsi | 5 +++--
- arch/mips/boot/dts/ingenic/x1830.dtsi | 5 +++--
- arch/mips/generic/board-ranchu.c      | 1 +
- arch/mips/lantiq/falcon/sysctrl.c     | 6 ++++++
- arch/mips/lantiq/irq.c                | 1 +
- arch/mips/lantiq/xway/sysctrl.c       | 4 ++++
- arch/mips/mti-malta/malta-time.c      | 2 ++
- arch/mips/pic32/pic32mzda/init.c      | 7 ++++++-
- arch/mips/pic32/pic32mzda/time.c      | 3 +++
- arch/mips/ralink/of.c                 | 2 ++
- arch/mips/vr41xx/common/icu.c         | 2 --
- drivers/gpio/gpio-vr41xx.c            | 2 --
- 12 files changed, 31 insertions(+), 9 deletions(-)
+The point is that there are use-cases in which the users need the code in 
+C. One of those is the work being done in the Linux Foundation Elisa group.
+There will be more formalism, like timed automata... which will require
+infra-structure that is easily accessible in C... including synchronization,
+and reactors that are available only in C on "per use-cases" basis - for
+example on embedded devices.
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+On the other hand, there is ongoing research on asynchronous RV in which
+I am only using BPF on the instrumentation side, for more complex formalism
+running the processing in user-space (but for a different use-case,
+with different timing and logical properties).
+
+I see C and BPF (and rust?...) as complementary tools that I can use, and
+we will have them all :-).
+
+In this first series, I am adding the DA monitor in the kernel (motivated
+by Elisa), and the basic kernel interface. After that, I will add the dot2bpf
+for the cases in which BPF is a viable option... other formalism... other
+extensions from Elisa... and so on... collecting these methods in a single
+place.
+
+-- Daniel
+
+> Thanks,
+> Song
+
