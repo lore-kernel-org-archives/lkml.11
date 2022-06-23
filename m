@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 348B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4871C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbiFWRPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
+        id S229483AbiFWRPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232735AbiFWRM0 (ORCPT
+        with ESMTP id S232925AbiFWRMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:12:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18DF2DF3;
-        Thu, 23 Jun 2022 09:57:53 -0700 (PDT)
+        Thu, 23 Jun 2022 13:12:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36AF918351;
+        Thu, 23 Jun 2022 09:58:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A643FB8248C;
-        Thu, 23 Jun 2022 16:57:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15030C3411B;
-        Thu, 23 Jun 2022 16:57:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0138C613F9;
+        Thu, 23 Jun 2022 16:58:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31F8C3411B;
+        Thu, 23 Jun 2022 16:58:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003470;
-        bh=DXBUbvkk4CdCgdHzMDE41vC7EXTzA7k4HO01SBDNL7c=;
+        s=korg; t=1656003482;
+        bh=3p0YjrfUjqKoTgC5K6srQAZQ1GXKJuj4faY5xGKBedc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NGGrGXOgHybZ4XHz3X8eUAB5qZcq0lmtYKof/OeuYr0QQVaeaY3q3o3Ff9XrSALrV
-         ESCMCdPxgZKoFeWt4tVsb1/BFyCMUYQKgx6Xlt3VhfT99qIKc5gaiAIwUNPTcDfG9H
-         M9eCA0oBCf5e22+bbwS0og1OL5LtLdqOtd01xHsE=
+        b=Qkm97KpPIOA+5PXvupWG5R8gN4vDjiSk5sij1w6Rm0TioF3gKxfcvT9g1Ch1+uHXZ
+         Z9AAGLG7YLksm1LrGOtBLBZlfrMGCxJpFhqtAD5T7SI4V3gtZK2ghgsaXxeHYXKR7W
+         ivx6tFayuh0O0v1xa0zu45wb67LIuW8KJIA/hd1I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Ding Xiang <dingxiang@cmss.chinamobile.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.9 248/264] ext4: make variable "count" signed
-Date:   Thu, 23 Jun 2022 18:44:01 +0200
-Message-Id: <20220623164351.087369319@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>
+Subject: [PATCH 4.9 252/264] s390/mm: use non-quiescing sske for KVM switch to keyed guest
+Date:   Thu, 23 Jun 2022 18:44:05 +0200
+Message-Id: <20220623164351.197381495@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,35 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ding Xiang <dingxiang@cmss.chinamobile.com>
+From: Christian Borntraeger <borntraeger@linux.ibm.com>
 
-commit bc75a6eb856cb1507fa907bf6c1eda91b3fef52f upstream.
+commit 3ae11dbcfac906a8c3a480e98660a823130dc16a upstream.
 
-Since dx_make_map() may return -EFSCORRUPTED now, so change "count" to
-be a signed integer so we can correctly check for an error code returned
-by dx_make_map().
+The switch to a keyed guest does not require a classic sske as the other
+guest CPUs are not accessing the key before the switch is complete.
+By using the NQ SSKE things are faster especially with multiple guests.
 
-Fixes: 46c116b920eb ("ext4: verify dir block before splitting it")
-Cc: stable@kernel.org
-Signed-off-by: Ding Xiang <dingxiang@cmss.chinamobile.com>
-Link: https://lore.kernel.org/r/20220530100047.537598-1-dingxiang@cmss.chinamobile.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Suggested-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220530092706.11637-3-borntraeger@linux.ibm.com
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/namei.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/s390/mm/pgtable.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -1726,7 +1726,8 @@ static struct ext4_dir_entry_2 *do_split
- 			struct dx_hash_info *hinfo)
- {
- 	unsigned blocksize = dir->i_sb->s_blocksize;
--	unsigned count, continued;
-+	unsigned continued;
-+	int count;
- 	struct buffer_head *bh2;
- 	ext4_lblk_t newblock;
- 	u32 hash2;
+--- a/arch/s390/mm/pgtable.c
++++ b/arch/s390/mm/pgtable.c
+@@ -595,7 +595,7 @@ void ptep_zap_key(struct mm_struct *mm,
+ 			      PGSTE_GR_BIT | PGSTE_GC_BIT);
+ 	ptev = pte_val(*ptep);
+ 	if (!(ptev & _PAGE_INVALID) && (ptev & _PAGE_WRITE))
+-		page_set_storage_key(ptev & PAGE_MASK, PAGE_DEFAULT_KEY, 1);
++		page_set_storage_key(ptev & PAGE_MASK, PAGE_DEFAULT_KEY, 0);
+ 	pgste_set_unlock(ptep, pgste);
+ 	preempt_enable();
+ }
 
 
