@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D983BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B013C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232125AbiFWQ4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57006 "EHLO
+        id S232807AbiFWQ4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiFWQwW (ORCPT
+        with ESMTP id S229992AbiFWQwV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:52:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05208CC0;
-        Thu, 23 Jun 2022 09:52:22 -0700 (PDT)
+        Thu, 23 Jun 2022 12:52:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91A2C70;
+        Thu, 23 Jun 2022 09:52:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FEB861FC2;
-        Thu, 23 Jun 2022 16:52:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7044EC3411B;
-        Thu, 23 Jun 2022 16:52:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2BEF1CE25DF;
+        Thu, 23 Jun 2022 16:52:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3077DC3411B;
+        Thu, 23 Jun 2022 16:52:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003140;
-        bh=EWV0K9b5FI8ijcInq18884BVp+zCSg39CPByOA5yjw4=;
+        s=korg; t=1656003137;
+        bh=W5a4qdO3sxhr8X7o0w7ZiEpA44gPr7ERdDCwxwf7rF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jztZe2fpqlk+6JSyDpYTeJuJxgMpMeJ7wEgO+/BJKLesoBPzx3oZZ7zJwNX6ADDn8
-         MzSrBbPYQfv9iFWaJRSN0nydRC5pU294JqrYFy2BIS/XkaPWRFnuhXShuPe9+4kCi5
-         QArh51AIFyQJjFDg0y3PPPfum/QgrzsKZCKBekNs=
+        b=giQBSu/8Jho0SAEkmBMnXwjWti/qSCxIusMB2F2BCIybzbzldhbXeeYIlH1hoSE9c
+         CZSrs168YkUacfwJkqJgJgBmsijM5jtzbJLMYiWMJFur3WWy6WuBUWd2Fd/99Q/jhL
+         vxaSC5ITXQFMZfhtmRkJozuMAjSjwQoRD4mh2oEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 144/264] random: check for crng_init == 0 in add_device_randomness()
-Date:   Thu, 23 Jun 2022 18:42:17 +0200
-Message-Id: <20220623164348.139924650@linuxfoundation.org>
+Subject: [PATCH 4.9 143/264] random: unify early init crng load accounting
+Date:   Thu, 23 Jun 2022 18:42:16 +0200
+Message-Id: <20220623164348.111894062@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,12 +52,19 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 1daf2f387652bf3a7044aea042f5023b3f6b189b upstream.
+commit da792c6d5f59a76c10a310c5d4c93428fd18f996 upstream.
 
-This has no real functional change, as crng_pre_init_inject() (and
-before that, crng_slow_init()) always checks for == 0, not >= 2. So
-correct the outer unlocked change to reflect that. Before this used
-crng_ready(), which was not correct.
+crng_fast_load() and crng_slow_load() have different semantics:
+
+- crng_fast_load() xors and accounts with crng_init_cnt.
+- crng_slow_load() hashes and doesn't account.
+
+However add_hwgenerator_randomness() can afford to hash (it's called
+from a kthread), and it should account. Additionally, ones that can
+afford to hash don't need to take a trylock but can take a normal lock.
+So, we combine these into one function, crng_pre_init_inject(), which
+allows us to control these in a uniform way. This will make it simpler
+later to simplify this all down when the time comes for that.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
@@ -65,19 +72,174 @@ Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |  114 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 59 insertions(+), 55 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1016,7 +1016,7 @@ void add_device_randomness(const void *b
- 	unsigned long time = random_get_entropy() ^ jiffies;
+@@ -385,7 +385,7 @@ static void crng_make_state(u32 chacha_s
+ 	 * For the fast path, we check whether we're ready, unlocked first, and
+ 	 * then re-check once locked later. In the case where we're really not
+ 	 * ready, we do fast key erasure with the base_crng directly, because
+-	 * this is what crng_{fast,slow}_load mutate during early init.
++	 * this is what crng_pre_init_inject() mutates during early init.
+ 	 */
+ 	if (unlikely(!crng_ready())) {
+ 		bool ready;
+@@ -436,72 +436,75 @@ static void crng_make_state(u32 chacha_s
+ }
+ 
+ /*
+- * This function is for crng_init == 0 only.
++ * This function is for crng_init == 0 only. It loads entropy directly
++ * into the crng's key, without going through the input pool. It is,
++ * generally speaking, not very safe, but we use this only at early
++ * boot time when it's better to have something there rather than
++ * nothing.
++ *
++ * There are two paths, a slow one and a fast one. The slow one
++ * hashes the input along with the current key. The fast one simply
++ * xors it in, and should only be used from interrupt context.
++ *
++ * If account is set, then the crng_init_cnt counter is incremented.
++ * This shouldn't be set by functions like add_device_randomness(),
++ * where we can't trust the buffer passed to it is guaranteed to be
++ * unpredictable (so it might not have any entropy at all).
+  *
+- * crng_fast_load() can be called by code in the interrupt service
+- * path.  So we can't afford to dilly-dally. Returns the number of
+- * bytes processed from cp.
++ * Returns the number of bytes processed from input, which is bounded
++ * by CRNG_INIT_CNT_THRESH if account is true.
+  */
+-static size_t crng_fast_load(const void *cp, size_t len)
++static size_t crng_pre_init_inject(const void *input, size_t len,
++				   bool fast, bool account)
+ {
+ 	static int crng_init_cnt = 0;
+ 	unsigned long flags;
+-	const u8 *src = (const u8 *)cp;
+-	size_t ret = 0;
+ 
+-	if (!spin_trylock_irqsave(&base_crng.lock, flags))
+-		return 0;
++	if (fast) {
++		if (!spin_trylock_irqsave(&base_crng.lock, flags))
++			return 0;
++	} else {
++		spin_lock_irqsave(&base_crng.lock, flags);
++	}
++
+ 	if (crng_init != 0) {
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
+ 		return 0;
+ 	}
+-	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
+-		base_crng.key[crng_init_cnt % sizeof(base_crng.key)] ^= *src;
+-		src++; crng_init_cnt++; len--; ret++;
+-	}
+-	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+-		++base_crng.generation;
+-		crng_init = 1;
+-	}
+-	spin_unlock_irqrestore(&base_crng.lock, flags);
+-	if (crng_init == 1)
+-		pr_notice("fast init done\n");
+-	return ret;
+-}
+ 
+-/*
+- * This function is for crng_init == 0 only.
+- *
+- * crng_slow_load() is called by add_device_randomness, which has two
+- * attributes.  (1) We can't trust the buffer passed to it is
+- * guaranteed to be unpredictable (so it might not have any entropy at
+- * all), and (2) it doesn't have the performance constraints of
+- * crng_fast_load().
+- *
+- * So, we simply hash the contents in with the current key. Finally,
+- * we do *not* advance crng_init_cnt since buffer we may get may be
+- * something like a fixed DMI table (for example), which might very
+- * well be unique to the machine, but is otherwise unvarying.
+- */
+-static void crng_slow_load(const void *cp, size_t len)
+-{
+-	unsigned long flags;
+-	struct blake2s_state hash;
++	if (account)
++		len = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
+ 
+-	blake2s_init(&hash, sizeof(base_crng.key));
+-
+-	if (!spin_trylock_irqsave(&base_crng.lock, flags))
+-		return;
+-	if (crng_init != 0) {
+-		spin_unlock_irqrestore(&base_crng.lock, flags);
+-		return;
++	if (fast) {
++		const u8 *src = input;
++		size_t i;
++
++		for (i = 0; i < len; ++i)
++			base_crng.key[(crng_init_cnt + i) %
++				      sizeof(base_crng.key)] ^= src[i];
++	} else {
++		struct blake2s_state hash;
++
++		blake2s_init(&hash, sizeof(base_crng.key));
++		blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
++		blake2s_update(&hash, input, len);
++		blake2s_final(&hash, base_crng.key);
++	}
++
++	if (account) {
++		crng_init_cnt += len;
++		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
++			++base_crng.generation;
++			crng_init = 1;
++		}
+ 	}
+ 
+-	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
+-	blake2s_update(&hash, cp, len);
+-	blake2s_final(&hash, base_crng.key);
+-
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
++
++	if (crng_init == 1)
++		pr_notice("fast init done\n");
++
++	return len;
+ }
+ 
+ static void _get_random_bytes(void *buf, size_t nbytes)
+@@ -1014,7 +1017,7 @@ void add_device_randomness(const void *b
  	unsigned long flags;
  
--	if (!crng_ready() && size)
-+	if (crng_init == 0 && size)
- 		crng_pre_init_inject(buf, size, false, false);
+ 	if (!crng_ready() && size)
+-		crng_slow_load(buf, size);
++		crng_pre_init_inject(buf, size, false, false);
  
  	spin_lock_irqsave(&input_pool.lock, flags);
+ 	_mix_pool_bytes(buf, size);
+@@ -1131,7 +1134,7 @@ void add_hwgenerator_randomness(const vo
+ 				size_t entropy)
+ {
+ 	if (unlikely(crng_init == 0)) {
+-		size_t ret = crng_fast_load(buffer, count);
++		size_t ret = crng_pre_init_inject(buffer, count, false, true);
+ 		mix_pool_bytes(buffer, ret);
+ 		count -= ret;
+ 		buffer += ret;
+@@ -1294,7 +1297,8 @@ void add_interrupt_randomness(int irq)
+ 
+ 	if (unlikely(crng_init == 0)) {
+ 		if (new_count >= 64 &&
+-		    crng_fast_load(fast_pool->pool32, sizeof(fast_pool->pool32)) > 0) {
++		    crng_pre_init_inject(fast_pool->pool32, sizeof(fast_pool->pool32),
++					 true, true) > 0) {
+ 			atomic_set(&fast_pool->count, 0);
+ 			fast_pool->last = now;
+ 			if (spin_trylock(&input_pool.lock)) {
 
 
