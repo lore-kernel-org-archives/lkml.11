@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32330C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79AE2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235106AbiFWSA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54068 "EHLO
+        id S235786AbiFWSBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235754AbiFWR5j (ORCPT
+        with ESMTP id S235451AbiFWRzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:57:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41EDAE9B1;
-        Thu, 23 Jun 2022 10:15:36 -0700 (PDT)
+        Thu, 23 Jun 2022 13:55:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35479AE332;
+        Thu, 23 Jun 2022 10:15:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E91B61DEF;
-        Thu, 23 Jun 2022 17:15:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ECFCC3411B;
-        Thu, 23 Jun 2022 17:15:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8860B82498;
+        Thu, 23 Jun 2022 17:15:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1447DC3411B;
+        Thu, 23 Jun 2022 17:15:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004535;
-        bh=X3ndALqqFVENCzduf7i3wwpF2ta0OR/76HnniJRrl0k=;
+        s=korg; t=1656004523;
+        bh=qAp+1FtUo5m3pP8NSq/qXrqVcDNdNIOx8aS3upOITXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdBTPJ0LqHcOi8XZkV3ZqodSwugQUeLJgWFPXwmt+ZHyFMNtfsvP3XeCI+JA5vU0E
-         oqteNed1JyWJakV752+OgB9IQbTV4oRp+m0stec0sofzf6AFJuj46Y7MlnKiBRrsma
-         3kJCND9E5UBJIEjLYWiwL6D146XjJSaDaS/LyvtE=
+        b=sXE1c3xbtcUtgnXAE6/Elq0tNNrUen9Fx993Oo3GlPvt/RCgvm1+ueZ5VRGPTXIXv
+         niQddEBMZ7P+duhIq5+tKgN+iW20cbr2MGt6bUbwGT417k2meHTCeseQawq7hBH3Ab
+         zBLaHr5m+2VWc1kZwfTOEtKjVBWTpch/At3dSowg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
+        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 067/234] random: de-duplicate INPUT_POOL constants
-Date:   Thu, 23 Jun 2022 18:42:14 +0200
-Message-Id: <20220623164344.957705512@linuxfoundation.org>
+Subject: [PATCH 4.19 037/234] s390: Remove arch_has_random, arch_has_random_seed
+Date:   Thu, 23 Jun 2022 18:41:44 +0200
+Message-Id: <20220623164344.115274680@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,74 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Richard Henderson <richard.henderson@linaro.org>
 
-commit 5b87adf30f1464477169a1d653e9baf8c012bbfe upstream.
+commit 5e054c820f59bbb9714d5767f5f476581c309ca8 upstream.
 
-We already had the POOL_* constants, so deduplicate the older INPUT_POOL
-ones. As well, fold EXTRACT_SIZE into the poolinfo enum, since it's
-related.
+These symbols are currently part of the generic archrandom.h
+interface, but are currently unused and can be removed.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Richard Henderson <rth@twiddle.net>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20200110145422.49141-4-broonie@kernel.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ arch/s390/include/asm/archrandom.h |   12 ------------
+ 1 file changed, 12 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -359,13 +359,6 @@
- /* #define ADD_INTERRUPT_BENCH */
+--- a/arch/s390/include/asm/archrandom.h
++++ b/arch/s390/include/asm/archrandom.h
+@@ -21,18 +21,6 @@ extern atomic64_t s390_arch_random_count
  
- /*
-- * Configuration information
-- */
--#define INPUT_POOL_SHIFT	12
--#define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
--#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
+ bool s390_arch_random_generate(u8 *buf, unsigned int nbytes);
+ 
+-static inline bool arch_has_random(void)
+-{
+-	return false;
+-}
 -
--/*
-  * To allow fractional bits to be tracked, the entropy_count field is
-  * denominated in units of 1/8th bits.
-  *
-@@ -440,7 +433,9 @@ enum poolinfo {
- 	POOL_TAP2 = 76,
- 	POOL_TAP3 = 51,
- 	POOL_TAP4 = 25,
--	POOL_TAP5 = 1
-+	POOL_TAP5 = 1,
-+
-+	EXTRACT_SIZE = BLAKE2S_HASH_SIZE / 2
- };
- 
- /*
-@@ -503,7 +498,7 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
-  *
-  **********************************************************************/
- 
--static u32 input_pool_data[INPUT_POOL_WORDS] __latent_entropy;
-+static u32 input_pool_data[POOL_WORDS] __latent_entropy;
- 
- static struct {
- 	/* read-only data: */
-@@ -1959,7 +1954,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- #include <linux/sysctl.h>
- 
- static int min_write_thresh;
--static int max_write_thresh = INPUT_POOL_WORDS * 32;
-+static int max_write_thresh = POOL_BITS;
- static int random_min_urandom_seed = 60;
- static char sysctl_bootid[16];
- 
-@@ -2016,7 +2011,7 @@ static int proc_do_entropy(struct ctl_ta
- 	return proc_dointvec(&fake_table, write, buffer, lenp, ppos);
- }
- 
--static int sysctl_poolsize = INPUT_POOL_WORDS * 32;
-+static int sysctl_poolsize = POOL_BITS;
- extern struct ctl_table random_table[];
- struct ctl_table random_table[] = {
- 	{
+-static inline bool arch_has_random_seed(void)
+-{
+-	if (static_branch_likely(&s390_arch_random_available))
+-		return true;
+-	return false;
+-}
+-
+ static inline bool arch_get_random_long(unsigned long *v)
+ {
+ 	return false;
 
 
