@@ -2,97 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E85BCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 11:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2055C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 11:40:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbiFWLjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 07:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
+        id S230447AbiFWLkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 07:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230320AbiFWLjf (ORCPT
+        with ESMTP id S230349AbiFWLkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 07:39:35 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8686E4BFDD;
-        Thu, 23 Jun 2022 04:39:34 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-317741c86fdso189200227b3.2;
-        Thu, 23 Jun 2022 04:39:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=omRmebZ/oY7CY9g8zXjNwG5YUCBp0sw1aQgxBX9Qr6o=;
-        b=G91znaNiWal/0ob/917Hlvp0GRpczJ17O8mxXPBbV+l1LK0LM8IMdF55uVZKuKTGFq
-         +ppo+uJ3tqZoucO7I9ZseIe6QlW93gTRkrtqu7/bvIoO+026qCnhi7jbwLKAmRE0FBdr
-         8fY2XcAVDliyJ5GSbEVYm9tG9sSQx0CLesvX++6VvvWzKNX6Q75sG257aEc0ic0bgMK+
-         ViWE5V20XBRIRx2X37rNbWlBPmeM5WmKB3lh0gbxWcNmZu3eP03RVg+HSFyda/pHSep8
-         t4rGlbJD+BYK+3jYcuK8Zd4Ayc0wiEWe8wtq9GSUWa/RB0z+8Mj2+luXiB3DgTolW/zW
-         910g==
+        Thu, 23 Jun 2022 07:40:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F36594BFD6
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 04:40:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655984404;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pXX1Tci8u6uSkWlCeJ6TegtPSfgMP3wYaXXEz0pOrgM=;
+        b=OaZVVip9LN/4AoDZryX9HsRC1xmCNjwx1AvQoBJZKv+ztF/kGJ9W703UZl9bMq3i0F1iiA
+        ty1prNpcnCWCURujDjSvGbxxaFWlNcILTo9RIrUW6ATHn71i2kXPVcBGrq1iYSB2hpkwsZ
+        sqzsqpMRmUkiircDI9dI51cZUwIzAqY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-298-upTb53_9P9SB-ChKbmpmgA-1; Thu, 23 Jun 2022 07:40:00 -0400
+X-MC-Unique: upTb53_9P9SB-ChKbmpmgA-1
+Received: by mail-wm1-f69.google.com with SMTP id p6-20020a05600c358600b0039c873184b9so1302533wmq.4
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 04:40:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=omRmebZ/oY7CY9g8zXjNwG5YUCBp0sw1aQgxBX9Qr6o=;
-        b=HwkZ0i3z1Yd831PkOKKZ+AWgant7mj8Jlq3P25NV04Vv7rfum/fDnGNKdB8afWq9Ma
-         oJRzwBjCP1pB/uQwLJGrN29coGG9MNBsi/zXDsMZOwKCLk8Ri7LK26Y2SYqacM0gBc85
-         TTJmlBab6VL5hL5V9TIBGP1/5Kk2D6iW+mZGHUI34BsgkmRs+lBidESf+9B/9rlHv1Wr
-         FPsbGBlg1EisJcq9JYrCDfoDzJZvArdludtgvqdAivJypT6ifDCoNuKXTdsL1wmc3/zU
-         5TXo1NEFPOT+3d5HgGLmXSMn5tzQeDBAhFMByaSls9LqsqYBI65csTYo+XTn3ZTqJMNY
-         +MbA==
-X-Gm-Message-State: AJIora+DWN4bXJZGiEsEX76Vglfw4Lgxlla1pTplxZfQOUZOQgv3uhoo
-        8yGYBS+nxgUIoXWwW6YiymdogCu7cIkwZKcK6hA=
-X-Google-Smtp-Source: AGRyM1tIccF6SA0l7YfTqzWSZNqiyehUPuP5isoKUNjBxUNacNtJbPk6Af35vL1VRBh7BRCji4F8il2LX/zERRUL7b8=
-X-Received: by 2002:a05:690c:58d:b0:317:dd62:f6d9 with SMTP id
- bo13-20020a05690c058d00b00317dd62f6d9mr10409900ywb.78.1655984373752; Thu, 23
- Jun 2022 04:39:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=pXX1Tci8u6uSkWlCeJ6TegtPSfgMP3wYaXXEz0pOrgM=;
+        b=DKS3p6qBOb5bzZ66kWfgJXQZXH8lmoxLhBBr1gUnIFmUv7ts3ApYDUdsYSl30o7M/b
+         L8Gr4Z+1eYzHCoECr7bnJklNiu8GFsyg4yME8egsj2Ee7ogfHun9FWTKodUDoT+UhZBc
+         S5vFlbzjIjGNh3rqafcMniYLxWloGaKLYPgciqYWxlJVVsztnhuyktMXU2R/HLq32uba
+         J+LlfMEFQHy1jHkh5Fy2exxKZA3XXRIeaT82rF80HW+CzKgItQpfK/sxM/Y7xiqT8DIj
+         5CspbS5RnEb+3cwCIZAfxHEBZ9WaWQPR99z9psXk4MIfL35ounyU+Z8j3iv/lpeb3UL9
+         hyFw==
+X-Gm-Message-State: AJIora/UeTSEmADJEbPNT0Lw+jnYXOI7AuCJPs6e/1UTvTYrx/hiuWhG
+        dIVwvzyvQ/ZGYn4YHs1UpCJ3/TXTdCUEqfSN21sd8lg/gMbkMwYtYg5VrKafvlynP7SgmFW2nLl
+        0wbOgjgSfoiDUZtHI55I3/joR
+X-Received: by 2002:adf:dece:0:b0:21b:a4b0:f7e3 with SMTP id i14-20020adfdece000000b0021ba4b0f7e3mr4817782wrn.197.1655984399533;
+        Thu, 23 Jun 2022 04:39:59 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sK/dnm6ZYIya+uSaMaOutOXp1zODWOwg9uNXRImx0f7YrOK+SdjBXJeYaIC5fXn2ZDefBv4A==
+X-Received: by 2002:adf:dece:0:b0:21b:a4b0:f7e3 with SMTP id i14-20020adfdece000000b0021ba4b0f7e3mr4817761wrn.197.1655984399335;
+        Thu, 23 Jun 2022 04:39:59 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id h30-20020adfaa9e000000b0020c7ec0fdf4sm27013707wrc.117.2022.06.23.04.39.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 04:39:58 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
+        linux-rt-users@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Arnd Bergmann <arnd@arndb.de>, Petr Mladek <pmladek@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Juri Lelli <jlelli@redhat.com>,
+        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Subject: Re: [PATCH v2] panic, kexec: Make __crash_kexec() NMI safe
+In-Reply-To: <YrQzB7sPD8BNxSFq@linutronix.de>
+References: <20220620111520.1039685-1-vschneid@redhat.com>
+ <YrQzB7sPD8BNxSFq@linutronix.de>
+Date:   Thu, 23 Jun 2022 12:39:57 +0100
+Message-ID: <xhsmhy1xn622a.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-References: <20220622173614.12778-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220622173614.12778-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdWbQ1VHH4ugQs2mamS2KGEj5AdWmNtmg=6eUJmyGRDTVw@mail.gmail.com>
- <CA+V-a8vDem8=QaSdJr5mjHC+qbGmUtTBWEsf9T8njMZMT3BGJw@mail.gmail.com> <YrNo6LLDixpZ16k/@kunai>
-In-Reply-To: <YrNo6LLDixpZ16k/@kunai>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Thu, 23 Jun 2022 12:39:07 +0100
-Message-ID: <CA+V-a8tTtaX2gj7Hc0JLjZcnuQ6BJLveWEtxGuT4fsk=pRa_KQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] mmc: renesas_sdhi: Fix typo's
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Pavel Machek <pavel@denx.de>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wolfram,
+On 23/06/22 11:31, Sebastian Andrzej Siewior wrote:
+> On 2022-06-20 12:15:20 [+0100], Valentin Schneider wrote:
+>> Attempting to get a crash dump out of a debug PREEMPT_RT kernel via an N=
+MI
+>> panic() doesn't work. The cause of that lies in the PREEMPT_RT definition
+>> of mutex_trylock():
+>>=20
+> =E2=80=A6
+>
+>> Fixes: 6ce47fd961fa ("rtmutex: Warn if trylock is called from hard/softi=
+rq context")
+>> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
+>
+> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>
+>> ---
+>> v1 -> v2
+>> ++++++++
+>>=20
+>> o Changed from Peterson-like synchronization to simpler atomic_cmpxchg
+>>   (Petr)
+>> o Slightly reworded changelog
+>> o Added Fixes: tag. Technically should be up to since kexec can happen
+>>   in an NMI, but that isn't such a clear target
+>
+> RT-wise it would be needed for each release.
 
-On Wed, Jun 22, 2022 at 8:09 PM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
->
->
-> > > > -       /* This DMAC cannot handle if buffer is not 128-bytes alignment */
-> > > > +       /* This DMAC cannot handle if buffer is not 128 byte aligned */
-> > >
-> > > 128-byte? ;-)
-> > >
-> > In the previous version of the patch Wolfram never came back on your
-> > reply, so I went with 128 byte instead.
->
-> I hoped for a native speaker to chime in. I don't care about the '-' but
-> maybe we should rephrase it to:
->
-> /* This DMAC needs buffers to be 128-byte aligned */
->
-> ?
-Fine by me, will update and resend a v3.
+So git tells me the Fixes: commit dates from v4.2; from [1] and [2] I get
+that both current longterm stable and stable-rt trees go as far back as
+v4.9, so I'm guessing if that gets picked up for the stable trees then it
+should make its way into the stable -rt trees?
 
-Cheers,
-Prabhakar
+[1]: https://wiki.linuxfoundation.org/realtime/preempt_rt_versions
+[2]: https://www.kernel.org/category/releases.html
+
+> There is also a mutex_unlock() in case an image is missing. This can go
+> via the scheduler if there is a waiter which does not look good with the
+> NMI in the picture.
+>
+> Sebastian
+
