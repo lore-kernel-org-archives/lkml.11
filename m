@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2115C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 075F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232207AbiFWRLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39216 "EHLO
+        id S231544AbiFWRLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiFWRJz (ORCPT
+        with ESMTP id S230378AbiFWRJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:09:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA06755367;
-        Thu, 23 Jun 2022 09:57:33 -0700 (PDT)
+        Thu, 23 Jun 2022 13:09:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF76B4B85F;
+        Thu, 23 Jun 2022 09:57:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10CE9B8248C;
-        Thu, 23 Jun 2022 16:57:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E0B8C341C6;
-        Thu, 23 Jun 2022 16:57:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11200B82493;
+        Thu, 23 Jun 2022 16:57:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64144C3411B;
+        Thu, 23 Jun 2022 16:57:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003427;
-        bh=hpr7dPZ5XWl9ycqC+kESLO4L50zCczShqrP2GtHInnc=;
+        s=korg; t=1656003445;
+        bh=S2mte76aH7kqcqbNPMSUvjm5m4VlBrxixRxn7+AsZ5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eHJLPzzB2GCJvPp9bJcjBqjNEbf4vTphrPod6i7XSLInhdhI8JV9qV9EDxlp7bvKF
-         jy4fEzoFpoUZPX5RWuSph29Km4WsexvuOzicafq/eJ4j//kOIQYVjJXc1HMlooLSfz
-         uvKeeT8qAMbBw88TvhdT0mTtyp49Vyc39pyJw0jA=
+        b=MQPV+x1wVm8pLNphU5Rx61vBQp4jy47qHMQolkRMRdkU17Vtt3yB+AogXQdp1257r
+         OoKx6eFdVDUiM/b7pIcO24BmUNgzndJm9N+QgaWpoALBsEmG5K2B3UEjgzLDN6aN2W
+         X8vJLHNHmUG7nkYVK5C86saCmBbceuX9fdJnjk1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, zijun_hu <zijun_hu@htc.com>,
+        Marc Zyngier <marc.zyngier@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 235/264] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
-Date:   Thu, 23 Jun 2022 18:43:48 +0200
-Message-Id: <20220623164350.725799345@linuxfoundation.org>
+Subject: [PATCH 4.9 241/264] irqchip/gic-v3: Iterate over possible CPUs by for_each_possible_cpu()
+Date:   Thu, 23 Jun 2022 18:43:54 +0200
+Message-Id: <20220623164350.893321580@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,44 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: zijun_hu <zijun_hu@htc.com>
 
-[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
+[ Upstream commit 3fad4cdac235c5b13227d0c09854c689ae62c70b ]
 
-When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
-overflow. To fix, we can follow what udpv6 does and subtract the
-transhdrlen from the max.
+get_cpu_number() doesn't use existing helper to iterate over possible
+CPUs, It will cause an error in case of discontinuous @cpu_possible_mask
+such as 0b11110001, which can result from a core having failed to come
+up on a SMP machine.
 
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixed by using existing helper for_each_possible_cpu().
+
+Signed-off-by: zijun_hu <zijun_hu@htc.com>
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/l2tp/l2tp_ip6.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-gic-v3.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 76ef758db112..e412020029df 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -518,14 +518,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	struct ipcm6_cookie ipc6;
- 	int addr_len = msg->msg_namelen;
- 	int transhdrlen = 4; /* zero session-id */
--	int ulen = len + transhdrlen;
-+	int ulen;
- 	int err;
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 2ab6060031a4..9ae24ffb9b09 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -982,7 +982,7 @@ static int get_cpu_number(struct device_node *dn)
+ {
+ 	const __be32 *cell;
+ 	u64 hwid;
+-	int i;
++	int cpu;
  
- 	/* Rough check on arithmetic overflow,
- 	   better check is made in ip6_append_data().
- 	 */
--	if (len > INT_MAX)
-+	if (len > INT_MAX - transhdrlen)
- 		return -EMSGSIZE;
-+	ulen = len + transhdrlen;
+ 	cell = of_get_property(dn, "reg", NULL);
+ 	if (!cell)
+@@ -996,9 +996,9 @@ static int get_cpu_number(struct device_node *dn)
+ 	if (hwid & ~MPIDR_HWID_BITMASK)
+ 		return -1;
  
- 	/* Mirror BSD error message compatibility */
- 	if (msg->msg_flags & MSG_OOB)
+-	for (i = 0; i < num_possible_cpus(); i++)
+-		if (cpu_logical_map(i) == hwid)
+-			return i;
++	for_each_possible_cpu(cpu)
++		if (cpu_logical_map(cpu) == hwid)
++			return cpu;
+ 
+ 	return -1;
+ }
 -- 
 2.35.1
 
