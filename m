@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 555A2CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234391AbiFWSTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
+        id S236980AbiFWSTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:19:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234164AbiFWSQD (ORCPT
+        with ESMTP id S236814AbiFWSQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:16:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF275C1639;
-        Thu, 23 Jun 2022 10:22:16 -0700 (PDT)
+        Thu, 23 Jun 2022 14:16:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF1DD111;
+        Thu, 23 Jun 2022 10:23:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ADDAB824B8;
-        Thu, 23 Jun 2022 17:22:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AD51C341CA;
-        Thu, 23 Jun 2022 17:22:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85D8661DC6;
+        Thu, 23 Jun 2022 17:23:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BE9FC3411B;
+        Thu, 23 Jun 2022 17:23:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004933;
-        bh=ELWPu2WsVA7XBvgFySoXF2QkOya+kpglczV7K/lrUXA=;
+        s=korg; t=1656004982;
+        bh=TOIYFlWSQUz41KaMTNODFTia0ri16JYS2zYLBSxXidY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U/pB3EpZNsAiFYmgv0nLsdXMbP9VzDOkcEGIVU3seV55f/UHK5n/wZUPNajTc8qIV
-         LMD94uXDemnSraCKjyDpbDGH9UqYfKCpOi4uPNA50wi5nHmAmOVczzcMJnAn61uj9G
-         wNtOMuOFMKWze7MEJUqwbSchh6fxvxbkmP4o+Lmg=
+        b=Vnuu9EnL8q+lm4+n+iq9Yl78tdeGq1XyvNZw7p2+KlSdCfqnvLeEmpeye9VhqmCTO
+         SR8+/WsV/m+Xrpb0RmuhNJzt0J4iMSfm7gnoPLPPwPOBdzCFxpwaYxJMNGtdBvFxNB
+         TDgkQd0LWK77RhrpNkG39SwJ/XHJlECTJp0tuXLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 196/234] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
-Date:   Thu, 23 Jun 2022 18:44:23 +0200
-Message-Id: <20220623164348.594784982@linuxfoundation.org>
+        stable@vger.kernel.org, Stephan Mueller <smueller@chronox.de>,
+        Yann Droneaud <ydroneaud@opteya.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 171/234] crypto: drbg - add FIPS 140-2 CTRNG for noise source
+Date:   Thu, 23 Jun 2022 18:43:58 +0200
+Message-Id: <20220623164347.890800730@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,46 +50,216 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Stephan Mueller <smueller@chronox.de>
 
-[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
+commit db07cd26ac6a418dc2823187958edcfdb415fa83 upstream.
 
-When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
-overflow. To fix, we can follow what udpv6 does and subtract the
-transhdrlen from the max.
+FIPS 140-2 section 4.9.2 requires a continuous self test of the noise
+source. Up to kernel 4.8 drivers/char/random.c provided this continuous
+self test. Afterwards it was moved to a location that is inconsistent
+with the FIPS 140-2 requirements. The relevant patch was
+e192be9d9a30555aae2ca1dc3aad37cba484cd4a .
 
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Thus, the FIPS 140-2 CTRNG is added to the DRBG when it obtains the
+seed. This patch resurrects the function drbg_fips_continous_test that
+existed some time ago and applies it to the noise sources. The patch
+that removed the drbg_fips_continous_test was
+b3614763059b82c26bdd02ffcb1c016c1132aad0 .
+
+The Jitter RNG implements its own FIPS 140-2 self test and thus does not
+need to be subjected to the test in the DRBG.
+
+The patch contains a tiny fix to ensure proper zeroization in case of an
+error during the Jitter RNG data gathering.
+
+Signed-off-by: Stephan Mueller <smueller@chronox.de>
+Reviewed-by: Yann Droneaud <ydroneaud@opteya.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/l2tp/l2tp_ip6.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ crypto/drbg.c         |   94 ++++++++++++++++++++++++++++++++++++++++++++++++--
+ include/crypto/drbg.h |    2 +
+ 2 files changed, 93 insertions(+), 3 deletions(-)
 
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 2ff25c445b82..9dae10d8880c 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -519,14 +519,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	struct ipcm6_cookie ipc6;
- 	int addr_len = msg->msg_namelen;
- 	int transhdrlen = 4; /* zero session-id */
--	int ulen = len + transhdrlen;
-+	int ulen;
- 	int err;
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -220,6 +220,57 @@ static inline unsigned short drbg_sec_st
+ }
  
- 	/* Rough check on arithmetic overflow,
- 	   better check is made in ip6_append_data().
- 	 */
--	if (len > INT_MAX)
-+	if (len > INT_MAX - transhdrlen)
- 		return -EMSGSIZE;
-+	ulen = len + transhdrlen;
+ /*
++ * FIPS 140-2 continuous self test for the noise source
++ * The test is performed on the noise source input data. Thus, the function
++ * implicitly knows the size of the buffer to be equal to the security
++ * strength.
++ *
++ * Note, this function disregards the nonce trailing the entropy data during
++ * initial seeding.
++ *
++ * drbg->drbg_mutex must have been taken.
++ *
++ * @drbg DRBG handle
++ * @entropy buffer of seed data to be checked
++ *
++ * return:
++ *	0 on success
++ *	-EAGAIN on when the CTRNG is not yet primed
++ *	< 0 on error
++ */
++static int drbg_fips_continuous_test(struct drbg_state *drbg,
++				     const unsigned char *entropy)
++{
++	unsigned short entropylen = drbg_sec_strength(drbg->core->flags);
++	int ret = 0;
++
++	if (!IS_ENABLED(CONFIG_CRYPTO_FIPS))
++		return 0;
++
++	/* skip test if we test the overall system */
++	if (list_empty(&drbg->test_data.list))
++		return 0;
++	/* only perform test in FIPS mode */
++	if (!fips_enabled)
++		return 0;
++
++	if (!drbg->fips_primed) {
++		/* Priming of FIPS test */
++		memcpy(drbg->prev, entropy, entropylen);
++		drbg->fips_primed = true;
++		/* priming: another round is needed */
++		return -EAGAIN;
++	}
++	ret = memcmp(drbg->prev, entropy, entropylen);
++	if (!ret)
++		panic("DRBG continuous self test failed\n");
++	memcpy(drbg->prev, entropy, entropylen);
++
++	/* the test shall pass when the two values are not equal */
++	return 0;
++}
++
++/*
+  * Convert an integer into a byte representation of this integer.
+  * The byte representation is big-endian
+  *
+@@ -998,6 +1049,22 @@ static inline int __drbg_seed(struct drb
+ 	return ret;
+ }
  
- 	/* Mirror BSD error message compatibility */
- 	if (msg->msg_flags & MSG_OOB)
--- 
-2.35.1
-
++static inline int drbg_get_random_bytes(struct drbg_state *drbg,
++					unsigned char *entropy,
++					unsigned int entropylen)
++{
++	int ret;
++
++	do {
++		get_random_bytes(entropy, entropylen);
++		ret = drbg_fips_continuous_test(drbg, entropy);
++		if (ret && ret != -EAGAIN)
++			return ret;
++	} while (ret);
++
++	return 0;
++}
++
+ static void drbg_async_seed(struct work_struct *work)
+ {
+ 	struct drbg_string data;
+@@ -1006,16 +1073,20 @@ static void drbg_async_seed(struct work_
+ 					       seed_work);
+ 	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
+ 	unsigned char entropy[32];
++	int ret;
+ 
+ 	BUG_ON(!entropylen);
+ 	BUG_ON(entropylen > sizeof(entropy));
+-	get_random_bytes(entropy, entropylen);
+ 
+ 	drbg_string_fill(&data, entropy, entropylen);
+ 	list_add_tail(&data.list, &seedlist);
+ 
+ 	mutex_lock(&drbg->drbg_mutex);
+ 
++	ret = drbg_get_random_bytes(drbg, entropy, entropylen);
++	if (ret)
++		goto unlock;
++
+ 	/* If nonblocking pool is initialized, deactivate Jitter RNG */
+ 	crypto_free_rng(drbg->jent);
+ 	drbg->jent = NULL;
+@@ -1030,6 +1101,7 @@ static void drbg_async_seed(struct work_
+ 	if (drbg->seeded)
+ 		drbg->reseed_threshold = drbg_max_requests(drbg);
+ 
++unlock:
+ 	mutex_unlock(&drbg->drbg_mutex);
+ 
+ 	memzero_explicit(entropy, entropylen);
+@@ -1081,7 +1153,9 @@ static int drbg_seed(struct drbg_state *
+ 		BUG_ON((entropylen * 2) > sizeof(entropy));
+ 
+ 		/* Get seed from in-kernel /dev/urandom */
+-		get_random_bytes(entropy, entropylen);
++		ret = drbg_get_random_bytes(drbg, entropy, entropylen);
++		if (ret)
++			goto out;
+ 
+ 		if (!drbg->jent) {
+ 			drbg_string_fill(&data1, entropy, entropylen);
+@@ -1094,7 +1168,7 @@ static int drbg_seed(struct drbg_state *
+ 						   entropylen);
+ 			if (ret) {
+ 				pr_devel("DRBG: jent failed with %d\n", ret);
+-				return ret;
++				goto out;
+ 			}
+ 
+ 			drbg_string_fill(&data1, entropy, entropylen * 2);
+@@ -1121,6 +1195,7 @@ static int drbg_seed(struct drbg_state *
+ 
+ 	ret = __drbg_seed(drbg, &seedlist, reseed);
+ 
++out:
+ 	memzero_explicit(entropy, entropylen * 2);
+ 
+ 	return ret;
+@@ -1142,6 +1217,11 @@ static inline void drbg_dealloc_state(st
+ 	drbg->reseed_ctr = 0;
+ 	drbg->d_ops = NULL;
+ 	drbg->core = NULL;
++	if (IS_ENABLED(CONFIG_CRYPTO_FIPS)) {
++		kzfree(drbg->prev);
++		drbg->prev = NULL;
++		drbg->fips_primed = false;
++	}
+ }
+ 
+ /*
+@@ -1211,6 +1291,14 @@ static inline int drbg_alloc_state(struc
+ 		drbg->scratchpad = PTR_ALIGN(drbg->scratchpadbuf, ret + 1);
+ 	}
+ 
++	if (IS_ENABLED(CONFIG_CRYPTO_FIPS)) {
++		drbg->prev = kzalloc(drbg_sec_strength(drbg->core->flags),
++				     GFP_KERNEL);
++		if (!drbg->prev)
++			goto fini;
++		drbg->fips_primed = false;
++	}
++
+ 	return 0;
+ 
+ fini:
+--- a/include/crypto/drbg.h
++++ b/include/crypto/drbg.h
+@@ -129,6 +129,8 @@ struct drbg_state {
+ 
+ 	bool seeded;		/* DRBG fully seeded? */
+ 	bool pr;		/* Prediction resistance enabled? */
++	bool fips_primed;	/* Continuous test primed? */
++	unsigned char *prev;	/* FIPS 140-2 continuous test value */
+ 	struct work_struct seed_work;	/* asynchronous seeding support */
+ 	struct crypto_rng *jent;
+ 	const struct drbg_state_ops *d_ops;
 
 
