@@ -2,101 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83189C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:38:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9056EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbiFWTiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
+        id S229527AbiFWTkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiFWThm (ORCPT
+        with ESMTP id S230261AbiFWTk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:37:42 -0400
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3608DA182;
-        Thu, 23 Jun 2022 12:26:05 -0700 (PDT)
-Received: by mail-pf1-f177.google.com with SMTP id bo5so518653pfb.4;
-        Thu, 23 Jun 2022 12:26:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=+Po9Dm3vumEX9STq43cTmihX9SdOY+/mYJ+qc0yciOo=;
-        b=sGAUs3OuNq/HpG0mGrjUfw8EV5ojeDk4MKCkeFJczsQMdL0CrRHfWEhCfsifSn7omK
-         3ToVGm8qKf5pNK5LovA7aB6DtNDXGvLU2smcPWpeWE0YmdeI5Wn8z1xHlrdPY7cnqeIz
-         VdVmRgNGcaed8Sd7j9dwkvwzNhT9JrMomEHP2hSfhCsRNQ9w4ccLuDgCxXucxjCm6XfN
-         Sgn4lbTdslKNzALsB8y/4oP+Fd1vAx3sfGjTcSDZyhP9V0XmXkbLVx9QUNUuCr25g263
-         s3EUJKP9ZWOFGyVdCBz0vB20wCvseQnqgJrJn0vxC0FxnTulBXaWhkv9hiHIitLtXCJK
-         z0Pg==
-X-Gm-Message-State: AJIora9oQxk20zjVrqRX85GjIRrBg1IPjcZGpANLetSc0Yft06NzRCuo
-        RmOkdOlEhlWOH87Tm3hEKzY=
-X-Google-Smtp-Source: AGRyM1uTX4ESJ0tw80Aa81RBvBg4Pcvvf5BGyKGi9W8AIdbExQbAaHbhTGHrArxaF0w8Iu1c5l0S6Q==
-X-Received: by 2002:a05:6a00:24cc:b0:50d:58bf:5104 with SMTP id d12-20020a056a0024cc00b0050d58bf5104mr42316787pfv.36.1656012364666;
-        Thu, 23 Jun 2022 12:26:04 -0700 (PDT)
-Received: from karthik-strix-linux.karthek.com ([117.208.185.194])
-        by smtp.gmail.com with ESMTPSA id h11-20020a63b00b000000b0040c99f8bcb7sm10095771pgf.58.2022.06.23.12.26.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 12:26:04 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 00:55:58 +0530
-From:   Karthik Alapati <mail@karthek.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>
-Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        Thu, 23 Jun 2022 15:40:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785F77C50C
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 12:30:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EF44617AE
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 19:30:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3E8D1C341C0;
+        Thu, 23 Jun 2022 19:30:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656012608;
+        bh=zyLe6wt39Wb6s3oWmYzQL/cc8t5ray/rgeaP+1Ole80=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=OFGFMohyXsngDhFTxAOafHKVk+RbCeTslY8q/1nu3HxFTYNHPz1s2DjGRDFMpnj5O
+         VxsyOQmXhGgGsXZqavVMZ5Qy5l24fjnpkG3mGlKPbXAq9/bf1ciZY3kRCh9/iWs/t7
+         x6tGi6MPvcmiVByYUHnFiQbfn0Vh/nIyQaC9k/kJw4CTHVJYM/vVUlG8R/1rzoAOko
+         g4n7KkJAwsdc2Uoyk9o+2dUQVQrEb7o2LbRoPZienYAqFJOS7PDabT4OxJphtjXOUn
+         xHNtsICUar18UNj7uTPuvwdgMWiASWSAoXT5EPbAWePh2VU/mv/LE2cOyap8/q30ad
+         Bi1vqcg+02hiw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1D6C6E737F0;
+        Thu, 23 Jun 2022 19:30:08 +0000 (UTC)
+Subject: Re: [GIT PULL] random number generator fixes for 5.19-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220623185446.1351600-1-Jason@zx2c4.com>
+References: <20220623185446.1351600-1-Jason@zx2c4.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220623185446.1351600-1-Jason@zx2c4.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.19-rc4-for-linus
+X-PR-Tracked-Commit-Id: 63b8ea5e4f1a87dea4d3114293fc8e96a8f193d7
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: ba461afbef604f58e05676ca38c2a599f073f296
+Message-Id: <165601260804.24693.10068706609616412473.pr-tracker-bot@kernel.org>
+Date:   Thu, 23 Jun 2022 19:30:08 +0000
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: media/atomisp: don't use index pointer for debug
- messages
-Message-ID: <YrS+RmnyusG6JOTU@karthik-strix-linux.karthek.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there are some debug messages which use index pointer of
-list which may not always point to the right entry as in
-the case where the required entry is not found and the
-list traversal completes with index pointer pointing
-to the last entry
+The pull request you sent on Thu, 23 Jun 2022 20:54:46 +0200:
 
-Signed-off-by: Karthik Alapati <mail@karthek.com>
----
- drivers/staging/media/atomisp/pci/atomisp_cmd.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.19-rc4-for-linus
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_cmd.c b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-index 97d5a528969b..ec030e3aeae5 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-@@ -956,7 +956,7 @@ void atomisp_buf_done(struct atomisp_sub_device *asd, int error,
- 		asd->s3a_bufs_in_css[css_pipe_id]--;
- 		atomisp_3a_stats_ready_event(asd, buffer.css_buffer.exp_id);
- 		dev_dbg(isp->dev, "%s: s3a stat with exp_id %d is ready\n",
--			__func__, s3a_buf->s3a_data->exp_id);
-+			__func__, buffer.css_buffer.exp_id);
- 		break;
- 	case IA_CSS_BUFFER_TYPE_METADATA:
- 		if (error)
-@@ -976,7 +976,7 @@ void atomisp_buf_done(struct atomisp_sub_device *asd, int error,
- 		asd->metadata_bufs_in_css[stream_id][css_pipe_id]--;
- 		atomisp_metadata_ready_event(asd, md_type);
- 		dev_dbg(isp->dev, "%s: metadata with exp_id %d is ready\n",
--			__func__, md_buf->metadata->exp_id);
-+			__func__, buffer.css_buffer.exp_id);
- 		break;
- 	case IA_CSS_BUFFER_TYPE_DIS_STATISTICS:
- 		list_for_each_entry_safe(dis_buf, _dis_buf_tmp,
-@@ -995,7 +995,7 @@ void atomisp_buf_done(struct atomisp_sub_device *asd, int error,
- 		}
- 		asd->dis_bufs_in_css--;
- 		dev_dbg(isp->dev, "%s: dis stat with exp_id %d is ready\n",
--			__func__, dis_buf->dis_data->exp_id);
-+			__func__, buffer.css_buffer.exp_id);
- 		break;
- 	case IA_CSS_BUFFER_TYPE_VF_OUTPUT_FRAME:
- 	case IA_CSS_BUFFER_TYPE_SEC_VF_OUTPUT_FRAME:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/ba461afbef604f58e05676ca38c2a599f073f296
+
+Thank you!
+
 -- 
-2.36.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
