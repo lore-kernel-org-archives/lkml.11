@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE043C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C931C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231590AbiFWRdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
+        id S234119AbiFWRdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234140AbiFWRbT (ORCPT
+        with ESMTP id S234195AbiFWRbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:31:19 -0400
+        Thu, 23 Jun 2022 13:31:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD89C81D87;
-        Thu, 23 Jun 2022 10:05:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7ABB5158F;
+        Thu, 23 Jun 2022 10:05:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A079AB82499;
-        Thu, 23 Jun 2022 17:05:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC18C341C4;
-        Thu, 23 Jun 2022 17:04:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A894B8248E;
+        Thu, 23 Jun 2022 17:05:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD840C3411B;
+        Thu, 23 Jun 2022 17:05:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003900;
-        bh=lwxdwfv9q0du0Q5xiBlzD6K/BrGfI5juH84PKp+aQHM=;
+        s=korg; t=1656003906;
+        bh=N/NIA5jKRGapFcBKcTH4xUISDWf3g0Dhrm0AZVeEJeU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WiMkQMsPUSyhrxS3RKq8xn2dl8/tQiS7jdcodJKzXByN7ydjwr/53bwXVBdmpHaHo
-         CXzhY5aLlDoNctTpgWty4Vd5uDGA45upDOJHwM2wIcZPoGtLSRZJRBqCnkpwBQi7sQ
-         FfTPFOM9Xp1Kk7kfj0Xip/+XseR85OrU6hXuPHks=
+        b=tulBVPNe2qNKTAfbWqfVZjZXkOX1BYndPrYrYTipSFgaJPzMVLiTQP0+qIdOogW4t
+         qkz2PhIe+HTPESKD6G7PjzomhSuKUpecUOzOfb8rMygImEEjJQeGBZnojl8iL/sdkR
+         EpbVgANNeiPp3OjHpnKxEEpUUcgyB6diTwmsGSb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Mackall <mpm@selenic.com>,
-        Theodore Tso <tytso@mit.edu>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 122/237] random: pull add_hwgenerator_randomness() declaration into random.h
-Date:   Thu, 23 Jun 2022 18:42:36 +0200
-Message-Id: <20220623164346.665378562@linuxfoundation.org>
+Subject: [PATCH 4.14 124/237] random: round-robin registers as ulong, not u32
+Date:   Thu, 23 Jun 2022 18:42:38 +0200
+Message-Id: <20220623164346.723386093@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -54,61 +51,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit b777c38239fec5a528e59f55b379e31b1a187524 upstream.
+commit da3951ebdcd1cb1d5c750e08cd05aee7b0c04d9a upstream.
 
-add_hwgenerator_randomness() is a function implemented and documented
-inside of random.c. It is the way that hardware RNGs push data into it.
-Therefore, it should be declared in random.h. Otherwise sparse complains
-with:
+When the interrupt handler does not have a valid cycle counter, it calls
+get_reg() to read a register from the irq stack, in round-robin.
+Currently it does this assuming that registers are 32-bit. This is
+_probably_ the case, and probably all platforms without cycle counters
+are in fact 32-bit platforms. But maybe not, and either way, it's not
+quite correct. This commit fixes that to deal with `unsigned long`
+rather than `u32`.
 
-random.c:1137:6: warning: symbol 'add_hwgenerator_randomness' was not declared. Should it be static?
-
-The alternative would be to include hw_random.h into random.c, but that
-wouldn't really be good for anything except slowing down compile time.
-
-Cc: Matt Mackall <mpm@selenic.com>
 Cc: Theodore Ts'o <tytso@mit.edu>
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/hw_random/core.c |    1 +
- include/linux/hw_random.h     |    2 --
- include/linux/random.h        |    2 ++
- 3 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/char/random.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/char/hw_random/core.c
-+++ b/drivers/char/hw_random/core.c
-@@ -15,6 +15,7 @@
- #include <linux/err.h>
- #include <linux/fs.h>
- #include <linux/hw_random.h>
-+#include <linux/random.h>
- #include <linux/kernel.h>
- #include <linux/kthread.h>
- #include <linux/sched/signal.h>
---- a/include/linux/hw_random.h
-+++ b/include/linux/hw_random.h
-@@ -59,7 +59,5 @@ extern int devm_hwrng_register(struct de
- /** Unregister a Hardware Random Number Generator driver. */
- extern void hwrng_unregister(struct hwrng *rng);
- extern void devm_hwrng_unregister(struct device *dve, struct hwrng *rng);
--/** Feed random bits into the pool. */
--extern void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1256,15 +1256,15 @@ int random_online_cpu(unsigned int cpu)
+ }
+ #endif
  
- #endif /* LINUX_HWRANDOM_H_ */
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -32,6 +32,8 @@ static inline void add_latent_entropy(vo
- extern void add_input_randomness(unsigned int type, unsigned int code,
- 				 unsigned int value) __latent_entropy;
- extern void add_interrupt_randomness(int irq) __latent_entropy;
-+extern void add_hwgenerator_randomness(const void *buffer, size_t count,
-+				       size_t entropy);
+-static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
++static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
+ {
+-	u32 *ptr = (u32 *)regs;
++	unsigned long *ptr = (unsigned long *)regs;
+ 	unsigned int idx;
  
- extern void get_random_bytes(void *buf, size_t nbytes);
- extern int wait_for_random_bytes(void);
+ 	if (regs == NULL)
+ 		return 0;
+ 	idx = READ_ONCE(f->reg_idx);
+-	if (idx >= sizeof(struct pt_regs) / sizeof(u32))
++	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
+ 		idx = 0;
+ 	ptr += idx++;
+ 	WRITE_ONCE(f->reg_idx, idx);
 
 
