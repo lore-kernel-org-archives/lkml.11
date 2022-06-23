@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 771D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 479CAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbiFWRGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54686 "EHLO
+        id S230022AbiFWRGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231381AbiFWREE (ORCPT
+        with ESMTP id S231519AbiFWREI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:04:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CD9515BE;
-        Thu, 23 Jun 2022 09:55:26 -0700 (PDT)
+        Thu, 23 Jun 2022 13:04:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA2A517C5;
+        Thu, 23 Jun 2022 09:55:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DB1A8CE24F9;
-        Thu, 23 Jun 2022 16:55:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4C5EC3411B;
-        Thu, 23 Jun 2022 16:55:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC16460B21;
+        Thu, 23 Jun 2022 16:55:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A13DDC3411B;
+        Thu, 23 Jun 2022 16:55:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003315;
-        bh=V6dFDewaS8WoSf1+YUj9GNXzHan9k2X6UV0TwN8v4fQ=;
+        s=korg; t=1656003318;
+        bh=1M9PSXJVnGE6mA3Iv9p2eOcKv5jmu9LVJ0s2Uepl+pg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SHdqEHh7T4NQ6M9IglhQtPLUpk4x0zKQf9MeFz1UnpNIhrIKXzRKh9Lv67xL2itsK
-         FNHM8mtMXmcu09jpXmBwTeePClRgh9liL1Y8GOXAV1k39wEK+d1XO8KinVANRNk3BG
-         /KWSxof/61l0nWpYVeZTEvr6jxv4lO5DTREVa5Ks=
+        b=hRKhQnqOHaTwNFui6JitdFi5A3FRkwfwMv69gm+fwuz8HxDn4esh/mSmWkS+utnxt
+         4RzKjYNhdOUCmfiWZ12Jtko/Mi/L0uP8x72wfUChyq4UKUzguNIlIoEBWhxF4yHJMX
+         Zz9sMCfMJ1fxuZXASCTPR7MlpsE0zBQF5n9xFbLo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 198/264] random: help compiler out with fast_mix() by using simpler arguments
-Date:   Thu, 23 Jun 2022 18:43:11 +0200
-Message-Id: <20220623164349.673626206@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 172/264] random: check for signal_pending() outside of need_resched() check
+Date:   Thu, 23 Jun 2022 18:42:45 +0200
+Message-Id: <20220623164348.932310056@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -47,94 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Jann Horn <jannh@google.com>
 
-commit 791332b3cbb080510954a4c152ce02af8832eac9 upstream.
+commit 1448769c9cdb69ad65287f4f7ab58bc5f2f5d7ba upstream.
 
-Now that fast_mix() has more than one caller, gcc no longer inlines it.
-That's fine. But it also doesn't handle the compound literal argument we
-pass it very efficiently, nor does it handle the loop as well as it
-could. So just expand the code to spell out this function so that it
-generates the same code as it did before. Performance-wise, this now
-behaves as it did before the last commit. The difference in actual code
-size on x86 is 45 bytes, which is less than a cache line.
+signal_pending() checks TIF_NOTIFY_SIGNAL and TIF_SIGPENDING, which
+signal that the task should bail out of the syscall when possible. This
+is a separate concept from need_resched(), which checks
+TIF_NEED_RESCHED, signaling that the task should preempt.
 
+In particular, with the current code, the signal_pending() bailout
+probably won't work reliably.
+
+Change this to look like other functions that read lots of data, such as
+read_zero().
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jann Horn <jannh@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   44 +++++++++++++++++++++++---------------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+ drivers/char/random.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1027,25 +1027,30 @@ static DEFINE_PER_CPU(struct fast_pool,
-  * and therefore this has no security on its own. s represents the
-  * four-word SipHash state, while v represents a two-word input.
-  */
--static void fast_mix(unsigned long s[4], const unsigned long v[2])
-+static void fast_mix(unsigned long s[4], unsigned long v1, unsigned long v2)
- {
--	size_t i;
--
--	for (i = 0; i < 2; ++i) {
--		s[3] ^= v[i];
- #ifdef CONFIG_64BIT
--		s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32);
--		s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2];
--		s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0];
--		s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32);
-+#define PERM() do { \
-+	s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32); \
-+	s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2]; \
-+	s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0]; \
-+	s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32); \
-+} while (0)
- #else
--		s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16);
--		s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2];
--		s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0];
--		s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16);
-+#define PERM() do { \
-+	s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16); \
-+	s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2]; \
-+	s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0]; \
-+	s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16); \
-+} while (0)
- #endif
--		s[0] ^= v[i];
--	}
-+
-+	s[3] ^= v1;
-+	PERM();
-+	s[0] ^= v1;
-+	s[3] ^= v2;
-+	PERM();
-+	s[0] ^= v2;
- }
+@@ -550,13 +550,13 @@ static ssize_t get_random_bytes_user(voi
+ 	}
  
- #ifdef CONFIG_SMP
-@@ -1115,10 +1120,8 @@ void add_interrupt_randomness(int irq)
- 	struct pt_regs *regs = get_irq_regs();
- 	unsigned int new_count;
+ 	do {
+-		if (large_request && need_resched()) {
++		if (large_request) {
+ 			if (signal_pending(current)) {
+ 				if (!ret)
+ 					ret = -ERESTARTSYS;
+ 				break;
+ 			}
+-			schedule();
++			cond_resched();
+ 		}
  
--	fast_mix(fast_pool->pool, (unsigned long[2]){
--		entropy,
--		(regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq)
--	});
-+	fast_mix(fast_pool->pool, entropy,
-+		 (regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq));
- 	new_count = ++fast_pool->count;
- 
- 	if (new_count & MIX_INFLIGHT)
-@@ -1158,8 +1161,7 @@ static void add_timer_randomness(struct
- 	 * sometime after, so mix into the fast pool.
- 	 */
- 	if (in_irq()) {
--		fast_mix(this_cpu_ptr(&irq_randomness)->pool,
--			 (unsigned long[2]){ entropy, num });
-+		fast_mix(this_cpu_ptr(&irq_randomness)->pool, entropy, num);
- 	} else {
- 		spin_lock_irqsave(&input_pool.lock, flags);
- 		_mix_pool_bytes(&entropy, sizeof(entropy));
+ 		chacha20_block(chacha_state, output);
 
 
