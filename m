@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF0DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92306CCA48B
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232483AbiFWQqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47066 "EHLO
+        id S231892AbiFWQqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232119AbiFWQqK (ORCPT
+        with ESMTP id S232482AbiFWQqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:46:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A84849936;
-        Thu, 23 Jun 2022 09:46:04 -0700 (PDT)
+        Thu, 23 Jun 2022 12:46:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD444993A;
+        Thu, 23 Jun 2022 09:46:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C3E161F4A;
-        Thu, 23 Jun 2022 16:46:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD2F9C3411B;
-        Thu, 23 Jun 2022 16:46:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A723E61F93;
+        Thu, 23 Jun 2022 16:46:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95A2AC3411B;
+        Thu, 23 Jun 2022 16:46:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002763;
-        bh=acTDpMhWkZASg9kenzikQtg6sdaeRAIDpz7Wx/oAjgs=;
+        s=korg; t=1656002772;
+        bh=c5tXv7Sm5AN8vh85CRQru6QUw77VvvZ6qZ96H1GaVwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ObIfpMf6ELm9qDQ3eM2iY3hw4dpNN98gNLLgNlX/Nu5MIt8jo7mrbVsqUspde2bv
-         vwP06QgqS5XPv2xc++hUgnVKWHxWVMLoJcGJ9rfZxBHhxLWslE15wc/uPwL+14bGA6
-         3nBLuWUOElLAR9ZKplZP4GSfKkZLKmC9C8Sqplds=
+        b=NvMtM/q+j6TB8SONrVriTcnm9UGxrY3IL8njoWf32FwNFfJ1mZ5DLEhTtS3EBG18w
+         2N5cgRYQxwb6ISUz+0jZ004Yah8D6AJiVfRbYlBD/Yfe2X1JOTOne5Wi7jw22ub5hz
+         qQktkI6CFFrkAU0oEKgfu82FnZVfzDlpMUkAu/+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 4.9 018/264] random: set up the NUMA crng instances after the CRNG is fully initialized
-Date:   Thu, 23 Jun 2022 18:40:11 +0200
-Message-Id: <20220623164344.580933193@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.9 020/264] random: rate limit unseeded randomness warnings
+Date:   Thu, 23 Jun 2022 18:40:13 +0200
+Message-Id: <20220623164344.637708538@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,67 +49,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Theodore Ts'o <tytso@mit.edu>
 
-commit 8ef35c866f8862df074a49a93b0309725812dea8 upstream.
+commit 4e00b339e264802851aff8e73cde7d24b57b18ce upstream.
 
-Until the primary_crng is fully initialized, don't initialize the NUMA
-crng nodes.  Otherwise users of /dev/urandom on NUMA systems before
-the CRNG is fully initialized can get very bad quality randomness.  Of
-course everyone should move to getrandom(2) where this won't be an
-issue, but there's a lot of legacy code out there.  This related to
-CVE-2018-1108.
+On systems without sufficient boot randomness, no point spamming dmesg.
 
-Reported-by: Jann Horn <jannh@google.com>
-Fixes: 1e7f583af67b ("random: make /dev/urandom scalable for silly...")
-Cc: stable@kernel.org # 4.8+
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/char/random.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -799,6 +799,32 @@ static void crng_initialize(struct crng_
- 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+@@ -1637,8 +1637,9 @@ static void _warn_unseeded_randomness(co
+ #ifndef CONFIG_WARN_ALL_UNSEEDED_RANDOM
+ 	print_once = true;
+ #endif
+-	pr_notice("random: %s called from %pS with crng_init=%d\n",
+-		  func_name, caller, crng_init);
++	if (__ratelimit(&unseeded_warning))
++		pr_notice("random: %s called from %pS with crng_init=%d\n",
++			  func_name, caller, crng_init);
  }
  
-+#ifdef CONFIG_NUMA
-+static void numa_crng_init(void)
-+{
-+	int i;
-+	struct crng_state *crng;
-+	struct crng_state **pool;
-+
-+	pool = kcalloc(nr_node_ids, sizeof(*pool), GFP_KERNEL|__GFP_NOFAIL);
-+	for_each_online_node(i) {
-+		crng = kmalloc_node(sizeof(struct crng_state),
-+				    GFP_KERNEL | __GFP_NOFAIL, i);
-+		spin_lock_init(&crng->lock);
-+		crng_initialize(crng);
-+		pool[i] = crng;
-+	}
-+	mb();
-+	if (cmpxchg(&crng_node_pool, NULL, pool)) {
-+		for_each_node(i)
-+			kfree(pool[i]);
-+		kfree(pool);
-+	}
-+}
-+#else
-+static void numa_crng_init(void) {}
-+#endif
-+
  /*
-  * crng_fast_load() can be called by code in the interrupt service
-  * path.  So we can't afford to dilly-dally.
-@@ -957,6 +983,7 @@ static void crng_reseed(struct crng_stat
- 	if (crng == &primary_crng && crng_init < 2) {
- 		numa_crng_init();
- 		invalidate_batched_entropy();
-+		numa_crng_init();
- 		crng_init = 2;
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
 
 
