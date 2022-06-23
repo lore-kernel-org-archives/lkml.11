@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4506C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2115C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232148AbiFWRLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
+        id S232207AbiFWRLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbiFWRJ1 (ORCPT
+        with ESMTP id S229639AbiFWRJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:09:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57ACA562CF;
-        Thu, 23 Jun 2022 09:57:32 -0700 (PDT)
+        Thu, 23 Jun 2022 13:09:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA06755367;
+        Thu, 23 Jun 2022 09:57:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94E2D60B2C;
-        Thu, 23 Jun 2022 16:57:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76D3EC3411B;
-        Thu, 23 Jun 2022 16:57:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10CE9B8248C;
+        Thu, 23 Jun 2022 16:57:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E0B8C341C6;
+        Thu, 23 Jun 2022 16:57:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003448;
-        bh=6XAypWJoYaPQZyaDCVQ3fpYCncTok/BXGrjFVTqXzHI=;
+        s=korg; t=1656003427;
+        bh=hpr7dPZ5XWl9ycqC+kESLO4L50zCczShqrP2GtHInnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I642/gRR+LqW5oN9B1dFDrmMhOOktB6vDcW58cg+w/rNafYAV4eaKrlO272Llx2A+
-         VlWaLkqRl93bpJCDnHzedGGv4Z0op3CAvtIW0bbKMRvDbt1Cu/e8LTWmtI6Fo6rvau
-         g+D9H6GwlnNt7GzwJstJtj9+CaAjGw/Z/xVu/XA4=
+        b=eHJLPzzB2GCJvPp9bJcjBqjNEbf4vTphrPod6i7XSLInhdhI8JV9qV9EDxlp7bvKF
+         jy4fEzoFpoUZPX5RWuSph29Km4WsexvuOzicafq/eJ4j//kOIQYVjJXc1HMlooLSfz
+         uvKeeT8qAMbBw88TvhdT0mTtyp49Vyc39pyJw0jA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Ian Abbott <abbotti@mev.co.uk>
-Subject: [PATCH 4.9 242/264] comedi: vmk80xx: fix expression for tx buffer size
-Date:   Thu, 23 Jun 2022 18:43:55 +0200
-Message-Id: <20220623164350.920498267@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 235/264] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
+Date:   Thu, 23 Jun 2022 18:43:48 +0200
+Message-Id: <20220623164350.725799345@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -48,35 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Abbott <abbotti@mev.co.uk>
+From: Wang Yufen <wangyufen@huawei.com>
 
-commit 242439f7e279d86b3f73b5de724bc67b2f8aeb07 upstream.
+[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
 
-The expression for setting the size of the allocated bulk TX buffer
-(`devpriv->usb_tx_buf`) is calling `usb_endpoint_maxp(devpriv->ep_rx)`,
-which is using the wrong endpoint (should be `devpriv->ep_tx`).  Fix it.
+When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
+overflow. To fix, we can follow what udpv6 does and subtract the
+transhdrlen from the max.
 
-Fixes: a23461c47482 ("comedi: vmk80xx: fix transfer-buffer overflow")
-Cc: Johan Hovold <johan@kernel.org>
-Cc: stable@vger.kernel.org # 4.9+
-Reviewed-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
-Link: https://lore.kernel.org/r/20220607171819.4121-1-abbotti@mev.co.uk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/comedi/drivers/vmk80xx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/l2tp/l2tp_ip6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/staging/comedi/drivers/vmk80xx.c
-+++ b/drivers/staging/comedi/drivers/vmk80xx.c
-@@ -694,7 +694,7 @@ static int vmk80xx_alloc_usb_buffers(str
- 	if (!devpriv->usb_rx_buf)
- 		return -ENOMEM;
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 76ef758db112..e412020029df 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -518,14 +518,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct ipcm6_cookie ipc6;
+ 	int addr_len = msg->msg_namelen;
+ 	int transhdrlen = 4; /* zero session-id */
+-	int ulen = len + transhdrlen;
++	int ulen;
+ 	int err;
  
--	size = max(usb_endpoint_maxp(devpriv->ep_rx), MIN_BUF_SIZE);
-+	size = max(usb_endpoint_maxp(devpriv->ep_tx), MIN_BUF_SIZE);
- 	devpriv->usb_tx_buf = kzalloc(size, GFP_KERNEL);
- 	if (!devpriv->usb_tx_buf)
- 		return -ENOMEM;
+ 	/* Rough check on arithmetic overflow,
+ 	   better check is made in ip6_append_data().
+ 	 */
+-	if (len > INT_MAX)
++	if (len > INT_MAX - transhdrlen)
+ 		return -EMSGSIZE;
++	ulen = len + transhdrlen;
+ 
+ 	/* Mirror BSD error message compatibility */
+ 	if (msg->msg_flags & MSG_OOB)
+-- 
+2.35.1
+
 
 
