@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C55DCC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 003E5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234236AbiFWRds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55228 "EHLO
+        id S234249AbiFWRdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234471AbiFWRcq (ORCPT
+        with ESMTP id S234467AbiFWRcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:32:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC0C86AC3;
-        Thu, 23 Jun 2022 10:05:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A11F85796;
+        Thu, 23 Jun 2022 10:05:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FFB3B82499;
-        Thu, 23 Jun 2022 17:05:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF622C3411B;
-        Thu, 23 Jun 2022 17:05:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BFF761B76;
+        Thu, 23 Jun 2022 17:05:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E92A4C3411B;
+        Thu, 23 Jun 2022 17:05:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003927;
-        bh=fBU7IPs0E+Na+OQLrUJRsGKxqjI7vklE+yq1nJxbwYM=;
+        s=korg; t=1656003921;
+        bh=LxfPCWUpPkoJx7CMdmDWuUIIaCKudlIu6rNxc9EV36E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GZBGrqn/QVyUNQx5MsukRs4s+7Yy3mhskyRqtgVPjL9dp4xtVJguAS5kr5E5zh/KZ
-         /kbWLBlp0hXQdq3Z/PvTLXNLZLwFFMOJfrL2XV4zFHTl5++bFZRo1WDJ+YZICxmYuo
-         7quCCAyRNuf+5jHEJuv3wUDFGBNeA3RdivkQ33hQ=
+        b=Miow90e2hNzOjxUkBCQi1nUpXy5i9keGz3vneyrQUS/xihRFdHmqjN3aslakqgMlF
+         n6P+WDFsdBS8izcpNtUXmqEMU5NgCHz/7e1sDtsyaJynpO/PBqRAMk/LM8+FlSk6js
+         Xr0494lannAlDvcSHjYR/WrzwNPRSTVc1tGwZObc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 130/237] random: dont let 644 read-only sysctls be written to
-Date:   Thu, 23 Jun 2022 18:42:44 +0200
-Message-Id: <20220623164346.894479540@linuxfoundation.org>
+Subject: [PATCH 4.14 129/237] random: give sysctl_random_min_urandom_seed a more sensible value
+Date:   Thu, 23 Jun 2022 18:42:43 +0200
+Message-Id: <20220623164346.865639562@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,54 +51,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 77553cf8f44863b31da242cf24671d76ddb61597 upstream.
+commit d0efdf35a6a71d307a250199af6fce122a7c7e11 upstream.
 
-We leave around these old sysctls for compatibility, and we keep them
-"writable" for compatibility, but even after writing, we should keep
-reporting the same value. This is consistent with how userspaces tend to
-use sysctl_random_write_wakeup_bits, writing to it, and then later
-reading from it and using the value.
+This isn't used by anything or anywhere, but we can't delete it due to
+compatibility. So at least give it the correct value of what it's
+supposed to be instead of a garbage one.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/char/random.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1662,6 +1662,13 @@ static int proc_do_uuid(struct ctl_table
- 	return proc_dostring(&fake_table, 0, buffer, lenp, ppos);
- }
+@@ -1612,7 +1612,7 @@ const struct file_operations urandom_fop
+  *   to avoid breaking old userspaces, but writing to it does not
+  *   change any behavior of the RNG.
+  *
+- * - urandom_min_reseed_secs - fixed to the meaningless value "60".
++ * - urandom_min_reseed_secs - fixed to the value CRNG_RESEED_INTERVAL.
+  *   It is writable to avoid breaking old userspaces, but writing
+  *   to it does not change any behavior of the RNG.
+  *
+@@ -1622,7 +1622,7 @@ const struct file_operations urandom_fop
  
-+/* The same as proc_dointvec, but writes don't change anything. */
-+static int proc_do_rointvec(struct ctl_table *table, int write, void __user *buffer,
-+			    size_t *lenp, loff_t *ppos)
-+{
-+	return write ? 0 : proc_dointvec(table, 0, buffer, lenp, ppos);
-+}
-+
- extern struct ctl_table random_table[];
- struct ctl_table random_table[] = {
- 	{
-@@ -1683,14 +1690,14 @@ struct ctl_table random_table[] = {
- 		.data		= &sysctl_random_write_wakeup_bits,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_do_rointvec,
- 	},
- 	{
- 		.procname	= "urandom_min_reseed_secs",
- 		.data		= &sysctl_random_min_urandom_seed,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_do_rointvec,
- 	},
- 	{
- 		.procname	= "boot_id",
+ #include <linux/sysctl.h>
+ 
+-static int sysctl_random_min_urandom_seed = 60;
++static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
+ static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
+ static int sysctl_poolsize = POOL_BITS;
+ static u8 sysctl_bootid[UUID_SIZE];
 
 
