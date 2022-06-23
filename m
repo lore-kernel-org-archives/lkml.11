@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235690AbiFWSBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52556 "EHLO
+        id S235823AbiFWSBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235630AbiFWR45 (ORCPT
+        with ESMTP id S236159AbiFWR6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:56:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB44AE98F;
-        Thu, 23 Jun 2022 10:15:33 -0700 (PDT)
+        Thu, 23 Jun 2022 13:58:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2074F1D7;
+        Thu, 23 Jun 2022 10:16:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3102D61DE1;
-        Thu, 23 Jun 2022 17:15:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1295AC3411B;
-        Thu, 23 Jun 2022 17:15:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87B74B824B9;
+        Thu, 23 Jun 2022 17:16:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 763F2C3411B;
+        Thu, 23 Jun 2022 17:16:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004532;
-        bh=J5xJYi+i64ykzs9x/0F9qkD+abvNKXxxEEBjmLewFAs=;
+        s=korg; t=1656004571;
+        bh=/ZmgAz/yF4n7uDYfBU2W7fDHZpOoFzytYqX2t0cr/gc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JcWaZtTSQlVkNrEr+oGWtTh7P2cVImIYX6yRkmVeOFF4dmkKBUX3jjCqgZRxYTyHx
-         XW2pzPFhPVBjHOTvxBMSGSoZ5kdmZ8S9KI+rfJArG3k+CUkkrDdFm5Le84U8bfOVlg
-         mYFlYgChzL9V16qIAUi4aiCUZPp/JXxnUHsDV8ZQ=
+        b=nUVOxOZeBWcIxz3FG0KM15ZQKZGpZcDV48F+v7JQLJBNT3SV4CI6Va+vEFtF5rR0G
+         q5tShvmFplteptB3lbhVMAjgEzYmVpAtNZDB/9xibk/BorDsn7+6LL1hNJnmYUeGMA
+         LgwvJj390eK1YN2nC5Vfu2YRMg8DP/VBeeQ/8ikw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 066/234] random: remove unused OUTPUT_POOL constants
-Date:   Thu, 23 Jun 2022 18:42:13 +0200
-Message-Id: <20220623164344.929675215@linuxfoundation.org>
+Subject: [PATCH 4.19 039/234] linux/random.h: Use false with bool
+Date:   Thu, 23 Jun 2022 18:41:46 +0200
+Message-Id: <20220623164344.171237654@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,44 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Richard Henderson <richard.henderson@linaro.org>
 
-commit 0f63702718c91d89c922081ac1e6baeddc2d8b1a upstream.
+commit 66f5ae899ada79c0e9a3d8d954f93a72344cd350 upstream.
 
-We no longer have an output pool. Rather, we have just a wakeup bits
-threshold for /dev/random reads, presumably so that processes don't
-hang. This value, random_write_wakeup_bits, is configurable anyway. So
-all the no longer usefully named OUTPUT_POOL constants were doing was
-setting a reasonable default for random_write_wakeup_bits. This commit
-gets rid of the constants and just puts it all in the default value of
-random_write_wakeup_bits.
+Keep the generic fallback versions in sync with the other architecture
+specific implementations and use the proper name for false.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Suggested-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Richard Henderson <rth@twiddle.net>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20200110145422.49141-6-broonie@kernel.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ include/linux/random.h |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -363,8 +363,6 @@
-  */
- #define INPUT_POOL_SHIFT	12
- #define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
--#define OUTPUT_POOL_SHIFT	10
--#define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
- #define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -120,19 +120,19 @@ unsigned long randomize_page(unsigned lo
+ #else
+ static inline bool arch_get_random_long(unsigned long *v)
+ {
+-	return 0;
++	return false;
+ }
+ static inline bool arch_get_random_int(unsigned int *v)
+ {
+-	return 0;
++	return false;
+ }
+ static inline bool arch_get_random_seed_long(unsigned long *v)
+ {
+-	return 0;
++	return false;
+ }
+ static inline bool arch_get_random_seed_int(unsigned int *v)
+ {
+-	return 0;
++	return false;
+ }
+ #endif
  
- /*
-@@ -382,7 +380,7 @@
-  * should wake up processes which are selecting or polling on write
-  * access to /dev/random.
-  */
--static int random_write_wakeup_bits = 28 * OUTPUT_POOL_WORDS;
-+static int random_write_wakeup_bits = 28 * (1 << 5);
- 
- /*
-  * Originally, we used a primitive polynomial of degree .poolwords
 
 
