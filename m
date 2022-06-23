@@ -2,178 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA36C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABC3CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231582AbiFWTdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:33:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53180 "EHLO
+        id S231628AbiFWTd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231147AbiFWTcL (ORCPT
+        with ESMTP id S232118AbiFWTcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:32:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656279919E;
-        Thu, 23 Jun 2022 12:07:16 -0700 (PDT)
+        Thu, 23 Jun 2022 15:32:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BA9993F7;
+        Thu, 23 Jun 2022 12:10:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F040960DE9;
-        Thu, 23 Jun 2022 19:07:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87510C341C6;
-        Thu, 23 Jun 2022 19:07:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C088FB824EF;
+        Thu, 23 Jun 2022 19:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61EBEC341C6;
+        Thu, 23 Jun 2022 19:10:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656011235;
-        bh=/YQ8dM9H1tSiUewSTAyicto7sQUtAk0DXHV0TCvRd4Q=;
-        h=Date:Subject:From:To:References:In-Reply-To:From;
-        b=X7/o9PXcYENIHwBGSUOpBPwVaRvZ2gKufyvCj6fwFPtLuOJnE3r70eprmWaQSE+dz
-         iR3tlFsbkd0bDoexoU3ck057AJmnTD/XJHsKHY7Prv+8FNdV/kemLCJ+tuWRrth1l/
-         q7ilAgmv7WEIFKrFW7SuWQpUPAu8dKDn9bqsMCBrjm2dK9B+KNoPx+761YQAfUEwra
-         l2M1NN1RukY8rjIZBvv58LrbaEkxTiLu0pFju4VBOlBGa5c2H1Ie0J2kMlaIfFQmOO
-         hDk1pHrQo2o07mLUGehUYIt5HWYcQlLpFDpJpiHkdqtusY9D9SNyB7FZGcHRB5wFlK
-         aggSeYfuus95w==
-Message-ID: <b111c356-ee6a-bd68-d08f-fbe2a67d2f55@kernel.org>
-Date:   Thu, 23 Jun 2022 14:07:13 -0500
+        s=k20201202; t=1656011417;
+        bh=hdPxiwoRttBIzWEIb6YpO8NBXxG6GrweSOsSURG0ZAU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XQc3kJxeKCboJwgvhir6MFPrFAP/UwTApTO+r4Iz5mu/lo6BcV5hixPq0C5mcrxkT
+         XrscgWjih7BqhafEmJlihi/V/zlMk2i+qy/Ix3J82OYbCsFHly4KotpiatoJwqoyTb
+         XjSGvu86PWX1j1Q/n9odsbQSCYsB0UIkGHl5T87lP10ksrUPzflDj64AoNs7UZE/Wh
+         rJdRuszu4AQ5uzljXyxE01I9pwJ9+lv5pdtJGwXRRN89U4L64+IlrTzOCEUceKpGwA
+         lU4Xz4U1YwmpUI1qZ7WlA8HhbUqXrSh/aog/H3/ZYs1c3GTm/0wUQ6szjJ7ICJ00yd
+         umy6uAAFmryvg==
+Date:   Thu, 23 Jun 2022 12:10:15 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v3] timekeeping: contribute wall clock to rng on time
+ change
+Message-ID: <YrS6l38HDhqJIYS9@sol.localdomain>
+References: <CAHmME9rbOt14sHkPVgb7yysYSXk-eiwzkp9PzPnyO_9HyrmQ3Q@mail.gmail.com>
+ <20220623190014.1355583-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] arm64: dts: altera: socfpga_stratix10: move clocks out of
- soc node
-Content-Language: en-US
-From:   Dinh Nguyen <dinguyen@kernel.org>
-To:     niravkumar.l.rabara@intel.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220623024221.2766255-1-niravkumar.l.rabara@intel.com>
- <1f1ac1ad-0eed-0871-93a9-56f710eeba98@kernel.org>
-In-Reply-To: <1f1ac1ad-0eed-0871-93a9-56f710eeba98@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623190014.1355583-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
-
-On 6/23/22 11:16, Dinh Nguyen wrote:
+On Thu, Jun 23, 2022 at 09:00:14PM +0200, Jason A. Donenfeld wrote:
+> The rng's random_init() function contributes the real time to the rng at
+> boot time, so that events can at least start in relation to something
+> particular in the real world. But this clock might not yet be set that
+> point in boot, so nothing is contributed. In addition, the relation
+> between minor clock changes from, say, NTP, and the cycle counter is
+> potentially useful entropic data.
 > 
+> This commit addresses this by mixing in a time stamp on calls to
+> settimeofday and adjtimex. No entropy is credited in doing so, so it
+> doesn't make initialization faster, but it is still useful input to
+> have.
 > 
-> On 6/22/22 21:42, niravkumar.l.rabara@intel.com wrote:
->> From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
->>
->> The clocks are not part of the SoC but provided on the board
->> (external oscillators). Moving them out of soc node.
->>
->> Signed-off-by: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
->> ---
->>   .../boot/dts/altera/socfpga_stratix10.dtsi    | 56 +++++++++----------
->>   1 file changed, 28 insertions(+), 28 deletions(-)
->>
->> diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi 
->> b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
->> index aa2bba75265f..5c7d926d18f7 100644
->> --- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
->> +++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
->> @@ -97,6 +97,34 @@ intc: interrupt-controller@fffc1000 {
->>                 <0x0 0xfffc6000 0x0 0x2000>;
->>       };
->> +    clocks {
->> +        cb_intosc_hs_div2_clk: cb-intosc-hs-div2-clk {
->> +            #clock-cells = <0>;
->> +            compatible = "fixed-clock";
->> +        };
->> +
->> +        cb_intosc_ls_clk: cb-intosc-ls-clk {
->> +            #clock-cells = <0>;
->> +            compatible = "fixed-clock";
->> +        };
->> +
->> +        f2s_free_clk: f2s-free-clk {
->> +            #clock-cells = <0>;
->> +            compatible = "fixed-clock";
->> +        };
->> +
->> +        osc1: osc1 {
->> +            #clock-cells = <0>;
->> +            compatible = "fixed-clock";
->> +        };
->> +
->> +        qspi_clk: qspi-clk {
->> +            #clock-cells = <0>;
->> +            compatible = "fixed-clock";
->> +            clock-frequency = <200000000>;
->> +        };
->> +    };
->> +
->>       soc {
->>           #address-cells = <1>;
->>           #size-cells = <1>;
->> @@ -119,34 +147,6 @@ clkmgr: clock-controller@ffd10000 {
->>               #clock-cells = <1>;
->>           };
->> -        clocks {
->> -            cb_intosc_hs_div2_clk: cb-intosc-hs-div2-clk {
->> -                #clock-cells = <0>;
->> -                compatible = "fixed-clock";
->> -            };
->> -
->> -            cb_intosc_ls_clk: cb-intosc-ls-clk {
->> -                #clock-cells = <0>;
->> -                compatible = "fixed-clock";
->> -            };
->> -
->> -            f2s_free_clk: f2s-free-clk {
->> -                #clock-cells = <0>;
->> -                compatible = "fixed-clock";
->> -            };
->> -
->> -            osc1: osc1 {
->> -                #clock-cells = <0>;
->> -                compatible = "fixed-clock";
->> -            };
->> -
->> -            qspi_clk: qspi-clk {
->> -                #clock-cells = <0>;
->> -                compatible = "fixed-clock";
->> -                clock-frequency = <200000000>;
->> -            };
->> -        };
->> -
->>           gmac0: ethernet@ff800000 {
->>               compatible = "altr,socfpga-stmmac-a10-s10", 
->> "snps,dwmac-3.74a", "snps,dwmac";
->>               reg = <0xff800000 0x2000>;
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  kernel/time/timekeeping.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
 > 
-> NAK! This patch breaks the Stratix10 boot. Also these clocks are part of 
-> the SoC!
-> 
+> diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+> index 8e4b3c32fcf9..49ee8ef16544 100644
+> --- a/kernel/time/timekeeping.c
+> +++ b/kernel/time/timekeeping.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/pvclock_gtod.h>
+>  #include <linux/compiler.h>
+>  #include <linux/audit.h>
+> +#include <linux/random.h>
+>  
+>  #include "tick-internal.h"
+>  #include "ntp_internal.h"
+> @@ -1343,8 +1344,10 @@ int do_settimeofday64(const struct timespec64 *ts)
+>  	/* Signal hrtimers about time change */
+>  	clock_was_set(CLOCK_SET_WALL);
+>  
+> -	if (!ret)
+> +	if (!ret) {
+>  		audit_tk_injoffset(ts_delta);
+> +		add_device_randomness(&ts, sizeof(ts));
+> +	}
 
-Take that back. Your changes are fine, but you need to update the board 
-files as well. i.e socfpga_stratix10_socdk.dts
+It should be:
 
+add_device_randomness(ts, sizeof(*ts));
 
---- a/arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dts
-+++ b/arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dts
-@@ -52,12 +52,6 @@ ref_033v: regulator-v-ref {
-         };
-
-         soc {
--               clocks {
--                       osc1 {
--                               clock-frequency = <25000000>;
--                       };
--               };
--
-                 eccmgr {
-                         sdmmca-ecc@ff8c8c00 {
-                                 compatible = "altr,socfpga-s10-sdmmc-ecc",
-@@ -113,6 +107,10 @@ &mmc {
-         bus-width = <4>;
-  };
-
-+&osc1 {
-+       clock-frequency = <25000000>;
-+};
-+
-
-Dinh
+- Eric
