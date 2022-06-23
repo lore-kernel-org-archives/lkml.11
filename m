@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6354CC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A30CECCA47F
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232965AbiFWRA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S233053AbiFWRAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232803AbiFWQt6 (ORCPT
+        with ESMTP id S233517AbiFWQyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:49:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FB865D7;
-        Thu, 23 Jun 2022 09:47:55 -0700 (PDT)
+        Thu, 23 Jun 2022 12:54:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4505465DB;
+        Thu, 23 Jun 2022 09:52:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5657861FA7;
-        Thu, 23 Jun 2022 16:47:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 274A9C341C6;
-        Thu, 23 Jun 2022 16:47:52 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 26814CE25D9;
+        Thu, 23 Jun 2022 16:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEFEBC341C7;
+        Thu, 23 Jun 2022 16:52:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002873;
-        bh=on1mcXpHvtEEBiQUkCQcIaAraZzLUj878rAwYC0ELY4=;
+        s=korg; t=1656003168;
+        bh=hI1iiZo7B9eq7MYCO1l/Xw/OEPnNnnYM9KdREjGhzSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y9UnxRQPzKjEa0vbc5e0fMKc8+fFcoMtjsPV30mvHuSii0dhy93YSma2SX4wo23FY
-         N6KAK1Dv1d8UVW10Qhy++EAWaq1mrzE9EXD/DRc8XEpRpuHEmZg+6lCGYVvkBiQ8KI
-         2PyQnZhmn48EXVKnLoCci07qaXvW8sdUxWKJmWAg=
+        b=VRZF2CTxySA63Q7IzjWN/gDhzRPDYZMXB2rPuS4EjbmAmm8ItsqpF7brEZwWOdvew
+         JBtxtcynOTXsDpzieS967Od/H9nP/RwRyoub0ZntRCxWzt8SaZYkYIkFjqp4vbRngZ
+         UyaHB4JxPLgzsnKSIIRu+DGy2oXm81kM+nj/pbr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
+        stable@vger.kernel.org, Matt Mackall <mpm@selenic.com>,
         Theodore Tso <tytso@mit.edu>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Eric Biggers <ebiggers@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 055/264] random: add GRND_INSECURE to return best-effort non-cryptographic bytes
-Date:   Thu, 23 Jun 2022 18:40:48 +0200
-Message-Id: <20220623164345.629744497@linuxfoundation.org>
+Subject: [PATCH 4.9 152/264] random: pull add_hwgenerator_randomness() declaration into random.h
+Date:   Thu, 23 Jun 2022 18:42:25 +0200
+Message-Id: <20220623164348.365012788@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,59 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 75551dbf112c992bc6c99a972990b3f272247e23 upstream.
+commit b777c38239fec5a528e59f55b379e31b1a187524 upstream.
 
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/d5473b56cf1fa900ca4bd2b3fc1e5b8874399919.1577088521.git.luto@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+add_hwgenerator_randomness() is a function implemented and documented
+inside of random.c. It is the way that hardware RNGs push data into it.
+Therefore, it should be declared in random.h. Otherwise sparse complains
+with:
+
+random.c:1137:6: warning: symbol 'add_hwgenerator_randomness' was not declared. Should it be static?
+
+The alternative would be to include hw_random.h into random.c, but that
+wouldn't really be good for anything except slowing down compile time.
+
+Cc: Matt Mackall <mpm@selenic.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c       |   11 +++++++++--
- include/uapi/linux/random.h |    2 ++
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/char/hw_random/core.c |    1 +
+ include/linux/hw_random.h     |    2 --
+ include/linux/random.h        |    2 ++
+ 3 files changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -2187,7 +2187,14 @@ SYSCALL_DEFINE3(getrandom, char __user *
- {
- 	int ret;
+--- a/drivers/char/hw_random/core.c
++++ b/drivers/char/hw_random/core.c
+@@ -12,6 +12,7 @@
  
--	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM))
-+	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
-+		return -EINVAL;
-+
-+	/*
-+	 * Requesting insecure and blocking randomness at the same time makes
-+	 * no sense.
-+	 */
-+	if ((flags & (GRND_INSECURE|GRND_RANDOM)) == (GRND_INSECURE|GRND_RANDOM))
- 		return -EINVAL;
+ #include <linux/device.h>
+ #include <linux/hw_random.h>
++#include <linux/random.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/fs.h>
+--- a/include/linux/hw_random.h
++++ b/include/linux/hw_random.h
+@@ -60,7 +60,5 @@ extern int devm_hwrng_register(struct de
+ /** Unregister a Hardware Random Number Generator driver. */
+ extern void hwrng_unregister(struct hwrng *rng);
+ extern void devm_hwrng_unregister(struct device *dve, struct hwrng *rng);
+-/** Feed random bits into the pool. */
+-extern void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
  
- 	if (count > INT_MAX)
-@@ -2196,7 +2203,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if (flags & GRND_RANDOM)
- 		return _random_read(flags & GRND_NONBLOCK, buf, count);
+ #endif /* LINUX_HWRANDOM_H_ */
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -32,6 +32,8 @@ static inline void add_latent_entropy(vo
+ extern void add_input_randomness(unsigned int type, unsigned int code,
+ 				 unsigned int value) __latent_entropy;
+ extern void add_interrupt_randomness(int irq) __latent_entropy;
++extern void add_hwgenerator_randomness(const void *buffer, size_t count,
++				       size_t entropy);
  
--	if (!crng_ready()) {
-+	if (!(flags & GRND_INSECURE) && !crng_ready()) {
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
- 		ret = wait_for_random_bytes();
---- a/include/uapi/linux/random.h
-+++ b/include/uapi/linux/random.h
-@@ -48,8 +48,10 @@ struct rand_pool_info {
-  *
-  * GRND_NONBLOCK	Don't block and return EAGAIN instead
-  * GRND_RANDOM		Use the /dev/random pool instead of /dev/urandom
-+ * GRND_INSECURE	Return non-cryptographic random bytes
-  */
- #define GRND_NONBLOCK	0x0001
- #define GRND_RANDOM	0x0002
-+#define GRND_INSECURE	0x0004
- 
- #endif /* _UAPI_LINUX_RANDOM_H */
+ extern void get_random_bytes(void *buf, size_t nbytes);
+ extern int wait_for_random_bytes(void);
 
 
