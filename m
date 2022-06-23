@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B83ACCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E0BCCA487
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233160AbiFWRC1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:02:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33166 "EHLO
+        id S233265AbiFWRCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233245AbiFWQ5k (ORCPT
+        with ESMTP id S233797AbiFWQ6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:57:40 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5C94D631;
-        Thu, 23 Jun 2022 09:53:26 -0700 (PDT)
+        Thu, 23 Jun 2022 12:58:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4024EDEF;
+        Thu, 23 Jun 2022 09:53:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9FD80CE25CA;
-        Thu, 23 Jun 2022 16:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D544C3411B;
-        Thu, 23 Jun 2022 16:53:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 263E961F90;
+        Thu, 23 Jun 2022 16:53:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D087BC3411B;
+        Thu, 23 Jun 2022 16:53:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003193;
-        bh=+XdeAMZGulDlklmAx2AM9VR97QYmurT/FuKkS1NDyBU=;
+        s=korg; t=1656003230;
+        bh=dFCsBs52RyVBTsB4B2q01Ax5YZX+Pkr7BvVsGXWOwUo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zN4BSDpotblv3L1LQ76oSk4wwTMY8Kls7Rxs9Me+/eX07A8lotLLvUYyJ/faFPeXf
-         knJnRhVpG5zCJ6EqEiut5Sh2n0z+WizRXglMBczM7T7owTRfUbGOOloGVGLkgXPqJS
-         4U9Ut86R9XUGaKpp1Lz9VF1en3AguKshZl7k3xo4=
+        b=jTjTPuCSmGplDHeiixThvAnfhhwmjbPQLmLakrB8IwtnOq+7Fh/abAqkutmJnGbDN
+         gaiQJAqSlrCk+WP0gigK2RQoKFb70NipSlIgGx5xbv5YBN5WJ3I7IpPatPiOwi3Bpi
+         /nIy6sluns91bRR5qPtXd1XqynyFRN/I4Mr35p8g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 159/264] random: give sysctl_random_min_urandom_seed a more sensible value
-Date:   Thu, 23 Jun 2022 18:42:32 +0200
-Message-Id: <20220623164348.561292388@linuxfoundation.org>
+Subject: [PATCH 4.9 132/264] random: remove useless header comment
+Date:   Thu, 23 Jun 2022 18:42:05 +0200
+Message-Id: <20220623164347.801089853@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,39 +52,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit d0efdf35a6a71d307a250199af6fce122a7c7e11 upstream.
+commit 6071a6c0fba2d747742cadcbb3ba26ed756ed73b upstream.
 
-This isn't used by anything or anywhere, but we can't delete it due to
-compatibility. So at least give it the correct value of what it's
-supposed to be instead of a garbage one.
+This really adds nothing at all useful.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/random.h |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1613,7 +1613,7 @@ const struct file_operations urandom_fop
-  *   to avoid breaking old userspaces, but writing to it does not
-  *   change any behavior of the RNG.
-  *
-- * - urandom_min_reseed_secs - fixed to the meaningless value "60".
-+ * - urandom_min_reseed_secs - fixed to the value CRNG_RESEED_INTERVAL.
-  *   It is writable to avoid breaking old userspaces, but writing
-  *   to it does not change any behavior of the RNG.
-  *
-@@ -1623,7 +1623,7 @@ const struct file_operations urandom_fop
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -1,8 +1,5 @@
+-/*
+- * include/linux/random.h
+- *
+- * Include file for the random number generator.
+- */
++/* SPDX-License-Identifier: GPL-2.0 */
++
+ #ifndef _LINUX_RANDOM_H
+ #define _LINUX_RANDOM_H
  
- #include <linux/sysctl.h>
- 
--static int sysctl_random_min_urandom_seed = 60;
-+static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
- static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
- static int sysctl_poolsize = POOL_BITS;
- static u8 sysctl_bootid[UUID_SIZE];
 
 
