@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 030A1CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:13:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8365DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbiFWRNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42858 "EHLO
+        id S231646AbiFWRNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbiFWRLl (ORCPT
+        with ESMTP id S229449AbiFWRLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:11:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDEF26E;
-        Thu, 23 Jun 2022 09:52:12 -0700 (PDT)
+        Thu, 23 Jun 2022 13:11:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AFE18364;
+        Thu, 23 Jun 2022 09:51:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7D64CCE25CA;
-        Thu, 23 Jun 2022 16:52:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D36DC3411B;
-        Thu, 23 Jun 2022 16:52:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C06AA61F62;
+        Thu, 23 Jun 2022 16:51:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABE2FC3411B;
+        Thu, 23 Jun 2022 16:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003128;
-        bh=vUxtEGawyv3TEXubFV5MwuZAHJF1ujvfsN/irCIm6us=;
+        s=korg; t=1656003070;
+        bh=B+p7EtKRj9a5tVfJTGyiXDhd9taRre9xiGKcJXTVWl0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GGRUa3vToMqprlra9fjsB/yW0/8zVrtxEeed5dOdQTafeD1/ZqtK1FJv26mLLpGQO
-         w/xxKsxQQ9ZruRLRVvi7OJN/im6JI2O9taufWfYlPOCevy4BZGIcDi4A2ssCTBfWPM
-         K/aq3Xn0tYfrFCZCPyib+Dg1tuegVj/N6KOwBAho=
+        b=faVrZObDdenQTWRpEl9shrcppjtgsEAiZsq5CZp3Npl5bTCIn9Z50djTEQQpiqwdX
+         f3hGIYAiFiObvl7A7Bpar+Ptk8CYQBAAWUGMSw8zc0tLkVcB8xaoQlCJpDEqkLcws2
+         ylNyprP6kqyixzbCgyWmKhmApnvwL4y/4kJRWn6k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 140/264] workqueue: make workqueue available early during boot
-Date:   Thu, 23 Jun 2022 18:42:13 +0200
-Message-Id: <20220623164348.027555223@linuxfoundation.org>
+Subject: [PATCH 4.9 119/264] random: inline leaves of rand_initialize()
+Date:   Thu, 23 Jun 2022 18:41:52 +0200
+Message-Id: <20220623164347.434462658@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,269 +50,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 3347fa0928210d96aaa2bd6cd5a8391d5e630873 upstream.
+commit 8566417221fcec51346ec164e920dacb979c6b5f upstream.
 
-Workqueue is currently initialized in an early init call; however,
-there are cases where early boot code has to be split and reordered to
-come after workqueue initialization or the same code path which makes
-use of workqueues is used both before workqueue initailization and
-after.  The latter cases have to gate workqueue usages with
-keventd_up() tests, which is nasty and easy to get wrong.
+This is a preparatory commit for the following one. We simply inline the
+various functions that rand_initialize() calls that have no other
+callers. The compiler was doing this anyway before. Doing this will
+allow us to reorganize this after. We can then move the trust_cpu and
+parse_trust_cpu definitions a bit closer to where they're actually used,
+which makes the code easier to read.
 
-Workqueue usages have become widespread and it'd be a lot more
-convenient if it can be used very early from boot.  This patch splits
-workqueue initialization into two steps.  workqueue_init_early() which
-sets up the basic data structures so that workqueues can be created
-and work items queued, and workqueue_init() which actually brings up
-workqueues online and starts executing queued work items.  The former
-step can be done very early during boot once memory allocation,
-cpumasks and idr are initialized.  The latter right after kthreads
-become available.
-
-This allows work item queueing and canceling from very early boot
-which is what most of these use cases want.
-
-* As systemd_wq being initialized doesn't indicate that workqueue is
-  fully online anymore, update keventd_up() to test wq_online instead.
-  The follow-up patches will get rid of all its usages and the
-  function itself.
-
-* Flushing doesn't make sense before workqueue is fully initialized.
-  The flush functions trigger WARN and return immediately before fully
-  online.
-
-* Work items are never in-flight before fully online.  Canceling can
-  always succeed by skipping the flush step.
-
-* Some code paths can no longer assume to be called with irq enabled
-  as irq is disabled during early boot.  Use irqsave/restore
-  operations instead.
-
-v2: Watchdog init, which requires timer to be running, moved from
-    workqueue_init_early() to workqueue_init().
-
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Link: http://lkml.kernel.org/r/CA+55aFx0vPuMuxn00rBSM192n-Du5uxy+4AvKa0SBSOVJeuCGg@mail.gmail.com
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/workqueue.h |    7 +++-
- init/main.c               |   10 ++++++
- kernel/workqueue.c        |   76 ++++++++++++++++++++++++++++++++++++----------
- 3 files changed, 76 insertions(+), 17 deletions(-)
+ drivers/char/random.c |   90 ++++++++++++++++++--------------------------------
+ 1 file changed, 33 insertions(+), 57 deletions(-)
 
---- a/include/linux/workqueue.h
-+++ b/include/linux/workqueue.h
-@@ -359,6 +359,8 @@ extern struct workqueue_struct *system_f
- extern struct workqueue_struct *system_power_efficient_wq;
- extern struct workqueue_struct *system_freezable_power_efficient_wq;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -477,42 +477,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init
  
-+extern bool wq_online;
-+
- extern struct workqueue_struct *
- __alloc_workqueue_key(const char *fmt, unsigned int flags, int max_active,
- 	struct lock_class_key *key, const char *lock_name, ...) __printf(1, 6);
-@@ -598,7 +600,7 @@ static inline bool schedule_delayed_work
-  */
- static inline bool keventd_up(void)
- {
--	return system_wq != NULL;
-+	return wq_online;
- }
+ static void invalidate_batched_entropy(void);
  
- #ifndef CONFIG_SMP
-@@ -635,4 +637,7 @@ int workqueue_online_cpu(unsigned int cp
- int workqueue_offline_cpu(unsigned int cpu);
- #endif
- 
-+int __init workqueue_init_early(void);
-+int __init workqueue_init(void);
-+
- #endif
---- a/init/main.c
-+++ b/init/main.c
-@@ -554,6 +554,14 @@ asmlinkage __visible void __init start_k
- 		 "Interrupts were enabled *very* early, fixing it\n"))
- 		local_irq_disable();
- 	idr_init_cache();
-+
-+	/*
-+	 * Allow workqueue creation and work item queueing/cancelling
-+	 * early.  Work item execution depends on kthreads and starts after
-+	 * workqueue_init().
-+	 */
-+	workqueue_init_early();
-+
- 	rcu_init();
- 
- 	/* trace_printk() and trace points may be used after this */
-@@ -1026,6 +1034,8 @@ static noinline void __init kernel_init_
- 
- 	smp_prepare_cpus(setup_max_cpus);
- 
-+	workqueue_init();
-+
- 	do_pre_smp_initcalls();
- 	lockup_detector_init();
- 
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -292,6 +292,8 @@ module_param_named(disable_numa, wq_disa
- static bool wq_power_efficient = IS_ENABLED(CONFIG_WQ_POWER_EFFICIENT_DEFAULT);
- module_param_named(power_efficient, wq_power_efficient, bool, 0444);
- 
-+bool wq_online;				/* can kworkers be created yet? */
-+
- static bool wq_numa_enabled;		/* unbound NUMA affinity enabled */
- 
- /* buf for wq_update_unbound_numa_attrs(), protected by CPU hotplug exclusion */
-@@ -2588,6 +2590,9 @@ void flush_workqueue(struct workqueue_st
- 	};
- 	int next_color;
- 
-+	if (WARN_ON(!wq_online))
-+		return;
-+
- 	lock_map_acquire(&wq->lockdep_map);
- 	lock_map_release(&wq->lockdep_map);
- 
-@@ -2848,6 +2853,9 @@ bool flush_work(struct work_struct *work
- {
- 	struct wq_barrier barr;
- 
-+	if (WARN_ON(!wq_online))
-+		return false;
-+
- 	lock_map_acquire(&work->lockdep_map);
- 	lock_map_release(&work->lockdep_map);
- 
-@@ -2918,7 +2926,13 @@ static bool __cancel_work_timer(struct w
- 	mark_work_canceling(work);
- 	local_irq_restore(flags);
- 
--	flush_work(work);
-+	/*
-+	 * This allows canceling during early boot.  We know that @work
-+	 * isn't executing.
-+	 */
-+	if (wq_online)
-+		flush_work(work);
-+
- 	clear_work_data(work);
- 
- 	/*
-@@ -3368,7 +3382,7 @@ static struct worker_pool *get_unbound_p
- 		goto fail;
- 
- 	/* create and start the initial worker */
--	if (!create_worker(pool))
-+	if (wq_online && !create_worker(pool))
- 		goto fail;
- 
- 	/* install */
-@@ -3439,6 +3453,7 @@ static void pwq_adjust_max_active(struct
- {
- 	struct workqueue_struct *wq = pwq->wq;
- 	bool freezable = wq->flags & WQ_FREEZABLE;
-+	unsigned long flags;
- 
- 	/* for @wq->saved_max_active */
- 	lockdep_assert_held(&wq->mutex);
-@@ -3447,7 +3462,8 @@ static void pwq_adjust_max_active(struct
- 	if (!freezable && pwq->max_active == wq->saved_max_active)
- 		return;
- 
--	spin_lock_irq(&pwq->pool->lock);
-+	/* this function can be called during early boot w/ irq disabled */
-+	spin_lock_irqsave(&pwq->pool->lock, flags);
- 
- 	/*
- 	 * During [un]freezing, the caller is responsible for ensuring that
-@@ -3477,7 +3493,7 @@ static void pwq_adjust_max_active(struct
- 		pwq->max_active = 0;
- 	}
- 
--	spin_unlock_irq(&pwq->pool->lock);
-+	spin_unlock_irqrestore(&pwq->pool->lock, flags);
- }
- 
- /* initialize newly alloced @pwq which is associated with @wq and @pool */
-@@ -5550,7 +5566,17 @@ static void __init wq_numa_init(void)
- 	wq_numa_enabled = true;
- }
- 
--static int __init init_workqueues(void)
-+/**
-+ * workqueue_init_early - early init for workqueue subsystem
-+ *
-+ * This is the first half of two-staged workqueue subsystem initialization
-+ * and invoked as soon as the bare basics - memory allocation, cpumasks and
-+ * idr are up.  It sets up all the data structures and system workqueues
-+ * and allows early boot code to create workqueues and queue/cancel work
-+ * items.  Actual work item execution starts only after kthreads can be
-+ * created and scheduled right before early initcalls.
-+ */
-+int __init workqueue_init_early(void)
- {
- 	int std_nice[NR_STD_WORKER_POOLS] = { 0, HIGHPRI_NICE_LEVEL };
- 	int i, cpu;
-@@ -5583,16 +5609,6 @@ static int __init init_workqueues(void)
- 		}
- 	}
- 
--	/* create the initial worker */
--	for_each_online_cpu(cpu) {
--		struct worker_pool *pool;
+-static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
+-static int __init parse_trust_cpu(char *arg)
+-{
+-	return kstrtobool(arg, &trust_cpu);
+-}
+-early_param("random.trust_cpu", parse_trust_cpu);
 -
--		for_each_cpu_worker_pool(pool, cpu) {
--			pool->flags &= ~POOL_DISASSOCIATED;
--			BUG_ON(!create_worker(pool));
+-static bool __init crng_init_try_arch_early(void)
+-{
+-	int i;
+-	bool arch_init = true;
+-	unsigned long rv;
+-
+-	for (i = 4; i < 16; i++) {
+-		if (!arch_get_random_seed_long_early(&rv) &&
+-		    !arch_get_random_long_early(&rv)) {
+-			rv = random_get_entropy();
+-			arch_init = false;
 -		}
+-		primary_crng.state[i] ^= rv;
 -	}
 -
- 	/* create default unbound and ordered wq attrs */
- 	for (i = 0; i < NR_STD_WORKER_POOLS; i++) {
- 		struct workqueue_attrs *attrs;
-@@ -5629,8 +5645,36 @@ static int __init init_workqueues(void)
- 	       !system_power_efficient_wq ||
- 	       !system_freezable_power_efficient_wq);
- 
-+	return 0;
-+}
-+
-+/**
-+ * workqueue_init - bring workqueue subsystem fully online
-+ *
-+ * This is the latter half of two-staged workqueue subsystem initialization
-+ * and invoked as soon as kthreads can be created and scheduled.
-+ * Workqueues have been created and work items queued on them, but there
-+ * are no kworkers executing the work items yet.  Populate the worker pools
-+ * with the initial workers and enable future kworker creations.
-+ */
-+int __init workqueue_init(void)
-+{
-+	struct worker_pool *pool;
-+	int cpu, bkt;
-+
-+	/* create the initial workers */
-+	for_each_online_cpu(cpu) {
-+		for_each_cpu_worker_pool(pool, cpu) {
-+			pool->flags &= ~POOL_DISASSOCIATED;
-+			BUG_ON(!create_worker(pool));
-+		}
-+	}
-+
-+	hash_for_each(unbound_pool_hash, bkt, pool, hash_node)
-+		BUG_ON(!create_worker(pool));
-+
-+	wq_online = true;
- 	wq_watchdog_init();
- 
- 	return 0;
+-	return arch_init;
+-}
+-
+-static void __init crng_initialize(void)
+-{
+-	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
+-	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
+-		invalidate_batched_entropy();
+-		crng_init = 2;
+-		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+-	}
+-	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+-}
+-
+ /*
+  * crng_fast_load() can be called by code in the interrupt service
+  * path.  So we can't afford to dilly-dally. Returns the number of
+@@ -1272,17 +1236,28 @@ int __must_check get_random_bytes_arch(v
  }
--early_initcall(init_workqueues);
+ EXPORT_SYMBOL(get_random_bytes_arch);
+ 
++static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
++static int __init parse_trust_cpu(char *arg)
++{
++	return kstrtobool(arg, &trust_cpu);
++}
++early_param("random.trust_cpu", parse_trust_cpu);
++
+ /*
+- * init_std_data - initialize pool with system data
+- *
+- * This function clears the pool's entropy count and mixes some system
+- * data into the pool to prepare it for use. The pool is not cleared
+- * as that can only decrease the entropy in the pool.
++ * Note that setup_arch() may call add_device_randomness()
++ * long before we get here. This allows seeding of the pools
++ * with some platform dependent data very early in the boot
++ * process. But it limits our options here. We must use
++ * statically allocated structures that already have all
++ * initializations complete at compile time. We should also
++ * take care not to overwrite the precious per platform data
++ * we were given.
+  */
+-static void __init init_std_data(void)
++int __init rand_initialize(void)
+ {
+ 	int i;
+ 	ktime_t now = ktime_get_real();
++	bool arch_init = true;
+ 	unsigned long rv;
+ 
+ 	mix_pool_bytes(&now, sizeof(now));
+@@ -1293,22 +1268,23 @@ static void __init init_std_data(void)
+ 		mix_pool_bytes(&rv, sizeof(rv));
+ 	}
+ 	mix_pool_bytes(utsname(), sizeof(*(utsname())));
+-}
+ 
+-/*
+- * Note that setup_arch() may call add_device_randomness()
+- * long before we get here. This allows seeding of the pools
+- * with some platform dependent data very early in the boot
+- * process. But it limits our options here. We must use
+- * statically allocated structures that already have all
+- * initializations complete at compile time. We should also
+- * take care not to overwrite the precious per platform data
+- * we were given.
+- */
+-int __init rand_initialize(void)
+-{
+-	init_std_data();
+-	crng_initialize();
++	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
++	for (i = 4; i < 16; i++) {
++		if (!arch_get_random_seed_long_early(&rv) &&
++		    !arch_get_random_long_early(&rv)) {
++			rv = random_get_entropy();
++			arch_init = false;
++		}
++		primary_crng.state[i] ^= rv;
++	}
++	if (arch_init && trust_cpu && crng_init < 2) {
++		invalidate_batched_entropy();
++		crng_init = 2;
++		pr_notice("crng init done (trusting CPU's manufacturer)\n");
++	}
++	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
++
+ 	if (ratelimit_disable) {
+ 		urandom_warning.interval = 0;
+ 		unseeded_warning.interval = 0;
 
 
