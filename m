@@ -2,95 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 221E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BAD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:20:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232474AbiFWRUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
+        id S233493AbiFWRUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233913AbiFWRSU (ORCPT
+        with ESMTP id S233970AbiFWRSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:18:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE9B89D32;
-        Thu, 23 Jun 2022 10:00:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF39C61408;
-        Thu, 23 Jun 2022 17:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B460AC3411B;
-        Thu, 23 Jun 2022 17:00:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003618;
-        bh=todGJ889bYb1GLppz5m0BFtuPCEl3dARoMiQD5OanME=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZKtjFIOSxo0vNzADUySd97SEfcXe91lpCph0lpJS7rh2KrWxHRUrzhbZiNmlrdAJH
-         5abW6OfOhAb3VVBJNkvAujGlfLARPv1T22XFwFtbOrt6zsb4j+vYSIU+/dXNmdTzBI
-         Mjpe34MbvQGea3vrgDbhbSahYVVksu5dPKa3L0cA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
-        Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 032/237] random: ignore GRND_RANDOM in getentropy(2)
-Date:   Thu, 23 Jun 2022 18:41:06 +0200
-Message-Id: <20220623164344.080210895@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
-References: <20220623164343.132308638@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 13:18:30 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A789B550
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:00:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656003624; x=1687539624;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=J9s/LpFILeLPTlseYxUrJteIVRlhiZdWHoHvHoBnIYU=;
+  b=gc7Wx7vCmeJZE0/Wb6nF63L3okTIW8USO6hva5J5G1MY0STnW3VqVguP
+   KtWwrAwcPEifNqPp57Zqw/gSIzuqR0xztpQ/P9YytI1eOqDJzL5gG40V/
+   rYDxZzJZi7VO/sf26np0Ij83r5OhD7TCLfdvfGCmDPoLBAYnyG1Ll7iQV
+   15fl5DQnllCAY6e1M85VVZ9zAP81FvqXQAMOsg4gcMxifXc0R44KXJYAm
+   HXqfNgUV7Zj1giGl+EdzpEPUFH9B0dwCUQ5PrzvX87t6boWP32FrJqjDp
+   DfCiqJrrPIXIPtMfoOZd3uUv5ngkSuEZGPT2RCVCNh96xm9SzP766QpQn
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="279544659"
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="279544659"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 10:00:20 -0700
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="834723685"
+Received: from anefedov-mobl.ccr.corp.intel.com (HELO localhost) ([10.252.38.20])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 10:00:15 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Jiang Jian <jiangjian@cdjrlc.com>, airlied@linux.ie,
+        daniel@ffwll.ch
+Cc:     joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        tvrtko.ursulin@linux.intel.com, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Jiang Jian <jiangjian@cdjrlc.com>
+Subject: Re: [PATCH] GPU: drm: i915: drop unexpected word 'for' in comments
+In-Reply-To: <20220623101113.28470-1-jiangjian@cdjrlc.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220623101113.28470-1-jiangjian@cdjrlc.com>
+Date:   Thu, 23 Jun 2022 20:00:11 +0300
+Message-ID: <871qvfnwmc.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+On Thu, 23 Jun 2022, Jiang Jian <jiangjian@cdjrlc.com> wrote:
+> there is an unexpected word 'for' in the comments that need to be dropped
 
-commit 48446f198f9adcb499b30332488dfd5bc3f176f6 upstream.
+While it's also unexpected, it's really *duplicated* word.
 
-The separate blocking pool is going away.  Start by ignoring
-GRND_RANDOM in getentropy(2).
+> file - drivers/gpu/drm/i915/i915_reg.h
+> line - 2537
+>
+>  * Please check the detailed lore in the commit message for for experimental
+>
+> changed to:
+>
+>  * Please check the detailed lore in the commit message for experimental
+>
 
-This should not materially break any API.  Any code that worked
-without this change should work at least as well with this change.
+The above is just duplication of the patch itself, and completely
+unnecessary.
 
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/705c5a091b63cc5da70c99304bb97e0109be0a26.1577088521.git.luto@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c       |    3 ---
- include/uapi/linux/random.h |    2 +-
- 2 files changed, 1 insertion(+), 4 deletions(-)
+The patch subject prefix should be something like "drm/i915:" or
+"drm/i915/reg:".
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -2147,9 +2147,6 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if (count > INT_MAX)
- 		count = INT_MAX;
- 
--	if (flags & GRND_RANDOM)
--		return _random_read(flags & GRND_NONBLOCK, buf, count);
--
- 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
---- a/include/uapi/linux/random.h
-+++ b/include/uapi/linux/random.h
-@@ -48,7 +48,7 @@ struct rand_pool_info {
-  * Flags for getrandom(2)
-  *
-  * GRND_NONBLOCK	Don't block and return EAGAIN instead
-- * GRND_RANDOM		Use the /dev/random pool instead of /dev/urandom
-+ * GRND_RANDOM		No effect
-  * GRND_INSECURE	Return non-cryptographic random bytes
-  */
- #define GRND_NONBLOCK	0x0001
+Pro-tip for figuring out good guesses of what the subject prefix should
+be:
+
+$ git log --since={5-year} --no-merges --pretty=format:%s -- drivers/gpu/drm/i915/i915_reg.h | sed 's/:.*//' | sort | uniq -c | sort -rn | head
+    312 drm/i915
+    113 drm/i915/icl
+     57 drm/i915/tgl
+     26 drm/i915/cnl
+     25 drm/i915/display
+     22 drm/i915/dg2
+     16 drm/i915/psr
+     14 drm/i915/gt
+     14 drm/i915/adl_p
+     12 drm/i915/dg1
+
+The patch itself is fine, but I'm nitpicking on the commit message
+because I've seen lots of patches like this, with the same kind of stuff
+in the commit messages.
+
+BR,
+Jani.
 
 
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+> ---
+>  drivers/gpu/drm/i915/i915_reg.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
+> index 616164fa2e32..738c020396af 100644
+> --- a/drivers/gpu/drm/i915/i915_reg.h
+> +++ b/drivers/gpu/drm/i915/i915_reg.h
+> @@ -2534,7 +2534,7 @@
+>   * HDMI/DP bits are g4x+
+>   *
+>   * WARNING: Bspec for hpd status bits on gen4 seems to be completely confused.
+> - * Please check the detailed lore in the commit message for for experimental
+> + * Please check the detailed lore in the commit message for experimental
+>   * evidence.
+>   */
+>  /* Bspec says GM45 should match G4X/VLV/CHV, but reality disagrees */
+
+-- 
+Jani Nikula, Intel Open Source Graphics Center
