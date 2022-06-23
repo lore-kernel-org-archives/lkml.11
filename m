@@ -2,555 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F577C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3DCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231628AbiFWSPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33070 "EHLO
+        id S236607AbiFWSPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232409AbiFWSOV (ORCPT
+        with ESMTP id S236600AbiFWSOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:14:21 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8669A877
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:21:18 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id q15so11414342wmj.2
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:21:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=L5rVpiSBD6bHrgBbtOmsPeL7WjLPbqmPTnPwPerx3Is=;
-        b=vbtD2FZDG3XohdsHpK60LexpnW+hZCYEHreA264cxYeVivWYaDcm0zb1Huzfez0fjQ
-         o32V0KP/x69JAJxE0jvMYFRIRo1acdALwZhSKmTRoCRpVwjrRgIqrCNeqZIeE0jKjZkg
-         pJjD/hZhxxYNMnLQ/EFS/QTyMU9KwfBp9cqytDZYFluHN9AY5U9mOZ9KL40yfq3vB1H/
-         xNDFQ0MB/p2gjHHzYDI+r0nB+h9IRuel8guBd0fSjSvfgiQy7RxY4dlH5JB14OkOnoEy
-         sBl5M8F9EunKpreLdXteAy3X3ZlsZt8OkkZXH5vn+iXZCKODl1mmi/jrhV50Bl8RwF66
-         BdaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=L5rVpiSBD6bHrgBbtOmsPeL7WjLPbqmPTnPwPerx3Is=;
-        b=wlzxzKH4vhoC51emdhvq/k+xG8M5ScMTNmzJlRgc0r6BvR+D6jGj8PjixgV2W/llOF
-         WqbNfFxPam8vL65py9yHcqL7jtCuKI2xdFpouo0M5sY2eImaz95f/eh0onZpmTxzkHJQ
-         vnL1CvV3rlMAO0s9KIsoYWckLajSL7fb8oJ3/glwJMmj9adn/jLgL0sTPqD8C9uaPMpE
-         jXpwsFymuZ/spAetDzewTyDBTU0THcB+UhhFWeBBrPib9/V9AhX3Iblvd2o6KXfQWd83
-         uYFp8ADZb37KFtZYsNvKvswm5Mig6MijzMi5Jl+ayH1RDp7vngZK73mlFqe8mqW7xTzx
-         qcIg==
-X-Gm-Message-State: AJIora+G6yLoMhWxIJxBxatRiLbyfRdI+ltNQ3Rqh7F2B3ED76U0j83t
-        2BY4QD3zBT9ixQwnapk1wmA3MA==
-X-Google-Smtp-Source: AGRyM1uW7ezE3RjDBrd+dlkQkVXAVdDjKKoY4iGLl68odcrGDz/V5+RroxuGNGlOorVYSQnn/3nXdA==
-X-Received: by 2002:a05:600c:35d2:b0:39c:8490:abbf with SMTP id r18-20020a05600c35d200b0039c8490abbfmr5463860wmq.86.1656004876835;
-        Thu, 23 Jun 2022 10:21:16 -0700 (PDT)
-Received: from localhost ([109.180.234.132])
-        by smtp.gmail.com with ESMTPSA id e18-20020a05600c219200b003a0279f5935sm3999965wme.9.2022.06.23.10.21.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 10:21:16 -0700 (PDT)
-From:   Punit Agrawal <punit.agrawal@bytedance.com>
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org
-Subject: Re: [PATCH V4 01/20] rv: Add Runtime Verification (RV) interface
-References: <cover.1655368610.git.bristot@kernel.org>
-        <60548902dbccaa7ba420e40e46835693e27f643f.1655368610.git.bristot@kernel.org>
-Date:   Thu, 23 Jun 2022 18:21:15 +0100
-In-Reply-To: <60548902dbccaa7ba420e40e46835693e27f643f.1655368610.git.bristot@kernel.org>
-        (Daniel Bristot de Oliveira's message of "Thu, 16 Jun 2022 10:44:43
-        +0200")
-Message-ID: <87tu8bmh2s.fsf@stealth>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 23 Jun 2022 14:14:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB60D9B77D;
+        Thu, 23 Jun 2022 10:21:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6354261E0D;
+        Thu, 23 Jun 2022 17:21:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02D8EC341C5;
+        Thu, 23 Jun 2022 17:21:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656004881;
+        bh=R/DU5ussio9VSKRaz4p16oSabeAx7muJAL9aw2UUGzQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1ZLCeOg4gPZf1EYXgjUeuk/Dc6uWQZFyXxhXT2o61+VctTCDRJ2KEs+0AVjpWt0jx
+         2fZ7/lsHdrsav9/m080N39cgdUfMmZCE/7wPIfsciFk9fFfPXMKpHTVKg3AsrgziWu
+         WfpUPLKMmY3PvO1BS7hUCqmwqP5atw5c6hc0K98s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wanming Hu <huwanming@huaweil.com>,
+        He Ying <heying24@huawei.com>,
+        Chen Jingwen <chenjingwen6@huawei.com>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 181/234] powerpc/kasan: Silence KASAN warnings in __get_wchan()
+Date:   Thu, 23 Jun 2022 18:44:08 +0200
+Message-Id: <20220623164348.172530284@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+From: He Ying <heying24@huawei.com>
 
-A few flyby issues I noticed while going through the patches to
-understand what RV offers.
+[ Upstream commit a1b29ba2f2c171b9bea73be993bfdf0a62d37d15 ]
 
-For the typos, I wonder if it isn't better to use a spellcheck - they
-unnecessarily detract from the review. Sorry for the annoyance!
+The following KASAN warning was reported in our kernel.
 
-Daniel Bristot de Oliveira <bristot@kernel.org> writes:
+  BUG: KASAN: stack-out-of-bounds in get_wchan+0x188/0x250
+  Read of size 4 at addr d216f958 by task ps/14437
 
-> RV is a lightweight (yet rigorous) method that complements classical
-> exhaustive verification techniques (such as model checking and
-> theorem proving) with a more practical approach to complex systems.
->
-> RV works by analyzing the trace of the system's actual execution,
-> comparing it against a formal specification of the system behavior.
-> RV can give precise information on the runtime behavior of the
-> monitored system while enabling the reaction for unexpected
-> events, avoiding, for example, the propagation of a failure on
-> safety-critical systems.
->
-> The development of this interface roots in the development of the
-> paper:
->
-> DE OLIVEIRA, Daniel Bristot; CUCINOTTA, Tommaso; DE OLIVEIRA, Romulo
-> Silva. Efficient formal verification for the Linux kernel. In:
-> International Conference on Software Engineering and Formal Methods.
-> Springer, Cham, 2019. p. 315-332.
->
-> And:
->
-> DE OLIVEIRA, Daniel Bristot, et al. Automata-based formal analysis
-> and verification of the real-time Linux kernel. PhD Thesis, 2020.
->
-> The RV interface resembles the tracing/ interface on purpose. The current
-> path for the RV interface is /sys/kernel/tracing/rv/.
->
-> It presents these files:
->
->  "available_monitors"
->    - List the available monitors, one per line.
->
->    For example:
->    [root@f32 rv]# cat available_monitors
->    wip
->    wwnr
->
->  "enabled_monitors"
->    - Lists the enabled monitors, one per line;
->    - Writing to it enables a given monitor;
->    - Writing a monitor name with a '-' prefix disables it;
->    - Truncating the file disables all enabled monitors.
->
->    For example:
->    [root@f32 rv]# cat enabled_monitors
->    [root@f32 rv]# echo wip > enabled_monitors
->    [root@f32 rv]# echo wwnr >> enabled_monitors
->    [root@f32 rv]# cat enabled_monitors
->    wip
->    wwnr
->    [root@f32 rv]# echo !wip >> enabled_monitors
->    [root@f32 rv]# cat enabled_monitors
->    wwnr
->    [root@f32 rv]# echo > enabled_monitors
->    [root@f32 rv]# cat enabled_monitors
->    [root@f32 rv]#
->
->    Note that more than one monitor can be enabled concurrently.
->
->  "monitoring_on"
->    - It is an on/off general switcher for monitoring. Note
->    that it does not disable enabled monitors, but stop the per-entity
->    monitors of monitoring the events received from the system.
->    It resambles the "tracing_on" switcher.
+  CPU: 3 PID: 14437 Comm: ps Tainted: G           O      5.10.0 #1
+  Call Trace:
+  [daa63858] [c0654348] dump_stack+0x9c/0xe4 (unreliable)
+  [daa63888] [c035cf0c] print_address_description.constprop.3+0x8c/0x570
+  [daa63908] [c035d6bc] kasan_report+0x1ac/0x218
+  [daa63948] [c00496e8] get_wchan+0x188/0x250
+  [daa63978] [c0461ec8] do_task_stat+0xce8/0xe60
+  [daa63b98] [c0455ac8] proc_single_show+0x98/0x170
+  [daa63bc8] [c03cab8c] seq_read_iter+0x1ec/0x900
+  [daa63c38] [c03cb47c] seq_read+0x1dc/0x290
+  [daa63d68] [c037fc94] vfs_read+0x164/0x510
+  [daa63ea8] [c03808e4] ksys_read+0x144/0x1d0
+  [daa63f38] [c005b1dc] ret_from_syscall+0x0/0x38
+  --- interrupt: c00 at 0x8fa8f4
+      LR = 0x8fa8cc
 
-        resembles
->
->  "monitors/"
->    Each monitor will have its one directory inside "monitors/". There
->    the monitor specific files will be presented.
->    The "monitors/" directory resambles the "events" directory on
+  The buggy address belongs to the page:
+  page:98ebcdd2 refcount:0 mapcount:0 mapping:00000000 index:0x2 pfn:0x1216f
+  flags: 0x0()
+  raw: 00000000 00000000 01010122 00000000 00000002 00000000 ffffffff 00000000
+  raw: 00000000
+  page dumped because: kasan: bad access detected
 
-                               resembles
+  Memory state around the buggy address:
+   d216f800: 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00 00
+   d216f880: f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  >d216f900: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
+                                            ^
+   d216f980: f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00 00 00 00
+   d216fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
-... and in the rest of the file.
+After looking into this issue, I find the buggy address belongs
+to the task stack region. It seems KASAN has something wrong.
+I look into the code of __get_wchan in x86 architecture and
+find the same issue has been resolved by the commit
+f7d27c35ddff ("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
+The solution could be applied to powerpc architecture too.
 
->    tracefs.
->
->    For example:
->    [root@f32 rv]# cd monitors/wip/
->    [root@f32 wip]# ls
->    desc  enable
->    [root@f32 wip]# cat desc
->    auto-generated wakeup in preemptive monitor.
->    [root@f32 wip]# cat enable
->    0
->
-> For further information, see the comments in the header of
-> kernel/trace/rv/rv.c from this patch.
->
-> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Marco Elver <elver@google.com>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Shuah Khan <skhan@linuxfoundation.org>
-> Cc: Gabriele Paoloni <gpaoloni@redhat.com>
-> Cc: Juri Lelli <juri.lelli@redhat.com>
-> Cc: Clark Williams <williams@redhat.com>
-> Cc: linux-doc@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-trace-devel@vger.kernel.org
-> Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-> ---
->  include/linux/rv.h       |  23 ++
->  include/linux/sched.h    |  11 +
->  include/rv/rv.h          |  23 ++
->  kernel/fork.c            |  14 +
->  kernel/trace/Kconfig     |   2 +
->  kernel/trace/Makefile    |   2 +
->  kernel/trace/rv/Kconfig  |  12 +
->  kernel/trace/rv/Makefile |   3 +
->  kernel/trace/rv/rv.c     | 738 +++++++++++++++++++++++++++++++++++++++
->  kernel/trace/rv/rv.h     |  34 ++
->  kernel/trace/trace.c     |   4 +
->  kernel/trace/trace.h     |   2 +
->  12 files changed, 868 insertions(+)
->  create mode 100644 include/linux/rv.h
->  create mode 100644 include/rv/rv.h
->  create mode 100644 kernel/trace/rv/Kconfig
->  create mode 100644 kernel/trace/rv/Makefile
->  create mode 100644 kernel/trace/rv/rv.c
->  create mode 100644 kernel/trace/rv/rv.h
+As Andrey Ryabinin said, get_wchan() is racy by design, it may
+access volatile stack of running task, thus it may access
+redzone in a stack frame and cause KASAN to warn about this.
 
-[...]
+Use READ_ONCE_NOCHECK() to silence these warnings.
 
-> diff --git a/kernel/trace/rv/rv.c b/kernel/trace/rv/rv.c
-> new file mode 100644
-> index 000000000000..43af7b13187e
-> --- /dev/null
-> +++ b/kernel/trace/rv/rv.c
-> @@ -0,0 +1,738 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * This is the online Runtime Verification (RV) interface.
-> + *
-> + * RV is a lightweight (yet rigorous) method that complements classical
-> + * exhaustive verification techniques (such as model checking and
-> + * theorem proving) with a more practical approach to complex systems.
-> + *
-> + * RV works by analyzing the trace of the system's actual execution,
-> + * comparing it against a formal specification of the system behavior.
-> + * RV can give precise information on the runtime behavior of the
-> + * monitored system while enabling the reaction for unexpected
-> + * events, avoiding, for example, the propagation of a failure on
-> + * safety-critical systems.
-> + *
-> + * The development of this interface roots in the development of the
-> + * paper:
-> + *
-> + * DE OLIVEIRA, Daniel Bristot; CUCINOTTA, Tommaso; DE OLIVEIRA, Romulo
-> + * Silva. Efficient formal verification for the Linux kernel. In:
-> + * International Conference on Software Engineering and Formal Methods.
-> + * Springer, Cham, 2019. p. 315-332.
-> + *
-> + * And:
-> + *
-> + * DE OLIVEIRA, Daniel Bristot, et al. Automata-based formal analysis
-> + * and verification of the real-time Linux kernel. PhD Thesis, 2020.
-> + *
-> + * == Runtime monitor interface ==
-> + *
-> + * A monitor is the central part of the runtime verification of a system.
-> + *
-> + * The monitor stands in between the formal specification of the desired
-> + * (or undesired) behavior, and the trace of the actual system.
-> + *
-> + * In Linux terms, the runtime verification monitors are encapsulated
-> + * inside the "RV monitor" abstraction. A RV monitor includes a reference
-> + * model of the system, a set of instances of the monitor (per-cpu monitor,
-> + * per-task monitor, and so on), and the helper functions that glue the
-> + * monitor to the system via trace. Generally, a monitor includes some form
-> + * of trace output as a reaction for event parsing and exceptions,
-> + * as depicted bellow:
-> + *
-> + * Linux  +----- RV Monitor ----------------------------------+ Formal
-> + *  Realm |                                                   |  Realm
-> + *  +-------------------+     +----------------+     +-----------------+
-> + *  |   Linux kernel    |     |     Monitor    |     |     Reference   |
-> + *  |     Tracing       |  -> |   Instance(s)  | <-  |       Model     |
-> + *  | (instrumentation) |     | (verification) |     | (specification) |
-> + *  +-------------------+     +----------------+     +-----------------+
-> + *         |                          |                       |
-> + *         |                          V                       |
-> + *         |                     +----------+                 |
-> + *         |                     | Reaction |                 |
-> + *         |                     +--+--+--+-+                 |
-> + *         |                        |  |  |                   |
-> + *         |                        |  |  +-> trace output ?  |
-> + *         +------------------------|--|----------------------+
-> + *                                  |  +----> panic ?
-> + *                                  +-------> <user-specified>
-> + *
-> + * This file implements the interface for loading RV monitors, and
-> + * to control the verification session.
-> + *
-> + * == Registering monitors ==
-> + *
-> + * The struct rv_monitor defines a set of callback functions to control
-> + * a verification session. For instance, when a given monitor is enabled,
-> + * the "start" callback function is called to hook the instrumentation
-> + * functions to the kernel trace events. The "stop" function is called
-> + * when disabling the verification session.
-> + *
-> + * A RV monitor is registered via:
-> + *   int rv_register_monitor(struct rv_monitor *monitor);
-> + * And unregistered via:
-> + *   int rv_unregister_monitor(struct rv_monitor *monitor);
-> + *
-> + * These functions are exported to modules, enabling verification monitors
-> + * to be dynamically loaded.
-> + *
-> + * == User interface ==
-> + *
-> + * The user interface resembles kernel tracing interface. It presents
-> + * these files:
-> + *
-> + *  "available_monitors"
-> + *    - List the available monitors, one per line.
-> + *
-> + *    For example:
-> + *    [root@f32 rv]# cat available_monitors
-> + *    wip
-> + *    wwnr
-> + *
-> + *  "enabled_monitors"
-> + *    - Lists the enabled monitors, one per line;
-> + *    - Writing to it enables a given monitor;
-> + *    - Writing a monitor name with a '-' prefix disables it;
-> + *    - Truncating the file disables all enabled monitors.
-> + *
-> + *    For example:
-> + *    [root@f32 rv]# cat enabled_monitors
-> + *    [root@f32 rv]# echo wip > enabled_monitors
-> + *    [root@f32 rv]# echo wwnr >> enabled_monitors
-> + *    [root@f32 rv]# cat enabled_monitors
-> + *    wip
-> + *    wwnr
-> + *    [root@f32 rv]# echo !wip >> enabled_monitors
-> + *    [root@f32 rv]# cat enabled_monitors
-> + *    wwnr
-> + *    [root@f32 rv]# echo > enabled_monitors
-> + *    [root@f32 rv]# cat enabled_monitors
-> + *    [root@f32 rv]#
-> + *
-> + *    Note that more than one monitor can be enabled concurrently.
-> + *
-> + *  "monitoring_on"
-> + *    - It is an on/off general switcher for monitoring. Note
-> + *    that it does not disable enabled monitors, but stop the per-entity
-> + *    monitors of monitoring the events received from the system.
-> + *    It resambles the "tracing_on" switcher.
-> + *
-> + *  "monitors/"
-> + *    Each monitor will have its one directory inside "monitors/". There
-> + *    the monitor specific files will be presented.
-> + *    The "monitors/" directory resambles the "events" directory on
-> + *    tracefs.
-> + *
-> + *    For example:
-> + *    [root@f32 rv]# cd monitors/wip/
-> + *    [root@f32 wip]# ls
-> + *    desc  enable
-> + *    [root@f32 wip]# cat desc
-> + *    auto-generated wakeup in preemptive monitor.
-> + *    [root@f32 wip]# cat enable
-> + *    0
-> + *
-> + * Copyright (C) 2019-2022 Daniel Bristot de Oliveira <bristot@kernel.org>
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/slab.h>
-> +#include <rv/rv.h>
-> +
-> +#include "rv.h"
-> +
-> +DEFINE_MUTEX(rv_interface_lock);
-> +struct rv_interface rv_root;
-> +
-> +struct dentry *get_monitors_root(void)
-> +{
-> +	return rv_root.monitors_dir;
-> +}
-> +
-> +/*
-> + * Monitoring on global switcher!
-> + */
-> +bool __read_mostly monitoring_on;
-> +
-> +/*
-> + * Interface for the monitor register.
-> + */
-> +LIST_HEAD(rv_monitors_list);
-> +
-> +static int task_monitor_count;
-> +static bool task_monitor_slots[RV_PER_TASK_MONITORS];
-> +
-> +int get_task_monitor_slot(void)
-> +{
-> +	int i;
-> +
-> +	lockdep_assert_held(&rv_interface_lock);
-> +
-> +	if (task_monitor_count == RV_PER_TASK_MONITORS)
-> +		return -EBUSY;
-> +
-> +	task_monitor_count++;
-> +
-> +	for (i = 0; i < RV_PER_TASK_MONITORS; i++) {
-> +		if (task_monitor_slots[i] == false) {
-> +			task_monitor_slots[i] = true;
-> +			return i;
-> +		}
-> +	}
-> +
-> +	WARN_ONCE(1, "RV task_monitor_cout and slots are out of sync\n");
+Reported-by: Wanming Hu <huwanming@huaweil.com>
+Signed-off-by: He Ying <heying24@huawei.com>
+Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220121014418.155675-1-heying24@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/kernel/process.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-                         task_monitor_count
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +void put_task_monitor_slot(int slot)
-> +{
-> +	lockdep_assert_held(&rv_interface_lock);
-> +
-> +	if (slot < 0 || slot > RV_PER_TASK_MONITORS) {
-> +		WARN_ONCE(1, "RV releasing an invlid slot!: %d\n", slot);
+diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+index 02b69a68139c..56c33285b1df 100644
+--- a/arch/powerpc/kernel/process.c
++++ b/arch/powerpc/kernel/process.c
+@@ -2017,12 +2017,12 @@ unsigned long get_wchan(struct task_struct *p)
+ 		return 0;
+ 
+ 	do {
+-		sp = *(unsigned long *)sp;
++		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
+ 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
+ 		    p->state == TASK_RUNNING)
+ 			return 0;
+ 		if (count > 0) {
+-			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
++			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
+ 			if (!in_sched_functions(ip))
+ 				return ip;
+ 		}
+-- 
+2.35.1
 
-                                              invalid
-                                              
-> +		return;
-> +	}
-> +
-> +	WARN_ONCE(!task_monitor_slots[slot], "RV releasing unsused task_monitor_slots: %d\n",
 
-                                                           unused
-
-> +		  slot);
-> +
-> +	task_monitor_count--;
-> +	task_monitor_slots[slot] = false;
-> +}
-> +
-> +/*
-> + * This section collects the monitor/ files and folders.
-> + */
-> +static ssize_t monitor_enable_read_data(struct file *filp,
-> +					char __user *user_buf,
-> +					size_t count, loff_t *ppos)
-> +{
-> +	struct rv_monitor_def *mdef = filp->private_data;
-> +	char buff[4];
-> +
-> +	memset(buff, 0, sizeof(buff));
-
-Not sure if the generated code is different, but the memset can be
-rolled into buff declaration as -
-
-char buff[4] = { 0 };
-
-> +
-> +	mutex_lock(&rv_interface_lock);
-> +	sprintf(buff, "%x\n", mdef->monitor->enabled);
-> +	mutex_unlock(&rv_interface_lock);
-> +
-> +	return simple_read_from_buffer(user_buf, count, ppos,
-> +				       buff, strlen(buff)+1);
-> +}
-> +
-> +/*
-> + * Disable a given runtime monitor.
-> + */
-> +static int disable_monitor(struct rv_monitor_def *mdef)
-> +{
-> +	if (mdef->monitor->enabled) {
-> +		mdef->monitor->enabled = 0;
-> +		mdef->monitor->stop();
-> +	}
-> +
-> +	mdef->enabled = 0;
-> +	return 0;
-> +}
-> +
-> +/*
-> + * Enable a given monitor.
-> + */
-> +static int enable_monitor(struct rv_monitor_def *mdef)
-> +{
-> +	int retval;
-> +
-> +	/*
-> +	 * Reset all internal monitors before starting.
-> +	 */
-> +	mdef->monitor->reset();
-> +	if (!mdef->monitor->enabled) {
-> +		retval = mdef->monitor->start();
-> +		if (retval)
-> +			return retval;
-> +	}
-> +
-> +	mdef->monitor->enabled = 1;
-> +	mdef->enabled = 1;
-> +
-> +	return 0;
-> +}
-> +
-> +/*
-> + * interface for enabling/disabling a monitor.
-> + */
-> +static ssize_t monitor_enable_write_data(struct file *filp,
-> +					 const char __user *user_buf,
-> +					 size_t count, loff_t *ppos)
-> +{
-> +	struct rv_monitor_def *mdef = filp->private_data;
-> +	int retval;
-> +	u64 val;
-> +
-> +	retval = kstrtoull_from_user(user_buf, count, 10, &val);
-
-IIUC, kstrtobool_from_user() is better suited here.
-
-Thanks,
-Punit
-
-> +	if (retval)
-> +		return retval;
-> +
-> +	retval = count;
-> +
-> +	mutex_lock(&rv_interface_lock);
-> +
-> +	switch (val) {
-> +	case 0:
-> +		retval = disable_monitor(mdef);
-> +		break;
-> +	case 1:
-> +		retval = enable_monitor(mdef);
-> +		break;
-> +	default:
-> +		retval = -EINVAL;
-> +	}
-> +
-> +	mutex_unlock(&rv_interface_lock);
-> +
-> +	return retval;
-> +}
-> +
-
-[...]
 
