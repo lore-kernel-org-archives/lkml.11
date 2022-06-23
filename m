@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEED9CCA482
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B83ACCA483
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232988AbiFWRCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42150 "EHLO
+        id S233160AbiFWRC1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233672AbiFWQ6H (ORCPT
+        with ESMTP id S233245AbiFWQ5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:58:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624774ECEC;
-        Thu, 23 Jun 2022 09:53:46 -0700 (PDT)
+        Thu, 23 Jun 2022 12:57:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5C94D631;
+        Thu, 23 Jun 2022 09:53:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1880861F99;
-        Thu, 23 Jun 2022 16:53:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEE47C341CA;
-        Thu, 23 Jun 2022 16:53:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9FD80CE25CA;
+        Thu, 23 Jun 2022 16:53:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D544C3411B;
+        Thu, 23 Jun 2022 16:53:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003217;
-        bh=M/IUnOHbECY2+i0S5JihLZ2sBBNn7J6lnIdzKb5aEuI=;
+        s=korg; t=1656003193;
+        bh=+XdeAMZGulDlklmAx2AM9VR97QYmurT/FuKkS1NDyBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hpGL4mb0pfXE6O8J63jTxfd6hnh6ptN1NK+kbhYKopTBIC/LKXuS+A6RjRt4WhPc1
-         fNw8d9+4ZJJYIEfReHGVTx2eVHRkgdckk3rh3jJ2RSd6lTckbB3dyOi0YW+FxrvfbR
-         3ecYvyKYpBk8FQi1cV05PZwpN712OS0pOefp0VMs=
+        b=zN4BSDpotblv3L1LQ76oSk4wwTMY8Kls7Rxs9Me+/eX07A8lotLLvUYyJ/faFPeXf
+         knJnRhVpG5zCJ6EqEiut5Sh2n0z+WizRXglMBczM7T7owTRfUbGOOloGVGLkgXPqJS
+         4U9Ut86R9XUGaKpp1Lz9VF1en3AguKshZl7k3xo4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 166/264] random: skip fast_init if hwrng provides large chunk of entropy
-Date:   Thu, 23 Jun 2022 18:42:39 +0200
-Message-Id: <20220623164348.761271106@linuxfoundation.org>
+Subject: [PATCH 4.9 159/264] random: give sysctl_random_min_urandom_seed a more sensible value
+Date:   Thu, 23 Jun 2022 18:42:32 +0200
+Message-Id: <20220623164348.561292388@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,38 +51,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit af704c856e888fb044b058d731d61b46eeec499d upstream.
+commit d0efdf35a6a71d307a250199af6fce122a7c7e11 upstream.
 
-At boot time, EFI calls add_bootloader_randomness(), which in turn calls
-add_hwgenerator_randomness(). Currently add_hwgenerator_randomness()
-feeds the first 64 bytes of randomness to the "fast init"
-non-crypto-grade phase. But if add_hwgenerator_randomness() gets called
-with more than POOL_MIN_BITS of entropy, there's no point in passing it
-off to the "fast init" stage, since that's enough entropy to bootstrap
-the real RNG. The "fast init" stage is just there to provide _something_
-in the case where we don't have enough entropy to properly bootstrap the
-RNG. But if we do have enough entropy to bootstrap the RNG, the current
-logic doesn't serve a purpose. So, in the case where we're passed
-greater than or equal to POOL_MIN_BITS of entropy, this commit makes us
-skip the "fast init" phase.
+This isn't used by anything or anywhere, but we can't delete it due to
+compatibility. So at least give it the correct value of what it's
+supposed to be instead of a garbage one.
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1121,7 +1121,7 @@ void rand_initialize_disk(struct gendisk
- void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
--	if (unlikely(crng_init == 0)) {
-+	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
- 		size_t ret = crng_pre_init_inject(buffer, count, true);
- 		mix_pool_bytes(buffer, ret);
- 		count -= ret;
+@@ -1613,7 +1613,7 @@ const struct file_operations urandom_fop
+  *   to avoid breaking old userspaces, but writing to it does not
+  *   change any behavior of the RNG.
+  *
+- * - urandom_min_reseed_secs - fixed to the meaningless value "60".
++ * - urandom_min_reseed_secs - fixed to the value CRNG_RESEED_INTERVAL.
+  *   It is writable to avoid breaking old userspaces, but writing
+  *   to it does not change any behavior of the RNG.
+  *
+@@ -1623,7 +1623,7 @@ const struct file_operations urandom_fop
+ 
+ #include <linux/sysctl.h>
+ 
+-static int sysctl_random_min_urandom_seed = 60;
++static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
+ static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
+ static int sysctl_poolsize = POOL_BITS;
+ static u8 sysctl_bootid[UUID_SIZE];
 
 
