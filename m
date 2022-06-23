@@ -2,107 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 735E2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB02C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232861AbiFWQz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
+        id S232252AbiFWQ4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233899AbiFWQvv (ORCPT
+        with ESMTP id S233878AbiFWQvs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:51 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B2619F83
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:51:18 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id c65so6365393edf.4
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:51:17 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:48 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B767EE09
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:50:26 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id j5-20020a05600c1c0500b0039c5dbbfa48so1880939wms.5
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:50:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ZOox6HqgRBUv7icqURUJML9abJah70/U25bI8X8Eyc0=;
-        b=kfqCOp4uGyXjRICRfEG2lcRUgea96b9kksgdi1ldi2t1fN0InFIsPiqt4nqCLdfD/p
-         5BV+fuCzoVB2zfwoFAGFjymKkjfwyhmh+MmXr42ycq8dvVwWI2VXrr0EOxscM6UOmfUt
-         uI/j4WGJ5wfuNByUoQrhC++RY6pXGjOgLYLNpkXoMwfbWnWuirJq0TdYdVd8FCV35/VG
-         TwNAf8QZLaY3zIsBXsuJhAhs63Z/R3uwUYTtxAxLcYTV50pGABiUgGnf0cjW8ynvhaWG
-         tWY+f99eYGIoXq+TBANdoWe0YoEKdd9IaE870Jpwbx4CmYDD0jzZloR8qNw2Ki+A0ef5
-         HPig==
+        bh=IyotFVIHbhwpabNYCGpU2td0gSap/Y9S4vgKOOyoLJk=;
+        b=FrYaPn5yCP6c7XLE34Oe4aHh28I2+edN+azHdmB/Hm41HqxPPG50LlZclCjAXo/6sd
+         sUji2HaPVj4NqIerdZV1Dq99mON5/WCMELiHVpfXmAwKM1hHBHG1C+ovvS4LPKdT0BHz
+         MU+httuoGZN0A02Bd7UJMb4bVlLuJlrEMqr3r+eOFmOPuMHAP7R4lyJrGwSWuI5FSwxF
+         4HcDKCVCynBgWQuRcyr/73vXpiRCxe2AXuunChxGXu68Bey0VzUozDru4wS/+GO88u9X
+         k8yG4gwL6fQWebAgqaipPE1moMjXv2dwUZBeCIlPcJ25UdJEqfrVImTleyGcA+DbBcjA
+         teOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZOox6HqgRBUv7icqURUJML9abJah70/U25bI8X8Eyc0=;
-        b=SyWMNdPAjQuXd4dvcemqVjPqt6vWZYok75P2mgI65W5vL4FJB6AIHSe1LtxQDNpO0p
-         ClC1yDsXbiG+iZIhW2rls8CzBB3hLGNvOA9CgujqiWletyo39nt41dRi2Ro/ixxSIu3w
-         8nCvWGTbapUiSE1tvm3oAjKXWa0Jqi1ahQIGDygr8CwOeAAHiv8LKYm5laah/CCDT1Ia
-         3Y/4c4JrC5U3yxUWcndyIXHgnbS+SnQOLCFRnjxN7MIObLDUp5FlHPExkTvBKMazkhqL
-         gawnH4kVU7j8nLocrZV0SETwcybuGYjVFekcl2MNSTfz8GqepU7paOv6gMGA0aac6DBm
-         4/0w==
-X-Gm-Message-State: AJIora9kd+JTbkO862HEtSv5M/XGmKojZdqfyshKBN4PaaUBag+rhzUI
-        BNzjGGYJ7RnvA5ttCd8ZneQa6RN5jn+S+pX7m3A=
-X-Google-Smtp-Source: AGRyM1seSiLtqCIe8T9UCrc/sPscS+2NaSYNj41ONsIdzNTTytILIW4ECo/OCFVlLa6XL8bIlCV+qiVNMuLc7ZT3Ttw=
-X-Received: by 2002:a05:6402:50ce:b0:435:9249:dfe9 with SMTP id
- h14-20020a05640250ce00b004359249dfe9mr12079163edb.310.1656003076595; Thu, 23
- Jun 2022 09:51:16 -0700 (PDT)
+        bh=IyotFVIHbhwpabNYCGpU2td0gSap/Y9S4vgKOOyoLJk=;
+        b=yGdCOfb8T04byO+wON7ZoJtnt5icClXq8aQZ2FUj11+a0uxko0F+jMOaNPFr7PN013
+         BO0HAhpQsTjLs20WeOVUGtz/ZJarJsmqUMWhKFX4G/51iQ4aW6PS5htJGIFsPauYXFp7
+         6EmTO1INmpPJAujyP09hIs8cyU0vINcO8WuARfxqEb465Luak1CRbvv4mo6HZdryk0s2
+         FEMARzBtXzvzWFetbwtyswe5hg8w3PPSQ5Tyt8IVVtMlbDjeAN8F5EknCv0wjgLE539O
+         1JQ/iXms6m87EcClbw65pfH3VV1kC1/yLhtuxlJS01+bJkN17XtHfIE+6ZhSPfydzAbt
+         ptog==
+X-Gm-Message-State: AJIora9LorvoPMDu23jFcj/1mjvikjSBZcE5gzdtw0x1hvef+uHj62ub
+        jsfXZTsNPKjN9sdPMp/rRteav/Wi0Kv4GKD9AElglg==
+X-Google-Smtp-Source: AGRyM1veKrdS63pvIE+ZqkDsx+2WUvC3Q147rHm2GTilmFfL/Eh0tVd/vlOO+xQfiDVYfU3UuSB9FmFFZe27Zk+zBa8=
+X-Received: by 2002:a05:600c:1906:b0:39c:7f82:3090 with SMTP id
+ j6-20020a05600c190600b0039c7f823090mr5159188wmq.152.1656003025075; Thu, 23
+ Jun 2022 09:50:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220623101448.30188-1-jiangjian@cdjrlc.com>
-In-Reply-To: <20220623101448.30188-1-jiangjian@cdjrlc.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Thu, 23 Jun 2022 12:51:04 -0400
-Message-ID: <CADnq5_P1VQo71hENT-RZUXY1T_+46bwPzRQ+OED-mTwRG52gnA@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: drop unexpected word 'for' in comments
-To:     Jiang Jian <jiangjian@cdjrlc.com>
-Cc:     Dave Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        "Yang, Philip" <Philip.Yang@amd.com>,
-        "Kuehling, Felix" <Felix.Kuehling@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>
+References: <20220623000530.1194226-1-yosryahmed@google.com>
+ <YrQe5A+FXnbgOR1f@dhcp22.suse.cz> <CAJD7tkanavKpKrQr8-jA8pukgD7OY4eOwJRZufJ2NoThD12G+Q@mail.gmail.com>
+ <YrQ1o3CeaZWhm+h4@dhcp22.suse.cz> <CAJD7tkadsLOV7GMFAm+naX4Y1WpZ-4=NkAhAMxNw60iaRPWx=w@mail.gmail.com>
+ <YrSWruhPlJV1X9kp@dhcp22.suse.cz> <CALvZod6eLa1X1FJ2Qi6FXhFA-qBCP4mN2SB31MSgjj+g8hKo6Q@mail.gmail.com>
+In-Reply-To: <CALvZod6eLa1X1FJ2Qi6FXhFA-qBCP4mN2SB31MSgjj+g8hKo6Q@mail.gmail.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Thu, 23 Jun 2022 09:49:48 -0700
+Message-ID: <CAJD7tkY4a7AsUxa_k+_6q56+MmTJmsiy7uk176Z=6o-eC-950w@mail.gmail.com>
+Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
+ memory pressure
+To:     Shakeel Butt <shakeelb@google.com>, Michal Hocko <mhocko@suse.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Hildenbrand <david@redhat.com>,
+        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+On Thu, Jun 23, 2022 at 9:42 AM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Thu, Jun 23, 2022 at 9:37 AM Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > On Thu 23-06-22 09:22:35, Yosry Ahmed wrote:
+> > > On Thu, Jun 23, 2022 at 2:43 AM Michal Hocko <mhocko@suse.com> wrote:
+> > > >
+> > > > On Thu 23-06-22 01:35:59, Yosry Ahmed wrote:
+> > [...]
+> > > > > In our internal version of memory.reclaim that we recently upstreamed,
+> > > > > we do not account vmpressure during proactive reclaim (similar to how
+> > > > > psi is handled upstream). We want to make sure this behavior also
+> > > > > exists in the upstream version so that consolidating them does not
+> > > > > break our users who rely on vmpressure and will start seeing increased
+> > > > > pressure due to proactive reclaim.
+> > > >
+> > > > These are good reasons to have this patch in your tree. But why is this
+> > > > patch benefitial for the upstream kernel? It clearly adds some code and
+> > > > some special casing which will add a maintenance overhead.
+> > >
+> > > It is not just Google, any existing vmpressure users will start seeing
+> > > false pressure notifications with memory.reclaim. The main goal of the
+> > > patch is to make sure memory.reclaim does not break pre-existing users
+> > > of vmpressure, and doing it in a way that is consistent with psi makes
+> > > sense.
+> >
+> > memory.reclaim is v2 only feature which doesn't have vmpressure
+> > interface. So I do not see how pre-existing users of the upstream kernel
+> > can see any breakage.
+> >
+>
+> Please note that vmpressure is still being used in v2 by the
+> networking layer (see mem_cgroup_under_socket_pressure()) for
+> detecting memory pressure.
+>
+> Though IMO we should deprecate vmpressure altogether.
 
-Alex
+Thanks Shakeel for mentioning that, I was just about to. Although I
+agree vmpressure should be deprecated at some point, the current state
+is that memory.reclaim will give incorrect vmpressure signals.
 
-On Thu, Jun 23, 2022 at 6:15 AM Jiang Jian <jiangjian@cdjrlc.com> wrote:
->
-> there is an unexpected word 'for' in the comments that need to be dropped
->
-> file - drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c
-> line - 245
->
->  * position and also advance the position for for Vega10
->
-> changed to:
->
->  * position and also advance the position for Vega10
->
-> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
-> ---
->  drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c
-> index 3df146579ad9..1d5af50331e4 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c
-> @@ -242,7 +242,7 @@ int amdgpu_ih_process(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih)
->   * @entry: IV entry
->   *
->   * Decodes the interrupt vector at the current rptr
-> - * position and also advance the position for for Vega10
-> + * position and also advance the position for Vega10
->   * and later GPUs.
->   */
->  void amdgpu_ih_decode_iv_helper(struct amdgpu_device *adev,
-> --
-> 2.17.1
->
+IMO psi and vmpressure (though legacy) both signify memory pressure
+and should both be consistent as to what is being accounted for.
