@@ -2,93 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 053D8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:21:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AB9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234247AbiFWSVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40940 "EHLO
+        id S237012AbiFWSVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237194AbiFWSR7 (ORCPT
+        with ESMTP id S237173AbiFWSR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:17:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E011B2CE3;
-        Thu, 23 Jun 2022 10:24:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC35DB82497;
-        Thu, 23 Jun 2022 17:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA480C385A5;
-        Thu, 23 Jun 2022 17:24:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005060;
-        bh=wXfswAKxoB6qEeTTPf176jRBdlVA4NxvQhEMTOE3Kqk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QZvYQuHhplZRe3kOXG3ecjBboBgTGO11QvIP1x71gSMhQO0pIoaW5xCqGw8k8A1ms
-         bcomcn4Lln8KF1kxXM/BFWmgLNAnit+WGTtMf92zdLRW6T4OZsVh3xrqH3dXhOx8F4
-         hKoQOoz5aYf57PILuKoUtxP5STUSXKlsFLdgG/do=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@penugtronix.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 4.19 216/234] serial: 8250: Store to lsr_save_flags after lsr read
-Date:   Thu, 23 Jun 2022 18:44:43 +0200
-Message-Id: <20220623164349.162997301@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
-References: <20220623164343.042598055@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 14:17:56 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16515B3C1C;
+        Thu, 23 Jun 2022 10:24:18 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id i18so111624lfu.8;
+        Thu, 23 Jun 2022 10:24:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Vd6I47XVnnsBhvyCl3F2FOHX4RVw1fOk5Ka4rUmvOyw=;
+        b=AfKR0c24ywYANVT/yo48pwbD67+tfKAyJ5mxn73xIoJZFyu1YGuFdFJAD3avh68hHf
+         L9mG2F4voRL2y8BD4ffFqMytVW6zDLtNFU1OyahEiYd+0W961n8howXJhbrYRim8pKnS
+         TsJ107hrjN4/VPbCfTiRNIh1nKzxwTM7mftm7IyVU3dmJZRX+tFBzLzlf9OirlkDGLPK
+         XH+DYiAuqGPryc78DuqNHDUckevTjKEC+Izsm+Ck8I6XnB8pTGGnpN1r7gO/SNSeBpzT
+         FHP+6upHqMjsGC9xp79r1Rw2W4gDheEuLSHeVz4CozYrWvlO8KkLmGdGRHECYw0GHHkR
+         BV4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Vd6I47XVnnsBhvyCl3F2FOHX4RVw1fOk5Ka4rUmvOyw=;
+        b=CdFQbQ5DcboTglYypdlV+OY8WmZdAi++9mj4vmWWZRC4RByfUVIKAzJECgTlcruPmd
+         9nexaiuqg5oR+tWeiqSG9ErY4dIUbWfCKpsxsjQU049RGLdnF/4akpVJ+J308QMzgZUj
+         YLGmYwxgNA1nJgHt+p2pjlWCcH+ft/F7AhvDlxfHGL/nQtnGBx4Fme8bn+NAOKDjY8KE
+         rS+6oVcXTN5gkp9qGWj8eLyGAx8uyGD3nldK+3YrXFixhzKi+qtBZretZZk/la6saDkP
+         T+IGS3XsAmhPVPPJDzmPUBKRh8N6GVdEKJLItarWK3i8XV9OTBZHx/x3ZJ9SggjpbUXR
+         /cuw==
+X-Gm-Message-State: AJIora/9J/OExdGf7nFPulhkOHO3RsufiOaXvWGdzmRb55Cyvu8PW8+p
+        p5aq+0Tav81hKkbjhYCajnM=
+X-Google-Smtp-Source: AGRyM1uGcwmA4B2BYgcxHcSU64lGKl2lkAP50JWq/nzLH/mLaOoHxPa9gArlBKjn55ukt20bk9e+Wg==
+X-Received: by 2002:a05:6512:2241:b0:479:6426:15af with SMTP id i1-20020a056512224100b00479642615afmr6111281lfu.631.1656005057043;
+        Thu, 23 Jun 2022 10:24:17 -0700 (PDT)
+Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id v6-20020a05651203a600b0047f9cfa914csm677369lfp.18.2022.06.23.10.24.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 10:24:15 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 19:26:05 +0200
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 10/10] iio: adc: mcp3911: add support to set PGA
+Message-ID: <YrSiLdFzkXtCZIBi@gmail.com>
+References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
+ <20220623170844.2189814-10-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="lGrmasrXvQkSs9iU"
+Content-Disposition: inline
+In-Reply-To: <20220623170844.2189814-10-marcus.folkesson@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-commit be03b0651ffd8bab69dfd574c6818b446c0753ce upstream.
+--lGrmasrXvQkSs9iU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Not all LSR register flags are preserved across reads. Therefore, LSR
-readers must store the non-preserved bits into lsr_save_flags.
+On Thu, Jun 23, 2022 at 07:08:44PM +0200, Marcus Folkesson wrote:
+> -		.info_mask_shared_by_type_available =		\
+> -			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+> +		.info_mask_shared_by_type_available =           \
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO)	\
 
-This fix was initially mixed into feature commit f6f586102add ("serial:
-8250: Handle UART without interrupt on TEMT using em485"). However,
-that feature change had a flaw and it was reverted to make room for
-simpler approach providing the same feature. The embedded fix got
-reverted with the feature change.
+This change was not supposed to sneak in. Removed in v2.
 
-Re-add the lsr_save_flags fix and properly mark it's a fix.
-
-Link: https://lore.kernel.org/all/1d6c31d-d194-9e6a-ddf9-5f29af829f3@linux.intel.com/T/#m1737eef986bd20cf19593e344cebd7b0244945fc
-Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
-Cc: stable <stable@kernel.org>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@penugtronix.de>
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/f4d774be-1437-a550-8334-19d8722ab98c@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/8250/8250_port.c |    2 ++
- 1 file changed, 2 insertions(+)
-
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1522,6 +1522,8 @@ static inline void __stop_tx(struct uart
- 
- 	if (em485) {
- 		unsigned char lsr = serial_in(p, UART_LSR);
-+		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-+
- 		/*
- 		 * To provide required timeing and allow FIFO transfer,
- 		 * __stop_tx_rs485() must be called only when both FIFO and
+/Marcus
 
 
+
+--lGrmasrXvQkSs9iU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmK0oicACgkQiIBOb1ld
+UjJvmQ/+O1qb9I5+2vmxERYd3bqBZ7uUt0KqGiSxxvQJ8ZkEhN95leqvOtCicSsl
+9zRV1VyQc6z6dB4Hwol4FZ27FKPL3bzNQatSnBIbDqX7nQKGGT0uY2UWwrhcqm/I
+dRgc5WBODVjjpqcZPR/KkWhHBBO+qDhPTRVq6Q2OZIueKNcG26+5XIsNo5Uhw1dB
+p2yj3jfySqp4Q4FIQlcM7wB72/0rc9T4BbvQDRNcdin7UaSl4rWmtfxg7ZPOje1p
+9O6ek1soQKuEDqj18h7N2VD3zuG2FN4DtBNxPERqRF9rqkgiyf4/pvpYl9ontZp1
+zEJujWE0aUodxaN9A8q3RvDRPT2TbmE5OxcBdYvUot9tHX99NNiscZjdV1Wp61Wt
+pbZklmGOiQ0PcwNsakZRRer9+e6JGSm5KpC3ssckadejOVOT32C/v1iErGBuvlru
+vA18SDq3ZvPmO5s/WybjIGnpmqJ/YK9khZSn247/YOiOC8IgcDKWIv8SfItOhJN/
+mQLqmHXDZPH9Mhf7rM/EnvjVUjBDZyBwt0guZMkgMS45iS9eEvSoWyMXgC6fmgtJ
+i4jmRNTXc3IbBibdvuX4xIEjEeLJJjmlQZWL0F/TTAuL1Xxx0FC1WaTcKWYD141S
+eMbTVMPXie6rK8p8pGx5OTv+6fJe6A5BO0uxf6g2CSW+FlVAb5U=
+=DB3I
+-----END PGP SIGNATURE-----
+
+--lGrmasrXvQkSs9iU--
