@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E28C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D07AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:16:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236691AbiFWSQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
+        id S236639AbiFWSQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236632AbiFWSP2 (ORCPT
+        with ESMTP id S236633AbiFWSPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:15:28 -0400
+        Thu, 23 Jun 2022 14:15:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77C982893;
-        Thu, 23 Jun 2022 10:21:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272178289C;
+        Thu, 23 Jun 2022 10:21:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A65DBB82490;
-        Thu, 23 Jun 2022 17:21:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04CADC3411B;
-        Thu, 23 Jun 2022 17:21:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D99A0B824BD;
+        Thu, 23 Jun 2022 17:21:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 279E2C3411B;
+        Thu, 23 Jun 2022 17:21:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004909;
-        bh=ADtRrt3V39JZgtjHY/+41M5NR/geQPE2msmcwBrkHyw=;
+        s=korg; t=1656004915;
+        bh=iw50gbSjabpucUX0/rYmkGKA6LdGRAt/18oM3zoVtzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hh4lXVn93+so+ELIl35w55mv4iLJjlPDNQmfwYdrVnY4ou3jlQwIG4wu1uP4KWu+J
-         pJROITnoxMmwWp4R3RE0XndpPLZCagWb02f0YyfT3FKc74ihe+Dkgp2/cau0VowdXT
-         BQnJGVPediLl5Q5S4Eymsa/n6ukdNd8lqMJ0nqaM=
+        b=BTS952vmhrA2NaAzfGbW8JMfNddprFecWJO4i4VVbGWNwtNpOrIAJAjZ9dZRvTdCF
+         uM+TJxzcYjbEQFh4Ro6WcmDZnkb6GS775YTthdXKf2IEMOdbbdiOhGY0p17+J96L4y
+         JnGp0D1zJpKED4kzAO9KrG8PS7h9ObUnSgxu26wI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 189/234] ASoC: wm_adsp: Fix event generation for wm_adsp_fw_put()
-Date:   Thu, 23 Jun 2022 18:44:16 +0200
-Message-Id: <20220623164348.397071709@linuxfoundation.org>
+Subject: [PATCH 4.19 191/234] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
+Date:   Thu, 23 Jun 2022 18:44:18 +0200
+Message-Id: <20220623164348.452907586@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,37 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 2abdf9f80019e8244d3806ed0e1c9f725e50b452 ]
+[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
 
-Currently wm_adsp_fw_put() returns 0 rather than 1 when updating the value
-of the control, meaning that no event is generated to userspace. Fix this
-by setting the default return value to 1, the code already exits early with
-a return value of 0 if the value is unchanged.
+After issuing a LIP, a specific target vendor does not ACC the FLOGI that
+lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
+target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
+and starts the RPI registration for DID 0x000001.  The target then sends a
+LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
+fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
+0x000001 is put back into NPR and discovery stops, leaving the port in
+stuck in bypassed mode.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220603115003.3865834-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Change lpfc behavior such that if a LOGO is received for the fabric DID in
+PT2PT topology skip the lpfc_linkdown_port() routine and just move the
+fabric DID back to NPR.
+
+Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm_adsp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
-index 02c557e1f779..c5b0b56d9c94 100644
---- a/sound/soc/codecs/wm_adsp.c
-+++ b/sound/soc/codecs/wm_adsp.c
-@@ -697,7 +697,7 @@ int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	struct wm_adsp *dsp = snd_soc_component_get_drvdata(component);
--	int ret = 0;
-+	int ret = 1;
- 
- 	if (ucontrol->value.enumerated.item[0] == dsp[e->shift_l].fw)
- 		return 0;
+diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
+index 9442fb30e7cd..f666518d84b0 100644
+--- a/drivers/scsi/lpfc/lpfc_nportdisc.c
++++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
+@@ -662,7 +662,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ 	else
+ 		lpfc_els_rsp_acc(vport, ELS_CMD_ACC, cmdiocb, ndlp, NULL);
+ 	if (ndlp->nlp_DID == Fabric_DID) {
+-		if (vport->port_state <= LPFC_FDISC)
++		if (vport->port_state <= LPFC_FDISC ||
++		    vport->fc_flag & FC_PT2PT)
+ 			goto out;
+ 		lpfc_linkdown_port(vport);
+ 		spin_lock_irq(shost->host_lock);
 -- 
 2.35.1
 
