@@ -2,354 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC08DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234510AbiFWRkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45860 "EHLO
+        id S234418AbiFWRk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234516AbiFWRhl (ORCPT
+        with ESMTP id S234529AbiFWRhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:37:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB2B848B0;
+        Thu, 23 Jun 2022 13:37:47 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA8492151;
+        Thu, 23 Jun 2022 10:07:07 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id o23so16929561ljg.13;
+        Thu, 23 Jun 2022 10:07:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=IGSdRSXlkf0EIyduZq/whIQ2rDkrEQQxbaXXIkw+vOc=;
+        b=ZFHGjYUJvqZZhg78fpoliU7qdjoto7KiFJyYriKWwGL0L/3RDJ0Sw/wu0prrvThurs
+         CfMrLatOrnBaIH445OM2GhWnP1bL4MelDWESLWvDdoAeybUiu7l9QkxT5uKQGnR6phJO
+         1ULSiORHbAjQapGBYmBTipq16k1Nn6T9pBqgdWk8CJCUuUDeoOZrRlafyCZzANaqZGPX
+         E6zOtPIJa71dIQPeOPAB2MyP1/fHYwP0H8PaK0XLO9Ol79cx4qnKD5FZjerp3QHIG7XP
+         9IQNl+GkyCPSHO4wIB3gTRJLN/xbTMJrVdGsrJZ4t7aPuAqE/Ozy0N2TeEPPB27EbPN2
+         Z4ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=IGSdRSXlkf0EIyduZq/whIQ2rDkrEQQxbaXXIkw+vOc=;
+        b=7rS7A4RFfHwN+0v0GwD+zJRCnOXqpSszrRbK2Ea1pclgkfowEvbIsUr1BSW8l/v6aN
+         ij9ziGGKYyhxuwbu/b6r/3/kRfeT9KnFL2f+qKsLJZa6fDd1hIJoha9YfkVQNEXfSvTs
+         i7SXsxTrPiJeyyLXbG13uP6yrBljdkV1SUMjg4UidxPlLYgt2HiCLZW6/qDd1WaZ7gb0
+         l2/3G69dtNm79m6iBSsx6tNx1tgmo9If5Y8FdvglnA6PszjQVhMXU1nYE/gmIGPY4F9x
+         2hbf6v9xI+26bqrhKcGRMgL/o6hRCNgVszPFK112ewkGwgvdOCwLpplx575XSRMdr/qa
+         /D4w==
+X-Gm-Message-State: AJIora8bfRIVOj7ibqEqkPY9jaDOy9lZf6UlmnzKsW9BPVY2mqmpJU3k
+        xFiK0xyNhGIAAmtAA5IjDR0=
+X-Google-Smtp-Source: AGRyM1vT6R/FeopIjUsc0j4VCnlgppCQy/5MJHK1pAwuLfvpE7UwIUaowXDXmGf8cnNZG+EHMTF3kA==
+X-Received: by 2002:a05:651c:233:b0:255:58b9:1f53 with SMTP id z19-20020a05651c023300b0025558b91f53mr5230297ljn.143.1656004025373;
         Thu, 23 Jun 2022 10:07:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE34DB82499;
-        Thu, 23 Jun 2022 17:07:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F8D3C341CC;
-        Thu, 23 Jun 2022 17:07:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004022;
-        bh=EIHky4aFw9V9ab+PaAqXgkNWepVgcqHggEFeSC2llOI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pja2OOmnzqtdpFUyWqhBjmsiXM21qWcUT/p6ZgS1mW1PX01t13RkwJJeO6zpmO6xv
-         24T2MhXQz8KcNT+5gSUCUcMuwR9FlSM79aRCMWbvFYNTjVY96PldrvcNmABVpOqnnr
-         7BTSkwvHZTItxmq7qCr/jcEijCOS2/rNy8CKHa6I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 163/237] random: do not use batches when !crng_ready()
-Date:   Thu, 23 Jun 2022 18:43:17 +0200
-Message-Id: <20220623164347.843763142@linuxfoundation.org>
+Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id w27-20020a19491b000000b0047a0bf9540asm3060405lfa.213.2022.06.23.10.07.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 10:07:04 -0700 (PDT)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 02/10] iio: adc: mcp3911: use resource-managed version of iio_device_register
+Date:   Thu, 23 Jun 2022 19:08:36 +0200
+Message-Id: <20220623170844.2189814-2-marcus.folkesson@gmail.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
-References: <20220623164343.132308638@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
+References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Keep using managed resources as much as possible.
 
-commit cbe89e5a375a51bbb952929b93fa973416fea74e upstream.
-
-It's too hard to keep the batches synchronized, and pointless anyway,
-since in !crng_ready(), we're updating the base_crng key really often,
-where batching only hurts. So instead, if the crng isn't ready, just
-call into get_random_bytes(). At this stage nothing is performance
-critical anyhow.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 ---
- drivers/char/random.c |  158 ++++++++++++++++++--------------------------------
- 1 file changed, 59 insertions(+), 99 deletions(-)
+ drivers/iio/adc/mcp3911.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -233,10 +233,7 @@ static void _warn_unseeded_randomness(co
-  *
-  *********************************************************************/
+diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+index 4338552cd0ca..3d9e8ed10874 100644
+--- a/drivers/iio/adc/mcp3911.c
++++ b/drivers/iio/adc/mcp3911.c
+@@ -306,7 +306,7 @@ static int mcp3911_probe(struct spi_device *spi)
  
--enum {
--	CRNG_RESEED_INTERVAL = 300 * HZ,
--	CRNG_INIT_CNT_THRESH = 2 * CHACHA20_KEY_SIZE
--};
-+enum { CRNG_RESEED_INTERVAL = 300 * HZ };
+ 	mutex_init(&adc->lock);
  
- static struct {
- 	u8 key[CHACHA20_KEY_SIZE] __aligned(__alignof__(long));
-@@ -258,6 +255,8 @@ static DEFINE_PER_CPU(struct crng, crngs
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&adc->spi->dev, indio_dev);
+ 	if (ret)
+ 		goto clk_disable;
  
- /* Used by crng_reseed() to extract a new seed from the input pool. */
- static bool drain_entropy(void *buf, size_t nbytes);
-+/* Used by crng_make_state() to extract a new seed when crng_init==0. */
-+static void extract_entropy(void *buf, size_t nbytes);
+@@ -326,8 +326,6 @@ static void mcp3911_remove(struct spi_device *spi)
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct mcp3911 *adc = iio_priv(indio_dev);
  
- /*
-  * This extracts a new crng key from the input pool, but only if there is a
-@@ -382,17 +381,20 @@ static void crng_make_state(u32 chacha_s
- 	/*
- 	 * For the fast path, we check whether we're ready, unlocked first, and
- 	 * then re-check once locked later. In the case where we're really not
--	 * ready, we do fast key erasure with the base_crng directly, because
--	 * this is what crng_pre_init_inject() mutates during early init.
-+	 * ready, we do fast key erasure with the base_crng directly, extracting
-+	 * when crng_init==0.
- 	 */
- 	if (!crng_ready()) {
- 		bool ready;
- 
- 		spin_lock_irqsave(&base_crng.lock, flags);
- 		ready = crng_ready();
--		if (!ready)
-+		if (!ready) {
-+			if (crng_init == 0)
-+				extract_entropy(base_crng.key, sizeof(base_crng.key));
- 			crng_fast_key_erasure(base_crng.key, chacha_state,
- 					      random_data, random_data_len);
-+		}
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 		if (!ready)
- 			return;
-@@ -433,50 +435,6 @@ static void crng_make_state(u32 chacha_s
- 	local_irq_restore(flags);
- }
- 
--/*
-- * This function is for crng_init == 0 only. It loads entropy directly
-- * into the crng's key, without going through the input pool. It is,
-- * generally speaking, not very safe, but we use this only at early
-- * boot time when it's better to have something there rather than
-- * nothing.
-- *
-- * If account is set, then the crng_init_cnt counter is incremented.
-- * This shouldn't be set by functions like add_device_randomness(),
-- * where we can't trust the buffer passed to it is guaranteed to be
-- * unpredictable (so it might not have any entropy at all).
-- */
--static void crng_pre_init_inject(const void *input, size_t len, bool account)
--{
--	static int crng_init_cnt = 0;
--	struct blake2s_state hash;
--	unsigned long flags;
+-	iio_device_unregister(indio_dev);
 -
--	blake2s_init(&hash, sizeof(base_crng.key));
--
--	spin_lock_irqsave(&base_crng.lock, flags);
--	if (crng_init != 0) {
--		spin_unlock_irqrestore(&base_crng.lock, flags);
--		return;
--	}
--
--	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
--	blake2s_update(&hash, input, len);
--	blake2s_final(&hash, base_crng.key);
--
--	if (account) {
--		crng_init_cnt += min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
--		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
--			++base_crng.generation;
--			crng_init = 1;
--		}
--	}
--
--	spin_unlock_irqrestore(&base_crng.lock, flags);
--
--	if (crng_init == 1)
--		pr_notice("fast init done\n");
--}
--
- static void _get_random_bytes(void *buf, size_t nbytes)
- {
- 	u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)];
-@@ -622,6 +580,11 @@ u64 get_random_u64(void)
- 
- 	warn_unseeded_randomness(&previous);
- 
-+	if  (!crng_ready()) {
-+		_get_random_bytes(&ret, sizeof(ret));
-+		return ret;
-+	}
-+
- 	local_irq_save(flags);
- 	batch = raw_cpu_ptr(&batched_entropy_u64);
- 
-@@ -655,6 +618,11 @@ u32 get_random_u32(void)
- 
- 	warn_unseeded_randomness(&previous);
- 
-+	if  (!crng_ready()) {
-+		_get_random_bytes(&ret, sizeof(ret));
-+		return ret;
-+	}
-+
- 	local_irq_save(flags);
- 	batch = raw_cpu_ptr(&batched_entropy_u32);
- 
-@@ -776,7 +744,8 @@ EXPORT_SYMBOL(get_random_bytes_arch);
- 
- enum {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
--	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
-+	POOL_MIN_BITS = POOL_BITS, /* No point in settling for less. */
-+	POOL_FAST_INIT_BITS = POOL_MIN_BITS / 2
- };
- 
- /* For notifying userspace should write into /dev/random. */
-@@ -813,24 +782,6 @@ static void mix_pool_bytes(const void *i
- 	spin_unlock_irqrestore(&input_pool.lock, flags);
- }
- 
--static void credit_entropy_bits(size_t nbits)
--{
--	unsigned int entropy_count, orig, add;
--
--	if (!nbits)
--		return;
--
--	add = min_t(size_t, nbits, POOL_BITS);
--
--	do {
--		orig = READ_ONCE(input_pool.entropy_count);
--		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
--	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
--
--	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
--		crng_reseed();
--}
--
- /*
-  * This is an HKDF-like construction for using the hashed collected entropy
-  * as a PRF key, that's then expanded block-by-block.
-@@ -896,6 +847,33 @@ static bool drain_entropy(void *buf, siz
- 	return true;
- }
- 
-+static void credit_entropy_bits(size_t nbits)
-+{
-+	unsigned int entropy_count, orig, add;
-+	unsigned long flags;
-+
-+	if (!nbits)
-+		return;
-+
-+	add = min_t(size_t, nbits, POOL_BITS);
-+
-+	do {
-+		orig = READ_ONCE(input_pool.entropy_count);
-+		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
-+	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
-+
-+	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
-+		crng_reseed();
-+	else if (unlikely(crng_init == 0 && entropy_count >= POOL_FAST_INIT_BITS)) {
-+		spin_lock_irqsave(&base_crng.lock, flags);
-+		if (crng_init == 0) {
-+			extract_entropy(base_crng.key, sizeof(base_crng.key));
-+			crng_init = 1;
-+		}
-+		spin_unlock_irqrestore(&base_crng.lock, flags);
-+	}
-+}
-+
- 
- /**********************************************************************
-  *
-@@ -938,9 +916,9 @@ static bool drain_entropy(void *buf, siz
-  * entropy as specified by the caller. If the entropy pool is full it will
-  * block until more entropy is needed.
-  *
-- * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
-- * add_device_randomness(), depending on whether or not the configuration
-- * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-+ * add_bootloader_randomness() is called by bootloader drivers, such as EFI
-+ * and device tree, and credits its input depending on whether or not the
-+ * configuration option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-  *
-  * add_interrupt_randomness() uses the interrupt timing as random
-  * inputs to the entropy pool. Using the cycle counters and the irq source
-@@ -1020,9 +998,6 @@ void add_device_randomness(const void *b
- 	unsigned long entropy = random_get_entropy();
- 	unsigned long flags;
- 
--	if (crng_init == 0 && size)
--		crng_pre_init_inject(buf, size, false);
--
- 	spin_lock_irqsave(&input_pool.lock, flags);
- 	_mix_pool_bytes(&entropy, sizeof(entropy));
- 	_mix_pool_bytes(buf, size);
-@@ -1138,12 +1113,6 @@ void rand_initialize_disk(struct gendisk
- void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
--	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
--		crng_pre_init_inject(buffer, count, true);
--		mix_pool_bytes(buffer, count);
--		return;
--	}
--
- 	/*
- 	 * Throttle writing if we're above the trickle threshold.
- 	 * We'll be woken up again once below POOL_MIN_BITS, when
-@@ -1151,7 +1120,7 @@ void add_hwgenerator_randomness(const vo
- 	 * CRNG_RESEED_INTERVAL has elapsed.
- 	 */
- 	wait_event_interruptible_timeout(random_write_wait,
--			!system_wq || kthread_should_stop() ||
-+			kthread_should_stop() ||
- 			input_pool.entropy_count < POOL_MIN_BITS,
- 			CRNG_RESEED_INTERVAL);
- 	mix_pool_bytes(buffer, count);
-@@ -1160,17 +1129,14 @@ void add_hwgenerator_randomness(const vo
- EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
- 
- /*
-- * Handle random seed passed by bootloader.
-- * If the seed is trustworthy, it would be regarded as hardware RNGs. Otherwise
-- * it would be regarded as device data.
-- * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
-+ * Handle random seed passed by bootloader, and credit it if
-+ * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-  */
- void add_bootloader_randomness(const void *buf, size_t size)
- {
-+	mix_pool_bytes(buf, size);
- 	if (trust_bootloader)
--		add_hwgenerator_randomness(buf, size, size * 8);
--	else
--		add_device_randomness(buf, size);
-+		credit_entropy_bits(size * 8);
- }
- EXPORT_SYMBOL_GPL(add_bootloader_randomness);
- 
-@@ -1270,13 +1236,8 @@ static void mix_interrupt_randomness(str
- 	fast_pool->last = jiffies;
- 	local_irq_enable();
- 
--	if (unlikely(crng_init == 0)) {
--		crng_pre_init_inject(pool, sizeof(pool), true);
--		mix_pool_bytes(pool, sizeof(pool));
--	} else {
--		mix_pool_bytes(pool, sizeof(pool));
--		credit_entropy_bits(1);
--	}
-+	mix_pool_bytes(pool, sizeof(pool));
-+	credit_entropy_bits(1);
- 
- 	memzero_explicit(pool, sizeof(pool));
- }
-@@ -1298,8 +1259,7 @@ void add_interrupt_randomness(int irq)
- 	if (new_count & MIX_INFLIGHT)
- 		return;
- 
--	if (new_count < 64 && (!time_is_before_jiffies(fast_pool->last + HZ) ||
--			       unlikely(crng_init == 0)))
-+	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
- 
- 	if (unlikely(!fast_pool->mix.func))
-
+ 	clk_disable_unprepare(adc->clki);
+ 	if (adc->vref)
+ 		regulator_disable(adc->vref);
+-- 
+2.36.1
 
