@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 735C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232495AbiFWRLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        id S232521AbiFWRL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbiFWRKf (ORCPT
+        with ESMTP id S230199AbiFWRKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:10:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC694B876;
-        Thu, 23 Jun 2022 09:57:38 -0700 (PDT)
+        Thu, 23 Jun 2022 13:10:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17924B841;
+        Thu, 23 Jun 2022 09:57:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5819614E6;
-        Thu, 23 Jun 2022 16:57:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3ABFC3411B;
-        Thu, 23 Jun 2022 16:57:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9908260FFA;
+        Thu, 23 Jun 2022 16:57:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA8BC3411B;
+        Thu, 23 Jun 2022 16:57:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003434;
-        bh=QBouKxMDyaV8Mttk6r2ESrYduoZR6gfXIf1X23CW09E=;
+        s=korg; t=1656003454;
+        bh=bLc/uzwhwumxTQr/g8oSJE2ipqPDTrjDSdcBHWUxshE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pOdZ5XRnNNnu0n/G+C8KblCc0Bb6WKstzyZCvjKECIo+XGm6oVcn5rKi0n9TlRO5e
-         RbpwxLwRALOga0Ww7vkIZlrOJFE2SAgEBFvNVuyiAB20bPEPikxqM8QhzNlt3pU504
-         B9VeJw5GvEsd+eSkxJFosKyTbh1QVbSMetSwiX2E=
+        b=ukwqiv+3mqtxPhWE53wCHjZKMrYTSCVmij41KJeyWCnH9AYVtX9aR8auWEwdsZ0BV
+         HtWYYCgDwUZRtyWMAj6awR2Nw7Mz2LyZmiPKJXKkPTTTlfU/HjKXxjPt7q0Jx1GWjv
+         sx+JwPSVYrDVfQxMfwkbL2nhGxPKiqDLUcc2STOg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 237/264] random: credit cpu and bootloader seeds by default
-Date:   Thu, 23 Jun 2022 18:43:50 +0200
-Message-Id: <20220623164350.781700882@linuxfoundation.org>
+        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.9 243/264] USB: serial: option: add support for Cinterion MV31 with new baseline
+Date:   Thu, 23 Jun 2022 18:43:56 +0200
+Message-Id: <20220623164350.948874350@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,203 +48,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-[ Upstream commit 846bb97e131d7938847963cca00657c995b1fce1 ]
+commit 158f7585bfcea4aae0ad4128d032a80fec550df1 upstream.
 
-This commit changes the default Kconfig values of RANDOM_TRUST_CPU and
-RANDOM_TRUST_BOOTLOADER to be Y by default. It does not change any
-existing configs or change any kernel behavior. The reason for this is
-several fold.
+Adding support for Cinterion device MV31 with Qualcomm
+new baseline. Use different PIDs to separate it from
+previous base line products.
+All interfaces settings keep same as previous.
 
-As background, I recently had an email thread with the kernel
-maintainers of Fedora/RHEL, Debian, Ubuntu, Gentoo, Arch, NixOS, Alpine,
-SUSE, and Void as recipients. I noted that some distros trust RDRAND,
-some trust EFI, and some trust both, and I asked why or why not. There
-wasn't really much of a "debate" but rather an interesting discussion of
-what the historical reasons have been for this, and it came up that some
-distros just missed the introduction of the bootloader Kconfig knob,
-while another didn't want to enable it until there was a boot time
-switch to turn it off for more concerned users (which has since been
-added). The result of the rather uneventful discussion is that every
-major Linux distro enables these two options by default.
+Below is test evidence:
+T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  6 Spd=480 MxCh= 0
+D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=1e2d ProdID=00b8 Rev=04.14
+S:  Manufacturer=Cinterion
+S:  Product=Cinterion PID 0x00B8 USB Mobile Broadband
+S:  SerialNumber=90418e79
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
 
-While I didn't have really too strong of an opinion going into this
-thread -- and I mostly wanted to learn what the distros' thinking was
-one way or another -- ultimately I think their choice was a decent
-enough one for a default option (which can be disabled at boot time).
-I'll try to summarize the pros and cons:
+T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  7 Spd=480 MxCh= 0
+D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=1e2d ProdID=00b9 Rev=04.14
+S:  Manufacturer=Cinterion
+S:  Product=Cinterion PID 0x00B9 USB Mobile Broadband
+S:  SerialNumber=90418e79
+C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=50 Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
 
-Pros:
+For PID 00b8, interface 3 is GNSS port which don't use serial driver.
 
-- The RNG machinery gets initialized super quickly, and there's no
-  messing around with subsequent blocking behavior.
-
-- The bootloader mechanism is used by kexec in order for the prior
-  kernel to initialize the RNG of the next kernel, which increases
-  the entropy available to early boot daemons of the next kernel.
-
-- Previous objections related to backdoors centered around
-  Dual_EC_DRBG-like kleptographic systems, in which observing some
-  amount of the output stream enables an adversary holding the right key
-  to determine the entire output stream.
-
-  This used to be a partially justified concern, because RDRAND output
-  was mixed into the output stream in varying ways, some of which may
-  have lacked pre-image resistance (e.g. XOR or an LFSR).
-
-  But this is no longer the case. Now, all usage of RDRAND and
-  bootloader seeds go through a cryptographic hash function. This means
-  that the CPU would have to compute a hash pre-image, which is not
-  considered to be feasible (otherwise the hash function would be
-  terribly broken).
-
-- More generally, if the CPU is backdoored, the RNG is probably not the
-  realistic vector of choice for an attacker.
-
-- These CPU or bootloader seeds are far from being the only source of
-  entropy. Rather, there is generally a pretty huge amount of entropy,
-  not all of which is credited, especially on CPUs that support
-  instructions like RDRAND. In other words, assuming RDRAND outputs all
-  zeros, an attacker would *still* have to accurately model every single
-  other entropy source also in use.
-
-- The RNG now reseeds itself quite rapidly during boot, starting at 2
-  seconds, then 4, then 8, then 16, and so forth, so that other sources
-  of entropy get used without much delay.
-
-- Paranoid users can set random.trust_{cpu,bootloader}=no in the kernel
-  command line, and paranoid system builders can set the Kconfig options
-  to N, so there's no reduction or restriction of optionality.
-
-- It's a practical default.
-
-- All the distros have it set this way. Microsoft and Apple trust it
-  too. Bandwagon.
-
-Cons:
-
-- RDRAND *could* still be backdoored with something like a fixed key or
-  limited space serial number seed or another indexable scheme like
-  that. (However, it's hard to imagine threat models where the CPU is
-  backdoored like this, yet people are still okay making *any*
-  computations with it or connecting it to networks, etc.)
-
-- RDRAND *could* be defective, rather than backdoored, and produce
-  garbage that is in one way or another insufficient for crypto.
-
-- Suggesting a *reduction* in paranoia, as this commit effectively does,
-  may cause some to question my personal integrity as a "security
-  person".
-
-- Bootloader seeds and RDRAND are generally very difficult if not all
-  together impossible to audit.
-
-Keep in mind that this doesn't actually change any behavior. This
-is just a change in the default Kconfig value. The distros already are
-shipping kernels that set things this way.
-
-Ard made an additional argument in [1]:
-
-    We're at the mercy of firmware and micro-architecture anyway, given
-    that we are also relying on it to ensure that every instruction in
-    the kernel's executable image has been faithfully copied to memory,
-    and that the CPU implements those instructions as documented. So I
-    don't think firmware or ISA bugs related to RNGs deserve special
-    treatment - if they are broken, we should quirk around them like we
-    usually do. So enabling these by default is a step in the right
-    direction IMHO.
-
-In [2], Phil pointed out that having this disabled masked a bug that CI
-otherwise would have caught:
-
-    A clean 5.15.45 boots cleanly, whereas a downstream kernel shows the
-    static key warning (but it does go on to boot). The significant
-    difference is that our defconfigs set CONFIG_RANDOM_TRUST_BOOTLOADER=y
-    defining that on top of multi_v7_defconfig demonstrates the issue on
-    a clean 5.15.45. Conversely, not setting that option in a
-    downstream kernel build avoids the warning
-
-[1] https://lore.kernel.org/lkml/CAMj1kXGi+ieviFjXv9zQBSaGyyzeGW_VpMpTLJK8PJb2QHEQ-w@mail.gmail.com/
-[2] https://lore.kernel.org/lkml/c47c42e3-1d56-5859-a6ad-976a1a3381c6@raspberrypi.com/
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Link: https://lore.kernel.org/r/20220601034740.5438-1-slark_xiao@163.com
+[ johan: rename defines using a "2" infix ]
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/Kconfig | 54 +++++++++++++++++++++++++++-----------------
- 1 file changed, 33 insertions(+), 21 deletions(-)
+ drivers/usb/serial/option.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index 1de665ae0255..1d3813d4f5c8 100644
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -593,29 +593,41 @@ config TILE_SROM
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -430,6 +430,8 @@ static void option_instat_callback(struc
+ #define CINTERION_PRODUCT_CLS8			0x00b0
+ #define CINTERION_PRODUCT_MV31_MBIM		0x00b3
+ #define CINTERION_PRODUCT_MV31_RMNET		0x00b7
++#define CINTERION_PRODUCT_MV31_2_MBIM		0x00b8
++#define CINTERION_PRODUCT_MV31_2_RMNET		0x00b9
+ #define CINTERION_PRODUCT_MV32_WA		0x00f1
+ #define CINTERION_PRODUCT_MV32_WB		0x00f2
  
- source "drivers/char/xillybus/Kconfig"
- 
--endmenu
--
- config RANDOM_TRUST_CPU
--	bool "Trust the CPU manufacturer to initialize Linux's CRNG"
--	depends on X86 || S390 || PPC
--	default n
-+	bool "Initialize RNG using CPU RNG instructions"
-+	default y
-+	depends on ARCH_RANDOM
- 	help
--	Assume that CPU manufacturer (e.g., Intel or AMD for RDSEED or
--	RDRAND, IBM for the S390 and Power PC architectures) is trustworthy
--	for the purposes of initializing Linux's CRNG.  Since this is not
--	something that can be independently audited, this amounts to trusting
--	that CPU manufacturer (perhaps with the insistence or mandate
--	of a Nation State's intelligence or law enforcement agencies)
--	has not installed a hidden back door to compromise the CPU's
--	random number generation facilities. This can also be configured
--	at boot with "random.trust_cpu=on/off".
-+	  Initialize the RNG using random numbers supplied by the CPU's
-+	  RNG instructions (e.g. RDRAND), if supported and available. These
-+	  random numbers are never used directly, but are rather hashed into
-+	  the main input pool, and this happens regardless of whether or not
-+	  this option is enabled. Instead, this option controls whether the
-+	  they are credited and hence can initialize the RNG. Additionally,
-+	  other sources of randomness are always used, regardless of this
-+	  setting.  Enabling this implies trusting that the CPU can supply high
-+	  quality and non-backdoored random numbers.
-+
-+	  Say Y here unless you have reason to mistrust your CPU or believe
-+	  its RNG facilities may be faulty. This may also be configured at
-+	  boot time with "random.trust_cpu=on/off".
- 
- config RANDOM_TRUST_BOOTLOADER
--	bool "Trust the bootloader to initialize Linux's CRNG"
-+	bool "Initialize RNG using bootloader-supplied seed"
-+	default y
- 	help
--	Some bootloaders can provide entropy to increase the kernel's initial
--	device randomness. Say Y here to assume the entropy provided by the
--	booloader is trustworthy so it will be added to the kernel's entropy
--	pool. Otherwise, say N here so it will be regarded as device input that
--	only mixes the entropy pool. This can also be configured at boot with
--	"random.trust_bootloader=on/off".
-+	  Initialize the RNG using a seed supplied by the bootloader or boot
-+	  environment (e.g. EFI or a bootloader-generated device tree). This
-+	  seed is not used directly, but is rather hashed into the main input
-+	  pool, and this happens regardless of whether or not this option is
-+	  enabled. Instead, this option controls whether the seed is credited
-+	  and hence can initialize the RNG. Additionally, other sources of
-+	  randomness are always used, regardless of this setting. Enabling
-+	  this implies trusting that the bootloader can supply high quality and
-+	  non-backdoored seeds.
-+
-+	  Say Y here unless you have reason to mistrust your bootloader or
-+	  believe its RNG facilities may be faulty. This may also be configured
-+	  at boot time with "random.trust_bootloader=on/off".
-+
-+endmenu
--- 
-2.35.1
-
+@@ -1953,6 +1955,10 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(3)},
+ 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_RMNET, 0xff),
+ 	  .driver_info = RSVD(0)},
++	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_2_MBIM, 0xff),
++	  .driver_info = RSVD(3)},
++	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_2_RMNET, 0xff),
++	  .driver_info = RSVD(0)},
+ 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WA, 0xff),
+ 	  .driver_info = RSVD(3)},
+ 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WB, 0xff),
 
 
