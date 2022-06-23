@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BA4CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E965BCCA485
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233684AbiFWQ6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
+        id S233710AbiFWQ6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233530AbiFWQvI (ORCPT
+        with ESMTP id S233521AbiFWQvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D824F9F8;
-        Thu, 23 Jun 2022 09:49:07 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8082A4F9E3;
+        Thu, 23 Jun 2022 09:49:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9829261F99;
-        Thu, 23 Jun 2022 16:49:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 846FBC3411B;
-        Thu, 23 Jun 2022 16:49:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06585B82490;
+        Thu, 23 Jun 2022 16:49:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 667A2C3411B;
+        Thu, 23 Jun 2022 16:49:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002945;
-        bh=b3HcxFY2Z107yriS02GzNOck2hhG/Ixx/VwzsOXG4J4=;
+        s=korg; t=1656002942;
+        bh=Zbui7v7FMbWc//788gGyBC2NlADN4nVrUFzvTcnNgOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vBmFmGYnxwOjz8dJ4e+CKNaDQpq9txoSl4f2idD9j2OUneuQZ18JBAoMSKPoCrhGV
-         hD1i33RUDbMmqBvtkCg8zgGeRpBoW4UTxFpC/HCFtU682KguthPAdFfYvIiucPRO9n
-         RIDALzg2u6PfGuo4ozrQst0r0z7tjRDiuwtXUyqo=
+        b=YfG2SPbHkeaYF/yeibqUoeOJ7ekQ8//OB5SqostMrmidFF7PPFSCGhu7Ml0hLpgo1
+         2lSTFSfuDK6PyJGaYp0C4582DUmFn0Rv5+sVVFMCwic9byr3tqnVIL2nX2ZtEfMhA8
+         ZJu64/Q5Ft3FvA4/KbAFiSfxangp3mNehC0TRsyg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, linux-crypto@vger.kernel.org,
-        Andy Lutomirski <luto@kernel.org>,
-        Jann Horn <jannh@google.com>, Theodore Tso <tytso@mit.edu>,
-        Ard Biesheuvel <ardb@kernel.org>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Andre Przywara <andre.przywara@arm.com>,
         Eric Biggers <ebiggers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 077/264] random: remove dead code left over from blocking pool
-Date:   Thu, 23 Jun 2022 18:41:10 +0200
-Message-Id: <20220623164346.249501108@linuxfoundation.org>
+        Marc Zyngier <maz@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 4.9 076/264] random: avoid arch_get_random_seed_long() when collecting IRQ randomness
+Date:   Thu, 23 Jun 2022 18:41:09 +0200
+Message-Id: <20220623164346.220853098@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -53,187 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit 118a4417e14348b2e46f5e467da8444ec4757a45 upstream.
+commit 390596c9959c2a4f5b456df339f0604df3d55fe0 upstream.
 
-Remove some dead code that was left over following commit 90ea1c6436d2
-("random: remove the blocking pool").
+When reseeding the CRNG periodically, arch_get_random_seed_long() is
+called to obtain entropy from an architecture specific source if one
+is implemented. In most cases, these are special instructions, but in
+some cases, such as on ARM, we may want to back this using firmware
+calls, which are considerably more expensive.
 
-Cc: linux-crypto@vger.kernel.org
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Jann Horn <jannh@google.com>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Andy Lutomirski <luto@kernel.org>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Another call to arch_get_random_seed_long() exists in the CRNG driver,
+in add_interrupt_randomness(), which collects entropy by capturing
+inter-interrupt timing and relying on interrupt jitter to provide
+random bits. This is done by keeping a per-CPU state, and mixing in
+the IRQ number, the cycle counter and the return address every time an
+interrupt is taken, and mixing this per-CPU state into the entropy pool
+every 64 invocations, or at least once per second. The entropy that is
+gathered this way is credited as 1 bit of entropy. Every time this
+happens, arch_get_random_seed_long() is invoked, and the result is
+mixed in as well, and also credited with 1 bit of entropy.
+
+This means that arch_get_random_seed_long() is called at least once
+per second on every CPU, which seems excessive, and doesn't really
+scale, especially in a virtualization scenario where CPUs may be
+oversubscribed: in cases where arch_get_random_seed_long() is backed
+by an instruction that actually goes back to a shared hardware entropy
+source (such as RNDRRS on ARM), we will end up hitting it hundreds of
+times per second.
+
+So let's drop the call to arch_get_random_seed_long() from
+add_interrupt_randomness(), and instead, rely on crng_reseed() to call
+the arch hook to get random seed material from the platform.
+
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Tested-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Link: https://lore.kernel.org/r/20201105152944.16953-1-ardb@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c         |   17 +-------
- include/trace/events/random.h |   83 ------------------------------------------
- 2 files changed, 3 insertions(+), 97 deletions(-)
+ drivers/char/random.c |   15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -503,7 +503,6 @@ struct entropy_store {
- 	unsigned short add_ptr;
- 	unsigned short input_rotate;
- 	int entropy_count;
--	unsigned int initialized:1;
- 	unsigned int last_data_init:1;
- 	__u8 last_data[EXTRACT_SIZE];
- };
-@@ -663,7 +662,7 @@ static void process_random_ready_list(vo
-  */
- static void credit_entropy_bits(struct entropy_store *r, int nbits)
- {
--	int entropy_count, orig, has_initialized = 0;
-+	int entropy_count, orig;
- 	const int pool_size = r->poolinfo->poolfracbits;
- 	int nfrac = nbits << ENTROPY_SHIFT;
+@@ -1331,8 +1331,6 @@ void add_interrupt_randomness(int irq, i
+ 	cycles_t		cycles = random_get_entropy();
+ 	__u32			c_high, j_high;
+ 	__u64			ip;
+-	unsigned long		seed;
+-	int			credit = 0;
  
-@@ -720,23 +719,14 @@ retry:
- 	if (cmpxchg(&r->entropy_count, orig, entropy_count) != orig)
- 		goto retry;
+ 	if (cycles == 0)
+ 		cycles = get_reg(fast_pool, regs);
+@@ -1368,23 +1366,12 @@ void add_interrupt_randomness(int irq, i
  
--	if (has_initialized) {
--		r->initialized = 1;
--		kill_fasync(&fasync, SIGIO, POLL_IN);
+ 	fast_pool->last = now;
+ 	__mix_pool_bytes(r, &fast_pool->pool, sizeof(fast_pool->pool));
+-
+-	/*
+-	 * If we have architectural seed generator, produce a seed and
+-	 * add it to the pool.  For the sake of paranoia don't let the
+-	 * architectural seed generator dominate the input from the
+-	 * interrupt noise.
+-	 */
+-	if (arch_get_random_seed_long(&seed)) {
+-		__mix_pool_bytes(r, &seed, sizeof(seed));
+-		credit = 1;
 -	}
--
- 	trace_credit_entropy_bits(r->name, nbits,
- 				  entropy_count >> ENTROPY_SHIFT, _RET_IP_);
+ 	spin_unlock(&r->lock);
  
- 	if (r == &input_pool) {
- 		int entropy_bits = entropy_count >> ENTROPY_SHIFT;
+ 	fast_pool->count = 0;
  
--		if (crng_init < 2) {
--			if (entropy_bits < 128)
--				return;
-+		if (crng_init < 2 && entropy_bits >= 128)
- 			crng_reseed(&primary_crng, r);
--			entropy_bits = ENTROPY_BITS(r);
--		}
- 	}
+ 	/* award one bit for the contents of the fast pool */
+-	credit_entropy_bits(r, credit + 1);
++	credit_entropy_bits(r, 1);
  }
- 
-@@ -1442,8 +1432,7 @@ retry:
- }
- 
- /*
-- * This function does the actual extraction for extract_entropy and
-- * extract_entropy_user.
-+ * This function does the actual extraction for extract_entropy.
-  *
-  * Note: we assume that .poolwords is a multiple of 16 words.
-  */
---- a/include/trace/events/random.h
-+++ b/include/trace/events/random.h
-@@ -84,28 +84,6 @@ TRACE_EVENT(credit_entropy_bits,
- 		  __entry->entropy_count, (void *)__entry->IP)
- );
- 
--TRACE_EVENT(push_to_pool,
--	TP_PROTO(const char *pool_name, int pool_bits, int input_bits),
--
--	TP_ARGS(pool_name, pool_bits, input_bits),
--
--	TP_STRUCT__entry(
--		__field( const char *,	pool_name		)
--		__field(	  int,	pool_bits		)
--		__field(	  int,	input_bits		)
--	),
--
--	TP_fast_assign(
--		__entry->pool_name	= pool_name;
--		__entry->pool_bits	= pool_bits;
--		__entry->input_bits	= input_bits;
--	),
--
--	TP_printk("%s: pool_bits %d input_pool_bits %d",
--		  __entry->pool_name, __entry->pool_bits,
--		  __entry->input_bits)
--);
--
- TRACE_EVENT(debit_entropy,
- 	TP_PROTO(const char *pool_name, int debit_bits),
- 
-@@ -160,35 +138,6 @@ TRACE_EVENT(add_disk_randomness,
- 		  MINOR(__entry->dev), __entry->input_bits)
- );
- 
--TRACE_EVENT(xfer_secondary_pool,
--	TP_PROTO(const char *pool_name, int xfer_bits, int request_bits,
--		 int pool_entropy, int input_entropy),
--
--	TP_ARGS(pool_name, xfer_bits, request_bits, pool_entropy,
--		input_entropy),
--
--	TP_STRUCT__entry(
--		__field( const char *,	pool_name		)
--		__field(	  int,	xfer_bits		)
--		__field(	  int,	request_bits		)
--		__field(	  int,	pool_entropy		)
--		__field(	  int,	input_entropy		)
--	),
--
--	TP_fast_assign(
--		__entry->pool_name	= pool_name;
--		__entry->xfer_bits	= xfer_bits;
--		__entry->request_bits	= request_bits;
--		__entry->pool_entropy	= pool_entropy;
--		__entry->input_entropy	= input_entropy;
--	),
--
--	TP_printk("pool %s xfer_bits %d request_bits %d pool_entropy %d "
--		  "input_entropy %d", __entry->pool_name, __entry->xfer_bits,
--		  __entry->request_bits, __entry->pool_entropy,
--		  __entry->input_entropy)
--);
--
- DECLARE_EVENT_CLASS(random__get_random_bytes,
- 	TP_PROTO(int nbytes, unsigned long IP),
- 
-@@ -252,38 +201,6 @@ DEFINE_EVENT(random__extract_entropy, ex
- 	TP_ARGS(pool_name, nbytes, entropy_count, IP)
- );
- 
--DEFINE_EVENT(random__extract_entropy, extract_entropy_user,
--	TP_PROTO(const char *pool_name, int nbytes, int entropy_count,
--		 unsigned long IP),
--
--	TP_ARGS(pool_name, nbytes, entropy_count, IP)
--);
--
--TRACE_EVENT(random_read,
--	TP_PROTO(int got_bits, int need_bits, int pool_left, int input_left),
--
--	TP_ARGS(got_bits, need_bits, pool_left, input_left),
--
--	TP_STRUCT__entry(
--		__field(	  int,	got_bits		)
--		__field(	  int,	need_bits		)
--		__field(	  int,	pool_left		)
--		__field(	  int,	input_left		)
--	),
--
--	TP_fast_assign(
--		__entry->got_bits	= got_bits;
--		__entry->need_bits	= need_bits;
--		__entry->pool_left	= pool_left;
--		__entry->input_left	= input_left;
--	),
--
--	TP_printk("got_bits %d still_needed_bits %d "
--		  "blocking_pool_entropy_left %d input_entropy_left %d",
--		  __entry->got_bits, __entry->got_bits, __entry->pool_left,
--		  __entry->input_left)
--);
--
- TRACE_EVENT(urandom_read,
- 	TP_PROTO(int got_bits, int pool_left, int input_left),
+ EXPORT_SYMBOL_GPL(add_interrupt_randomness);
  
 
 
