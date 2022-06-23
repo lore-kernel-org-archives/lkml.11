@@ -2,117 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB97C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:17:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B56C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236888AbiFWSQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
+        id S236903AbiFWSRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236778AbiFWSQg (ORCPT
+        with ESMTP id S236506AbiFWSQO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:16:36 -0400
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06B25DF35;
-        Thu, 23 Jun 2022 10:22:44 -0700 (PDT)
-Received: by mail-yb1-f173.google.com with SMTP id u9so219638ybq.3;
-        Thu, 23 Jun 2022 10:22:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QzySQcL24GEYxXoJc82RsC0c2BhGDpj4k4DOkY9xrS0=;
-        b=EA9QO/BQU35unKlx6FbkmO5/gPZgmhdZgoPbgFC6ffBaA9VooOcc0BRLOU39xQVF5u
-         oCQBgnLZoYCyzVFx7UIoZDv9EQX6dTDh4Rgq+u/q19CS8XJPMXCMbOzr/wvoN8a+JJEX
-         n+dfZAHFvr9Z2RZB/XL9H/844Gm0m5QrkH2LAFi2Edlk952DPNVmyNwpHEo0zDEgttH/
-         rh/cvmHqXZv3hq9jo2fuvJWXhzak+RaB6VSTOM7wwmz9+vUeiVyRW9eHndW02UhCqfSG
-         zciotoAlnfZ/mSNthxa1kW0Dqxa+aopjSNJbaqDfEBibkC99qnrZLbTwsBuiL8Fdv7Fv
-         iS+g==
-X-Gm-Message-State: AJIora8hjXpF/oHWli0PfCcSNJcgeSauYfwdswID16swkOdq45TP3wEt
-        BttImfYagxBaZOWbKf9rxILcTsZ7uMFC93gcX1A=
-X-Google-Smtp-Source: AGRyM1vlR+G3ynXaQ+rOy9k5hMBPieUkqHmh9QChAgpgAs7VODTNv3swHyAeiQ4sYXpc/+o+j6AcUnENYWlbLbMDoS8=
-X-Received: by 2002:a05:6902:1141:b0:669:3f2a:c6bb with SMTP id
- p1-20020a056902114100b006693f2ac6bbmr10551083ybu.365.1656004963776; Thu, 23
- Jun 2022 10:22:43 -0700 (PDT)
+        Thu, 23 Jun 2022 14:16:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72E64F46F;
+        Thu, 23 Jun 2022 10:22:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A05B61E0D;
+        Thu, 23 Jun 2022 17:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBEFFC3411B;
+        Thu, 23 Jun 2022 17:22:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656004958;
+        bh=4YG/mLz04w7Z3iVgwRBUHl1vEuxLOBCOG6D0oHMrmAA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PsGfQ0UNB3t/pBHXdLRZjJHLGgW1GaB+PcVIjuArgGcPL2vK3fK0zKAC2XHU9XSC/
+         ccnF6lEGsbobfgSch7BQdMsSVQe8hRYOyL5sTr3ruoKt8IijIy68E4efMYr37mS77N
+         wbT9AvD9Agp/ubdu/XxIIJZ3MuKf4+Ed8HR+NbAg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 204/234] mlxsw: spectrum_cnt: Reorder counter pools
+Date:   Thu, 23 Jun 2022 18:44:31 +0200
+Message-Id: <20220623164348.824680175@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220623080344.783549-1-saravanak@google.com> <20220623080344.783549-3-saravanak@google.com>
- <20220623100421.GY1615@pengutronix.de> <YrSXKkYfr+Hinsuu@smile.fi.intel.com>
-In-Reply-To: <YrSXKkYfr+Hinsuu@smile.fi.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 23 Jun 2022 19:22:32 +0200
-Message-ID: <CAJZ5v0girHMO5v=KMXmTuXNjrfx+1gi8ma25mNc+gt=3U8pppA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] of: base: Avoid console probe delay when fw_devlink.strict=1
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     sascha hauer <sha@pengutronix.de>,
-        Saravana Kannan <saravanak@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Len Brown <lenb@kernel.org>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        russell king <linux@armlinux.org.uk>,
-        "david s. miller" <davem@davemloft.net>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 6:39 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> On Thu, Jun 23, 2022 at 12:04:21PM +0200, sascha hauer wrote:
-> > On Thu, Jun 23, 2022 at 01:03:43AM -0700, Saravana Kannan wrote:
->
-> ...
->
-> > I wonder if it wouldn't be a better approach to just probe all devices
-> > and record the device(node) they are waiting on. Then you know that you
-> > don't need to probe them again until the device they are waiting for
-> > is available.
->
-> There may be no device, but resource. And we become again to the something like
-> deferred probe ugly hack.
->
-> The real solution is to rework device driver model in the kernel that it will
-> create a graph of dependencies and then simply follow it. But actually it should
-> be more than 1 graph, because there are resources and there are power, clock and
-> resets that may be orthogonal to the higher dependencies (like driver X provides
-> a resource to driver Y).
+From: Petr Machata <petrm@nvidia.com>
 
-There is one graph, or it wouldn't be possible to shut down the system orderly.
+[ Upstream commit 4b7a632ac4e7101ceefee8484d5c2ca505d347b3 ]
 
-The problem is that this graph is generally dynamic, especially during
-system init, and following dependencies in transient states is
-generally hard.
+Both RIF and ACL flow counters use a 24-bit SW-managed counter address to
+communicate which counter they want to bind.
 
-Device links allow the already known dependencies to be recorded and
-taken into account later, so we already have a graph for those.
+In a number of Spectrum FW releases, binding a RIF counter is broken and
+slices the counter index to 16 bits. As a result, on Spectrum-2 and above,
+no more than about 410 RIF counters can be effectively used. This
+translates to 205 netdevices for which L3 HW stats can be enabled. (This
+does not happen on Spectrum-1, because there are fewer counters available
+overall and the counter index never exceeds 16 bits.)
 
-The unknown dependencies obviously cannot be used for creating a graph
-of any sort, though, and here we are in the business of guessing what
-the unknown dependencies may be IIUC.
+Binding counters to ACLs does not have this issue. Therefore reorder the
+counter allocation scheme so that RIF counters come first and therefore get
+lower indices that are below the 16-bit barrier.
+
+Fixes: 98e60dce4da1 ("Merge branch 'mlxsw-Introduce-initial-Spectrum-2-support'")
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/20220613125017.2018162-1-idosch@nvidia.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
+index 81465e267b10..b7eb3674e285 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
+@@ -7,8 +7,8 @@
+ #include "spectrum.h"
+ 
+ enum mlxsw_sp_counter_sub_pool_id {
+-	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
+ 	MLXSW_SP_COUNTER_SUB_POOL_RIF,
++	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
+ };
+ 
+ int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
+-- 
+2.35.1
+
+
+
