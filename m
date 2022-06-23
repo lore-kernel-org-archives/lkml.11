@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F65C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233431AbiFWRvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
+        id S235315AbiFWRv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235299AbiFWRvM (ORCPT
+        with ESMTP id S235191AbiFWRvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:51:12 -0400
+        Thu, 23 Jun 2022 13:51:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1487EAA;
-        Thu, 23 Jun 2022 10:12:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F10563A1;
+        Thu, 23 Jun 2022 10:12:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0A5B61D17;
-        Thu, 23 Jun 2022 17:12:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E64CC3411B;
-        Thu, 23 Jun 2022 17:12:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88F9F61D02;
+        Thu, 23 Jun 2022 17:12:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C44C3411B;
+        Thu, 23 Jun 2022 17:12:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004332;
-        bh=qG/z7pGTlu7rIK35JdI01L2yl2wZZo3gEQBsnATcXHc=;
+        s=korg; t=1656004337;
+        bh=qDzmuSiqbUB+FjyDOoGuytMegQAGK7PpdDB2C/Si6hM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XdV/hKH2OOvjwTytUTH7ZLlnv8kjuXpre9cbZwNDH0t6z0S/VLuPRxhyTIiXPM1VV
-         URZc3RuvqJ+XJ1Nw1rPRC/eezaJ2vIMO1MZefiYJBKJHeZd1XOqC7RHdZsEP8glPMG
-         WAzMclbuJnkkkyobp267XbDu5QcbGg0piPGw7UIs=
+        b=cy5koJkjk+Nw7SjPnE3/4Hb8bWvhNZeBZk3lxslvA0VwhfBY+qjoI/V3JDGTZqhWz
+         Z+fa+ikKL4Tq8uugioc82Y04hvqPa2QaUdblDC6U+nzeqm6MdwoRcaKBPqz8rG49Ag
+         3VJRZdhMdIeb/ehlGQBf2a5RT4N0KS9NLWCgMpnU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Simon Sundberg <simon.sundberg@kau.se>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 6/9] bpf: Fix calling global functions from BPF_PROG_TYPE_EXT programs
-Date:   Thu, 23 Jun 2022 18:44:49 +0200
-Message-Id: <20220623164322.477144391@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH 5.15 8/9] serial: core: Initialize rs485 RTS polarity already on probe
+Date:   Thu, 23 Jun 2022 18:44:51 +0200
+Message-Id: <20220623164322.534186490@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164322.288837280@linuxfoundation.org>
 References: <20220623164322.288837280@linuxfoundation.org>
@@ -49,63 +49,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit f858c2b2ca04fc7ead291821a793638ae120c11d upstream.
+commit 2dd8a74fddd21b95dcc60a2d3c9eaec993419d69 upstream.
 
-The verifier allows programs to call global functions as long as their
-argument types match, using BTF to check the function arguments. One of the
-allowed argument types to such global functions is PTR_TO_CTX; however the
-check for this fails on BPF_PROG_TYPE_EXT functions because the verifier
-uses the wrong type to fetch the vmlinux BTF ID for the program context
-type. This failure is seen when an XDP program is loaded using
-libxdp (which loads it as BPF_PROG_TYPE_EXT and attaches it to a global XDP
-type program).
+RTS polarity of rs485-enabled ports is currently initialized on uart
+open via:
 
-Fix the issue by passing in the target program type instead of the
-BPF_PROG_TYPE_EXT type to bpf_prog_get_ctx() when checking function
-argument compatibility.
+tty_port_open()
+  tty_port_block_til_ready()
+    tty_port_raise_dtr_rts()  # if (C_BAUD(tty))
+      uart_dtr_rts()
+        uart_port_dtr_rts()
 
-The first Fixes tag refers to the latest commit that touched the code in
-question, while the second one points to the code that first introduced
-the global function call verification.
+There's at least three problems here:
 
-v2:
-- Use resolve_prog_type()
+First, if no baud rate is set, RTS polarity is not initialized.
+That's the right thing to do for rs232, but not for rs485, which
+requires that RTS is deasserted unconditionally.
 
-Fixes: 3363bd0cfbb8 ("bpf: Extend kfunc with PTR_TO_CTX, PTR_TO_MEM argument support")
-Fixes: 51c39bb1d5d1 ("bpf: Introduce function-by-function verification")
-Reported-by: Simon Sundberg <simon.sundberg@kau.se>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/r/20220606075253.28422-1-toke@redhat.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-[ backport: open-code missing resolve_prog_type() helper, resolve context diff ]
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Second, if the DeviceTree property "linux,rs485-enabled-at-boot-time" is
+present, RTS should be deasserted as early as possible, i.e. on probe.
+Otherwise it may remain asserted until first open.
+
+Third, even though RTS is deasserted on open and close, it may
+subsequently be asserted by uart_throttle(), uart_unthrottle() or
+uart_set_termios() because those functions aren't rs485-aware.
+(Only uart_tiocmset() is.)
+
+To address these issues, move RTS initialization from uart_port_dtr_rts()
+to uart_configure_port().  Prevent subsequent modification of RTS
+polarity by moving the existing rs485 check from uart_tiocmget() to
+uart_update_mctrl().
+
+That way, RTS is initialized on probe and then remains unmodified unless
+the uart transmits data.  If rs485 is enabled at runtime (instead of at
+boot) through a TIOCSRS485 ioctl(), RTS is initialized by the uart
+driver's ->rs485_config() callback and then likewise remains unmodified.
+
+The PL011 driver initializes RTS on uart open and prevents subsequent
+modification in its ->set_mctrl() callback.  That code is obsoleted by
+the present commit, so drop it.
+
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Su Bao Cheng <baocheng.su@siemens.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/2d2acaf3a69e89b7bf687c912022b11fd29dfa1e.1642909284.git.lukas@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/btf.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c  |   15 +--------------
+ drivers/tty/serial/serial_core.c |   34 ++++++++++++----------------------
+ 2 files changed, 13 insertions(+), 36 deletions(-)
 
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -5441,6 +5441,8 @@ static int btf_check_func_arg_match(stru
- 				    struct bpf_reg_state *regs,
- 				    bool ptr_to_mem_ok)
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1620,13 +1620,6 @@ static void pl011_set_mctrl(struct uart_
+ 	    container_of(port, struct uart_amba_port, port);
+ 	unsigned int cr;
+ 
+-	if (port->rs485.flags & SER_RS485_ENABLED) {
+-		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
+-			mctrl &= ~TIOCM_RTS;
+-		else
+-			mctrl |= TIOCM_RTS;
+-	}
+-
+ 	cr = pl011_read(uap, REG_CR);
+ 
+ #define	TIOCMBIT(tiocmbit, uartbit)		\
+@@ -1850,14 +1843,8 @@ static int pl011_startup(struct uart_por
+ 	cr = uap->old_cr & (UART011_CR_RTS | UART011_CR_DTR);
+ 	cr |= UART01x_CR_UARTEN | UART011_CR_RXE;
+ 
+-	if (port->rs485.flags & SER_RS485_ENABLED) {
+-		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
+-			cr &= ~UART011_CR_RTS;
+-		else
+-			cr |= UART011_CR_RTS;
+-	} else {
++	if (!(port->rs485.flags & SER_RS485_ENABLED))
+ 		cr |= UART011_CR_TXE;
+-	}
+ 
+ 	pl011_write(cr, uap, REG_CR);
+ 
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -144,6 +144,11 @@ uart_update_mctrl(struct uart_port *port
+ 	unsigned long flags;
+ 	unsigned int old;
+ 
++	if (port->rs485.flags & SER_RS485_ENABLED) {
++		set &= ~TIOCM_RTS;
++		clear &= ~TIOCM_RTS;
++	}
++
+ 	spin_lock_irqsave(&port->lock, flags);
+ 	old = port->mctrl;
+ 	port->mctrl = (old & ~clear) | set;
+@@ -157,23 +162,10 @@ uart_update_mctrl(struct uart_port *port
+ 
+ static void uart_port_dtr_rts(struct uart_port *uport, int raise)
  {
-+	enum bpf_prog_type prog_type = env->prog->type == BPF_PROG_TYPE_EXT ?
-+		env->prog->aux->dst_prog->type : env->prog->type;
- 	struct bpf_verifier_log *log = &env->log;
- 	const char *func_name, *ref_tname;
- 	const struct btf_type *t, *ref_t;
-@@ -5533,8 +5535,7 @@ static int btf_check_func_arg_match(stru
- 					reg_ref_tname);
- 				return -EINVAL;
- 			}
--		} else if (btf_get_prog_ctx_type(log, btf, t,
--						 env->prog->type, i)) {
-+		} else if (btf_get_prog_ctx_type(log, btf, t, prog_type, i)) {
- 			/* If function expects ctx type in BTF check that caller
- 			 * is passing PTR_TO_CTX.
- 			 */
+-	int rs485_on = uport->rs485_config &&
+-		(uport->rs485.flags & SER_RS485_ENABLED);
+-	int RTS_after_send = !!(uport->rs485.flags & SER_RS485_RTS_AFTER_SEND);
+-
+-	if (raise) {
+-		if (rs485_on && RTS_after_send) {
+-			uart_set_mctrl(uport, TIOCM_DTR);
+-			uart_clear_mctrl(uport, TIOCM_RTS);
+-		} else {
+-			uart_set_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
+-		}
+-	} else {
+-		unsigned int clear = TIOCM_DTR;
+-
+-		clear |= (!rs485_on || RTS_after_send) ? TIOCM_RTS : 0;
+-		uart_clear_mctrl(uport, clear);
+-	}
++	if (raise)
++		uart_set_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
++	else
++		uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
+ }
+ 
+ /*
+@@ -1089,11 +1081,6 @@ uart_tiocmset(struct tty_struct *tty, un
+ 		goto out;
+ 
+ 	if (!tty_io_error(tty)) {
+-		if (uport->rs485.flags & SER_RS485_ENABLED) {
+-			set &= ~TIOCM_RTS;
+-			clear &= ~TIOCM_RTS;
+-		}
+-
+ 		uart_update_mctrl(uport, set, clear);
+ 		ret = 0;
+ 	}
+@@ -2408,6 +2395,9 @@ uart_configure_port(struct uart_driver *
+ 		 */
+ 		spin_lock_irqsave(&port->lock, flags);
+ 		port->mctrl &= TIOCM_DTR;
++		if (port->rs485.flags & SER_RS485_ENABLED &&
++		    !(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
++			port->mctrl |= TIOCM_RTS;
+ 		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ 
 
 
