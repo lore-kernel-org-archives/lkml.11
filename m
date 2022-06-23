@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1AE3CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11088CCA482
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233259AbiFWRRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:17:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39150 "EHLO
+        id S233553AbiFWRRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233273AbiFWRMn (ORCPT
+        with ESMTP id S232418AbiFWROH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:12:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0D52F3;
-        Thu, 23 Jun 2022 09:58:25 -0700 (PDT)
+        Thu, 23 Jun 2022 13:14:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03555995DF;
+        Thu, 23 Jun 2022 09:59:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89444B8248A;
-        Thu, 23 Jun 2022 16:58:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9365C3411B;
-        Thu, 23 Jun 2022 16:58:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1184B82493;
+        Thu, 23 Jun 2022 16:59:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDD4EC341C4;
+        Thu, 23 Jun 2022 16:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003503;
-        bh=9P2pvINs/sgb/fVH7QEjMuFU0EZR1PdrE2W4adZFrjo=;
+        s=korg; t=1656003559;
+        bh=TXlJw9jpEOS1fyd0OpgzA5Jz8hgGqgEotnlXApTzPMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yM5ayYg8mqfqhTeFAnC9LWv8l6NzAu2JivxQNIo+PtnNENf7H6i2EU6yDGD5BF5Pc
-         vv1KOa4as4eqMyqL6dfp1yCifZ1FkydDs4iO8idtri6PxetqZhHdgQ6vq2CNAHQnvy
-         DU9gOXeWbBQHcOyk7tgGt9X/n2aarx/LlfJdz41w=
+        b=Bn6Ic9DQNiHOjRPpXBHfj4P5knMfaDMAVgd77Ed5/XVjblat7o3oSSJF86MvPDVBj
+         VohG+KxGRBMsDkpo63vx6vgoWJwrmAdbAUy3q/qJlhnAqybpNytIHMPhGku/TfydCu
+         tvzpG3HM4pGIEXj2UC9Ty4YpCpEjqArQ2TGocZI8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 219/264] crypto: drbg - move dynamic ->reseed_threshold adjustments to __drbg_seed()
-Date:   Thu, 23 Jun 2022 18:43:32 +0200
-Message-Id: <20220623164350.273618284@linuxfoundation.org>
+Subject: [PATCH 4.14 014/237] drivers/char/random.c: make primary_crng static
+Date:   Thu, 23 Jun 2022 18:40:48 +0200
+Message-Id: <20220623164343.561668067@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
-References: <20220623164344.053938039@linuxfoundation.org>
+In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
+References: <20220623164343.132308638@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,107 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolai Stange <nstange@suse.de>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-commit 262d83a4290c331cd4f617a457408bdb82fbb738 upstream.
+commit 764ed189c82090c1d85f0e30636156736d8f09a8 upstream.
 
-Since commit 42ea507fae1a ("crypto: drbg - reseed often if seedsource is
-degraded"), the maximum seed lifetime represented by ->reseed_threshold
-gets temporarily lowered if the get_random_bytes() source cannot provide
-sufficient entropy yet, as is common during boot, and restored back to
-the original value again once that has changed.
+Since the definition of struct crng_state is private to random.c, and
+primary_crng is neither declared or used elsewhere, there's no reason
+for that symbol to have external linkage.
 
-More specifically, if the add_random_ready_callback() invoked from
-drbg_prepare_hrng() in the course of DRBG instantiation does not return
--EALREADY, that is, if get_random_bytes() has not been fully initialized
-at this point yet, drbg_prepare_hrng() will lower ->reseed_threshold
-to a value of 50. The drbg_async_seed() scheduled from said
-random_ready_callback will eventually restore the original value.
-
-A future patch will replace the random_ready_callback based notification
-mechanism and thus, there will be no add_random_ready_callback() return
-value anymore which could get compared to -EALREADY.
-
-However, there's __drbg_seed() which gets invoked in the course of both,
-the DRBG instantiation as well as the eventual reseeding from
-get_random_bytes() in aforementioned drbg_async_seed(), if any. Moreover,
-it knows about the get_random_bytes() initialization state by the time the
-seed data had been obtained from it: the new_seed_state argument introduced
-with the previous patch would get set to DRBG_SEED_STATE_PARTIAL in case
-get_random_bytes() had not been fully initialized yet and to
-DRBG_SEED_STATE_FULL otherwise. Thus, __drbg_seed() provides a convenient
-alternative for managing that ->reseed_threshold lowering and restoring at
-a central place.
-
-Move all ->reseed_threshold adjustment code from drbg_prepare_hrng() and
-drbg_async_seed() respectively to __drbg_seed(). Make __drbg_seed()
-lower the ->reseed_threshold to 50 in case its new_seed_state argument
-equals DRBG_SEED_STATE_PARTIAL and let it restore the original value
-otherwise.
-
-There is no change in behaviour.
-
-Signed-off-by: Nicolai Stange <nstange@suse.de>
-Reviewed-by: Stephan Müller <smueller@chronox.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/drbg.c |   29 ++++++++++++++++++++---------
- 1 file changed, 20 insertions(+), 9 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/crypto/drbg.c
-+++ b/crypto/drbg.c
-@@ -1048,6 +1048,26 @@ static inline int __drbg_seed(struct drb
- 	/* 10.1.1.2 / 10.1.1.3 step 5 */
- 	drbg->reseed_ctr = 1;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -415,7 +415,7 @@ struct crng_state {
+ 	spinlock_t	lock;
+ };
  
-+	switch (drbg->seeded) {
-+	case DRBG_SEED_STATE_UNSEEDED:
-+		/* Impossible, but handle it to silence compiler warnings. */
-+	case DRBG_SEED_STATE_PARTIAL:
-+		/*
-+		 * Require frequent reseeds until the seed source is
-+		 * fully initialized.
-+		 */
-+		drbg->reseed_threshold = 50;
-+		break;
-+
-+	case DRBG_SEED_STATE_FULL:
-+		/*
-+		 * Seed source has become fully initialized, frequent
-+		 * reseeds no longer required.
-+		 */
-+		drbg->reseed_threshold = drbg_max_requests(drbg);
-+		break;
-+	}
-+
- 	return ret;
- }
- 
-@@ -1096,9 +1116,6 @@ static void drbg_async_seed(struct work_
- 
- 	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
- 
--	if (drbg->seeded == DRBG_SEED_STATE_FULL)
--		drbg->reseed_threshold = drbg_max_requests(drbg);
--
- unlock:
- 	mutex_unlock(&drbg->drbg_mutex);
- 
-@@ -1532,12 +1549,6 @@ static int drbg_prepare_hrng(struct drbg
- 		return err;
- 	}
- 
--	/*
--	 * Require frequent reseeds until the seed source is fully
--	 * initialized.
--	 */
--	drbg->reseed_threshold = 50;
--
- 	return err;
- }
+-struct crng_state primary_crng = {
++static struct crng_state primary_crng = {
+ 	.lock = __SPIN_LOCK_UNLOCKED(primary_crng.lock),
+ };
  
 
 
