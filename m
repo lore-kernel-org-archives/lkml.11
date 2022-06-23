@@ -2,142 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3476C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 753DCCCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231867AbiFWQZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        id S232202AbiFWQZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231744AbiFWQY7 (ORCPT
+        with ESMTP id S232204AbiFWQZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:24:59 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85333A732
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:24:57 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id f16so80023pjj.1
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:24:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dilger-ca.20210112.gappssmtp.com; s=20210112;
-        h=from:message-id:mime-version:subject:date:in-reply-to:cc:to
-         :references;
-        bh=bcyfxdYDvwFKE4FcRkASoG03KisaDjvMQmq4ODLZY6Y=;
-        b=Q6EkS8J9o1kRFWTS1Sz7yUZQrVb9iZj6pO/U9kzzfvvlgRxFnL50FsOu6QYctzx4Zj
-         4AFwrrYShyaBMbMo/S//DCItdhB6Xhidd85LbLLCxhVPWdWfApQ8g/jLGL/zYxjMnhmB
-         xugmETGHUFP/NTpUaNxC3LJ8uNd1GAVXJfdx/0rp85cdY7Ghk6qITrxSFopDdfiLvenO
-         RRWQfBglfzjZeMXnkcJFN4vOV1vf6TcRPzixwqDrnxZlAnKBAJNAfji+cLcxuPTwVecy
-         yQOMeWEt/s2lxyaOoO1+OBzNWKgwuofTfgyeF7a8/TNbKiIEVB21YyJebVkm9tDvvBw2
-         jkgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:mime-version:subject:date
-         :in-reply-to:cc:to:references;
-        bh=bcyfxdYDvwFKE4FcRkASoG03KisaDjvMQmq4ODLZY6Y=;
-        b=R9zytiTH6OTIUrvGap61jU22EaSFW6y0ltczFaWwYFdpGaB38BENc5jxDOuhFEpUiZ
-         0jb0Plr/2AKFSB02nB1seGRJwzMtvx7Nw75S6z1NJpcl80AchkFmTDbBlw0x0gNIEXhT
-         pUjRTSJytPa9LWBQxgUuSyCDz+Jx6BAbEJLR9vsYOdZETV+xBE/Tlqhs4kZn67fTYKvw
-         aV0mPb/VUkYlL2kQKo9CFJ1Fa+bI3UhQCEoYrvAa1ZCbj9OXA/CR48/02w2z9+EDkMNY
-         EYjmnRYZMWJr5/zli10yhuNOK1+mbarNou5by+u44kW5V6HD/YuM6oP0+NE3/6u29BCX
-         CdZQ==
-X-Gm-Message-State: AJIora+KvyUGJgv3l2kOyAZAV1zSq9PBKEZDuP7E7D26tr+WLyy1CPNM
-        7yzymZ3EhKn3ennyqEquj3v58w==
-X-Google-Smtp-Source: AGRyM1ukROTsV74eiDORs7U9DuEV5/TMYhdqOiMfNTcV5f2UeXO0T5u5WYzf57Iazk83XTH31glX2g==
-X-Received: by 2002:a17:90b:3b81:b0:1ec:e852:22db with SMTP id pc1-20020a17090b3b8100b001ece85222dbmr4865881pjb.77.1656001497135;
-        Thu, 23 Jun 2022 09:24:57 -0700 (PDT)
-Received: from cabot.adilger.int (S01061cabc081bf83.cg.shawcable.net. [70.77.221.9])
-        by smtp.gmail.com with ESMTPSA id jh21-20020a170903329500b0016a109c7606sm11075493plb.259.2022.06.23.09.24.55
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 Jun 2022 09:24:56 -0700 (PDT)
-From:   Andreas Dilger <adilger@dilger.ca>
-Message-Id: <622BA3BB-03EA-4271-8A2E-2ADAFB574155@dilger.ca>
-Content-Type: multipart/signed;
- boundary="Apple-Mail=_1B6FC5B2-556F-4A2D-9F1C-A60D36468C15";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Subject: Re: [man-pages RFC PATCH] statx.2, open.2: document STATX_DIOALIGN
-Date:   Thu, 23 Jun 2022 10:27:19 -0600
-In-Reply-To: <YrSOm2murB4Bc1RQ@magnolia>
-Cc:     Eric Biggers <ebiggers@kernel.org>, linux-fsdevel@vger.kernel.org,
-        linux-man@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Keith Busch <kbusch@kernel.org>
-To:     "Darrick J. Wong" <djwong@kernel.org>
-References: <20220616202141.125079-1-ebiggers@kernel.org>
- <YrSOm2murB4Bc1RQ@magnolia>
-X-Mailer: Apple Mail (2.3273)
+        Thu, 23 Jun 2022 12:25:18 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC0C46CBF;
+        Thu, 23 Jun 2022 09:25:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656001515; x=1687537515;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YBcyDm3+c63sXYAdzt+59szqAftpblBOv3+86OdD4RA=;
+  b=XHJYgpf/yfI3tJuogK4n2XuPtBS8UROwjEN/04HUUrO4L6pR6v9R4wDR
+   GQmnTrDdl/9Oo/B7UpLrQLFYuqfXKAbBlDk1ys5I6dwsgollfsZg/MXRG
+   RYn7q3JYnWzNrnOsinRFE8ztMiWuU3WtNRbOGEn+p8Km4w5Ijt+aFuOnB
+   ooKeMUpuG5IjrPYGTqUq9asKZb8UEzl3SgLWpbsYu7OqHW7yxL4hwAT24
+   qdoV7c0X5cljqVCW5bj4DGQTmstccCL29qX4D05FVh5GLXudbTpZllDnL
+   ZtY5fNA3bIsh+rFvpJjh7lmydoMFxbrJbg7GVnJEfQSb6eOnv9zTFMsE2
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="280814532"
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="280814532"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 09:25:14 -0700
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="691094949"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 09:25:11 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o4Pdj-000tCq-Le;
+        Thu, 23 Jun 2022 19:25:07 +0300
+Date:   Thu, 23 Jun 2022 19:25:07 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lukas@wunner.de, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: Re: [PATCH 3/8] serial: core: move sanitizing of RS485 delays into
+ own function
+Message-ID: <YrST4zDJjSo5aNZh@smile.fi.intel.com>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
+ <20220622154659.8710-4-LinoSanfilippo@gmx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622154659.8710-4-LinoSanfilippo@gmx.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---Apple-Mail=_1B6FC5B2-556F-4A2D-9F1C-A60D36468C15
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-	charset=us-ascii
-
-On Jun 23, 2022, at 10:02 AM, Darrick J. Wong <djwong@kernel.org> wrote:
+On Wed, Jun 22, 2022 at 05:46:54PM +0200, Lino Sanfilippo wrote:
+> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 > 
-> On Thu, Jun 16, 2022 at 01:21:41PM -0700, Eric Biggers wrote:
->> From: Eric Biggers <ebiggers@google.com>
->> 
->> @@ -244,8 +249,11 @@ STATX_SIZE	Want stx_size
->> STATX_BLOCKS	Want stx_blocks
->> STATX_BASIC_STATS	[All of the above]
->> STATX_BTIME	Want stx_btime
->> +STATX_ALL	The same as STATX_BASIC_STATS | STATX_BTIME.
->> +         	This is deprecated and should not be used.
-> 
-> STATX_ALL is deprecated??  I was under the impression that _ALL meant
-> all the known bits for that kernel release, but...
+> Move the sanitizing of RS485 delays out of uart_sanitize_serial_rs485()
+> into the new function uart_sanitize_serial_rs485_delays().
 
-For userspace STATX_ALL doesn't make sense, and it isn't used by the kernel.
+...
 
-Firstly, that would be a compile-time value for an application, so it
-may be incorrect for the kernel the code is actually run on (either too
-many or too few bits could be set).
+> +	/* pick sane settings if the user hasn't */
 
-Secondly, it isn't really useful for an app to request "all attributes"
-if it doesn't know what they all mean, as that potentially adds useless
-overhead.  Better for it to explicitly request the attributes that it
-needs.  If that is fewer than the kernel could return it is irrelevant,
-since the app would ignore them anyway.
+Be consistent with the style (capitalization) of one-line comments. It might
+require another patch to make it all consistent.
 
-The kernel will already ignore and mask attributes that *it* doesn't
-understand, so requesting more is fine and STATX_ALL doesn't help this.
+(Below is left for a context)
 
-Cheers, Andreas
+>  	/* Return clean padding area to userspace */
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-
-
-
---Apple-Mail=_1B6FC5B2-556F-4A2D-9F1C-A60D36468C15
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-Comment: GPGTools - http://gpgtools.org
-
-iQIzBAEBCAAdFiEEDb73u6ZejP5ZMprvcqXauRfMH+AFAmK0lGcACgkQcqXauRfM
-H+CkuA//avp4Tuh55VpE8yHOQ8z64y5vrwNesx7bZ8atQCuwyhbJlvdTGn27SVv1
-4j1+/hWy3q+Jsot1ja0njROgu9KlOetTJ7qK4tlq4buIjBuB1izLfyGtSUtRezui
-Z93g7NQEpOSFyNwknXMz2vTB4gOxgMd0V9jCkElXXC+EClReBJq/Jts+/qNH8cnU
-j2kdedwlaAg3zMbSWbygM0DxumX1YB0dCYuK/SyyAyjWr4I5mHFqHeyZf3ej2fVB
-g/wUfgv7Ku50XluSp4/deoA8R/TJbCkQikvKS4S9pI/LqMeOEZ6moyIJ8KRyWKSs
-wbSn8e2E49hUrxKO15kQx2vIs1BS1WLN1PWmv4TVnkTmfkuf7iUVVMxlU3Jfifcx
-qZXhYvTv7UvL/oV12MJHzQiYR/YUytHzdeliMC+sDa/tCyWE0UZMAZaKFgO9vV9h
-gdHfsvdNabGbFBE8ul5auWUT6QaqmytVQOk6239FD/gHD3Vw4ZVptZKDziYfwULV
-JgVDmWSi8RzmV3F+g3Lr9oGWqFbErsl+QWm80wXaC7yxHm3C2wKKqwPx6bfFbucT
-PuSiilxCV7qDXmDRISKNt/JMaLsxh8w+15v92wWhacEtgMzIyVsjudfePb2wiUtw
-bLbXOh9Pj4DCci4an5lxVhj8jEYThvOPq1FlB6e7qhrXwoGwugE=
-=83Nf
------END PGP SIGNATURE-----
-
---Apple-Mail=_1B6FC5B2-556F-4A2D-9F1C-A60D36468C15--
