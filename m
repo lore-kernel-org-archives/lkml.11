@@ -2,102 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D30FFCCA482
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:36:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D15BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230282AbiFWIgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
+        id S230286AbiFWIgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbiFWIgT (ORCPT
+        with ESMTP id S230172AbiFWIgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:36:19 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A6048E57;
-        Thu, 23 Jun 2022 01:36:17 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LTD9H0dZ7z684wN;
-        Thu, 23 Jun 2022 16:35:47 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Thu, 23 Jun 2022 10:36:14 +0200
-Received: from [10.195.245.183] (10.195.245.183) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 09:36:13 +0100
-Message-ID: <c973c0d1-49a4-e0d5-2d2e-4eefeb91099f@huawei.com>
-Date:   Thu, 23 Jun 2022 09:36:12 +0100
+        Thu, 23 Jun 2022 04:36:41 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D4548E74
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:36:37 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id m1so19099262wrb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:36:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cbuXZOwI9mYKfaVBHWeOR5IHXlwgx/Q9JGU1SB5W8ho=;
+        b=rNE4ypE3Anl7UmSPNciHy5jRgpfNrZqmYhgejf+DhJ21ZTqNYFcI6EHFDTvszTPsPu
+         tvXKKnnbMrBtWUBtJI0ZV1ropXJG24/JCKtURLIUSv5dTdE+fC99+azrU0ATqe4hw6cC
+         Av386JXtJcDseifMm7xtDk0WYys7VJBM4VJA0AsRkfLmp6s9dw9UCs1CfgJkysPe5ftV
+         VNLaBo0jf8JSSH4u+fogIby/mhkfgSvcP9two9vHX60hNA6Bk+uCP+W684ICmKZP8JcO
+         vGEqH4BrgYaPbOPEw4B9Q3kIu2CZUopKZa+h9hSv7plPRP/AIK/1KJu+2fAXIOdk+JGK
+         Z6Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cbuXZOwI9mYKfaVBHWeOR5IHXlwgx/Q9JGU1SB5W8ho=;
+        b=oIAiPr6Rs4jbWe+rGZ8b9szlthN/3e9M6yCbCOpsgnjnm1RRZ0HsJrOZbtLv5OjetX
+         6duj+00CKLrIJ+PtS3UJUTI+9NpIfDsZMeTg6yr6jzsFLUt1VhsyK8rCJrqJ74WGL0ot
+         mtYSYRwMOvl4qDLeZQcJWgAPxguvODDdRRK2TQswLMwfvisJe2Be5DwYuZtP1mxUk+Ng
+         hv7Sfh2yyPwQborkGEhZl5XdEqrDmhzd2OUp5lywxjn+MaYQGSq5bDrwqP2mBksYs1TW
+         zVawndOlhsoqKQ7w/bzWEnRE/EMAYc60xwq3sRMCJoAWTnDulusQPZ/8Hx2IikSIfLaT
+         aBdQ==
+X-Gm-Message-State: AJIora/W0SXgAFq8+z6/vBjG+l5NqmSQ7x+0XYJxHKRwyCuAjybQjMNO
+        t0rkenRY5U7TGm0PykvO978nKUB2pBT7n4Xl2c4ooA==
+X-Google-Smtp-Source: AGRyM1uAzkp1Y+NAMZvl5CJxWEOHWfRu/K19SJEsnNSsL8wB4qh8iZ1NWiHdyoBswX/VqG8W+ew/8+Z1cOmNFpAXC24=
+X-Received: by 2002:a5d:4308:0:b0:219:e5a4:5729 with SMTP id
+ h8-20020a5d4308000000b00219e5a45729mr6988759wrq.210.1655973395694; Thu, 23
+ Jun 2022 01:36:35 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3 3/4] scsi: core: Cap shost max_sectors according to DMA
- optimum mapping limits
-To:     Bart Van Assche <bvanassche@acm.org>,
-        <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
-        <will@kernel.org>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hch@lst.de>,
-        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <liyihang6@hisilicon.com>, <linux-kernel@vger.kernel.org>,
-        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>
-References: <1654507822-168026-1-git-send-email-john.garry@huawei.com>
- <1654507822-168026-4-git-send-email-john.garry@huawei.com>
- <fe365aa8-00d5-153d-ceb2-f887a71a6927@acm.org>
- <31417477-953d-283e-808e-cf8701e820a8@huawei.com>
- <bccbcc9b-4750-a1a7-130f-69eeea5dcb23@acm.org>
- <5b214e95-dd95-551a-496e-a2139a74e8eb@huawei.com>
- <a2585983-75d7-c627-13ba-38a464cf716e@acm.org>
- <9b1d155e-28cc-08dc-5a5a-8580132575e7@huawei.com>
- <23bf4427-41c3-bf1d-903a-75928bb47627@acm.org>
- <f7872ebc-dfe5-d977-c51f-91b73e6d1fbb@huawei.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <f7872ebc-dfe5-d977-c51f-91b73e6d1fbb@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.245.183]
-X-ClientProxiedBy: lhreml705-chm.china.huawei.com (10.201.108.54) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+References: <20220623000530.1194226-1-yosryahmed@google.com> <YrQe5A+FXnbgOR1f@dhcp22.suse.cz>
+In-Reply-To: <YrQe5A+FXnbgOR1f@dhcp22.suse.cz>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Thu, 23 Jun 2022 01:35:59 -0700
+Message-ID: <CAJD7tkanavKpKrQr8-jA8pukgD7OY4eOwJRZufJ2NoThD12G+Q@mail.gmail.com>
+Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
+ memory pressure
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Hildenbrand <david@redhat.com>,
+        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/06/2022 16:37, John Garry via iommu wrote:
-> 
->> On 6/9/22 10:54, John Garry wrote:
->>> ok, but do you have a system where the UFS host controller is behind 
->>> an IOMMU? I had the impression that UFS controllers would be mostly 
->>> found in embedded systems and IOMMUs are not as common on there.
->>
->> Modern phones have an IOMMU. Below one can find an example from a 
->> Pixel 6 phone. The UFS storage controller is not controller by the 
->> IOMMU as far as I can see but I wouldn't be surprised if the security 
->> team would ask us one day to enable the IOMMU for the UFS controller.
-> 
-> OK, then unfortunately it seems that you have no method to test. I might 
-> be able to test USB MSC but I am not even sure if I can even get DMA 
-> mappings who length exceeds the IOVA rcache limit there.
+On Thu, Jun 23, 2022 at 1:05 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Thu 23-06-22 00:05:30, Yosry Ahmed wrote:
+> > Commit e22c6ed90aa9 ("mm: memcontrol: don't count limit-setting reclaim
+> > as memory pressure") made sure that memory reclaim that is induced by
+> > userspace (limit-setting, proactive reclaim, ..) is not counted as
+> > memory pressure for the purposes of psi.
+> >
+> > Instead of counting psi inside try_to_free_mem_cgroup_pages(), callers
+> > from try_charge() and reclaim_high() wrap the call to
+> > try_to_free_mem_cgroup_pages() with psi handlers.
+> >
+> > However, vmpressure is still counted in these cases where reclaim is
+> > directly induced by userspace. This patch makes sure vmpressure is not
+> > counted in those operations, in the same way as psi. Since vmpressure
+> > calls need to happen deeper within the reclaim path, the same approach
+> > could not be followed. Hence, a new "controlled" flag is added to struct
+> > scan_control to flag a reclaim operation that is controlled by
+> > userspace. This flag is set by limit-setting and proactive reclaim
+> > operations, and is used to count vmpressure correctly.
+> >
+> > To prevent future divergence of psi and vmpressure, commit e22c6ed90aa9
+> > ("mm: memcontrol: don't count limit-setting reclaim as memory pressure")
+> > is effectively reverted and the same flag is used to control psi as
+> > well.
+>
+> Why do we need to add this is a legacy interface now? Are there any
+> pre-existing users who realized this is bugging them? Please be more
+> specific about the usecase.
 
-I was able to do some testing on USB MSC for an XHCI controller. The 
-result is that limiting the max HW sectors there does not affect 
-performance in normal conditions.
+Sorry if I wasn't clear enough. Unfortunately we still have userspace
+workloads at Google that use vmpressure notifications.
 
-However if I hack the USB driver and fiddle with request queue settings 
-then it can:
-- lift max_sectors limit in usb_stor_host_template 120KB -> 256KB
-- lift request queue read_ahead_kb 128KB -> 256KB
+In our internal version of memory.reclaim that we recently upstreamed,
+we do not account vmpressure during proactive reclaim (similar to how
+psi is handled upstream). We want to make sure this behavior also
+exists in the upstream version so that consolidating them does not
+break our users who rely on vmpressure and will start seeing increased
+pressure due to proactive reclaim.
 
-In this scenario I can get 42.5MB/s read throughput, as opposed to 
-39.5MB/s in normal conditions. Since .can_queue=1 for that host it would 
-not fall foul of some issues I experience in IOVA allocator performance, 
-so limiting max_sectors would not be required for that reason.
-
-So this is an artificial test, but it may be worth considering only 
-applying this DMA mapping optimal max_sectors limit to SAS controllers 
-which I know can benefit.
-
-Christoph, any opinion?
-
-thanks,
-John
+>
+> --
+> Michal Hocko
+> SUSE Labs
