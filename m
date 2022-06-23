@@ -2,107 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7376AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 380CDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231670AbiFWMHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 08:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55018 "EHLO
+        id S231459AbiFWMHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 08:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbiFWMHT (ORCPT
+        with ESMTP id S229734AbiFWMHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 08:07:19 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174524B436
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 05:07:19 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id t1so35459036ybd.2
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 05:07:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ACxXBxS9wLm3s0o360W5tadVCtNgAfMCjbW4/7oTcA4=;
-        b=SQAHvCcWiZPW2d3TCyD1ucF5/vuJJlyPVHSS/EBGdmL8eX5SUfz3/Ks10JcOSDF4FX
-         6NM2LxV3aGPxbmKFW6CymAyrqLU04WuWmUf2W35juuB5SYN+qyur+64ek1GkZNdOxCws
-         tTjaOk+a96XPGBxGCBD5TPY35OoLL5ZfevMzMdl7MTdY4Lju9vHRIWrmkL9wOONsxjX1
-         O/asGkoOSqI99F3ZdcWFu2tF4TQnWuBOhwiu1f+nogWCWs7sx7Xb7ixvQeYV05cPLDTG
-         vGEWDE0n6iE6LBdtk56t/E4aRGQdXA2peo3o93/9OM1CH/Qznz+D7SbjboU23TZ3IHe3
-         YhOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ACxXBxS9wLm3s0o360W5tadVCtNgAfMCjbW4/7oTcA4=;
-        b=FEKAfQlaWE2oKHr7oKbaGRsPj1kXSwwNrOLigMjssCXC+0hTf6RoY77ueCcAqIJYHs
-         3BuYJPZDQyN1Nqzzv2iSVI6iskZrLy2jdu/OIiZcqLMMTlDfjaknx6IriX35/hTviub2
-         rxwMrw741QRbJK3y1uH29/LWaNRAtnNKLzlf6X5rSkoFGw7OGMpxBn3ME+TYDzvleXPN
-         2SEBB+LrVd3FYfK/DMIrlXV9x+QdWVVPjrZn4OtkNvO8tI982juQPyWBxS3xWstt7TxD
-         PH6kUw1hBcxsu56eqRGRmHDF8ooc9KvBLTczTQpb+4dDay3SW1MyNMS3QDHbhVYHF1JA
-         fdUg==
-X-Gm-Message-State: AJIora/tYGQq4xoCsW7py+NauVGuYPLZdXzW4gyOIZEvIJvJgwSiUnMp
-        iLE4MDk+lfj/TRijoz5HwSocSRNyOFqBca1F13z7nwhH05E=
-X-Google-Smtp-Source: AGRyM1so/RVtDJwHhTKgYn+XHelVpXIxpsLsc4tp78gqxCR/ieVCu7jnZAYDuCZ45vtLrLwadNS0nmv5gI6/XxqOHnU=
-X-Received: by 2002:a81:1591:0:b0:317:bb1f:fb83 with SMTP id
- 139-20020a811591000000b00317bb1ffb83mr10329151ywv.362.1655985635802; Thu, 23
- Jun 2022 05:00:35 -0700 (PDT)
+        Thu, 23 Jun 2022 08:07:40 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75A04B436
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 05:07:39 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LTJs34MfZzDsLg;
+        Thu, 23 Jun 2022 20:07:03 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 23 Jun 2022 20:07:37 +0800
+Subject: Re: [PATCH 07/16] mm/huge_memory: minor cleanup for
+ split_huge_pages_pid
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+CC:     <akpm@linux-foundation.org>, <shy828301@gmail.com>,
+        <willy@infradead.org>, <zokeefe@google.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220622170627.19786-1-linmiaohe@huawei.com>
+ <20220622170627.19786-8-linmiaohe@huawei.com>
+ <20220623032211.rvrtlas25u7nddpt@box.shutemov.name>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <cb3d564e-40f8-0ab9-683a-b6992081b91d@huawei.com>
+Date:   Thu, 23 Jun 2022 20:07:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-References: <20220623111937.6491-1-yee.lee@mediatek.com> <20220623111937.6491-2-yee.lee@mediatek.com>
-In-Reply-To: <20220623111937.6491-2-yee.lee@mediatek.com>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 23 Jun 2022 13:59:59 +0200
-Message-ID: <CANpmjNN-jsZoVmJWD2Dz6O3_YVjy0av6e0iD-+OYXpik1LbLvg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] mm: kfence: skip kmemleak alloc in kfence_pool
-To:     yee.lee@mediatek.com
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:KFENCE" <kasan-dev@googlegroups.com>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220623032211.rvrtlas25u7nddpt@box.shutemov.name>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 at 13:20, yee.lee via kasan-dev
-<kasan-dev@googlegroups.com> wrote:
->
-> From: Yee Lee <yee.lee@mediatek.com>
->
-> Use MEMBLOCK_ALLOC_NOLEAKTRACE to skip kmemleak registration when
-> the kfence pool is allocated from memblock. And the kmemleak_free
-> later can be removed too.
+On 2022/6/23 11:22, Kirill A. Shutemov wrote:
+> On Thu, Jun 23, 2022 at 01:06:18AM +0800, Miaohe Lin wrote:
+>> Use helper function vma_lookup to lookup the needed vma and use help macro
+>> IS_ERR_OR_NULL to check the validity of page to simplify the code. Minor
+>> readability improvement.
+> 
+> Grouping of changing seems random, but okay.
 
-Is this purely meant to be a cleanup and non-functional change?
+I group them because they belong to the same function. Should I split these two changes?
 
-> Signed-off-by: Yee Lee <yee.lee@mediatek.com>
->
-> ---
->  mm/kfence/core.c | 18 ++++++++----------
->  1 file changed, 8 insertions(+), 10 deletions(-)
->
-> diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-> index 4e7cd4c8e687..0d33d83f5244 100644
-> --- a/mm/kfence/core.c
-> +++ b/mm/kfence/core.c
-> @@ -600,14 +600,6 @@ static unsigned long kfence_init_pool(void)
->                 addr += 2 * PAGE_SIZE;
->         }
->
-> -       /*
-> -        * The pool is live and will never be deallocated from this point on.
-> -        * Remove the pool object from the kmemleak object tree, as it would
-> -        * otherwise overlap with allocations returned by kfence_alloc(), which
-> -        * are registered with kmemleak through the slab post-alloc hook.
-> -        */
-> -       kmemleak_free(__kfence_pool);
+Many thanks for reviewing and comment!
 
-This appears to only be a non-functional change if the pool is
-allocated early. If the pool is allocated late using page-alloc, then
-there'll not be a kmemleak_free() on that memory and we'll have the
-same problem.
+> 
+
