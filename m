@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E965BCCA485
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89375CCA48B
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233710AbiFWQ6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
+        id S233431AbiFWQ5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233521AbiFWQvH (ORCPT
+        with ESMTP id S233603AbiFWQvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8082A4F9E3;
-        Thu, 23 Jun 2022 09:49:05 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07B850010;
+        Thu, 23 Jun 2022 09:49:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06585B82490;
-        Thu, 23 Jun 2022 16:49:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 667A2C3411B;
-        Thu, 23 Jun 2022 16:49:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 554D5CE24F9;
+        Thu, 23 Jun 2022 16:49:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B6F2C3411B;
+        Thu, 23 Jun 2022 16:49:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002942;
-        bh=Zbui7v7FMbWc//788gGyBC2NlADN4nVrUFzvTcnNgOY=;
+        s=korg; t=1656002957;
+        bh=IXRIJ1GHDIZo2SuBShIm4o6PtlLtHIr1VFnSfZwBj5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YfG2SPbHkeaYF/yeibqUoeOJ7ekQ8//OB5SqostMrmidFF7PPFSCGhu7Ml0hLpgo1
-         2lSTFSfuDK6PyJGaYp0C4582DUmFn0Rv5+sVVFMCwic9byr3tqnVIL2nX2ZtEfMhA8
-         ZJu64/Q5Ft3FvA4/KbAFiSfxangp3mNehC0TRsyg=
+        b=onmFfDkUyZLE6/PIHiP/m449MNjqghk25NERrSuNDU0APMtkQTQDXFjmbsDAE9BsH
+         SYwUDhGf9BhgPyHKlRWjMB4ZoOVSaLhSx5F85bXeL9NVxqSSHegH8Qe9hnFMXePwD1
+         9kk6YOMNL17d4lwYgaMXKYrZGJDOLNrl9Pii6xJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Marc Zyngier <maz@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH 4.9 076/264] random: avoid arch_get_random_seed_long() when collecting IRQ randomness
-Date:   Thu, 23 Jun 2022 18:41:09 +0200
-Message-Id: <20220623164346.220853098@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 080/264] crypto: blake2s - adjust include guard naming
+Date:   Thu, 23 Jun 2022 18:41:13 +0200
+Message-Id: <20220623164346.333650677@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,88 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 390596c9959c2a4f5b456df339f0604df3d55fe0 upstream.
+commit 8786841bc2020f7f2513a6c74e64912f07b9c0dc upstream.
 
-When reseeding the CRNG periodically, arch_get_random_seed_long() is
-called to obtain entropy from an architecture specific source if one
-is implemented. In most cases, these are special instructions, but in
-some cases, such as on ARM, we may want to back this using firmware
-calls, which are considerably more expensive.
+Use the full path in the include guards for the BLAKE2s headers to avoid
+ambiguity and to match the convention for most files in include/crypto/.
 
-Another call to arch_get_random_seed_long() exists in the CRNG driver,
-in add_interrupt_randomness(), which collects entropy by capturing
-inter-interrupt timing and relying on interrupt jitter to provide
-random bits. This is done by keeping a per-CPU state, and mixing in
-the IRQ number, the cycle counter and the return address every time an
-interrupt is taken, and mixing this per-CPU state into the entropy pool
-every 64 invocations, or at least once per second. The entropy that is
-gathered this way is credited as 1 bit of entropy. Every time this
-happens, arch_get_random_seed_long() is invoked, and the result is
-mixed in as well, and also credited with 1 bit of entropy.
-
-This means that arch_get_random_seed_long() is called at least once
-per second on every CPU, which seems excessive, and doesn't really
-scale, especially in a virtualization scenario where CPUs may be
-oversubscribed: in cases where arch_get_random_seed_long() is backed
-by an instruction that actually goes back to a shared hardware entropy
-source (such as RNDRRS on ARM), we will end up hitting it hundreds of
-times per second.
-
-So let's drop the call to arch_get_random_seed_long() from
-add_interrupt_randomness(), and instead, rely on crng_reseed() to call
-the arch hook to get random seed material from the platform.
-
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Tested-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Link: https://lore.kernel.org/r/20201105152944.16953-1-ardb@kernel.org
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   15 +--------------
- 1 file changed, 1 insertion(+), 14 deletions(-)
+ include/crypto/blake2s.h          |    6 +++---
+ include/crypto/internal/blake2s.h |    6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1331,8 +1331,6 @@ void add_interrupt_randomness(int irq, i
- 	cycles_t		cycles = random_get_entropy();
- 	__u32			c_high, j_high;
- 	__u64			ip;
--	unsigned long		seed;
--	int			credit = 0;
+--- a/include/crypto/blake2s.h
++++ b/include/crypto/blake2s.h
+@@ -3,8 +3,8 @@
+  * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+  */
  
- 	if (cycles == 0)
- 		cycles = get_reg(fast_pool, regs);
-@@ -1368,23 +1366,12 @@ void add_interrupt_randomness(int irq, i
+-#ifndef BLAKE2S_H
+-#define BLAKE2S_H
++#ifndef _CRYPTO_BLAKE2S_H
++#define _CRYPTO_BLAKE2S_H
  
- 	fast_pool->last = now;
- 	__mix_pool_bytes(r, &fast_pool->pool, sizeof(fast_pool->pool));
--
--	/*
--	 * If we have architectural seed generator, produce a seed and
--	 * add it to the pool.  For the sake of paranoia don't let the
--	 * architectural seed generator dominate the input from the
--	 * interrupt noise.
--	 */
--	if (arch_get_random_seed_long(&seed)) {
--		__mix_pool_bytes(r, &seed, sizeof(seed));
--		credit = 1;
--	}
- 	spin_unlock(&r->lock);
- 
- 	fast_pool->count = 0;
- 
- 	/* award one bit for the contents of the fast pool */
--	credit_entropy_bits(r, credit + 1);
-+	credit_entropy_bits(r, 1);
+ #include <linux/bug.h>
+ #include <linux/types.h>
+@@ -99,4 +99,4 @@ static inline void blake2s(u8 *out, cons
+ 	blake2s_final(&state, out);
  }
- EXPORT_SYMBOL_GPL(add_interrupt_randomness);
  
+-#endif /* BLAKE2S_H */
++#endif /* _CRYPTO_BLAKE2S_H */
+--- a/include/crypto/internal/blake2s.h
++++ b/include/crypto/internal/blake2s.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 OR MIT */
+ 
+-#ifndef BLAKE2S_INTERNAL_H
+-#define BLAKE2S_INTERNAL_H
++#ifndef _CRYPTO_INTERNAL_BLAKE2S_H
++#define _CRYPTO_INTERNAL_BLAKE2S_H
+ 
+ #include <crypto/blake2s.h>
+ 
+@@ -16,4 +16,4 @@ static inline void blake2s_set_lastblock
+ 	state->f[0] = -1;
+ }
+ 
+-#endif /* BLAKE2S_INTERNAL_H */
++#endif /* _CRYPTO_INTERNAL_BLAKE2S_H */
 
 
