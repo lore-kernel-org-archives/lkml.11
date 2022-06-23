@@ -2,112 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B4A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF693C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbiFWHk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 03:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54922 "EHLO
+        id S230383AbiFWHld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 03:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiFWHkY (ORCPT
+        with ESMTP id S230168AbiFWHla (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 03:40:24 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65C24666E;
-        Thu, 23 Jun 2022 00:40:22 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 23so12211346pgc.8;
-        Thu, 23 Jun 2022 00:40:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BJaWp4a1tWsJmYrMIxcQvHfF8fGl7s3JflZw6+GG7E4=;
-        b=KiwmhuKiOGsU4BQ0Kocc/jTyTXJlmIz2tf+HMyLs48pNn+xpiQjyuSr3V+xaIEc9kP
-         x2MvJNSQh3stGUxWBNetXAYBEE+kXbzum6+VM7LLj8nWoSyn/m9CgDoesC5bcBGpFVuM
-         8s/hsTlujBKC2L+gXZflKLf2joW9hbJ/r3vxaLUFYOk7SSUKvWE4rVDPf6/0jvT7QR4h
-         wwqaX+1trexU2R5lwHNNKcbBRHF/cDj8mrFpbsHn9GrBlj4L3gsFLqfr+QaPdCEXyg3U
-         ixPSjCrrs0quU3dWFRyd4fHrC5/k2t6DdBm1h4Lo++IZOdhHaO7sa8jskOE/raoqlikX
-         8ocw==
+        Thu, 23 Jun 2022 03:41:30 -0400
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894B94667F;
+        Thu, 23 Jun 2022 00:41:27 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id mf9so18885457ejb.0;
+        Thu, 23 Jun 2022 00:41:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=BJaWp4a1tWsJmYrMIxcQvHfF8fGl7s3JflZw6+GG7E4=;
-        b=P5o+BcQdqopqynpajxNxHvRHRWomWXctfQ1yUEMQdCtgq4EmsI2GV6Pwzw74Iyc12a
-         aaGa5X0S+gmNK+9RJNvEkg54nt14qck3h2Y33m1xHOGVqlJiQ1e3Dgv4QXqQonPe1pOb
-         YiY7WVzy5jtdDSxY4FsT4u3AwnwSdNU81eCWNgxAkKiSYazQRx3IdnwO7kPVy3/9SBC1
-         fySBMhAPbmO7vpNNG7hXMHf2FuZAwZQ0IEV8mv8PJxXiay8JQ6Z7FfTLvdrq2ZlTdq1K
-         1tEHcclvv/RQZycbWbhJ5G7HxmyZMGEhB09x8BZSFC/FTMZOS7RW5FPUb1oHDL7BAd50
-         5hhg==
-X-Gm-Message-State: AJIora+UqkdBUjzUiGDXmrlyZqsDtvEmdURmMHC/Uj795HLa28hHDLUO
-        In4HQ1CKZdMM0Gwe+/czw5E=
-X-Google-Smtp-Source: AGRyM1u+JO+nQKjV2iJ4RUEoYgYCWxmeGWw0POrGaKaHXvxDb4TkD6ivW2fWcigPw5Ku+KcCAXe9Gg==
-X-Received: by 2002:a63:8ac8:0:b0:40d:4bd5:d6f6 with SMTP id y191-20020a638ac8000000b0040d4bd5d6f6mr2468363pgd.76.1655970021966;
-        Thu, 23 Jun 2022 00:40:21 -0700 (PDT)
-Received: from tong-desktop.local ([2600:1700:3ec7:421f:869f:7e22:7df6:1f98])
-        by smtp.googlemail.com with ESMTPSA id b9-20020a17090a550900b001eaec814132sm5520768pji.3.2022.06.23.00.40.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 00:40:21 -0700 (PDT)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Tong Zhang <ztong0001@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yilun Wu <yiluwu@cs.stonybrook.edu>
-Subject: [PATCH] epic100: fix use after free on rmmod
-Date:   Thu, 23 Jun 2022 00:40:04 -0700
-Message-Id: <20220623074005.259309-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=ZVb61+LDQ60uMHssCxzA52VpodCYtCxPvKQczsoS/1g=;
+        b=HVWh8WCV4xy7bwrZ3xEvdRWTNk5kEm3FXnxFq4ihWOrrn9kk3KuCoV/ksv8uKbudbl
+         iNbcC2GktafzMDmPsuAyb2Xi2M++IFJIt99XQTjtK/QTRnkqZq1uu0N13yqf+gYLal/y
+         b9EpkZB/keHs07v4PobB2pSDCJTZ4bUODzYatpy6LvCEN+coSAeqK5URr9Hu5C69gzXm
+         FZtPtzlt+Gry6wEZe9hXzFS6Tw7kkfjiqPX05zfsAfErIiGnQu783ab/tqCDbxLi3tKP
+         Pxm5HXyQ8dadPzH/cKh74rmx5XuPqLvt/W2vVWLDKk+UxtYZtMS7E/wG9km1eBiAjwyy
+         UiKA==
+X-Gm-Message-State: AJIora/RWe5uxmqLhB9S4upxtihkhNB57foyrPlfeBrfn8YpwRhh6bPw
+        uwryPUXtnMzEFllUSpmxkd0=
+X-Google-Smtp-Source: AGRyM1s2wuY4k6dNlSI0R4cdqh9+8L6y5hbgB1bq0e+g38e35h84OG+g2Wa3dMgBb5qJWTGviQlp0A==
+X-Received: by 2002:a17:906:6a1c:b0:70a:fd95:ee6a with SMTP id qw28-20020a1709066a1c00b0070afd95ee6amr6940892ejc.36.1655970086067;
+        Thu, 23 Jun 2022 00:41:26 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id la5-20020a170907780500b006f3ef214de7sm10485403ejc.77.2022.06.23.00.41.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 00:41:25 -0700 (PDT)
+Message-ID: <03467516-3962-4ff2-23d2-2b3a1d647c5a@kernel.org>
+Date:   Thu, 23 Jun 2022 09:41:24 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 6/6] serial: Consolidate BOTH_EMPTY use
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        speakup@linux-speakup.org, sparclinux@vger.kernel.org
+References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com>
+ <20220621124958.3342-7-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220621124958.3342-7-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-epic_close() calls epic_rx() and uses dma buffer, but in epic_remove_one()
-we already freed the dma buffer. To fix this issue, reorder function calls
-like in the .probe function.
+On 21. 06. 22, 14:49, Ilpo Järvinen wrote:
+> Per file BOTH_EMPTY defines are littering our source code here and
+> there. Define once in serial.h and create helper for the check
+> too.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-BUG: KASAN: use-after-free in epic_rx+0xa6/0x7e0 [epic100]
-Call Trace:
- epic_rx+0xa6/0x7e0 [epic100]
- epic_close+0xec/0x2f0 [epic100]
- unregister_netdev+0x18/0x20
- epic_remove_one+0xaa/0xf0 [epic100]
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-Fixes: ae150435b59e ("smsc: Move the SMC (SMSC) drivers")
-Reported-by: Yilun Wu <yiluwu@cs.stonybrook.edu>
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
----
- drivers/net/ethernet/smsc/epic100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> --- a/arch/mips/ath79/early_printk.c
+> +++ b/arch/mips/ath79/early_printk.c
+> @@ -8,6 +8,7 @@
+>   
+>   #include <linux/io.h>
+>   #include <linux/errno.h>
+> +#include <linux/serial.h>
+>   #include <linux/serial_reg.h>
+>   #include <asm/addrspace.h>
+>   #include <asm/setup.h>
+> @@ -29,15 +30,15 @@ static inline void prom_putchar_wait(void __iomem *reg, u32 mask, u32 val)
+>   	} while (1);
+>   }
+>   
+> -#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
+> -
+>   static void prom_putchar_ar71xx(char ch)
+>   {
+>   	void __iomem *base = (void __iomem *)(KSEG1ADDR(AR71XX_UART_BASE));
+>   
+> -	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
+> +	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
+> +			  UART_LSR_BOTH_EMPTY);
+>   	__raw_writel((unsigned char)ch, base + UART_TX * 4);
+> -	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
+> +	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
+> +			  UART_LSR_BOTH_EMPTY);
 
-diff --git a/drivers/net/ethernet/smsc/epic100.c b/drivers/net/ethernet/smsc/epic100.c
-index a0654e88444c..0329caf63279 100644
---- a/drivers/net/ethernet/smsc/epic100.c
-+++ b/drivers/net/ethernet/smsc/epic100.c
-@@ -1515,14 +1515,14 @@ static void epic_remove_one(struct pci_dev *pdev)
- 	struct net_device *dev = pci_get_drvdata(pdev);
- 	struct epic_private *ep = netdev_priv(dev);
- 
-+	unregister_netdev(dev);
- 	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, ep->tx_ring,
- 			  ep->tx_ring_dma);
- 	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, ep->rx_ring,
- 			  ep->rx_ring_dma);
--	unregister_netdev(dev);
- 	pci_iounmap(pdev, ep->ioaddr);
--	pci_release_regions(pdev);
- 	free_netdev(dev);
-+	pci_release_regions(pdev);
- 	pci_disable_device(pdev);
- 	/* pci_power_off(pdev, -1); */
- }
+Two observations apart from this patch:
+* prom_putchar_wait()'s last two parameters are always the same.
+   One should be removed, i.e. all this simplified.
+* prom_putchar_wait() should be implemented using
+   read_poll_timeout_atomic(), incl. failure/timeout handling.
+
+thanks,
 -- 
-2.25.1
-
+js
+suse labs
