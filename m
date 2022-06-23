@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EF5CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D5DC43334
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233833AbiFWQ6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
+        id S232619AbiFWQ6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233421AbiFWQuz (ORCPT
+        with ESMTP id S233374AbiFWQut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:50:55 -0400
+        Thu, 23 Jun 2022 12:50:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7264F456;
-        Thu, 23 Jun 2022 09:48:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC4D4F1F0;
+        Thu, 23 Jun 2022 09:48:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95C1C61F4A;
-        Thu, 23 Jun 2022 16:48:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A5DFC3411B;
-        Thu, 23 Jun 2022 16:48:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9885D61FB7;
+        Thu, 23 Jun 2022 16:48:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E1FC3411B;
+        Thu, 23 Jun 2022 16:48:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002930;
-        bh=X0ausAnTkxkVNlUSvePP3bPHa7VhO6PfAU1PS/t+u08=;
+        s=korg; t=1656002924;
+        bh=eHUsmPq6rVHbWd6VJ6FVayzi+lj9DUoCq506ZLeh6zE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cyuMAxc7QzXR+Hajp8PiuwrYSlzzQbZAChlSSuWRSZLCr8zLqNcvRoJmjzQUlFapN
-         OgDObm2WslfNUU62Wan3CqXiIAVZFkQHfLaq4ZWkvYJBRvX6FqKnlq62TTm+SFj91A
-         QWKzyHPT1kuaMx0ouyCwM2Glp3E0B9J8f4le8aYY=
+        b=KTpbHtQdeWB9soMwHol32MU/48/fIUnmzBg4AID4k7YXHWz2c8qtJT72jirPTnUFU
+         5z36W6esbMcmgUlZJhpHFLJVQ5IRpLzuOitZBYfIJSX1Bi6m6FgkRiOVdOXRIo5/W4
+         aC4t0lSLUexZ7fo8MDp0mNX0WHRWlKWC71+4NxIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Richard Henderson <rth@twiddle.net>,
+        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
         Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 072/264] linux/random.h: Use false with bool
-Date:   Thu, 23 Jun 2022 18:41:05 +0200
-Message-Id: <20220623164346.109087886@linuxfoundation.org>
+Subject: [PATCH 4.9 070/264] powerpc: Remove arch_has_random, arch_has_random_seed
+Date:   Thu, 23 Jun 2022 18:41:03 +0200
+Message-Id: <20220623164346.052178272@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,47 +51,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Richard Henderson <richard.henderson@linaro.org>
 
-commit 66f5ae899ada79c0e9a3d8d954f93a72344cd350 upstream.
+commit cbac004995a0ce8453bdc555fab579e2bdb842a6 upstream.
 
-Keep the generic fallback versions in sync with the other architecture
-specific implementations and use the proper name for false.
+These symbols are currently part of the generic archrandom.h
+interface, but are currently unused and can be removed.
 
-Suggested-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Richard Henderson <rth@twiddle.net>
 Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20200110145422.49141-6-broonie@kernel.org
+Link: https://lore.kernel.org/r/20200110145422.49141-3-broonie@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/powerpc/include/asm/archrandom.h |   10 ----------
+ 1 file changed, 10 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -98,19 +98,19 @@ unsigned long randomize_page(unsigned lo
- #else
- static inline bool arch_get_random_long(unsigned long *v)
- {
--	return 0;
-+	return false;
- }
- static inline bool arch_get_random_int(unsigned int *v)
- {
--	return 0;
-+	return false;
- }
- static inline bool arch_get_random_seed_long(unsigned long *v)
- {
--	return 0;
-+	return false;
- }
- static inline bool arch_get_random_seed_int(unsigned int *v)
- {
--	return 0;
-+	return false;
- }
- #endif
+--- a/arch/powerpc/include/asm/archrandom.h
++++ b/arch/powerpc/include/asm/archrandom.h
+@@ -33,16 +33,6 @@ static inline int arch_get_random_seed_i
  
+ 	return rc;
+ }
+-
+-static inline int arch_has_random(void)
+-{
+-	return 0;
+-}
+-
+-static inline int arch_has_random_seed(void)
+-{
+-	return !!ppc_md.get_random_seed;
+-}
+ #endif /* CONFIG_ARCH_RANDOM */
+ 
+ #ifdef CONFIG_PPC_POWERNV
 
 
