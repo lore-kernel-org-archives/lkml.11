@@ -2,107 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 031EECCA481
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D75F1CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbiFWRBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
+        id S229511AbiFWRB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233014AbiFWQ5T (ORCPT
+        with ESMTP id S231425AbiFWQ4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:57:19 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F358E3EA9B;
-        Thu, 23 Jun 2022 09:53:10 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id ge10so10810521ejb.7;
-        Thu, 23 Jun 2022 09:53:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dB/YUbV33gsASlwt43eLvtTGgD7GHgvcm51jFsSmolg=;
-        b=OLTlxLjQoiKVo4r81x0/z/I7oucCUFZni1cb0k5NlrcBRvxKWxjqv9rTthbcj93dOg
-         eba4VzI94/Fy0biC52sVeAeRaY6XNZPGlAdBXPVC30RP2SqMUFR7huF1rGoq5ERK28u1
-         jED+gu01s/HrlMFrbgoZP+gPNRwmpU0+V9d50RqLdhncoLtz32NP7+g6+hia3lTtQBNJ
-         ZajluoYSjGZb3B9f8pBh0/p6kMnzNn0rRW+/AD9yd/+a7qNEtYNotgXb5Sh3w5Grj2gm
-         UlH5g/aqt5DEJkVEyN4nT5zfOxm53uWJT9qJ5JETF+P9Zbvq+j7gfgd3NnEDicxXH9fI
-         9brA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dB/YUbV33gsASlwt43eLvtTGgD7GHgvcm51jFsSmolg=;
-        b=6lF6uF+lWzPrNlgWCTIjhuK5Qudghhlg8j4M8kykicg/ifoCc1KsQbzTzZxhHXBE82
-         tcwfF3mapzmgISHO7zG+hpffcDvlsOccoK+d1+No3Pa7m8av9/KJZ3IWSedVRkz3zoUG
-         GByDSfTRF7HRaasMPJNx5xAz5uLR+pCZKsDU6fRo2bTRotDHXLWVmZv25Svz/FsJm0aq
-         UmglO8bK+bV06AeGcpOE3kDecTIkrwxQQv1coMr0jGVCojBwxZeBcN3SVb2TFi/F47iS
-         GBcQjecJVNv4jbFObL8+9mezu5XXEPeYyjRxuykMLBCnNM0nW56vBjpdRb3FyAwHsAl0
-         xLaA==
-X-Gm-Message-State: AJIora9Kd+VrJ3DRN8SfI6l6E3D77Pv1bu/4lBuJ3fPmXA7hhpPBi/RA
-        AHCyUePBWMQ0TQJBa8BiKB95DmErI56W3wi+8xw=
-X-Google-Smtp-Source: AGRyM1v7UCi/dybJ7a8Hu2QcGEODPFGhdz3he6dGZwqW7M53CtDeoODvjoD1bZCwhJ+OPsCkP81b3cYZrPNQEbnMpX4=
-X-Received: by 2002:a17:906:5253:b0:711:ee52:764e with SMTP id
- y19-20020a170906525300b00711ee52764emr8998144ejm.171.1656003189377; Thu, 23
- Jun 2022 09:53:09 -0700 (PDT)
+        Thu, 23 Jun 2022 12:56:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7C949F95;
+        Thu, 23 Jun 2022 09:53:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FF4C61FC3;
+        Thu, 23 Jun 2022 16:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51829C3411B;
+        Thu, 23 Jun 2022 16:53:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656003186;
+        bh=Xk7XDaHfucI5XuBLCwlyfk8IWzvNYbIFaqKKBAWe6I4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kBnYbOIFNtIVi1Y5MiVzHwAeKfBUUk8dSA6/u2kQ60pMmnZnOl8/f3R0Wu3eSve7a
+         65d/Y3hSmq4LrI9wbu7RnWg4Mjve8L55abjKx4CToK188ZJpznQ9ggGbzcZTYbtNV2
+         mBGnJgWsU0AMOGAm/+keq7wvZG7f3oqDX9o7fMHo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 157/264] random: unify cycles_t and jiffies usage and types
+Date:   Thu, 23 Jun 2022 18:42:30 +0200
+Message-Id: <20220623164348.505140815@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
+References: <20220623164344.053938039@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220623080946.19116-1-colin.i.king@gmail.com> <d3218391-de1f-d64d-bda7-0042473e9833@amd.com>
-In-Reply-To: <d3218391-de1f-d64d-bda7-0042473e9833@amd.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Thu, 23 Jun 2022 12:52:57 -0400
-Message-ID: <CADnq5_MiZvJdR43Ook1F359CtfSUq+aBWvOOfyv+1EKLGwK9ug@mail.gmail.com>
-Subject: Re: [PATCH][next] drm/amdgpu/display: Fix spelling mistake
- "supporing" -> "supporting"
-To:     Harry Wentland <harry.wentland@amd.com>
-Cc:     Colin Ian King <colin.i.king@gmail.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, kernel-janitors@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Alex
+commit abded93ec1e9692920fe309f07f40bd1035f2940 upstream.
 
-On Thu, Jun 23, 2022 at 10:20 AM Harry Wentland <harry.wentland@amd.com> wrote:
->
->
->
-> On 2022-06-23 04:09, Colin Ian King wrote:
-> > There is a spelling mistake in a dml_print message. Fix it.
-> >
-> > Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
->
-> Reviewed-by: Harry Wentland <harry.wentland@amd.com>
->
-> Harry
->
-> > ---
-> >  drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c
-> > index 7f144adb1e36..7d536c2f4477 100644
-> > --- a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c
-> > +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c
-> > @@ -1098,7 +1098,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
-> >                               if (mode_lib->vba.ImmediateFlipRequirement[k] != dm_immediate_flip_not_required && v->ImmediateFlipSupportedForPipe[k] == false) {
-> >                                       v->ImmediateFlipSupported = false;
-> >  #ifdef __DML_VBA_DEBUG__
-> > -                                     dml_print("DML::%s: Pipe %0d not supporing iflip\n", __func__, k);
-> > +                                     dml_print("DML::%s: Pipe %0d not supporting iflip\n", __func__, k);
-> >  #endif
-> >                               }
-> >                       }
->
+random_get_entropy() returns a cycles_t, not an unsigned long, which is
+sometimes 64 bits on various 32-bit platforms, including x86.
+Conversely, jiffies is always unsigned long. This commit fixes things to
+use cycles_t for fields that use random_get_entropy(), named "cycles",
+and unsigned long for fields that use jiffies, named "now". It's also
+good to mix in a cycles_t and a jiffies in the same way for both
+add_device_randomness and add_timer_randomness, rather than using xor in
+one case. Finally, we unify the order of these volatile reads, always
+reading the more precise cycles counter, and then jiffies, so that the
+cycle counter is as close to the event as possible.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |   56 ++++++++++++++++++++++++--------------------------
+ 1 file changed, 27 insertions(+), 29 deletions(-)
+
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1016,12 +1016,6 @@ int __init rand_initialize(void)
+ 	return 0;
+ }
+ 
+-/* There is one of these per entropy source */
+-struct timer_rand_state {
+-	cycles_t last_time;
+-	long last_delta, last_delta2;
+-};
+-
+ /*
+  * Add device- or boot-specific data to the input pool to help
+  * initialize it.
+@@ -1032,19 +1026,26 @@ struct timer_rand_state {
+  */
+ void add_device_randomness(const void *buf, size_t size)
+ {
+-	unsigned long time = random_get_entropy() ^ jiffies;
+-	unsigned long flags;
++	cycles_t cycles = random_get_entropy();
++	unsigned long flags, now = jiffies;
+ 
+ 	if (crng_init == 0 && size)
+ 		crng_pre_init_inject(buf, size, false, false);
+ 
+ 	spin_lock_irqsave(&input_pool.lock, flags);
++	_mix_pool_bytes(&cycles, sizeof(cycles));
++	_mix_pool_bytes(&now, sizeof(now));
+ 	_mix_pool_bytes(buf, size);
+-	_mix_pool_bytes(&time, sizeof(time));
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ }
+ EXPORT_SYMBOL(add_device_randomness);
+ 
++/* There is one of these per entropy source */
++struct timer_rand_state {
++	unsigned long last_time;
++	long last_delta, last_delta2;
++};
++
+ /*
+  * This function adds entropy to the entropy "pool" by using timing
+  * delays.  It uses the timer_rand_state structure to make an estimate
+@@ -1053,29 +1054,26 @@ EXPORT_SYMBOL(add_device_randomness);
+  * The number "num" is also added to the pool - it should somehow describe
+  * the type of event which just happened.  This is currently 0-255 for
+  * keyboard scan codes, and 256 upwards for interrupts.
+- *
+  */
+ static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
+ {
+-	struct {
+-		long jiffies;
+-		unsigned int cycles;
+-		unsigned int num;
+-	} sample;
++	cycles_t cycles = random_get_entropy();
++	unsigned long flags, now = jiffies;
+ 	long delta, delta2, delta3;
+ 
+-	sample.jiffies = jiffies;
+-	sample.cycles = random_get_entropy();
+-	sample.num = num;
+-	mix_pool_bytes(&sample, sizeof(sample));
++	spin_lock_irqsave(&input_pool.lock, flags);
++	_mix_pool_bytes(&cycles, sizeof(cycles));
++	_mix_pool_bytes(&now, sizeof(now));
++	_mix_pool_bytes(&num, sizeof(num));
++	spin_unlock_irqrestore(&input_pool.lock, flags);
+ 
+ 	/*
+ 	 * Calculate number of bits of randomness we probably added.
+ 	 * We take into account the first, second and third-order deltas
+ 	 * in order to make our estimate.
+ 	 */
+-	delta = sample.jiffies - state->last_time;
+-	state->last_time = sample.jiffies;
++	delta = now - READ_ONCE(state->last_time);
++	WRITE_ONCE(state->last_time, now);
+ 
+ 	delta2 = delta - state->last_delta;
+ 	state->last_delta = delta;
+@@ -1301,10 +1299,10 @@ static void mix_interrupt_randomness(str
+ void add_interrupt_randomness(int irq)
+ {
+ 	enum { MIX_INFLIGHT = 1U << 31 };
++	cycles_t cycles = random_get_entropy();
++	unsigned long now = jiffies;
+ 	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
+ 	struct pt_regs *regs = get_irq_regs();
+-	unsigned long now = jiffies;
+-	cycles_t cycles = random_get_entropy();
+ 	unsigned int new_count;
+ 
+ 	if (cycles == 0)
+@@ -1379,28 +1377,28 @@ static void entropy_timer(unsigned long
+ static void try_to_generate_entropy(void)
+ {
+ 	struct {
+-		unsigned long now;
++		cycles_t cycles;
+ 		struct timer_list timer;
+ 	} stack;
+ 
+-	stack.now = random_get_entropy();
++	stack.cycles = random_get_entropy();
+ 
+ 	/* Slow counter - or none. Don't even bother */
+-	if (stack.now == random_get_entropy())
++	if (stack.cycles == random_get_entropy())
+ 		return;
+ 
+ 	__setup_timer_on_stack(&stack.timer, entropy_timer, 0, 0);
+ 	while (!crng_ready()) {
+ 		if (!timer_pending(&stack.timer))
+ 			mod_timer(&stack.timer, jiffies + 1);
+-		mix_pool_bytes(&stack.now, sizeof(stack.now));
++		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
+ 		schedule();
+-		stack.now = random_get_entropy();
++		stack.cycles = random_get_entropy();
+ 	}
+ 
+ 	del_timer_sync(&stack.timer);
+ 	destroy_timer_on_stack(&stack.timer);
+-	mix_pool_bytes(&stack.now, sizeof(stack.now));
++	mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
+ }
+ 
+ 
+
+
