@@ -2,118 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34AE8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32330C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235808AbiFWSAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33498 "EHLO
+        id S235106AbiFWSA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236215AbiFWR66 (ORCPT
+        with ESMTP id S235754AbiFWR5j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:58:58 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1A9993DB;
-        Thu, 23 Jun 2022 10:16:12 -0700 (PDT)
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 25NHFruH009674;
-        Fri, 24 Jun 2022 02:15:54 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 25NHFruH009674
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1656004554;
-        bh=PFMCdlXbalpZFV18Es/vk2cklPdZH8cwyXNb6XthAtM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=PGzfKulegRNZxR2tbL3yTm1lM0mxjmLymAvvDYwdtqaJ1Wlxof/aOiJOgXgvUeSie
-         IqeRfm9m4aVrRqmeKraWU1fbwbbiAfMNG3VSPHP8cyzit7eNNDbBPA+PbdL+PAIkyh
-         wU6D5X6/u0x4mcMo7ouQN6j1XEVK02wVWjlRzsJDdynSpxdgvGjVMo+XBHyyMh38T9
-         7I965GY+H49vFWdFYgV9MeKyftpcrZtv+6dEcqaqKM+yi7Qh0PxrvAIE51r8+LVoNA
-         SScyNDkuCWDtzRjQl2KJWnlo44d7lI5SdXhG/ZxBVAUnSPkyE1ibA4PyC4J3d8OmuH
-         Ex0oRKe5rZ1Ow==
-X-Nifty-SrcIP: [209.85.221.50]
-Received: by mail-wr1-f50.google.com with SMTP id v14so28885383wra.5;
-        Thu, 23 Jun 2022 10:15:54 -0700 (PDT)
-X-Gm-Message-State: AJIora/Qy2Q7QGBhTnB1mllCMCxbAHrH2eqzK8rT2xlPpigcIphZ6og+
-        kZd98hqFqVZhd0cKwxt3r7aTCDCtac6OOZ0z+qg=
-X-Google-Smtp-Source: AGRyM1u5H7gMkGpAckFdpl8BPR/XeZ+9/LZ/rWTFIyiIiwjHNpr74i/u6/TtqTiQVwJ/IOx+s6IKcIftpmxZRC4G5eY=
-X-Received: by 2002:a5d:5e92:0:b0:21a:278c:b901 with SMTP id
- ck18-20020a5d5e92000000b0021a278cb901mr9327218wrb.461.1656004552543; Thu, 23
- Jun 2022 10:15:52 -0700 (PDT)
+        Thu, 23 Jun 2022 13:57:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41EDAE9B1;
+        Thu, 23 Jun 2022 10:15:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E91B61DEF;
+        Thu, 23 Jun 2022 17:15:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ECFCC3411B;
+        Thu, 23 Jun 2022 17:15:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656004535;
+        bh=X3ndALqqFVENCzduf7i3wwpF2ta0OR/76HnniJRrl0k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fdBTPJ0LqHcOi8XZkV3ZqodSwugQUeLJgWFPXwmt+ZHyFMNtfsvP3XeCI+JA5vU0E
+         oqteNed1JyWJakV752+OgB9IQbTV4oRp+m0stec0sofzf6AFJuj46Y7MlnKiBRrsma
+         3kJCND9E5UBJIEjLYWiwL6D146XjJSaDaS/LyvtE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 067/234] random: de-duplicate INPUT_POOL constants
+Date:   Thu, 23 Jun 2022 18:42:14 +0200
+Message-Id: <20220623164344.957705512@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220621133526.29662-1-mikoxyzzz@gmail.com> <2817735.mvXUDI8C0e@sakura.myxoz.lan>
- <CAK7LNAQqJc74MGFyU6fvhM9VkDKYUXyCt0NF1qAr1RmfUqC0=w@mail.gmail.com> <2650588.mvXUDI8C0e@sakura.myxoz.lan>
-In-Reply-To: <2650588.mvXUDI8C0e@sakura.myxoz.lan>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 24 Jun 2022 02:15:14 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQ_4QUfBxRu2HpPS99Ay7JTcqFTHsrBmrPk+d8So5tjOQ@mail.gmail.com>
-Message-ID: <CAK7LNAQ_4QUfBxRu2HpPS99Ay7JTcqFTHsrBmrPk+d8So5tjOQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Kconfig: -O3 enablement
-To:     Miko Larsson <mikoxyzzz@gmail.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Sean Christopherson <seanjc@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Chris Down <chris@chrisdown.name>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        Oleksandr Natalenko <oleksandr@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 2:00 AM Miko Larsson <mikoxyzzz@gmail.com> wrote:
->
-> On Thursday, 23 June 2022 17:44:57 CEST Masahiro Yamada wrote:
-> > On Fri, Jun 24, 2022 at 12:42 AM Miko Larsson <mikoxyzzz@gmail.com> wrote:
-> > > On Wednesday, 22 June 2022 03:57:34 CEST Masahiro Yamada wrote:
-> > > > If you want to say "use this option carefully",
-> > > > EXPERT might be another option.
-> > > >
-> > > >     depends on ARC || EXPERT
-> > >
-> > > Yeah, this would be a fair compromise, though I think it would be
-> > > better to use "visible if" instead of "depends on". I can get a v2 of
-> > > the series together if this is desired.
-> >
-> > Why is "visible if" better than "depends on"?
-> >
->
-> Technically it most likely doesn't matter, but logically it makes more
-> sense, since we'd make CC_OPTIMIZE_FOR_PERFORMANCE_O3 be visible if
-> we're on ARC or if we have EXPERT enabled, instead of depending on
-> them. But yeah, it probably doesn't matter.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+
+commit 5b87adf30f1464477169a1d653e9baf8c012bbfe upstream.
+
+We already had the POOL_* constants, so deduplicate the older INPUT_POOL
+ones. As well, fold EXTRACT_SIZE into the poolinfo enum, since it's
+related.
+
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |   17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
+
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -359,13 +359,6 @@
+ /* #define ADD_INTERRUPT_BENCH */
+ 
+ /*
+- * Configuration information
+- */
+-#define INPUT_POOL_SHIFT	12
+-#define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
+-#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
+-
+-/*
+  * To allow fractional bits to be tracked, the entropy_count field is
+  * denominated in units of 1/8th bits.
+  *
+@@ -440,7 +433,9 @@ enum poolinfo {
+ 	POOL_TAP2 = 76,
+ 	POOL_TAP3 = 51,
+ 	POOL_TAP4 = 25,
+-	POOL_TAP5 = 1
++	POOL_TAP5 = 1,
++
++	EXTRACT_SIZE = BLAKE2S_HASH_SIZE / 2
+ };
+ 
+ /*
+@@ -503,7 +498,7 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
+  *
+  **********************************************************************/
+ 
+-static u32 input_pool_data[INPUT_POOL_WORDS] __latent_entropy;
++static u32 input_pool_data[POOL_WORDS] __latent_entropy;
+ 
+ static struct {
+ 	/* read-only data: */
+@@ -1959,7 +1954,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ #include <linux/sysctl.h>
+ 
+ static int min_write_thresh;
+-static int max_write_thresh = INPUT_POOL_WORDS * 32;
++static int max_write_thresh = POOL_BITS;
+ static int random_min_urandom_seed = 60;
+ static char sysctl_bootid[16];
+ 
+@@ -2016,7 +2011,7 @@ static int proc_do_entropy(struct ctl_ta
+ 	return proc_dointvec(&fake_table, write, buffer, lenp, ppos);
+ }
+ 
+-static int sysctl_poolsize = INPUT_POOL_WORDS * 32;
++static int sysctl_poolsize = POOL_BITS;
+ extern struct ctl_table random_table[];
+ struct ctl_table random_table[] = {
+ 	{
 
 
-Did you write and test the code?
-
-
-"visible if" is only supported for "menu".
-This is clearly documented at line 207
-of Documentation/kbuild/kconfig-language.rst
-
-
-Using "visible if" for config entry will just
-result in the syntax error.
-
-
-
-
-
-> --
-> ~miko
->
->
->
-
-
---
-Best Regards
-Masahiro Yamada
