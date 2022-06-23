@@ -2,175 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54B85C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 11:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1616C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 11:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231503AbiFWLq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 07:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
+        id S231518AbiFWLtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 07:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231485AbiFWLqV (ORCPT
+        with ESMTP id S229787AbiFWLtn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 07:46:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EFA7D4CD43
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 04:46:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655984779;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=uR5+Zkk6yrnJbps9wNMzV8Rp89GBDb7meHwZjOCv9Yk=;
-        b=be3JkdSTprBGtXaJm9IglfKjwyhgnd28dTRoc9BMFxOYuzY7K1wjlioQebNckr9UWkMjiy
-        kcZ33bEPdnUOCmVGelvwuolnh56oDXpWidj2WsW1dh7QmWD+5tEB+5ZqoVQz0qrMGALN5k
-        Rzfqo0t7ZI8XoSPKz2x/VjJYNQpfuZ4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-101-JtwwhmT2OF-JAKIOM2mj4w-1; Thu, 23 Jun 2022 07:46:16 -0400
-X-MC-Unique: JtwwhmT2OF-JAKIOM2mj4w-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CE0CC185A7B2;
-        Thu, 23 Jun 2022 11:46:15 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 635C5C2810D;
-        Thu, 23 Jun 2022 11:46:15 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] MAINTAINERS: Reorganize KVM/x86 maintainership
-Date:   Thu, 23 Jun 2022 07:46:15 -0400
-Message-Id: <20220623114615.2600316-1-pbonzini@redhat.com>
+        Thu, 23 Jun 2022 07:49:43 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8874CD7F
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 04:49:42 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id i18so19258773lfu.8
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 04:49:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Ik3t0l4fcbio4cX8FR37ZQkgyke1x7n6Zn3wLLd1pX0=;
+        b=fM0xWDs5K7teHGXOJztCHJT/llpM7zu9xuI0NnHI0hirBcCYnXJl763ue0nt3L5JRQ
+         4GKgrI529bs2dRMOZrMfotgWsdpUXRsNTypUJmgGIt87Z/Na3Ancc/XA6hgMJ1rcJgBc
+         K0dNESZRqFvcnrHvk8eJcbS2nb/ftJMDauYerWPHbWA98w32gqLb1LDAzkU6mQzy2f3P
+         mPfZI7BuIxhDCphAI5eJ/+OyhhS3oI9lOLXbq35TSL6Jw+T3C4ehMhGD4FH/7l6YvxYM
+         IbZzl93zvLHyc23QlKIn6OWQvq5uKKDHDSspY1ggFNKwwbalTDpZ3AnsksLB5IIZaojI
+         quQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Ik3t0l4fcbio4cX8FR37ZQkgyke1x7n6Zn3wLLd1pX0=;
+        b=3dQ+XtS3lBhjFCEPz53mzhxOk8X7X1lH746DtNqHTuWZKRbJgSmi1Fcou7jQsnloOX
+         JgD2Aou8OWlKHSilembhAEKxgRIlt3YBrnxgHjZp97IN35Oq/lWOm2+2RcP/pAkH6kpV
+         BXMT4jd9gEnKw5HNozTJA+qQ8PwXdAd2pArGY4Fx+2I3pVO7FTkP5KlRXeu4qi2qfJs0
+         jiePwiESUomgs8sLMWHWYwDjScQ0J1lNwH/FUNaEfvn8tkOP5MQkm0sXroi3Zv31pXtM
+         48mOx+yZEboDK9yZlprzSYveFPxZC0duoB+NGFW74Cg5cpbRTIpLHQ2QU0u812CeKnku
+         HdLw==
+X-Gm-Message-State: AJIora8Ydu7C33SYKHFRDAYMEvJ+ges3ZVjg7ry6hV8HQEfBm67SsrQb
+        EelDOBGhYjo0QyarWZSbfHZh9g==
+X-Google-Smtp-Source: AGRyM1t4TD1Sc6F5sq9F1yH8vffHMc1UT8wQzHLHJY65aci0iWr4UtrSIZrFRYsEuvp936wciB48uQ==
+X-Received: by 2002:a05:6512:686:b0:47d:b7f3:e6a4 with SMTP id t6-20020a056512068600b0047db7f3e6a4mr5207986lfe.138.1655984980388;
+        Thu, 23 Jun 2022 04:49:40 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id t7-20020a2e9d07000000b002556cf330e8sm2754306lji.99.2022.06.23.04.49.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 04:49:39 -0700 (PDT)
+Message-ID: <80da3045-5351-5d21-ffb2-e514e0b25961@linaro.org>
+Date:   Thu, 23 Jun 2022 14:49:39 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/3] phy: qcom-qmp: clean up v4 and v5 define order
+Content-Language: en-GB
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220609120338.4080-1-johan+linaro@kernel.org>
+ <20220609120338.4080-2-johan+linaro@kernel.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220609120338.4080-2-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the last few years I have been the sole maintainer of KVM, albeit
-getting serious help from all the people who have reviewed hundreds of
-patches.  The volume of KVM x86 alone has gotten to the point where one
-maintainer is not enough; especially if that maintainer is not doing it
-full time and if they want to keep up with the evolution of ARM64 and
-RISC-V at both the architecture and the hypervisor level.
+On 09/06/2022 15:03, Johan Hovold wrote:
+> Clean up the QMP v4 and v5 defines by moving a few entries that were out
+> of order.
+> 
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 
-So, this patch is the first step in restoring double maintainership
-or even transitioning to the submaintainer model of other architectures.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-The changes here were mostly proposed by Sean offlist and they are twofold:
+> ---
+>   drivers/phy/qualcomm/phy-qcom-qmp.h | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.h b/drivers/phy/qualcomm/phy-qcom-qmp.h
+> index eb5705d1e32c..626be0ccede2 100644
+> --- a/drivers/phy/qualcomm/phy-qcom-qmp.h
+> +++ b/drivers/phy/qualcomm/phy-qcom-qmp.h
+> @@ -577,8 +577,8 @@
+>   #define QSERDES_V4_COM_LOCK_CMP1_MODE0			0x0ac
+>   #define QSERDES_V4_COM_LOCK_CMP2_MODE0			0x0b0
+>   #define QSERDES_V4_COM_LOCK_CMP1_MODE1			0x0b4
+> -#define QSERDES_V4_COM_DEC_START_MODE0			0x0bc
+>   #define QSERDES_V4_COM_LOCK_CMP2_MODE1			0x0b8
+> +#define QSERDES_V4_COM_DEC_START_MODE0			0x0bc
+>   #define QSERDES_V4_COM_DEC_START_MODE1			0x0c4
+>   #define QSERDES_V4_COM_DIV_FRAC_START1_MODE0		0x0cc
+>   #define QSERDES_V4_COM_DIV_FRAC_START2_MODE0		0x0d0
+> @@ -1106,8 +1106,8 @@
+>   #define QSERDES_V5_COM_LOCK_CMP1_MODE0			0x0ac
+>   #define QSERDES_V5_COM_LOCK_CMP2_MODE0			0x0b0
+>   #define QSERDES_V5_COM_LOCK_CMP1_MODE1			0x0b4
+> -#define QSERDES_V5_COM_DEC_START_MODE0			0x0bc
+>   #define QSERDES_V5_COM_LOCK_CMP2_MODE1			0x0b8
+> +#define QSERDES_V5_COM_DEC_START_MODE0			0x0bc
+>   #define QSERDES_V5_COM_DEC_START_MODE1			0x0c4
+>   #define QSERDES_V5_COM_DIV_FRAC_START1_MODE0		0x0cc
+>   #define QSERDES_V5_COM_DIV_FRAC_START2_MODE0		0x0d0
+> @@ -1134,8 +1134,8 @@
+>   #define QSERDES_V5_COM_BIN_VCOCAL_CMP_CODE1_MODE0	0x1ac
+>   #define QSERDES_V5_COM_BIN_VCOCAL_CMP_CODE2_MODE0	0x1b0
+>   #define QSERDES_V5_COM_BIN_VCOCAL_CMP_CODE1_MODE1	0x1b4
+> -#define QSERDES_V5_COM_BIN_VCOCAL_HSCLK_SEL		0x1bc
+>   #define QSERDES_V5_COM_BIN_VCOCAL_CMP_CODE2_MODE1	0x1b8
+> +#define QSERDES_V5_COM_BIN_VCOCAL_HSCLK_SEL		0x1bc
+>   
+>   /* Only for QMP V5 PHY - TX registers */
+>   #define QSERDES_V5_TX_RES_CODE_LANE_TX			0x34
 
-- revisiting the set of KVM x86 reviewers.  It's important to have an
-  an accurate list of people that are actively reviewing patches ("R"),
-  as well as people that are able to act on bug reports ("M").  Otherwise,
-  voids to be filled are not easily visible.  The proposal is to split
-  KVM on Hyper-V, which is where Vitaly has been the main contributor
-  for quite some time now; likewise for KVM paravirt support, which
-  has been the main interest of Wanpeng.  Jim and Joerg have not been
-  particularly active (though Joerg has worked on guest support for AMD
-  SEV); knowing them a bit, I can't imagine they would object to their
-  removal or even be surprised, but please speak up if you do.
 
-- promoting Sean to maintainer for KVM x86 host support.  While for
-  now this changes little, let's treat it as a harbinger for future
-  changes.  The plan is that I would keep the final integration testing
-  for quite some time, and probably focus more on -rc work.  This will
-  give me more time to clean up my ad hoc setup and moving towards a
-  more public CI, with Sean focusing instead on next-release patches,
-  and the testing up to where kvm-unit-tests and selftests pass.  In
-  order to facilitate collaboration between Sean and myself, we'll
-  also formalize a bit more the various branches of kvm.git.
-
-Nothing is going to change with respect to handling pull requests to Linus
-and from other architectures, as well as maintainance of the generic code
-(which I expect and hope to be more important as architectures try to
-share more code) and documentation.  However, it's not a coincidence
-that my entry is now the last for x86, ready to be demoted to reviewer
-if/when the right time comes.
-
-(Man, this commit message sounds emotional).
-
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Co-developed-by: Sean Christopherson <seanjc@google.com>
-Cc: kvm@vger.kernel.org
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc: Wanpeng Li <wanpengli@tencent.com>
-Cc: Jim Mattson <jmattson@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- MAINTAINERS | 37 ++++++++++++++++++++++++++++---------
- 1 file changed, 28 insertions(+), 9 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 97014ae3e5ed..3f7c485195d9 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10897,28 +10897,47 @@ F:	tools/testing/selftests/kvm/*/s390x/
- F:	tools/testing/selftests/kvm/s390x/
- 
- KERNEL VIRTUAL MACHINE FOR X86 (KVM/x86)
-+M:	Sean Christopherson <seanjc@google.com>
- M:	Paolo Bonzini <pbonzini@redhat.com>
--R:	Sean Christopherson <seanjc@google.com>
--R:	Vitaly Kuznetsov <vkuznets@redhat.com>
--R:	Wanpeng Li <wanpengli@tencent.com>
--R:	Jim Mattson <jmattson@google.com>
--R:	Joerg Roedel <joro@8bytes.org>
- L:	kvm@vger.kernel.org
- S:	Supported
--W:	http://www.linux-kvm.org
- T:	git git://git.kernel.org/pub/scm/virt/kvm/kvm.git
- F:	arch/x86/include/asm/kvm*
--F:	arch/x86/include/asm/pvclock-abi.h
- F:	arch/x86/include/asm/svm.h
- F:	arch/x86/include/asm/vmx*.h
- F:	arch/x86/include/uapi/asm/kvm*
- F:	arch/x86/include/uapi/asm/svm.h
- F:	arch/x86/include/uapi/asm/vmx.h
--F:	arch/x86/kernel/kvm.c
--F:	arch/x86/kernel/kvmclock.c
- F:	arch/x86/kvm/
- F:	arch/x86/kvm/*/
- 
-+KVM PARAVIRT (KVM/paravirt)
-+M:	Paolo Bonzini <pbonzini@redhat.com>
-+R:	Wanpeng Li <wanpengli@tencent.com>
-+L:	kvm@vger.kernel.org
-+S:	Supported
-+T:	git git://git.kernel.org/pub/scm/virt/kvm/kvm.git
-+F:	arch/x86/kernel/kvm.c
-+F:	arch/x86/kernel/kvmclock.c
-+F:	arch/x86/include/asm/pvclock-abi.h
-+F:	include/linux/kvm_para.h
-+F:	include/uapi/linux/kvm_para.h
-+F:	include/uapi/asm-generic/kvm_para.h
-+F:	include/asm-generic/kvm_para.h
-+F:	arch/um/include/asm/kvm_para.h
-+F:	arch/x86/include/asm/kvm_para.h
-+F:	arch/x86/include/uapi/asm/kvm_para.h
-+
-+KVM X86 HYPER-V (KVM/hyper-v)
-+M:	Vitaly Kuznetsov <vkuznets@redhat.com>
-+M:	Sean Christopherson <seanjc@google.com>
-+M:	Paolo Bonzini <pbonzini@redhat.com>
-+T:	git git://git.kernel.org/pub/scm/virt/kvm/kvm.git
-+F:	arch/x86/kvm/hyperv.*
-+F:	arch/x86/kvm/kvm_onhyperv.*
-+F:	arch/x86/kvm/svm/svm_onhyperv.*
-+F:	arch/x86/kvm/vmx/evmcs.*
-+
- KERNFS
- M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
- M:	Tejun Heo <tj@kernel.org>
 -- 
-2.31.1
-
+With best wishes
+Dmitry
