@@ -2,208 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 689EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03938C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbiFWIWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35658 "EHLO
+        id S229689AbiFWIWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiFWIWX (ORCPT
+        with ESMTP id S229842AbiFWIWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:22:23 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BA94832F
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:22:21 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id i15so29695051ybp.1
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:22:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9PjNiNhLCuh9WhzT1AaONPfu5Pj4HpLdf/1QRxDQ9sQ=;
-        b=pzqGfXQLba3va5/8Sml5dTqasBd22VtMC6LsIY9XM86NydlS9zpVJnL7w7xX6iuDe8
-         X7CBtL21Xt/roY99vHIUugx0rcpAIZr/MRxvyoGKpsUZLiqAk//S2jlQpBwrNnHk7wGm
-         RQTEw34L8DZMyPfA1AsauTTsxDs05tA56d4f5svcOAWjw1Odk+3DTByfTvJrYBNr/zRF
-         iPbOdMh47ENO95zTpdz/17l4CgcdpExtT5e0NypAQFBQc/j/g67fTa8i40rOqRH7rdeC
-         +qNvOlp6pV5Z2uaLHf2Y3ZncmyJaUhr6W/xXlsYAJCLg8Ts5Y0LhOT8aCUZsWexiZHkk
-         67Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9PjNiNhLCuh9WhzT1AaONPfu5Pj4HpLdf/1QRxDQ9sQ=;
-        b=QGtQjGhhgCCOJCKgblc1HHtU0HH2ea7OC+0bmikirD4h250d+aQG4zj8bVXGeTEyxH
-         hx1a+VehVwZArSXSKXKyacgaWeiVr1ji3qAOMcSQzbA+XSRbLXoCrgFSdbPlZNNy0nX+
-         u49TARd2+TJyttB17y3WxKbVuCwuVtzQwpgWCDZ3mtimqF8FLB13KM5rbSpyF9gBMBJU
-         /EU9EgOCZnC62tJePloQdqEWKEO30z2l0gaJBpjE5J/Xc8xkKR015pu1nyd36ZZbRoQA
-         PXDPJ0MRMTvv2spyyu1g2mxYxT/95w8CaITocunVYJA3zPXIbetgSOYBBRVjKAjYNj8+
-         CBrg==
-X-Gm-Message-State: AJIora/CN/8Pf+hpEBVJCYoHgYlzYar87OF5jkycjI5Bv/+khzTWpdTU
-        TWryvZC/bkjWP4GRPe5eDt5SFgRNNZBVLlfbjgjgSA==
-X-Google-Smtp-Source: AGRyM1vxaAj9yCr/MgE5OXOPyoZP2NZubFdKuQ3kk1yDt2x8rBApcAn2+N11GLiK2OWn/arC4N2rlY0DEOynYw1Ms08=
-X-Received: by 2002:a25:9e82:0:b0:669:b38d:e93e with SMTP id
- p2-20020a259e82000000b00669b38de93emr775933ybq.242.1655972540895; Thu, 23 Jun
- 2022 01:22:20 -0700 (PDT)
+        Thu, 23 Jun 2022 04:22:32 -0400
+Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DE748338
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:22:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1655972549; x=1687508549;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=gNpD1bVqKlbsMksw4J8hMe8jV69hgwr3fUwwPSY2qLA=;
+  b=qAhq1bT7pxdyh56n/a0Ym9U7LTvD5Fd3ta6J2KL4G22V32iqPzq8jw2W
+   mH2Ck9S1/Zrw81eHoSuFkZhX2Y5x2212R+bazOVYDrCDmpL7pWR8OY3r+
+   EgBcb23HI+wxN9yiM/9HHxQL0oPQs/KuTYIhzuZ2xiN0TDtR6dD7uZuuO
+   lm42gi2NKsbiQixryfjKCnPvGnLE8kUhNyOQXeUAyfFYPekaBDLutclko
+   /uzXb1WWHCa8rqpW7iL/vyPiYX3fBQcD3zCj9gmpTZgHhUtuHTiMYAtr6
+   wGRF3ezEt3kVWzvKeht+Kgw6QrKzs+EL1PLLDvVrf8ekYOhdco68K/1WT
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,215,1650902400"; 
+   d="scan'208";a="208765632"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 23 Jun 2022 16:22:28 +0800
+IronPort-SDR: XDXLo5ApAaRhi0afwnW74uDZsVX0lSUIPDN8rnv4CBqp63QZ1cWjeRrI4ezv7vJ5sGoPv0UCJ+
+ RMlCwCXBue4SoLbv1oV3+H3OdeZ8Dk5Kz3+p8StJ4SRuFKRnUYKEjpWihza0vV7UmZP43a8t5m
+ oG6q7TWA4GsN+sohKZTY2SCMU7tR9mri6kPaclpdZp4XCUJKyUQu8C3rK0UX+dxX4NTu6rTSiC
+ m4zHKhW6HH1Orx9pKaUUhTLdXDC4HbiXWhXy91tFootiWiQ54hEUNSWSIcBiyT4Iy4+KkyIOyc
+ 0AkGiLAI7fse701pG39+mTrn
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 23 Jun 2022 00:44:58 -0700
+IronPort-SDR: 2hazUpMPcBpzorNqrDgkm+cC+yZ+ALgqj+krYfhrFUdvN4hQVTqPkB9ewjOOjs3kN4+1gnbVTI
+ PeNy+OgUbkYZ/PapUzpmAGt/weKWrNtsIIbakCuwch+SZ2ZDNnaRm0h0ub7QIaKG/r8cBgwfIL
+ Lb+5CmlwAteWyu6hYp3U7R3thlgh+9gRoe+AMWpGjFW0DOFiGgf7RmyxFd3BSt9622YEzk4Fqq
+ 5WwVRrsxqvJS0buTPqtWkHGOPNDYeufxwFBiFgMuUNKUmAgS8SOD+8ZnnkE+ShiYY86sJVErdf
+ xPw=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 23 Jun 2022 01:22:30 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LTCsy0HYjz1Rwnx
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:22:30 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1655972549; x=1658564550; bh=gNpD1bVqKlbsMksw4J8hMe8jV69hgwr3fUw
+        wPSY2qLA=; b=PAibzQuoVnPczN2jLQ68p94iASR4uLcJfBZHQqcQDsJaW2YfISQ
+        cQpMlHIFZIte6e/DJ1vIzK9Nx5B24TRuxsYoTbQ3vZ6Ng8m9MhT1cbnRikYbEgNM
+        xaF93brbXSVsXrYRZIiTOhfzIdvRTPMLwer9bZbnDWpL1j1JhzMryjNmTVwvsfoJ
+        XbActMEXZhie+v6RhoYu5GwFaEK5O0pu0N0DcOeJJYvs5ijWZJZNTPOVoatWBLPw
+        vsUURP7qsOwp2hd7x7sX3KGcoNT9zrYfAjiFPGjVuTiZpDgGX3rkJAP+HCFcytxY
+        Vn+LkB07Rdz/ZPQuHRiv75FjwtZQvLSv3sg==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 1aTqyC4z-ea2 for <linux-kernel@vger.kernel.org>;
+        Thu, 23 Jun 2022 01:22:29 -0700 (PDT)
+Received: from [10.225.163.90] (unknown [10.225.163.90])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LTCsw5vFCz1RtVk;
+        Thu, 23 Jun 2022 01:22:28 -0700 (PDT)
+Message-ID: <09091cc4-f652-0978-bb6a-b63f24fdcf49@opensource.wdc.com>
+Date:   Thu, 23 Jun 2022 17:22:27 +0900
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
- <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
- <YrKhkmj3jCQA39X/@atomide.com> <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
- <YrQP3OZbe8aCQxKU@atomide.com>
-In-Reply-To: <YrQP3OZbe8aCQxKU@atomide.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 23 Jun 2022 01:21:43 -0700
-Message-ID: <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] libata: add horkage for M88V29
+Content-Language: en-US
+To:     =?UTF-8?B?QsO2c3rDtnJtw6lueWkgWm9sdMOhbg==?= <zboszor@gmail.com>,
+        zboszor@pr.hu, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org
+References: <20220204125750.1771303-1-zboszor@pr.hu>
+ <f726e9e1-bdad-ac8a-368b-aae423a00676@opensource.wdc.com>
+ <78c29f43-3b67-8e70-0711-14e997f3efb1@gmail.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <78c29f43-3b67-8e70-0711-14e997f3efb1@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 12:01 AM Tony Lindgren <tony@atomide.com> wrote:
->
-> * Saravana Kannan <saravanak@google.com> [220622 19:05]:
-> > On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > * Saravana Kannan <saravanak@google.com> [220621 19:29]:
-> > > > On Tue, Jun 21, 2022 at 12:28 AM Tony Lindgren <tony@atomide.com> wrote:
-> > > > >
-> > > > > Hi,
-> > > > >
-> > > > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > > > > Now that fw_devlink=on by default and fw_devlink supports
-> > > > > > "power-domains" property, the execution will never get to the point
-> > > > > > where driver_deferred_probe_check_state() is called before the supplier
-> > > > > > has probed successfully or before deferred probe timeout has expired.
-> > > > > >
-> > > > > > So, delete the call and replace it with -ENODEV.
-> > > > >
-> > > > > Looks like this causes omaps to not boot in Linux next.
-> > > >
-> > > > Can you please point me to an example DTS I could use for debugging
-> > > > this? I'm assuming you are leaving fw_devlink=on and not turning it
-> > > > off or putting it in permissive mode.
-> > >
-> > > Sure, this seems to happen at least with simple-pm-bus as the top
-> > > level interconnect with a configured power-domains property:
-> > >
-> > > $ git grep -A10 "ocp {" arch/arm/boot/dts/*.dtsi | grep -B3 -A4 simple-pm-bus
-> >
-> > Thanks for the example. I generally start looking from dts (not dtsi)
-> > files in case there are some DT property override/additions after the
-> > dtsi files are included in the dts file. But I'll assume for now
-> > that's not the case. If there's a specific dts file for a board I can
-> > look from that'd be helpful to rule out those kinds of issues.
-> >
-> > For now, I looked at arch/arm/boot/dts/omap4.dtsi.
->
-> OK it should be very similar for all the affected SoCs.
->
-> > > This issue is no directly related fw_devlink. It is a side effect of
-> > > removing driver_deferred_probe_check_state(). We no longer return
-> > > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
-> >
-> > Yes, I understand the issue. But driver_deferred_probe_check_state()
-> > was deleted because fw_devlink=on should have short circuited the
-> > probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
-> > probe function and hitting this -ENOENT failure. That's why I was
-> > asking the other questions.
->
-> OK. So where is the -EPROBE_DEFER supposed to happen without
-> driver_deferred_probe_check_state() then?
+On 6/23/22 16:47, B=C3=B6sz=C3=B6rm=C3=A9nyi Zolt=C3=A1n wrote:
+> 2022. 02. 08. 9:07 keltez=C3=A9ssel, Damien Le Moal =C3=ADrta:
+>> On 2/4/22 21:57, zboszor@pr.hu wrote:
+>>> From: Zolt=C3=A1n B=C3=B6sz=C3=B6rm=C3=A9nyi <zboszor@gmail.com>
+>>>
+>>> This device is a CF card, or possibly an SSD in CF form factor.
+>>> It supports NCQ and high speed DMA.
+>>>
+>>> While it also advertises TRIM support, I/O errors are reported
+>>> when the discard mount option fstrim is used. TRIM also fails
+>>> when disabling NCQ and not just as an NCQ command.
+>>>
+>>> TRIM must be disabled for this device.
+>>>
+>>> Signed-off-by: Zolt=C3=A1n B=C3=B6sz=C3=B6rm=C3=A9nyi <zboszor@gmail.=
+com>
+>>> ---
+>>>   drivers/ata/libata-core.c | 1 +
+>>>   1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+>>> index 67f88027680a..4a7f58fcc411 100644
+>>> --- a/drivers/ata/libata-core.c
+>>> +++ b/drivers/ata/libata-core.c
+>>> @@ -4028,6 +4028,7 @@ static const struct ata_blacklist_entry ata_dev=
+ice_blacklist [] =3D {
+>>>  =20
+>>>   	/* devices that don't properly handle TRIM commands */
+>>>   	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
+>>> +	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
+>>>  =20
+>>>   	/*
+>>>   	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
+>> Applied to for-5.17-fixes. Thanks !
+>=20
+> Thank you. However, I have second thoughts about this patch.
+> The device advertises this:
+>=20
+> # hdparm -iI /dev/sda
+> ...
+>  =C2=A0Enabled Supported
+>  =C2=A0=C2=A0=C2=A0 *=C2=A0=C2=A0=C2=A0 Data Set Management TRIM suppor=
+ted (limit 1 block)
+> ...
+>=20
+> but the I/O failures always reported higher number of blocks,
+> IIRC the attempted number of block was 8 or so.
+>=20
+> Can the kernel limit or split TRIM commands according to the
+> advertised limit? If not (or not yet) then the quirk is good for now.
 
-device_links_check_suppliers() call inside really_probe() would short
-circuit and return an -EPROBE_DEFER if the device links are created as
-expected.
+Yes, the kernel does that. See the sysfs queue attributes
+discard_max_bytes and discard_max_hw_bytes. What are the values for your
+device ? I think that the "limit 1 block" indicated by hdparm is simply t=
+o
+say that the DSM command (to trim the device) accept only at most a 1
+block (512 B) list of sectors to trim. That is not the actual trim limit
+for each sector range in that list.
 
->
-> > > > > On platform_probe() genpd_get_from_provider() returns
-> > > > > -ENOENT.
-> > > >
-> > > > This error is with the series I assume?
-> > >
-> > > On the first probe genpd_get_from_provider() will return -ENOENT in
-> > > both cases. The list is empty on the first probe and there are no
-> > > genpd providers at this point.
-> > >
-> > > Earlier with driver_deferred_probe_check_state(), the initial -ENOENT
-> > > ends up getting changed to -EPROBE_DEFER at the end of
-> > > driver_deferred_probe_check_state(), we are now missing that.
-> >
-> > Right, I was aware -ENOENT would be returned if we got this far. But
-> > the point of this series is that you shouldn't have gotten that far
-> > before your pm domain device is ready. Hence my questions from the
-> > earlier reply.
->
-> OK
->
-> > Can I get answers to rest of my questions in the first reply please?
-> > That should help us figure out why fw_devlink let us get this far.
-> > Summarize them here to make it easy:
-> > * Are you running with fw_devlink=on?
->
-> Yes with the default with no specific kernel params so looks like
-> FW_DEVLINK_FLAGS_ON.
->
-> > * Is the"ti,omap4-prm-inst"/"ti,omap-prm-inst" built-in in this case?
->
-> Yes
->
-> > * If it's not built-in, can you please try deferred_probe_timeout=0
-> > and deferred_probe_timeout=30 and see if either one of them help?
->
-> It's built in so I did not try these.
->
-> > * Can I get the output of "ls -d supplier:*" and "cat
-> > supplier:*/status" output from the sysfs dir for the ocp device
-> > without this series where it boots properly.
->
-> Hmm so I'm not seeing any supplier for the top level ocp device in
-> the booting case without your patches. I see the suppliers for the
-> ocp child device instances only.
+>=20
+> Best regards,
+> Zolt=C3=A1n B=C3=B6sz=C3=B6rm=C3=A9nyi
+>=20
 
-Hmmm... this is strange (that the device link isn't there), but this
-is what I suspected.
 
-Now we need to figure out why it's missing. There are only a few
-things that could cause this and I don't see any of those. I already
-checked to make sure the power domain in this instance had a proper
-driver with a probe() function -- if it didn't, then that's one thing
-that'd could have caused the missing device link. The device does seem
-to have a proper driver, so looks like I can rule that out.
-
-Can you point me to the dts file that corresponds to the specific
-board you are testing this one? I probably won't find anything, but I
-want to rule out some of the possibilities.
-
-All the device link creation logic is inside drivers/base/core.c. So
-if you can look at the existing messages or add other stuff to figure
-out why the device link isn't getting created, that'd be handy. In
-either case, I'll continue staring at the DT and code to see what
-might be happening here.
-
--Saravana
+--=20
+Damien Le Moal
+Western Digital Research
