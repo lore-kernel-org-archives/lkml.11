@@ -2,98 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2778C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4931C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231512AbiFWRHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:07:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
+        id S231804AbiFWRHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbiFWRG2 (ORCPT
+        with ESMTP id S230053AbiFWRG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:06:28 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF036517E6
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:55:46 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id l4so19655294pgh.13
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:55:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zxNuJF6Nbe8LLHbYqIbwZg9Zj1L4NANG6tNglCp+Qvc=;
-        b=XHUVPgvbh1RbKwDTYzng/n5/obx4NKF4t5gJwAYybq7iw0yl1IDnJnj/UY6lbOdIcC
-         JkaxYapcyaMhT7hyRjqzXPDIvNUgOB31tZlsO0LlgDI/TYnfopMr1Zeep1u7xtng6c7U
-         Sm3VvZm1doZ/hhaqr8Q85AwjJvT8qWBqtgoRDufLJDPWRTqeYWW1HMtPPhtpNvrt51hn
-         OzAAz9xbjUVszG9brdyyjkJOuSgnHuvZ6zm2eprL83/CPtn07FUuEfi6zGOrWwOkzBjA
-         pYCc/T8UNb0tsN+TWWA7O5ktS1EBpp22pfEQuQWcMcqlVh/8XUXFTzRxBRfxmd9MTYgU
-         9zuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zxNuJF6Nbe8LLHbYqIbwZg9Zj1L4NANG6tNglCp+Qvc=;
-        b=YkZ1+r6UYkOVVMHCxKRZq4zMLpopbEgpOXyeFL95ezQ4v+mWpAvCmnUJRaSAxUFz1K
-         hnYo7qpzStx6YruW3WPf7PjV4rSb1LkiMjn8oTsct8zPyEGGL0JOSAGekvZIehbxMuJP
-         sqG9cqq3WEGKwfRJmRHmOTYbjOEjWCKnxesduO4E4F05bmwP8m/B9C6TiIE790U7jq6Q
-         ODIOY8liV4oB29C9GHWD2zugq3R41ipdcIuDPYiXuNYGFxMi8cmIL801OCsvGb2XPzE8
-         uFW4xtmNhxYkC4sFBxIQtP32BMUF1tihA3eKhLrL8JFj54XmGYtvVBlPLJ9Ve4FW1tr7
-         WOMg==
-X-Gm-Message-State: AJIora9hrG9hU1I5aOwcielL3dolL6wG2zufJZLAMTbbEv92lDLzjdNA
-        dr3A6qtSKLuxU8rI+CCtnmGDQ0GXcfmzezjEF3vvBQ==
-X-Google-Smtp-Source: AGRyM1tEW//oYgmqBPHq48elIVVWT5t+ubvinbX4G1Hc6hZJrESk88dK9Jd6fyiayXLcRsWyQhixpLKJ/IPg7eKqTKc=
-X-Received: by 2002:a05:6a00:2393:b0:524:eeb2:5547 with SMTP id
- f19-20020a056a00239300b00524eeb25547mr30203002pfc.8.1656003344568; Thu, 23
- Jun 2022 09:55:44 -0700 (PDT)
+        Thu, 23 Jun 2022 13:06:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9728962F5;
+        Thu, 23 Jun 2022 09:55:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7120360AE6;
+        Thu, 23 Jun 2022 16:55:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5704EC3411B;
+        Thu, 23 Jun 2022 16:55:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656003345;
+        bh=v+uqFq0mmPd4dXWAbJJ6cWrhuxD2LOV7JBG4rsGwqWk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HQi+e66tihCBR+hPpZza3HGsnGnF0/AjQaAUoWVp27YKda6eesb8aPAqw0XVUKDkb
+         ml+yHqSaV/s/CkNcbkMv9KblDZFRPCKwcjj5yFHiPLcCjexQqlwOT7peF/YtBvhqYy
+         6MUJ2guw4Y6sC3LFbmZGB2qlXBPA2ramfWjQpF9g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 207/264] random: remove extern from functions in header
+Date:   Thu, 23 Jun 2022 18:43:20 +0200
+Message-Id: <20220623164349.928111378@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
+References: <20220623164344.053938039@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <4e685057-b07d-745d-fdaa-1a6a5a681060@openvz.org>
- <0fe836b4-5c0f-0e32-d511-db816d359748@openvz.org> <c516033f-a9e4-3485-26d9-a68afa694c1d@openvz.org>
- <YrSP25ebDmXE+kPS@dhcp22.suse.cz>
-In-Reply-To: <YrSP25ebDmXE+kPS@dhcp22.suse.cz>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 23 Jun 2022 09:55:33 -0700
-Message-ID: <CALvZod4WsmrpfZtfnP4AmvtnkvBRngXXGyhM6+aQzkdfjsinAQ@mail.gmail.com>
-Subject: Re: [PATCH mm v5 0/9] memcg: accounting for objects allocated by
- mkdir, cgroup
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Vasily Averin <vvs@openvz.org>, kernel@openvz.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 9:07 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Thu 23-06-22 18:03:31, Vasily Averin wrote:
-> > Dear Michal,
-> > do you still have any concerns about this patch set?
->
-> Yes, I do not think we have concluded this to be really necessary. IIRC
-> Roman would like to see lingering cgroups addressed in not-so-distant
-> future (http://lkml.kernel.org/r/Ypd2DW7id4M3KJJW@carbon) and we already
-> have a limit for the number of cgroups in the tree. So why should we
-> chase after allocations that correspond the cgroups and somehow try to
-> cap their number via the memory consumption. This looks like something
-> that will get out of sync eventually and it also doesn't seem like the
-> best control to me (comparing to an explicit limit to prevent runaways).
-> --
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Let me give a counter argument to that. On a system running multiple
-workloads, how can the admin come up with a sensible limit for the
-number of cgroups? There will definitely be jobs that require much
-more number of sub-cgroups. Asking the admins to dynamically tune
-another tuneable is just asking for more complications. At the end all
-the users would just set it to max.
+commit 7782cfeca7d420e8bb707613d4cfb0f7ff29bb3a upstream.
 
-I would recommend to see the commit ac7b79fd190b ("inotify, memcg:
-account inotify instances to kmemcg") where there is already a sysctl
-(inotify/max_user_instances) to limit the number of instances but
-there was no sensible way to set that limit on a multi-tenant system.
+Accoriding to the kernel style guide, having `extern` on functions in
+headers is old school and deprecated, and doesn't add anything. So remove
+them from random.h, and tidy up the file a little bit too.
+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/random.h |   67 +++++++++++++++++++------------------------------
+ 1 file changed, 27 insertions(+), 40 deletions(-)
+
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -12,13 +12,12 @@
+ 
+ struct notifier_block;
+ 
+-extern void add_device_randomness(const void *, size_t);
+-extern void add_bootloader_randomness(const void *, size_t);
+-extern void add_input_randomness(unsigned int type, unsigned int code,
+-				 unsigned int value) __latent_entropy;
+-extern void add_interrupt_randomness(int irq) __latent_entropy;
+-extern void add_hwgenerator_randomness(const void *buffer, size_t count,
+-				       size_t entropy);
++void add_device_randomness(const void *, size_t);
++void add_bootloader_randomness(const void *, size_t);
++void add_input_randomness(unsigned int type, unsigned int code,
++			  unsigned int value) __latent_entropy;
++void add_interrupt_randomness(int irq) __latent_entropy;
++void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
+ static inline void add_latent_entropy(void)
+@@ -26,21 +25,11 @@ static inline void add_latent_entropy(vo
+ 	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
+ }
+ #else
+-static inline void add_latent_entropy(void) {}
+-#endif
+-
+-extern void get_random_bytes(void *buf, size_t nbytes);
+-extern int wait_for_random_bytes(void);
+-extern int __init random_init(const char *command_line);
+-extern bool rng_is_initialized(void);
+-extern int register_random_ready_notifier(struct notifier_block *nb);
+-extern int unregister_random_ready_notifier(struct notifier_block *nb);
+-extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
+-
+-#ifndef MODULE
+-extern const struct file_operations random_fops, urandom_fops;
++static inline void add_latent_entropy(void) { }
+ #endif
+ 
++void get_random_bytes(void *buf, size_t nbytes);
++size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
+ u32 get_random_u32(void);
+ u64 get_random_u64(void);
+ static inline unsigned int get_random_int(void)
+@@ -56,6 +45,14 @@ static inline unsigned long get_random_l
+ #endif
+ }
+ 
++unsigned long randomize_page(unsigned long start, unsigned long range);
++
++int __init random_init(const char *command_line);
++bool rng_is_initialized(void);
++int wait_for_random_bytes(void);
++int register_random_ready_notifier(struct notifier_block *nb);
++int unregister_random_ready_notifier(struct notifier_block *nb);
++
+ /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
+  * Returns the result of the call to wait_for_random_bytes. */
+ static inline int get_random_bytes_wait(void *buf, size_t nbytes)
+@@ -79,8 +76,6 @@ declare_get_random_var_wait(int)
+ declare_get_random_var_wait(long)
+ #undef declare_get_random_var
+ 
+-unsigned long randomize_page(unsigned long start, unsigned long range);
+-
+ /*
+  * This is designed to be standalone for just prandom
+  * users, but for now we include it from <linux/random.h>
+@@ -91,22 +86,10 @@ unsigned long randomize_page(unsigned lo
+ #ifdef CONFIG_ARCH_RANDOM
+ # include <asm/archrandom.h>
+ #else
+-static inline bool __must_check arch_get_random_long(unsigned long *v)
+-{
+-	return false;
+-}
+-static inline bool __must_check arch_get_random_int(unsigned int *v)
+-{
+-	return false;
+-}
+-static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
+-{
+-	return false;
+-}
+-static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
+-{
+-	return false;
+-}
++static inline bool __must_check arch_get_random_long(unsigned long *v) { return false; }
++static inline bool __must_check arch_get_random_int(unsigned int *v) { return false; }
++static inline bool __must_check arch_get_random_seed_long(unsigned long *v) { return false; }
++static inline bool __must_check arch_get_random_seed_int(unsigned int *v) { return false; }
+ #endif
+ 
+ /*
+@@ -130,8 +113,12 @@ static inline bool __init arch_get_rando
+ #endif
+ 
+ #ifdef CONFIG_SMP
+-extern int random_prepare_cpu(unsigned int cpu);
+-extern int random_online_cpu(unsigned int cpu);
++int random_prepare_cpu(unsigned int cpu);
++int random_online_cpu(unsigned int cpu);
++#endif
++
++#ifndef MODULE
++extern const struct file_operations random_fops, urandom_fops;
+ #endif
+ 
+ #endif /* _LINUX_RANDOM_H */
+
+
