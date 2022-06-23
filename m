@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0919C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66862C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236468AbiFWSNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59138 "EHLO
+        id S236493AbiFWSNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236530AbiFWSMT (ORCPT
+        with ESMTP id S236531AbiFWSMZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:12:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A759B575;
-        Thu, 23 Jun 2022 10:20:35 -0700 (PDT)
+        Thu, 23 Jun 2022 14:12:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AC6BEAB3;
+        Thu, 23 Jun 2022 10:20:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D888761E50;
-        Thu, 23 Jun 2022 17:20:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6146C3411B;
-        Thu, 23 Jun 2022 17:20:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA80C61DE5;
+        Thu, 23 Jun 2022 17:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C2B6C3411B;
+        Thu, 23 Jun 2022 17:20:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004834;
-        bh=FHmPyj2D2tGbC8s1f5us7ysnhTDu4Fn5V+6b2VESaaE=;
+        s=korg; t=1656004843;
+        bh=ZE8Oti+fu3e1FxWiLUTqce4e2vXw7qouPFIc2w4kBJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iNmhleT2KUhfwmZsuqJSGyr3zOXxgmMuXk5wzqWpoXXvMl0KtgGzrAn6dxmaB4AAb
-         X9XjKq6DVoyglrp+BW9vnq/YIbxVGPwGfS5tREoD4xAwd/LoDDTzitqUwKUlW9GBpl
-         A1lOdWUMBAv8FudCApzJefQOM1nxqeW8aUM+Jfd4=
+        b=Ao375EfeJ9Si8R+vqkywMdT+40RwZtObRY2gs7Ivvvk2ICFbtdu813GQEL9enMa+w
+         RNKPy90kCCGAN//s54CiHYSigeAyTymYQNgXdf4GIOr3K2OeztX35iV8ula99YTKWL
+         umwEDYLKz48xfA3IVLMUTKmoo9Nlc0Fe5iBnnw7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 163/234] random: remove extern from functions in header
-Date:   Thu, 23 Jun 2022 18:43:50 +0200
-Message-Id: <20220623164347.667353654@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Jann Horn <jannh@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 128/234] random: do not allow user to keep crng key around on stack
+Date:   Thu, 23 Jun 2022 18:43:15 +0200
+Message-Id: <20220623164346.681483476@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,136 +51,96 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7782cfeca7d420e8bb707613d4cfb0f7ff29bb3a upstream.
+commit aba120cc101788544aa3e2c30c8da88513892350 upstream.
 
-Accoriding to the kernel style guide, having `extern` on functions in
-headers is old school and deprecated, and doesn't add anything. So remove
-them from random.h, and tidy up the file a little bit too.
+The fast key erasure RNG design relies on the key that's used to be used
+and then discarded. We do this, making judicious use of
+memzero_explicit().  However, reads to /dev/urandom and calls to
+getrandom() involve a copy_to_user(), and userspace can use FUSE or
+userfaultfd, or make a massive call, dynamically remap memory addresses
+as it goes, and set the process priority to idle, in order to keep a
+kernel stack alive indefinitely. By probing
+/proc/sys/kernel/random/entropy_avail to learn when the crng key is
+refreshed, a malicious userspace could mount this attack every 5 minutes
+thereafter, breaking the crng's forward secrecy.
 
+In order to fix this, we just overwrite the stack's key with the first
+32 bytes of the "free" fast key erasure output. If we're returning <= 32
+bytes to the user, then we can still return those bytes directly, so
+that short reads don't become slower. And for long reads, the difference
+is hopefully lost in the amortization, so it doesn't change much, with
+that amortization helping variously for medium reads.
+
+We don't need to do this for get_random_bytes() and the various
+kernel-space callers, and later, if we ever switch to always batching,
+this won't be necessary either, so there's no need to change the API of
+these functions.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Jann Horn <jannh@google.com>
+Fixes: c92e040d575a ("random: add backtracking protection to the CRNG")
+Fixes: 186873c549df ("random: use simpler fast key erasure flow on per-cpu keys")
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |   71 +++++++++++++++++++------------------------------
- 1 file changed, 28 insertions(+), 43 deletions(-)
+ drivers/char/random.c |   35 +++++++++++++++++++++++------------
+ 1 file changed, 23 insertions(+), 12 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -12,13 +12,12 @@
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -532,19 +532,29 @@ static ssize_t get_random_bytes_user(voi
+ 	if (!nbytes)
+ 		return 0;
  
- struct notifier_block;
+-	len = min_t(size_t, 32, nbytes);
+-	crng_make_state(chacha_state, output, len);
+-
+-	if (copy_to_user(buf, output, len))
+-		return -EFAULT;
+-	nbytes -= len;
+-	buf += len;
+-	ret += len;
++	/*
++	 * Immediately overwrite the ChaCha key at index 4 with random
++	 * bytes, in case userspace causes copy_to_user() below to sleep
++	 * forever, so that we still retain forward secrecy in that case.
++	 */
++	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
++	/*
++	 * However, if we're doing a read of len <= 32, we don't need to
++	 * use chacha_state after, so we can simply return those bytes to
++	 * the user directly.
++	 */
++	if (nbytes <= CHACHA_KEY_SIZE) {
++		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? -EFAULT : nbytes;
++		goto out_zero_chacha;
++	}
  
--extern void add_device_randomness(const void *, size_t);
--extern void add_bootloader_randomness(const void *, size_t);
--extern void add_input_randomness(unsigned int type, unsigned int code,
--				 unsigned int value) __latent_entropy;
--extern void add_interrupt_randomness(int irq) __latent_entropy;
--extern void add_hwgenerator_randomness(const void *buffer, size_t count,
--				       size_t entropy);
-+void add_device_randomness(const void *, size_t);
-+void add_bootloader_randomness(const void *, size_t);
-+void add_input_randomness(unsigned int type, unsigned int code,
-+			  unsigned int value) __latent_entropy;
-+void add_interrupt_randomness(int irq) __latent_entropy;
-+void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
+-	while (nbytes) {
++	do {
+ 		if (large_request && need_resched()) {
+-			if (signal_pending(current))
++			if (signal_pending(current)) {
++				if (!ret)
++					ret = -ERESTARTSYS;
+ 				break;
++			}
+ 			schedule();
+ 		}
  
- #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
-@@ -26,21 +25,11 @@ static inline void add_latent_entropy(vo
- 	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
+@@ -561,10 +571,11 @@ static ssize_t get_random_bytes_user(voi
+ 		nbytes -= len;
+ 		buf += len;
+ 		ret += len;
+-	}
++	} while (nbytes);
+ 
+-	memzero_explicit(chacha_state, sizeof(chacha_state));
+ 	memzero_explicit(output, sizeof(output));
++out_zero_chacha:
++	memzero_explicit(chacha_state, sizeof(chacha_state));
+ 	return ret;
  }
- #else
--static inline void add_latent_entropy(void) {}
--#endif
--
--extern void get_random_bytes(void *buf, size_t nbytes);
--extern int wait_for_random_bytes(void);
--extern int __init random_init(const char *command_line);
--extern bool rng_is_initialized(void);
--extern int register_random_ready_notifier(struct notifier_block *nb);
--extern int unregister_random_ready_notifier(struct notifier_block *nb);
--extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
--
--#ifndef MODULE
--extern const struct file_operations random_fops, urandom_fops;
-+static inline void add_latent_entropy(void) { }
- #endif
  
-+void get_random_bytes(void *buf, size_t nbytes);
-+size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
- u32 get_random_u32(void);
- u64 get_random_u64(void);
- static inline unsigned int get_random_int(void)
-@@ -72,11 +61,17 @@ static inline unsigned long get_random_l
- 
- static inline unsigned long get_random_canary(void)
- {
--	unsigned long val = get_random_long();
--
--	return val & CANARY_MASK;
-+	return get_random_long() & CANARY_MASK;
- }
- 
-+unsigned long randomize_page(unsigned long start, unsigned long range);
-+
-+int __init random_init(const char *command_line);
-+bool rng_is_initialized(void);
-+int wait_for_random_bytes(void);
-+int register_random_ready_notifier(struct notifier_block *nb);
-+int unregister_random_ready_notifier(struct notifier_block *nb);
-+
- /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
-  * Returns the result of the call to wait_for_random_bytes. */
- static inline int get_random_bytes_wait(void *buf, size_t nbytes)
-@@ -100,8 +95,6 @@ declare_get_random_var_wait(int)
- declare_get_random_var_wait(long)
- #undef declare_get_random_var
- 
--unsigned long randomize_page(unsigned long start, unsigned long range);
--
- /*
-  * This is designed to be standalone for just prandom
-  * users, but for now we include it from <linux/random.h>
-@@ -112,22 +105,10 @@ unsigned long randomize_page(unsigned lo
- #ifdef CONFIG_ARCH_RANDOM
- # include <asm/archrandom.h>
- #else
--static inline bool __must_check arch_get_random_long(unsigned long *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_int(unsigned int *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
--{
--	return false;
--}
-+static inline bool __must_check arch_get_random_long(unsigned long *v) { return false; }
-+static inline bool __must_check arch_get_random_int(unsigned int *v) { return false; }
-+static inline bool __must_check arch_get_random_seed_long(unsigned long *v) { return false; }
-+static inline bool __must_check arch_get_random_seed_int(unsigned int *v) { return false; }
- #endif
- 
- /*
-@@ -151,8 +132,12 @@ static inline bool __init arch_get_rando
- #endif
- 
- #ifdef CONFIG_SMP
--extern int random_prepare_cpu(unsigned int cpu);
--extern int random_online_cpu(unsigned int cpu);
-+int random_prepare_cpu(unsigned int cpu);
-+int random_online_cpu(unsigned int cpu);
-+#endif
-+
-+#ifndef MODULE
-+extern const struct file_operations random_fops, urandom_fops;
- #endif
- 
- #endif /* _LINUX_RANDOM_H */
 
 
