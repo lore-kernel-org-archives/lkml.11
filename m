@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:42:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F88C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234482AbiFWRmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45962 "EHLO
+        id S233379AbiFWRmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:42:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234739AbiFWRiM (ORCPT
+        with ESMTP id S234794AbiFWRiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:38:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A41188;
-        Thu, 23 Jun 2022 10:07:51 -0700 (PDT)
+        Thu, 23 Jun 2022 13:38:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B09A23BE1;
+        Thu, 23 Jun 2022 10:08:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E18EB61408;
-        Thu, 23 Jun 2022 17:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE4E6C3411B;
-        Thu, 23 Jun 2022 17:07:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A627861408;
+        Thu, 23 Jun 2022 17:08:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ED31C3411B;
+        Thu, 23 Jun 2022 17:08:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004070;
-        bh=FHmPyj2D2tGbC8s1f5us7ysnhTDu4Fn5V+6b2VESaaE=;
+        s=korg; t=1656004091;
+        bh=598Hl7kIDIGJ5LdbwkPEKiM7nzzTHD9/w2CWnbQ9xv0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=snwVRyFBnBeHwUGyUpjXYTRZtn4J88dn21j+MQSmERssuza3gFHJZYcr30zq4WwdW
-         O+85y2nwETwPIsAmukfbAj/rZuKfXu6yJbP3rj5SBDw8bQmImt0JL8wHPrOBAfnpG1
-         kBAaX/g8QZRjBRtJSYCmDTFkTgee0lsO8sVw11UE=
+        b=DchenOgrm56xFnIDCYt9e0SorCD4tVi261Lh/3sWP0YlHsXLcD+Luc1KxRfA4gdhB
+         mLKvQ62h73eyeNiWDNYFRD1Vk+EyF7be6XpbhpZICVH6rvN6HeaViVLCDJGG/OfIhl
+         PZwenfLXw8UmQoUGLyNT0vHTBHrseIJsUYeK6gFU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 176/237] random: remove extern from functions in header
-Date:   Thu, 23 Jun 2022 18:43:30 +0200
-Message-Id: <20220623164348.214602450@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 134/237] random: reseed more often immediately after booting
+Date:   Thu, 23 Jun 2022 18:42:48 +0200
+Message-Id: <20220623164347.009917719@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,136 +51,85 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7782cfeca7d420e8bb707613d4cfb0f7ff29bb3a upstream.
+commit 7a7ff644aeaf071d433caffb3b8ea57354b55bd3 upstream.
 
-Accoriding to the kernel style guide, having `extern` on functions in
-headers is old school and deprecated, and doesn't add anything. So remove
-them from random.h, and tidy up the file a little bit too.
+In order to chip away at the "premature first" problem, we augment our
+existing entropy accounting with more frequent reseedings at boot.
 
+The idea is that at boot, we're getting entropy from various places, and
+we're not very sure which of early boot entropy is good and which isn't.
+Even when we're crediting the entropy, we're still not totally certain
+that it's any good. Since boot is the one time (aside from a compromise)
+that we have zero entropy, it's important that we shepherd entropy into
+the crng fairly often.
+
+At the same time, we don't want a "premature next" problem, whereby an
+attacker can brute force individual bits of added entropy. In lieu of
+going full-on Fortuna (for now), we can pick a simpler strategy of just
+reseeding more often during the first 5 minutes after boot. This is
+still bounded by the 256-bit entropy credit requirement, so we'll skip a
+reseeding if we haven't reached that, but in case entropy /is/ coming
+in, this ensures that it makes its way into the crng rather rapidly
+during these early stages.
+
+Ordinarily we reseed if the previous reseeding is 300 seconds old. This
+commit changes things so that for the first 600 seconds of boot time, we
+reseed if the previous reseeding is uptime / 2 seconds old. That means
+that we'll reseed at the very least double the uptime of the previous
+reseeding.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |   71 +++++++++++++++++++------------------------------
- 1 file changed, 28 insertions(+), 43 deletions(-)
+ drivers/char/random.c |   28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -12,13 +12,12 @@
- 
- struct notifier_block;
- 
--extern void add_device_randomness(const void *, size_t);
--extern void add_bootloader_randomness(const void *, size_t);
--extern void add_input_randomness(unsigned int type, unsigned int code,
--				 unsigned int value) __latent_entropy;
--extern void add_interrupt_randomness(int irq) __latent_entropy;
--extern void add_hwgenerator_randomness(const void *buffer, size_t count,
--				       size_t entropy);
-+void add_device_randomness(const void *, size_t);
-+void add_bootloader_randomness(const void *, size_t);
-+void add_input_randomness(unsigned int type, unsigned int code,
-+			  unsigned int value) __latent_entropy;
-+void add_interrupt_randomness(int irq) __latent_entropy;
-+void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
- 
- #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
-@@ -26,21 +25,11 @@ static inline void add_latent_entropy(vo
- 	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
- }
- #else
--static inline void add_latent_entropy(void) {}
--#endif
--
--extern void get_random_bytes(void *buf, size_t nbytes);
--extern int wait_for_random_bytes(void);
--extern int __init random_init(const char *command_line);
--extern bool rng_is_initialized(void);
--extern int register_random_ready_notifier(struct notifier_block *nb);
--extern int unregister_random_ready_notifier(struct notifier_block *nb);
--extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
--
--#ifndef MODULE
--extern const struct file_operations random_fops, urandom_fops;
-+static inline void add_latent_entropy(void) { }
- #endif
- 
-+void get_random_bytes(void *buf, size_t nbytes);
-+size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
- u32 get_random_u32(void);
- u64 get_random_u64(void);
- static inline unsigned int get_random_int(void)
-@@ -72,11 +61,17 @@ static inline unsigned long get_random_l
- 
- static inline unsigned long get_random_canary(void)
- {
--	unsigned long val = get_random_long();
--
--	return val & CANARY_MASK;
-+	return get_random_long() & CANARY_MASK;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -336,6 +336,28 @@ static void crng_fast_key_erasure(u8 key
  }
  
-+unsigned long randomize_page(unsigned long start, unsigned long range);
-+
-+int __init random_init(const char *command_line);
-+bool rng_is_initialized(void);
-+int wait_for_random_bytes(void);
-+int register_random_ready_notifier(struct notifier_block *nb);
-+int unregister_random_ready_notifier(struct notifier_block *nb);
-+
- /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
-  * Returns the result of the call to wait_for_random_bytes. */
- static inline int get_random_bytes_wait(void *buf, size_t nbytes)
-@@ -100,8 +95,6 @@ declare_get_random_var_wait(int)
- declare_get_random_var_wait(long)
- #undef declare_get_random_var
- 
--unsigned long randomize_page(unsigned long start, unsigned long range);
--
  /*
-  * This is designed to be standalone for just prandom
-  * users, but for now we include it from <linux/random.h>
-@@ -112,22 +105,10 @@ unsigned long randomize_page(unsigned lo
- #ifdef CONFIG_ARCH_RANDOM
- # include <asm/archrandom.h>
- #else
--static inline bool __must_check arch_get_random_long(unsigned long *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_int(unsigned int *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
--{
--	return false;
--}
-+static inline bool __must_check arch_get_random_long(unsigned long *v) { return false; }
-+static inline bool __must_check arch_get_random_int(unsigned int *v) { return false; }
-+static inline bool __must_check arch_get_random_seed_long(unsigned long *v) { return false; }
-+static inline bool __must_check arch_get_random_seed_int(unsigned int *v) { return false; }
- #endif
- 
- /*
-@@ -151,8 +132,12 @@ static inline bool __init arch_get_rando
- #endif
- 
- #ifdef CONFIG_SMP
--extern int random_prepare_cpu(unsigned int cpu);
--extern int random_online_cpu(unsigned int cpu);
-+int random_prepare_cpu(unsigned int cpu);
-+int random_online_cpu(unsigned int cpu);
-+#endif
++ * Return whether the crng seed is considered to be sufficiently
++ * old that a reseeding might be attempted. This happens if the last
++ * reseeding was CRNG_RESEED_INTERVAL ago, or during early boot, at
++ * an interval proportional to the uptime.
++ */
++static bool crng_has_old_seed(void)
++{
++	static bool early_boot = true;
++	unsigned long interval = CRNG_RESEED_INTERVAL;
 +
-+#ifndef MODULE
-+extern const struct file_operations random_fops, urandom_fops;
- #endif
++	if (unlikely(READ_ONCE(early_boot))) {
++		time64_t uptime = ktime_get_seconds();
++		if (uptime >= CRNG_RESEED_INTERVAL / HZ * 2)
++			WRITE_ONCE(early_boot, false);
++		else
++			interval = max_t(unsigned int, 5 * HZ,
++					 (unsigned int)uptime / 2 * HZ);
++	}
++	return time_after(jiffies, READ_ONCE(base_crng.birth) + interval);
++}
++
++/*
+  * This function returns a ChaCha state that you may use for generating
+  * random data. It also returns up to 32 bytes on its own of random data
+  * that may be used; random_data_len may not be greater than 32.
+@@ -368,10 +390,10 @@ static void crng_make_state(u32 chacha_s
+ 	}
  
- #endif /* _LINUX_RANDOM_H */
+ 	/*
+-	 * If the base_crng is more than 5 minutes old, we reseed, which
+-	 * in turn bumps the generation counter that we check below.
++	 * If the base_crng is old enough, we try to reseed, which in turn
++	 * bumps the generation counter that we check below.
+ 	 */
+-	if (unlikely(time_after(jiffies, READ_ONCE(base_crng.birth) + CRNG_RESEED_INTERVAL)))
++	if (unlikely(crng_has_old_seed()))
+ 		crng_reseed();
+ 
+ 	local_irq_save(flags);
 
 
