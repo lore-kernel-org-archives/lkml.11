@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F30C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231731AbiFWRYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
+        id S233024AbiFWRYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233897AbiFWRWq (ORCPT
+        with ESMTP id S233956AbiFWRWx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:22:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B31B622F;
-        Thu, 23 Jun 2022 10:01:25 -0700 (PDT)
+        Thu, 23 Jun 2022 13:22:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AD6B6288;
+        Thu, 23 Jun 2022 10:01:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9133FB8248A;
-        Thu, 23 Jun 2022 17:01:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E88A7C3411B;
-        Thu, 23 Jun 2022 17:01:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE7B6B8248E;
+        Thu, 23 Jun 2022 17:01:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EFC3C3411B;
+        Thu, 23 Jun 2022 17:01:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003682;
-        bh=NQhNWJ1NHThvUxIKw4Ef2+2rvwT+8Bk+F6NZyTtL0Jk=;
+        s=korg; t=1656003685;
+        bh=IRArbYD6t1efifI8AEPgeWzmvyXU3WSmW9IZMAI750Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GxR6YUD4WzXzhMDsrsBDxa1Hm7JuLfQi6SEPqmJmUlpgsSJ33fyx3TmwgTOGSVDbb
-         k/o+3UOFwV5Ev2Ad8/bLFbmnCVdGfqGa7R1sdmeInIoDvPiXRa5WCT0L2r/MZt9GEe
-         Q4eDranq0t0Ruj7hg6GX43IxLI5PZUY84LqWPDUQ=
+        b=1IFbcu1RogDGbpRBFmAHyNHwaR4UN+d0y2F9yL2R2mt+6YrxzjeLOmsIHUXaNEHKm
+         yi+TyKD5+IrM1JhvMx61r5D7HW++QRAqbXhSz/zr1z3CgKOsQYRz1pmJ4YED+Mo0tZ
+         bTYo5ltgn0NR7nYtGWZ+yWdGmibcizfyJqvzbDvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 012/237] drivers/char/random.c: constify poolinfo_table
-Date:   Thu, 23 Jun 2022 18:40:46 +0200
-Message-Id: <20220623164343.504791313@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.14 003/237] random: always fill buffer in get_random_bytes_wait
+Date:   Thu, 23 Jun 2022 18:40:37 +0200
+Message-Id: <20220623164343.240272190@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -50,30 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 26e0854ab3310bbeef1ed404a2c87132fc91f8e1 upstream.
+commit 25e3fca492035a2e1d4ac6e3b1edd9c1acd48897 upstream.
 
-Never modified, might as well be put in .rodata.
+In the unfortunate event that a developer fails to check the return
+value of get_random_bytes_wait, or simply wants to make a "best effort"
+attempt, for whatever that's worth, it's much better to still fill the
+buffer with _something_ rather than catastrophically failing in the case
+of an interruption. This is both a defense in depth measure against
+inevitable programming bugs, as well as a means of making the API a bit
+more useful.
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/random.h |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -359,7 +359,7 @@ static int random_write_wakeup_bits = 28
-  * polynomial which improves the resulting TGFSR polynomial to be
-  * irreducible, which we have made here.
-  */
--static struct poolinfo {
-+static const struct poolinfo {
- 	int poolbitshift, poolwords, poolbytes, poolbits, poolfracbits;
- #define S(x) ilog2(x)+5, (x), (x)*4, (x)*32, (x) << (ENTROPY_SHIFT+5)
- 	int tap1, tap2, tap3, tap4, tap5;
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -85,10 +85,8 @@ static inline unsigned long get_random_c
+ static inline int get_random_bytes_wait(void *buf, int nbytes)
+ {
+ 	int ret = wait_for_random_bytes();
+-	if (unlikely(ret))
+-		return ret;
+ 	get_random_bytes(buf, nbytes);
+-	return 0;
++	return ret;
+ }
+ 
+ #define declare_get_random_var_wait(var) \
 
 
