@@ -2,104 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCCFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B538CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232167AbiFWQIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
+        id S232207AbiFWQIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232149AbiFWQH4 (ORCPT
+        with ESMTP id S232164AbiFWQIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:07:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2DAA0FC6
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:07:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656000474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Thu, 23 Jun 2022 12:08:00 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C0A2ACC;
+        Thu, 23 Jun 2022 09:07:58 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0A0131F747;
+        Thu, 23 Jun 2022 16:07:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1656000477; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=jDSWGezRUNkQrAnDbfXcTDGQ0dqeSGuiydbEoBFc/3I=;
-        b=Su1mK0PqqSTbEy3XxRsjMOqUxCallOhTCpED+SPIabrjrkoAmBl1mK3dYzTDI11WY6+6LV
-        ZSOXajldLy/oS6ANtbGaIIqT4gNAfyK7XTehgRuUblzRkDOmEZZyHXGoFUm2m6b2uHMkmg
-        8c2dgFJq/d3gcO3UpT+/8nKB7aoUk68=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-490-un5L0Dl3OjyiMOvnfTqbhA-1; Thu, 23 Jun 2022 12:07:51 -0400
-X-MC-Unique: un5L0Dl3OjyiMOvnfTqbhA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        bh=wMF9zQXoS7789benC3y1Mqff9+pXyWjyfnVX7+d4uIU=;
+        b=mvvikz1x06mAR0j9AIIjqZez94lYbuacM/0nvGLHh9QkoXhZ0Bgz3bcqKQylfvDVab1ffl
+        fs5NfryGLmDNt9mFXbPF8S/1L9pyATCAiB9FP7RkBv2Nhdqo1yCiRNngO6aqd++vLOKIUx
+        RwGAngJGkZvbsOT99UE2700SeBZB+E4=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1514718E004D;
-        Thu, 23 Jun 2022 16:07:50 +0000 (UTC)
-Received: from eperezma.remote.csb (unknown [10.39.194.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A14B82166B26;
-        Thu, 23 Jun 2022 16:07:45 +0000 (UTC)
-From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
-To:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Parav Pandit <parav@nvidia.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        lulu@redhat.com, tanuj.kamde@amd.com,
-        Si-Wei Liu <si-wei.liu@oracle.com>, Piotr.Uminski@intel.com,
-        habetsm.xilinx@gmail.com, gautam.dawar@amd.com, pabloc@xilinx.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>, lvivier@redhat.com,
-        Longpeng <longpeng2@huawei.com>, dinang@xilinx.com,
-        martinh@xilinx.com, martinpo@xilinx.com,
-        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, hanand@xilinx.com,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Subject: [PATCH v6 1/4] vdpa: Add suspend operation
-Date:   Thu, 23 Jun 2022 18:07:35 +0200
-Message-Id: <20220623160738.632852-2-eperezma@redhat.com>
-In-Reply-To: <20220623160738.632852-1-eperezma@redhat.com>
-References: <20220623160738.632852-1-eperezma@redhat.com>
+        by relay2.suse.de (Postfix) with ESMTPS id 52EBA2C197;
+        Thu, 23 Jun 2022 16:07:56 +0000 (UTC)
+Date:   Thu, 23 Jun 2022 18:07:55 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     kernel@openvz.org, Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Muchun Song <songmuchun@bytedance.com>, cgroups@vger.kernel.org
+Subject: Re: [PATCH mm v5 0/9] memcg: accounting for objects allocated by
+ mkdir, cgroup
+Message-ID: <YrSP25ebDmXE+kPS@dhcp22.suse.cz>
+References: <4e685057-b07d-745d-fdaa-1a6a5a681060@openvz.org>
+ <0fe836b4-5c0f-0e32-d511-db816d359748@openvz.org>
+ <c516033f-a9e4-3485-26d9-a68afa694c1d@openvz.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c516033f-a9e4-3485-26d9-a68afa694c1d@openvz.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This operation is optional: It it's not implemented, backend feature bit
-will not be exposed.
+On Thu 23-06-22 18:03:31, Vasily Averin wrote:
+> Dear Michal,
+> do you still have any concerns about this patch set?
 
-Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
----
- include/linux/vdpa.h | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index 7b4a13d3bd91..d282f464d2f1 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -218,6 +218,9 @@ struct vdpa_map_file {
-  * @reset:			Reset device
-  *				@vdev: vdpa device
-  *				Returns integer: success (0) or error (< 0)
-+ * @suspend:			Suspend or resume the device (optional)
-+ *				@vdev: vdpa device
-+ *				Returns integer: success (0) or error (< 0)
-  * @get_config_size:		Get the size of the configuration space includes
-  *				fields that are conditional on feature bits.
-  *				@vdev: vdpa device
-@@ -319,6 +322,7 @@ struct vdpa_config_ops {
- 	u8 (*get_status)(struct vdpa_device *vdev);
- 	void (*set_status)(struct vdpa_device *vdev, u8 status);
- 	int (*reset)(struct vdpa_device *vdev);
-+	int (*suspend)(struct vdpa_device *vdev);
- 	size_t (*get_config_size)(struct vdpa_device *vdev);
- 	void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
- 			   void *buf, unsigned int len);
+Yes, I do not think we have concluded this to be really necessary. IIRC 
+Roman would like to see lingering cgroups addressed in not-so-distant
+future (http://lkml.kernel.org/r/Ypd2DW7id4M3KJJW@carbon) and we already
+have a limit for the number of cgroups in the tree. So why should we
+chase after allocations that correspond the cgroups and somehow try to
+cap their number via the memory consumption. This looks like something
+that will get out of sync eventually and it also doesn't seem like the
+best control to me (comparing to an explicit limit to prevent runaways).
 -- 
-2.31.1
-
+Michal Hocko
+SUSE Labs
