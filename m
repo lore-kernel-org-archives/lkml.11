@@ -2,116 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1772C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbiFWIAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
+        id S231176AbiFWIBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbiFWIAw (ORCPT
+        with ESMTP id S230263AbiFWIBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:00:52 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A3447389
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:00:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655971251; x=1687507251;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=8UTosm5kmpwnazx0Z7uDYyVGA3n9PMg53aPK1RogWQk=;
-  b=kHca/r5kK3vcfZq2pv3k/u0ZGFFICJ59h0AX0SqbSzLU2CVXac6XPlCG
-   nCBZ6cum/PLaHVNmhYlUn0LI6PBnvEjU67u4Nj4a0aYaLGU05CEfXK3NN
-   eM55upFq+4rEXkzhgsuUEssHa4noPi6fxMwAKbDxLu8D7L7kH8O7uwu+o
-   85hI6jIOMzH90iajKQdQkcax1YzYZAGDVeq4qZRf8j/RF6DvV5QFq7wMM
-   TBUw2CORqTuwd6TnDn9nrafO2xcosE3nvx99GTwHGqOOeZld6XaDDAlEV
-   m+9CsXzBjUUWB+nKW87ZFRq4e6Z5aHzC7qC5DGU4oTOP4KqG8icLKB/D7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="263689170"
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="263689170"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 01:00:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="615491255"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 23 Jun 2022 01:00:23 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o4HlH-0000uo-2J;
-        Thu, 23 Jun 2022 08:00:23 +0000
-Date:   Thu, 23 Jun 2022 15:59:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ben Widawsky <bwidawsk@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [cxl:preview 38/49] include/linux/memregion.h:19:6: warning: no
- previous prototype for function 'memregion_free'
-Message-ID: <202206231541.NNhh1JGy-lkp@intel.com>
+        Thu, 23 Jun 2022 04:01:50 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6059D47389;
+        Thu, 23 Jun 2022 01:01:47 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id B521E1E80CCC;
+        Thu, 23 Jun 2022 16:01:28 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Pa5kxhsLTUu4; Thu, 23 Jun 2022 16:01:26 +0800 (CST)
+Received: from localhost.localdomain (unknown [112.64.61.33])
+        (Authenticated sender: jiaming@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 5388D1E80C85;
+        Thu, 23 Jun 2022 16:01:25 +0800 (CST)
+From:   Zhang Jiaming <jiaming@nfschina.com>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, renyu@nfschina.com,
+        Zhang Jiaming <jiaming@nfschina.com>
+Subject: [PATCH] netfilter: Fix spelling mistake
+Date:   Thu, 23 Jun 2022 16:01:41 +0800
+Message-Id: <20220623080141.7567-1-jiaming@nfschina.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
-head:   b2d4fd5c97b59f622e6c45ac51020cdcd66bb022
-commit: e4b2a6ac46c3288f73b88e0aa69afd2a815930d7 [38/49] cxl/region: Add region creation support
-config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220623/202206231541.NNhh1JGy-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 46be5faaf03466c3751f8a2882bef5a217e15926)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=e4b2a6ac46c3288f73b88e0aa69afd2a815930d7
-        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
-        git fetch --no-tags cxl preview
-        git checkout e4b2a6ac46c3288f73b88e0aa69afd2a815930d7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/cxl/core/
+Change 'succesful' to 'successful'.
+Change 'transation' to 'transaction'.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+---
+ net/netfilter/nft_set_bitmap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/cxl/core/port.c:4:
->> include/linux/memregion.h:19:6: warning: no previous prototype for function 'memregion_free' [-Wmissing-prototypes]
-   void memregion_free(int id)
-        ^
-   include/linux/memregion.h:19:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void memregion_free(int id)
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/memregion_free +19 include/linux/memregion.h
-
-a6c7f4c6aea5f4 Dan Williams 2019-11-06  10  
-33dd70752cd76f Dan Williams 2019-11-06  11  #ifdef CONFIG_MEMREGION
-33dd70752cd76f Dan Williams 2019-11-06  12  int memregion_alloc(gfp_t gfp);
-33dd70752cd76f Dan Williams 2019-11-06  13  void memregion_free(int id);
-33dd70752cd76f Dan Williams 2019-11-06  14  #else
-33dd70752cd76f Dan Williams 2019-11-06  15  static inline int memregion_alloc(gfp_t gfp)
-33dd70752cd76f Dan Williams 2019-11-06  16  {
-33dd70752cd76f Dan Williams 2019-11-06  17  	return -ENOMEM;
-33dd70752cd76f Dan Williams 2019-11-06  18  }
-33dd70752cd76f Dan Williams 2019-11-06 @19  void memregion_free(int id)
-
-:::::: The code at line 19 was first introduced by commit
-:::::: 33dd70752cd76f4d883a165a674f13121a4155ed lib: Uplevel the pmem "region" ida to a global allocator
-
-:::::: TO: Dan Williams <dan.j.williams@intel.com>
-:::::: CC: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-
+diff --git a/net/netfilter/nft_set_bitmap.c b/net/netfilter/nft_set_bitmap.c
+index e7ae5914971e..96081ac8d2b4 100644
+--- a/net/netfilter/nft_set_bitmap.c
++++ b/net/netfilter/nft_set_bitmap.c
+@@ -21,7 +21,7 @@ struct nft_bitmap_elem {
+  * the element state in the current and the future generation.
+  *
+  * An element can be in three states. The generation cursor is represented using
+- * the ^ character, note that this cursor shifts on every succesful transaction.
++ * the ^ character, note that this cursor shifts on every successful transaction.
+  * If no transaction is going on, we observe all elements are in the following
+  * state:
+  *
+@@ -39,7 +39,7 @@ struct nft_bitmap_elem {
+  * 10 = this element is active in the current generation and it becomes inactive
+  * ^    in the next one. This happens when the element is deactivated but commit
+  *      path has not yet been executed yet, so removal is still pending. On
+- *      transation abortion, the next generation bit is reset to go back to
++ *      transaction abortion, the next generation bit is reset to go back to
+  *      restore its previous state.
+  */
+ struct nft_bitmap {
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
