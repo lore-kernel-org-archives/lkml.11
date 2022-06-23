@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D470CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6AECCA48D
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236346AbiFWR7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
+        id S236310AbiFWR7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235420AbiFWRyL (ORCPT
+        with ESMTP id S235338AbiFWRyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:54:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA28EAD9C5;
-        Thu, 23 Jun 2022 10:15:10 -0700 (PDT)
+        Thu, 23 Jun 2022 13:54:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406A9AD1A2;
+        Thu, 23 Jun 2022 10:15:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52FABB82498;
-        Thu, 23 Jun 2022 17:15:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 309B3C3411B;
-        Thu, 23 Jun 2022 17:15:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE50DB82498;
+        Thu, 23 Jun 2022 17:15:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37DEBC3411B;
+        Thu, 23 Jun 2022 17:15:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004508;
-        bh=vPRTMm+R+ACCNBJFw2ofXGsoF9uzS5IfdoIy6DONyu0=;
+        s=korg; t=1656004504;
+        bh=VpQApCs5/lvsmf8+1uF4l3TjOpcku2gXN53TYSaWCMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N7t1PnZFsqfdN+tGqVh5gBPgQEpNkPeelG7w0W5m3XcRTrDxh1b4eVyLyDzbAh1G+
-         b7S4+BD1UhibOzKhEIiWEiUZV7B8GAHcrNpeGSqRM+/NdwNb2ZCtzEYxGzyP5qDwPE
-         OylZ6Le9a3SQY+bJ9QJPBsgFsFWWoYrM40PJOIQM=
+        b=2uHMyv2Fih1mBKxUEJPFB+Exihu/MfTmNEJglp90wv734qfd5CooxRmw1tVSpuf2a
+         nD6ZuVJJRVgGGRJVTzKlSvGHaZ9qcLu9BfSnqhPqk5lrn8qpqdkArFYu5Yy3TefS8k
+         Z9zn8OKKIH0TouaKNwcuHDBDv+k3ktiwcdE3HPBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 060/234] random: fix typo in comments
-Date:   Thu, 23 Jun 2022 18:42:07 +0200
-Message-Id: <20220623164344.762097921@linuxfoundation.org>
+Subject: [PATCH 4.19 059/234] random: dont reset crng_init_cnt on urandom_read()
+Date:   Thu, 23 Jun 2022 18:42:06 +0200
+Message-Id: <20220623164344.734731857@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -48,29 +48,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Jann Horn <jannh@google.com>
 
-commit c0a8a61e7abbf66729687ee63659ee25983fbb1e upstream.
+commit 6c8e11e08a5b74bb8a5cdd5cbc1e5143df0fba72 upstream.
 
-s/or/for
+At the moment, urandom_read() (used for /dev/urandom) resets crng_init_cnt
+to zero when it is called at crng_init<2. This is inconsistent: We do it
+for /dev/urandom reads, but not for the equivalent
+getrandom(GRND_INSECURE).
 
-Signed-off-by: Schspa Shi <schspa@gmail.com>
+(And worse, as Jason pointed out, we're only doing this as long as
+maxwarn>0.)
+
+crng_init_cnt is only read in crng_fast_load(); it is relevant at
+crng_init==0 for determining when to switch to crng_init==1 (and where in
+the RNG state array to write).
+
+As far as I understand:
+
+ - crng_init==0 means "we have nothing, we might just be returning the same
+   exact numbers on every boot on every machine, we don't even have
+   non-cryptographic randomness; we should shove every bit of entropy we
+   can get into the RNG immediately"
+ - crng_init==1 means "well we have something, it might not be
+   cryptographic, but at least we're not gonna return the same data every
+   time or whatever, it's probably good enough for TCP and ASLR and stuff;
+   we now have time to build up actual cryptographic entropy in the input
+   pool"
+ - crng_init==2 means "this is supposed to be cryptographically secure now,
+   but we'll keep adding more entropy just to be sure".
+
+The current code means that if someone is pulling data from /dev/urandom
+fast enough at crng_init==0, we'll keep resetting crng_init_cnt, and we'll
+never make forward progress to crng_init==1. It seems to be intended to
+prevent an attacker from bruteforcing the contents of small individual RNG
+inputs on the way from crng_init==0 to crng_init==1, but that's misguided;
+crng_init==1 isn't supposed to provide proper cryptographic security
+anyway, RNG users who care about getting secure RNG output have to wait
+until crng_init==2.
+
+This code was inconsistent, and it probably made things worse - just get
+rid of it.
+
+Signed-off-by: Jann Horn <jannh@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |    4 ----
+ 1 file changed, 4 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -101,7 +101,7 @@
-  * ===============================
-  *
-  * There are four exported interfaces; two for use within the kernel,
-- * and two or use from userspace.
-+ * and two for use from userspace.
-  *
-  * Exported interfaces ---- userspace output
-  * -----------------------------------------
+@@ -1831,7 +1831,6 @@ urandom_read_nowarn(struct file *file, c
+ static ssize_t
+ urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+ {
+-	unsigned long flags;
+ 	static int maxwarn = 10;
+ 
+ 	if (!crng_ready() && maxwarn > 0) {
+@@ -1839,9 +1838,6 @@ urandom_read(struct file *file, char __u
+ 		if (__ratelimit(&urandom_warning))
+ 			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
+ 				  current->comm, nbytes);
+-		spin_lock_irqsave(&primary_crng.lock, flags);
+-		crng_init_cnt = 0;
+-		spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	}
+ 
+ 	return urandom_read_nowarn(file, buf, nbytes, ppos);
 
 
