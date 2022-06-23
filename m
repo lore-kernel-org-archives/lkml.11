@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6330FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbiFWQwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49014 "EHLO
+        id S232131AbiFWQwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233879AbiFWQvs (ORCPT
+        with ESMTP id S229976AbiFWQwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC22FD11;
-        Thu, 23 Jun 2022 09:50:31 -0700 (PDT)
+        Thu, 23 Jun 2022 12:52:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EE0C70;
+        Thu, 23 Jun 2022 09:52:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89A33B82493;
-        Thu, 23 Jun 2022 16:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E33A5C341C5;
-        Thu, 23 Jun 2022 16:50:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D48861FC2;
+        Thu, 23 Jun 2022 16:52:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C645C3411B;
+        Thu, 23 Jun 2022 16:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003029;
-        bh=x9iWFYc6ywzpL8ONHopaPPY7f/VQ7Xo4jKXCi7xFPqw=;
+        s=korg; t=1656003134;
+        bh=Ea2DuI5HzURpzZRy1dCo9khmXb8QqjZuhfPAQGahYm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y4m2HKleWBRVCEkj5MAJWOepIpjO1xVera/PWHeFMrNwJfmsZFyc+zj9qXXLW5n9L
-         yN4wslkWc7NxZ22H5wg4vzXYLNo1pGUaYrih5nncrjO9v0pDmK3iUbPW5vPqbVOy3+
-         4iX1XI2D/EPgBirDfyUMtn8cY6Fq/B5b2H0mRCgk=
+        b=GV/yHYYV3nP2t7RHJ3PxhF83CyBvGoazU6yG4NKFxdrMXx1HYdFChpcA79VMPfheF
+         z83B9TC497kOhJp2u4ccJxkDbCey1KxnSRc1eBTQd96MYwlicE0eTSWI5PKBqZZyOj
+         SAWLDXTXwqgCdXknrjC5yuxWIYiopGmlDFymnp6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 106/264] random: simplify arithmetic function flow in account()
-Date:   Thu, 23 Jun 2022 18:41:39 +0200
-Message-Id: <20220623164347.069392524@linuxfoundation.org>
+Subject: [PATCH 4.9 142/264] random: do not take pool spinlock at boot
+Date:   Thu, 23 Jun 2022 18:42:15 +0200
+Message-Id: <20220623164348.083875305@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,58 +51,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit a254a0e4093fce8c832414a83940736067eed515 upstream.
+commit afba0b80b977b2a8f16234f2acd982f82710ba33 upstream.
 
-Now that have_bytes is never modified, we can simplify this function.
-First, we move the check for negative entropy_count to be first. That
-ensures that subsequent reads of this will be non-negative. Then,
-have_bytes and ibytes can be folded into their one use site in the
-min_t() function.
+Since rand_initialize() is run while interrupts are still off and
+nothing else is running, we don't need to repeatedly take and release
+the pool spinlock, especially in the RDSEED loop.
 
-Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/char/random.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1344,7 +1344,7 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
-  */
- static size_t account(size_t nbytes, int min)
- {
--	int entropy_count, orig, have_bytes;
-+	int entropy_count, orig;
- 	size_t ibytes, nfrac;
- 
- 	BUG_ON(input_pool.entropy_count > POOL_FRACBITS);
-@@ -1352,20 +1352,15 @@ static size_t account(size_t nbytes, int
- 	/* Can we pull enough? */
- retry:
- 	entropy_count = orig = READ_ONCE(input_pool.entropy_count);
--	ibytes = nbytes;
--	/* never pull more than available */
--	have_bytes = entropy_count >> (POOL_ENTROPY_SHIFT + 3);
--
--	if (have_bytes < 0)
--		have_bytes = 0;
--	ibytes = min_t(size_t, ibytes, have_bytes);
--	if (ibytes < min)
--		ibytes = 0;
--
- 	if (WARN_ON(entropy_count < 0)) {
- 		pr_warn("negative entropy count: count %d\n", entropy_count);
- 		entropy_count = 0;
+@@ -974,10 +974,10 @@ int __init rand_initialize(void)
+ 			rv = random_get_entropy();
+ 			arch_init = false;
+ 		}
+-		mix_pool_bytes(&rv, sizeof(rv));
++		_mix_pool_bytes(&rv, sizeof(rv));
  	}
-+
-+	/* never pull more than available */
-+	ibytes = min_t(size_t, nbytes, entropy_count >> (POOL_ENTROPY_SHIFT + 3));
-+	if (ibytes < min)
-+		ibytes = 0;
- 	nfrac = ibytes << (POOL_ENTROPY_SHIFT + 3);
- 	if ((size_t)entropy_count > nfrac)
- 		entropy_count -= nfrac;
+-	mix_pool_bytes(&now, sizeof(now));
+-	mix_pool_bytes(utsname(), sizeof(*(utsname())));
++	_mix_pool_bytes(&now, sizeof(now));
++	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
+ 
+ 	extract_entropy(base_crng.key, sizeof(base_crng.key));
+ 	++base_crng.generation;
 
 
