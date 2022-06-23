@@ -2,120 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF22C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A06BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231290AbiFWJuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53696 "EHLO
+        id S231320AbiFWJu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbiFWJuM (ORCPT
+        with ESMTP id S231304AbiFWJuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:50:12 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77279FC6;
-        Thu, 23 Jun 2022 02:50:11 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso2050200pjh.4;
-        Thu, 23 Jun 2022 02:50:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OrccWdamTvgOFcK19T+WIMvuOqIZDWIcCJSvAHqZYgQ=;
-        b=XjhOaxiES3eKDxQTefCRzGhA0CftQ33Vaeb7/1vjcIeITxNJ2ZAZbBA0eFNioDm0AO
-         Z5r6T9DPWXsq/H4BGJ4aDNolUGGYlOJT8B0yM26QcE+0hp7W5qnCiUaSULWvw92UzbSd
-         Z2BZv8p/4hqesWUtQrS0Rf1OfPZTIqzcP6L8+tAqdBkkwQTmHLoAnomd1/qtCV9Yy9RO
-         bPAJao5jlYLqYtxkbfENzP99y2XZYLndJN9dkaEQDZOFFBQ7qVMdzSkMojHdqAojm43s
-         ExysRASALskXVUEOvFQMnLbpQAZzIEgJN1btk36g9BBx6vhiACwDGKeHnSZI/0+VkwTk
-         6zYQ==
+        Thu, 23 Jun 2022 05:50:16 -0400
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5D1A1A9;
+        Thu, 23 Jun 2022 02:50:15 -0700 (PDT)
+Received: by mail-ed1-f43.google.com with SMTP id o9so18486027edt.12;
+        Thu, 23 Jun 2022 02:50:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OrccWdamTvgOFcK19T+WIMvuOqIZDWIcCJSvAHqZYgQ=;
-        b=iF+9ECwkkxeWBOck/TnJqylkAPG4x0O8TZICjbnQDSccK4fsn1rXTso7ZpI6EGhTuP
-         8q292EV9zPwtIa6ag6zWiHjn3+yW8O8cJfpUP6kPHztpCH/z8q3A0+qSkISaTIK7zIdQ
-         yDKRs+3avArTJXmsmNYOvL0bzDUubGhwrAdzR27BqTc9TcGaPr33IKkeKY9kfvvQW7Hs
-         z5XVidt95lOEdz5HekspS3g5ZpXrKfSaoS5pkMrfwlNUSRo7Fk/Px2Hn2zhckWJ3KOR0
-         BkVx873pap8/nzJdbx0An7OguchKhmySL2riyHFkPo/3HByO6jGiH+4h2cCQKuvbSO6G
-         X1WQ==
-X-Gm-Message-State: AJIora8lGJcAlSNWQyeZflZAy7klTbz7d0J+CRCadbY+gHfWATNIny/x
-        0HvLD4fLqpchWd5n0huedLfmT6aK78Y=
-X-Google-Smtp-Source: AGRyM1vXNXQtf2JKIcz4hWc7g4muk3EZd3qtFB/vvHoJgWjPRgUKMqqvlySR52Ijuv1LnDibSicp3g==
-X-Received: by 2002:a17:902:d2c1:b0:16a:4028:4748 with SMTP id n1-20020a170902d2c100b0016a40284748mr10367479plc.37.1655977811369;
-        Thu, 23 Jun 2022 02:50:11 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id y2-20020a17090264c200b0016a12fab6c2sm10055543pli.307.2022.06.23.02.50.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 02:50:10 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     anton@tuxera.com, linux-ntfs-dev@lists.sourceforge.net,
-        stable@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, xu.xin16@zte.com.cn,
-        linux-fsdevel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com,
-        Songyi Zhang <zhang.songyi@zte.com.cn>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Jiang Xuexin <jiang.xuexin@zte.com.cn>,
-        Zhang wenya <zhang.wenya1@zte.com.cn>
-Subject: [PATCH v2] fs/ntfs: fix BUG_ON of ntfs_read_block()
-Date:   Thu, 23 Jun 2022 09:49:56 +0000
-Message-Id: <20220623094956.977053-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220623033635.973929-1-xu.xin16@zte.com.cn>
-References: <20220623033635.973929-1-xu.xin16@zte.com.cn>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8ghPZJULwgcvOIIuUmECv/qBnpG0RYGHrLQOgEEsZlY=;
+        b=yCABGNQ98gYPKbN/tnS8J67vXZLM8V6CDvIlMqHsP0JGH446nBVk7+GX4jW039INJy
+         oycII5tfwgiOSBcKA5QiCBMdE2zSlHAHBQG8lOp9sH5FWIqyIoJbmrav0EeTReb0MFCc
+         azKLdIMqhqlS4gfGHP2Xif0AGRIaZ26zsdH3H25deoLxBepkBxuUFmLCwAAjmr7RcYyV
+         ZWxCYYUDLPYssyCOARvuQSneLqcUe80vmjhcl28EOW1Q4btEFL+SyTII/nT8bobZLcr/
+         dRVsgQCW40w/lXeWDFXPWMxiN3ujzZNqkSUXsscsoPbgC1WCemMJ/tfyAOw5E3lRADXv
+         tDnw==
+X-Gm-Message-State: AJIora+yIf1lcSQuZAAGX6fpM1qRkAsPsQRxd12fycWWW43lDg9m47al
+        buIGSUMFMgXIKpJI9liyrdE=
+X-Google-Smtp-Source: AGRyM1sTEVx70huHg0D8xHYZRwmVHfDV9VCKFayHlo5RYukxq88kGOtl4SMAKvx8iDot134JeHq5fw==
+X-Received: by 2002:a05:6402:370c:b0:435:cb14:9aa8 with SMTP id ek12-20020a056402370c00b00435cb149aa8mr3234894edb.35.1655977813766;
+        Thu, 23 Jun 2022 02:50:13 -0700 (PDT)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id t24-20020a056402021800b004356a647d08sm12951296edv.94.2022.06.23.02.50.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 02:50:13 -0700 (PDT)
+Message-ID: <217838e7-f840-a957-74cc-d878ae0b1820@kernel.org>
+Date:   Thu, 23 Jun 2022 11:50:12 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] kbuild, link-vmlinux: Don't delete output files with make
+ -i
+Content-Language: en-US
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andi Kleen <andi@firstfloor.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Andi Kleen <ak@linux.intel.com>
+References: <20220623083105.26354-1-jslaby@suse.cz>
+ <CAK7LNARaB8-4mm4sZwH2DxGE=GAhS8HiF+-uT9suiHYHe8PgwQ@mail.gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <CAK7LNARaB8-4mm4sZwH2DxGE=GAhS8HiF+-uT9suiHYHe8PgwQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xu xin <xu.xin16@zte.com.cn>
+On 23. 06. 22, 11:45, Masahiro Yamada wrote:
+> On Thu, Jun 23, 2022 at 5:31 PM Jiri Slaby <jslaby@suse.cz> wrote:
+>>
+>> From: Andi Kleen <andi@firstfloor.org>
+>>
+>> make -i is useful to see output files which normally get deleted on an
+>> error.  Make this work with link-vmlinux.sh too. Don't delete the output
+>> files on error when make -i is used.
+>>
+>> Cc: Masahiro Yamada <masahiroy@kernel.org>
+>> Cc: Michal Marek <michal.lkml@markovi.net>
+>> Cc: Nick Desaulniers <ndesaulniers@google.com>
+>> Cc: linux-kbuild@vger.kernel.org
+>> Signed-off-by: Andi Kleen <ak@linux.intel.com>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+> 
+> 
+> 
+> I am afraid you missed this commit:
+> 
+> 
+> 
+> commit 51eb95e2da41802454f48b9afeb4d96a77295035
+> Author: Andi Kleen <ak@linux.intel.com>
+> Date:   Tue May 4 20:35:27 2021 -0700
+> 
+>      kbuild: Don't remove link-vmlinux temporary files on exit/signal
 
-As the bug description at
-https://lore.kernel.org/lkml/20220623033635.973929-1-xu.xin16@zte.com.cn/
-attckers can use this bug to crash the system.
+Oops, thanks a lot for pointing out. We are going through the Andi's LTO 
+patches and this went unnoticed as it was changed differently (and 
+rebase succeeded). Now dropped from the queue.
 
-So to avoid panic, remove the BUG_ON, and use ntfs_warning to output a
-warning to the syslog and return instead until someone really solve
-the problem.
-
-Cc: stable@vger.kernel.org
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Reported-by: syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com
-Reviewed-by: Songyi Zhang <zhang.songyi@zte.com.cn>
-Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
-Reviewed-by: Jiang Xuexin<jiang.xuexin@zte.com.cn>
-Reviewed-by: Zhang wenya<zhang.wenya1@zte.com.cn>
-Signed-off-by: xu xin <xu.xin16@zte.com.cn>
----
-
-Change for v2:
- - Use ntfs_warning instead of WARN().
- - Add the tag Cc: stable@vger.kernel.org.
----
- fs/ntfs/aops.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/fs/ntfs/aops.c b/fs/ntfs/aops.c
-index 5f4fb6ca6f2e..84d68efb4ace 100644
---- a/fs/ntfs/aops.c
-+++ b/fs/ntfs/aops.c
-@@ -183,7 +183,12 @@ static int ntfs_read_block(struct page *page)
- 	vol = ni->vol;
- 
- 	/* $MFT/$DATA must have its complete runlist in memory at all times. */
--	BUG_ON(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni));
-+	if (unlikely(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni))) {
-+		ntfs_warning(vi->i_sb, "Error because ni->runlist.rl, ni->mft_no, "
-+				"and NInoAttr(ni) is null.");
-+		unlock_page(page);
-+		return -EINVAL;
-+	}
- 
- 	blocksize = vol->sb->s_blocksize;
- 	blocksize_bits = vol->sb->s_blocksize_bits;
+thanks,
 -- 
-2.25.1
-
+js
+suse labs
