@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44767C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:50:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbiFWRty (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34988 "EHLO
+        id S235224AbiFWRt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235468AbiFWRsL (ORCPT
+        with ESMTP id S235526AbiFWRsR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:48:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3981A17CE;
-        Thu, 23 Jun 2022 10:11:26 -0700 (PDT)
+        Thu, 23 Jun 2022 13:48:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4407CA3779;
+        Thu, 23 Jun 2022 10:11:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A83161D02;
-        Thu, 23 Jun 2022 17:11:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D905AC3411B;
-        Thu, 23 Jun 2022 17:11:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7818CB824B7;
+        Thu, 23 Jun 2022 17:11:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0587C3411B;
+        Thu, 23 Jun 2022 17:11:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004285;
-        bh=E0lgWaK+wTrtgx+NOHmYoyAHE5JLXtccaud7lMVI+84=;
+        s=korg; t=1656004279;
+        bh=2qBvmkSjuxSQepjkFgaqdMK1oOZ2y2xAVkxtUVL33b0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HeUY3Y6dbzbdheK3HuLVPZ7J35bHIBhoa9yeDqn1CviFYo/s8ucq9vgiiTtDupDY0
-         g5mimqgVv6GzQbzd2JVI/J+ic8E+Mglvkg7Z9YSAkWBiFzFnJbPzQqNGp/dENgRCQl
-         6/HTWdASaTd8MHocyS7iMj1omUpC6krbnhRo9M48=
+        b=HYhTImS3uKPi1gEaEUogU50m4inX1rtiQPrk9lcSVEXqMHWklOUETN/uohxm3WfvC
+         Zkq1JiQbzt8oG3qX6RySpfrsjvsnKNDGsjolF52FVhjntlsE8/woYWE4I+xTX3xvso
+         t8q/gqHldixhdw/Bk8WR4g4AS3O1cvhaTTlFU7Po=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marian Postevca <posteuca@mutex.one>
-Subject: [PATCH 5.10 03/11] usb: gadget: u_ether: fix regression in setting fixed MAC address
-Date:   Thu, 23 Jun 2022 18:44:36 +0200
-Message-Id: <20220623164322.398149548@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>
+Subject: [PATCH 5.10 01/11] s390/mm: use non-quiescing sske for KVM switch to keyed guest
+Date:   Thu, 23 Jun 2022 18:44:34 +0200
+Message-Id: <20220623164322.341041417@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164322.296526800@linuxfoundation.org>
 References: <20220623164322.296526800@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -47,79 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marian Postevca <posteuca@mutex.one>
+From: Christian Borntraeger <borntraeger@linux.ibm.com>
 
-commit b337af3a4d6147000b7ca6b3438bf5c820849b37 upstream.
+commit 3ae11dbcfac906a8c3a480e98660a823130dc16a upstream.
 
-In systemd systems setting a fixed MAC address through
-the "dev_addr" module argument fails systematically.
-When checking the MAC address after the interface is created
-it always has the same but different MAC address to the one
-supplied as argument.
+The switch to a keyed guest does not require a classic sske as the other
+guest CPUs are not accessing the key before the switch is complete.
+By using the NQ SSKE things are faster especially with multiple guests.
 
-This is partially caused by systemd which by default will
-set an internally generated permanent MAC address for interfaces
-that are marked as having a randomly generated address.
-
-Commit 890d5b40908bfd1a ("usb: gadget: u_ether: fix race in
-setting MAC address in setup phase") didn't take into account
-the fact that the interface must be marked as having a set
-MAC address when it's set as module argument.
-
-Fixed by marking the interface with NET_ADDR_SET when
-the "dev_addr" module argument is supplied.
-
-Fixes: 890d5b40908bfd1a ("usb: gadget: u_ether: fix race in setting MAC address in setup phase")
-Cc: stable@vger.kernel.org
-Signed-off-by: Marian Postevca <posteuca@mutex.one>
-Link: https://lore.kernel.org/r/20220603153459.32722-1-posteuca@mutex.one
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Suggested-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220530092706.11637-3-borntraeger@linux.ibm.com
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/function/u_ether.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ arch/s390/mm/pgtable.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/gadget/function/u_ether.c
-+++ b/drivers/usb/gadget/function/u_ether.c
-@@ -772,9 +772,13 @@ struct eth_dev *gether_setup_name(struct
- 	dev->qmult = qmult;
- 	snprintf(net->name, sizeof(net->name), "%s%%d", netname);
- 
--	if (get_ether_addr(dev_addr, net->dev_addr))
-+	if (get_ether_addr(dev_addr, net->dev_addr)) {
-+		net->addr_assign_type = NET_ADDR_RANDOM;
- 		dev_warn(&g->dev,
- 			"using random %s ethernet address\n", "self");
-+	} else {
-+		net->addr_assign_type = NET_ADDR_SET;
-+	}
- 	if (get_ether_addr(host_addr, dev->host_mac))
- 		dev_warn(&g->dev,
- 			"using random %s ethernet address\n", "host");
-@@ -831,6 +835,9 @@ struct net_device *gether_setup_name_def
- 	INIT_LIST_HEAD(&dev->tx_reqs);
- 	INIT_LIST_HEAD(&dev->rx_reqs);
- 
-+	/* by default we always have a random MAC address */
-+	net->addr_assign_type = NET_ADDR_RANDOM;
-+
- 	skb_queue_head_init(&dev->rx_frames);
- 
- 	/* network device setup */
-@@ -868,7 +875,6 @@ int gether_register_netdev(struct net_de
- 	g = dev->gadget;
- 
- 	memcpy(net->dev_addr, dev->dev_mac, ETH_ALEN);
--	net->addr_assign_type = NET_ADDR_RANDOM;
- 
- 	status = register_netdev(net);
- 	if (status < 0) {
-@@ -908,6 +914,7 @@ int gether_set_dev_addr(struct net_devic
- 	if (get_ether_addr(dev_addr, new_addr))
- 		return -EINVAL;
- 	memcpy(dev->dev_mac, new_addr, ETH_ALEN);
-+	net->addr_assign_type = NET_ADDR_SET;
- 	return 0;
+--- a/arch/s390/mm/pgtable.c
++++ b/arch/s390/mm/pgtable.c
+@@ -734,7 +734,7 @@ void ptep_zap_key(struct mm_struct *mm,
+ 	pgste_val(pgste) |= PGSTE_GR_BIT | PGSTE_GC_BIT;
+ 	ptev = pte_val(*ptep);
+ 	if (!(ptev & _PAGE_INVALID) && (ptev & _PAGE_WRITE))
+-		page_set_storage_key(ptev & PAGE_MASK, PAGE_DEFAULT_KEY, 1);
++		page_set_storage_key(ptev & PAGE_MASK, PAGE_DEFAULT_KEY, 0);
+ 	pgste_set_unlock(ptep, pgste);
+ 	preempt_enable();
  }
- EXPORT_SYMBOL_GPL(gether_set_dev_addr);
 
 
