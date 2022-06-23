@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA2B2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:04:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5236BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233215AbiFWRC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
+        id S232096AbiFWREX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233742AbiFWQ6Z (ORCPT
+        with ESMTP id S233500AbiFWRCt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:58:25 -0400
+        Thu, 23 Jun 2022 13:02:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 240034EF7D;
-        Thu, 23 Jun 2022 09:53:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57876506EE;
+        Thu, 23 Jun 2022 09:54:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31C11B8248C;
-        Thu, 23 Jun 2022 16:53:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A93FC36AE2;
-        Thu, 23 Jun 2022 16:53:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11B9CB8249A;
+        Thu, 23 Jun 2022 16:54:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71B90C341C5;
+        Thu, 23 Jun 2022 16:54:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003224;
-        bh=15bRerzgbepuov9EEqqGAXS7YopqqG4A1cmYbhPkl0E=;
+        s=korg; t=1656003269;
+        bh=Af/mC/zq4tKhaB0LwhH5Vk0R8nnqO8wO9ms7HejQAZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zeUpNJH76gzcdB3iVdnbN3UiXb7RVEXnOt6umFuUsNzSVDzxYYIsdcc0DASBm6gg+
-         6nwBEY52ZpW/QrEx+54es9PL0JMir1xsP0YTE0wyisKpITW0muIiCyOL/m/c9bDw33
-         DwV2/vgc8pjh6/iq9oGtP2XvoGGjDF/7JMphMzRo=
+        b=EnNSUGDkuHKrULsDV6cs9lMYtdvjB0P1k4CLlW5zU+Q3SSok1BGUuhRSjW4tpxxAh
+         X50Cd3SE1t55wZbelmFggej6U2nmfVhWGAtRwlLySlScGxQ6TWxWrUhA2ACWAtcEXM
+         u90IadAhFuHMrNNkw5PQpfC1/ul2F7MV8/Q6a+Dc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 168/264] random: re-add removed comment about get_random_{u32,u64} reseeding
-Date:   Thu, 23 Jun 2022 18:42:41 +0200
-Message-Id: <20220623164348.818089732@linuxfoundation.org>
+Subject: [PATCH 4.9 185/264] mips: use fallback for random_get_entropy() instead of just c0 random
+Date:   Thu, 23 Jun 2022 18:42:58 +0200
+Message-Id: <20220623164349.302969110@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,35 +53,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit dd7aa36e535797926d8eb311da7151919130139d upstream.
+commit 1c99c6a7c3c599a68321b01b9ec243215ede5a68 upstream.
 
-The comment about get_random_{u32,u64}() not invoking reseeding got
-added in an unrelated commit, that then was recently reverted by
-0313bc278dac ("Revert "random: block in /dev/urandom""). So this adds
-that little comment snippet back, and improves the wording a bit too.
+For situations in which we don't have a c0 counter register available,
+we've been falling back to reading the c0 "random" register, which is
+usually bounded by the amount of TLB entries and changes every other
+cycle or so. This means it wraps extremely often. We can do better by
+combining this fast-changing counter with a potentially slower-changing
+counter from random_get_entropy_fallback() in the more significant bits.
+This commit combines the two, taking into account that the changing bits
+are in a different bit position depending on the CPU model. In addition,
+we previously were falling back to 0 for ancient CPUs that Linux does
+not support anyway; remove that dead path entirely.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Tested-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/mips/include/asm/timex.h |   17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -227,9 +227,10 @@ static void _warn_unseeded_randomness(co
-  *
-  * These interfaces will return the requested number of random bytes
-  * into the given buffer or as a return value. This is equivalent to
-- * a read from /dev/urandom. The integer family of functions may be
-- * higher performance for one-off random integers, because they do a
-- * bit of buffering.
-+ * a read from /dev/urandom. The u32, u64, int, and long family of
-+ * functions may be higher performance for one-off random integers,
-+ * because they do a bit of buffering and do not invoke reseeding
-+ * until the buffer is emptied.
-  *
-  *********************************************************************/
+--- a/arch/mips/include/asm/timex.h
++++ b/arch/mips/include/asm/timex.h
+@@ -76,25 +76,24 @@ static inline cycles_t get_cycles(void)
+ 	else
+ 		return 0;	/* no usable counter */
+ }
++#define get_cycles get_cycles
+ 
+ /*
+  * Like get_cycles - but where c0_count is not available we desperately
+  * use c0_random in an attempt to get at least a little bit of entropy.
+- *
+- * R6000 and R6000A neither have a count register nor a random register.
+- * That leaves no entropy source in the CPU itself.
+  */
+ static inline unsigned long random_get_entropy(void)
+ {
+-	unsigned int prid = read_c0_prid();
+-	unsigned int imp = prid & PRID_IMP_MASK;
++	unsigned int c0_random;
+ 
+-	if (can_use_mips_counter(prid))
++	if (can_use_mips_counter(read_c0_prid()))
+ 		return read_c0_count();
+-	else if (likely(imp != PRID_IMP_R6000 && imp != PRID_IMP_R6000A))
+-		return read_c0_random();
++
++	if (cpu_has_3kex)
++		c0_random = (read_c0_random() >> 8) & 0x3f;
+ 	else
+-		return 0;	/* no usable register */
++		c0_random = read_c0_random() & 0x3f;
++	return (random_get_entropy_fallback() << 6) | (0x3f - c0_random);
+ }
+ #define random_get_entropy random_get_entropy
  
 
 
