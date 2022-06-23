@@ -2,140 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA12CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F4ACCA480
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 01:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239202AbiFWB2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 21:28:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
+        id S1349738AbiFWB2Y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 21:28:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345283AbiFWB2K (ORCPT
+        with ESMTP id S1343614AbiFWB2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 21:28:10 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295CF1FA76
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 18:28:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6688C1758A;
+        Wed, 22 Jun 2022 18:28:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655947687; x=1687483687;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=G3vyVfGyjVDNe/UsKsUwwq4Eqoe99LLJdjZAyJ/ETVo=;
-  b=BQkyDaJU5X6Kg0vPbO3jvQIUIOW9Tapaw7Ao+cny0f4qoF3mmw0teInE
-   lII9INy5gfZTd0o7gvrMdPC71pfEDpNVYIJCHcjndsYQEWPERuum8Hqed
-   NHZtRvVZ6gtQHViPo4ncQvbse3YLebfy33rgCRTUOWFxmGtQPEDcL6iGr
-   POycY9kgQXo2Q/bUA05dkjJS/CaP8+a0U1lIBxManjJDmw+LqKcsFtViJ
-   6hmzNv20bQ5/F0xwF/C1sXzuvUBeKzxdCKtSyK2OEbtXn8Zv6Rq0HpAgX
-   06DgPc5PzNfaKHEcHmMOQVWS5yBmrL7+VxpWtV7IqGwnn3FxjQl1JHQbr
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="263625927"
+  t=1655947684; x=1687483684;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FVJa2+JGTCHuOb6NnEu37R8kKk2s4YcOMsTCEJXQcog=;
+  b=nfK/ZSbT8CgjOScdaM/5lU3+AFNNAHdVtN63K59q6p/2ndNOu+jQ0QxF
+   crmKLVR5FMXrDzw35gYybMUWf8uMIa/X1drK+3Sze5WjRWiZCBHQ+AdQZ
+   exrm3rdZ65qyUnOubB9ssJDCbLhu858mwwaLVF8v6BeBnWFSTd+sWve8C
+   q5slLBfgVZzEANLm4AYG2A8KT2/UzEKVZBObiNCieOmB1X0ASvpcysuhZ
+   0K3EZkLqC975pBk+PvIDO4Lzl8dHjTHSw7TR5HtYChOeuMC+cTAOqhbNF
+   7m2mtUPnKOg6nDVk/sbcJhHGhYyil9p+mVsPjDRqJElW9BwatCvKE7Ao/
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="263625916"
 X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="263625927"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 18:28:06 -0700
+   d="scan'208";a="263625916"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 18:28:02 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="538701997"
+   d="scan'208";a="730624806"
 Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 22 Jun 2022 18:28:05 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 22 Jun 2022 18:27:59 -0700
 Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1o4BdX-0000HQ-EX;
-        Thu, 23 Jun 2022 01:27:59 +0000
-Date:   Thu, 23 Jun 2022 09:27:13 +0800
+        id 1o4BdW-0000Fq-N0;
+        Thu, 23 Jun 2022 01:27:58 +0000
+Date:   Thu, 23 Jun 2022 08:25:53 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Sam Ravnborg <sam@ravnborg.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: [kbingham-rcar:kbingham/drm-misc/next/sn65dsi86/hpd 10/21]
- drivers/gpu/drm/bridge/parade-ps8640.c:524:9: error: implicit declaration of
- function 'drm_bridge_chain_pre_enable'; did you mean
- 'drm_bridge_hpd_enable'?
-Message-ID: <202206230936.HWBqaAwV-lkp@intel.com>
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, quic_msavaliy@quicinc.com,
+        dianders@chromium.org, mka@chromium.org, swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: Re: [PATCH] tty: serial: qcom-geni-serial: Fix get_clk_div_rate()
+ which otherwise could return a sub-optimal clock rate.
+Message-ID: <202206230849.dxzRCvaU-lkp@intel.com>
+References: <1655834239-20812-1-git-send-email-quic_vnivarth@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <1655834239-20812-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kbingham/rcar.git kbingham/drm-misc/next/sn65dsi86/hpd
-head:   69c67e7d89e9e68e6ffb17deec7112af1d529ac9
-commit: b88732c0df106217e663da0458bd46d061ec3ce4 [10/21] drm/bridge: Drop unused drm_bridge_chain functions
-config: arc-randconfig-r043-20220622 (https://download.01.org/0day-ci/archive/20220623/202206230936.HWBqaAwV-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
+Hi Vijaya,
+
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on linus/master v5.19-rc3 next-20220622]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220622-015826
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: arm-randconfig-r016-20220622 (https://download.01.org/0day-ci/archive/20220623/202206230849.dxzRCvaU-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kbingham/rcar.git/commit/?id=b88732c0df106217e663da0458bd46d061ec3ce4
-        git remote add kbingham-rcar https://git.kernel.org/pub/scm/linux/kernel/git/kbingham/rcar.git
-        git fetch --no-tags kbingham-rcar kbingham/drm-misc/next/sn65dsi86/hpd
-        git checkout b88732c0df106217e663da0458bd46d061ec3ce4
+        # https://github.com/intel-lab-lkp/linux/commit/668659f1481053090a9dbe9c83bd769de527a5c2
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220622-015826
+        git checkout 668659f1481053090a9dbe9c83bd769de527a5c2
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/gpu/drm/bridge/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   drivers/gpu/drm/bridge/parade-ps8640.c: In function 'ps8640_bridge_get_edid':
->> drivers/gpu/drm/bridge/parade-ps8640.c:524:9: error: implicit declaration of function 'drm_bridge_chain_pre_enable'; did you mean 'drm_bridge_hpd_enable'? [-Werror=implicit-function-declaration]
-     524 |         drm_bridge_chain_pre_enable(bridge);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |         drm_bridge_hpd_enable
->> drivers/gpu/drm/bridge/parade-ps8640.c:534:17: error: implicit declaration of function 'drm_bridge_chain_post_disable'; did you mean 'drm_atomic_bridge_chain_post_disable'? [-Werror=implicit-function-declaration]
-     534 |                 drm_bridge_chain_post_disable(bridge);
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                 drm_atomic_bridge_chain_post_disable
-   cc1: some warnings being treated as errors
-
-
-vim +524 drivers/gpu/drm/bridge/parade-ps8640.c
-
-13afcdd7277eff9 Philip Chen            2021-09-21  504  
-d82c12ab16b8477 Enric Balletbo i Serra 2020-08-26  505  static struct edid *ps8640_bridge_get_edid(struct drm_bridge *bridge,
-d82c12ab16b8477 Enric Balletbo i Serra 2020-08-26  506  					   struct drm_connector *connector)
-d82c12ab16b8477 Enric Balletbo i Serra 2020-08-26  507  {
-d82c12ab16b8477 Enric Balletbo i Serra 2020-08-26  508  	struct ps8640 *ps_bridge = bridge_to_ps8640(bridge);
-826cff3f7ebba46 Philip Chen            2021-10-28  509  	bool poweroff = !ps_bridge->pre_enabled;
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  510  	struct edid *edid;
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  511  
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  512  	/*
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  513  	 * When we end calling get_edid() triggered by an ioctl, i.e
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  514  	 *
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  515  	 *   drm_mode_getconnector (ioctl)
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  516  	 *     -> drm_helper_probe_single_connector_modes
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  517  	 *        -> drm_bridge_connector_get_modes
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  518  	 *           -> ps8640_bridge_get_edid
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  519  	 *
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  520  	 * We need to make sure that what we need is enabled before reading
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  521  	 * EDID, for this chip, we need to do a full poweron, otherwise it will
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  522  	 * fail.
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  523  	 */
-46f206304db0311 Enric Balletbo i Serra 2020-08-27 @524  	drm_bridge_chain_pre_enable(bridge);
-d82c12ab16b8477 Enric Balletbo i Serra 2020-08-26  525  
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  526  	edid = drm_get_edid(connector,
-d82c12ab16b8477 Enric Balletbo i Serra 2020-08-26  527  			    ps_bridge->page[PAGE0_DP_CNTL]->adapter);
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  528  
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  529  	/*
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  530  	 * If we call the get_edid() function without having enabled the chip
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  531  	 * before, return the chip to its original power state.
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  532  	 */
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  533  	if (poweroff)
-46f206304db0311 Enric Balletbo i Serra 2020-08-27 @534  		drm_bridge_chain_post_disable(bridge);
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  535  
-46f206304db0311 Enric Balletbo i Serra 2020-08-27  536  	return edid;
-d82c12ab16b8477 Enric Balletbo i Serra 2020-08-26  537  }
-d82c12ab16b8477 Enric Balletbo i Serra 2020-08-26  538  
-
-:::::: The code at line 524 was first introduced by commit
-:::::: 46f206304db0311b0920479f42accaa7cb472fdc drm/bridge: ps8640: Rework power state handling
-
-:::::: TO: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-:::::: CC: Neil Armstrong <narmstrong@baylibre.com>
+   arm-linux-gnueabi-ld: arm-linux-gnueabi-ld: DWARF error: could not find abbrev number 121
+   drivers/tty/serial/qcom_geni_serial.o: in function `find_clk_rate_in_tol':
+>> qcom_geni_serial.c:(.text+0x764): undefined reference to `__aeabi_uldivmod'
 
 -- 
 0-DAY CI Kernel Test Service
