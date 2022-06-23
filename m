@@ -2,85 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA68C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0328C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230482AbiFWKAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33582 "EHLO
+        id S230501AbiFWKDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231400AbiFWKAO (ORCPT
+        with ESMTP id S229689AbiFWKDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:00:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF16349CB7;
-        Thu, 23 Jun 2022 03:00:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7035161DAD;
-        Thu, 23 Jun 2022 10:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CA7CEC341C0;
-        Thu, 23 Jun 2022 10:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655978412;
-        bh=BkUxnJPDhnPu27WSLpY2P7BGcWIQ8/1j1dDbELLIkdg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=K4kenSi8J3qXR8EyHxXgSCY2MNWUakjRtbrG8vdHETNVapUi6PiTIqmDKFxEJ0Y1F
-         DiRtXf9XlZIJAWNq99QQZ3giPY71kItM7wSAp2R8KfBIf5TSYqRTKIwsWEtX92lJkp
-         +/qHMuqJnJD/ZonzIw0MZxUKjLqe0OnHnNQrIdQQv9LhR1F1PDJH8FjidS7qYpQTMS
-         hdPsJUnssjuChlTz+b1JQ1EeEpygiuQ6irNjHRI0TfClOG7grbTBA/QHzRsatDyhN0
-         q/yIQ+sE4G7b3f7Q6JIafgKtO/IcEMEdsHBZRymzCWGDkpWpQ1/Z2alegWIThkiMhl
-         2yvtvcelun2eA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF68FE737F0;
-        Thu, 23 Jun 2022 10:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: openvswitch: fix parsing of nw_proto for IPv6
- fragments
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165597841271.22799.14586391448638568362.git-patchwork-notify@kernel.org>
-Date:   Thu, 23 Jun 2022 10:00:12 +0000
-References: <20220621204845.9721-1-roriorden@redhat.com>
-In-Reply-To: <20220621204845.9721-1-roriorden@redhat.com>
-To:     Rosemarie O'Riorden <roriorden@redhat.com>
-Cc:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        yihung.wei@gmail.com, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, i.maximets@ovn.org,
-        aconole@redhat.com
+        Thu, 23 Jun 2022 06:03:23 -0400
+Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E90BC0F
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:03:18 -0700 (PDT)
+X-QQ-mid: bizesmtp78t1655978521tbfj69q5
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 23 Jun 2022 18:01:57 +0800 (CST)
+X-QQ-SSF: 01000000008000B0C000B00A0000000
+X-QQ-FEAT: hOPADF7UwX4iFB/7g9JVub6CWGg5wL+Zwsx+9FUj+tJK97Ei0f+gQUuzavP5y
+        3z7R5vr7gKFIJejzAb+9iYRtSW4d8HJqBkBq4/II4Z5l9Otnt7GJRHqN9VKsayV8SDIBxjM
+        6BTqf+lUZ9Jt+Fy5r0VSv0TXD41wTiHW71aZO8rEDypAkFQBr3KMmQ3KLCId6AgcHfrEpkl
+        4PXCloDmexVIaHmRIcsyxZdvZEQLxHLFyWbMkGFO2RO32t6ai5zhNpJE+LQmxyRa6vFAXk0
+        95pT9AW5s+8h4sZPSpXHi3l8j6+URymXTd2HkbOJh+/fmZvTwYMrsoyTKYPVraZNON0+bXt
+        H9dmLnRsmoUWJXrClklHt8oQGZCoA==
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     patrik.r.jakobsson@gmail.com, airlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] drm/gma500: drop unexpected word 'for' in comments
+Date:   Thu, 23 Jun 2022 18:01:55 +0800
+Message-Id: <20220623100155.24806-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+there is an unexpected word 'for' in the comments that need to be dropped
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+file - drivers/gpu/drm/gma500/oaktrail_crtc.c
+line - 312
 
-On Tue, 21 Jun 2022 16:48:45 -0400 you wrote:
-> When a packet enters the OVS datapath and does not match any existing
-> flows installed in the kernel flow cache, the packet will be sent to
-> userspace to be parsed, and a new flow will be created. The kernel and
-> OVS rely on each other to parse packet fields in the same way so that
-> packets will be handled properly.
-> 
-> As per the design document linked below, OVS expects all later IPv6
-> fragments to have nw_proto=44 in the flow key, so they can be correctly
-> matched on OpenFlow rules. OpenFlow controllers create pipelines based
-> on this design.
-> 
-> [...]
+/* Wait for for the pipe disable to take effect. */
 
-Here is the summary with links:
-  - [net] net: openvswitch: fix parsing of nw_proto for IPv6 fragments
-    https://git.kernel.org/netdev/net/c/12378a5a75e3
+changed to:
 
-You are awesome, thank you!
+/* Wait for the pipe disable to take effect. */
+
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/gpu/drm/gma500/oaktrail_crtc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/gma500/oaktrail_crtc.c b/drivers/gpu/drm/gma500/oaktrail_crtc.c
+index 22398d34853a..407ce948bf68 100644
+--- a/drivers/gpu/drm/gma500/oaktrail_crtc.c
++++ b/drivers/gpu/drm/gma500/oaktrail_crtc.c
+@@ -309,7 +309,7 @@ static void oaktrail_crtc_dpms(struct drm_crtc *crtc, int mode)
+ 						   temp & ~PIPEACONF_ENABLE, i);
+ 				REG_READ_WITH_AUX(map->conf, i);
+ 			}
+-			/* Wait for for the pipe disable to take effect. */
++			/* Wait for the pipe disable to take effect. */
+ 			gma_wait_for_vblank(dev);
+ 
+ 			temp = REG_READ_WITH_AUX(map->dpll, i);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.17.1
 
