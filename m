@@ -2,67 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE780C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFBDAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:35:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230351AbiFWHeo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 03:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
+        id S230355AbiFWHfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 03:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiFWHek (ORCPT
+        with ESMTP id S230274AbiFWHfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 03:34:40 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0B6846662
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:34:38 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 39BD21E80C85;
-        Thu, 23 Jun 2022 15:34:20 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id QmuzbNwUwYMz; Thu, 23 Jun 2022 15:34:17 +0800 (CST)
-Received: from localhost.localdomain (unknown [112.64.61.33])
-        (Authenticated sender: jiaming@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id C35141E80C7D;
-        Thu, 23 Jun 2022 15:34:16 +0800 (CST)
-From:   Zhang Jiaming <jiaming@nfschina.com>
-To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        renyu@nfschina.com, Zhang Jiaming <jiaming@nfschina.com>
-Subject: [PATCH] mfd: Fix spelling mistake
-Date:   Thu, 23 Jun 2022 15:33:33 +0800
-Message-Id: <20220623073333.5675-1-jiaming@nfschina.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 23 Jun 2022 03:35:15 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB7546662
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:35:14 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id g9-20020a056e020d0900b002d958b2a86dso401908ilj.14
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:35:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=7QItAS8B1/7qL5yTPxj88y2NM1HLwSWmFz7/r/sTOpw=;
+        b=xsI2tuy5Per3z2drsHHf0KyXbJnWGEW1pem3q0K4kkbek90zekvMBiWV20cmv/Pnta
+         Zx+XfL75opaLT1TxzQ6RH3/cS+fifTH5RXe8YBHrs6AYVv+/3sTR1zcf2eiTEq9G25ma
+         qUgvNNWEdksMfDuveRsBVXgFURepF/2BE0Zh2CUhwT8kny7IB0NnC4lVg930k2TNNR9f
+         z5R51eK/E5YygZd3v5uzRi4oy5+LW8gkOfiCaDuMtbZKP5zrDFKNLrWTQxq1F8zQrX1y
+         Ld3mUy7yfGrnQcsAlQBnlJjOvAXFcVHEYDa0ncwbEujKRiL7cVu7mlW0G7GyBuFHRRJ9
+         MEMQ==
+X-Gm-Message-State: AJIora85qT5yBQ2e/Q094Ww5+PkERUTrgGnrUmmAs2kPxNiSXsj6ozVs
+        RFiEiFVB5BzA/c2sqdUef3lBIPBKifH4umB5WOA1qD5Hod4+
+X-Google-Smtp-Source: AGRyM1uDHnpelBbH4pNfjqs05S1Tv86HE01S7bBLQKv9VdmULK/vAW25cGgGt/yXk/plAf0qQ01oPQbiNstvymQby6B/VLWIJO9i
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:38a0:b0:331:ec50:d191 with SMTP id
+ b32-20020a05663838a000b00331ec50d191mr4517568jav.40.1655969713718; Thu, 23
+ Jun 2022 00:35:13 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 00:35:13 -0700
+In-Reply-To: <000000000000b9edeb05e1aca987@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008b8cd205e2187ea2@google.com>
+Subject: Re: [syzbot] WARNING: suspicious RCU usage (5)
+From:   syzbot <syzbot+9cbc6bed3a22f1d37395@syzkaller.appspotmail.com>
+To:     alobakin@pm.me, bp@alien8.de, daniel@iogearbox.net, hpa@zytor.com,
+        jmattson@google.com, john.fastabend@gmail.com, joro@8bytes.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mingo@redhat.com, netdev@vger.kernel.org, pbonzini@redhat.com,
+        seanjc@google.com, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, xuanzhuo@linux.alibaba.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change 'receieved' to 'received'.
-Change 'recieve' to 'receive'.
+syzbot has bisected this issue to:
 
-Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
----
- include/linux/mfd/ipaq-micro.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+commit c2ff53d8049f30098153cd2d1299a44d7b124c57
+Author: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date:   Thu Feb 18 20:50:02 2021 +0000
 
-diff --git a/include/linux/mfd/ipaq-micro.h b/include/linux/mfd/ipaq-micro.h
-index ee48a4321c57..d5caa4c86ecc 100644
---- a/include/linux/mfd/ipaq-micro.h
-+++ b/include/linux/mfd/ipaq-micro.h
-@@ -75,8 +75,8 @@ struct ipaq_micro_rxdev {
-  * @id: 4-bit ID of the message
-  * @tx_len: length of TX data
-  * @tx_data: TX data to send
-- * @rx_len: length of receieved RX data
-- * @rx_data: RX data to recieve
-+ * @rx_len: length of received RX data
-+ * @rx_data: RX data to receive
-  * @ack: a completion that will be completed when RX is complete
-  * @node: list node if message gets queued
-  */
--- 
-2.25.1
+    net: Add priv_flags for allow tx skb without linear
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11596838080000
+start commit:   a5b00f5b78b7 Merge branch 'hns3-fixres'
+git tree:       net
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13596838080000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15596838080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=20ac3e0ebf0db3bd
+dashboard link: https://syzkaller.appspot.com/bug?extid=9cbc6bed3a22f1d37395
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143b22abf00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=125194eff00000
+
+Reported-by: syzbot+9cbc6bed3a22f1d37395@syzkaller.appspotmail.com
+Fixes: c2ff53d8049f ("net: Add priv_flags for allow tx skb without linear")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
