@@ -2,99 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8371BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA36C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbiFWTdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52566 "EHLO
+        id S231582AbiFWTdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:33:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231627AbiFWTcU (ORCPT
+        with ESMTP id S231147AbiFWTcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:32:20 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A391F3EF20;
-        Thu, 23 Jun 2022 12:08:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656011318; x=1687547318;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=J+82fiAkS6UDD5/pp26a92/IR26KYgUmTE+aTlC+9Go=;
-  b=Iup2ACskJcE+IaasI8xLwa4Gxo4k23sb9E0QxGpw1ngbL3LeQpcym9lj
-   pr66obmeZp4w0lJpw04M1AfK9eCuca6t2k7aUoMOr88H3IcpPDLwdrNbB
-   iN//RTxfnJLkgNOvMZfoq/1nPxRwEHMD+kO0jJxkZX5ZLZdFaCxKs7rMA
-   c=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 23 Jun 2022 12:08:36 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 12:08:36 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 23 Jun 2022 12:08:35 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 23 Jun
- 2022 12:08:34 -0700
-Date:   Thu, 23 Jun 2022 15:08:32 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, <linux-crypto@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] arm64/crypto: Select AEAD2 for GHASH_ARM64_CE
-Message-ID: <YrS6MIhv/ze4rbxy@qian>
-References: <20220622142557.144536-1-quic_qiancai@quicinc.com>
- <YrSgH//ysOd/Qumo@sol.localdomain>
+        Thu, 23 Jun 2022 15:32:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656279919E;
+        Thu, 23 Jun 2022 12:07:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F040960DE9;
+        Thu, 23 Jun 2022 19:07:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87510C341C6;
+        Thu, 23 Jun 2022 19:07:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656011235;
+        bh=/YQ8dM9H1tSiUewSTAyicto7sQUtAk0DXHV0TCvRd4Q=;
+        h=Date:Subject:From:To:References:In-Reply-To:From;
+        b=X7/o9PXcYENIHwBGSUOpBPwVaRvZ2gKufyvCj6fwFPtLuOJnE3r70eprmWaQSE+dz
+         iR3tlFsbkd0bDoexoU3ck057AJmnTD/XJHsKHY7Prv+8FNdV/kemLCJ+tuWRrth1l/
+         q7ilAgmv7WEIFKrFW7SuWQpUPAu8dKDn9bqsMCBrjm2dK9B+KNoPx+761YQAfUEwra
+         l2M1NN1RukY8rjIZBvv58LrbaEkxTiLu0pFju4VBOlBGa5c2H1Ie0J2kMlaIfFQmOO
+         hDk1pHrQo2o07mLUGehUYIt5HWYcQlLpFDpJpiHkdqtusY9D9SNyB7FZGcHRB5wFlK
+         aggSeYfuus95w==
+Message-ID: <b111c356-ee6a-bd68-d08f-fbe2a67d2f55@kernel.org>
+Date:   Thu, 23 Jun 2022 14:07:13 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YrSgH//ysOd/Qumo@sol.localdomain>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] arm64: dts: altera: socfpga_stratix10: move clocks out of
+ soc node
+Content-Language: en-US
+From:   Dinh Nguyen <dinguyen@kernel.org>
+To:     niravkumar.l.rabara@intel.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220623024221.2766255-1-niravkumar.l.rabara@intel.com>
+ <1f1ac1ad-0eed-0871-93a9-56f710eeba98@kernel.org>
+In-Reply-To: <1f1ac1ad-0eed-0871-93a9-56f710eeba98@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 10:17:19AM -0700, Eric Biggers wrote:
-> On Wed, Jun 22, 2022 at 10:25:57AM -0400, Qian Cai wrote:
-> > Otherwise, we could fail to compile.
-> > 
-> > ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_exit':
-> > ghash-ce-glue.c:(.exit.text+0x24): undefined reference to 'crypto_unregister_aead'
-> > ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_init':
-> > ghash-ce-glue.c:(.init.text+0x34): undefined reference to 'crypto_register_aead'
-> > 
-> > Fixes: 37b6aab68fae ("crypto: arm64/ghash - drop PMULL based shash")
+Hi
+
+On 6/23/22 11:16, Dinh Nguyen wrote:
 > 
-> I don't see how the Fixes commit is related.  Hasn't this been a problem since
-> commit 537c1445ab0b, which added an AEAD algorithm to this module?
-
-Ah, you are probably right. crypto_unregister_aead and crypto_register_aead
-are already there in the previous commit.
-
 > 
-> > diff --git a/arch/arm64/crypto/Kconfig b/arch/arm64/crypto/Kconfig
-> > index 4391a463abd7..6b2ecc193bc0 100644
-> > --- a/arch/arm64/crypto/Kconfig
-> > +++ b/arch/arm64/crypto/Kconfig
-> > @@ -71,6 +71,7 @@ config CRYPTO_GHASH_ARM64_CE
-> >  	select CRYPTO_HASH
-> >  	select CRYPTO_GF128MUL
-> >  	select CRYPTO_LIB_AES
-> > +	select CRYPTO_AEAD2
+> On 6/22/22 21:42, niravkumar.l.rabara@intel.com wrote:
+>> From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
+>>
+>> The clocks are not part of the SoC but provided on the board
+>> (external oscillators). Moving them out of soc node.
+>>
+>> Signed-off-by: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
+>> ---
+>>   .../boot/dts/altera/socfpga_stratix10.dtsi    | 56 +++++++++----------
+>>   1 file changed, 28 insertions(+), 28 deletions(-)
+>>
+>> diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi 
+>> b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+>> index aa2bba75265f..5c7d926d18f7 100644
+>> --- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+>> +++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+>> @@ -97,6 +97,34 @@ intc: interrupt-controller@fffc1000 {
+>>                 <0x0 0xfffc6000 0x0 0x2000>;
+>>       };
+>> +    clocks {
+>> +        cb_intosc_hs_div2_clk: cb-intosc-hs-div2-clk {
+>> +            #clock-cells = <0>;
+>> +            compatible = "fixed-clock";
+>> +        };
+>> +
+>> +        cb_intosc_ls_clk: cb-intosc-ls-clk {
+>> +            #clock-cells = <0>;
+>> +            compatible = "fixed-clock";
+>> +        };
+>> +
+>> +        f2s_free_clk: f2s-free-clk {
+>> +            #clock-cells = <0>;
+>> +            compatible = "fixed-clock";
+>> +        };
+>> +
+>> +        osc1: osc1 {
+>> +            #clock-cells = <0>;
+>> +            compatible = "fixed-clock";
+>> +        };
+>> +
+>> +        qspi_clk: qspi-clk {
+>> +            #clock-cells = <0>;
+>> +            compatible = "fixed-clock";
+>> +            clock-frequency = <200000000>;
+>> +        };
+>> +    };
+>> +
+>>       soc {
+>>           #address-cells = <1>;
+>>           #size-cells = <1>;
+>> @@ -119,34 +147,6 @@ clkmgr: clock-controller@ffd10000 {
+>>               #clock-cells = <1>;
+>>           };
+>> -        clocks {
+>> -            cb_intosc_hs_div2_clk: cb-intosc-hs-div2-clk {
+>> -                #clock-cells = <0>;
+>> -                compatible = "fixed-clock";
+>> -            };
+>> -
+>> -            cb_intosc_ls_clk: cb-intosc-ls-clk {
+>> -                #clock-cells = <0>;
+>> -                compatible = "fixed-clock";
+>> -            };
+>> -
+>> -            f2s_free_clk: f2s-free-clk {
+>> -                #clock-cells = <0>;
+>> -                compatible = "fixed-clock";
+>> -            };
+>> -
+>> -            osc1: osc1 {
+>> -                #clock-cells = <0>;
+>> -                compatible = "fixed-clock";
+>> -            };
+>> -
+>> -            qspi_clk: qspi-clk {
+>> -                #clock-cells = <0>;
+>> -                compatible = "fixed-clock";
+>> -                clock-frequency = <200000000>;
+>> -            };
+>> -        };
+>> -
+>>           gmac0: ethernet@ff800000 {
+>>               compatible = "altr,socfpga-stmmac-a10-s10", 
+>> "snps,dwmac-3.74a", "snps,dwmac";
+>>               reg = <0xff800000 0x2000>;
 > 
-> I don't think CRYPTO_AEAD2 is meant to be selected directly.  It should be
-> CRYPTO_AEAD instead.
+> NAK! This patch breaks the Stratix10 boot. Also these clocks are part of 
+> the SoC!
+> 
 
-I am not sure about that. I chose CRYPTO_AEAD2 because that is in the
-Makefile.
+Take that back. Your changes are fine, but you need to update the board 
+files as well. i.e socfpga_stratix10_socdk.dts
 
-obj-$(CONFIG_CRYPTO_AEAD2) += aead.o
+
+--- a/arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dts
++++ b/arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dts
+@@ -52,12 +52,6 @@ ref_033v: regulator-v-ref {
+         };
+
+         soc {
+-               clocks {
+-                       osc1 {
+-                               clock-frequency = <25000000>;
+-                       };
+-               };
+-
+                 eccmgr {
+                         sdmmca-ecc@ff8c8c00 {
+                                 compatible = "altr,socfpga-s10-sdmmc-ecc",
+@@ -113,6 +107,10 @@ &mmc {
+         bus-width = <4>;
+  };
+
++&osc1 {
++       clock-frequency = <25000000>;
++};
++
+
+Dinh
