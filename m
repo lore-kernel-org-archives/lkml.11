@@ -2,95 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 149DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F9FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiFWJB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
+        id S230500AbiFWJCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230293AbiFWJB5 (ORCPT
+        with ESMTP id S231162AbiFWJCd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:01:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91EA046B3B;
-        Thu, 23 Jun 2022 02:01:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D84D61D6A;
-        Thu, 23 Jun 2022 09:01:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19652C3411B;
-        Thu, 23 Jun 2022 09:01:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655974914;
-        bh=fT+IJvgPZNzB/PLxHleWMdWWCTFeEP1+X+n7+wANHeI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CtzNcfU389jSKDXr8ShHzMatCuDDaYfwgjwE/2ALel8Fj77b+9CjUPutqCVN8ghxO
-         HNLS4O8Q5GI7hp9kmmRB+CAWVFlhlvRBO2QbjBl4YqxI5fw4F44YXJNTZzy4Lt27n4
-         +CpPUrClPmWBIQd3iX3biBrKoHwHyxhUyVL+VMbI=
-Date:   Thu, 23 Jun 2022 11:01:51 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kai Ye <yekai13@huawei.com>
-Cc:     herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-        linux-accelerators@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linuxarm@huawei.com, zhangfei.gao@linaro.org,
-        wangzhou1@hisilicon.com
-Subject: Re: [PATCH v4 2/3] Documentation: add a isolation strategy sysfs
- node for uacce
-Message-ID: <YrQr/3URWsdowov9@kroah.com>
-References: <20220623061452.40732-1-yekai13@huawei.com>
- <20220623061452.40732-3-yekai13@huawei.com>
+        Thu, 23 Jun 2022 05:02:33 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5523A46CB0
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:02:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655974949; x=1687510949;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rOdguUzREfaDZkZ/+ZWuAbnYuWbuUf8LF36WhgQPXG4=;
+  b=lpcSijL/FzHyv1iNsT9/OvTG7U5sC/hO+U6XPcpnQPemhfGOJWPP3CFb
+   CG905YphiQw8XCewe/5R5UCb3IeQPFYxPNt5XI+1nF1hTE69GXD4O2s7E
+   cwNBgqEvQJnKVyto0e+dNNDCaoX97Rsni3n4RmghaJKZkCz0OI0pDgo2O
+   FHf6KrDKq2X/yFcDpJv/qxvOKjHw8ayPfId2TL81P4rYTRTsMTVZB1lq0
+   MCjIwEgF2NhX/Eol7FnwP3hwCGIgetBd4Q0CVE/f4PuCloRQ+X6aK1s6G
+   XFmr4uCC8R2xQKzDiLAQJn8RsNOXCYRbTOJIcugs3Qsj+dyPXctz7Dipr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="260483766"
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="260483766"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 02:02:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="834547243"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 23 Jun 2022 02:02:27 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o4IjK-0000zl-Pz;
+        Thu, 23 Jun 2022 09:02:26 +0000
+Date:   Thu, 23 Jun 2022 17:01:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     kbuild-all@lists.01.org,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        linux-kernel@vger.kernel.org, Ben Widawsky <bwidawsk@kernel.org>
+Subject: [cxl:preview 41/49] powerpc-linux-ld: port.c:undefined reference to
+ `dev_attr_create_pmem_region'
+Message-ID: <202206231626.oruggHVP-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220623061452.40732-3-yekai13@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 02:14:51PM +0800, Kai Ye wrote:
-> Update documentation describing sysfs node that could help to
-> configure isolation method command for users in th user space.
-> 
-> Signed-off-by: Kai Ye <yekai13@huawei.com>
-> ---
->  Documentation/ABI/testing/sysfs-driver-uacce | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-driver-uacce b/Documentation/ABI/testing/sysfs-driver-uacce
-> index 08f2591138af..8784efa96e01 100644
-> --- a/Documentation/ABI/testing/sysfs-driver-uacce
-> +++ b/Documentation/ABI/testing/sysfs-driver-uacce
-> @@ -19,6 +19,24 @@ Contact:        linux-accelerators@lists.ozlabs.org
->  Description:    Available instances left of the device
->                  Return -ENODEV if uacce_ops get_available_instances is not provided
->  
-> +What:           /sys/class/uacce/<dev_name>/isolate_strategy
-> +Date:           Jun 2022
-> +KernelVersion:  5.20
-> +Contact:        linux-accelerators@lists.ozlabs.org
-> +Description:    A sysfs node that used to configures the hardware error
-> +                isolation method command. The command can be parsed
-> +                in correct driver. e.g. If the device slot reset frequency
-> +                exceeds the preset value in a time window, the device will be
-> +                isolated.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
+head:   b2d4fd5c97b59f622e6c45ac51020cdcd66bb022
+commit: 96ec07f789bf8a52f5c00d3310d9b7ec4c701738 [41/49] cxl/region: Allocate host physical address (HPA) capacity to new regions
+config: powerpc-randconfig-r031-20220622 (https://download.01.org/0day-ci/archive/20220623/202206231626.oruggHVP-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=96ec07f789bf8a52f5c00d3310d9b7ec4c701738
+        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
+        git fetch --no-tags cxl preview
+        git checkout 96ec07f789bf8a52f5c00d3310d9b7ec4c701738
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-What is the "command"?  What is being parsed?  This needs to be
-documented a lot more here, this is very vague and not obvious at all.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
 
-> +
-> +What:           /sys/class/uacce/<dev_name>/isolate
-> +Date:           Jun 2022
-> +KernelVersion:  5.20
-> +Contact:        linux-accelerators@lists.ozlabs.org
-> +Description:    A sysfs node that show the device isolated state. The value 0
-> +                means that the device is working. The value 1 means that the
-> +                device has been isolated.
+   powerpc-linux-ld: drivers/cxl/core/port.o: in function `cxl_root_decoder_visible':
+   port.c:(.text+0x1a6): undefined reference to `dev_attr_create_pmem_region'
+>> powerpc-linux-ld: port.c:(.text+0x1aa): undefined reference to `dev_attr_create_pmem_region'
+>> powerpc-linux-ld: port.c:(.text+0x1ba): undefined reference to `dev_attr_delete_region'
+   powerpc-linux-ld: port.c:(.text+0x1be): undefined reference to `dev_attr_delete_region'
+>> powerpc-linux-ld: drivers/cxl/core/port.o:(.data+0x130): undefined reference to `dev_attr_create_pmem_region'
+>> powerpc-linux-ld: drivers/cxl/core/port.o:(.data+0x134): undefined reference to `dev_attr_delete_region'
 
-Are these read-only?  Write only?  read/write?
-
-thanks,
-
-greg k-h
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
