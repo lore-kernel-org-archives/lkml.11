@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2EE3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11747C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:16:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234438AbiFWSQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
+        id S230312AbiFWSQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236641AbiFWSPn (ORCPT
+        with ESMTP id S234111AbiFWSPp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:15:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4104F9D1;
-        Thu, 23 Jun 2022 10:22:06 -0700 (PDT)
+        Thu, 23 Jun 2022 14:15:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D085DF0D;
+        Thu, 23 Jun 2022 10:22:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5AB761E0D;
-        Thu, 23 Jun 2022 17:22:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D06CC3411B;
-        Thu, 23 Jun 2022 17:22:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8017B82497;
+        Thu, 23 Jun 2022 17:22:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E64BC341C5;
+        Thu, 23 Jun 2022 17:22:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004924;
-        bh=XLle1ULxtnkMGtZ5J8OId3dZzK+gS1ktRIOSKJPKipE=;
+        s=korg; t=1656004927;
+        bh=VUdUdSClpPx72kdmXclp+/hBcSqoa28HxWnfFrjn8/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s3nwBD3abQ9Mh2nmSu/E020yZaRH4bLphBgJDkawXDjT9VeDHYiZyfO3DQFnZ7VxK
-         5A4+1uQGDTBHiSdBvUOA9bdzvOBkXNO1qvIksgjS5fvuKMxu5iSNAQQRmfbQn2pAUG
-         ZWfhgwzIXPPLz87eOOzW4MKO+6QDg/dk4lM8h6tw=
+        b=MS1ajmkL56pfcf9LP9mB6w+q15Ww5IZ8yKqeA9O4YGRgy0lnekpm9ao83PSIR/W/i
+         fBFd1UwmLDgo1O7QfhCpNTwzrT3JqyMDJB3wXRMSFFSjE2NiMnVnXGQYI5aTk49xG7
+         uO3KhDMA3+d77JNsfw9wVOvL5bv+dzvXA2uBTkZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, chengkaitao <pilgrimtao@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 194/234] virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
-Date:   Thu, 23 Jun 2022 18:44:21 +0200
-Message-Id: <20220623164348.538321472@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 168/234] random: wire up fops->splice_{read,write}_iter()
+Date:   Thu, 23 Jun 2022 18:43:55 +0200
+Message-Id: <20220623164347.807363101@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -50,36 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: chengkaitao <pilgrimtao@gmail.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit a58a7f97ba11391d2d0d408e0b24f38d86ae748e ]
+commit 79025e727a846be6fd215ae9cdb654368ac3f9a6 upstream.
 
-The reference must be released when device_register(&vm_cmdline_parent)
-failed. Add the corresponding 'put_device()' in the error handling path.
+Now that random/urandom is using {read,write}_iter, we can wire it up to
+using the generic splice handlers.
 
-Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
-Message-Id: <20220602005542.16489-1-chengkaitao@didiglobal.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 36e2c7421f02 ("fs: don't allow splice read/write without explicit ops")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[Jason: added the splice_write path. Note that sendfile() and such still
+ does not work for read, though it does for write, because of a file
+ type restriction in splice_direct_to_actor(), which I'll address
+ separately.]
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio_mmio.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/random.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 4cd9ea5c75be..c69c755bf553 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -663,6 +663,7 @@ static int vm_cmdline_set(const char *device,
- 	if (!vm_cmdline_parent_registered) {
- 		err = device_register(&vm_cmdline_parent);
- 		if (err) {
-+			put_device(&vm_cmdline_parent);
- 			pr_err("Failed to register parent device!\n");
- 			return err;
- 		}
--- 
-2.35.1
-
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1381,6 +1381,8 @@ const struct file_operations random_fops
+ 	.unlocked_ioctl = random_ioctl,
+ 	.fasync = random_fasync,
+ 	.llseek = noop_llseek,
++	.splice_read = generic_file_splice_read,
++	.splice_write = iter_file_splice_write,
+ };
+ 
+ const struct file_operations urandom_fops = {
+@@ -1389,6 +1391,8 @@ const struct file_operations urandom_fop
+ 	.unlocked_ioctl = random_ioctl,
+ 	.fasync = random_fasync,
+ 	.llseek = noop_llseek,
++	.splice_read = generic_file_splice_read,
++	.splice_write = iter_file_splice_write,
+ };
+ 
+ 
 
 
