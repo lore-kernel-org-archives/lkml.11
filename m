@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE53C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbiFWRDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41992 "EHLO
+        id S231199AbiFWRD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233126AbiFWRBJ (ORCPT
+        with ESMTP id S230127AbiFWRBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:01:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F12C4FC4E;
-        Thu, 23 Jun 2022 09:54:16 -0700 (PDT)
+        Thu, 23 Jun 2022 13:01:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5406C4FC59;
+        Thu, 23 Jun 2022 09:54:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CED961FFB;
-        Thu, 23 Jun 2022 16:54:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0503C3411B;
-        Thu, 23 Jun 2022 16:54:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A816DB82492;
+        Thu, 23 Jun 2022 16:54:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7CB2C341C4;
+        Thu, 23 Jun 2022 16:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003254;
-        bh=U71YCgBwZPMBM6krXE/wQf4g0JZCHmQ3AB3XjJA9Zk0=;
+        s=korg; t=1656003251;
+        bh=NU7LfoX5t0VpnGzmPaJ813yUdd6Ggjzgn/jJrjffIxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ulr3SRdJJNZoera0rAkY06ZGPqcPHtIyQmkd1XCC++ynDEwd6yK0y3exfViC70WDR
-         mPgP3FhUFOJSiFQFUvuQPAu3F7uj0gxjJ2JX2w9+cEbRpgNMWS5sPdBGMS+4EBxk4j
-         OXgG05Cu66cfbi3e+neZSGB7kWKELyzOLtrog0Rk=
+        b=Acrzk/x/q5aLmJgr42uCyQCdEPm81Kk/VNdXQl2h/i9AxO/MV0Rn8xDTvGizKqKSm
+         09pYvycM8io1d37th/b0WRxJMyDL6dy5d0PfwPSwrr9em9ldRnLjZMISfoLyuFIyKy
+         nhxHHH047H6PzMw5dVvHVr8czFzYYU2roCF07KvE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Helge Deller <deller@gmx.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 180/264] parisc: define get_cycles macro for arch-override
-Date:   Thu, 23 Jun 2022 18:42:53 +0200
-Message-Id: <20220623164349.159583501@linuxfoundation.org>
+Subject: [PATCH 4.9 179/264] s390: define get_cycles macro for arch-override
+Date:   Thu, 23 Jun 2022 18:42:52 +0200
+Message-Id: <20220623164349.131344826@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,9 +56,9 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 8865bbe6ba1120e67f72201b7003a16202cd42be upstream.
+commit 2e3df523256cb9836de8441e9c791a796759bb3c upstream.
 
-PA-RISC defines a get_cycles() function, but it does not do the usual
+S390x defines a get_cycles() function, but it does not do the usual
 `#define get_cycles get_cycles` dance, making it impossible for generic
 code to see if an arch-specific function was defined. While the
 get_cycles() ifdef is not currently used, the following timekeeping
@@ -62,26 +67,26 @@ when defining random_get_entropy().
 
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Helge Deller <deller@gmx.de>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/include/asm/timex.h |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/s390/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/parisc/include/asm/timex.h
-+++ b/arch/parisc/include/asm/timex.h
-@@ -11,9 +11,10 @@
- 
- typedef unsigned long cycles_t;
- 
--static inline cycles_t get_cycles (void)
-+static inline cycles_t get_cycles(void)
+--- a/arch/s390/include/asm/timex.h
++++ b/arch/s390/include/asm/timex.h
+@@ -168,6 +168,7 @@ static inline cycles_t get_cycles(void)
  {
- 	return mfctl(16);
+ 	return (cycles_t) get_tod_clock() >> 2;
  }
 +#define get_cycles get_cycles
  
- #endif
+ int get_phys_clock(unsigned long long *clock);
+ void init_cpu_timer(void);
 
 
