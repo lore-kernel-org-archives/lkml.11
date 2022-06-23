@@ -2,118 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D15BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbiFWIgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47762 "EHLO
+        id S230314AbiFWIiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbiFWIgl (ORCPT
+        with ESMTP id S229838AbiFWIiL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:36:41 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D4548E74
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:36:37 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id m1so19099262wrb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:36:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cbuXZOwI9mYKfaVBHWeOR5IHXlwgx/Q9JGU1SB5W8ho=;
-        b=rNE4ypE3Anl7UmSPNciHy5jRgpfNrZqmYhgejf+DhJ21ZTqNYFcI6EHFDTvszTPsPu
-         tvXKKnnbMrBtWUBtJI0ZV1ropXJG24/JCKtURLIUSv5dTdE+fC99+azrU0ATqe4hw6cC
-         Av386JXtJcDseifMm7xtDk0WYys7VJBM4VJA0AsRkfLmp6s9dw9UCs1CfgJkysPe5ftV
-         VNLaBo0jf8JSSH4u+fogIby/mhkfgSvcP9two9vHX60hNA6Bk+uCP+W684ICmKZP8JcO
-         vGEqH4BrgYaPbOPEw4B9Q3kIu2CZUopKZa+h9hSv7plPRP/AIK/1KJu+2fAXIOdk+JGK
-         Z6Og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cbuXZOwI9mYKfaVBHWeOR5IHXlwgx/Q9JGU1SB5W8ho=;
-        b=oIAiPr6Rs4jbWe+rGZ8b9szlthN/3e9M6yCbCOpsgnjnm1RRZ0HsJrOZbtLv5OjetX
-         6duj+00CKLrIJ+PtS3UJUTI+9NpIfDsZMeTg6yr6jzsFLUt1VhsyK8rCJrqJ74WGL0ot
-         mtYSYRwMOvl4qDLeZQcJWgAPxguvODDdRRK2TQswLMwfvisJe2Be5DwYuZtP1mxUk+Ng
-         hv7Sfh2yyPwQborkGEhZl5XdEqrDmhzd2OUp5lywxjn+MaYQGSq5bDrwqP2mBksYs1TW
-         zVawndOlhsoqKQ7w/bzWEnRE/EMAYc60xwq3sRMCJoAWTnDulusQPZ/8Hx2IikSIfLaT
-         aBdQ==
-X-Gm-Message-State: AJIora/W0SXgAFq8+z6/vBjG+l5NqmSQ7x+0XYJxHKRwyCuAjybQjMNO
-        t0rkenRY5U7TGm0PykvO978nKUB2pBT7n4Xl2c4ooA==
-X-Google-Smtp-Source: AGRyM1uAzkp1Y+NAMZvl5CJxWEOHWfRu/K19SJEsnNSsL8wB4qh8iZ1NWiHdyoBswX/VqG8W+ew/8+Z1cOmNFpAXC24=
-X-Received: by 2002:a5d:4308:0:b0:219:e5a4:5729 with SMTP id
- h8-20020a5d4308000000b00219e5a45729mr6988759wrq.210.1655973395694; Thu, 23
- Jun 2022 01:36:35 -0700 (PDT)
+        Thu, 23 Jun 2022 04:38:11 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD75A1FCEB;
+        Thu, 23 Jun 2022 01:38:09 -0700 (PDT)
+Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LTD9f6t10z67wtW;
+        Thu, 23 Jun 2022 16:36:06 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Thu, 23 Jun 2022 10:38:07 +0200
+Received: from [10.195.245.183] (10.195.245.183) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2375.24; Thu, 23 Jun 2022 09:38:06 +0100
+Message-ID: <ebe0ce98-4a02-1e94-d21b-ccb010abfd2d@huawei.com>
+Date:   Thu, 23 Jun 2022 09:38:05 +0100
 MIME-Version: 1.0
-References: <20220623000530.1194226-1-yosryahmed@google.com> <YrQe5A+FXnbgOR1f@dhcp22.suse.cz>
-In-Reply-To: <YrQe5A+FXnbgOR1f@dhcp22.suse.cz>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Thu, 23 Jun 2022 01:35:59 -0700
-Message-ID: <CAJD7tkanavKpKrQr8-jA8pukgD7OY4eOwJRZufJ2NoThD12G+Q@mail.gmail.com>
-Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
- memory pressure
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Hildenbrand <david@redhat.com>,
-        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 2/4] dma-iommu: Add iommu_dma_opt_mapping_size()
+From:   John Garry <john.garry@huawei.com>
+To:     <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
+CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+        <linux-scsi@vger.kernel.org>, <liyihang6@hisilicon.com>,
+        <chenxiang66@hisilicon.com>, <thunder.leizhen@huawei.com>,
+        <damien.lemoal@opensource.wdc.com>, <m.szyprowski@samsung.com>,
+        <martin.petersen@oracle.com>, <jejb@linux.ibm.com>, <hch@lst.de>
+References: <1654507822-168026-1-git-send-email-john.garry@huawei.com>
+ <1654507822-168026-3-git-send-email-john.garry@huawei.com>
+ <4a3ab043-f609-22cb-895f-e67c8dd8f6ab@huawei.com>
+In-Reply-To: <4a3ab043-f609-22cb-895f-e67c8dd8f6ab@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.195.245.183]
+X-ClientProxiedBy: lhreml705-chm.china.huawei.com (10.201.108.54) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 1:05 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Thu 23-06-22 00:05:30, Yosry Ahmed wrote:
-> > Commit e22c6ed90aa9 ("mm: memcontrol: don't count limit-setting reclaim
-> > as memory pressure") made sure that memory reclaim that is induced by
-> > userspace (limit-setting, proactive reclaim, ..) is not counted as
-> > memory pressure for the purposes of psi.
-> >
-> > Instead of counting psi inside try_to_free_mem_cgroup_pages(), callers
-> > from try_charge() and reclaim_high() wrap the call to
-> > try_to_free_mem_cgroup_pages() with psi handlers.
-> >
-> > However, vmpressure is still counted in these cases where reclaim is
-> > directly induced by userspace. This patch makes sure vmpressure is not
-> > counted in those operations, in the same way as psi. Since vmpressure
-> > calls need to happen deeper within the reclaim path, the same approach
-> > could not be followed. Hence, a new "controlled" flag is added to struct
-> > scan_control to flag a reclaim operation that is controlled by
-> > userspace. This flag is set by limit-setting and proactive reclaim
-> > operations, and is used to count vmpressure correctly.
-> >
-> > To prevent future divergence of psi and vmpressure, commit e22c6ed90aa9
-> > ("mm: memcontrol: don't count limit-setting reclaim as memory pressure")
-> > is effectively reverted and the same flag is used to control psi as
-> > well.
->
-> Why do we need to add this is a legacy interface now? Are there any
-> pre-existing users who realized this is bugging them? Please be more
-> specific about the usecase.
+On 14/06/2022 14:12, John Garry wrote:
+> On 06/06/2022 10:30, John Garry wrote:
+>> Add the IOMMU callback for DMA mapping API dma_opt_mapping_size(), which
+>> allows the drivers to know the optimal mapping limit and thus limit the
+>> requested IOVA lengths.
+>>
+>> This value is based on the IOVA rcache range limit, as IOVAs allocated
+>> above this limit must always be newly allocated, which may be quite slow.
+>>
+> 
+> Can I please get some sort of ack from the IOMMU people on this one?
+> 
 
-Sorry if I wasn't clear enough. Unfortunately we still have userspace
-workloads at Google that use vmpressure notifications.
+Another request for an ack please.
 
-In our internal version of memory.reclaim that we recently upstreamed,
-we do not account vmpressure during proactive reclaim (similar to how
-psi is handled upstream). We want to make sure this behavior also
-exists in the upstream version so that consolidating them does not
-break our users who rely on vmpressure and will start seeing increased
-pressure due to proactive reclaim.
+Thanks,
+john
 
->
-> --
-> Michal Hocko
-> SUSE Labs
+> 
+>> Signed-off-by: John Garry <john.garry@huawei.com>
+>> Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+>> ---
+>>   drivers/iommu/dma-iommu.c | 6 ++++++
+>>   drivers/iommu/iova.c      | 5 +++++
+>>   include/linux/iova.h      | 2 ++
+>>   3 files changed, 13 insertions(+)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index f90251572a5d..9e1586447ee8 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -1459,6 +1459,11 @@ static unsigned long 
+>> iommu_dma_get_merge_boundary(struct device *dev)
+>>       return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
+>>   }
+>> +static size_t iommu_dma_opt_mapping_size(void)
+>> +{
+>> +    return iova_rcache_range();
+>> +}
+>> +
+>>   static const struct dma_map_ops iommu_dma_ops = {
+>>       .alloc            = iommu_dma_alloc,
+>>       .free            = iommu_dma_free,
+>> @@ -1479,6 +1484,7 @@ static const struct dma_map_ops iommu_dma_ops = {
+>>       .map_resource        = iommu_dma_map_resource,
+>>       .unmap_resource        = iommu_dma_unmap_resource,
+>>       .get_merge_boundary    = iommu_dma_get_merge_boundary,
+>> +    .opt_mapping_size    = iommu_dma_opt_mapping_size,
+>>   };
+>>   /*
+>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>> index db77aa675145..9f00b58d546e 100644
+>> --- a/drivers/iommu/iova.c
+>> +++ b/drivers/iommu/iova.c
+>> @@ -26,6 +26,11 @@ static unsigned long iova_rcache_get(struct 
+>> iova_domain *iovad,
+>>   static void free_cpu_cached_iovas(unsigned int cpu, struct 
+>> iova_domain *iovad);
+>>   static void free_iova_rcaches(struct iova_domain *iovad);
+>> +unsigned long iova_rcache_range(void)
+>> +{
+>> +    return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
+>> +}
+>> +
+>>   static int iova_cpuhp_dead(unsigned int cpu, struct hlist_node *node)
+>>   {
+>>       struct iova_domain *iovad;
+>> diff --git a/include/linux/iova.h b/include/linux/iova.h
+>> index 320a70e40233..c6ba6d95d79c 100644
+>> --- a/include/linux/iova.h
+>> +++ b/include/linux/iova.h
+>> @@ -79,6 +79,8 @@ static inline unsigned long iova_pfn(struct 
+>> iova_domain *iovad, dma_addr_t iova)
+>>   int iova_cache_get(void);
+>>   void iova_cache_put(void);
+>> +unsigned long iova_rcache_range(void);
+>> +
+>>   void free_iova(struct iova_domain *iovad, unsigned long pfn);
+>>   void __free_iova(struct iova_domain *iovad, struct iova *iova);
+>>   struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
+> 
+
