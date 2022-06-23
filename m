@@ -2,74 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1677ECCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FDEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230248AbiFWIdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45356 "EHLO
+        id S230197AbiFWIdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiFWIdL (ORCPT
+        with ESMTP id S229470AbiFWIdr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:33:11 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E35DEB5;
-        Thu, 23 Jun 2022 01:33:10 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0VHAoIhL_1655973184;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHAoIhL_1655973184)
-          by smtp.aliyun-inc.com;
-          Thu, 23 Jun 2022 16:33:05 +0800
-Message-ID: <1655972550.3746855-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [syzbot] WARNING: suspicious RCU usage (5)
-Date:   Thu, 23 Jun 2022 16:22:30 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     syzbot <syzbot+9cbc6bed3a22f1d37395@syzkaller.appspotmail.com>
-Cc:     alobakin@pm.me, bp@alien8.de, daniel@iogearbox.net, hpa@zytor.com,
-        jmattson@google.com, john.fastabend@gmail.com, joro@8bytes.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mingo@redhat.com, netdev@vger.kernel.org, pbonzini@redhat.com,
-        seanjc@google.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org
-References: <000000000000b9edeb05e1aca987@google.com>
- <0000000000008b8cd205e2187ea2@google.com>
-In-Reply-To: <0000000000008b8cd205e2187ea2@google.com>
+        Thu, 23 Jun 2022 04:33:47 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D7E13F8A;
+        Thu, 23 Jun 2022 01:33:46 -0700 (PDT)
+Received: from mail-yb1-f177.google.com ([209.85.219.177]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MORN0-1oJEda2liA-00PwU7; Thu, 23 Jun 2022 10:33:44 +0200
+Received: by mail-yb1-f177.google.com with SMTP id 23so34569416ybe.8;
+        Thu, 23 Jun 2022 01:33:44 -0700 (PDT)
+X-Gm-Message-State: AJIora9yHFTN7923r6JSeJlM2Z6Np+jeeCOJcXAP3QIKRj6MlriEi7Cr
+        Ru6Dgrq4V720635n0uZ6Dpp4TWH4YipGZ29N3/E=
+X-Google-Smtp-Source: AGRyM1vpjNUL/cDQCAr6IDE7zemhTcO8DLjRIsD3hMydd57CzdT1bmHPuTtCl+as80/GyaFbtaHiOikuetXsjsJdvX4=
+X-Received: by 2002:a25:d792:0:b0:669:2e6e:208e with SMTP id
+ o140-20020a25d792000000b006692e6e208emr8179490ybg.452.1655973223374; Thu, 23
+ Jun 2022 01:33:43 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220621144920.2945595-1-guoren@kernel.org> <20220621144920.2945595-2-guoren@kernel.org>
+In-Reply-To: <20220621144920.2945595-2-guoren@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 23 Jun 2022 10:33:24 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2rnz9mQqhN6-e0CGUUv9rntRELFdxt_weiD7FxH7fkfQ@mail.gmail.com>
+Message-ID: <CAK8P3a2rnz9mQqhN6-e0CGUUv9rntRELFdxt_weiD7FxH7fkfQ@mail.gmail.com>
+Subject: Re: [PATCH V6 1/2] asm-generic: spinlock: Move qspinlock &
+ ticket-lock into generic spinlock.h
+To:     Guo Ren <guoren@kernel.org>
+Cc:     Palmer Dabbelt <palmer@rivosinc.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Conor Dooley <Conor.Dooley@microchip.com>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Xuerui Wang <kernel@xen0n.name>, Rui Wang <r@hev.cc>,
+        Stafford Horne <shorne@gmail.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:C580wb4YURZM/E3PsM9I4ixOvma9jHd9L4ezyUoqtQcqWRAnLHJ
+ BugBcEUsBF+A/L/1o8JF1o4nkn4ir7hurViTrb6qagOJ2l2b8zAT7dQJEbmQOMpn0SO6sGL
+ vKdGQTWTOyoO4tE4pnitcSkxSlcIBPGDyTQnWsVs7Z1a8vMqg3DF4gdfIxgXvKxzetEMnMx
+ YCHeBc4IaOqPvNXYnGsfw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:FJXonaS8Pls=:UwNb83m5zTgE7b7iW/45ul
+ 4xvzGs3A0LIG10vu1BrHVgZv420w1+JWW6Gdn4l+DFaTjdiO7mjfdlhLSkll9yWH3aUvSwdP7
+ 87sci12D7cPMgPwFM/T8ZPcWcSLoxH7QwEHObOQzamRiMQ6J+0Jnmwh19MuugKAt1g0oxg6dx
+ N1AYO3L7STBLflOkf77mJnXn7n3z/KZu7cndtv7xcYNndzWsr+MatHPxZJPZfQEz8fGN2WNJE
+ Zi+6NdkJOKQSINoOu0ETo0MBKLvY2Tdw5f+8jdJxbY2hs1TpkI/bAoJWXMuWaDAKMgd+E5bCj
+ xojnUVPR2ZfJv/EAkbPyqNcMph1Z+P8e3Q0jM92lPsnqIEZrPQ5/NWlLflD2V3mySY479POWJ
+ 1ioUVcflAhtZhHb/CBLzFae9T1yXrrzEe5ttgCSEOirTxUldIEpQcB08QM4wcF/E04CQVCobA
+ 6dMWh0zTTAX/w+WMnXGOthdxztThmTlaKwc7Jxr4f7Raf55vBKz/6UfL0pSN/El3eiuUNuLqX
+ vwv9DDzlsM3W5GGUYyU93JTM0mijcArwVnCLrHCwFffRutR89/Em9pUPUP7lK/xrjWuoj9tq7
+ m5vL66UWRk8lDDRX5UAsLvIbxH7qe0/zVWrL9dpn6yllIDxUrIdc3JD3kGoutJMHst5ghP7Fd
+ tEJtf0VQ0mq43b6r1qzuhCIMjH0oRIuVAqTbrA27F4jQU/QVaJVKM91qmhqd9Hi8GdUHXRmwH
+ jaevmgJcK0ALZKaLOFlyeC5CoSGAfGo3ibDmyiesU97vAHr+NDRBjUcEJ34CWeOb5HlftjsL2
+ OIvaeOF34fEm9pMI30QLaMK92yVUcsk8gjfYVJ9jQavJDwJgzne56oe/n8QIfYX5YnDou86VC
+ Bnwb4VGeFe9hDVgTPKbA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 00:35:13 -0700, syzbot <syzbot+9cbc6bed3a22f1d37395@syzkaller.appspotmail.com> wrote:
-> syzbot has bisected this issue to:
+On Tue, Jun 21, 2022 at 4:49 PM <guoren@kernel.org> wrote:
 >
-> commit c2ff53d8049f30098153cd2d1299a44d7b124c57
-> Author: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Date:   Thu Feb 18 20:50:02 2021 +0000
+> From: Guo Ren <guoren@linux.alibaba.com>
 >
->     net: Add priv_flags for allow tx skb without linear
+> Separate ticket-lock into tspinlock.h and let generic spinlock support
+> qspinlock or ticket-lock selected by CONFIG_ARCH_USE_QUEUED_SPINLOCKS
+> config.
 >
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11596838080000
-> start commit:   a5b00f5b78b7 Merge branch 'hns3-fixres'
-> git tree:       net
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=13596838080000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=15596838080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=20ac3e0ebf0db3bd
-> dashboard link: https://syzkaller.appspot.com/bug?extid=9cbc6bed3a22f1d37395
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143b22abf00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=125194eff00000
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  include/asm-generic/spinlock.h        | 90 ++------------------------
+>  include/asm-generic/spinlock_types.h  | 14 ++--
+>  include/asm-generic/tspinlock.h       | 92 +++++++++++++++++++++++++++
+>  include/asm-generic/tspinlock_types.h | 17 +++++
+
+Unless someone has a very good argument for the "tspinlock" name, I would
+prefer naming the new file ticket_spinlock.h. While the 'qspinlock' name has
+an established meaning already, this is not the case for 'tspinlock', and
+the longer name would be less confusing in my opinion.
+
+> +#ifdef CONFIG_ARCH_USE_QUEUED_SPINLOCKS
+> +#include <asm/qspinlock.h>
+>  #include <asm/qrwlock.h>
+> +#else
+> +#include <asm-generic/tspinlock.h>
+> +#endif
+
+As Huacai Chen suggested in the other thread, the asm/qrwlock.h include should
+be outside of the #ifdef here.
+
+> diff --git a/include/asm-generic/spinlock_types.h b/include/asm-generic/spinlock_types.h
+> index 8962bb730945..9875c1d058b3 100644
+> --- a/include/asm-generic/spinlock_types.h
+> +++ b/include/asm-generic/spinlock_types.h
+> @@ -3,15 +3,11 @@
+>  #ifndef __ASM_GENERIC_SPINLOCK_TYPES_H
+>  #define __ASM_GENERIC_SPINLOCK_TYPES_H
 >
-> Reported-by: syzbot+9cbc6bed3a22f1d37395@syzkaller.appspotmail.com
-> Fixes: c2ff53d8049f ("net: Add priv_flags for allow tx skb without linear")
+> -#include <linux/types.h>
+> -typedef atomic_t arch_spinlock_t;
+> -
+> -/*
+> - * qrwlock_types depends on arch_spinlock_t, so we must typedef that before the
+> - * include.
+> - */
+> +#ifdef CONFIG_ARCH_USE_QUEUED_SPINLOCKS
+> +#include <asm-generic/qspinlock_types.h>
+>  #include <asm/qrwlock_types.h>
+> -
+> -#define __ARCH_SPIN_LOCK_UNLOCKED      ATOMIC_INIT(0)
+> +#else
+> +#include <asm-generic/tspinlock_types.h>
+> +#endif
 
+I don't think this file warrants the extra indirection, since both
+versions have only a
+few lines. Just put it all into one file, and change the files that include
+asm-generic/qspinlock_types.h to use asm-generic/spinlock_types.h instead.
 
-I think it's unlikely that my patch is causing the problem, because my patch is
-very simple and doesn't have any effect on the kernel. I don't know if there is
-something wrong.
-
-I used the above config (make olddefconfig) to compile this commit, and it
-crashed directly after starting it in qemu.
-
-Thanks.
-
-
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+      Arnd
