@@ -2,122 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BAD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB76AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:20:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233493AbiFWRUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
+        id S233509AbiFWRUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233970AbiFWRSa (ORCPT
+        with ESMTP id S233980AbiFWRSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:18:30 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A789B550
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:00:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656003624; x=1687539624;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=J9s/LpFILeLPTlseYxUrJteIVRlhiZdWHoHvHoBnIYU=;
-  b=gc7Wx7vCmeJZE0/Wb6nF63L3okTIW8USO6hva5J5G1MY0STnW3VqVguP
-   KtWwrAwcPEifNqPp57Zqw/gSIzuqR0xztpQ/P9YytI1eOqDJzL5gG40V/
-   rYDxZzJZi7VO/sf26np0Ij83r5OhD7TCLfdvfGCmDPoLBAYnyG1Ll7iQV
-   15fl5DQnllCAY6e1M85VVZ9zAP81FvqXQAMOsg4gcMxifXc0R44KXJYAm
-   HXqfNgUV7Zj1giGl+EdzpEPUFH9B0dwCUQ5PrzvX87t6boWP32FrJqjDp
-   DfCiqJrrPIXIPtMfoOZd3uUv5ngkSuEZGPT2RCVCNh96xm9SzP766QpQn
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="279544659"
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="279544659"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 10:00:20 -0700
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="834723685"
-Received: from anefedov-mobl.ccr.corp.intel.com (HELO localhost) ([10.252.38.20])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 10:00:15 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Jiang Jian <jiangjian@cdjrlc.com>, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        tvrtko.ursulin@linux.intel.com, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jiang Jian <jiangjian@cdjrlc.com>
-Subject: Re: [PATCH] GPU: drm: i915: drop unexpected word 'for' in comments
-In-Reply-To: <20220623101113.28470-1-jiangjian@cdjrlc.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220623101113.28470-1-jiangjian@cdjrlc.com>
-Date:   Thu, 23 Jun 2022 20:00:11 +0300
-Message-ID: <871qvfnwmc.fsf@intel.com>
+        Thu, 23 Jun 2022 13:18:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0769B55A;
+        Thu, 23 Jun 2022 10:00:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3DDA3B8248A;
+        Thu, 23 Jun 2022 17:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97833C341C5;
+        Thu, 23 Jun 2022 17:00:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656003621;
+        bh=3rZ4keeAZVuslG8FpTjQQGI8XwrSaROFMtyKvOT3rdU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SWl4n8MJfNAK2Pgp6vU3rGcGO5JbllFoSKkNrYzpNLI+oAUJ8/K3qFA5S8YEesIwt
+         GpbZkGOYTcw5xaXMThEUPmovLIOa1NJo0wB4aWfhboTZVNnDWcrdQP/g6755aByrjA
+         kcNOYuG5v87vsDkLk8se4C+0WtIlj24spfFf/73w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        "Tobin C. Harding" <me@tobin.cc>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 006/237] random: Fix whitespace pre random-bytes work
+Date:   Thu, 23 Jun 2022 18:40:40 +0200
+Message-Id: <20220623164343.329048734@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
+References: <20220623164343.132308638@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022, Jiang Jian <jiangjian@cdjrlc.com> wrote:
-> there is an unexpected word 'for' in the comments that need to be dropped
+From: "Tobin C. Harding" <me@tobin.cc>
 
-While it's also unexpected, it's really *duplicated* word.
+commit 8ddd6efa56c3fe23df9fe4cf5e2b49cc55416ef4 upstream.
 
-> file - drivers/gpu/drm/i915/i915_reg.h
-> line - 2537
->
->  * Please check the detailed lore in the commit message for for experimental
->
-> changed to:
->
->  * Please check the detailed lore in the commit message for experimental
->
+There are a couple of whitespace issues around the function
+get_random_bytes_arch().  In preparation for patching this function
+let's clean them up.
 
-The above is just duplication of the patch itself, and completely
-unnecessary.
+Acked-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Tobin C. Harding <me@tobin.cc>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-The patch subject prefix should be something like "drm/i915:" or
-"drm/i915/reg:".
-
-Pro-tip for figuring out good guesses of what the subject prefix should
-be:
-
-$ git log --since={5-year} --no-merges --pretty=format:%s -- drivers/gpu/drm/i915/i915_reg.h | sed 's/:.*//' | sort | uniq -c | sort -rn | head
-    312 drm/i915
-    113 drm/i915/icl
-     57 drm/i915/tgl
-     26 drm/i915/cnl
-     25 drm/i915/display
-     22 drm/i915/dg2
-     16 drm/i915/psr
-     14 drm/i915/gt
-     14 drm/i915/adl_p
-     12 drm/i915/dg1
-
-The patch itself is fine, but I'm nitpicking on the commit message
-because I've seen lots of patches like this, with the same kind of stuff
-in the commit messages.
-
-BR,
-Jani.
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1742,7 +1742,7 @@ void get_random_bytes_arch(void *buf, in
+ 
+ 		if (!arch_get_random_long(&v))
+ 			break;
+-		
++
+ 		memcpy(p, &v, chunk);
+ 		p += chunk;
+ 		nbytes -= chunk;
+@@ -1753,7 +1753,6 @@ void get_random_bytes_arch(void *buf, in
+ }
+ EXPORT_SYMBOL(get_random_bytes_arch);
+ 
+-
+ /*
+  * init_std_data - initialize pool with system data
+  *
 
 
-> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
-> ---
->  drivers/gpu/drm/i915/i915_reg.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
-> index 616164fa2e32..738c020396af 100644
-> --- a/drivers/gpu/drm/i915/i915_reg.h
-> +++ b/drivers/gpu/drm/i915/i915_reg.h
-> @@ -2534,7 +2534,7 @@
->   * HDMI/DP bits are g4x+
->   *
->   * WARNING: Bspec for hpd status bits on gen4 seems to be completely confused.
-> - * Please check the detailed lore in the commit message for for experimental
-> + * Please check the detailed lore in the commit message for experimental
->   * evidence.
->   */
->  /* Bspec says GM45 should match G4X/VLV/CHV, but reality disagrees */
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
