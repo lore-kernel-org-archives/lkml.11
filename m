@@ -2,117 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E68CCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 171F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231335AbiFWKJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
+        id S231383AbiFWKKJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiFWKJd (ORCPT
+        with ESMTP id S229723AbiFWKKF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:09:33 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B940449C8E;
-        Thu, 23 Jun 2022 03:09:31 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 25NA94Bt030361;
-        Thu, 23 Jun 2022 19:09:05 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 25NA94Bt030361
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1655978945;
-        bh=VrNJeZOOoxsp333/0m3wcHIZFYPss3hVZ7DqYZoPrEM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=zQA+le9IcciER0KVbr4wwcg45cS/xUXk6UDnJ05NNPEGXAy6mZvYU29OYi6lOmJEZ
-         dgJmSlfrN/J3ioaPTbHcRP3MoR+bi3wKC1A39Uo2werJvmHuTh+/N/DBHshfLa8h5x
-         1KA0M+tYRkk+3Q/ZxW+NLhk85uUAOY73kSuCeYWHH7L5ysp8UFD+4GXrw5K3NkSPR+
-         W6hjnCN2C9Ge++kHVdNZ/U3gkZpnVYBOKl210mKwOkTz2HnSRPi4mXnacffBqQEj02
-         pjI2FX0cR8u0o4ODTO59clnyBCn/+T/9FmhWxTBCNy0Au3mLtcyF3iKsTMZj/rgNEJ
-         g60XnIXZ1PYkQ==
-X-Nifty-SrcIP: [209.85.221.44]
-Received: by mail-wr1-f44.google.com with SMTP id i10so23445662wrc.0;
-        Thu, 23 Jun 2022 03:09:05 -0700 (PDT)
-X-Gm-Message-State: AJIora+W09s21WkSli2lBE5mN+rHZP5FXSCm3zhba9uSrCUR71XykZL8
-        mR85CoELnkw2HxYWY8t9FC3eoYEAM7fRuNkVpHQ=
-X-Google-Smtp-Source: AGRyM1u7Aj3TAT/slcXrcHpTGlaaLYJnoGxhHEYAeEWyxd0XvUfEyAr2bl7pqK36JG8IT4+F4pFKmCDdxplz3OpMf4c=
-X-Received: by 2002:adf:e104:0:b0:21b:9938:b07a with SMTP id
- t4-20020adfe104000000b0021b9938b07amr7634574wrz.682.1655978943781; Thu, 23
- Jun 2022 03:09:03 -0700 (PDT)
+        Thu, 23 Jun 2022 06:10:05 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E04949F07;
+        Thu, 23 Jun 2022 03:10:05 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 0EAF56601796;
+        Thu, 23 Jun 2022 11:10:03 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655979003;
+        bh=+y7MosVyFMCeWL500cbHvDLPel8eiklTH/H6ZFzjZ1Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EoOSch7c2DJRjoiRID56J9pJIkXxdG+jxrFhuCoajbcuS9w4U8+i3ecTcwFwRGZF+
+         ZJiIbbNNqkSlmgWyveYXvJiM7M9xG+K3hv6/LTDYN2eeOHBl/Px3GziBKAELJx+JoN
+         UxeTQpejkI5tZGTAN23bCXxvtGd8mHHifERS9JSWLI8JizcmxfD0nS/CRSJmER5yDM
+         9589/DPPRG860wFpos+BWLSD1gQXxcaD1deaS7hk8iSQ6FhtQUPuTNH/fRq+Q8cybz
+         HM0xfxegcBAZEO9cj8VjbUaHF/PukGheZR+QVSb5EwkoCLDYniRFV4sFfzf94Leo+0
+         AFmx/zGeuNM/Q==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wenst@chromium.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 0/5] Allow getting regulator on MFG for multiple SoCs
+Date:   Thu, 23 Jun 2022 12:09:46 +0200
+Message-Id: <20220623100951.21153-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220613170902.1775211-1-masahiroy@kernel.org>
- <20220613170902.1775211-2-masahiroy@kernel.org> <YrMdnEB686tSGARZ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-In-Reply-To: <YrMdnEB686tSGARZ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 23 Jun 2022 19:08:27 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATHTwxfNC9QJDGBiw+z4LN-wFmXsAKXOsVa_JU0K-nuUw@mail.gmail.com>
-Message-ID: <CAK7LNATHTwxfNC9QJDGBiw+z4LN-wFmXsAKXOsVa_JU0K-nuUw@mail.gmail.com>
-Subject: Re: [PATCH 2/3] s390/purgatory: hard-code obj-y in Makefile
-To:     Alexander Gordeev <agordeev@linux.ibm.com>
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 10:48 PM Alexander Gordeev
-<agordeev@linux.ibm.com> wrote:
->
-> On Tue, Jun 14, 2022 at 02:09:01AM +0900, Masahiro Yamada wrote:
-> > The purgatory/ directory is entirely guarded in arch/s390/Kbuild.
-> > CONFIG_ARCH_HAS_KEXEC_PURGATORY is bool type.
-> >
-> > $(CONFIG_ARCH_HAS_KEXEC_PURGATORY) is always 'y' when Kbuild visits
-> > this Makefile for building.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
-> >
-> >  arch/s390/purgatory/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/arch/s390/purgatory/Makefile b/arch/s390/purgatory/Makefile
-> > index 360ada80d20c..3e2c17ba04de 100644
-> > --- a/arch/s390/purgatory/Makefile
-> > +++ b/arch/s390/purgatory/Makefile
-> > @@ -51,4 +51,4 @@ $(obj)/purgatory.ro: $(obj)/purgatory $(obj)/purgatory.chk FORCE
-> >  $(obj)/kexec-purgatory.o: $(obj)/kexec-purgatory.S $(obj)/purgatory.ro FORCE
-> >       $(call if_changed_rule,as_o_S)
-> >
-> > -obj-$(CONFIG_ARCH_HAS_KEXEC_PURGATORY) += kexec-purgatory.o
-> > +obj-y += kexec-purgatory.o
->
-> Applied, thanks!
->
-> BTW, it looks like x86 and riscv also need similar change.
+This is one of the steps to enable DVFS with the Panfrost driver:
+since Panfrost is already enabling the (required) MFG power domains
+and since the mtk-pm-domains driver is already responsible for
+actually enabling the SRAM PDN, it makes sense to make sure that
+the VSRAM supply is ON when trying to reset/enable the SRAM.
 
-A patch for x86 exists:
+For this reason, the MTK_SCPD_DOMAIN_SUPPLY flag was added to one
+more MFG domain, ensuring that the SRAM is actually powered and
+also not relying on the bootloader leaving this supply on; on the
+other hand, this is also making possible to avoid setting a
+sram-supply on the GPU node, making devfreq happy about having
+only one supply and finally allowing DVFS to happen.
 
-https://lore.kernel.org/all/20220616072407.2317131-1-masahiroy@kernel.org/
+If no domain-supply is declared in devicetree, mtk-pm-domains driver
+probe will anyway keep going, so this is not breaking old devicetrees.
 
+No side effects either when this supply is declared for both a MFG
+domain and Panfrost together.
 
-I will send riscv patches later.
+This series has no dependencies.
 
+AngeloGioacchino Del Regno (5):
+  soc: mediatek: mt8192-pm-domains: Allow probing vreg supply on MFG0/1
+  soc: mediatek: mt8183-pm-domains: Allow probing vreg supply on
+    MFG_ASYNC
+  soc: mediatek: mt8195-pm-domains: Allow probing vreg supply on MFG1
+  soc: mediatek: mt8186-pm-domains: Allow probing vreg supply on MFG1
+  arm64: dts: mediatek: mt8183-kukui: Assign sram supply to mfg_async pd
 
-> In addition, x86 use of CONFIG_ARCH_HAS_KEXEC_PURGATORY vs CONFIG_KEXEC_FILE
-> is not consistent with other architectures (may be even incorrect?).
-
-I thought of this when I reworked Makefiles,
-but did not touch this part.
-
-
->
-> > --
-> > 2.32.0
-> >
-
-
+ arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 4 ++++
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi       | 2 +-
+ drivers/soc/mediatek/mt8183-pm-domains.h       | 1 +
+ drivers/soc/mediatek/mt8186-pm-domains.h       | 2 +-
+ drivers/soc/mediatek/mt8192-pm-domains.h       | 2 ++
+ drivers/soc/mediatek/mt8195-pm-domains.h       | 2 +-
+ 6 files changed, 10 insertions(+), 3 deletions(-)
 
 -- 
-Best Regards
-Masahiro Yamada
+2.35.1
+
