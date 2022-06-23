@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFCDCCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0A0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234391AbiFWRfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59030 "EHLO
+        id S231144AbiFWRfe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234356AbiFWRed (ORCPT
+        with ESMTP id S229833AbiFWRej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:34:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4995D12E;
-        Thu, 23 Jun 2022 10:06:06 -0700 (PDT)
+        Thu, 23 Jun 2022 13:34:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559E65D136;
+        Thu, 23 Jun 2022 10:06:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2BD6B82495;
-        Thu, 23 Jun 2022 17:06:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24300C3411B;
-        Thu, 23 Jun 2022 17:06:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 220D560B2C;
+        Thu, 23 Jun 2022 17:05:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBD53C3411B;
+        Thu, 23 Jun 2022 17:05:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003963;
-        bh=9JiLLKEFF08OHQyTD9XgRz6e6ElIK4pPXkGN/Qn6wj4=;
+        s=korg; t=1656003957;
+        bh=L4B1jgg4pSEFQhH/WMB9agpVhdwDvcBXqX+EZyPjUXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GfyUxofQpav37nc0j0YADFBr27ToR69IZ4qctvLhkb4EvrJ9MWDUJFwwTfNCxILqq
-         kqSFWbhfateFiTAohrYouAxG2Pm7wSJRNZam/nzwCPI0UgYIm/GzOvCtqErnK5o4UH
-         /yTFbco9g2QU4eIkjSDGisdeoqW1+LTuqUVPxHXM=
+        b=tG2kKfq0mcMIPZsyyKlJC1FiC/6R5FrMsf2eAgWpj0DoB3BnlyWztl3fSXO3tfe42
+         cR6SN5AyPHwNyJLdZAubSTfO14cxUhuH3iXK24rG/NuaMK8IUVQpqSq6SQNmdmtToF
+         0P5dpC5aOuulrGuhDWLqJZwFT74Ltb0EejS7beLk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@kernel.org>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 145/237] random: document crng_fast_key_erasure() destination possibility
-Date:   Thu, 23 Jun 2022 18:42:59 +0200
-Message-Id: <20220623164347.326562260@linuxfoundation.org>
+Subject: [PATCH 4.14 135/237] random: check for signal and try earlier when generating entropy
+Date:   Thu, 23 Jun 2022 18:42:49 +0200
+Message-Id: <20220623164347.038588058@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,42 +51,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 8717627d6ac53251ee012c3c7aca392f29f38a42 upstream.
+commit 3e504d2026eb6c8762cd6040ae57db166516824a upstream.
 
-This reverts 35a33ff3807d ("random: use memmove instead of memcpy for
-remaining 32 bytes"), which was made on a totally bogus basis. The thing
-it was worried about overlapping came from the stack, not from one of
-its arguments, as Eric pointed out.
+Rather than waiting a full second in an interruptable waiter before
+trying to generate entropy, try to generate entropy first and wait
+second. While waiting one second might give an extra second for getting
+entropy from elsewhere, we're already pretty late in the init process
+here, and whatever else is generating entropy will still continue to
+contribute. This has implications on signal handling: we call
+try_to_generate_entropy() from wait_for_random_bytes(), and
+wait_for_random_bytes() always uses wait_event_interruptible_timeout()
+when waiting, since it's called by userspace code in restartable
+contexts, where signals can pend. Since try_to_generate_entropy() now
+runs first, if a signal is pending, it's necessary for
+try_to_generate_entropy() to check for signals, since it won't hit the
+wait until after try_to_generate_entropy() has returned. And even before
+this change, when entering a busy loop in try_to_generate_entropy(), we
+should have been checking to see if any signals are pending, so that a
+process doesn't get stuck in that loop longer than expected.
 
-But the fact that this confusion even happened draws attention to the
-fact that it's a bit non-obvious that the random_data parameter can
-alias chacha_state, and in fact should do so when the caller can't rely
-on the stack being cleared in a timely manner. So this commit documents
-that.
-
-Reported-by: Eric Biggers <ebiggers@kernel.org>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/char/random.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -318,6 +318,13 @@ static void crng_reseed(void)
-  * the resultant ChaCha state to the user, along with the second
-  * half of the block containing 32 bytes of random data that may
-  * be used; random_data_len may not be greater than 32.
-+ *
-+ * The returned ChaCha state contains within it a copy of the old
-+ * key value, at index 4, so the state should always be zeroed out
-+ * immediately after using in order to maintain forward secrecy.
-+ * If the state cannot be erased in a timely manner, then it is
-+ * safer to set the random_data parameter to &chacha_state[4] so
-+ * that this function overwrites it before returning.
-  */
- static void crng_fast_key_erasure(u8 key[CHACHA20_KEY_SIZE],
- 				  u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)],
+@@ -127,10 +127,11 @@ int wait_for_random_bytes(void)
+ {
+ 	while (!crng_ready()) {
+ 		int ret;
++
++		try_to_generate_entropy();
+ 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
+ 		if (ret)
+ 			return ret > 0 ? 0 : ret;
+-		try_to_generate_entropy();
+ 	}
+ 	return 0;
+ }
+@@ -1366,7 +1367,7 @@ static void try_to_generate_entropy(void
+ 		return;
+ 
+ 	__setup_timer_on_stack(&stack.timer, entropy_timer, 0, 0);
+-	while (!crng_ready()) {
++	while (!crng_ready() && !signal_pending(current)) {
+ 		if (!timer_pending(&stack.timer))
+ 			mod_timer(&stack.timer, jiffies + 1);
+ 		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
 
 
