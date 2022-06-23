@@ -2,140 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19772C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:58:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA41C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231147AbiFWI6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38954 "EHLO
+        id S231185AbiFWI6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:58:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbiFWI6d (ORCPT
+        with ESMTP id S231160AbiFWI6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:58:33 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219B222522
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:58:31 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1o4IfT-0001Zu-Cc; Thu, 23 Jun 2022 10:58:27 +0200
-Message-ID: <fbb228cd78e9bebd7e7921c19e0c4c09d0891f23.camel@pengutronix.de>
-Subject: Re: DMA-buf and uncached system memory
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Pekka Paalanen <ppaalanen@gmail.com>
-Cc:     "Sharma, Shashank" <Shashank.Sharma@amd.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        linaro-mm-sig@lists.linaro.org,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        linux-media <linux-media@vger.kernel.org>
-Date:   Thu, 23 Jun 2022 10:58:26 +0200
-In-Reply-To: <adc626ec-ff5a-5c06-44ce-09111be450cd@amd.com>
-References: <91ff0bbb-ea3a-2663-3453-dea96ccd6dd8@amd.com>
-         <YCuPhOT4GhY3RR/6@phenom.ffwll.local>
-         <9178e19f5c0e141772b61b759abaa0d176f902b6.camel@ndufresne.ca>
-         <CAPj87rPYQNkgVEdHECQcHcYe2nCpgF3RYQKk_=wwhvJSxwHXCg@mail.gmail.com>
-         <c6e65ee1-531e-d72c-a6a6-da7149e34f18@amd.com>
-         <20220623101326.18beeab3@eldfell>
-         <954d0a9b-29ef-52ef-f6ca-22d7e6aa3f4d@amd.com>
-         <4b69f9f542d6efde2190b73c87096e87fa24d8ef.camel@pengutronix.de>
-         <adc626ec-ff5a-5c06-44ce-09111be450cd@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Thu, 23 Jun 2022 04:58:37 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46BF140CD;
+        Thu, 23 Jun 2022 01:58:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655974716; x=1687510716;
+  h=from:to:cc:subject:date:message-id;
+  bh=laL22yp//q+jqKuq9HA61KLZ09Gii3voigcEHYG+ZkM=;
+  b=D6UOZ7LHelyj1iaBASzURzopv7CdF8cKjx32XJk5woO6eQbX1/JFNmHt
+   DDgOOtP0E4yF4bYuZhU6kTZHjYJzoyPWCVKr7sjRIvFk8m05ATryrF5fe
+   0TrbhyC4oNaSPcDJCK2Z79NPQyHDscD+1YpOA5J8eD6sI/zF4FHDhFW3g
+   cV5RF/TjIz0y0ohAzGpUHHUj9Wfyohv05rGQCd3viNB4QLvmFJ78NViUP
+   MXkXyF3eaqj38L637dJ0QbmWmgOZegvH+twR1lZuuaDpHJHvQuaLKjsyb
+   eM97e5FLA2ro56WLxxWj1P5kcSl2G5ekr5IP86BymumQrJHBqSC5mhmIK
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="344656350"
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="344656350"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 01:58:34 -0700
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="644642226"
+Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 01:58:32 -0700
+From:   Zeng Guang <guang.zeng@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Shuah Khan <shuah@kernel.org>, Gao Chao <chao.gao@intel.com>,
+        linux-kselftest@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Zeng Guang <guang.zeng@intel.com>
+Subject: [PATCH] KVM: selftest: Enhance handling WRMSR ICR register in x2APIC mode
+Date:   Thu, 23 Jun 2022 16:26:01 +0800
+Message-Id: <20220623082601.25588-1-guang.zeng@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Donnerstag, dem 23.06.2022 um 10:14 +0200 schrieb Christian König:
-> Am 23.06.22 um 10:04 schrieb Lucas Stach:
-> > Am Donnerstag, dem 23.06.2022 um 09:26 +0200 schrieb Christian König:
-> > > Am 23.06.22 um 09:13 schrieb Pekka Paalanen:
-> > > > On Thu, 23 Jun 2022 08:59:41 +0200
-> > > > Christian König <christian.koenig@amd.com> wrote:
-> > > > 
-> > > > > The exporter isn't doing anything wrong here. DMA-buf are supposed to be
-> > > > > CPU cached and can also be cache hot.
-> > > > Hi,
-> > > > 
-> > > > what is that statement based on?
-> > > On the design documentation of DMA-buf and the actual driver
-> > > implementations.
-> > > 
-> > > Coherency and snooping of the CPU cache is mandatory for devices and
-> > > root complexes in the PCI specification. Incoherent access is just an
-> > > extension.
-> > > 
-> > > We inherited that by basing DMA-buf on the Linux kernel DMA-API which in
-> > > turn is largely based on the PCI specification.
-> > > 
-> > > > Were the (mandatory for CPU access) cpu_access_begin/end functions &
-> > > > ioctls not supposed to ensure that CPU cache is up-to-date / CPU cache
-> > > > is fully flushed out?
-> > > No, those functions are to inform the exporter that the importer has
-> > > started and finished accessing the buffer using the CPU.
-> > > 
-> > > There is no signaling in the other direction. In other words the
-> > > exporter doesn't inform the importer about CPU accesses because it is
-> > > the owner of the buffer.
-> > > 
-> > > It's the responsibility of the importer to make sure that it can
-> > > actually access the data in the buffer. If it can't guarantee that the
-> > > importer shouldn't import the buffer in the first place.
-> > This is not really correct. DMA-buf inherited the the map/unmap part
-> > from the DMA API, which on cache coherent architecture is mostly a no-
-> > op or ties into the IOMMU implementation to set up the pagetables for
-> > the translation. On non cache coherent architectures this is the point
-> > where any any necessary cache maintenance happens. DRM breaks this
-> > model by caching the DMA-buf mapping for performance reasons.
-> 
-> That's not only because of performance reasons, but also because of 
-> correctness.
-> 
-> At least the Vulkan API and a bunch of OpenGL extensions make it 
-> mandatory for the buffer to be cache coherent. The kernel is simply not 
-> informed about domain transfers.
-> 
-> For example you can just do a CPU copy to a ring buffer and the 
-> expectation is that an already running shader sees that.
+Hardware would directly write x2APIC ICR register instead of software
+emulation in some circumstances, e.g when Intel IPI virtualization is
+enabled. This behavior requires normal reserved bits checking to ensure
+them input as zero, otherwise it will cause #GP. So we need mask out
+those reserved bits from the data written to vICR register.
 
-Yes, that one is not really an issue as you know that at buffer
-creation time and can make sure to map those buffers uncached on non
-coherent arches. If there are no explicit domain transfer points non
-coherent must bite the bullet and bypass the CPU caches, running
-performance into the ground.
+Remove Delivery Status bit emulation in test case as this flag
+is invalid and not needed in x2APIC mode. KVM may ignore clearing
+it during interrupt dispatch which will lead to fake test failure.
 
-> 
-> > In the DMA API keeping things mapped is also a valid use-case, but then
-> > you need to do explicit domain transfers via the dma_sync_* family,
-> > which DMA-buf has not inherited. Again those sync are no-ops on cache
-> > coherent architectures, but do any necessary cache maintenance on non
-> > coherent arches.
-> 
-> Correct, yes. Coherency is mandatory for DMA-buf, you can't use 
-> dma_sync_* on it when you are the importer.
-> 
-> The exporter could of course make use of that because he is the owner of 
-> the buffer.
+Opportunstically correct vector number for test sending IPI to
+non-existent vCPUs.
 
-In the example given here with UVC video, you don't know that the
-buffer will be exported and needs to be coherent without
-synchronization points, due to the mapping cache at the DRM side. So
-V4L2 naturally allocates the buffers from CPU cached memory. If the
-expectation is that those buffers are device coherent without relying
-on the map/unmap_attachment calls, then V4L2 needs to always
-synchronize caches on DQBUF when the  buffer is allocated from CPU
-cached memory and a single DMA-buf attachment exists. And while writing
-this I realize that this is probably exactly what V4L2 should do...
+Signed-off-by: Zeng Guang <guang.zeng@intel.com>
+---
+ .../selftests/kvm/x86_64/xapic_state_test.c   | 20 ++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-Regards,
-Lucas
+diff --git a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
+index 0792334ba243..062d2e1adeb7 100644
+--- a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
++++ b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
+@@ -70,13 +70,27 @@ static void ____test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu, uint64_t val)
+ 	vcpu_ioctl(vm, vcpu->id, KVM_GET_LAPIC, &xapic);
+ 	icr = (u64)(*((u32 *)&xapic.regs[APIC_ICR])) |
+ 	      (u64)(*((u32 *)&xapic.regs[APIC_ICR2])) << 32;
+-	if (!vcpu->is_x2apic)
++	if (!vcpu->is_x2apic) {
+ 		val &= (-1u | (0xffull << (32 + 24)));
+-	ASSERT_EQ(icr, val & ~APIC_ICR_BUSY);
++		ASSERT_EQ(icr, val & ~APIC_ICR_BUSY);
++	} else {
++		ASSERT_EQ(icr, val);
++	}
+ }
+ 
++#define X2APIC_RSVED_BITS_MASK  (GENMASK_ULL(31,20) | \
++				 GENMASK_ULL(17,16) | \
++				 GENMASK_ULL(13,13))
++
+ static void __test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu, uint64_t val)
+ {
++	if (vcpu->is_x2apic) {
++		/* Hardware writing vICR register requires reserved bits 31:20,
++		 * 17:16 and 13 kept as zero to avoid #GP exception. Data value
++		 * written to vICR should mask out those bits above.
++		 */
++		val &= ~X2APIC_RSVED_BITS_MASK;
++	}
+ 	____test_icr(vm, vcpu, val | APIC_ICR_BUSY);
+ 	____test_icr(vm, vcpu, val & ~(u64)APIC_ICR_BUSY);
+ }
+@@ -100,7 +114,7 @@ static void test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
+ 	icr = APIC_INT_ASSERT | 0xff;
+ 	for (i = vcpu->id + 1; i < 0xff; i++) {
+ 		for (j = 0; j < 8; j++)
+-			__test_icr(vm, vcpu, i << (32 + 24) | APIC_INT_ASSERT | (j << 8));
++			__test_icr(vm, vcpu, i << (32 + 24) | icr | (j << 8));
+ 	}
+ 
+ 	/* And again with a shorthand destination for all types of IPIs. */
+-- 
+2.27.0
 
