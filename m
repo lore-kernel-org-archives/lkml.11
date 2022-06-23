@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C247CCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6FECCA490
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232689AbiFWQrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:47:03 -0400
+        id S232658AbiFWQq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:46:59 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232537AbiFWQq0 (ORCPT
+        with ESMTP id S232524AbiFWQqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:46:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1939148E74;
-        Thu, 23 Jun 2022 09:46:25 -0700 (PDT)
+        Thu, 23 Jun 2022 12:46:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595CD49936;
+        Thu, 23 Jun 2022 09:46:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EE3561F8B;
-        Thu, 23 Jun 2022 16:46:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E507C3411B;
-        Thu, 23 Jun 2022 16:46:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15D52B82491;
+        Thu, 23 Jun 2022 16:46:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42986C3411B;
+        Thu, 23 Jun 2022 16:46:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002783;
-        bh=DVN6U5IhvqaY5Z5ZN0rwL7RjeJmnKnPUZNN85OcuWM0=;
+        s=korg; t=1656002777;
+        bh=OmtL7uH5LUrq5G1PeDdWvk6GgpF+V8JNVcp9Z90LVtY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iDyTDFxUWKawi+HnUCVLODsP9KOyiUNeq0ryGoUZIjzEsur4c3A0StaUj2O4ytmm1
-         nxCj/mRmigquAub72s/ua/OqmWIzkF4miJck2eu7PKc0kWXyji7kLHjHlDE8dkPPiJ
-         ajm7ScXHlyd+gp/PRej5qCQjVMSAYNn+0XoFR9w4=
+        b=Y4ct1HpQNTC97e4rgkTvKYKPzTckEKr1CGkipq/d4muumXyOgLb532ypXevy24HBo
+         kwU7qtGzzfzQSIcpzdwlQqYS1dNs6uRL4RDP2oBmLZJQMNLC/IWdScButM5TVm4guc
+         h1WaITGWxUDMPwM2il7PlOsAD4nrDZXyD7C0qaks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.9 024/264] random: always use batched entropy for get_random_u{32,64}
-Date:   Thu, 23 Jun 2022 18:40:17 +0200
-Message-Id: <20220623164344.752706899@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
+        Qian Cai <cai@lca.pw>, Theodore Tso <tytso@mit.edu>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 022/264] char/random: silence a lockdep splat with printk()
+Date:   Thu, 23 Jun 2022 18:40:15 +0200
+Message-Id: <20220623164344.694143935@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -48,102 +50,274 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 
-commit 69efea712f5b0489e67d07565aad5c94e09a3e52 upstream.
+[ Upstream commit 1b710b1b10eff9d46666064ea25f079f70bc67a8 ]
 
-It turns out that RDRAND is pretty slow. Comparing these two
-constructions:
+Sergey didn't like the locking order,
 
-  for (i = 0; i < CHACHA_BLOCK_SIZE; i += sizeof(ret))
-    arch_get_random_long(&ret);
+uart_port->lock  ->  tty_port->lock
 
-and
+uart_write (uart_port->lock)
+  __uart_start
+    pl011_start_tx
+      pl011_tx_chars
+        uart_write_wakeup
+          tty_port_tty_wakeup
+            tty_port_default
+              tty_port_tty_get (tty_port->lock)
 
-  long buf[CHACHA_BLOCK_SIZE / sizeof(long)];
-  extract_crng((u8 *)buf);
+but those code is so old, and I have no clue how to de-couple it after
+checking other locks in the splat. There is an onging effort to make all
+printk() as deferred, so until that happens, workaround it for now as a
+short-term fix.
 
-it amortizes out to 352 cycles per long for the top one and 107 cycles
-per long for the bottom one, on Coffee Lake Refresh, Intel Core i9-9880H.
+LTP: starting iogen01 (export LTPROOT; rwtest -N iogen01 -i 120s -s
+read,write -Da -Dv -n 2 500b:$TMPDIR/doio.f1.$$
+1000b:$TMPDIR/doio.f2.$$)
+WARNING: possible circular locking dependency detected
+------------------------------------------------------
+doio/49441 is trying to acquire lock:
+ffff008b7cff7290 (&(&zone->lock)->rlock){..-.}, at: rmqueue+0x138/0x2050
 
-And importantly, the top one has the drawback of not benefiting from the
-real rng, whereas the bottom one has all the nice benefits of using our
-own chacha rng. As get_random_u{32,64} gets used in more places (perhaps
-beyond what it was originally intended for when it was introduced as
-get_random_{int,long} back in the md5 monstrosity era), it seems like it
-might be a good thing to strengthen its posture a tiny bit. Doing this
-should only be stronger and not any weaker because that pool is already
-initialized with a bunch of rdrand data (when available). This way, we
-get the benefits of the hardware rng as well as our own rng.
+but task is already holding lock:
+60ff000822352818 (&pool->lock/1){-.-.}, at: start_flush_work+0xd8/0x3f0
 
-Another benefit of this is that we no longer hit pitfalls of the recent
-stream of AMD bugs in RDRAND. One often used code pattern for various
-things is:
+  which lock already depends on the new lock.
 
-  do {
-  	val = get_random_u32();
-  } while (hash_table_contains_key(val));
+  the existing dependency chain (in reverse order) is:
 
-That recent AMD bug rendered that pattern useless, whereas we're really
-very certain that chacha20 output will give pretty distributed numbers,
-no matter what.
+  -> #4 (&pool->lock/1){-.-.}:
+       lock_acquire+0x320/0x360
+       _raw_spin_lock+0x64/0x80
+       __queue_work+0x4b4/0xa10
+       queue_work_on+0xac/0x11c
+       tty_schedule_flip+0x84/0xbc
+       tty_flip_buffer_push+0x1c/0x28
+       pty_write+0x98/0xd0
+       n_tty_write+0x450/0x60c
+       tty_write+0x338/0x474
+       __vfs_write+0x88/0x214
+       vfs_write+0x12c/0x1a4
+       redirected_tty_write+0x90/0xdc
+       do_loop_readv_writev+0x140/0x180
+       do_iter_write+0xe0/0x10c
+       vfs_writev+0x134/0x1cc
+       do_writev+0xbc/0x130
+       __arm64_sys_writev+0x58/0x8c
+       el0_svc_handler+0x170/0x240
+       el0_sync_handler+0x150/0x250
+       el0_sync+0x164/0x180
 
-So, this simplification seems better both from a security perspective
-and from a performance perspective.
+  -> #3 (&(&port->lock)->rlock){-.-.}:
+       lock_acquire+0x320/0x360
+       _raw_spin_lock_irqsave+0x7c/0x9c
+       tty_port_tty_get+0x24/0x60
+       tty_port_default_wakeup+0x1c/0x3c
+       tty_port_tty_wakeup+0x34/0x40
+       uart_write_wakeup+0x28/0x44
+       pl011_tx_chars+0x1b8/0x270
+       pl011_start_tx+0x24/0x70
+       __uart_start+0x5c/0x68
+       uart_write+0x164/0x1c8
+       do_output_char+0x33c/0x348
+       n_tty_write+0x4bc/0x60c
+       tty_write+0x338/0x474
+       redirected_tty_write+0xc0/0xdc
+       do_loop_readv_writev+0x140/0x180
+       do_iter_write+0xe0/0x10c
+       vfs_writev+0x134/0x1cc
+       do_writev+0xbc/0x130
+       __arm64_sys_writev+0x58/0x8c
+       el0_svc_handler+0x170/0x240
+       el0_sync_handler+0x150/0x250
+       el0_sync+0x164/0x180
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20200221201037.30231-1-Jason@zx2c4.com
+  -> #2 (&port_lock_key){-.-.}:
+       lock_acquire+0x320/0x360
+       _raw_spin_lock+0x64/0x80
+       pl011_console_write+0xec/0x2cc
+       console_unlock+0x794/0x96c
+       vprintk_emit+0x260/0x31c
+       vprintk_default+0x54/0x7c
+       vprintk_func+0x218/0x254
+       printk+0x7c/0xa4
+       register_console+0x734/0x7b0
+       uart_add_one_port+0x734/0x834
+       pl011_register_port+0x6c/0xac
+       sbsa_uart_probe+0x234/0x2ec
+       platform_drv_probe+0xd4/0x124
+       really_probe+0x250/0x71c
+       driver_probe_device+0xb4/0x200
+       __device_attach_driver+0xd8/0x188
+       bus_for_each_drv+0xbc/0x110
+       __device_attach+0x120/0x220
+       device_initial_probe+0x20/0x2c
+       bus_probe_device+0x54/0x100
+       device_add+0xae8/0xc2c
+       platform_device_add+0x278/0x3b8
+       platform_device_register_full+0x238/0x2ac
+       acpi_create_platform_device+0x2dc/0x3a8
+       acpi_bus_attach+0x390/0x3cc
+       acpi_bus_attach+0x108/0x3cc
+       acpi_bus_attach+0x108/0x3cc
+       acpi_bus_attach+0x108/0x3cc
+       acpi_bus_scan+0x7c/0xb0
+       acpi_scan_init+0xe4/0x304
+       acpi_init+0x100/0x114
+       do_one_initcall+0x348/0x6a0
+       do_initcall_level+0x190/0x1fc
+       do_basic_setup+0x34/0x4c
+       kernel_init_freeable+0x19c/0x260
+       kernel_init+0x18/0x338
+       ret_from_fork+0x10/0x18
+
+  -> #1 (console_owner){-...}:
+       lock_acquire+0x320/0x360
+       console_lock_spinning_enable+0x6c/0x7c
+       console_unlock+0x4f8/0x96c
+       vprintk_emit+0x260/0x31c
+       vprintk_default+0x54/0x7c
+       vprintk_func+0x218/0x254
+       printk+0x7c/0xa4
+       get_random_u64+0x1c4/0x1dc
+       shuffle_pick_tail+0x40/0xac
+       __free_one_page+0x424/0x710
+       free_one_page+0x70/0x120
+       __free_pages_ok+0x61c/0xa94
+       __free_pages_core+0x1bc/0x294
+       memblock_free_pages+0x38/0x48
+       __free_pages_memory+0xcc/0xfc
+       __free_memory_core+0x70/0x78
+       free_low_memory_core_early+0x148/0x18c
+       memblock_free_all+0x18/0x54
+       mem_init+0xb4/0x17c
+       mm_init+0x14/0x38
+       start_kernel+0x19c/0x530
+
+  -> #0 (&(&zone->lock)->rlock){..-.}:
+       validate_chain+0xf6c/0x2e2c
+       __lock_acquire+0x868/0xc2c
+       lock_acquire+0x320/0x360
+       _raw_spin_lock+0x64/0x80
+       rmqueue+0x138/0x2050
+       get_page_from_freelist+0x474/0x688
+       __alloc_pages_nodemask+0x3b4/0x18dc
+       alloc_pages_current+0xd0/0xe0
+       alloc_slab_page+0x2b4/0x5e0
+       new_slab+0xc8/0x6bc
+       ___slab_alloc+0x3b8/0x640
+       kmem_cache_alloc+0x4b4/0x588
+       __debug_object_init+0x778/0x8b4
+       debug_object_init_on_stack+0x40/0x50
+       start_flush_work+0x16c/0x3f0
+       __flush_work+0xb8/0x124
+       flush_work+0x20/0x30
+       xlog_cil_force_lsn+0x88/0x204 [xfs]
+       xfs_log_force_lsn+0x128/0x1b8 [xfs]
+       xfs_file_fsync+0x3c4/0x488 [xfs]
+       vfs_fsync_range+0xb0/0xd0
+       generic_write_sync+0x80/0xa0 [xfs]
+       xfs_file_buffered_aio_write+0x66c/0x6e4 [xfs]
+       xfs_file_write_iter+0x1a0/0x218 [xfs]
+       __vfs_write+0x1cc/0x214
+       vfs_write+0x12c/0x1a4
+       ksys_write+0xb0/0x120
+       __arm64_sys_write+0x54/0x88
+       el0_svc_handler+0x170/0x240
+       el0_sync_handler+0x150/0x250
+       el0_sync+0x164/0x180
+
+       other info that might help us debug this:
+
+ Chain exists of:
+   &(&zone->lock)->rlock --> &(&port->lock)->rlock --> &pool->lock/1
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&pool->lock/1);
+                               lock(&(&port->lock)->rlock);
+                               lock(&pool->lock/1);
+  lock(&(&zone->lock)->rlock);
+
+                *** DEADLOCK ***
+
+4 locks held by doio/49441:
+ #0: a0ff00886fc27408 (sb_writers#8){.+.+}, at: vfs_write+0x118/0x1a4
+ #1: 8fff00080810dfe0 (&xfs_nondir_ilock_class){++++}, at:
+xfs_ilock+0x2a8/0x300 [xfs]
+ #2: ffff9000129f2390 (rcu_read_lock){....}, at:
+rcu_lock_acquire+0x8/0x38
+ #3: 60ff000822352818 (&pool->lock/1){-.-.}, at:
+start_flush_work+0xd8/0x3f0
+
+               stack backtrace:
+CPU: 48 PID: 49441 Comm: doio Tainted: G        W
+Hardware name: HPE Apollo 70             /C01_APACHE_MB         , BIOS
+L50_5.13_1.11 06/18/2019
+Call trace:
+ dump_backtrace+0x0/0x248
+ show_stack+0x20/0x2c
+ dump_stack+0xe8/0x150
+ print_circular_bug+0x368/0x380
+ check_noncircular+0x28c/0x294
+ validate_chain+0xf6c/0x2e2c
+ __lock_acquire+0x868/0xc2c
+ lock_acquire+0x320/0x360
+ _raw_spin_lock+0x64/0x80
+ rmqueue+0x138/0x2050
+ get_page_from_freelist+0x474/0x688
+ __alloc_pages_nodemask+0x3b4/0x18dc
+ alloc_pages_current+0xd0/0xe0
+ alloc_slab_page+0x2b4/0x5e0
+ new_slab+0xc8/0x6bc
+ ___slab_alloc+0x3b8/0x640
+ kmem_cache_alloc+0x4b4/0x588
+ __debug_object_init+0x778/0x8b4
+ debug_object_init_on_stack+0x40/0x50
+ start_flush_work+0x16c/0x3f0
+ __flush_work+0xb8/0x124
+ flush_work+0x20/0x30
+ xlog_cil_force_lsn+0x88/0x204 [xfs]
+ xfs_log_force_lsn+0x128/0x1b8 [xfs]
+ xfs_file_fsync+0x3c4/0x488 [xfs]
+ vfs_fsync_range+0xb0/0xd0
+ generic_write_sync+0x80/0xa0 [xfs]
+ xfs_file_buffered_aio_write+0x66c/0x6e4 [xfs]
+ xfs_file_write_iter+0x1a0/0x218 [xfs]
+ __vfs_write+0x1cc/0x214
+ vfs_write+0x12c/0x1a4
+ ksys_write+0xb0/0x120
+ __arm64_sys_write+0x54/0x88
+ el0_svc_handler+0x170/0x240
+ el0_sync_handler+0x150/0x250
+ el0_sync+0x164/0x180
+
+Reviewed-by: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Signed-off-by: Qian Cai <cai@lca.pw>
+Link: https://lore.kernel.org/r/1573679785-21068-1-git-send-email-cai@lca.pw
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   20 ++++----------------
- 1 file changed, 4 insertions(+), 16 deletions(-)
+ drivers/char/random.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2233,11 +2233,11 @@ struct batched_entropy {
+@@ -1638,8 +1638,9 @@ static void _warn_unseeded_randomness(co
+ 	print_once = true;
+ #endif
+ 	if (__ratelimit(&unseeded_warning))
+-		pr_notice("random: %s called from %pS with crng_init=%d\n",
+-			  func_name, caller, crng_init);
++		printk_deferred(KERN_NOTICE "random: %s called from %pS "
++				"with crng_init=%d\n", func_name, caller,
++				crng_init);
+ }
  
  /*
-  * Get a random word for internal kernel use only. The quality of the random
-- * number is either as good as RDRAND or as good as /dev/urandom, with the
-- * goal of being quite fast and not depleting entropy. In order to ensure
-+ * number is good as /dev/urandom, but there is no backtrack protection, with
-+ * the goal of being quite fast and not depleting entropy. In order to ensure
-  * that the randomness provided by this function is okay, the function
-- * wait_for_random_bytes() should be called and return 0 at least once
-- * at any point prior.
-+ * wait_for_random_bytes() should be called and return 0 at least once at any
-+ * point prior.
-  */
- static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
- 	.batch_lock	= __SPIN_LOCK_UNLOCKED(batched_entropy_u64.lock),
-@@ -2250,15 +2250,6 @@ u64 get_random_u64(void)
- 	struct batched_entropy *batch;
- 	static void *previous;
- 
--#if BITS_PER_LONG == 64
--	if (arch_get_random_long((unsigned long *)&ret))
--		return ret;
--#else
--	if (arch_get_random_long((unsigned long *)&ret) &&
--	    arch_get_random_long((unsigned long *)&ret + 1))
--	    return ret;
--#endif
--
- 	warn_unseeded_randomness(&previous);
- 
- 	batch = raw_cpu_ptr(&batched_entropy_u64);
-@@ -2283,9 +2274,6 @@ u32 get_random_u32(void)
- 	struct batched_entropy *batch;
- 	static void *previous;
- 
--	if (arch_get_random_int(&ret))
--		return ret;
--
- 	warn_unseeded_randomness(&previous);
- 
- 	batch = raw_cpu_ptr(&batched_entropy_u32);
 
 
