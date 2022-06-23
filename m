@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF05CCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC47C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237452AbiFWSWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
+        id S235915AbiFWSYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236829AbiFWSSw (ORCPT
+        with ESMTP id S237608AbiFWSXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:18:52 -0400
+        Thu, 23 Jun 2022 14:23:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339A4647B7;
-        Thu, 23 Jun 2022 10:25:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FA4C2C41;
+        Thu, 23 Jun 2022 10:25:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA73160B79;
-        Thu, 23 Jun 2022 17:25:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89D2CC3411B;
-        Thu, 23 Jun 2022 17:24:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48D3061DC6;
+        Thu, 23 Jun 2022 17:25:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D8AEC3411B;
+        Thu, 23 Jun 2022 17:25:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005099;
-        bh=hqzuFkqJZfZ2xw66ZjW5NeLcs8PlIC6Yzab2noj3OdM=;
+        s=korg; t=1656005132;
+        bh=jBL5LPWzIe5LTcpmUu/vq8dj06VeJFEUWnOKZtuluVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OQfntXg1188KUKr9JXf5EzFxhKy0EAR5xejfPR5Hxo09lr4QimdA5PqW0brDTOPTh
-         Wv3oL29nVIFuS4IwhVTX/ghEzmT7C4KDfEMn/GcSTsvuQrL2/YYPXcMBU/c7jKFtPD
-         lslBexq7buCBjHMCCKGGpKi+fxyfRuQmeC1Y4OLw=
+        b=aGB3Qvrj7MLD4qVt6r7yfJ8Vit1uUOiv9hb5TFTrMop9bdnJWbg41f2VDtl9z/z6W
+         8YsyxONI0wBJiT/nV89dGF/7IjTAmPhbawkmAfDcy1CMifHiqXc8JhBGg4FYe/C61r
+         cse/q33sPiM4nfbul/YvA+y9MjsVDX5gv5hkmLR4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.4 08/11] tcp: increase source port perturb table to 2^16
-Date:   Thu, 23 Jun 2022 18:45:12 +0200
-Message-Id: <20220623164321.442250829@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Liska <mliska@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.18 04/11] eth: sun: cassini: remove dead code
+Date:   Thu, 23 Jun 2022 18:45:16 +0200
+Message-Id: <20220623164322.444430614@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164321.195163701@linuxfoundation.org>
-References: <20220623164321.195163701@linuxfoundation.org>
+In-Reply-To: <20220623164322.315085512@linuxfoundation.org>
+References: <20220623164322.315085512@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,60 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Martin Liška <mliska@suse.cz>
 
-commit 4c2c8f03a5ab7cb04ec64724d7d176d00bcc91e5 upstream.
+commit 32329216ca1d6ee29c41215f18b3053bb6158541 upstream.
 
-Moshe Kol, Amit Klein, and Yossi Gilad reported being able to accurately
-identify a client by forcing it to emit only 40 times more connections
-than there are entries in the table_perturb[] table. The previous two
-improvements consisting in resalting the secret every 10s and adding
-randomness to each port selection only slightly improved the situation,
-and the current value of 2^8 was too small as it's not very difficult
-to make a client emit 10k connections in less than 10 seconds.
+Fixes the following GCC warning:
 
-Thus we're increasing the perturb table from 2^8 to 2^16 so that the
-same precision now requires 2.6M connections, which is more difficult in
-this time frame and harder to hide as a background activity. The impact
-is that the table now uses 256 kB instead of 1 kB, which could mostly
-affect devices making frequent outgoing connections. However such
-components usually target a small set of destinations (load balancers,
-database clients, perf assessment tools), and in practice only a few
-entries will be visited, like before.
+drivers/net/ethernet/sun/cassini.c:1316:29: error: comparison between two arrays [-Werror=array-compare]
+drivers/net/ethernet/sun/cassini.c:3783:34: error: comparison between two arrays [-Werror=array-compare]
 
-A live test at 1 million connections per second showed no performance
-difference from the previous value.
+Note that 2 arrays should be compared by comparing of their addresses:
+note: use ‘&cas_prog_workaroundtab[0] == &cas_prog_null[0]’ to compare the addresses
 
-Reported-by: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Reported-by: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Reported-by: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Cc: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Martin Liska <mliska@suse.cz>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/inet_hashtables.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/sun/cassini.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -675,11 +675,12 @@ EXPORT_SYMBOL_GPL(inet_unhash);
-  * Note that we use 32bit integers (vs RFC 'short integers')
-  * because 2^16 is not a multiple of num_ephemeral and this
-  * property might be used by clever attacker.
-- * RFC claims using TABLE_LENGTH=10 buckets gives an improvement,
-- * we use 256 instead to really give more isolation and
-- * privacy, this only consumes 1 KB of kernel memory.
-+ * RFC claims using TABLE_LENGTH=10 buckets gives an improvement, though
-+ * attacks were since demonstrated, thus we use 65536 instead to really
-+ * give more isolation and privacy, at the expense of 256kB of kernel
-+ * memory.
-  */
--#define INET_TABLE_PERTURB_SHIFT 8
-+#define INET_TABLE_PERTURB_SHIFT 16
- #define INET_TABLE_PERTURB_SIZE (1 << INET_TABLE_PERTURB_SHIFT)
- static u32 *table_perturb;
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -1313,7 +1313,7 @@ static void cas_init_rx_dma(struct cas *
+ 	writel(val, cp->regs + REG_RX_PAGE_SIZE);
  
+ 	/* enable the header parser if desired */
+-	if (CAS_HP_FIRMWARE == cas_prog_null)
++	if (&CAS_HP_FIRMWARE[0] == &cas_prog_null[0])
+ 		return;
+ 
+ 	val = CAS_BASE(HP_CFG_NUM_CPU, CAS_NCPUS > 63 ? 0 : CAS_NCPUS);
+@@ -3780,7 +3780,7 @@ static void cas_reset(struct cas *cp, in
+ 
+ 	/* program header parser */
+ 	if ((cp->cas_flags & CAS_FLAG_TARGET_ABORT) ||
+-	    (CAS_HP_ALT_FIRMWARE == cas_prog_null)) {
++	    (&CAS_HP_ALT_FIRMWARE[0] == &cas_prog_null[0])) {
+ 		cas_load_firmware(cp, CAS_HP_FIRMWARE);
+ 	} else {
+ 		cas_load_firmware(cp, CAS_HP_ALT_FIRMWARE);
 
 
