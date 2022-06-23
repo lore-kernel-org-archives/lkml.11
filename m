@@ -2,73 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 171E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE61C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbiFWKgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34836 "EHLO
+        id S230204AbiFWKhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbiFWKgB (ORCPT
+        with ESMTP id S229595AbiFWKhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:36:01 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161B54AE36
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:35:56 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1655980487tlqo1v9w
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 23 Jun 2022 18:34:44 +0800 (CST)
-X-QQ-SSF: 01000000008000B0C000D00A0000000
-X-QQ-FEAT: ke64Y+R1JM3r3XabZSLawLGmZgSSz98nOPJ2NOYVUaL5aK1neRm1f92H9heXi
-        /pPhPH0f3VrBuSfcNwbRqdt0onn4Zj5qtbFlR/cd4ZNMuQVisUcErcK0U4LEv31PV1rsGX0
-        tAGnfQRB7NR3yXhDCG7bXzUe/a5mOcq3HW8CbrKVqaB6v/Z/PMXpTnRrZYhPdvV9prgbf+i
-        s/JYlHJaVPNbDeHMRiyRHoEdtCPTWLrEsNSwD8WJkA7pb+lflnCSE9pIBGWpw0uGgoTbrxe
-        XyKLsSNS69ftBIx31F3ZE1gJvrfSr0mDuonzNBMd6O3X+e3mw952G8sezfG28pHSwcYU4G5
-        RC35yhG/+6sDD5bSWBGdHNbMf3YoUYjYo73Anf6
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     stuyoder@gmail.com, laurentiu.tudor@nxp.com
-Cc:     linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] bus: fsl-mc-msi: drop unexpected word 'for' in comments
-Date:   Thu, 23 Jun 2022 18:34:42 +0800
-Message-Id: <20220623103442.42154-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
+        Thu, 23 Jun 2022 06:37:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C4844A3EB
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:37:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFB6061E91
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:37:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C677C3411B
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:37:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655980655;
+        bh=0Y9nKoXLQwSEF6T0zqCPzYrsrLdHVeldqGjdfHLwb+E=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=KapQCZyVfIKkXgz3eSWxZVJQ5Hl7eggZo0Z4x8tyREwY8gAiB1RPXACIy/Msuuc95
+         ltzViPKtvFWkXWLWCUEbZTuqRdI/byxUHh+aEDQY8ZE9T8ZBnBoju+f4ihd757Q+Sj
+         gC+BbsNxelmc536gav1Ti+kgfB/RXUt8lDQ/MyiRk8ec/B/O00WKnnoStBBVnGojNf
+         DWDdpYLjz0p/x2ay9a0aEknBcowW5s/+0tIsEubsNMhLdrrHIQKcgUTOFEIa+hWydl
+         2r/TfhoYg4RI/nNg1OH0YlhWVO4UUgnA6PfHZKNQefV8ULLJMzkm6cB9xwJeHXQ4Nt
+         qjsjYd9XavyKw==
+Received: by mail-wr1-f43.google.com with SMTP id o8so27339279wro.3
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:37:35 -0700 (PDT)
+X-Gm-Message-State: AJIora+41m+MBJFeiRmanm00MqP2xW/QW+YxdEDl+aV62+DGri0S4kgC
+        Oej/xPzbUepG4uXxFYTpy/7ijaJ3gZ3VihH4RQc=
+X-Google-Smtp-Source: AGRyM1sIu57xuQcFNqy/UpFIU0HcLcSI6SlGGumRH5EjM9SNLOP0lNiix5WMcC0upZxdaoZJZ2m4Gdanu8l1n42Xo6U=
+X-Received: by 2002:a05:6000:1191:b0:21b:a32e:983b with SMTP id
+ g17-20020a056000119100b0021ba32e983bmr5450849wrx.348.1655980653379; Thu, 23
+ Jun 2022 03:37:33 -0700 (PDT)
+MIME-Version: 1.0
+References: <1655541551-3997-1-git-send-email-yangtiezhu@loongson.cn>
+ <CAAhV-H5oaCnRyi0xpzzoUs-VemuQtSEStHHzerZFoAQmEabCdw@mail.gmail.com> <c9123763-a72e-ce2a-83e3-b3e46cec15b3@loongson.cn>
+In-Reply-To: <c9123763-a72e-ce2a-83e3-b3e46cec15b3@loongson.cn>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Thu, 23 Jun 2022 18:37:19 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H4Lv73KnU-+3FeTiHxApwZ8u2dAZbYWDUkkJ_mUOsk3fA@mail.gmail.com>
+Message-ID: <CAAhV-H4Lv73KnU-+3FeTiHxApwZ8u2dAZbYWDUkkJ_mUOsk3fA@mail.gmail.com>
+Subject: Re: [PATCH] LoongArch: Make compute_return_era() return void
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     WANG Xuerui <kernel@xen0n.name>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word 'for' in the comments that need to be dropped
+Hi, Tiezhu,
 
-file - drivers/bus/fsl-mc/fsl-mc-msi.c
-line - 99
+On Thu, Jun 23, 2022 at 5:36 PM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
+>
+>
+>
+> On 06/23/2022 05:26 PM, Huacai Chen wrote:
+> > Hi, Tiezhu,
+> >
+> > On Sat, Jun 18, 2022 at 4:39 PM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
+> >>
+> >> compute_return_era() always returns 0, make it return void,
+> >> and then no need to check its return value for its callers.
+> >>
+> >> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> >> ---
+> >>  arch/loongarch/include/asm/branch.h | 3 +--
+> >>  arch/loongarch/kernel/traps.c       | 3 +--
+> >>  2 files changed, 2 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/arch/loongarch/include/asm/branch.h b/arch/loongarch/include/asm/branch.h
+> >> index 3f33c89..9a133e4 100644
+> >> --- a/arch/loongarch/include/asm/branch.h
+> >> +++ b/arch/loongarch/include/asm/branch.h
+> >> @@ -12,10 +12,9 @@ static inline unsigned long exception_era(struct pt_regs *regs)
+> >>         return regs->csr_era;
+> >>  }
+> >>
+> >> -static inline int compute_return_era(struct pt_regs *regs)
+> >> +static inline void compute_return_era(struct pt_regs *regs)
+> >>  {
+> >>         regs->csr_era += 4;
+> >> -       return 0;
+> >>  }
+> >>
+> >>  #endif /* _ASM_BRANCH_H */
+> >> diff --git a/arch/loongarch/kernel/traps.c b/arch/loongarch/kernel/traps.c
+> >> index e4060f8..1bf58c6 100644
+> >> --- a/arch/loongarch/kernel/traps.c
+> >> +++ b/arch/loongarch/kernel/traps.c
+> >> @@ -475,8 +475,7 @@ asmlinkage void noinstr do_ri(struct pt_regs *regs)
+> >>
+> >>         die_if_kernel("Reserved instruction in kernel code", regs);
+> >>
+> >> -       if (unlikely(compute_return_era(regs) < 0))
+> >> -               goto out;
+> >> +       compute_return_era(regs);
+> > Maybe it is better to simply remove the compute_return_era() function?
+>
+> Good idea, if so, I think we can also remove exception_era(), and then
+> arch/loongarch/include/asm/branch.h can be removed.
+>
+> If you are OK, I will send a v2 patch to remove
+> arch/loongarch/include/asm/branch.h
+After some consideration, I think just taking this version is OK,
+because maybe there will be more callers in future. Thanks.
 
-* IRQ is for for a child device of mc_bus_dev
-
-changed to:
-
-* IRQ is for a child device of mc_bus_dev
-
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/bus/fsl-mc/fsl-mc-msi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/bus/fsl-mc/fsl-mc-msi.c b/drivers/bus/fsl-mc/fsl-mc-msi.c
-index 0cfe859a4ac4..df3318f1a292 100644
---- a/drivers/bus/fsl-mc/fsl-mc-msi.c
-+++ b/drivers/bus/fsl-mc/fsl-mc-msi.c
-@@ -96,7 +96,7 @@ static void __fsl_mc_msi_write_msg(struct fsl_mc_device *mc_bus_dev,
- 		}
- 	} else {
- 		/*
--		 * IRQ is for for a child device of mc_bus_dev
-+		 * IRQ is for a child device of mc_bus_dev
- 		 */
- 		error = dprc_set_obj_irq(mc_bus_dev->mc_io,
- 					 MC_CMD_FLAG_INTR_DIS | MC_CMD_FLAG_PRI,
--- 
-2.17.1
-
+Huacai
+>
+> Thanks,
+> Tiezhu
+>
+> >
+> > Huacai
+> >>
+> >>         if (unlikely(get_user(opcode, era) < 0)) {
+> >>                 status = SIGSEGV;
+> >> --
+> >> 2.1.0
+> >>
+>
