@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B953C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37821C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233130AbiFWRRU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42872 "EHLO
+        id S233141AbiFWRRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbiFWRLn (ORCPT
+        with ESMTP id S231959AbiFWRMV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:11:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B43517AB7;
-        Thu, 23 Jun 2022 09:50:47 -0700 (PDT)
+        Thu, 23 Jun 2022 13:12:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC3C13D5A;
+        Thu, 23 Jun 2022 09:57:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10C8261FBF;
-        Thu, 23 Jun 2022 16:50:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E83F5C3411B;
-        Thu, 23 Jun 2022 16:50:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7C1DB82495;
+        Thu, 23 Jun 2022 16:57:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2F64C341C4;
+        Thu, 23 Jun 2022 16:57:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003046;
-        bh=NngK8zJ9xOgR7UIyAU/43ZE+nhhVWSxmb/OOH9fQejc=;
+        s=korg; t=1656003473;
+        bh=UHfzWZ17enTshJAv77LTshGmYK29RVb2TySaQdEy0yI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nnSsJX18XgOwVTCTD99q6/zwGBt6hRCvaLVCQ4HXhJGWaBr0hmxdtLsf5woJ49Iqn
-         7cRKHImwgRGekNGjytWwRsDjRzT8rKK6+avBV8NZM0/MDwvmw5iUKoHhMACqhvGlvT
-         86dCiDeSLKAs+heGDyNF3Ri4euLOXLz6cKp4KYaQ=
+        b=QArhG6GicHy8sTiH9PkoA6es+s1GmT3auT2qEuxDBZJ/5z5DN24vq5dKIiOOr0IGH
+         soksgMEXHHdtsSBYCfhkIEcENf6SRbmIt08PDUEhuBW9pjA7zguRFgKPvrWeLpc4BO
+         UJrLTHWVkN4BPY5wgNnAUE7vlDq7GdpnmRXEB3Dc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 085/264] random: do not re-init if crng_reseed completes before primary init
-Date:   Thu, 23 Jun 2022 18:41:18 +0200
-Message-Id: <20220623164346.474751240@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Zhang Yi <yi.zhang@huawei.com>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.9 249/264] ext4: add reserved GDT blocks check
+Date:   Thu, 23 Jun 2022 18:44:02 +0200
+Message-Id: <20220623164351.114851003@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,39 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-commit 9c3ddde3f811aabbb83778a2a615bf141b4909ef upstream.
+commit b55c3cd102a6f48b90e61c44f7f3dda8c290c694 upstream.
 
-If the bootloader supplies sufficient material and crng_reseed() is called
-very early on, but not too early that wqs aren't available yet, then we
-might transition to crng_init==2 before rand_initialize()'s call to
-crng_initialize_primary() made. Then, when crng_initialize_primary() is
-called, if we're trusting the CPU's RDRAND instructions, we'll
-needlessly reinitialize the RNG and emit a message about it. This is
-mostly harmless, as numa_crng_init() will allocate and then free what it
-just allocated, and excessive calls to invalidate_batched_entropy()
-aren't so harmful. But it is funky and the extra message is confusing,
-so avoid the re-initialization all together by checking for crng_init <
-2 in crng_initialize_primary(), just as we already do in crng_reseed().
+We capture a NULL pointer issue when resizing a corrupt ext4 image which
+is freshly clear resize_inode feature (not run e2fsck). It could be
+simply reproduced by following steps. The problem is because of the
+resize_inode feature was cleared, and it will convert the filesystem to
+meta_bg mode in ext4_resize_fs(), but the es->s_reserved_gdt_blocks was
+not reduced to zero, so could we mistakenly call reserve_backup_gdb()
+and passing an uninitialized resize_inode to it when adding new group
+descriptors.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+ mkfs.ext4 /dev/sda 3G
+ tune2fs -O ^resize_inode /dev/sda #forget to run requested e2fsck
+ mount /dev/sda /mnt
+ resize2fs /dev/sda 8G
+
+ ========
+ BUG: kernel NULL pointer dereference, address: 0000000000000028
+ CPU: 19 PID: 3243 Comm: resize2fs Not tainted 5.18.0-rc7-00001-gfde086c5ebfd #748
+ ...
+ RIP: 0010:ext4_flex_group_add+0xe08/0x2570
+ ...
+ Call Trace:
+  <TASK>
+  ext4_resize_fs+0xbec/0x1660
+  __ext4_ioctl+0x1749/0x24e0
+  ext4_ioctl+0x12/0x20
+  __x64_sys_ioctl+0xa6/0x110
+  do_syscall_64+0x3b/0x90
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f2dd739617b
+ ========
+
+The fix is simple, add a check in ext4_resize_begin() to make sure that
+the es->s_reserved_gdt_blocks is zero when the resize_inode feature is
+disabled.
+
+Cc: stable@kernel.org
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220601092717.763694-1-yi.zhang@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/resize.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -829,7 +829,7 @@ static void __init crng_initialize_prima
- {
- 	memcpy(&crng->state[0], "expand 32-byte k", 16);
- 	_extract_entropy(&input_pool, &crng->state[4], sizeof(__u32) * 12, 0);
--	if (crng_init_try_arch_early(crng) && trust_cpu) {
-+	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
- 		numa_crng_init();
- 		crng_init = 2;
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -52,6 +52,16 @@ int ext4_resize_begin(struct super_block
+ 		return -EPERM;
+ 
+ 	/*
++	 * If the reserved GDT blocks is non-zero, the resize_inode feature
++	 * should always be set.
++	 */
++	if (EXT4_SB(sb)->s_es->s_reserved_gdt_blocks &&
++	    !ext4_has_feature_resize_inode(sb)) {
++		ext4_error(sb, "resize_inode disabled but reserved GDT blocks non-zero");
++		return -EFSCORRUPTED;
++	}
++
++	/*
+ 	 * If we are not using the primary superblock/GDT copy don't resize,
+          * because the user tools have no way of handling this.  Probably a
+          * bad time to do it anyways.
 
 
