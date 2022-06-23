@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C96FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 447EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236533AbiFWSMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59188 "EHLO
+        id S236071AbiFWSNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236373AbiFWSLu (ORCPT
+        with ESMTP id S234085AbiFWSMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:11:50 -0400
+        Thu, 23 Jun 2022 14:12:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FECBD5DB;
-        Thu, 23 Jun 2022 10:20:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3D9BD5FC;
+        Thu, 23 Jun 2022 10:20:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AB0DB824C0;
-        Thu, 23 Jun 2022 17:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86124C3411B;
-        Thu, 23 Jun 2022 17:20:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E458B82490;
+        Thu, 23 Jun 2022 17:20:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6554C3411B;
+        Thu, 23 Jun 2022 17:20:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004818;
-        bh=wvyHoClL7ERvP595o/9+eYZSIUBBJhySOGYGJJR06BA=;
+        s=korg; t=1656004825;
+        bh=IVqg8u+gF0ORv3w81IDPWbZ8HpMy12YNLIg3Mycg8fk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Iw8Uw+uhauEWgfzCdzh+ZS5n2V+0kWyPDRlxT16mV4Fw/uEaiHvyqZoa1X+bTZxCh
-         3PfBiccoePL9VqaXNWMWxFqzsIZJWqWZq7XB+45SDfI8TZ/J/ztDkTIYTJODMxXtDl
-         z6EBiEeF/Bj0K6Sko5EF6xnCtkOleUOlGFV5MFTU=
+        b=X09bLFR+sWOQ46JBCHF+z0rr6IBt5QYnRecp8z7KKdt7P4cneSaHP3p53U7Xc5Ngf
+         H4ukPLtqd5DdKa6IKYLNlhrOISU7p4c0XLrLv4vORkUyu+wfDp/QavRtrfDLCrnFKf
+         TfHuiIak/ySVW/ugbphGCyrDgfvoeKOzfmALP52g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 159/234] random: use proper jiffies comparison macro
-Date:   Thu, 23 Jun 2022 18:43:46 +0200
-Message-Id: <20220623164347.553547856@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 161/234] random: credit architectural init the exact amount
+Date:   Thu, 23 Jun 2022 18:43:48 +0200
+Message-Id: <20220623164347.610451960@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,27 +51,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 8a5b8a4a4ceb353b4dd5bafd09e2b15751bcdb51 upstream.
+commit 12e45a2a6308105469968951e6d563e8f4fea187 upstream.
 
-This expands to exactly the same code that it replaces, but makes things
-consistent by using the same macro for jiffy comparisons throughout.
+RDRAND and RDSEED can fail sometimes, which is fine. We currently
+initialize the RNG with 512 bits of RDRAND/RDSEED. We only need 256 bits
+of those to succeed in order to initialize the RNG. Instead of the
+current "all or nothing" approach, actually credit these contributions
+the amount that is actually contributed.
 
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -324,7 +324,7 @@ static bool crng_has_old_seed(void)
- 			interval = max_t(unsigned int, CRNG_RESEED_START_INTERVAL,
- 					 (unsigned int)uptime / 2 * HZ);
- 	}
--	return time_after(jiffies, READ_ONCE(base_crng.birth) + interval);
-+	return time_is_before_jiffies(READ_ONCE(base_crng.birth) + interval);
- }
+@@ -891,9 +891,8 @@ early_param("random.trust_bootloader", p
+  */
+ int __init random_init(const char *command_line)
+ {
+-	size_t i;
+ 	ktime_t now = ktime_get_real();
+-	bool arch_init = true;
++	unsigned int i, arch_bytes;
+ 	unsigned long rv;
  
- /*
+ #if defined(LATENT_ENTROPY_PLUGIN)
+@@ -901,11 +900,12 @@ int __init random_init(const char *comma
+ 	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
+ #endif
+ 
+-	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
++	for (i = 0, arch_bytes = BLAKE2S_BLOCK_SIZE;
++	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
+ 		if (!arch_get_random_seed_long_early(&rv) &&
+ 		    !arch_get_random_long_early(&rv)) {
+ 			rv = random_get_entropy();
+-			arch_init = false;
++			arch_bytes -= sizeof(rv);
+ 		}
+ 		_mix_pool_bytes(&rv, sizeof(rv));
+ 	}
+@@ -916,8 +916,8 @@ int __init random_init(const char *comma
+ 
+ 	if (crng_ready())
+ 		crng_reseed();
+-	else if (arch_init && trust_cpu)
+-		credit_init_bits(BLAKE2S_BLOCK_SIZE * 8);
++	else if (trust_cpu)
++		credit_init_bits(arch_bytes * 8);
+ 
+ 	return 0;
+ }
 
 
