@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A18F2CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F0DCCA48A
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232586AbiFWQqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
+        id S232508AbiFWQqr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232478AbiFWQqQ (ORCPT
+        with ESMTP id S232450AbiFWQqL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:46:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD2349241;
-        Thu, 23 Jun 2022 09:46:11 -0700 (PDT)
+        Thu, 23 Jun 2022 12:46:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AF648899;
+        Thu, 23 Jun 2022 09:46:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 324AAB82486;
-        Thu, 23 Jun 2022 16:46:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C90C3411B;
-        Thu, 23 Jun 2022 16:46:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED52761F99;
+        Thu, 23 Jun 2022 16:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB2B9C3411B;
+        Thu, 23 Jun 2022 16:46:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002769;
-        bh=TrzbbqsCtrXJjCT0Qc2UXZVSDOTNsRyLQf4EYboMBUU=;
+        s=korg; t=1656002766;
+        bh=zfjYakhufALYOcCw1/8OMrfMmpo4S54sJyp1TLq0JQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Doz0k7zzCS38aNrlHRWujsyHrndUWieUJA97BvPk0YiKeFoaaG0rUkV6zkf6dZMa5
-         dekePoYX5FgdVD9TbOrJDRyzjDBwHyaTQEwafJA3DMZuVPCqTVWj+e8zWnTTKEOAu/
-         BTlaTj7y1AYi4lWGz3De/oVflPEmrUsVEj70VAMY=
+        b=dJRTnd3kWZgHeyzyXfJ1k+BhignxF2tnOlsRpCUIgY8kOQGe8rxXbMAwV6nRggC7k
+         B8AvFIf1NTWBeC1t3ipD4ZTipqmoXZ8f3i1i1SVjfSy//OAgxAT/SUePuUtdfRi6np
+         taN0yfkPSvSQwJwgVdmbAz4tNTm83uFn7J94HhyQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephan Mueller <smueller@chronox.de>,
-        Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 002/264] random: remove stale maybe_reseed_primary_crng
-Date:   Thu, 23 Jun 2022 18:39:55 +0200
-Message-Id: <20220623164344.127505498@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        syzbot+9de458f6a5e713ee8c1a@syzkaller.appspotmail.com,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.9 019/264] random: fix possible sleeping allocation from irq context
+Date:   Thu, 23 Jun 2022 18:40:12 +0200
+Message-Id: <20220623164344.609507273@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,36 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Mueller <stephan.mueller@atsec.com>
+From: Theodore Ts'o <tytso@mit.edu>
 
-commit 3d071d8da1f586c24863a57349586a1611b9aa67 upstream.
+commit 6c1e851c4edc13a43adb3ea4044e3fc8f43ccf7d upstream.
 
-The function maybe_reseed_primary_crng is not used anywhere and thus can
-be removed.
+We can do a sleeping allocation from an irq context when CONFIG_NUMA
+is enabled.  Fix this by initializing the NUMA crng instances in a
+workqueue.
 
-Signed-off-by: Stephan Mueller <smueller@chronox.de>
+Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Reported-by: syzbot+9de458f6a5e713ee8c1a@syzkaller.appspotmail.com
+Fixes: 8ef35c866f8862df ("random: set up the NUMA crng instances...")
+Cc: stable@vger.kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    7 -------
- 1 file changed, 7 deletions(-)
+ drivers/char/random.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -931,13 +931,6 @@ static void crng_reseed(struct crng_stat
- 	spin_unlock_irqrestore(&crng->lock, flags);
+@@ -800,7 +800,7 @@ static void crng_initialize(struct crng_
  }
  
--static inline void maybe_reseed_primary_crng(void)
--{
--	if (crng_init > 2 &&
--	    time_after(jiffies, primary_crng.init_time + CRNG_RESEED_INTERVAL))
--		crng_reseed(&primary_crng, &input_pool);
--}
--
- static inline void crng_wait_ready(void)
+ #ifdef CONFIG_NUMA
+-static void numa_crng_init(void)
++static void do_numa_crng_init(struct work_struct *work)
  {
- 	wait_event_interruptible(crng_init_wait, crng_ready());
+ 	int i;
+ 	struct crng_state *crng;
+@@ -821,6 +821,13 @@ static void numa_crng_init(void)
+ 		kfree(pool);
+ 	}
+ }
++
++static DECLARE_WORK(numa_crng_init_work, do_numa_crng_init);
++
++static void numa_crng_init(void)
++{
++	schedule_work(&numa_crng_init_work);
++}
+ #else
+ static void numa_crng_init(void) {}
+ #endif
 
 
