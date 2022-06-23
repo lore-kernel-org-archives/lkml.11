@@ -2,460 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A88FDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 842C2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231863AbiFWMsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 08:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58952 "EHLO
+        id S231731AbiFWMsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 08:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231558AbiFWMsG (ORCPT
+        with ESMTP id S231575AbiFWMsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 08:48:06 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 468F4193F1
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 05:48:04 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3E8FA15BF;
-        Thu, 23 Jun 2022 05:48:04 -0700 (PDT)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E87993F534;
-        Thu, 23 Jun 2022 05:48:02 -0700 (PDT)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, vincent.guittot@linaro.org,
-        f.fainelli@gmail.com, Cristian Marussi <cristian.marussi@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 5/5] firmware: arm_scmi: Add SCMI System Power Control driver
-Date:   Thu, 23 Jun 2022 13:47:42 +0100
-Message-Id: <20220623124742.2492164-6-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220623124742.2492164-1-cristian.marussi@arm.com>
-References: <20220623124742.2492164-1-cristian.marussi@arm.com>
+        Thu, 23 Jun 2022 08:48:07 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9603444752;
+        Thu, 23 Jun 2022 05:48:05 -0700 (PDT)
+Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LTKlp4fpKz6GD3M;
+        Thu, 23 Jun 2022 20:47:34 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 23 Jun 2022 14:48:03 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 23 Jun 2022 13:48:00 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <hch@lst.de>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH] scsi: hisi_sas: Limit max hw sectors for v3 HW
+Date:   Thu, 23 Jun 2022 20:41:59 +0800
+Message-ID: <1655988119-223714-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an SCMI System Power control driver to handle platform's requests
-carried by SYSTEM_POWER_STATE_NOTIFIER notifications: such platform
-requested system-wide power state transitions are handled accordingly,
-gracefully or forcefully, depending on the notifications' message flags.
+If the controller is behind an IOMMU then the IOMMU IOVA caching range can
+affect performance, as discussed in [0].
 
-Graceful requests are relayed to userspace using the same Kernel API used
-to handle ACPI Shutdown bus events.
+Limit the max HW sectors to not exceed this limit. We need to hardcode
+the value until a proper DMA mapping API is available.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+[0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
+
+Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/firmware/arm_scmi/Kconfig             |  12 +
- drivers/firmware/arm_scmi/Makefile            |   1 +
- .../firmware/arm_scmi/scmi_power_control.c    | 362 ++++++++++++++++++
- 3 files changed, 375 insertions(+)
- create mode 100644 drivers/firmware/arm_scmi/scmi_power_control.c
+This patch is intended as something which I can backport to stable.
+Series [1] is a proper fix but stuck, but I would not plan to backport
+it anyway.
+[1] https://lore.kernel.org/linux-scsi/1654507822-168026-1-git-send-email-john.garry@huawei.com/T/#m069f33edd547533301e2af156ebd6badee199dea
 
-diff --git a/drivers/firmware/arm_scmi/Kconfig b/drivers/firmware/arm_scmi/Kconfig
-index cb5d97c2d8bc..c9bcfab00b76 100644
---- a/drivers/firmware/arm_scmi/Kconfig
-+++ b/drivers/firmware/arm_scmi/Kconfig
-@@ -162,4 +162,16 @@ config ARM_SCMI_POWER_DOMAIN
- 	  will be called scmi_pm_domain. Note this may needed early in boot
- 	  before rootfs may be available.
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 7d819fc0395e..eb86afb21aab 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -2782,6 +2782,7 @@ static int slave_configure_v3_hw(struct scsi_device *sdev)
+ 	struct hisi_hba *hisi_hba = shost_priv(shost);
+ 	struct device *dev = hisi_hba->dev;
+ 	int ret = sas_slave_configure(sdev);
++	unsigned int max_sectors;
  
-+config ARM_SCMI_POWER_CONTROL
-+	tristate "SCMI system power control driver"
-+	depends on ARM_SCMI_PROTOCOL || (COMPILE_TEST && OF)
-+	help
-+	  This enables System Power control logic which binds system shutdown or
-+	  reboot actions to SCMI System Power notifications generated by SCP
-+	  firmware.
-+
-+	  This driver can also be built as a module.  If so, the module will be
-+	  called scmi_power_control. Note this may needed early in boot to catch
-+	  early shutdown/reboot SCMI requests.
-+
- endmenu
-diff --git a/drivers/firmware/arm_scmi/Makefile b/drivers/firmware/arm_scmi/Makefile
-index a02dc8ce5a7f..9ea86f8cc8f7 100644
---- a/drivers/firmware/arm_scmi/Makefile
-+++ b/drivers/firmware/arm_scmi/Makefile
-@@ -12,6 +12,7 @@ scmi-module-objs := $(scmi-bus-y) $(scmi-driver-y) $(scmi-protocols-y) \
- 		    $(scmi-transport-y)
- obj-$(CONFIG_ARM_SCMI_PROTOCOL) += scmi-module.o
- obj-$(CONFIG_ARM_SCMI_POWER_DOMAIN) += scmi_pm_domain.o
-+obj-$(CONFIG_ARM_SCMI_POWER_CONTROL) += scmi_power_control.o
+ 	if (ret)
+ 		return ret;
+@@ -2799,6 +2800,12 @@ static int slave_configure_v3_hw(struct scsi_device *sdev)
+ 		}
+ 	}
  
- ifeq ($(CONFIG_THUMB2_KERNEL)$(CONFIG_CC_IS_CLANG),yy)
- # The use of R7 in the SMCCC conflicts with the compiler's use of R7 as a frame
-diff --git a/drivers/firmware/arm_scmi/scmi_power_control.c b/drivers/firmware/arm_scmi/scmi_power_control.c
-new file mode 100644
-index 000000000000..6eb7d2a4b6b1
---- /dev/null
-+++ b/drivers/firmware/arm_scmi/scmi_power_control.c
-@@ -0,0 +1,362 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * SCMI Generic SystemPower Control driver.
-+ *
-+ * Copyright (C) 2020-2022 ARM Ltd.
-+ */
-+/*
-+ * In order to handle platform originated SCMI SystemPower requests (like
-+ * shutdowns or cold/warm resets) we register an SCMI Notification notifier
-+ * block to react when such SCMI SystemPower events are emitted by platform.
-+ *
-+ * Once such a notification is received we act accordingly to perform the
-+ * required system transition depending on the kind of request.
-+ *
-+ * Graceful requests are routed to userspace through the same API methods
-+ * (orderly_poweroff/reboot()) used by ACPI when handling ACPI Shutdown bus
-+ * events.
-+ *
-+ * Direct forceful requests are not supported since are not meant to be sent
-+ * by the SCMI platform to an OSPM like Linux.
-+ *
-+ * Additionally, graceful request notifications can carry an optional timeout
-+ * field stating the maximum amount of time allowed by the platform for
-+ * completion after which they are converted to forceful ones: the assumption
-+ * here is that even graceful requests can be upper-bound by a maximum final
-+ * timeout strictly enforced by the platform itself which can ultimately cut
-+ * the power off at will anytime; in order to avoid such extreme scenario, we
-+ * track progress of graceful requests through the means of a reboot notifier
-+ * converting timed-out graceful requests to forceful ones, so at least we
-+ * try to perform a clean sync and shutdown/restart before the power is cut.
-+ *
-+ * Given the peculiar nature of SCMI SystemPower protocol, that is being in
-+ * charge of triggering system wide shutdown/reboot events, there should be
-+ * only one SCMI platform actively emitting SystemPower events.
-+ * For this reason the SCMI core takes care to enforce the creation of one
-+ * single unique device associated to the SCMI System Power protocol; no matter
-+ * how many SCMI platforms are defined on the system, only one can be designated
-+ * to support System Power: as a consequence this driver will never be probed
-+ * more than once.
-+ *
-+ * For similar reasons as soon as the first valid SystemPower is received by
-+ * this driver and the shutdown/reboot is started, any further notification
-+ * possibly emitted by the platform will be ignored.
-+ */
++	/* Set according to IOMMU IOVA caching limit */
++	max_sectors = min_t(size_t, queue_max_hw_sectors(sdev->request_queue),
++			    (PAGE_SIZE * 32) >> SECTOR_SHIFT);
 +
-+#include <linux/math.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/printk.h>
-+#include <linux/reboot.h>
-+#include <linux/scmi_protocol.h>
-+#include <linux/slab.h>
-+#include <linux/time64.h>
-+#include <linux/timer.h>
-+#include <linux/types.h>
-+#include <linux/workqueue.h>
++	blk_queue_max_hw_sectors(sdev->request_queue, max_sectors);
 +
-+#ifndef MODULE
-+#include <linux/fs.h>
-+#endif
-+
-+enum scmi_syspower_state {
-+	SCMI_SYSPOWER_IDLE,
-+	SCMI_SYSPOWER_IN_PROGRESS,
-+	SCMI_SYSPOWER_REBOOTING
-+};
-+
-+/**
-+ * struct scmi_syspower_conf  -  Common configuration
-+ *
-+ * @dev: A reference device
-+ * @state: Current SystemPower state
-+ * @state_mtx: @state related mutex
-+ * @required_transition: The requested transition as decribed in the received
-+ *			 SCMI SystemPower notification
-+ * @userspace_nb: The notifier_block registered against the SCMI SystemPower
-+ *		  notification to start the needed userspace interactions.
-+ * @reboot_nb: A notifier_block optionally used to track reboot progress
-+ * @forceful_work: A worker used to trigger a forceful transition once a
-+ *		   graceful has timed out.
-+ */
-+struct scmi_syspower_conf {
-+	struct device *dev;
-+	enum scmi_syspower_state state;
-+	/* Protect access to state */
-+	struct mutex state_mtx;
-+	enum scmi_system_events required_transition;
-+
-+	struct notifier_block userspace_nb;
-+	struct notifier_block reboot_nb;
-+
-+	struct delayed_work forceful_work;
-+};
-+
-+#define userspace_nb_to_sconf(x)	\
-+	container_of(x, struct scmi_syspower_conf, userspace_nb)
-+
-+#define reboot_nb_to_sconf(x)		\
-+	container_of(x, struct scmi_syspower_conf, reboot_nb)
-+
-+#define dwork_to_sconf(x)		\
-+	container_of(x, struct scmi_syspower_conf, forceful_work)
-+
-+/**
-+ * scmi_reboot_notifier  - A reboot notifier to catch an ongoing successful
-+ * system transition
-+ * @nb: Reference to the related notifier block
-+ * @reason: The reason for the ongoing reboot
-+ * @__unused: The cmd being executed on a restart request (unused)
-+ *
-+ * When an ongoing system transition is detected, compatible with the one
-+ * requested by SCMI, cancel the delayed work.
-+ *
-+ * Return: NOTIFY_OK in any case
-+ */
-+static int scmi_reboot_notifier(struct notifier_block *nb,
-+				unsigned long reason, void *__unused)
-+{
-+	struct scmi_syspower_conf *sc = reboot_nb_to_sconf(nb);
-+
-+	mutex_lock(&sc->state_mtx);
-+	switch (reason) {
-+	case SYS_HALT:
-+	case SYS_POWER_OFF:
-+		if (sc->required_transition == SCMI_SYSTEM_SHUTDOWN)
-+			sc->state = SCMI_SYSPOWER_REBOOTING;
-+		break;
-+	case SYS_RESTART:
-+		if (sc->required_transition == SCMI_SYSTEM_COLDRESET ||
-+		    sc->required_transition == SCMI_SYSTEM_WARMRESET)
-+			sc->state = SCMI_SYSPOWER_REBOOTING;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (sc->state == SCMI_SYSPOWER_REBOOTING) {
-+		dev_dbg(sc->dev, "Reboot in progress...cancel delayed work.\n");
-+		cancel_delayed_work_sync(&sc->forceful_work);
-+	}
-+	mutex_unlock(&sc->state_mtx);
-+
-+	return NOTIFY_OK;
-+}
-+
-+/**
-+ * scmi_request_forceful_transition  - Request forceful SystemPower transition
-+ * @sc: A reference to the configuration data
-+ *
-+ * Initiates the required SystemPower transition without involving userspace:
-+ * just trigger the action at the kernel level after issuing an emergency
-+ * sync. (if possible at all)
-+ */
-+static inline void
-+scmi_request_forceful_transition(struct scmi_syspower_conf *sc)
-+{
-+	dev_dbg(sc->dev, "Serving forceful request:%d\n",
-+		sc->required_transition);
-+
-+#ifndef MODULE
-+	emergency_sync();
-+#endif
-+	switch (sc->required_transition) {
-+	case SCMI_SYSTEM_SHUTDOWN:
-+		kernel_power_off();
-+		break;
-+	case SCMI_SYSTEM_COLDRESET:
-+	case SCMI_SYSTEM_WARMRESET:
-+		kernel_restart(NULL);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
-+static void scmi_forceful_work_func(struct work_struct *work)
-+{
-+	struct scmi_syspower_conf *sc;
-+	struct delayed_work *dwork;
-+
-+	if (system_state > SYSTEM_RUNNING)
-+		return;
-+
-+	dwork = to_delayed_work(work);
-+	sc = dwork_to_sconf(dwork);
-+
-+	dev_dbg(sc->dev, "Graceful request timed out...forcing !\n");
-+	mutex_lock(&sc->state_mtx);
-+	/* avoid deadlock by unregistering reboot notifier first */
-+	unregister_reboot_notifier(&sc->reboot_nb);
-+	if (sc->state == SCMI_SYSPOWER_IN_PROGRESS)
-+		scmi_request_forceful_transition(sc);
-+	mutex_unlock(&sc->state_mtx);
-+}
-+
-+/**
-+ * scmi_request_graceful_transition  - Request graceful SystemPower transition
-+ * @sc: A reference to the configuration data
-+ * @timeout_ms: The desired timeout to wait for the shutdown to complete before
-+ *		system is forcibly shutdown.
-+ *
-+ * Initiates the required SystemPower transition, requesting userspace
-+ * co-operation: it uses the same orderly_ methods used by ACPI Shutdown event
-+ * processing.
-+ *
-+ * Takes care also to register a reboot notifier and to schedule a delayed work
-+ * in order to detect if userspace actions are taking too long and in such a
-+ * case to trigger a forceful transition.
-+ */
-+static void scmi_request_graceful_transition(struct scmi_syspower_conf *sc,
-+					     unsigned int timeout_ms)
-+{
-+	unsigned int adj_timeout_ms = 0;
-+
-+	if (timeout_ms) {
-+		int ret;
-+
-+		sc->reboot_nb.notifier_call = &scmi_reboot_notifier;
-+		ret = register_reboot_notifier(&sc->reboot_nb);
-+		if (!ret) {
-+			/* Wait only up to 75% of the advertised timeout */
-+			adj_timeout_ms = mult_frac(timeout_ms, 3, 4);
-+			INIT_DELAYED_WORK(&sc->forceful_work,
-+					  scmi_forceful_work_func);
-+			schedule_delayed_work(&sc->forceful_work,
-+					      msecs_to_jiffies(adj_timeout_ms));
-+		} else {
-+			/* Carry on best effort even without a reboot notifier */
-+			dev_warn(sc->dev,
-+				 "Cannot register reboot notifier !\n");
-+		}
-+	}
-+
-+	dev_dbg(sc->dev,
-+		"Serving graceful req:%d (timeout_ms:%u  adj_timeout_ms:%u)\n",
-+		sc->required_transition, timeout_ms, adj_timeout_ms);
-+
-+	switch (sc->required_transition) {
-+	case SCMI_SYSTEM_SHUTDOWN:
-+		/*
-+		 * When triggered early at boot-time the 'orderly' call will
-+		 * partially fail due to the lack of userspace itself, but
-+		 * the force=true argument will start anyway a successful
-+		 * forced shutdown.
-+		 */
-+		orderly_poweroff(true);
-+		break;
-+	case SCMI_SYSTEM_COLDRESET:
-+	case SCMI_SYSTEM_WARMRESET:
-+		orderly_reboot();
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
-+/**
-+ * scmi_userspace_notifier  - Notifier callback to act on SystemPower
-+ * Notifications
-+ * @nb: Reference to the related notifier block
-+ * @event: The SystemPower notification event id
-+ * @data: The SystemPower event report
-+ *
-+ * This callback is in charge of decoding the received SystemPower report
-+ * and act accordingly triggering a graceful or forceful system transition.
-+ *
-+ * Note that once a valid SCMI SystemPower event starts being served, any
-+ * other following SystemPower notification received from the same SCMI
-+ * instance (handle) will be ignored.
-+ *
-+ * Return: NOTIFY_OK once a valid SystemPower event has been successfully
-+ * processed.
-+ */
-+static int scmi_userspace_notifier(struct notifier_block *nb,
-+				   unsigned long event, void *data)
-+{
-+	struct scmi_system_power_state_notifier_report *er = data;
-+	struct scmi_syspower_conf *sc = userspace_nb_to_sconf(nb);
-+
-+	if (er->system_state >= SCMI_SYSTEM_POWERUP) {
-+		dev_err(sc->dev, "Ignoring unsupported system_state: 0x%X\n",
-+			er->system_state);
-+		return NOTIFY_DONE;
-+	}
-+
-+	if (!SCMI_SYSPOWER_IS_REQUEST_GRACEFUL(er->flags)) {
-+		dev_err(sc->dev, "Ignoring forceful notification.\n");
-+		return NOTIFY_DONE;
-+	}
-+
-+	/*
-+	 * Bail out if system is already shutting down or an SCMI SystemPower
-+	 * requested is already being served.
-+	 */
-+	if (system_state > SYSTEM_RUNNING)
-+		return NOTIFY_DONE;
-+	mutex_lock(&sc->state_mtx);
-+	if (sc->state != SCMI_SYSPOWER_IDLE) {
-+		dev_dbg(sc->dev,
-+			"Transition already in progress...ignore.\n");
-+		mutex_unlock(&sc->state_mtx);
-+		return NOTIFY_DONE;
-+	}
-+	sc->state = SCMI_SYSPOWER_IN_PROGRESS;
-+	mutex_unlock(&sc->state_mtx);
-+
-+	sc->required_transition = er->system_state;
-+
-+	/* Leaving a trace in logs of who triggered the shutdown/reboot. */
-+	dev_info(sc->dev, "Serving shutdown/reboot request: %d\n",
-+		 sc->required_transition);
-+
-+	scmi_request_graceful_transition(sc, er->timeout);
-+
-+	return NOTIFY_OK;
-+}
-+
-+static int scmi_syspower_probe(struct scmi_device *sdev)
-+{
-+	int ret;
-+	struct scmi_syspower_conf *sc;
-+	struct scmi_handle *handle = sdev->handle;
-+
-+	if (!handle)
-+		return -ENODEV;
-+
-+	ret = handle->devm_protocol_acquire(sdev, SCMI_PROTOCOL_SYSTEM);
-+	if (ret)
-+		return ret;
-+
-+	sc = devm_kzalloc(&sdev->dev, sizeof(*sc), GFP_KERNEL);
-+	if (!sc)
-+		return -ENOMEM;
-+
-+	sc->state = SCMI_SYSPOWER_IDLE;
-+	mutex_init(&sc->state_mtx);
-+	sc->required_transition = SCMI_SYSTEM_MAX;
-+	sc->userspace_nb.notifier_call = &scmi_userspace_notifier;
-+	sc->dev = &sdev->dev;
-+
-+	return handle->notify_ops->devm_event_notifier_register(sdev,
-+							   SCMI_PROTOCOL_SYSTEM,
-+					 SCMI_EVENT_SYSTEM_POWER_STATE_NOTIFIER,
-+						       NULL, &sc->userspace_nb);
-+}
-+
-+static const struct scmi_device_id scmi_id_table[] = {
-+	{ SCMI_PROTOCOL_SYSTEM, "syspower" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(scmi, scmi_id_table);
-+
-+static struct scmi_driver scmi_system_power_driver = {
-+	.name = "scmi-system-power",
-+	.probe = scmi_syspower_probe,
-+	.id_table = scmi_id_table,
-+};
-+module_scmi_driver(scmi_system_power_driver);
-+
-+MODULE_AUTHOR("Cristian Marussi <cristian.marussi@arm.com>");
-+MODULE_DESCRIPTION("ARM SCMI SystemPower Control driver");
-+MODULE_LICENSE("GPL");
+ 	return 0;
+ }
+ 
 -- 
-2.32.0
+2.35.3
 
