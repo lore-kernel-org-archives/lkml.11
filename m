@@ -2,263 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D68C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 13:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF4FCCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 13:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232035AbiFWN32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 09:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        id S231974AbiFWN3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 09:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231283AbiFWN3M (ORCPT
+        with ESMTP id S231886AbiFWN30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 09:29:12 -0400
+        Thu, 23 Jun 2022 09:29:26 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5F244475F
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 06:29:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 434A82CDD8
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 06:29:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655990943;
+        s=mimecast20190719; t=1655990959;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TYwJyNlorDfkZL5hbdP7tAvf4Wvs6EAxSqE4KohLuJk=;
-        b=J9mbnVlR1H07v+gibgJD8R+nTLQt0+aMbLowTWqYcCYaxLtF5NMAm/MQI+a2HubM0QrfMY
-        /yQ5LjQpPeMJ2CrpxfpPYf+DoD51GwDFTjmZkpagKY63NXM2lKGq2XyXTFVQz1/CNfrn+M
-        YbToyeEC1Z0Lmy1KNkwAD0urpRQhOYw=
+        bh=uef2yh6j1zy01ZHqkGb+HrXgHU+Hh0UFr+oU45pcct0=;
+        b=CF9uLqcmpCy0Aq4EKGwbfqwaoXcpUqsmk7RxJqWAl8HpPD+YCq4tvbLvbbZfwOKwycyTEZ
+        5Ky+ah09Bd8jU0zjbxZ9b5FcGAOaxLmOKgJe3zu1SWi/Tmh9zlimuhHGIbb3tUT1R5kxra
+        WySG3VfXGPEmO3Ewjm1tC5bMNbMCmws=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-662-5EYduaVENkOqkC9KijmIDw-1; Thu, 23 Jun 2022 09:29:00 -0400
-X-MC-Unique: 5EYduaVENkOqkC9KijmIDw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+ us-mta-610-ZcBih0k_ORiu8YP_QNUXXQ-1; Thu, 23 Jun 2022 09:29:14 -0400
+X-MC-Unique: ZcBih0k_ORiu8YP_QNUXXQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7376D101E986;
-        Thu, 23 Jun 2022 13:29:00 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 664D08032F4;
+        Thu, 23 Jun 2022 13:29:14 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8739F40CFD0B;
-        Thu, 23 Jun 2022 13:28:59 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7995F2166B29;
+        Thu, 23 Jun 2022 13:29:13 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [RFC PATCH 1/8] rxrpc: List open sockets in /proc/net/rxrpc/sockets
+Subject: [RFC PATCH 3/8] rxrpc: Allow multiple AF_RXRPC sockets to be bound
+ together to form queues
 From:   David Howells <dhowells@redhat.com>
 To:     linux-afs@lists.infradead.org
 Cc:     dhowells@redhat.com, Marc Dionne <marc.dionne@auristor.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Thu, 23 Jun 2022 14:28:58 +0100
-Message-ID: <165599093879.1827880.359068963357629741.stgit@warthog.procyon.org.uk>
+Date:   Thu, 23 Jun 2022 14:29:12 +0100
+Message-ID: <165599095279.1827880.8011666375060763290.stgit@warthog.procyon.org.uk>
 In-Reply-To: <165599093190.1827880.6407599132975295152.stgit@warthog.procyon.org.uk>
 References: <165599093190.1827880.6407599132975295152.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide a list of open sockets in /proc/net/rxrpc/sockets, providing a few
-useful stats.
+Allow one rxrpc socket to be bound onto another to form a queue.  This is
+done by allocating a socket and setting it up, then allocating more sockets
+and using a sockopt to bind them together:
+
+	fd1 = socket(AF_RXRPC, SOCK_DGRAM, IPPROTO_IPV6);
+	bind(fd1, &address);
+	listen(fd1, depth);
+
+	fd2 = socket(AF_RXRPC, SOCK_DGRAM, IPPROTO_IPV6);
+	setsockopt(fd2, SOL_RXRPC, RXRPC_BIND_CHANNEL, &fd1, sizeof(fd1));
+
+From this point:
+
+ (1) Each channel must be charged with user call IDs separately.  Each
+     channel has a separate call ID space.  A call ID on one channel cannot
+     be used to send a message on another channel.  The same call ID on
+     different channels refers to different calls.
+
+ (2) An incoming call will get bound to the next channel that does a
+     recvmsg() on an empty queue.  All further incoming packets relating to
+     that call will go to that channel exclusively.
+
+ (3) An outgoung client call made on a particular channel will be bound to
+     that channel.
+
+ (4) If a channel is closed, all calls bound to that channel will be
+     aborted.
+
+ (5) Unaccepted incoming calls are held in a queue common to all channels
+     and is of the depth set by listen().  Each time recvmsg() is called on
+     a channel, if that channel has at least one charge available, it will
+     pop an incoming call from that queue, bind the next charge to it,
+     attach it to the socket and push it onto the tail of the recvmsg
+     queue.
+
+     This can be used as a mechanism to distribute calls between a thread
+     pool and a mechanism to control the arrival of new calls on any
+     particular channel.  New calls can and will only be collected if the
+     channel is charged.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 ---
 
- net/rxrpc/af_rxrpc.c    |    9 +++++
- net/rxrpc/ar-internal.h |    5 ++-
- net/rxrpc/net_ns.c      |    4 ++
- net/rxrpc/proc.c        |   92 +++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 109 insertions(+), 1 deletion(-)
+ include/uapi/linux/rxrpc.h |    1 +
+ net/rxrpc/af_rxrpc.c       |   79 +++++++++++++++++++++++++++++++++++++++++++-
+ net/rxrpc/call_accept.c    |    5 ---
+ net/rxrpc/call_object.c    |    2 +
+ 4 files changed, 80 insertions(+), 7 deletions(-)
 
-diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
-index ceba28e9dce6..5519c2bef7f5 100644
---- a/net/rxrpc/af_rxrpc.c
-+++ b/net/rxrpc/af_rxrpc.c
-@@ -787,6 +787,10 @@ static int rxrpc_create(struct net *net, struct socket *sock, int protocol,
- 	memset(&rx->srx, 0, sizeof(rx->srx));
- 
- 	rxnet = rxrpc_net(sock_net(&rx->sk));
-+	mutex_lock(&rxnet->local_mutex);
-+	hlist_add_head_rcu(&rx->ns_link, &rxnet->sockets);
-+	mutex_unlock(&rxnet->local_mutex);
-+
- 	timer_reduce(&rxnet->peer_keepalive_timer, jiffies + 1);
- 
- 	_leave(" = 0 [%p]", rx);
-@@ -851,6 +855,7 @@ static void rxrpc_sock_destructor(struct sock *sk)
- static int rxrpc_release_sock(struct sock *sk)
- {
- 	struct rxrpc_sock *rx = rxrpc_sk(sk);
-+	struct rxrpc_net *rxnet = rxrpc_net(sock_net(&rx->sk));
- 
- 	_enter("%p{%d,%d}", sk, sk->sk_state, refcount_read(&sk->sk_refcnt));
- 
-@@ -887,6 +892,10 @@ static int rxrpc_release_sock(struct sock *sk)
- 	flush_workqueue(rxrpc_workqueue);
- 	rxrpc_purge_queue(&sk->sk_receive_queue);
- 
-+	mutex_lock(&rxnet->local_mutex);
-+	hlist_del_rcu(&rx->ns_link);
-+	mutex_unlock(&rxnet->local_mutex);
-+
- 	rxrpc_unuse_local(rx->local);
- 	rxrpc_put_local(rx->local);
- 	rx->local = NULL;
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 571436064cd6..68d269598305 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -80,8 +80,9 @@ struct rxrpc_net {
- 	struct work_struct	client_conn_reaper;
- 	struct timer_list	client_conn_reap_timer;
- 
-+	struct hlist_head	sockets;	/* List of sockets */
- 	struct hlist_head	local_endpoints;
--	struct mutex		local_mutex;	/* Lock for ->local_endpoints */
-+	struct mutex		local_mutex;	/* Lock for ->local_endpoints, ->sockets */
- 
- 	DECLARE_HASHTABLE	(peer_hash, 10);
- 	spinlock_t		peer_hash_lock;	/* Lock for ->peer_hash */
-@@ -130,6 +131,7 @@ struct rxrpc_sock {
- 	struct list_head	sock_calls;	/* List of calls owned by this socket */
- 	struct list_head	to_be_accepted;	/* calls awaiting acceptance */
- 	struct list_head	recvmsg_q;	/* Calls awaiting recvmsg's attention  */
-+	struct hlist_node	ns_link;	/* Link in net->sockets */
- 	rwlock_t		recvmsg_lock;	/* Lock for recvmsg_q */
- 	struct key		*key;		/* security for this socket */
- 	struct key		*securities;	/* list of server security descriptors */
-@@ -1008,6 +1010,7 @@ extern const struct seq_operations rxrpc_call_seq_ops;
- extern const struct seq_operations rxrpc_connection_seq_ops;
- extern const struct seq_operations rxrpc_peer_seq_ops;
- extern const struct seq_operations rxrpc_local_seq_ops;
-+extern const struct seq_operations rxrpc_socket_seq_ops;
+diff --git a/include/uapi/linux/rxrpc.h b/include/uapi/linux/rxrpc.h
+index 8f8dc7a937a4..811923643751 100644
+--- a/include/uapi/linux/rxrpc.h
++++ b/include/uapi/linux/rxrpc.h
+@@ -36,6 +36,7 @@ struct sockaddr_rxrpc {
+ #define RXRPC_MIN_SECURITY_LEVEL	4	/* minimum security level */
+ #define RXRPC_UPGRADEABLE_SERVICE	5	/* Upgrade service[0] -> service[1] */
+ #define RXRPC_SUPPORTED_CMSG		6	/* Get highest supported control message type */
++#define RXRPC_BIND_CHANNEL		7	/* Bind a socket as an additional recvmsg channel */
  
  /*
-  * recvmsg.c
-diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
-index bb4c25d6df64..4107099a259c 100644
---- a/net/rxrpc/net_ns.c
-+++ b/net/rxrpc/net_ns.c
-@@ -72,6 +72,7 @@ static __net_init int rxrpc_init_net(struct net *net)
- 	timer_setup(&rxnet->client_conn_reap_timer,
- 		    rxrpc_client_conn_reap_timeout, 0);
+  * RxRPC control messages
+diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
+index 703e10969d2f..6b89a5a969e0 100644
+--- a/net/rxrpc/af_rxrpc.c
++++ b/net/rxrpc/af_rxrpc.c
+@@ -733,6 +733,71 @@ int rxrpc_sock_set_upgradeable_service(struct sock *sk, unsigned int val[2])
+ }
+ EXPORT_SYMBOL(rxrpc_sock_set_upgradeable_service);
  
-+	INIT_HLIST_HEAD(&rxnet->sockets);
- 	INIT_HLIST_HEAD(&rxnet->local_endpoints);
- 	mutex_init(&rxnet->local_mutex);
- 
-@@ -101,6 +102,9 @@ static __net_init int rxrpc_init_net(struct net *net)
- 	proc_create_net("locals", 0444, rxnet->proc_net,
- 			&rxrpc_local_seq_ops,
- 			sizeof(struct seq_net_private));
-+	proc_create_net("sockets", 0444, rxnet->proc_net,
-+			&rxrpc_socket_seq_ops,
-+			sizeof(struct seq_net_private));
- 	return 0;
- 
- err_proc:
-diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
-index 245418943e01..b92303012338 100644
---- a/net/rxrpc/proc.c
-+++ b/net/rxrpc/proc.c
-@@ -397,3 +397,95 @@ const struct seq_operations rxrpc_local_seq_ops = {
- 	.stop   = rxrpc_local_seq_stop,
- 	.show   = rxrpc_local_seq_show,
- };
-+
 +/*
-+ * Generate a list of extant sockets in /proc/net/rxrpc/sockets
++ * Bind this socket to another socket that's already set up and listening to
++ * use this as an additional channel for receiving new service calls.
 + */
-+static int rxrpc_socket_seq_show(struct seq_file *seq, void *v)
++static int rxrpc_bind_channel(struct rxrpc_sock *rx2, int fd)
 +{
-+	struct rxrpc_local *local;
-+	struct rxrpc_sock *rx;
-+	struct list_head *p;
-+	char lbuff[50];
-+	unsigned int nr_calls = 0, nr_acc = 0, nr_attend = 0;
++	struct rxrpc_service *b;
++	struct rxrpc_sock *rx1;
++	struct socket *sock1;
++	unsigned long *call_id_backlog;
++	int ret;
 +
-+	if (v == SEQ_START_TOKEN) {
-+		seq_puts(seq,
-+			 "Proto Local                                          "
-+			 " Use Svc1 Svc2 nCal nAcc nAtn\n");
-+		return 0;
-+	}
++	if (rx2->sk.sk_state != RXRPC_UNBOUND)
++		return -EISCONN;
++	if (rx2->service || rx2->exclusive)
++		return -EINVAL;
 +
-+	rx = hlist_entry(v, struct rxrpc_sock, ns_link);
-+	local = rx->local;
++	sock1 = sockfd_lookup(fd, &ret);
++	if (!sock1)
++		return ret;
++	rx1 = rxrpc_sk(sock1->sk);
 +
-+	if (local)
-+		sprintf(lbuff, "%pISpc", &local->srx.transport);
-+	else
-+		sprintf(lbuff, "-");
++	ret = -EINVAL;
++	if (rx1 == rx2 || rx2->family != rx1->family ||
++	    sock_net(&rx2->sk) != sock_net(&rx1->sk))
++		goto error;
 +
-+	read_lock(&rx->call_lock);
-+	list_for_each(p, &rx->sock_calls) {
-+		nr_calls++;
-+	}
-+	list_for_each(p, &rx->to_be_accepted) {
-+		nr_acc++;
-+	}
-+	read_unlock(&rx->call_lock);
++	ret = -EISCONN;
++	if (rx1->sk.sk_state != RXRPC_SERVER_LISTENING)
++		goto error;
 +
-+	read_lock_bh(&rx->recvmsg_lock);
-+	list_for_each(p, &rx->recvmsg_q) {
-+		nr_attend++;
-+	}
-+	read_unlock_bh(&rx->recvmsg_lock);
++	ret = -ENOMEM;
++	call_id_backlog = kcalloc(RXRPC_BACKLOG_MAX,
++				  sizeof(call_id_backlog[0]),
++				  GFP_KERNEL);
++	if (!call_id_backlog)
++		goto error;
 +
-+	seq_printf(seq,
-+		   "UDP   %-47.47s %3d %4x %4x %4u %4u %4u\n",
-+		   lbuff,
-+		   refcount_read(&rx->sk.sk_refcnt),
-+		   rx->srx.srx_service, rx->second_service,
-+		   nr_calls, nr_acc, nr_attend);
++	lock_sock_nested(&rx1->sk, 1);
 +
-+	return 0;
++	ret = -EISCONN;
++	if (rx1->sk.sk_state != RXRPC_SERVER_LISTENING)
++		goto error_unlock;
++
++	b = rx1->service;
++	refcount_inc(&b->ref);
++	refcount_inc(&b->active);
++	rx2->service		= b;
++	rx2->srx		= rx1->srx;
++	rx2->call_id_backlog	= call_id_backlog;
++	rx2->min_sec_level	= rx1->min_sec_level;
++	rx2->local		= rxrpc_get_local(rx1->local);
++	atomic_inc(&rx1->local->active_users);
++	rx2->sk.sk_state	= RXRPC_SERVER_LISTENING;
++	call_id_backlog = NULL;
++	ret = 0;
++
++error_unlock:
++	release_sock(&rx1->sk);
++	kfree(call_id_backlog);
++error:
++	fput(sock1->file);
++	return ret;
 +}
 +
-+static void *rxrpc_socket_seq_start(struct seq_file *seq, loff_t *_pos)
-+	__acquires(rcu)
-+{
-+	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
-+	unsigned int n;
+ /*
+  * set RxRPC socket options
+  */
+@@ -742,7 +807,7 @@ static int rxrpc_setsockopt(struct socket *sock, int level, int optname,
+ 	struct rxrpc_sock *rx = rxrpc_sk(sock->sk);
+ 	unsigned int min_sec_level;
+ 	u16 service_upgrade[2];
+-	int ret;
++	int ret, fd;
+ 
+ 	_enter(",%d,%d,,%d", level, optname, optlen);
+ 
+@@ -817,6 +882,18 @@ static int rxrpc_setsockopt(struct socket *sock, int level, int optname,
+ 				goto error;
+ 			goto success;
+ 
++		case RXRPC_BIND_CHANNEL:
++			ret = -EINVAL;
++			if (optlen != sizeof(fd))
++				goto error;
++			ret = -EFAULT;
++			if (copy_from_sockptr(&fd, optval, sizeof(fd)) != 0)
++				goto error;
++			ret = rxrpc_bind_channel(rx, fd);
++			if (ret < 0)
++				goto error;
++			goto success;
 +
-+	rcu_read_lock();
-+
-+	if (*_pos >= UINT_MAX)
-+		return NULL;
-+
-+	n = *_pos;
-+	if (n == 0)
-+		return SEQ_START_TOKEN;
-+
-+	return seq_hlist_start_rcu(&rxnet->sockets, n - 1);
-+}
-+
-+static void *rxrpc_socket_seq_next(struct seq_file *seq, void *v, loff_t *_pos)
-+{
-+	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
-+
-+	if (*_pos >= UINT_MAX)
-+		return NULL;
-+
-+	return seq_hlist_next_rcu(v, &rxnet->sockets, _pos);
-+}
-+
-+static void rxrpc_socket_seq_stop(struct seq_file *seq, void *v)
-+	__releases(rcu)
-+{
-+	rcu_read_unlock();
-+}
-+
-+const struct seq_operations rxrpc_socket_seq_ops = {
-+	.start  = rxrpc_socket_seq_start,
-+	.next   = rxrpc_socket_seq_next,
-+	.stop   = rxrpc_socket_seq_stop,
-+	.show   = rxrpc_socket_seq_show,
-+};
+ 		default:
+ 			break;
+ 		}
+diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
+index 3cba4dacb8d4..68760a0657a1 100644
+--- a/net/rxrpc/call_accept.c
++++ b/net/rxrpc/call_accept.c
+@@ -296,8 +296,6 @@ void rxrpc_deactivate_service(struct rxrpc_sock *rx)
+ 	if (!refcount_dec_and_test(&rx->service->active))
+ 		return;
+ 
+-	kdebug("-- deactivate --");
+-
+ 	/* Now that active is 0, make sure that there aren't any incoming calls
+ 	 * being set up before we clear the preallocation buffers.
+ 	 */
+@@ -335,12 +333,9 @@ void rxrpc_deactivate_service(struct rxrpc_sock *rx)
+ 
+ 	head = b->call_backlog_head;
+ 	tail = b->call_backlog_tail;
+-	kdebug("backlog %x %x", head, tail);
+ 	while (CIRC_CNT(head, tail, size) > 0) {
+ 		struct rxrpc_call *call = b->call_backlog[tail];
+ 
+-		kdebug("discard c=%08x", call->debug_id);
+-
+ 		trace_rxrpc_call(call->debug_id, rxrpc_call_discard,
+ 				 refcount_read(&call->ref),
+ 				 NULL, (const void *)call->user_call_ID);
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index e90b205a6c0f..4ee98ac689f9 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -712,7 +712,7 @@ void rxrpc_cleanup_call(struct rxrpc_call *call)
+ 
+ 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+ 	if (WARN_ON(!test_bit(RXRPC_CALL_RELEASED, &call->flags))) {
+-		kdebug("### UNRELEASED c=%08x", call->debug_id);
++		pr_warn("### UNRELEASED c=%08x", call->debug_id);
+ 		return;
+ 	}
+ 
 
 
