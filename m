@@ -2,91 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F0CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237023AbiFWSUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
+        id S237028AbiFWSUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236852AbiFWSQt (ORCPT
+        with ESMTP id S236863AbiFWSQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:16:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186994D9C9;
-        Thu, 23 Jun 2022 10:23:25 -0700 (PDT)
+        Thu, 23 Jun 2022 14:16:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20DFA4EA11;
+        Thu, 23 Jun 2022 10:23:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22CD5B824BC;
-        Thu, 23 Jun 2022 17:23:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 812B1C3411B;
-        Thu, 23 Jun 2022 17:23:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656005002;
-        bh=wHCbmf5IRU39rWTli2nZUaGZkhlxJIj37MxQFogSdEY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PyKKn5AmJY5LA84KqOczZyyRySup5L6Azsjk02/PDhbsW5QDnbgiunWdXq6+5Hdly
-         so5Jt85YlQB9yKrlKNekvT01BKoj61uSsEu/gk7IN2BYRRSZpJ27dJHNI3qqcUG7Au
-         zhBqRL1Qly6dDmbG/gEgCOJOudXz40JLfL6p+bxfc6GS+W4PIbHRpxLNi83ee1O/GS
-         uP5kPq9auC78LW6pOr1jPPca7r7KzTXLrrbzcVjhNuSFmJf/idfZ+iKYrqA82FALa/
-         yKF7FO0a8934AaK2M+hpSsOnQSPqHVFK1nrJQcNXnJEua4rVcuQoWL5ptjezOKzdVE
-         vp2zp8L/1LTLQ==
-Date:   Thu, 23 Jun 2022 10:23:20 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Darrick J. Wong" <djwong@kernel.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Keith Busch <kbusch@kernel.org>
-Subject: Re: [PATCH v3 1/8] statx: add direct I/O alignment information
-Message-ID: <YrShiIjNCIANjSwL@sol.localdomain>
-References: <20220616201506.124209-1-ebiggers@kernel.org>
- <20220616201506.124209-2-ebiggers@kernel.org>
- <YrSNlFgW6X4pUelg@magnolia>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78F17B82497;
+        Thu, 23 Jun 2022 17:23:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4489C341C6;
+        Thu, 23 Jun 2022 17:23:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656005004;
+        bh=ZLCEwXffTqRU3tK4EId6tTYhofvM1aJAsm/kPMIBKcc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jHNIHuVkpbeeeYLSdyFkjLrCWhDXwMZ1xaEkGWpIHh/qpMz2/vTRq7agid5j1BaNb
+         oRdjVgwM9fBysocA+P8CblC+nGMnCigZ2UgvHPaUbWP/oEpUYlwwVlDTrEEPYu+m+R
+         3f2LO0VcBoq0qj2psMcuaWbSOsZW0yfEUes1wLTU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Frode Nordahl <frode.nordahl@canonical.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 221/234] net: openvswitch: fix misuse of the cached connection on tuple changes
+Date:   Thu, 23 Jun 2022 18:44:48 +0200
+Message-Id: <20220623164349.303968769@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrSNlFgW6X4pUelg@magnolia>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 08:58:12AM -0700, Darrick J. Wong wrote:
-> > diff --git a/include/linux/stat.h b/include/linux/stat.h
-> > index 7df06931f25d8..ff277ced50e9f 100644
-> > --- a/include/linux/stat.h
-> > +++ b/include/linux/stat.h
-> > @@ -50,6 +50,8 @@ struct kstat {
-> >  	struct timespec64 btime;			/* File creation time */
-> >  	u64		blocks;
-> >  	u64		mnt_id;
-> > +	u32		dio_mem_align;
-> > +	u32		dio_offset_align;
-> 
-> Hmm.  Does the XFS port of XFS_IOC_DIOINFO to STATX_DIOALIGN look like
-> this?
-> 
-> 	struct xfs_buftarg	*target = xfs_inode_buftarg(ip);
-> 
-> 	kstat.dio_mem_align = target->bt_logical_sectorsize;
-> 	kstat.dio_offset_align = target->bt_logical_sectorsize;
-> 	kstat.result_mask |= STATX_DIOALIGN;
+From: Ilya Maximets <i.maximets@ovn.org>
 
-Yes, I think so.
+commit 2061ecfdf2350994e5b61c43e50e98a7a70e95ee upstream.
 
-However, if we need more fields as Avi Kivity requested at
-https://lore.kernel.org/r/6c06b2d4-2d96-c4a6-7aca-5147a91e7cf2@scylladb.com
-that is going to complicate things.  I haven't had a chance to look
-into whether those extra fields are really needed.  Your opinion on whether XFS
-(and any other filesystem) needs them would be appreciated.
+If packet headers changed, the cached nfct is no longer relevant
+for the packet and attempt to re-use it leads to the incorrect packet
+classification.
 
-> 
-> And I guess you're tabling the "optimal" IO discussions for now, because
-> there are too many variants of what that means?
-> 
+This issue is causing broken connectivity in OpenStack deployments
+with OVS/OVN due to hairpin traffic being unexpectedly dropped.
 
-Yes, that's omitted for now due to the apparent redundancy with stx_blksize.
+The setup has datapath flows with several conntrack actions and tuple
+changes between them:
 
-- Eric
+  actions:ct(commit,zone=8,mark=0/0x1,nat(src)),
+          set(eth(src=00:00:00:00:00:01,dst=00:00:00:00:00:06)),
+          set(ipv4(src=172.18.2.10,dst=192.168.100.6,ttl=62)),
+          ct(zone=8),recirc(0x4)
+
+After the first ct() action the packet headers are almost fully
+re-written.  The next ct() tries to re-use the existing nfct entry
+and marks the packet as invalid, so it gets dropped later in the
+pipeline.
+
+Clearing the cached conntrack entry whenever packet tuple is changed
+to avoid the issue.
+
+The flow key should not be cleared though, because we should still
+be able to match on the ct_state if the recirculation happens after
+the tuple change but before the next ct() action.
+
+Cc: stable@vger.kernel.org
+Fixes: 7f8a436eaa2c ("openvswitch: Add conntrack action")
+Reported-by: Frode Nordahl <frode.nordahl@canonical.com>
+Link: https://mail.openvswitch.org/pipermail/ovs-discuss/2022-May/051829.html
+Link: https://bugs.launchpad.net/ubuntu/+source/ovn/+bug/1967856
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Link: https://lore.kernel.org/r/20220606221140.488984-1-i.maximets@ovn.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[Backport to 5.10: minor rebase in ovs_ct_clear function.
+ This version also applicable to and tested on 5.4 and 4.19.]
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/openvswitch/actions.c   |    6 ++++++
+ net/openvswitch/conntrack.c |    3 ++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -443,6 +443,7 @@ static void set_ip_addr(struct sk_buff *
+ 	update_ip_l4_checksum(skb, nh, *addr, new_addr);
+ 	csum_replace4(&nh->check, *addr, new_addr);
+ 	skb_clear_hash(skb);
++	ovs_ct_clear(skb, NULL);
+ 	*addr = new_addr;
+ }
+ 
+@@ -490,6 +491,7 @@ static void set_ipv6_addr(struct sk_buff
+ 		update_ipv6_checksum(skb, l4_proto, addr, new_addr);
+ 
+ 	skb_clear_hash(skb);
++	ovs_ct_clear(skb, NULL);
+ 	memcpy(addr, new_addr, sizeof(__be32[4]));
+ }
+ 
+@@ -730,6 +732,7 @@ static int set_nsh(struct sk_buff *skb,
+ static void set_tp_port(struct sk_buff *skb, __be16 *port,
+ 			__be16 new_port, __sum16 *check)
+ {
++	ovs_ct_clear(skb, NULL);
+ 	inet_proto_csum_replace2(check, skb, *port, new_port, false);
+ 	*port = new_port;
+ }
+@@ -769,6 +772,7 @@ static int set_udp(struct sk_buff *skb,
+ 		uh->dest = dst;
+ 		flow_key->tp.src = src;
+ 		flow_key->tp.dst = dst;
++		ovs_ct_clear(skb, NULL);
+ 	}
+ 
+ 	skb_clear_hash(skb);
+@@ -831,6 +835,8 @@ static int set_sctp(struct sk_buff *skb,
+ 	sh->checksum = old_csum ^ old_correct_csum ^ new_csum;
+ 
+ 	skb_clear_hash(skb);
++	ovs_ct_clear(skb, NULL);
++
+ 	flow_key->tp.src = sh->source;
+ 	flow_key->tp.dst = sh->dest;
+ 
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -1303,7 +1303,8 @@ int ovs_ct_clear(struct sk_buff *skb, st
+ 	if (skb_nfct(skb)) {
+ 		nf_conntrack_put(skb_nfct(skb));
+ 		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
+-		ovs_ct_fill_key(skb, key);
++		if (key)
++			ovs_ct_fill_key(skb, key);
+ 	}
+ 
+ 	return 0;
+
+
