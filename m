@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E18C4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 01:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 01:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345283AbiFWBaU (ORCPT
+        id S1347009AbiFWBaX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 21:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52028 "EHLO
+        Wed, 22 Jun 2022 21:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237880AbiFWBaQ (ORCPT
+        with ESMTP id S237828AbiFWBaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 21:30:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEBC4339E;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219E74339C;
         Wed, 22 Jun 2022 18:30:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F14DFB81E82;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE01BB82185;
         Thu, 23 Jun 2022 01:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AD3DAC3411B;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9B4C3C341C5;
         Thu, 23 Jun 2022 01:30:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1655947813;
-        bh=EHKcw3CV9Z4hdOWq52eIVI9XCxk3qIlOlXsr1ft1M0I=;
+        bh=ovCsGvzEsvgDTBhcIXWG04M1NeUaNuVh9D3Y5BE9nhk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ttSx9F1oXYqhmVBJbn/FXgbk5wZd8C5RJmZqANf9xIxEYffEdtpmY1RgD9+/liT5i
-         tgfNeKK3J4BPUO1/YJhXWDbOypy7wgUCboxs2VWPNXQyfapjFn1kc+008Kk+lpjb+4
-         lxw0J4rt+af7/p1TroAz1yvhqxWe+xmrnvAsgloK/Gpkd7+38OwREqVXaOuVA7coyU
-         nPd3KZflFe/RkYFJzcZ24Dtt8/pUbt6RFyjCa1MXR91kqGQOcUa+WKL2kDX3A0Htq0
-         RGibtQZxcvYxNmdp3hE72z0zjmlYKQs5j+S6v0FcyJqvD7J4WPOJbTVkYdkzOvrhEC
-         FyrrlD3MKtekA==
+        b=dShnmHCfD1ozPdAqEqFIXkGM2eJ6nP/DBaJ9LwHxZcOvBF/VI8ggKBgFa7l3gaXCB
+         pdUnXrLg+RSm5WxKlyXyjbYJpaP8Xa/hcUV17j5H4ZvFgv7HWd8ns4WBpQQkDX3OuH
+         mfKittEnWqRCP8XYaNhaceww2tsM0ApPmoAvZTOmeLZvDFXAUJ5WUhQ+sz7CMbci7Y
+         C6HBZcbrP0lp+7vFuZAxvI5Z2WxTFO5u6/bK0+FhBG3CMMjky0UrxlbhNKp3tiii/b
+         VIRgXI04TAzD1ntAj4pSP/MUWh0z+M98V/0U7Ro7V43VEW5EvupM/rt520INaQqJUy
+         hwMXIiFngMvqA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F783E7BB9B;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7DE94E7387A;
         Thu, 23 Jun 2022 01:30:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] cxgb4vf: remove unexpected word "the"
+Subject: Re: [PATCH] isdn: mISDN: hfcsusb: drop unexpected word "the" in the
+ comments
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165594781358.21755.11075562583865337616.git-patchwork-notify@kernel.org>
+Message-Id: <165594781350.21755.6624075051253698330.git-patchwork-notify@kernel.org>
 Date:   Thu, 23 Jun 2022 01:30:13 +0000
-References: <20220621084537.58402-1-jiangjian@cdjrlc.com>
-In-Reply-To: <20220621084537.58402-1-jiangjian@cdjrlc.com>
+References: <20220621114529.108079-1-jiangjian@cdjrlc.com>
+In-Reply-To: <20220621114529.108079-1-jiangjian@cdjrlc.com>
 To:     Jiang Jian <jiangjian@cdjrlc.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, rajur@chelsio.com, netdev@vger.kernel.org,
+Cc:     isdn@linux-pingi.de, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -58,17 +58,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 21 Jun 2022 16:45:37 +0800 you wrote:
-> there is an unexpected word "the" in the comments that need to be removed
+On Tue, 21 Jun 2022 19:45:29 +0800 you wrote:
+> there is an unexpected word "the" in the comments that need to be dropped
 > 
-> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
-> ---
->  drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> file: ./drivers/isdn/hardware/mISDN/hfcsusb.c
+> line: 1560
+>  /* set USB_SIZE_I to match the the wMaxPacketSize for ISO transfers */
+> changed to
+>  /* set USB_SIZE_I to match the wMaxPacketSize for ISO transfers */
+> 
+> [...]
 
 Here is the summary with links:
-  - cxgb4vf: remove unexpected word "the"
-    https://git.kernel.org/netdev/net-next/c/f0d2ef7f92dc
+  - isdn: mISDN: hfcsusb: drop unexpected word "the" in the comments
+    https://git.kernel.org/netdev/net-next/c/d4667f96f485
 
 You are awesome, thank you!
 -- 
