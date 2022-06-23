@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C3F7C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD49CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236868AbiFWSTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42028 "EHLO
+        id S236984AbiFWSTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236819AbiFWSQn (ORCPT
+        with ESMTP id S236835AbiFWSQp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:16:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C95EB7F5;
-        Thu, 23 Jun 2022 10:23:07 -0700 (PDT)
+        Thu, 23 Jun 2022 14:16:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF3323173;
+        Thu, 23 Jun 2022 10:23:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B656D61EA7;
-        Thu, 23 Jun 2022 17:23:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DB4EC3411B;
-        Thu, 23 Jun 2022 17:23:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 385F5B82497;
+        Thu, 23 Jun 2022 17:23:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F860C3411B;
+        Thu, 23 Jun 2022 17:23:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004986;
-        bh=UrZM801TqwRIICsVfAzJac2y0NOGz5tf/BvbH6vMcOo=;
+        s=korg; t=1656004991;
+        bh=8L1thByr+96y7LiwJjwBO7DzEBZc6NqjlE7eg/BZEZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hJ9yZjUgJCzv4rQDbU3j7PCZNUi9Y4W9rC/AJNYr1Dgc0/SfnFkCnZBSQwxzoIswG
-         2+rBfYFv2ACZ9Oq81Si/qnlZnUXOtu2FgWnkT06wTykHTIWPYY0S0qnGYHnID0qVQU
-         115MQgttCmod4OeheV5l70ozzupf8Mcn3UMtwS5k=
+        b=JHgbkw1CL57kvpbHuxoOEtlCaIN/yn1nDm78R/GQub2TfnFdqZyIT7wmzCNtzl+na
+         W5nTlVqbQ6k9YJw51nCsAOjuKqdRZOCJqNw5EpUEljEQVPf3cJf2MQlS5HdKcKXEFt
+         bAwcf+0a3ejUFTyJQNatX65gbfYl+1wnL2xnpw4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephan Mueller <smueller@chronox.de>,
+        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
+        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 172/234] crypto: drbg - always seeded with SP800-90B compliant noise source
-Date:   Thu, 23 Jun 2022 18:43:59 +0200
-Message-Id: <20220623164347.919133423@linuxfoundation.org>
+Subject: [PATCH 4.19 174/234] crypto: drbg - track whether DRBG was seeded with !rng_is_initialized()
+Date:   Thu, 23 Jun 2022 18:44:01 +0200
+Message-Id: <20220623164347.975596983@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,116 +50,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Stephan Müller" <smueller@chronox.de>
+From: Nicolai Stange <nstange@suse.de>
 
-commit 97f2650e504033376e8813691cb6eccf73151676 upstream.
+commit 2bcd25443868aa8863779a6ebc6c9319633025d2 upstream.
 
-As the Jitter RNG provides an SP800-90B compliant noise source, use this
-noise source always for the (re)seeding of the DRBG.
+Currently, the DRBG implementation schedules asynchronous works from
+random_ready_callbacks for reseeding the DRBG instances with output from
+get_random_bytes() once the latter has sufficient entropy available.
 
-To make sure the DRBG is always properly seeded, the reseed threshold
-is reduced to 1<<20 generate operations.
+However, as the get_random_bytes() initialization state can get queried by
+means of rng_is_initialized() now, there is no real need for this
+asynchronous reseeding logic anymore and it's better to keep things simple
+by doing it synchronously when needed instead, i.e. from drbg_generate()
+once rng_is_initialized() has flipped to true.
 
-The Jitter RNG may report health test failures. Such health test
-failures are treated as transient as follows. The DRBG will not reseed
-from the Jitter RNG (but from get_random_bytes) in case of a health
-test failure. Though, it produces the requested random number.
+Of course, for this to work, drbg_generate() would need some means by which
+it can tell whether or not rng_is_initialized() has flipped to true since
+the last seeding from get_random_bytes(). Or equivalently, whether or not
+the last seed from get_random_bytes() has happened when
+rng_is_initialized() was still evaluating to false.
 
-The Jitter RNG has a failure counter where at most 1024 consecutive
-resets due to a health test failure are considered as a transient error.
-If more consecutive resets are required, the Jitter RNG will return
-a permanent error which is returned to the caller by the DRBG. With this
-approach, the worst case reseed threshold is significantly lower than
-mandated by SP800-90A in order to seed with an SP800-90B noise source:
-the DRBG has a reseed threshold of 2^20 * 1024 = 2^30 generate requests.
+As it currently stands, enum drbg_seed_state allows for the representation
+of two different DRBG seeding states: DRBG_SEED_STATE_UNSEEDED and
+DRBG_SEED_STATE_FULL. The former makes drbg_generate() to invoke a full
+reseeding operation involving both, the rather expensive jitterentropy as
+well as the get_random_bytes() randomness sources. The DRBG_SEED_STATE_FULL
+state on the other hand implies that no reseeding at all is required for a
+!->pr DRBG variant.
 
-Yet, in case of a transient Jitter RNG health test failure, the DRBG is
-seeded with the data obtained from get_random_bytes.
+Introduce the new DRBG_SEED_STATE_PARTIAL state to enum drbg_seed_state for
+representing the condition that a DRBG was being seeded when
+rng_is_initialized() had still been false. In particular, this new state
+implies that
+- the given DRBG instance has been fully seeded from the jitterentropy
+  source (if enabled)
+- and drbg_generate() is supposed to reseed from get_random_bytes()
+  *only* once rng_is_initialized() turns to true.
 
-However, if the Jitter RNG fails during the initial seeding operation
-even due to a health test error, the DRBG will send an error to the
-caller because at that time, the DRBG has received no seed that is
-SP800-90B compliant.
+Up to now, the __drbg_seed() helper used to set the given DRBG instance's
+->seeded state to constant DRBG_SEED_STATE_FULL. Introduce a new argument
+allowing for the specification of the to be written ->seeded value instead.
+Make the first of its two callers, drbg_seed(), determine the appropriate
+value based on rng_is_initialized(). The remaining caller,
+drbg_async_seed(), is known to get invoked only once rng_is_initialized()
+is true, hence let it pass constant DRBG_SEED_STATE_FULL for the new
+argument to __drbg_seed().
 
-Signed-off-by: Stephan Mueller <smueller@chronox.de>
+There is no change in behaviour, except for that the pr_devel() in
+drbg_generate() would now report "unseeded" for ->pr DRBG instances which
+had last been seeded when rng_is_initialized() was still evaluating to
+false.
+
+Signed-off-by: Nicolai Stange <nstange@suse.de>
+Reviewed-by: Stephan MÃ¼ller <smueller@chronox.de>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/drbg.c         |   26 +++++++++++++++++++-------
- include/crypto/drbg.h |    6 +-----
- 2 files changed, 20 insertions(+), 12 deletions(-)
+ crypto/drbg.c         |   12 ++++++++----
+ include/crypto/drbg.h |    1 +
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
-@@ -1087,10 +1087,6 @@ static void drbg_async_seed(struct work_
+@@ -1035,14 +1035,14 @@ static const struct drbg_state_ops drbg_
+  ******************************************************************/
+ 
+ static inline int __drbg_seed(struct drbg_state *drbg, struct list_head *seed,
+-			      int reseed)
++			      int reseed, enum drbg_seed_state new_seed_state)
+ {
+ 	int ret = drbg->d_ops->update(drbg, seed, reseed);
+ 
  	if (ret)
- 		goto unlock;
+ 		return ret;
  
--	/* If nonblocking pool is initialized, deactivate Jitter RNG */
--	crypto_free_rng(drbg->jent);
--	drbg->jent = NULL;
--
- 	/* Set seeded to false so that if __drbg_seed fails the
- 	 * next generate call will trigger a reseed.
+-	drbg->seeded = DRBG_SEED_STATE_FULL;
++	drbg->seeded = new_seed_state;
+ 	/* 10.1.1.2 / 10.1.1.3 step 5 */
+ 	drbg->reseed_ctr = 1;
+ 
+@@ -1092,7 +1092,7 @@ static void drbg_async_seed(struct work_
  	 */
-@@ -1168,7 +1164,23 @@ static int drbg_seed(struct drbg_state *
- 						   entropylen);
- 			if (ret) {
- 				pr_devel("DRBG: jent failed with %d\n", ret);
--				goto out;
+ 	drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
+ 
+-	__drbg_seed(drbg, &seedlist, true);
++	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
+ 
+ 	if (drbg->seeded == DRBG_SEED_STATE_FULL)
+ 		drbg->reseed_threshold = drbg_max_requests(drbg);
+@@ -1122,6 +1122,7 @@ static int drbg_seed(struct drbg_state *
+ 	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
+ 	struct drbg_string data1;
+ 	LIST_HEAD(seedlist);
++	enum drbg_seed_state new_seed_state = DRBG_SEED_STATE_FULL;
+ 
+ 	/* 9.1 / 9.2 / 9.3.1 step 3 */
+ 	if (pers && pers->len > (drbg_max_addtl(drbg))) {
+@@ -1149,6 +1150,9 @@ static int drbg_seed(struct drbg_state *
+ 		BUG_ON((entropylen * 2) > sizeof(entropy));
+ 
+ 		/* Get seed from in-kernel /dev/urandom */
++		if (!rng_is_initialized())
++			new_seed_state = DRBG_SEED_STATE_PARTIAL;
 +
-+				/*
-+				 * Do not treat the transient failure of the
-+				 * Jitter RNG as an error that needs to be
-+				 * reported. The combined number of the
-+				 * maximum reseed threshold times the maximum
-+				 * number of Jitter RNG transient errors is
-+				 * less than the reseed threshold required by
-+				 * SP800-90A allowing us to treat the
-+				 * transient errors as such.
-+				 *
-+				 * However, we mandate that at least the first
-+				 * seeding operation must succeed with the
-+				 * Jitter RNG.
-+				 */
-+				if (!reseed || ret != -EAGAIN)
-+					goto out;
- 			}
- 
- 			drbg_string_fill(&data1, entropy, entropylen * 2);
-@@ -1493,6 +1505,8 @@ static int drbg_prepare_hrng(struct drbg
- 	if (list_empty(&drbg->test_data.list))
- 		return 0;
- 
-+	drbg->jent = crypto_alloc_rng("jitterentropy_rng", 0, 0);
-+
- 	INIT_WORK(&drbg->seed_work, drbg_async_seed);
- 
- 	drbg->random_ready.notifier_call = drbg_schedule_async_seed;
-@@ -1511,8 +1525,6 @@ static int drbg_prepare_hrng(struct drbg
- 		return err;
+ 		ret = drbg_get_random_bytes(drbg, entropy, entropylen);
+ 		if (ret)
+ 			goto out;
+@@ -1205,7 +1209,7 @@ static int drbg_seed(struct drbg_state *
+ 		memset(drbg->C, 0, drbg_statelen(drbg));
  	}
  
--	drbg->jent = crypto_alloc_rng("jitterentropy_rng", 0, 0);
--
- 	/*
- 	 * Require frequent reseeds until the seed source is fully
- 	 * initialized.
+-	ret = __drbg_seed(drbg, &seedlist, reseed);
++	ret = __drbg_seed(drbg, &seedlist, reseed, new_seed_state);
+ 
+ out:
+ 	memzero_explicit(entropy, entropylen * 2);
 --- a/include/crypto/drbg.h
 +++ b/include/crypto/drbg.h
-@@ -184,11 +184,7 @@ static inline size_t drbg_max_addtl(stru
- static inline size_t drbg_max_requests(struct drbg_state *drbg)
- {
- 	/* SP800-90A requires 2**48 maximum requests before reseeding */
--#if (__BITS_PER_LONG == 32)
--	return SIZE_MAX;
--#else
--	return (1UL<<48);
--#endif
-+	return (1<<20);
- }
+@@ -107,6 +107,7 @@ struct drbg_test_data {
  
- /*
+ enum drbg_seed_state {
+ 	DRBG_SEED_STATE_UNSEEDED,
++	DRBG_SEED_STATE_PARTIAL, /* Seeded with !rng_is_initialized() */
+ 	DRBG_SEED_STATE_FULL,
+ };
+ 
 
 
