@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CBC4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8D1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231585AbiFWRpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
+        id S234985AbiFWRpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235074AbiFWRjA (ORCPT
+        with ESMTP id S235303AbiFWRj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:39:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF2653A6C;
-        Thu, 23 Jun 2022 10:09:22 -0700 (PDT)
+        Thu, 23 Jun 2022 13:39:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB1392B6E;
+        Thu, 23 Jun 2022 10:09:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B45D4B824B9;
-        Thu, 23 Jun 2022 17:09:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E46A4C341C4;
-        Thu, 23 Jun 2022 17:09:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81B7A61D18;
+        Thu, 23 Jun 2022 17:09:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AE9EC341C7;
+        Thu, 23 Jun 2022 17:09:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004159;
-        bh=M34mY1zF7FH4pZrQTQ8/U8RxQAYkwVNvKJhRoqOYvOI=;
+        s=korg; t=1656004180;
+        bh=Zok0YD5rq+Sy4706nKv56dV1P5mBEMpn3KOpJFInSIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XvHPBdzWoPTutSMVEMRZRQdXyZpFicIr2hO2gIhrcBk4Fo6lcmpzA+O2xRScBRYGJ
-         ShNkn2Z4eml2+q1rLqqWdYe9L2e5fG7vQH26O14u9HLeI2dOLqJNOfDVHN9qM4IPuO
-         IJM2nG3ywv4iu+YguaR2e7WRdRn7aGO/d8l6af/4=
+        b=bzNK44Q1MY2HMMGklJB5atjVKNPJ6LVxrIwxPCx7jozy1OtYgtHyWzWzHdRGpvcIa
+         fb9oreMfbly7M4xsR4v5UlB3n/LnLJW+gA3+zCC7/9dhJxySdvAu+PwEm4usMA3znX
+         FJzZXK6COoLzcRzAA0KVet8+j6QBiKRPvuZD+AFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Lin <chen45464546@163.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 207/237] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
-Date:   Thu, 23 Jun 2022 18:44:01 +0200
-Message-Id: <20220623164349.104058899@linuxfoundation.org>
+Subject: [PATCH 4.14 213/237] net: bgmac: Fix an erroneous kfree() in bgmac_remove()
+Date:   Thu, 23 Jun 2022 18:44:07 +0200
+Message-Id: <20220623164349.278131466@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,71 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Lin <chen45464546@163.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 2f2c0d2919a14002760f89f4e02960c735a316d2 ]
+[ Upstream commit d7dd6eccfbc95ac47a12396f84e7e1b361db654b ]
 
-When rx_flag == MTK_RX_FLAGS_HWLRO,
-rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
-netdev_alloc_frag is for alloction of page fragment only.
-Reference to other drivers and Documentation/vm/page_frags.rst
+'bgmac' is part of a managed resource allocated with bgmac_alloc(). It
+should not be freed explicitly.
 
-Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
+Remove the erroneous kfree() from the .remove() function.
 
-Signed-off-by: Chen Lin <chen45464546@163.com>
-Link: https://lore.kernel.org/r/1654692413-2598-1-git-send-email-chen45464546@163.com
+Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bgmac-bcma.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index ade72b46e93c..fb48efa70797 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -596,6 +596,17 @@ static inline void mtk_rx_get_desc(struct mtk_rx_dma *rxd,
- 	rxd->rxd4 = READ_ONCE(dma_rxd->rxd4);
+diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+index 6322594ab260..98f1057650da 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
++++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+@@ -317,7 +317,6 @@ static void bgmac_remove(struct bcma_device *core)
+ 	bcma_mdio_mii_unregister(bgmac->mii_bus);
+ 	bgmac_enet_remove(bgmac);
+ 	bcma_set_drvdata(core, NULL);
+-	kfree(bgmac);
  }
  
-+static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
-+{
-+	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
-+	unsigned long data;
-+
-+	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
-+				get_order(size));
-+
-+	return (void *)data;
-+}
-+
- /* the qdma core needs scratch memory to be setup */
- static int mtk_init_fq_dma(struct mtk_eth *eth)
- {
-@@ -1005,7 +1016,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			goto release_desc;
- 
- 		/* alloc new buffer */
--		new_data = napi_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			new_data = napi_alloc_frag(ring->frag_size);
-+		else
-+			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
- 		if (unlikely(!new_data)) {
- 			netdev->stats.rx_dropped++;
- 			goto release_desc;
-@@ -1315,7 +1329,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < rx_dma_size; i++) {
--		ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		else
-+			ring->data[i] = mtk_max_lro_buf_alloc(GFP_KERNEL);
- 		if (!ring->data[i])
- 			return -ENOMEM;
- 	}
+ static struct bcma_driver bgmac_bcma_driver = {
 -- 
 2.35.1
 
