@@ -2,276 +2,556 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D51CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD293C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232776AbiFWEq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
+        id S232823AbiFWEqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346854AbiFWEaU (ORCPT
+        with ESMTP id S238356AbiFWD1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 00:30:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB704193DC
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:30:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60D6CB81EA9
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 04:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2C43C3411B;
-        Thu, 23 Jun 2022 04:30:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655958616;
-        bh=BRzBBPQDISUXKF+dnmQg2f3fvozeO32ObTg7nkiAODQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KXZTdYzVr2Q7l6G/qlSK6u+AzSzuCRT7AQWH3j3L5I/Ptp48zwtTLhadr6M1LJ2Ty
-         45ie0oNY8A/F6bFiR191pc51+P5v3vqfxj2rJDQxmrNQot6KbxIFRiidRYGuv7D5L6
-         DLyH+3EM0UWs7g6PLjcGWuddTrDiA8nl0lD2KcQAHkLJbJ+6vChANKeF6DCgniDP4o
-         IyEIv33MkdEjdXyleuuNn1VjSJQ48aUjM9h5PDT1CpA054qAXJAARoPkq3E6aAdGAf
-         AUZ0pFamtyr1fcHAeF4gQZO/NtcLCV2TcqXiUof384g6QiJfN9f+Vn09mn5bEAKP36
-         0xWyzdv3Gk15g==
-Date:   Wed, 22 Jun 2022 23:30:10 -0500
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Rebecca Mckeever <remckee0@gmail.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH v3 2/4] memblock tests: add verbose output to memblock
- tests
-Message-ID: <YrPsUrJ5R5UaIGBS@kernel.org>
-References: <cover.1655889641.git.remckee0@gmail.com>
- <004e021cc3cb7be8749361b3b1cb324459b9cb9f.1655889641.git.remckee0@gmail.com>
+        Wed, 22 Jun 2022 23:27:18 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A862F677;
+        Wed, 22 Jun 2022 20:27:16 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id f16so16253273pjj.1;
+        Wed, 22 Jun 2022 20:27:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BGxgiv11hvdw7wDli9ikUOZaW5PWrlx+R9Qfffj5nmA=;
+        b=e5TfjJjcVuJRt54CUHfLA3h6xetjYOMgr8K1O8qgnCmOhid3YJaBTgmNRlzll7kilw
+         j0m20G9sBsG0jm1/wPBfLSGn1tTwHv6rtpLn/z+v5kxn5imiBS4HL0UrsfoQkVamWglI
+         VE9Lq3dy+SUypO//dIDJoXboczVYqdD2evNWTSu/on9uiuIiVuGgD0JgEG+5wcu8FipD
+         ls2mocEgAk1ZPSKpd28rT9nw9kc4t8R6Qy5gTNJDeW/0K7IxVfqsmsqFEonpi1L4x9OG
+         BIInYqjVQZb2hQWWg58cyrSrD4lxH1Pgvicu8b28IVH4emrjk8xiLMyUaYCQiY1iIXyY
+         kr+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BGxgiv11hvdw7wDli9ikUOZaW5PWrlx+R9Qfffj5nmA=;
+        b=HIttvqFh8lJoOvK1NQXvWvlJcmqTcqvSLoW1Mr8AbgbIPv/YgBAVk8CHzOQVcoCxOy
+         OxD0JyDToJKghri5AC+AQHiQDzJaRkXAnAC3zDK36sBCkeemo3p8qa8bqU8LkC8AweLL
+         iBtKbPGSBwngnlCj/cmL07h9lY1TETKKQXrRocp36DS2xrKvU1bnk5Spi3rZP5Zovxtz
+         NFccrFXl9aNNCkJW89ZUCtBmSLgtd1CiU4bsprsyyy3YxAwS8COZ9hJPA8nvOAVmfkhB
+         NRBVQO/1XrYgBcY45jOV/oMMyPjA+T7WGf2Kz9g5IiXGq1NUsYnGOVGfHZ+PE688kkVd
+         MC/g==
+X-Gm-Message-State: AJIora9bgZi+6oY5yYDXmiOKePvDcogUNgxSWbD8PfQ7CYRQqL3YAUQO
+        s0gbpECVKF/b84nZabsb18VJmnJPyK4=
+X-Google-Smtp-Source: AGRyM1uWx+Cc0+kaxj2kJxoKLTWgDi+3PVCrFNsTUJdsuyUa4wi6zHZxW6ePZngHNiCMvjaETPBGoQ==
+X-Received: by 2002:a17:902:ec84:b0:16a:50f5:61c1 with SMTP id x4-20020a170902ec8400b0016a50f561c1mr4114570plg.12.1655954836184;
+        Wed, 22 Jun 2022 20:27:16 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id iw2-20020a170903044200b00163f2f9f07csm9516193plb.48.2022.06.22.20.27.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 20:27:15 -0700 (PDT)
+From:   xu xin <cgel.zte@gmail.com>
+X-Google-Original-From: xu xin <xu.xin16@zte.com.cn>
+To:     anton@tuxera.com, linux-ntfs-dev@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Bug report: ntfs_read_block may crash system
+Date:   Thu, 23 Jun 2022 03:27:13 +0000
+Message-Id: <20220623032713.973803-1-xu.xin16@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <004e021cc3cb7be8749361b3b1cb324459b9cb9f.1655889641.git.remckee0@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 04:29:07AM -0500, Rebecca Mckeever wrote:
-> Add and use functions for printing verbose testing output.
-> 
-> If the Memblock simulator was compiled with VERBOSE=1:
->   prefix_push() appends the given string to a prefix string that will be
->     printed in the test functions.
->   prefix_pop() removes the last prefix from the prefix string.
->   prefix_reset() clears the prefix string.
->   test_fail() prints a message after a test fails containing the test
->     number of the failing test and the prefix.
->   test_pass() prints a message after a test passes containing its test
->     number and the prefix.
->   test_print() prints the given formatted output string.
-> 
-> If the Memblock simulator was not compiled with VERBOSE=1, these
-> functions do nothing.
-> 
-> Add the assert wrapper macros ASSERT_EQ(), ASSERT_NE(), and ASSERT_LT().
-> If the assert condition fails, these macros call test_fail() before
-> executing assert().
-> 
-> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> ---
->  tools/testing/memblock/tests/alloc_api.c      | 241 ++++++++----
->  .../memblock/tests/alloc_helpers_api.c        | 135 +++++--
->  tools/testing/memblock/tests/alloc_nid_api.c  | 371 ++++++++++++------
->  tools/testing/memblock/tests/basic_api.c      | 365 ++++++++++++-----
->  tools/testing/memblock/tests/common.c         |  58 +++
->  tools/testing/memblock/tests/common.h         |  54 +++
->  6 files changed, 880 insertions(+), 344 deletions(-)
-> 
-> diff --git a/tools/testing/memblock/tests/alloc_api.c b/tools/testing/memblock/tests/alloc_api.c
-> index d1aa7e15c18d..96df033d4300 100644
-> --- a/tools/testing/memblock/tests/alloc_api.c
-> +++ b/tools/testing/memblock/tests/alloc_api.c
+From Zeal Robot <zealci@zte.com.cn>
 
-...
+Hi! Zeal Robot found a potential risky bug about NTFS under the help of syzkaller.
+This will cause OS crash when CONFIG_NTFS_FS is set and panic_on_oops is on.
 
-> @@ -729,6 +820,12 @@ static int alloc_no_memory_check(void)
->  
->  int memblock_alloc_checks(void)
->  {
-> +	static const char func_testing[] = "memblock_alloc";
-> +
-> +	prefix_reset();
-> +	prefix_push(func_testing);
-> +	test_print("Running %s tests...\n", func_testing);
+We have a reproducer below and Debug log.
 
-Why not 
+=============================================================================
+Debugging log:
+=============================================================================
+[  101.384038] kernel BUG at fs/ntfs/aops.c:186!
+[  101.386267] invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+[  101.387099] PKRU: 55555554
+[  101.387099] Call Trace:
+[  101.387099]  <TASK>
+[  101.387099]  ? ntfs_end_buffer_async_read+0xb20/0xb20
+[  101.387099]  ? filemap_add_folio+0x115/0x180
+[  101.387099]  ? add_to_page_cache_locked+0x90/0x90
+[  101.387099]  do_read_cache_folio+0x4d4/0x950
+[  101.387099]  ? generic_file_read_iter+0x4f0/0x4f0
+[  101.387099]  ? _extract_crng.constprop.0+0xc1/0xf0
+[  101.387099]  ? ntfs_attr_find+0x649/0xa90
+[  101.387099]  ? __kasan_check_write+0x15/0x20
+[  101.387099]  read_cache_page+0x6c/0x150
+[  101.387099]  map_mft_record+0x1a5/0x960
+[  101.387099]  ntfs_read_locked_inode+0x1a7/0x58b0
+[  101.387099]  ? ntfs_mapping_pairs_decompress+0x79e/0x1030
+[  101.387099]  ? ntfs_attr_reinit_search_ctx+0x14e/0x430
+[  101.387099]  ntfs_read_inode_mount+0xb72/0x2170
+[  101.387099]  ntfs_fill_super+0x10f2/0x4420
+[  101.387099]  ? snprintf+0xa9/0xd0
+[  101.387099]  mount_bdev+0x305/0x3d0
+[  101.387099]  ? ntfs_remount+0xc0/0xc0
+[  101.387099]  ntfs_mount+0x3b/0x50
+[  101.387099]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+===============================================================================
 
-	test_print("Running memblock_alloc tests...\n");
+The C reproducer of this bug is as follows:
+===============================================================================
 
-?
+#define _GNU_SOURCE
 
-(applies to other cases below)
+#include <endian.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/mount.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-> +
->  	reset_memblock_attributes();
->  	dummy_physical_memory_init();
+#include <linux/loop.h>
 
-...
+#ifndef __NR_memfd_create
+#define __NR_memfd_create 319
+#endif
 
-> diff --git a/tools/testing/memblock/tests/alloc_helpers_api.c b/tools/testing/memblock/tests/alloc_helpers_api.c
-> index 963a966db461..f6eaed540427 100644
-> --- a/tools/testing/memblock/tests/alloc_helpers_api.c
-> +++ b/tools/testing/memblock/tests/alloc_helpers_api.c
+static unsigned long long procid;
 
-...
+struct fs_image_segment {
+  void* data;
+  uintptr_t size;
+  uintptr_t offset;
+};
 
-> @@ -378,6 +423,12 @@ static int alloc_from_min_addr_cap_check(void)
->  
->  int memblock_alloc_helpers_checks(void)
->  {
-> +	static const char func_testing[] = "memblock_alloc_from";
-> +
-> +	prefix_reset();
-> +	prefix_push(func_testing);
-> +	test_print("Running %s tests...\n", func_testing);
-> +
->  	reset_memblock_attributes();
->  	dummy_physical_memory_init();
->  
-> diff --git a/tools/testing/memblock/tests/alloc_nid_api.c b/tools/testing/memblock/tests/alloc_nid_api.c
-> index 6390206e50e1..601f4a7ee30d 100644
-> --- a/tools/testing/memblock/tests/alloc_nid_api.c
-> +++ b/tools/testing/memblock/tests/alloc_nid_api.c
+#define IMAGE_MAX_SEGMENTS 4096
+#define IMAGE_MAX_SIZE (129 << 20)
 
-...
+static unsigned long fs_image_segment_check(unsigned long size,
+                                            unsigned long nsegs,
+                                            struct fs_image_segment* segs)
+{
+  if (nsegs > IMAGE_MAX_SEGMENTS)
+    nsegs = IMAGE_MAX_SEGMENTS;
+  for (size_t i = 0; i < nsegs; i++) {
+    if (segs[i].size > IMAGE_MAX_SIZE)
+      segs[i].size = IMAGE_MAX_SIZE;
+    segs[i].offset %= IMAGE_MAX_SIZE;
+    if (segs[i].offset > IMAGE_MAX_SIZE - segs[i].size)
+      segs[i].offset = IMAGE_MAX_SIZE - segs[i].size;
+    if (size < segs[i].offset + segs[i].offset)
+      size = segs[i].offset + segs[i].offset;
+  }
+  if (size > IMAGE_MAX_SIZE)
+    size = IMAGE_MAX_SIZE;
+  return size;
+}
+static int setup_loop_device(long unsigned size, long unsigned nsegs,
+                             struct fs_image_segment* segs,
+                             const char* loopname, int* memfd_p, int* loopfd_p)
+{
+  int err = 0, loopfd = -1;
+  size = fs_image_segment_check(size, nsegs, segs);
+  int memfd = syscall(__NR_memfd_create, "syzkaller", 0);
+  if (memfd == -1) {
+    err = errno;
+    goto error;
+  }
+  if (ftruncate(memfd, size)) {
+    err = errno;
+    goto error_close_memfd;
+  }
+  for (size_t i = 0; i < nsegs; i++) {
+    if (pwrite(memfd, segs[i].data, segs[i].size, segs[i].offset) < 0) {
+    }
+  }
+  loopfd = open(loopname, O_RDWR);
+  if (loopfd == -1) {
+    err = errno;
+    goto error_close_memfd;
+  }
+  if (ioctl(loopfd, LOOP_SET_FD, memfd)) {
+    if (errno != EBUSY) {
+      err = errno;
+      goto error_close_loop;
+    }
+    ioctl(loopfd, LOOP_CLR_FD, 0);
+    usleep(1000);
+    if (ioctl(loopfd, LOOP_SET_FD, memfd)) {
+      err = errno;
+      goto error_close_loop;
+    }
+  }
+  *memfd_p = memfd;
+  *loopfd_p = loopfd;
+  return 0;
 
-> @@ -1150,6 +1263,12 @@ static int alloc_try_nid_low_max_check(void)
->  
->  int memblock_alloc_nid_checks(void)
->  {
-> +	static const char func_testing[] = "memblock_alloc_try_nid";
-> +
-> +	prefix_reset();
-> +	prefix_push(func_testing);
-> +	test_print("Running %s tests...\n", func_testing);
-> +
->  	reset_memblock_attributes();
->  	dummy_physical_memory_init();
->  
-> @@ -1170,5 +1289,7 @@ int memblock_alloc_nid_checks(void)
->  
->  	dummy_physical_memory_cleanup();
->  
-> +	prefix_pop();
-> +
->  	return 0;
->  }
-> diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
-> index a7bc180316d6..f223a9a57be7 100644
-> --- a/tools/testing/memblock/tests/basic_api.c
-> +++ b/tools/testing/memblock/tests/basic_api.c
-> @@ -4,21 +4,30 @@
->  #include "basic_api.h"
->  
->  #define EXPECTED_MEMBLOCK_REGIONS			128
-> +#define FUNC_ADD					"memblock_add"
-> +#define FUNC_RESERVE					"memblock_reserve"
-> +#define FUNC_REMOVE					"memblock_remove"
-> +#define FUNC_FREE					"memblock_free"
->  
->  static int memblock_initialization_check(void)
->  {
-> -	assert(memblock.memory.regions);
-> -	assert(memblock.memory.cnt == 1);
-> -	assert(memblock.memory.max == EXPECTED_MEMBLOCK_REGIONS);
-> -	assert(strcmp(memblock.memory.name, "memory") == 0);
-> +	prefix_push(__func__);
->  
-> -	assert(memblock.reserved.regions);
-> -	assert(memblock.reserved.cnt == 1);
-> -	assert(memblock.memory.max == EXPECTED_MEMBLOCK_REGIONS);
-> -	assert(strcmp(memblock.reserved.name, "reserved") == 0);
-> +	ASSERT_NE(memblock.memory.regions, NULL);
-> +	ASSERT_EQ(memblock.memory.cnt, 1);
-> +	ASSERT_EQ(memblock.memory.max, EXPECTED_MEMBLOCK_REGIONS);
-> +	ASSERT_EQ(strcmp(memblock.memory.name, "memory"), 0);
->  
-> -	assert(!memblock.bottom_up);
-> -	assert(memblock.current_limit == MEMBLOCK_ALLOC_ANYWHERE);
-> +	ASSERT_NE(memblock.reserved.regions, NULL);
-> +	ASSERT_EQ(memblock.reserved.cnt, 1);
-> +	ASSERT_EQ(memblock.memory.max, EXPECTED_MEMBLOCK_REGIONS);
-> +	ASSERT_EQ(strcmp(memblock.reserved.name, "reserved"), 0);
-> +
-> +	ASSERT_EQ(memblock.bottom_up, false);
-> +	ASSERT_EQ(memblock.current_limit, MEMBLOCK_ALLOC_ANYWHERE);
-> +
-> +	test_pass();
-> +	prefix_pop();
->  
->  	return 0;
->  }
-> @@ -40,14 +49,19 @@ static int memblock_add_simple_check(void)
->  		.size = SZ_4M
->  	};
->  
-> +	prefix_push(__func__);
-> +
->  	reset_memblock_regions();
->  	memblock_add(r.base, r.size);
->  
-> -	assert(rgn->base == r.base);
-> -	assert(rgn->size == r.size);
-> +	ASSERT_EQ(rgn->base, r.base);
-> +	ASSERT_EQ(rgn->size, r.size);
-> +
-> +	ASSERT_EQ(memblock.memory.cnt, 1);
-> +	ASSERT_EQ(memblock.memory.total_size, r.size);
->  
-> -	assert(memblock.memory.cnt == 1);
-> -	assert(memblock.memory.total_size == r.size);
-> +	test_pass();
-> +	prefix_pop();
->  
->  	return 0;
->  }
-> @@ -69,18 +83,27 @@ static int memblock_add_node_simple_check(void)
->  		.size = SZ_16M
->  	};
->  
-> +	prefix_pop();
-> +	prefix_push("memblock_add_node");
-> +	prefix_push(__func__);
+error_close_loop:
+  close(loopfd);
+error_close_memfd:
+  close(memfd);
+error:
+  errno = err;
+  return -1;
+}
 
-I think there is no need to change the prefix from memblock_add to
-memblock_add_node here.
+static long syz_mount_image(volatile long fsarg, volatile long dir,
+                            volatile unsigned long size,
+                            volatile unsigned long nsegs,
+                            volatile long segments, volatile long flags,
+                            volatile long optsarg)
+{
+  struct fs_image_segment* segs = (struct fs_image_segment*)segments;
+  int res = -1, err = 0, loopfd = -1, memfd = -1, need_loop_device = !!segs;
+  char* mount_opts = (char*)optsarg;
+  char* target = (char*)dir;
+  char* fs = (char*)fsarg;
+  char* source = NULL;
+  char loopname[64];
+  if (need_loop_device) {
+    memset(loopname, 0, sizeof(loopname));
+    snprintf(loopname, sizeof(loopname), "/dev/loop%llu", procid);
+    if (setup_loop_device(size, nsegs, segs, loopname, &memfd, &loopfd) == -1) {
+	    printf("setup_loop_device failed\n");
+      	 return -1;
+    }
+    source = loopname;
+  }
+  mkdir(target, 0777);
+  char opts[256];
+  memset(opts, 0, sizeof(opts));
+  if (strlen(mount_opts) > (sizeof(opts) - 32)) {
+  }
+  strncpy(opts, mount_opts, sizeof(opts) - 32);
+  if (strcmp(fs, "iso9660") == 0) {
+    flags |= MS_RDONLY;
+  } else if (strncmp(fs, "ext", 3) == 0) {
+    if (strstr(opts, "errors=panic") || strstr(opts, "errors=remount-ro") == 0)
+      strcat(opts, ",errors=continue");
+  } else if (strcmp(fs, "xfs") == 0) {
+    strcat(opts, ",nouuid");
+  }
+  
+  printf("Start to mount...\n");
+  res = mount(source, target, fs, flags, opts);
+  if (res == -1) {
+	  printf("mount failed: %s\n", strerror(errno));
+    err = errno;
+    goto error_clear_loop;
+  }
+  res = open(target, O_RDONLY | O_DIRECTORY);
+  if (res == -1) {
+    err = errno;
+  }
 
-ok 3 : memblock_add: memblock_add_node_simple_check: passed
+error_clear_loop:
+  if (need_loop_device) {
+    ioctl(loopfd, LOOP_CLR_FD, 0);
+    close(loopfd);
+    close(memfd);
+  }
+  errno = err;
+  return res;
+}
 
-provides enough information.
+int main(void)
+{
+  syscall(__NR_mmap, 0x1ffff000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
+  syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 7ul, 0x32ul, -1, 0ul);
+  syscall(__NR_mmap, 0x21000000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
 
-> +
->  	reset_memblock_regions();
->  	memblock_add_node(r.base, r.size, 1, MEMBLOCK_HOTPLUG);
->  
-> -	assert(rgn->base == r.base);
-> -	assert(rgn->size == r.size);
-> +	ASSERT_EQ(rgn->base, r.base);
-> +	ASSERT_EQ(rgn->size, r.size);
->  #ifdef CONFIG_NUMA
-> -	assert(rgn->nid == 1);
-> +	ASSERT_EQ(rgn->nid, 1);
->  #endif
-> -	assert(rgn->flags == MEMBLOCK_HOTPLUG);
-> +	ASSERT_EQ(rgn->flags, MEMBLOCK_HOTPLUG);
-> +
-> +	ASSERT_EQ(memblock.memory.cnt, 1);
-> +	ASSERT_EQ(memblock.memory.total_size, r.size);
->  
-> -	assert(memblock.memory.cnt == 1);
-> -	assert(memblock.memory.total_size == r.size);
-> +	test_pass();
-> +	prefix_pop();
-> +	prefix_pop();
-> +	prefix_push(FUNC_ADD);
->  
->  	return 0;
->  }
+  memcpy((void*)0x20000000, "ntfs\000", 5);
+  memcpy((void*)0x20000100, "./file0\000", 8);
+  *(uint64_t*)0x20000200 = 0x20010000;
+  memcpy(
+      (void*)0x20010000,
+      "\xeb\x52\x90\x4e\x54\x46\x53\x20\x20\x20\x20\x00\x02\x08\x00\x00\x00\x00"
+      "\x00\x00\x00\xf8\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x80\x00\x80\x00\xff\x0f\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00"
+      "\x00\x00\xff\x00\x00\x00\x00\x00\x00\x00\xf6\x00\x00\x00\x01\x00\x00\x00"
+      "\x3d\xaa\xf5\x5a\xf9\x83\x09\x09\x00\x00\x00\x00\x0e\x1f\xbe\x71\x7c\xac"
+      "\x22\xc0\x74\x0b\x56\xb4\x0e\xbb\x07\x00\xcd\x10\x5e\xeb\xf0\x32\xe4\xcd"
+      "\x16\xcd\x19\xeb\xfe\x54\x68\x69\x73\x20\x69\x73\x20\x6e\x6f\x74\x20\x61"
+      "\x20\x62\x6f\x6f\x74\x61\x62\x6c\x65\x20\x64\x69\x73\x6b\x2e\x20\x50\x6c"
+      "\x65\x61\x73\x65\x20\x69\x6e\x73\x65\x72\x74\x20\x61\x20\x62\x6f\x6f\x74"
+      "\x61\x62\x6c\x65\x20\x66\x6c\x6f\x70\x70\x79\x20\x61\x6e\x64\x0d\x0a\x70"
+      "\x72\x65\x73\x73\x20\x61\x6e\x79\x20\x6b\x65\x79\x20\x74\x6f\x20\x74\x72"
+      "\x79\x20\x61\x67\x61\x69\x6e\x20\x2e\x2e\x2e\x20\x0d\x0a\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00",
+      224);
+  *(uint64_t*)0x20000208 = 0xe0;
+  *(uint64_t*)0x20000210 = 0;
+  *(uint64_t*)0x20000218 = 0x20010100;
+  memcpy((void*)0x20010100,
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x55\xaa",
+         32);
+  *(uint64_t*)0x20000220 = 0x20;
+  *(uint64_t*)0x20000228 = 0x1e0;
+  *(uint64_t*)0x20000230 = 0x20010200;
+  memcpy((void*)0x20010200,
+         "\xff\xff\x00\x07\x00\x00\x00\x00\x3f\x00\x00\x00\x00\x00\x00\x00\x00"
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+         32);
+  *(uint64_t*)0x20000238 = 0x20;
+  *(uint64_t*)0x20000240 = 0x2000;
+  *(uint64_t*)0x20000248 = 0x20010300;
+  memcpy(
+      (void*)0x20010300,
+      "\x46\x49\x4c\x45\x30\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00"
+      "\x01\x00\x38\x00\x01\x00\x98\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x00\x00"
+      "\x00\x00\x10\x00\x00\x00\x60\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00"
+      "\x48\x00\x00\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x30\x00\x00\x00\x68\x00\x00\x00\x00\x00"
+      "\x18\x00\x00\x00\x02\x00\x4a\x00\x00\x00\x18\x00\x01\x00\x05\x00\x00\x00"
+      "\x00\x00\x05\x00\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d"
+      "\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01"
+      "\x00\x70\x00\x00\x00\x00\x00\x00\x00\x6c\x00\x00\x00\x00\x00\x00\x06\x00"
+      "\x00\x00\x00\x00\x00\x00\x04\x03\x24\x00\x4d\x00\x46\x00\x54\x00\x00\x00"
+      "\x00\x00\x00\x00\x80\x00\x00\x00\x48\x00\x00\x00\x01\x00\x40\x00\x00\x00"
+      "\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x12\x00\x00\x00\x00\x00\x00\x00"
+      "\x40\x00\x00\x00\x00\x00\x00\x00\x00\x30\x01\x00\x00\x00\x00\x00\x00\x18"
+      "\x01\x00\x00\x00\x00\x00",
+      312);
+  *(uint64_t*)0x20000250 = 0x138;
+  *(uint64_t*)0x20000258 = 0x4000;
+  *(uint64_t*)0x20000260 = 0x20010500;
+  memcpy((void*)0x20010500,
+         "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+         "\000\000\000\000\000\000\000\000\000\000\000\000\000\b",
+         31);
+  *(uint64_t*)0x20000268 = 0x1f;
+  *(uint64_t*)0x20000270 = 0x41e0;
+  *(uint64_t*)0x20000278 = 0x20010600;
+  memcpy((void*)0x20010600,
+         "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+         "\000\000\000\000\000\000\000\000\000\000\000\000\000\b",
+         31);
+  *(uint64_t*)0x20000280 = 0x1f;
+  *(uint64_t*)0x20000288 = 0x43e0;
+  *(uint64_t*)0x20000290 = 0x20010c00;
+  memcpy(
+      (void*)0x20010c00,
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x46\x49\x4c\x45"
+      "\x30\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x01\x00\x38\x00"
+      "\x01\x00\xe0\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x06\x00\x00\x00\x03\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x10\x00"
+      "\x00\x00\x48\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00\x30\x00\x00\x00"
+      "\x18\x00\x00\x00\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d"
+      "\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01"
+      "\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x30\x00"
+      "\x00\x00\x68\x00\x00\x00\x00\x00\x18\x00\x00\x00\x01\x00\x50\x00\x00\x00"
+      "\x18\x00\x01\x00\x05\x00\x00\x00\x00\x00\x05\x00\x00\x6f\x95\xff\xc7\x8d"
+      "\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01"
+      "\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07\x03\x24\x00"
+      "\x56\x00\x6f\x00\x6c\x00\x75\x00\x6d\x00\x65\x00\x50\x00\x00\x00\x80\x00"
+      "\x00\x00\x00\x00\x18\x00\x00\x00\x02\x00\x64\x00\x00\x00\x18\x00\x00\x00"
+      "\x01\x00\x04\x80\x48\x00\x00\x00\x54\x00\x00\x00\x00\x00\x00\x00\x14\x00"
+      "\x00\x00\x02\x00\x34\x00\x02\x00\x00\x00\x00\x00\x14\x00\x9f\x01\x12\x00"
+      "\x01\x01\x00\x00\x00\x00\x00\x05\x12\x00\x00\x00\x00\x00\x18\x00\x9f\x01"
+      "\x12\x00\x01\x02\x00\x00\x00\x00\x00\x05\x20\x00\x00\x00\x20\x02\x00\x00"
+      "\x01\x01\x00\x00\x00\x00\x00\x05\x12\x00\x00\x00\x01\x02\x00\x00\x00\x00"
+      "\x00\x05\x20\x00\x00\x00\x20\x02\x00\x00\x00\x00\x00\x00\x60\x00\x00\x00"
+      "\x30\x00\x00\x00\x00\x00\x18\x00\x00\x00\x04\x00\x12\x00\x00\x00\x18\x00"
+      "\x00\x00\x73\x00\x79\x00\x7a\x00\x6b\x00\x61\x00\x6c\x00\x6c\x00\x65\x00"
+      "\x72\x00\x00\x00\x00\x00\x00\x00\x70\x00\x00\x00\x28\x00\x00\x00\x00\x00"
+      "\x18\x00\x00\x00\x05\x00\x0c\x00\x00\x00\x18\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x03\x01\x00\x00\x00\x00\x00\x00\x80\x00\x00\x00\x18\x00"
+      "\x00\x00\x00\x00\x18\x00\x00\x00\x03\x00\x00\x00\x00\x00\x18\x00\x00\x00"
+      "\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x02",
+      543);
+  *(uint64_t*)0x20000298 = 0x21f;
+  *(uint64_t*)0x200002a0 = 0x4be0;
+  *(uint64_t*)0x200002a8 = 0x20010f00;
+  memcpy((void*)0x20010f00,
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
+         31);
+  *(uint64_t*)0x200002b0 = 0x1f;
+  *(uint64_t*)0x200002b8 = 0x4fe0;
+  *(uint64_t*)0x200002c0 = 0x20011200;
+  memcpy(
+      (void*)0x20011200,
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x46\x49\x4c\x45"
+      "\x30\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05\x00\x01\x00\x38\x00"
+      "\x03\x00\x00\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x06\x00\x00\x00\x05\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00\x10\x00"
+      "\x00\x00\x48\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00\x30\x00\x00\x00"
+      "\x18\x00\x00\x00\x00\x6f\x95\xff\xc7\x8d\xd6\x01\xbb\xc8\x07\x00\xc8\x8d"
+      "\xd6\x01\xbb\xc8\x07\x00\xc8\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01"
+      "\x26\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x30\x00"
+      "\x00\x00\x60\x00\x00\x00\x00\x00\x18\x00\x00\x00\x01\x00\x44\x00\x00\x00"
+      "\x18\x00\x01\x00\x05\x00\x00\x00\x00\x00\x05\x00\x00\x6f\x95\xff\xc7\x8d"
+      "\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01"
+      "\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x06\x00\x00\x10\x00\x00\x00\x00\x01\x03\x2e\x00"
+      "\x00\x00\x00\x00\x50\x00\x00\x00\x48\x00\x00\x00\x01\x00\x40\x00\x00\x00"
+      "\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00"
+      "\x40\x00\x00\x00\x00\x00\x00\x00\x00\x20\x00\x00\x00\x00\x00\x00\x2c\x10"
+      "\x00\x00\x00\x00\x00\x00\x2c\x10\x00\x00\x00\x00\x00\x00\x11\x02\x43\x00"
+      "\x00\x00\x00\x00\x90\x00\x00\x00\x58\x00\x00\x00\x00\x04\x18\x00\x00\x00"
+      "\x03\x00\x38\x00\x00\x00\x20\x00\x00\x00\x24\x00\x49\x00\x33\x00\x30\x00"
+      "\x30\x00\x00\x00\x01\x00\x00\x00\x00\x10\x00\x00\x01\x00\x00\x00\x10\x00"
+      "\x00\x00\x28\x00\x00\x00\x28\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x18\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\xa0\x00\x00\x00\x50\x00\x00\x00\x01\x04\x40\x00\x00\x00\x05\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x48\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x10\x00\x00"
+      "\x00\x00\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00\x24\x00\x49\x00\x33\x00"
+      "\x30\x00\x11\x01\x45\x00\x00\x00\x00\x00\xb0\x00\x00\x00\x28\x00\x00\x00"
+      "\x00\x04\x18\x00\x00\x00\x04\x00\x08\x00\x00\x00\x20\x00\x00\x00\x24\x00"
+      "\x49\x00\x33\x00\x30\x00\x01\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff"
+      "\x00\x00\x07",
+      543);
+  *(uint64_t*)0x200002c8 = 0x21f;
+  *(uint64_t*)0x200002d0 = 0x53e0;
+  *(uint64_t*)0x200002d8 = 0x20011500;
+  memcpy(
+      (void*)0x20011500,
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x46\x49\x4c\x45"
+      "\x30\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06\x00\x01\x00\x38\x00"
+      "\x01\x00\x50\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x03\x00\x00\x00\x06\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x10\x00"
+      "\x00\x00\x60\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00\x48\x00\x00\x00"
+      "\x18\x00\x00\x00\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d"
+      "\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01"
+      "\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x30\x00\x00\x00\x68\x00\x00\x00\x00\x00\x18\x00\x00\x00"
+      "\x02\x00\x50\x00\x00\x00\x18\x00\x01\x00\x05\x00\x00\x00\x00\x00\x05\x00"
+      "\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f"
+      "\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x10\x00\x00"
+      "\x00\x00\x00\x00\x40\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00"
+      "\x00\x00\x07\x03\x24\x00\x42\x00\x69\x00\x74\x00\x6d\x00\x61\x00\x70\x00"
+      "\x80\x00\x00\x00\x48\x00\x00\x00\x01\x00\x40\x00\x00\x00\x01\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x40\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00\x40",
+      337);
+  *(uint64_t*)0x200002e0 = 0x151;
+  *(uint64_t*)0x200002e8 = 0x57e0;
+  *(uint64_t*)0x200002f0 = 0x20011700;
+  memcpy((void*)0x20011700,
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
+         31);
+  *(uint64_t*)0x200002f8 = 0x1f;
+  *(uint64_t*)0x20000300 = 0x59e0;
+  *(uint64_t*)0x20000308 = 0x20011800;
+  memcpy((void*)0x20011800,
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
+         31);
+  *(uint64_t*)0x20000310 = 0x1f;
+  *(uint64_t*)0x20000318 = 0x5be0;
+  *(uint64_t*)0x20000320 = 0x20011e00;
+  memcpy(
+      (void*)0x20011e00,
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x46\x49\x4c\x45"
+      "\x30\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x09\x00\x01\x00\x38\x00"
+      "\x09\x00\xa8\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x05\x00\x00\x00\x09\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x10\x00"
+      "\x00\x00\x60\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00\x48\x00\x00\x00"
+      "\x18\x00\x00\x00\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d"
+      "\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01"
+      "\x06\x00\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x30\x00\x00\x00\x68\x00\x00\x00\x00\x00\x18\x00\x00\x00"
+      "\x01\x00\x50\x00\x00\x00\x18\x00\x01\x00\x05\x00\x00\x00\x00\x00\x05\x00"
+      "\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f"
+      "\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x20\x00\x00"
+      "\x00\x00\x07\x03\x24\x00\x53\x00\x65\x00\x63\x00\x75\x00\x72\x00\x65\x00"
+      "\x80\x00\x00\x00\x50\x00\x00\x00\x01\x04\x40\x00\x00\x00\x02\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x40\x00\x00\x00\x00\x00\x00\x00\x48\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x10\x04\x00\x00\x00\x00\x00\xfc\x00\x04\x00\x00\x00"
+      "\x00\x00\xfc\x00\x04\x00\x00\x00\x00\x00\x24\x00\x53\x00\x44\x00\x53\x00"
+      "\x11\x41\x48\x00\x00\x00\x00\x00\x90\x00\x00\x00\xb0\x00\x00\x00\x00\x04"
+      "\x18\x00\x00\x00\x03\x00\x90\x00\x00\x00\x20\x00\x00\x00\x24\x00\x53\x00"
+      "\x44\x00\x48\x00\x00\x00\x00\x00\x12\x00\x00\x00\x00\x10\x00\x00\x01\x00"
+      "\x00\x00\x10\x00\x00\x00\x80\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00"
+      "\x18\x00\x14\x00\x00\x00\x00\x00\x30\x00\x08\x00\x00\x00\x00\x00\x51\x24"
+      "\xb3\x00\x01\x01\x00\x00\x51\x24\xb3\x00\x01\x01\x00\x00\x80\x00\x00\x00"
+      "\x00\x00\x00\x00\x7c\x00\x00\x00\x49\x00\x49\x00\x18\x00\x14\x00\x00\x00"
+      "\x00\x00\x30\x00\x08\x00\x00\x00\x00\x00\xf0\x12\x03\xf8\x00\x01\x00\x00"
+      "\xf0\x12\x03\xf8\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x7c\x00"
+      "\x00\x00\x49\x00\x49\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x00\x00\x00"
+      "\x02\x00\x02",
+      543);
+  *(uint64_t*)0x20000328 = 0x21f;
+  *(uint64_t*)0x20000330 = 0x63e0;
+  *(uint64_t*)0x20000338 = 0x20012100;
+  memcpy((void*)0x20012100,
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
+         31);
+  *(uint64_t*)0x20000340 = 0x1f;
+  *(uint64_t*)0x20000348 = 0x67e0;
+  *(uint64_t*)0x20000350 = 0x20012400;
+  memcpy(
+      (void*)0x20012400,
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x46\x49\x4c\x45"
+      "\x30\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0b\x00\x01\x00\x38\x00"
+      "\x03\x00\x80\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x03\x00\x00\x00\x0b\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x10\x00"
+      "\x00\x00\x60\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00\x48\x00\x00\x00"
+      "\x18\x00\x00\x00\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d"
+      "\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01"
+      "\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x30\x00\x00\x00\x68\x00\x00\x00\x00\x00\x18\x00\x00\x00"
+      "\x01\x00\x50\x00\x00\x00\x18\x00\x01\x00\x05\x00\x00\x00\x00\x00\x05\x00"
+      "\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f"
+      "\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x10\x00\x00"
+      "\x00\x00\x07\x03\x24\x00\x45\x00\x78\x00\x74\x00\x65\x00\x6e\x00\x64\x00"
+      "\x90\x00\x00\x00\x78\x01\x00\x00\x00\x04\x18\x00\x00\x00\x02\x00\x58\x01"
+      "\x00\x00\x20\x00\x00\x00\x24\x00\x49\x00\x33\x00\x30\x00\x30\x00\x00\x00"
+      "\x01\x00\x00\x00\x00\x10\x00\x00\x01\x00\x00\x00\x10\x00\x00\x00\x48\x01"
+      "\x00\x00\x48\x01\x00\x00\x00\x00\x00\x00\x19\x00\x00\x00\x00\x00\x01\x00"
+      "\x60\x00\x4e\x00\x00\x00\x00\x00\x0b\x00\x00\x00\x00\x00\x0b\x00\x00\x6f"
+      "\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff"
+      "\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x00\x00\x00\x00\x00"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x26\x00\x00\x20\x00\x00\x00\x00"
+      "\x06\x03\x24\x00\x4f\x00\x62\x00\x6a\x00\x49\x00\x64\x00\x00\x00\x18\x00"
+      "\x00\x00\x00\x00\x01\x00\x60\x00\x4e\x00\x00\x00\x00\x00\x0b\x00\x00\x00"
+      "\x00\x00\x0b\x00\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d"
+      "\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01\x00\x6f\x95\xff\xc7\x8d\xd6\x01"
+      "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x26\x00"
+      "\x00\x20\x00\x00\x00\x00\x06\x03\x24\x00\x51\x00\x75\x00\x6f\x00\x74\x00"
+      "\x61\x00\x02",
+      543);
+  *(uint64_t*)0x20000358 = 0x21f;
+  *(uint64_t*)0x20000360 = 0x6be0;
+  *(uint64_t*)0x20000368 = 0x20012700;
+  memcpy((void*)0x20012700,
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
+         31);
+  *(uint64_t*)0x20000370 = 0x1f;
+  *(uint64_t*)0x20000378 = 0x6fe0;
+  *(uint8_t*)0x2007dc00 = 0;
+  syz_mount_image(0x20000000, 0x20000100, 0, 0x10, 0x20000200, 0, 0x2007dc00);
+  return 0;
+}
 
--- 
-Sincerely yours,
-Mike.
