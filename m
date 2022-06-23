@@ -2,140 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53545C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D51CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232719AbiFWEqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
+        id S232776AbiFWEq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242035AbiFWDvD (ORCPT
+        with ESMTP id S1346854AbiFWEaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 23:51:03 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B803DDE5;
-        Wed, 22 Jun 2022 20:51:01 -0700 (PDT)
-X-UUID: 83eea814f8214dbfb606a2deacabb4ae-20220623
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:6c0c927b-1b10-44a4-9192-47b868671fc2,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:90
-X-CID-INFO: VERSION:1.1.6,REQID:6c0c927b-1b10-44a4-9192-47b868671fc2,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:90
-X-CID-META: VersionHash:b14ad71,CLOUDID:b5cd3c38-5e4b-44d7-80b2-bb618cb09d29,C
-        OID:e7b73493f7dd,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 83eea814f8214dbfb606a2deacabb4ae-20220623
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <stanley.chu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1691572327; Thu, 23 Jun 2022 11:50:54 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 23 Jun 2022 11:50:54 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 23 Jun 2022 11:50:53 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 23 Jun 2022 11:50:53 +0800
-From:   Stanley Chu <stanley.chu@mediatek.com>
-To:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <martin.petersen@oracle.com>, <avri.altman@wdc.com>,
-        <alim.akhtar@samsung.com>, <jejb@linux.ibm.com>,
-        <bvanassche@acm.org>
-CC:     <peter.wang@mediatek.com>, <chun-hung.wu@mediatek.com>,
-        <alice.chao@mediatek.com>, <powen.kao@mediatek.com>,
-        <mason.zhang@mediatek.com>, <qilin.tan@mediatek.com>,
-        <lin.gui@mediatek.com>, <eddie.huang@mediatek.com>,
-        <tun-yu.yu@mediatek.com>, <cc.chou@mediatek.com>,
-        <chaotian.jing@mediatek.com>, <jiajie.hao@mediatek.com>,
-        <stanley.chu@mediatek.com>
-Subject: [PATCH v2 1/8] scsi: ufs-mediatek: Fix build warnings
-Date:   Thu, 23 Jun 2022 11:50:45 +0800
-Message-ID: <20220623035052.18802-2-stanley.chu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220623035052.18802-1-stanley.chu@mediatek.com>
-References: <20220623035052.18802-1-stanley.chu@mediatek.com>
+        Thu, 23 Jun 2022 00:30:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB704193DC
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:30:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60D6CB81EA9
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 04:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2C43C3411B;
+        Thu, 23 Jun 2022 04:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655958616;
+        bh=BRzBBPQDISUXKF+dnmQg2f3fvozeO32ObTg7nkiAODQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KXZTdYzVr2Q7l6G/qlSK6u+AzSzuCRT7AQWH3j3L5I/Ptp48zwtTLhadr6M1LJ2Ty
+         45ie0oNY8A/F6bFiR191pc51+P5v3vqfxj2rJDQxmrNQot6KbxIFRiidRYGuv7D5L6
+         DLyH+3EM0UWs7g6PLjcGWuddTrDiA8nl0lD2KcQAHkLJbJ+6vChANKeF6DCgniDP4o
+         IyEIv33MkdEjdXyleuuNn1VjSJQ48aUjM9h5PDT1CpA054qAXJAARoPkq3E6aAdGAf
+         AUZ0pFamtyr1fcHAeF4gQZO/NtcLCV2TcqXiUof384g6QiJfN9f+Vn09mn5bEAKP36
+         0xWyzdv3Gk15g==
+Date:   Wed, 22 Jun 2022 23:30:10 -0500
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Rebecca Mckeever <remckee0@gmail.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v3 2/4] memblock tests: add verbose output to memblock
+ tests
+Message-ID: <YrPsUrJ5R5UaIGBS@kernel.org>
+References: <cover.1655889641.git.remckee0@gmail.com>
+ <004e021cc3cb7be8749361b3b1cb324459b9cb9f.1655889641.git.remckee0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <004e021cc3cb7be8749361b3b1cb324459b9cb9f.1655889641.git.remckee0@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix build warnings as below,
-1.
-../drivers/ufs/host/ufs-mediatek.c:1375:5: error: no previous prototype for function 'ufs_mtk_system_suspend' [-Werror,-Wmissing-prototypes]
-int ufs_mtk_system_suspend(struct device *dev)
-    ^
-../drivers/ufs/host/ufs-mediatek.c:1375:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-int ufs_mtk_system_suspend(struct device *dev)
-^
-static
+On Wed, Jun 22, 2022 at 04:29:07AM -0500, Rebecca Mckeever wrote:
+> Add and use functions for printing verbose testing output.
+> 
+> If the Memblock simulator was compiled with VERBOSE=1:
+>   prefix_push() appends the given string to a prefix string that will be
+>     printed in the test functions.
+>   prefix_pop() removes the last prefix from the prefix string.
+>   prefix_reset() clears the prefix string.
+>   test_fail() prints a message after a test fails containing the test
+>     number of the failing test and the prefix.
+>   test_pass() prints a message after a test passes containing its test
+>     number and the prefix.
+>   test_print() prints the given formatted output string.
+> 
+> If the Memblock simulator was not compiled with VERBOSE=1, these
+> functions do nothing.
+> 
+> Add the assert wrapper macros ASSERT_EQ(), ASSERT_NE(), and ASSERT_LT().
+> If the assert condition fails, these macros call test_fail() before
+> executing assert().
+> 
+> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+> ---
+>  tools/testing/memblock/tests/alloc_api.c      | 241 ++++++++----
+>  .../memblock/tests/alloc_helpers_api.c        | 135 +++++--
+>  tools/testing/memblock/tests/alloc_nid_api.c  | 371 ++++++++++++------
+>  tools/testing/memblock/tests/basic_api.c      | 365 ++++++++++++-----
+>  tools/testing/memblock/tests/common.c         |  58 +++
+>  tools/testing/memblock/tests/common.h         |  54 +++
+>  6 files changed, 880 insertions(+), 344 deletions(-)
+> 
+> diff --git a/tools/testing/memblock/tests/alloc_api.c b/tools/testing/memblock/tests/alloc_api.c
+> index d1aa7e15c18d..96df033d4300 100644
+> --- a/tools/testing/memblock/tests/alloc_api.c
+> +++ b/tools/testing/memblock/tests/alloc_api.c
 
-2.
-../drivers/ufs/host/ufs-mediatek.c:702:50: error: format specifies type 'unsigned long' but the argument has type 'int' [-Werror,-Wformat]
-                snprintf(vcc_name, MAX_VCC_NAME, "vcc-ufs%lu", ver);
-                                                         ~~~   ^~~
-                                                         %d
+...
 
-Signed-off-by: Stanley Chu <stanley.chu@mediatek.com>
----
- drivers/ufs/host/ufs-mediatek.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+> @@ -729,6 +820,12 @@ static int alloc_no_memory_check(void)
+>  
+>  int memblock_alloc_checks(void)
+>  {
+> +	static const char func_testing[] = "memblock_alloc";
+> +
+> +	prefix_reset();
+> +	prefix_push(func_testing);
+> +	test_print("Running %s tests...\n", func_testing);
 
-diff --git a/drivers/ufs/host/ufs-mediatek.c b/drivers/ufs/host/ufs-mediatek.c
-index 3ee27f2bcdfc..d970c6607b4a 100755
---- a/drivers/ufs/host/ufs-mediatek.c
-+++ b/drivers/ufs/host/ufs-mediatek.c
-@@ -690,7 +690,7 @@ static int ufs_mtk_vreg_fix_vcc(struct ufs_hba *hba)
- 			return -ENODEV;
- 	} else if (of_property_read_bool(np, "mediatek,ufs-vcc-by-ver")) {
- 		ver = (hba->dev_info.wspecversion & 0xF00) >> 8;
--		snprintf(vcc_name, MAX_VCC_NAME, "vcc-ufs%lu", ver);
-+		snprintf(vcc_name, MAX_VCC_NAME, "vcc-ufs%d", ver);
- 	} else {
- 		return 0;
- 	}
-@@ -1364,7 +1364,7 @@ static int ufs_mtk_remove(struct platform_device *pdev)
- }
- 
- #ifdef CONFIG_PM_SLEEP
--int ufs_mtk_system_suspend(struct device *dev)
-+static int ufs_mtk_system_suspend(struct device *dev)
- {
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 	int ret;
-@@ -1378,7 +1378,7 @@ int ufs_mtk_system_suspend(struct device *dev)
- 	return 0;
- }
- 
--int ufs_mtk_system_resume(struct device *dev)
-+static int ufs_mtk_system_resume(struct device *dev)
- {
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 
-@@ -1388,7 +1388,7 @@ int ufs_mtk_system_resume(struct device *dev)
- }
- #endif
- 
--int ufs_mtk_runtime_suspend(struct device *dev)
-+static int ufs_mtk_runtime_suspend(struct device *dev)
- {
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 	int ret = 0;
-@@ -1402,7 +1402,7 @@ int ufs_mtk_runtime_suspend(struct device *dev)
- 	return 0;
- }
- 
--int ufs_mtk_runtime_resume(struct device *dev)
-+static int ufs_mtk_runtime_resume(struct device *dev)
- {
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 
+Why not 
+
+	test_print("Running memblock_alloc tests...\n");
+
+?
+
+(applies to other cases below)
+
+> +
+>  	reset_memblock_attributes();
+>  	dummy_physical_memory_init();
+
+...
+
+> diff --git a/tools/testing/memblock/tests/alloc_helpers_api.c b/tools/testing/memblock/tests/alloc_helpers_api.c
+> index 963a966db461..f6eaed540427 100644
+> --- a/tools/testing/memblock/tests/alloc_helpers_api.c
+> +++ b/tools/testing/memblock/tests/alloc_helpers_api.c
+
+...
+
+> @@ -378,6 +423,12 @@ static int alloc_from_min_addr_cap_check(void)
+>  
+>  int memblock_alloc_helpers_checks(void)
+>  {
+> +	static const char func_testing[] = "memblock_alloc_from";
+> +
+> +	prefix_reset();
+> +	prefix_push(func_testing);
+> +	test_print("Running %s tests...\n", func_testing);
+> +
+>  	reset_memblock_attributes();
+>  	dummy_physical_memory_init();
+>  
+> diff --git a/tools/testing/memblock/tests/alloc_nid_api.c b/tools/testing/memblock/tests/alloc_nid_api.c
+> index 6390206e50e1..601f4a7ee30d 100644
+> --- a/tools/testing/memblock/tests/alloc_nid_api.c
+> +++ b/tools/testing/memblock/tests/alloc_nid_api.c
+
+...
+
+> @@ -1150,6 +1263,12 @@ static int alloc_try_nid_low_max_check(void)
+>  
+>  int memblock_alloc_nid_checks(void)
+>  {
+> +	static const char func_testing[] = "memblock_alloc_try_nid";
+> +
+> +	prefix_reset();
+> +	prefix_push(func_testing);
+> +	test_print("Running %s tests...\n", func_testing);
+> +
+>  	reset_memblock_attributes();
+>  	dummy_physical_memory_init();
+>  
+> @@ -1170,5 +1289,7 @@ int memblock_alloc_nid_checks(void)
+>  
+>  	dummy_physical_memory_cleanup();
+>  
+> +	prefix_pop();
+> +
+>  	return 0;
+>  }
+> diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
+> index a7bc180316d6..f223a9a57be7 100644
+> --- a/tools/testing/memblock/tests/basic_api.c
+> +++ b/tools/testing/memblock/tests/basic_api.c
+> @@ -4,21 +4,30 @@
+>  #include "basic_api.h"
+>  
+>  #define EXPECTED_MEMBLOCK_REGIONS			128
+> +#define FUNC_ADD					"memblock_add"
+> +#define FUNC_RESERVE					"memblock_reserve"
+> +#define FUNC_REMOVE					"memblock_remove"
+> +#define FUNC_FREE					"memblock_free"
+>  
+>  static int memblock_initialization_check(void)
+>  {
+> -	assert(memblock.memory.regions);
+> -	assert(memblock.memory.cnt == 1);
+> -	assert(memblock.memory.max == EXPECTED_MEMBLOCK_REGIONS);
+> -	assert(strcmp(memblock.memory.name, "memory") == 0);
+> +	prefix_push(__func__);
+>  
+> -	assert(memblock.reserved.regions);
+> -	assert(memblock.reserved.cnt == 1);
+> -	assert(memblock.memory.max == EXPECTED_MEMBLOCK_REGIONS);
+> -	assert(strcmp(memblock.reserved.name, "reserved") == 0);
+> +	ASSERT_NE(memblock.memory.regions, NULL);
+> +	ASSERT_EQ(memblock.memory.cnt, 1);
+> +	ASSERT_EQ(memblock.memory.max, EXPECTED_MEMBLOCK_REGIONS);
+> +	ASSERT_EQ(strcmp(memblock.memory.name, "memory"), 0);
+>  
+> -	assert(!memblock.bottom_up);
+> -	assert(memblock.current_limit == MEMBLOCK_ALLOC_ANYWHERE);
+> +	ASSERT_NE(memblock.reserved.regions, NULL);
+> +	ASSERT_EQ(memblock.reserved.cnt, 1);
+> +	ASSERT_EQ(memblock.memory.max, EXPECTED_MEMBLOCK_REGIONS);
+> +	ASSERT_EQ(strcmp(memblock.reserved.name, "reserved"), 0);
+> +
+> +	ASSERT_EQ(memblock.bottom_up, false);
+> +	ASSERT_EQ(memblock.current_limit, MEMBLOCK_ALLOC_ANYWHERE);
+> +
+> +	test_pass();
+> +	prefix_pop();
+>  
+>  	return 0;
+>  }
+> @@ -40,14 +49,19 @@ static int memblock_add_simple_check(void)
+>  		.size = SZ_4M
+>  	};
+>  
+> +	prefix_push(__func__);
+> +
+>  	reset_memblock_regions();
+>  	memblock_add(r.base, r.size);
+>  
+> -	assert(rgn->base == r.base);
+> -	assert(rgn->size == r.size);
+> +	ASSERT_EQ(rgn->base, r.base);
+> +	ASSERT_EQ(rgn->size, r.size);
+> +
+> +	ASSERT_EQ(memblock.memory.cnt, 1);
+> +	ASSERT_EQ(memblock.memory.total_size, r.size);
+>  
+> -	assert(memblock.memory.cnt == 1);
+> -	assert(memblock.memory.total_size == r.size);
+> +	test_pass();
+> +	prefix_pop();
+>  
+>  	return 0;
+>  }
+> @@ -69,18 +83,27 @@ static int memblock_add_node_simple_check(void)
+>  		.size = SZ_16M
+>  	};
+>  
+> +	prefix_pop();
+> +	prefix_push("memblock_add_node");
+> +	prefix_push(__func__);
+
+I think there is no need to change the prefix from memblock_add to
+memblock_add_node here.
+
+ok 3 : memblock_add: memblock_add_node_simple_check: passed
+
+provides enough information.
+
+> +
+>  	reset_memblock_regions();
+>  	memblock_add_node(r.base, r.size, 1, MEMBLOCK_HOTPLUG);
+>  
+> -	assert(rgn->base == r.base);
+> -	assert(rgn->size == r.size);
+> +	ASSERT_EQ(rgn->base, r.base);
+> +	ASSERT_EQ(rgn->size, r.size);
+>  #ifdef CONFIG_NUMA
+> -	assert(rgn->nid == 1);
+> +	ASSERT_EQ(rgn->nid, 1);
+>  #endif
+> -	assert(rgn->flags == MEMBLOCK_HOTPLUG);
+> +	ASSERT_EQ(rgn->flags, MEMBLOCK_HOTPLUG);
+> +
+> +	ASSERT_EQ(memblock.memory.cnt, 1);
+> +	ASSERT_EQ(memblock.memory.total_size, r.size);
+>  
+> -	assert(memblock.memory.cnt == 1);
+> -	assert(memblock.memory.total_size == r.size);
+> +	test_pass();
+> +	prefix_pop();
+> +	prefix_pop();
+> +	prefix_push(FUNC_ADD);
+>  
+>  	return 0;
+>  }
+
 -- 
-2.18.0
-
+Sincerely yours,
+Mike.
