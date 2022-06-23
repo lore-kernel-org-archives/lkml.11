@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B904C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A0AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232085AbiFWOv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 10:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45926 "EHLO
+        id S231698AbiFWOwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 10:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbiFWOvu (ORCPT
+        with ESMTP id S231467AbiFWOv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 10:51:50 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F334739E
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:51:49 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id t24so21560670lfr.4
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:51:49 -0700 (PDT)
+        Thu, 23 Jun 2022 10:51:58 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ADF047543
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:51:57 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id y32so33804313lfa.6
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:51:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=openvz-org.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:from:subject:to:cc
          :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=RJ0ABL9uCwvFv63ZyK8hl1S+g8awXPTVNvHTVH+sSkA=;
-        b=VgAQKKEsiHE7SoRPkk1oRDOCQig2wAGOd4W/o+dF2VxecW1m7m7A8NKaTdjY6rAajT
-         mVPbyprusIoCKB4TPm6SHYIe3KpCqQ4pzIY7CbdHfGyr5ORXzNRmj2PRvHPzPDQPueHn
-         Z76hXIZzwuiGUftMNpZoKoWS9xthi1G7AC/Ew2GNKdBfQqhZ3MUsCmNqCVzvGpl9wzfU
-         sa/0UyQ27uVR+L11DOohImUdZ4+okomUQIW1WXxaGaYIvE/q5N8bZW/ooU71RpIi+Eo/
-         iAM0GC4i5D9/nVN8TJEWbT3QYi7fwJCEyg7P3n9TS/6boGeH0zIjxQU8xKVtxvk7K9A7
-         5rYw==
+        bh=hqvRcJBRW/zXn9o8PLaPnPcK1byd11F8xwtbZSlj240=;
+        b=L3GdFJ5msAUKjEBgJr8tC0Ye/uf5rOW/nTjACFOPDVkM4uV2p2NICHRx0qbgkWRrHW
+         xye3mNc9OUGNDUkdfVMWc+YCL7Uw2FtXXna0LVEbGKFaP1NtOR9VxXehiJAtnQEze01M
+         zD25I3FxU8/N5GjP9dXmVKZL2giwMWH1O04S/yKV3I/NnfvtJbiXvpW1ovOGu9+QwMgj
+         GBDOyIDuwc8e82tKToKvcUFx39aq2ki+Tp6x/9ooZM/+FRKSWkYPJ3fK+x6UXHRL0vlb
+         /b9h4l4s9Eg3vjeZyOWNwEHeOq/ax6nMC3d26/bpwKwaZyykWOqIebfDdRo9GEwfGrzZ
+         C52A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:from
          :subject:to:cc:references:content-language:in-reply-to
          :content-transfer-encoding;
-        bh=RJ0ABL9uCwvFv63ZyK8hl1S+g8awXPTVNvHTVH+sSkA=;
-        b=cL7OAnrtdwTBpN1LYIQ01rnxK6RIPhskT4wLpEmRakhV3BhX9feKvaYsCM5pXbMBhQ
-         u+ONAyRMerfl8a2wo3hrx5/eDL0RSBPGmoFwXy7VcAZzYnzBCEo3IxAupGjTyBLxoV3+
-         Y/QHgaavPz65/ayCejz86viXgVWbMjiE/dahJ71Y18dvd5BZvxyjXf6cIdfIZ5deVLBt
-         dNXDNefKGSvsVEtnOh0NRK8cBBooYFw7a61tGzxmT6wxU7aEgOmxSZr4LunU1XbkE5uO
-         X0rSsYDMXCfPskDTUhYWX2jqMDo+dhX9M9We5xEn7N4ubvA/GWsGr0Tu5/6m71qpVT8f
-         emJQ==
-X-Gm-Message-State: AJIora/c9RSOsX5kKDNLgsRXD6NVw/8irpqMURNyFmd6Rdv6vJHIC7Tn
-        BzQBOXuGg+Prc1QYSz+xwWRDPw==
-X-Google-Smtp-Source: AGRyM1v+wrtYYFhb0JXolKG7l98gJTFPDw4sPts1HZmI4WNoqYhmZ/QU9LxTvX7ieU9TzkpzKZmNyw==
-X-Received: by 2002:a05:6512:2247:b0:47f:5dff:2eef with SMTP id i7-20020a056512224700b0047f5dff2eefmr5689792lfu.493.1655995907826;
-        Thu, 23 Jun 2022 07:51:47 -0700 (PDT)
+        bh=hqvRcJBRW/zXn9o8PLaPnPcK1byd11F8xwtbZSlj240=;
+        b=JH/8JGUmgR6Bedd/x8+0Ip1I60a/KTlTNQQJncxCTJLY3LsjMELTUaQB1fztiuGUSh
+         e8tdKAl8yEPV1DvCK6YOCg7ru35+7nCegez5SJKDVbm/bYQSLe8CA78ijPY4EwTeJ01i
+         tjXhylaX4kr6KKR60Y7lHKBDIX11hATMgv1NfOQqUkrGmgdm6/I98Qr0cZ+fu/ymk57F
+         qO8Cvo12wxWYGlxE+peVq93tZqs3mewFOOZXvDvIaM9qE1oteRQJtP25o1sm8kFIBmGH
+         IDE/vWhwN3x4cdFXUdKIK3BHLPGbEWADRHlekRlTPsjoKF91bq77CSgZ1daP93C6MMBc
+         +TVg==
+X-Gm-Message-State: AJIora/u7sNsfkS6oPQxGUbF9ByRy1Y0L3hhGh3ttl8b4b5ZL09q2dlH
+        z95Q7t/SJZ1g2d8KpAcuL6z9eQ==
+X-Google-Smtp-Source: AGRyM1v6I/+vDXiKc4oKtXa6cXcr1Fi2ubJWusXb8148nVz1lt5JY6qWafShI9FEMt2PZmgT4xszhw==
+X-Received: by 2002:a19:f207:0:b0:47f:6890:60b0 with SMTP id q7-20020a19f207000000b0047f689060b0mr5440246lfh.327.1655995915827;
+        Thu, 23 Jun 2022 07:51:55 -0700 (PDT)
 Received: from [192.168.1.65] ([46.188.121.129])
-        by smtp.gmail.com with ESMTPSA id bd7-20020a05651c168700b0025a8ef49c64sm342231ljb.140.2022.06.23.07.51.47
+        by smtp.gmail.com with ESMTPSA id s3-20020a195e03000000b0047861cba7bdsm3019220lfb.53.2022.06.23.07.51.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jun 2022 07:51:47 -0700 (PDT)
-Message-ID: <045740af-d2a0-a81d-cbb6-153649705087@openvz.org>
-Date:   Thu, 23 Jun 2022 17:51:46 +0300
+        Thu, 23 Jun 2022 07:51:55 -0700 (PDT)
+Message-ID: <6a0f9fb4-2ddd-8ad0-4f2a-d3780c1d9397@openvz.org>
+Date:   Thu, 23 Jun 2022 17:51:54 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
 From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH mm v5 7/9] memcg: enable accounting for large allocations in
- mem_cgroup_css_alloc
+Subject: [PATCH mm v5 8/9] memcg: enable accounting for allocations in
+ alloc_fair_sched_group
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
         linux-mm@kvack.org, Shakeel Butt <shakeelb@google.com>,
@@ -74,33 +74,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Creation of each memory cgroup allocates few huge objects in
-mem_cgroup_css_alloc(). Its size exceeds the size of memory
-accounted in common part of cgroup creation:
+Creating of each new cpu cgroup allocates two 512-bytes kernel objects
+per CPU. This is especially important for cgroups shared parent memory
+cgroup. In this scenario, on nodes with multiple processors, these
+allocations become one of the main memory consumers.
 
+Memory allocated during new cpu cgroup creation:
 common part: 	~11Kb	+  318 bytes percpu
-memcg: 		~17Kb	+ 4692 bytes percpu
-
-memory:
-------
-Allocs  Alloc   $1*$2   Sum     Allocation
-number  size
---------------------------------------------
-1   +   8192    8192    8192    (mem_cgroup_css_alloc+0x4a) <NB
-14  ~   352     4928    13120   KERNFS
-1   +   2048    2048    15168   (mem_cgroup_css_alloc+0xdd) <NB
-1       1024    1024    16192   (alloc_shrinker_info+0x79)
-1       584     584     16776   (radix_tree_node_alloc.constprop.0+0x89)
-2       64      128     16904   (percpu_ref_init+0x6a)
-1       64      64      16968   (mem_cgroup_css_online+0x32)
-
-1   =   3684    3684    3684    call_site=mem_cgroup_css_alloc+0x9e
-1   =   984     984     4668    call_site=mem_cgroup_css_alloc+0xfd
-2       12      24      4692    call_site=percpu_ref_init+0x23
-
-     '=' -- already accounted,
-     '+' -- to be accounted,
-     '~' -- partially accounted
+cpu cgroup:	~2.5Kb	+ 1036 bytes percpu
 
 Accounting for this memory helps to avoid misuse inside memcg-limited
 contianers.
@@ -111,30 +92,27 @@ Reviewed-by: Michal Koutný <mkoutny@suse.com>
 Acked-by: Shakeel Butt <shakeelb@google.com>
 Reviewed-by: Muchun Song <songmuchun@bytedance.com>
 ---
- mm/memcontrol.c | 4 ++--
+ kernel/sched/fair.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 85adc43c5a25..275d0c847f05 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -5257,7 +5257,7 @@ static int alloc_mem_cgroup_per_node_info(struct mem_cgroup *memcg, int node)
- {
- 	struct mem_cgroup_per_node *pn;
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index e8202b5cd3d5..71161be1e783 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -11503,12 +11503,12 @@ int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
  
--	pn = kzalloc_node(sizeof(*pn), GFP_KERNEL, node);
-+	pn = kzalloc_node(sizeof(*pn), GFP_KERNEL_ACCOUNT, node);
- 	if (!pn)
- 		return 1;
+ 	for_each_possible_cpu(i) {
+ 		cfs_rq = kzalloc_node(sizeof(struct cfs_rq),
+-				      GFP_KERNEL, cpu_to_node(i));
++				      GFP_KERNEL_ACCOUNT, cpu_to_node(i));
+ 		if (!cfs_rq)
+ 			goto err;
  
-@@ -5309,7 +5309,7 @@ static struct mem_cgroup *mem_cgroup_alloc(void)
- 	int __maybe_unused i;
- 	long error = -ENOMEM;
- 
--	memcg = kzalloc(struct_size(memcg, nodeinfo, nr_node_ids), GFP_KERNEL);
-+	memcg = kzalloc(struct_size(memcg, nodeinfo, nr_node_ids), GFP_KERNEL_ACCOUNT);
- 	if (!memcg)
- 		return ERR_PTR(error);
+ 		se = kzalloc_node(sizeof(struct sched_entity_stats),
+-				  GFP_KERNEL, cpu_to_node(i));
++				  GFP_KERNEL_ACCOUNT, cpu_to_node(i));
+ 		if (!se)
+ 			goto err_free_rq;
  
 -- 
 2.36.1
