@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 154ACCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9FCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiFWRBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57544 "EHLO
+        id S230493AbiFWRBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbiFWQzO (ORCPT
+        with ESMTP id S232110AbiFWQzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:55:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D22B1C90F;
-        Thu, 23 Jun 2022 09:52:55 -0700 (PDT)
+        Thu, 23 Jun 2022 12:55:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4D949C96;
+        Thu, 23 Jun 2022 09:53:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 104AC61FC2;
-        Thu, 23 Jun 2022 16:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB2F7C3411B;
-        Thu, 23 Jun 2022 16:52:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58E1A61FBF;
+        Thu, 23 Jun 2022 16:53:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3076DC3411B;
+        Thu, 23 Jun 2022 16:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003174;
-        bh=ntBuGWY/Q+9zWoprDMG6nKxd4AqpclY4u+giu3jGLr4=;
+        s=korg; t=1656003180;
+        bh=m1t48f8J1t5GlS2HZ+kgwhOatWjtlZrYDKKdcmlt4Co=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YY5BlpqUMWEAcmbTTuRjbWLD99VN83YmNEkmfA8Ks1A3nu4PbF0eiWduR9vOb7Op9
-         egCTuAgkv+KucJik+Z7MhkcGDRojOAqE7/zXTpQv2cWUixtpjLEWiYQWd0ZHE5GkUu
-         vf3qx27INLrFhTTgTfynyyPzLgSIOy5N+0wniZpQ=
+        b=rjFgrAhPuJkM7/Daai4/WAx0DEAt97gwG3K05wMcefy+t6TuiLXlRoH9mKVJ7RZQl
+         1kEy37gTVpuokiGb6o6EbFWB3D17e9p+jxdH2JT7YoxXl+jkz8ABWOaWAo6z7psLW+
+         8XJtombx3jx6ovKCHTA7gABAsGGELUGKTWqh5szU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 154/264] random: round-robin registers as ulong, not u32
-Date:   Thu, 23 Jun 2022 18:42:27 +0200
-Message-Id: <20220623164348.421783134@linuxfoundation.org>
+Subject: [PATCH 4.9 129/264] random: add proper SPDX header
+Date:   Thu, 23 Jun 2022 18:42:02 +0200
+Message-Id: <20220623164347.716505368@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,44 +52,72 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit da3951ebdcd1cb1d5c750e08cd05aee7b0c04d9a upstream.
+commit a07fdae346c35c6ba286af1c88e0effcfa330bf9 upstream.
 
-When the interrupt handler does not have a valid cycle counter, it calls
-get_reg() to read a register from the irq stack, in round-robin.
-Currently it does this assuming that registers are 32-bit. This is
-_probably_ the case, and probably all platforms without cycle counters
-are in fact 32-bit platforms. But maybe not, and either way, it's not
-quite correct. This commit fixes that to deal with `unsigned long`
-rather than `u32`.
+Convert the current license into the SPDX notation of "(GPL-2.0 OR
+BSD-3-Clause)". This infers GPL-2.0 from the text "ALTERNATIVELY, this
+product may be distributed under the terms of the GNU General Public
+License, in which case the provisions of the GPL are required INSTEAD OF
+the above restrictions" and it infers BSD-3-Clause from the verbatim
+BSD 3 clause license in the file.
 
+Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/char/random.c |   37 +------------------------------------
+ 1 file changed, 1 insertion(+), 36 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1257,15 +1257,15 @@ int random_online_cpu(unsigned int cpu)
- }
- #endif
+@@ -1,44 +1,9 @@
++// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+ /*
+- * random.c -- A strong random number generator
+- *
+  * Copyright (C) 2017-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+- *
+  * Copyright Matt Mackall <mpm@selenic.com>, 2003, 2004, 2005
+- *
+  * Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999.  All
+  * rights reserved.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, and the entire permission notice in its entirety,
+- *    including the disclaimer of warranties.
+- * 2. Redistributions in binary form must reproduce the above copyright
+- *    notice, this list of conditions and the following disclaimer in the
+- *    documentation and/or other materials provided with the distribution.
+- * 3. The name of the author may not be used to endorse or promote
+- *    products derived from this software without specific prior
+- *    written permission.
+- *
+- * ALTERNATIVELY, this product may be distributed under the terms of
+- * the GNU General Public License, in which case the provisions of the GPL are
+- * required INSTEAD OF the above restrictions.  (This clause is
+- * necessary due to a potential bad interaction between the GPL and
+- * the restrictions contained in a BSD-style copyright.)
+- *
+- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
+- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ALL OF
+- * WHICH ARE HEREBY DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE
+- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+- * USE OF THIS SOFTWARE, EVEN IF NOT ADVISED OF THE POSSIBILITY OF SUCH
+- * DAMAGE.
+  */
  
--static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
-+static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
- {
--	u32 *ptr = (u32 *)regs;
-+	unsigned long *ptr = (unsigned long *)regs;
- 	unsigned int idx;
- 
- 	if (regs == NULL)
- 		return 0;
- 	idx = READ_ONCE(f->reg_idx);
--	if (idx >= sizeof(struct pt_regs) / sizeof(u32))
-+	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
- 		idx = 0;
- 	ptr += idx++;
- 	WRITE_ONCE(f->reg_idx, idx);
+ /*
 
 
