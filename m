@@ -2,83 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16211C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234152AbiFWRb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
+        id S231310AbiFWRbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234484AbiFWR2r (ORCPT
+        with ESMTP id S234501AbiFWR2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:28:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EB97A6D6;
-        Thu, 23 Jun 2022 10:04:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 23 Jun 2022 13:28:49 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910C87A6E4;
+        Thu, 23 Jun 2022 10:04:26 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 97DB721B7E;
+        Thu, 23 Jun 2022 17:04:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1656003864; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=x9l3R+KX6WOeiyi1xAcT40XEOunRcwBBALV27Yv1S0I=;
+        b=G2RfLflEoRnPfoa30BJzXST0CFeNzcKVmLSbuIwKMxDfMqVJeIrICEvbv+cQ3YhYXyigp6
+        BQqFOlQCFnxoJJ+VJv5ba4MclfCF/DVVoAxHCMmXkwMqUFyqfD8ZPUz5xlQS0d0qb0/JLN
+        yrCJLNuSpzjv5cxbu0JLs8L+u9gXY7E=
+Received: from suse.cz (unknown [10.100.201.86])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E199B61C16;
+        by relay2.suse.de (Postfix) with ESMTPS id BA9A52C197;
         Thu, 23 Jun 2022 17:04:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B8FC3411B;
-        Thu, 23 Jun 2022 17:04:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003863;
-        bh=u+uas4E9Hk1TWmgMcgHjuWFBdQixdCGfz+NC0mvmir4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1GUBv6eIp8MblPdYnY8Mx/si0dQY0w7oXcSHzqLi2d8yE+D3L6M2ynXVwhG7JVXNH
-         yF2xjpnrVw/waCzDp0zB1uvPPofzNFR5TNxV7hSTI+dXwCuzHjnbomgR0XiaIYdpIv
-         7NY4oW/FBebC5WpTYY8GroDe5V0Buonj3eIeuQ+Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 111/237] random: remove whitespace and reorder includes
-Date:   Thu, 23 Jun 2022 18:42:25 +0200
-Message-Id: <20220623164346.343999138@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
-References: <20220623164343.132308638@linuxfoundation.org>
-User-Agent: quilt/0.66
+Date:   Thu, 23 Jun 2022 19:04:23 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Yosry Ahmed <yosryahmed@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Hildenbrand <david@redhat.com>,
+        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
+ memory pressure
+Message-ID: <YrSdFy3qYdG+rGR6@dhcp22.suse.cz>
+References: <20220623000530.1194226-1-yosryahmed@google.com>
+ <YrQe5A+FXnbgOR1f@dhcp22.suse.cz>
+ <CAJD7tkanavKpKrQr8-jA8pukgD7OY4eOwJRZufJ2NoThD12G+Q@mail.gmail.com>
+ <YrQ1o3CeaZWhm+h4@dhcp22.suse.cz>
+ <CAJD7tkadsLOV7GMFAm+naX4Y1WpZ-4=NkAhAMxNw60iaRPWx=w@mail.gmail.com>
+ <YrSWruhPlJV1X9kp@dhcp22.suse.cz>
+ <CALvZod6eLa1X1FJ2Qi6FXhFA-qBCP4mN2SB31MSgjj+g8hKo6Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALvZod6eLa1X1FJ2Qi6FXhFA-qBCP4mN2SB31MSgjj+g8hKo6Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+On Thu 23-06-22 09:42:43, Shakeel Butt wrote:
+> On Thu, Jun 23, 2022 at 9:37 AM Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > On Thu 23-06-22 09:22:35, Yosry Ahmed wrote:
+> > > On Thu, Jun 23, 2022 at 2:43 AM Michal Hocko <mhocko@suse.com> wrote:
+> > > >
+> > > > On Thu 23-06-22 01:35:59, Yosry Ahmed wrote:
+> > [...]
+> > > > > In our internal version of memory.reclaim that we recently upstreamed,
+> > > > > we do not account vmpressure during proactive reclaim (similar to how
+> > > > > psi is handled upstream). We want to make sure this behavior also
+> > > > > exists in the upstream version so that consolidating them does not
+> > > > > break our users who rely on vmpressure and will start seeing increased
+> > > > > pressure due to proactive reclaim.
+> > > >
+> > > > These are good reasons to have this patch in your tree. But why is this
+> > > > patch benefitial for the upstream kernel? It clearly adds some code and
+> > > > some special casing which will add a maintenance overhead.
+> > >
+> > > It is not just Google, any existing vmpressure users will start seeing
+> > > false pressure notifications with memory.reclaim. The main goal of the
+> > > patch is to make sure memory.reclaim does not break pre-existing users
+> > > of vmpressure, and doing it in a way that is consistent with psi makes
+> > > sense.
+> >
+> > memory.reclaim is v2 only feature which doesn't have vmpressure
+> > interface. So I do not see how pre-existing users of the upstream kernel
+> > can see any breakage.
+> >
+> 
+> Please note that vmpressure is still being used in v2 by the
+> networking layer (see mem_cgroup_under_socket_pressure()) for
+> detecting memory pressure.
 
-commit 87e7d5abad0cbc9312dea7f889a57d294c1a5fcc upstream.
+I have missed this. It is hidden quite good. I thought that v2 is
+completely vmpressure free. I have to admit that the effect of
+mem_cgroup_under_socket_pressure is not really clear to me. Not to
+mention whether it should or shouldn't be triggered for the user
+triggered memory reclaim. So this would really need some explanation.
+ 
+> Though IMO we should deprecate vmpressure altogether.
 
-This is purely cosmetic. Future work involves figuring out which of
-these headers we need and which we don't.
+Yes it should be really limited to v1. But as I've said the effect on
+mem_cgroup_under_socket_pressure is not really clear to me. It really
+seems the v2 support has been introduced deliberately.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -193,11 +193,10 @@
- #include <linux/syscalls.h>
- #include <linux/completion.h>
- #include <linux/uuid.h>
-+#include <linux/uaccess.h>
- #include <crypto/chacha20.h>
- #include <crypto/blake2s.h>
--
- #include <asm/processor.h>
--#include <linux/uaccess.h>
- #include <asm/irq.h>
- #include <asm/irq_regs.h>
- #include <asm/io.h>
-
-
+-- 
+Michal Hocko
+SUSE Labs
