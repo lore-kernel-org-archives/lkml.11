@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95887CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8718EC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235723AbiFWR5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41056 "EHLO
+        id S235707AbiFWR53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235445AbiFWRwg (ORCPT
+        with ESMTP id S235442AbiFWRwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:52:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2112563A7;
-        Thu, 23 Jun 2022 10:13:27 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8448351E50;
+        Thu, 23 Jun 2022 10:13:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D334B82498;
-        Thu, 23 Jun 2022 17:13:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F7EC341CA;
-        Thu, 23 Jun 2022 17:13:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DAA061D18;
+        Thu, 23 Jun 2022 17:13:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF00CC3411B;
+        Thu, 23 Jun 2022 17:13:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004405;
-        bh=b3tAOqFWHhp7uK8IscYVSpe8+FpMUzq1THBxCN2AgNA=;
+        s=korg; t=1656004402;
+        bh=m1sz7/0y703HzqFoJhFblKKSMZx/esz15Z2QOT9RrcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vl2k/0rDfkVBFgPGxvKKcWUbg4Hqq12znSnW4IX3Ngqje4IQWT2GQux7lAq+rTf10
-         GfCscAAKUfi4np6ku4c2VAh7VHomdaKPEr00zQM/hTjWhYSOEtG23Zv1Pp1yBw/2pS
-         iQIZHwSl64DeV80Gyjw2e2aOpaNVVE0ZjVSD09Uc=
+        b=UEHtkwAkIsnhaMUiucGThVtZz/J/IQ2vJzPWosiF5oXeWAwaGWheu6hCbjgniTbxJ
+         s73qWH6DV3dA2dHz7YSfecNnzlO6DbSzaeH4cB5Xzvztgz3uQKnE3Os2EUq2NTdmuq
+         eNyGt05gvRMEexJNvWCvpxnGugxhiZ6Bpt9/W3qo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 027/234] random: remove kernel.random.read_wakeup_threshold
-Date:   Thu, 23 Jun 2022 18:41:34 +0200
-Message-Id: <20220623164343.833023360@linuxfoundation.org>
+Subject: [PATCH 4.19 026/234] random: delete code to pull data into pools
+Date:   Thu, 23 Jun 2022 18:41:33 +0200
+Message-Id: <20220623164343.804745488@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -51,60 +51,97 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andy Lutomirski <luto@kernel.org>
 
-commit c95ea0c69ffda19381c116db2be23c7e654dac98 upstream.
+commit 84df7cdfbb215a34657b39f4257dab739efa2df9 upstream.
 
-It has no effect any more, so remove it.  We can revert this if
-there is some user code that expects to be able to set this sysctl.
+There is no pool that pulls, so it was just dead code.
 
 Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/a74ed2cf0b5a5451428a246a9239f5bc4e29358f.1577088521.git.luto@kernel.org
+Link: https://lore.kernel.org/r/4a05fe0c7a5c831389ef4aea51d24528ac8682c7.1577088521.git.luto@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   18 +-----------------
- 1 file changed, 1 insertion(+), 17 deletions(-)
+ drivers/char/random.c |   40 ----------------------------------------
+ 1 file changed, 40 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -370,12 +370,6 @@
- #define ENTROPY_BITS(r) ((r)->entropy_count >> ENTROPY_SHIFT)
+@@ -530,10 +530,8 @@ struct entropy_store {
+ 	const struct poolinfo *poolinfo;
+ 	__u32 *pool;
+ 	const char *name;
+-	struct entropy_store *pull;
+ 
+ 	/* read-write data: */
+-	unsigned long last_pulled;
+ 	spinlock_t lock;
+ 	unsigned short add_ptr;
+ 	unsigned short input_rotate;
+@@ -1367,41 +1365,6 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
+  *********************************************************************/
  
  /*
-- * The minimum number of bits of entropy before we wake up a read on
-- * /dev/random.  Should be enough to do a significant reseed.
+- * This utility inline function is responsible for transferring entropy
+- * from the primary pool to the secondary extraction pool. We make
+- * sure we pull enough for a 'catastrophic reseed'.
 - */
--static int random_read_wakeup_bits = 64;
+-static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes);
+-static void xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
+-{
+-	if (!r->pull ||
+-	    r->entropy_count >= (nbytes << (ENTROPY_SHIFT + 3)) ||
+-	    r->entropy_count > r->poolinfo->poolfracbits)
+-		return;
+-
+-	_xfer_secondary_pool(r, nbytes);
+-}
+-
+-static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
+-{
+-	__u32	tmp[OUTPUT_POOL_WORDS];
+-
+-	int bytes = nbytes;
+-
+-	/* pull at least as much as a wakeup */
+-	bytes = max_t(int, bytes, random_read_wakeup_bits / 8);
+-	/* but never more than the buffer size */
+-	bytes = min_t(int, bytes, sizeof(tmp));
+-
+-	trace_xfer_secondary_pool(r->name, bytes * 8, nbytes * 8,
+-				  ENTROPY_BITS(r), ENTROPY_BITS(r->pull));
+-	bytes = extract_entropy(r->pull, tmp, bytes,
+-				random_read_wakeup_bits / 8, 0);
+-	mix_pool_bytes(r, tmp, bytes);
+-	credit_entropy_bits(r, bytes*8);
+-}
 -
 -/*
-  * If the entropy count falls under this number of bits, then we
-  * should wake up processes which are selecting or polling on write
-  * access to /dev/random.
-@@ -2073,8 +2067,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+  * This function decides how many bytes to actually take from the
+  * given pool, and also debits the entropy count accordingly.
+  */
+@@ -1564,7 +1527,6 @@ static ssize_t extract_entropy(struct en
+ 			spin_unlock_irqrestore(&r->lock, flags);
+ 			trace_extract_entropy(r->name, EXTRACT_SIZE,
+ 					      ENTROPY_BITS(r), _RET_IP_);
+-			xfer_secondary_pool(r, EXTRACT_SIZE);
+ 			extract_buf(r, tmp);
+ 			spin_lock_irqsave(&r->lock, flags);
+ 			memcpy(r->last_data, tmp, EXTRACT_SIZE);
+@@ -1573,7 +1535,6 @@ static ssize_t extract_entropy(struct en
+ 	}
  
- #include <linux/sysctl.h>
+ 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
+-	xfer_secondary_pool(r, nbytes);
+ 	nbytes = account(r, nbytes, min, reserved);
  
--static int min_read_thresh = 8, min_write_thresh;
--static int max_read_thresh = OUTPUT_POOL_WORDS * 32;
-+static int min_write_thresh;
- static int max_write_thresh = INPUT_POOL_WORDS * 32;
- static int random_min_urandom_seed = 60;
- static char sysctl_bootid[16];
-@@ -2150,15 +2143,6 @@ struct ctl_table random_table[] = {
- 		.data		= &input_pool.entropy_count,
- 	},
- 	{
--		.procname	= "read_wakeup_threshold",
--		.data		= &random_read_wakeup_bits,
--		.maxlen		= sizeof(int),
--		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
--		.extra1		= &min_read_thresh,
--		.extra2		= &max_read_thresh,
--	},
--	{
- 		.procname	= "write_wakeup_threshold",
- 		.data		= &random_write_wakeup_bits,
- 		.maxlen		= sizeof(int),
+ 	return _extract_entropy(r, buf, nbytes, fips_enabled);
+@@ -1845,7 +1806,6 @@ static void __init init_std_data(struct
+ 	ktime_t now = ktime_get_real();
+ 	unsigned long rv;
+ 
+-	r->last_pulled = jiffies;
+ 	mix_pool_bytes(r, &now, sizeof(now));
+ 	for (i = r->poolinfo->poolbytes; i > 0; i -= sizeof(rv)) {
+ 		if (!arch_get_random_seed_long(&rv) &&
 
 
