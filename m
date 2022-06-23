@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3314DCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F09F8CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232569AbiFWQyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+        id S232027AbiFWQyW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233887AbiFWQvt (ORCPT
+        with ESMTP id S233821AbiFWQvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:49 -0400
+        Thu, 23 Jun 2022 12:51:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DB9167EB;
-        Thu, 23 Jun 2022 09:50:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8684D601;
+        Thu, 23 Jun 2022 09:49:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 587C061F99;
-        Thu, 23 Jun 2022 16:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C212C3411B;
-        Thu, 23 Jun 2022 16:50:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 839AE61FC0;
+        Thu, 23 Jun 2022 16:49:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DBE4C3411B;
+        Thu, 23 Jun 2022 16:49:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003043;
-        bh=29/my/I5fvwGN+y/1c5LGXnWS/zWpdoyi24loqmubbg=;
+        s=korg; t=1656002993;
+        bh=kYMTaFkDMWwk9gVOcvZPuv0uIydDT1gtwhi25M/zY3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dkSamp8ZU/ZOoLvJgjWGwguGfa8lnsDo12iGpZe+9nlWeUceYf4xxuZSlJvddWzbB
-         uVap3e/1pJ3/ZiX2lpXupWZ/k1nkqDnCCNi/Y6Fyf1gdTA94A2M99b9V5IheA/hiN9
-         lEPb5D19fmYBmrPjI2iX8rVFQSSwe0HX78a1T/WA=
+        b=AszVpB3JWvP4xE+iklCDAoc5Wn6n53dOmmzqaOxFlEwCXeFR4ibvBtPLRh0A5CIl+
+         /paiXzvF84WF5i0hr4EzyQ1LkhhFB8onx00/9wmFMwuWJEhmVx/MwrHdaDwg55OI/2
+         Lun+UryNDMlSpi+vDRKDX2VLp+U4ENWemCSZFWhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
+        Theodore Tso <tytso@mit.edu>,
         Eric Biggers <ebiggers@google.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 111/264] random: simplify entropy debiting
-Date:   Thu, 23 Jun 2022 18:41:44 +0200
-Message-Id: <20220623164347.210349959@linuxfoundation.org>
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 095/264] crypto: chacha20 - Fix chacha20_block() keystream alignment (again)
+Date:   Thu, 23 Jun 2022 18:41:28 +0200
+Message-Id: <20220623164346.760209489@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,267 +52,206 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 9c07f57869e90140080cfc282cc628d123e27704 upstream.
+[ Upstream commit a5e9f557098e54af44ade5d501379be18435bfbf ]
 
-Our pool is 256 bits, and we only ever use all of it or don't use it at
-all, which is decided by whether or not it has at least 128 bits in it.
-So we can drastically simplify the accounting and cmpxchg loop to do
-exactly this.  While we're at it, we move the minimum bit size into a
-constant so it can be shared between the two places where it matters.
+In commit 9f480faec58c ("crypto: chacha20 - Fix keystream alignment for
+chacha20_block()"), I had missed that chacha20_block() can be called
+directly on the buffer passed to get_random_bytes(), which can have any
+alignment.  So, while my commit didn't break anything, it didn't fully
+solve the alignment problems.
 
-The reason we want any of this is for the case in which an attacker has
-compromised the current state, and then bruteforces small amounts of
-entropy added to it. By demanding a particular minimum amount of entropy
-be present before reseeding, we make that bruteforcing difficult.
+Revert my solution and just update chacha20_block() to use
+put_unaligned_le32(), so the output buffer need not be aligned.
+This is simpler, and on many CPUs it's the same speed.
 
-Note that this rationale no longer includes anything about /dev/random
-blocking at the right moment, since /dev/random no longer blocks (except
-for at ~boot), but rather uses the crng. In a former life, /dev/random
-was different and therefore required a more nuanced account(), but this
-is no longer.
+But, I kept the 'tmp' buffers in extract_crng_user() and
+_get_random_bytes() 4-byte aligned, since that alignment is actually
+needed for _crng_backtrack_protect() too.
 
-Behaviorally, nothing changes here. This is just a simplification of
-the code.
-
+Reported-by: Stephan Müller <smueller@chronox.de>
 Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c         |   91 +++++++++---------------------------------
- include/trace/events/random.h |   30 ++-----------
- 2 files changed, 27 insertions(+), 94 deletions(-)
+ crypto/chacha20_generic.c |    7 ++++---
+ drivers/char/random.c     |   24 ++++++++++++------------
+ include/crypto/chacha20.h |    3 +--
+ lib/chacha20.c            |    6 +++---
+ 4 files changed, 20 insertions(+), 20 deletions(-)
 
+--- a/crypto/chacha20_generic.c
++++ b/crypto/chacha20_generic.c
+@@ -23,20 +23,21 @@ static inline u32 le32_to_cpuvp(const vo
+ static void chacha20_docrypt(u32 *state, u8 *dst, const u8 *src,
+ 			     unsigned int bytes)
+ {
+-	u32 stream[CHACHA20_BLOCK_WORDS];
++	/* aligned to potentially speed up crypto_xor() */
++	u8 stream[CHACHA20_BLOCK_SIZE] __aligned(sizeof(long));
+ 
+ 	if (dst != src)
+ 		memcpy(dst, src, bytes);
+ 
+ 	while (bytes >= CHACHA20_BLOCK_SIZE) {
+ 		chacha20_block(state, stream);
+-		crypto_xor(dst, (const u8 *)stream, CHACHA20_BLOCK_SIZE);
++		crypto_xor(dst, stream, CHACHA20_BLOCK_SIZE);
+ 		bytes -= CHACHA20_BLOCK_SIZE;
+ 		dst += CHACHA20_BLOCK_SIZE;
+ 	}
+ 	if (bytes) {
+ 		chacha20_block(state, stream);
+-		crypto_xor(dst, (const u8 *)stream, bytes);
++		crypto_xor(dst, stream, bytes);
+ 	}
+ }
+ 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -290,12 +290,14 @@
- enum poolinfo {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
- 	POOL_BITSHIFT = ilog2(POOL_BITS),
-+	POOL_MIN_BITS = POOL_BITS / 2,
+@@ -486,9 +486,9 @@ static int crng_init_cnt = 0;
+ static unsigned long crng_global_init_time = 0;
+ #define CRNG_INIT_CNT_THRESH (2*CHACHA20_KEY_SIZE)
+ static void _extract_crng(struct crng_state *crng,
+-			  __u32 out[CHACHA20_BLOCK_WORDS]);
++			  __u8 out[CHACHA20_BLOCK_SIZE]);
+ static void _crng_backtrack_protect(struct crng_state *crng,
+-				    __u32 tmp[CHACHA20_BLOCK_WORDS], int used);
++				    __u8 tmp[CHACHA20_BLOCK_SIZE], int used);
+ static void process_random_ready_list(void);
+ static void _get_random_bytes(void *buf, int nbytes);
  
- 	/* To allow fractional bits to be tracked, the entropy_count field is
- 	 * denominated in units of 1/8th bits. */
- 	POOL_ENTROPY_SHIFT = 3,
- #define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
--	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT
-+	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT,
-+	POOL_MIN_FRACBITS = POOL_MIN_BITS << POOL_ENTROPY_SHIFT
- };
- 
- /*
-@@ -376,8 +378,7 @@ static struct {
- 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
- };
- 
--static bool extract_entropy(void *buf, size_t nbytes, int min);
--static void _extract_entropy(void *buf, size_t nbytes);
-+static void extract_entropy(void *buf, size_t nbytes);
- 
- static void crng_reseed(struct crng_state *crng, bool use_input_pool);
- 
-@@ -468,7 +469,7 @@ static void process_random_ready_list(vo
-  */
- static void credit_entropy_bits(int nbits)
- {
--	int entropy_count, entropy_bits, orig;
-+	int entropy_count, orig;
- 	int nfrac = nbits << POOL_ENTROPY_SHIFT;
- 
- 	/* Ensure that the multiplication can avoid being 64 bits wide. */
-@@ -528,8 +529,7 @@ retry:
- 
- 	trace_credit_entropy_bits(nbits, entropy_count >> POOL_ENTROPY_SHIFT, _RET_IP_);
- 
--	entropy_bits = entropy_count >> POOL_ENTROPY_SHIFT;
--	if (crng_init < 2 && entropy_bits >= 128)
-+	if (crng_init < 2 && entropy_count >= POOL_MIN_FRACBITS)
- 		crng_reseed(&primary_crng, true);
- }
- 
-@@ -618,7 +618,7 @@ static void crng_initialize_secondary(st
- 
- static void __init crng_initialize_primary(void)
- {
--	_extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
-+	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
- 	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
- 		numa_crng_init();
-@@ -839,8 +839,17 @@ static void crng_reseed(struct crng_stat
+@@ -1038,7 +1038,7 @@ static void crng_reseed(struct crng_stat
+ 	unsigned long	flags;
+ 	int		i, num;
+ 	union {
+-		__u32	block[CHACHA20_BLOCK_WORDS];
++		__u8	block[CHACHA20_BLOCK_SIZE];
+ 		__u32	key[8];
  	} buf;
  
- 	if (use_input_pool) {
--		if (!extract_entropy(&buf, 32, 16))
--			return;
-+		int entropy_count;
-+		do {
-+			entropy_count = READ_ONCE(input_pool.entropy_count);
-+			if (entropy_count < POOL_MIN_FRACBITS)
-+				return;
-+		} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
-+		extract_entropy(buf.key, sizeof(buf.key));
-+		if (random_write_wakeup_bits) {
-+			wake_up_interruptible(&random_write_wait);
-+			kill_fasync(&fasync, SIGIO, POLL_OUT);
-+		}
- 	} else {
- 		_extract_crng(&primary_crng, buf.block);
- 		_crng_backtrack_protect(&primary_crng, buf.block,
-@@ -1166,51 +1175,10 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
-  *********************************************************************/
- 
- /*
-- * This function decides how many bytes to actually take from the
-- * given pool, and also debits the entropy count accordingly.
-- */
--static size_t account(size_t nbytes, int min)
--{
--	int entropy_count, orig;
--	size_t ibytes, nfrac;
--
--	BUG_ON(input_pool.entropy_count > POOL_FRACBITS);
--
--	/* Can we pull enough? */
--retry:
--	entropy_count = orig = READ_ONCE(input_pool.entropy_count);
--	if (WARN_ON(entropy_count < 0)) {
--		pr_warn("negative entropy count: count %d\n", entropy_count);
--		entropy_count = 0;
--	}
--
--	/* never pull more than available */
--	ibytes = min_t(size_t, nbytes, entropy_count >> (POOL_ENTROPY_SHIFT + 3));
--	if (ibytes < min)
--		ibytes = 0;
--	nfrac = ibytes << (POOL_ENTROPY_SHIFT + 3);
--	if ((size_t)entropy_count > nfrac)
--		entropy_count -= nfrac;
--	else
--		entropy_count = 0;
--
--	if (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig)
--		goto retry;
--
--	trace_debit_entropy(8 * ibytes);
--	if (ibytes && POOL_ENTROPY_BITS() < random_write_wakeup_bits) {
--		wake_up_interruptible(&random_write_wait);
--		kill_fasync(&fasync, SIGIO, POLL_OUT);
--	}
--
--	return ibytes;
--}
--
--/*
-  * This is an HKDF-like construction for using the hashed collected entropy
-  * as a PRF key, that's then expanded block-by-block.
-  */
--static void _extract_entropy(void *buf, size_t nbytes)
-+static void extract_entropy(void *buf, size_t nbytes)
- {
- 	unsigned long flags;
- 	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
-@@ -1220,6 +1188,8 @@ static void _extract_entropy(void *buf,
- 	} block;
- 	size_t i;
- 
-+	trace_extract_entropy(nbytes, POOL_ENTROPY_BITS());
-+
- 	for (i = 0; i < ARRAY_SIZE(block.rdrand); ++i) {
- 		if (!arch_get_random_long(&block.rdrand[i]))
- 			block.rdrand[i] = random_get_entropy();
-@@ -1251,25 +1221,6 @@ static void _extract_entropy(void *buf,
- 	memzero_explicit(&block, sizeof(block));
+@@ -1066,7 +1066,7 @@ static void crng_reseed(struct crng_stat
  }
  
--/*
-- * This function extracts randomness from the "entropy pool", and
-- * returns it in a buffer.
-- *
-- * The min parameter specifies the minimum amount we can pull before
-- * failing to avoid races that defeat catastrophic reseeding. If we
-- * have less than min entropy available, we return false and buf is
-- * not filled.
-- */
--static bool extract_entropy(void *buf, size_t nbytes, int min)
--{
--	trace_extract_entropy(nbytes, POOL_ENTROPY_BITS(), _RET_IP_);
--	if (account(nbytes, min)) {
--		_extract_entropy(buf, nbytes);
--		return true;
--	}
--	return false;
--}
--
- #define warn_unseeded_randomness(previous) \
- 	_warn_unseeded_randomness(__func__, (void *)_RET_IP_, (previous))
+ static void _extract_crng(struct crng_state *crng,
+-			  __u32 out[CHACHA20_BLOCK_WORDS])
++			  __u8 out[CHACHA20_BLOCK_SIZE])
+ {
+ 	unsigned long flags, init_time;
  
---- a/include/trace/events/random.h
-+++ b/include/trace/events/random.h
-@@ -78,22 +78,6 @@ TRACE_EVENT(credit_entropy_bits,
- 		  __entry->bits, __entry->entropy_count, (void *)__entry->IP)
- );
+@@ -1084,7 +1084,7 @@ static void _extract_crng(struct crng_st
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+ }
  
--TRACE_EVENT(debit_entropy,
--	TP_PROTO(int debit_bits),
--
--	TP_ARGS( debit_bits),
--
--	TP_STRUCT__entry(
--		__field(	  int,	debit_bits		)
--	),
--
--	TP_fast_assign(
--		__entry->debit_bits	= debit_bits;
--	),
--
--	TP_printk("input pool: debit_bits %d", __entry->debit_bits)
--);
--
- TRACE_EVENT(add_input_randomness,
- 	TP_PROTO(int input_bits),
+-static void extract_crng(__u32 out[CHACHA20_BLOCK_WORDS])
++static void extract_crng(__u8 out[CHACHA20_BLOCK_SIZE])
+ {
+ 	_extract_crng(select_crng(), out);
+ }
+@@ -1094,7 +1094,7 @@ static void extract_crng(__u32 out[CHACH
+  * enough) to mutate the CRNG key to provide backtracking protection.
+  */
+ static void _crng_backtrack_protect(struct crng_state *crng,
+-				    __u32 tmp[CHACHA20_BLOCK_WORDS], int used)
++				    __u8 tmp[CHACHA20_BLOCK_SIZE], int used)
+ {
+ 	unsigned long	flags;
+ 	__u32		*s, *d;
+@@ -1106,14 +1106,14 @@ static void _crng_backtrack_protect(stru
+ 		used = 0;
+ 	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+-	s = &tmp[used / sizeof(__u32)];
++	s = (__u32 *) &tmp[used];
+ 	d = &crng->state[4];
+ 	for (i=0; i < 8; i++)
+ 		*d++ ^= *s++;
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+ }
  
-@@ -160,31 +144,29 @@ DEFINE_EVENT(random__get_random_bytes, g
- );
+-static void crng_backtrack_protect(__u32 tmp[CHACHA20_BLOCK_WORDS], int used)
++static void crng_backtrack_protect(__u8 tmp[CHACHA20_BLOCK_SIZE], int used)
+ {
+ 	_crng_backtrack_protect(select_crng(), tmp, used);
+ }
+@@ -1121,7 +1121,7 @@ static void crng_backtrack_protect(__u32
+ static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
+ {
+ 	ssize_t ret = 0, i = CHACHA20_BLOCK_SIZE;
+-	__u32 tmp[CHACHA20_BLOCK_WORDS];
++	__u8 tmp[CHACHA20_BLOCK_SIZE] __aligned(4);
+ 	int large_request = (nbytes > 256);
  
- DECLARE_EVENT_CLASS(random__extract_entropy,
--	TP_PROTO(int nbytes, int entropy_count, unsigned long IP),
-+	TP_PROTO(int nbytes, int entropy_count),
+ 	while (nbytes) {
+@@ -1580,7 +1580,7 @@ static void _warn_unseeded_randomness(co
+  */
+ static void _get_random_bytes(void *buf, int nbytes)
+ {
+-	__u32 tmp[CHACHA20_BLOCK_WORDS];
++	__u8 tmp[CHACHA20_BLOCK_SIZE] __aligned(4);
  
--	TP_ARGS(nbytes, entropy_count, IP),
-+	TP_ARGS(nbytes, entropy_count),
+ 	trace_get_random_bytes(nbytes, _RET_IP_);
  
- 	TP_STRUCT__entry(
- 		__field(	  int,	nbytes			)
- 		__field(	  int,	entropy_count		)
--		__field(unsigned long,	IP			)
- 	),
+@@ -2167,7 +2167,7 @@ u64 get_random_u64(void)
+ 	batch = raw_cpu_ptr(&batched_entropy_u64);
+ 	spin_lock_irqsave(&batch->batch_lock, flags);
+ 	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0) {
+-		extract_crng((__u32 *)batch->entropy_u64);
++		extract_crng((u8 *)batch->entropy_u64);
+ 		batch->position = 0;
+ 	}
+ 	ret = batch->entropy_u64[batch->position++];
+@@ -2191,7 +2191,7 @@ u32 get_random_u32(void)
+ 	batch = raw_cpu_ptr(&batched_entropy_u32);
+ 	spin_lock_irqsave(&batch->batch_lock, flags);
+ 	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0) {
+-		extract_crng(batch->entropy_u32);
++		extract_crng((u8 *)batch->entropy_u32);
+ 		batch->position = 0;
+ 	}
+ 	ret = batch->entropy_u32[batch->position++];
+--- a/include/crypto/chacha20.h
++++ b/include/crypto/chacha20.h
+@@ -11,13 +11,12 @@
+ #define CHACHA20_IV_SIZE	16
+ #define CHACHA20_KEY_SIZE	32
+ #define CHACHA20_BLOCK_SIZE	64
+-#define CHACHA20_BLOCK_WORDS	(CHACHA20_BLOCK_SIZE / sizeof(u32))
  
- 	TP_fast_assign(
- 		__entry->nbytes		= nbytes;
- 		__entry->entropy_count	= entropy_count;
--		__entry->IP		= IP;
- 	),
+ struct chacha20_ctx {
+ 	u32 key[8];
+ };
  
--	TP_printk("input pool: nbytes %d entropy_count %d caller %pS",
--		  __entry->nbytes, __entry->entropy_count, (void *)__entry->IP)
-+	TP_printk("input pool: nbytes %d entropy_count %d",
-+		  __entry->nbytes, __entry->entropy_count)
- );
+-void chacha20_block(u32 *state, u32 *stream);
++void chacha20_block(u32 *state, u8 *stream);
+ void crypto_chacha20_init(u32 *state, struct chacha20_ctx *ctx, u8 *iv);
+ int crypto_chacha20_setkey(struct crypto_tfm *tfm, const u8 *key,
+ 			   unsigned int keysize);
+--- a/lib/chacha20.c
++++ b/lib/chacha20.c
+@@ -21,9 +21,9 @@ static inline u32 rotl32(u32 v, u8 n)
+ 	return (v << n) | (v >> (sizeof(v) * 8 - n));
+ }
  
+-void chacha20_block(u32 *state, u32 *stream)
++void chacha20_block(u32 *state, u8 *stream)
+ {
+-	u32 x[16], *out = stream;
++	u32 x[16];
+ 	int i;
  
- DEFINE_EVENT(random__extract_entropy, extract_entropy,
--	TP_PROTO(int nbytes, int entropy_count, unsigned long IP),
-+	TP_PROTO(int nbytes, int entropy_count),
+ 	for (i = 0; i < ARRAY_SIZE(x); i++)
+@@ -72,7 +72,7 @@ void chacha20_block(u32 *state, u32 *str
+ 	}
  
--	TP_ARGS(nbytes, entropy_count, IP)
-+	TP_ARGS(nbytes, entropy_count)
- );
+ 	for (i = 0; i < ARRAY_SIZE(x); i++)
+-		out[i] = cpu_to_le32(x[i] + state[i]);
++		put_unaligned_le32(x[i] + state[i], &stream[i * sizeof(u32)]);
  
- TRACE_EVENT(urandom_read,
+ 	state[12]++;
+ }
 
 
