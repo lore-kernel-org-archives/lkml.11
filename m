@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B14C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234462AbiFWRoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39740 "EHLO
+        id S235130AbiFWRnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235255AbiFWRjY (ORCPT
+        with ESMTP id S234836AbiFWRiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:39:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F1B35DF2F;
-        Thu, 23 Jun 2022 10:09:37 -0700 (PDT)
+        Thu, 23 Jun 2022 13:38:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CCF4993F;
+        Thu, 23 Jun 2022 10:08:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25FA2B8249B;
-        Thu, 23 Jun 2022 17:09:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60FAEC3411B;
-        Thu, 23 Jun 2022 17:09:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F16C6B824B4;
+        Thu, 23 Jun 2022 17:08:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 430F4C3411B;
+        Thu, 23 Jun 2022 17:08:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004174;
-        bh=iPzfm+GDmQDrIFT2Fmda4KYFqJnH2Vu68Poe4txUNTM=;
+        s=korg; t=1656004122;
+        bh=qIYgr84JW2wfwskmNEvNzTtO/Z+QttXhLdhRIbSR53E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HsimSGlmgUO/L5LTAnO9HUbnR2+WGJCk+VN/AL02//8BBg/5b/paQ5hZRyiLnP1zM
-         gToxjfbzcz2wyZy/xWDGqTGOKae3Zn8n1WwUXtuWoWFPOnQy6LFwbK+PKiUy5rZ8fY
-         R3vfY9KMHbOg7leUyAZEo/s06b8Hota1/Hr2H8Hc=
+        b=hv74h+8vNCqUUC87zA+zmbC3F+xbZr4+nUa6hxe9Nm+E+c9TO+xwEW0gCz8i6A28z
+         U/MkR9DId18LB8v98oxMEbOtZFTfuN+Zx5IY5f5r3VI/SwaU+8vXES1LtpGqxbjjeg
+         bif0Xn3d70MPhNMURoNQAlLdmGVgQ6pqaXDUoEZY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 211/237] tty: goldfish: Fix free_irq() on remove
-Date:   Thu, 23 Jun 2022 18:44:05 +0200
-Message-Id: <20220623164349.221648467@linuxfoundation.org>
+Subject: [PATCH 4.14 196/237] ASoC: cs42l52: Correct TLV for Bypass Volume
+Date:   Thu, 23 Jun 2022 18:43:50 +0200
+Message-Id: <20220623164348.785802223@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,49 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 499e13aac6c762e1e828172b0f0f5275651d6512 ]
+[ Upstream commit 91e90c712fade0b69cdff7cc6512f6099bd18ae5 ]
 
-Pass the correct dev_id to free_irq() to fix this splat when the driver
-is unbound:
+The Bypass Volume is accidentally using a -6dB minimum TLV rather than
+the correct -60dB minimum. Add a new TLV to correct this.
 
- WARNING: CPU: 0 PID: 30 at kernel/irq/manage.c:1895 free_irq
- Trying to free already-free IRQ 65
- Call Trace:
-  warn_slowpath_fmt
-  free_irq
-  goldfish_tty_remove
-  platform_remove
-  device_remove
-  device_release_driver_internal
-  device_driver_detach
-  unbind_store
-  drv_attr_store
-  ...
-
-Fixes: 465893e18878e119 ("tty: goldfish: support platform_device with id -1")
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Link: https://lore.kernel.org/r/20220609141704.1080024-1-vincent.whitchurch@axis.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-5-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/goldfish.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/cs42l52.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index 1b72321f2d0b..9f0b6b185be7 100644
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -435,7 +435,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
- 	tty_unregister_device(goldfish_tty_driver, qtty->console.index);
- 	iounmap(qtty->base);
- 	qtty->base = NULL;
--	free_irq(qtty->irq, pdev);
-+	free_irq(qtty->irq, qtty);
- 	tty_port_destroy(&qtty->port);
- 	goldfish_tty_current_line_count--;
- 	if (goldfish_tty_current_line_count == 0)
+diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
+index f733f6b42b53..47f2439fd7b0 100644
+--- a/sound/soc/codecs/cs42l52.c
++++ b/sound/soc/codecs/cs42l52.c
+@@ -141,6 +141,8 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
+ 
+ static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
+ 
++static DECLARE_TLV_DB_SCALE(pass_tlv, -6000, 50, 0);
++
+ static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
+ 
+ static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
+@@ -355,7 +357,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
+ 			      CS42L52_SPKB_VOL, 0, 0x40, 0xC0, hl_tlv),
+ 
+ 	SOC_DOUBLE_R_SX_TLV("Bypass Volume", CS42L52_PASSTHRUA_VOL,
+-			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pga_tlv),
++			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pass_tlv),
+ 
+ 	SOC_DOUBLE("Bypass Mute", CS42L52_MISC_CTL, 4, 5, 1, 0),
+ 
 -- 
 2.35.1
 
