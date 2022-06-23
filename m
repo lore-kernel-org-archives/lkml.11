@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 765A6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE439C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:19:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232907AbiFWRTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
+        id S233114AbiFWRTH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiFWRQs (ORCPT
+        with ESMTP id S233242AbiFWRRe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:16:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E828859E;
-        Thu, 23 Jun 2022 09:59:43 -0700 (PDT)
+        Thu, 23 Jun 2022 13:17:34 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9581160C40;
+        Thu, 23 Jun 2022 09:59:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 706FAB8248F;
-        Thu, 23 Jun 2022 16:59:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7C8CC341C5;
-        Thu, 23 Jun 2022 16:59:40 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 475CBCE25E0;
+        Thu, 23 Jun 2022 16:59:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9635C3411B;
+        Thu, 23 Jun 2022 16:59:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003581;
-        bh=k8IRD0CITbwpR3zpBINJA66Fe1woeN7WaFk+Ji76kp4=;
+        s=korg; t=1656003584;
+        bh=uUz847qAmDk1S1PuKmUF+VuRrzIK6TzYKBfTF12X20E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=COkbrKlN40AI+K3lzIGlaqr75311G2xktTiFV54QHr4981xGhRO4Lj2epZTi21UVp
-         fdqUxtSXqfyDXMfMvxFZ4MkZTpLCV9iDGGloPg7IFJdzb8cUPcDw2ziLoYl+kv9geO
-         B/kH/W+jJUZXxi3yNXGauRdlckqgGP+U2pLx3xfo=
+        b=csmvgOVqWn/X+U+2Vll7+USho1iH9/Z9aE5hhf9BycdZSuFRPNhi+27Tn2wWQ2FuX
+         cGWhWWOEB8VBKzVytiRpagiWmyHj4afnPKSSyzcTX2SXQjQakZQGhf5y3mVViBtjEF
+         0ecG1ELLn472nRCu+Qc+XZRygeo8K0l60tbsncqI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Herring <robh@kernel.org>, Will Deacon <will@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH 4.14 021/237] fdt: add support for rng-seed
-Date:   Thu, 23 Jun 2022 18:40:55 +0200
-Message-Id: <20220623164343.763322956@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Keerthy <j-keerthy@ti.com>, Stephen Boyd <swboyd@chromium.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 022/237] random: Use wait_event_freezable() in add_hwgenerator_randomness()
+Date:   Thu, 23 Jun 2022 18:40:56 +0200
+Message-Id: <20220623164343.792795445@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,135 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hsin-Yi Wang <hsinyi@chromium.org>
+From: Stephen Boyd <swboyd@chromium.org>
 
-commit 428826f5358c922dc378830a1717b682c0823160 upstream.
+commit 59b569480dc8bb9dce57cdff133853a842dfd805 upstream.
 
-Introducing a chosen node, rng-seed, which is an entropy that can be
-passed to kernel called very early to increase initial device
-randomness. Bootloader should provide this entropy and the value is
-read from /chosen/rng-seed in DT.
+Sebastian reports that after commit ff296293b353 ("random: Support freezable
+kthreads in add_hwgenerator_randomness()") we can call might_sleep() when the
+task state is TASK_INTERRUPTIBLE (state=1). This leads to the following warning.
 
-Obtain of_fdt_crc32 for CRC check after early_init_dt_scan_nodes(),
-since early_init_dt_scan_chosen() would modify fdt to erase rng-seed.
+ do not call blocking ops when !TASK_RUNNING; state=1 set at [<00000000349d1489>] prepare_to_wait_event+0x5a/0x180
+ WARNING: CPU: 0 PID: 828 at kernel/sched/core.c:6741 __might_sleep+0x6f/0x80
+ Modules linked in:
 
-Add a new interface add_bootloader_randomness() for rng-seed use case.
-Depends on whether the seed is trustworthy, rng seed would be passed to
-add_hwgenerator_randomness(). Otherwise it would be passed to
-add_device_randomness(). Decision is controlled by kernel config
-RANDOM_TRUST_BOOTLOADER.
+ CPU: 0 PID: 828 Comm: hwrng Not tainted 5.3.0-rc7-next-20190903+ #46
+ RIP: 0010:__might_sleep+0x6f/0x80
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Theodore Ts'o <tytso@mit.edu> # drivers/char/random.c
-Signed-off-by: Will Deacon <will@kernel.org>
+ Call Trace:
+  kthread_freezable_should_stop+0x1b/0x60
+  add_hwgenerator_randomness+0xdd/0x130
+  hwrng_fillfn+0xbf/0x120
+  kthread+0x10c/0x140
+  ret_from_fork+0x27/0x50
+
+We shouldn't call kthread_freezable_should_stop() from deep within the
+wait_event code because the task state is still set as
+TASK_INTERRUPTIBLE instead of TASK_RUNNING and
+kthread_freezable_should_stop() will try to call into the freezer with
+the task in the wrong state. Use wait_event_freezable() instead so that
+it calls schedule() in the right place and tries to enter the freezer
+when the task state is TASK_RUNNING instead.
+
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Tested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Keerthy <j-keerthy@ti.com>
+Fixes: ff296293b353 ("random: Support freezable kthreads in add_hwgenerator_randomness()")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/Kconfig   |    9 +++++++++
- drivers/char/random.c  |   14 ++++++++++++++
- drivers/of/fdt.c       |   14 ++++++++++++--
- include/linux/random.h |    1 +
- 4 files changed, 36 insertions(+), 2 deletions(-)
+ drivers/char/random.c |   12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -604,3 +604,12 @@ config RANDOM_TRUST_CPU
- 	has not installed a hidden back door to compromise the CPU's
- 	random number generation facilities. This can also be configured
- 	at boot with "random.trust_cpu=on/off".
-+
-+config RANDOM_TRUST_BOOTLOADER
-+	bool "Trust the bootloader to initialize Linux's CRNG"
-+	help
-+	Some bootloaders can provide entropy to increase the kernel's initial
-+	device randomness. Say Y here to assume the entropy provided by the
-+	booloader is trustworthy so it will be added to the kernel's entropy
-+	pool. Otherwise, say N here so it will be regarded as device input that
-+	only mixes the entropy pool.
-\ No newline at end of file
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2440,3 +2440,17 @@ void add_hwgenerator_randomness(const ch
- 	}
+@@ -327,6 +327,7 @@
+ #include <linux/percpu.h>
+ #include <linux/cryptohash.h>
+ #include <linux/fips.h>
++#include <linux/freezer.h>
+ #include <linux/ptrace.h>
+ #include <linux/workqueue.h>
+ #include <linux/irq.h>
+@@ -2420,7 +2421,6 @@ void add_hwgenerator_randomness(const ch
+ 				size_t entropy)
+ {
+ 	struct entropy_store *poolp = &input_pool;
+-	bool frozen = false;
+ 
+ 	if (unlikely(crng_init == 0)) {
+ 		crng_fast_load(buffer, count);
+@@ -2431,13 +2431,11 @@ void add_hwgenerator_randomness(const ch
+ 	 * We'll be woken up again once below random_write_wakeup_thresh,
+ 	 * or when the calling thread is about to terminate.
+ 	 */
+-	wait_event_interruptible(random_write_wait,
+-			kthread_freezable_should_stop(&frozen) ||
++	wait_event_freezable(random_write_wait,
++			kthread_should_stop() ||
+ 			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
+-	if (!frozen) {
+-		mix_pool_bytes(poolp, buffer, count);
+-		credit_entropy_bits(poolp, entropy);
+-	}
++	mix_pool_bytes(poolp, buffer, count);
++	credit_entropy_bits(poolp, entropy);
  }
  EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
-+
-+/* Handle random seed passed by bootloader.
-+ * If the seed is trustworthy, it would be regarded as hardware RNGs. Otherwise
-+ * it would be regarded as device data.
-+ * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
-+ */
-+void add_bootloader_randomness(const void *buf, unsigned int size)
-+{
-+	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
-+		add_hwgenerator_randomness(buf, size, size * 8);
-+	else
-+		add_device_randomness(buf, size);
-+}
-+EXPORT_SYMBOL_GPL(add_bootloader_randomness);
-\ No newline at end of file
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -27,6 +27,7 @@
- #include <linux/debugfs.h>
- #include <linux/serial_core.h>
- #include <linux/sysfs.h>
-+#include <linux/random.h>
  
- #include <asm/setup.h>  /* for COMMAND_LINE_SIZE */
- #include <asm/page.h>
-@@ -1117,6 +1118,7 @@ int __init early_init_dt_scan_chosen(uns
- {
- 	int l;
- 	const char *p;
-+	const void *rng_seed;
- 
- 	pr_debug("search \"chosen\", depth: %d, uname: %s\n", depth, uname);
- 
-@@ -1151,6 +1153,14 @@ int __init early_init_dt_scan_chosen(uns
- 
- 	pr_debug("Command line is: %s\n", (char*)data);
- 
-+	rng_seed = of_get_flat_dt_prop(node, "rng-seed", &l);
-+	if (rng_seed && l > 0) {
-+		add_bootloader_randomness(rng_seed, l);
-+
-+		/* try to clear seed so it won't be found. */
-+		fdt_nop_property(initial_boot_params, node, "rng-seed");
-+	}
-+
- 	/* break now */
- 	return 1;
- }
-@@ -1262,8 +1272,6 @@ bool __init early_init_dt_verify(void *p
- 
- 	/* Setup flat device-tree pointer */
- 	initial_boot_params = params;
--	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
--				fdt_totalsize(initial_boot_params));
- 	return true;
- }
- 
-@@ -1289,6 +1297,8 @@ bool __init early_init_dt_scan(void *par
- 		return false;
- 
- 	early_init_dt_scan_nodes();
-+	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
-+				fdt_totalsize(initial_boot_params));
- 	return true;
- }
- 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -19,6 +19,7 @@ struct random_ready_callback {
- };
- 
- extern void add_device_randomness(const void *, unsigned int);
-+extern void add_bootloader_randomness(const void *, unsigned int);
- 
- #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
 
 
