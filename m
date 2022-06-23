@@ -2,146 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA1DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A84A1CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232809AbiFWRVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
+        id S233549AbiFWRVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230526AbiFWRUy (ORCPT
+        with ESMTP id S231915AbiFWRUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:20:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B0C4F44B;
-        Thu, 23 Jun 2022 10:00:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F019B82493;
-        Thu, 23 Jun 2022 17:00:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD37CC3411B;
-        Thu, 23 Jun 2022 17:00:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003636;
-        bh=/XFET9+SKI8rKv+riAwsmtnXJOwCQVRbvx7+8+FI7qQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E2vcdGRoh1d37hZZbxmpPOw6LnXLjLxwZeGEWkkvmRUxt8fgwyfxXpT3LqcMUyWBo
-         7q95z6ZYUdp4WKTeV/tV72INnHOF4Hjr1loisCCHKd/ch2PcZjC/NGXStwilnUjuha
-         lCAv4uTkPdiOXObNBsFTFtJih4JNDkQMohQOnIX8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
-        Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 037/237] random: delete code to pull data into pools
-Date:   Thu, 23 Jun 2022 18:41:11 +0200
-Message-Id: <20220623164344.222789578@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
-References: <20220623164343.132308638@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109A9CD911;
+        Thu, 23 Jun 2022 10:00:41 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id g4so22024002lfv.9;
+        Thu, 23 Jun 2022 10:00:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AyqzSDiNvk0JXiJA88Ctd6VpkzCitgPMbrP8MwPw0tg=;
+        b=a3k/G2QCfq01Gzwf77qJyKjiQY6S7idKqT3CD5AUEHQqFB8M8QnX18lwJxA/PrMry7
+         XrO58mKy2atVb4hHlz7dBv3CVgm7OCtZZJ5V8S8I7Y0q+j7SSvCGtJrizFu6SSeyrjHv
+         aSgjueWr3LBVr5Ak/4iCTDz3Ix0AI3yffx/CKORswfxnKWkRDo1PLjoUaqRWUs4c4P+W
+         WgYyH3EVHesxKXKK8m8lQ/Kcg3k+HuwzVnrknOVGvdpaQsuh5An+U8gctX6FtXuJ/cha
+         TrFa6E43SOa8O5OkvyjboTKOiD5TDFvk95clmB6qwNL6KAy9UtEtwSseGa8STpLRyWeK
+         akhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AyqzSDiNvk0JXiJA88Ctd6VpkzCitgPMbrP8MwPw0tg=;
+        b=KdOaJHjfaVXC7WhW6Qq37DJjOQvIJ4/CrTILYncO+zHsCBt1wEoEDLJiNIGDpXhFUA
+         WVH3pkq4EW/nGNkzFpbfkBr2RpG27a63b2IXeLpMFfG+XisClaPocQu1bcT+1Y9RKob0
+         UZa1M3oHSSjRy293ieVOqMBO8GZxT4SWgXuPEN/NJSHV68o8I3hqQRkz6LPYvfVmTyHU
+         Vw44stoU84R1/dhiuzB1mfhOSLjbEAtA3RPGHJk2R6adZhzOYPj/cGBqF0X4gaIyJl7K
+         1jIksaJi5+3MUnrRlwkWq0guJ2PAOX7eVTeheRwBYy5rLL7/Cf7PDKIIzaykrhogVC+W
+         x3nQ==
+X-Gm-Message-State: AJIora+PnsMdEH+evMbfOmASwuCEzVLeCoFVTXs/clX5mRkXZK287uNU
+        X/zI6iupui6jSfXHAEKmWh6UIOdYkRwjimTz
+X-Google-Smtp-Source: AGRyM1u7UxyLwNPcGv50NxrYtAI+jU11DHAzSBGlQvSi9sZqL3GDSejVn+3spp5cVuyJUsF2yw8Buw==
+X-Received: by 2002:ac2:5201:0:b0:479:3923:9559 with SMTP id a1-20020ac25201000000b0047939239559mr6199240lfl.553.1656003638785;
+        Thu, 23 Jun 2022 10:00:38 -0700 (PDT)
+Received: from sakura.myxoz.lan (2-248-181-228-no2390.tbcn.telia.com. [2.248.181.228])
+        by smtp.gmail.com with ESMTPSA id f6-20020a05651c02c600b00255526478f1sm1472387ljo.88.2022.06.23.10.00.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 10:00:38 -0700 (PDT)
+From:   Miko Larsson <mikoxyzzz@gmail.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Sean Christopherson <seanjc@google.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Chris Down <chris@chrisdown.name>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Elliot Berman <quic_eberman@quicinc.com>,
+        Oleksandr Natalenko <oleksandr@redhat.com>
+Subject: Re: [PATCH 0/2] Kconfig: -O3 enablement
+Date:   Thu, 23 Jun 2022 19:00:47 +0200
+Message-ID: <2650588.mvXUDI8C0e@sakura.myxoz.lan>
+In-Reply-To: <CAK7LNAQqJc74MGFyU6fvhM9VkDKYUXyCt0NF1qAr1RmfUqC0=w@mail.gmail.com>
+References: <20220621133526.29662-1-mikoxyzzz@gmail.com> <2817735.mvXUDI8C0e@sakura.myxoz.lan> <CAK7LNAQqJc74MGFyU6fvhM9VkDKYUXyCt0NF1qAr1RmfUqC0=w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+On Thursday, 23 June 2022 17:44:57 CEST Masahiro Yamada wrote:
+> On Fri, Jun 24, 2022 at 12:42 AM Miko Larsson <mikoxyzzz@gmail.com> wrote:
+> > On Wednesday, 22 June 2022 03:57:34 CEST Masahiro Yamada wrote:
+> > > If you want to say "use this option carefully",
+> > > EXPERT might be another option.
+> > > 
+> > >     depends on ARC || EXPERT
+> > 
+> > Yeah, this would be a fair compromise, though I think it would be
+> > better to use "visible if" instead of "depends on". I can get a v2 of
+> > the series together if this is desired.
+> 
+> Why is "visible if" better than "depends on"?
+> 
 
-commit 84df7cdfbb215a34657b39f4257dab739efa2df9 upstream.
+Technically it most likely doesn't matter, but logically it makes more
+sense, since we'd make CC_OPTIMIZE_FOR_PERFORMANCE_O3 be visible if
+we're on ARC or if we have EXPERT enabled, instead of depending on
+them. But yeah, it probably doesn't matter.
 
-There is no pool that pulls, so it was just dead code.
+--
+~miko
 
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/4a05fe0c7a5c831389ef4aea51d24528ac8682c7.1577088521.git.luto@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |   40 ----------------------------------------
- 1 file changed, 40 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -530,10 +530,8 @@ struct entropy_store {
- 	const struct poolinfo *poolinfo;
- 	__u32 *pool;
- 	const char *name;
--	struct entropy_store *pull;
- 
- 	/* read-write data: */
--	unsigned long last_pulled;
- 	spinlock_t lock;
- 	unsigned short add_ptr;
- 	unsigned short input_rotate;
-@@ -1364,41 +1362,6 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
-  *********************************************************************/
- 
- /*
-- * This utility inline function is responsible for transferring entropy
-- * from the primary pool to the secondary extraction pool. We make
-- * sure we pull enough for a 'catastrophic reseed'.
-- */
--static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes);
--static void xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
--{
--	if (!r->pull ||
--	    r->entropy_count >= (nbytes << (ENTROPY_SHIFT + 3)) ||
--	    r->entropy_count > r->poolinfo->poolfracbits)
--		return;
--
--	_xfer_secondary_pool(r, nbytes);
--}
--
--static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
--{
--	__u32	tmp[OUTPUT_POOL_WORDS];
--
--	int bytes = nbytes;
--
--	/* pull at least as much as a wakeup */
--	bytes = max_t(int, bytes, random_read_wakeup_bits / 8);
--	/* but never more than the buffer size */
--	bytes = min_t(int, bytes, sizeof(tmp));
--
--	trace_xfer_secondary_pool(r->name, bytes * 8, nbytes * 8,
--				  ENTROPY_BITS(r), ENTROPY_BITS(r->pull));
--	bytes = extract_entropy(r->pull, tmp, bytes,
--				random_read_wakeup_bits / 8, 0);
--	mix_pool_bytes(r, tmp, bytes);
--	credit_entropy_bits(r, bytes*8);
--}
--
--/*
-  * This function decides how many bytes to actually take from the
-  * given pool, and also debits the entropy count accordingly.
-  */
-@@ -1561,7 +1524,6 @@ static ssize_t extract_entropy(struct en
- 			spin_unlock_irqrestore(&r->lock, flags);
- 			trace_extract_entropy(r->name, EXTRACT_SIZE,
- 					      ENTROPY_BITS(r), _RET_IP_);
--			xfer_secondary_pool(r, EXTRACT_SIZE);
- 			extract_buf(r, tmp);
- 			spin_lock_irqsave(&r->lock, flags);
- 			memcpy(r->last_data, tmp, EXTRACT_SIZE);
-@@ -1570,7 +1532,6 @@ static ssize_t extract_entropy(struct en
- 	}
- 
- 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
--	xfer_secondary_pool(r, nbytes);
- 	nbytes = account(r, nbytes, min, reserved);
- 
- 	return _extract_entropy(r, buf, nbytes, fips_enabled);
-@@ -1782,7 +1743,6 @@ static void __init init_std_data(struct
- 	ktime_t now = ktime_get_real();
- 	unsigned long rv;
- 
--	r->last_pulled = jiffies;
- 	mix_pool_bytes(r, &now, sizeof(now));
- 	for (i = r->poolinfo->poolbytes; i > 0; i -= sizeof(rv)) {
- 		if (!arch_get_random_seed_long(&rv) &&
 
 
