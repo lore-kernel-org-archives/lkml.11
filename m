@@ -2,138 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 344EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5F9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237165AbiFWSYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57106 "EHLO
+        id S234539AbiFWSYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237734AbiFWSXX (ORCPT
+        with ESMTP id S237792AbiFWSX3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:23:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD5BC2C69;
-        Thu, 23 Jun 2022 10:25:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5418861F0A;
-        Thu, 23 Jun 2022 17:25:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB4A9C341C5;
-        Thu, 23 Jun 2022 17:25:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005150;
-        bh=SyFyZ2sRAWl65JKjtAQGLYjMGv0I2r4u6CPEgMxxpHE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UndrPuqlREOVAdbphSJ54FLO4A6s+2z413Pfi+d+k2c6q3trM6Txqulo9U8vN1CY1
-         ZZmCuyKvYYYC3b2aUV4Ga39Iutl9ajMG3ACnhl7d1fwpJjExuBf7zNQ+kt4eBAtb3S
-         bKXp7mUxTcgZ0xzlBUrXP5ppQxNxu39SJ7B3hXPE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.18 00/11] 5.18.7-rc1 review
-Date:   Thu, 23 Jun 2022 18:45:12 +0200
-Message-Id: <20220623164322.315085512@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
+        Thu, 23 Jun 2022 14:23:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB309C3E92
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:25:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656005157;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4H0hc8Du3nY/oCseQOeBBjY2ZACt1jajcUPDM0qtvz4=;
+        b=RVuljAJM5S2bteL3KffuGOqRWiCdYFeYnrTHwhwWVYtiVlfk7tEYejHTjaXXFleY7XIEZL
+        t4XElqy00k7fbxoc8OaNMIP8eZQpJ/UPt7mEOv3TLP3IENjkGmxal1aTslHyyaLgP7fyDZ
+        zVPwrcvVCsnKZdKxGsLPoT0BxCPmW+w=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-263-TKazAbQVN0uFphCcwH2b7Q-1; Thu, 23 Jun 2022 13:25:56 -0400
+X-MC-Unique: TKazAbQVN0uFphCcwH2b7Q-1
+Received: by mail-wm1-f69.google.com with SMTP id c185-20020a1c35c2000000b0039db3e56c39so1700282wma.5
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:25:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=4H0hc8Du3nY/oCseQOeBBjY2ZACt1jajcUPDM0qtvz4=;
+        b=zXpWQR+ckkZTG1heYW3Z1YGcQZJrpRDC3mRD3mF6oKy72FKHjSU3uGMSB0cV3g6TCn
+         4bFfvRVCeaR65si7zIWAWN4mJuYh4QyCPYo6s1SPlsis02/FsxeW+Ze24SvGnGc9/8Z4
+         lX0DpEOLW+phWeqteOa+CBwYuLFaCiPX1XRGBzwJtzFayKtXuZ0kl2jOY99rbLqXczVf
+         p8A+FpMZtpreWb2SuUQ+NiG9THVaG/cpXOUFCyhwDncP1L39sX3ArLnFuwnfgO1g2jcZ
+         PiLV5QjHjPvHhczn/aQJbCN/9EXwVr+PyO5rrpJ09eCeIW7VGBnasqupMFTwIyUzGigA
+         y5xw==
+X-Gm-Message-State: AJIora+QizCDasaX/JN08azp2M6RNX69+S4uOKQjtC4hHmXEQS+/ZFER
+        ELcodlUZZgRhpJkfZSmU4O2GUivfY1qBjOjXm775RzfO7PpabXTKvElZiX9hWiLWv7knsTRg9YM
+        6FoP1IZ0DctL3dF/I+08Bta9T
+X-Received: by 2002:a05:600c:3503:b0:39c:65e0:c070 with SMTP id h3-20020a05600c350300b0039c65e0c070mr5373281wmq.161.1656005155009;
+        Thu, 23 Jun 2022 10:25:55 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vJyq9ZzEeWdCIMTKXFNIDyGCOfxTXaE0YEorcmZChZlK3RamVYTnhSFvza4mKsapK/OGnOUw==
+X-Received: by 2002:a05:600c:3503:b0:39c:65e0:c070 with SMTP id h3-20020a05600c350300b0039c65e0c070mr5373264wmq.161.1656005154769;
+        Thu, 23 Jun 2022 10:25:54 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c704:b100:7694:f34e:d0dd:95e7? (p200300cbc704b1007694f34ed0dd95e7.dip0.t-ipconnect.de. [2003:cb:c704:b100:7694:f34e:d0dd:95e7])
+        by smtp.gmail.com with ESMTPSA id r13-20020a5d4e4d000000b0021b96cdf68fsm8917991wrt.97.2022.06.23.10.25.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 10:25:54 -0700 (PDT)
+Message-ID: <5972b785-a98a-ca3d-8c21-8156dd981749@redhat.com>
+Date:   Thu, 23 Jun 2022 19:25:53 +0200
 MIME-Version: 1.0
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.7-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.18.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.18.7-rc1
-X-KernelTest-Deadline: 2022-06-25T16:43+00:00
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-US
+To:     Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "damon @ lists . linux . dev" <damon@lists.linux.dev>,
+        SeongJae Park <sj@kernel.org>
+References: <20220621204632.3370049-1-Liam.Howlett@oracle.com>
+ <20220621204632.3370049-14-Liam.Howlett@oracle.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v10 13/69] mm/mmap: use maple tree for
+ unmapped_area{_topdown}
+In-Reply-To: <20220621204632.3370049-14-Liam.Howlett@oracle.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.18.7 release.
-There are 11 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+On 21.06.22 22:46, Liam Howlett wrote:
+> From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+> 
+> The maple tree code was added to find the unmapped area in a previous
+> commit and was checked against what the rbtree returned, but the actual
+> result was never used.  Start using the maple tree implementation and
+> remove the rbtree code.
+> 
+> Add kernel documentation comment for these functions.
+> 
+> Link: https://lkml.kernel.org/r/20220504010716.661115-15-Liam.Howlett@oracle.com
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+> Cc: SeongJae Park <sj@kernel.org>
+> Cc: Vlastimil Babka <vbabka@suse.cz>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Davidlohr Bueso <dave@stgolabs.net>
+> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> ---
+>  mm/mmap.c | 253 +++++++-----------------------------------------------
+>  1 file changed, 32 insertions(+), 221 deletions(-)
+> 
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index 08845a0317bf..b91d22329418 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -2053,250 +2053,61 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+>  	return error;
+>  }
+>  
+> +/* unmapped_area() Find an area between the low_limit and the high_limit with
 
-Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
-Anything received after that time might be too late.
+/**
+ * unmapped_area() - ...
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.7-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-and the diffstat can be found below.
+> + * the correct alignment and offset, all from @info. Note: current->mm is used
+> + * for the search.
+> + *
+> + * @info: The unmapped area information including the range (low_limit -
+> + * hight_limit), the alignment offset and mask.
+> + *
+> + * Return: A memory address or -ENOMEM.
+> + */
+>  static unsigned long unmapped_area(struct vm_unmapped_area_info *info)
+>  {
 
-thanks,
+...
 
-greg k-h
+>  
+> +/* unmapped_area_topdown() Find an area between the low_limit and the
 
--------------
-Pseudo-Shortlog of commits:
+\Dito
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.18.7-rc1
+> + * high_limit with * the correct alignment and offset at the highest available
+> + * address, all from * @info. Note: current->mm is used for the search.
 
-Sean Anderson <sean.anderson@seco.com>
-    dt-bindings: nvmem: sfp: Add clock properties
+I'm confused about the "*" in the text, but maybe I'm just tired :)
 
-Toke Høiland-Jørgensen <toke@redhat.com>
-    selftests/bpf: Add selftest for calling global functions from freplace
+> + *
+> + * @info: The unmapped area information including the range (low_limit -
+> + * hight_limit), the alignment offset and mask.
+> + *
+> + * Return: A memory address or -ENOMEM.
+> + */
+>  static unsigned long unmapped_area_topdown(struct vm_unmapped_area_info *info)
+>  {
 
-Toke Høiland-Jørgensen <toke@redhat.com>
-    bpf: Fix calling global functions from BPF_PROG_TYPE_EXT programs
+[...]
 
-Amir Goldstein <amir73il@gmail.com>
-    fsnotify: consistent behavior for parent not watching children
+> -found:
+> -	/* We found a suitable gap. Clip it with the original high_limit. */
+> -	if (gap_end > info->high_limit)
+> -		gap_end = info->high_limit;
+> -
+> -found_highest:
+> -	/* Compute highest gap address at the desired alignment */
+> -	gap_end -= info->length;
+> -	gap_end -= (gap_end - info->align_offset) & info->align_mask;
+> -
+> -	VM_BUG_ON(gap_end < info->low_limit);
+> -	VM_BUG_ON(gap_end < gap_start);
 
-Amir Goldstein <amir73il@gmail.com>
-    fsnotify: introduce mark type iterator
+Can we leave some of these in, please? (same applies to other function)
 
-Kees Cook <keescook@chromium.org>
-    x86/boot: Wrap literal addresses in absolute_pointer()
-
-Jakub Kicinski <kuba@kernel.org>
-    net: wwan: iosm: remove pointless null check
-
-Martin Liška <mliska@suse.cz>
-    eth: sun: cassini: remove dead code
-
-Jakub Kicinski <kuba@kernel.org>
-    wifi: rtlwifi: remove always-true condition pointed out by GCC 12
-
-Damien Le Moal <damien.lemoal@opensource.wdc.com>
-    zonefs: fix zonefs_iomap_begin() for reads
-
-Christian Borntraeger <borntraeger@linux.ibm.com>
-    s390/mm: use non-quiescing sske for KVM switch to keyed guest
+I keep getting confused by align_offset. vs align_mask. I *think* this
+is correct, but some checks that we stay in limits and actually have
+proper alignment would be reasonable.
 
 
--------------
+-- 
+Thanks,
 
-Diffstat:
-
- .../bindings/nvmem/fsl,layerscape-sfp.yaml         | 14 ++++
- Makefile                                           |  4 +-
- arch/s390/mm/pgtable.c                             |  2 +-
- arch/x86/boot/boot.h                               | 36 ++++++---
- arch/x86/boot/main.c                               |  2 +-
- drivers/net/ethernet/sun/cassini.c                 |  4 +-
- .../net/wireless/realtek/rtlwifi/rtl8192de/phy.c   |  5 +-
- drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c      | 10 ---
- fs/notify/fanotify/fanotify.c                      | 24 ++----
- fs/notify/fsnotify.c                               | 85 +++++++++----------
- fs/zonefs/super.c                                  | 94 +++++++++++++++-------
- include/linux/fsnotify_backend.h                   | 31 +++++--
- kernel/bpf/btf.c                                   |  4 +-
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       | 14 ++++
- .../selftests/bpf/progs/freplace_global_func.c     | 18 +++++
- 15 files changed, 216 insertions(+), 131 deletions(-)
-
+David / dhildenb
 
