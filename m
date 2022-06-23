@@ -2,81 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 353D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 01:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 719F1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 01:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236295AbiFWB1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 21:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
+        id S236575AbiFWB1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 21:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiFWB1J (ORCPT
+        with ESMTP id S236540AbiFWB1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 21:27:09 -0400
-Received: from ZXSHCAS1.zhaoxin.com (ZXSHCAS1.zhaoxin.com [210.0.225.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95F93DA73;
-        Wed, 22 Jun 2022 18:27:07 -0700 (PDT)
-Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS1.zhaoxin.com
- (10.28.252.161) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Thu, 23 Jun
- 2022 09:27:05 +0800
-Received: from [10.32.64.1] (10.32.64.1) by zxbjmbx1.zhaoxin.com
- (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Thu, 23 Jun
- 2022 09:27:03 +0800
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-CC:     <CobeChen@zhaoxin.com>, <TimGuo@zhaoxin.com>,
-        <LindaChai@zhaoxin.com>, <LeoLiu@zhaoxin.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-From:   Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>
-Subject: [PATCH V1] x86/cstate: Add Zhaoxin/Centaur ACPI Cx FFH MWAIT support
-Message-ID: <0b583b7e-dcd3-be51-f367-1c12ac841d3f@zhaoxin.com>
-Date:   Thu, 23 Jun 2022 09:26:57 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Wed, 22 Jun 2022 21:27:18 -0400
+Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com [209.85.215.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC4942A08
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 18:27:16 -0700 (PDT)
+Received: by mail-pg1-f196.google.com with SMTP id a14so8072181pgh.11
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 18:27:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HNPzzADt89xo5zs6PZNoGyHBhvApF8RGasyMsX1K6+Q=;
+        b=wMY07f2TdHjD25Yeiv4irGcdgqd3acmP05ALs1upIPKvFYlM+3z+RpfQ0m1OUC7QBt
+         +SUDvT2tzgk/SC17KD+4QjUwam3MSBXqmxUy7c6ryrzKa/Yu53T+19KL7UbSwUMcaEvE
+         QJ28bIdznf4Qu5biYWZ7kr0fxzf8zF5ubqKj7MdI3R3b6VSY7zoB5aSB5LHzlddSczPz
+         ThP8AGN0unN9RY6JZZI5SzUFo71gl8+Niu+MaZcJ0OOYEOmPFUHBaxShXOPALQzaLmFa
+         KmZuQMibiirqQI6cJqNt/1ZfoQo8BsBDuaZCEqVHpVOBalSfg+4oIwPHTDBYbysbUGLb
+         b7wg==
+X-Gm-Message-State: AJIora+LbgULiCalhMOjCk5EOjJku3uQ7Xt8vylmOxHvkmuFjsA9+D/K
+        Bap2EaEg8mqAlvR9inlLOQ==
+X-Google-Smtp-Source: AGRyM1slyIMjS+dECh4SopuEF2n3vHBOXmq2DPnk2fOXCjRzZuZeUYSXEtu0dJzsatkcU1zoVwBIlQ==
+X-Received: by 2002:a63:1846:0:b0:3fd:dd12:ffa8 with SMTP id 6-20020a631846000000b003fddd12ffa8mr5339853pgy.337.1655947635915;
+        Wed, 22 Jun 2022 18:27:15 -0700 (PDT)
+Received: from localhost.localdomain ([156.146.53.107])
+        by smtp.gmail.com with ESMTPSA id p13-20020a170902e74d00b0016a4a57a25asm2255342plf.152.2022.06.22.18.27.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 18:27:15 -0700 (PDT)
+From:   sunliming <sunliming@kylinos.cn>
+To:     quic_abhinavk@quicinc.com, robdclark@gmail.com,
+        dmitry.baryshkov@linaro.org
+Cc:     linux-kernel@vger.kernel.org, sunliming@kylinos.cn,
+        kelulanainsley@gmail.com, freedreno@lists.freedesktop.org,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH RESEND] drm/msm/dpu: Fix variable dereferenced before check
+Date:   Thu, 23 Jun 2022 09:27:07 +0800
+Message-Id: <20220623012707.453972-1-sunliming@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.32.64.1]
-X-ClientProxiedBy: ZXSHCAS2.zhaoxin.com (10.28.252.162) To
- zxbjmbx1.zhaoxin.com (10.29.252.163)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Recent Zhaoxin/Centaur CPUs support X86_FEATURE_MWAIT that implies
-the MONITOR/MWAIT instructions can be used for ACPI Cx state.
-The BIOS declares Cx state in _CST object to use FFH on Zhaoxin/Centaur
-systems. So let function ffh_cstate_init() support These CPUs too.
+Fixes the following smatch warning:
 
-Signed-off-by: Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>
+drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c:261
+dpu_encoder_phys_wb_atomic_check() warn: variable dereferenced before check 'conn_state'
+
+Signed-off-by: sunliming <sunliming@kylinos.cn>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 ---
-  arch/x86/kernel/acpi/cstate.c | 4 +++-
-  1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kernel/acpi/cstate.c b/arch/x86/kernel/acpi/cstate.c
-index 7945eae..d4185e1 100644
---- a/arch/x86/kernel/acpi/cstate.c
-+++ b/arch/x86/kernel/acpi/cstate.c
-@@ -213,7 +213,9 @@ static int __init ffh_cstate_init(void)
-
-  	if (c->x86_vendor != X86_VENDOR_INTEL &&
-  	    c->x86_vendor != X86_VENDOR_AMD &&
--	    c->x86_vendor != X86_VENDOR_HYGON)
-+	    c->x86_vendor != X86_VENDOR_HYGON &&
-+	    c->x86_vendor != X86_VENDOR_CENTAUR &&
-+	    c->x86_vendor != X86_VENDOR_ZHAOXIN)
-  		return -1;
-
-  	cpu_cstate_entry = alloc_percpu(struct cstate_entry);
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
+index 59da348ff339..0ec809ab06e7 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
+@@ -252,11 +252,6 @@ static int dpu_encoder_phys_wb_atomic_check(
+ 	DPU_DEBUG("[atomic_check:%d, \"%s\",%d,%d]\n",
+ 			phys_enc->wb_idx, mode->name, mode->hdisplay, mode->vdisplay);
+ 
+-	if (!conn_state->writeback_job || !conn_state->writeback_job->fb)
+-		return 0;
+-
+-	fb = conn_state->writeback_job->fb;
+-
+ 	if (!conn_state || !conn_state->connector) {
+ 		DPU_ERROR("invalid connector state\n");
+ 		return -EINVAL;
+@@ -267,6 +262,11 @@ static int dpu_encoder_phys_wb_atomic_check(
+ 		return -EINVAL;
+ 	}
+ 
++	if (!conn_state->writeback_job || !conn_state->writeback_job->fb)
++		return 0;
++
++	fb = conn_state->writeback_job->fb;
++
+ 	DPU_DEBUG("[fb_id:%u][fb:%u,%u]\n", fb->base.id,
+ 			fb->width, fb->height);
+ 
 -- 
-2.7.4
+2.25.1
 
