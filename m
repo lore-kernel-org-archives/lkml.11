@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8E6CCA48A
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F849CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:23:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233614AbiFWSXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51414 "EHLO
+        id S234399AbiFWSXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237081AbiFWSVF (ORCPT
+        with ESMTP id S237123AbiFWSVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:21:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8ACB68C42;
-        Thu, 23 Jun 2022 10:25:12 -0700 (PDT)
+        Thu, 23 Jun 2022 14:21:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9B7699BB;
+        Thu, 23 Jun 2022 10:25:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C67DD61BFA;
-        Thu, 23 Jun 2022 17:25:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B936AC3411B;
-        Thu, 23 Jun 2022 17:25:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D447761DC6;
+        Thu, 23 Jun 2022 17:25:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F40C3411B;
+        Thu, 23 Jun 2022 17:25:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005111;
-        bh=c5AcL957SsFi4ZAuL0Y2ToBTmHljoGZLqLESIUV+rfM=;
+        s=korg; t=1656005114;
+        bh=a2yASAbOJhkKvUDD8zu4yyqktGPtzXvL3oQp01bC5n4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hKYs+yNiSDnHjxn17/VJcieBx/hsxbbGd0zYmGrDfGlM7N8TBrIwG/qNqoLXBSWdH
-         lLAPV1Mm+xjVOz2W3rN4BEF6ZrQ9cen8pzALvu0nQZbKQFFwp6+HVeXP1+GK39KOnp
-         H85u8Y6X/vEH39Hj5UQo8c8hUMlTLHKq4zeaWr1s=
+        b=bw+wYo7VWJUx2eLMI71U1ZXImkei3EoOKuYhkPSZNQyqORAjAIAxXKX+q52JrJWSf
+         7FWYzeM0h/YRyXPepCArizrm+s9Rb7UOyGs0umE7sxF9ppN3toLrHeK6AUAcDjebV5
+         gMgnDoYKT8+o786f1Zpkj4Z4wA+jiZ1nuS/RhS6I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julian Haller <julian.haller@philips.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 11/11] Revert "hwmon: Make chip parameter for with_info API mandatory"
-Date:   Thu, 23 Jun 2022 18:45:15 +0200
-Message-Id: <20220623164321.527852885@linuxfoundation.org>
+        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.4 06/11] tcp: add small random increments to the source port
+Date:   Thu, 23 Jun 2022 18:45:10 +0200
+Message-Id: <20220623164321.383720086@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164321.195163701@linuxfoundation.org>
 References: <20220623164321.195163701@linuxfoundation.org>
@@ -49,67 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Willy Tarreau <w@1wt.eu>
 
-This reverts commit 1ec0bc72f5dab3ab367ae5230cf6f212d805a225 which is
-commit ddaefa209c4ac791c1262e97c9b2d0440c8ef1d5 upstream.  It should not
-have been applied to the stable trees.
+commit ca7af0402550f9a0b3316d5f1c30904e42ed257d upstream.
 
-Link: https://lore.kernel.org/r/20220622154454.GA1864037@roeck-us.net
-Reported-by: Julian Haller <julian.haller@philips.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Cc: Sasha Levin <sashal@kernel.org>
+Here we're randomly adding between 0 and 7 random increments to the
+selected source port in order to add some noise in the source port
+selection that will make the next port less predictable.
+
+With the default port range of 32768-60999 this means a worst case
+reuse scenario of 14116/8=1764 connections between two consecutive
+uses of the same port, with an average of 14116/4.5=3137. This code
+was stressed at more than 800000 connections per second to a fixed
+target with all connections closed by the client using RSTs (worst
+condition) and only 2 connections failed among 13 billion, despite
+the hash being reseeded every 10 seconds, indicating a perfectly
+safe situation.
+
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/hwmon/hwmon-kernel-api.rst |    2 +-
- drivers/hwmon/hwmon.c                    |   16 +++++++++-------
- 2 files changed, 10 insertions(+), 8 deletions(-)
+ net/ipv4/inet_hashtables.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/Documentation/hwmon/hwmon-kernel-api.rst
-+++ b/Documentation/hwmon/hwmon-kernel-api.rst
-@@ -72,7 +72,7 @@ hwmon_device_register_with_info is the m
- to register a hardware monitoring device. It creates the standard sysfs
- attributes in the hardware monitoring core, letting the driver focus on reading
- from and writing to the chip instead of having to bother with sysfs attributes.
--The parent device parameter as well as the chip parameter must not be NULL. Its
-+The parent device parameter cannot be NULL with non-NULL chip info. Its
- parameters are described in more detail below.
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -782,11 +782,12 @@ next_port:
+ 	return -EADDRNOTAVAIL;
  
- devm_hwmon_device_register_with_info is similar to
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -715,12 +715,11 @@ EXPORT_SYMBOL_GPL(hwmon_device_register_
+ ok:
+-	/* If our first attempt found a candidate, skip next candidate
+-	 * in 1/16 of cases to add some noise.
++	/* Here we want to add a little bit of randomness to the next source
++	 * port that will be chosen. We use a max() with a random here so that
++	 * on low contention the randomness is maximal and on high contention
++	 * it may be inexistent.
+ 	 */
+-	if (!i && !(prandom_u32() % 16))
+-		i = 2;
++	i = max_t(int, i, (prandom_u32() & 7) * 2);
+ 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
  
- /**
-  * hwmon_device_register_with_info - register w/ hwmon
-- * @dev: the parent device (mandatory)
-- * @name: hwmon name attribute (mandatory)
-- * @drvdata: driver data to attach to created device (optional)
-- * @chip: pointer to hwmon chip information (mandatory)
-+ * @dev: the parent device
-+ * @name: hwmon name attribute
-+ * @drvdata: driver data to attach to created device
-+ * @chip: pointer to hwmon chip information
-  * @extra_groups: pointer to list of additional non-standard attribute groups
-- *	(optional)
-  *
-  * hwmon_device_unregister() must be called when the device is no
-  * longer needed.
-@@ -733,10 +732,13 @@ hwmon_device_register_with_info(struct d
- 				const struct hwmon_chip_info *chip,
- 				const struct attribute_group **extra_groups)
- {
--	if (!dev || !name || !chip)
-+	if (!name)
- 		return ERR_PTR(-EINVAL);
- 
--	if (!chip->ops || !chip->ops->is_visible || !chip->info)
-+	if (chip && (!chip->ops || !chip->ops->is_visible || !chip->info))
-+		return ERR_PTR(-EINVAL);
-+
-+	if (chip && !dev)
- 		return ERR_PTR(-EINVAL);
- 
- 	return __hwmon_device_register(dev, name, drvdata, chip, extra_groups);
+ 	/* Head lock still held and bh's disabled */
 
 
