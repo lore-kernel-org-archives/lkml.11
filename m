@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8783DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B506BCCA47C
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233384AbiFWQ5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
+        id S233567AbiFWQ54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233614AbiFWQvR (ORCPT
+        with ESMTP id S233583AbiFWQvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD454F446;
-        Thu, 23 Jun 2022 09:49:21 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44F64FC75;
+        Thu, 23 Jun 2022 09:49:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F87361F90;
-        Thu, 23 Jun 2022 16:49:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47524C3411B;
-        Thu, 23 Jun 2022 16:49:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BB2EB82490;
+        Thu, 23 Jun 2022 16:49:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 781BCC3411B;
+        Thu, 23 Jun 2022 16:49:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002960;
-        bh=N5fiw4PejwCrYvciUGPEH44DfCxU/YsYTR0gRKooOCQ=;
+        s=korg; t=1656002951;
+        bh=TCA2eW/394gZdU9DbDrD2+sFkBb+4almQ6gSFNAKYCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tU3/mCT6AAc88zBhX6CSnX3cNwFP3O+w8Ml7UoVbwKHoEkfu74BcgkrhqEVowt9mg
-         4mm4kKcO17UW2KRAtWHPeZd6bm0db21+GlfvlcwImMgRNtSOc9KsGo3jEiXHPI9MK4
-         rPlUlFHQHxHy2D+1FBM3NPRERnMUM8LpzEFWRZ6o=
+        b=KvXmhNIbxWl8BaJ1Y+cJ4Lu/lVnlVSDWh0gIR4F6apXuJVSlM7E0iA3whYsYE6eof
+         VAZxrx6I6A8OXVKQ1Q0GQmQtyMMlch67GwrpzOpPq4BAsBYtG/tWEL6IQYnGpEje0x
+         Wpe5Vto70X6NfTTiMhtPFzeiVrrNGAJv2XlKpaHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 081/264] random: document add_hwgenerator_randomness() with other input functions
-Date:   Thu, 23 Jun 2022 18:41:14 +0200
-Message-Id: <20220623164346.362104869@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.9 078/264] MAINTAINERS: co-maintain random.c
+Date:   Thu, 23 Jun 2022 18:41:11 +0200
+Message-Id: <20220623164346.277922920@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -48,49 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 2b6c6e3d9ce3aa0e547ac25d60e06fe035cd9f79 upstream.
+commit 58e1100fdc5990b0cc0d4beaf2562a92e621ac7d upstream.
 
-The section at the top of random.c which documents the input functions
-available does not document add_hwgenerator_randomness() which might lead
-a reader to overlook it. Add a brief note about it.
+random.c is a bit understaffed, and folks want more prompt reviews. I've
+got the crypto background and the interest to do these reviews, and have
+authored parts of the file already.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-[Jason: reorganize position of function in doc comment and also document
- add_bootloader_randomness() while we're at it.]
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ MAINTAINERS |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -202,6 +202,9 @@
-  *                                unsigned int value);
-  *	void add_interrupt_randomness(int irq, int irq_flags);
-  * 	void add_disk_randomness(struct gendisk *disk);
-+ *	void add_hwgenerator_randomness(const char *buffer, size_t count,
-+ *					size_t entropy);
-+ *	void add_bootloader_randomness(const void *buf, unsigned int size);
-  *
-  * add_device_randomness() is for adding data to the random pool that
-  * is likely to differ between two devices (or possibly even per boot).
-@@ -228,6 +231,14 @@
-  * particular randomness source.  They do this by keeping track of the
-  * first and second order deltas of the event timings.
-  *
-+ * add_hwgenerator_randomness() is for true hardware RNGs, and will credit
-+ * entropy as specified by the caller. If the entropy pool is full it will
-+ * block until more entropy is needed.
-+ *
-+ * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
-+ * add_device_randomness(), depending on whether or not the configuration
-+ * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-+ *
-  * Ensuring unpredictability at system startup
-  * ============================================
-  *
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10068,6 +10068,7 @@ F:	drivers/block/brd.c
+ 
+ RANDOM NUMBER DRIVER
+ M:	"Theodore Ts'o" <tytso@mit.edu>
++M:	Jason A. Donenfeld <Jason@zx2c4.com>
+ S:	Maintained
+ F:	drivers/char/random.c
+ 
 
 
