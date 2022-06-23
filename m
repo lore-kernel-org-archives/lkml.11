@@ -2,74 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E371C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B875CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230381AbiFWKkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39156 "EHLO
+        id S230034AbiFWKnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiFWKk2 (ORCPT
+        with ESMTP id S229595AbiFWKnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:40:28 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636A213E07;
-        Thu, 23 Jun 2022 03:40:23 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1655980818t092s0u9
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 23 Jun 2022 18:40:14 +0800 (CST)
-X-QQ-SSF: 01000000008000B0C000D00A0000000
-X-QQ-FEAT: +i7PuHLNsE7UBD9BC541qmopyEJf9ANnuoidtz228/fn941NgbHUZVlS/arGo
-        kR64QH6WMQaNvjkjfJvzS1AjS30RJN8BBLRGx8GSCkfAAnza3nSVQw+j0dUcbkqoLtIY+iS
-        MBQGaqENOAlnaLuhvBm+1tW6e1by7CpBoQKXgieW4+PsBfkDIY2t/OcF/l0Yw3keW/d0qmk
-        1QeN7HPMyDJ9y+2J4FLaf/iDH8JZQT7nq2O4Qf5uykeNIMUfhw7xaOdYJchBa3ZK5eUPc3q
-        2rOn5IwJyf6JZYMs+Xb5l39+i20YlDxOYEq1g01AojcXuGjEdjZS2NYvjLzLeZLMweTADBs
-        4LlbBZ0+Tbfn8gC5feJaacgNRHW0g==
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     mchehab@kernel.org
-Cc:     jiangjian@cdjrlc.com, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] media: dvb-frontends: drxk_hard.c - drop unexpected word 'for' in comments
-Date:   Thu, 23 Jun 2022 18:40:12 +0800
-Message-Id: <20220623104012.44107-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+        Thu, 23 Jun 2022 06:43:05 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D08BCB5;
+        Thu, 23 Jun 2022 03:43:03 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5460B202D8C;
+        Thu, 23 Jun 2022 12:43:02 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DD410200904;
+        Thu, 23 Jun 2022 12:43:01 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 9A2A11802201;
+        Thu, 23 Jun 2022 18:43:00 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     shengjiu.wang@gmail.com
+Subject: [PATCH] ASoC: dt-bindings: fsl,micfil: Convert format to json-schema
+Date:   Thu, 23 Jun 2022 18:28:45 +0800
+Message-Id: <1655980125-24141-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word 'for' in the comments that need to be dropped
+Convert the NXP MICFIL binding to DT schema format using json-schema.
 
-file - drivers/media/dvb-frontends/drxk_hard.c
-line - 3519
-
-/* window size for for sense pre-SAW detection */
-
-changed to:
-
-/* window size for sense pre-SAW detection */
-
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
 ---
- drivers/media/dvb-frontends/drxk_hard.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/sound/fsl,micfil.txt  | 33 ---------
+ .../devicetree/bindings/sound/fsl,micfil.yaml | 73 +++++++++++++++++++
+ 2 files changed, 73 insertions(+), 33 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.txt
+ create mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.yaml
 
-diff --git a/drivers/media/dvb-frontends/drxk_hard.c b/drivers/media/dvb-frontends/drxk_hard.c
-index 9430295a8175..47d83e0a470c 100644
---- a/drivers/media/dvb-frontends/drxk_hard.c
-+++ b/drivers/media/dvb-frontends/drxk_hard.c
-@@ -3516,7 +3516,7 @@ static int set_dvbt_standard(struct drxk_state *state,
- 	status = write16(state, IQM_AF_CLP_LEN__A, 0);
- 	if (status < 0)
- 		goto error;
--	/* window size for for sense pre-SAW detection */
-+	/* window size for sense pre-SAW detection */
- 	status = write16(state, IQM_AF_SNS_LEN__A, 0);
- 	if (status < 0)
- 		goto error;
+diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.txt b/Documentation/devicetree/bindings/sound/fsl,micfil.txt
+deleted file mode 100644
+index 1ea05d4996c7..000000000000
+--- a/Documentation/devicetree/bindings/sound/fsl,micfil.txt
++++ /dev/null
+@@ -1,33 +0,0 @@
+-NXP MICFIL Digital Audio Interface (MICFIL).
+-
+-The MICFIL digital interface provides a 16-bit audio signal from a PDM
+-microphone bitstream in a configurable output sampling rate.
+-
+-Required properties:
+-
+-  - compatible		: Compatible list, contains "fsl,imx8mm-micfil"
+-			  or "fsl,imx8mp-micfil"
+-
+-  - reg			: Offset and length of the register set for the device.
+-
+-  - interrupts		: Contains the micfil interrupts.
+-
+-  - clocks		: Must contain an entry for each entry in clock-names.
+-
+-  - clock-names		: Must include the "ipg_clk" for register access and
+-			  "ipg_clk_app" for internal micfil clock.
+-
+-  - dmas		: Generic dma devicetree binding as described in
+-			  Documentation/devicetree/bindings/dma/dma.txt.
+-
+-Example:
+-micfil: micfil@30080000 {
+-	compatible = "fsl,imx8mm-micfil";
+-	reg = <0x0 0x30080000 0x0 0x10000>;
+-	interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
+-		     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
+-	clocks = <&clk IMX8MM_CLK_PDM_IPG>,
+-		 <&clk IMX8MM_CLK_PDM_ROOT>;
+-	clock-names = "ipg_clk", "ipg_clk_app";
+-	dmas = <&sdma2 24 26 0x80000000>;
+-};
+diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.yaml b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
+new file mode 100644
+index 000000000000..74c77f4cf7a4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
+@@ -0,0 +1,73 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/sound/fsl,micfil.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP MICFIL Digital Audio Interface (MICFIL)
++
++maintainers:
++  - Shengjiu Wang <shengjiu.wang@nxp.com>
++
++description: |
++  The MICFIL digital interface provides a 16-bit or 24-bit audio signal
++  from a PDM microphone bitstream in a configurable output sampling rate.
++
++properties:
++  compatible:
++    enum:
++      - fsl,imx8mm-micfil
++      - fsl,imx8mp-micfil
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 4
++
++  dmas:
++    items:
++      - description: DMA controller phandle and request line for RX
++
++  dma-names:
++    items:
++      - const: rx
++
++  clocks:
++    items:
++      - description: The ipg clock for register access
++      - description: internal micfil clock
++
++  clock-names:
++    items:
++      - const: ipg_clk
++      - const: ipg_clk_app
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - dmas
++  - dma-names
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/imx8mm-clock.h>
++    micfil: audio-controller@30080000 {
++        compatible = "fsl,imx8mm-micfil";
++        reg = <0x30080000 0x10000>;
++        interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&clk IMX8MM_CLK_PDM_IPG>,
++                 <&clk IMX8MM_CLK_PDM_ROOT>;
++        clock-names = "ipg_clk", "ipg_clk_app";
++        dmas = <&sdma2 24 25 0>;
++        dma-names = "rx";
++    };
 -- 
 2.17.1
 
