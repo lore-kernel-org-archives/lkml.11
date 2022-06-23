@@ -2,72 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D7D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230311AbiFWH1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 03:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45012 "EHLO
+        id S230314AbiFWH2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 03:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229851AbiFWH1F (ORCPT
+        with ESMTP id S230316AbiFWH2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 03:27:05 -0400
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394A346644;
-        Thu, 23 Jun 2022 00:27:05 -0700 (PDT)
-Received: by mail-ed1-f50.google.com with SMTP id c13so22760641eds.10;
-        Thu, 23 Jun 2022 00:27:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=c6yTXw2yLdl9FUORd9XTbKmD+hTxds6vw24+wNHfO/4=;
-        b=zSRvEq15hRO2HmEqg+TYmyX8wFtW6aGVy7PgvU+fxtuyVW/O0LR2YcNMhd8l2DXf4X
-         iUcPkoId1Apwb7uW6FgFQJwEkZhbA5yf94QaVNDta+vbWN0R+qiaN8CzA26msUtESkNX
-         Q/QUkYVL1ir2I1GRHNDKEGCcrKgIuUcDFz4tL0a/didrdVab7i7psLSyDnFFRg2PBv5E
-         5vRdfFqWpvvLc0A3rd5kEFeP4OTO/SUz6s9ja+N1HiON1dm6x+RJi3/pIRdTQWBxbPGr
-         PToV62FoWeIMvTO/TgDwvJnGWHike2nlWccUCyPm4pnLlkgFiFsXN3K42q/ayQna41qK
-         XVqQ==
-X-Gm-Message-State: AJIora8cbDa09xmmZMwUW2FWdNP/26GJvygb0Z72KzTs2eQNqN9nPXEo
-        Nu5QYc7uwFzpnHDfNhsGUS/0sw5En/EDPg==
-X-Google-Smtp-Source: AGRyM1usnp8oNx386pFZFnzY99wkX+HjfCw1BQHBoibJwaqXa10OQnbcyUmfTndfrn2Xb7sslpwccg==
-X-Received: by 2002:a50:fb13:0:b0:435:90d1:19ca with SMTP id d19-20020a50fb13000000b0043590d119camr9167197edq.159.1655969223708;
-        Thu, 23 Jun 2022 00:27:03 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id w15-20020a170906480f00b007262a1c8d20sm132852ejq.19.2022.06.23.00.27.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jun 2022 00:27:03 -0700 (PDT)
-Message-ID: <7a7cb1e4-7d74-6569-9fcc-d6a88b917deb@kernel.org>
-Date:   Thu, 23 Jun 2022 09:27:02 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 4/6] serial: 8250: Use C99 array initializer & define
- UART_REG_UNMAPPED
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com>
- <20220621124958.3342-5-ilpo.jarvinen@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220621124958.3342-5-ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Thu, 23 Jun 2022 03:28:01 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54CDF65B2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:27:59 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D81CB1FD3E;
+        Thu, 23 Jun 2022 07:27:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655969277; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=1rlRIJlY6EU+TIkUPRO4MuCKj1kDYLc5bWlpB29ydqs=;
+        b=Uu8fQ1ji7H5hQXEtet/1eg6uCbuATH5rEeFkhqp+tfoVWhf0Qgt6ZopMvKWkkFBwmElxq5
+        K4zX5rNDpx3d0lrDAMZ7sffu0BYgzUkgGGpKnSVCEprNMoEvTekOMbV1xyZJc7LW2e1pTw
+        SH7J0CwaPICSt1ZCCO1rtj0uCjqZi9Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655969277;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=1rlRIJlY6EU+TIkUPRO4MuCKj1kDYLc5bWlpB29ydqs=;
+        b=5/agNth6gbNrEYmohKxPtYa6e4wmWk7nG5cVEet3E9WBuv6ROTkKFm4JMMZ2fdmGA3Ql83
+        qp2xpwyyzGfHIYCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B80D0133A6;
+        Thu, 23 Jun 2022 07:27:57 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +0+lK/0VtGJpXQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Thu, 23 Jun 2022 07:27:57 +0000
+Date:   Thu, 23 Jun 2022 09:27:57 +0200
+Message-ID: <874k0bn8jm.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] sound fixes for 5.19-rc4
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21. 06. 22, 14:49, Ilpo Järvinen wrote:
-> Use C99 array initializer insteads of comments and make unmapped checks
-> more obvious.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Linus,
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+please pull sound fixes for v5.19-rc4 from:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.19-rc4
 
--- 
-js
-suse labs
+The topmost commit is 627ce0d68eb4b53e995b08089fa9da1e513ec5ba
+
+----------------------------------------------------------------
+
+sound fixes for 5.19-rc4
+
+All small changes, mostly device-specific:
+- A regression fix for PCM WC-page allocation on x86
+- A regression fix for i915 audio component binding
+- Fixes for (longstanding) beep handling bug
+- Runtime PM fixes for Intel LPE HDMI audio
+- A couple of pending FireWire fixes
+- Usual HD-audio and USB-audio quirks, new Intel dspconf entries
+
+----------------------------------------------------------------
+
+Daniil Dementev (1):
+      ALSA: usb-audio: US16x08: Move overflow check before array access
+
+Jiapeng Chong (1):
+      firewire: convert sysfs sprintf/snprintf family to sysfs_emit
+
+Kailang Yang (1):
+      ALSA: hda/realtek - ALC897 headset MIC no sound
+
+Pierre-Louis Bossart (4):
+      ALSA: hda: intel-dspcfg: use SOF for UpExtreme and UpExtreme11 boards
+      ALSA: hda: intel-nhlt: remove use of __func__ in dev_dbg
+      ALSA: x86: intel_hdmi_audio: enable pm_runtime and set autosuspend delay
+      ALSA: x86: intel_hdmi_audio: use pm_runtime_resume_and_get()
+
+Soham Sen (1):
+      ALSA: hda/realtek: Add mute LED quirk for HP Omen laptop
+
+Takashi Iwai (5):
+      ALSA: hda/realtek: Apply fixup for Lenovo Yoga Duet 7 properly
+      ALSA: memalloc: Drop x86-specific hack for WC allocations
+      ALSA: hda/conexant: Fix missing beep setup
+      ALSA: hda/via: Fix missing beep setup
+      ALSA: hda: Fix discovery of i915 graphics PCI device
+
+Takashi Sakamoto (1):
+      firewire: cdev: fix potential leak of kernel stack due to uninitialized value
+
+Tim Crawford (2):
+      ALSA: hda/realtek: Add quirk for Clevo PD70PNT
+      ALSA: hda/realtek: Add quirk for Clevo NS50PU
+
+---
+ drivers/firewire/core-cdev.c    |  2 +-
+ drivers/firewire/core-device.c  |  6 ++----
+ sound/core/memalloc.c           | 23 +----------------------
+ sound/hda/hdac_i915.c           | 15 ++++++---------
+ sound/hda/intel-dsp-config.c    | 12 ++++++++++++
+ sound/hda/intel-nhlt.c          | 17 ++++++++---------
+ sound/pci/hda/hda_auto_parser.c |  7 ++++---
+ sound/pci/hda/hda_local.h       |  1 +
+ sound/pci/hda/patch_conexant.c  |  4 ++--
+ sound/pci/hda/patch_realtek.c   | 36 +++++++++++++++++++++++++++++++++++-
+ sound/pci/hda/patch_via.c       |  4 ++--
+ sound/usb/mixer_us16x08.c       |  6 +++---
+ sound/x86/intel_hdmi_audio.c    | 15 +++++++++++++--
+ 13 files changed, 90 insertions(+), 58 deletions(-)
+
