@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7920CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD3CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235286AbiFWRvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39774 "EHLO
+        id S235163AbiFWRvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235058AbiFWRu1 (ORCPT
+        with ESMTP id S235174AbiFWRvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:50:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B660A6939;
-        Thu, 23 Jun 2022 10:12:06 -0700 (PDT)
+        Thu, 23 Jun 2022 13:51:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD9A4AE30;
+        Thu, 23 Jun 2022 10:12:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE3DCB824B6;
-        Thu, 23 Jun 2022 17:12:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48D11C341C4;
-        Thu, 23 Jun 2022 17:12:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FC5D61CD9;
+        Thu, 23 Jun 2022 17:12:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63B7BC3411B;
+        Thu, 23 Jun 2022 17:12:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004322;
-        bh=6fH8AWnE43TUWzbd1LNxTcaH+c3QHupvuuJ7goaZ2nY=;
+        s=korg; t=1656004328;
+        bh=2z9tTJftywRoIVlylQdhtZ47Nl/uIFxFyf3M6FUq6Xo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hXhjWIKzpNGWVU5gWnYDQ0aKTZ6tQya8M2n7RdDTbJilIR6rqSswHs+jPR3ca1H09
-         wZETItCbLoCjhmsrZoruDY9f33UStxe082B58m6dpVq8flH00aYBtXeLmjsxdWKWmO
-         MO7XnaCwKlOFtMPLu0Be/KOYBREu9T9teZYkFdQA=
+        b=dGZbY254lnjulv5NhvzMyaHRQEl6AoVc60Ic0N3eUSzi6ON4FLSPANyYl8PZNrz2r
+         G+ONtyoXVxHQ3VwT32PodMp0cyFXMad4ThO48R1ppnlzOuxVe+OeWPGfgMQkgspawR
+         H29oK9RIJKbW/9WSISYR2VsmsFhGzRE1Fr2XjH9s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haiyang Zhang <haiyangz@microsoft.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 3/9] net: mana: Add handling of CQE_RX_TRUNCATED
-Date:   Thu, 23 Jun 2022 18:44:46 +0200
-Message-Id: <20220623164322.390907722@linuxfoundation.org>
+        stable@vger.kernel.org, Marian Postevca <posteuca@mutex.one>
+Subject: [PATCH 5.15 5/9] usb: gadget: u_ether: fix regression in setting fixed MAC address
+Date:   Thu, 23 Jun 2022 18:44:48 +0200
+Message-Id: <20220623164322.448085871@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164322.288837280@linuxfoundation.org>
 References: <20220623164322.288837280@linuxfoundation.org>
@@ -49,43 +47,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haiyang Zhang <haiyangz@microsoft.com>
+From: Marian Postevca <posteuca@mutex.one>
 
-commit e4b7621982d29f26ff4d39af389e5e675a4ffed4 upstream.
+commit b337af3a4d6147000b7ca6b3438bf5c820849b37 upstream.
 
-The proper way to drop this kind of CQE is advancing rxq tail
-without indicating the packet to the upper network layer.
+In systemd systems setting a fixed MAC address through
+the "dev_addr" module argument fails systematically.
+When checking the MAC address after the interface is created
+it always has the same but different MAC address to the one
+supplied as argument.
 
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This is partially caused by systemd which by default will
+set an internally generated permanent MAC address for interfaces
+that are marked as having a randomly generated address.
+
+Commit 890d5b40908bfd1a ("usb: gadget: u_ether: fix race in
+setting MAC address in setup phase") didn't take into account
+the fact that the interface must be marked as having a set
+MAC address when it's set as module argument.
+
+Fixed by marking the interface with NET_ADDR_SET when
+the "dev_addr" module argument is supplied.
+
+Fixes: 890d5b40908bfd1a ("usb: gadget: u_ether: fix race in setting MAC address in setup phase")
+Cc: stable@vger.kernel.org
+Signed-off-by: Marian Postevca <posteuca@mutex.one>
+Link: https://lore.kernel.org/r/20220603153459.32722-1-posteuca@mutex.one
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/microsoft/mana/mana_en.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/function/u_ether.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -980,8 +980,10 @@ static void mana_process_rx_cqe(struct m
- 		break;
+--- a/drivers/usb/gadget/function/u_ether.c
++++ b/drivers/usb/gadget/function/u_ether.c
+@@ -774,9 +774,13 @@ struct eth_dev *gether_setup_name(struct
+ 	dev->qmult = qmult;
+ 	snprintf(net->name, sizeof(net->name), "%s%%d", netname);
  
- 	case CQE_RX_TRUNCATED:
--		netdev_err(ndev, "Dropped a truncated packet\n");
--		return;
-+		++ndev->stats.rx_dropped;
-+		rxbuf_oob = &rxq->rx_oobs[rxq->buf_index];
-+		netdev_warn_once(ndev, "Dropped a truncated packet\n");
-+		goto drop;
+-	if (get_ether_addr(dev_addr, net->dev_addr))
++	if (get_ether_addr(dev_addr, net->dev_addr)) {
++		net->addr_assign_type = NET_ADDR_RANDOM;
+ 		dev_warn(&g->dev,
+ 			"using random %s ethernet address\n", "self");
++	} else {
++		net->addr_assign_type = NET_ADDR_SET;
++	}
+ 	if (get_ether_addr(host_addr, dev->host_mac))
+ 		dev_warn(&g->dev,
+ 			"using random %s ethernet address\n", "host");
+@@ -833,6 +837,9 @@ struct net_device *gether_setup_name_def
+ 	INIT_LIST_HEAD(&dev->tx_reqs);
+ 	INIT_LIST_HEAD(&dev->rx_reqs);
  
- 	case CQE_RX_COALESCED_4:
- 		netdev_err(ndev, "RX coalescing is unsupported\n");
-@@ -1043,6 +1045,7 @@ static void mana_process_rx_cqe(struct m
++	/* by default we always have a random MAC address */
++	net->addr_assign_type = NET_ADDR_RANDOM;
++
+ 	skb_queue_head_init(&dev->rx_frames);
  
- 	mana_rx_skb(old_buf, oob, rxq);
+ 	/* network device setup */
+@@ -869,7 +876,6 @@ int gether_register_netdev(struct net_de
+ 	dev = netdev_priv(net);
+ 	g = dev->gadget;
  
-+drop:
- 	mana_move_wq_tail(rxq->gdma_rq, rxbuf_oob->wqe_inf.wqe_size_in_bu);
+-	net->addr_assign_type = NET_ADDR_RANDOM;
+ 	eth_hw_addr_set(net, dev->dev_mac);
  
- 	mana_post_pkt_rxq(rxq);
+ 	status = register_netdev(net);
+@@ -910,6 +916,7 @@ int gether_set_dev_addr(struct net_devic
+ 	if (get_ether_addr(dev_addr, new_addr))
+ 		return -EINVAL;
+ 	memcpy(dev->dev_mac, new_addr, ETH_ALEN);
++	net->addr_assign_type = NET_ADDR_SET;
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(gether_set_dev_addr);
 
 
