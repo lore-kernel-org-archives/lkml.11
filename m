@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F6D5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6354CC43334
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232680AbiFWRAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49292 "EHLO
+        id S232965AbiFWRA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232925AbiFWQt6 (ORCPT
+        with ESMTP id S232803AbiFWQt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 12:49:58 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0FE13F3D;
-        Thu, 23 Jun 2022 09:47:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FB865D7;
+        Thu, 23 Jun 2022 09:47:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DDCBCCE25D9;
-        Thu, 23 Jun 2022 16:47:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC414C385A5;
-        Thu, 23 Jun 2022 16:47:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5657861FA7;
+        Thu, 23 Jun 2022 16:47:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 274A9C341C6;
+        Thu, 23 Jun 2022 16:47:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002876;
-        bh=DVqS7H5Sm67SdV6zpWpQ1W1Mj+FjSJsjD7F6bT+BDPs=;
+        s=korg; t=1656002873;
+        bh=on1mcXpHvtEEBiQUkCQcIaAraZzLUj878rAwYC0ELY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ODTbryXKvY8poKwLBT11rdWYCt/KEndZgVPeLneG155xBxViqPpEK8tzcnEFhcYd6
-         5RmlRS0hhK2kwjwsxZYCUb8ImwslRU8QOjFVpPrCnWvSx6Z7sK+3C83B1ZFw/TolN1
-         cjn7InwsX513toinLyvHV3d5jt84gyvPOUitJKgI=
+        b=Y9UnxRQPzKjEa0vbc5e0fMKc8+fFcoMtjsPV30mvHuSii0dhy93YSma2SX4wo23FY
+         N6KAK1Dv1d8UVW10Qhy++EAWaq1mrzE9EXD/DRc8XEpRpuHEmZg+6lCGYVvkBiQ8KI
+         2PyQnZhmn48EXVKnLoCci07qaXvW8sdUxWKJmWAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 056/264] random: ignore GRND_RANDOM in getentropy(2)
-Date:   Thu, 23 Jun 2022 18:40:49 +0200
-Message-Id: <20220623164345.658306748@linuxfoundation.org>
+Subject: [PATCH 4.9 055/264] random: add GRND_INSECURE to return best-effort non-cryptographic bytes
+Date:   Thu, 23 Jun 2022 18:40:48 +0200
+Message-Id: <20220623164345.629744497@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,46 +51,57 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andy Lutomirski <luto@kernel.org>
 
-commit 48446f198f9adcb499b30332488dfd5bc3f176f6 upstream.
-
-The separate blocking pool is going away.  Start by ignoring
-GRND_RANDOM in getentropy(2).
-
-This should not materially break any API.  Any code that worked
-without this change should work at least as well with this change.
+commit 75551dbf112c992bc6c99a972990b3f272247e23 upstream.
 
 Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/705c5a091b63cc5da70c99304bb97e0109be0a26.1577088521.git.luto@kernel.org
+Link: https://lore.kernel.org/r/d5473b56cf1fa900ca4bd2b3fc1e5b8874399919.1577088521.git.luto@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c       |    3 ---
- include/uapi/linux/random.h |    2 +-
- 2 files changed, 1 insertion(+), 4 deletions(-)
+ drivers/char/random.c       |   11 +++++++++--
+ include/uapi/linux/random.h |    2 ++
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2200,9 +2200,6 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if (count > INT_MAX)
- 		count = INT_MAX;
+@@ -2187,7 +2187,14 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ {
+ 	int ret;
  
--	if (flags & GRND_RANDOM)
--		return _random_read(flags & GRND_NONBLOCK, buf, count);
--
- 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
+-	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM))
++	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
++		return -EINVAL;
++
++	/*
++	 * Requesting insecure and blocking randomness at the same time makes
++	 * no sense.
++	 */
++	if ((flags & (GRND_INSECURE|GRND_RANDOM)) == (GRND_INSECURE|GRND_RANDOM))
+ 		return -EINVAL;
+ 
+ 	if (count > INT_MAX)
+@@ -2196,7 +2203,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ 	if (flags & GRND_RANDOM)
+ 		return _random_read(flags & GRND_NONBLOCK, buf, count);
+ 
+-	if (!crng_ready()) {
++	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
+ 		ret = wait_for_random_bytes();
 --- a/include/uapi/linux/random.h
 +++ b/include/uapi/linux/random.h
-@@ -47,7 +47,7 @@ struct rand_pool_info {
-  * Flags for getrandom(2)
+@@ -48,8 +48,10 @@ struct rand_pool_info {
   *
   * GRND_NONBLOCK	Don't block and return EAGAIN instead
-- * GRND_RANDOM		Use the /dev/random pool instead of /dev/urandom
-+ * GRND_RANDOM		No effect
-  * GRND_INSECURE	Return non-cryptographic random bytes
+  * GRND_RANDOM		Use the /dev/random pool instead of /dev/urandom
++ * GRND_INSECURE	Return non-cryptographic random bytes
   */
  #define GRND_NONBLOCK	0x0001
+ #define GRND_RANDOM	0x0002
++#define GRND_INSECURE	0x0004
+ 
+ #endif /* _UAPI_LINUX_RANDOM_H */
 
 
