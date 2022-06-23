@@ -2,102 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5678FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F20C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234062AbiFWRzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
+        id S235415AbiFWRzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235421AbiFWRwc (ORCPT
+        with ESMTP id S235488AbiFWRwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:52:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CEF5506ED;
-        Thu, 23 Jun 2022 10:13:15 -0700 (PDT)
+        Thu, 23 Jun 2022 13:52:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8183D5675F;
+        Thu, 23 Jun 2022 10:13:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A795E61D17;
-        Thu, 23 Jun 2022 17:13:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC6CC341C5;
-        Thu, 23 Jun 2022 17:13:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656004393;
-        bh=KOnK+vJizyo7Zx4GKRrnV6DYGpqQvLH0I1Zva2gYZN8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ELM+W9fbWFNqyvDff3JptaraGIpkpQfdjAillhDKvA7QxnAAy2p7QzsvkmijUPJux
-         JEp+aOQljIHuC8hJObRIIay7LWtJVl1jZZVZPdXRPczaX+Avoi4VVt8K08GUbsYNTG
-         KD1cPo8fsb+alKzyAos8HViR0f9DPsJQ7BwolBard5oOXAxuuIqyUJE6vtpy/Xp8DB
-         xd/Nq6RJ6wnsp8xIwqfNhcbieYVaJmX8/s+KwapHQ0d1dQvUmWNvk3OY2cXQKusBEF
-         uVWMICNVgmDj3VqTp6unU5bnZLGp9G9ef6FR2sL+aHZI33hYP/sBAuTyT7rS/Mnlz7
-         tTMWH3u4McBsw==
-Date:   Thu, 23 Jun 2022 12:13:07 -0500
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] powerpc/book3e: Fix PUD allocation size in
- map_kernel_page()
-Message-ID: <YrSfIyDy3rM16NqC@kernel.org>
-References: <95ddfd6176d53e6c85e13bd1c358359daa56775f.1655974558.git.christophe.leroy@csgroup.eu>
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9D1CB82498;
+        Thu, 23 Jun 2022 17:13:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3595BC341C4;
+        Thu, 23 Jun 2022 17:13:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656004411;
+        bh=EG8DbuFAy3wSg2q98S5uSLWwJle4ufkndXArKGOdL5s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BBedXAKRbvJ1jnrCSwwKwK2qliR90ou4QJW4x7vRIH+8ji3oT7C+Lf1tU4YYTme6B
+         BfzJ1Y8IJZ5UKarRRJg9ADUqMA67fmqx7Qg4on8nn8Zq5vYivkbKUtOdcoS79uMcnt
+         eE/sg7V6VfLnICKoOiw/po0sMNoixvJsu/RRwtM0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>,
+        Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 029/234] random: convert to ENTROPY_BITS for better code readability
+Date:   Thu, 23 Jun 2022 18:41:36 +0200
+Message-Id: <20220623164343.889685406@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <95ddfd6176d53e6c85e13bd1c358359daa56775f.1655974558.git.christophe.leroy@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 10:56:17AM +0200, Christophe Leroy wrote:
-> Commit 2fb4706057bc ("powerpc: add support for folded p4d page tables")
-> erroneously changed PUD setup to a mix of PMD and PUD. Fix it.
-> 
-> While at it, use PTE_TABLE_SIZE instead of PAGE_SIZE for PTE tables
-> in order to avoid any confusion.
-> 
-> Fixes: 2fb4706057bc ("powerpc: add support for folded p4d page tables")
-> Cc: stable@vger.kernel.org
-> Cc: Mike Rapoport <rppt@kernel.org>
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Yangtao Li <tiny.windzz@gmail.com>
 
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+commit 12faac30d157970fdbfa171bbeb1fb88350303b1 upstream.
 
-> ---
->  arch/powerpc/mm/nohash/book3e_pgtable.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/powerpc/mm/nohash/book3e_pgtable.c b/arch/powerpc/mm/nohash/book3e_pgtable.c
-> index 7d4368d055a6..b80fc4a91a53 100644
-> --- a/arch/powerpc/mm/nohash/book3e_pgtable.c
-> +++ b/arch/powerpc/mm/nohash/book3e_pgtable.c
-> @@ -96,8 +96,8 @@ int __ref map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t prot)
->  		pgdp = pgd_offset_k(ea);
->  		p4dp = p4d_offset(pgdp, ea);
->  		if (p4d_none(*p4dp)) {
-> -			pmdp = early_alloc_pgtable(PMD_TABLE_SIZE);
-> -			p4d_populate(&init_mm, p4dp, pmdp);
-> +			pudp = early_alloc_pgtable(PUD_TABLE_SIZE);
-> +			p4d_populate(&init_mm, p4dp, pudp);
->  		}
->  		pudp = pud_offset(p4dp, ea);
->  		if (pud_none(*pudp)) {
-> @@ -106,7 +106,7 @@ int __ref map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t prot)
->  		}
->  		pmdp = pmd_offset(pudp, ea);
->  		if (!pmd_present(*pmdp)) {
-> -			ptep = early_alloc_pgtable(PAGE_SIZE);
-> +			ptep = early_alloc_pgtable(PTE_TABLE_SIZE);
->  			pmd_populate_kernel(&init_mm, pmdp, ptep);
->  		}
->  		ptep = pte_offset_kernel(pmdp, ea);
-> -- 
-> 2.36.1
-> 
+Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+Link: https://lore.kernel.org/r/20190607182517.28266-2-tiny.windzz@gmail.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
--- 
-Sincerely yours,
-Mike.
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -762,7 +762,7 @@ retry:
+ 			if (entropy_bits < 128)
+ 				return;
+ 			crng_reseed(&primary_crng, r);
+-			entropy_bits = r->entropy_count >> ENTROPY_SHIFT;
++			entropy_bits = ENTROPY_BITS(r);
+ 		}
+ 	}
+ }
+@@ -1397,8 +1397,7 @@ retry:
+ 		goto retry;
+ 
+ 	trace_debit_entropy(r->name, 8 * ibytes);
+-	if (ibytes &&
+-	    (r->entropy_count >> ENTROPY_SHIFT) < random_write_wakeup_bits) {
++	if (ibytes && ENTROPY_BITS(r) < random_write_wakeup_bits) {
+ 		wake_up_interruptible(&random_write_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_OUT);
+ 	}
+
+
