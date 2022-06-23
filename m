@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F95C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2010CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233706AbiFWRXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38912 "EHLO
+        id S233742AbiFWRX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:23:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233769AbiFWRWb (ORCPT
+        with ESMTP id S233838AbiFWRWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:22:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFAFB826A9;
-        Thu, 23 Jun 2022 10:01:14 -0700 (PDT)
+        Thu, 23 Jun 2022 13:22:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C364FB6204;
+        Thu, 23 Jun 2022 10:01:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3243261408;
-        Thu, 23 Jun 2022 17:01:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09FC2C3411B;
-        Thu, 23 Jun 2022 17:01:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB059B82490;
+        Thu, 23 Jun 2022 17:01:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD59C3411B;
+        Thu, 23 Jun 2022 17:01:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003673;
-        bh=IuH4ic1YsBToeSvLd3jNZS1lfWQ/zJnN8Ztg8qqvwV0=;
+        s=korg; t=1656003676;
+        bh=NVduRPoc9LXw1ID7ASguvYUJ3GvEQijehoDrH1Fl0hI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XgpC6F6qDet1kdPkIZzth5BiIltb+CWco9wLcOu5LsMEBK3sPpYG5uooT/bJkqn8T
-         b2q4VPOL9Hmk0UaiRnLWDFi2hLhy9dhmanhJYBjwxU8Z51z0jZImz/KuLDewiSFdFD
-         CUGl9PEwUd0m9zCoxUb1SIVzhnn/mSDfQcN2kUKw=
+        b=XQ/J4Km4Qgtm2J9thpWGF0SGOg5ZSOsBnBbayKnKmoalH5dKjlKQU4AGjbulif6iM
+         qVJSOTqxUihWhbVXhaLFrYIRxU95JOD3PmC1DFezccQfOHtdojqbcHa3+FrG/sIKho
+         kLuknzsMuF784m4OGWmebyiNRnorRfhkaYR59rYM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Theodore Tso" <tytso@mit.edu>,
-        Ingo Molnar <mingo@elte.hu>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 009/237] random: remove preempt disabled region
-Date:   Thu, 23 Jun 2022 18:40:43 +0200
-Message-Id: <20220623164343.416061929@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.14 010/237] random: Make crng state queryable
+Date:   Thu, 23 Jun 2022 18:40:44 +0200
+Message-Id: <20220623164343.446209230@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,55 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ingo Molnar <mingo@elte.hu>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit b34fbaa9289328c7aec67d2b8b8b7d02bc61c67d upstream.
+commit 9a47249d444d344051c7c0e909fad0e88515a5c2 upstream.
 
-No need to keep preemption disabled across the whole function.
+It is very useful to be able to know whether or not get_random_bytes_wait
+/ wait_for_random_bytes is going to block or not, or whether plain
+get_random_bytes is going to return good randomness or bad randomness.
 
-mix_pool_bytes() uses a spin_lock() to protect the pool and there are
-other places like write_pool() whhich invoke mix_pool_bytes() without
-disabling preemption.
-credit_entropy_bits() is invoked from other places like
-add_hwgenerator_randomness() without disabling preemption.
+The particular use case is for mitigating certain attacks in WireGuard.
+A handshake packet arrives and is queued up. Elsewhere a worker thread
+takes items from the queue and processes them. In replying to these
+items, it needs to use some random data, and it has to be good random
+data. If we simply block until we can have good randomness, then it's
+possible for an attacker to fill the queue up with packets waiting to be
+processed. Upon realizing the queue is full, WireGuard will detect that
+it's under a denial of service attack, and behave accordingly. A better
+approach is just to drop incoming handshake packets if the crng is not
+yet initialized.
 
-Before commit 95b709b6be49 ("random: drop trickle mode") the function
-used __this_cpu_inc_return() which would require disabled preemption.
-The preempt_disable() section was added in commit 43d5d3018c37 ("[PATCH]
-random driver preempt robustness", history tree).  It was claimed that
-the code relied on "vt_ioctl() being called under BKL".
+This patch, therefore, makes that information directly accessible.
 
-Cc: "Theodore Ts'o" <tytso@mit.edu>
-Signed-off-by: Ingo Molnar <mingo@elte.hu>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-[bigeasy: enhance the commit message]
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 ----
- 1 file changed, 4 deletions(-)
+ drivers/char/random.c  |   15 +++++++++++++++
+ include/linux/random.h |    1 +
+ 2 files changed, 16 insertions(+)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1136,8 +1136,6 @@ static void add_timer_randomness(struct
- 	} sample;
- 	long delta, delta2, delta3;
+@@ -1669,6 +1669,21 @@ int wait_for_random_bytes(void)
+ EXPORT_SYMBOL(wait_for_random_bytes);
  
--	preempt_disable();
--
- 	sample.jiffies = jiffies;
- 	sample.cycles = random_get_entropy();
- 	sample.num = num;
-@@ -1175,8 +1173,6 @@ static void add_timer_randomness(struct
- 	 * and limit entropy entimate to 12 bits.
- 	 */
- 	credit_entropy_bits(r, min_t(int, fls(delta>>1), 11));
--
--	preempt_enable();
- }
+ /*
++ * Returns whether or not the urandom pool has been seeded and thus guaranteed
++ * to supply cryptographically secure random numbers. This applies to: the
++ * /dev/urandom device, the get_random_bytes function, and the get_random_{u32,
++ * ,u64,int,long} family of functions.
++ *
++ * Returns: true if the urandom pool has been seeded.
++ *          false if the urandom pool has not been seeded.
++ */
++bool rng_is_initialized(void)
++{
++	return crng_ready();
++}
++EXPORT_SYMBOL(rng_is_initialized);
++
++/*
+  * Add a callback function that will be invoked when the nonblocking
+  * pool is initialised.
+  *
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -36,6 +36,7 @@ extern void add_interrupt_randomness(int
  
- void add_input_randomness(unsigned int type, unsigned int code,
+ extern void get_random_bytes(void *buf, int nbytes);
+ extern int wait_for_random_bytes(void);
++extern bool rng_is_initialized(void);
+ extern int add_random_ready_callback(struct random_ready_callback *rdy);
+ extern void del_random_ready_callback(struct random_ready_callback *rdy);
+ extern int __must_check get_random_bytes_arch(void *buf, int nbytes);
 
 
