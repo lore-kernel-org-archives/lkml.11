@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787C5CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69509C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233099AbiFWQ5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
+        id S233055AbiFWQ51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232048AbiFWQwh (ORCPT
+        with ESMTP id S233708AbiFWQvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:52:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81160767E;
-        Thu, 23 Jun 2022 09:52:35 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:25 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEF6506F5;
+        Thu, 23 Jun 2022 09:49:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39010B8248F;
-        Thu, 23 Jun 2022 16:52:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8495BC341C5;
-        Thu, 23 Jun 2022 16:52:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0EEABCE24F9;
+        Thu, 23 Jun 2022 16:49:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07BEAC3411B;
+        Thu, 23 Jun 2022 16:49:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003153;
-        bh=b9t6lL+INKNOFLpFIcHfpH8GJGOZCDDRQxD+dRkzac8=;
+        s=korg; t=1656002969;
+        bh=Y7iYCgSwsMda12QKXktsWuoDEuID8TlNrXx8exnzjOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jt7LnmEt4TtPSYbvL+zfhksgJFIrUFtAr/InYRCYVzD21yBYK85sHmy1hTNzRYw7R
-         0AFx+K4kEFWRrQOzlIBBUUJoiP3Pr/wcg2NS7kC9oA0uyB0X1bAq9AaUpFvdgoBANJ
-         QtWrZ1+lC7bs2ZtICeOW3UxJ3dVpkRi1nuvlL1Tw=
+        b=BHoU2prB3clgYn+oiJGgX1SWAab2gWcz7TFezqSymHr5GZdgdLuuNqUFcoDuf+eOw
+         CorQIbxqx3HCZNLDHuWRN3wqo/cnefiA8JBRAULL5gdYln1w1xgJBYV6s4idiXpaS9
+         kriYeQ8H3+RWJusQjsbe6D1HGzurtuVGYcIWYxBI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 147/264] hwrng: core - Rewrite the header
-Date:   Thu, 23 Jun 2022 18:42:20 +0200
-Message-Id: <20220623164348.223959283@linuxfoundation.org>
+        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Herring <robh@kernel.org>, Will Deacon <will@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>
+Subject: [PATCH 4.9 045/264] fdt: add support for rng-seed
+Date:   Thu, 23 Jun 2022 18:40:38 +0200
+Message-Id: <20220623164345.344162333@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,67 +51,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin LABBE <clabbe.montjoie@gmail.com>
+From: Hsin-Yi Wang <hsinyi@chromium.org>
 
-commit dd8014830d2b1fdf5328978ada706df3ec180c21 upstream.
+commit 428826f5358c922dc378830a1717b682c0823160 upstream.
 
-checkpatch have lot of complaint about header.
-Furthermore, the header have some offtopic/useless information.
+Introducing a chosen node, rng-seed, which is an entropy that can be
+passed to kernel called very early to increase initial device
+randomness. Bootloader should provide this entropy and the value is
+read from /chosen/rng-seed in DT.
 
-This patch rewrite a proper header.
+Obtain of_fdt_crc32 for CRC check after early_init_dt_scan_nodes(),
+since early_init_dt_scan_chosen() would modify fdt to erase rng-seed.
 
-Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Add a new interface add_bootloader_randomness() for rng-seed use case.
+Depends on whether the seed is trustworthy, rng seed would be passed to
+add_hwgenerator_randomness(). Otherwise it would be passed to
+add_device_randomness(). Decision is controlled by kernel config
+RANDOM_TRUST_BOOTLOADER.
+
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Theodore Ts'o <tytso@mit.edu> # drivers/char/random.c
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/hw_random/core.c |   38 +++++++++-----------------------------
- 1 file changed, 9 insertions(+), 29 deletions(-)
+ drivers/char/Kconfig   |    9 +++++++++
+ drivers/char/random.c  |   14 ++++++++++++++
+ drivers/of/fdt.c       |   14 ++++++++++++--
+ include/linux/random.h |    1 +
+ 4 files changed, 36 insertions(+), 2 deletions(-)
 
---- a/drivers/char/hw_random/core.c
-+++ b/drivers/char/hw_random/core.c
-@@ -1,33 +1,13 @@
- /*
--        Added support for the AMD Geode LX RNG
--	(c) Copyright 2004-2005 Advanced Micro Devices, Inc.
--
--	derived from
--
-- 	Hardware driver for the Intel/AMD/VIA Random Number Generators (RNG)
--	(c) Copyright 2003 Red Hat Inc <jgarzik@redhat.com>
--
-- 	derived from
--
--        Hardware driver for the AMD 768 Random Number Generator (RNG)
--        (c) Copyright 2001 Red Hat Inc <alan@redhat.com>
--
-- 	derived from
--
--	Hardware driver for Intel i810 Random Number Generator (RNG)
--	Copyright 2000,2001 Jeff Garzik <jgarzik@pobox.com>
--	Copyright 2000,2001 Philipp Rumpf <prumpf@mandrakesoft.com>
--
--	Added generic RNG API
--	Copyright 2006 Michael Buesch <m@bues.ch>
--	Copyright 2005 (c) MontaVista Software, Inc.
--
--	Please read Documentation/hw_random.txt for details on use.
--
--	----------------------------------------------------------
--	This software may be used and distributed according to the terms
--        of the GNU General Public License, incorporated herein by reference.
--
-+ * hw_random/core.c: HWRNG core API
-+ *
-+ * Copyright 2006 Michael Buesch <m@bues.ch>
-+ * Copyright 2005 (c) MontaVista Software, Inc.
-+ *
-+ * Please read Documentation/hw_random.txt for details on use.
-+ *
-+ * This software may be used and distributed according to the terms
-+ * of the GNU General Public License, incorporated herein by reference.
-  */
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -609,3 +609,12 @@ config RANDOM_TRUST_CPU
+ 	has not installed a hidden back door to compromise the CPU's
+ 	random number generation facilities. This can also be configured
+ 	at boot with "random.trust_cpu=on/off".
++
++config RANDOM_TRUST_BOOTLOADER
++	bool "Trust the bootloader to initialize Linux's CRNG"
++	help
++	Some bootloaders can provide entropy to increase the kernel's initial
++	device randomness. Say Y here to assume the entropy provided by the
++	booloader is trustworthy so it will be added to the kernel's entropy
++	pool. Otherwise, say N here so it will be regarded as device input that
++	only mixes the entropy pool.
+\ No newline at end of file
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -2493,3 +2493,17 @@ void add_hwgenerator_randomness(const ch
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
++
++/* Handle random seed passed by bootloader.
++ * If the seed is trustworthy, it would be regarded as hardware RNGs. Otherwise
++ * it would be regarded as device data.
++ * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
++ */
++void add_bootloader_randomness(const void *buf, unsigned int size)
++{
++	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
++		add_hwgenerator_randomness(buf, size, size * 8);
++	else
++		add_device_randomness(buf, size);
++}
++EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+\ No newline at end of file
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -27,6 +27,7 @@
+ #include <linux/debugfs.h>
+ #include <linux/serial_core.h>
+ #include <linux/sysfs.h>
++#include <linux/random.h>
  
- #include <linux/device.h>
+ #include <asm/setup.h>  /* for COMMAND_LINE_SIZE */
+ #include <asm/page.h>
+@@ -1068,6 +1069,7 @@ int __init early_init_dt_scan_chosen(uns
+ {
+ 	int l;
+ 	const char *p;
++	const void *rng_seed;
+ 
+ 	pr_debug("search \"chosen\", depth: %d, uname: %s\n", depth, uname);
+ 
+@@ -1102,6 +1104,14 @@ int __init early_init_dt_scan_chosen(uns
+ 
+ 	pr_debug("Command line is: %s\n", (char*)data);
+ 
++	rng_seed = of_get_flat_dt_prop(node, "rng-seed", &l);
++	if (rng_seed && l > 0) {
++		add_bootloader_randomness(rng_seed, l);
++
++		/* try to clear seed so it won't be found. */
++		fdt_nop_property(initial_boot_params, node, "rng-seed");
++	}
++
+ 	/* break now */
+ 	return 1;
+ }
+@@ -1203,8 +1213,6 @@ bool __init early_init_dt_verify(void *p
+ 
+ 	/* Setup flat device-tree pointer */
+ 	initial_boot_params = params;
+-	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
+-				fdt_totalsize(initial_boot_params));
+ 	return true;
+ }
+ 
+@@ -1230,6 +1238,8 @@ bool __init early_init_dt_scan(void *par
+ 		return false;
+ 
+ 	early_init_dt_scan_nodes();
++	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
++				fdt_totalsize(initial_boot_params));
+ 	return true;
+ }
+ 
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -18,6 +18,7 @@ struct random_ready_callback {
+ };
+ 
+ extern void add_device_randomness(const void *, unsigned int);
++extern void add_bootloader_randomness(const void *, unsigned int);
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
+ static inline void add_latent_entropy(void)
 
 
