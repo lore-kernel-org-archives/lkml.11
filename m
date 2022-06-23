@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4422CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:44:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:44:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234843AbiFWRoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
+        id S234867AbiFWRoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235166AbiFWRjN (ORCPT
+        with ESMTP id S235220AbiFWRjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:39:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4AFC54BF6;
-        Thu, 23 Jun 2022 10:09:30 -0700 (PDT)
+        Thu, 23 Jun 2022 13:39:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B456454F97;
+        Thu, 23 Jun 2022 10:09:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92B2861D1D;
-        Thu, 23 Jun 2022 17:09:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65659C341C4;
-        Thu, 23 Jun 2022 17:09:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96C4361D1E;
+        Thu, 23 Jun 2022 17:09:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50A08C341C4;
+        Thu, 23 Jun 2022 17:09:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004168;
-        bh=u0GEv/XyerHIZ2giYq+rTxkDdait67OCUhlxl5kZKBA=;
+        s=korg; t=1656004171;
+        bh=GyqMI4GxS3xDZt0Lnj199d9Y6OT+xXUzP9fx8UUSRWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gb119LkmHJ1crVj/R3DaHc92CnTzEzdzVgODDVHjvLOoMLsaok2ikxCgmWjMYZcmF
-         3XoC1jOe9JQnga3Yu5cc4PcHbcPEWORivkMhisZbxpLFi+1TsLgwbgjuzw9XEF74MK
-         UJbUhAg11FK92TiZ3BlkVCFBdlTXKI7VFuwRJ7nM=
+        b=XGvRb4FE2HC3z773H7P9M017EHxMSAbOWDPRVj7V8ARXnYC2dSoF0CPZE347D8s9Z
+         pMaslUTmgmChmly1E1XKhiPDzYYMoPCF8HpQl5rT274fBCUpNEonDzgtDVtvEqeHwV
+         7JSoUKpeS8y+qGZQUT0Wk5IPWNHdiO6l8qjofKz4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 209/237] pNFS: Dont keep retrying if the server replied NFS4ERR_LAYOUTUNAVAILABLE
-Date:   Thu, 23 Jun 2022 18:44:03 +0200
-Message-Id: <20220623164349.162149451@linuxfoundation.org>
+        stable@vger.kernel.org, Michal Jaron <michalx.jaron@intel.com>,
+        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 4.14 210/237] i40e: Fix call trace in setup_tx_descriptors
+Date:   Thu, 23 Jun 2022 18:44:04 +0200
+Message-Id: <20220623164349.190753671@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -50,39 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 
-[ Upstream commit fe44fb23d6ccde4c914c44ef74ab8d9d9ba02bea ]
+[ Upstream commit fd5855e6b1358e816710afee68a1d2bc685176ca ]
 
-If the server tells us that a pNFS layout is not available for a
-specific file, then we should not keep pounding it with further
-layoutget requests.
+After PF reset and ethtool -t there was call trace in dmesg
+sometimes leading to panic. When there was some time, around 5
+seconds, between reset and test there were no errors.
 
-Fixes: 183d9e7b112a ("pnfs: rework LAYOUTGET retry handling")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Problem was that pf reset calls i40e_vsi_close in prep_for_reset
+and ethtool -t calls i40e_vsi_close in diag_test. If there was not
+enough time between those commands the second i40e_vsi_close starts
+before previous i40e_vsi_close was done which leads to crash.
+
+Add check to diag_test if pf is in reset and don't start offline
+tests if it is true.
+Add netif_info("testing failed") into unhappy path of i40e_diag_test()
+
+Fixes: e17bc411aea8 ("i40e: Disable offline diagnostics if VFs are enabled")
+Fixes: 510efb2682b3 ("i40e: Fix ethtool offline diagnostic with netqueues")
+Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
+Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/pnfs.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 25 +++++++++++++------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
-diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 18bbdaefd940..962585e00c86 100644
---- a/fs/nfs/pnfs.c
-+++ b/fs/nfs/pnfs.c
-@@ -1878,6 +1878,12 @@ pnfs_update_layout(struct inode *ino,
- 			/* Fallthrough */
- 		case -EAGAIN:
- 			break;
-+		case -ENODATA:
-+			/* The server returned NFS4ERR_LAYOUTUNAVAILABLE */
-+			pnfs_layout_set_fail_bit(
-+				lo, pnfs_iomode_to_fail_bit(iomode));
-+			lseg = NULL;
-+			goto out_put_layout_hdr;
- 		default:
- 			if (!nfs_error_is_fatal(PTR_ERR(lseg))) {
- 				pnfs_layout_clear_fail_bit(lo, pnfs_iomode_to_fail_bit(iomode));
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+index 751ac5616884..21648dab13e0 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+@@ -1874,15 +1874,16 @@ static void i40e_diag_test(struct net_device *netdev,
+ 
+ 		set_bit(__I40E_TESTING, pf->state);
+ 
++		if (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state) ||
++		    test_bit(__I40E_RESET_INTR_RECEIVED, pf->state)) {
++			dev_warn(&pf->pdev->dev,
++				 "Cannot start offline testing when PF is in reset state.\n");
++			goto skip_ol_tests;
++		}
++
+ 		if (i40e_active_vfs(pf) || i40e_active_vmdqs(pf)) {
+ 			dev_warn(&pf->pdev->dev,
+ 				 "Please take active VFs and Netqueues offline and restart the adapter before running NIC diagnostics\n");
+-			data[I40E_ETH_TEST_REG]		= 1;
+-			data[I40E_ETH_TEST_EEPROM]	= 1;
+-			data[I40E_ETH_TEST_INTR]	= 1;
+-			data[I40E_ETH_TEST_LINK]	= 1;
+-			eth_test->flags |= ETH_TEST_FL_FAILED;
+-			clear_bit(__I40E_TESTING, pf->state);
+ 			goto skip_ol_tests;
+ 		}
+ 
+@@ -1929,9 +1930,17 @@ static void i40e_diag_test(struct net_device *netdev,
+ 		data[I40E_ETH_TEST_INTR] = 0;
+ 	}
+ 
+-skip_ol_tests:
+-
+ 	netif_info(pf, drv, netdev, "testing finished\n");
++	return;
++
++skip_ol_tests:
++	data[I40E_ETH_TEST_REG]		= 1;
++	data[I40E_ETH_TEST_EEPROM]	= 1;
++	data[I40E_ETH_TEST_INTR]	= 1;
++	data[I40E_ETH_TEST_LINK]	= 1;
++	eth_test->flags |= ETH_TEST_FL_FAILED;
++	clear_bit(__I40E_TESTING, pf->state);
++	netif_info(pf, drv, netdev, "testing failed\n");
+ }
+ 
+ static void i40e_get_wol(struct net_device *netdev,
 -- 
 2.35.1
 
