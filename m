@@ -2,342 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 06:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD47C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 06:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbiFWGVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 02:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53180 "EHLO
+        id S229769AbiFWGYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 02:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiFWGV3 (ORCPT
+        with ESMTP id S229788AbiFWGYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 02:21:29 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D0331367;
-        Wed, 22 Jun 2022 23:21:21 -0700 (PDT)
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LT99T5NRdzDsC8;
-        Thu, 23 Jun 2022 14:20:45 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 14:21:19 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 23 Jun
- 2022 14:21:19 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>,
-        <linux-accelerators@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        <zhangfei.gao@linaro.org>, <wangzhou1@hisilicon.com>,
-        <yekai13@huawei.com>
-Subject: [PATCH v4 3/3] crypto: hisilicon/qm - defining the device isolation strategy
-Date:   Thu, 23 Jun 2022 14:14:52 +0800
-Message-ID: <20220623061452.40732-4-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220623061452.40732-1-yekai13@huawei.com>
-References: <20220623061452.40732-1-yekai13@huawei.com>
+        Thu, 23 Jun 2022 02:24:36 -0400
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE9B1F2F3;
+        Wed, 22 Jun 2022 23:24:34 -0700 (PDT)
+Received: by mail-ed1-f41.google.com with SMTP id z19so10184629edb.11;
+        Wed, 22 Jun 2022 23:24:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LAvZX/HQkXO+elF8yokNflr5QirVV5UEMq0oc8yUmpE=;
+        b=H1QCGFAiKimL121wWL7ryTlUzVoy18ZZo3ogiU97f2XBKIP1gT7+BfV+JrJ8SG6ddx
+         +QWf7TOYL29iZXfZ4YE9KXE0PiGC5R8NREQfQEAT9ca3Wj/3FZcjlPSTrMFCju0y4kP7
+         jTW6DPoahiDSIE7luo3aLAqDdH8yRutlMSRLTJArI6F5elUFe9IhURLEEdzVHxahOQ+N
+         EjBmT12wFFbfNRtUOmcHuJWVZLo7QTuHBx9UAS/0S2lCHlbZV+qKcDIKOUp+XPHuRvtv
+         EHoUIguLSpWragDO7l11nrq3w/DT5vtfqIGvJEzufO7xXQI5QNRhgqZfUReVcqiVe0cG
+         72Xw==
+X-Gm-Message-State: AJIora/EcFNa2Lrhjih4T/99Ry10ot0ISgloPoHl26rWG2UiMCu5PbUf
+        bYwxVia7I81h5/me1mlq2io=
+X-Google-Smtp-Source: AGRyM1tXK+zbk/q7v6rZQSSUdcFgCIHc2bT1UPKLfaDfqrsExbpJ5FIF9I+SeCqIjTwcP9jNNt1zeQ==
+X-Received: by 2002:a50:9f6a:0:b0:435:5804:e07 with SMTP id b97-20020a509f6a000000b0043558040e07mr8785271edf.178.1655965473018;
+        Wed, 22 Jun 2022 23:24:33 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id r1-20020a170906280100b006fefd1d5c2bsm10374858ejc.148.2022.06.22.23.24.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 23:24:32 -0700 (PDT)
+Message-ID: <469ba743-69bd-b322-9e14-2f15cd1f9bda@kernel.org>
+Date:   Thu, 23 Jun 2022 08:24:31 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/6] serial: msm: Convert container_of UART_TO_MSM to
+ static inline
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com>
+ <20220621124958.3342-2-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220621124958.3342-2-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Define the device isolation strategy by the device driver. The
-user configures a frequency value by uacce interface. If the
-slot reset frequency exceeds the value of setting for a certain
-period of time, the device will not be available in user space.
-This frequency is an abstract number of times that can be
-considered to occur in a time window. The time window can be set
-to one hour or one day. The VF device use the PF device isolation
-strategy. All the hardware errors are processed by PF driver.
+On 21. 06. 22, 14:49, Ilpo Järvinen wrote:
+> Create static inline instead of define.
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- drivers/crypto/hisilicon/qm.c | 177 +++++++++++++++++++++++++++++++---
- include/linux/hisi_acc_qm.h   |   9 ++
- 2 files changed, 174 insertions(+), 12 deletions(-)
+I know it's obvious, but next time, it would be nice if you specify why 
+you're doing things, not what you're doing. I.e. amending something 
+like: ", because it's more obvious, type safer, much more readable, and 
+avoids bad macro expansion -- uart_port can "escape" as it is not in 
+parentheses."
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index ad83c194d664..f92cf20fc84e 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -417,6 +417,16 @@ struct hisi_qm_resource {
- 	struct list_head list;
- };
- 
-+/**
-+ * struct qm_hw_err - structure of describes the device err
-+ * @list: hardware error list
-+ * @timestamp: timestamp when the error occurred
-+ */
-+struct qm_hw_err {
-+	struct list_head list;
-+	unsigned long long timestamp;
-+};
-+
- struct hisi_qm_hw_ops {
- 	int (*get_vft)(struct hisi_qm *qm, u32 *base, u32 *number);
- 	void (*qm_db)(struct hisi_qm *qm, u16 qn,
-@@ -3410,6 +3420,125 @@ static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
- 	return 0;
- }
- 
-+/**
-+ * qm_hw_err_isolate() - Try to isolate the uacce device with its VFs
-+ * according to user's configuration of isolation strategy. Warning: this
-+ * API should be called while there the users on this device are suspended
-+ * by slot resetting preparation of PCI AER.
-+ * @qm: the uacce device
-+ */
-+static int qm_hw_err_isolate(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp, *hw_err;
-+	struct qm_err_isolate *isolate;
-+	u32 count = 0;
-+
-+	isolate = &qm->isolate_data;
-+
-+#define SECONDS_PER_HOUR	3600
-+
-+	/* All the hw errs are processed by PF driver */
-+	if (qm->uacce->is_vf || atomic_read(&isolate->is_isolate) ||
-+	    !isolate->hw_err_isolate_hz)
-+		return 0;
-+
-+	hw_err = kzalloc(sizeof(*hw_err), GFP_ATOMIC);
-+	if (!hw_err)
-+		return -ENOMEM;
-+
-+	mutex_lock(&isolate->isolate_lock);
-+	hw_err->timestamp = jiffies;
-+	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
-+		if ((hw_err->timestamp - err->timestamp) / HZ >
-+		    SECONDS_PER_HOUR) {
-+			list_del(&err->list);
-+			kfree(err);
-+		} else {
-+			count++;
-+		}
-+	}
-+	list_add(&hw_err->list, &qm->uacce_hw_errs);
-+	mutex_unlock(&isolate->isolate_lock);
-+
-+	if (count >= isolate->hw_err_isolate_hz)
-+		atomic_set(&isolate->is_isolate, 1);
-+
-+	return 0;
-+}
-+
-+static void qm_hw_err_destroy(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp;
-+
-+	mutex_lock(&qm->isolate_data.isolate_lock);
-+	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
-+		list_del(&err->list);
-+		kfree(err);
-+	}
-+	mutex_unlock(&qm->isolate_data.isolate_lock);
-+}
-+
-+static enum uacce_dev_state hisi_qm_get_isolate_state(struct uacce_device *uacce)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qm *pf_qm;
-+
-+	if (uacce->is_vf)
-+		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
-+	else
-+		pf_qm = qm;
-+
-+	return atomic_read(&pf_qm->isolate_data.is_isolate) ?
-+			UACCE_DEV_ISOLATE : UACCE_DEV_NORMAL;
-+}
-+
-+static int hisi_qm_isolate_strategy_write(struct uacce_device *uacce,
-+					  const char *buf, size_t len)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	unsigned long val;
-+
-+#define MAX_ISOLATE_STRATEGY	65535
-+
-+	/* Must be set by PF */
-+	if (uacce->is_vf) {
-+		dev_info(&qm->pdev->dev, "the isolation strategy must be set by PF.\n");
-+		return -EINVAL;
-+	}
-+
-+	if (atomic_read(&qm->isolate_data.is_isolate))
-+		return -EINVAL;
-+
-+	if (kstrtoul(buf, 0, &val) < 0)
-+		return -EINVAL;
-+
-+	if (val > MAX_ISOLATE_STRATEGY)
-+		return -EINVAL;
-+
-+	qm->isolate_data.hw_err_isolate_hz = val;
-+
-+	/* After the policy is updated, need to reset the hardware err list */
-+	qm_hw_err_destroy(qm);
-+
-+	return 0;
-+}
-+
-+static int hisi_qm_isolate_strategy_read(struct uacce_device *uacce, char *buf)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qm *pf_qm;
-+	unsigned long val;
-+
-+	if (uacce->is_vf) {
-+		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
-+		val = pf_qm->isolate_data.hw_err_isolate_hz;
-+	} else {
-+		val = qm->isolate_data.hw_err_isolate_hz;
-+	}
-+
-+	return sysfs_emit(buf, "%lu\n", val);
-+}
-+
- static const struct uacce_ops uacce_qm_ops = {
- 	.get_available_instances = hisi_qm_get_available_instances,
- 	.get_queue = hisi_qm_uacce_get_queue,
-@@ -3419,8 +3548,22 @@ static const struct uacce_ops uacce_qm_ops = {
- 	.mmap = hisi_qm_uacce_mmap,
- 	.ioctl = hisi_qm_uacce_ioctl,
- 	.is_q_updated = hisi_qm_is_q_updated,
-+	.get_isolate_state = hisi_qm_get_isolate_state,
-+	.isolate_strategy_write = hisi_qm_isolate_strategy_write,
-+	.isolate_strategy_read = hisi_qm_isolate_strategy_read,
- };
- 
-+static void qm_remove_uacce(struct hisi_qm *qm)
-+{
-+	struct uacce_device *uacce = qm->uacce;
-+
-+	if (qm->use_sva) {
-+		qm_hw_err_destroy(qm);
-+		uacce_remove(uacce);
-+		qm->uacce = NULL;
-+	}
-+}
-+
- static int qm_alloc_uacce(struct hisi_qm *qm)
- {
- 	struct pci_dev *pdev = qm->pdev;
-@@ -3433,6 +3576,8 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 	};
- 	int ret;
- 
-+	INIT_LIST_HEAD(&qm->uacce_hw_errs);
-+	mutex_init(&qm->isolate_data.isolate_lock);
- 	ret = strscpy(interface.name, dev_driver_string(&pdev->dev),
- 		      sizeof(interface.name));
- 	if (ret < 0)
-@@ -3446,8 +3591,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 		qm->use_sva = true;
- 	} else {
- 		/* only consider sva case */
--		uacce_remove(uacce);
--		qm->uacce = NULL;
-+		qm_remove_uacce(qm);
- 		return -EINVAL;
- 	}
- 
-@@ -5109,6 +5253,12 @@ static int qm_controller_reset_prepare(struct hisi_qm *qm)
- 		return ret;
- 	}
- 
-+	if (qm->use_sva) {
-+		ret = qm_hw_err_isolate(qm);
-+		if (ret)
-+			pci_err(pdev, "failed to isolate hw err!\n");
-+	}
-+
- 	ret = qm_wait_vf_prepare_finish(qm);
- 	if (ret)
- 		pci_err(pdev, "failed to stop by vfs in soft reset!\n");
-@@ -5436,19 +5586,25 @@ static int qm_controller_reset(struct hisi_qm *qm)
- 	ret = qm_soft_reset(qm);
- 	if (ret) {
- 		pci_err(pdev, "Controller reset failed (%d)\n", ret);
--		qm_reset_bit_clear(qm);
--		return ret;
-+		goto err_reset;
- 	}
- 
- 	ret = qm_controller_reset_done(qm);
--	if (ret) {
--		qm_reset_bit_clear(qm);
--		return ret;
--	}
-+	if (ret)
-+		goto err_reset;
- 
- 	pci_info(pdev, "Controller reset complete\n");
- 
- 	return 0;
-+
-+err_reset:
-+	pci_err(pdev, "Controller reset failed (%d)\n", ret);
-+	qm_reset_bit_clear(qm);
-+
-+	/* if resetting fails, isolate the device */
-+	if (qm->use_sva && !qm->uacce->is_vf)
-+		atomic_set(&qm->isolate_data.is_isolate, 1);
-+	return ret;
- }
- 
- /**
-@@ -6246,10 +6402,7 @@ int hisi_qm_init(struct hisi_qm *qm)
- err_free_qm_memory:
- 	hisi_qm_memory_uninit(qm);
- err_alloc_uacce:
--	if (qm->use_sva) {
--		uacce_remove(qm->uacce);
--		qm->uacce = NULL;
--	}
-+	qm_remove_uacce(qm);
- err_irq_register:
- 	qm_irq_unregister(qm);
- err_pci_init:
-diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
-index 116e8bd68c99..44454150c205 100644
---- a/include/linux/hisi_acc_qm.h
-+++ b/include/linux/hisi_acc_qm.h
-@@ -271,6 +271,13 @@ struct hisi_qm_poll_data {
- 	u16 *qp_finish_id;
- };
- 
-+struct qm_err_isolate {
-+	struct mutex isolate_lock;
-+	/* user cfg freq which triggers isolation */
-+	u32 hw_err_isolate_hz;
-+	atomic_t is_isolate;
-+};
-+
- struct hisi_qm {
- 	enum qm_hw_ver ver;
- 	enum qm_fun_type fun_type;
-@@ -335,6 +342,8 @@ struct hisi_qm {
- 	struct qm_shaper_factor *factor;
- 	u32 mb_qos;
- 	u32 type_rate;
-+	struct list_head uacce_hw_errs;
-+	struct qm_err_isolate isolate_data;
- };
- 
- struct hisi_qp_status {
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+> ---
+>   drivers/tty/serial/msm_serial.c | 49 +++++++++++++++++----------------
+>   1 file changed, 26 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+> index e676ec761f18..15cab9c4b295 100644
+> --- a/drivers/tty/serial/msm_serial.c
+> +++ b/drivers/tty/serial/msm_serial.c
+> @@ -181,7 +181,10 @@ struct msm_port {
+>   	struct msm_dma		rx_dma;
+>   };
+>   
+> -#define UART_TO_MSM(uart_port)	container_of(uart_port, struct msm_port, uart)
+> +static inline struct msm_port *to_msm_port(struct uart_port *up)
+> +{
+> +	return container_of(up, struct msm_port, uart);
+> +}
+>   
+>   static
+>   void msm_write(struct uart_port *port, unsigned int val, unsigned int off)
+> @@ -221,7 +224,7 @@ static void msm_serial_set_mnd_regs_tcxoby4(struct uart_port *port)
+>   
+>   static void msm_serial_set_mnd_regs(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   
+>   	/*
+>   	 * These registers don't exist so we change the clk input rate
+> @@ -404,7 +407,7 @@ static inline void msm_wait_for_xmitr(struct uart_port *port)
+>   
+>   static void msm_stop_tx(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   
+>   	msm_port->imr &= ~UART_IMR_TXLEV;
+>   	msm_write(port, msm_port->imr, UART_IMR);
+> @@ -412,7 +415,7 @@ static void msm_stop_tx(struct uart_port *port)
+>   
+>   static void msm_start_tx(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	struct msm_dma *dma = &msm_port->tx_dma;
+>   
+>   	/* Already started in DMA mode */
+> @@ -690,7 +693,7 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
+>   
+>   static void msm_stop_rx(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	struct msm_dma *dma = &msm_port->rx_dma;
+>   
+>   	msm_port->imr &= ~(UART_IMR_RXLEV | UART_IMR_RXSTALE);
+> @@ -702,7 +705,7 @@ static void msm_stop_rx(struct uart_port *port)
+>   
+>   static void msm_enable_ms(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   
+>   	msm_port->imr |= UART_IMR_DELTA_CTS;
+>   	msm_write(port, msm_port->imr, UART_IMR);
+> @@ -714,7 +717,7 @@ static void msm_handle_rx_dm(struct uart_port *port, unsigned int misr)
+>   	struct tty_port *tport = &port->state->port;
+>   	unsigned int sr;
+>   	int count = 0;
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   
+>   	if ((msm_read(port, UART_SR) & UART_SR_OVERRUN)) {
+>   		port->icount.overrun++;
+> @@ -837,7 +840,7 @@ static void msm_handle_rx(struct uart_port *port)
+>   static void msm_handle_tx_pio(struct uart_port *port, unsigned int tx_count)
+>   {
+>   	struct circ_buf *xmit = &port->state->xmit;
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	unsigned int num_chars;
+>   	unsigned int tf_pointer = 0;
+>   	void __iomem *tf;
+> @@ -883,7 +886,7 @@ static void msm_handle_tx_pio(struct uart_port *port, unsigned int tx_count)
+>   
+>   static void msm_handle_tx(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	struct circ_buf *xmit = &msm_port->uart.state->xmit;
+>   	struct msm_dma *dma = &msm_port->tx_dma;
+>   	unsigned int pio_count, dma_count, dma_min;
+> @@ -947,7 +950,7 @@ static void msm_handle_delta_cts(struct uart_port *port)
+>   static irqreturn_t msm_uart_irq(int irq, void *dev_id)
+>   {
+>   	struct uart_port *port = dev_id;
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	struct msm_dma *dma = &msm_port->rx_dma;
+>   	unsigned long flags;
+>   	unsigned int misr;
+> @@ -1002,7 +1005,7 @@ static unsigned int msm_get_mctrl(struct uart_port *port)
+>   
+>   static void msm_reset(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	unsigned int mr;
+>   
+>   	/* reset everything */
+> @@ -1055,7 +1058,7 @@ static const struct msm_baud_map *
+>   msm_find_best_baud(struct uart_port *port, unsigned int baud,
+>   		   unsigned long *rate)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	unsigned int divisor, result;
+>   	unsigned long target, old, best_rate = 0, diff, best_diff = ULONG_MAX;
+>   	const struct msm_baud_map *entry, *end, *best;
+> @@ -1124,7 +1127,7 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
+>   			     unsigned long *saved_flags)
+>   {
+>   	unsigned int rxstale, watermark, mask;
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	const struct msm_baud_map *entry;
+>   	unsigned long flags, rate;
+>   
+> @@ -1185,7 +1188,7 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
+>   
+>   static void msm_init_clock(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   
+>   	clk_prepare_enable(msm_port->clk);
+>   	clk_prepare_enable(msm_port->pclk);
+> @@ -1194,7 +1197,7 @@ static void msm_init_clock(struct uart_port *port)
+>   
+>   static int msm_startup(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	unsigned int data, rfr_level, mask;
+>   	int ret;
+>   
+> @@ -1246,7 +1249,7 @@ static int msm_startup(struct uart_port *port)
+>   
+>   static void msm_shutdown(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   
+>   	msm_port->imr = 0;
+>   	msm_write(port, 0, UART_IMR); /* disable interrupts */
+> @@ -1262,7 +1265,7 @@ static void msm_shutdown(struct uart_port *port)
+>   static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
+>   			    struct ktermios *old)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	struct msm_dma *dma = &msm_port->rx_dma;
+>   	unsigned long flags;
+>   	unsigned int baud, mr;
+> @@ -1416,7 +1419,7 @@ static int msm_verify_port(struct uart_port *port, struct serial_struct *ser)
+>   static void msm_power(struct uart_port *port, unsigned int state,
+>   		      unsigned int oldstate)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   
+>   	switch (state) {
+>   	case 0:
+> @@ -1435,7 +1438,7 @@ static void msm_power(struct uart_port *port, unsigned int state,
+>   #ifdef CONFIG_CONSOLE_POLL
+>   static int msm_poll_get_char_single(struct uart_port *port)
+>   {
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   	unsigned int rf_reg = msm_port->is_uartdm ? UARTDM_RF : UART_RF;
+>   
+>   	if (!(msm_read(port, UART_SR) & UART_SR_RX_READY))
+> @@ -1489,7 +1492,7 @@ static int msm_poll_get_char(struct uart_port *port)
+>   {
+>   	u32 imr;
+>   	int c;
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   
+>   	/* Disable all interrupts */
+>   	imr = msm_read(port, UART_IMR);
+> @@ -1509,7 +1512,7 @@ static int msm_poll_get_char(struct uart_port *port)
+>   static void msm_poll_put_char(struct uart_port *port, unsigned char c)
+>   {
+>   	u32 imr;
+> -	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	struct msm_port *msm_port = to_msm_port(port);
+>   
+>   	/* Disable all interrupts */
+>   	imr = msm_read(port, UART_IMR);
+> @@ -1677,7 +1680,7 @@ static void msm_console_write(struct console *co, const char *s,
+>   	BUG_ON(co->index < 0 || co->index >= UART_NR);
+>   
+>   	port = msm_get_port_from_line(co->index);
+> -	msm_port = UART_TO_MSM(port);
+> +	msm_port = to_msm_port(port);
+>   
+>   	__msm_console_write(port, s, count, msm_port->is_uartdm);
+>   }
+> @@ -1808,7 +1811,7 @@ static int msm_serial_probe(struct platform_device *pdev)
+>   
+>   	port = msm_get_port_from_line(line);
+>   	port->dev = &pdev->dev;
+> -	msm_port = UART_TO_MSM(port);
+> +	msm_port = to_msm_port(port);
+>   
+>   	id = of_match_device(msm_uartdm_table, &pdev->dev);
+>   	if (id)
+
+
 -- 
-2.33.0
-
+js
+suse labs
