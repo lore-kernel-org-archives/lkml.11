@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D83FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A0CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233219AbiFWRTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:19:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32886 "EHLO
+        id S233230AbiFWRTP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233231AbiFWRRd (ORCPT
+        with ESMTP id S233291AbiFWRRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:17:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A0960C46;
-        Thu, 23 Jun 2022 09:59:48 -0700 (PDT)
+        Thu, 23 Jun 2022 13:17:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D676B60C60;
+        Thu, 23 Jun 2022 09:59:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4425860AE7;
-        Thu, 23 Jun 2022 16:59:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 062D1C3411B;
-        Thu, 23 Jun 2022 16:59:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 176B861408;
+        Thu, 23 Jun 2022 16:59:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC61BC3411B;
+        Thu, 23 Jun 2022 16:59:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003587;
-        bh=7N0cRxUKT2mV2q77i8c2ECDo/NDuhfXEWtFavHW0zw4=;
+        s=korg; t=1656003590;
+        bh=/cipB65XXSwV6v6f6npwY4IX8FITeDxg38s9Lz6i3jg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HVcR3SLIMT1YECgnz26L/eNphu0UpW4XuX6I8aIdNmtsbmJJ2YXEmStFoDFBLTXp9
-         AwGHZNObyhotWNg1bk8IiiWtNSHi38vbu3LDFogz8KLlCqIqD0FPhar0s9ITJRui1J
-         VUCg5xExqKgn1ng/8u4YSRqwH+9ADeBv4azglWVY=
+        b=zJaMq4RvWRwvvYhcsfhvSCMyRRBexSnFoLMVYTs93UesknljOAdzagF5Hmo1M9DGh
+         9BeDHXNgwQ1NaEEjZtFiN96ywJKL1OdUE/LohmRl09ZAK/Mw6coTRLbUfoBNESlW38
+         D7qXK3Py0X/S7a4bAcn+Q3dNTWCQMkHEM+vQQ5W4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Theodore Tso <tytso@mit.edu>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 005/237] drivers/char/random.c: remove unused dont_count_entropy
-Date:   Thu, 23 Jun 2022 18:40:39 +0200
-Message-Id: <20220623164343.299530716@linuxfoundation.org>
+Subject: [PATCH 4.14 023/237] char/random: Add a newline at the end of the file
+Date:   Thu, 23 Jun 2022 18:40:57 +0200
+Message-Id: <20220623164343.821440415@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -50,96 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+From: Borislav Petkov <bp@alien8.de>
 
-commit 5e747dd9be54be190dd6ebeebf4a4a01ba765625 upstream.
+commit 3fd57e7a9e66b9a8bcbf0560ff09e84d0b8de1bd upstream.
 
-Ever since "random: kill dead extract_state struct" [1], the
-dont_count_entropy member of struct timer_rand_state has been
-effectively unused. Since it hasn't found a new use in 12 years, it's
-probably safe to finally kill it.
+On Tue, Oct 01, 2019 at 10:14:40AM -0700, Linus Torvalds wrote:
+> The previous state of the file didn't have that 0xa at the end, so you get that
+>
+>
+>   -EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+>   \ No newline at end of file
+>   +EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+>
+> which is "the '-' line doesn't have a newline, the '+' line does" marker.
 
-[1] Pre-git, https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git/commit/?id=c1c48e61c251f57e7a3f1bf11b3c462b2de9dcb5
+Aaha, that makes total sense, thanks for explaining. Oh well, let's fix
+it then so that people don't scratch heads like me.
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   55 +++++++++++++++++++++++---------------------------
- 1 file changed, 26 insertions(+), 29 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1077,7 +1077,6 @@ static ssize_t extract_crng_user(void __
- struct timer_rand_state {
- 	cycles_t last_time;
- 	long last_delta, last_delta2;
--	unsigned dont_count_entropy:1;
- };
- 
- #define INIT_TIMER_RAND_STATE { INITIAL_JIFFIES, };
-@@ -1141,35 +1140,33 @@ static void add_timer_randomness(struct
- 	 * We take into account the first, second and third-order deltas
- 	 * in order to make our estimate.
- 	 */
-+	delta = sample.jiffies - state->last_time;
-+	state->last_time = sample.jiffies;
-+
-+	delta2 = delta - state->last_delta;
-+	state->last_delta = delta;
-+
-+	delta3 = delta2 - state->last_delta2;
-+	state->last_delta2 = delta2;
-+
-+	if (delta < 0)
-+		delta = -delta;
-+	if (delta2 < 0)
-+		delta2 = -delta2;
-+	if (delta3 < 0)
-+		delta3 = -delta3;
-+	if (delta > delta2)
-+		delta = delta2;
-+	if (delta > delta3)
-+		delta = delta3;
-+
-+	/*
-+	 * delta is now minimum absolute delta.
-+	 * Round down by 1 bit on general principles,
-+	 * and limit entropy entimate to 12 bits.
-+	 */
-+	credit_entropy_bits(r, min_t(int, fls(delta>>1), 11));
- 
--	if (!state->dont_count_entropy) {
--		delta = sample.jiffies - state->last_time;
--		state->last_time = sample.jiffies;
--
--		delta2 = delta - state->last_delta;
--		state->last_delta = delta;
--
--		delta3 = delta2 - state->last_delta2;
--		state->last_delta2 = delta2;
--
--		if (delta < 0)
--			delta = -delta;
--		if (delta2 < 0)
--			delta2 = -delta2;
--		if (delta3 < 0)
--			delta3 = -delta3;
--		if (delta > delta2)
--			delta = delta2;
--		if (delta > delta3)
--			delta = delta3;
--
--		/*
--		 * delta is now minimum absolute delta.
--		 * Round down by 1 bit on general principles,
--		 * and limit entropy entimate to 12 bits.
--		 */
--		credit_entropy_bits(r, min_t(int, fls(delta>>1), 11));
--	}
- 	preempt_enable();
+@@ -2451,4 +2451,4 @@ void add_bootloader_randomness(const voi
+ 	else
+ 		add_device_randomness(buf, size);
  }
- 
+-EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+\ No newline at end of file
++EXPORT_SYMBOL_GPL(add_bootloader_randomness);
 
 
