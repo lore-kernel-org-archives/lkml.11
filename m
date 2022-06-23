@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C77FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 624CDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231329AbiFWRLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33248 "EHLO
+        id S232107AbiFWRL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:11:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234119AbiFWRIr (ORCPT
+        with ESMTP id S229528AbiFWRJE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:08:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D079655361;
-        Thu, 23 Jun 2022 09:57:25 -0700 (PDT)
+        Thu, 23 Jun 2022 13:09:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848594B1C4;
+        Thu, 23 Jun 2022 09:57:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 713C260FFA;
-        Thu, 23 Jun 2022 16:57:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E83AC3411B;
-        Thu, 23 Jun 2022 16:57:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6C2861403;
+        Thu, 23 Jun 2022 16:57:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84326C3411B;
+        Thu, 23 Jun 2022 16:57:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003424;
-        bh=r8lvdLrTRpr0JO0BJ5yTk+PV/xkIpP+MsXfGHsZLz0I=;
+        s=korg; t=1656003442;
+        bh=SHTi1zF3pa0p1FdO0UqpPoroeo9nkhzpDP2J2+uPBwo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SIYex9ktTNMzi3Wod2BTZND8kJG2Xb2rhw6/XZ+in/57ZDXZWIZp1+NokJ1fA9Sdq
-         JN4JSYF9GQhnDSVeNHquNtY8ZdkX4oGAV/dux2OsxVEYO8lzL3Dhwr8ZYn9fqNTQvK
-         W6zkj0PHjPIaObaTkt5m9Xy6fM2tk6zMlM8ZkcNQ=
+        b=B+pQeuN2hagj9G1iBH2BpyA8RqES5IW/BycNioLok+4mAJT8nTkHMqEh7gC/bK+6P
+         f+7+iMAcLUmpvpwZAa4rCJ/3aGTC/TpT+wH+jGBO9Ioy3V24oJEdeCDazQotBhjmF2
+         W52WDpb9GvHuUpMGH7QwwtKYU+AQaFJ6ptmoNfEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 234/264] nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
-Date:   Thu, 23 Jun 2022 18:43:47 +0200
-Message-Id: <20220623164350.698303931@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 240/264] irqchip/gic/realview: Fix refcount leak in realview_gic_of_init
+Date:   Thu, 23 Jun 2022 18:43:53 +0200
+Message-Id: <20220623164350.865622077@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,64 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 8a4d480702b71184fabcf379b80bf7539716752e ]
+[ Upstream commit f4b98e314888cc51486421bcf6d52852452ea48b ]
 
-Similar to the handling of play_deferred in commit 19cfe912c37b
-("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
-a patch might be needed here as well.
+of_find_matching_node_and_match() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Currently usb_submit_urb is called directly to submit deferred tx
-urbs after unanchor them.
-
-So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
-and cause memory leak.
-
-Put those urbs in tx_anchor to avoid the leak, and also fix the error
-handling.
-
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220607083230.6182-1-xiaohuizhang@ruc.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 82b0a434b436 ("irqchip/gic/realview: Support more RealView DCC variants")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220601080930.31005-2-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/nfcmrvl/usb.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-gic-realview.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
-index 585a0f20835b..3263e2a2bdfd 100644
---- a/drivers/nfc/nfcmrvl/usb.c
-+++ b/drivers/nfc/nfcmrvl/usb.c
-@@ -401,13 +401,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
- 	int err;
+diff --git a/drivers/irqchip/irq-gic-realview.c b/drivers/irqchip/irq-gic-realview.c
+index 54c296401525..61024882c685 100644
+--- a/drivers/irqchip/irq-gic-realview.c
++++ b/drivers/irqchip/irq-gic-realview.c
+@@ -56,6 +56,7 @@ realview_gic_of_init(struct device_node *node, struct device_node *parent)
  
- 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		usb_anchor_urb(urb, &drv_data->tx_anchor);
-+
- 		err = usb_submit_urb(urb, GFP_ATOMIC);
--		if (err)
-+		if (err) {
-+			kfree(urb->setup_packet);
-+			usb_unanchor_urb(urb);
-+			usb_free_urb(urb);
- 			break;
-+		}
- 
- 		drv_data->tx_in_flight++;
-+		usb_free_urb(urb);
-+	}
-+
-+	/* Cleanup the rest deferred urbs. */
-+	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		kfree(urb->setup_packet);
-+		usb_free_urb(urb);
- 	}
--	usb_scuttle_anchored_urbs(&drv_data->deferred);
- }
- 
- static int nfcmrvl_resume(struct usb_interface *intf)
+ 	/* The PB11MPCore GIC needs to be configured in the syscon */
+ 	map = syscon_node_to_regmap(np);
++	of_node_put(np);
+ 	if (!IS_ERR(map)) {
+ 		/* new irq mode with no DCC */
+ 		regmap_write(map, REALVIEW_SYS_LOCK_OFFSET,
 -- 
 2.35.1
 
