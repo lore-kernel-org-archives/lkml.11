@@ -2,101 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC71CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3D5CCA482
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233343AbiFWEty (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58552 "EHLO
+        id S233121AbiFWEtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345956AbiFWEVz (ORCPT
+        with ESMTP id S233736AbiFWDLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 00:21:55 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E4D2D1E9
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:21:54 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-3178996424dso129412327b3.21
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:21:54 -0700 (PDT)
+        Wed, 22 Jun 2022 23:11:54 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C995723177
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:11:51 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id bn8so4332521ljb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:11:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=PpsZDxpmLv6+/qqx3+rvSnNv1wpv3+TXqYxnLrVDMiw=;
-        b=pm+EavrBSxygW9wvzqLjGcfKXhCGr/dBXeZRdOmzCF8Zi1nye/Et5+WVIO1C4lauO9
-         M0leCRvfLM2AJxgg46x5MH/oEn1eoCecvj8b0+RU+zFimw9DruYrsNqaEk0hos+bVQaC
-         SARmWkMTypjPWRsL0ayNGI2DgIqA5OCS0y3o62U2/708BVGIrsONfu1coiyFRA+io8YS
-         cANR+cfjv8GyXTbIpXJz7EUfWGU8InNlh0Y/ctR3fdIgwsVQI0GT5yLT4wPJzW1aOwqI
-         IK29lat5TnM27KQlno2Ueg4IGlB4lf5r0qXh84LqRLK3/eYdbCtqW8XEw50eTOexFIRE
-         iGqw==
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5jDNpLxr7cGIqADzC3sdvFFhgsnexUiy02PrUDQv/Rc=;
+        b=n3/SAojrz0/DrGQPMh4WqNM2k2NjcEc6nMVjVXXxCdYX2AIyZ6sytS0oG0ItZ4mnUM
+         XzKImwOIP3Y25IOGjXWiew1cP8zrvTIyKI7z5SigqInuCta2YY3bnLyIvj17PD8QLtP+
+         IhoABN7knreFAv/nNhpWcSc0umlHnQc30OCBrOVLgmk6RmwxabUzCbnAnWWix/PDDc8f
+         dFrB9wKnFBqufwQ/HJSDBRP+LkRXVIeURSo1LtMoPhWac5z8oG95PZoLls0MKkvS/PCn
+         zH8p1qVzN4Jxeu9xnfHFvwYzXokVFx01f+j+RwZSe1u5A5xTBJ7UrQsqZaXfXYbWlvf4
+         JP7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=PpsZDxpmLv6+/qqx3+rvSnNv1wpv3+TXqYxnLrVDMiw=;
-        b=QWknw0q/Pryih8s7B8UH0ZRh3SS4ImUR4YLOLLVtAlaYkKvRkVRUuz3hFs6aejz8xQ
-         tCs+5qFjmOQzg/WFmKFCv4Hepx8xEckb42Sdd5ng6JwvYRE7MChSoTf1n6HRgNWvRj2A
-         Hj0tBt+y9qc2OngLC3QyeSBciOisKB/Biw//lF7HAzf6dnb0I68Gp4VORBl6QaSHXYTf
-         aY6omokBEXUGQ9PLdNMVdCiJdVHrCsdzxtRmJK+EVm1M44iYLKR2KtItq3Skx2eyQprl
-         b+zB/x2oGULrgq1B4ZDM1XopJcdqLGOm91gWYyP3Fvb2OYDJc+aI8yWgHbo6xa9nnMeQ
-         t9+A==
-X-Gm-Message-State: AJIora//VQggLRExg/XkzofufCXReey0+m3EPKrR/yhOIi0qZ1vtzHbR
-        AFIqfJBI2ojpj1xOeiEyOfVEJUqEv2FVmZQ=
-X-Google-Smtp-Source: AGRyM1sw4pfSqRlLWjCBS1hEyjS9ZkZZkdnqpUsYZum7q8zUnQM5xufoFVhVU+O40bAUjXvk3LspzoM/oI94neU=
-X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:be1f:89ac:a37d:6bb4])
- (user=saravanak job=sendgmr) by 2002:a05:6902:84:b0:63d:4a3d:eb5 with SMTP id
- h4-20020a056902008400b0063d4a3d0eb5mr7368682ybs.145.1655958114239; Wed, 22
- Jun 2022 21:21:54 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 21:21:50 -0700
-Message-Id: <20220623042150.762330-1-saravanak@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v1] driver core: Ignore driver_async_probe cmdline param for
- module drivers
-From:   Saravana Kannan <saravanak@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Saravana Kannan <saravanak@google.com>, kernel-team@android.com,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5jDNpLxr7cGIqADzC3sdvFFhgsnexUiy02PrUDQv/Rc=;
+        b=zfhHj7cpu2pj8LswL95UBk93H2jioTwzuuPZ3Bs4JkRO0d1qr246+jCOOds4fTuTm+
+         15j1XOeeHe4BI6TeDpsTmgBb55ADffxpsCgKSsulFlJAKA/b4c5obupKL6g/Olq82S94
+         epordO9pb+K6DNlVL0BNZCCZ8m9DjJndrQCVpJ+aYhDbWc9Rn+LzC2kK0qeb7Lkd/Nvd
+         4HTqa9w2J1NEIVk9iFjtgHzeqzW1TL87cFqfyFimhaxi3SC7E8mOeJLtFqwNhuhKhwKw
+         nLt8f0b/QDu0YdS9hVRQsViBSL8YsiBfp8oIMqViashLHZsAfRn5hH0qT0pkQIOklMOQ
+         pn/w==
+X-Gm-Message-State: AJIora8wZJ3NKZ4qu5Din7UewQtYa+idcR01JEfLjohToCc7cgoCaVyl
+        dlRHsntt4f7vpB52SvYSMnCjUw==
+X-Google-Smtp-Source: AGRyM1uv21oXvWhnlrC67bIpBGrktWhfdrCeenGfpqFQHyuq00SiRyba6eLq2NOvwzgLyWGhXEbY6g==
+X-Received: by 2002:a2e:9283:0:b0:253:e175:dd84 with SMTP id d3-20020a2e9283000000b00253e175dd84mr3557956ljh.221.1655953910136;
+        Wed, 22 Jun 2022 20:11:50 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id a15-20020ac2504f000000b0047f665e2df8sm1754606lfm.257.2022.06.22.20.11.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 20:11:48 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id BC825104A32; Thu, 23 Jun 2022 06:14:01 +0300 (+03)
+Date:   Thu, 23 Jun 2022 06:14:01 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, shy828301@gmail.com,
+        willy@infradead.org, zokeefe@google.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 02/16] mm/huge_memory: access vm_page_prot with READ_ONCE
+ in remove_migration_pmd
+Message-ID: <20220623031401.wdyt5ylin4aijzhh@box.shutemov.name>
+References: <20220622170627.19786-1-linmiaohe@huawei.com>
+ <20220622170627.19786-3-linmiaohe@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622170627.19786-3-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the module's async_probe option isn't set, the module loading code
-will do a async_synchronize_full() before returning to userspace. This
-effectively negates any benefits of driver_async_probe listing the
-module's driver.
+On Thu, Jun 23, 2022 at 01:06:13AM +0800, Miaohe Lin wrote:
+> vma->vm_page_prot is read lockless from the rmap_walk, it may be updated
+> concurrently. Using READ_ONCE to prevent the risk of reading intermediate
+> values.
 
-If the module's async_probe is set, then we already do async probe for
-that module's driver even if driver_async_probe does not list that
-driver. So, again, the driver_async_probe's value doesn't matter for a
-module's driver.
+Have you checked all other vm_page_prot reads that they hold mmap_lock?
 
-So this change ignores the driver_async_probe for module drivers to
-avoid useless async probes.
+I think the right fix would be to provide a helper to read vm_page_prot
+which does READ_ONCE() and use it everywhere. This seems more sustainable.
 
-In addition, if driver_async_probe lists a module's driver and the
-driver's async probe ends up calling request_module() in the async
-thread context, that's going to trigger a spurious WARNING stack dump
-without any real benefits of async probing. So this will avoid that
-unnecessary warning in that situation.
-
-Signed-off-by: Saravana Kannan <saravanak@google.com>
----
- drivers/base/dd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index e600dd2afc35..f1ac28a4ce62 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -823,7 +823,7 @@ bool driver_allows_async_probing(struct device_driver *drv)
- 		return false;
- 
- 	default:
--		if (cmdline_requested_async_probing(drv->name))
-+		if (cmdline_requested_async_probing(drv->name) && drv->owner == NULL)
- 			return true;
- 
- 		if (module_requested_async_probing(drv->owner))
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
-
+ Kirill A. Shutemov
