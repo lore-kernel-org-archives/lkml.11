@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A0CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C908CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:19:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233230AbiFWRTP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
+        id S233251AbiFWRT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233291AbiFWRRf (ORCPT
+        with ESMTP id S233404AbiFWRRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:17:35 -0400
+        Thu, 23 Jun 2022 13:17:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D676B60C60;
-        Thu, 23 Jun 2022 09:59:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D9060C73;
+        Thu, 23 Jun 2022 09:59:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 176B861408;
-        Thu, 23 Jun 2022 16:59:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC61BC3411B;
-        Thu, 23 Jun 2022 16:59:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DB4061573;
+        Thu, 23 Jun 2022 16:59:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB75CC3411B;
+        Thu, 23 Jun 2022 16:59:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003590;
-        bh=/cipB65XXSwV6v6f6npwY4IX8FITeDxg38s9Lz6i3jg=;
+        s=korg; t=1656003593;
+        bh=hwdRMpcr3c0hyNdYLNwBv3vwIovC0ChxL5ZZ2uhRUfk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zJaMq4RvWRwvvYhcsfhvSCMyRRBexSnFoLMVYTs93UesknljOAdzagF5Hmo1M9DGh
-         9BeDHXNgwQ1NaEEjZtFiN96ywJKL1OdUE/LohmRl09ZAK/Mw6coTRLbUfoBNESlW38
-         D7qXK3Py0X/S7a4bAcn+Q3dNTWCQMkHEM+vQQ5W4=
+        b=uRzT/5eoS+bqk/EYv05K9JV+OVYlTzyQ7FFJ9raL2uyGtt0w98IcVooBRo+n+Pr3F
+         3MuxIgKyQUxYYS4rGisA3ZHwrD3khOnC2A797l5wmEywgSvULR+Db15kVboH7H9uuw
+         fQo8N5n03MLyXtj3N5dsoSTLe/8qoJSl1JO3CagM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 023/237] char/random: Add a newline at the end of the file
-Date:   Thu, 23 Jun 2022 18:40:57 +0200
-Message-Id: <20220623164343.821440415@linuxfoundation.org>
+Subject: [PATCH 4.14 024/237] Revert "hwrng: core - Freeze khwrng thread during suspend"
+Date:   Thu, 23 Jun 2022 18:40:58 +0200
+Message-Id: <20220623164343.850447279@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,38 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@alien8.de>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-commit 3fd57e7a9e66b9a8bcbf0560ff09e84d0b8de1bd upstream.
+commit 08e97aec700aeff54c4847f170e566cbd7e14e81 upstream.
 
-On Tue, Oct 01, 2019 at 10:14:40AM -0700, Linus Torvalds wrote:
-> The previous state of the file didn't have that 0xa at the end, so you get that
->
->
->   -EXPORT_SYMBOL_GPL(add_bootloader_randomness);
->   \ No newline at end of file
->   +EXPORT_SYMBOL_GPL(add_bootloader_randomness);
->
-> which is "the '-' line doesn't have a newline, the '+' line does" marker.
+This reverts commit 03a3bb7ae631 ("hwrng: core - Freeze khwrng
+thread during suspend"), ff296293b353 ("random: Support freezable
+kthreads in add_hwgenerator_randomness()") and 59b569480dc8 ("random:
+Use wait_event_freezable() in add_hwgenerator_randomness()").
 
-Aaha, that makes total sense, thanks for explaining. Oh well, let's fix
-it then so that people don't scratch heads like me.
+These patches introduced regressions and we need more time to
+get them ready for mainline.
 
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2451,4 +2451,4 @@ void add_bootloader_randomness(const voi
- 	else
- 		add_device_randomness(buf, size);
- }
--EXPORT_SYMBOL_GPL(add_bootloader_randomness);
-\ No newline at end of file
-+EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+@@ -327,7 +327,6 @@
+ #include <linux/percpu.h>
+ #include <linux/cryptohash.h>
+ #include <linux/fips.h>
+-#include <linux/freezer.h>
+ #include <linux/ptrace.h>
+ #include <linux/workqueue.h>
+ #include <linux/irq.h>
+@@ -2431,8 +2430,7 @@ void add_hwgenerator_randomness(const ch
+ 	 * We'll be woken up again once below random_write_wakeup_thresh,
+ 	 * or when the calling thread is about to terminate.
+ 	 */
+-	wait_event_freezable(random_write_wait,
+-			kthread_should_stop() ||
++	wait_event_interruptible(random_write_wait, kthread_should_stop() ||
+ 			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
+ 	mix_pool_bytes(poolp, buffer, count);
+ 	credit_entropy_bits(poolp, entropy);
 
 
