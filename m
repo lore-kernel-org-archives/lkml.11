@@ -2,322 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E2FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 06:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D86C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 06:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229778AbiFWGL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 02:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
+        id S229790AbiFWGPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 02:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbiFWGLZ (ORCPT
+        with ESMTP id S229692AbiFWGPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 02:11:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D93A10AB
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 23:11:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655964682;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aBbUFZDUxw+fu8KxzqA80LOJaxym4dr93FB6nZfWgBw=;
-        b=VMmRvSkDZfOMCpKWH7ELtjxC4fVl4Ck3vSLv80a2e4226LWVtq+58+t5W0F+/OzvJdpAAI
-        CDa0Ueg6iVl/oUTnV62jYai95Pm1t0A7DX8MbVhm9jIbmCY46OXSx0L/cj7i4EB7YAE3/J
-        zD0htO8yywICQ4jDH340taOZZQz9g+k=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-190-CWQwka7fOe2NfWgwbrkD0A-1; Thu, 23 Jun 2022 02:11:18 -0400
-X-MC-Unique: CWQwka7fOe2NfWgwbrkD0A-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5C7648001EA;
-        Thu, 23 Jun 2022 06:11:18 +0000 (UTC)
-Received: from [10.64.54.63] (vpn2-54-63.bne.redhat.com [10.64.54.63])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 792F41121314;
-        Thu, 23 Jun 2022 06:11:11 +0000 (UTC)
-Subject: Re: [PATCH v7 00/22] Support SDEI Virtualization
-From:   Gavin Shan <gshan@redhat.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     maz@kernel.org, shijie@amperemail.onmicrosoft.com,
-        linux-kernel@vger.kernel.org, eauger@redhat.com,
-        shan.gavin@gmail.com, Jonathan.Cameron@huawei.com,
-        pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org,
-        oliver.upton@linux.dev, Oliver Upton <oupton@google.com>,
-        James Morse <james.morse@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>
-References: <20220527080253.1562538-1-gshan@redhat.com>
-Message-ID: <6bdb9280-3530-dc1f-d33e-5bc1c5ac927b@redhat.com>
-Date:   Thu, 23 Jun 2022 16:11:08 +1000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        Thu, 23 Jun 2022 02:15:15 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50612CE06
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 23:15:14 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id 73-20020a17090a0fcf00b001eaee69f600so1589569pjz.1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 23:15:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oTdRX4nzzh5XnScdkMS8ZCJNByGLkKSHjz8cEvYbU9o=;
+        b=D497u8ltIwHyH0cjmk5+9ujb4d8BsmOVJEVh1DplnRz36O6jiHh+AfEKpvRNDxEU5h
+         NbbDB6IvDv6xUYX2qwu2RtqSToEMUKVMCundGguJ/kmyUh+eu/WIQBROeEObcGn72wbm
+         lS+eFwFqWNqHRpvApI8kqW4o9m9coViBB/YB2xsPbBUHvHUpgE1MmWxaFRcuRM3ROmZj
+         yN/kZtDhrm7cQ2F1dHtsuIIrvf3JPmlnYo7xbE95IItIV+wLo2w86DXBMXxAWsge3jg4
+         6YAyzMdDwQcNNB+EF4UKJIfvgJ0nemxIXdIjAjWrIFxcKkb0VFrQHbWGg+of4kRp0vTu
+         QE1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oTdRX4nzzh5XnScdkMS8ZCJNByGLkKSHjz8cEvYbU9o=;
+        b=fvxKsnhNi5sa9urS/gdyGrgue4ijDZh4SBf8jsmKzxdogB/TfGCIPl7hVog6Lq6t0E
+         CX0insC3nSwPPjUgWYh38ctfRo2nciHpTnET3yn9reoJnY5d+Bf51f0sZDgM+cMRuKY/
+         U75P3cogiPwBQ/mRWPV7yIefk3u5beLhaM5aFe1cGAl8QnqwTtru7aFQsJjEtIyNYhUu
+         f1cM69UjySN+w0nVt4xwz2CvpogfGMZEaBLpaXEl3Uzt6ZqV4vfdThaSOK5QNt058Jqt
+         qABtHdqFxRsA7n015KbQDQiSRi3cpKugtQKjAkAtSUOlLILkTK83+qW/Y8QPbgOfCUv+
+         G7jA==
+X-Gm-Message-State: AJIora9me5vjWPCikk1CPYezRCTa3bAW1xCvDr9O7pfjbZqpprjK6rfh
+        X2a8GsUDYFbCIEkF+QtpvE1h4w==
+X-Google-Smtp-Source: AGRyM1u+kUriTQ+YpHfPIMLDHaJOtv19+9y3fQAqtSvu0h+Q6l2ikp3Z8qM1TdZ39IiBnYldQlDIkg==
+X-Received: by 2002:a17:902:d5c3:b0:168:f037:98d7 with SMTP id g3-20020a170902d5c300b00168f03798d7mr37421289plh.117.1655964914258;
+        Wed, 22 Jun 2022 23:15:14 -0700 (PDT)
+Received: from FVFDK26JP3YV.bytedance.net ([139.177.225.234])
+        by smtp.gmail.com with ESMTPSA id y22-20020a17090264d600b0015e8d4eb1b6sm350992pli.0.2022.06.22.23.15.10
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 Jun 2022 23:15:13 -0700 (PDT)
+From:   Lei He <helei.sig11@bytedance.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au,
+        dhowells@redhat.com
+Cc:     mst@redhat.com, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, berrange@redhat.com,
+        pizhenwei@bytedance.com, lei he <helei.sig11@bytedance.com>
+Subject: [PATCH v2 1/4] crypto: fix the calculation of max_size for ECDSA
+Date:   Thu, 23 Jun 2022 14:14:57 +0800
+Message-Id: <20220623061500.78331-1-helei.sig11@bytedance.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-In-Reply-To: <20220527080253.1562538-1-gshan@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Oliver,
+From: lei he <helei.sig11@bytedance.com>
 
-On 5/27/22 6:02 PM, Gavin Shan wrote:
-> This series intends to virtualize Software Delegated Exception Interface
-> (SDEI), which is defined by DEN0054C (v1.1). It allows the hypervisor to
-> deliver NMI-alike SDEI event to guest and it's needed by Async PF to
-> deliver page-not-present notification from hypervisor to guest. The code
-> and the required qemu changes can be found from:
-> 
->     https://developer.arm.com/documentation/den0054/c
->     https://github.com/gwshan/linux    ("kvm/arm64_sdei")
->     https://github.com/gwshan/qemu     ("kvm/arm64_sdei")
-> 
-> The design is quite strightforward by following the specification. The
-> (SDEI) events are classified into the shared and private ones according
-> to their scope. The shared event is system or VM scoped, but the private
-> event is vcpu scoped. This implementation doesn't support the shared
-> event because all the needed events are private. Besides, the critial
-> events aren't supported by the implementation either. It means all events
-> are normal in terms of priority.
-> 
-> There are several objects (data structures) introduced to help on the
-> event registration, enablement, disablement, unregistration, reset,
-> delivery and handling.
-> 
->    * kvm_sdei_event_handler
->      SDEI event handler, which is provided through EVENT_REGISTER
->      hypercall, is called when the SDEI event is delivered from
->      host to guest.
->      
->    * kvm_sdei_event_context
->      The saved (preempted) context when SDEI event is delivered
->      for handling.
->      
->    * kvm_sdei_vcpu
->      SDEI events and their states.
-> 
-> The patches are organized as below:
-> 
->    PATCH[01-02] Preparatory work to extend smccc_get_argx() and refactor
->                 hypercall routing mechanism
->    PATCH[03]    Adds SDEI virtualization infrastructure
->    PATCH[04-16] Supports various SDEI hypercalls and event handling
->    PATCH[17]    Exposes SDEI capability
->    PATCH[18-19] Support SDEI migration
->    PATCH[20]    Adds document about SDEI
->    PATCH[21-22] SDEI related selftest cases
-> 
-> The previous revisions can be found:
-> 
->    v6: https://lore.kernel.org/lkml/20220403153911.12332-4-gshan@redhat.com/T/
->    v5: https://lore.kernel.org/kvmarm/20220322080710.51727-1-gshan@redhat.com/
->    v4: https://lore.kernel.org/kvmarm/20210815001352.81927-1-gshan@redhat.com/
->    v3: https://lore.kernel.org/kvmarm/20210507083124.43347-1-gshan@redhat.com/
->    v2: https://lore.kernel.org/kvmarm/20210209032733.99996-1-gshan@redhat.com/
->    v1: https://lore.kernel.org/kvmarm/20200817100531.83045-1-gshan@redhat.com/
-> 
+The signature of ECDSA is consists of two big integers up to the
+size of keylen, and is DER encoded into one SEQUENCE.
+Calculate max_size of ECDSA signature more accurately according to
+the DER encoding rules.
 
-Copying Oliver's new email address (oliver.upton@linux.dev).
+Signed-off-by: lei he <helei.sig11@bytedance.com>
+---
+ crypto/Kconfig                  |  1 +
+ crypto/Makefile                 |  2 ++
+ crypto/ecdsa.c                  |  3 ++-
+ crypto/ecdsa_helper.c           | 45 +++++++++++++++++++++++++++++++++
+ include/crypto/internal/ecdsa.h | 15 +++++++++++
+ include/linux/asn1_encoder.h    |  2 ++
+ lib/asn1_encoder.c              |  3 ++-
+ 7 files changed, 69 insertions(+), 2 deletions(-)
+ create mode 100644 crypto/ecdsa_helper.c
+ create mode 100644 include/crypto/internal/ecdsa.h
 
-Please let me know if I need to rebase and repost the series.
-
-Thanks,
-Gavin
-
-> Testing
-> =======
-> [1] The selftest case included in this series works fine. The default SDEI
->      event, whose number is zero, can be registered, enabled, raised. The
->      SDEI event handler can be invoked.
-> 
->      [host]# pwd
->      /home/gavin/sandbox/linux.main/tools/testing/selftests/kvm
->      [root@virtlab-arm01 kvm]# ./aarch64/sdei
-> 
->          NR_VCPUS: 2    SDEI Event: 0x00000000
-> 
->      --- VERSION
->          Version:              1.1 (vendor: 0x4b564d)
->      --- FEATURES
->          Shared event slots:   0
->          Private event slots:  0
->          Relative mode:        No
->      --- PRIVATE_RESET
->      --- SHARED_RESET
->      --- PE_UNMASK
->      --- EVENT_GET_INFO
->          Type:                 Private
->          Priority:             Normal
->          Signaled:             Yes
->      --- EVENT_REGISTER
->      --- EVENT_ENABLE
->      --- EVENT_SIGNAL
->          Handled:              Yes
->          IRQ:                  No
->          Status:               Registered-Enabled-Running
->          PC/PSTATE:            000000000040232c 00000000600003c5
->          Regs:                 0000000000000000 0000000000000000
->                                0000000000000000 0000000000000000
->      --- PE_MASK
->      --- EVENT_DISABLE
->      --- EVENT_UNREGISTER
-> 
->          Result: OK
-> 
-> [2] There are additional patches in the following repositories to create
->      procfs entries, allowing to inject SDEI event from host side. The
->      SDEI client in the guest side registers the SDEI default event, whose
->      number is zero. Also, the QEMU exports SDEI ACPI table and supports
->      migration for SDEI.
-> 
->      https://github.com/gwshan/linux    ("kvm/arm64_sdei")
->      https://github.com/gwshan/qemu     ("kvm/arm64_sdei")
-> 
->      [2.1] Start the guests and migrate the source VM to the destination
->            VM.
-> 
->      [host]# /home/gavin/sandbox/qemu.main/build/qemu-system-aarch64       \
->              -accel kvm -machine virt,gic-version=host                     \
->              -cpu host -smp 6,sockets=2,cores=3,threads=1                  \
->              -m 1024M,slots=16,maxmem=64G                                  \
->                 :                                                          \
->              -kernel /home/gavin/sandbox/linux.guest/arch/arm64/boot/Image \
->              -initrd /home/gavin/sandbox/images/rootfs.cpio.xz             \
->              -append earlycon=pl011,mmio,0x9000000                         \
->                 :
-> 
->      [host]# /home/gavin/sandbox/qemu.main/build/qemu-system-aarch64       \
->              -accel kvm -machine virt,gic-version=host                     \
->              -cpu host -smp 6,sockets=2,cores=3,threads=1                  \
->              -m 1024M,slots=16,maxmem=64G                                  \
->                 :                                                          \
->              -kernel /home/gavin/sandbox/linux.guest/arch/arm64/boot/Image \
->              -initrd /home/gavin/sandbox/images/rootfs.cpio.xz             \
->              -append earlycon=pl011,mmio,0x9000000                         \
->              -incoming tcp:0:4444                                          \
->                 :
-> 
->      [2.2] Check kernel log on the source VM. The SDEI service is enabled
->            and the default SDEI event (0x0) is enabled.
-> 
->       [guest-src]# dmesg | grep -i sdei
->       ACPI: SDEI 0x000000005BC80000 000024 \
->                  (v00 BOCHS  BXPC     00000001 BXPC 00000001)
->       sdei: SDEIv1.1 (0x4b564d) detected in firmware.
->       SDEI TEST: Version 1.1, Vendor 0x4b564d
->       sdei_init: SDEI event (0x0) registered
->       sdei_init: SDEI event (0x0) enabled
-> 
->   
->       (qemu) migrate -d tcp:localhost:4444
-> 
->      [2.3] Migrate the source VM to the destination VM. Inject SDEI event
->            to the destination VM. The event is raised and handled.
-> 
->      (qemu) migrate -d tcp:localhost:4444
-> 
->      [host]# echo 0 > /proc/kvm/kvm-5360/vcpu-1
-> 
->      [guest-dst]#
->      =========== SDEI Event (CPU#1) ===========
->      Event: 0000000000000000  Parameter: 00000000dabfdabf
->      PC:    ffff800008cbb554  PSTATE: 00000000604000c5  SP: ffff800009c7bde0
->      Regs:    00000000000016ee ffff00001ffd2e28 00000000000016ed 0000000000000001
->               ffff800016c28000 0000000000000000 0000000000000000 0000000000000000
->               0000000000000000 0000000000000000 0000000000000000 0000000000000000
->               0000000000000000 0000000000000000 0000000000000000 0000000000000000
->               0000000000000000 0000000000000000 0000000000000000 ffff800009399008
->               ffff8000097d9af0 ffff8000097d99f8 ffff8000093a8db8 ffff8000097d9b18
->               0000000000000000 0000000000000000 ffff000000339d00 0000000000000000
->               0000000000000000 ffff800009c7bde0 ffff800008cbb5c4
->      Context: 00000000000016ee ffff00001ffd2e28 00000000000016ed 0000000000000001
->               ffff800016c28000 03ffffffffffffff 000000024325db59 ffff8000097de190
->               ffff00000033a790 ffff800008cbb814 0000000000000a30 0000000000000000
-> 
-> Changelog
-> =========
-> v7:
->     * Rebased to v5.19.rc1                                     (Gavin)
->     * Add hypercall ranges for routing                         (Oliver)
->     * Remove support to the critical event and redesigned
->       data structures. Function names are also modified
->       as Oliver suggested                                      (Oliver)
->     * Deliver event when it's enabled or the specific PE
->       is unmasked                                              (Oliver)
->     * Improve EVENT_COMPLETE_AND_RESUME hypercall to resume
->       from the specified address                               (Oliver)
->     * Add patches for SDEI migration and documentation         (Gavin)
->     * Misc comments from Oliver Upon                           (Oliver)
-> v6:
->     * Rebased to v5.18.rc1                                     (Gavin)
->     * Pass additional argument to smccc_get_arg()              (Oliver)
->     * Add preparatory patch to route hypercalls based on their
->       owners                                                   (Oliver)
->     * Remove the support for shared event.                     (Oliver/Gavin)
->     * Remove the support for migration and add-on patches to
->       support it in future                                     (Oliver)
->     * The events are exposed by KVM instead of VMM             (Oliver)
->     * kvm_sdei_state.h is dropped and all the structures are
->       folded into the corresponding ones in kvm_sdei.h         (Oliver)
->     * Rename 'struct kvm_sdei_registered_event' to
->       'struct kvm_sdei_event'                                  (Oliver)
->     * Misc comments from Oliver Upon                           (Oliver)
-> v5/v4/v3/v2/v1:
->     * Skipped here and please visit the history by
->       https://lore.kernel.org/lkml/20220403153911.12332-4-gshan@redhat.com/T/
-> 
-> Gavin Shan (22):
->    KVM: arm64: Extend smccc_get_argx()
->    KVM: arm64: Route hypercalls based on their owner
->    KVM: arm64: Add SDEI virtualization infrastructure
->    KVM: arm64: Support EVENT_REGISTER hypercall
->    KVM: arm64: Support EVENT_{ENABLE, DISABLE} hypercall
->    KVM: arm64: Support EVENT_CONTEXT hypercall
->    KVM: arm64: Support EVENT_UNREGISTER hypercall
->    KVM: arm64: Support EVENT_STATUS hypercall
->    KVM: arm64: Support EVENT_GET_INFO hypercall
->    KVM: arm64: Support PE_{MASK, UNMASK} hypercall
->    KVM: arm64: Support {PRIVATE, SHARED}_RESET hypercall
->    KVM: arm64: Support event injection and delivery
->    KVM: arm64: Support EVENT_{COMPLETE, COMPLETE_AND_RESUME} hypercall
->    KVM: arm64: Support EVENT_SIGNAL hypercall
->    KVM: arm64: Support SDEI_FEATURES hypercall
->    KVM: arm64: Support SDEI_VERSION hypercall
->    KVM: arm64: Expose SDEI capbility and service
->    KVM: arm64: Allow large sized pseudo firmware registers
->    KVM: arm64: Support SDEI event migration
->    KVM: arm64: Add SDEI document
->    selftests: KVM: aarch64: Add SDEI case in hypercall tests
->    selftests: KVM: aarch64: Add SDEI test case
-> 
->   Documentation/virt/kvm/api.rst                |  11 +
->   Documentation/virt/kvm/arm/hypercalls.rst     |   4 +
->   Documentation/virt/kvm/arm/sdei.rst           |  64 ++
->   arch/arm64/include/asm/kvm_host.h             |   3 +
->   arch/arm64/include/asm/kvm_sdei.h             |  81 +++
->   arch/arm64/include/uapi/asm/kvm.h             |  18 +
->   arch/arm64/kvm/Makefile                       |   2 +-
->   arch/arm64/kvm/arm.c                          |   8 +
->   arch/arm64/kvm/hypercalls.c                   | 182 +++--
->   arch/arm64/kvm/psci.c                         |  14 +-
->   arch/arm64/kvm/pvtime.c                       |   2 +-
->   arch/arm64/kvm/sdei.c                         | 676 ++++++++++++++++++
->   arch/arm64/kvm/trng.c                         |   4 +-
->   include/kvm/arm_hypercalls.h                  |  19 +-
->   include/linux/arm-smccc.h                     |   7 +
->   include/uapi/linux/arm_sdei.h                 |   8 +
->   include/uapi/linux/kvm.h                      |   1 +
->   tools/testing/selftests/kvm/Makefile          |   1 +
->   .../selftests/kvm/aarch64/hypercalls.c        |  11 +-
->   tools/testing/selftests/kvm/aarch64/sdei.c    | 450 ++++++++++++
->   20 files changed, 1499 insertions(+), 67 deletions(-)
->   create mode 100644 Documentation/virt/kvm/arm/sdei.rst
->   create mode 100644 arch/arm64/include/asm/kvm_sdei.h
->   create mode 100644 arch/arm64/kvm/sdei.c
->   create mode 100644 tools/testing/selftests/kvm/aarch64/sdei.c
-> 
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index 19197469cfab..3e82c7bc8424 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -254,6 +254,7 @@ config CRYPTO_ECDSA
+ 	select CRYPTO_ECC
+ 	select CRYPTO_AKCIPHER
+ 	select ASN1
++	select ASN1_ENCODER
+ 	help
+ 	  Elliptic Curve Digital Signature Algorithm (NIST P192, P256 etc.)
+ 	  is A NIST cryptographic standard algorithm. Only signature verification
+diff --git a/crypto/Makefile b/crypto/Makefile
+index 43bc33e247d1..226bc2cfb9b7 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -52,8 +52,10 @@ obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
+ 
+ $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature.asn1.h
+ $(obj)/ecdsa.o: $(obj)/ecdsasignature.asn1.h
++
+ ecdsa_generic-y += ecdsa.o
+ ecdsa_generic-y += ecdsasignature.asn1.o
++ecdsa_generic-y += ecdsa_helper.o
+ obj-$(CONFIG_CRYPTO_ECDSA) += ecdsa_generic.o
+ 
+ crypto_acompress-y := acompress.o
+diff --git a/crypto/ecdsa.c b/crypto/ecdsa.c
+index b3a8a6b572ba..2ba44c92d271 100644
+--- a/crypto/ecdsa.c
++++ b/crypto/ecdsa.c
+@@ -6,6 +6,7 @@
+ #include <linux/module.h>
+ #include <crypto/internal/akcipher.h>
+ #include <crypto/internal/ecc.h>
++#include <crypto/internal/ecdsa.h>
+ #include <crypto/akcipher.h>
+ #include <crypto/ecdh.h>
+ #include <linux/asn1_decoder.h>
+@@ -262,7 +263,7 @@ static unsigned int ecdsa_max_size(struct crypto_akcipher *tfm)
+ {
+ 	struct ecc_ctx *ctx = akcipher_tfm_ctx(tfm);
+ 
+-	return ctx->pub_key.ndigits << ECC_DIGITS_TO_BYTES_SHIFT;
++	return ecdsa_max_signature_size(ctx->curve);
+ }
+ 
+ static int ecdsa_nist_p384_init_tfm(struct crypto_akcipher *tfm)
+diff --git a/crypto/ecdsa_helper.c b/crypto/ecdsa_helper.c
+new file mode 100644
+index 000000000000..487c4e9c0f67
+--- /dev/null
++++ b/crypto/ecdsa_helper.c
+@@ -0,0 +1,45 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * RSA key extract helper
++ *
++ * Copyright 2022 Bytedance CO., LTD.
++ *
++ * Authors: lei he <helei.sig11@bytedance.com>
++ */
++#include <crypto/internal/ecdsa.h>
++#include <linux/err.h>
++#include <linux/export.h>
++#include <linux/oid_registry.h>
++#include <linux/asn1_encoder.h>
++#include <crypto/ecdh.h>
++
++unsigned int ecdsa_max_signature_size(const struct ecc_curve *curve)
++{
++	unsigned int keylen = curve->g.ndigits * sizeof(u64);
++	/* Up to one extra byte to indicate the format */
++	unsigned char buffer[sizeof(size_t) + 1], *data = buffer;
++	int buffer_len = sizeof(buffer);
++	unsigned int coordinate_length, sequence_length;
++
++	asn1_encode_length(&data, &buffer_len, keylen);
++	/**
++	 * The extra cost for encoding keylen bytes as INTEGER in ASN.1:
++	 * 1. one byte for tag
++	 * 2. sizeof(buffer) - buffer_len bytes for length
++	 * 3. one leading zero byte for integers whose leftmost bit is 1
++	 */
++	coordinate_length = 1 + sizeof(buffer) - buffer_len + 1 + keylen;
++
++	/**
++	 * The extra cost for encoding coordinate_length * 2 bytes as SEQUENCE in ASN.1:
++	 * 1. one byte for tag
++	 * 2. sizeof(buffer) - buffer_len bytes for length
++	 */
++	buffer_len = sizeof(buffer);
++	data = buffer;
++	asn1_encode_length(&data, &buffer_len, coordinate_length * 2);
++	sequence_length = 1 + sizeof(buffer) - buffer_len + coordinate_length * 2;
++
++	return sequence_length;
++}
++EXPORT_SYMBOL_GPL(ecdsa_max_signature_size);
+diff --git a/include/crypto/internal/ecdsa.h b/include/crypto/internal/ecdsa.h
+new file mode 100644
+index 000000000000..e35638a35dc2
+--- /dev/null
++++ b/include/crypto/internal/ecdsa.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * ECDSA internal helpers
++ *
++ * Copyright (c) 2022 lei he <helei.sig11@bytedance.com>
++ */
++
++ #ifndef _CRYPTO_ECDSA_H
++ #define _CRYPTO_ECDSA_H
++
++#include <crypto/ecc_curve.h>
++
++unsigned int ecdsa_max_signature_size(const struct ecc_curve *curve);
++
++#endif
+diff --git a/include/linux/asn1_encoder.h b/include/linux/asn1_encoder.h
+index 08cd0c2ad34f..fe439c9a73e3 100644
+--- a/include/linux/asn1_encoder.h
++++ b/include/linux/asn1_encoder.h
+@@ -29,4 +29,6 @@ unsigned char *
+ asn1_encode_boolean(unsigned char *data, const unsigned char *end_data,
+ 		    bool val);
+ 
++int asn1_encode_length(unsigned char **data, int *data_len, int len);
++
+ #endif
+diff --git a/lib/asn1_encoder.c b/lib/asn1_encoder.c
+index 0fd3c454a468..644af3055ebb 100644
+--- a/lib/asn1_encoder.c
++++ b/lib/asn1_encoder.c
+@@ -188,7 +188,7 @@ EXPORT_SYMBOL_GPL(asn1_encode_oid);
+  * encoder primitives to accept negative lengths as singalling the
+  * sequence will be re-encoded when the length is known.
+  */
+-static int asn1_encode_length(unsigned char **data, int *data_len, int len)
++int asn1_encode_length(unsigned char **data, int *data_len, int len)
+ {
+ 	if (*data_len < 1)
+ 		return -EINVAL;
+@@ -239,6 +239,7 @@ static int asn1_encode_length(unsigned char **data, int *data_len, int len)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(asn1_encode_length);
+ 
+ /**
+  * asn1_encode_tag() - add a tag for optional or explicit value
+-- 
+2.20.1
 
