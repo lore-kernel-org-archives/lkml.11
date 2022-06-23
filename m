@@ -2,171 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB7AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 22:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6040FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 23:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiFWWui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 18:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
+        id S230202AbiFWXAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 19:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbiFWWug (ORCPT
+        with ESMTP id S229437AbiFWXAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 18:50:36 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2136527F4;
-        Thu, 23 Jun 2022 15:50:35 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id bd16so1386404oib.6;
-        Thu, 23 Jun 2022 15:50:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Y+Dg0mM96GxdgWzW8Q0806WYRu+tu0Ie+VcO+cMcI4U=;
-        b=FYk61bvDh5JwGf5WdZIwNZW8B6+57IJxN4Nk3SgOVQUCUsYiOm3ErEX+kq3vz0b1jl
-         ehO4ycV50KjmXNOG82d4ajlgj9CqbebkKJ4SWJJqHREo4pk+ilQPgbCv6IB6zHid79iP
-         rqmZHNnlfQ/rPeGGBvDbNZN9ZMa975cK8vv+RyGLosEe6hd4C5Y35Ob1uvZYTwiiw7Y6
-         b7DLV4jzyNghScUUIIDElRVSlbKCQALz3tZIOKZJAGj2eZTZ+H5JRAhWbVmRsDvMSzlp
-         R9wiUFpG2WjWK042boAletT6C5cPLJc0Zo+RjXzFx7sR8PaYb7ukt2dzVz3wkwtF6YIr
-         Md9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Y+Dg0mM96GxdgWzW8Q0806WYRu+tu0Ie+VcO+cMcI4U=;
-        b=VdVX1KljLiXQtwwWL+4BBgDe5GU+eIyxjseEaV403AReEJ0gt3ZoqHVlw8xyr7DeT+
-         flJy5IRLl1Db1zCP2UqBkY/Ace2yLfZSkJiv7jwrSg/GGpsKSNhnk7FbcCqghgJkMr6w
-         NDYOKI4pmMh9ZeX+k7DgsJGxXSReAAJsFUTXVBWj6+MCNlu6StTrx9+MfnHYr7r3+4Vf
-         SvsR3y4h6smzBcPFn3e0KzzrQ4ulI174rgSKx1xNQJ+cL5u3preoHgaRnfc+MCV1APfw
-         zJSy5HNyddC1YN6ZX/nCfOkHk+jHgt2DUq1sZC+/WkNeFXJ27RWSmN9D3Lpx6ApL/n7j
-         Kxvg==
-X-Gm-Message-State: AJIora9pUBzBhvdnFmGSBw0s9iTRpH4/E8LkjTxCMG12DPyIwcQfa48+
-        0Yqg4hCC3dzhTju87nJhPnvph/bFFtOCg4jPYmA8JWxT1p0=
-X-Google-Smtp-Source: AGRyM1uj/Q9s5zKn4L4uThaMvEnMiPzOqEF1sLtJVqTO12h9dB2vaIo0yv0Uh2i5b+OALrND/sp8sTGWW12NFpQK0Us=
-X-Received: by 2002:a05:6808:179a:b0:32f:fd4:3ad6 with SMTP id
- bg26-20020a056808179a00b0032f0fd43ad6mr199172oib.190.1656024634956; Thu, 23
- Jun 2022 15:50:34 -0700 (PDT)
+        Thu, 23 Jun 2022 19:00:11 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2064.outbound.protection.outlook.com [40.107.244.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B5A5D112;
+        Thu, 23 Jun 2022 16:00:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DoGy3AGFwHC0+NnXOYj8CmJzqTU3hR9GQS1tYL1sSrOPtnLJKr3sKlMmjDFQKlfVIM31FQvb8pPN81GOY8fPB1Q/kNtd9+uw5JjOdfjWunulgjUJxZRDju5zX2GJp9wChMKUTE6ZMMilDXmEQe/3OkBZXI/zt61cEOv30x1KPOjvr2f0+vHGtHu2HmEQJNEN0ufAMEn/zdjQARX8mmrEMu/MVBAJmNytNDbrii26tQQrIlvt6lCDD+8O9rRog5dhzvniIAM+jjkfcvd9X3QdWYtALi62uuyZzcoJYvINS4epMlPuTyMD/gFfHu2fV0Es4TzE2BmAboPqjqtlDz6gcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iyamViTq1nBVi9xIjb/e7PY0gptonM7vBa3se7GZiFw=;
+ b=CFLJNDLBu/E2TYT6VYoqW+81mxIGkIV3mq/kTYoSjr+uq84FXUpoMPdF9LZYF43jZQtuzASzYT0V4qWFlMRHnCOFLY3lR8Sy+2i2ezYN7VSbmm7CEBLrzqtWBCO/gM9HtC5hm8+VJ56hlWnmJqBN0ScpJB4UpwFQ/40i3AdreFtc9Pkg1iTio2hdPyBRXhoXjnmTPfsLNhmfLURfjFK35+yiwvt1boPl6McXyn3aso013Qs3GkmM67vA9NG+HnDTgaQ4PnIomf9CX+XeWRMS7Nb88WZFsJ4mESqw2poEeq8SDg7inWShtiWnn1g69mQLZtwXdhi1H2/DQ1Dwr6s/5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iyamViTq1nBVi9xIjb/e7PY0gptonM7vBa3se7GZiFw=;
+ b=atgzjGE3jRVBW7/o7bDUJl/ee5/S6Gu+XZzlD+iAUAljqzH9CrYpsQJ83OKnrx69hJiVHmsc5rX1kkaAphTM9HM6lD/5G8B8hZbtLLCnNsQb7XBpss6iVqSlx2/NsSXcswy3mBvTl3iZdVAc/v9kcjF0OlbAaQ37ewXPU6XGHfI=
+Received: from BN6PR12CA0043.namprd12.prod.outlook.com (2603:10b6:405:70::29)
+ by DS7PR12MB5815.namprd12.prod.outlook.com (2603:10b6:8:77::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Thu, 23 Jun
+ 2022 23:00:07 +0000
+Received: from BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:70:cafe::82) by BN6PR12CA0043.outlook.office365.com
+ (2603:10b6:405:70::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.17 via Frontend
+ Transport; Thu, 23 Jun 2022 23:00:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT013.mail.protection.outlook.com (10.13.176.182) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5373.15 via Frontend Transport; Thu, 23 Jun 2022 23:00:07 +0000
+Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 23 Jun
+ 2022 18:00:06 -0500
+Date:   Thu, 23 Jun 2022 17:07:51 -0500
+From:   Michael Roth <michael.roth@amd.com>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+CC:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-fsdevel@vger.kernel.org>,
+        <linux-api@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <qemu-devel@nongnu.org>, Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        <luto@kernel.org>, <jun.nakajima@intel.com>,
+        <dave.hansen@intel.com>, <ak@linux.intel.com>, <david@redhat.com>,
+        <aarcange@redhat.com>, <ddutile@redhat.com>, <dhildenb@redhat.com>,
+        Quentin Perret <qperret@google.com>, <mhocko@suse.com>
+Subject: Re: [PATCH v6 7/8] KVM: Enable and expose KVM_MEM_PRIVATE
+Message-ID: <20220623220751.emt3iqq77faxfzzy@amd.com>
+References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
+ <20220519153713.819591-8-chao.p.peng@linux.intel.com>
 MIME-Version: 1.0
-References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
- <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
-In-Reply-To: <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 23 Jun 2022 18:50:07 -0400
-Message-ID: <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, mptcp@lists.linux.dev,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>, feng.tang@intel.com,
-        zhengjun.xing@linux.intel.com, fengwei.yin@intel.com,
-        Ying Xu <yinxu@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220519153713.819591-8-chao.p.peng@linux.intel.com>
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 41f2cc68-07a1-439c-c99c-08da556c1df8
+X-MS-TrafficTypeDiagnostic: DS7PR12MB5815:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MMQER8qa581Q0yKLb6m725j+nrTlmsVafu9Jmrkl4r1diWywwDCPswbB9hT/dLvDJF76DL6h/PZUjKcQD/Saw9KuV+o29w/CWT/wABmDG7PsaH6GRo/c/OQc2uVUUFp3R2mAvYRfsR+d+j74AC3inUipssISlM9I/FLqz2+tDypSM7A7Hw7WY7q2zbvIw7BrP5dzJddnOhwEpR3vxX75aWwR6OIa7sG8xlEGalVE3wwVerDWuTAcPxc9z7CDD0kYB+uxgzuGGcnOlTnaMUM89dynoTM/6AvoqT2h6d3oqMlYEkeudT6O8smJTpMxuMuor2la0BfpfU05gB+ZgaTXuwTwx1LxMB72WOBJ7GO1ZlBHltu1Rw6y/NYH+H6D18YpojVm+DxToENfXJ9WS1v4e4gHuwmb12T5n0Hy4w0yKhy2vzjXNwC62m4MxqrMuvcxFJLGI1SO8DU2f0UFy4uFIgimjRvvC+10tQ6nVi0v69iw9vWaA56tHEiTrHWlIE2S65cobqYdXeMVcvJ6KTSXD0q4uJ4P0syAQxBsvzHREvUINFu/+A5CekZ27JjNIXBwtXLRw6DdqAXBwUDRejJnjY2hvAsJCKZCUElYSR3VLYiO518M1spMecqiMHNjfh5aVOBIs3MNqqFi8PzHUlmuWmbrs7KCb00p6Lm5CoAOoTvoyxHftkRCwN3Abs00FsyAMC10NKN28QInCpZ8a23iKAno0pLxuGPFhXpxdHXq34t/P7JNNLuHEVj0pEbHeUvaXXxPjUpRyJPYOkL4UyGb7sP9SIFaVF9XgK5cqaXAaIhRpJAIGd+7ySOtFRgjgd2SpZE1/OYJ8xkjaxj6dStNYg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(376002)(346002)(39860400002)(36840700001)(40470700004)(46966006)(26005)(83380400001)(426003)(186003)(6916009)(36860700001)(82740400003)(5660300002)(40460700003)(6666004)(47076005)(2906002)(336012)(36756003)(82310400005)(70206006)(356005)(8676002)(7416002)(40480700001)(4326008)(70586007)(16526019)(54906003)(44832011)(86362001)(7406005)(316002)(2616005)(8936002)(1076003)(81166007)(41300700001)(478600001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2022 23:00:07.3238
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41f2cc68-07a1-439c-c99c-08da556c1df8
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5815
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 11:08 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> Yes, I'm working on it. I couldn't see the regression in my env with
-> the 'reproduce' script attached.
-> I will try with lkp tomorrow.
->
-> Thanks.
->
-> On Wed, Jun 22, 2022 at 8:29 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > Could someone working on SCTP double check this is a real regression?
-> > Feels like the regression reports are flowing at such rate its hard
-> > to keep up.
-> >
-> > >
-> > > commit:
-> > >   7c80b038d2 ("net: fix sk_wmem_schedule() and sk_rmem_schedule() err=
-ors")
-> > >   4890b686f4 ("net: keep sk->sk_forward_alloc as small as possible")
-> > >
-> > > 7c80b038d23e1f4c 4890b686f4088c90432149bd6de
-> > > ---------------- ---------------------------
-> > >          %stddev     %change         %stddev
-> > >              \          |                \
-> > >      15855           -69.4%       4854        netperf.Throughput_Mbps
-> > >     570788           -69.4%     174773        netperf.Throughput_tota=
-l_Mbps
-...
-> > >       0.00            +5.1        5.10 =C2=B1  5%  perf-profile.callt=
-race.cycles-pp.__sk_mem_reduce_allocated.sctp_wfree.skb_release_head_state.=
-consume_skb.sctp_chunk_put
-> > >       0.17 =C2=B1141%      +5.3        5.42 =C2=B1  6%  perf-profile.=
-calltrace.cycles-pp.skb_release_head_state.consume_skb.sctp_chunk_put.sctp_=
-outq_sack.sctp_cmd_interpreter
-> > >       0.00            +5.3        5.35 =C2=B1  6%  perf-profile.callt=
-race.cycles-pp.sctp_wfree.skb_release_head_state.consume_skb.sctp_chunk_put=
-.sctp_outq_sack
-> > >       0.00            +5.5        5.51 =C2=B1  6%  perf-profile.callt=
-race.cycles-pp.__sk_mem_reduce_allocated.skb_release_head_state.kfree_skb_r=
-eason.sctp_recvmsg.inet_recvmsg
-> > >       0.00            +5.7        5.65 =C2=B1  6%  perf-profile.callt=
-race.cycles-pp.skb_release_head_state.kfree_skb_reason.sctp_recvmsg.inet_re=
-cvmsg.____sys_recvmsg
-...
-> > >       0.00            +4.0        4.04 =C2=B1  6%  perf-profile.child=
-ren.cycles-pp.mem_cgroup_charge_skmem
-> > >       2.92 =C2=B1  6%      +4.2        7.16 =C2=B1  6%  perf-profile.=
-children.cycles-pp.sctp_outq_sack
-> > >       0.00            +4.3        4.29 =C2=B1  6%  perf-profile.child=
-ren.cycles-pp.__sk_mem_raise_allocated
-> > >       0.00            +4.3        4.32 =C2=B1  6%  perf-profile.child=
-ren.cycles-pp.__sk_mem_schedule
-> > >       1.99 =C2=B1  6%      +4.4        6.40 =C2=B1  6%  perf-profile.=
-children.cycles-pp.consume_skb
-> > >       1.78 =C2=B1  6%      +4.6        6.42 =C2=B1  6%  perf-profile.=
-children.cycles-pp.kfree_skb_reason
-> > >       0.37 =C2=B1  8%      +5.0        5.40 =C2=B1  6%  perf-profile.=
-children.cycles-pp.sctp_wfree
-> > >       0.87 =C2=B1  9%     +10.3       11.20 =C2=B1  6%  perf-profile.=
-children.cycles-pp.skb_release_head_state
-> > >       0.00           +10.7       10.66 =C2=B1  6%  perf-profile.child=
-ren.cycles-pp.__sk_mem_reduce_allocated
-...
-> > >       0.00            +1.2        1.19 =C2=B1  7%  perf-profile.self.=
-cycles-pp.try_charge_memcg
-> > >       0.00            +2.0        1.96 =C2=B1  6%  perf-profile.self.=
-cycles-pp.page_counter_uncharge
-> > >       0.00            +2.1        2.07 =C2=B1  5%  perf-profile.self.=
-cycles-pp.page_counter_try_charge
-> > >       1.09 =C2=B1  8%      +2.8        3.92 =C2=B1  6%  perf-profile.=
-self.cycles-pp.native_queued_spin_lock_slowpath
-> > >       0.29 =C2=B1  6%      +3.5        3.81 =C2=B1  6%  perf-profile.=
-self.cycles-pp.sctp_eat_data
-> > >       0.00            +7.8        7.76 =C2=B1  6%  perf-profile.self.=
-cycles-pp.__sk_mem_reduce_allocated
+On Thu, May 19, 2022 at 11:37:12PM +0800, Chao Peng wrote:
+> Register private memslot to fd-based memory backing store and handle the
+> memfile notifiers to zap the existing mappings.
+> 
+> Currently the register is happened at memslot creating time and the
+> initial support does not include page migration/swap.
+> 
+> KVM_MEM_PRIVATE is not exposed by default, architecture code can turn
+> on it by implementing kvm_arch_private_mem_supported().
+> 
+> A 'kvm' reference is added in memslot structure since in
+> memfile_notifier callbacks we can only obtain a memslot reference while
+> kvm is need to do the zapping. The zapping itself reuses code from
+> existing mmu notifier handling.
+> 
+> Co-developed-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+> Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> ---
+>  include/linux/kvm_host.h |  10 ++-
+>  virt/kvm/kvm_main.c      | 132 ++++++++++++++++++++++++++++++++++++---
+>  2 files changed, 131 insertions(+), 11 deletions(-)
+> 
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index b0a7910505ed..00efb4b96bc7 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -246,7 +246,7 @@ bool kvm_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+>  int kvm_async_pf_wakeup_all(struct kvm_vcpu *vcpu);
+>  #endif
+>  
+> -#ifdef KVM_ARCH_WANT_MMU_NOTIFIER
+> +#if defined(KVM_ARCH_WANT_MMU_NOTIFIER) || defined(CONFIG_MEMFILE_NOTIFIER)
+>  struct kvm_gfn_range {
+>  	struct kvm_memory_slot *slot;
+>  	gfn_t start;
+> @@ -577,6 +577,7 @@ struct kvm_memory_slot {
+>  	struct file *private_file;
+>  	loff_t private_offset;
+>  	struct memfile_notifier notifier;
+> +	struct kvm *kvm;
+>  };
+>  
+>  static inline bool kvm_slot_is_private(const struct kvm_memory_slot *slot)
+> @@ -769,9 +770,13 @@ struct kvm {
+>  	struct hlist_head irq_ack_notifier_list;
+>  #endif
+>  
+> +#if (defined(CONFIG_MMU_NOTIFIER) && defined(KVM_ARCH_WANT_MMU_NOTIFIER)) ||\
+> +	defined(CONFIG_MEMFILE_NOTIFIER)
+> +	unsigned long mmu_notifier_seq;
+> +#endif
+> +
+>  #if defined(CONFIG_MMU_NOTIFIER) && defined(KVM_ARCH_WANT_MMU_NOTIFIER)
+>  	struct mmu_notifier mmu_notifier;
+> -	unsigned long mmu_notifier_seq;
+>  	long mmu_notifier_count;
+>  	unsigned long mmu_notifier_range_start;
+>  	unsigned long mmu_notifier_range_end;
+> @@ -1438,6 +1443,7 @@ bool kvm_arch_dy_has_pending_interrupt(struct kvm_vcpu *vcpu);
+>  int kvm_arch_post_init_vm(struct kvm *kvm);
+>  void kvm_arch_pre_destroy_vm(struct kvm *kvm);
+>  int kvm_arch_create_vm_debugfs(struct kvm *kvm);
+> +bool kvm_arch_private_mem_supported(struct kvm *kvm);
+>  
+>  #ifndef __KVM_HAVE_ARCH_VM_ALLOC
+>  /*
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index db9d39a2d3a6..f93ac7cdfb53 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -843,6 +843,73 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
+>  
+>  #endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
+>  
+> +#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
+> +static void kvm_private_mem_notifier_handler(struct memfile_notifier *notifier,
+> +					     pgoff_t start, pgoff_t end)
+> +{
+> +	int idx;
+> +	struct kvm_memory_slot *slot = container_of(notifier,
+> +						    struct kvm_memory_slot,
+> +						    notifier);
+> +	struct kvm_gfn_range gfn_range = {
+> +		.slot		= slot,
+> +		.start		= start - (slot->private_offset >> PAGE_SHIFT),
+> +		.end		= end - (slot->private_offset >> PAGE_SHIFT),
 
-From the perf data, we can see __sk_mem_reduce_allocated() is the one
-using CPU the most more than before, and mem_cgroup APIs are also
-called in this function. It means the mem cgroup must be enabled in
-the test env, which may explain why I couldn't reproduce it.
+This code assumes that 'end' is greater than slot->private_offset, but
+even if slot->private_offset is non-zero, nothing stops userspace from
+allocating pages in the range of 0 through slot->private_offset, which
+will still end up triggering this notifier. In that case gfn_range.end
+will end up going negative, and the below code will limit that to
+slot->npages and do a populate/invalidate for the entire range.
 
-The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small as
-possible") uses sk_mem_reclaim(checking reclaimable >=3D PAGE_SIZE) to
-reclaim the memory, which is *more frequent* to call
-__sk_mem_reduce_allocated() than before (checking reclaimable >=3D
-SK_RECLAIM_THRESHOLD). It might be cheap when
-mem_cgroup_sockets_enabled is false, but I'm not sure if it's still
-cheap when mem_cgroup_sockets_enabled is true.
+Not sure if this covers all the cases, but this fixes the issue for me:
 
-I think SCTP netperf could trigger this, as the CPU is the bottleneck
-for SCTP netperf testing, which is more sensitive to the extra
-function calls than TCP.
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 903ffdb5f01c..4c744d8f7527 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -872,6 +872,19 @@ static void kvm_private_mem_notifier_handler(struct memfile_notifier *notifier,
+                .may_block      = true,
+        };
 
-Can we re-run this testing without mem cgroup enabled?
+        struct kvm *kvm = slot->kvm;
++
++       if (slot->private_offset > end)
++               return;
++
 
-Thanks.
