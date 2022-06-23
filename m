@@ -2,95 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE98AC2BBEC
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C23C2BBEB
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 01:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378148AbiFWBxg (ORCPT
+        id S1378170AbiFWBxi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 21:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38170 "EHLO
+        Wed, 22 Jun 2022 21:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377604AbiFWBwW (ORCPT
+        with ESMTP id S1377277AbiFWBwW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 21:52:22 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6DA43AF3;
-        Wed, 22 Jun 2022 18:51:53 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LT39F19rvzkWVh;
-        Thu, 23 Jun 2022 09:50:09 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 09:51:51 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 09:51:50 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-arch@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kbuild@vger.kernel.org>, <live-patching@vger.kernel.org>
-CC:     <jpoimboe@kernel.org>, <peterz@infradead.org>,
-        <catalin.marinas@arm.com>, <will@kernel.org>,
-        <masahiroy@kernel.org>, <michal.lkml@markovi.net>,
-        <ndesaulniers@google.com>, <mark.rutland@arm.com>,
-        <pasha.tatashin@soleen.com>, <broonie@kernel.org>,
-        <chenzhongjin@huawei.com>, <rmk+kernel@armlinux.org.uk>,
-        <madvenka@linux.microsoft.com>, <christophe.leroy@csgroup.eu>,
-        <daniel.thompson@linaro.org>
-Subject: [PATCH v6 26/33] arm64: crypto: Remove unnecessary stackframe
-Date:   Thu, 23 Jun 2022 09:49:10 +0800
-Message-ID: <20220623014917.199563-27-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220623014917.199563-1-chenzhongjin@huawei.com>
-References: <20220623014917.199563-1-chenzhongjin@huawei.com>
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5240443AF0;
+        Wed, 22 Jun 2022 18:51:52 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25N1FPnN029418;
+        Thu, 23 Jun 2022 01:50:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=TsI+ILPUKVz3yg7piZ6IP0m7tWX8TJEnXWgNEGMDWNc=;
+ b=bY4gNorDsHYNJG2Bf7vLFZ9c7LcQJRlzLlHQz6IP10ZnGAfNcqnbh0O1IuDT8cLTS7Lt
+ 1nYfP7kdHEM1Lw4ozSdfDo3PWjcfmwa2pobiTI7dFCJciaHxLFjnx6U6CDeCEB1Nu/tk
+ VrVoa4J39NN56aQOFrgcjqvsJH45Lhz7wkMMdcK+W6Ya3+SD+xpQvil4WsOCUn8Ac8cP
+ gBdgo+Ie6cD9STH9X2471OYHcYpaYBAUsSb5HMaeQa8kYqsrbjmNBeF24EnqX24Uxr08
+ PC5z8qPq6ekKDxxDQGQyGsBXEfU3yFv9cPy6N43LUd3l4K2d3SQ4IhVlctaPb5TKZZcW QA== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gvebm0q3u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 23 Jun 2022 01:50:48 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25N1aPW6003841;
+        Thu, 23 Jun 2022 01:50:47 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma01dal.us.ibm.com with ESMTP id 3guk92kbnh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 23 Jun 2022 01:50:47 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25N1okmM35651890
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 23 Jun 2022 01:50:46 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 54C0AC605A;
+        Thu, 23 Jun 2022 01:50:46 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7AAF7C6057;
+        Thu, 23 Jun 2022 01:50:45 +0000 (GMT)
+Received: from [9.211.125.38] (unknown [9.211.125.38])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 23 Jun 2022 01:50:45 +0000 (GMT)
+Message-ID: <e200854b-116a-cbf3-256d-92a9c490b9bc@linux.vnet.ibm.com>
+Date:   Wed, 22 Jun 2022 21:50:45 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [RFC PATCH v2 2/3] fs: define a firmware security filesystem
+ named fwsecurityfs
+Content-Language: en-US
+To:     Casey Schaufler <casey@schaufler-ca.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-fsdevel@vger.kernel.org
+Cc:     linux-efi@vger.kernel.org,
+        linux-security-module <linux-security-module@vger.kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        George Wilson <gcwilson@linux.ibm.com>, gjoyce@ibm.com,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+References: <20220622215648.96723-1-nayna@linux.ibm.com>
+ <20220622215648.96723-3-nayna@linux.ibm.com>
+ <e5399b47-5382-99e6-9a79-c0947a696917@schaufler-ca.com>
+From:   Nayna <nayna@linux.vnet.ibm.com>
+In-Reply-To: <e5399b47-5382-99e6-9a79-c0947a696917@schaufler-ca.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: xCCZ1rp5CwqPjADRXKVg0nEJScoazKR5
+X-Proofpoint-GUID: xCCZ1rp5CwqPjADRXKVg0nEJScoazKR5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-22_08,2022-06-22_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ mlxlogscore=835 priorityscore=1501 spamscore=0 suspectscore=0
+ impostorscore=0 clxscore=1011 adultscore=0 mlxscore=0 bulkscore=0
+ phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2204290000 definitions=main-2206230004
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The way sha256_block_neon restore the stackframe confuses objtool.
-But it turns out this function is a leaf function and does not use
-FP nor LR as scratch register.
 
-Do not create a stackframe in this function as it is not necessary.
+On 6/22/22 18:29, Casey Schaufler wrote:
+> On 6/22/2022 2:56 PM, Nayna Jain wrote:
+>> securityfs is meant for linux security subsystems to expose 
+>> policies/logs
+>> or any other information. However, there are various firmware security
+>> features which expose their variables for user management via kernel.
+>> There is currently no single place to expose these variables. Different
+>> platforms use sysfs/platform specific filesystem(efivarfs)/securityfs
+>> interface as find appropriate. Thus, there is a gap in kernel interfaces
+>> to expose variables for security features.
+>
+> Why not put the firmware entries under /sys/kernel/security/firmware?
 
-Signed-off-by: Julien Thierry <jthierry@redhat.com>
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
----
- arch/arm64/crypto/sha512-armv8.pl | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ From man 5 sysfs page:
 
-diff --git a/arch/arm64/crypto/sha512-armv8.pl b/arch/arm64/crypto/sha512-armv8.pl
-index 1882c4110026..6e2a96e05c5a 100644
---- a/arch/arm64/crypto/sha512-armv8.pl
-+++ b/arch/arm64/crypto/sha512-armv8.pl
-@@ -648,8 +648,6 @@ $code.=<<___;
- .align	4
- sha256_block_neon:
- .Lneon_entry:
--	stp	x29, x30, [sp, #-16]!
--	mov	x29, sp
- 	sub	sp,sp,#16*4
- 
- 	adr	$Ktbl,K256
-@@ -736,8 +734,7 @@ $code.=<<___;
- 	 mov	$Xfer,sp
- 	b.ne	.L_00_48
- 
--	ldr	x29,[x29]
--	add	sp,sp,#16*4+16
-+	add	sp,sp,#16*4
- 	ret
- .size	sha256_block_neon,.-sha256_block_neon
- ___
--- 
-2.17.1
+/sys/firmware: This subdirectory contains interfaces for viewing and 
+manipulating firmware-specific objects and attributes.
+
+/sys/kernel: This subdirectory contains various files and subdirectories 
+that provide information about the running kernel.
+
+The security variables which are supposed to be exposed via fwsecurityfs 
+are managed by firmware, stored in firmware managed space and also often 
+consumed by firmware for enabling various security features.
+
+ From git commit b67dbf9d4c1987c370fd18fdc4cf9d8aaea604c2, the purpose 
+of securityfs(/sys/kernel/security) is to provide a common place for all 
+kernel LSMs to use a common place. The idea of 
+fwsecurityfs(/sys/firmware/security) is to similarly provide a common 
+place for all firmware security objects.
+
+By having another firmware directory within /sys/kernel/security would 
+mean scattering firmware objects at multiple places and confusing the 
+purpose of /sys/kernel and /sys/firmware.
+
+Thanks & Regards,
+
+      - Nayna
 
