@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44495C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A83C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234919AbiFWRol (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46324 "EHLO
+        id S234925AbiFWRor (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234827AbiFWRiU (ORCPT
+        with ESMTP id S234835AbiFWRiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:38:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BC24707D;
-        Thu, 23 Jun 2022 10:08:35 -0700 (PDT)
+        Thu, 23 Jun 2022 13:38:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E1049930;
+        Thu, 23 Jun 2022 10:08:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7183B82499;
-        Thu, 23 Jun 2022 17:08:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB72BC3411B;
-        Thu, 23 Jun 2022 17:08:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1AFFB8249B;
+        Thu, 23 Jun 2022 17:08:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32011C3411B;
+        Thu, 23 Jun 2022 17:08:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004113;
-        bh=YEOkS9rYWaYZ21ChQDwOws+yUKUG4JodqoNMAASmEAg=;
+        s=korg; t=1656004119;
+        bh=gX6d4W5ZOnEqylI6qnqXvGiuiG+YvJ1yoDEsCSk7LbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BHL1YtkI1/2O8ns+ilzsKBmZBc89GHRLuLujd7+53TiHWUu+M/Wa4R1eGHkKibU91
-         njrC5y692G9XHLa4AbOwfjNPDpW1J00drKiLJ76DDIZRfTmn5Xx3qEnKUP7A3zkoJ4
-         /ShcslJds75psx0vN/P4JUp2F21FLXCBR9AFZKQo=
+        b=a3bqAVdb1nyNPXaBnOoWMwuI8GwNks93EmWJFwvrC8OMn7cuMsZ8c+ryQYB2++MlA
+         VsYWWJsNctlPue8Ee5V+p+Ygk682C3Ez/FDEpb7HY2Xb/Luq/KRdsiJFTPaZdyoBx7
+         ZmfW+cMSnItf21lgRi5MqXszYLQslD5+nr6HqBRY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 193/237] random: account for arch randomness in bits
-Date:   Thu, 23 Jun 2022 18:43:47 +0200
-Message-Id: <20220623164348.699759354@linuxfoundation.org>
+        stable@vger.kernel.org, David Rhodes <david.rhodes@cirrus.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 195/237] ASoC: cs53l30: Correct number of volume levels on SX controls
+Date:   Thu, 23 Jun 2022 18:43:49 +0200
+Message-Id: <20220623164348.757443139@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -47,57 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-commit 77fc95f8c0dc9e1f8e620ec14d2fb65028fb7adc upstream.
+[ Upstream commit 7fbd6dd68127927e844912a16741016d432a0737 ]
 
-Rather than accounting in bytes and multiplying (shifting), we can just
-account in bits and avoid the shift. The main motivation for this is
-there are other patches in flux that expand this code a bit, and
-avoiding the duplication of "* 8" everywhere makes things a bit clearer.
+This driver specified the maximum value rather than the number of volume
+levels on the SX controls, this is incorrect, so correct them.
 
-Cc: stable@vger.kernel.org
-Fixes: 12e45a2a6308 ("random: credit architectural init the exact amount")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: David Rhodes <david.rhodes@cirrus.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-4-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/codecs/cs53l30.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -809,7 +809,7 @@ early_param("random.trust_bootloader", p
- int __init random_init(const char *command_line)
- {
- 	ktime_t now = ktime_get_real();
--	unsigned int i, arch_bytes;
-+	unsigned int i, arch_bits;
- 	unsigned long entropy;
+diff --git a/sound/soc/codecs/cs53l30.c b/sound/soc/codecs/cs53l30.c
+index c7edf2df5e36..f30807b3705d 100644
+--- a/sound/soc/codecs/cs53l30.c
++++ b/sound/soc/codecs/cs53l30.c
+@@ -351,22 +351,22 @@ static const struct snd_kcontrol_new cs53l30_snd_controls[] = {
+ 	SOC_ENUM("ADC2 NG Delay", adc2_ng_delay_enum),
  
- #if defined(LATENT_ENTROPY_PLUGIN)
-@@ -817,12 +817,12 @@ int __init random_init(const char *comma
- 	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
- #endif
+ 	SOC_SINGLE_SX_TLV("ADC1A PGA Volume",
+-		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC1B PGA Volume",
+-		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2A PGA Volume",
+-		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2B PGA Volume",
+-		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
  
--	for (i = 0, arch_bytes = BLAKE2S_BLOCK_SIZE;
-+	for (i = 0, arch_bits = BLAKE2S_BLOCK_SIZE * 8;
- 	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(entropy)) {
- 		if (!arch_get_random_seed_long_early(&entropy) &&
- 		    !arch_get_random_long_early(&entropy)) {
- 			entropy = random_get_entropy();
--			arch_bytes -= sizeof(entropy);
-+			arch_bits -= sizeof(entropy) * 8;
- 		}
- 		_mix_pool_bytes(&entropy, sizeof(entropy));
- 	}
-@@ -834,7 +834,7 @@ int __init random_init(const char *comma
- 	if (crng_ready())
- 		crng_reseed();
- 	else if (trust_cpu)
--		_credit_init_bits(arch_bytes * 8);
-+		_credit_init_bits(arch_bits);
+ 	SOC_SINGLE_SX_TLV("ADC1A Digital Volume",
+-		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC1B Digital Volume",
+-		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2A Digital Volume",
+-		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2B Digital Volume",
+-		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ };
  
- 	return 0;
- }
+ static const struct snd_soc_dapm_widget cs53l30_dapm_widgets[] = {
+-- 
+2.35.1
+
 
 
