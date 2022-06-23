@@ -2,113 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3062AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC8FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiFWV3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 17:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47754 "EHLO
+        id S229852AbiFWV30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 17:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiFWV3U (ORCPT
+        with ESMTP id S229469AbiFWV3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 17:29:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A4775251F
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:29:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656019758;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6PfW9sxpQj/mvhni+b0KRiNmHNGj39/jQBs8n3G3n/E=;
-        b=i2rZEXo49QwUmz7rTW1PNtwpd4ROnXA+jCSsz1p39sdzBjX/XxsNkdCcXUy0Y/FX65Qssh
-        gAcDQMllb+ZUoZ+lc83TeQfuMn5G2+KZPvVbfOOHSuV9QRvM53VJk00Uk6XtNebUvj4exW
-        YVuLVuY2r/rbvJOLeDK8qr+Tlf8+vS4=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-578-vc2GWJ_YOGWIurpiz4FtMw-1; Thu, 23 Jun 2022 17:29:17 -0400
-X-MC-Unique: vc2GWJ_YOGWIurpiz4FtMw-1
-Received: by mail-il1-f198.google.com with SMTP id x5-20020a923005000000b002d1a91c4d13so185803ile.4
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:29:16 -0700 (PDT)
+        Thu, 23 Jun 2022 17:29:24 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA43D5251E
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:29:21 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id pk21so871829ejb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:29:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0MgVHm7hfEGFFpT89WECbukmwvWQfoQIAD1gRN/MMR4=;
+        b=n7GAWxaMj1YQvoYjky86F32/DIqkyAUd/sNAAdAq6jmau341mtT+4q2Maf5NALs4An
+         SgXcfJksoRB1B8uYuvAsRuWO7MdPyMAZjZH/Gsf2JZZYIH3vGYzW6f1z4rouXS4BLlNB
+         GryqLM4JA59qTNM9xFUkN/6xZVu+iIspE1z+Rr5FH94U5LO/AfAf3AU8fbNMBkQ4HFSt
+         EE4JKCXIHShqvaORJG3rrvzWcg7Cd6WKesteYcRYqhXKNcTpwtXYO4ymGPLSU+lPwZmq
+         EKVEsN7AvQ/mjuQlNm4qFjuHYJnevXm3gj0oTPowrYcrCmhbtSX2jNSsb7ve+HVRNum8
+         y6wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6PfW9sxpQj/mvhni+b0KRiNmHNGj39/jQBs8n3G3n/E=;
-        b=YHhMAQehGlX6EiX6BtZ0nRr95lmFAhGQozdm/kBrhy06yZyITcmvpoB4aL88Tjw/wN
-         Y9O3vc1Wxo16tLCUC7W0qohn95FkAGEAcxStK65zrtVaL1E2DxzyHNyqamPBU3v4tSzA
-         9yDuJ7MlCHe/WNAh15CU37zoK3QCV/kc4IWOgF1KU2mL5ap0yxe+0K7fUmM8PCnnKAhW
-         Q4TokkKZEezUcDR94fchhYGbxzZ2RcSyHrPRJi8DtOxCfnwqD5XgEoZrRS1R06jY7E91
-         JHBaUvEMlp3Uw7db44RKZ9u3w8VWdQRaYOjeh8plKkodWTALNJiAhEJssLMflhii8g3D
-         e6rA==
-X-Gm-Message-State: AJIora/jqnWrUUXnpdWB+f+HwAXsaZVbFrKPJXOmL73Vf07dLcfhOa5E
-        aWe5xZXIOpeDndi0tMBhn0svanf2teJ7Bh7Yx1taA5y3p5wPH+Yba2hqNGVNeKtl+bGKTYup4qL
-        DZxhdqNKbju48xqj8TqcTLl5W
-X-Received: by 2002:a05:6602:13c3:b0:672:6e5b:f91d with SMTP id o3-20020a05660213c300b006726e5bf91dmr5280345iov.68.1656019755998;
-        Thu, 23 Jun 2022 14:29:15 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vtJvEhlzlRfOF8b92vaohNpblje8osM0+m8TcPa0obERTPPu0deqheKeigL7E2U8Aqg0jxfg==
-X-Received: by 2002:a05:6602:13c3:b0:672:6e5b:f91d with SMTP id o3-20020a05660213c300b006726e5bf91dmr5280339iov.68.1656019755753;
-        Thu, 23 Jun 2022 14:29:15 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id h7-20020a0566380f0700b00339cfcf4a49sm202645jas.141.2022.06.23.14.29.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 14:29:15 -0700 (PDT)
-Date:   Thu, 23 Jun 2022 17:29:13 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Linux MM Mailing List <linux-mm@kvack.org>
-Subject: Re: [PATCH 2/4] kvm: Merge "atomic" and "write" in
- __gfn_to_pfn_memslot()
-Message-ID: <YrTbKaRe497n8M0o@xz-m1.local>
-References: <20220622213656.81546-1-peterx@redhat.com>
- <20220622213656.81546-3-peterx@redhat.com>
- <YrR9i3yHzh5ftOxB@google.com>
- <YrTDBwoddwoY1uSV@xz-m1.local>
- <YrTNGVpT8Cw2yrnr@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0MgVHm7hfEGFFpT89WECbukmwvWQfoQIAD1gRN/MMR4=;
+        b=V1pYnIUc5XpJfihKNotUMqRjjDzdidxu/rVrez02K6y7L0fS+LK/jz06En4GIto9MG
+         bXe5CZnBksKq9AHVntbMBoyoy6nAttuGF0498/E5sx+cXD3aAVtAC62j3C5rDeq5Kw14
+         Cr7NOla1swnKtxVbVj0k15sTVndrckXdirATlHBKaDyKzaMLzQ1DypBKcBqLsF4wAGO5
+         YSFXa0vFP49MA5xj1zyo1QUkJt4Pq+TAcupZi9BGTwLdCqfnkER7DHMeWupC1fnO2jpX
+         96X0xM+8SQfwLJvBk5niGxWTwpWTyjb6sfZVzFTNhrxPc/f3EsxYXvLs3Y4zypHgZDZT
+         UIcg==
+X-Gm-Message-State: AJIora9aC5QKQbe/4gWCIuVPZ+1pEELviNfikw/YI8oYzYJvYKcU7RsC
+        +MQaenm6JBI5WSjt9aYegyz55Llw/jZRc63w1UmVtkuuc1Q=
+X-Google-Smtp-Source: AGRyM1uno90QbZ91SwG8r3HvsHhw5rKJPhHQzK+RE5HBZIL7xB7+LX1qCZOvrN1Ov87DW0uPVHuwiJJSUd6eHUkuQfc=
+X-Received: by 2002:a17:906:149:b0:711:fca6:bc2f with SMTP id
+ 9-20020a170906014900b00711fca6bc2fmr10273609ejh.497.1656019760286; Thu, 23
+ Jun 2022 14:29:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YrTNGVpT8Cw2yrnr@google.com>
+References: <202206240410.O3xJ4UZE-lkp@intel.com>
+In-Reply-To: <202206240410.O3xJ4UZE-lkp@intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 23 Jun 2022 23:28:43 +0200
+Message-ID: <CAHp75VeaBssymMOvxSkMjyRD4J_BTcA+n3b9qD8-QQTH5uUFTQ@mail.gmail.com>
+Subject: Re: [asahilinux:bits/130-cpufreq 3/4] drivers/cpufreq/apple-soc-cpufreq.c:67:19:
+ error: implicit declaration of function 'readq_relaxed'; did you mean 'readl_relaxed'?
+To:     kernel test robot <lkp@intel.com>
+Cc:     Hector Martin <marcan@marcan.st>, kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 08:29:13PM +0000, Sean Christopherson wrote:
-> This is what I came up with for splitting @async into a pure input (no_wait) and
-> a return value (KVM_PFN_ERR_NEEDS_IO).
+On Thu, Jun 23, 2022 at 11:23 PM kernel test robot <lkp@intel.com> wrote:
+>
+> tree:   https://github.com/AsahiLinux/linux bits/130-cpufreq
+> head:   c1f94f72b7ae14d506b361283ef25624368b1a32
+> commit: 4b2ae5bd4433c2282e699dc54bd26b066ad28f85 [3/4] cpufreq: apple-soc: Add new driver to control Apple SoC CPU P-states
+> config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220624/202206240410.O3xJ4UZE-lkp@intel.com/config)
+> compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/AsahiLinux/linux/commit/4b2ae5bd4433c2282e699dc54bd26b066ad28f85
+>         git remote add asahilinux https://github.com/AsahiLinux/linux
+>         git fetch --no-tags asahilinux bits/130-cpufreq
+>         git checkout 4b2ae5bd4433c2282e699dc54bd26b066ad28f85
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    drivers/cpufreq/apple-soc-cpufreq.c: In function 'apple_soc_cpufreq_get_rate':
+> >> drivers/cpufreq/apple-soc-cpufreq.c:67:19: error: implicit declaration of function 'readq_relaxed'; did you mean 'readl_relaxed'? [-Werror=implicit-function-declaration]
+>       67 |         u64 reg = readq_relaxed(priv->reg_base + APPLE_DVFS_STATUS);
+>          |                   ^~~~~~~~~~~~~
+>          |                   readl_relaxed
 
-The attached patch looks good to me.  It's just that..
+Consider to use io-64-non-atomic-lo-hi.h or so
 
-[...]
-
->  kvm_pfn_t __gfn_to_pfn_memslot(const struct kvm_memory_slot *slot, gfn_t gfn,
-> -			       bool atomic, bool *async, bool write_fault,
-> +			       bool atomic, bool no_wait, bool write_fault,
->  			       bool *writable, hva_t *hva)
-
-.. with this patch on top we'll have 3 booleans already.  With the new one
-to add separated as suggested then it'll hit 4.
-
-Let's say one day we'll have that struct, but.. are you sure you think
-keeping four booleans around is nicer than having a flag, no matter whether
-we'd like to have a struct or not?
-
-  kvm_pfn_t __gfn_to_pfn_memslot(const struct kvm_memory_slot *slot, gfn_t gfn,
-			       bool atomic, bool no_wait, bool write_fault,
-                               bool interruptible, bool *writable, hva_t *hva);
-
-What if the booleans goes to 5, 6, or more?
-
-/me starts to wonder what'll be the magic number that we'll start to think
-a bitmask flag will be more lovely here. :)
 
 -- 
-Peter Xu
-
+With Best Regards,
+Andy Shevchenko
