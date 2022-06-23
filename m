@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F278DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40FB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234257AbiFWRcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51196 "EHLO
+        id S234305AbiFWRcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233768AbiFWR3o (ORCPT
+        with ESMTP id S233970AbiFWRaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:29:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8BE7FD2A;
-        Thu, 23 Jun 2022 10:04:49 -0700 (PDT)
+        Thu, 23 Jun 2022 13:30:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C6281240;
+        Thu, 23 Jun 2022 10:04:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80BFFB82490;
-        Thu, 23 Jun 2022 17:04:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE70DC3411B;
-        Thu, 23 Jun 2022 17:04:47 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CAF39CE258A;
+        Thu, 23 Jun 2022 17:04:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3109C3411B;
+        Thu, 23 Jun 2022 17:04:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003888;
-        bh=/S1iYXeszMNaRYv4XNqtEEGXovrfJyB6SAipvJMmfqI=;
+        s=korg; t=1656003891;
+        bh=BSMaDwzixyNbRy3gIu8dOQMQypBu2a2mD+FocGsuuiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hfA2DsTRL8Fk8kefxOMCwzN8RWt4/cXVNshOn3vesj3Ep2q7OfXijw8l/3CZC3idr
-         F0NPKZlapYMPhXGReghtyAJ+s9rTwgcmEjTK5qhVkUp8l8x1suXraRYQ2Kg4f0AUA2
-         Cx4Bm//5LjCWsWOAjDUGc+Ak8GmNv2QBGTd5Pwow=
+        b=a0iLbZSEpj8sggZNOS7zGhN8hTeaOw7VtdVv1y4PZMLq7ZZGeS6FwhVUG2Zi3xQ9/
+         Ky8Sms7zK2kFN7MouBzFt0kzaGoH9S8WcUQ7zjaWvpUHHu95+y48TuaGuh8X8cFnOU
+         DcqTMavzNLY1yKV9GOs+TMmiM5Q9dcNeFAx4vh08=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 119/237] random: do not take pool spinlock at boot
-Date:   Thu, 23 Jun 2022 18:42:33 +0200
-Message-Id: <20220623164346.578536073@linuxfoundation.org>
+Subject: [PATCH 4.14 093/237] random: remove use_input_pool parameter from crng_reseed()
+Date:   Thu, 23 Jun 2022 18:42:07 +0200
+Message-Id: <20220623164345.825463908@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,37 +48,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit afba0b80b977b2a8f16234f2acd982f82710ba33 upstream.
+commit 5d58ea3a31cc98b9fa563f6921d3d043bf0103d1 upstream.
 
-Since rand_initialize() is run while interrupts are still off and
-nothing else is running, we don't need to repeatedly take and release
-the pool spinlock, especially in the RDSEED loop.
+The primary_crng is always reseeded from the input_pool, while the NUMA
+crngs are always reseeded from the primary_crng.  Remove the redundant
+'use_input_pool' parameter from crng_reseed() and just directly check
+whether the crng is the primary_crng.
 
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/char/random.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -973,10 +973,10 @@ int __init rand_initialize(void)
- 			rv = random_get_entropy();
- 			arch_init = false;
- 		}
--		mix_pool_bytes(&rv, sizeof(rv));
-+		_mix_pool_bytes(&rv, sizeof(rv));
- 	}
--	mix_pool_bytes(&now, sizeof(now));
--	mix_pool_bytes(utsname(), sizeof(*(utsname())));
-+	_mix_pool_bytes(&now, sizeof(now));
-+	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
+@@ -365,7 +365,7 @@ static struct {
  
- 	extract_entropy(base_crng.key, sizeof(base_crng.key));
- 	++base_crng.generation;
+ static void extract_entropy(void *buf, size_t nbytes);
+ 
+-static void crng_reseed(struct crng_state *crng, bool use_input_pool);
++static void crng_reseed(struct crng_state *crng);
+ 
+ /*
+  * This function adds bytes into the entropy "pool".  It does not
+@@ -464,7 +464,7 @@ static void credit_entropy_bits(int nbit
+ 	trace_credit_entropy_bits(nbits, entropy_count, _RET_IP_);
+ 
+ 	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
+-		crng_reseed(&primary_crng, true);
++		crng_reseed(&primary_crng);
+ }
+ 
+ /*********************************************************************
+@@ -700,7 +700,7 @@ static int crng_slow_load(const u8 *cp,
+ 	return 1;
+ }
+ 
+-static void crng_reseed(struct crng_state *crng, bool use_input_pool)
++static void crng_reseed(struct crng_state *crng)
+ {
+ 	unsigned long flags;
+ 	int i;
+@@ -709,7 +709,7 @@ static void crng_reseed(struct crng_stat
+ 		u32 key[8];
+ 	} buf;
+ 
+-	if (use_input_pool) {
++	if (crng == &primary_crng) {
+ 		int entropy_count;
+ 		do {
+ 			entropy_count = READ_ONCE(input_pool.entropy_count);
+@@ -747,7 +747,7 @@ static void _extract_crng(struct crng_st
+ 		init_time = READ_ONCE(crng->init_time);
+ 		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
+ 		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
+-			crng_reseed(crng, crng == &primary_crng);
++			crng_reseed(crng);
+ 	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+ 	chacha20_block(&crng->state[0], out);
+@@ -1546,7 +1546,7 @@ static long random_ioctl(struct file *f,
+ 			return -EPERM;
+ 		if (crng_init < 2)
+ 			return -ENODATA;
+-		crng_reseed(&primary_crng, true);
++		crng_reseed(&primary_crng);
+ 		WRITE_ONCE(crng_global_init_time, jiffies - 1);
+ 		return 0;
+ 	default:
 
 
