@@ -2,99 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF138CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE3C7C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbiFWEsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        id S231933AbiFWEst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbiFWEjQ (ORCPT
+        with ESMTP id S1343761AbiFWEFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 00:39:16 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3C534B99
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:39:15 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id a11-20020a17090acb8b00b001eca0041455so2654773pju.1
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:39:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XtCc+UQQpUTja7HKmiItYlG8yACqKBWw8JAx2Em2Ros=;
-        b=gh/igH2UBmB6266V7qY6S0bv21sMThSqiv6qST2OQV19Ker6WZI12/ZPsn5LmqqWMh
-         t6B8o2aZQ4nJA7ak3aUREkh7KGQ2hNRtyoR81bZ+A8Fi4z4McsyrgQekTQcMCI70UI2n
-         3RQWqjbp2T4yiGZpV+UYo3SmGTABIUT9W/o/7PhDpLAGwt+LqOCdHqUxWN8rIWno2h1A
-         yaR7HwLh5gimH4pkP8R4TyB0BRQgj5Vk/qAzYMVTFTvdrtlzi9MU2P0Ov9lbzA5ajnZ9
-         JG6THSs9MWkC6Ho5PsIOCjSN6xRoh9MdEFq94l8qNCd/kXfvxnaFM83nULrqV7QslcN2
-         EuNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XtCc+UQQpUTja7HKmiItYlG8yACqKBWw8JAx2Em2Ros=;
-        b=VJK2Nrx2rxQygESeN5HxpesKD7gq6K8BSY7N+IQqwjOi7XXQzWn1HSHUWFOo1dsA1I
-         EZg5/lWIYyKgmvthyweYhKOrQ+BIR83fb0Mb4WHHYtjWN2qgbHxoU83f+ZZcjwYuch6B
-         WAUkNpH/J/X/WFUmOKL6NWZMYv8laC4ofm24GKW8Ary4cBxeetqQQQfYu29Ol9jqJulB
-         +9tET6louEkmb9Ci2M7Dt/sJAA9uEq/ouytnVpDGmhC3fd1DjZdYMsW2k1h7XCP5GJmS
-         ZLh34BkRb9yOAGZiDCsutfJXlWrEkhn9Mu7zsHrX0mzNiFhwVEDaw/81rcuaZzE1Ewst
-         Ku0Q==
-X-Gm-Message-State: AJIora+oRLHSixOlhVmdo2sRRPeJRnAnoGpdiSKpHbUPXqk8Nv4EEFHJ
-        i4P7z2wtEtdmcPl6u5tbSaVrtxwAWoHTSg==
-X-Google-Smtp-Source: AGRyM1tjtG0nx/M7CuMI6QIDU2GQemBYxqdzHLv+78X41ahZcFZtCvvQIaaUbp3aAN3pC5NPVKezhw==
-X-Received: by 2002:a17:90a:c984:b0:1ec:747b:da32 with SMTP id w4-20020a17090ac98400b001ec747bda32mr1975850pjt.216.1655959154953;
-        Wed, 22 Jun 2022 21:39:14 -0700 (PDT)
-Received: from localhost (c-67-180-87-133.hsd1.ca.comcast.net. [67.180.87.133])
-        by smtp.gmail.com with ESMTPSA id a66-20020a621a45000000b005251759afbasm9041385pfa.65.2022.06.22.21.39.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 21:39:14 -0700 (PDT)
-From:   Chang Yu <marcus.yu.56@gmail.com>
-To:     Larry.Finger@lwfinger.net, philipp.g.hortmann@gmail.com
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Chang Yu <marcus.yu.56@gmail.com>
-Subject: [PATCH v2] staging: r8188eu: Make rtw_signal_stat_timer_hdl a static function
-Date:   Wed, 22 Jun 2022 21:38:55 -0700
-Message-Id: <20220623043855.407208-1-marcus.yu.56@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 23 Jun 2022 00:05:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455E53EF03
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:05:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D984D60F92
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 04:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0821C3411B;
+        Thu, 23 Jun 2022 04:05:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655957130;
+        bh=2UyGTSqVR/Y2YvttRxXwD6RrqgslHhqELmKAKfDMlSs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZgX2RmY9WHipioZJhoQAQbDPSCYa+2lXYl1fAkh1Pc89RoWxPDo3rMsB3lq17mOfW
+         hQ6THnUgteTa1Bpe+zkx2RhqOj5EO2E329dtLyFpyHGy574HlzALKELPd78Ka+rtHa
+         Q95fIbeQwzEA/Se3sBN3B2LZVLmtwkRVlkIFdPbTl+6MUlH02XBoJfZ5/CdOfovy2Z
+         MpMjWhpK+He0NIEaWlKIRSFGm+/dwTdd2FAEXbl07OLkznvhofl8K1Kru8MZXthVT9
+         2/4KptYo7NFPW86Thf5PHzPbaXpaZ4II+ul/KuBPtgWMQZCjhoIvkc1GUZZVYbd3Rz
+         5bhFgUuR3IrEA==
+Date:   Wed, 22 Jun 2022 23:05:27 -0500
+From:   Mike Rapoport <rppt@kernel.org>
+To:     "Huang, Shaoqin" <shaoqin.huang@intel.com>
+Cc:     Rebecca Mckeever <remckee0@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v3 2/4] memblock tests: add verbose output to memblock
+ tests
+Message-ID: <YrPmhzZDd9YFyEUa@kernel.org>
+References: <cover.1655889641.git.remckee0@gmail.com>
+ <004e021cc3cb7be8749361b3b1cb324459b9cb9f.1655889641.git.remckee0@gmail.com>
+ <b7e6565b-d9f7-a5cc-8e66-087ea7b270d1@intel.com>
+ <YrO3uyXee9DcMTzz@bertie>
+ <d53b547a-1450-82de-a3c5-4bb09f2a728d@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d53b547a-1450-82de-a3c5-4bb09f2a728d@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make rtw_signal_stat_timer_hdl a static function instead of a global
-function.
+On Thu, Jun 23, 2022 at 09:29:05AM +0800, Huang, Shaoqin wrote:
+> 
+> 
+> On 6/23/2022 8:45 AM, Rebecca Mckeever wrote:
+> > On Wed, Jun 22, 2022 at 06:32:04PM +0800, Huang, Shaoqin wrote:
+> > > Just test it and everything works fine. And I think there are some thing can
+> > > improve:
+> > > 
+> > >      The prefix_push() and prefix_pop() are used in so many functions and
+> > > almost of them just put the prefix_push(__func__) begin in the head and the
+> > > prefix_pop() in the end.
+> > >      May be you can define some macro that when you output something and
+> > > automatically push the __func__ as prefix. And when leave the function,
+> > > automatically pop it. And only in some special place, you call it manually.
+> > > 
+> > Thank you for your review. I'm not sure how you would automatically push
+> > __func__ since you have to be inside the function to access that
+> > variable. Let me know if you have any suggestions. I am thinking about
+> > adding another function in common.c that just calls test_pass() followed
+> > by prefix_pop() since those are called together so often.
+> 
+> Just like:
+> #define test_pass_macro()               \
+>          do {                            \
+>                  prefix_push(__func__);  \
+>                  test_pass();            \
+>                  prefix_pop();           \
+>          } while (0)
 
-Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
----
-Changes in v2:
-Added static for the definition as well
+This will not print the name of the failing test, e.g. instead of 
 
- drivers/staging/r8188eu/core/rtw_recv.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+not ok 28 : memblock_alloc: alloc_bottom_up_disjoint_check: failed
 
-diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index cc91638a085d..6564e82ddd66 100644
---- a/drivers/staging/r8188eu/core/rtw_recv.c
-+++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -24,7 +24,7 @@ static u8 rtw_rfc1042_header[] = {
- 	0xaa, 0xaa, 0x03, 0x00, 0x00, 0x00
- };
+with Rebecca's implementation it'll print
+
+not ok 28 : memblock_alloc: failed
+
+How about
+
+#define PREFIX_PUSH() 	prefix_push(__func__)?
  
--void rtw_signal_stat_timer_hdl(struct timer_list *t);
-+static void rtw_signal_stat_timer_hdl(struct timer_list *t);
- 
- void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
- {
-@@ -1794,7 +1794,7 @@ s32 rtw_recv_entry(struct recv_frame *precvframe)
- 	return ret;
- }
- 
--void rtw_signal_stat_timer_hdl(struct timer_list *t)
-+static void rtw_signal_stat_timer_hdl(struct timer_list *t)
- {
- 	struct adapter *adapter = from_timer(adapter, t, recvpriv.signal_stat_timer);
- 	struct recv_priv *recvpriv = &adapter->recvpriv;
+> This macro will automatically push the __fun__ as prefix when you call
+> test_pass_macro(). And then pop it after test_pass() output.
+> 
+> And use this macro() to hidden most of the paired prefix_* functions.
+> 
+> And I think that's the simplist way. May be someone has a better solution.
+> 
+
 -- 
-2.36.1
-
+Sincerely yours,
+Mike.
