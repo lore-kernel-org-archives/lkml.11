@@ -2,72 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A19EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 22:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 829A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 22:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiFWV74 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 17:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41046 "EHLO
+        id S229845AbiFWWGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 18:06:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiFWV7y (ORCPT
+        with ESMTP id S229460AbiFWWG2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 17:59:54 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3C42E0A6;
-        Thu, 23 Jun 2022 14:59:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=Nx26xqoD/wg7rXmn86PrLNvRleEHYYDjYy2HD6LgoXA=; b=b1f/WsmQc9anpr5LcVTEGlX8kd
-        LxV/iEe+N2noR2nT+unDhhhqH1tUwzqDGK2txyNY3a3oqdtZm6BAyAF1NdnXwfA6qeFv8PlLDC0mZ
-        8f9P3XbKqTP5oqv7sOIq3T0SatzcENzUQZkuctu6GFW1btgNOBEVzQHsM32LTGVK4is9e98v4KuvM
-        MlgPcNDoQ5VNOPJIyv74GZQDu69YZODZwvurjbZ5FUuqytM4jT5IO9JnL4M5/V5l3sIiVS8VdkmtE
-        FTrvftKQx2gjfm/V6IC+oDv4piyM+a1WXxASghPyE4TA0pxMPwchIqfhDS25VsjBoZCcc8n792dQJ
-        Kb+iIQTA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o4Urb-00Gvyd-LB; Thu, 23 Jun 2022 21:59:47 +0000
-Message-ID: <bfb37ecf-75b9-8aa4-ec1c-18708c0c673f@infradead.org>
-Date:   Thu, 23 Jun 2022 14:59:46 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] docs: driver-api: gpio: Fix some typos
-Content-Language: en-US
-To:     Tom Schwindl <schwindl@posteo.de>, corbet@lwn.net
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl,
-        linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <YrTdAv3YPlCiDr2u@posteo.de>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <YrTdAv3YPlCiDr2u@posteo.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Thu, 23 Jun 2022 18:06:28 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C00F563A6
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 15:06:24 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id by4-20020a056a00400400b005251029fd97so362135pfb.9
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 15:06:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=KwqDl7Ku0++kd3bGbvwgzs1gT1laIcj9GIfwKObRL9E=;
+        b=f8U/4xKGanNwrOdn737tuWhSmnZoG61m1qxfjiv5VkQ8UPtSqaWeibB404rrX79rJX
+         Sr8EwtDegZkmDOiQT1PYLi73vlNuyK3MEO3CteMf7qrTyzJdkDqEDsqiRCNCHSPQ5OpW
+         eesWhWqiGdmVom/8h4KWFRd14AnohMl03xMmbV6Ab1oeKOXQCzTP9OQoqz1l8U2F6/ec
+         VlqIw1iK8+IqtbCAOHrXtiW4tOefdgMl+CoajfkyUTpBuZ8kM+4EuI/xDArQ35ySZCKy
+         wRv8WwozJNFIjWw3i7yzruaQIY9s/ub55YNu2bl9iMISFr3cyMkNMY6hYWwYFcZJ8fYO
+         pNYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=KwqDl7Ku0++kd3bGbvwgzs1gT1laIcj9GIfwKObRL9E=;
+        b=DlQAta/H4ao1L1VkzZ5vVO2aPfVt8Kze9Ro9DhA/5zr9SQgpIBwxo65XxxMfMwUX0G
+         8Bke+pR/VqS9KH/LWEWG1qVXwcEXyfYxqZsldk7K/rh6EyIXucl0+3/p6AIumW5o2tYr
+         WbXA/HwUpbZEpZP5USB3zawvpi+GJSRbRKv/Ozn/JFlWSJq1WGXBgqBM8X4dv7apmTaG
+         iORQhqY219rtc8BPwqFRyztlBkYoAltehPYv1udhrj9ywhMLkV5iEGXiZBvxoeYOyqTQ
+         WOZw/Hv5zGCF1/gctsQcfr1lfXjQkedZU7RJS1PnkUeJgeLOh7xY53aUnZfffbW1jiGS
+         cpJA==
+X-Gm-Message-State: AJIora+LvgemoOsX4GVDEINlPeVBQ1+IavX+kQfA5ZQVe90/+RPMqVSK
+        N/eSFfiXyi9It8AVVmodUOeyv9gxac8fhgO4Tw==
+X-Google-Smtp-Source: AGRyM1sO9ieUDBnlX+/hb6X4MjMKGW7axAjbZt6eLMihv8A9ry56mIpW47+iL+E9JFdzcNk6h+YievpjxofEabG5Zw==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:ac62:20a7:e3c5:c221])
+ (user=kaleshsingh job=sendgmr) by 2002:a05:6a00:885:b0:510:950f:f787 with
+ SMTP id q5-20020a056a00088500b00510950ff787mr42464806pfj.83.1656021983532;
+ Thu, 23 Jun 2022 15:06:23 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 15:06:05 -0700
+Message-Id: <20220623220613.3014268-1-kaleshsingh@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v2 0/2] procfs: Add file path and size to /proc/<pid>/fdinfo
+From:   Kalesh Singh <kaleshsingh@google.com>
+To:     ckoenig.leichtzumerken@gmail.com, christian.koenig@amd.com,
+        viro@zeniv.linux.org.uk, hch@infradead.org,
+        stephen.s.brennan@oracle.com, David.Laight@ACULAB.COM
+Cc:     ilkos@google.com, tjmercier@google.com, surenb@google.com,
+        kernel-team@android.com, Kalesh Singh <kaleshsingh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Anton Mitterer <mail@christoph.anton.mitterer.name>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Colin Cross <ccross@google.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi all,
+
+This is v2 of the fdinfo patches. The main update is adding path
+field only for files with anon inodes. Rebased on 5.19-rc3.
+
+The previous cover letter is copied below for convenience.
+
+Thanks,
+Kalesh
+
+-----------
+
+Processes can pin shared memory by keeping a handle to it through a
+file descriptor; for instance dmabufs, memfd, and ashmem (in Android).
+
+In the case of a memory leak, to identify the process pinning the
+memory, userspace needs to:
+  - Iterate the /proc/<pid>/fd/* for each process
+  - Do a readlink on each entry to identify the type of memory from
+    the file path.
+  - stat() each entry to get the size of the memory.
+
+The file permissions on /proc/<pid>/fd/* only allows for the owner
+or root to perform the operations above; and so is not suitable for
+capturing the system-wide state in a production environment.
+
+This issue was addressed for dmabufs by making /proc/*/fdinfo/*
+accessible to a process with PTRACE_MODE_READ_FSCREDS credentials[1]
+To allow the same kind of tracking for other types of shared memory,
+add the following fields to /proc/<pid>/fdinfo/<fd>:
+
+path - This allows identifying the type of memory based on common
+       prefixes: e.g. "/memfd...", "/dmabuf...", "/dev/ashmem..."
+
+       This was not an issued when dmabuf tracking was introduced
+       because the exp_name field of dmabuf fdinfo could be used
+       to distinguish dmabuf fds from other types.
+
+size - To track the amount of memory that is being pinned.
+
+       dmabufs expose size as an additional field in fdinfo. Remove
+       this and make it a common field for all fds.
+
+Access to /proc/<pid>/fdinfo is governed by PTRACE_MODE_READ_FSCREDS
+-- the same as for /proc/<pid>/maps which also exposes the path and
+size for mapped memory regions.
+
+This allows for a system process with PTRACE_MODE_READ_FSCREDS to
+account the pinned per-process memory via fdinfo.
 
 
-On 6/23/22 14:37, Tom Schwindl wrote:
-> Correct some simple spelling mistakes in consumer.rst, driver.rst
-> and using-gpio.rst.
-> 
-> Signed-off-by: Tom Schwindl <schwindl@posteo.de>
+Kalesh Singh (2):
+  procfs: Add 'size' to /proc/<pid>/fdinfo/
+  procfs: Add 'path' to /proc/<pid>/fdinfo/
 
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
-(still)
-
-Thanks.
-
-> ---
->  Documentation/driver-api/gpio/consumer.rst   | 2 +-
->  Documentation/driver-api/gpio/driver.rst     | 6 +++---
->  Documentation/driver-api/gpio/using-gpio.rst | 2 +-
->  3 files changed, 5 insertions(+), 5 deletions(-)
-> 
+ Documentation/filesystems/proc.rst | 22 ++++++++++++++++++++--
+ drivers/dma-buf/dma-buf.c          |  1 -
+ fs/libfs.c                         |  9 +++++++++
+ fs/proc/fd.c                       | 18 ++++++++++++++----
+ include/linux/fs.h                 |  1 +
+ 5 files changed, 44 insertions(+), 7 deletions(-)
 
 
+base-commit: a111daf0c53ae91e71fd2bfe7497862d14132e3e
 -- 
-~Randy
+2.37.0.rc0.161.g10f37bed90-goog
+
