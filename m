@@ -2,109 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53540C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 344EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237126AbiFWSYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33546 "EHLO
+        id S237165AbiFWSYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237715AbiFWSXV (ORCPT
+        with ESMTP id S237734AbiFWSXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:23:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68622C2C5F;
-        Thu, 23 Jun 2022 10:25:50 -0700 (PDT)
+        Thu, 23 Jun 2022 14:23:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD5BC2C69;
+        Thu, 23 Jun 2022 10:25:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A94C2B824C1;
-        Thu, 23 Jun 2022 17:25:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EBF3C341C7;
-        Thu, 23 Jun 2022 17:25:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5418861F0A;
+        Thu, 23 Jun 2022 17:25:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB4A9C341C5;
+        Thu, 23 Jun 2022 17:25:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005147;
-        bh=2JmOFGewJ4ZB7dxdcwRFUX2CBNPWpL4Q3bPJdpAazwk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gODA1EaRzQ5QoYnXwnoWkESemA4D4HtaLZgYnadBOfcmxa3xxd0tvo+zerWaupJr5
-         AOboKkizQv+l6YkJKwMGBrnRs5opP7sP5T08+xOFM/jz2Cc7kxs9muo9JzlpFCOJ6C
-         ZxOV13NBpuaU+zu8m4uX9RKPztyJ3zFgplLGTIEM=
+        s=korg; t=1656005150;
+        bh=SyFyZ2sRAWl65JKjtAQGLYjMGv0I2r4u6CPEgMxxpHE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UndrPuqlREOVAdbphSJ54FLO4A6s+2z413Pfi+d+k2c6q3trM6Txqulo9U8vN1CY1
+         ZZmCuyKvYYYC3b2aUV4Ga39Iutl9ajMG3ACnhl7d1fwpJjExuBf7zNQ+kt4eBAtb3S
+         bKXp7mUxTcgZ0xzlBUrXP5ppQxNxu39SJ7B3hXPE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Simon Sundberg <simon.sundberg@kau.se>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.18 09/11] bpf: Fix calling global functions from BPF_PROG_TYPE_EXT programs
-Date:   Thu, 23 Jun 2022 18:45:21 +0200
-Message-Id: <20220623164322.585696427@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.18 00/11] 5.18.7-rc1 review
+Date:   Thu, 23 Jun 2022 18:45:12 +0200
+Message-Id: <20220623164322.315085512@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164322.315085512@linuxfoundation.org>
-References: <20220623164322.315085512@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.7-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.18.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.18.7-rc1
+X-KernelTest-Deadline: 2022-06-25T16:43+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+This is the start of the stable review cycle for the 5.18.7 release.
+There are 11 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit f858c2b2ca04fc7ead291821a793638ae120c11d upstream.
+Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
+Anything received after that time might be too late.
 
-The verifier allows programs to call global functions as long as their
-argument types match, using BTF to check the function arguments. One of the
-allowed argument types to such global functions is PTR_TO_CTX; however the
-check for this fails on BPF_PROG_TYPE_EXT functions because the verifier
-uses the wrong type to fetch the vmlinux BTF ID for the program context
-type. This failure is seen when an XDP program is loaded using
-libxdp (which loads it as BPF_PROG_TYPE_EXT and attaches it to a global XDP
-type program).
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.7-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+and the diffstat can be found below.
 
-Fix the issue by passing in the target program type instead of the
-BPF_PROG_TYPE_EXT type to bpf_prog_get_ctx() when checking function
-argument compatibility.
+thanks,
 
-The first Fixes tag refers to the latest commit that touched the code in
-question, while the second one points to the code that first introduced
-the global function call verification.
+greg k-h
 
-v2:
-- Use resolve_prog_type()
+-------------
+Pseudo-Shortlog of commits:
 
-Fixes: 3363bd0cfbb8 ("bpf: Extend kfunc with PTR_TO_CTX, PTR_TO_MEM argument support")
-Fixes: 51c39bb1d5d1 ("bpf: Introduce function-by-function verification")
-Reported-by: Simon Sundberg <simon.sundberg@kau.se>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/r/20220606075253.28422-1-toke@redhat.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-[ backport: resolve conflict due to kptr series missing ]
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- kernel/bpf/btf.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.18.7-rc1
 
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -5769,6 +5769,7 @@ static int btf_check_func_arg_match(stru
- 				    struct bpf_reg_state *regs,
- 				    bool ptr_to_mem_ok)
- {
-+	enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
- 	struct bpf_verifier_log *log = &env->log;
- 	u32 i, nargs, ref_id, ref_obj_id = 0;
- 	bool is_kfunc = btf_is_kernel(btf);
-@@ -5834,8 +5835,7 @@ static int btf_check_func_arg_match(stru
- 		if (ret < 0)
- 			return ret;
- 
--		if (btf_get_prog_ctx_type(log, btf, t,
--					  env->prog->type, i)) {
-+		if (btf_get_prog_ctx_type(log, btf, t, prog_type, i)) {
- 			/* If function expects ctx type in BTF check that caller
- 			 * is passing PTR_TO_CTX.
- 			 */
+Sean Anderson <sean.anderson@seco.com>
+    dt-bindings: nvmem: sfp: Add clock properties
+
+Toke Høiland-Jørgensen <toke@redhat.com>
+    selftests/bpf: Add selftest for calling global functions from freplace
+
+Toke Høiland-Jørgensen <toke@redhat.com>
+    bpf: Fix calling global functions from BPF_PROG_TYPE_EXT programs
+
+Amir Goldstein <amir73il@gmail.com>
+    fsnotify: consistent behavior for parent not watching children
+
+Amir Goldstein <amir73il@gmail.com>
+    fsnotify: introduce mark type iterator
+
+Kees Cook <keescook@chromium.org>
+    x86/boot: Wrap literal addresses in absolute_pointer()
+
+Jakub Kicinski <kuba@kernel.org>
+    net: wwan: iosm: remove pointless null check
+
+Martin Liška <mliska@suse.cz>
+    eth: sun: cassini: remove dead code
+
+Jakub Kicinski <kuba@kernel.org>
+    wifi: rtlwifi: remove always-true condition pointed out by GCC 12
+
+Damien Le Moal <damien.lemoal@opensource.wdc.com>
+    zonefs: fix zonefs_iomap_begin() for reads
+
+Christian Borntraeger <borntraeger@linux.ibm.com>
+    s390/mm: use non-quiescing sske for KVM switch to keyed guest
+
+
+-------------
+
+Diffstat:
+
+ .../bindings/nvmem/fsl,layerscape-sfp.yaml         | 14 ++++
+ Makefile                                           |  4 +-
+ arch/s390/mm/pgtable.c                             |  2 +-
+ arch/x86/boot/boot.h                               | 36 ++++++---
+ arch/x86/boot/main.c                               |  2 +-
+ drivers/net/ethernet/sun/cassini.c                 |  4 +-
+ .../net/wireless/realtek/rtlwifi/rtl8192de/phy.c   |  5 +-
+ drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c      | 10 ---
+ fs/notify/fanotify/fanotify.c                      | 24 ++----
+ fs/notify/fsnotify.c                               | 85 +++++++++----------
+ fs/zonefs/super.c                                  | 94 +++++++++++++++-------
+ include/linux/fsnotify_backend.h                   | 31 +++++--
+ kernel/bpf/btf.c                                   |  4 +-
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       | 14 ++++
+ .../selftests/bpf/progs/freplace_global_func.c     | 18 +++++
+ 15 files changed, 216 insertions(+), 131 deletions(-)
 
 
