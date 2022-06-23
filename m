@@ -2,80 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC216CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:26:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbiFWIZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:25:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39096 "EHLO
+        id S229841AbiFWI0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiFWIZG (ORCPT
+        with ESMTP id S229470AbiFWI0h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:25:06 -0400
-Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A750488A2
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:25:05 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 4I96oKg22NUm14I96oB4mn; Thu, 23 Jun 2022 10:25:02 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Thu, 23 Jun 2022 10:25:02 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <77bdb152-db01-9ad0-fc9f-a8921107a119@wanadoo.fr>
-Date:   Thu, 23 Jun 2022 10:24:59 +0200
+        Thu, 23 Jun 2022 04:26:37 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729BB48883;
+        Thu, 23 Jun 2022 01:26:31 -0700 (PDT)
+X-UUID: fb55d257849d41a2a97ea1a6b12931bc-20220623
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:38e7695c-074a-4db0-9de9-83513716d3a5,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.6,REQID:38e7695c-074a-4db0-9de9-83513716d3a5,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:b14ad71,CLOUDID:b938d82d-1756-4fa3-be7f-474a6e4be921,C
+        OID:f395d47c0c6c,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: fb55d257849d41a2a97ea1a6b12931bc-20220623
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <macpaul.lin@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 875172891; Thu, 23 Jun 2022 16:26:24 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 23 Jun 2022 16:26:22 +0800
+Received: from [172.21.84.99] (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 23 Jun 2022 16:26:22 +0800
+Subject: Re: [PATCH] USB: serial: option: add Quectel RM500K module support
+To:     Johan Hovold <johan@kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Bear Wang <bear.wang@mediatek.com>,
+        Pablo Sun <pablo.sun@mediatek.com>,
+        Mediatek WSD Upstream <wsd_upstream@mediatek.com>,
+        Macpaul Lin <macpaul@gmail.com>, <stable@vger.kernel.org>,
+        Ballon Shi <ballon.shi@quectel.com>
+References: <20220623035214.20124-1-macpaul.lin@mediatek.com>
+ <YrQKApkdi//0ysiP@hovoldconsulting.com>
+From:   Macpaul Lin <macpaul.lin@mediatek.com>
+Message-ID: <8da94613-17b1-bcad-9dce-a8dd401d2e38@mediatek.com>
+Date:   Thu, 23 Jun 2022 16:26:22 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] net: sfp: fix memory leak in sfp_probe()
-Content-Language: fr
-To:     Jianglei Nie <niejianglei2021@163.com>, linux@armlinux.org.uk,
-        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220623070914.1781700-1-niejianglei2021@163.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220623070914.1781700-1-niejianglei2021@163.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YrQKApkdi//0ysiP@hovoldconsulting.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 23/06/2022 à 09:09, Jianglei Nie a écrit :
-> sfp_probe() allocates a memory chunk from sfp with sfp_alloc(), when
-> devm_add_action() fails, sfp is not freed, which leads to a memory leak.
+
+
+On 6/23/22 2:36 PM, Johan Hovold wrote:
+> On Thu, Jun 23, 2022 at 11:52:14AM +0800, Macpaul Lin wrote:
+>> Add usb product id of the Quectel RM500K module.
+>>
+>> RM500K provides 2 maindatory interfaces to Linux host after enumeration.
 > 
-> We should free the sfp with sfp_cleanup() when devm_add_action() fails.
+> typo: mandatory
+
+Will be fixed on patch v2.
+
+>>   - /dev/ttyUSB5: this is a serial interface for control path. User needs
+>>     to write AT commands to this device node to query status, set APN,
+>>     set PIN code, and enable/disable the data connection to 5G network.
+>>   - ethX: this is the data path provided as a RNDIS devices. After the
+>>     data connection has been established, Linux host can access 5G data
+>>     network via this interface.
+>>
+>> The following kernel settings is required for RM500K.
+>>   - CONFIG_USB_SERIAL_GENERIC
+>>   - CONFIG_USB_SERIAL_CONSOLE
+
+Double checked: no need confirmed.
+
+> You shouldn't need either of those.
 > 
-> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-> ---
->   drivers/net/phy/sfp.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
+>>   - CONFIG_USB_NET_RNDIS_HOST
+>>   - CONFIG_USB_SERIAL_WWAN
+>>   - CONFIG_USB_SERIAL_OPTION
+
+Will remove this paragraph in patch v2.
+
+> And OPTION selects WWAN so no need to mention that.
 > 
-> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-> index 9a5d5a10560f..366a89adabf5 100644
-> --- a/drivers/net/phy/sfp.c
-> +++ b/drivers/net/phy/sfp.c
-> @@ -2517,8 +2517,10 @@ static int sfp_probe(struct platform_device *pdev)
->   	platform_set_drvdata(pdev, sfp);
->   
->   	err = devm_add_action(sfp->dev, sfp_cleanup, sfp);
-> -	if (err < 0)
-> +	if (err < 0) {
-> +		sfp_cleanup(sfp);
->   		return err;
-> +	}
+> But you can probably just drop this paragraph.
+> 
+>> usb-devices output for 0x7001:
+>> T:  Bus=05 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  3 Spd=480 MxCh= 0
+>> D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+>> P:  Vendor=2c7c ProdID=7001 Rev=00.01
+>> S:  Manufacturer=MediaTek Inc.
+>> S:  Product=USB DATA CARD
+>> S:  SerialNumber=869206050009672
+>> C:  #Ifs=10 Cfg#= 1 Atr=a0 MxPwr=500mA
 
-Hi,
+RDNIS interface, will be enumerated as ethX.
+>> I:  If#= 0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=02 Prot=ff Driver=rndis_host
+>> E:  Ad=82(I) Atr=03(Int.) MxPS=  64 Ivl=125us
+>> I:  If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
+>> E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
-or use devm_add_action_or_reset() instead?
+COM port.
+>> I:  If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+>> E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> I:  If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+>> E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> I:  If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+>> E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
-Just my 2c,
+Debug interface (will be disabled with mass-production shipping).
+>> I:  If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=(none)
+>> E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
-CJ
+COM port.
+>> I:  If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+>> E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> I:  If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+>> E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> I:  If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+>> E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> I:  If#= 9 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+>> E:  Ad=09(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+>> E:  Ad=8a(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> 
+> Can you say something about what the other interfaces are for?
 
->   
->   	sff = sfp->type = &sfp_data;
->   
+The others COM ports are MODEM related interface but I'm not sure the 
+exactly purpose and how they are used.
 
+I'll summarize the part I know in patch v2.
+
+>> Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+>> Signed-off-by: Ballon Shi <ballon.shi@quectel.com>
+> 
+> The submitters SoB always goes last (to reflect how the patch was
+> forwarded).
+
+Will be fixed in patch v2.
+
+> If Ballon is the primary author you need to add a From line at the
+> beginning of mail body.
+
+No need for this patch.
+
+> Otherwise you should add a Co-developed-by tag before the co-author's
+> SoB.
+> 
+> More details in
+> 
+> 	Documentation/process/submitting-patches.rst
+> 
+
+Will be fixed in patch v2.
+
+>> Cc: stable@vger.kernel.org
+>> ---
+>>   drivers/usb/serial/option.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+>> index e7755d9cfc61..e2587a3c7600 100644
+>> --- a/drivers/usb/serial/option.c
+>> +++ b/drivers/usb/serial/option.c
+>> @@ -253,6 +253,7 @@ static void option_instat_callback(struct urb *urb);
+>>   #define QUECTEL_PRODUCT_BG96			0x0296
+>>   #define QUECTEL_PRODUCT_EP06			0x0306
+>>   #define QUECTEL_PRODUCT_EM12			0x0512
+>> +#define QUECTEL_PRODUCT_RM500K			0x7001
+> 
+> Please keep the defines sorted by PID here.
+
+Will be fixed in patch v2.
+
+> 
+>>   #define QUECTEL_PRODUCT_RM500Q			0x0800
+>>   #define QUECTEL_PRODUCT_EC200S_CN		0x6002
+>>   #define QUECTEL_PRODUCT_EC200T			0x6026
+>> @@ -1135,6 +1136,7 @@ static const struct usb_device_id option_ids[] = {
+>>   	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x0620, 0xff, 0, 0) },
+>>   	{ USB_DEVICE_INTERFACE_CLASS(QUECTEL_VENDOR_ID, 0x0700, 0xff), /* BG95 */
+>>   	  .driver_info = RSVD(3) | ZLP },
+>> +	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500K, 0xff, 0x00, 0x00) },
+>>   	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0xff, 0x30) },
+>>   	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0, 0) },
+>>   	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0xff, 0x10),
+> 
+> Johan
+> 
+
+Thanks for the quick review.
+I'll fix them all and send patch v2.
+
+Macpaul Lin
