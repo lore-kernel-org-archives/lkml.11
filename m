@@ -2,94 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 077CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 20:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8995FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 20:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229461AbiFWUvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 16:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48612 "EHLO
+        id S229493AbiFWUxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 16:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbiFWUvn (ORCPT
+        with ESMTP id S229449AbiFWUxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 16:51:43 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF394F9D0;
-        Thu, 23 Jun 2022 13:51:42 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id i8-20020a17090aee8800b001ecc929d14dso4354160pjz.0;
-        Thu, 23 Jun 2022 13:51:42 -0700 (PDT)
+        Thu, 23 Jun 2022 16:53:36 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3745660C71;
+        Thu, 23 Jun 2022 13:53:34 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so384932wmb.5;
+        Thu, 23 Jun 2022 13:53:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DF2FXD71gqOjtQrBwDNRffReItmxuKK3gUoUPPQiRu8=;
-        b=MLqV5p7IsGqf4Ko6unI+XADaUccyjVXRrH96dePvy+ZlepoxctSj7qO+ktAsHHr7Tb
-         UNug+zVH4LApYBTo3l+FYSqxI1EL2n/Qhbjwr03piPAgRwE3siRwTncpTLd6gte7Psqk
-         1jEXWP8yLiBmyO+PfYDUYevHrSLYfHeboN95Vqg7vfSDNeXbAgWqhOH4HwRnQr94TVxd
-         YOa4HQHny4osLtN4Mjxc+Upn2WN0GngWi/dRjWZm18gREuJC9i+G/ts9zrs5kdxQCEDZ
-         zzns1p/Ke/TIWr5zQDUn3AH7pEw8OdWQ6Nss2fTP1iJZ7ixRPP3gqt0fbYEQPTxkgeGr
-         GHiA==
+        h=references:from:to:cc:subject:in-reply-to:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=uR19dUJmcNaxBwdM2oTyzNVaO2KBzPX6s9JgcdgMii0=;
+        b=ij55DIpBjm/hJbjc0ntL8Q2eWnzNJC2eDhKfxvV1EykMihvHpPJDo3uD/32lOcvKvF
+         +Nub1SNXWszsbsqNrrOZywFANBPl6ZQxpN+ByL6OCsk5SheLF4ClaATXOY2xs7A0cBlg
+         JAh8CpZNLrm1wTf/ZyU42B38HdJvGMfVTdfI7NPHrngS9uVghyow7eDum8QPsJURP/lm
+         nGsgFVuP5u+Sj/fy1JQvRyFUTWu4ChJBQh70+mErYPMicSVDCWeFZv0Qmp42+DP8RQWH
+         37PqXCX0mjI5Ww40jRdGzUjybml3+Zz/VJod3AczUP5t0Ncdc/pVDM3foOeWPsbmZdmU
+         YUEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DF2FXD71gqOjtQrBwDNRffReItmxuKK3gUoUPPQiRu8=;
-        b=ZwZNoaA7GYadnrp1k/O0C7Ehj0VZdeyM1nVrLceI0Sq5j743J4qnjDyTN8GDPNibl8
-         ciwdew271WMK5Ti6juCctn13DhvLV7sPG9cbVTiigZi6L+H7n7wJGuBsD8JJIgRg+/sh
-         U62Bi2dbrXBzKjKlSH/rqAYVG9b+e4oXwnBl7ilW1VyX8pT3JWusuhEaGXq/J9SX2gD8
-         /p8YttAg73y3WHDwddkZWZkl3rPw38w3Atcx6rz/RoMN/9Fs9a7PzPacmBjIcZvebGr7
-         70U3bTC7tVBapzgoxDa7wYLGIkP9VInKTqcC/si4cBZpL1eOfjbXp5wezwpH/LdZgDJR
-         K6Bg==
-X-Gm-Message-State: AJIora/mF2Os7/DSWbnh/J4cO6qElLkvV9DPMlv6cizTPxdS62Wfi85c
-        lcBBDJUp+2SH0jNPBdevs+h3gVzscSQhyRq/cT4=
-X-Google-Smtp-Source: AGRyM1umWrpYxCdsqahfZggxS4kZJfv4CL610/K1pDg8FvTpbU1OYrW3f+KJjo0bYpzbI39huYxJD7FTv3PKCxIYlH0=
-X-Received: by 2002:a17:903:32cb:b0:16a:3f2e:ca70 with SMTP id
- i11-20020a17090332cb00b0016a3f2eca70mr13327719plr.153.1656017502408; Thu, 23
- Jun 2022 13:51:42 -0700 (PDT)
+        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=uR19dUJmcNaxBwdM2oTyzNVaO2KBzPX6s9JgcdgMii0=;
+        b=tepO17FqAE8NY/PDvLHksCYL6RRXUHIv/emEobJO2JgQME7GVyjWfhDvIhvMH2aRop
+         H0AxOoU2yyLjqZeKfdzEChM48np+A7PhhE4/YlHZOCnDM4+vYNqJ/qEjiZxpNzHB05Oa
+         gBJRcqdL2p8WsuLxoarTPkkvcA6lOW86HOkkAGHekr4l2ZdjbuLqm8QT2UowtLmfvAdT
+         mifECCjiX/OFCVyQfKDPUv6cXtgXmU78ws1cl7bGFWFU+p54q4/7aPDoRP6IXVq8kYSt
+         1xsqcBmHFv0VLZO76hkurfRuP6dTpNpg/UzFauDIPZisdnhiWEBqDjtrUom1yjFxEVg2
+         V3/Q==
+X-Gm-Message-State: AJIora/XVYDrkb5rcCmhwyQgrSqU/tB06XvQcs73KxP7LSfIajUHC9ut
+        V7MhE5aWlEncx+c4oDE5b90=
+X-Google-Smtp-Source: AGRyM1tIBcbqqjiLWicrbHaR6vX8/2L6/5uVJuB9R6VbK4sR7Y33O50Sc4VbODYyYuYA5cMC0BoYeA==
+X-Received: by 2002:a05:600c:4f15:b0:39c:7eaf:97e7 with SMTP id l21-20020a05600c4f1500b0039c7eaf97e7mr6415694wmq.199.1656017612752;
+        Thu, 23 Jun 2022 13:53:32 -0700 (PDT)
+Received: from localhost (92.40.171.44.threembb.co.uk. [92.40.171.44])
+        by smtp.gmail.com with ESMTPSA id n14-20020a5d67ce000000b0021b89c07b6asm406757wrw.108.2022.06.23.13.53.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 13:53:32 -0700 (PDT)
+References: <20220620200644.1961936-1-aidanmacdonald.0x0@gmail.com>
+ <20220620200644.1961936-16-aidanmacdonald.0x0@gmail.com>
+ <CAHp75Vd7Sq9RMqin_y-8qUEAJLaGfuqxAbe+qcMB22=bqkyZqg@mail.gmail.com>
+ <FQHPnJKuXUHf8vLiZoXidpoim5RtEYUC@localhost>
+ <CAHp75VfoMKo9-_OTF1AAC0KyNJOb5qvYPTgHxmkYwOfTJFSLkg@mail.gmail.com>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Mark Brown <broonie@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Banajit Goswami <bgoswami@codeaurora.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Michael Walle <michael@walle.cc>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Cristian Ciocaltea <cristian.ciocaltea@gmail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        "tharvey@gateworks.com" <tharvey@gateworks.com>,
+        "rjones@gateworks.com" <rjones@gateworks.com>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
+        "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+        "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "linux-actions@lists.infradead.org" 
+        <linux-actions@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "linux-sunxi@lists.linux.dev" <linux-sunxi@lists.linux.dev>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>
+Subject: Re: [PATCH 15/49] regmap-irq: Change the behavior of mask_writeonly
+In-reply-to: <CAHp75VfoMKo9-_OTF1AAC0KyNJOb5qvYPTgHxmkYwOfTJFSLkg@mail.gmail.com>
+Date:   Thu, 23 Jun 2022 21:54:37 +0100
+Message-ID: <8qRxwIYmbvte9HM2KVfkdhwPpeZ7oY9s@localhost>
 MIME-Version: 1.0
-References: <20220622062027.994614-1-peng.fan@oss.nxp.com> <20220622072435.GT1615@pengutronix.de>
- <CAGETcx9JpTbYtGFoKttWLeiBB73QzzBM1o-OL0o-XuFouLcEog@mail.gmail.com>
- <CAOMZO5DFX72xuxWwAPsuk4Q667Ap7Dk+pR89cWDQJkzT0D2osA@mail.gmail.com>
- <CAOMZO5Ccu_v_G9DEwrEfVHq83-hfrXCP_h20Rv0=oFTLux5AkQ@mail.gmail.com>
- <CAGETcx85z_hkhKFHUwnihqcD0UQG3xtSZjw=BZxqwQB0D1CMgw@mail.gmail.com>
- <CAOMZO5A6Zn=6tXU2VQ+-cj=50mpxCmoZ8c437=w1Spd34k7T6A@mail.gmail.com> <CAGETcx-_nwrzJzaY3yc80g4AfydV5J9-JYE5h1m+5TT05jyKOw@mail.gmail.com>
-In-Reply-To: <CAGETcx-_nwrzJzaY3yc80g4AfydV5J9-JYE5h1m+5TT05jyKOw@mail.gmail.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Thu, 23 Jun 2022 17:51:31 -0300
-Message-ID: <CAOMZO5BvnBCza5HQVNUQqDBZR9WsXiK4RuVPh654GJGb2jw+1g@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: imx8mp: drop dmas property for uart console
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>, hvilleneuve@dimonoff.com,
-        Lucas Stach <l.stach@pengutronix.de>,
-        abbaraju.manojsai@amarulasolutions.com,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Matteo Lisi <matteo.lisi@engicam.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Teresa Remmet <t.remmet@phytec.de>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, t.remmet@phytec.deh,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Peng Fan <peng.fan@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 3:58 PM Saravana Kannan <saravanak@google.com> wrote:
 
-> Will do. I'm looking at the serial console code and I don't see a
-> difference between earlycon= vs console= handling. And I know that
-> earlycon= doesn't go through the driver core and isn't affected by any
-> of this. If you have additional pointers on where console= is parsed,
-> feel free to pass it on. I'll continue poking at this.
+Andy Shevchenko <andy.shevchenko@gmail.com> writes:
 
-It seems to be parsed at uart_parse_earlycon() inside
-drivers/tty/serial/serial_core.c.
+> On Tuesday, June 21, 2022, Aidan MacDonald <aidanmacdonald.0x0@gmail.com>=
+ wrote:
+>> Andy Shevchenko <andy.shevchenko@gmail.com> writes:
+>>
+>> > On Mon, Jun 20, 2022 at 10:08 PM Aidan MacDonald
+>> > <aidanmacdonald.0x0@gmail.com> wrote:
+>> >>
+>> >> No drivers currently use mask_writeonly, and in its current form
+>> >> it seems a bit misleading. When set, mask registers will be
+>> >> updated with regmap_write_bits() instead of regmap_update_bits(),
+>> >> but regmap_write_bits() still does a read-modify-write under the
+>> >> hood. It's not a write-only operation.
+>> >>
+>> >> Performing a simple regmap_write() is probably more useful, since
+>> >> it can be used for chips that have separate set & clear registers
+>> >> for controlling mask bits. Such registers are normally volatile
+>> >> and read as 0, so avoiding a register read minimizes bus traffic.
+>> >
+>> > Reading your explanations and the code, I would rather think about
+>> > fixing the regmap_write_bits() to be writeonly op.
+>>
+>> That's impossible without special hardware support.
+>>
+>> > Otherwise it's unclear what's the difference between
+>> > regmap_write_bits() vs. regmap_update_bits().
+>>
+>> This was not obvious to me either. They're the same except in how they
+>> issue the low-level write op -- regmap_update_bits() will only do the
+>> write if the new value differs from the current one. regmap_write_bits()
+>> will always do a write, even if the new value is the same.
+>
+> Okay, it makes a lot of sense for W1C type of bits in the register.
+> Also, =E2=80=9Creading=E2=80=9D might imply to restore last value from ca=
+che, no?
+
+Maybe there needs to be some explanation of what the typical use case is
+and why you'd choose write_bits() over update_bits(), because the more I
+think about it the less clear it is. You're right that the read could be
+served from a cache. But I'm not sure if a cache would be safe if even
+one bit in the register is volatile, and I can't really see a use case
+for write_bits() that doesn't involve volatile behavior of some sort.
+
+In any event, I'm just going to drop this patch and the related driver
+patches in favor of removing mask_writeonly entirely, since it looks
+like it was never used, and after thinking about it I'm not sure what
+I did helps much. If some driver needs write_bits() for mask registers
+down the road it's not a big deal to add this back.
+
+>> I think the problem is lack of documentation. I only figured this out
+>> by reading the implementation.
+>>
+>> >>         if (d->chip->mask_writeonly)
+>> >> -               return regmap_write_bits(d->map, reg, mask, val);
+>> >> +               return regmap_write(d->map, reg, val & mask);
+>> >>         else
+>> >>                 return regmap_update_bits(d->map, reg, mask, val);
+
