@@ -2,145 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43FB3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2778C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbiFWRHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
+        id S231512AbiFWRHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:07:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiFWRGI (ORCPT
+        with ESMTP id S230118AbiFWRG2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:06:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D84651E50;
-        Thu, 23 Jun 2022 09:55:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 652D560B20;
-        Thu, 23 Jun 2022 16:55:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37980C341C4;
-        Thu, 23 Jun 2022 16:55:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003342;
-        bh=1F6bZmAY5p4rpGT2E+2Q05yqO5+1LoIQ4CxLrpbvRZ4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LKlEzYrMCMwIOvdTs9Vh03qF6pNq6SGDOH0OOxPEV7/aygUL9Of6l2YynQhUTdgTj
-         SRdeVJ6laaaq598lT9ZfflPnzy6d35AQ7hu4yr1Bx0nNnOI13W1D8XWkTwS5THblQJ
-         U382m1QcSqbCToFqCFsXjCnL08Jr5V5qhBzbRSL0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 206/264] random: use static branch for crng_ready()
-Date:   Thu, 23 Jun 2022 18:43:19 +0200
-Message-Id: <20220623164349.899829694@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
-References: <20220623164344.053938039@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 13:06:28 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF036517E6
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:55:46 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id l4so19655294pgh.13
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zxNuJF6Nbe8LLHbYqIbwZg9Zj1L4NANG6tNglCp+Qvc=;
+        b=XHUVPgvbh1RbKwDTYzng/n5/obx4NKF4t5gJwAYybq7iw0yl1IDnJnj/UY6lbOdIcC
+         JkaxYapcyaMhT7hyRjqzXPDIvNUgOB31tZlsO0LlgDI/TYnfopMr1Zeep1u7xtng6c7U
+         Sm3VvZm1doZ/hhaqr8Q85AwjJvT8qWBqtgoRDufLJDPWRTqeYWW1HMtPPhtpNvrt51hn
+         OzAAz9xbjUVszG9brdyyjkJOuSgnHuvZ6zm2eprL83/CPtn07FUuEfi6zGOrWwOkzBjA
+         pYCc/T8UNb0tsN+TWWA7O5ktS1EBpp22pfEQuQWcMcqlVh/8XUXFTzRxBRfxmd9MTYgU
+         9zuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zxNuJF6Nbe8LLHbYqIbwZg9Zj1L4NANG6tNglCp+Qvc=;
+        b=YkZ1+r6UYkOVVMHCxKRZq4zMLpopbEgpOXyeFL95ezQ4v+mWpAvCmnUJRaSAxUFz1K
+         hnYo7qpzStx6YruW3WPf7PjV4rSb1LkiMjn8oTsct8zPyEGGL0JOSAGekvZIehbxMuJP
+         sqG9cqq3WEGKwfRJmRHmOTYbjOEjWCKnxesduO4E4F05bmwP8m/B9C6TiIE790U7jq6Q
+         ODIOY8liV4oB29C9GHWD2zugq3R41ipdcIuDPYiXuNYGFxMi8cmIL801OCsvGb2XPzE8
+         uFW4xtmNhxYkC4sFBxIQtP32BMUF1tihA3eKhLrL8JFj54XmGYtvVBlPLJ9Ve4FW1tr7
+         WOMg==
+X-Gm-Message-State: AJIora9hrG9hU1I5aOwcielL3dolL6wG2zufJZLAMTbbEv92lDLzjdNA
+        dr3A6qtSKLuxU8rI+CCtnmGDQ0GXcfmzezjEF3vvBQ==
+X-Google-Smtp-Source: AGRyM1tEW//oYgmqBPHq48elIVVWT5t+ubvinbX4G1Hc6hZJrESk88dK9Jd6fyiayXLcRsWyQhixpLKJ/IPg7eKqTKc=
+X-Received: by 2002:a05:6a00:2393:b0:524:eeb2:5547 with SMTP id
+ f19-20020a056a00239300b00524eeb25547mr30203002pfc.8.1656003344568; Thu, 23
+ Jun 2022 09:55:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <4e685057-b07d-745d-fdaa-1a6a5a681060@openvz.org>
+ <0fe836b4-5c0f-0e32-d511-db816d359748@openvz.org> <c516033f-a9e4-3485-26d9-a68afa694c1d@openvz.org>
+ <YrSP25ebDmXE+kPS@dhcp22.suse.cz>
+In-Reply-To: <YrSP25ebDmXE+kPS@dhcp22.suse.cz>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 23 Jun 2022 09:55:33 -0700
+Message-ID: <CALvZod4WsmrpfZtfnP4AmvtnkvBRngXXGyhM6+aQzkdfjsinAQ@mail.gmail.com>
+Subject: Re: [PATCH mm v5 0/9] memcg: accounting for objects allocated by
+ mkdir, cgroup
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Vasily Averin <vvs@openvz.org>, kernel@openvz.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Cgroups <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+On Thu, Jun 23, 2022 at 9:07 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Thu 23-06-22 18:03:31, Vasily Averin wrote:
+> > Dear Michal,
+> > do you still have any concerns about this patch set?
+>
+> Yes, I do not think we have concluded this to be really necessary. IIRC
+> Roman would like to see lingering cgroups addressed in not-so-distant
+> future (http://lkml.kernel.org/r/Ypd2DW7id4M3KJJW@carbon) and we already
+> have a limit for the number of cgroups in the tree. So why should we
+> chase after allocations that correspond the cgroups and somehow try to
+> cap their number via the memory consumption. This looks like something
+> that will get out of sync eventually and it also doesn't seem like the
+> best control to me (comparing to an explicit limit to prevent runaways).
+> --
 
-commit f5bda35fba615ace70a656d4700423fa6c9bebee upstream.
+Let me give a counter argument to that. On a system running multiple
+workloads, how can the admin come up with a sensible limit for the
+number of cgroups? There will definitely be jobs that require much
+more number of sub-cgroups. Asking the admins to dynamically tune
+another tuneable is just asking for more complications. At the end all
+the users would just set it to max.
 
-Since crng_ready() is only false briefly during initialization and then
-forever after becomes true, we don't need to evaluate it after, making
-it a prime candidate for a static branch.
-
-One complication, however, is that it changes state in a particular call
-to credit_init_bits(), which might be made from atomic context, which
-means we must kick off a workqueue to change the static key. Further
-complicating things, credit_init_bits() may be called sufficiently early
-on in system initialization such that system_wq is NULL.
-
-Fortunately, there exists the nice function execute_in_process_context(),
-which will immediately execute the function if !in_interrupt(), and
-otherwise defer it to a workqueue. During early init, before workqueues
-are available, in_interrupt() is always false, because interrupts
-haven't even been enabled yet, which means the function in that case
-executes immediately. Later on, after workqueues are available,
-in_interrupt() might be true, but in that case, the work is queued in
-system_wq and all goes well.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |   16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -78,8 +78,9 @@ static enum {
- 	CRNG_EMPTY = 0, /* Little to no entropy collected */
- 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
- 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
--} crng_init = CRNG_EMPTY;
--#define crng_ready() (likely(crng_init >= CRNG_READY))
-+} crng_init __read_mostly = CRNG_EMPTY;
-+static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
-+#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
- /* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
-@@ -109,6 +110,11 @@ bool rng_is_initialized(void)
- }
- EXPORT_SYMBOL(rng_is_initialized);
- 
-+static void crng_set_ready(struct work_struct *work)
-+{
-+	static_branch_enable(&crng_is_ready);
-+}
-+
- /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
- static void try_to_generate_entropy(void);
- 
-@@ -268,7 +274,7 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (!crng_ready())
-+	if (!static_branch_likely(&crng_is_ready))
- 		crng_init = CRNG_READY;
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
- 	memzero_explicit(key, sizeof(key));
-@@ -783,6 +789,7 @@ static void extract_entropy(void *buf, s
- 
- static void credit_init_bits(size_t nbits)
- {
-+	static struct execute_work set_ready;
- 	unsigned int new, orig, add;
- 	unsigned long flags;
- 
-@@ -798,6 +805,7 @@ static void credit_init_bits(size_t nbit
- 
- 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
- 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
-+		execute_in_process_context(crng_set_ready, &set_ready);
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
-@@ -1307,7 +1315,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if (count > INT_MAX)
- 		count = INT_MAX;
- 
--	if (!(flags & GRND_INSECURE) && !crng_ready()) {
-+	if (!crng_ready() && !(flags & GRND_INSECURE)) {
- 		int ret;
- 
- 		if (flags & GRND_NONBLOCK)
-
-
+I would recommend to see the commit ac7b79fd190b ("inotify, memcg:
+account inotify instances to kmemcg") where there is already a sysctl
+(inotify/max_user_instances) to limit the number of instances but
+there was no sensible way to set that limit on a multi-tenant system.
