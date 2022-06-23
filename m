@@ -2,163 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50471C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61ED1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232202AbiFWQ2O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58674 "EHLO
+        id S232256AbiFWQ3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbiFWQ1v (ORCPT
+        with ESMTP id S231634AbiFWQ33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:27:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C1345505;
-        Thu, 23 Jun 2022 09:27:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D571D61F29;
-        Thu, 23 Jun 2022 16:27:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D56B7C3411B;
-        Thu, 23 Jun 2022 16:27:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656001669;
-        bh=mQ/fn0p8cPl4WB2QzHrDHEEQ5APApuVeWejOBIseoBo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=CXItkpNMNvxD7QoYxGuICkZjHYpIyeXGmsSznqc6onqqP9Yaogh5wQYLy0mxK2SVF
-         0kF1LS4itKDyL9o3aZhGuI0wM3MCK8biKylavp+HpFWn2vsGhpiL+zWOa10zykwDmK
-         nhW0o8lNSvfxT/J55BKAXCKYOa0eLKlIhzlBD1+YQu6RlN5QrqxMSUjKm3Cf8yMmzv
-         QC1/YK6hYvvHSQWiUzqofQzI1LMRnUaIcq837L4Y9YYCRlLbXKTJ9hDoyLrU/xI65N
-         v7je9R4R6Y9pUMRJjMsJK5hjkHIZXBOwqDDUBMSWpN3RhhqDiRUc1R/75LFE8U4bLZ
-         ltz0W0KD8CtaA==
-Date:   Thu, 23 Jun 2022 11:27:47 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PCI: mvebu: Use devm_request_irq() for registering
- interrupt handler
-Message-ID: <20220623162747.GA1455992@bhelgaas>
+        Thu, 23 Jun 2022 12:29:29 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761A746C85
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:29:27 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id q18so7172221pld.13
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:29:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2/BbUVh0cfAq2g3sTTEh1dhxjM0IAKM6s6X7XzEKPTg=;
+        b=VWllvdwMR3kg3Ed9OEhiULEzlVtdbGFjCVqY5hxwaSsPeVO0C4FtOn6i/ejhUxwhK7
+         5BaqtUspFCu1Oo+6JYQP9uzzM5huJBJSyWEXE1dg8jQ+FPKzN9E9Uf9zgpf+iuEHwhay
+         uQAGtCBiZz5u2eJnCGRK72yS3LfhQ+LwphT6Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2/BbUVh0cfAq2g3sTTEh1dhxjM0IAKM6s6X7XzEKPTg=;
+        b=vI0sk/uj/MXCek6NRw+4IFuqIttZDHfL/8Hjeiw7fqlyUUv7Ar+ESyYBqgyRWANYvE
+         zNc6W3uGmQr3fkXO5kXv5o8GdaSlYfj4/E1o51+2TcH8MNhQB4wEPLYy2VfMYWw5U3Ee
+         rwZWkPjKRLXn9uFmjMtDSOw/3S/qzP8zG09qUMgz7w1zAM6iQo8LnNWlbrtJBu54Wvy8
+         xE6w1eX162Lhxjeiqj3sNZdwLnaibYBf/dlxsGaOmLLYVvITtDqoGGwdaGnWf3eczQq/
+         AGbT9xOoF3tHrU6LMM9LNlLmGYL2Ncvm0bIMl1YfxiiGXFMFZslpQxo8pCPXtqfyywfK
+         zRfQ==
+X-Gm-Message-State: AJIora+YQWadfZ6BSGMDAeOa+R0KxpXCjQcZwHX5GPRQheXNax6IoWuW
+        isszKSJl03opzlSHSB2s7M3X0g==
+X-Google-Smtp-Source: AGRyM1sDLE9y8/LYsf2Bs4AoD2epoxqcEYkWHYEs7FdrsqvUm6zri1tArpRTJRcLpuvSTzkiIQvqdg==
+X-Received: by 2002:a17:90a:bb91:b0:1ec:7062:32cc with SMTP id v17-20020a17090abb9100b001ec706232ccmr4827208pjr.231.1656001766975;
+        Thu, 23 Jun 2022 09:29:26 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id t66-20020a637845000000b004088f213f68sm15702091pgc.56.2022.06.23.09.29.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 09:29:26 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 09:29:25 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 8/8][next] scsi: aacraid: Replace one-element array with
+ flexible-array member in struct aac_aifcmd
+Message-ID: <202206230926.8C76CFCC@keescook>
+References: <cover.1645513670.git.gustavoars@kernel.org>
+ <7d0571ef5dc87904008c325a942cfed24dbbf42e.1645513670.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220524122817.7199-1-pali@kernel.org>
+In-Reply-To: <7d0571ef5dc87904008c325a942cfed24dbbf42e.1645513670.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 02:28:17PM +0200, Pali Rohár wrote:
-> Same as in commit a3b69dd0ad62 ("Revert "PCI: aardvark: Rewrite IRQ code to
-> chained IRQ handler"") for pci-aardvark driver, use devm_request_irq()
-> instead of chained IRQ handler in pci-mvebu.c driver.
->
-> This change fixes affinity support and allows to pin interrupts from
-> different PCIe controllers to different CPU cores.
-
-Several other drivers use irq_set_chained_handler_and_data().  Do any
-of them need similar changes?  The commit log suggests that using
-chained IRQ handlers breaks affinity support.  But perhaps that's not
-the case and the real culprit is some other difference between mvebu
-and the other drivers.
-
-> Fixes: ec075262648f ("PCI: mvebu: Implement support for legacy INTx interrupts")
-> Signed-off-by: Pali Rohár <pali@kernel.org>
+On Tue, Feb 22, 2022 at 01:31:07AM -0600, Gustavo A. R. Silva wrote:
+> Replace one-element array with flexible-array member in struct
+> aac_aifcmd.
+> 
+> This issue was found with the help of Coccinelle and audited and fixed,
+> manually.
+> 
+> Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> Link: https://github.com/KSPP/linux/issues/79
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 > ---
-> Hello Bjorn! This is basically same issue as for pci-aardvark.c:
-> https://lore.kernel.org/linux-pci/20220515125815.30157-1-pali@kernel.org/#t
+>  drivers/scsi/aacraid/aacraid.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I tested this patch with pci=nomsi in cmdline (to force kernel to use
-> legacy intx instead of MSI) on A385 and checked that I can set affinity
-> via /proc/irq/XX/smp_affinity file for every mvebu pcie controller to
-> different CPU and legacy interrupts from different cards/controllers
-> were handled by different CPUs.
-> 
-> I think that this is important on Armada XP platforms which have many
-> independent PCIe controllers (IIRC up to 10) and many cores (up to 4).
-> ---
->  drivers/pci/controller/pci-mvebu.c | 30 +++++++++++++++++-------------
->  1 file changed, 17 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-> index 8f76d4bda356..de67ea39fea5 100644
-> --- a/drivers/pci/controller/pci-mvebu.c
-> +++ b/drivers/pci/controller/pci-mvebu.c
-> @@ -1017,16 +1017,13 @@ static int mvebu_pcie_init_irq_domain(struct mvebu_pcie_port *port)
->  	return 0;
->  }
+> diff --git a/drivers/scsi/aacraid/aacraid.h b/drivers/scsi/aacraid/aacraid.h
+> index 97948cd5f13c..447feabf5360 100644
+> --- a/drivers/scsi/aacraid/aacraid.h
+> +++ b/drivers/scsi/aacraid/aacraid.h
+> @@ -2616,7 +2616,7 @@ struct aac_hba_info {
+>  struct aac_aifcmd {
+>  	__le32 command;		/* Tell host what type of notify this is */
+>  	__le32 seqnum;		/* To allow ordering of reports (if necessary) */
+> -	u8 data[1];		/* Undefined length (from kernel viewpoint) */
+> +	u8 data[];		/* Undefined length (from kernel viewpoint) */
+>  };
 >  
-> -static void mvebu_pcie_irq_handler(struct irq_desc *desc)
-> +static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
->  {
-> -	struct mvebu_pcie_port *port = irq_desc_get_handler_data(desc);
-> -	struct irq_chip *chip = irq_desc_get_chip(desc);
-> +	struct mvebu_pcie_port *port = arg;
->  	struct device *dev = &port->pcie->pdev->dev;
->  	u32 cause, unmask, status;
->  	int i;
->  
-> -	chained_irq_enter(chip, desc);
-> -
->  	cause = mvebu_readl(port, PCIE_INT_CAUSE_OFF);
->  	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
->  	status = cause & unmask;
-> @@ -1040,7 +1037,7 @@ static void mvebu_pcie_irq_handler(struct irq_desc *desc)
->  			dev_err_ratelimited(dev, "unexpected INT%c IRQ\n", (char)i+'A');
->  	}
->  
-> -	chained_irq_exit(chip, desc);
-> +	return status ? IRQ_HANDLED : IRQ_NONE;
->  }
->  
->  static int mvebu_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-> @@ -1490,9 +1487,20 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
->  				mvebu_pcie_powerdown(port);
->  				continue;
->  			}
-> -			irq_set_chained_handler_and_data(irq,
-> -							 mvebu_pcie_irq_handler,
-> -							 port);
-> +
-> +			ret = devm_request_irq(dev, irq, mvebu_pcie_irq_handler,
-> +					       IRQF_SHARED | IRQF_NO_THREAD,
-> +					       port->name, port);
-> +			if (ret) {
-> +				dev_err(dev, "%s: cannot register interrupt handler: %d\n",
-> +					port->name, ret);
-> +				irq_domain_remove(port->intx_irq_domain);
-> +				pci_bridge_emul_cleanup(&port->bridge);
-> +				devm_iounmap(dev, port->base);
-> +				port->base = NULL;
-> +				mvebu_pcie_powerdown(port);
-> +				continue;
-> +			}
->  		}
->  
->  		/*
-> @@ -1599,7 +1607,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
->  
->  	for (i = 0; i < pcie->nports; i++) {
->  		struct mvebu_pcie_port *port = &pcie->ports[i];
-> -		int irq = port->intx_irq;
->  
->  		if (!port->base)
->  			continue;
-> @@ -1615,9 +1622,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
->  		/* Clear all interrupt causes. */
->  		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
->  
-> -		if (irq > 0)
-> -			irq_set_chained_handler_and_data(irq, NULL, NULL);
-> -
->  		/* Remove IRQ domains. */
->  		if (port->intx_irq_domain)
->  			irq_domain_remove(port->intx_irq_domain);
+>  /**
 > -- 
-> 2.20.1
+> 2.27.0
 > 
+
+FWIW, this patch solves an -Warray-bounds warning that is seen under
+-fstrict-flex-arrays=3 (coming soon[1]):
+
+../drivers/scsi/aacraid/commsup.c:1166:17: warning: array index 1 is past the end of the array (which contains 1 element) [-Warray-bounds]
+                                (((__le32 *)aifcmd->data)[1] == cpu_to_le32(3));
+                                            ^             ~
+../drivers/scsi/aacraid/aacraid.h:2620:2: note: array 'data' declared here
+        u8 data[1];             /* Undefined length (from kernel viewpoint) */
+        ^
+../drivers/scsi/aacraid/commsup.c:1286:20: warning: array index 3 is past the end of the array (which contains 1 element) [-Warray-bounds]
+                                  ((((__le32 *)aifcmd->data)[3]
+                                               ^             ~
+../drivers/scsi/aacraid/aacraid.h:2620:2: note: array 'data' declared here
+        u8 data[1];             /* Undefined length (from kernel viewpoint) */
+        ^
+
+[1] new flag in GCC and Clang:
+    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101836
+    https://reviews.llvm.org/D126864
+
+
+-- 
+Kees Cook
