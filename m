@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C7DCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D41C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230295AbiFWRNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39008 "EHLO
+        id S230427AbiFWRNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbiFWRLl (ORCPT
+        with ESMTP id S231767AbiFWRLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:11:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B0BFD26;
-        Thu, 23 Jun 2022 09:50:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401F1FE9;
+        Thu, 23 Jun 2022 09:50:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C347DCE25DE;
-        Thu, 23 Jun 2022 16:50:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93925C3411B;
-        Thu, 23 Jun 2022 16:50:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC58B61FC2;
+        Thu, 23 Jun 2022 16:50:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5916C3411B;
+        Thu, 23 Jun 2022 16:50:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003031;
-        bh=cMW0RWQwvnmaeI4SjGqV7oxsiHkLWotEGjxucDFTelw=;
+        s=korg; t=1656003055;
+        bh=26K/+lq/Nl/U9R1SiSZW77RUyAOQ9pPzlVvMh+JeS9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hj7aG7+0e9EuI+EkcSac2XUX7bPg2+eCXFPGb6k+O+EUHdSjVf1fvdPDVNnFOgB8K
-         jnnICNnxxX77QomLbvMVpL4WZnrMCgCYnjFFhPaTfoFMYGiatapZWq09YVQT/80QAB
-         u/yHF8N3mdTGry9/CwIS5LXSMBDZLGjxpSToNbV4=
+        b=iY7e3K0BE4oQamEoomyq5MDrjt4MSVNIAiYAq0xSK6BZbnBFG+r1j4nKwAE5p9BGP
+         N32u2sTusXmk6Wo/9A9PnTHN/SrWz4ckhl4LBg8gIXbuG04tpKb/2hKsnob7ihTKjY
+         OGmYbJgGoktWlj74KU3RV9gzO8MZKmhc0604rJPw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH 4.9 107/264] random: continually use hwgenerator randomness
-Date:   Thu, 23 Jun 2022 18:41:40 +0200
-Message-Id: <20220623164347.096943607@linuxfoundation.org>
+        stable@vger.kernel.org, Sultan Alsawaf <sultan@kerneltoast.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 114/264] random: make credit_entropy_bits() always safe
+Date:   Thu, 23 Jun 2022 18:41:47 +0200
+Message-Id: <20220623164347.294617279@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,45 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit c321e907aa4803d562d6e70ebed9444ad082f953 upstream.
+commit a49c010e61e1938be851f5e49ac219d49b704103 upstream.
 
-The rngd kernel thread may sleep indefinitely if the entropy count is
-kept above random_write_wakeup_bits by other entropy sources. To make
-best use of multiple sources of randomness, mix entropy from hardware
-RNGs into the pool at least once within CRNG_RESEED_INTERVAL.
+This is called from various hwgenerator drivers, so rather than having
+one "safe" version for userspace and one "unsafe" version for the
+kernel, just make everything safe; the checks are cheap and sensible to
+have anyway.
 
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reported-by: Sultan Alsawaf <sultan@kerneltoast.com>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/char/random.c |   29 +++++++++--------------------
+ 1 file changed, 9 insertions(+), 20 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2244,13 +2244,15 @@ void add_hwgenerator_randomness(const ch
- 			return;
- 	}
- 
--	/* Suspend writing if we're above the trickle threshold.
-+	/* Throttle writing if we're above the trickle threshold.
- 	 * We'll be woken up again once below random_write_wakeup_thresh,
--	 * or when the calling thread is about to terminate.
-+	 * when the calling thread is about to terminate, or once
-+	 * CRNG_RESEED_INTERVAL has lapsed.
- 	 */
--	wait_event_interruptible(random_write_wait,
-+	wait_event_interruptible_timeout(random_write_wait,
- 			!system_wq || kthread_should_stop() ||
--			POOL_ENTROPY_BITS() <= random_write_wakeup_bits);
-+			POOL_ENTROPY_BITS() <= random_write_wakeup_bits,
-+			CRNG_RESEED_INTERVAL);
- 	mix_pool_bytes(buffer, count);
- 	credit_entropy_bits(entropy);
+@@ -448,18 +448,15 @@ static void process_random_ready_list(vo
+ 	spin_unlock_irqrestore(&random_ready_list_lock, flags);
  }
+ 
+-/*
+- * Credit (or debit) the entropy store with n bits of entropy.
+- * Use credit_entropy_bits_safe() if the value comes from userspace
+- * or otherwise should be checked for extreme values.
+- */
+ static void credit_entropy_bits(int nbits)
+ {
+ 	int entropy_count, orig;
+ 
+-	if (!nbits)
++	if (nbits <= 0)
+ 		return;
+ 
++	nbits = min(nbits, POOL_BITS);
++
+ 	do {
+ 		orig = READ_ONCE(input_pool.entropy_count);
+ 		entropy_count = min(POOL_BITS, orig + nbits);
+@@ -471,18 +468,6 @@ static void credit_entropy_bits(int nbit
+ 		crng_reseed(&primary_crng, true);
+ }
+ 
+-static int credit_entropy_bits_safe(int nbits)
+-{
+-	if (nbits < 0)
+-		return -EINVAL;
+-
+-	/* Cap the value to avoid overflows */
+-	nbits = min(nbits, POOL_BITS);
+-
+-	credit_entropy_bits(nbits);
+-	return 0;
+-}
+-
+ /*********************************************************************
+  *
+  * CRNG using CHACHA20
+@@ -1577,7 +1562,10 @@ static long random_ioctl(struct file *f,
+ 			return -EPERM;
+ 		if (get_user(ent_count, p))
+ 			return -EFAULT;
+-		return credit_entropy_bits_safe(ent_count);
++		if (ent_count < 0)
++			return -EINVAL;
++		credit_entropy_bits(ent_count);
++		return 0;
+ 	case RNDADDENTROPY:
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+@@ -1590,7 +1578,8 @@ static long random_ioctl(struct file *f,
+ 		retval = write_pool((const char __user *)p, size);
+ 		if (retval < 0)
+ 			return retval;
+-		return credit_entropy_bits_safe(ent_count);
++		credit_entropy_bits(ent_count);
++		return 0;
+ 	case RNDZAPENTCNT:
+ 	case RNDCLEARPOOL:
+ 		/*
 
 
