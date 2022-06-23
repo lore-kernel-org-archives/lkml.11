@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCC9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED14CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233862AbiFWRYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:24:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
+        id S233311AbiFWRYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233987AbiFWRW7 (ORCPT
+        with ESMTP id S234106AbiFWRXJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:22:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3795B62A0;
-        Thu, 23 Jun 2022 10:01:30 -0700 (PDT)
+        Thu, 23 Jun 2022 13:23:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA8E62BE9;
+        Thu, 23 Jun 2022 10:01:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7661E61408;
-        Thu, 23 Jun 2022 17:01:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4973FC3411B;
-        Thu, 23 Jun 2022 17:01:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4E786159A;
+        Thu, 23 Jun 2022 17:01:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B52DC3411B;
+        Thu, 23 Jun 2022 17:01:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003688;
-        bh=nvgdiBJ7BD3uKpg5Q+GCBeISfW/+zmEsuUGDmnbJQAg=;
+        s=korg; t=1656003691;
+        bh=2XrBjZ9r1JiQmbgW7MJXyVhxs+2lGIZGcEAZKhkzzC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xQ3F8pW0bSC/Du/rUUfY0Q/L93GmEgJ1ulhPYbzhcuCuFNMEvsehjz5WKc33GRMXl
-         F1yGj0n80gmc4peXLkl6FlZI8YKkY1umxb4rJSJsr/cxjb0+S6CYpoX91jupczO3Y0
-         +oYHvRZLrUXA9m7/vYxI/ElEhnMkE43qsD+IjuZ0=
+        b=E/mJJXNvasuv+63r6y8QXcIiNl8JfSgwgU/5K52aMBDFyY08uH1MVrKMFgtzTLTq2
+         NQOqh8Ml4iKcXQpBlJzov6kxlcrJSLZkURFgK0CSrLP2qo0gWE0M/hnm8tktB37QQI
+         ad+u7Fpjfm9btKKBV4ZgEmq0mIb6wJuDs2WoKO2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
-        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 048/237] s390: Remove arch_has_random, arch_has_random_seed
-Date:   Thu, 23 Jun 2022 18:41:22 +0200
-Message-Id: <20220623164344.535968271@linuxfoundation.org>
+Subject: [PATCH 4.14 057/237] crypto: blake2s - include <linux/bug.h> instead of <asm/bug.h>
+Date:   Thu, 23 Jun 2022 18:41:31 +0200
+Message-Id: <20220623164344.798449731@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,43 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Henderson <richard.henderson@linaro.org>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 5e054c820f59bbb9714d5767f5f476581c309ca8 upstream.
+commit bbda6e0f1303953c855ee3669655a81b69fbe899 upstream.
 
-These symbols are currently part of the generic archrandom.h
-interface, but are currently unused and can be removed.
+Address the following checkpatch warning:
 
-Signed-off-by: Richard Henderson <rth@twiddle.net>
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20200110145422.49141-4-broonie@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+	WARNING: Use #include <linux/bug.h> instead of <asm/bug.h>
+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/include/asm/archrandom.h |   12 ------------
- 1 file changed, 12 deletions(-)
+ include/crypto/blake2s.h |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/arch/s390/include/asm/archrandom.h
-+++ b/arch/s390/include/asm/archrandom.h
-@@ -26,18 +26,6 @@ static void s390_arch_random_generate(u8
- 	atomic64_add(nbytes, &s390_arch_random_counter);
- }
+--- a/include/crypto/blake2s.h
++++ b/include/crypto/blake2s.h
+@@ -6,12 +6,11 @@
+ #ifndef BLAKE2S_H
+ #define BLAKE2S_H
  
--static inline bool arch_has_random(void)
--{
--	if (static_branch_likely(&s390_arch_random_available))
--		return true;
--	return false;
--}
++#include <linux/bug.h>
+ #include <linux/types.h>
+ #include <linux/kernel.h>
+ #include <linux/string.h>
+ 
+-#include <asm/bug.h>
 -
--static inline bool arch_has_random_seed(void)
--{
--	return arch_has_random();
--}
--
- static inline bool arch_get_random_long(unsigned long *v)
- {
- 	if (static_branch_likely(&s390_arch_random_available)) {
+ enum blake2s_lengths {
+ 	BLAKE2S_BLOCK_SIZE = 64,
+ 	BLAKE2S_HASH_SIZE = 32,
 
 
