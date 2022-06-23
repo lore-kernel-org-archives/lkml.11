@@ -2,227 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43387C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09AF5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbiFWJph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47646 "EHLO
+        id S231216AbiFWJqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbiFWJpf (ORCPT
+        with ESMTP id S229692AbiFWJqN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:45:35 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7DAA496AA;
-        Thu, 23 Jun 2022 02:45:33 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25N9jPcr047116;
-        Thu, 23 Jun 2022 04:45:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1655977525;
-        bh=Pi/6nVVvO0gXMhT7Kn1W6gxKOmLcIzaVRT/1b0Zz+xc=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=VyY23mELmk/vUp2ZjpDn+yDkNkSebXrzlrA9+S24zuqYsBD9VoLXBXns1tQGSPlbZ
-         MyxchKa7cKJvNLKvvegOwlUlVNuEIY93paEhOnWW682fJ1JSq14d2XtoJ07YheyBWd
-         MekidNOMeV4cPweDn7pFtU+lilAs+SP5pFgcg9Fw=
-Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25N9jP3F043556
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 23 Jun 2022 04:45:25 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 23
- Jun 2022 04:45:24 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 23 Jun 2022 04:45:24 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25N9jNaI007380;
-        Thu, 23 Jun 2022 04:45:24 -0500
-Date:   Thu, 23 Jun 2022 15:15:23 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Rahul T R <r-ravikumar@ti.com>
-CC:     <linux-phy@lists.infradead.org>, <kishon@ti.com>,
-        <vkoul@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <laurent.pinchart@ideasonboard.com>,
-        <tomi.valkeinen@ideasonboard.com>, <linux-kernel@vger.kernel.org>,
-        <jpawar@cadence.com>, <sjakhade@cadence.com>, <mparab@cadence.com>,
-        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
-        <lee.jones@linaro.org>
-Subject: Re: [PATCH v3 3/3] phy: cdns-dphy: Add support for DPHY TX on J721e
-Message-ID: <20220623094523.ccrsmw477a5btgcf@ti.com>
-References: <20220622105311.21415-1-r-ravikumar@ti.com>
- <20220622105311.21415-4-r-ravikumar@ti.com>
+        Thu, 23 Jun 2022 05:46:13 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5269C496AA
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:46:12 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 14A8F1FD8A;
+        Thu, 23 Jun 2022 09:46:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655977571; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=IIvicZRTKlJOBgOc3++ZHzJfG9P22jzec6L0MnajaIo=;
+        b=HPHaGgfyCZ84QyQjmgfwZPXBbLogxmzAtQTOZqyOqAI/F39MK0TO4DKhXNYcJSj4jo+eX1
+        4LEt8gm8/e7JyZ+Gah81gPbuDHtiUtkXXTogbdVwTdSRavynFnglvqajH+3ROrBcVj3ETO
+        NGKDudBRBG152w3cUPz/VLCVqB1q+AE=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AED21133A6;
+        Thu, 23 Jun 2022 09:46:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id XCAtKWI2tGLmLwAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 23 Jun 2022 09:46:10 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Subject: [PATCH v2 0/3] x86: fix brk area initialization
+Date:   Thu, 23 Jun 2022 11:46:05 +0200
+Message-Id: <20220623094608.7294-1-jgross@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220622105311.21415-4-r-ravikumar@ti.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rahul,
+The brk area needs to be zeroed initially, like the .bss section.
+At the same time its memory should be covered by the ELF program
+headers.
 
-On 22/06/22 04:23PM, Rahul T R wrote:
-> Add support new compatible for dphy-tx on j721e
-> and implement dphy ops required.
-> 
-> Signed-off-by: Rahul T R <r-ravikumar@ti.com>
-> ---
->  drivers/phy/cadence/Kconfig     | 10 ++++++
->  drivers/phy/cadence/cdns-dphy.c | 62 +++++++++++++++++++++++++++++++++
->  2 files changed, 72 insertions(+)
-> 
-> diff --git a/drivers/phy/cadence/Kconfig b/drivers/phy/cadence/Kconfig
-> index 1adde2d99ae7..18024ac6d511 100644
-> --- a/drivers/phy/cadence/Kconfig
-> +++ b/drivers/phy/cadence/Kconfig
-> @@ -22,6 +22,16 @@ config PHY_CADENCE_DPHY
->  	  system. If M is selected, the module will be called
->  	  cdns-dphy.
->  
-> +if PHY_CADENCE_DPHY
-> +
-> +config PHY_CADENCE_DPHY_J721E
-> +	depends on ARCH_K3 || COMPILE_TEST
-> +	bool "J721E DPHY TX Wiz support"
-> +	default y
-> +	help
-> +	  Support J721E Cadence DPHY TX Wiz configuration.
-> +endif
-> +
->  config PHY_CADENCE_DPHY_RX
->  	tristate "Cadence D-PHY Rx Support"
->  	depends on HAS_IOMEM && OF
-> diff --git a/drivers/phy/cadence/cdns-dphy.c b/drivers/phy/cadence/cdns-dphy.c
-> index 14f951013b4f..a6b7d696f77a 100644
-> --- a/drivers/phy/cadence/cdns-dphy.c
-> +++ b/drivers/phy/cadence/cdns-dphy.c
-> @@ -7,6 +7,7 @@
->  #include <linux/bitops.h>
->  #include <linux/clk.h>
->  #include <linux/io.h>
-> +#include <linux/iopoll.h>
->  #include <linux/module.h>
->  #include <linux/of_address.h>
->  #include <linux/of_device.h>
-> @@ -18,6 +19,7 @@
->  
->  #define REG_WAKEUP_TIME_NS		800
->  #define DPHY_PLL_RATE_HZ		108000000
-> +#define POLL_TIMEOUT_US			1000
->  
->  /* DPHY registers */
->  #define DPHY_PMA_CMN(reg)		(reg)
-> @@ -62,6 +64,18 @@
->  #define DSI_NULL_FRAME_OVERHEAD		6
->  #define DSI_EOT_PKT_SIZE		4
->  
-> +#define DPHY_TX_J721E_WIZ_PLL_CTRL	0xF04
-> +#define DPHY_TX_J721E_WIZ_STATUS	0xF08
-> +#define DPHY_TX_J721E_WIZ_RST_CTRL	0xF0C
-> +#define DPHY_TX_J721E_WIZ_PSM_FREQ	0xF10
-> +
-> +#define DPHY_TX_J721E_WIZ_IPDIV		GENMASK(4, 0)
-> +#define DPHY_TX_J721E_WIZ_OPDIV		GENMASK(13, 8)
-> +#define DPHY_TX_J721E_WIZ_FBDIV		GENMASK(25, 16)
-> +#define DPHY_TX_J721E_WIZ_LANE_RSTB	BIT(31)
-> +#define DPHY_TX_WIZ_PLL_LOCK		BIT(31)
-> +#define DPHY_TX_WIZ_O_CMN_READY		BIT(31)
-> +
->  struct cdns_dphy_cfg {
->  	u8 pll_ipdiv;
->  	u8 pll_opdiv;
-> @@ -210,6 +224,43 @@ static void cdns_dphy_ref_set_psm_div(struct cdns_dphy *dphy, u8 div)
->  	       dphy->regs + DPHY_PSM_CFG);
->  }
->  
-> +#ifdef CONFIG_PHY_CADENCE_DPHY_J721E
+Juergen Gross (3):
+  x86/xen: use clear_bss() for Xen PV guests
+  x86: fix setup of brk area
+  x86: fix .brk attribute in linker script
 
-Honestly, I don't think there is much use for using this config here. I 
-prefer to have as little ifdefs scattered in code as possible. And I 
-don't think the code you add makes much of a difference in terms of 
-size.
-
-I have not looked much into the WIZ module but the code looks fine to 
-me.
-
-> +static unsigned long cdns_dphy_j721e_get_wakeup_time_ns(struct cdns_dphy *dphy)
-> +{
-> +	return 1000000;
-> +}
-> +
-> +static void cdns_dphy_j721e_set_pll_cfg(struct cdns_dphy *dphy,
-> +					const struct cdns_dphy_cfg *cfg)
-> +{
-> +	u32 status;
-> +
-> +	writel(DPHY_CMN_PWM_HIGH(6) | DPHY_CMN_PWM_LOW(0x101) |
-> +	       DPHY_CMN_PWM_DIV(0x8),
-
-Please avoid using magic numbers. Or if you are going to use them, at 
-least explain in a comment what they are doing.
-
-> +	       dphy->regs + DPHY_CMN_PWM);
-> +
-> +	writel((FIELD_PREP(DPHY_TX_J721E_WIZ_IPDIV, cfg->pll_ipdiv) |
-> +		FIELD_PREP(DPHY_TX_J721E_WIZ_OPDIV, cfg->pll_opdiv) |
-> +		FIELD_PREP(DPHY_TX_J721E_WIZ_FBDIV, cfg->pll_fbdiv)),
-> +		dphy->regs + DPHY_TX_J721E_WIZ_PLL_CTRL);
-> +
-> +	writel(DPHY_TX_J721E_WIZ_LANE_RSTB,
-> +	       dphy->regs + DPHY_TX_J721E_WIZ_RST_CTRL);
-> +
-> +	readl_poll_timeout(dphy->regs + DPHY_TX_J721E_WIZ_PLL_CTRL, status,
-> +			   (status & DPHY_TX_WIZ_PLL_LOCK), 0, POLL_TIMEOUT_US);
-> +
-> +	readl_poll_timeout(dphy->regs + DPHY_TX_J721E_WIZ_STATUS, status,
-> +			   (status & DPHY_TX_WIZ_O_CMN_READY), 0,
-> +			   POLL_TIMEOUT_US);
-> +}
-> +
-> +static void cdns_dphy_j721e_set_psm_div(struct cdns_dphy *dphy, u8 div)
-> +{
-> +	writel(div, dphy->regs + DPHY_TX_J721E_WIZ_PSM_FREQ);
-> +}
-> +#endif /* !CONFIG_PHY_CADENCE_DPHY_J721E */
-> +
->  /*
->   * This is the reference implementation of DPHY hooks. Specific integration of
->   * this IP may have to re-implement some of them depending on how they decided
-> @@ -221,6 +272,14 @@ static const struct cdns_dphy_ops ref_dphy_ops = {
->  	.set_psm_div = cdns_dphy_ref_set_psm_div,
->  };
->  
-> +#ifdef CONFIG_PHY_CADENCE_DPHY_J721E
-> +static const struct cdns_dphy_ops j721e_dphy_ops = {
-> +	.get_wakeup_time_ns = cdns_dphy_j721e_get_wakeup_time_ns,
-> +	.set_pll_cfg = cdns_dphy_j721e_set_pll_cfg,
-> +	.set_psm_div = cdns_dphy_j721e_set_psm_div,
-> +};
-> +#endif /* !CONFIG_PHY_CADENCE_DPHY_J721E */
-> +
->  static int cdns_dphy_config_from_opts(struct phy *phy,
->  				      struct phy_configure_opts_mipi_dphy *opts,
->  				      struct cdns_dphy_cfg *cfg)
-> @@ -408,6 +467,9 @@ static int cdns_dphy_remove(struct platform_device *pdev)
->  
->  static const struct of_device_id cdns_dphy_of_match[] = {
->  	{ .compatible = "cdns,dphy", .data = &ref_dphy_ops },
-> +#ifdef CONFIG_PHY_CADENCE_DPHY_J721E
-> +	{ .compatible = "ti,j721e-dphy", .data = &j721e_dphy_ops },
-> +#endif /* !CONFIG_PHY_CADENCE_DPHY_J721E */
->  	{ /* sentinel */ },
->  };
->  MODULE_DEVICE_TABLE(of, cdns_dphy_of_match);
-> -- 
-> 2.36.1
-> 
+ arch/x86/include/asm/setup.h  |  3 +++
+ arch/x86/kernel/head64.c      |  4 +++-
+ arch/x86/kernel/vmlinux.lds.S |  2 +-
+ arch/x86/xen/enlighten_pv.c   |  8 ++++++--
+ arch/x86/xen/xen-head.S       | 10 +---------
+ 5 files changed, 14 insertions(+), 13 deletions(-)
 
 -- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+2.35.3
+
