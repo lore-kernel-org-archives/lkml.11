@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E371C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbiFWKij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38340 "EHLO
+        id S230381AbiFWKkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiFWKii (ORCPT
+        with ESMTP id S229937AbiFWKk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:38:38 -0400
+        Thu, 23 Jun 2022 06:40:28 -0400
 Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA60473A8;
-        Thu, 23 Jun 2022 03:38:34 -0700 (PDT)
-X-QQ-mid: bizesmtp83t1655980634t4p80waa
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636A213E07;
+        Thu, 23 Jun 2022 03:40:23 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1655980818t092s0u9
 Received: from ubuntu.localdomain ( [106.117.99.68])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 23 Jun 2022 18:37:10 +0800 (CST)
+        id ; Thu, 23 Jun 2022 18:40:14 +0800 (CST)
 X-QQ-SSF: 01000000008000B0C000D00A0000000
-X-QQ-FEAT: z8a0vINfhrv78jzEWZpM5dp3suNsGFUiFRS9/zONYZ+w5+MHtQsNJP2MG3OZC
-        T+UIg2yQHa9bMWuv3i0IbcBiIArss/C4uQvQsTczHq5lCyvgwDKIZveAU+dq5JJ7v962YG2
-        QbwOojUCPMEjN6c5t26cKbSBHw64+mPD6BsOYuGOTVz0GjgLjZrv5OXPMi0dQyiapp5BH09
-        QFrDCXvvB4RZqAgr4FVadKE9QastHkr4x2cwzthX/DMOTkbYH4aOpbv/ZdcsBy64sqMMzRR
-        9m3GZtKdFoprDf1L2KekuvdDIXMHAnXA7YHdezfU8p6oxpB9X5NgBickH+k/sqmXLYGDk28
-        9MHtR1aXcP4MuiE1U18vpHdb0kqvEvlRvtMzxS7
+X-QQ-FEAT: +i7PuHLNsE7UBD9BC541qmopyEJf9ANnuoidtz228/fn941NgbHUZVlS/arGo
+        kR64QH6WMQaNvjkjfJvzS1AjS30RJN8BBLRGx8GSCkfAAnza3nSVQw+j0dUcbkqoLtIY+iS
+        MBQGaqENOAlnaLuhvBm+1tW6e1by7CpBoQKXgieW4+PsBfkDIY2t/OcF/l0Yw3keW/d0qmk
+        1QeN7HPMyDJ9y+2J4FLaf/iDH8JZQT7nq2O4Qf5uykeNIMUfhw7xaOdYJchBa3ZK5eUPc3q
+        2rOn5IwJyf6JZYMs+Xb5l39+i20YlDxOYEq1g01AojcXuGjEdjZS2NYvjLzLeZLMweTADBs
+        4LlbBZ0+Tbfn8gC5feJaacgNRHW0g==
 X-QQ-GoodBg: 0
 From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     selvin.xavier@broadcom.com, jgg@ziepe.ca, leon@kernel.org
-Cc:     linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] RDMA/bnxt_re: drop unexpected word 'for' in comments
-Date:   Thu, 23 Jun 2022 18:37:08 +0800
-Message-Id: <20220623103708.43104-1-jiangjian@cdjrlc.com>
+To:     mchehab@kernel.org
+Cc:     jiangjian@cdjrlc.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] media: dvb-frontends: drxk_hard.c - drop unexpected word 'for' in comments
+Date:   Thu, 23 Jun 2022 18:40:12 +0800
+Message-Id: <20220623104012.44107-1-jiangjian@cdjrlc.com>
 X-Mailer: git-send-email 2.17.1
 X-QQ-SENDSIZE: 520
 Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
@@ -43,33 +43,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 there is an unexpected word 'for' in the comments that need to be dropped
 
-file - drivers/infiniband/hw/bnxt_re/bnxt_re.h
-line - 176
+file - drivers/media/dvb-frontends/drxk_hard.c
+line - 3519
 
-	/* QP for for handling QP1 packets */
+/* window size for for sense pre-SAW detection */
 
 changed to:
 
-	/* QP for handling QP1 packets */
+/* window size for sense pre-SAW detection */
 
 Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
 ---
- drivers/infiniband/hw/bnxt_re/bnxt_re.h | 2 +-
+ drivers/media/dvb-frontends/drxk_hard.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/bnxt_re/bnxt_re.h b/drivers/infiniband/hw/bnxt_re/bnxt_re.h
-index 79401e6c6aa9..785c37cae3c0 100644
---- a/drivers/infiniband/hw/bnxt_re/bnxt_re.h
-+++ b/drivers/infiniband/hw/bnxt_re/bnxt_re.h
-@@ -173,7 +173,7 @@ struct bnxt_re_dev {
- 	/* Max of 2 lossless traffic class supported per port */
- 	u16				cosq[2];
- 
--	/* QP for for handling QP1 packets */
-+	/* QP for handling QP1 packets */
- 	struct bnxt_re_gsi_context	gsi_ctx;
- 	struct bnxt_re_stats		stats;
- 	atomic_t nq_alloc_cnt;
+diff --git a/drivers/media/dvb-frontends/drxk_hard.c b/drivers/media/dvb-frontends/drxk_hard.c
+index 9430295a8175..47d83e0a470c 100644
+--- a/drivers/media/dvb-frontends/drxk_hard.c
++++ b/drivers/media/dvb-frontends/drxk_hard.c
+@@ -3516,7 +3516,7 @@ static int set_dvbt_standard(struct drxk_state *state,
+ 	status = write16(state, IQM_AF_CLP_LEN__A, 0);
+ 	if (status < 0)
+ 		goto error;
+-	/* window size for for sense pre-SAW detection */
++	/* window size for sense pre-SAW detection */
+ 	status = write16(state, IQM_AF_SNS_LEN__A, 0);
+ 	if (status < 0)
+ 		goto error;
 -- 
 2.17.1
 
