@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBD6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9F1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233166AbiFWRZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
+        id S233484AbiFWRZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233960AbiFWRZZ (ORCPT
+        with ESMTP id S232249AbiFWRZf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:25:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A64C6B8D6;
-        Thu, 23 Jun 2022 10:02:24 -0700 (PDT)
+        Thu, 23 Jun 2022 13:25:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6192968C74;
+        Thu, 23 Jun 2022 10:02:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2B13B8248C;
-        Thu, 23 Jun 2022 17:02:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16AEEC3411B;
-        Thu, 23 Jun 2022 17:02:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D2D761573;
+        Thu, 23 Jun 2022 17:02:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9FFC3411B;
+        Thu, 23 Jun 2022 17:02:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003738;
-        bh=vPRTMm+R+ACCNBJFw2ofXGsoF9uzS5IfdoIy6DONyu0=;
+        s=korg; t=1656003744;
+        bh=ZNOsSVQMDWoidLiXR8QjTh8d8stxB7opV2niuosnnsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1IQ46oJ0A4XsYadg8+iSWiaceOYe0hfpl/unAxtwgY97J7a80Ste6FAInrVY/6D7M
-         7Eyv9/JaUX3i0TPFXuO4YLgvwRTDI7zZdfGmyvrWv0D0cLT9vocG0xROXF9pilfby6
-         1zxHYypJL/WcfLF0Mfa01hvHU592CQnK8iQMxJQI=
+        b=wU4JrKTkZzPfrQ5WFpYAGdTk7AovuJLkGidlRv9yKlGbi9TI7JKjhwWn+IMXwqW5+
+         EIduz+e4QVLSHpPbspiVnb8WeWj9+wpo7ZCU0WyHqUgSmIIOiwaCsHKy5Q+EvFHcm+
+         wanCB9yNVo4XOwwQUpq9ndJwHp/7K04MtTB2WE3U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 071/237] random: fix typo in comments
-Date:   Thu, 23 Jun 2022 18:41:45 +0200
-Message-Id: <20220623164345.196578315@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
+        Theodore Tso <tytso@mit.edu>,
+        Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 073/237] crypto: chacha20 - Fix chacha20_block() keystream alignment (again)
+Date:   Thu, 23 Jun 2022 18:41:47 +0200
+Message-Id: <20220623164345.253389810@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -48,29 +52,206 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit c0a8a61e7abbf66729687ee63659ee25983fbb1e upstream.
+[ Upstream commit a5e9f557098e54af44ade5d501379be18435bfbf ]
 
-s/or/for
+In commit 9f480faec58c ("crypto: chacha20 - Fix keystream alignment for
+chacha20_block()"), I had missed that chacha20_block() can be called
+directly on the buffer passed to get_random_bytes(), which can have any
+alignment.  So, while my commit didn't break anything, it didn't fully
+solve the alignment problems.
 
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Revert my solution and just update chacha20_block() to use
+put_unaligned_le32(), so the output buffer need not be aligned.
+This is simpler, and on many CPUs it's the same speed.
+
+But, I kept the 'tmp' buffers in extract_crng_user() and
+_get_random_bytes() 4-byte aligned, since that alignment is actually
+needed for _crng_backtrack_protect() too.
+
+Reported-by: Stephan Müller <smueller@chronox.de>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ crypto/chacha20_generic.c |    7 ++++---
+ drivers/char/random.c     |   24 ++++++++++++------------
+ include/crypto/chacha20.h |    3 +--
+ lib/chacha20.c            |    6 +++---
+ 4 files changed, 20 insertions(+), 20 deletions(-)
 
+--- a/crypto/chacha20_generic.c
++++ b/crypto/chacha20_generic.c
+@@ -22,20 +22,21 @@ static inline u32 le32_to_cpuvp(const vo
+ static void chacha20_docrypt(u32 *state, u8 *dst, const u8 *src,
+ 			     unsigned int bytes)
+ {
+-	u32 stream[CHACHA20_BLOCK_WORDS];
++	/* aligned to potentially speed up crypto_xor() */
++	u8 stream[CHACHA20_BLOCK_SIZE] __aligned(sizeof(long));
+ 
+ 	if (dst != src)
+ 		memcpy(dst, src, bytes);
+ 
+ 	while (bytes >= CHACHA20_BLOCK_SIZE) {
+ 		chacha20_block(state, stream);
+-		crypto_xor(dst, (const u8 *)stream, CHACHA20_BLOCK_SIZE);
++		crypto_xor(dst, stream, CHACHA20_BLOCK_SIZE);
+ 		bytes -= CHACHA20_BLOCK_SIZE;
+ 		dst += CHACHA20_BLOCK_SIZE;
+ 	}
+ 	if (bytes) {
+ 		chacha20_block(state, stream);
+-		crypto_xor(dst, (const u8 *)stream, bytes);
++		crypto_xor(dst, stream, bytes);
+ 	}
+ }
+ 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -101,7 +101,7 @@
-  * ===============================
-  *
-  * There are four exported interfaces; two for use within the kernel,
-- * and two or use from userspace.
-+ * and two for use from userspace.
-  *
-  * Exported interfaces ---- userspace output
-  * -----------------------------------------
+@@ -485,9 +485,9 @@ static int crng_init_cnt = 0;
+ static unsigned long crng_global_init_time = 0;
+ #define CRNG_INIT_CNT_THRESH (2*CHACHA20_KEY_SIZE)
+ static void _extract_crng(struct crng_state *crng,
+-			  __u32 out[CHACHA20_BLOCK_WORDS]);
++			  __u8 out[CHACHA20_BLOCK_SIZE]);
+ static void _crng_backtrack_protect(struct crng_state *crng,
+-				    __u32 tmp[CHACHA20_BLOCK_WORDS], int used);
++				    __u8 tmp[CHACHA20_BLOCK_SIZE], int used);
+ static void process_random_ready_list(void);
+ static void _get_random_bytes(void *buf, int nbytes);
+ 
+@@ -986,7 +986,7 @@ static void crng_reseed(struct crng_stat
+ 	unsigned long	flags;
+ 	int		i, num;
+ 	union {
+-		__u32	block[CHACHA20_BLOCK_WORDS];
++		__u8	block[CHACHA20_BLOCK_SIZE];
+ 		__u32	key[8];
+ 	} buf;
+ 
+@@ -1014,7 +1014,7 @@ static void crng_reseed(struct crng_stat
+ }
+ 
+ static void _extract_crng(struct crng_state *crng,
+-			  __u32 out[CHACHA20_BLOCK_WORDS])
++			  __u8 out[CHACHA20_BLOCK_SIZE])
+ {
+ 	unsigned long flags, init_time;
+ 
+@@ -1032,7 +1032,7 @@ static void _extract_crng(struct crng_st
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+ }
+ 
+-static void extract_crng(__u32 out[CHACHA20_BLOCK_WORDS])
++static void extract_crng(__u8 out[CHACHA20_BLOCK_SIZE])
+ {
+ 	_extract_crng(select_crng(), out);
+ }
+@@ -1042,7 +1042,7 @@ static void extract_crng(__u32 out[CHACH
+  * enough) to mutate the CRNG key to provide backtracking protection.
+  */
+ static void _crng_backtrack_protect(struct crng_state *crng,
+-				    __u32 tmp[CHACHA20_BLOCK_WORDS], int used)
++				    __u8 tmp[CHACHA20_BLOCK_SIZE], int used)
+ {
+ 	unsigned long	flags;
+ 	__u32		*s, *d;
+@@ -1054,14 +1054,14 @@ static void _crng_backtrack_protect(stru
+ 		used = 0;
+ 	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+-	s = &tmp[used / sizeof(__u32)];
++	s = (__u32 *) &tmp[used];
+ 	d = &crng->state[4];
+ 	for (i=0; i < 8; i++)
+ 		*d++ ^= *s++;
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+ }
+ 
+-static void crng_backtrack_protect(__u32 tmp[CHACHA20_BLOCK_WORDS], int used)
++static void crng_backtrack_protect(__u8 tmp[CHACHA20_BLOCK_SIZE], int used)
+ {
+ 	_crng_backtrack_protect(select_crng(), tmp, used);
+ }
+@@ -1069,7 +1069,7 @@ static void crng_backtrack_protect(__u32
+ static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
+ {
+ 	ssize_t ret = 0, i = CHACHA20_BLOCK_SIZE;
+-	__u32 tmp[CHACHA20_BLOCK_WORDS];
++	__u8 tmp[CHACHA20_BLOCK_SIZE] __aligned(4);
+ 	int large_request = (nbytes > 256);
+ 
+ 	while (nbytes) {
+@@ -1529,7 +1529,7 @@ static void _warn_unseeded_randomness(co
+  */
+ static void _get_random_bytes(void *buf, int nbytes)
+ {
+-	__u32 tmp[CHACHA20_BLOCK_WORDS];
++	__u8 tmp[CHACHA20_BLOCK_SIZE] __aligned(4);
+ 
+ 	trace_get_random_bytes(nbytes, _RET_IP_);
+ 
+@@ -2116,7 +2116,7 @@ u64 get_random_u64(void)
+ 	batch = raw_cpu_ptr(&batched_entropy_u64);
+ 	spin_lock_irqsave(&batch->batch_lock, flags);
+ 	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0) {
+-		extract_crng((__u32 *)batch->entropy_u64);
++		extract_crng((u8 *)batch->entropy_u64);
+ 		batch->position = 0;
+ 	}
+ 	ret = batch->entropy_u64[batch->position++];
+@@ -2140,7 +2140,7 @@ u32 get_random_u32(void)
+ 	batch = raw_cpu_ptr(&batched_entropy_u32);
+ 	spin_lock_irqsave(&batch->batch_lock, flags);
+ 	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0) {
+-		extract_crng(batch->entropy_u32);
++		extract_crng((u8 *)batch->entropy_u32);
+ 		batch->position = 0;
+ 	}
+ 	ret = batch->entropy_u32[batch->position++];
+--- a/include/crypto/chacha20.h
++++ b/include/crypto/chacha20.h
+@@ -13,13 +13,12 @@
+ #define CHACHA20_IV_SIZE	16
+ #define CHACHA20_KEY_SIZE	32
+ #define CHACHA20_BLOCK_SIZE	64
+-#define CHACHA20_BLOCK_WORDS	(CHACHA20_BLOCK_SIZE / sizeof(u32))
+ 
+ struct chacha20_ctx {
+ 	u32 key[8];
+ };
+ 
+-void chacha20_block(u32 *state, u32 *stream);
++void chacha20_block(u32 *state, u8 *stream);
+ void crypto_chacha20_init(u32 *state, struct chacha20_ctx *ctx, u8 *iv);
+ int crypto_chacha20_setkey(struct crypto_skcipher *tfm, const u8 *key,
+ 			   unsigned int keysize);
+--- a/lib/chacha20.c
++++ b/lib/chacha20.c
+@@ -21,9 +21,9 @@ static inline u32 rotl32(u32 v, u8 n)
+ 	return (v << n) | (v >> (sizeof(v) * 8 - n));
+ }
+ 
+-void chacha20_block(u32 *state, u32 *stream)
++void chacha20_block(u32 *state, u8 *stream)
+ {
+-	u32 x[16], *out = stream;
++	u32 x[16];
+ 	int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(x); i++)
+@@ -72,7 +72,7 @@ void chacha20_block(u32 *state, u32 *str
+ 	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(x); i++)
+-		out[i] = cpu_to_le32(x[i] + state[i]);
++		put_unaligned_le32(x[i] + state[i], &stream[i * sizeof(u32)]);
+ 
+ 	state[12]++;
+ }
 
 
