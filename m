@@ -2,86 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B493CCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C54CCA47E
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 03:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbiFWDDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 23:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53408 "EHLO
+        id S229952AbiFWDDP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 23:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229901AbiFWC7i (ORCPT
+        with ESMTP id S229436AbiFWDCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 22:59:38 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA13E55;
-        Wed, 22 Jun 2022 19:59:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=sIfzbNhL8TrtFD7HElGf5ZhPwJycPkd0im274TrYgOE=; b=UnLy5cTQ9sM5zeCyJZzL7KnkWc
-        LhxMLklCHlYKiJrrXdupWsZKGXnFbZhYxYlgr9YBdgGDax6rz/IoYK7WIZV+rjNLdZxhrKFhr+801
-        y83vdod1sbpRBgyA5iR6JfWp0JFYMzrvSjEljyj9To2MadknSDDVbgfWR64/wydYAfOSNWQ9Z2kyo
-        l0DemHleTXJrCJOrjJ64mOHv3HUwlkFiikYhx/b/ryyd3u+lWw11VOuMQ7irm2/CLJc+GCLofGopK
-        kCJBoK8mqZpk0gYDRVWWvJdZXNq7OIgDLYoe9UByOuqlgrsGGMBb8aC0eANBcRahGA39veVoQDwcs
-        hne8NIzg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o4D46-007YCQ-Es; Thu, 23 Jun 2022 02:59:30 +0000
-Message-ID: <f174fa2c-40b8-af76-812f-0f3bb680b2da@infradead.org>
-Date:   Wed, 22 Jun 2022 19:59:26 -0700
+        Wed, 22 Jun 2022 23:02:18 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1357F218F;
+        Wed, 22 Jun 2022 20:02:11 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 23so11696079pgc.8;
+        Wed, 22 Jun 2022 20:02:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=g03u5w/SOP9Sq8BmXmtuOWSKoGMrDR9MfcvEZZfKrFU=;
+        b=Srcv5PJSKVOmkMl+WTNEfVKuJeOaOWy2Hq7o0wXx6v1bAJ5fPELPAxr7uZvhbEb78i
+         iB1AV+JyJ24VPbRf6fQ4JCZFCyMgZz51q5fRinR9rtrbIAkGtf19M/i6ipD1BGJLryXW
+         V1Bi6IYAsLHPE37i+z4036m0RMkZEmzzd3aRN0cP5KdWBoSajL5IiE1bTXY2lVY9dawt
+         uX74ZuT/czsYEngTU4fx513grk82zx7u0jNb3ZUxJogrk5PntCwYKxoua0UFVAee5JK+
+         aVitLKQTvaMlZpzOwdIzNDCfcE48DD/kPnrXgVLhHlbThjI9l9GIQP75gYeEXtzClXvL
+         TC8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=g03u5w/SOP9Sq8BmXmtuOWSKoGMrDR9MfcvEZZfKrFU=;
+        b=3k3QisUbZOcmje7bItXqe9qdN+LtUvLwZ6gRwBzrZnz18vst4BLhXwGgZC3Kr1NcAm
+         1cJ9NZFBykDfVKELBAM7G0IWg7O2EELtrGipcQvyMKrd7fkBoGyh+vR9OAcH+z89pCYG
+         hRX+PYsehA88qer6n/bYmi3tUpNshOM54a7h28c4d6cFhCuA3LWRrokmdmXIbDOFkqbu
+         pDRPqt/iVDr4M2ztPIlb905ENYw770DUU45Nl0D9VwdZgh63RxTUWdKc0zbcHq7iDAXb
+         EsEdMvdcE3vLhIRKxQAdleg43uj8D67E7ZhEBytr3j5sPBcwTS9a3rzIidBTcxagmYH6
+         N59w==
+X-Gm-Message-State: AJIora8EIFUAmppRlJyoVvfebFWrqmSk/toUnyzQbKkI9+EUkx6V6Tl1
+        MxT3qDzLy8r4EhvbQEigow3L8J3IVzo=
+X-Google-Smtp-Source: AGRyM1vHQjFvsyICN8eFMWzI33+FYWFTZ5MtZ2VtgSMJzNKyiX9Lqw92Dt4Kucaqoo9zjN8og6oP0A==
+X-Received: by 2002:a63:4447:0:b0:3fc:d3d1:cea9 with SMTP id t7-20020a634447000000b003fcd3d1cea9mr5600389pgk.269.1655953329732;
+        Wed, 22 Jun 2022 20:02:09 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x16-20020a170902b41000b0016a1c61c603sm7823705plr.154.2022.06.22.20.02.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 20:02:09 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: dsa: bcm_sf2: force pause link settings
+Date:   Wed, 22 Jun 2022 20:02:04 -0700
+Message-Id: <20220623030204.1966851-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] MIPS: Fix 2 typos
-Content-Language: en-US
-To:     Joe Perches <joe@perches.com>,
-        Zhang Jiaming <jiaming@nfschina.com>, tsbogend@alpha.franken.de
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liqiong@nfschina.com, renyu@nfschina.com
-References: <20220622090713.24370-1-jiaming@nfschina.com>
- <d2112863-bd28-d6db-c353-1b7b94b45fcb@infradead.org>
- <37d560bc5267408eb9cc806339025418094cf5bb.camel@perches.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <37d560bc5267408eb9cc806339025418094cf5bb.camel@perches.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Doug Berger <opendmb@gmail.com>
 
+The pause settings reported by the PHY should also be applied to the GMII port
+status override otherwise the switch will not generate pause frames towards the
+link partner despite the advertisement saying otherwise.
 
-On 6/22/22 07:46, Joe Perches wrote:
-> On Wed, 2022-06-22 at 07:28 -0700, Randy Dunlap wrote:
->> On 6/22/22 02:07, Zhang Jiaming wrote:
->>> Change 'modifed' to 'modified'.
->>> Change 'relys' to 'relays'.
-> []
->>> diff --git a/arch/mips/cavium-octeon/executive/cvmx-helper-board.c b/arch/mips/cavium-octeon/executive/cvmx-helper-board.c
-> []
->>> @@ -282,9 +282,9 @@ union cvmx_helper_link_info __cvmx_helper_board_link_get(int ipd_port)
->>>   * support and should return the number of actual ports on the
->>>   * board.
->>>   *
->>> - * This function must be modifed for every new Octeon board.
->>> + * This function must be modified for every new Octeon board.
->>>   * Internally it uses switch statements based on the cvmx_sysinfo
->>> - * data to determine board types and revisions. It relys on the
->>
->>                                                       relies
->>
->> But it would be better to restrict this barrage (or swarm) of patches
->> to Kconfig help text problems and/or strings that are printed to users.
-> 
-> I believe fixing typos isn't a particular problem and is
-> overall rather a good thing.
+Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/bcm_sf2.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-OK, I can agree with that.
-
-> Though backporting these patches would be silly.
-
-Ack.
-
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 87e81c636339..be0edfa093d0 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -878,6 +878,11 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
+ 		if (duplex == DUPLEX_FULL)
+ 			reg |= DUPLX_MODE;
+ 
++		if (tx_pause)
++			reg |= TXFLOW_CNTL;
++		if (rx_pause)
++			reg |= RXFLOW_CNTL;
++
+ 		core_writel(priv, reg, offset);
+ 	}
+ 
 -- 
-~Randy
+2.25.1
+
