@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3581CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5355CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234776AbiFWRmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
+        id S234515AbiFWRm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234782AbiFWRiQ (ORCPT
+        with ESMTP id S234823AbiFWRiT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:38:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035D718384;
-        Thu, 23 Jun 2022 10:08:05 -0700 (PDT)
+        Thu, 23 Jun 2022 13:38:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B335369E6;
+        Thu, 23 Jun 2022 10:08:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD0E6B82498;
-        Thu, 23 Jun 2022 17:08:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07D28C3411B;
-        Thu, 23 Jun 2022 17:08:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 313CD60AE6;
+        Thu, 23 Jun 2022 17:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0EFCC3411B;
+        Thu, 23 Jun 2022 17:08:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004082;
-        bh=ZE8Oti+fu3e1FxWiLUTqce4e2vXw7qouPFIc2w4kBJs=;
+        s=korg; t=1656004110;
+        bh=0FJWfLoW8P5fpPUhXZhjrPk7ihopk+wbSWD3MHtf1pc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qxqnBklW7K3l8evoVDh1nj3qm0PNDjF+ySm0KwSrccPv5cYO8tNaFHx+GWqV3ngvP
-         AfRfQxv8/09w+1GeJbOvTaoNuN7F+BHTHak7WAvQlx0X7EySj2T6QITpJSFV59RoHe
-         Q0koOJ2NBoMrBBFvf6wKyUB6cc3zSh6m2JhP/oQs=
+        b=VMWrsr5xgYQxdCxx6kqY42F8ptfZINC3hgkIZCUoaOYRrJzlfr6mMEp417llats4C
+         gsj3sCoyczQ4Iho0m7fklbVr0KBoflk8ICh2+2tGoviPUBuRNYIdzkKstuEFNsC1TE
+         +7f6JihrsG+Pc4Qqtl23EFXSmmUhYqru6YvMwBhA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Jann Horn <jannh@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 141/237] random: do not allow user to keep crng key around on stack
-Date:   Thu, 23 Jun 2022 18:42:55 +0200
-Message-Id: <20220623164347.211451447@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 192/237] random: mark bootloader randomness code as __init
+Date:   Thu, 23 Jun 2022 18:43:46 +0200
+Message-Id: <20220623164348.671234652@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,96 +49,60 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit aba120cc101788544aa3e2c30c8da88513892350 upstream.
+commit 39e0f991a62ed5efabd20711a7b6e7da92603170 upstream.
 
-The fast key erasure RNG design relies on the key that's used to be used
-and then discarded. We do this, making judicious use of
-memzero_explicit().  However, reads to /dev/urandom and calls to
-getrandom() involve a copy_to_user(), and userspace can use FUSE or
-userfaultfd, or make a massive call, dynamically remap memory addresses
-as it goes, and set the process priority to idle, in order to keep a
-kernel stack alive indefinitely. By probing
-/proc/sys/kernel/random/entropy_avail to learn when the crng key is
-refreshed, a malicious userspace could mount this attack every 5 minutes
-thereafter, breaking the crng's forward secrecy.
+add_bootloader_randomness() and the variables it touches are only used
+during __init and not after, so mark these as __init. At the same time,
+unexport this, since it's only called by other __init code that's
+built-in.
 
-In order to fix this, we just overwrite the stack's key with the first
-32 bytes of the "free" fast key erasure output. If we're returning <= 32
-bytes to the user, then we can still return those bytes directly, so
-that short reads don't become slower. And for long reads, the difference
-is hopefully lost in the amortization, so it doesn't change much, with
-that amortization helping variously for medium reads.
-
-We don't need to do this for get_random_bytes() and the various
-kernel-space callers, and later, if we ever switch to always batching,
-this won't be necessary either, so there's no need to change the API of
-these functions.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Jann Horn <jannh@google.com>
-Fixes: c92e040d575a ("random: add backtracking protection to the CRNG")
-Fixes: 186873c549df ("random: use simpler fast key erasure flow on per-cpu keys")
+Cc: stable@vger.kernel.org
+Fixes: 428826f5358c ("fdt: add support for rng-seed")
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   35 +++++++++++++++++++++++------------
- 1 file changed, 23 insertions(+), 12 deletions(-)
+ drivers/char/random.c  |    7 +++----
+ include/linux/random.h |    2 +-
+ 2 files changed, 4 insertions(+), 5 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -532,19 +532,29 @@ static ssize_t get_random_bytes_user(voi
- 	if (!nbytes)
- 		return 0;
+@@ -785,8 +785,8 @@ static void __cold _credit_init_bits(siz
+  *
+  **********************************************************************/
  
--	len = min_t(size_t, 32, nbytes);
--	crng_make_state(chacha_state, output, len);
--
--	if (copy_to_user(buf, output, len))
--		return -EFAULT;
--	nbytes -= len;
--	buf += len;
--	ret += len;
-+	/*
-+	 * Immediately overwrite the ChaCha key at index 4 with random
-+	 * bytes, in case userspace causes copy_to_user() below to sleep
-+	 * forever, so that we still retain forward secrecy in that case.
-+	 */
-+	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
-+	/*
-+	 * However, if we're doing a read of len <= 32, we don't need to
-+	 * use chacha_state after, so we can simply return those bytes to
-+	 * the user directly.
-+	 */
-+	if (nbytes <= CHACHA_KEY_SIZE) {
-+		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? -EFAULT : nbytes;
-+		goto out_zero_chacha;
-+	}
- 
--	while (nbytes) {
-+	do {
- 		if (large_request && need_resched()) {
--			if (signal_pending(current))
-+			if (signal_pending(current)) {
-+				if (!ret)
-+					ret = -ERESTARTSYS;
- 				break;
-+			}
- 			schedule();
- 		}
- 
-@@ -561,10 +571,11 @@ static ssize_t get_random_bytes_user(voi
- 		nbytes -= len;
- 		buf += len;
- 		ret += len;
--	}
-+	} while (nbytes);
- 
--	memzero_explicit(chacha_state, sizeof(chacha_state));
- 	memzero_explicit(output, sizeof(output));
-+out_zero_chacha:
-+	memzero_explicit(chacha_state, sizeof(chacha_state));
- 	return ret;
+-static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
+-static bool trust_bootloader __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
++static bool trust_cpu __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
++static bool trust_bootloader __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
+ static int __init parse_trust_cpu(char *arg)
+ {
+ 	return kstrtobool(arg, &trust_cpu);
+@@ -882,13 +882,12 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
+  * Handle random seed passed by bootloader, and credit it if
+  * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+  */
+-void __cold add_bootloader_randomness(const void *buf, size_t len)
++void __init add_bootloader_randomness(const void *buf, size_t len)
+ {
+ 	mix_pool_bytes(buf, len);
+ 	if (trust_bootloader)
+ 		credit_init_bits(len * 8);
  }
+-EXPORT_SYMBOL_GPL(add_bootloader_randomness);
  
+ struct fast_pool {
+ 	struct work_struct mix;
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -13,7 +13,7 @@
+ struct notifier_block;
+ 
+ void add_device_randomness(const void *buf, size_t len);
+-void add_bootloader_randomness(const void *buf, size_t len);
++void __init add_bootloader_randomness(const void *buf, size_t len);
+ void add_input_randomness(unsigned int type, unsigned int code,
+ 			  unsigned int value) __latent_entropy;
+ void add_interrupt_randomness(int irq) __latent_entropy;
 
 
