@@ -2,80 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD49C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F936C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbiFWJrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48946 "EHLO
+        id S231433AbiFWJrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231294AbiFWJqs (ORCPT
+        with ESMTP id S231428AbiFWJrQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:46:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18D649935
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:46:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AC1EB8222B
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:46:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A417C341C6;
-        Thu, 23 Jun 2022 09:46:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655977604;
-        bh=YWP8xQl28FqLrVoNh1JnPPBf3z5SkmXcUdzYiHP2f7k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Gjtv+PjCDpxCyJtM19H3WCoRUbPRJ6X3nmxXRGq7LpG/Ias3TIY3bQk6vsTF0lPWy
-         Ac9WflSk2BxdX2HLvW3izOiHYz/v8axaZDYgPmopeiN0BfnajkbAf0/46n1SHjVNUC
-         5QItwP4uR9P1wkhPKXp2WqZ684TF3ihhl4Fa2phI=
-Date:   Thu, 23 Jun 2022 11:46:41 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-staging@lists.linux.dev, davem@davemloft.net,
-        alexander.deucher@amd.com, kuba@kernel.org, broonie@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: rtl8192u: Fix sleep in atomic context bug in
- dm_fsync_timer_callback
-Message-ID: <YrQ2gXtX2FOkyNgu@kroah.com>
-References: <20220623055912.84138-1-duoming@zju.edu.cn>
+        Thu, 23 Jun 2022 05:47:16 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D915249C87
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:47:00 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3D30812FC;
+        Thu, 23 Jun 2022 02:47:00 -0700 (PDT)
+Received: from [10.57.84.86] (unknown [10.57.84.86])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 77A373F93E;
+        Thu, 23 Jun 2022 02:46:47 -0700 (PDT)
+Message-ID: <17600de3-b295-ebdf-b9fa-323d2bc3cb93@arm.com>
+Date:   Thu, 23 Jun 2022 10:46:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220623055912.84138-1-duoming@zju.edu.cn>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH v4] coresight: etm4x: avoid build failure with unrolled
+ loops
+To:     Nick Desaulniers <ndesaulniers@google.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+References: <20220614220229.1640085-1-ndesaulniers@google.com>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20220614220229.1640085-1-ndesaulniers@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 01:59:12PM +0800, Duoming Zhou wrote:
-> There are sleep in atomic context bugs when dm_fsync_timer_callback is
-> executing. The root cause is that the memory allocation functions with
-> GFP_KERNEL or GFP_NOIO parameters are called in dm_fsync_timer_callback
-> which is a timer handler. The call paths that could trigger bugs are
-> shown below:
+Hi Nick
+
+Thanks for resending the patch. Unfortunately, this one still doesn't
+address my comments in the v3 [0].
+
+
+On 14/06/2022 23:02, Nick Desaulniers wrote:
+> When the following configs are enabled:
+> * CORESIGHT
+> * CORESIGHT_SOURCE_ETM4X
+> * UBSAN
+> * UBSAN_TRAP
 > 
->     (interrupt context)
-> dm_fsync_timer_callback
->   write_nic_byte
->     kzalloc(sizeof(data), GFP_KERNEL); //may sleep
->     usb_control_msg
->       kmalloc(.., GFP_NOIO); //may sleep
->   write_nic_dword
->     kzalloc(sizeof(data), GFP_KERNEL); //may sleep
->     usb_control_msg
->       kmalloc(.., GFP_NOIO); //may sleep
+> Clang fails assemble the kernel with the error:
+> <instantiation>:1:7: error: expected constant expression in '.inst' directive
+> .inst (0xd5200000|((((2) << 19) | ((1) << 16) | (((((((((((0x160 + (i * 4))))) >> 2))) >> 7) & 0x7)) << 12) | ((((((((((0x160 + (i * 4))))) >> 2))) & 0xf)) << 8) | (((((((((((0x160 + (i * 4))))) >> 2))) >> 4) & 0x7)) << 5)))|(.L__reg_num_x8))
+>        ^
+> drivers/hwtracing/coresight/coresight-etm4x-core.c:702:4: note: while in macro instantiation
+>                          etm4x_relaxed_read32(csa, TRCCNTVRn(i));
+>                          ^
+> drivers/hwtracing/coresight/coresight-etm4x.h:403:4: note: expanded from macro 'etm4x_relaxed_read32'
+>                   read_etm4x_sysreg_offset((offset), false)))
+>                   ^
+> drivers/hwtracing/coresight/coresight-etm4x.h:383:12: note: expanded from macro 'read_etm4x_sysreg_offset'
+>                          __val = read_etm4x_sysreg_const_offset((offset));       \
+>                                  ^
+> drivers/hwtracing/coresight/coresight-etm4x.h:149:2: note: expanded from macro 'read_etm4x_sysreg_const_offset'
+>          READ_ETM4x_REG(ETM4x_OFFSET_TO_REG(offset))
+>          ^
+> drivers/hwtracing/coresight/coresight-etm4x.h:144:2: note: expanded from macro 'READ_ETM4x_REG'
+>          read_sysreg_s(ETM4x_REG_NUM_TO_SYSREG((reg)))
+>          ^
+> arch/arm64/include/asm/sysreg.h:1108:15: note: expanded from macro 'read_sysreg_s'
+>          asm volatile(__mrs_s("%0", r) : "=r" (__val));                  \
+>                       ^
+> arch/arm64/include/asm/sysreg.h:1074:2: note: expanded from macro '__mrs_s'
+> "       mrs_s " v ", " __stringify(r) "\n"                      \
+>   ^
 > 
-> This patch uses delayed work to replace timer and moves the operations
-> that may sleep into the delayed work in order to mitigate bugs.
+> Consider the definitions of TRCSSCSRn and TRCCNTVRn:
+> drivers/hwtracing/coresight/coresight-etm4x.h:56
+>   #define TRCCNTVRn(n)      (0x160 + (n * 4))
+> drivers/hwtracing/coresight/coresight-etm4x.h:81
+>   #define TRCSSCSRn(n)      (0x2A0 + (n * 4))
 > 
-> Fixes: 8fc8598e61f6 ("Staging: Added Realtek rtl8192u driver to staging")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> Where the macro parameter is expanded to i; a loop induction variable
+> from etm4_disable_hw.
+> 
+> When any compiler can determine that loops may be unrolled, then the
+> __builtin_constant_p check in read_etm4x_sysreg_offset() defined in
+> drivers/hwtracing/coresight/coresight-etm4x.h may evaluate to true. This
+> can lead to the expression `(0x160 + (i * 4))` being passed to
+> read_etm4x_sysreg_const_offset. Via the trace above, this is passed
+> through READ_ETM4x_REG, read_sysreg_s, and finally to __mrs_s where it
+> is string-ified and used directly in inline asm.
+> 
+> Regardless of compiler or compiler options determine whether a loop can
+> or can't be unrolled, which determines whether __builtin_constant_p
+> evaluates to true when passed an expression using a loop induction
+> variable, it is NEVER safe to allow the preprocessor to construction
+> inline asm like:
+>    asm volatile (".inst (0x160 + (i * 4))" : "=r"(__val));
+>                                   ^ expected constant expression
+> 
+> Replace unsafe uses of calls to etm4x_relaxed_read32 with
+> csdev_access_read32 when the parameter is an expression that would be
+> invalid inline asm so that it does not depend on the ability of the
+> compiler to optimize __builtin_constant_p of the expression to true.
+> Only when the second parameter of etm4x_relaxed_read32 expands to an
+> expression dependent on a loop induction variable do we need to fix
+> this.
+> 
+> This is not a bug in clang; it's a potentially unsafe use of the macro
+> arguments in read_etm4x_sysreg_offset dependent on __builtin_constant_p.
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1310
+> Suggested-by: Arnd Bergmann <arnd@kernel.org>
+> Suggested-by: Tao Zhang <quic_taozha@quicinc.com>
+> Suggested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
 > ---
-> Changes in v2:
->   - Use delayed work to replace timer.
+> V1 (Arnd):
+> https://lore.kernel.org/lkml/20210225094324.3542511-1-arnd@kernel.org/
+> 
+> V2 (Arnd):
+> https://lore.kernel.org/lkml/20210429145752.3218324-1-arnd@kernel.org/
+> 
+> V3 (Tao):
+> https://lore.kernel.org/lkml/1632652550-26048-1-git-send-email-quic_taozha@quicinc.com/
 
-Did you test this with real hardware to verify it still works?
 
-thanks,
+Even with this patch applied, we have many more instances left
+to convert. Please could you update the patch to convert all of these ?
 
-greg k-h
+$ grep "(i)"  coresight-etm4x* | grep -v csdev_
+coresight-etm4x-core.c: * Check if TRCSSPCICRn(i) is implemented for a 
+given instance.
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+config->seq_ctrl[i], TRCSEQEVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+config->cntrldvr[i], TRCCNTRLDVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+config->cntr_ctrl[i], TRCCNTCTLRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+config->cntr_val[i], TRCCNTVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+config->res_ctrl[i], TRCRSCTLRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+config->ss_ctrl[i], TRCSSCCRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+config->ss_status[i], TRCSSCSRn(i));
+coresight-etm4x-core.c:                 etm4x_relaxed_write32(csa, 
+config->ss_pe_cmp[i], TRCSSPCICRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write64(csa, 
+config->addr_val[i], TRCACVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write64(csa, 
+config->addr_acc[i], TRCACATRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write64(csa, 
+config->ctxid_pid[i], TRCCIDCVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write64(csa, 
+config->vmid_val[i], TRCVMIDCVRn(i));
+coresight-etm4x-core.c:         state->trcseqevr[i] = etm4x_read32(csa, 
+TRCSEQEVRn(i));
+coresight-etm4x-core.c:         state->trccntrldvr[i] = 
+etm4x_read32(csa, TRCCNTRLDVRn(i));
+coresight-etm4x-core.c:         state->trccntctlr[i] = etm4x_read32(csa, 
+TRCCNTCTLRn(i));
+coresight-etm4x-core.c:         state->trccntvr[i] = etm4x_read32(csa, 
+TRCCNTVRn(i));
+coresight-etm4x-core.c:         state->trcrsctlr[i] = etm4x_read32(csa, 
+TRCRSCTLRn(i));
+coresight-etm4x-core.c:         state->trcssccr[i] = etm4x_read32(csa, 
+TRCSSCCRn(i));
+coresight-etm4x-core.c:         state->trcsscsr[i] = etm4x_read32(csa, 
+TRCSSCSRn(i));
+coresight-etm4x-core.c:                 state->trcsspcicr[i] = 
+etm4x_read32(csa, TRCSSPCICRn(i));
+coresight-etm4x-core.c:         state->trcacvr[i] = etm4x_read64(csa, 
+TRCACVRn(i));
+coresight-etm4x-core.c:         state->trcacatr[i] = etm4x_read64(csa, 
+TRCACATRn(i));
+coresight-etm4x-core.c:         state->trccidcvr[i] = etm4x_read64(csa, 
+TRCCIDCVRn(i));
+coresight-etm4x-core.c:         state->trcvmidcvr[i] = etm4x_read64(csa, 
+TRCVMIDCVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+state->trcseqevr[i], TRCSEQEVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+state->trccntrldvr[i], TRCCNTRLDVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+state->trccntctlr[i], TRCCNTCTLRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+state->trccntvr[i], TRCCNTVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+state->trcrsctlr[i], TRCRSCTLRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+state->trcssccr[i], TRCSSCCRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write32(csa, 
+state->trcsscsr[i], TRCSSCSRn(i));
+coresight-etm4x-core.c:                 etm4x_relaxed_write32(csa, 
+state->trcsspcicr[i], TRCSSPCICRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write64(csa, 
+state->trcacvr[i], TRCACVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write64(csa, 
+state->trcacatr[i], TRCACATRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write64(csa, 
+state->trccidcvr[i], TRCCIDCVRn(i));
+coresight-etm4x-core.c:         etm4x_relaxed_write64(csa, 
+state->trcvmidcvr[i], TRCVMIDCVRn(i));
+
+[0] 
+https://lore.kernel.org/lkml/48162555-2a67-60bc-ea4b-8720e7b98a22@arm.com/
+
+
+Kind regards
+Suzuki
+
+> 
+>   drivers/hwtracing/coresight/coresight-etm4x-core.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> index 87299e99dabb..7c6bd85e36d4 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> @@ -836,13 +836,13 @@ static void etm4_disable_hw(void *info)
+>   	/* read the status of the single shot comparators */
+>   	for (i = 0; i < drvdata->nr_ss_cmp; i++) {
+>   		config->ss_status[i] =
+> -			etm4x_relaxed_read32(csa, TRCSSCSRn(i));
+> +			csdev_access_read32(csa, TRCSSCSRn(i));
+>   	}
+>   
+>   	/* read back the current counter values */
+>   	for (i = 0; i < drvdata->nr_cntr; i++) {
+>   		config->cntr_val[i] =
+> -			etm4x_relaxed_read32(csa, TRCCNTVRn(i));
+> +			csdev_access_read32(csa, TRCCNTVRn(i));
+>   	}
+>   
+>   	coresight_disclaim_device_unlocked(csdev);
+> @@ -1177,7 +1177,7 @@ static void etm4_init_arch_data(void *info)
+>   	drvdata->nr_ss_cmp = FIELD_GET(TRCIDR4_NUMSSCC_MASK, etmidr4);
+>   	for (i = 0; i < drvdata->nr_ss_cmp; i++) {
+>   		drvdata->config.ss_status[i] =
+> -			etm4x_relaxed_read32(csa, TRCSSCSRn(i));
+> +			csdev_access_read32(csa, TRCSSCSRn(i));
+>   	}
+>   	/* NUMCIDC, bits[27:24] number of Context ID comparators for tracing */
+>   	drvdata->numcidc = FIELD_GET(TRCIDR4_NUMCIDC_MASK, etmidr4);
+
