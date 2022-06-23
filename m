@@ -2,57 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1746C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0133CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229505AbiFWTeT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57196 "EHLO
+        id S230041AbiFWTef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbiFWTde (ORCPT
+        with ESMTP id S231549AbiFWTcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:33:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8E34EDFA;
-        Thu, 23 Jun 2022 12:14:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA2E4B824BD;
-        Thu, 23 Jun 2022 19:14:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD72C341C0;
-        Thu, 23 Jun 2022 19:14:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656011670;
-        bh=wC/mFFOXrER8itkfHbAsJlzoussVbkCh7WfuQkWX524=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Uuir36EaxLJoFbQNhTM3TJD0TQfF9zlezPxAKPYt05pIDsPDlyU9JhpvtPJceomx+
-         EBCHpxQgx59JsnVOVGJAnjEM5tAdsD+fzelCIqHSbMd7vyjGkMYJG7Qocuw9cJaZRb
-         JvalXj+2PXrN2eSOqaJMSyPrfDmtFB7JlvWesQPR4saJpgDirsRxf1j67tCsz2fsk8
-         0/V3GUER1ZlLysdquV50C0YuYlOUwzRTKBxtTjkp7jg94n4RXRwn9XrvCSmy7VoQQZ
-         b/4YjlLKtmx23DzBdNYYN5gN8udxWdt5B7wAW6S3z/KTjLa37cFV8PfNKRVA6V31OJ
-         8X3w4AOIj5f3g==
-Date:   Thu, 23 Jun 2022 12:14:21 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jianglei Nie <niejianglei2021@163.com>
-Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sfp: fix memory leak in sfp_probe()
-Message-ID: <20220623121421.3bc054d2@kernel.org>
-In-Reply-To: <20220623070914.1781700-1-niejianglei2021@163.com>
-References: <20220623070914.1781700-1-niejianglei2021@163.com>
+        Thu, 23 Jun 2022 15:32:19 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BBA3EF37
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 12:08:32 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-317741c86fdso3928527b3.2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 12:08:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cI9+Tt7Z23d5RLVvZyen7R3tMKAwKXD+mtIbHKBAs/0=;
+        b=EwRTeyODFUti7GZ+xjLiRABaUIFE+v7VX2QUxT1gLoLb7OcrDvTuc6YmjFeBi4QPK8
+         cMcrZYL/sB3CiRaYHBqxYeHyYY9+3MMopZKUBg8OgBIT5gj7y2fBBjARSaMRIu9EVLOi
+         /mclFnDn/0H+0h2tsaiH5pZNuBZIw6OokDWIE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cI9+Tt7Z23d5RLVvZyen7R3tMKAwKXD+mtIbHKBAs/0=;
+        b=xtMX5ibvwwyV/3GFWlRVvFqiLwTw4JxkPrz0B/9guoZDPJNl1tW4fBhtT3c/zDqNsk
+         SaCmW2XTcILt+lXD14HTH3sjE6Z/3TdLFn8uicvlbanDoSUxBDIzZ2Ovg7GMAHMRQK/M
+         sYWFu3vYgr453BRJoU4Pw72H6Q2+5cfF5hqI9KYcQxaRLb/3ovj7DreY6BaqxcHjrO4f
+         OEtbW3GXF9QTAEvC7vUYWaOgpoHhWVEg+49z0otzZWwaYFbqJXz2tVkOgMGEvKpAtzaF
+         GZnossbu0WoHnm6NyXWaQyZzXsf3nm8RZdgkACatsTFARsfYjalKoCXuKIEQqUAc1TAY
+         FOpw==
+X-Gm-Message-State: AJIora+ImzpmXc4aGaBVkKWrJrBzydGopvQ47N1MJiGkUOhYDnthn/yT
+        vSEHwzpowULxpbbiXkYD8iRFfena+yFQSlZDDTsDrQ==
+X-Google-Smtp-Source: AGRyM1uI+NXVSDSF+kdbOhzo94TrmT6zO+AbQ7d8LLAT0eOAHI6q+f2Lm9Z72G3mIZo/6BEfD/8XNNQ0xyYslCAEtI8=
+X-Received: by 2002:a0d:f045:0:b0:317:e6b2:2c64 with SMTP id
+ z66-20020a0df045000000b00317e6b22c64mr12234518ywe.350.1656011311909; Thu, 23
+ Jun 2022 12:08:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220622173605.1168416-1-pmalani@chromium.org>
+ <20220622173605.1168416-2-pmalani@chromium.org> <CAE-0n51kcr3VGdR2Kf8j1JaBbLcCmWo9GYhhvkUQ4+jn2iEKLg@mail.gmail.com>
+In-Reply-To: <CAE-0n51kcr3VGdR2Kf8j1JaBbLcCmWo9GYhhvkUQ4+jn2iEKLg@mail.gmail.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Thu, 23 Jun 2022 12:08:21 -0700
+Message-ID: <CACeCKac4eL9++QwbDBKrVTpUzhes=WczqZfh+cFiVgoO4py4MQ@mail.gmail.com>
+Subject: Re: [PATCH v5 1/9] dt-bindings: usb: Add Type-C switch binding
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Allen Chen <allen.chen@ite.com.tw>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 15:09:14 +0800 Jianglei Nie wrote:
-> sfp_probe() allocates a memory chunk from sfp with sfp_alloc(), when
-> devm_add_action() fails, sfp is not freed, which leads to a memory leak.
-> 
-> We should free the sfp with sfp_cleanup() when devm_add_action() fails.
+On Thu, Jun 23, 2022 at 11:30 AM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Quoting Prashant Malani (2022-06-22 10:34:30)
+> > diff --git a/Documentation/devicetree/bindings/usb/typec-switch.yaml b/Documentation/devicetree/bindings/usb/typec-switch.yaml
+> > new file mode 100644
+> > index 000000000000..78b0190c8543
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/usb/typec-switch.yaml
+> > @@ -0,0 +1,74 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/usb/typec-switch.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: USB Type-C Switch
+> > +
+> > +maintainers:
+> > +  - Prashant Malani <pmalani@chromium.org>
+> > +
+> > +description:
+> > +  A USB Type-C switch represents a component which routes USB Type-C data
+> > +  lines to various protocol host controllers (e.g USB, VESA DisplayPort,
+> > +  Thunderbolt etc.) depending on which mode the Type-C port, port partner
+> > +  and cable are operating in. It can also modify lane routing based on
+> > +  the orientation of a connected Type-C peripheral.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: typec-switch
+> > +
+> > +  mode-switch:
+> > +    type: boolean
+> > +    description: Specify that this switch can handle alternate mode switching.
+> > +
+> > +  orientation-switch:
+> > +    type: boolean
+> > +    description: Specify that this switch can handle orientation switching.
+> > +
+> > +  ports:
+> > +    $ref: /schemas/graph.yaml#/properties/ports
+> > +    description: OF graph binding modelling data lines to the Type-C switch.
+> > +
+> > +    properties:
+> > +      port@0:
+> > +        $ref: /schemas/graph.yaml#/properties/port
+> > +        description: Link between the switch and a Type-C connector.
+>
+> Is there an update to the usb-c-connector binding to accept this port
+> connection?
 
-.. and please add a Fixes tag
+Not at this time. I don't think we should enforce that either.
+(Type-C data-lines could theoretically be routed through intermediate
+hardware like retimers/repeaters)
+
+>
+> > +
+> > +    required:
+> > +      - port@0
+> > +
+> > +required:
+> > +  - compatible
+> > +  - ports
+> > +
+> > +anyOf:
+> > +  - required:
+> > +      - mode-switch
+> > +  - required:
+> > +      - orientation-switch
+> > +
+> > +additionalProperties: true
+> > +
+> > +examples:
+> > +  - |
+> > +    drm-bridge {
+> > +        usb-switch {
+> > +            compatible = "typec-switch";
+>
+> I still don't understand the subnode design here. usb-switch as a
+> container node indicates to me that this is a bus, but in earlier rounds
+> of this series it was stated this isn't a bus.
+
+I am not aware of this as a requirement. Can you please point me to the
+documentation that states this needs to be the case?
+
+> Why doesn't it work to
+> merge everything inside usb-switch directly into the drm-bridge node?
+
+I attempted to explain the rationale in the previous version [1], but
+using a dedicated sub-node means the driver doesn't haven't to
+inspect individual ports to determine which of them need switches
+registered for them. If it sees a `typec-switch`, it registers a
+mode-switch and/or orientation-switch. IMO it simplifies the hardware
+device binding too.
+
+It also maps with the internal block diagram for these hardware
+components (for ex. the anx7625 crosspoint switch is a separate
+sub-block within anx7625).
+
+[1] https://lore.kernel.org/linux-usb/CACeCKaeH6qTTdG_huC4yw0xxG8TYEOtfPW3tiVNwYs=P4QVPXg@mail.gmail.com/
+
+>
+> > +            mode-switch;
+> > +            orientation-switch;
+> > +            ports {
+> > +                #address-cells = <1>;
+> > +                #size-cells = <0>;
+> > +
+> > +                port@0 {
+> > +                    reg = <0>;
+> > +                    anx_ep: endpoint {
+> > +                        remote-endpoint = <&typec_controller>;
+> > +                    };
+> > +                };
+> > +            };
+> > +        };
