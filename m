@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 435D9CCA483
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C28ACCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:43:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235046AbiFWRmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45776 "EHLO
+        id S231204AbiFWRnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234841AbiFWRiV (ORCPT
+        with ESMTP id S234847AbiFWRiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:38:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D1649911;
-        Thu, 23 Jun 2022 10:08:51 -0700 (PDT)
+        Thu, 23 Jun 2022 13:38:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6324B1E4;
+        Thu, 23 Jun 2022 10:08:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4ED74B82499;
-        Thu, 23 Jun 2022 17:08:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FAFBC3411B;
-        Thu, 23 Jun 2022 17:08:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9917C61D19;
+        Thu, 23 Jun 2022 17:08:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DFC8C3411B;
+        Thu, 23 Jun 2022 17:08:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004129;
-        bh=F2C+a+8dtvviJkoaai/uJj0g+utQmcXAR8Ws3qofBw4=;
+        s=korg; t=1656004134;
+        bh=OhAGgrsd2hb8cxfZVSqxF5k5FDAbFKwyrNdGMaFnscM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lAo5eO5h0YPyc6i0xgUAETmTr/x98815/Z2VXdyXPvMiw7RCMAsd+YCUESZee4Dc3
-         1RjqW3V78GRxrAoPUwMKwvpufi6K+LAJG6paZGZzgTSfj64ROUD3u3k+x4+OQto4h3
-         OTf1aIxvzu1zpYc+PlVtycwiDLZWccxCIfyO1yaA=
+        b=KaJBL+wN5UfzvDaB6QOU+lFAkLzEmj6Srzj6yeqKkZIrai4H/2uboh1o7iP5Ifvhf
+         VAi8HCYflsAUXhetl/fQzMzuUmV0m+XqKIYmOnKuKIaKKPzVjlOGNt5E19mjtDVUaC
+         Ccx3iBC/NTCpK8zX4ck97xRrf3JelRiZs4VA2/QA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 180/237] random: convert to using fops->write_iter()
-Date:   Thu, 23 Jun 2022 18:43:34 +0200
-Message-Id: <20220623164348.328200521@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 199/237] ASoC: wm8962: Fix suspend while playing music
+Date:   Thu, 23 Jun 2022 18:43:53 +0200
+Message-Id: <20220623164348.871341179@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,148 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Adam Ford <aford173@gmail.com>
 
-commit 22b0a222af4df8ee9bb8e07013ab44da9511b047 upstream.
+[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
 
-Now that the read side has been converted to fix a regression with
-splice, convert the write side as well to have some symmetry in the
-interface used (and help deprecate ->write()).
+If the audio CODEC is playing sound when the system is suspended,
+it can be left in a state which throws the following error:
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[Jason: cleaned up random_ioctl a bit, require full writes in
- RNDADDENTROPY since it's crediting entropy, simplify control flow of
- write_pool(), and incorporate suggestions from Al.]
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
+
+Once this error has occurred, the audio will not work again until rebooted.
+
+Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
+
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |   67 ++++++++++++++++++++++++++------------------------
- 1 file changed, 35 insertions(+), 32 deletions(-)
+ sound/soc/codecs/wm8962.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1251,39 +1251,31 @@ static unsigned int random_poll(struct f
- 	return crng_ready() ? POLLIN | POLLRDNORM : POLLOUT | POLLWRNORM;
- }
+diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
+index 0e8008d38161..d46881f96c16 100644
+--- a/sound/soc/codecs/wm8962.c
++++ b/sound/soc/codecs/wm8962.c
+@@ -3861,6 +3861,7 @@ static int wm8962_runtime_suspend(struct device *dev)
+ #endif
  
--static int write_pool(const char __user *ubuf, size_t len)
-+static ssize_t write_pool(struct iov_iter *iter)
- {
--	size_t block_len;
--	int ret = 0;
- 	u8 block[BLAKE2S_BLOCK_SIZE];
-+	ssize_t ret = 0;
-+	size_t copied;
+ static const struct dev_pm_ops wm8962_pm = {
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
+ 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
+ };
  
--	while (len) {
--		block_len = min(len, sizeof(block));
--		if (copy_from_user(block, ubuf, block_len)) {
--			ret = -EFAULT;
--			goto out;
--		}
--		len -= block_len;
--		ubuf += block_len;
--		mix_pool_bytes(block, block_len);
-+	if (unlikely(!iov_iter_count(iter)))
-+		return 0;
-+
-+	for (;;) {
-+		copied = copy_from_iter(block, sizeof(block), iter);
-+		ret += copied;
-+		mix_pool_bytes(block, copied);
-+		if (!iov_iter_count(iter) || copied != sizeof(block))
-+			break;
- 		cond_resched();
- 	}
- 
--out:
- 	memzero_explicit(block, sizeof(block));
--	return ret;
-+	return ret ? ret : -EFAULT;
- }
- 
--static ssize_t random_write(struct file *file, const char __user *ubuf,
--			    size_t len, loff_t *ppos)
-+static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
- {
--	int ret;
--
--	ret = write_pool(ubuf, len);
--	if (ret)
--		return ret;
--
--	return (ssize_t)len;
-+	return write_pool(iter);
- }
- 
- static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
-@@ -1315,9 +1307,8 @@ static ssize_t random_read_iter(struct k
- 
- static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
- {
--	int size, ent_count;
- 	int __user *p = (int __user *)arg;
--	int retval;
-+	int ent_count;
- 
- 	switch (cmd) {
- 	case RNDGETENTCNT:
-@@ -1334,20 +1325,32 @@ static long random_ioctl(struct file *f,
- 			return -EINVAL;
- 		credit_init_bits(ent_count);
- 		return 0;
--	case RNDADDENTROPY:
-+	case RNDADDENTROPY: {
-+		struct iov_iter iter;
-+		struct iovec iov;
-+		ssize_t ret;
-+		int len;
-+
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
- 		if (get_user(ent_count, p++))
- 			return -EFAULT;
- 		if (ent_count < 0)
- 			return -EINVAL;
--		if (get_user(size, p++))
-+		if (get_user(len, p++))
-+			return -EFAULT;
-+		ret = import_single_range(WRITE, p, len, &iov, &iter);
-+		if (unlikely(ret))
-+			return ret;
-+		ret = write_pool(&iter);
-+		if (unlikely(ret < 0))
-+			return ret;
-+		/* Since we're crediting, enforce that it was all written into the pool. */
-+		if (unlikely(ret != len))
- 			return -EFAULT;
--		retval = write_pool((const char __user *)p, size);
--		if (retval < 0)
--			return retval;
- 		credit_init_bits(ent_count);
- 		return 0;
-+	}
- 	case RNDZAPENTCNT:
- 	case RNDCLEARPOOL:
- 		/* No longer has any effect. */
-@@ -1373,7 +1376,7 @@ static int random_fasync(int fd, struct
- 
- const struct file_operations random_fops = {
- 	.read_iter = random_read_iter,
--	.write = random_write,
-+	.write_iter = random_write_iter,
- 	.poll = random_poll,
- 	.unlocked_ioctl = random_ioctl,
- 	.fasync = random_fasync,
-@@ -1382,7 +1385,7 @@ const struct file_operations random_fops
- 
- const struct file_operations urandom_fops = {
- 	.read_iter = urandom_read_iter,
--	.write = random_write,
-+	.write_iter = random_write_iter,
- 	.unlocked_ioctl = random_ioctl,
- 	.fasync = random_fasync,
- 	.llseek = noop_llseek,
+-- 
+2.35.1
+
 
 
