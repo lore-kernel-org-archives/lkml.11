@@ -2,43 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25555C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 922D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235634AbiFWR45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:56:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51228 "EHLO
+        id S233960AbiFWR5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236006AbiFWRxn (ORCPT
+        with ESMTP id S235989AbiFWRxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:53:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955EBABA7F;
-        Thu, 23 Jun 2022 10:14:36 -0700 (PDT)
+        Thu, 23 Jun 2022 13:53:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE8456F9A;
+        Thu, 23 Jun 2022 10:14:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8CABB82489;
-        Thu, 23 Jun 2022 17:14:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 189DEC3411B;
-        Thu, 23 Jun 2022 17:14:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD18AB824BA;
+        Thu, 23 Jun 2022 17:14:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D39B8C3411B;
+        Thu, 23 Jun 2022 17:14:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004473;
-        bh=KkAwVWgKLqPdkaSik0c8SYjTlhXMUBJcRaBWsgSUEWk=;
+        s=korg; t=1656004470;
+        bh=ae2D2tKswpPnQf+75FHprNitIsIz5BouRfkpCcPwMOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UAgLaf4ZeBmY2YmymK98yNw5e0qfjNT7h7cw0Jxr0OexFCMuPFr/HXa82j5NeaE04
-         B6v2TqsBnYxW274OtU06agoZ4A6pG3V0oTsZxNfvtO43xh+zFwBCgy/ObNuHoH0NEM
-         lphiwaNi758ef2RxdLzzRXh5HCkUEX2ta7BxxRrM=
+        b=ATnfUNnUR8zeg79i8Kap46kXmoItLIqn6sAalDOji+AMtjRbD0rCiMSLF0mCm73zD
+         ZZGe3tPfpiZoVECO8mRGF66rJzvSi0wpsqVjwQqqk7nf707q6oLZsf8xFD/hhiUYZK
+         aRLXwe2kNIARBIueerNOcsHOFIHQehDCIKy1fH3U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Eric Biggers <ebiggers@google.com>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        stable@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
+        x86@kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 050/234] random: use BLAKE2s instead of SHA1 in extraction
-Date:   Thu, 23 Jun 2022 18:41:57 +0200
-Message-Id: <20220623164344.483055494@linuxfoundation.org>
+Subject: [PATCH 4.19 049/234] random: remove unused irq_flags argument from add_interrupt_randomness()
+Date:   Thu, 23 Jun 2022 18:41:56 +0200
+Message-Id: <20220623164344.454446083@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -50,209 +58,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-commit 9f9eff85a008b095eafc5f4ecbaf5aca689271c1 upstream.
+commit 703f7066f40599c290babdb79dd61319264987e9 upstream.
 
-This commit addresses one of the lower hanging fruits of the RNG: its
-usage of SHA1.
+Since commit
+   ee3e00e9e7101 ("random: use registers from interrupted code for CPU's w/o a cycle counter")
 
-BLAKE2s is generally faster, and certainly more secure, than SHA1, which
-has [1] been [2] really [3] very [4] broken [5]. Additionally, the
-current construction in the RNG doesn't use the full SHA1 function, as
-specified, and allows overwriting the IV with RDRAND output in an
-undocumented way, even in the case when RDRAND isn't set to "trusted",
-which means potential malicious IV choices. And its short length means
-that keeping only half of it secret when feeding back into the mixer
-gives us only 2^80 bits of forward secrecy. In other words, not only is
-the choice of hash function dated, but the use of it isn't really great
-either.
+the irq_flags argument is no longer used.
 
-This commit aims to fix both of these issues while also keeping the
-general structure and semantics as close to the original as possible.
-Specifically:
+Remove unused irq_flags.
 
-   a) Rather than overwriting the hash IV with RDRAND, we put it into
-      BLAKE2's documented "salt" and "personal" fields, which were
-      specifically created for this type of usage.
-   b) Since this function feeds the full hash result back into the
-      entropy collector, we only return from it half the length of the
-      hash, just as it was done before. This increases the
-      construction's forward secrecy from 2^80 to a much more
-      comfortable 2^128.
-   c) Rather than using the raw "sha1_transform" function alone, we
-      instead use the full proper BLAKE2s function, with finalization.
-
-This also has the advantage of supplying 16 bytes at a time rather than
-SHA1's 10 bytes, which, in addition to having a faster compression
-function to begin with, means faster extraction in general. On an Intel
-i7-11850H, this commit makes initial seeding around 131% faster.
-
-BLAKE2s itself has the nice property of internally being based on the
-ChaCha permutation, which the RNG is already using for expansion, so
-there shouldn't be any issue with newness, funkiness, or surprising CPU
-behavior, since it's based on something already in use.
-
-[1] https://eprint.iacr.org/2005/010.pdf
-[2] https://www.iacr.org/archive/crypto2005/36210017/36210017.pdf
-[3] https://eprint.iacr.org/2015/967.pdf
-[4] https://shattered.io/static/shattered.pdf
-[5] https://www.usenix.org/system/files/sec20-leurent.pdf
-
-Reviewed-by: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Dexuan Cui <decui@microsoft.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: K. Y. Srinivasan <kys@microsoft.com>
+Cc: Stephen Hemminger <sthemmin@microsoft.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Wei Liu <wei.liu@kernel.org>
+Cc: linux-hyperv@vger.kernel.org
+Cc: x86@kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   70 +++++++++++++++++++++-----------------------------
- 1 file changed, 30 insertions(+), 40 deletions(-)
+ drivers/char/random.c  |    4 ++--
+ drivers/hv/hv.c        |    2 +-
+ drivers/hv/vmbus_drv.c |    2 +-
+ include/linux/random.h |    2 +-
+ kernel/irq/handle.c    |    2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1,8 +1,7 @@
- /*
-  * random.c -- A strong random number generator
-  *
-- * Copyright (C) 2017 Jason A. Donenfeld <Jason@zx2c4.com>. All
-- * Rights Reserved.
-+ * Copyright (C) 2017-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-  *
-  * Copyright Matt Mackall <mpm@selenic.com>, 2003, 2004, 2005
-  *
-@@ -78,12 +77,12 @@
-  * an *estimate* of how many bits of randomness have been stored into
-  * the random number generator's internal state.
-  *
-- * When random bytes are desired, they are obtained by taking the SHA
-- * hash of the contents of the "entropy pool".  The SHA hash avoids
-+ * When random bytes are desired, they are obtained by taking the BLAKE2s
-+ * hash of the contents of the "entropy pool".  The BLAKE2s hash avoids
-  * exposing the internal state of the entropy pool.  It is believed to
-  * be computationally infeasible to derive any useful information
-- * about the input of SHA from its output.  Even if it is possible to
-- * analyze SHA in some clever way, as long as the amount of data
-+ * about the input of BLAKE2s from its output.  Even if it is possible to
-+ * analyze BLAKE2s in some clever way, as long as the amount of data
-  * returned from the generator is less than the inherent entropy in
-  * the pool, the output data is totally unpredictable.  For this
-  * reason, the routine decreases its internal estimate of how many
-@@ -93,7 +92,7 @@
-  * If this estimate goes to zero, the routine can still generate
-  * random numbers; however, an attacker may (at least in theory) be
-  * able to infer the future output of the generator from prior
-- * outputs.  This requires successful cryptanalysis of SHA, which is
-+ * outputs.  This requires successful cryptanalysis of BLAKE2s, which is
-  * not believed to be feasible, but there is a remote possibility.
-  * Nonetheless, these numbers should be useful for the vast majority
-  * of purposes.
-@@ -348,6 +347,7 @@
- #include <linux/completion.h>
- #include <linux/uuid.h>
- #include <crypto/chacha20.h>
-+#include <crypto/blake2s.h>
- 
- #include <asm/processor.h>
- #include <linux/uaccess.h>
-@@ -367,10 +367,7 @@
- #define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
- #define OUTPUT_POOL_SHIFT	10
- #define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
--#define EXTRACT_SIZE		10
--
--
--#define LONGS(x) (((x) + sizeof(unsigned long) - 1)/sizeof(unsigned long))
-+#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
- 
- /*
-  * To allow fractional bits to be tracked, the entropy_count field is
-@@ -406,7 +403,7 @@ static int random_write_wakeup_bits = 28
-  * Thanks to Colin Plumb for suggesting this.
-  *
-  * The mixing operation is much less sensitive than the output hash,
-- * where we use SHA-1.  All that we want of mixing operation is that
-+ * where we use BLAKE2s.  All that we want of mixing operation is that
-  * it be a good non-cryptographic hash; i.e. it not produce collisions
-  * when fed "random" data of the sort we expect to see.  As long as
-  * the pool state differs for different inputs, we have preserved the
-@@ -1398,56 +1395,49 @@ retry:
-  */
- static void extract_buf(struct entropy_store *r, __u8 *out)
- {
--	int i;
--	union {
--		__u32 w[5];
--		unsigned long l[LONGS(20)];
--	} hash;
--	__u32 workspace[SHA_WORKSPACE_WORDS];
-+	struct blake2s_state state __aligned(__alignof__(unsigned long));
-+	u8 hash[BLAKE2S_HASH_SIZE];
-+	unsigned long *salt;
- 	unsigned long flags;
- 
-+	blake2s_init(&state, sizeof(hash));
-+
- 	/*
- 	 * If we have an architectural hardware random number
--	 * generator, use it for SHA's initial vector
-+	 * generator, use it for BLAKE2's salt & personal fields.
- 	 */
--	sha_init(hash.w);
--	for (i = 0; i < LONGS(20); i++) {
-+	for (salt = (unsigned long *)&state.h[4];
-+	     salt < (unsigned long *)&state.h[8]; ++salt) {
- 		unsigned long v;
- 		if (!arch_get_random_long(&v))
- 			break;
--		hash.l[i] = v;
-+		*salt ^= v;
- 	}
- 
--	/* Generate a hash across the pool, 16 words (512 bits) at a time */
-+	/* Generate a hash across the pool */
- 	spin_lock_irqsave(&r->lock, flags);
--	for (i = 0; i < r->poolinfo->poolwords; i += 16)
--		sha_transform(hash.w, (__u8 *)(r->pool + i), workspace);
-+	blake2s_update(&state, (const u8 *)r->pool,
-+		       r->poolinfo->poolwords * sizeof(*r->pool));
-+	blake2s_final(&state, hash); /* final zeros out state */
- 
- 	/*
- 	 * We mix the hash back into the pool to prevent backtracking
- 	 * attacks (where the attacker knows the state of the pool
- 	 * plus the current outputs, and attempts to find previous
--	 * ouputs), unless the hash function can be inverted. By
--	 * mixing at least a SHA1 worth of hash data back, we make
-+	 * outputs), unless the hash function can be inverted. By
-+	 * mixing at least a hash worth of hash data back, we make
- 	 * brute-forcing the feedback as hard as brute-forcing the
- 	 * hash.
- 	 */
--	__mix_pool_bytes(r, hash.w, sizeof(hash.w));
-+	__mix_pool_bytes(r, hash, sizeof(hash));
- 	spin_unlock_irqrestore(&r->lock, flags);
- 
--	memzero_explicit(workspace, sizeof(workspace));
--
--	/*
--	 * In case the hash function has some recognizable output
--	 * pattern, we fold it in half. Thus, we always feed back
--	 * twice as much data as we output.
-+	/* Note that EXTRACT_SIZE is half of hash size here, because above
-+	 * we've dumped the full length back into mixer. By reducing the
-+	 * amount that we emit, we retain a level of forward secrecy.
- 	 */
--	hash.w[0] ^= hash.w[3];
--	hash.w[1] ^= hash.w[4];
--	hash.w[2] ^= rol32(hash.w[2], 16);
--
--	memcpy(out, &hash, EXTRACT_SIZE);
--	memzero_explicit(&hash, sizeof(hash));
-+	memcpy(out, hash, EXTRACT_SIZE);
-+	memzero_explicit(hash, sizeof(hash));
+@@ -200,7 +200,7 @@
+  *	void add_device_randomness(const void *buf, unsigned int size);
+  * 	void add_input_randomness(unsigned int type, unsigned int code,
+  *                                unsigned int value);
+- *	void add_interrupt_randomness(int irq, int irq_flags);
++ *	void add_interrupt_randomness(int irq);
+  * 	void add_disk_randomness(struct gendisk *disk);
+  *	void add_hwgenerator_randomness(const char *buffer, size_t count,
+  *					size_t entropy);
+@@ -1272,7 +1272,7 @@ static __u32 get_reg(struct fast_pool *f
+ 	return *ptr;
  }
  
- static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
+-void add_interrupt_randomness(int irq, int irq_flags)
++void add_interrupt_randomness(int irq)
+ {
+ 	struct entropy_store	*r;
+ 	struct fast_pool	*fast_pool = this_cpu_ptr(&irq_randomness);
+--- a/drivers/hv/hv.c
++++ b/drivers/hv/hv.c
+@@ -115,7 +115,7 @@ static void hv_stimer0_isr(void)
+ 
+ 	hv_cpu = this_cpu_ptr(hv_context.cpu_context);
+ 	hv_cpu->clk_evt->event_handler(hv_cpu->clk_evt);
+-	add_interrupt_randomness(stimer0_vector, 0);
++	add_interrupt_randomness(stimer0_vector);
+ }
+ 
+ static int hv_ce_set_next_event(unsigned long delta,
+--- a/drivers/hv/vmbus_drv.c
++++ b/drivers/hv/vmbus_drv.c
+@@ -1146,7 +1146,7 @@ static void vmbus_isr(void)
+ 			tasklet_schedule(&hv_cpu->msg_dpc);
+ 	}
+ 
+-	add_interrupt_randomness(HYPERVISOR_CALLBACK_VECTOR, 0);
++	add_interrupt_randomness(HYPERVISOR_CALLBACK_VECTOR);
+ }
+ 
+ /*
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -35,7 +35,7 @@ static inline void add_latent_entropy(vo
+ 
+ extern void add_input_randomness(unsigned int type, unsigned int code,
+ 				 unsigned int value) __latent_entropy;
+-extern void add_interrupt_randomness(int irq, int irq_flags) __latent_entropy;
++extern void add_interrupt_randomness(int irq) __latent_entropy;
+ 
+ extern void get_random_bytes(void *buf, int nbytes);
+ extern int wait_for_random_bytes(void);
+--- a/kernel/irq/handle.c
++++ b/kernel/irq/handle.c
+@@ -188,7 +188,7 @@ irqreturn_t handle_irq_event_percpu(stru
+ 
+ 	retval = __handle_irq_event_percpu(desc, &flags);
+ 
+-	add_interrupt_randomness(desc->irq_data.irq, flags);
++	add_interrupt_randomness(desc->irq_data.irq);
+ 
+ 	if (!noirqdebug)
+ 		note_interrupt(desc, retval);
 
 
