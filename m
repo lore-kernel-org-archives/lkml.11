@@ -2,99 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83DCDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C7CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbiFWTIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
+        id S229559AbiFWTIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiFWS5G (ORCPT
+        with ESMTP id S229590AbiFWTCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:57:06 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593F5B4316;
-        Thu, 23 Jun 2022 11:01:45 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id p6-20020a05600c1d8600b003a035657950so165832wms.4;
-        Thu, 23 Jun 2022 11:01:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QYPcW1hEJAKXQTfy6ssNBNN9iygcjxjI39Ht44KpS84=;
-        b=SMx7rDnKYxQ/yE41yzcDYth0Dxqlu1QtP2qcFwcdkcex3AS/qnkkhlm8aGLy8Xe7PE
-         Hefyqx5E7QCIFxfCgMUatHuSeZ7c5mqUv++NWDsEBdcgHL5IVYTdmxTEQXJLgLeBWXDs
-         180AzNiH7f1Fbs7tT5aJuWW8cwiV1t91jGBn9W7nD1e17F+V4lV2qAUUERVau8cWjGvQ
-         qWsj/VKZapAO5Up3BTd7zd7/q/6KWcjUbdVT7XO4E+t7XElGn7U0WOhYHsV25NH2n+AE
-         ax672YvSn+6bFakOjmcUZU+j4MOePY8qLV+g2vccyayJeSx1DKI0nwa0iSBRrCb/BHWo
-         CSLA==
+        Thu, 23 Jun 2022 15:02:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 463C988959
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 11:07:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656007638;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Fcy1Q3vZZLDhsnG6KdBWdg+6I5F1iLma0wO2j1hoD9c=;
+        b=glLvaMctamQV2BzonT7qOkKdbbYagcxDj1qNoYTWAvr42JPQzJOAXzftQZlNG/j19GtLr6
+        99AwyV/gYqLNVsqBYEBNDhvqKPPokfBfxa3zAdkynvvkInsDrz6R4HVLQ0h3eY27CC3Y28
+        ed9C+WPX6ekx9tZI1IyP7Grwc+UkUe0=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-651-CPSqdDc9P3WGi1Z1LxmZdA-1; Thu, 23 Jun 2022 14:07:17 -0400
+X-MC-Unique: CPSqdDc9P3WGi1Z1LxmZdA-1
+Received: by mail-wm1-f69.google.com with SMTP id p22-20020a05600c359600b0039c7b23a1c7so1754623wmq.2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 11:07:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QYPcW1hEJAKXQTfy6ssNBNN9iygcjxjI39Ht44KpS84=;
-        b=pcaYdqJNIrG9VPSMvI3wsFP9lwVfSACqRB7hT+L4GsuLK60d4+AnbbYEjrpKzE+Cmo
-         OpQYKRG9eJz1cCVMn3y7ebYYKfshDcNR8KeawrlT4GBLZOJjcRBM8XYm0ZjqdJd31yWG
-         5A72q8EQrSnTo+Z5kjt8CMBd/tb2aWv2yI+X4TveAHQc+y2R6YxjD+BES0x7pZZ5mndj
-         Bvzzpmqand6wuj+FgFB8VQA+bFwzE7yuilXV1Ko3CmKjcRadPYOgK2RAU6BxG5m3feWV
-         JptlKRrSivzjg8YwBVKqraoDmkE1BzrOlVJfn9vslNQidcncygHnEhsMS8B49JxVUhmV
-         ASDA==
-X-Gm-Message-State: AJIora+NtKaCg6gv1utq31uwg5uPw5m7BndSfJ7sd2z3cYIkCo8mhvqw
-        xnbnyrVUq2wrb/fOc026qzY=
-X-Google-Smtp-Source: AGRyM1seeWn1XAx+b2vbfPrOYxt9H4MzoYh20GcLYgTRvrxDQVLVBf4IxxreeZEKG6d3YeVset+DEg==
-X-Received: by 2002:a7b:c4ce:0:b0:3a0:2ac4:3233 with SMTP id g14-20020a7bc4ce000000b003a02ac43233mr5568067wmk.92.1656007304136;
-        Thu, 23 Jun 2022 11:01:44 -0700 (PDT)
-Received: from [192.168.0.118] (88-113-28-27.elisa-laajakaista.fi. [88.113.28.27])
-        by smtp.gmail.com with ESMTPSA id p17-20020a7bcc91000000b0039c4ec6fdacsm6275wma.40.2022.06.23.11.01.42
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=Fcy1Q3vZZLDhsnG6KdBWdg+6I5F1iLma0wO2j1hoD9c=;
+        b=TqBKHCK9NGbbXFkQSWNZq0fEqMOJQnHF2eRuBv88jt2CfIQiC0J7cK56dsB3VVGrrD
+         PsdXsek1UVsEakK594my5Dv7oqVH0H3N759G0Zn0KPh94Mit/WqR7FgttTaQYVp+Sr7U
+         GevrNnLn1t1BAlC05TUv4ZmqUxWe34HJE5Kij0dpKAhx88NIqypRL01EzmlT8RPfVRLy
+         x5DKpNrmKiI9TEaHNEkyxVvQ+oTXiN7+0BH2Nuf6zp+7VDSRtUX0ebdxeW9LUs+RJRVo
+         EBoC0uH4Lqpvngy774O/XNqY0+0uRjThkqrAxh3qLsDrRAdGLXy4wBGch0Aj4ArpqYbD
+         20zA==
+X-Gm-Message-State: AJIora/sugP3IURP4bCOdb6sj6NWuQKB+5LRnYwm3hVblrAC8FRw3nEH
+        y6kL7V0eOnBo12JU+emycZCIxwmXOe+BCcs9h3KCJk+ghaEfLC8EcH/v5WSd3GWAa0Bt9p7Cnoy
+        GUPzFmskXEUsOHCxgzFqujf0z
+X-Received: by 2002:a05:6000:1f87:b0:21b:970b:e88c with SMTP id bw7-20020a0560001f8700b0021b970be88cmr9595591wrb.320.1656007635870;
+        Thu, 23 Jun 2022 11:07:15 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tbTbYL8XeaDCd4moOYGgY+zKqfgCzDvLfPAFyx+vQt+Z7MS+QQ3dZipJa7LzvlXGFa+V6pug==
+X-Received: by 2002:a05:6000:1f87:b0:21b:970b:e88c with SMTP id bw7-20020a0560001f8700b0021b970be88cmr9595562wrb.320.1656007635576;
+        Thu, 23 Jun 2022 11:07:15 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c704:b100:7694:f34e:d0dd:95e7? (p200300cbc704b1007694f34ed0dd95e7.dip0.t-ipconnect.de. [2003:cb:c704:b100:7694:f34e:d0dd:95e7])
+        by smtp.gmail.com with ESMTPSA id r127-20020a1c4485000000b0039c4ba160absm11819520wma.2.2022.06.23.11.07.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jun 2022 11:01:43 -0700 (PDT)
-Message-ID: <62d69463-35c0-683d-f03e-c668ea82136d@gmail.com>
-Date:   Thu, 23 Jun 2022 21:01:41 +0300
+        Thu, 23 Jun 2022 11:07:15 -0700 (PDT)
+Message-ID: <cb7efb0f-5537-5ce4-7aec-bb10ea81d5de@redhat.com>
+Date:   Thu, 23 Jun 2022 20:07:14 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] hid: Add support for the xp-pen deco mini7 tablet
+ Thunderbird/91.9.0
 Content-Language: en-US
-To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        Stefan Berzl <stefanberzl@gmail.com>
-Cc:     Jiri Kosina <jikos@kernel.org>, benjamin.tissoires@redhat.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <85312611-797f-2dd2-f864-f7c13cb889f9@gmail.com>
- <nycvar.YFH.7.76.2206091058530.14340@cbobk.fhfr.pm>
- <c856a79c-1d42-6af5-0ff3-589688701fc0@gmail.com>
- <20220623175116.GA4757@elementary>
-From:   Nikolai Kondrashov <spbnick@gmail.com>
-In-Reply-To: <20220623175116.GA4757@elementary>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        akpm@linux-foundation.org, minchan@kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, paulmck@kernel.org,
+        jhubbard@nvidia.com, joaodias@google.com
+References: <165490039431.944052.12458624139225785964.stgit@omen>
+ <bb120b4a-e6f6-de81-35f0-9803acf9b0be@redhat.com>
+ <20220615155659.GA7684@nvidia.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH] mm: Re-allow pinning of zero pfns
+In-Reply-To: <20220615155659.GA7684@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/23/22 20:51, José Expósito wrote:
->> I would of course fix this, but I don't really know what's the preferred
->> way. One can obviously simply set up an urb to catch this, but it would
->> have to be a special corner case for the mini 7, as José assures me that
->> none of his tablets display similar behavior. Is this acceptable?
-> 
-> My tablets also send an ACK packet, but in my case it does not have any
-> visible effects. Maybe it is related to the DE environment used. I
-> tested it on elementary OS (Ubuntu) and Fedora 36, in both cases the
-> ACK is ignored... But catching it is fine, we can include the code you
-> suggest.
-> 
->> José already had a look at some firmware device descriptor string that
->> reports the number of buttons and what not, but as far as I know, it
->> doesn't say anything about ack packets (right José? Does it say
->> anything about touch strips or similar?).
-> 
-> In the devices I tested, the ACK packet is always present, so it should
-> be fine to catch it. I'll test your patch in all the devices I own to
-> be safe.
+On 15.06.22 17:56, Jason Gunthorpe wrote:
+> On Sat, Jun 11, 2022 at 08:29:47PM +0200, David Hildenbrand wrote:
+>> On 11.06.22 00:35, Alex Williamson wrote:
+>>> The commit referenced below subtly and inadvertently changed the logic
+>>> to disallow pinning of zero pfns.  This breaks device assignment with
+>>> vfio and potentially various other users of gup.  Exclude the zero page
+>>> test from the negation.
+>>
+>> I wonder which setups can reliably work with a long-term pin on a shared
+>> zeropage. In a MAP_PRIVATE mapping, any write access via the page tables
+>> will end up replacing the shared zeropage with an anonymous page.
+>> Something similar should apply in MAP_SHARED mappings, when lazily
+>> allocating disk blocks.
 
-I think it's OK to just ignore the first packet for these devices, even if the 
-ACK packet is not sent for some of them. Even with the report rate of 20 years 
-ago nobody would've noticed if you dropped one packet.
+^ correction, shared zeropage is never user in MAP_SHARED mappings
+(fortunally).
 
-Nick
+>>
+>> In the future, we might trigger unsharing when taking a R/O pin for the
+>> shared zeropage, just like we do as of now upstream for shared anonymous
+>> pages (!PageAnonExclusive). And something similar could then be done
+>> when finding a !anon page in a MAP_SHARED mapping.
+> 
+> I'm also confused how qemu is hitting this and it isn't already a bug?
+> 
+
+I assume it's just some random thingy mapped into the guest physical
+address space (by the bios? R/O?), that actually never ends up getting
+used by a device.
+
+So vfio simply only needs this to keep working ... but weon't actually
+ever user that data.
+
+But this is just my best guess after thinking about it.
+
+> It is arising because vfio doesn't use FOLL_FORCE|FOLL_WRITE to move
+> away the zero page in most cases.
+> 
+> And why does Yishai say it causes an infinite loop in the kernel?
+
+
+Good question. Maybe $something keeps retying if pinning fails, either
+in the kernel (which would be bad) or in user space. At least QEMU seems
+to just fail if pinning fails, but maybe it's a different user space?
+
+
+-- 
+Thanks,
+
+David / dhildenb
+
