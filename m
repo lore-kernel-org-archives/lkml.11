@@ -2,120 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8573C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B90F5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbiFWRwT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39814 "EHLO
+        id S235356AbiFWRwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbiFWRvu (ORCPT
+        with ESMTP id S235304AbiFWRvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:51:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479D69917F;
-        Thu, 23 Jun 2022 10:12:33 -0700 (PDT)
+        Thu, 23 Jun 2022 13:51:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5CB99150;
+        Thu, 23 Jun 2022 10:12:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3EC45B82489;
-        Thu, 23 Jun 2022 17:12:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8973AC341C4;
-        Thu, 23 Jun 2022 17:12:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05D19B82490;
+        Thu, 23 Jun 2022 17:12:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 423CDC3411B;
+        Thu, 23 Jun 2022 17:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004349;
-        bh=8NpyPW8fRdZfAbob49QXgobOOSiEkus4+nQosMXVvEg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WAGYCZSk3Z5nVC8kHB5HkranYSQ/2eHWBZ31DyeLd0D2vHeC6ZCChaQClPkKAtVne
-         SjymvLvhc0hXQgbhztLzee44m80hCf68yXqUzA/Ec4XHFlLKMQYdg5wS5J4fqMVpQp
-         4AR+CZmrB/4r2gzIktMJPzhWxTrpOliKj/GR/7Ek=
+        s=korg; t=1656004343;
+        bh=DaYViUv7sKos6j+bBO3Sx5fQpf8p8DwpSG+lKpxJBdY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=t+26JMdlnQ3JzbSn25mNX9izWfw6HJqJPJytpU/0xN2A6AQSfejMOjNcUklW/Mp3x
+         j4nsjmVe/dtiTRlqV8o5oBd9L3IY+UZbJtmNU701vlZBYE9mY3C9+wKU31pUUZqulA
+         k6IPrvx3kPCOU+hCBZxHwsTTJetktVUXy3p5v1KM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Keerthy <j-keerthy@ti.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 010/234] random: Support freezable kthreads in add_hwgenerator_randomness()
-Date:   Thu, 23 Jun 2022 18:41:17 +0200
-Message-Id: <20220623164343.347771738@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.15 0/9] 5.15.50-rc1 review
+Date:   Thu, 23 Jun 2022 18:44:43 +0200
+Message-Id: <20220623164322.288837280@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
-References: <20220623164343.042598055@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.50-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.15.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.15.50-rc1
+X-KernelTest-Deadline: 2022-06-25T16:43+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+This is the start of the stable review cycle for the 5.15.50 release.
+There are 9 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit ff296293b3538d19278a7f7cd1f3aa600ad9164c upstream.
+Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
+Anything received after that time might be too late.
 
-The kthread calling this function is freezable after commit 03a3bb7ae631
-("hwrng: core - Freeze khwrng thread during suspend") is applied.
-Unfortunately, this function uses wait_event_interruptible() but doesn't
-check for the kthread being woken up by the fake freezer signal. When a
-user suspends the system, this kthread will wake up and if it fails the
-entropy size check it will immediately go back to sleep and not go into
-the freezer. Eventually, suspend will fail because the task never froze
-and a warning message like this may appear:
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.50-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+and the diffstat can be found below.
 
- PM: suspend entry (deep)
- Filesystems sync: 0.000 seconds
- Freezing user space processes ... (elapsed 0.001 seconds) done.
- OOM killer disabled.
- Freezing remaining freezable tasks ...
- Freezing of tasks failed after 20.003 seconds (1 tasks refusing to freeze, wq_busy=0):
- hwrng           R  running task        0   289      2 0x00000020
- [<c08c64c4>] (__schedule) from [<c08c6a10>] (schedule+0x3c/0xc0)
- [<c08c6a10>] (schedule) from [<c05dbd8c>] (add_hwgenerator_randomness+0xb0/0x100)
- [<c05dbd8c>] (add_hwgenerator_randomness) from [<bf1803c8>] (hwrng_fillfn+0xc0/0x14c [rng_core])
- [<bf1803c8>] (hwrng_fillfn [rng_core]) from [<c015abec>] (kthread+0x134/0x148)
- [<c015abec>] (kthread) from [<c01010e8>] (ret_from_fork+0x14/0x2c)
+thanks,
 
-Check for a freezer signal here and skip adding any randomness if the
-task wakes up because it was frozen. This should make the kthread freeze
-properly and suspend work again.
+greg k-h
 
-Fixes: 03a3bb7ae631 ("hwrng: core - Freeze khwrng thread during suspend")
-Reported-by: Keerthy <j-keerthy@ti.com>
-Tested-by: Keerthy <j-keerthy@ti.com>
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+-------------
+Pseudo-Shortlog of commits:
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -2483,6 +2483,7 @@ void add_hwgenerator_randomness(const ch
- 				size_t entropy)
- {
- 	struct entropy_store *poolp = &input_pool;
-+	bool frozen = false;
- 
- 	if (unlikely(crng_init == 0)) {
- 		crng_fast_load(buffer, count);
-@@ -2493,9 +2494,12 @@ void add_hwgenerator_randomness(const ch
- 	 * We'll be woken up again once below random_write_wakeup_thresh,
- 	 * or when the calling thread is about to terminate.
- 	 */
--	wait_event_interruptible(random_write_wait, kthread_should_stop() ||
-+	wait_event_interruptible(random_write_wait,
-+			kthread_freezable_should_stop(&frozen) ||
- 			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
--	mix_pool_bytes(poolp, buffer, count);
--	credit_entropy_bits(poolp, entropy);
-+	if (!frozen) {
-+		mix_pool_bytes(poolp, buffer, count);
-+		credit_entropy_bits(poolp, entropy);
-+	}
- }
- EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.15.50-rc1
+
+Will Deacon <will@kernel.org>
+    arm64: mm: Don't invalidate FROM_DEVICE buffers at start of DMA transfer
+
+Lukas Wunner <lukas@wunner.de>
+    serial: core: Initialize rs485 RTS polarity already on probe
+
+Toke Høiland-Jørgensen <toke@redhat.com>
+    selftests/bpf: Add selftest for calling global functions from freplace
+
+Toke Høiland-Jørgensen <toke@redhat.com>
+    bpf: Fix calling global functions from BPF_PROG_TYPE_EXT programs
+
+Marian Postevca <posteuca@mutex.one>
+    usb: gadget: u_ether: fix regression in setting fixed MAC address
+
+Damien Le Moal <damien.lemoal@opensource.wdc.com>
+    zonefs: fix zonefs_iomap_begin() for reads
+
+Haiyang Zhang <haiyangz@microsoft.com>
+    net: mana: Add handling of CQE_RX_TRUNCATED
+
+Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+    drm/amd/display: Don't reinitialize DMCUB on s0ix resume
+
+Christian Borntraeger <borntraeger@linux.ibm.com>
+    s390/mm: use non-quiescing sske for KVM switch to keyed guest
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                           |  4 +-
+ arch/arm64/mm/cache.S                              |  2 -
+ arch/s390/mm/pgtable.c                             |  2 +-
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c  | 30 ++++++-
+ drivers/net/ethernet/microsoft/mana/mana_en.c      |  7 +-
+ drivers/tty/serial/amba-pl011.c                    | 15 +---
+ drivers/tty/serial/serial_core.c                   | 34 +++-----
+ drivers/usb/gadget/function/u_ether.c              | 11 ++-
+ fs/zonefs/super.c                                  | 94 +++++++++++++++-------
+ kernel/bpf/btf.c                                   |  5 +-
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       | 14 ++++
+ .../selftests/bpf/progs/freplace_global_func.c     | 18 +++++
+ 12 files changed, 156 insertions(+), 80 deletions(-)
 
 
