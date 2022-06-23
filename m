@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F0DCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1410CCA48E
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232508AbiFWQqr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
+        id S232626AbiFWQq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232450AbiFWQqL (ORCPT
+        with ESMTP id S232525AbiFWQqW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:46:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AF648899;
-        Thu, 23 Jun 2022 09:46:07 -0700 (PDT)
+        Thu, 23 Jun 2022 12:46:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FEB49B48;
+        Thu, 23 Jun 2022 09:46:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED52761F99;
-        Thu, 23 Jun 2022 16:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB2B9C3411B;
-        Thu, 23 Jun 2022 16:46:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7640B61F8B;
+        Thu, 23 Jun 2022 16:46:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38A5CC3411B;
+        Thu, 23 Jun 2022 16:46:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002766;
-        bh=zfjYakhufALYOcCw1/8OMrfMmpo4S54sJyp1TLq0JQc=;
+        s=korg; t=1656002780;
+        bh=yB7EFq7zmujwtMOqpM9csnu5bZuf8C3k9kLxj+uqSNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dJRTnd3kWZgHeyzyXfJ1k+BhignxF2tnOlsRpCUIgY8kOQGe8rxXbMAwV6nRggC7k
-         B8AvFIf1NTWBeC1t3ipD4ZTipqmoXZ8f3i1i1SVjfSy//OAgxAT/SUePuUtdfRi6np
-         taN0yfkPSvSQwJwgVdmbAz4tNTm83uFn7J94HhyQ=
+        b=pwVexN0P7wwzkhhntSh58dc3wJI+CTuJl0Ya/Xaqv/T9Dmh/NS7bRhcCdRI1R/Zzl
+         wfNh521A5L3ThhTpZe3jlb3f3GxX/hQV6nLpbv/Alc87Iy91O4v5m4GUczxzNkDvVt
+         e+o/0FM8l9iV+HF4LJXrWPP2FWUh2wR39iIAIKPs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        syzbot+9de458f6a5e713ee8c1a@syzkaller.appspotmail.com,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.9 019/264] random: fix possible sleeping allocation from irq context
-Date:   Thu, 23 Jun 2022 18:40:12 +0200
-Message-Id: <20220623164344.609507273@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
+        Qian Cai <cai@lca.pw>, Theodore Tso <tytso@mit.edu>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 023/264] Revert "char/random: silence a lockdep splat with printk()"
+Date:   Thu, 23 Jun 2022 18:40:16 +0200
+Message-Id: <20220623164344.722356710@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,49 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit 6c1e851c4edc13a43adb3ea4044e3fc8f43ccf7d upstream.
+This reverts commit 28820c5802f9f83c655ab09ccae8289103ce1490 which is
+commit 1b710b1b10eff9d46666064ea25f079f70bc67a8 upstream.
 
-We can do a sleeping allocation from an irq context when CONFIG_NUMA
-is enabled.  Fix this by initializing the NUMA crng instances in a
-workqueue.
+It causes problems here just like it did in 4.19.y and odds are it will
+be reverted upstream as well.
 
-Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Reported-by: syzbot+9de458f6a5e713ee8c1a@syzkaller.appspotmail.com
-Fixes: 8ef35c866f8862df ("random: set up the NUMA crng instances...")
-Cc: stable@vger.kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Qian Cai <cai@lca.pw>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/char/random.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -800,7 +800,7 @@ static void crng_initialize(struct crng_
+@@ -1638,9 +1638,8 @@ static void _warn_unseeded_randomness(co
+ 	print_once = true;
+ #endif
+ 	if (__ratelimit(&unseeded_warning))
+-		printk_deferred(KERN_NOTICE "random: %s called from %pS "
+-				"with crng_init=%d\n", func_name, caller,
+-				crng_init);
++		pr_notice("random: %s called from %pS with crng_init=%d\n",
++			  func_name, caller, crng_init);
  }
  
- #ifdef CONFIG_NUMA
--static void numa_crng_init(void)
-+static void do_numa_crng_init(struct work_struct *work)
- {
- 	int i;
- 	struct crng_state *crng;
-@@ -821,6 +821,13 @@ static void numa_crng_init(void)
- 		kfree(pool);
- 	}
- }
-+
-+static DECLARE_WORK(numa_crng_init_work, do_numa_crng_init);
-+
-+static void numa_crng_init(void)
-+{
-+	schedule_work(&numa_crng_init_work);
-+}
- #else
- static void numa_crng_init(void) {}
- #endif
+ /*
 
 
