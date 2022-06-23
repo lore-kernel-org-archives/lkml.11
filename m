@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A24E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8FABC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:56:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232712AbiFWQte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+        id S232726AbiFWQ4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232758AbiFWQsZ (ORCPT
+        with ESMTP id S233898AbiFWQvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:48:25 -0400
+        Thu, 23 Jun 2022 12:51:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD5C4BFE4;
-        Thu, 23 Jun 2022 09:47:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4723A1836E;
+        Thu, 23 Jun 2022 09:51:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8D9961FA4;
-        Thu, 23 Jun 2022 16:47:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD2BAC3411B;
-        Thu, 23 Jun 2022 16:47:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2CFB61F62;
+        Thu, 23 Jun 2022 16:51:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE87CC3411B;
+        Thu, 23 Jun 2022 16:51:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002852;
-        bh=GgW9rHCAKlZa1bYGLTKcS4p/eIUuL+qSoAlKD2rXBzw=;
+        s=korg; t=1656003073;
+        bh=JSoo2I+FLqaxpq8hlxGw0xxzJdzIaMJ0m4apH8OdkLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gDSQe5xh11HX0SwQa9xW2kce7T+BMdb6QzTc2C2UfS4DzGke8OJpe0moLB5DDVmMt
-         35j/4Qd0B3M3YBjCVAaQoLfTlTwNe2sVFdYThyrl5Qj1KOPvGhP5zZZcP/ev1rxYYv
-         dKiMKxDk+Dhyuwc4FQbL52+xAkbARdLgrZGsE5DI=
+        b=B0ufiFxQQUdHYOIuP8A+HSZqOb2Bd+QBv+plVXfbyabnCNuHv+OxFGarHFgzZNOJb
+         td74Tw7mY0TSThjieMABnprpUHHurR29A/aOUEc4ELaj5KdaKSai8O+G5ijvK3InOq
+         bGe1WiqzsfSLsDVy0UzE4zzu9ouURz7WpYbuLR6Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 048/264] Revert "hwrng: core - Freeze khwrng thread during suspend"
-Date:   Thu, 23 Jun 2022 18:40:41 +0200
-Message-Id: <20220623164345.430102071@linuxfoundation.org>
+Subject: [PATCH 4.9 120/264] random: ensure early RDSEED goes through mixer on init
+Date:   Thu, 23 Jun 2022 18:41:53 +0200
+Message-Id: <20220623164347.462626883@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -48,44 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 08e97aec700aeff54c4847f170e566cbd7e14e81 upstream.
+commit a02cf3d0dd77244fd5333ac48d78871de459ae6d upstream.
 
-This reverts commit 03a3bb7ae631 ("hwrng: core - Freeze khwrng
-thread during suspend"), ff296293b353 ("random: Support freezable
-kthreads in add_hwgenerator_randomness()") and 59b569480dc8 ("random:
-Use wait_event_freezable() in add_hwgenerator_randomness()").
+Continuing the reasoning of "random: use RDSEED instead of RDRAND in
+entropy extraction" from this series, at init time we also don't want to
+be xoring RDSEED directly into the crng. Instead it's safer to put it
+into our entropy collector and then re-extract it, so that it goes
+through a hash function with preimage resistance. As a matter of hygiene,
+we also order these now so that the RDSEED byte are hashed in first,
+followed by the bytes that are likely more predictable (e.g. utsname()).
 
-These patches introduced regressions and we need more time to
-get them ready for mainline.
-
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/char/random.c |   16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -327,7 +327,6 @@
- #include <linux/percpu.h>
- #include <linux/cryptohash.h>
- #include <linux/fips.h>
--#include <linux/freezer.h>
- #include <linux/ptrace.h>
- #include <linux/kmemcheck.h>
- #include <linux/workqueue.h>
-@@ -2484,8 +2483,7 @@ void add_hwgenerator_randomness(const ch
- 	 * We'll be woken up again once below random_write_wakeup_thresh,
- 	 * or when the calling thread is about to terminate.
- 	 */
--	wait_event_freezable(random_write_wait,
--			kthread_should_stop() ||
-+	wait_event_interruptible(random_write_wait, kthread_should_stop() ||
- 			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
- 	mix_pool_bytes(poolp, buffer, count);
- 	credit_entropy_bits(poolp, entropy);
+@@ -1260,24 +1260,18 @@ int __init rand_initialize(void)
+ 	bool arch_init = true;
+ 	unsigned long rv;
+ 
+-	mix_pool_bytes(&now, sizeof(now));
+ 	for (i = BLAKE2S_BLOCK_SIZE; i > 0; i -= sizeof(rv)) {
+-		if (!arch_get_random_seed_long(&rv) &&
+-		    !arch_get_random_long(&rv))
+-			rv = random_get_entropy();
+-		mix_pool_bytes(&rv, sizeof(rv));
+-	}
+-	mix_pool_bytes(utsname(), sizeof(*(utsname())));
+-
+-	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
+-	for (i = 4; i < 16; i++) {
+ 		if (!arch_get_random_seed_long_early(&rv) &&
+ 		    !arch_get_random_long_early(&rv)) {
+ 			rv = random_get_entropy();
+ 			arch_init = false;
+ 		}
+-		primary_crng.state[i] ^= rv;
++		mix_pool_bytes(&rv, sizeof(rv));
+ 	}
++	mix_pool_bytes(&now, sizeof(now));
++	mix_pool_bytes(utsname(), sizeof(*(utsname())));
++
++	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
+ 	if (arch_init && trust_cpu && crng_init < 2) {
+ 		invalidate_batched_entropy();
+ 		crng_init = 2;
 
 
