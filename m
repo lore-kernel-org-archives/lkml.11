@@ -2,79 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B90E7C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbiFWEsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
+        id S231641AbiFWEs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236292AbiFWDUC (ORCPT
+        with ESMTP id S238289AbiFWD0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 23:20:02 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9DE1CFFB
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:20:01 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id c2so31105816lfk.0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:20:01 -0700 (PDT)
+        Wed, 22 Jun 2022 23:26:55 -0400
+Received: from mail-yw1-x1144.google.com (mail-yw1-x1144.google.com [IPv6:2607:f8b0:4864:20::1144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C7C32EF9;
+        Wed, 22 Jun 2022 20:26:54 -0700 (PDT)
+Received: by mail-yw1-x1144.google.com with SMTP id 00721157ae682-317741c86fdso179918427b3.2;
+        Wed, 22 Jun 2022 20:26:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=79v4g22d06dNQZx4XHZ3GsOIEc9zd0ggEjlq0srZKG4=;
-        b=yrsZPHDCD9chqAOlK2aqkVDJbj4YlJK6Y1EmWC+AJelEirjFWQUhgxYZMRsapycCqT
-         d9/sLvLnS2eOJcmjMAuTeVD27TGKvpamgOwFcYRj+mGYSFBLSmmSZXaBDE3SUZrHdL4+
-         FNKvpXkRR1rlHo31238gF7oFTd6tugL+1j7VQ+5hZp3rK1Cgd3ZlEW1LGNL2qd2hO57J
-         f/U0Jm7N2a2hUqpnKo8G4S1bfKfvBcNMD5a0B4I3FxQhigqDWQC/ibhSOKDneB2pXxZy
-         tsvE9GxQXcHN3mCLB7R+5Pyv0PcHex0LGIVYsDNyVT5tKveqtjo8SRBsf4cRYjPoTNFQ
-         Gh6w==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=JNybckUxm5otNEbFw60yQ2dMtFPY6hEGSuWHqLz60QM=;
+        b=oJvhpXy33TJnMmAM9XmiHDngCvJn1nhnVe7FD+U8sWRhMtNkAkqEEv+s6eM3sjC9nQ
+         SP4/oKyZzFIcSvzVcZcJRkpqNU2l+p4u/EsCSTuDAENNJvUk2Rm/IwCJcU/xA5kJVkR5
+         0WnCrZf0DYztoO4VnAkTeJMZexhQu998QlhHncdmOP6wK1nAs8foWL5ohlo6buCBOGMf
+         CV+EmroH/AE3KWZJghzatzlV0/6fAbP73/BurcAl5NN9OI104wbc/N4kX8/PDwQEWhOI
+         Uu2nIqO3fW4KrnXf3F8Hylzi3Rn/t/t6xCeuACuevBIZPJu9eEesMdS2mNoDsROenGq1
+         FDrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=79v4g22d06dNQZx4XHZ3GsOIEc9zd0ggEjlq0srZKG4=;
-        b=yvu7wiZl3++uGB60hdlEHmQ/LqaYO4M7URpn6bqiXxQU7srQ3f3n8lNzQvjPCxKsHR
-         1eGtkANW+TwUsl9/52sB/LIgj6FSsStMqx6zFIllyO7hAohjKYQpuF6cExuE4nZVB5Q/
-         FATSgZG0R9EczOhbWCaAiGbhcerp+2/XUVNYCeQPzOrKpKpOtuRCnXOGqvoplfUBoiiV
-         I5lqF5pjVnEPp5zYY0IxPcIHQf6rhM04iEQ9+k4xudgCYAizwbm0tGeeSoQ6rVnkKLsV
-         MID33bCk3o61jJgT65llXpCMRdC348oMgPRi1RcUXD/3vGrJdw+mIis5buLM2sFnk+UK
-         WJrg==
-X-Gm-Message-State: AJIora9y0E3Qe7RfNDxVFLnPosnVEdc4J+IvUSy2Hsd/+lquzPJ8hpmi
-        tqPekB5DQPnNYgEbSWI0vbsKmA==
-X-Google-Smtp-Source: AGRyM1sjcA+kIxAhm99wkWCmSIHuz3qmOx9TGh1uQ8/3JNaPFYlfZzhiTm1Jt9n2Mty+3YUw6m9sLw==
-X-Received: by 2002:ac2:598b:0:b0:47f:9bf4:975a with SMTP id w11-20020ac2598b000000b0047f9bf4975amr3371926lfn.216.1655954399548;
-        Wed, 22 Jun 2022 20:19:59 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id s9-20020a056512214900b004790b5a0b22sm2799796lfr.239.2022.06.22.20.19.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 20:19:58 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id 8F928104A32; Thu, 23 Jun 2022 06:22:11 +0300 (+03)
-Date:   Thu, 23 Jun 2022 06:22:11 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, shy828301@gmail.com,
-        willy@infradead.org, zokeefe@google.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 07/16] mm/huge_memory: minor cleanup for
- split_huge_pages_pid
-Message-ID: <20220623032211.rvrtlas25u7nddpt@box.shutemov.name>
-References: <20220622170627.19786-1-linmiaohe@huawei.com>
- <20220622170627.19786-8-linmiaohe@huawei.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JNybckUxm5otNEbFw60yQ2dMtFPY6hEGSuWHqLz60QM=;
+        b=Imax4TBeBP3K+buGcXLL8156GcnAHBt/1jOkEfTMN5Amim0LMkHsCf1T2Q830m5OJt
+         sOC2AKIbLuHvOAapo7lNDRc/UejaPOdyanz1yDCoTuGCSFznLhTySOtfoeB9TzJTtwYt
+         vixJnr9fnfYODcCO+DnbKsznWZhhoEjHAH8ZM1ymAPY59bsjMrUOVLX4yxvZzrZB7dSv
+         3EfGpo+92ABys7eYuOSaC/4lR1vrak8eXNuk0gzuXiyzyKexaVRqKFgMX0nFDssLjqL0
+         qxddCo0P61Zywn6X2tqEXXoBVxNMKeioXoWI1a6Q6dprJPZr3aaeL2u6d2aw+4LG7GGF
+         bidA==
+X-Gm-Message-State: AJIora8WTeQt5v1eXW52ePf2X1//UYjkmJXKdtfaZmDTj/Q2giKY8yqb
+        DDrlhipvInBMasGEpy4KJWMiepENFztCyng7Rib3/5Y=
+X-Google-Smtp-Source: AGRyM1viAbCUWVPQ/NGv98H+Ta6yzR+JD0FHQ26J99CPudTae7UzU1vo507V0OpaWVB3wSaUkDUfo9G0LwP/MyfnqgQ=
+X-Received: by 2002:a81:106:0:b0:2d0:e682:8a7a with SMTP id
+ 6-20020a810106000000b002d0e6828a7amr8156975ywb.257.1655954813053; Wed, 22 Jun
+ 2022 20:26:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622170627.19786-8-linmiaohe@huawei.com>
+References: <20220622085146.444516-1-sunliming@kylinos.cn> <YrLwU27DNm0YWOvB@ZenIV>
+In-Reply-To: <YrLwU27DNm0YWOvB@ZenIV>
+From:   sunliming <kelulanainsley@gmail.com>
+Date:   Thu, 23 Jun 2022 11:26:38 +0800
+Message-ID: <CAJncD7S6inm90TEsUS6GpSiAdHHE95Q2qz08TmojN2uhhHA0Zw@mail.gmail.com>
+Subject: Re: [PATCH] walk_component(): get inode in lookup_slow branch
+ statement block
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sunliming@kylino.cn
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 01:06:18AM +0800, Miaohe Lin wrote:
-> Use helper function vma_lookup to lookup the needed vma and use help macro
-> IS_ERR_OR_NULL to check the validity of page to simplify the code. Minor
-> readability improvement.
-
-Grouping of changing seems random, but okay.
-
--- 
- Kirill A. Shutemov
+Al Viro <viro@zeniv.linux.org.uk> =E4=BA=8E2022=E5=B9=B46=E6=9C=8822=E6=97=
+=A5=E5=91=A8=E4=B8=89 18:35=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Wed, Jun 22, 2022 at 04:51:46PM +0800, sunliming wrote:
+> > The inode variable is used as a parameter by the step_into function,
+> > but is not assigned a value in the sub-lookup_slow branch path. So
+> > get the inode in the sub-lookup_slow branch path.
+>
+> Take a good look at handle_mounts() and the things it does when
+> *not* in RCU mode (i.e. LOOKUP_RCU is not set).  Specifically,
+>                 *inode =3D d_backing_inode(path->dentry);
+>                 *seqp =3D 0; /* out of RCU mode, so the value doesn't mat=
+ter */
+> this part.
+>
+> IOW, the values passed to step_into() in inode/seq are overridden unless
+> we stay in RCU mode.  And if we'd been through lookup_slow(), we'd been
+> out of RCU mode since before we called step_into().
+OK=EF=BC=8CI got it.
