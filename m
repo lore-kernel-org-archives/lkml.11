@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7766CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234518AbiFWRhp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35166 "EHLO
+        id S232008AbiFWRjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbiFWRhF (ORCPT
+        with ESMTP id S234150AbiFWRhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:37:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB637B350;
-        Thu, 23 Jun 2022 10:06:49 -0700 (PDT)
+        Thu, 23 Jun 2022 13:37:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7F87B340;
+        Thu, 23 Jun 2022 10:06:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E8D060B2C;
-        Thu, 23 Jun 2022 17:06:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12276C3411B;
-        Thu, 23 Jun 2022 17:06:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70F49B82490;
+        Thu, 23 Jun 2022 17:06:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC42AC3411B;
+        Thu, 23 Jun 2022 17:06:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004007;
-        bh=Q1fso5r86cgzFtzc8i+lSZhY0z3TNokfVQeXBKi/jqY=;
+        s=korg; t=1656003998;
+        bh=Af/mC/zq4tKhaB0LwhH5Vk0R8nnqO8wO9ms7HejQAZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fe+O6+KiYhWLNjernaOPAQpfIjCyNF80ji1B6kNXwUmw+B04+DwwupqZjwMmPluk4
-         7TjUSbjDWxXo0irN7QsITUCJMIIRl2cKlqh7p20pQMMlY9lOSCRJPdsrBjB6cwrU9e
-         HTmhkgXyUmJ6yk4aO6mMYrxMT/paCXImKJgnAFIA=
+        b=qCRODYWboelzMlNfAs/u7oxxPDV2aKli2RzfYEqiNyJejnGqUElzsoLL6VSGu5nDM
+         Ve0Pe6zvtAJmQ01h3WxB3PJ+rlnCs+05aI8a8rw3z1mh0JDEuKpD/I6lEjdZUEmftv
+         4cCzfGRZwfg24PzeDrNvIXbXAqHLlIpk2I/Z0InI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org
-Subject: [PATCH 4.14 158/237] x86/tsc: Use fallback for random_get_entropy() instead of zero
-Date:   Thu, 23 Jun 2022 18:43:12 +0200
-Message-Id: <20220623164347.700658541@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 155/237] mips: use fallback for random_get_entropy() instead of just c0 random
+Date:   Thu, 23 Jun 2022 18:43:09 +0200
+Message-Id: <20220623164347.615002777@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -52,71 +53,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 3bd4abc07a267e6a8b33d7f8717136e18f921c53 upstream.
+commit 1c99c6a7c3c599a68321b01b9ec243215ede5a68 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is suboptimal. Instead, fallback
-to calling random_get_entropy_fallback(), which isn't extremely high
-precision or guaranteed to be entropic, but is certainly better than
-returning zero all the time.
+For situations in which we don't have a c0 counter register available,
+we've been falling back to reading the c0 "random" register, which is
+usually bounded by the amount of TLB entries and changes every other
+cycle or so. This means it wraps extremely often. We can do better by
+combining this fast-changing counter with a potentially slower-changing
+counter from random_get_entropy_fallback() in the more significant bits.
+This commit combines the two, taking into account that the changing bits
+are in a different bit position depending on the CPU model. In addition,
+we previously were falling back to 0 for ancient CPUs that Linux does
+not support anyway; remove that dead path entirely.
 
-If CONFIG_X86_TSC=n, then it's possible for the kernel to run on systems
-without RDTSC, such as 486 and certain 586, so the fallback code is only
-required for that case.
-
-As well, fix up both the new function and the get_cycles() function from
-which it was derived to use cpu_feature_enabled() rather than
-boot_cpu_has(), and use !IS_ENABLED() instead of #ifndef.
-
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: x86@kernel.org
+Tested-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/timex.h |    9 +++++++++
- arch/x86/include/asm/tsc.h   |    7 +++----
- 2 files changed, 12 insertions(+), 4 deletions(-)
+ arch/mips/include/asm/timex.h |   17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
---- a/arch/x86/include/asm/timex.h
-+++ b/arch/x86/include/asm/timex.h
-@@ -5,6 +5,15 @@
- #include <asm/processor.h>
- #include <asm/tsc.h>
- 
-+static inline unsigned long random_get_entropy(void)
-+{
-+	if (!IS_ENABLED(CONFIG_X86_TSC) &&
-+	    !cpu_feature_enabled(X86_FEATURE_TSC))
-+		return random_get_entropy_fallback();
-+	return rdtsc();
-+}
-+#define random_get_entropy random_get_entropy
-+
- /* Assume we use the PIT time source for the clock tick */
- #define CLOCK_TICK_RATE		PIT_TICK_RATE
- 
---- a/arch/x86/include/asm/tsc.h
-+++ b/arch/x86/include/asm/tsc.h
-@@ -22,13 +22,12 @@ extern void disable_TSC(void);
- 
- static inline cycles_t get_cycles(void)
- {
--#ifndef CONFIG_X86_TSC
--	if (!boot_cpu_has(X86_FEATURE_TSC))
-+	if (!IS_ENABLED(CONFIG_X86_TSC) &&
-+	    !cpu_feature_enabled(X86_FEATURE_TSC))
- 		return 0;
--#endif
--
- 	return rdtsc();
+--- a/arch/mips/include/asm/timex.h
++++ b/arch/mips/include/asm/timex.h
+@@ -76,25 +76,24 @@ static inline cycles_t get_cycles(void)
+ 	else
+ 		return 0;	/* no usable counter */
  }
 +#define get_cycles get_cycles
  
- extern struct system_counterval_t convert_art_to_tsc(u64 art);
+ /*
+  * Like get_cycles - but where c0_count is not available we desperately
+  * use c0_random in an attempt to get at least a little bit of entropy.
+- *
+- * R6000 and R6000A neither have a count register nor a random register.
+- * That leaves no entropy source in the CPU itself.
+  */
+ static inline unsigned long random_get_entropy(void)
+ {
+-	unsigned int prid = read_c0_prid();
+-	unsigned int imp = prid & PRID_IMP_MASK;
++	unsigned int c0_random;
+ 
+-	if (can_use_mips_counter(prid))
++	if (can_use_mips_counter(read_c0_prid()))
+ 		return read_c0_count();
+-	else if (likely(imp != PRID_IMP_R6000 && imp != PRID_IMP_R6000A))
+-		return read_c0_random();
++
++	if (cpu_has_3kex)
++		c0_random = (read_c0_random() >> 8) & 0x3f;
+ 	else
+-		return 0;	/* no usable register */
++		c0_random = read_c0_random() & 0x3f;
++	return (random_get_entropy_fallback() << 6) | (0x3f - c0_random);
+ }
+ #define random_get_entropy random_get_entropy
  
 
 
