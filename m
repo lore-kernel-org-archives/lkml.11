@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D4BCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F30C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233790AbiFWRX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41944 "EHLO
+        id S231731AbiFWRYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233862AbiFWRWm (ORCPT
+        with ESMTP id S233897AbiFWRWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:22:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D33AB620F;
-        Thu, 23 Jun 2022 10:01:20 -0700 (PDT)
+        Thu, 23 Jun 2022 13:22:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B31B622F;
+        Thu, 23 Jun 2022 10:01:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4712C61573;
-        Thu, 23 Jun 2022 17:01:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A4DCC3411B;
-        Thu, 23 Jun 2022 17:01:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9133FB8248A;
+        Thu, 23 Jun 2022 17:01:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E88A7C3411B;
+        Thu, 23 Jun 2022 17:01:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003679;
-        bh=MqY2zppr9N1x5Ik2eekxRzvKnzXsm5vnnjmfSLbrANk=;
+        s=korg; t=1656003682;
+        bh=NQhNWJ1NHThvUxIKw4Ef2+2rvwT+8Bk+F6NZyTtL0Jk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t4Sn4OgnfwlhAdkasKTV+otYocdg+FeE/arr9DXwsXr2K18Ikye4wy65IhzTYSLDL
-         YCfLATlw936veopqJhOY9DQA6vREVYFhqeX9/pBhcxTKxtOQXVHJJR89jNyjozC/T+
-         s8ZFyTqaSplZG21q33tPmb5RJdoq9gaENe61yqy0=
+        b=GxR6YUD4WzXzhMDsrsBDxa1Hm7JuLfQi6SEPqmJmUlpgsSJ33fyx3TmwgTOGSVDbb
+         k/o+3UOFwV5Ev2Ad8/bLFbmnCVdGfqGa7R1sdmeInIoDvPiXRa5WCT0L2r/MZt9GEe
+         Q4eDranq0t0Ruj7hg6GX43IxLI5PZUY84LqWPDUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 011/237] random: make CPU trust a boot parameter
-Date:   Thu, 23 Jun 2022 18:40:45 +0200
-Message-Id: <20220623164343.475260325@linuxfoundation.org>
+Subject: [PATCH 4.14 012/237] drivers/char/random.c: constify poolinfo_table
+Date:   Thu, 23 Jun 2022 18:40:46 +0200
+Message-Id: <20220623164343.504791313@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,79 +50,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-commit 9b25436662d5fb4c66eb527ead53cab15f596ee0 upstream.
+commit 26e0854ab3310bbeef1ed404a2c87132fc91f8e1 upstream.
 
-Instead of forcing a distro or other system builder to choose
-at build time whether the CPU is trusted for CRNG seeding via
-CONFIG_RANDOM_TRUST_CPU, provide a boot-time parameter for end users to
-control the choice. The CONFIG will set the default state instead.
+Never modified, might as well be put in .rodata.
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt |    6 ++++++
- drivers/char/Kconfig                            |    4 ++--
- drivers/char/random.c                           |   11 ++++++++---
- 3 files changed, 16 insertions(+), 5 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3526,6 +3526,12 @@
- 	ramdisk_size=	[RAM] Sizes of RAM disks in kilobytes
- 			See Documentation/blockdev/ramdisk.txt.
- 
-+	random.trust_cpu={on,off}
-+			[KNL] Enable or disable trusting the use of the
-+			CPU's random number generator (if available) to
-+			fully seed the kernel's CRNG. Default is controlled
-+			by CONFIG_RANDOM_TRUST_CPU.
-+
- 	ras=option[,option,...]	[KNL] RAS-specific options
- 
- 		cec_disable	[X86]
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -602,5 +602,5 @@ config RANDOM_TRUST_CPU
- 	that CPU manufacturer (perhaps with the insistence or mandate
- 	of a Nation State's intelligence or law enforcement agencies)
- 	has not installed a hidden back door to compromise the CPU's
--	random number generation facilities.
--
-+	random number generation facilities. This can also be configured
-+	at boot with "random.trust_cpu=on/off".
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -779,6 +779,13 @@ static struct crng_state **crng_node_poo
- 
- static void invalidate_batched_entropy(void);
- 
-+static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
-+static int __init parse_trust_cpu(char *arg)
-+{
-+	return kstrtobool(arg, &trust_cpu);
-+}
-+early_param("random.trust_cpu", parse_trust_cpu);
-+
- static void crng_initialize(struct crng_state *crng)
- {
- 	int		i;
-@@ -799,12 +806,10 @@ static void crng_initialize(struct crng_
- 		}
- 		crng->state[i] ^= rv;
- 	}
--#ifdef CONFIG_RANDOM_TRUST_CPU
--	if (arch_init) {
-+	if (trust_cpu && arch_init) {
- 		crng_init = 2;
- 		pr_notice("random: crng done (trusting CPU's manufacturer)\n");
- 	}
--#endif
- 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
- }
- 
+@@ -359,7 +359,7 @@ static int random_write_wakeup_bits = 28
+  * polynomial which improves the resulting TGFSR polynomial to be
+  * irreducible, which we have made here.
+  */
+-static struct poolinfo {
++static const struct poolinfo {
+ 	int poolbitshift, poolwords, poolbytes, poolbits, poolfracbits;
+ #define S(x) ilog2(x)+5, (x), (x)*4, (x)*32, (x) << (ENTROPY_SHIFT+5)
+ 	int tap1, tap2, tap3, tap4, tap5;
 
 
