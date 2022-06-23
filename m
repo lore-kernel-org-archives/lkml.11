@@ -2,103 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C86FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:29:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DBEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbiFWT3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
+        id S231267AbiFWT3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231244AbiFWT3C (ORCPT
+        with ESMTP id S231271AbiFWT3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:29:02 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DB2DF1D
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 11:58:39 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-317a66d62dfso3464957b3.7
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 11:58:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FGzlsKlEfCGevmle/pHXLhVfx4U6rXBQGlZEgzoZTXI=;
-        b=dvSmYPqhPiGxfI/5Zh18vm11MWcK7wOb8aYAdPwZxHqODG5Cuad8CaOEmv/Y2sa9p5
-         VFVhZ3n04fnAE4EIBrxppU2JaQtCw+HwNGxNTftlpnSpGrlUtLsEAh3L0ohX07rtK8oT
-         vpTgkigl4cA4ZXj7VK0JpmQlWypFDFhQ+PPfA1npnvuud8+/3Lrzirf0Ok6pZdv9uXCk
-         VQcI1MF7PNbwpflSIIU5YLGwsfEJ+D0pBc2y9RzFdvO63vg93D63dsccsAeQnJ/ihgqY
-         4KLTrkboG5Upk2hTkDe4NH4xsTpqB4jE9ojiP37WepP0vtdLf6M8E6YgpB9gFhYJ6DSW
-         ukCA==
+        Thu, 23 Jun 2022 15:29:07 -0400
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0678E8EF82;
+        Thu, 23 Jun 2022 11:58:52 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id 15so662026ybc.2;
+        Thu, 23 Jun 2022 11:58:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FGzlsKlEfCGevmle/pHXLhVfx4U6rXBQGlZEgzoZTXI=;
-        b=oCB2gv4lz5pLYqul0uBF+vum3qPpFEWTtbllIJ6mbREGldrDl5cebQTDhEYt2uSfn+
-         QcroYEA9veqYAq7y8kjJC5mRir8ek7M/QQDvUHhypKl/qe+fC4cc3UEcggmqVXYK1LQ9
-         ilWN/jINC/2LNcuT22t5Er1RyoF+lsQzVB9VXBJ/hhO9aIf2Z645ep93Hp326akL0Rhl
-         YjVsX1K5RzWopi/F9daZJXwx5KRkE48Ez7A7ToXuOqyJNnr+imccZgd42DzJEpvMI3AP
-         cOtMIqYdKYKmCs7hMDJQtavux1Yfbu0a12pYfP126PxS2P943cf2IE0f2KbN8GhMjgyn
-         jw7Q==
-X-Gm-Message-State: AJIora/a5Br3aC38Ci/OFFhVY65bsBz1aFmrPblCIY7DOhnuu/bq59lJ
-        l19ynqMsNvYy2V+lEBno6DwPT3Adudsf5KGRrgW4Tw==
-X-Google-Smtp-Source: AGRyM1u/7wTdCyiFsm9BDRpZC1OybvAg1SKbmp+485CFKjjGjAnrIHBxFj8KE4k+UDRgnBvuLIE8imoEDuaOOm432SE=
-X-Received: by 2002:a0d:dfd5:0:b0:317:f0d4:505b with SMTP id
- i204-20020a0ddfd5000000b00317f0d4505bmr11837779ywe.518.1656010718792; Thu, 23
- Jun 2022 11:58:38 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=lI4mCx3whxOUC4X09M0nTfZ+oGlW9rf6dVQE1au+tlA=;
+        b=Kjdc1B6Kz6aKxttAJDHAYrtIni/Bn49AdnWIK3SNhp/YmbjIcZwNI0dMSDz3Yfsn8W
+         ay6CbKsHO6toZ2BMYTYjo2xQvdFIsCmyX02yPQP/opUkdrVT6bmaWuZ6t3QTf92pV7J4
+         5F62Isn5xf+phcKrD6ptTyFIgMd14gStYoA3LJ2nUeLTlU4vupsJIMx6CA1eZ3Qby8EC
+         8Yog6hznYqimr4myuNf/WRiW0OBDMQ4qvGLZDt1wR93B9wsfNdhEc74R+7mvtVRLuZaZ
+         kJy7ly1/4FicEskPwiOV2LSbOjdExaCF1QF+ZYWHJ9M0j+IQr2Bxtf2tUTx26OHPqX2n
+         fK+g==
+X-Gm-Message-State: AJIora8EL3A87IXfH3PCkZwygr/mo4/O0U/aKUPzsfJ36ciyNqPmnwn3
+        HrJq9eLxtnlqQDDTrIasCCjmEu+zOhBaE5tQ1zU=
+X-Google-Smtp-Source: AGRyM1v8RMiz7PDJqAFsyY9GUECSIoz7S30xCjilh79QODSpyibddy/527AzKVflhKiO/Qv8P0ih6SF55lfkhYNejiI=
+X-Received: by 2002:a25:d841:0:b0:668:ab2f:7b01 with SMTP id
+ p62-20020a25d841000000b00668ab2f7b01mr10902028ybg.482.1656010731199; Thu, 23
+ Jun 2022 11:58:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220622062027.994614-1-peng.fan@oss.nxp.com> <20220622072435.GT1615@pengutronix.de>
- <CAGETcx9JpTbYtGFoKttWLeiBB73QzzBM1o-OL0o-XuFouLcEog@mail.gmail.com>
- <CAOMZO5DFX72xuxWwAPsuk4Q667Ap7Dk+pR89cWDQJkzT0D2osA@mail.gmail.com>
- <CAOMZO5Ccu_v_G9DEwrEfVHq83-hfrXCP_h20Rv0=oFTLux5AkQ@mail.gmail.com>
- <CAGETcx85z_hkhKFHUwnihqcD0UQG3xtSZjw=BZxqwQB0D1CMgw@mail.gmail.com> <CAOMZO5A6Zn=6tXU2VQ+-cj=50mpxCmoZ8c437=w1Spd34k7T6A@mail.gmail.com>
-In-Reply-To: <CAOMZO5A6Zn=6tXU2VQ+-cj=50mpxCmoZ8c437=w1Spd34k7T6A@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 23 Jun 2022 11:58:02 -0700
-Message-ID: <CAGETcx-_nwrzJzaY3yc80g4AfydV5J9-JYE5h1m+5TT05jyKOw@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: imx8mp: drop dmas property for uart console
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>, hvilleneuve@dimonoff.com,
-        Lucas Stach <l.stach@pengutronix.de>,
-        abbaraju.manojsai@amarulasolutions.com,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Matteo Lisi <matteo.lisi@engicam.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Teresa Remmet <t.remmet@phytec.de>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, t.remmet@phytec.deh,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Peng Fan <peng.fan@nxp.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 23 Jun 2022 20:58:40 +0200
+Message-ID: <CAJZ5v0hHCBE5PpqayYi8kKF-+-juJwbQZtzoQ0mNDo_4iGQ6Lw@mail.gmail.com>
+Subject: [GIT PULL] Power management fix for v5.19-rc4
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux PM <linux-pm@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:43 AM Fabio Estevam <festevam@gmail.com> wrote:
->
-> On Thu, Jun 23, 2022 at 3:26 PM Saravana Kannan <saravanak@google.com> wrote:
->
-> > I don't think it'll be hard to fix the console= case either. In the
-> > case where you are not using stdout-path, how are you setting the
-> > console? Just want to make sure I'm handling that case too.
->
-> When stdout-path is not passed in DT, then the bootloader needs to pass
-> console=ttymxc0,115200, for example.
->
-> Please copy me in v3 if you send it.
+Hi Linus,
 
-Will do. I'm looking at the serial console code and I don't see a
-difference between earlycon= vs console= handling. And I know that
-earlycon= doesn't go through the driver core and isn't affected by any
-of this. If you have additional pointers on where console= is parsed,
-feel free to pass it on. I'll continue poking at this.
+Please pull from the tag
 
--Saravana
+ git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
+ pm-5.19-rc4
+
+with top-most commit 202773260023b56e868d09d13d3a417028f1ff5b
+
+ PM: hibernate: Use kernel_can_power_off()
+
+on top of commit a111daf0c53ae91e71fd2bfe7497862d14132e3e
+
+ Linux 5.19-rc3
+
+to receive a power management fix for 5.19-rc4.
+
+This fixes a recent regression preventing some systems from powering
+off after saving a hibernation image (Dmitry Osipenko).
+
+Thanks!
+
+
+---------------
+
+Dmitry Osipenko (1):
+      PM: hibernate: Use kernel_can_power_off()
+
+---------------
+
+ kernel/power/hibernate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
