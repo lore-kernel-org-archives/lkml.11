@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C908CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233251AbiFWRT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33144 "EHLO
+        id S233308AbiFWRTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233404AbiFWRRk (ORCPT
+        with ESMTP id S233588AbiFWRRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:17:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D9060C73;
-        Thu, 23 Jun 2022 09:59:54 -0700 (PDT)
+        Thu, 23 Jun 2022 13:17:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E320B885A3;
+        Thu, 23 Jun 2022 09:59:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DB4061573;
-        Thu, 23 Jun 2022 16:59:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB75CC3411B;
-        Thu, 23 Jun 2022 16:59:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C454B8248A;
+        Thu, 23 Jun 2022 16:59:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E9BC3411B;
+        Thu, 23 Jun 2022 16:59:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003593;
-        bh=hwdRMpcr3c0hyNdYLNwBv3vwIovC0ChxL5ZZ2uhRUfk=;
+        s=korg; t=1656003596;
+        bh=AsZmhEC9vfB6DX0K6zIPKTKXQnbgvJ5AfNP0h5XiAWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uRzT/5eoS+bqk/EYv05K9JV+OVYlTzyQ7FFJ9raL2uyGtt0w98IcVooBRo+n+Pr3F
-         3MuxIgKyQUxYYS4rGisA3ZHwrD3khOnC2A797l5wmEywgSvULR+Db15kVboH7H9uuw
-         fQo8N5n03MLyXtj3N5dsoSTLe/8qoJSl1JO3CagM=
+        b=o842dnH/ZNlVr3cHLIbvk7tK4/SLVs5sKtU6xHHp/TVJMQiJrG3TVf1nzbmfrpH8Y
+         J+//M9hWu6iffy9iaR8kcTCRt4abrW4qYcjMR2vnGtbb/MayJyBpSWUrYMqmkBwk8q
+         OGU30ogpcjoyM6woKUeISz7z3tSsnMaUC4m8yEcg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 024/237] Revert "hwrng: core - Freeze khwrng thread during suspend"
-Date:   Thu, 23 Jun 2022 18:40:58 +0200
-Message-Id: <20220623164343.850447279@linuxfoundation.org>
+Subject: [PATCH 4.14 025/237] crypto: Deduplicate le32_to_cpu_array() and cpu_to_le32_array()
+Date:   Thu, 23 Jun 2022 18:40:59 +0200
+Message-Id: <20220623164343.879325145@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -48,44 +50,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-commit 08e97aec700aeff54c4847f170e566cbd7e14e81 upstream.
+commit 9def051018c08e65c532822749e857eb4b2e12e7 upstream.
 
-This reverts commit 03a3bb7ae631 ("hwrng: core - Freeze khwrng
-thread during suspend"), ff296293b353 ("random: Support freezable
-kthreads in add_hwgenerator_randomness()") and 59b569480dc8 ("random:
-Use wait_event_freezable() in add_hwgenerator_randomness()").
+Deduplicate le32_to_cpu_array() and cpu_to_le32_array() by moving them
+to the generic header.
 
-These patches introduced regressions and we need more time to
-get them ready for mainline.
+No functional change implied.
 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ crypto/md4.c                      |   17 -----------------
+ crypto/md5.c                      |   17 -----------------
+ include/linux/byteorder/generic.h |   17 +++++++++++++++++
+ 3 files changed, 17 insertions(+), 34 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -327,7 +327,6 @@
- #include <linux/percpu.h>
- #include <linux/cryptohash.h>
- #include <linux/fips.h>
--#include <linux/freezer.h>
- #include <linux/ptrace.h>
- #include <linux/workqueue.h>
- #include <linux/irq.h>
-@@ -2431,8 +2430,7 @@ void add_hwgenerator_randomness(const ch
- 	 * We'll be woken up again once below random_write_wakeup_thresh,
- 	 * or when the calling thread is about to terminate.
- 	 */
--	wait_event_freezable(random_write_wait,
--			kthread_should_stop() ||
-+	wait_event_interruptible(random_write_wait, kthread_should_stop() ||
- 			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
- 	mix_pool_bytes(poolp, buffer, count);
- 	credit_entropy_bits(poolp, entropy);
+--- a/crypto/md4.c
++++ b/crypto/md4.c
+@@ -64,23 +64,6 @@ static inline u32 H(u32 x, u32 y, u32 z)
+ #define ROUND2(a,b,c,d,k,s) (a = lshift(a + G(b,c,d) + k + (u32)0x5A827999,s))
+ #define ROUND3(a,b,c,d,k,s) (a = lshift(a + H(b,c,d) + k + (u32)0x6ED9EBA1,s))
+ 
+-/* XXX: this stuff can be optimized */
+-static inline void le32_to_cpu_array(u32 *buf, unsigned int words)
+-{
+-	while (words--) {
+-		__le32_to_cpus(buf);
+-		buf++;
+-	}
+-}
+-
+-static inline void cpu_to_le32_array(u32 *buf, unsigned int words)
+-{
+-	while (words--) {
+-		__cpu_to_le32s(buf);
+-		buf++;
+-	}
+-}
+-
+ static void md4_transform(u32 *hash, u32 const *in)
+ {
+ 	u32 a, b, c, d;
+--- a/crypto/md5.c
++++ b/crypto/md5.c
+@@ -32,23 +32,6 @@ const u8 md5_zero_message_hash[MD5_DIGES
+ };
+ EXPORT_SYMBOL_GPL(md5_zero_message_hash);
+ 
+-/* XXX: this stuff can be optimized */
+-static inline void le32_to_cpu_array(u32 *buf, unsigned int words)
+-{
+-	while (words--) {
+-		__le32_to_cpus(buf);
+-		buf++;
+-	}
+-}
+-
+-static inline void cpu_to_le32_array(u32 *buf, unsigned int words)
+-{
+-	while (words--) {
+-		__cpu_to_le32s(buf);
+-		buf++;
+-	}
+-}
+-
+ #define F1(x, y, z)	(z ^ (x & (y ^ z)))
+ #define F2(x, y, z)	F1(z, x, y)
+ #define F3(x, y, z)	(x ^ y ^ z)
+--- a/include/linux/byteorder/generic.h
++++ b/include/linux/byteorder/generic.h
+@@ -156,6 +156,23 @@ static inline void le64_add_cpu(__le64 *
+ 	*var = cpu_to_le64(le64_to_cpu(*var) + val);
+ }
+ 
++/* XXX: this stuff can be optimized */
++static inline void le32_to_cpu_array(u32 *buf, unsigned int words)
++{
++	while (words--) {
++		__le32_to_cpus(buf);
++		buf++;
++	}
++}
++
++static inline void cpu_to_le32_array(u32 *buf, unsigned int words)
++{
++	while (words--) {
++		__cpu_to_le32s(buf);
++		buf++;
++	}
++}
++
+ static inline void be16_add_cpu(__be16 *var, u16 val)
+ {
+ 	*var = cpu_to_be16(be16_to_cpu(*var) + val);
 
 
