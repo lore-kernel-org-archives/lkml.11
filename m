@@ -2,128 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 694A3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 02:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CACDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 02:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353008AbiFWChK (ORCPT
+        id S1347915AbiFWCmr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 22:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        Wed, 22 Jun 2022 22:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236606AbiFWChD (ORCPT
+        with ESMTP id S229701AbiFWCmn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 22:37:03 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD403CA7A
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 19:37:01 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-3177f4ce3e2so157423597b3.5
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 19:37:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=49Nk7hmUdiJCNEYE0l0yCJRDHLf0jxWA0g/35538DuA=;
-        b=aGy21QAm2ckk1RncPP4GRr5ft+rJupnCr6OT/Le1/gXU/A9f6Fk/UaMnFtGMpAjRPC
-         7wwBIH+TFzD39mTpiazmfjeXUmlQ3UU9gZcNik0JvaaSeoYeGqJqUscvkHXqOFVcMa/R
-         SuB7JET94Z5HUQ9MShoToSmLuuoKSHVqvbBlOOIFg/fHYUewTUv80g5mgSDKZx10uHd+
-         qBb/Z0LvSv2ZbksXBn+fLEy1JQwEVzZq2CeQuOzjntgynlq7qSPTqha3lZMvGlHRl97b
-         pjpaedi+ISyzZimuCTzg0/3RdM+bfRpsyRaIlvpZWkywzNQwa7pmPkUQbpSKsuz3eRsH
-         N0NQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=49Nk7hmUdiJCNEYE0l0yCJRDHLf0jxWA0g/35538DuA=;
-        b=OYHjjTQyTQzaKULdbI0lRkb8YZWBo16sM/PpOugb2Mbt5pxbyGPrcT518VAhqzRow6
-         ghp19I78p8LH7Y3orCA/tGvhgwHPyJop997Lh0z6oFEpKmOqTw9ZLSJVMv7Sjzxf+DXW
-         KblbtPffzN+KFlcK+I81MbYWBL/Anzg2Pgzid7Mf3Q8qZOO30UtL18ydnVyN9rm8FE98
-         qcEUVLkZ9HZpQgB3Mf1MIyT7gjWHF2rG2iIlz/QPWHSgypJtzxLLMbeRN1LK1PHeFV8g
-         nhSukoIZ3nC5ZFhM/EsEpP9jJjGuXHxvscgNAWjSvT+eAJCOiEl/o7/SmTMzkZbF0aIE
-         +HIA==
-X-Gm-Message-State: AJIora8O7ljptOV4J1VKUGmC3moHDedQOH8W6FP0+9ymTL+5Y8L5E2g4
-        X4CBGtPd3xAeMZ/MIQe4sFfJUDBYbS6Y+qvzrcmY/A==
-X-Google-Smtp-Source: AGRyM1uForsh5uwbmA0/mI09ZlD3rwatBHRJYURxs0u4OU+1zZPa3scdhxXMEMbqrJC6Nd6N/RQLqd9C8noLcEuIb08=
-X-Received: by 2002:a81:4896:0:b0:317:f767:95f8 with SMTP id
- v144-20020a814896000000b00317f76795f8mr8455343ywa.218.1655951820855; Wed, 22
- Jun 2022 19:37:00 -0700 (PDT)
+        Wed, 22 Jun 2022 22:42:43 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BF942A10;
+        Wed, 22 Jun 2022 19:42:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655952162; x=1687488162;
+  h=from:to:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7c58LfG4TSl0Fs6TzOVpB2DHdxx//cWudkJuL9FQBx4=;
+  b=OaQ5IVl/tHlydeUmL3HMiDZL25b0zFL5feshYGoq62/9Qc6S8CMU6YJE
+   X1Ql+R0KpO1z4IKwSFtBGrB6GeGPsD1CxHWE+IErVJd/5mBpgYyMeGt85
+   GgSgVpxGHxcj6zfUZp9bnPEPKZH/QW6LEOHnNzFjptc1SkBkY2aFpplO5
+   1/I4021HJ0Cd425dBMFTNLQN8d7apFPgKCTybm7z8KZoja0HnGNPsAJbZ
+   E5qd8gsWvaxSRIS2O7xK3xCu+TLybgOnwawOHir3Kp15odwpGkPt9O6am
+   8ak6Kp8/fh/mskIFv9rDHLLYCIWeP1fwv7Q7IveBZJs4ZphC1HYXpN60z
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="342289221"
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="342289221"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 19:42:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="563271632"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.116])
+  by orsmga006.jf.intel.com with ESMTP; 22 Jun 2022 19:42:39 -0700
+From:   niravkumar.l.rabara@intel.com
+To:     dinguyen@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, niravkumar.l.rabara@intel.com
+Subject: [PATCH] arm64: dts: altera: socfpga_stratix10: move clocks out of soc node
+Date:   Thu, 23 Jun 2022 10:42:21 +0800
+Message-Id: <20220623024221.2766255-1-niravkumar.l.rabara@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CGME20220616032522eucas1p19a6c8718f01fa61c2fee795fb8945a92@eucas1p1.samsung.com>
- <CAGETcx8z4dn1j05Za6nfDeC3v4r1yo30Nqu=1K2BEsvLcqqybQ@mail.gmail.com>
- <d5796286-ec24-511a-5910-5673f8ea8b10@samsung.com> <CAGETcx8e0QDbaqHGm1O8y6zwrBCwRitsRFXeUPt0w6uFx9k6+g@mail.gmail.com>
-In-Reply-To: <CAGETcx8e0QDbaqHGm1O8y6zwrBCwRitsRFXeUPt0w6uFx9k6+g@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 22 Jun 2022 19:36:24 -0700
-Message-ID: <CAGETcx-MHwex8tHLB1d71MAP01-3OPDZSNCUBb3iT+BtrugJmQ@mail.gmail.com>
-Subject: Re: Default async probing for DT based systems
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Kevin Hilman <khilman@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 11:04 AM Saravana Kannan <saravanak@google.com> wrote:
->
-> On Fri, Jun 17, 2022 at 2:04 AM Marek Szyprowski
-> <m.szyprowski@samsung.com> wrote:
-> >
-> > Hi Saravana,
-> >
-> > On 16.06.2022 05:24, Saravana Kannan wrote:
-> > > Hi,
-> > >
-> > > TL;DR: I want to improve boot times by enabling async probing by
-> > > default for DT based systems. Can you give it a shot please?
-> >
-> > Yes, I've gave it a try on my test systems. It looks that there are a
-> > few issues. The first one, the most obvious to notice, is related to
-> > __request_module() calls from various drivers and frameworks. Here are
-> > some examples:
-> >
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 3 PID: 73 at kernel/kmod.c:136 __request_module+0x230/0x600
-> > Modules linked in:
-> > CPU: 3 PID: 73 Comm: kworker/u12:5 Not tainted 5.19.0-rc2-next-20220615+
-> > #5203
-> > Hardware name: ARM Juno development board (r1) (DT)
-> > Workqueue: events_unbound async_run_entry_fn
-> > pstate: 00000005 (nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> > UDC core: g_ether: couldn't find an available UDC
-> > pc : __request_module+0x230/0x600
-> > lr : __request_module+0x228/0x600
->
-> Ah, I think I know what these might be. Going by memory,
-> __request_module() from asyc thread context has some issues for module
-> loading. So I think a check was added like this. And I think the check
-> is triggering when it shouldn't (this isn't module context here).
+From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
 
-My memory was right and this is indeed the spurious warning that was
-meant to cover a potential deadlock in a module load path. I was
-trying to disable this warning till we hit the point in the boot flow
-where request_module() can actually succeed. But I got stuck trying to
-figure it out.
+The clocks are not part of the SoC but provided on the board
+(external oscillators). Moving them out of soc node.
 
-It looks like the usermode helper that's used for module loading
-triggered by request_module() is enabled in populate_rootfs() that
-runs well before most of the initcalls are done. I was under the
-impression that init with pid 0 would be the first userspace thread
-that can start. But I don't see anything obvious that prevents the
-usermode helper from running and loading a module before init process
-has been exec'ed after we set system_state to SYSTEM_RUNNING.
+Signed-off-by: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
+---
+ .../boot/dts/altera/socfpga_stratix10.dtsi    | 56 +++++++++----------
+ 1 file changed, 28 insertions(+), 28 deletions(-)
 
-Can someone clarify when is the earliest request_module() can succeed?
+diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+index aa2bba75265f..5c7d926d18f7 100644
+--- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
++++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+@@ -97,6 +97,34 @@ intc: interrupt-controller@fffc1000 {
+ 		      <0x0 0xfffc6000 0x0 0x2000>;
+ 	};
+ 
++	clocks {
++		cb_intosc_hs_div2_clk: cb-intosc-hs-div2-clk {
++			#clock-cells = <0>;
++			compatible = "fixed-clock";
++		};
++
++		cb_intosc_ls_clk: cb-intosc-ls-clk {
++			#clock-cells = <0>;
++			compatible = "fixed-clock";
++		};
++
++		f2s_free_clk: f2s-free-clk {
++			#clock-cells = <0>;
++			compatible = "fixed-clock";
++		};
++
++		osc1: osc1 {
++			#clock-cells = <0>;
++			compatible = "fixed-clock";
++		};
++
++		qspi_clk: qspi-clk {
++			#clock-cells = <0>;
++			compatible = "fixed-clock";
++			clock-frequency = <200000000>;
++		};
++	};
++
+ 	soc {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+@@ -119,34 +147,6 @@ clkmgr: clock-controller@ffd10000 {
+ 			#clock-cells = <1>;
+ 		};
+ 
+-		clocks {
+-			cb_intosc_hs_div2_clk: cb-intosc-hs-div2-clk {
+-				#clock-cells = <0>;
+-				compatible = "fixed-clock";
+-			};
+-
+-			cb_intosc_ls_clk: cb-intosc-ls-clk {
+-				#clock-cells = <0>;
+-				compatible = "fixed-clock";
+-			};
+-
+-			f2s_free_clk: f2s-free-clk {
+-				#clock-cells = <0>;
+-				compatible = "fixed-clock";
+-			};
+-
+-			osc1: osc1 {
+-				#clock-cells = <0>;
+-				compatible = "fixed-clock";
+-			};
+-
+-			qspi_clk: qspi-clk {
+-				#clock-cells = <0>;
+-				compatible = "fixed-clock";
+-				clock-frequency = <200000000>;
+-			};
+-		};
+-
+ 		gmac0: ethernet@ff800000 {
+ 			compatible = "altr,socfpga-stmmac-a10-s10", "snps,dwmac-3.74a", "snps,dwmac";
+ 			reg = <0xff800000 0x2000>;
+-- 
+2.25.1
 
-Thanks,
-Saravana
