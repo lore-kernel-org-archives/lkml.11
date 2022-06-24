@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4739C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED88C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232105AbiFXRS7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
+        id S232194AbiFXRTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231199AbiFXRSx (ORCPT
+        with ESMTP id S232110AbiFXRSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 24 Jun 2022 13:18:53 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA2DADD6
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:18:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98D6626117
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:18:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656091130;
+        s=mimecast20190719; t=1656091131;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3ufRTEzneH/kSvKyDxUKVLcSwThbG62Wnx3AVy3a8ow=;
-        b=XmE4ABpLfq/HFSQf/Gee2dCgzI0jmjgNj7Mxz1+tMD7Bk8jjeUp6g0QXa83IVKyLUEkPmE
-        xgYwZlRp533ZC5ywBf9r+ShWWqjTfjYGjCkAgXps0ZBLglIGMaJdOhLXxj76pSuOJvFyY0
-        q3Rb48wt+JVJrS64XokcEF4vcjWY23M=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=LpEiLmZkg93bGPFh7PJljlKo06GeGjtWHik84ASBrwI=;
+        b=gwTJPNqE57hHN1PEhvkTRxMLq0n/bCgA8CTLBbNpeDMrylef+F2fofDdDPTjx/nw8uccbw
+        SAxP9SDpPeM4foVPvnisloaCZxqwMyIDQobIeQLaT3b4nkWg6Ix7Zs/fG+8zBsZKUv2n3y
+        R9OmutbHpffSwkqRF3SExRh29N9b5bc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-641-xmyJLnTsMjeZute6Im-4Cw-1; Fri, 24 Jun 2022 13:18:49 -0400
-X-MC-Unique: xmyJLnTsMjeZute6Im-4Cw-1
+ us-mta-551-6tfvGRB6NTik30nH9iH82Q-1; Fri, 24 Jun 2022 13:18:50 -0400
+X-MC-Unique: 6tfvGRB6NTik30nH9iH82Q-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 349BF3C0E22D;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D2C8F1818801;
         Fri, 24 Jun 2022 17:18:49 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1D673492C3B;
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BB94D492C3B;
         Fri, 24 Jun 2022 17:18:49 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: [PATCH v2 1/8] KVM: x86: complete fast IN directly with complete_emulator_pio_in()
-Date:   Fri, 24 Jun 2022 13:18:41 -0400
-Message-Id: <20220624171848.2801602-2-pbonzini@redhat.com>
+Subject: [PATCH v2 6/8] KVM: x86: wean fast IN from emulator_pio_in
+Date:   Fri, 24 Jun 2022 13:18:46 -0400
+Message-Id: <20220624171848.2801602-7-pbonzini@redhat.com>
 In-Reply-To: <20220624171848.2801602-1-pbonzini@redhat.com>
 References: <20220624171848.2801602-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -53,34 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use complete_emulator_pio_in() directly when completing fast PIO, there's
-no need to bounce through emulator_pio_in(): the comment about ECX
-changing doesn't apply to fast PIO, which isn't used for string I/O.
+Use __emulator_pio_in() directly for fast PIO instead of bouncing through
+emulator_pio_in() now that __emulator_pio_in() fills "val" when handling
+in-kernel PIO.  vcpu->arch.pio.count is guaranteed to be '0', so this a
+pure nop.
+
+emulator_pio_in_emulated is now the last caller of emulator_pio_in.
 
 No functional change intended.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/x86.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ arch/x86/kvm/x86.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index d88600e41ff8..d66a873f4427 100644
+index 716ae5c92687..b824ffc63b17 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -8871,11 +8871,7 @@ static int complete_fast_pio_in(struct kvm_vcpu *vcpu)
+@@ -8886,7 +8886,7 @@ static int kvm_fast_pio_in(struct kvm_vcpu *vcpu, int size,
  	/* For size less than 4 we merge, else we zero extend */
- 	val = (vcpu->arch.pio.size < 4) ? kvm_rax_read(vcpu) : 0;
+ 	val = (size < 4) ? kvm_rax_read(vcpu) : 0;
  
--	/*
--	 * Since vcpu->arch.pio.count == 1 let emulator_pio_in perform
--	 * the copy and tracing
--	 */
--	emulator_pio_in(vcpu, vcpu->arch.pio.size, vcpu->arch.pio.port, &val, 1);
-+	complete_emulator_pio_in(vcpu, &val);
- 	kvm_rax_write(vcpu, val);
- 
- 	return kvm_skip_emulated_instruction(vcpu);
+-	ret = emulator_pio_in(vcpu, size, port, &val, 1);
++	ret = __emulator_pio_in(vcpu, size, port, &val, 1);
+ 	if (ret) {
+ 		kvm_rax_write(vcpu, val);
+ 		return ret;
 -- 
 2.31.1
 
