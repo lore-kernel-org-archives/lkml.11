@@ -2,164 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1902EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 06:34:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDEACCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 06:36:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230222AbiFXGe3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 02:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
+        id S229808AbiFXGgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 02:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbiFXGe2 (ORCPT
+        with ESMTP id S229441AbiFXGgR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 02:34:28 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF04F5DC21
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:34:26 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id p5so1862290pjt.2
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:34:26 -0700 (PDT)
+        Fri, 24 Jun 2022 02:36:17 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2046.outbound.protection.outlook.com [40.107.100.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D64609E2;
+        Thu, 23 Jun 2022 23:36:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LTP9jotI8IaELsYMzOaCcpMEWXyVosf/Xunbl3uIVFaYwYhdQ+Lw5SZkMkgaal9jSJ+CLSzesoyHnB643m3PrGPAgbBC869Upxhv+YHEUFfnkvejkIBZWOzzRVZv/WTixhEKm4QOZSWFnI0QdghFLJgZlYhIgDEx51wHlwBDQQ0IuSVFTn713MhsFC38O42S6YzZBU2iQNbPJ1sB2ZuENdyuNbAcQYnFrb1QzwVtHA6H7fbxk+BGRGmf+NUDlimUxLLVIU0jLaUNOFWWUd3imS/Dws3CFQuWFuKBCmtRQc4k3YQvLhqqdjHLgs+XeLs7yLyC4244D7tzpqEgmwMRcg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ST4U8b9xRnSU8SDgdanvDwT+OTVhfkA+MyD7le8tLvg=;
+ b=jW3XEzJigw7Jh+VIIFszCj3P+T+NC0uTfhsnN4wsH6nFm592ItAsiwDDu/u8KjX/ivI5iWUqU1YBoFnDnBFKR3/t2whY0dqQyZKxuPmcuyu3I9HeGMGVYDPfOh16SRRW7F9URvJ+Yv69HCMc/Cf9IhWND65cnSM4/RJ4ptNkodlEPoD/qZ3IHh1Ia+S/RXvN2V/82N+fZyFNdyoncRT1UAyKJ40IAcISRjbVrTeq+ojGfL8RF5T7oeeOiQkyMeXdhrj2fsTUxv6s/w0FYlAREinTsSx8ashSjAcN9N3OBV/IhfHvp6zErq20Hxsq7Q0tcxJVvXebxln+w9WtGETXvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=71jGypN6c61twJSnmBdGUmoPeKpzoJtu/qf5Lc4Vgtg=;
-        b=GQWOciPs4SH+KIoLH/4jvpooIeGL/uKMB5IIRmqHwKrVMCLTNkhEHTFWG3stILKRer
-         cinAgcMsxDf4RTBxejYoy941btEr/eLYCO+GF0ql1oaFb5jWx60AuACLQuEvlaLYrFZf
-         UgRAAkZWXt6lWFMzYjbN06dquy9miTA8f1PyXmTEZJcjuxIApu2/k+3F3LqT6WPZStaK
-         L7ajnIeNJmeLEocSQsgypUZxz1YBXMny857DRCdVvb2g8M2IoTpQy8wBz8KkiaITpwjR
-         N+Jfv3+DvM/5n9lutIQWyD9cIG3lm6BebIyNWT6S8ze0LdBcVOk9Wq+EciVzzoisMPoO
-         SYeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=71jGypN6c61twJSnmBdGUmoPeKpzoJtu/qf5Lc4Vgtg=;
-        b=K3asOngmI0EXJCqWGxeTBW1M6MraE508YEDzWJOFynG0HfSdiytrCvHVCmblwquGl3
-         n91q8NdAlp3ayFEDBmOQAsjlnZlxhmaszP2BFnyE+cXAxCc0qfD07qzAqDDnxM4kHohP
-         Fu6jb5OMxuejG3nTjpax4ooYRqcKxeeNvudfmhuu8xLRYEFoCosMIEsVq6h65iUrrZzU
-         It7Lkr9fPiLYGE+zHXvsaynVEPe/oor9+03+sP5URKJ8mygkcC3Asr6PWnK+8XDwHgoX
-         AWpKe6Opmgi2G70525V9MXvAlIHnpjmgtTMjlJ+K4wl/Wzd2BU78Lyotp44IB0gvE/a8
-         /xyA==
-X-Gm-Message-State: AJIora/lOyFh9t06YkEYYjOXQmBO2SIH9T0r9QsCM4GajFcS5Su6cx7G
-        FpwBb/eisMsdZ7tbv+ZqHwkjNTmXxDSwLNieU9sVzQ==
-X-Google-Smtp-Source: AGRyM1sH/6oaYCwlqeMz2fZ1ORa63Fgtzz9yKrkfpjijNf1stMa7F1Ub33v8l06714/cZs/6t1k6jgJJALnl6rgV8ZY=
-X-Received: by 2002:a17:902:f685:b0:16a:3c40:e3b5 with SMTP id
- l5-20020a170902f68500b0016a3c40e3b5mr15658634plg.106.1656052466148; Thu, 23
- Jun 2022 23:34:26 -0700 (PDT)
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ST4U8b9xRnSU8SDgdanvDwT+OTVhfkA+MyD7le8tLvg=;
+ b=YOWLH4P5PCbEdQQNXi6y26MG02BZFMJuyzotq5tnCoqvkYUk8IB9gGy01tMOCo0a2gZIYfEBl0YY0PHXYdq891g/4F/OanUvJ9AGzTWCnOoFWFbOs+Yz6Q8LgHGnjKtVBdonMwGfMc0qiPXmwKnLvi94eQJOiPuWUkyoaOGuV48=
+Received: from DS7PR03CA0021.namprd03.prod.outlook.com (2603:10b6:5:3b8::26)
+ by CO6PR02MB8818.namprd02.prod.outlook.com (2603:10b6:303:142::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Fri, 24 Jun
+ 2022 06:36:13 +0000
+Received: from DM3NAM02FT048.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:3b8:cafe::14) by DS7PR03CA0021.outlook.office365.com
+ (2603:10b6:5:3b8::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16 via Frontend
+ Transport; Fri, 24 Jun 2022 06:36:12 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT048.mail.protection.outlook.com (10.13.4.209) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5373.15 via Frontend Transport; Fri, 24 Jun 2022 06:36:12 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 23 Jun 2022 23:36:12 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 23 Jun 2022 23:36:12 -0700
+Envelope-to: vkoul@kernel.org,
+ lars@metafoo.de,
+ adrianml@alumnos.upm.es,
+ libaokun1@huawei.com,
+ marex@denx.de,
+ dmaengine@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.140.6.78] (port=39188 helo=xhdswatia40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <swati.agarwal@xilinx.com>)
+        id 1o4cv0-000FW1-6R; Thu, 23 Jun 2022 23:35:50 -0700
+From:   Swati Agarwal <swati.agarwal@xilinx.com>
+To:     <vkoul@kernel.org>, <lars@metafoo.de>, <adrianml@alumnos.upm.es>,
+        <libaokun1@huawei.com>, <marex@denx.de>
+CC:     <dmaengine@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <swati.agarwal@xilinx.com>,
+        <harini.katakam@xilinx.com>, <radhey.shyam.pandey@xilinx.com>,
+        <michal.simek@xilinx.com>
+Subject: [PATCH 2/2] dmaengine: xilinx_dma: Report error in case of dma_set_mask_and_coherent API failure
+Date:   Fri, 24 Jun 2022 12:05:39 +0530
+Message-ID: <20220624063539.18657-3-swati.agarwal@xilinx.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220624063539.18657-1-swati.agarwal@xilinx.com>
+References: <20220624063539.18657-1-swati.agarwal@xilinx.com>
 MIME-Version: 1.0
-References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
- <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
- <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
- <20220623185730.25b88096@kernel.org> <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
-In-Reply-To: <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 23 Jun 2022 23:34:15 -0700
-Message-ID: <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-To:     Eric Dumazet <edumazet@google.com>, Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Muchun Song <songmuchun@bytedance.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        "Tang, Feng" <feng.tang@intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0ebc1077-8fc3-4382-5529-08da55abd517
+X-MS-TrafficTypeDiagnostic: CO6PR02MB8818:EE_
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: obVQcHGGxlXel4EtEh58m+YhdKQdOGf8DiqEpFpw6K4H15YT0v8T5s54yG8qtiRp58bOSfjIII6CZHy2TihyvVMc4pKmAxuLChoz67xNtDZumnOtXImrLxFxO/wBld8OjHw6t1pOzwSgQsWsYdvRAr9UeLNGyZc564PhyzRS9BZNVQAcqZxwXjm3HR2z/fQEYSFKtfem2OYjxCK0rFSbvzVEmAe7Iwi4Vra9+yI2xeR7OQRLGURd+PZTxScalVE0DzqJh0RrUxu0ywPwdOVC4yO++2tL5mM4mG1iA9jBhyVjbum0vu6HEDSMZ7V9CN1YSErhWREUd+1Uu92vtrjZbK9aHiq7dWkGXwX26gnU5tic1G22B3u4hdoh0FxlZzoaMvU5NCj+XZBccOFDFxZee6GW7jCS9yt/6N4CRyU1lIglkj4sUV8zoHoOmFJsDFHjBakiXrU+tU/liQWyuJODwdTRJfvmJVuqL7PnJWhYtGsRe2thAiST5QxTeotOJHW2/Ola5BVXHOCBZMoUbhwzYEa1WcNIx0RrzuUgOfR6ziepRRZHIFbMYqgdAhBm/cQxxabT0WYKvtf2AE2jPBrRQxwsPNz+9HSIhIcYSvWjbBFzdrBhV7897GATWk/7Kb07wx9b7qaU2onr0ckyKKnREKwlXYZoZGzg5yT4kKlHFQU2MKgLpfdY3jXzBSUBlCVXX+j1FSe2ww0HTrUf5n2s5YhRNtk5HwEbctpm8fn82MFo4nair1W8J37sI+Ywm7ef4PibMQES0GnfMEIu3CN2R51ArhU/HVfGlXyi3+OwBzZ3E0zYVCKKwJXyDOZSlpQzcX6FwTLFdE0DBDXby6s92A==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(136003)(346002)(39860400002)(36840700001)(46966006)(40470700004)(47076005)(356005)(44832011)(186003)(83380400001)(107886003)(8936002)(426003)(36756003)(316002)(1076003)(336012)(54906003)(4326008)(2906002)(5660300002)(9786002)(40480700001)(8676002)(7696005)(41300700001)(6666004)(70206006)(40460700003)(36860700001)(82740400003)(110136005)(478600001)(70586007)(82310400005)(2616005)(26005)(7636003)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 06:36:12.8097
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ebc1077-8fc3-4382-5529-08da55abd517
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT048.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR02MB8818
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CCing memcg folks.
+The driver does not handle the failure case while calling
+dma_set_mask_and_coherent API.
 
-The thread starts at
-https://lore.kernel.org/all/20220619150456.GB34471@xsang-OptiPlex-9020/
+In case of failure, capture the return value of API and then report an
+error.
 
-On Thu, Jun 23, 2022 at 9:14 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Fri, Jun 24, 2022 at 3:57 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 23 Jun 2022 18:50:07 -0400 Xin Long wrote:
-> > > From the perf data, we can see __sk_mem_reduce_allocated() is the one
-> > > using CPU the most more than before, and mem_cgroup APIs are also
-> > > called in this function. It means the mem cgroup must be enabled in
-> > > the test env, which may explain why I couldn't reproduce it.
-> > >
-> > > The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small as
-> > > possible") uses sk_mem_reclaim(checking reclaimable >= PAGE_SIZE) to
-> > > reclaim the memory, which is *more frequent* to call
-> > > __sk_mem_reduce_allocated() than before (checking reclaimable >=
-> > > SK_RECLAIM_THRESHOLD). It might be cheap when
-> > > mem_cgroup_sockets_enabled is false, but I'm not sure if it's still
-> > > cheap when mem_cgroup_sockets_enabled is true.
-> > >
-> > > I think SCTP netperf could trigger this, as the CPU is the bottleneck
-> > > for SCTP netperf testing, which is more sensitive to the extra
-> > > function calls than TCP.
-> > >
-> > > Can we re-run this testing without mem cgroup enabled?
-> >
-> > FWIW I defer to Eric, thanks a lot for double checking the report
-> > and digging in!
->
-> I did tests with TCP + memcg and noticed a very small additional cost
-> in memcg functions,
-> because of suboptimal layout:
->
-> Extract of an internal Google bug, update from June 9th:
->
-> --------------------------------
-> I have noticed a minor false sharing to fetch (struct
-> mem_cgroup)->css.parent, at offset 0xc0,
-> because it shares the cache line containing struct mem_cgroup.memory,
-> at offset 0xd0
->
-> Ideally, memcg->socket_pressure and memcg->parent should sit in a read
-> mostly cache line.
-> -----------------------
->
-> But nothing that could explain a "-69.4% regression"
->
-> memcg has a very similar strategy of per-cpu reserves, with
-> MEMCG_CHARGE_BATCH being 32 pages per cpu.
->
-> It is not clear why SCTP with 10K writes would overflow this reserve constantly.
->
-> Presumably memcg experts will have to rework structure alignments to
-> make sure they can cope better
-> with more charge/uncharge operations, because we are not going back to
-> gigantic per-socket reserves,
-> this simply does not scale.
+Addresses-coverity: Unchecked return value (CHECKED_RETURN)
 
-Yes I agree. As you pointed out there are fields which are mostly
-read-only but sharing cache lines with fields which get updated and
-definitely need work.
+Signed-off-by: Swati Agarwal <swati.agarwal@xilinx.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+---
+ drivers/dma/xilinx/xilinx_dma.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-However can we first confirm if memcg charging is really the issue
-here as I remember these intel lkp tests are configured to run in root
-memcg and the kernel does not associate root memcg to any socket (see
-mem_cgroup_sk_alloc()).
+diff --git a/drivers/dma/xilinx/xilinx_dma.c b/drivers/dma/xilinx/xilinx_dma.c
+index fbf341e8c36f..194513eca7a2 100644
+--- a/drivers/dma/xilinx/xilinx_dma.c
++++ b/drivers/dma/xilinx/xilinx_dma.c
+@@ -3212,7 +3212,11 @@ static int xilinx_dma_probe(struct platform_device *pdev)
+ 		xdev->ext_addr = false;
+ 
+ 	/* Set the dma mask bits */
+-	dma_set_mask_and_coherent(xdev->dev, DMA_BIT_MASK(addr_width));
++	err = dma_set_mask_and_coherent(xdev->dev, DMA_BIT_MASK(addr_width));
++	if (err < 0) {
++		dev_err(xdev->dev, "DMA mask error %d\n", err);
++		goto disable_clks;
++	}
+ 
+ 	/* Initialize the DMA engine */
+ 	xdev->common.dev = &pdev->dev;
+-- 
+2.17.1
 
-If these tests are running in non-root memcg, is this cgroup v1 or v2?
-The memory counter and the 32 pages per cpu stock are only used on v2.
-For v1, there is no per-cpu stock and there is a separate tcpmem page
-counter and on v1 the network memory accounting has to be enabled
-explicitly i.e. not enabled by default.
-
-There is definite possibility of slowdown on v1 but let's first
-confirm the memcg setup used for this testing environment.
-
-Feng, can you please explain the memcg setup on these test machines
-and if the tests are run in root or non-root memcg?
-
-thanks,
-Shakeel
