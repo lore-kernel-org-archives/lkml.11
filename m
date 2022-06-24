@@ -2,145 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 440A5C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0210CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbiFXIlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 04:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
+        id S230179AbiFXImh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 04:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230071AbiFXIlr (ORCPT
+        with ESMTP id S229765AbiFXIme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 04:41:47 -0400
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-oln040092064077.outbound.protection.outlook.com [40.92.64.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AF374E51
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:41:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fUoL+vuGbDBwQfN8FuwEPBbKRxgaXcTT3dVZ/Ni3AeypwJ+GAa2PLMOnG6PwxF/iuSbcUMy1Bgy0g3O5CjTZ0dPy4QvRSlX+3yO8o2CiFDAZFVXIPKp6E4dTtca5aa65GCWn3EMKoxNfQJhXx3Lg1km1UAmGrKImNOJLRvKF6DTe52Rs6Ml1yzes0aUnohi2RDHEmUdE4T2V2fND2bpOCZzk9zg0e9OIM9JFj3AFBhwRy3Uy06BpAZRtHdR+p+W9CZeDRyG8xntbRh3ykkgriCHeHbfPv5MQhVvRe2GfRO0UQRlY1j1jecCWl1raattG+HcVMaanSG2cik3i6Rh9DQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OwkhBfdj1J/+6qfL9byOCZSYxvjObqiSep1lpNugb4Y=;
- b=LjH6xQmhuejYDtueIWH8/WErFJ8PFO1oQARfyLs2M/DLWOVN/QDPGcFA8Jd03wKlTjHGtK06DFy3pL6M6lEdjPf2jrg92LpPHRyr/E50jrtFE6WtKHmEzOx+1UJVigP1llFUhQkhrT8Z399VqKrvqnl8985Ohdx027M+3Fx3wiSP9VdZdIn6W0RQt/8lK28j3nNpbE4HbhmQIqBe8ynFSv/4BQRfa7yFzKFxNlQY6M1I2VgSD95qb+Bfnj/g7EAXTQ4OzN/c2+0o+aKI8qJVo42o8j5xT42BOB5K3ZmEzzPaN1oDTNqstNv1iQKer7nMoA4Ttfpyad4dBUDOiR/QCQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OwkhBfdj1J/+6qfL9byOCZSYxvjObqiSep1lpNugb4Y=;
- b=tlTZ+wEsprg3HFG8BFoAst8mNdHJ+pEVomOZ50xeMloOroGlHCbhBC3JrWwXF8tQvZu7QWPCulhjrUQimCtM+Vj5cwrok9Ud+iq9RPJU+V6PlCujKAI1K+WSTgWIiu0G5cr08Fk7GzpKfk5y2IhxHMaZVNNXa5CinAIi2S3pHaZ0Fuum+P500pzhHVDI4BqfqKcRGmknWldPDMg0jNx4zzbRMRzw5qyA3vCjLXwOXFVpwKeRmms+Xl1rspCRElA70uS/bVp3A6AHIyuqLxbRWTmivHsXiyzfQiyURTR6F5dqBt8EjDiS76FuesT/LHTPHWXdpkda0Ipfl+ZO+UaDoA==
-Received: from AM9P190MB1299.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:267::9)
- by AM8P190MB0962.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:1d2::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Fri, 24 Jun
- 2022 08:41:44 +0000
-Received: from AM9P190MB1299.EURP190.PROD.OUTLOOK.COM
- ([fe80::c0f4:a98e:332a:2397]) by AM9P190MB1299.EURP190.PROD.OUTLOOK.COM
- ([fe80::c0f4:a98e:332a:2397%5]) with mapi id 15.20.5353.022; Fri, 24 Jun 2022
- 08:41:44 +0000
-Date:   Fri, 24 Jun 2022 10:41:42 +0200
-From:   Felix Schlepper <f3sch.git@outlook.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 3/3] Staging: rtl8192e: Cleaning up error handling
-Message-ID: <AM9P190MB1299F18B717D3A5D3E6DE6D4A5B49@AM9P190MB1299.EURP190.PROD.OUTLOOK.COM>
-References: <cover.1655975970.git.f3sch.git@outlook.com>
- <13b32131cd00a1f0b8793657a24ada71240a8350.1655975970.git.f3sch.git@outlook.com>
- <CAHp75VcQcKaYUP_JsmTFOY-pbOR39+TMw=5ADbb2BRGoMijCMw@mail.gmail.com>
- <20220624052118.GT16517@kadam>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220624052118.GT16517@kadam>
-X-TMN:  [bIc0xoGaeR5LdBwXjs5hnb9/nnST5i7z]
-X-ClientProxiedBy: AM6PR01CA0065.eurprd01.prod.exchangelabs.com
- (2603:10a6:20b:e0::42) To AM9P190MB1299.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:267::9)
-X-Microsoft-Original-Message-ID: <20220624084142.jeyoux4dwofrytar@fermi>
+        Fri, 24 Jun 2022 04:42:34 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED40B766AD;
+        Fri, 24 Jun 2022 01:42:31 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id fd6so2445063edb.5;
+        Fri, 24 Jun 2022 01:42:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W/bNzydjLfS6FoWzLmCL3RjLpUy/CcRj6s94kxyuCxs=;
+        b=dTPHHSO6M3UC5M8AVVvieHM4AB6cdsU8zcydSDgycYuedEfXZZaRt++dvOrsBvTItV
+         ilvb1kuhxEMzvxmvSRhiXgiLncWv4pj2a6GWeu1ikelJY4w+RKvhhykPs/0qH1ee/WuK
+         azModRmICrq7ckO6FmLLIgOjwxTHO00AQ0w1puoMLfhV7ChNcQwFLghIHK7JMgTms8KE
+         EhyZWnfbCrGfa+ZupoW+FxABcTFDX/eFafA/DIlg4eltS6AN1vN/Fqf9rpsUCiCPOFqv
+         KXqdYBHWB4CfwGsx57WolI8w+d4uEPD04TYWw0BwbHX8UIufYJY44SKSMBVWfjOZpAMN
+         hqKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W/bNzydjLfS6FoWzLmCL3RjLpUy/CcRj6s94kxyuCxs=;
+        b=Mo9Ktv66fbaEyoqKMXlw+OP+je6Oa0yKzhzijI4i+rUL+V4o5Pw4qnNcM79I6LsWa0
+         U7dwsgyNTmG9x9FvlzJgy7VmvvGH5dbs4pYkVPrDiRr9cGc2VhE4n/TZsiooOoHYAbr1
+         Be42P51oMoGDicUi2aDOxUIEJuEVNwPFku05MOYJj9XB2fNic+YyMvaHM4UnBmYQJrqb
+         FzMcZj7aolxv1jUfrN7krz8nzzk5wqxdOtCFunKMO58bu036Nx3XiHBfzkdsGoyj1yCf
+         XMsvOupA8qcCrIP+XBECSkaqqkVgdxie4oYiQc7ZRHuCFsqiXWK+mxoq6gQDYAH9bzhR
+         LYWQ==
+X-Gm-Message-State: AJIora+Ho+SCmTot+MP8JouvkcSA9EVBsLJOrwelfThI/JBWHJGCesgJ
+        KVv7/8g2KWWGomBlqyp6LG4=
+X-Google-Smtp-Source: AGRyM1sNHCF89oZ3BAIwX//5qMMQTDe1k2bkioJtl3MyjPZ5NBbsj0VzPVD7jgiVzp5sXMWsONjExw==
+X-Received: by 2002:a05:6402:3298:b0:435:8145:e6db with SMTP id f24-20020a056402329800b004358145e6dbmr16072573eda.294.1656060150387;
+        Fri, 24 Jun 2022 01:42:30 -0700 (PDT)
+Received: from localhost.localdomain (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
+        by smtp.gmail.com with ESMTPSA id o12-20020a056402038c00b0043561e0c9adsm1434824edv.52.2022.06.24.01.42.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 01:42:28 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Chris Down <chris@chrisdown.name>,
+        Filipe Manana <fdmanana@suse.com>, Qu Wenruo <wqu@suse.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        Gabriel Niebler <gniebler@suse.com>,
+        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        David Sterba <dsterba@suse.cz>
+Subject: [RFC PATCH] btrfs: Replace kmap_atomic() with kmap_local_page()
+Date:   Fri, 24 Jun 2022 10:42:15 +0200
+Message-Id: <20220624084215.7287-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: af600962-43e0-4085-c251-08da55bd5dee
-X-MS-TrafficTypeDiagnostic: AM8P190MB0962:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uZiZz5DO2PTdFk/1kPfKttdw9oEKyie9Ay8pPGsbZT2arQvCgmSnEgaUmUEZRIZsIi8cHkD8d0Gnz05OXonED6TuwwUzqdfGFaWwNTemk8lIsgXJq7bVbXQ2K/HW6K5hehYXQwDgptBROxJCziu2CzEvyN4Cx6yKeVmf4X8anr7yvXo7+gM5Vl9g8h0TWnLODdjvKja8KItjptaWo8z7LouAElSQeMLIvunOAGemjsRJgXk33RKcRow1/8ekNeQPfaU6Ha4wLK7IJ6AJ5/HYDITPY0NnlRP7yt6HkIIVtWKZ8sevrw6RNrcL+xi2z9pxm4AVQHNbbx2ec4tBQ8XJATzXtU4A6ywxAnSet1nEp+mF7F0SVJPETcjPJk7F8uE9VAcQvFs8v2+qI1m0TD2FbjCFPjl5gRFy5a+XLRAYHu0NnquOyRFAh4creudiZ6X+TFQFkLSdIIbJQX0t2Y6TtfuU4rJXqURejZwRtrmPGct4p5833mGlSfMj6fvtZlIKdRNsw1MnyxZ+hrr9BK8N2kwtw8sKvVeTpj3PCMpc9LXbvBuBUT7A7J5JxTpaQh4/HSqKE3cO6ya2hZvKx9xHW1sqcthTd7rbaZysL0k77frS7hUMD+owH/PmIHXNuPbSp3LrsxFAna3A/mfaECg6iQ==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RzdCT1FrR1M4bVlaaWtnZ1V3b2pDbGxIbGREMnNHbGd0dlhIalJ2c0ZRd1pN?=
- =?utf-8?B?aDhkVk41M21UNndGUHZ1dnlnejVqUjBjbDhteTFLK3FHVisxR3pPcTdMMEc1?=
- =?utf-8?B?MUY1ejloL3A2VnZqQlpaRnQzSzZWYkRvSU9yK2d1WXNkNmFCTG44MW1CQlhw?=
- =?utf-8?B?c0xvVUc1SmVpZnh1UU91cGxsMmJvWHJQYzhudVR0TzFSaVpkem9zcWdwNEU5?=
- =?utf-8?B?YlArVC8vT1pGUkJ2cWJTK3pUQk5QZmgvT0ovUXBaZFg3MWdqWVpnZXpCM2xp?=
- =?utf-8?B?L1g4MTVRaUczcDlXeG1ZZ2oycGE2aXg0eXBUK1o5eCtLR3hDMDkyL01saUV2?=
- =?utf-8?B?UDNpR2dQTGk0V1NoZXBsN0NrTlRJVWZNb1J1ZWFKNzhuSnd0eTg3RGwzemdY?=
- =?utf-8?B?SkZGYkxoUzhTZ2hMY1NjcUpZZ0hZL0dUYjRYdDNjMU5qcDhzNkx5dEF6cWR5?=
- =?utf-8?B?Y3JVTDBPTndib0NoZEVHbExCMjI4Z1ZWSDJnU0VsMnVjTGRwTUZIVjVjOVdS?=
- =?utf-8?B?WHhyU3ZENGdSRzlESGx1dGhWcWpHQTAzYVNEQ0NKZmozbndwRWdxT2w2RE1I?=
- =?utf-8?B?Q2pFNkNWRTU2ZG5KbFlvWHlEbXdCeUlQOVV4TjY4UldrZ0Ixbi9MbkhLYjh4?=
- =?utf-8?B?anRRdEYzSGtQU1dkN0tuUlY1MG96MHl3UHlDUUcvbTRhQjYvL3ZvTlBNbkZU?=
- =?utf-8?B?L0lVSFI3U0I3RjFmanV0Y005TVJ5dFprRWFabTEzKzVsejM3WG44MHBlV3NS?=
- =?utf-8?B?cUdaMHcvYTFxVDJ5Z3NYR0ZlQUgrSTBUQ1V0Qy9yQUxmRlZhUDJYZjB5T2VP?=
- =?utf-8?B?bmRBTkFvczN5NEFqMjQ2YUllZGxsOVl6R3k0T2JVcnhFSWZVckluNkMyOTJt?=
- =?utf-8?B?T2pDVXRLSGtHTHRrRXVMNVpzYm11dTRweVJxZHRKUlZWS3huT3QxZDBSNjI1?=
- =?utf-8?B?TEZPTnFiZkNBRlNZWGlCOXBhREp4U2VxcUVBU0NRV3V0b0xRajB5UG1NK1pk?=
- =?utf-8?B?Smk5S0lZWGF6cThsL0F5S1lEY3VZTWdDWHdUOVlyakNSazJQZFdlU1Z3V3Zp?=
- =?utf-8?B?UDlQV0o1ckpRNTloTkw2Slc4cWI3MSt4UE53SitQZU5WSDlUY3ZYL0Z3cTkv?=
- =?utf-8?B?ZmhGQy9mYittQ0U4MVlLRGJTNnlPOFV2ajBCTFlPQ1hXYjJJWml2U0xDVmRz?=
- =?utf-8?B?UXZteUFIem8yQm9tb3dKMmVIRUpnRTM0TU45a0N0S0NHTFBXclRhSVZHWWN0?=
- =?utf-8?B?MHdlRDlJTzdjOWFwdFhIb0tzdGRRNW1BbzNIaEd4emJ1MCtDd2FIN1BGR3pr?=
- =?utf-8?B?TVRiYmVmYU1KcjRHWGFxS0hCemtxR2UxR1V5NmJpaHNtZVRDNTBhMVRIUjZT?=
- =?utf-8?B?a1IwSmhQcFQzRW1kbXNaUVI0OHJ4OVRXNFF2T1NnaXk0RUJ1aTBseEtMdmJX?=
- =?utf-8?B?ekRCdzZEaFR1S203dll3dGF1RkVBZGY2VTVZMEJsZjJLTENkL2ZwdlJOVk5Z?=
- =?utf-8?B?S2UzK3dyM0JiZUJVOW9mZmRxVVNyZ2JjbDhzME5waVNsQTN6ekwvZ0tDZUc3?=
- =?utf-8?B?OGNzc3kzUjNvMU5RYVI0K1lidXF0NnhIVTdzc0tTTEJRVXNhVDBBVU5iTmNU?=
- =?utf-8?B?Y0xLR2pxMUd2U0dTMzdRYUhxazRiR1B6czFmekpxenRrc2dMbm5ReDZrMVFl?=
- =?utf-8?B?TGJ3VFpmbzZjWm9EeHFEMkg4L1NQSERLVCsza2hwZU9sMDdHSXJtaytnPT0=?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af600962-43e0-4085-c251-08da55bd5dee
-X-MS-Exchange-CrossTenant-AuthSource: AM9P190MB1299.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 08:41:44.2592
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8P190MB0962
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24.06.2022 08:21, Dan Carpenter wrote:
-> On Thu, Jun 23, 2022 at 11:20:49PM +0200, Andy Shevchenko wrote:
-> > On Thu, Jun 23, 2022 at 10:44 PM Felix Schlepper <f3sch.git@outlook.com> wrote:
-> > >
-> > > Moved error handling to one common block.
-> > > This removes double checking if all txb->fragments[]
-> > > were initialized.
-> > > The original code worked fine, but this is cleaner.
-> >
-> > ...
-> >
-> > > +err_free:
-> > > +       while (--i >= 0)
-> >
-> >   while (i--)
-> >
-> > will suffice.
-> >
->
-> Either one is fine.  You prefer this format.  I prefer that other
-> format.  I told Felix he could use either format without expressing any
-> bias and he chose my format.  That means he loves me more.
->
-> regards,
-> dan carpenter
-Andy's advice is of course much appreciated but I prefer Dan's style <3.
+kmap_atomic() is being deprecated in favor of kmap_local_page() where it
+is feasible. With kmap_local_page() mappings are per thread, CPU local,
+and not globally visible.
 
-On another note, the thread is quite messy now, since all my previous
-failed attempts to send are now threaded to this one.
-How would I go about solving this? Sending another v5 version, the v4
-with [RESEND PATCH v4...] or does this even need any action on my part?
+As far as I can see, the kmap_atomic() calls in compression.c and in
+inode.c can be safely converted.
 
-Cheers
-Felix Schlepper
+Above all else, David Sterba has confirmed that "The context in
+check_compressed_csum is atomic [...]" and that "kmap_atomic() in inode.c
+[...] also can be replaced by kmap_local_page().".[1]
+
+Therefore, convert all kmap_atomic() calls currently still left in fs/btrfs
+to kmap_local_page().
+
+This is an RFC only because, testing with "./check -g quick" (xfstests) on
+a QEMU + KVM 32-bits VM with 4GB RAM and booting a kernel with HIGHMEM64GB
+enabled, outputs several errors. These errors seem to be exactly the same
+which are being output without this patch. It apparently seems that these
+changes don't introduce further errors, however I'd like to ask for
+comments before sending a "real" patch.
+
+With this patch, there are no more call sites for kmap() and kmap_atomic()
+in fs/btrfs.
+
+[1] https://lore.kernel.org/linux-btrfs/20220601132545.GM20633@twin.jikos.cz/
+
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Suggested-by: David Sterba <dsterba@suse.cz>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+ fs/btrfs/compression.c |  4 ++--
+ fs/btrfs/inode.c       | 12 ++++++------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
+index f4564f32f6d9..b49719ae45b4 100644
+--- a/fs/btrfs/compression.c
++++ b/fs/btrfs/compression.c
+@@ -175,10 +175,10 @@ static int check_compressed_csum(struct btrfs_inode *inode, struct bio *bio,
+ 		/* Hash through the page sector by sector */
+ 		for (pg_offset = 0; pg_offset < bytes_left;
+ 		     pg_offset += sectorsize) {
+-			kaddr = kmap_atomic(page);
++			kaddr = kmap_local_page(page);
+ 			crypto_shash_digest(shash, kaddr + pg_offset,
+ 					    sectorsize, csum);
+-			kunmap_atomic(kaddr);
++			kunmap_local(kaddr);
+ 
+ 			if (memcmp(&csum, cb_sum, csum_size) != 0) {
+ 				btrfs_print_data_csum_error(inode, disk_start,
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 7d84d57a0653..5fb4f6e929e5 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -332,9 +332,9 @@ static int insert_inline_extent(struct btrfs_trans_handle *trans,
+ 			cur_size = min_t(unsigned long, compressed_size,
+ 				       PAGE_SIZE);
+ 
+-			kaddr = kmap_atomic(cpage);
++			kaddr = kmap_local_page(cpage);
+ 			write_extent_buffer(leaf, kaddr, ptr, cur_size);
+-			kunmap_atomic(kaddr);
++			kunmap_local(kaddr);
+ 
+ 			i++;
+ 			ptr += cur_size;
+@@ -345,9 +345,9 @@ static int insert_inline_extent(struct btrfs_trans_handle *trans,
+ 	} else {
+ 		page = find_get_page(inode->vfs_inode.i_mapping, 0);
+ 		btrfs_set_file_extent_compression(leaf, ei, 0);
+-		kaddr = kmap_atomic(page);
++		kaddr = kmap_local_page(page);
+ 		write_extent_buffer(leaf, kaddr, ptr, size);
+-		kunmap_atomic(kaddr);
++		kunmap_local(kaddr);
+ 		put_page(page);
+ 	}
+ 	btrfs_mark_buffer_dirty(leaf);
+@@ -3355,11 +3355,11 @@ static int check_data_csum(struct inode *inode, struct btrfs_bio *bbio,
+ 	offset_sectors = bio_offset >> fs_info->sectorsize_bits;
+ 	csum_expected = ((u8 *)bbio->csum) + offset_sectors * csum_size;
+ 
+-	kaddr = kmap_atomic(page);
++	kaddr = kmap_local_page(page);
+ 	shash->tfm = fs_info->csum_shash;
+ 
+ 	crypto_shash_digest(shash, kaddr + pgoff, len, csum);
+-	kunmap_atomic(kaddr);
++	kunmap_local(kaddr);
+ 
+ 	if (memcmp(csum, csum_expected, csum_size))
+ 		goto zeroit;
+-- 
+2.36.1
+
