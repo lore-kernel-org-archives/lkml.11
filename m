@@ -2,149 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A68C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 02:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE49CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 02:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbiFXCdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 22:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54968 "EHLO
+        id S230418AbiFXCf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 22:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiFXCdh (ORCPT
+        with ESMTP id S229499AbiFXCf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 22:33:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BCB5000D;
-        Thu, 23 Jun 2022 19:33:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72066B825F6;
-        Fri, 24 Jun 2022 02:33:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F4C3C385A2;
-        Fri, 24 Jun 2022 02:33:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656038010;
-        bh=a4iNX4jJ+gnqj1zIP5Wj5jnZb07NsrcpoyCEobpZ5Yo=;
-        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
-        b=QfGE9onBynAV5WJCdKW0ZlWgQ80YMC52LULQ97xE//WWZo6QwcmuJqlkH4tEuTc3M
-         nsom2WtlMWAC/HeruQEgj/mPiVNpRzy3j47ZGbj4YsHROf4iPsefb8eFOVgJBGvXAN
-         h+LTRBYRPcbR/g4J4ertVwXtmcrqpxsnGj811zg00Hjw/+GnfoCkvhAbEZmwRHhyKx
-         6iL1wm75mi0PBIipCwsZY6N/2NEFNL7APn/Ni5MZSg3iyBd7PHXho0UTNTc9vwanFK
-         dz5N9yLow9VNSqhpYoog9UHX5P//5jPEe327D/gl3ApN3+5/5lXH8Easc1xJgsrzEq
-         khPYJ9cP65xXg==
-Received: by mail-qv1-f54.google.com with SMTP id cu16so2776950qvb.7;
-        Thu, 23 Jun 2022 19:33:30 -0700 (PDT)
-X-Gm-Message-State: AJIora+XIlYnuOa49SwcEBBHGj7GJwSMZ329/4UIG2NdLOnAwvyilrBG
-        xWjx1b3k0LeI8MvQfRawLz9vQCvJe5KPGm+UtYc=
-X-Google-Smtp-Source: AGRyM1uFq4naYNdLJNqLP+TvQkfc5iyrf/CltRak4zEUTFYg/Sq8LP4x3FXpp3cKVwH24M/PCK+tvgAW529tJ0DGf5E=
-X-Received: by 2002:ad4:5dc5:0:b0:470:93c8:e908 with SMTP id
- m5-20020ad45dc5000000b0047093c8e908mr1548301qvh.115.1656038009063; Thu, 23
- Jun 2022 19:33:29 -0700 (PDT)
+        Thu, 23 Jun 2022 22:35:57 -0400
+X-Greylist: delayed 915 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Jun 2022 19:35:55 PDT
+Received: from m13111.mail.163.com (m13111.mail.163.com [220.181.13.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7345C51E5A;
+        Thu, 23 Jun 2022 19:35:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=o9J+p
+        ZBtqnGDTrCmXSeP0lYYcW0DNpeCNkrGVu9xKKU=; b=g+1HTF+ArET0P9cR1mxhO
+        278o4PURNhDsGVAzQin9LWQ7pzvJAf07oSizb/Yff9+lddaQiB3itkx/eDYAqWGP
+        Fg1pilxJvAkzEt+doA0L0EfeoZJdVbVbLHoviWEhmafl6X+5VWOIneyUoTGsj7Xc
+        M1RnthJFTpD5r3XMLqzCMY=
+Received: from 15815827059$163.com ( [116.128.244.169] ) by
+ ajax-webmail-wmsvr111 (Coremail) ; Fri, 24 Jun 2022 10:20:29 +0800 (CST)
+X-Originating-IP: [116.128.244.169]
+Date:   Fri, 24 Jun 2022 10:20:29 +0800 (CST)
+From:   huhai <15815827059@163.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     "Len Brown" <lenb@kernel.org>,
+        "ACPI Devel Maling List" <linux-acpi@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        huhai <huhai@kylinos.cn>
+Subject: Re:Re: [PATCH] ACPI: LPSS: Fix missing check in
+ register_device_clock
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <CAJZ5v0jC+B7K0uuE=wLi1hk+WATn5B8sSu6abSO00rYJ4ofRFw@mail.gmail.com>
+References: <20220623132127.1248462-1-15815827059@163.com>
+ <CAJZ5v0jC+B7K0uuE=wLi1hk+WATn5B8sSu6abSO00rYJ4ofRFw@mail.gmail.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Received: by 2002:a05:6214:2a86:0:0:0:0 with HTTP; Thu, 23 Jun 2022 19:33:28
- -0700 (PDT)
-In-Reply-To: <YrSeAGmk4GZndtdn@sol.localdomain>
-References: <20220623033635.973929-1-xu.xin16@zte.com.cn> <20220623094956.977053-1-xu.xin16@zte.com.cn>
- <YrSeAGmk4GZndtdn@sol.localdomain>
-From:   Namjae Jeon <linkinjeon@kernel.org>
-Date:   Fri, 24 Jun 2022 11:33:28 +0900
-X-Gmail-Original-Message-ID: <CAKYAXd8qoLKbWGX7omYUfarSugRnose8X8o3Zhb1XctiUtamQg@mail.gmail.com>
-Message-ID: <CAKYAXd8qoLKbWGX7omYUfarSugRnose8X8o3Zhb1XctiUtamQg@mail.gmail.com>
-Subject: Re: [PATCH v2] fs/ntfs: fix BUG_ON of ntfs_read_block()
-To:     Eric Biggers <ebiggers@kernel.org>, xu.xin16@zte.com.cn
-Cc:     cgel.zte@gmail.com, anton@tuxera.com,
-        linux-ntfs-dev@lists.sourceforge.net, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>,
-        syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com,
-        Songyi Zhang <zhang.songyi@zte.com.cn>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Jiang Xuexin <jiang.xuexin@zte.com.cn>,
-        Zhang wenya <zhang.wenya1@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <18367cc4.16aa.1819382c273.Coremail.15815827059@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: b8GowACnr9ttH7VicrIgAA--.27406W
+X-CM-SenderInfo: rprvmiivyslimvzbiqqrwthudrp/1tbiwAcqhVXlvsh9FAABsG
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-2022-06-24 2:08 GMT+09:00, Eric Biggers <ebiggers@kernel.org>:
-> On Thu, Jun 23, 2022 at 09:49:56AM +0000, cgel.zte@gmail.com wrote:
->> From: xu xin <xu.xin16@zte.com.cn>
->>
->> As the bug description at
->> https://lore.kernel.org/lkml/20220623033635.973929-1-xu.xin16@zte.com.cn/
->> attckers can use this bug to crash the system.
->>
->> So to avoid panic, remove the BUG_ON, and use ntfs_warning to output a
->> warning to the syslog and return instead until someone really solve
->> the problem.
->>
->> Cc: stable@vger.kernel.org
->> Reported-by: Zeal Robot <zealci@zte.com.cn>
->> Reported-by: syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com
->> Reviewed-by: Songyi Zhang <zhang.songyi@zte.com.cn>
->> Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
->> Reviewed-by: Jiang Xuexin<jiang.xuexin@zte.com.cn>
->> Reviewed-by: Zhang wenya<zhang.wenya1@zte.com.cn>
->> Signed-off-by: xu xin <xu.xin16@zte.com.cn>
->> ---
->>
->> Change for v2:
->>  - Use ntfs_warning instead of WARN().
->>  - Add the tag Cc: stable@vger.kernel.org.
->> ---
->>  fs/ntfs/aops.c | 7 ++++++-
->>  1 file changed, 6 insertions(+), 1 deletion(-)
->>
->> diff --git a/fs/ntfs/aops.c b/fs/ntfs/aops.c
->> index 5f4fb6ca6f2e..84d68efb4ace 100644
->> --- a/fs/ntfs/aops.c
->> +++ b/fs/ntfs/aops.c
->> @@ -183,7 +183,12 @@ static int ntfs_read_block(struct page *page)
->>  	vol = ni->vol;
->>
->>  	/* $MFT/$DATA must have its complete runlist in memory at all times. */
->> -	BUG_ON(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni));
->> +	if (unlikely(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni))) {
->> +		ntfs_warning(vi->i_sb, "Error because ni->runlist.rl, ni->mft_no, "
->> +				"and NInoAttr(ni) is null.");
->> +		unlock_page(page);
->> +		return -EINVAL;
->> +	}
->
-> A better warning message that doesn't rely on implementation details
-> (struct
-> field and macro names) would be "Runlist of $MFT/$DATA is not cached".
-> Also,
-> why does this situation happen in the first place?  Is there a way to
-> prevent
-> this situation in the first place?
-
-ntfs_mapping_pairs_decompress() should return error pointer instead of NULL.
-Callers is checking error value using IS_ERR(). and the mapping pairs
-array of @MFT entry is empty, I think it's corrupted, it should cause
-mount failure.
-
-I haven't checked if this patch fix the problem. Xu, Can you check it ?
-
-diff --git a/fs/ntfs/runlist.c b/fs/ntfs/runlist.c
-index 97932fb5179c..31263fe0772f 100644
---- a/fs/ntfs/runlist.c
-+++ b/fs/ntfs/runlist.c
-@@ -766,8 +766,11 @@ runlist_element
-*ntfs_mapping_pairs_decompress(const ntfs_volume *vol,
-                return ERR_PTR(-EIO);
-        }
-        /* If the mapping pairs array is valid but empty, nothing to do. */
--       if (!vcn && !*buf)
-+       if (!vcn && !*buf) {
-+               if (!old_rl)
-+                       return ERR_PTR(-EIO);
-                return old_rl;
-+       }
-        /* Current position in runlist array. */
-        rlpos = 0;
-        /* Allocate first page and set current runlist size to one page. */
-
->
-> - Eric
->
+CkF0IDIwMjItMDYtMjMgMjE6MjU6NTUsICJSYWZhZWwgSi4gV3lzb2NraSIgPHJhZmFlbEBrZXJu
+ZWwub3JnPiB3cm90ZToKPk9uIFRodSwgSnVuIDIzLCAyMDIyIGF0IDM6MjEgUE0gaHVoYWkgPDE1
+ODE1ODI3MDU5QDE2My5jb20+IHdyb3RlOgo+Pgo+PiBGcm9tOiBodWhhaSA8aHVoYWlAa3lsaW5v
+cy5jbj4KPj4KPj4gcmVnaXN0ZXJfZGV2aWNlX2Nsb2NrKCkgbWlzc2VzIGEgY2hlY2sgZm9yIHBs
+YXRmb3JtX2RldmljZV9yZWdpc3Rlcl9zaW1wbGUoKS4KPj4gQWRkIGEgY2hlY2sgdG8gZml4IGl0
+Lgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBodWhhaSA8aHVoYWlAa3lsaW5vcy5jbj4KPj4gLS0tCj4+
+ICBkcml2ZXJzL2FjcGkvYWNwaV9scHNzLmMgfCAzICsrKwo+PiAgMSBmaWxlIGNoYW5nZWQsIDMg
+aW5zZXJ0aW9ucygrKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9hY3BpL2FjcGlfbHBzcy5j
+IGIvZHJpdmVycy9hY3BpL2FjcGlfbHBzcy5jCj4+IGluZGV4IGZiZTA3NTYyNTljNS4uYzRkNGQy
+MTM5MWQ3IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2FjcGkvYWNwaV9scHNzLmMKPj4gKysrIGIv
+ZHJpdmVycy9hY3BpL2FjcGlfbHBzcy5jCj4+IEBAIC00MjIsNiArNDIyLDkgQEAgc3RhdGljIGlu
+dCByZWdpc3Rlcl9kZXZpY2VfY2xvY2soc3RydWN0IGFjcGlfZGV2aWNlICphZGV2LAo+PiAgICAg
+ICAgIGlmICghbHBzc19jbGtfZGV2KQo+PiAgICAgICAgICAgICAgICAgbHB0X3JlZ2lzdGVyX2Ns
+b2NrX2RldmljZSgpOwo+Pgo+PiArICAgICAgIGlmIChJU19FUlIobHBzc19jbGtfZGV2KSkKPj4g
+KyAgICAgICAgICAgICAgIHJldHVybiBQVFJfRVJSKGxwc3NfY2xrX2Rldik7Cj4+ICsKPgo+V2h5
+IG5vdCB1c2UgSVNfRVJSX09SX05VTEwoKSBpbnN0ZWFkPwoKcGxhdGZvcm1fZGV2aWNlX3JlZ2lz
+dGVyX3NpbXBsZSgpIG5ldmVyIHJldHVybnMgTlVMTCBhcyBpdCBkZWNsYXJlZCBiZWxsb3dpbmej
+rApzbyB1c2UgSVNfRVJSKCkgdG8gdmFsaWRhdGUgdGhlIHJldHVybiB2YWx1ZSBzaG91bGQgYmUg
+ZW5vdWdoLgoKLyoqCiAqIHBsYXRmb3JtX2RldmljZV9yZWdpc3Rlcl9zaW1wbGUgLSBhZGQgYSBw
+bGF0Zm9ybS1sZXZlbCBkZXZpY2UgYW5kIGl0cyByZXNvdXJjZXMKICogLi4uCiAqIFJldHVybnMg
+JnN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgcG9pbnRlciBvbiBzdWNjZXNzLCBvciBFUlJfUFRSKCkg
+b24gZXJyb3IuCiAqLwoKVGhhbmtzLgoKPgo+PiAgICAgICAgIGNsa19kYXRhID0gcGxhdGZvcm1f
+Z2V0X2RydmRhdGEobHBzc19jbGtfZGV2KTsKPj4gICAgICAgICBpZiAoIWNsa19kYXRhKQo+PiAg
+ICAgICAgICAgICAgICAgcmV0dXJuIC1FTk9ERVY7Cj4+IC0tCj4+IDIuMjcuMAo+Pgo+Pgo+PiBO
+byB2aXJ1cyBmb3VuZAo+PiAgICAgICAgICAgICAgICAgQ2hlY2tlZCBieSBIaWxsc3RvbmUgTmV0
+d29yayBBbnRpVmlydXMKPj4K
