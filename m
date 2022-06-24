@@ -2,108 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2439EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:59:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232070AbiFXM7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 08:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36672 "EHLO
+        id S232021AbiFXM7n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 08:59:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232021AbiFXM7Q (ORCPT
+        with ESMTP id S232055AbiFXM7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 08:59:16 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9B152525
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 05:59:14 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4itu-00076I-Du; Fri, 24 Jun 2022 14:59:06 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4itr-002Qlj-07; Fri, 24 Jun 2022 14:59:04 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4itr-00H4PX-Lw; Fri, 24 Jun 2022 14:59:03 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next v1 1/3] net: dsa: add get_pause_stats support
-Date:   Fri, 24 Jun 2022 14:59:00 +0200
-Message-Id: <20220624125902.4068436-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Fri, 24 Jun 2022 08:59:41 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65577527FD;
+        Fri, 24 Jun 2022 05:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=vMOXdBy5q0jneD6eagGKUyxYDxjR9s5ISqYNMfmQSLs=; b=e9VIrFRSAoJIFu8bsXbrZyRRTc
+        i0XRBruZXdofziujw65WQJCUaxKA2cynWytHcpHtsukfz1JLZwagaQIlgR56v/CWe7tnG+vbzzotD
+        0aMsikP80AhoEI7hiEUBajzmFOTf6jRTzhz994vFGETTgH5J0VSUNccEo+LT5qKkFVTBkDF/d83XA
+        wsvpi9S/qpTTwNJHnKJiEhFWx7eZME93DJB04Lw3dpSTOLZBg94XsXvfPj21CDJ3WMifj55kxHDMB
+        edLRo7xTly67AzTxZqdwl7sFY2hMlu7c0BloaHDnS/2dH5QsuRAp8ZN8P40Byj5mO+b6lZNNwoQhT
+        41RxiRww==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o4iuR-002GrT-UF; Fri, 24 Jun 2022 12:59:39 +0000
+Date:   Fri, 24 Jun 2022 05:59:39 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Joerg Roedel <joro@8bytes.org>
+Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        iommu@lists.linux.dev, Joerg Roedel <jroedel@suse.de>,
+        Christoph Hellwig <hch@infradead.org>, stable@vger.kernel.org
+Subject: Re: [PATCH v2] MAINTAINERS: Add new IOMMU development mailing list
+Message-ID: <YrW1Oy0ojM5pXREB@infradead.org>
+References: <20220624125139.412-1-joro@8bytes.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220624125139.412-1-joro@8bytes.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for pause stats
+On Fri, Jun 24, 2022 at 02:51:39PM +0200, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> The IOMMU mailing list will move from lists.linux-foundation.org to
+> lists.linux.dev. The hard switch of the archive will happen on July
+> 5th, but add the new list now already so that people start using the
+> list when sending patches. After July 5th the old list will disappear.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- include/net/dsa.h |  2 ++
- net/dsa/slave.c   | 11 +++++++++++
- 2 files changed, 13 insertions(+)
-
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 14f07275852b..c8d7696cb2bf 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -890,6 +890,8 @@ struct dsa_switch_ops {
- 				      struct ethtool_eth_ctrl_stats *ctrl_stats);
- 	void	(*get_stats64)(struct dsa_switch *ds, int port,
- 				   struct rtnl_link_stats64 *s);
-+	void	(*get_pause_stats)(struct dsa_switch *ds, int port,
-+				   struct ethtool_pause_stats *pause_stats);
- 	void	(*self_test)(struct dsa_switch *ds, int port,
- 			     struct ethtool_test *etest, u64 *data);
- 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 2e1ac638d135..b2710ee46644 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1097,6 +1097,16 @@ static int dsa_slave_set_link_ksettings(struct net_device *dev,
- 	return phylink_ethtool_ksettings_set(dp->pl, cmd);
- }
- 
-+static void dsa_slave_get_pause_stats(struct net_device *dev,
-+				  struct ethtool_pause_stats *pause_stats)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_switch *ds = dp->ds;
-+
-+	if (ds->ops->get_pause_stats)
-+		ds->ops->get_pause_stats(ds, dp->index, pause_stats);
-+}
-+
- static void dsa_slave_get_pauseparam(struct net_device *dev,
- 				     struct ethtool_pauseparam *pause)
- {
-@@ -2087,6 +2097,7 @@ static const struct ethtool_ops dsa_slave_ethtool_ops = {
- 	.get_eee		= dsa_slave_get_eee,
- 	.get_link_ksettings	= dsa_slave_get_link_ksettings,
- 	.set_link_ksettings	= dsa_slave_set_link_ksettings,
-+	.get_pause_stats	= dsa_slave_get_pause_stats,
- 	.get_pauseparam		= dsa_slave_get_pauseparam,
- 	.set_pauseparam		= dsa_slave_set_pauseparam,
- 	.get_rxnfc		= dsa_slave_get_rxnfc,
--- 
-2.30.2
-
+Shouldn't this also remove the old list given it has only a few days
+to live?
