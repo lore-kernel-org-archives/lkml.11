@@ -2,265 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BF6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D599CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbiFXIvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 04:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
+        id S229768AbiFXIwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 04:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231778AbiFXIvS (ORCPT
+        with ESMTP id S229745AbiFXIwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 04:51:18 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FE4792B3;
-        Fri, 24 Jun 2022 01:51:08 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id n15so3596209qvh.12;
-        Fri, 24 Jun 2022 01:51:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iOkJMguCySKiYgS3jaAKrTeCcltfp+Ak4u2IsO3Ufzc=;
-        b=OS9y9gyqqlzBUxmT5C5qu5Bzoov0SFyiZghT1n2aZ6NXxe47VHQ2fxNtwNcSSNMSZc
-         TLujETxvVIzU7ZaBySBQKfS2B3GmzGsJpW+Z/sx4QadJF5AwweatiW25cA3VyBl1kw4f
-         zNMjb8JP1KkoOOfGDi+DB+JbPmAsmUF0R5Cg4eJMCW8YAAbZeXrYNGyTbemUqRJaAAFR
-         B4D5wo0c2JB38NP4yV7DgMhzIXzGj3A0YM3utDucRIkmA41mENTxYzywcYEfuIi3CwKS
-         uFKzXfk35U42oPGU4YEOm7oi/UkPjeMRqkd7aaof02RHFSuDe0GGxkrSWBYWdvd+9VaU
-         83Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iOkJMguCySKiYgS3jaAKrTeCcltfp+Ak4u2IsO3Ufzc=;
-        b=tS3v0/k+bOIyt2aTinm1L4dITVjEQHa2mHXV8s11+T2EenNTNsiyLfJJwm9/U6HrtL
-         UTH6ZRoZ/GQPTddG1QEVz18TcZOVOQLjQfUU78GxpboLB8dsgfOnGNScwQABtJPXTft4
-         RDb4vq/f30JR4Cn2ut1vi1txC3/etekoiFFnv+Njj1QxNSh+V0uKjVAgOU9KvuGcL/uT
-         NW+TrfKhilMJOiREUqnUL4Lahud8UdTG1ZY2sSYddqp1FaEGK++F2Tzk/Ju5U2AggR2g
-         etdqbDGvUI7BJp6Qi1h6U25GZT+ACLHlM+1H+ywm3jrRTgY2W3YThaaFkgsl8KvvyCKL
-         nTIg==
-X-Gm-Message-State: AJIora+HzIpDg+UCgqdD3hInz8ffIGPyr2R3y85VxN4FSdZeGS+QeBia
-        qt4k3BvbeDyAuYHPjeUBCTHRIca4H4zLgEcAhSY=
-X-Google-Smtp-Source: AGRyM1uiyXBd99GGaJBVR8C85XZmoBzCNHgrHQ/Wwsu4HOvyYcJpTRur+mwswijaZ+WAJ/rBF4BpXrIwIkgbPjNMzeg=
-X-Received: by 2002:a05:6214:2129:b0:470:396d:19c4 with SMTP id
- r9-20020a056214212900b00470396d19c4mr24485321qvc.34.1656060667403; Fri, 24
- Jun 2022 01:51:07 -0700 (PDT)
+        Fri, 24 Jun 2022 04:52:33 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D515D6E7AA
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:52:31 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R951e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VHGcxXq_1656060747;
+Received: from 30.97.49.29(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VHGcxXq_1656060747)
+          by smtp.aliyun-inc.com;
+          Fri, 24 Jun 2022 16:52:28 +0800
+Message-ID: <ed072ac6-cc70-9070-4e9d-281b9b60c9a6@linux.alibaba.com>
+Date:   Fri, 24 Jun 2022 16:52:34 +0800
 MIME-Version: 1.0
-References: <20220623182542.1116677-1-robimarko@gmail.com> <20220624010103.GA23758@quicinc.com>
-In-Reply-To: <20220624010103.GA23758@quicinc.com>
-From:   Robert Marko <robimarko@gmail.com>
-Date:   Fri, 24 Jun 2022 10:50:56 +0200
-Message-ID: <CAOX2RU7yKuV4i_9YRs9fx2DTTvAndWFFw3cYtQ3qFk9m1zZJVg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: firmware: qcom-scm: convert to dtschema
-To:     Guru Das Srinagesh <quic_gurus@quicinc.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH v2 2/3] mm: Add PUD level pagetable account
+To:     Matthew Wilcox <willy@infradead.org>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
+ <f7b2a6f6f5dfecbcac07fa3e187f10860c3a39ee.1655887440.git.baolin.wang@linux.alibaba.com>
+ <YrMpZlQHMuCy06/m@linux.ibm.com> <YrRqhj3p/KKU73f1@casper.infradead.org>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <YrRqhj3p/KKU73f1@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 24 Jun 2022 at 03:01, Guru Das Srinagesh <quic_gurus@quicinc.com> wrote:
->
-> On Thu, Jun 23, 2022 at 08:25:42PM +0200, Robert Marko wrote:
-> > Convert bindings for Qualcomm SCM to dtschema.
-> >
-> > SoC compatibles that were used, but not documented were added.
-> >
-> > Signed-off-by: Robert Marko <robimarko@gmail.com>
-> > ---
-> >  .../devicetree/bindings/firmware/qcom,scm.txt |  57 --------
-> >  .../bindings/firmware/qcom,scm.yaml           | 124 ++++++++++++++++++
-> >  2 files changed, 124 insertions(+), 57 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/firmware/qcom,scm.txt
-> >  create mode 100644 Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/firmware/qcom,scm.txt b/Documentation/devicetree/bindings/firmware/qcom,scm.txt
-> > deleted file mode 100644
-> > index 0f4e5ab26477..000000000000
-> > --- a/Documentation/devicetree/bindings/firmware/qcom,scm.txt
-> > +++ /dev/null
-> > @@ -1,57 +0,0 @@
-> > -QCOM Secure Channel Manager (SCM)
-> > -
-> > -Qualcomm processors include an interface to communicate to the secure firmware.
-> > -This interface allows for clients to request different types of actions.  These
-> > -can include CPU power up/down, HDCP requests, loading of firmware, and other
-> > -assorted actions.
-> > -
-> > -Required properties:
-> > -- compatible: must contain one of the following:
-> > - * "qcom,scm-apq8064"
-> > - * "qcom,scm-apq8084"
-> > - * "qcom,scm-ipq4019"
-> > - * "qcom,scm-ipq806x"
-> > - * "qcom,scm-ipq8074"
-> > - * "qcom,scm-mdm9607"
-> > - * "qcom,scm-msm8226"
-> > - * "qcom,scm-msm8660"
-> > - * "qcom,scm-msm8916"
-> > - * "qcom,scm-msm8953"
-> > - * "qcom,scm-msm8960"
-> > - * "qcom,scm-msm8974"
-> > - * "qcom,scm-msm8976"
-> > - * "qcom,scm-msm8994"
-> > - * "qcom,scm-msm8996"
-> > - * "qcom,scm-msm8998"
-> > - * "qcom,scm-sc7180"
-> > - * "qcom,scm-sc7280"
-> > - * "qcom,scm-sdm845"
-> > - * "qcom,scm-sdx55"
-> > - * "qcom,scm-sm6350"
-> > - * "qcom,scm-sm8150"
-> > - * "qcom,scm-sm8250"
-> > - * "qcom,scm-sm8350"
-> > - * "qcom,scm-sm8450"
-> > - and:
-> > - * "qcom,scm"
-> > -- clocks: Specifies clocks needed by the SCM interface, if any:
-> > - * core clock required for "qcom,scm-apq8064", "qcom,scm-msm8660" and
-> > -   "qcom,scm-msm8960"
-> > - * core, iface and bus clocks required for "qcom,scm-apq8084",
-> > -   "qcom,scm-msm8916", "qcom,scm-msm8953", "qcom,scm-msm8974" and "qcom,scm-msm8976"
-> > -- clock-names: Must contain "core" for the core clock, "iface" for the interface
-> > -  clock and "bus" for the bus clock per the requirements of the compatible.
-> > -- qcom,dload-mode: phandle to the TCSR hardware block and offset of the
-> > -                download mode control register (optional)
-> > -
-> > -Example for MSM8916:
-> > -
-> > -     firmware {
-> > -             scm {
-> > -                     compatible = "qcom,msm8916", "qcom,scm";
-> > -                     clocks = <&gcc GCC_CRYPTO_CLK> ,
-> > -                              <&gcc GCC_CRYPTO_AXI_CLK>,
-> > -                              <&gcc GCC_CRYPTO_AHB_CLK>;
-> > -                     clock-names = "core", "bus", "iface";
-> > -             };
-> > -     };
-> > diff --git a/Documentation/devicetree/bindings/firmware/qcom,scm.yaml b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-> > new file mode 100644
-> > index 000000000000..7dd7beb39846
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-> > @@ -0,0 +1,124 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/firmware/qcom,scm.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: QCOM Secure Channel Manager (SCM) bindings
-> > +
-> > +maintainers:
-> > +  - Robert Marko <robimarko@gmail.com>
->
-> I'd like to volunteer my name as well, if that's okay:
->
-> Guru Das Srinagesh <quic_gurus@quicinc.com>
 
-Hi,
-Sure, will add you to v2.
 
->
-> > +
-> > +description: |
-> ...
-> > +
-> > +  '#reset-cells':
-> > +    const: 1
->
-> This isn't part of the original file - could you please explain why this is
-> being added?
+On 6/23/2022 9:28 PM, Matthew Wilcox wrote:
+> On Wed, Jun 22, 2022 at 09:38:30AM -0500, Mike Rapoport wrote:
+>> On Wed, Jun 22, 2022 at 04:58:53PM +0800, Baolin Wang wrote:
+>>> +++ b/arch/loongarch/include/asm/pgalloc.h
+>>> @@ -89,10 +89,15 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
+>>>   static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long address)
+>>>   {
+>>>   	pud_t *pud;
+>>> +	struct page *pg;
+>>
+>> 	struct page *page;
+>>
+>> looks better IMO.
+>>
+>>> +
+>>> +	pg = alloc_pages(GFP_KERNEL & ~__GFP_HIGHMEM, PUD_ORDER);
+> 
+> GFP_KERNEL does not include __GFP_HIGHMEM, so you can just use
+> GFP_KERNEL here.
 
-Yes, its not part of the original file, however I noticed that a lot of SCM
-nodes were adding #reset-cells, and upon looking at the SCM code its
-clear that it is being registered as a reset controller so #reset-cells are
-appropriate.
+Yes. Thanks.
 
-However, since its not really being used via phandles #reset-cells did
-not really matter, hence why I did not add them to be required,
-this is something that DT guys can probably clarify.
+> 
+>>> +	if (!pg)
+>>> +		return NULL;
+>>>   
+>>> -	pud = (pud_t *) __get_free_pages(GFP_KERNEL, PUD_ORDER);
+>>> -	if (pud)
+>>> -		pud_init((unsigned long)pud, (unsigned long)invalid_pmd_table);
+>>> +	pgtable_set_and_inc(pg);
+>>> +	pud = (pud_t *)page_address(pg);
+>>
+>> I don't think __get_free_pages() should be replaced with alloc_pages()
+>> here, just call pgtable_set_and_inc() with virt_to_page(pud).
+> 
+> I don't understand why you want that.  Take a look at the implementation
+> of __get_free_pages().  Converting back to a struct page after calling
+> that seems like a real waste of time to me.
 
-Regards,
-Robert
->
-> > +
-> > +  qcom,dload-mode:
-> > +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> > +    description:
-> > +      Phandle to the TCSR hardware block and offset of the download mode control register
-> > +
-> > +required:
-> > +  - compatible
-> > +
-> > +allOf:
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - qcom,scm-apq8064
-> > +              - qcom,scm-msm8660
-> > +              - qcom,scm-msm8960
-> > +    then:
-> > +      properties:
-> > +        clocks:
-> > +          items:
-> > +            - description: SCM core clock
-> > +        clock-names:
-> > +          items:
-> > +            - const: core
-> > +
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - qcom,scm-apq8084
-> > +              - qcom,scm-mdm9607
-> > +              - qcom,scm-msm8916
-> > +              - qcom,scm-msm8953
-> > +              - qcom,scm-msm8974
-> > +              - qcom,scm-msm8976
-> > +    then:
-> > +      properties:
-> > +        clocks:
-> > +          items:
-> > +            - description: SCM core clock
-> > +            - description: SCM bus clock
-> > +            - description: SCM interface clock
-> > +        clock-names:
-> > +          items:
-> > +            - const: core
-> > +            - const: bus
-> > +            - const: iface
->
-> Thanks, I had this YAML conversion patch done locally, but couldn't figure out
-> how to represent the above logic in YAML. Thank you for this patch.
->
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/clock/qcom,gcc-msm8916.h>
-> > +    firmware {
-> > +      scm {
-> > +        compatible = "qcom,scm-msm8916", "qcom,scm";
-> > +
-> > +        clocks = <&gcc GCC_CRYPTO_CLK>,
-> > +                 <&gcc GCC_CRYPTO_AXI_CLK>,
-> > +                 <&gcc GCC_CRYPTO_AHB_CLK>;
-> > +        clock-names = "core", "bus", "iface";
-> > +        qcom,dload-mode = <&tcsr 0x6100>;
-> > +      };
-> > +    };
-> > --
-> > 2.36.1
-> >
+IMO I have no strong preference. The code can be simpler with using 
+__get_free_pages(), however like Matthew said it will add more conversion.
