@@ -2,121 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 782EEC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232279AbiFXPBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 11:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
+        id S232139AbiFXPGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 11:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232844AbiFXPBg (ORCPT
+        with ESMTP id S231127AbiFXPGr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 11:01:36 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F617E01F;
-        Fri, 24 Jun 2022 08:00:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656082855; x=1687618855;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=r9BpodH8DspgmZK/JHyZzFlbmsdPEpE2WjRvHVubaRA=;
-  b=Hlhe21SYrifUNqdBwRS2YsCwKdOx3ieYGgq76dqL4bXnVEIn06rp9XMv
-   9KFpSlnkWX+gD61zd5z6Tv+9P7EumxyfjKUxdOQLm2bjwZgA5l+PPmiNg
-   aQjhFc8c2wR1uimy80svoYij5tJaMRb0N35iEsIz4BkW0+Y38X+XX5DLq
-   U=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 24 Jun 2022 08:00:54 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 08:00:53 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 24 Jun 2022 08:00:53 -0700
-Received: from [10.110.58.84] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 24 Jun
- 2022 08:00:52 -0700
-Message-ID: <d1ad862d-3419-d9d8-f31e-bca791a3e6bc@quicinc.com>
-Date:   Fri, 24 Jun 2022 08:00:51 -0700
+        Fri, 24 Jun 2022 11:06:47 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B668841337;
+        Fri, 24 Jun 2022 08:06:45 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 25E145C01DA;
+        Fri, 24 Jun 2022 11:06:45 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Fri, 24 Jun 2022 11:06:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1656083205; x=
+        1656169605; bh=HjT+D1N1osG/gGZVW5EodSJ+cA7Y5+uYwHsMT33cSjw=; b=n
+        bK4GxSQkrXj+mv+hxp0zW+0OPwRz1ButBUhIu7fSLnA4E96zxgrCE6dqG+f7LGaj
+        1eYe8fzdRODokUz9cyQ0F+WzcrjKUyZdsr1wXHKeUobFIO+dBdWe73eCLrT4dvGP
+        JMME3INHUCBeKoM1Tt9+8J1zEKwJQW6rq80+eBFvxDqVI4z9hphrngJoRz/4s/zM
+        qNFj/duSmCrpbH0COptguSv8y+MZMGUH2vAx8qelVI/h+m8iPfIs2U6hGVgEwrMo
+        NfLaqGa3Amuy0wH3FrVdemzqS+yjWcUzUYNxSpDEeYitSBK4Ag2KsobqKTl4B9b+
+        AnIbNHdnkL3sUnBgscqgQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1656083205; x=
+        1656169605; bh=HjT+D1N1osG/gGZVW5EodSJ+cA7Y5+uYwHsMT33cSjw=; b=v
+        qvtGt0IX13aS/uwgD8GVvCpfB8hHyJ/0gJwOIX4pnv7xyVK6OZs8LvC7XeekRBfh
+        QLQdiKmF0UumsE4Z3zSVEbCUeHA7w7ZCLXLUk0Vjhem6gRcjY36zB/1QqSpjAj44
+        QeBFoWOubNPCoR/yS+F5vLCWAcx+0BEwox7WT6AYCmvz6hvJwwAal9jTNOovNwAs
+        vqVBgRD6AcTDTEy18PP/h4oQ4gw4BLXd6XbgABvOW+EIko6ZmR4cBCUcGXGZe96j
+        7i+HklAmDtS9n7EIwWCUL2yAuVYEnM0KAj2iR7W4U5ixPZ8hs5IAml6blbUroInQ
+        KiFjPkeTAArp/vpeW27tg==
+X-ME-Sender: <xms:BNO1YmL4ONZqTGqMU--zPKoJF1_-NDfTAG_HRW0MIjrDbsRw3jcSJw>
+    <xme:BNO1YuLpt6Omkimf-8rOE3BBhPFflBX-gaLWgMq-8LYfvnYvX773zoMHPV1kOp3F7
+    8oQrD2fhmP_rQDinUQ>
+X-ME-Received: <xmr:BNO1Ymv5J4GaEEZshQXOkH7BgakTraQ103BVHA8tP0goGFtSQkNtO_un3BzoGtO4cajXILuX-PJ30iPmSKH2vgj4p1dpymwUP1T-QLQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefledgkedvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggugfgjsehtqhertddttddvnecuhfhrohhmpeforgig
+    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
+    grthhtvghrnheptefgleeggfegkeekgffgleduieduffejffegveevkeejudektdduueet
+    feetfefgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:BNO1YrbAouVnEIZKD4ndfS9wcVEc8-W4GuCbuubGI61Rde2kJla6rQ>
+    <xmx:BNO1YtZVe7cBZbZ_ehlomCTXXajIZU3xELf8EByPcorMKih3-tN5Yw>
+    <xmx:BNO1YnBs0CR2_zmmIECtDzfuT9zLKArOzVKTSkXiKOgpbT_NZ24Kuw>
+    <xmx:BdO1Ygw0IiIqSoDeZnISQ8JHLRIBwdgpTxx0Eo7iY04pQtiYTdeJ_w>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 24 Jun 2022 11:06:44 -0400 (EDT)
+Date:   Fri, 24 Jun 2022 17:06:42 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] drm: logicvc: Fix uninitialized variable in probe
+Message-ID: <20220624150642.afkxpnut365i2wew@houat>
+References: <Yqh6OfSiPFuVrGo4@kili>
+ <YrXLrVUIavGWC4sx@aptenodytes>
+ <20220624143717.tykkcznvzq5e5qz2@houat>
+ <YrXOTAR6koA1b8XJ@aptenodytes>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] drm/msm/dp: no dp_hpd_unplug_handle() required for eDP
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
-        <daniel@ffwll.ch>, <dianders@chromium.org>,
-        <dmitry.baryshkov@linaro.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <vkoul@kernel.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1656027256-6552-1-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n534jvnjX5TShZw7CB9Cu9F7yowhwUosNkJE8t_R4xHYOw@mail.gmail.com>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <CAE-0n534jvnjX5TShZw7CB9Cu9F7yowhwUosNkJE8t_R4xHYOw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YrXOTAR6koA1b8XJ@aptenodytes>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 24, 2022 at 04:46:36PM +0200, Paul Kocialkowski wrote:
+> Hi,
+>=20
+> On Fri 24 Jun 22, 16:37, Maxime Ripard wrote:
+> > Hi,
+> >=20
+> > On Fri, Jun 24, 2022 at 04:35:25PM +0200, Paul Kocialkowski wrote:
+> > > On Tue 14 Jun 22, 15:08, Dan Carpenter wrote:
+> > > > The "regmap" is supposed to be initialized to NULL but it's used
+> > > > without being initialized.
+> > > >=20
+> > > > Fixes: efeeaefe9be5 ("drm: Add support for the LogiCVC display cont=
+roller")
+> > > > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > >=20
+> > > Nice catch, thanks a lot!
+> > >=20
+> > > Acked-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> >=20
+> > Since you have the commit rights to drm-misc, you should apply it
+>=20
+> Absolutely, I'm on my way to doing that.
 
-On 6/23/2022 5:09 PM, Stephen Boyd wrote:
-> Quoting Kuogee Hsieh (2022-06-23 16:34:16)
->> eDP implementation does not reuried to support hpd signal. Therefore
-> s/reuried/require/
->
->> it only has either ST_DISPLAY_OFF or ST_CONNECTED state during normal
->> operation. This patch remove unnecessary dp_hpd_unplug_handle() for
->> eDP but still keep dp_hpd_plug_handle() to support eDP to either
->> booting up or resume from ST_DISCONNECTED state.
-> I take it that making this change also fixes a glitch seen on the eDP
-> panel when a second modeset happens? Can you add that detail to the
-> commit text? The way it reads makes it sound like this is purely a
-> cleanup patch, but then there's a Fixes tag so it must be a bug fix or
-> worthy optimization, neither of which is described.
+Giving your Acked-by is confusing then, because it's kind of implied if
+you apply it.
 
-no, this patch will not fix edp (primary display) corruption issue.
+> Do I need to reply to the emails with a message indicating that I
+> merged them or is using the tool sufficient?
 
-This patch is pure clean up edp.
+Sending an email is better, dim doesn't do that
 
-I will submit fixes edp corruption issue at other patch.
-
->> Fixes: 391c96ff0555 ("drm/msm/dp: Support only IRQ_HPD and REPLUG interrupts for eDP")
->> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
->> ---
->>   drivers/gpu/drm/msm/dp/dp_display.c | 5 +----
->>   1 file changed, 1 insertion(+), 4 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
->> index da5c03a..ef9794e 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_display.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
->> @@ -1666,7 +1666,7 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
->>                  return;
->>          }
->>
->> -       if (dp->is_edp)
->> +       if (dp->is_edp && dp_display->hpd_state == ST_DISCONNECTED)
->>                  dp_hpd_plug_handle(dp_display, 0);
->>
->>          mutex_lock(&dp_display->event_mutex);
->> @@ -1737,9 +1737,6 @@ void dp_bridge_post_disable(struct drm_bridge *drm_bridge)
->>
->>          dp_display = container_of(dp, struct dp_display_private, dp_display);
->>
->> -       if (dp->is_edp)
->> -               dp_hpd_unplug_handle(dp_display, 0);
-> dp_hpd_unplug_handle() has a !edp check, and from what I can tell after
-> this patch that condition will always trigger? But then I wonder why we
-> aren't masking the irqs for hpd when the eDP display is disabled.
-> Shouldn't we at least be doing that so that we don't get spurious hpd
-> irqs when the eDP display is off or on the path to suspend where I
-> suspect the power may be removed from the panel?
+Maxime
