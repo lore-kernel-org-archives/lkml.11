@@ -2,108 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D20C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDD5CCA485
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbiFXR1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51534 "EHLO
+        id S231652AbiFXR10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:27:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232517AbiFXR0o (ORCPT
+        with ESMTP id S231739AbiFXR0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:26:44 -0400
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D77911A16;
-        Fri, 24 Jun 2022 10:26:41 -0700 (PDT)
-Received: by mail-il1-f181.google.com with SMTP id w10so1925409ilj.4;
-        Fri, 24 Jun 2022 10:26:41 -0700 (PDT)
+        Fri, 24 Jun 2022 13:26:54 -0400
+Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7352559B;
+        Fri, 24 Jun 2022 10:26:45 -0700 (PDT)
+Received: by mail-io1-f46.google.com with SMTP id z191so3373901iof.6;
+        Fri, 24 Jun 2022 10:26:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=B5w8YwmvaMvgaa+XdQ9K9wrK3DoeF6dUpZwQeNncYzU=;
-        b=5S7jZ2DwxYsqIR3F3tWMPBX8DGfNIddNGlGBHhoqeKJpFE3T6hwbSs5XOQqDDW56Cz
-         03jhUSUFO39oM6HFQYCNh69dIckGooiN/NdiywpXmlH0XkBt3t8UCU1UjZUv2qlmITLb
-         2RakjGSEGXWQ9CoMkXDsWmXO4XWuuIjV+m/GtbNXSAznV7+VYjIJNh70zfWTu96fmUQf
-         VGjAxBvNPCGOsj2Nr4PcLi+YRqvfYSKypR/Lv2zBj4xaI+HmH3ZjAsJMdVCywVMIS7wS
-         9JzQGz9zEJiS+a42yZVvYh59pmsJUMp4vaBG2p5x/MZccLIX0JXBHpj/xV4SChopvZDu
-         w3fQ==
-X-Gm-Message-State: AJIora90fsaort/i9rOCMZCyLofP95JBXe+zxdeByaXa5WAgDiCmLG8n
-        6w3/X2ouort14KNNgJ2L2+kgHB+7tg==
-X-Google-Smtp-Source: AGRyM1v4lwCvNUsULQiN1Fb/2fRNm5hCntJ8GiYUQcFu8to/stf++2gRR+lEsPmEbGiKxezIqCr1NQ==
-X-Received: by 2002:a92:7c06:0:b0:2d6:605d:8164 with SMTP id x6-20020a927c06000000b002d6605d8164mr29024ilc.179.1656091600683;
-        Fri, 24 Jun 2022 10:26:40 -0700 (PDT)
+        bh=n2XNNHfnlSzPCpBxhAe6aF2TsSHsKDP/VUmQAtti+ps=;
+        b=LkkIWWo9Vou612Jvm/ZNYmdNzmnusgkETjkk9tQRpmP+7HFW4C2tTTLGcfvFJp8ljx
+         5Eq2u4wlDFg8LenV16TTfBFFNN4TkEvut1sj/UgZ1IhFeSWF5/a7/oo3hZotXtr/m+jV
+         HLaaj022f244dviPqbbwlC340fg6fza8XWyjDrPl9+/certNkzAEArA7Sk7IqwUiAEtw
+         RIjhwqZKw+QDjf0++UTrFvPIVC0urB+hg/zxD2LXCJUw2RnuFbbWs8IwVxBoEEYAPlb3
+         VClnS/8m8hgVE0ttLS+tvF7jUCtGL1eLUUQywdhMOWBUgFZO5/C0548kRNYUCRY8THMk
+         er2Q==
+X-Gm-Message-State: AJIora/uqdn5JjtJenggTV36v7myioHtklYgbNwUMbe7JCqBxRZ3TpA2
+        nZHW8LLXtmt3MFCedD9IdA==
+X-Google-Smtp-Source: AGRyM1sf4ha7eK26cIM7jLNomU3rhP57Kcz5dGvzHk+OKIszOwQIVSEmCb7pX+/RoCjgFzkNOR6bYA==
+X-Received: by 2002:a05:6638:4889:b0:331:b103:a74c with SMTP id ct9-20020a056638488900b00331b103a74cmr158177jab.66.1656091604724;
+        Fri, 24 Jun 2022 10:26:44 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id c10-20020a92940a000000b002d90c9077a2sm1338850ili.57.2022.06.24.10.26.39
+        by smtp.gmail.com with ESMTPSA id p70-20020a022949000000b00339d2cd8da1sm1274202jap.152.2022.06.24.10.26.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 10:26:40 -0700 (PDT)
-Received: (nullmailer pid 146340 invoked by uid 1000);
+        Fri, 24 Jun 2022 10:26:44 -0700 (PDT)
+Received: (nullmailer pid 146350 invoked by uid 1000);
         Fri, 24 Jun 2022 17:26:34 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Kent Gustavsson <kent@minoris.se>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>
-In-Reply-To: <20220623170844.2189814-5-marcus.folkesson@gmail.com>
-References: <20220623170844.2189814-1-marcus.folkesson@gmail.com> <20220623170844.2189814-5-marcus.folkesson@gmail.com>
-Subject: Re: [PATCH 05/10] dt-bindings: iio: adc: mcp3911: add microchip,data-ready-hiz entry
+To:     Sricharan R <quic_srichara@quicinc.com>
+Cc:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, quic_varada@quicinc.com,
+        linus.walleij@linaro.org, catalin.marinas@arm.com,
+        mturquette@baylibre.com, robh+dt@kernel.org,
+        p.zabel@pengutronix.de, linux-clk@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, sboyd@kernel.org,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        agross@kernel.org, devicetree@vger.kernel.org
+In-Reply-To: <20220621161126.15883-3-quic_srichara@quicinc.com>
+References: <20220621161126.15883-1-quic_srichara@quicinc.com> <20220621161126.15883-3-quic_srichara@quicinc.com>
+Subject: Re: [PATCH V2 2/8] dt-bindings: arm64: ipq5018: Add binding descriptions for clock and reset
 Date:   Fri, 24 Jun 2022 11:26:34 -0600
-Message-Id: <1656091594.379237.146339.nullmailer@robh.at.kernel.org>
+Message-Id: <1656091594.420060.146349.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 19:08:39 +0200, Marcus Folkesson wrote:
-> The Data Ready Output Pin is either hard wired to work as high
-> impedance or push-pull. Make it configurable.
+On Tue, 21 Jun 2022 21:41:20 +0530, Sricharan R wrote:
+> From: Varadarajan Narayanan <quic_varada@quicinc.com>
 > 
-> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+> This patch adds support for the global clock controller found on
+> the IPQ5018 based devices.
+> 
+> Co-developed-by: Sricharan R <quic_srichara@quicinc.com>
+> Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
+> Signed-off-by: Varadarajan Narayanan <quic_varada@quicinc.com>
 > ---
->  .../devicetree/bindings/iio/adc/microchip,mcp3911.yaml    | 8 ++++++++
->  1 file changed, 8 insertions(+)
+>  .../bindings/clock/qcom,gcc-other.yaml        |   3 +
+>  include/dt-bindings/clock/qcom,gcc-ipq5018.h  | 188 ++++++++++++++++++
+>  include/dt-bindings/reset/qcom,gcc-ipq5018.h  | 122 ++++++++++++
+>  3 files changed, 313 insertions(+)
+>  create mode 100644 include/dt-bindings/clock/qcom,gcc-ipq5018.h
+>  create mode 100644 include/dt-bindings/reset/qcom,gcc-ipq5018.h
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml: properties:microchip,data-ready-hiz: 'oneOf' conditional failed, one must be fixed:
-	Additional properties are not allowed ('default' was unexpected)
-		hint: A vendor boolean property can use "type: boolean"
-	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml: properties:microchip,data-ready-hiz: 'oneOf' conditional failed, one must be fixed:
-		'enum' is a required property
-		'const' is a required property
-		hint: A vendor string property with exact values has an implicit type
-		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
-	Additional properties are not allowed ('default', 'type' were unexpected)
-		hint: A vendor string property with exact values has an implicit type
-	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml: properties:microchip,data-ready-hiz: 'oneOf' conditional failed, one must be fixed:
-		'$ref' is a required property
-		'allOf' is a required property
-		hint: A vendor property needs a $ref to types.yaml
-		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
-	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
-	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml: ignoring, error in schema: properties: microchip,data-ready-hiz
-Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.example.dtb:0:0: /example-0/spi/adc@0: failed to match any schema with compatible: ['microchip,mcp3911']
+Full log is available here: https://patchwork.ozlabs.org/patch/
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/
+gcc@1800000: '#power-domain-cells' is a required property
+	arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dtb
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+gcc@1800000: Unevaluated properties are not allowed ('#clock-cells', '#reset-cells', 'clock-names', 'clocks', 'reg' were unexpected)
+	arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dtb
 
