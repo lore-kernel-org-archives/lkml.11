@@ -2,82 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA259C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 319E5CCA481
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbiFXL1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 07:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53372 "EHLO
+        id S229821AbiFXLjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 07:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231138AbiFXL1k (ORCPT
+        with ESMTP id S229446AbiFXLjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 07:27:40 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F2B794FB;
-        Fri, 24 Jun 2022 04:27:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656070060; x=1687606060;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=e5RqOyieRrgpceUiVHqgjF0xxjOK+K1asIzYt45g8J0=;
-  b=jMdWAyzjGxDgjmOfZKj9vuhyaknk1UbwZGrfiM2qh8UkMpp6tJ+4L/11
-   ZdVfTrROJme4RmxmsivU4tqrbEhYPdrVm02nIuKTKr6Irh7pTmvFOfZnJ
-   QNsJtE4NfSeS1lPIazJy0kNWT+hPDDo8pclUdrKTtuubn2ccglR3SDD1U
-   rlPlyWnu25OYiqWWHHcXKnhHc3IpEb6m3o1kgbSdceLbV6D6LOkI4MMu/
-   UASLPI2XWAdnNchfGntxBYTlVIa4h+XneJr6JnqBy3s3fVUGqkMASebmJ
-   t20ttW+fjbn6cyeGRFG0IRKD2HmTcgGBrNEuULhrCjNy6kVM5hewElmPs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="306447594"
-X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
-   d="scan'208";a="306447594"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 04:27:39 -0700
-X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
-   d="scan'208";a="539254648"
-Received: from jvrobert-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.99.67])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 04:27:36 -0700
-Message-ID: <c57df7a93a4ba87a834eef88227f599e00c15477.camel@intel.com>
-Subject: Re: [PATCH v5 06/22] x86/virt/tdx: Add skeleton to initialize TDX
- on demand
-From:   Kai Huang <kai.huang@intel.com>
-To:     Chao Gao <chao.gao@intel.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
-        len.brown@intel.com, tony.luck@intel.com,
-        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
-        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-Date:   Fri, 24 Jun 2022 23:27:34 +1200
-In-Reply-To: <20220624023916.GC15566@gao-cwp>
-References: <cover.1655894131.git.kai.huang@intel.com>
-         <c751d1ce046ccc139a8bb34e04d70b1d6bc34a8d.1655894131.git.kai.huang@intel.com>
-         <20220624023916.GC15566@gao-cwp>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+        Fri, 24 Jun 2022 07:39:42 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CB36802C
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 04:39:40 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id g26so4130211ejb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 04:39:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Wj6+le4xQYgRWhbJ4o+JcrPIptpoGXL5M4xVrdtZbXI=;
+        b=O26iv82q0trCWgDQwRmW6rUiSusM7pWvnNkO+V25QbNy7sOhu5esaQuJS7PwEwU3me
+         Y5h7BfA9Gsbe2XrGvelcv6XAS5b+QDIjWuyq9j37ZvWmhRmJ48gmjKfPI+n6s0JkG0Im
+         CDVkH9TIGF7b8/w7lXV62OP94WgbzGfx7wpTJbGIrqDtM3uOjQnbLKSKlKwAtePFBT0V
+         p0UC7KC2dcsZiVk+jsW+BB+3hwR39LVFSI68D3J4t1grJmX1kHAWk4K42QCX24AX1oi0
+         SbMSM89C1Pj1C7dtRAeCcSnHR7lTOSfcpvpwV+KgsO9loIxaBH/9by5n0QkWSZvgYpVw
+         4zZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Wj6+le4xQYgRWhbJ4o+JcrPIptpoGXL5M4xVrdtZbXI=;
+        b=WHQmK1oUXYoZg3gr3gnis/G+cupxHRXEVkA0HFjszi3Rh932mttFOCwpoWxD8jXE/C
+         zcDCGbHFbRDeKA4zsCooC+BswUDEgftyZBW26/T2T5iQ80LkzACbwFIZlz6rnHXWPJU7
+         8q65+AQeivN0zzhJ/01MEN1Iz+aDcpyWN8AcYRmbhWKk4t4IoLuOcmCiJJHfdNWscxrY
+         6B7L1Os6T0CoVlTGCumFf982VHyhAYbU5LOgaPNRpFxDZ2eimNpe4zTgdMlua6yyn/df
+         3dqRz+24Y+lZHx8gCU1jPc9H9fpfYC1n8o2CSWsOmCY6ws0WJtzrSV7mpxUXPA4qHLYF
+         KGFA==
+X-Gm-Message-State: AJIora9dC/115FEbq1umKJ+jPfDY3xAWLN0bcvp+frerXj3+W6Wceqto
+        Io9YhtXafRkRP8UmTBRxw5a1ug==
+X-Google-Smtp-Source: AGRyM1tMl63rWpj4b70pBJHZZBdq7tLURrxHPvEhTWmOq2GveNEsVZf4u0behvJ6CGqQ22A5aqS+/g==
+X-Received: by 2002:a17:907:7e81:b0:726:2912:7467 with SMTP id qb1-20020a1709077e8100b0072629127467mr7207432ejc.373.1656070778635;
+        Fri, 24 Jun 2022 04:39:38 -0700 (PDT)
+Received: from [192.168.0.235] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id r1-20020a17090638c100b007219c20dcd8sm962517ejd.196.2022.06.24.04.39.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 04:39:38 -0700 (PDT)
+Message-ID: <8956c98e-657c-0263-c8d9-d6beb54410f9@linaro.org>
+Date:   Fri, 24 Jun 2022 13:39:36 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 06/14] dt-bindings: mfd: Add Mediatek MT6370
+Content-Language: en-US
+To:     ChiaEn Wu <peterwu.pub@gmail.com>, lee.jones@linaro.org,
+        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
+        heikki.krogerus@linux.intel.com, deller@gmx.de
+Cc:     chiaen_wu@richtek.com, alice_chen@richtek.com,
+        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com
+References: <20220623115631.22209-1-peterwu.pub@gmail.com>
+ <20220623115631.22209-7-peterwu.pub@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220623115631.22209-7-peterwu.pub@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 23/06/2022 13:56, ChiaEn Wu wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
+> 
+> Add Mediatek MT6370 binding documentation.
+> 
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> ---
+> 
+> v3
+> - Use " in entire patchset
+> - Refine ADC description
+> - Rename "enable-gpio" to "enable-gpios" in "regualtor"
+> - Change "/schemas/" to "../" in every reference of all MT6370 modules
+> ---
+>  .../devicetree/bindings/mfd/mediatek,mt6370.yaml   | 280 +++++++++++++++++++++
+>  include/dt-bindings/iio/adc/mediatek,mt6370_adc.h  |  18 ++
+>  2 files changed, 298 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
+>  create mode 100644 include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
+> 
+> diff --git a/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
+> new file mode 100644
+> index 0000000..fa9da13
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
+> @@ -0,0 +1,280 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/mfd/mediatek,mt6370.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Mediatek MT6370 SubPMIC
+> +
+> +maintainers:
+> +  - ChiYuan Huang <cy_huang@richtek.com>
+> +
+> +description: |
+> +  MT6370 is a highly-integrated smart power management IC, which includes a
+> +  single cell Li-Ion/Li-Polymer switching battery charger, a USB Type-C &
+> +  Power Delivery (PD) controller, dual flash LED current sources, a RGB LED
+> +  driver, a backlight WLED driver, a display bias driver and a general LDO for
+> +  portable devices.
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,mt6370
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  wakeup-source: true
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  interrupt-controller: true
+> +
+> +  "#interrupt-cells":
+> +    const: 1
+> +
+> +  adc:
+> +    type: object
+> +    description: |
+> +      Provides 9 channels for system monitoring, including VBUSDIV5 (lower
+> +      accuracy, higher measure range), VBUSDIV2 (higher accuracy, lower
+> +      measure range), VBAT, VSYS, CHG_VDDP, TS_BAT, IBUS, IBAT, and TEMP_JC.
+> +
+> +    properties:
+> +      compatible:
+> +        const: mediatek,mt6370-adc
+> +
+> +      "#io-channel-cells":
+> +        const: 1
+> +
+> +    required:
+> +      - compatible
+> +      - "#io-channel-cells"
+> +
+> +  backlight:
+> +    type: object
+> +    $ref: ../leds/backlight/mediatek,mt6370-backlight.yaml#
 
-> > +	ret =3D init_tdx_module();
-> > +	if (ret =3D=3D -ENODEV) {
-> > +		pr_info("TDX module is not loaded.\n");
->=20
-> tdx_module_status should be set to TDX_MODULE_NONE here.
+This was correct before: /schemas/leds/ ....
 
-Thanks.  Will fix.
-
->=20
-> > +		goto out;
-> > +	}
-
---=20
-Thanks,
--Kai
+Same in other places.
 
 
+Best regards,
+Krzysztof
