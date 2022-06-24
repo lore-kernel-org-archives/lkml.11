@@ -2,209 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C42C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 370D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbiFXQBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 12:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
+        id S230145AbiFXQBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 12:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbiFXQBh (ORCPT
+        with ESMTP id S230075AbiFXQBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 12:01:37 -0400
-Received: from forward501j.mail.yandex.net (forward501j.mail.yandex.net [5.45.198.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201055251F;
-        Fri, 24 Jun 2022 09:01:34 -0700 (PDT)
-Received: from myt5-30ca2e5366d2.qloud-c.yandex.net (myt5-30ca2e5366d2.qloud-c.yandex.net [IPv6:2a02:6b8:c12:fa5:0:640:30ca:2e53])
-        by forward501j.mail.yandex.net (Yandex) with ESMTP id D6F5B6233EA;
-        Fri, 24 Jun 2022 19:01:32 +0300 (MSK)
-Received: from myt5-ca5ec8faf378.qloud-c.yandex.net (myt5-ca5ec8faf378.qloud-c.yandex.net [2a02:6b8:c12:2514:0:640:ca5e:c8fa])
-        by myt5-30ca2e5366d2.qloud-c.yandex.net (mxback/Yandex) with ESMTP id qioSD0rNVz-1Vf4Z6IB;
-        Fri, 24 Jun 2022 19:01:32 +0300
-X-Yandex-Fwd: 2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1656086492;
-        bh=PUG8BO7e1bq7Yd/4revT/SkW7cbQUppnFmBmmkR/A8I=;
-        h=In-Reply-To:References:Date:Subject:Cc:To:From:Message-Id;
-        b=sqeaDYikYQJ1uwwG/xnLpAdcfWEB/CbQU1IcQcqAfJ26vD1K27fdhBk9km5MVg8E+
-         pKkBGqgypni7d3+mfzQLKMHzL1PTEpee3qdgEiTdlatWOgtg1tFx4l5rXj37SqwyBG
-         qp8kW9M2MeQoZ8E9Vt0ae+2K68uiYXUX5nKdLtf0=
-Authentication-Results: myt5-30ca2e5366d2.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
-Received: by myt5-ca5ec8faf378.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id iVUkuL8Azf-1UMKIGh9;
-        Fri, 24 Jun 2022 19:01:31 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Nikita Shubin <nikita.shubin@maquefel.me>
-To:     Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <anup@brainfault.org>
-Cc:     =?UTF-8?q?Jo=C3=A3o=20M=C3=A1rio=20Domingos?= 
-        <joao.mario@tecnico.ulisboa.pt>, linux@yadro.com,
-        Nikita Shubin <n.shubin@yadro.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH v4 2/5] perf tools riscv: Add support for get_cpuid_str function
-Date:   Fri, 24 Jun 2022 19:00:52 +0300
-Message-Id: <20220624160117.3206-3-nikita.shubin@maquefel.me>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220624160117.3206-1-nikita.shubin@maquefel.me>
-References: <20220624160117.3206-1-nikita.shubin@maquefel.me>
+        Fri, 24 Jun 2022 12:01:42 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D2B52533
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:01:41 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id i10so3790093wrc.0
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ffiO6A2PsfBMr7NqXQDGe4LlsBtZjortKK8FGiE8TGs=;
+        b=kgIGHkC9AmqJrRisa88gEb2JSgScN9bTHPrFYutqUu3j4EstnyWyH4Vt4PYgnr9wM7
+         g1Jv7MXUI3WAB6EsQuB5VZz7SP0td1kZM8aHXB3334K4ewpr7f3MXm8FbbdOznRGguvS
+         9npxt9kXyuL8dePxN4eNBJih2eAKLJYfnropKFhsxtJFb5vn9xZLZDaeLxxdOT+uhgu7
+         3g9Tgk1Q4KU08dTsHPkDehTnAWTp6s9QGlC+C82CA4Ykt8mHcGCE9bINdYKZj0AXVxyb
+         K3pJ1DpOKkUR6dPZXOp4lH/wfDAGpvVFshjIujmrGNIAff8cayGDyBrUKkUCR6/UtDUa
+         54lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ffiO6A2PsfBMr7NqXQDGe4LlsBtZjortKK8FGiE8TGs=;
+        b=1mIBFLzH+lInE29NbjK0pJMxEhz7UcZV1mPl0xJRMulDd/i3w4u7OVyH/Vi79oczS2
+         so0qdmlPUbYOzzSq4vZenW6oR+zQc6sEbXpXLZS7dJUQmanQSAKH5JmSlgKa38V6wTm8
+         PanSrhQORLkAsrmRYfAAFSzBjB2GbDGn+xlPIHPnXoWIESqY4ia3vKHS2+ydmj0HIhxp
+         TROBLoNLiCKZy5AtfXdrfm+KVi9ATKhtnM7zKRcz+x0/XoXMzhLBWhrY32tvj9hge6X0
+         HaCp+dGcUM5ikKpd5u1Th7stVusVyWvE7B022RYybNPHomvGVYhXFWH2M0zXhUsGII0I
+         cydA==
+X-Gm-Message-State: AJIora8mChnemURhyDIeBrl1zVwiAXnEi8+giXVUw3vywBf1NXGUckMp
+        dyMMA2bkIIb5FhOUu2uT7PclLQ==
+X-Google-Smtp-Source: AGRyM1vKGC5ccFr+1PSGrjWJ2Vn9gJPfJi5n/uVuZ8+6JKiJ9SiV5LkmBEgKYLw1Q+Ux8lewMHEdMg==
+X-Received: by 2002:a05:6000:381:b0:21b:9a20:7edb with SMTP id u1-20020a056000038100b0021b9a207edbmr13997766wrf.71.1656086499812;
+        Fri, 24 Jun 2022 09:01:39 -0700 (PDT)
+Received: from [192.168.0.237] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id z17-20020a5d6551000000b0021b932de5d6sm2720639wrv.39.2022.06.24.09.01.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 09:01:39 -0700 (PDT)
+Message-ID: <ac726845-01ec-4f35-7197-4c52fc483644@linaro.org>
+Date:   Fri, 24 Jun 2022 18:01:38 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] ASoC: dt-bindings: fsl,micfil: Convert format to
+ json-schema
+Content-Language: en-US
+To:     Shengjiu Wang <shengjiu.wang@nxp.com>, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     shengjiu.wang@gmail.com
+References: <1655980125-24141-1-git-send-email-shengjiu.wang@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1655980125-24141-1-git-send-email-shengjiu.wang@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Shubin <n.shubin@yadro.com>
+On 23/06/2022 12:28, Shengjiu Wang wrote:
+> Convert the NXP MICFIL binding to DT schema format using json-schema.
+> 
+> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+> ---
+>  .../devicetree/bindings/sound/fsl,micfil.txt  | 33 ---------
+>  .../devicetree/bindings/sound/fsl,micfil.yaml | 73 +++++++++++++++++++
+>  2 files changed, 73 insertions(+), 33 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.txt
+>  create mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.txt b/Documentation/devicetree/bindings/sound/fsl,micfil.txt
+> deleted file mode 100644
+> index 1ea05d4996c7..000000000000
+> --- a/Documentation/devicetree/bindings/sound/fsl,micfil.txt
+> +++ /dev/null
+> @@ -1,33 +0,0 @@
+> -NXP MICFIL Digital Audio Interface (MICFIL).
+> -
+> -The MICFIL digital interface provides a 16-bit audio signal from a PDM
+> -microphone bitstream in a configurable output sampling rate.
+> -
+> -Required properties:
+> -
+> -  - compatible		: Compatible list, contains "fsl,imx8mm-micfil"
+> -			  or "fsl,imx8mp-micfil"
+> -
+> -  - reg			: Offset and length of the register set for the device.
+> -
+> -  - interrupts		: Contains the micfil interrupts.
+> -
+> -  - clocks		: Must contain an entry for each entry in clock-names.
+> -
+> -  - clock-names		: Must include the "ipg_clk" for register access and
+> -			  "ipg_clk_app" for internal micfil clock.
+> -
+> -  - dmas		: Generic dma devicetree binding as described in
+> -			  Documentation/devicetree/bindings/dma/dma.txt.
+> -
+> -Example:
+> -micfil: micfil@30080000 {
+> -	compatible = "fsl,imx8mm-micfil";
+> -	reg = <0x0 0x30080000 0x0 0x10000>;
+> -	interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
+> -		     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
+> -	clocks = <&clk IMX8MM_CLK_PDM_IPG>,
+> -		 <&clk IMX8MM_CLK_PDM_ROOT>;
+> -	clock-names = "ipg_clk", "ipg_clk_app";
+> -	dmas = <&sdma2 24 26 0x80000000>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.yaml b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
+> new file mode 100644
+> index 000000000000..74c77f4cf7a4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
+> @@ -0,0 +1,73 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/sound/fsl,micfil.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: NXP MICFIL Digital Audio Interface (MICFIL)
+> +
+> +maintainers:
+> +  - Shengjiu Wang <shengjiu.wang@nxp.com>
+> +
+> +description: |
+> +  The MICFIL digital interface provides a 16-bit or 24-bit audio signal
+> +  from a PDM microphone bitstream in a configurable output sampling rate.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - fsl,imx8mm-micfil
+> +      - fsl,imx8mp-micfil
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 4
 
-The get_cpuid_str function returns the string that
-contains values of MVENDORID, MARCHID and MIMPID in
-hex format separated by coma.
+You should describe the interrupts/items. Similarly to clocks.
 
-The values themselves are taken from first cpu entry
-in "/proc/cpuid" that contains "mvendorid", "marchid"
-and "mimpid".
-
-Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
----
- tools/perf/arch/riscv/util/Build    |   1 +
- tools/perf/arch/riscv/util/header.c | 109 ++++++++++++++++++++++++++++
- 2 files changed, 110 insertions(+)
- create mode 100644 tools/perf/arch/riscv/util/header.c
-
-diff --git a/tools/perf/arch/riscv/util/Build b/tools/perf/arch/riscv/util/Build
-index 7d3050134ae0..603dbb5ae4dc 100644
---- a/tools/perf/arch/riscv/util/Build
-+++ b/tools/perf/arch/riscv/util/Build
-@@ -1,4 +1,5 @@
- perf-y += perf_regs.o
-+perf-y += header.o
- 
- perf-$(CONFIG_DWARF) += dwarf-regs.o
- perf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o
-diff --git a/tools/perf/arch/riscv/util/header.c b/tools/perf/arch/riscv/util/header.c
-new file mode 100644
-index 000000000000..53e8ddf7990b
---- /dev/null
-+++ b/tools/perf/arch/riscv/util/header.c
-@@ -0,0 +1,109 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Implementation of get_cpuid().
-+ *
-+ * Author: Nikita Shubin <n.shubin@yadro.com>
-+ */
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <api/fs/fs.h>
-+#include <errno.h>
-+#include "../../util/debug.h"
-+#include "../../util/header.h"
-+
-+#define CPUINFO_MVEN	"mvendorid"
-+#define CPUINFO_MARCH	"marchid"
-+#define CPUINFO_MIMP	"mimpid"
-+#define CPUINFO		"/proc/cpuinfo"
-+
-+static char *_get_field(const char *line)
-+{
-+	char *line2, *nl;
-+
-+	line2 = strrchr(line, ' ');
-+	if (!line2)
-+		return NULL;
-+
-+	line2++;
-+	nl = strrchr(line, '\n');
-+	if (!nl)
-+		return NULL;
-+
-+	return strndup(line2, nl - line2);
-+}
-+
-+static char *_get_cpuid(void)
-+{
-+	char *line = NULL;
-+	char *mvendorid = NULL;
-+	char *marchid = NULL;
-+	char *mimpid = NULL;
-+	char *cpuid = NULL;
-+	int read;
-+	unsigned long line_sz;
-+	FILE *cpuinfo;
-+
-+	cpuinfo = fopen(CPUINFO, "r");
-+	if (cpuinfo == NULL)
-+		return cpuid;
-+
-+	while ((read = getline(&line, &line_sz, cpuinfo)) != -1) {
-+		if (!strncmp(line, CPUINFO_MVEN, strlen(CPUINFO_MVEN))) {
-+			mvendorid = _get_field(line);
-+			if (!mvendorid)
-+				goto free;
-+		} else if (!strncmp(line, CPUINFO_MARCH, strlen(CPUINFO_MARCH))) {
-+			marchid = _get_field(line);
-+			if (!marchid)
-+				goto free;
-+		} else if (!strncmp(line, CPUINFO_MIMP, strlen(CPUINFO_MIMP))) {
-+			mimpid = _get_field(line);
-+			if (!mimpid)
-+				goto free;
-+
-+			break;
-+		}
-+	}
-+
-+	if (!mvendorid || !marchid || !mimpid) {
-+		cpuid = NULL;
-+		goto free;
-+	}
-+
-+	if (asprintf(&cpuid, "%s-%s-%s", mvendorid, marchid, mimpid) < 0)
-+		cpuid = NULL;
-+
-+free:
-+	fclose(cpuinfo);
-+
-+	if (mvendorid)
-+		free(mvendorid);
-+
-+	if (marchid)
-+		free(marchid);
-+
-+	if (mimpid)
-+		free(mimpid);
-+
-+	return cpuid;
-+}
-+
-+int get_cpuid(char *buffer, size_t sz)
-+{
-+	char *cpuid = _get_cpuid();
-+
-+	if (sz < strlen(cpuid)) {
-+		free(cpuid);
-+		return -EINVAL;
-+	}
-+
-+	scnprintf(buffer, sz, "%s", cpuid);
-+	return 0;
-+}
-+
-+char *
-+get_cpuid_str(struct perf_pmu *pmu __maybe_unused)
-+{
-+	return _get_cpuid();
-+}
--- 
-2.35.1
-
+Best regards,
+Krzysztof
