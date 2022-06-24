@@ -2,88 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66942C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D739C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231524AbiFXRSN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
+        id S232049AbiFXRSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:18:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231166AbiFXRSM (ORCPT
+        with ESMTP id S231166AbiFXRSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:18:12 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1578B1EACE
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:18:11 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id l6-20020a170902f68600b0016a36fb2c9aso1578766plg.2
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:18:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=v5yna8ItikU2fb5u1sePnTAPT+OQna41hrQ1rG7Dn0Y=;
-        b=KyIuHFn8LfqulIFW1TY5xQGMGKE5mrB5KYFzJL5pvXrFz9Z+E8TP798YlQiCx0euRQ
-         hACEWEJ6aNEucjttEX9XhVoJgxjBu2sOAZ6pLxOxcPm2wmyAZSgZiK1BPzML1Um0M+k0
-         yE3Tl0UTpLUitJyMN8wUwnX93sPI9+HQ3Ao49FkAPuK34WwuRNEqEE1fHuLkb/buqMpa
-         5bPwAIpA7c/yXX9a7gflIxragXVwgj9D6/tNfTijiNYw1xmnkLwLY4q6a/K2E6yn5heC
-         hRaa4vU+hwzw42TSYRgStAn1/+LuwEpNObCwzt4XMpgU+9X/gGLcIHT7DhbBvD5anPBu
-         i8Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=v5yna8ItikU2fb5u1sePnTAPT+OQna41hrQ1rG7Dn0Y=;
-        b=MfnVv7FgIt5nit+QpfseiUCclSWYd4fu3fcyNF35NO5gXjILVMclHHyJ4XhUomiuwr
-         E0d2eLho9cDSU51D0OoGUEassq+NojeJXXviD37Jltow3X5+SmEzoref4crZDA9YceLb
-         Dpm7aK0tn1Zs3wHNarElzg1Mc48oILObC4nOskurbyk2tXqsmSnalRm5UkQhJJbgZyup
-         7RHAA6NBA33H3JGGm9ODDsHroUvfBcbUmyqR3aVXMtega7QzIg84L5x+Y4glKRQSt6Yq
-         XYBsfGZVP56DirrNQ/Y/ykwRstq5hRyC+P/vb6pqsX6/XYpYlD+WD/LpbmHpegT/C5HA
-         0VDQ==
-X-Gm-Message-State: AJIora/tmjHIz07i72U40A7UWTME1IwWbf7eVBmI50H8+zOTsZjOjPiU
-        X59goPuGL8Ijq5I4P46raio6lor0j5g=
-X-Google-Smtp-Source: AGRyM1vNM3+l3baD53Rb//jNTwLDUmtvY2umobKNWJc93BvkYCSdkLSQPoj0oan9ZhziLBTWSveAjIySE5E=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:2450:b0:4f7:bf07:c063 with SMTP id
- d16-20020a056a00245000b004f7bf07c063mr47194536pfj.51.1656091090609; Fri, 24
- Jun 2022 10:18:10 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 24 Jun 2022 17:18:05 +0000
-Message-Id: <20220624171808.2845941-1-seanjc@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH 0/3] KVM: x86/mmu: Cleanups for eager page splitting
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 24 Jun 2022 13:18:15 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C69CF1E3E1
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:18:12 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 8E11392009C; Fri, 24 Jun 2022 19:18:11 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 86F1F92009B;
+        Fri, 24 Jun 2022 18:18:11 +0100 (BST)
+Date:   Fri, 24 Jun 2022 18:18:11 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PING^2][PATCH] RISC-V: PCI: Avoid handing out address 0 to
+ devices
+In-Reply-To: <mhng-a0733eea-8220-4bf6-b1da-9de3139dbae3@palmer-ri-x1c9>
+Message-ID: <alpine.DEB.2.21.2206231750490.57474@angie.orcam.me.uk>
+References: <mhng-a0733eea-8220-4bf6-b1da-9de3139dbae3@palmer-ri-x1c9>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eager page splitting cleanups for a few minor things that were noted in
-code review but didn't make it into the committed code.
+On Wed, 22 Jun 2022, Palmer Dabbelt wrote:
 
-The last patch in particular is a bit more urgent than I first realized.
-I had forgotten that pte_list_desc is now 128 bytes, and I also had a
-brain fart and thought it was just allocating pointers, i.e. 8 bytes.
-In other words, I was thinking the 513 object buffer was "only" wasting
-~8kb per VM, whereas it actually costs ~64kb per VM.
+> > > Therefore avoid handing out address 0, by bumping the lowest address
+> > > available to PCI via PCIBIOS_MIN_IO and PCIBIOS_MIN_MEM up by 4 and 16
+> > > respectively, which is the minimum allocation size for I/O and memory
+> > > BARs.
+> > 
+> >  Ping for:
+> > <https://lore.kernel.org/lkml/alpine.DEB.2.21.2204271207590.9383@angie.orcam.me.uk/>
+> 
+> Sorry, I got this mixed up with the non-RISC-V patch.
 
-Sean Christopherson (3):
-  KVM: x86/mmu: Avoid subtle pointer arithmetic in kvm_mmu_child_role()
-  KVM: x86/mmu: Use "unsigned int", not "u32", for SPTEs' @access info
-  KVM: x86/mmu: Buffer nested MMU split_desc_cache only by default
-    capacity
+ If you mean this:
 
- arch/x86/kvm/mmu/mmu.c | 53 ++++++++++++++++++++++++++++--------------
- 1 file changed, 35 insertions(+), 18 deletions(-)
+<https://lore.kernel.org/lkml/alpine.DEB.2.21.2202260044180.25061@angie.orcam.me.uk/>
 
+then we just don't have consensus to move forward.  If we ever do for a 
+generic change, then we can revert the RISC-V platform solution, as it's 
+merely an internal implementation detail and not a part of the ABI or 
+something.
 
-base-commit: 4b88b1a518b337de1252b8180519ca4c00015c9e
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+>  David poked me about
+> it, this is on for-next.  It's passing my tests, but they're just QEMU so
+> probably not all that exciting here.
 
+ Thanks!  I don't know offhand what QEMU supports as far as the RISC-V 
+architecture is concerned; I guess you can't just enable a PCI port-I/O 
+serial port in the simulator and see if it works with Linux or not.
+
+ Anyway it's just number shuffling, so the change should be reasonably 
+safe.
+
+  Maciej
