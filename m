@@ -2,115 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C146C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 00:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4160ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 00:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbiFXAJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 20:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
+        id S229674AbiFXAMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 20:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbiFXAJt (ORCPT
+        with ESMTP id S229605AbiFXAMX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 20:09:49 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDAC25D105
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 17:09:48 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id h15-20020a9d600f000000b0060c02d737ecso725287otj.1
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 17:09:48 -0700 (PDT)
+        Thu, 23 Jun 2022 20:12:23 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9945D10A
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 17:12:21 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id l6so626088plg.11
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 17:12:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=tNICjC0mqZ74g4NWx01ZNVZ2tkGnF23qOG9pMURoZhI=;
-        b=keigWUEC4et/ph4vYev3R+C43rBbm6avYfx1ICG8YUlMjI17zFbQ2NqdKaLjP20MgD
-         03TUpRIu3LgOXZ1LnijQy9VU1OpjjuxDho5zFrbATU/RB9F/5S2AJ9Z0bf26Xo+1ooT0
-         XGnZvujpKw3kMWwkNxBRfcYiO47Af/Ydzdzyk=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7t5NX7+PWQirm0TfbCUOmSknXtu+ymL/PYjukdREVgg=;
+        b=AjJ4YI9hzcHPMR3I7ooaCBJEv48bl8Q32Mo8hzpcUTLwAcJLwRSFxYtetfbhZ+Pbg4
+         BMI9ERvL8I/Yk8tgKyNVZ0SFEC86KHhBUn6AXxsoTCDMhb/NRhDOdr9IYXh8m5VzF775
+         2cs7djnBEBlsnSFUOF8gN7aqL9cK0ucyemA5qpYr+cd3nLKLY6Eb5RGDzEJGseA05MeL
+         wHdA7K8/uVfMMzDdLLSTzT6GmXgTZMn4YH4cCNhxP7iYiqo9iEsnySr1uWTocJSEgXbW
+         GFg7gsdItfriHRngsb9enc8dQyAb1J29KrhtE9hP1LKPPJqwqWi9CKFw9WaHXpsP4NiH
+         hW7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=tNICjC0mqZ74g4NWx01ZNVZ2tkGnF23qOG9pMURoZhI=;
-        b=MhZdElpQMFnmPTQb3H6f1iGbzA2lsHHM2Fi96+sNTc8+oLD4AMfvYsZTm3BC9qY3vC
-         g8sIz+H0J/0yvxGFjHkt/wAcjiLaDLP282I4YR5xxg4UcNzrtzjIMKdXAHLbOYwhUlsF
-         UvMaG/V4thjBGX52VmPEyAwaK9else9jCezdCJBhnEw/F1WpIpHhMyNp2mvP3lOMOrAs
-         hYCBY4UpuWC80RLsyH23BIhwJsKiWwdFzeHQqEAGEC8zdXRr3APVcoY33MQVnVSHp+o1
-         4UfGDlV7GCqm529TNEHrxf9Sw7SUG8m2hgDjCzli+8B9CXDjiCgy8ugSGTlHjpWFJLOH
-         4eXQ==
-X-Gm-Message-State: AJIora++7yJ12pICJGqBv5Hh6zPlkCw5zn1+oHp6wncohlO/Blp1cd6o
-        l5ZtAd64jtmo9ppkbhdBELBrTKc4otnlom7kGSrKXg==
-X-Google-Smtp-Source: AGRyM1toYtnlSvt/KriWql1qkmbYZ0fd3ZbL7W+3GyjF+TFTpfJIy6lNOXNS1wd+UjrciaaVGHz2lZIw6TxPwoIv6+Y=
-X-Received: by 2002:a9d:729b:0:b0:60c:21bd:97c0 with SMTP id
- t27-20020a9d729b000000b0060c21bd97c0mr4954986otj.77.1656029388070; Thu, 23
- Jun 2022 17:09:48 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 23 Jun 2022 17:09:47 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7t5NX7+PWQirm0TfbCUOmSknXtu+ymL/PYjukdREVgg=;
+        b=yxFjr9DmDxdq1W1lT5Vtv6zl60YWIbb+8TGRgwE62OZ+r5hIOBddUQawHb8PXGl6ZO
+         ub9WNQKvfJbzCobTuEVfAFJDqOpotCCj/TDug68/aLk2bFIb9oS3bp1L+BLbzHfNf7hS
+         i+/xg59YYRJZneEqHxg9vSfr0kqQyxxvYF9u6rhSUum+7rTZPjfVyxVE5+HtpEy/KKGd
+         K97J/iR73190VYLqW98vnoSIzWY2682kx+syoGizPgvbm9Ag6K2/x9o9fMWY+FS40nHF
+         mXB8NKXKTVNr0TjeyuhEUUZuP+YlgHYMMisUuoozI1Myfq3zTJRA2cWiSGe09JD/c+BO
+         OIlg==
+X-Gm-Message-State: AJIora/1AJdRBLu+5em7rTNUeCcxtHwc7e/kJow/xD6jLWdDgpkuFDK3
+        jZjxNcX8EYZ4q+I5BXSQ6EUxtA==
+X-Google-Smtp-Source: AGRyM1s6jmuW56VoKuYkPF34C9mlc8YlBGh5LtOuEdtqsnHErPrqpLFl+cg1Zup/cnGDsRdzlYByfw==
+X-Received: by 2002:a17:90b:4f8c:b0:1ec:d1bf:8c64 with SMTP id qe12-20020a17090b4f8c00b001ecd1bf8c64mr658357pjb.66.1656029541332;
+        Thu, 23 Jun 2022 17:12:21 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id a7-20020a1709027d8700b0016a4ca6516dsm348760plm.278.2022.06.23.17.12.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 17:12:20 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 00:12:17 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC v1 02/10] KVM: VMX: Add missing CPU based VM
+ execution controls to vmcs_config
+Message-ID: <YrUBYTXRxBGYsd1a@google.com>
+References: <20220622164432.194640-1-vkuznets@redhat.com>
+ <20220622164432.194640-3-vkuznets@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <1656027256-6552-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1656027256-6552-1-git-send-email-quic_khsieh@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Thu, 23 Jun 2022 17:09:47 -0700
-Message-ID: <CAE-0n534jvnjX5TShZw7CB9Cu9F7yowhwUosNkJE8t_R4xHYOw@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/dp: no dp_hpd_unplug_handle() required for eDP
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
-        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
-        dianders@chromium.org, dmitry.baryshkov@linaro.org,
-        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org
-Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622164432.194640-3-vkuznets@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Kuogee Hsieh (2022-06-23 16:34:16)
-> eDP implementation does not reuried to support hpd signal. Therefore
+Maybe say "dynamically enabled" or so instead of "missing"?
 
-s/reuried/require/
-
-> it only has either ST_DISPLAY_OFF or ST_CONNECTED state during normal
-> operation. This patch remove unnecessary dp_hpd_unplug_handle() for
-> eDP but still keep dp_hpd_plug_handle() to support eDP to either
-> booting up or resume from ST_DISCONNECTED state.
-
-I take it that making this change also fixes a glitch seen on the eDP
-panel when a second modeset happens? Can you add that detail to the
-commit text? The way it reads makes it sound like this is purely a
-cleanup patch, but then there's a Fixes tag so it must be a bug fix or
-worthy optimization, neither of which is described.
-
->
-> Fixes: 391c96ff0555 ("drm/msm/dp: Support only IRQ_HPD and REPLUG interrupts for eDP")
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+On Wed, Jun 22, 2022, Vitaly Kuznetsov wrote:
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 > ---
->  drivers/gpu/drm/msm/dp/dp_display.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-> index da5c03a..ef9794e 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-> @@ -1666,7 +1666,7 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
->                 return;
->         }
->
-> -       if (dp->is_edp)
-> +       if (dp->is_edp && dp_display->hpd_state == ST_DISCONNECTED)
->                 dp_hpd_plug_handle(dp_display, 0);
->
->         mutex_lock(&dp_display->event_mutex);
-> @@ -1737,9 +1737,6 @@ void dp_bridge_post_disable(struct drm_bridge *drm_bridge)
->
->         dp_display = container_of(dp, struct dp_display_private, dp_display);
->
-> -       if (dp->is_edp)
-> -               dp_hpd_unplug_handle(dp_display, 0);
-
-dp_hpd_unplug_handle() has a !edp check, and from what I can tell after
-this patch that condition will always trigger? But then I wonder why we
-aren't masking the irqs for hpd when the eDP display is disabled.
-Shouldn't we at least be doing that so that we don't get spurious hpd
-irqs when the eDP display is off or on the path to suspend where I
-suspect the power may be removed from the panel?
+>  arch/x86/kvm/vmx/vmx.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 24da9e93bdab..01294a2fc1c1 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -2483,8 +2483,14 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+>  	      CPU_BASED_INVLPG_EXITING |
+>  	      CPU_BASED_RDPMC_EXITING;
+>  
+> -	opt = CPU_BASED_TPR_SHADOW |
+> +	opt = CPU_BASED_INTR_WINDOW_EXITING |
+> +	      CPU_BASED_RDTSC_EXITING |
+> +	      CPU_BASED_TPR_SHADOW |
+> +	      CPU_BASED_NMI_WINDOW_EXITING |
+> +	      CPU_BASED_USE_IO_BITMAPS |
+> +	      CPU_BASED_MONITOR_TRAP_FLAG |
+>  	      CPU_BASED_USE_MSR_BITMAPS |
+> +	      CPU_BASED_PAUSE_EXITING |
+>  	      CPU_BASED_ACTIVATE_SECONDARY_CONTROLS |
+>  	      CPU_BASED_ACTIVATE_TERTIARY_CONTROLS;
+>  	if (adjust_vmx_controls(min, opt, MSR_IA32_VMX_PROCBASED_CTLS,
+> @@ -4280,6 +4286,13 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
+>  {
+>  	u32 exec_control = vmcs_config.cpu_based_exec_ctrl;
+>  
+> +	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
+> +			  CPU_BASED_RDTSC_EXITING |
+> +			  CPU_BASED_NMI_WINDOW_EXITING |
+> +			  CPU_BASED_USE_IO_BITMAPS |
+> +			  CPU_BASED_MONITOR_TRAP_FLAG |
+> +			  CPU_BASED_PAUSE_EXITING);
+> +
+>  #ifdef CONFIG_X86_64
+>  	if (exec_control & CPU_BASED_TPR_SHADOW)
+>  		exec_control &= ~CPU_BASED_CR8_LOAD_EXITING &
+> -- 
+> 2.35.3
+> 
