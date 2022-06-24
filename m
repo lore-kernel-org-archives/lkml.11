@@ -2,99 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C54AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 001B6CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232006AbiFXM4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 08:56:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
+        id S232031AbiFXM7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 08:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230100AbiFXM43 (ORCPT
+        with ESMTP id S230100AbiFXM7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 08:56:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FAD4FC72
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 05:56:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19786B827FC
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 12:56:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DB73C34114;
-        Fri, 24 Jun 2022 12:56:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656075386;
-        bh=oZgB5FkUoIrYN0GL94UFDfxuPMTD6+aI5GADFEjgS6I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oG2ZzXI7n/1R/rvuGgy+nU4KYxTjAuSE2ICfmp8EfPCvBHCKkTdZl4yb68zdGao5J
-         bIcXglaownmzcAJUo5wQz1QoPq2OsmFfpWbg/CaeVD5pBXycqcGplfc2FyCuM2EJq8
-         QUl/6VClaal5aeBDtYDM22s1I1FkdHTTNYZnzAnVP4D2UJ+B1zvlYaeLhdzbmqA0ya
-         mTuST7dsAV9cXiyXjguwCQBVvvJc3cArCCBipuJX+s/Ruhv2QnD6QhKFIIDJMvSiwc
-         RrJSSC+Ai4wsKDseSAgaI+XP67OGoXnbzChtq9HhPJs0Iv+r6StFHCD5eTdvj28AsZ
-         wKqKW3NqlYFiA==
-Date:   Fri, 24 Jun 2022 13:56:22 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 01/12] regmap-irq: Convert bool bitfields to unsigned
- int
-Message-ID: <YrW0dlXWhOo+a0sf@sirena.org.uk>
-References: <20220623211420.918875-1-aidanmacdonald.0x0@gmail.com>
- <20220623211420.918875-2-aidanmacdonald.0x0@gmail.com>
- <CAHp75VfTqTfMsrdqyqRj61JAAJ4a_h3rrFriY2d+rrqpVviy=w@mail.gmail.com>
- <YrWqAqGUuy8Z0F3x@sirena.org.uk>
- <4937c0cc9dbc9d06cb626465bd37cbcf76c80a0b.camel@perches.com>
+        Fri, 24 Jun 2022 08:59:15 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B70052524
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 05:59:14 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o4itu-00076J-Dv; Fri, 24 Jun 2022 14:59:06 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o4itr-002Qlm-7y; Fri, 24 Jun 2022 14:59:04 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o4itr-00H4Pt-ND; Fri, 24 Jun 2022 14:59:03 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
+Subject: [PATCH net-next v1 3/3] net: dsa: microchip: add pause stats support
+Date:   Fri, 24 Jun 2022 14:59:02 +0200
+Message-Id: <20220624125902.4068436-3-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220624125902.4068436-1-o.rempel@pengutronix.de>
+References: <20220624125902.4068436-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="s9R9sZfMsAeA9ZxE"
-Content-Disposition: inline
-In-Reply-To: <4937c0cc9dbc9d06cb626465bd37cbcf76c80a0b.camel@perches.com>
-X-Cookie: Help!  I'm trapped in a PDP 11/70!
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add support for pause specific stats.
 
---s9R9sZfMsAeA9ZxE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Tested on ksz9477.
 
-On Fri, Jun 24, 2022 at 05:46:10AM -0700, Joe Perches wrote:
-> On Fri, 2022-06-24 at 13:11 +0100, Mark Brown wrote:
-> > On Thu, Jun 23, 2022 at 11:26:10PM +0200, Andy Shevchenko wrote:
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz9477.c    |  1 +
+ drivers/net/dsa/microchip/ksz_common.c | 19 +++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h |  3 +++
+ 3 files changed, 23 insertions(+)
 
-> > > There is no point to convert the fields you are about to remove.
-> >=20
-> > > So, either don't touch them or make this patch closer to the end of t=
-he series.
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index ab40b700cf1a..8c31fb0fe1fd 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -1351,6 +1351,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.port_mirror_add	= ksz9477_port_mirror_add,
+ 	.port_mirror_del	= ksz9477_port_mirror_del,
+ 	.get_stats64		= ksz_get_stats64,
++	.get_pause_stats	= ksz_get_pause_stats,
+ 	.port_change_mtu	= ksz9477_change_mtu,
+ 	.port_max_mtu		= ksz9477_max_mtu,
+ };
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 9ca8c8d7740f..1022affb45aa 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -461,12 +461,14 @@ EXPORT_SYMBOL_GPL(ksz_phylink_get_caps);
+ 
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
+ {
++	struct ethtool_pause_stats *pstats;
+ 	struct rtnl_link_stats64 *stats;
+ 	struct ksz_stats_raw *raw;
+ 	struct ksz_port_mib *mib;
+ 
+ 	mib = &dev->ports[port].mib;
+ 	stats = &mib->stats64;
++	pstats = &mib->pause_stats;
+ 	raw = (struct ksz_stats_raw *)mib->counters;
+ 
+ 	spin_lock(&mib->stats64_lock);
+@@ -498,6 +500,9 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
+ 	stats->multicast = raw->rx_mcast;
+ 	stats->collisions = raw->tx_total_col;
+ 
++	pstats->tx_pause_frames = raw->tx_pause;
++	pstats->rx_pause_frames = raw->rx_pause;
++
+ 	spin_unlock(&mib->stats64_lock);
+ }
+ EXPORT_SYMBOL_GPL(ksz_r_mib_stats64);
+@@ -516,6 +521,20 @@ void ksz_get_stats64(struct dsa_switch *ds, int port,
+ }
+ EXPORT_SYMBOL_GPL(ksz_get_stats64);
+ 
++void ksz_get_pause_stats(struct dsa_switch *ds, int port,
++			 struct ethtool_pause_stats *pause_stats)
++{
++	struct ksz_device *dev = ds->priv;
++	struct ksz_port_mib *mib;
++
++	mib = &dev->ports[port].mib;
++
++	spin_lock(&mib->stats64_lock);
++	memcpy(pause_stats, &mib->pause_stats, sizeof(*pause_stats));
++	spin_unlock(&mib->stats64_lock);
++}
++EXPORT_SYMBOL_GPL(ksz_get_pause_stats);
++
+ void ksz_get_strings(struct dsa_switch *ds, int port,
+ 		     u32 stringset, uint8_t *buf)
+ {
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 8500eaedad67..5d81faf81c1b 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -25,6 +25,7 @@ struct ksz_port_mib {
+ 	u8 cnt_ptr;
+ 	u64 *counters;
+ 	struct rtnl_link_stats64 stats64;
++	struct ethtool_pause_stats pause_stats;
+ 	struct spinlock stats64_lock;
+ };
+ 
+@@ -200,6 +201,8 @@ void ksz_init_mib_timer(struct ksz_device *dev);
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
+ void ksz_get_stats64(struct dsa_switch *ds, int port,
+ 		     struct rtnl_link_stats64 *s);
++void ksz_get_pause_stats(struct dsa_switch *ds, int port,
++			 struct ethtool_pause_stats *pause_stats);
+ void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
+ 			  struct phylink_config *config);
+ extern const struct ksz_chip_data ksz_switch_chips[];
+-- 
+2.30.2
 
-> > It costs us nothing to convert them, this isn't a difficult or hard to
-> > understand refactoring - the patch is fine the way it is.
-
-> Modulo the defects that might be introduced if an overflow occurs.
-
-This won't be an issue if the fields are removed which was what Andy was
-complaining about.
-
---s9R9sZfMsAeA9ZxE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmK1tHUACgkQJNaLcl1U
-h9AeNQf/Wi7SpXxxRgHHg80reef4GhdJlgfwJefIGf4Soq0Sj4UloPvW9AmGxCOQ
-HQXa4OW03BmAX+7q9nSb9re+lpGmlWSwoZJx2JaJUrvKCWsOT/BZDx0958B3L4UR
-+gCm6ktBfNk50D171mV4PRUckD65qwO+QLh15gcxFSqYq1ZmMElXdFdKhXjL29Xh
-Jv6CcPrvYBqAZRc90PRD/nO5ikYobUrx9QMnRIO6KFeKMspugXk7O4ofAtOGmvv/
-jaDViIxSvxV5DF0q0MK1H5R5DxtQWCzYBfG636bXvHfu6vfrf80aInRT5cmMR6Z1
-3ujqMKEMiodj6RH9YELf1Ku1zVrGDA==
-=Cha1
------END PGP SIGNATURE-----
-
---s9R9sZfMsAeA9ZxE--
