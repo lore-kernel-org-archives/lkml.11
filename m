@@ -2,106 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 13:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A83A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 13:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232029AbiFXN2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 09:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
+        id S231965AbiFXNbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 09:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231852AbiFXN22 (ORCPT
+        with ESMTP id S230223AbiFXNbu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 09:28:28 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7EE47380
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 06:28:27 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id o16-20020a05600c379000b003a02eaea815so2327946wmr.0
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 06:28:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=Gd55QfDzv4tOkcKv6ZabSHGL0FEPuSK9T90juIUO+zc=;
-        b=BCGA35h351Jaf+cfGzozM71rulqxQsXze+AyxTGMiJVxUxSrMl/Y9ZFfBuIIWcq0yX
-         FmEZ8Juhqx/DUHMleUckAUd2jvb2I/NHIACEhb6mX4+AQataDFBIfuzZ+Ut0eKd9oiDG
-         xxYkSJ3jvVAtTRyWrN9DcVXLkl83WQaezIQdDTI/vg6BmQBFizY2tNKJMZkDIlw99fTw
-         SJDroRWYMKCZ/j75RcBPuKHpYpjd9gY50F8iIzKkM0Ytb4EUW+NaIIT1mAm9zkueJd/e
-         jLU2RJNWazy4YG7YifdvKrJglgZZzJmJHpfpEhyiWQ+dV77l56WUlLWEuF3S9taUNmjL
-         RUfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=Gd55QfDzv4tOkcKv6ZabSHGL0FEPuSK9T90juIUO+zc=;
-        b=AtEhs/z3nTxHNduCWhbav5wTEU70nxgjiZRqJYLw4Da7BwF6oh+bgd51nxMVYxouNH
-         SLv6jHyongO5+4pEU8uMZFlbz0Rz87SdGRFDpKcMwF7eGQIPnRBwxEeTB3PYYoy4qbTU
-         0yWjSrholCPRlpLfUTQK27iuJg3REP86kax2jYA5mJPiG/fveIBZUS3FZ4ugSumpaAnb
-         5Nm7id3dbLwIfzGUkMT35SbGaaVUaoQ7IIA6QZ/MhsC4M6W4GWAuqXvNgzM6EOq/oSG2
-         YukRWVzdbp6E2BnAQd5nPt1h6t7Ed4lKx6BF5V9GbInP9xnF/vODzFUskoqrQ3ts/r20
-         pnGQ==
-X-Gm-Message-State: AJIora+yQKx5auGlWb9p6hM5ANvUMp1RiXqBtRNtUfflI3izXMVEABVb
-        PQOJDHErV5p61DOLNKG7sX+WU6btQlo=
-X-Google-Smtp-Source: AGRyM1sHvdVItzUrt2JZHsnrGhrRpPLAdzo0enpSeBT9VOYJxU4BIp36RCr4fgUD7lxNiTsnJOUWoQ==
-X-Received: by 2002:a05:600c:3847:b0:39c:6a85:d20c with SMTP id s7-20020a05600c384700b0039c6a85d20cmr3941925wmr.129.1656077305705;
-        Fri, 24 Jun 2022 06:28:25 -0700 (PDT)
-Received: from localhost (92.40.168.222.threembb.co.uk. [92.40.168.222])
-        by smtp.gmail.com with ESMTPSA id b3-20020a5d6343000000b0021a36955493sm2250278wrw.74.2022.06.24.06.28.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 06:28:25 -0700 (PDT)
-References: <20220623211420.918875-1-aidanmacdonald.0x0@gmail.com>
- <20220623211420.918875-2-aidanmacdonald.0x0@gmail.com>
- <CAHp75VfTqTfMsrdqyqRj61JAAJ4a_h3rrFriY2d+rrqpVviy=w@mail.gmail.com>
- <YrWqAqGUuy8Z0F3x@sirena.org.uk>
- <4937c0cc9dbc9d06cb626465bd37cbcf76c80a0b.camel@perches.com>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 01/12] regmap-irq: Convert bool bitfields to unsigned
- int
-Date:   Fri, 24 Jun 2022 14:05:30 +0100
-In-reply-to: <4937c0cc9dbc9d06cb626465bd37cbcf76c80a0b.camel@perches.com>
-Message-ID: <Z2ggoG49naOiT1BMxPbsMc2zOjAUEnha@localhost>
+        Fri, 24 Jun 2022 09:31:50 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B0838BFA;
+        Fri, 24 Jun 2022 06:31:41 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 843F71F8EF;
+        Fri, 24 Jun 2022 13:31:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1656077500;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RgjcjsWwgFCT51qzN2+gjNYaVNpGbaTRZxVXLNJmXbg=;
+        b=VvgWBKdl1CvOhvyADG1uOBOtFL4EJM2iTP2RJqENtsxjEYxFI99ueud6cmoj+xODh0wwcW
+        kMqP/2+9iWPT6AEnQqfytCLGO+D2y6T+8o8FSO3uf4PV21cMv2Cyo8bgWLj0jJBKaV558o
+        OODUa0Kvif5Pec8YeSKL8+/Flq4R9Tc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1656077500;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RgjcjsWwgFCT51qzN2+gjNYaVNpGbaTRZxVXLNJmXbg=;
+        b=rbv9OWQH8nhn7uiUClbt61DsOVh1zVoZ2ZxvEt5asVQO0+SUARI8H8X4igIt64k89EDwJw
+        uzXtiGYjZlESk3DQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3F69B13480;
+        Fri, 24 Jun 2022 13:31:40 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id WYCFDry8tWJVBQAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Fri, 24 Jun 2022 13:31:40 +0000
+Date:   Fri, 24 Jun 2022 15:27:01 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Qu Wenruo <quwenruo.btrfs@gmx.com>
+Cc:     dsterba@suse.cz, Christoph Hellwig <hch@lst.de>, clm@fb.com,
+        josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: Re: [PATCH] btrfs: remove btrfs_writepage_cow_fixup
+Message-ID: <20220624132701.GT20633@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Qu Wenruo <quwenruo.btrfs@gmx.com>,
+        Christoph Hellwig <hch@lst.de>, clm@fb.com, josef@toxicpanda.com,
+        dsterba@suse.com, linux-btrfs@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+References: <20220624122334.80603-1-hch@lst.de>
+ <20220624124913.GS20633@twin.jikos.cz>
+ <b058e226-8a77-42bc-8c92-5bd23244e7da@gmx.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b058e226-8a77-42bc-8c92-5bd23244e7da@gmx.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 24, 2022 at 09:12:44PM +0800, Qu Wenruo wrote:
+> On 2022/6/24 20:49, David Sterba wrote:
+> > On Fri, Jun 24, 2022 at 02:23:34PM +0200, Christoph Hellwig wrote:
+> >> Since the page_mkwrite address space operation was added, starting with
+> >> commit 9637a5efd4fb ("[PATCH] add page_mkwrite() vm_operations method")
+> >> in 2006, the kernel does not just dirty random pages without telling
+> >> the file system.
+> >
+> > It does and there's a history behind the fixup worker. tl;dr it can't be
+> > removed, though every now and then somebody comes and tries to.
+> >
+> > On s390 the page status is tracked in two places, hw and in memory and
+> > this needs to be synchronized manually.
+> >
+> > On x86_64 it's not a simple reason but it happens as well in some edge
+> > case where the mappings get removed and dirty page is set deep in the
+> > arch mm code.  We've been chasing it long time ago, I don't recall exact
+> > details and it's been a painful experience.
+> >
+> > If there's been any change on the s390 side or in arch/x86/mm code I
+> > don't know but to be on the safe side, I strongly assume the fixup code
+> > is needed unless proven otherwise.
+> 
+> I'd say, if this can be a problem to btrfs, then all fs supporting COW
+> should also be affected, and should have similar workaround.
 
-Joe Perches <joe@perches.com> writes:
+Probably yes.
 
-> On Fri, 2022-06-24 at 13:11 +0100, Mark Brown wrote:
->> On Thu, Jun 23, 2022 at 11:26:10PM +0200, Andy Shevchenko wrote:
->> > On Thu, Jun 23, 2022 at 11:13 PM Aidan MacDonald
->> 
->> > > Use 'unsigned int' for bitfields for consistency with most other
->> > > kernel code.
->> 
->> > There is no point to convert the fields you are about to remove.
->> 
->> > So, either don't touch them or make this patch closer to the end of the series.
->> 
->> It costs us nothing to convert them, this isn't a difficult or hard to
->> understand refactoring - the patch is fine the way it is.
->
-> Modulo the defects that might be introduced if an overflow occurs.
->
-> struct foo {
-> 	unsigned int a:1;
-> 	bool b:1;
-> }
->
-> Assign a non-zero int without bit 0 set to each and see if
-> a and b differ.
+> Furthermore, this means we can get a page dirtied without us knowing.
 
-Bool permits implicit pointer-to-bool conversions, so it isn't free
-of pitfalls either. Overflow is probably more dangerous in general,
-but here there's little chance of pointers or overflow getting involved.
-These are const flags that describe properties of the hardware, nothing
-should change them once the irq chip is created, and the vast majority
-of chips are static const.
+This should not happen because we do have the detection of the page and
+extent state mismatch and the fixup worker makes things right again.
+
+> This is a super big surprise to any fs, and should be properly
+> documented, not just leaving some seemly dead and special code in some
+> random fs.
+
+You seem to be a non-believer that the bug is real and calling the code
+dead. Each filesystem should validate the implementation agains the
+platform where it is and btrfs once found the hard way that there are
+some corner cases where structures get out of sync.
+
+> Furthermore, I'm not sure even if handling this in a fs level is correct.
+> This looks like more a MM problem to me then.
+> 
+> 
+> I totally understand it's a pain to debug such lowlevel bug, but
+> shouldn't we have a proper regression for it then?
+
+The regression test is generic/208 and it was not reliable at all, it
+fired randomly once a week or month, there used to be a BUG() in the
+fixup worker callback.
+
+> Instead of just keeping what we know works, I really want to handle this
+> old case/bug in a more modern way.
+
+As long as the guarantees stay the same, then fine. We need to be able
+to detect the unexpected dirty bit and have a way to react to it.
+
+f4b1363cae43 ("btrfs: do not do delalloc reservation under page lock")
+25f3c5021985 ("Btrfs: keep pages dirty when using btrfs_writepage_fixup_worker")
+1d53c9e67230 ("Btrfs: only associate the locked page with one async_chunk struct")
+
+And the commit that fixed it:
+
+87826df0ec36 ("btrfs: delalloc for page dirtied out-of-band in fixup worker")
+
+You can find several reports in the mailing list archives (search term
+btrfs_writepage_fixup_worker):
+
+https://lore.kernel.org/linux-btrfs/1295053074.15265.6.camel@mercury.localdomain
+
+https://lore.kernel.org/linux-btrfs/20110701174436.GA8352@yahoo.fr
+
+https://lore.kernel.org/linux-btrfs/j0k65i$29a$1@dough.gmane.org
+
+https://lore.kernel.org/linux-btrfs/CAO47_--H0+6bu4qQ2QA9gZcHvGVWO4QUGCAb3+9a5Kg3+23UiQ@mail.gmail.com
+
+https://lore.kernel.org/linux-btrfs/vqfmv8-9ch.ln1@hurikhan.ath.cx
