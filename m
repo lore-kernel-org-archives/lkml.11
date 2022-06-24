@@ -2,94 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D893CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 619C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231512AbiFXJgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 05:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
+        id S232003AbiFXJgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 05:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232178AbiFXJgS (ORCPT
+        with ESMTP id S231605AbiFXJgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 05:36:18 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED05794DD
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 02:36:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VHGmXek_1656063365;
-Received: from 30.97.49.29(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VHGmXek_1656063365)
-          by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 17:36:06 +0800
-Message-ID: <f484d209-10de-c68b-ceb6-6d6d2b261c3a@linux.alibaba.com>
-Date:   Fri, 24 Jun 2022 17:36:07 +0800
+        Fri, 24 Jun 2022 05:36:31 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F347946E;
+        Fri, 24 Jun 2022 02:36:28 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LTsQp4yZVzkWVf;
+        Fri, 24 Jun 2022 17:34:42 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 24 Jun 2022 17:36:01 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 24 Jun
+ 2022 17:36:00 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>
+CC:     <Frank.Li@nxp.com>, <jdmason@kudzu.us>, <kishon@ti.com>,
+        <lpieralisi@kernel.org>, <kw@linux.com>, <bhelgaas@google.com>
+Subject: [PATCH -next] PCI: endpoint: pci-epf-vntb: fix error handle in epf_ntb_mw_bar_init()
+Date:   Fri, 24 Jun 2022 17:46:04 +0800
+Message-ID: <20220624094604.2159713-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 3/7] migrate_pages(): fix THP failure counting for -ENOMEM
-To:     Huang Ying <ying.huang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>
-References: <20220624025309.1033400-1-ying.huang@intel.com>
- <20220624025309.1033400-4-ying.huang@intel.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20220624025309.1033400-4-ying.huang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In error case of epf_ntb_mw_bar_init(), memory window BARs should be
+cleared, so add 'num_mws' parameter in epf_ntb_mw_bar_clear() and
+calling it in error path to clear the BARs. Also add missing error
+code when pci_epc_mem_alloc_addr() fails.
 
+Fixes: ff32fac00d97 ("NTB: EPF: support NTB transfer between PCI RC and EP connection")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/pci/endpoint/functions/pci-epf-vntb.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-On 6/24/2022 10:53 AM, Huang Ying wrote:
-> In unmap_and_move(), if the new THP cannot be allocated, -ENOMEM will
-> be returned, and migrate_pages() will try to split the THP unless
-> "reason" is MR_NUMA_MISPLACED (that is, nosplit == true).  But when
-> nosplit == true, the THP migration failure will not be counted.  This
-> is incorrect.  So in this patch, the THP migration failure will be
-> counted for -ENOMEM regardless of nosplit is true or false.  The
-> nr_failed counting is fixed too, although that is not used actually.
+diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+index ebf7e243eefa..d8ed640c16c4 100644
+--- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
++++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+@@ -567,6 +567,8 @@ static int epf_ntb_db_bar_init(struct epf_ntb *ntb)
+ 	return -1;
+ }
+ 
++static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb, int num_mws);
++
+ /**
+  * epf_ntb_db_bar_clear() - Clear doorbell BAR and free memory
+  *   allocated in peers outbound address space
+@@ -625,6 +627,11 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
+ 							      &ntb->vpci_mw_phy[i],
+ 							      size);
+ 		if (!ntb->vpci_mw_addr[i]) {
++			pci_epc_clear_bar(ntb->epf->epc,
++					  ntb->epf->func_no,
++					  ntb->epf->vfunc_no,
++					  &ntb->epf->bar[barno]);
++			ret = -ENOMEM;
+ 			dev_err(dev, "Failed to allocate source address\n");
+ 			goto err_alloc_mem;
+ 		}
+@@ -632,6 +639,7 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
+ 
+ 	return ret;
+ err_alloc_mem:
++	epf_ntb_mw_bar_clear(ntb, i);
+ 	return ret;
+ }
+ 
+@@ -640,12 +648,12 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
+  * @ntb: NTB device that facilitates communication between HOST and vHOST
+  *
+  */
+-static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb)
++static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb, int num_mws)
+ {
+ 	enum pci_barno barno;
+ 	int i;
+ 
+-	for (i = 0; i < ntb->num_mws; i++) {
++	for (i = 0; i < num_mws; i++) {
+ 		barno = ntb->epf_ntb_bar[BAR_MW0 + i];
+ 		pci_epc_clear_bar(ntb->epf->epc,
+ 				  ntb->epf->func_no,
+@@ -774,7 +782,7 @@ static int epf_ntb_epc_init(struct epf_ntb *ntb)
+ 	return 0;
+ 
+ err_write_header:
+-	epf_ntb_mw_bar_clear(ntb);
++	epf_ntb_mw_bar_clear(ntb, ntb->num_mws);
+ err_mw_bar_init:
+ 	epf_ntb_db_bar_clear(ntb);
+ err_db_bar_init:
+@@ -794,7 +802,7 @@ static int epf_ntb_epc_init(struct epf_ntb *ntb)
+ static void epf_ntb_epc_cleanup(struct epf_ntb *ntb)
+ {
+ 	epf_ntb_db_bar_clear(ntb);
+-	epf_ntb_mw_bar_clear(ntb);
++	epf_ntb_mw_bar_clear(ntb, ntb->num_mws);
+ }
+ 
+ #define EPF_NTB_R(_name)						\
+-- 
+2.25.1
 
-No strong opinion about the 'nr_failed' updating, like you said, we did 
-not use it in this case. Maybe just add some comments instead of adding 
-some unused code? Otherwise looks good to me.
-
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-
-> 
-> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-> Fixes: 5984fabb6e82 ("mm: move_pages: report the number of non-attempted pages")
-> Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Cc: Zi Yan <ziy@nvidia.com>
-> Cc: Yang Shi <shy828301@gmail.com>
-> --- >   mm/migrate.c | 8 +++++---
->   1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index 82444e7df9f1..542533e4e3cf 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1425,11 +1425,11 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
->   				/*
->   				 * When memory is low, don't bother to try to migrate
->   				 * other pages, just exit.
-> -				 * THP NUMA faulting doesn't split THP to retry.
->   				 */
-> -				if (is_thp && !nosplit) {
-> +				if (is_thp) {
->   					nr_thp_failed++;
-> -					if (!try_split_thp(page, &thp_split_pages)) {
-> +					/* THP NUMA faulting doesn't split THP to retry. */
-> +					if (!nosplit && !try_split_thp(page, &thp_split_pages)) {
->   						nr_thp_split++;
->   						goto retry;
->   					}
-> @@ -1446,6 +1446,8 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
->   				 */
->   				list_splice_init(&thp_split_pages, from);
->   				nr_thp_failed += thp_retry;
-> +				if (!no_subpage_counting)
-> +					nr_failed += retry;
->   				goto out;
->   			case -EAGAIN:
->   				if (is_thp)
