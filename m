@@ -2,104 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 066B6CCA48F
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232413AbiFXR1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51396 "EHLO
+        id S232478AbiFXR1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232116AbiFXR0z (ORCPT
+        with ESMTP id S231821AbiFXR0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:26:55 -0400
-Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A821B34650;
-        Fri, 24 Jun 2022 10:26:52 -0700 (PDT)
-Received: by mail-il1-f171.google.com with SMTP id a16so1918127ilr.6;
-        Fri, 24 Jun 2022 10:26:52 -0700 (PDT)
+        Fri, 24 Jun 2022 13:26:54 -0400
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2012A725;
+        Fri, 24 Jun 2022 10:26:48 -0700 (PDT)
+Received: by mail-io1-f45.google.com with SMTP id r133so3399192iod.3;
+        Fri, 24 Jun 2022 10:26:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=Hcu9Y5I2TimI6GlhyMhgQe9uEC4LVq7xIAa/nAEPBC8=;
-        b=Ks9Kxud5Ef+I3tMy+o1ZwmojUgWitXjhm+aOI+TAM+04nwtxS5Y4ixfMDKV45zMDMl
-         xNr1C+I4tmkK2aqyAf87mcOULKZoq/ZX+XVgrrHr79686T5Id6dKPPAJQEhY2saPyaT0
-         Eh4KnkR0cjXYld71EopeDXFBiXWEzxKQ1GQou6rUu7UkJx86rkRFnT7f5cWwGyS/adKS
-         8a8mJwS9Z89/1ewYgwN+LPvw0nSLJG3FqhEYsIU+FCOJ8Db48beet0FsB5bLV/GnQuaS
-         VNqFZUUf+HcYiqUzeZc4FpzVnq8TfTQgw358aMvjRadnfv39OXfqAaKqlGaY6k9HuL+7
-         BmUg==
-X-Gm-Message-State: AJIora9rzcVhj4Zz/mVgjnyCbuBakjjT1gUQ3I71b7tklDn+Q1JyVQjq
-        p/Aw5+PyuA7RuZi/2HLdRw==
-X-Google-Smtp-Source: AGRyM1vzAHHR7MUdvcHbYB9plvLeB5pijXtWczq677bgA2sQBUma/I2wqLWx2WXMYorxt26CDMLDSg==
-X-Received: by 2002:a92:a041:0:b0:2d7:7935:effa with SMTP id b1-20020a92a041000000b002d77935effamr44849ilm.222.1656091611881;
-        Fri, 24 Jun 2022 10:26:51 -0700 (PDT)
+        bh=vaHHEauVvqkMWfLMfHxzFvsc9NwJ8Elmx8AaWGts9VE=;
+        b=Bj9LRq4L8uB1RVMnmz5fw/iPvuxMrvnCr6xKyB29bNmdoDq5VRDtIxsie77Ob4O9GW
+         FiiZVc+UHlo8uFoJRWJ8kqVUR441HZMQ3lZSPTRR5kNBvcI3HySOyTl5Bj5kzAUFQKQ2
+         PgCHuN7ilQkj41KZwW6FZbp3xfLjL6ZUoeLDsYvWdLRhmZA4dApSgekidTrYd+27rR56
+         oPjL4b+YHVwHCRc7RtXCkqUV46WZ8Zeos98bJ56haPEk9YedfAOdtXgw1imfI0syjVwu
+         T9d5ZYNd6+Zz7ONpAGRZdEv24358Ki9HY/UCKFzX1FEsR3xYXdStHEgeGnH8OghZxZ5f
+         +46A==
+X-Gm-Message-State: AJIora8tx/NdbkoI/kzOAiaSEE/POnuj31CcVDG9ebyEOL8hZudkw5pi
+        LqJUXAe8HAT3ZZ2mSqppevHU5p6QCw==
+X-Google-Smtp-Source: AGRyM1vRutqEr41mUsHKGNxNx022yDHkG7fL3mpUC1VA5ARhOw6PzXDJLvpfjiu0/6t7pZQ6SdELnw==
+X-Received: by 2002:a02:c942:0:b0:339:ec11:d04e with SMTP id u2-20020a02c942000000b00339ec11d04emr154237jao.174.1656091607954;
+        Fri, 24 Jun 2022 10:26:47 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id s12-20020a92d90c000000b002d92c91da91sm1344610iln.77.2022.06.24.10.26.50
+        by smtp.gmail.com with ESMTPSA id b1-20020a5d8041000000b00674f9fb1531sm1433314ior.30.2022.06.24.10.26.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 10:26:51 -0700 (PDT)
-Received: (nullmailer pid 146334 invoked by uid 1000);
+        Fri, 24 Jun 2022 10:26:47 -0700 (PDT)
+Received: (nullmailer pid 146346 invoked by uid 1000);
         Fri, 24 Jun 2022 17:26:34 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Sricharan R <quic_srichara@quicinc.com>
-Cc:     linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, sboyd@kernel.org,
-        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
-        mturquette@baylibre.com, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        agross@kernel.org, quic_varada@quicinc.com,
-        linus.walleij@linaro.org, linux-arm-kernel@lists.infradead.org,
-        catalin.marinas@arm.com, p.zabel@pengutronix.de
-In-Reply-To: <20220621161126.15883-5-quic_srichara@quicinc.com>
-References: <20220621161126.15883-1-quic_srichara@quicinc.com> <20220621161126.15883-5-quic_srichara@quicinc.com>
-Subject: Re: [PATCH V2 4/8] dt-bindings: pinctrl: qcom: Add ipq5018 pinctrl bindings
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Dan Murphy <dmurphy@ti.com>, linux-leds@vger.kernel.org,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+In-Reply-To: <20220624111325.96478-1-krzysztof.kozlowski@linaro.org>
+References: <20220624111325.96478-1-krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH] dt-bindings: leds: lp50xx: fix LED children names
 Date:   Fri, 24 Jun 2022 11:26:34 -0600
-Message-Id: <1656091594.356132.146333.nullmailer@robh.at.kernel.org>
+Message-Id: <1656091594.405509.146345.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 21 Jun 2022 21:41:22 +0530, Sricharan R wrote:
-> From: Varadarajan Narayanan <quic_varada@quicinc.com>
+On Fri, 24 Jun 2022 13:13:25 +0200, Krzysztof Kozlowski wrote:
+> The lp50xx LEDs expects to have single-color LED children with unit
+> addresses.  This is required by the driver and provided by existing
+> DTSes.  Fix the binding to match actual usage.
 > 
-> Add device tree binding Documentation details for ipq5018
-> pinctrl driver.
-> 
-> Co-developed-by: Nitheesh Sekar <quic_nsekar@quicinc.com>
-> Co-developed-by: Sricharan R <quic_srichara@quicinc.com>
-> Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
-> Signed-off-by: Nitheesh Sekar <quic_nsekar@quicinc.com>
-> Signed-off-by: Varadarajan Narayanan <quic_varada@quicinc.com>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Fixes: dce1452301e7 ("dt: bindings: lp50xx: Introduce the lp50xx family of RGB drivers")
 > ---
->  .../pinctrl/qcom,ipq5018-pinctrl.yaml         | 145 ++++++++++++++++++
->  1 file changed, 145 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml
+>  Documentation/devicetree/bindings/leds/leds-lp50xx.yaml | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:72:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:73:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:74:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:75:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:76:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:77:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:78:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:79:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:80:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:81:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:82:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:83:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:84:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:85:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:86:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:87:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:88:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:89:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
-./Documentation/devicetree/bindings/pinctrl/qcom,ipq5018-pinctrl.yaml:90:11: [warning] wrong indentation: expected 16 but found 10 (indentation)
 
 dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-lp50xx.example.dtb: led-controller@14: multi-led@2:#size-cells:0:0: 0 was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
 
 doc reference errors (make refcheckdocs):
 
