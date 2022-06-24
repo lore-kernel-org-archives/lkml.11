@@ -2,184 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9839C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F1EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231907AbiFXMHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 08:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
+        id S231938AbiFXMHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 08:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231903AbiFXMHb (ORCPT
+        with ESMTP id S231912AbiFXMHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 08:07:31 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222A87FD2A;
-        Fri, 24 Jun 2022 05:07:30 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id bn8so2561290ljb.2;
-        Fri, 24 Jun 2022 05:07:30 -0700 (PDT)
+        Fri, 24 Jun 2022 08:07:39 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2075.outbound.protection.outlook.com [40.107.244.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F2E7FD35;
+        Fri, 24 Jun 2022 05:07:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nYT6T+g/pToeztR/E5kvwjcTFzX5d0tfqu3985QhhkTss8WaF+/sdm3grG0NUZMb6bQoIoPrKB6QL13ItQtWyxB/DmKjJsNu3n2c4a5/s3N0aODmztRHI4o1E/5PwUa933by3wsv4VzYAXSzU4kvweJnk8DvGPsxdpGa/x+xZsUAFEc5O9VBsvD+UfGUzy4gJ83K4AS7c47P+Qt7vdpebFx9x40zmXkBOasNgX8/KskBxADU15bHc8WkruxRZAGtpMt18k45lPfWzXxJrsbol70dtwCzw9awFW1T8GDzTOu9RhdIRkKO/Z7WvQPNOAMv3EcEPqJIArjyv/k50oCrWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UglXwQ8315VDT7Db2CyxMMeqT8Qbp4ICreWy9dnboEU=;
+ b=ak0qmmp8QkpSgbP5BELPepIYfU9ByFVQ5z1Sc4wA1sX5fpgs6vyKR+T+Q1LE2gYR6mEgnWVcJZuZW7/opqFzPS0b9MKcMno243jF8DItTqNeM28M7J28STWY5S6bmTyqh+z63p4xUD37TDrrdOHqwmTPAVwh+qObr6nMbIIoqKwL9qN5laDiL/Po8Sdp+2sfI5NZ8Cp4l9itfOYPdUFqqgruYPE3hDcHrTqmEbnnw4LxsLlmvBT88G4hkrQIlFFuzBjOc0rrSEUzuaAJhD+pWoX7xyxi4+ME1RsFMNwF+F/7RUHlAK+5XDdobzOKpAyCYmzOrw+KgY2gA7trMcXsgg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=amd.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MlmWOxwc9B5om1qcXX6Sgk8MRmGPoyaBAHrPiH+sPck=;
-        b=TQavJQqPAxGOqaMWJH9G5tNHL53MY09upOvdRJfLqeqqZop/EKT0tPY3DYiABuEp6R
-         zLNG7my/MHYCPm5oEBkNe/RKCL3gIoCOTEYLZ5XRY+flheUaPrpqFFaSipolHublVGk7
-         8Z9C6a2UXzh65Mwq/B9RTrrYSVAU33jj2TzOT+5tG18uTErqLoFcY6bpUlf7lQ4cKNrx
-         FzTSgNU7Or9nuNLn2hU9yDkXPIgoY4cNUA2pxNmWAqB0XMXmPCKenP2FydicJ0Gspq03
-         ItDkP4YjE/Hk/SH8BXRir0+EVbSyUi4R7qslZ7PsLFRlMk5ZmOgXJ+kQAquVkncYJVs2
-         rsEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MlmWOxwc9B5om1qcXX6Sgk8MRmGPoyaBAHrPiH+sPck=;
-        b=3sFhTSr/HkfWNuB4gKrxZRQB+NvVKZlBrZ9kzkGIoGdlJgF0OKIFJpED1MvvKGSgEh
-         M6vHZ1lksBg9iWN53MYBZ5u5/2lL88IyFQh+OeJJUxrsj74Fc/z9oXctexcJpxJ6HcrF
-         d8YtTl0mzrZTaxhH28Cb1/k8wiuweHZHXOA8sYJ+rbD6nsihlcXTXV2OfdYwxR2JwhPw
-         quB7ZZB+Cqlg0/XClFvJMo0VWdWHl6cdKKy6rx/HIWRcmJ/FDiz6fzp4zxsOiH2VvC6x
-         jRT+sDhfmV14royii7NuiGPQVgyuEhZ7bHOO3M8kDHaHyFHazTpA0cTfnKrJaZ7Wzzx0
-         PHyA==
-X-Gm-Message-State: AJIora85zXfCaz7QhyW0Tv42LrwYmqqSYxJxXl+FqaccdgKHrBeHseFm
-        ixINSCofN78hBfqqza+kxqg=
-X-Google-Smtp-Source: AGRyM1ul024y5yyz3HCvSrcXgQgYJBlCT9N3Mk8SZtstRjOh+SrDXWzEgx7iNLMpl1idElTM3rjavg==
-X-Received: by 2002:a05:651c:178a:b0:25a:44ab:593 with SMTP id bn10-20020a05651c178a00b0025a44ab0593mr7385359ljb.358.1656072448258;
-        Fri, 24 Jun 2022 05:07:28 -0700 (PDT)
-Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id v5-20020a2ea605000000b0025a96e2ab0csm261845ljp.133.2022.06.24.05.07.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 05:07:27 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 14:09:17 +0200
-From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Kent Gustavsson <kent@minoris.se>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 06/10] iio: adc: mcp3911: add support for oversampling
- ratio
-Message-ID: <YrWpbcjHSY+se1Aj@gmail.com>
-References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
- <20220623170844.2189814-6-marcus.folkesson@gmail.com>
- <CAHp75Ve+gDa46MRhTR-5dOutGhXqakZbSX14TurwnsuT4OeuYQ@mail.gmail.com>
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UglXwQ8315VDT7Db2CyxMMeqT8Qbp4ICreWy9dnboEU=;
+ b=ZpYFp5XbXhNbqeM6Lgxr2SCXrRd5SJAjlDpr0nPLYBo4D4Soak5EPLq/bfTCZx4mDNj3aJLBk5VHp+y9RZ4sJ3/eYDTExIBsSHqpPSJ+GBwufSXcFvA7XqQ7RuNkDVanmuq2vSBDfqjwnkZqes5zsAvHf8t2/bW9RHETSIKFOJ4=
+Received: from SN7PR04CA0116.namprd04.prod.outlook.com (2603:10b6:806:122::31)
+ by SN1PR02MB3758.namprd02.prod.outlook.com (2603:10b6:802:2c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Fri, 24 Jun
+ 2022 12:07:33 +0000
+Received: from SN1NAM02FT0039.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:806:122:cafe::c2) by SN7PR04CA0116.outlook.office365.com
+ (2603:10b6:806:122::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16 via Frontend
+ Transport; Fri, 24 Jun 2022 12:07:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0039.mail.protection.outlook.com (10.97.5.35) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5373.15 via Frontend Transport; Fri, 24 Jun 2022 12:07:33 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 24 Jun 2022 05:07:31 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 24 Jun 2022 05:07:31 -0700
+Envelope-to: git@amd.com,
+ michal.simek@amd.com,
+ linux-arm-kernel@lists.infradead.org,
+ linux-i2c@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Received: from [172.23.64.2] (port=47738 helo=xhdvnc102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <manikanta.guntupalli@xilinx.com>)
+        id 1o4i5z-0005Oz-Gr; Fri, 24 Jun 2022 05:07:31 -0700
+Received: by xhdvnc102.xilinx.com (Postfix, from userid 90444)
+        id 928C010454C; Fri, 24 Jun 2022 17:35:54 +0530 (IST)
+From:   Manikanta Guntupalli <manikanta.guntupalli@xilinx.com>
+To:     <michal.simek@xilinx.com>, <michal.simek@amd.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <git@amd.com>
+CC:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>,
+        Manikanta Guntupalli <manikanta.guntupalli@xilinx.com>
+Subject: [PATCH 09/12] dt-bindings: i2c: xiic: Add 'xlnx,axi-iic-2.1' to compatible
+Date:   Fri, 24 Jun 2022 17:35:24 +0530
+Message-ID: <1656072327-13628-10-git-send-email-manikanta.guntupalli@xilinx.com>
+X-Mailer: git-send-email 2.1.1
+In-Reply-To: <1656072327-13628-1-git-send-email-manikanta.guntupalli@xilinx.com>
+References: <1656072327-13628-1-git-send-email-manikanta.guntupalli@xilinx.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="mjYFCl1wg8k8qrkO"
-Content-Disposition: inline
-In-Reply-To: <CAHp75Ve+gDa46MRhTR-5dOutGhXqakZbSX14TurwnsuT4OeuYQ@mail.gmail.com>
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f2853b89-ffc6-4e5e-cdc9-08da55da1ebe
+X-MS-TrafficTypeDiagnostic: SN1PR02MB3758:EE_
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2NsFFxmG1DK+b9BuMDHuF/YISmiXnAbMuwmrcMAchldpUmSYsOaQtPW2sz7iwIC8q7QLrTcKoBye4TTMgPtU2iNlcpIbbfnm9R1esc18OWG6hnGDNdeMVhJEyfAH/o6P9GATMC826rqUf4WFMyWcGMsVqI7AsMVg/CJO617dgpLnhV1H69JwQ7qDYwVEyz7OrtO4/kmfR9Kiesqa6HG9VsJ6iuJcw+dMbRib2djMLfZP0QUOD4/fL2tOskUAS51u4PXdM4yvYNWQlfUrIKjX943x5i7hj9q/Rlk3Xkk48fKcDU2JIwC3eBxBQJbvzeZTC8Wpnr6YCMOea8SIP67HUuySo9AEOTaWvMBEXkPz+RvGhW3oWlXmRUQr0xcSnnvdL00ap6eOXEbAZpODzd7NqMBylZ80fZqUyfizRqqwDfmXbIdNJHNagJLWG3kslkrxgrKCcMvFJUBIRyvGl9z7rnzIJPQftmwDLzHqddDcqceyea8VD2BlveWMazvUimO/iGmIqBRs5hUVI8u4+u9DEySmvsj3SnxTBhi6r64DXSbA6pZuFWqGnrv5AmvGEihgMuj4V2SmkpeppcKxwcKSod8HEK2uJfERU4BsxSW1cMieibnHq2ynw0SNroYUfuVTMwvEMeysxIBzlkWz24WXuohOCxiYDeixTiYBvqrVTtKJABkieS8fqEq9jYl6vZpt0i2A0IUkqr0o8ybDWMxXkkmImHOap1AH8Q2Q0V9PqVVDIOyp36UQPhDAFPTe+0MlOxvwVi2qY8Ir1BoohaLv5/+eN79qum/Urx4TPV3GaPDJt/1NDzsp9dDjvJml/TPvEvUv4g3Yqq7vW+7mmpLrWOpBCVWTbLgi0WdYapNkUzQ=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(39860400002)(396003)(36840700001)(40470700004)(46966006)(4326008)(478600001)(2906002)(82310400005)(8676002)(70206006)(2616005)(40480700001)(8936002)(36860700001)(70586007)(41300700001)(7636003)(5660300002)(6266002)(82740400003)(26005)(44832011)(54906003)(42186006)(36756003)(83380400001)(426003)(356005)(107886003)(110136005)(6666004)(47076005)(40460700003)(336012)(316002)(186003)(102446001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 12:07:33.2461
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2853b89-ffc6-4e5e-cdc9-08da55da1ebe
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0039.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR02MB3758
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
 
---mjYFCl1wg8k8qrkO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Xilinx AXI I2C IP is updated with a bug fix for dynamic mode reads.
+Older IPs are handled with a workaround in which they are using
+xiic standard mode for all these effected use cases.
+Added the xilinx I2C new version 'xlnx,axi-iic-2.1' string to
+compatible.
 
-On Thu, Jun 23, 2022 at 09:20:01PM +0200, Andy Shevchenko wrote:
-> On Thu, Jun 23, 2022 at 9:08 PM Marcus Folkesson
-> <marcus.folkesson@gmail.com> wrote:
-> >
-> > The chip support oversampling ratio so expose it to userspace.
->=20
-> supports
->=20
-> ratio, so
->=20
-> ...
+Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@xilinx.com>
+---
+ .../devicetree/bindings/i2c/xlnx,xps-iic-2.00.a.yaml          | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Thanks
->=20
-> > +static const int mcp3911_osr_table[] =3D {32, 64, 128, 256, 512, 1024,=
- 2048, 4096};
->=20
-> Spaces inside {}.
+diff --git a/Documentation/devicetree/bindings/i2c/xlnx,xps-iic-2.00.a.yaml b/Documentation/devicetree/bindings/i2c/xlnx,xps-iic-2.00.a.yaml
+index 715dcfa5a922..e516c1ed358c 100644
+--- a/Documentation/devicetree/bindings/i2c/xlnx,xps-iic-2.00.a.yaml
++++ b/Documentation/devicetree/bindings/i2c/xlnx,xps-iic-2.00.a.yaml
+@@ -14,7 +14,9 @@ allOf:
+ 
+ properties:
+   compatible:
+-    const: xlnx,xps-iic-2.00.a
++    enum:
++      - xlnx,xps-iic-2.00.a
++      - xlnx,axi-iic-2.1
+ 
+   reg:
+     maxItems: 1
+-- 
+2.25.1
 
-Not sure what you mean?
->=20
-> ...
->=20
-> >  }
-> >
-> > +
->=20
-> Unwanted blank line.
->=20
-> ...
-
-Removed
->=20
-> > +               switch (val) {
-> > +               case 4096:
-> > +                       val =3D FIELD_PREP(MCP3911_CONFIG_OSR, 0x07);
-> > +                       break;
-> > +               case 2048:
-> > +                       val =3D FIELD_PREP(MCP3911_CONFIG_OSR, 0x06);
-> > +                       break;
-> > +               case 1024:
-> > +                       val =3D FIELD_PREP(MCP3911_CONFIG_OSR, 0x05);
-> > +                       break;
-> > +               case 512:
-> > +                       val =3D FIELD_PREP(MCP3911_CONFIG_OSR, 0x04);
-> > +                       break;
-> > +               case 256:
-> > +                       val =3D FIELD_PREP(MCP3911_CONFIG_OSR, 0x03);
-> > +                       break;
-> > +               case 128:
-> > +                       val =3D FIELD_PREP(MCP3911_CONFIG_OSR, 0x02);
-> > +                       break;
-> > +               case 64:
-> > +                       val =3D FIELD_PREP(MCP3911_CONFIG_OSR, 0x01);
-> > +                       break;
-> > +               case 32:
-> > +                       val =3D FIELD_PREP(MCP3911_CONFIG_OSR, 0x00);
-> > +                       break;
-> > +               default:
-> > +                       ret =3D -EINVAL;
-> > +                       goto out;
-> > +               }
->=20
-> I understood why the table above, but this is a waste of resources.
-> Use that table
-
-Yep, I will use the table instead
->=20
-> ...
->=20
-> > +               ret =3D mcp3911_update(adc, MCP3911_REG_CONFIG,
-> > +                               MCP3911_CONFIG_OSR,
-> > +                               val, 2);
->=20
-> sizeof() ?
-
-sizeof() what?
-
-
-Thanks,
-Marcus Folkesson
-
---mjYFCl1wg8k8qrkO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmK1qWgACgkQiIBOb1ld
-UjLRIhAAxjpsZF7muOuTgCKiTvY0MQGsqb059NkGOLpiiiB39A0g4r+Oj3yHDdZk
-RmynAm/qheM70moQNU2GUDKUm96bHVHrPmbpl8TpOZ0QldlPanXs3gZ+vBeGlO95
-t0s4NPLVHnxKusVRDSMeWa5EETjm0DWTfwbwE/tDp5Gd9U56+vsJ+fndhIwolLo3
-4kjkDo1oPXlFeJUwAHOZ9HNp+987NVoS0u9SDotb/CkWK63hNfpP9aL6Knk07cby
-PgtLzefWXf47NVOAErZIfE0UzNQkRTP7ijH20JcX+CLYKavovEYbrMXyhVwQky4c
-NrWFjHYy1DhW6WKMc2qW76q1vPrQgQo4y/rsbLlF/25TWCfN3ruFOdpGzijPkDku
-r4buN5L2C7M+MOdfT6R+4Uo2RzQoeK7ZuheU51rn9B/8FQbtldD99mCoBARoEdEq
-JSzIpdnheTmQwZH4BNgzEoe6/NrG08fAtG9oET+7NvCK4fA+h+KasgZ+Ixo/MbOw
-jD8B3m0nNGd1RBRm41/KGUnO4IFzDWmLZAwIHGTRIMpJ3cT5BxR84mmi48EcngS6
-x42I5s1LmfvwCh1k+YXcUWhttZEK/qv6NiEPFRdlK/GomREs4aVDqviveRy0TLnA
-cscGoik2YWh0sOAkmxoOmPhuiNLwL3IW7YhybhrYiTh95p1lrTE=
-=3t6v
------END PGP SIGNATURE-----
-
---mjYFCl1wg8k8qrkO--
