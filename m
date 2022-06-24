@@ -2,106 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C26FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232003AbiFXV5u convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 17:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
+        id S231534AbiFXV6S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 17:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231907AbiFXV5l (ORCPT
+        with ESMTP id S230392AbiFXV6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 17:57:41 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC03487D4A
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:57:40 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OLaB0T018071
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:57:40 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gvvmjgfcp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:57:40 -0700
-Received: from twshared5413.23.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Fri, 24 Jun 2022 14:57:39 -0700
-Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id 52D0694C3A3C; Fri, 24 Jun 2022 14:57:28 -0700 (PDT)
-From:   Song Liu <song@kernel.org>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <x86@vger.kernel.org>
-CC:     <dave.hansen@linux.intel.com>, <mcgrof@kernel.org>,
-        <rick.p.edgecombe@intel.com>, <kernel-team@fb.com>,
-        <daniel@iogearbox.net>, Song Liu <song@kernel.org>
-Subject: [PATCH v5 bpf-next 4/5] vmalloc: introduce huge_vmalloc_supported
-Date:   Fri, 24 Jun 2022 14:57:11 -0700
-Message-ID: <20220624215712.3050672-5-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220624215712.3050672-1-song@kernel.org>
-References: <20220624215712.3050672-1-song@kernel.org>
+        Fri, 24 Jun 2022 17:58:16 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F42B5FD3;
+        Fri, 24 Jun 2022 14:58:15 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id 184so3539529pga.12;
+        Fri, 24 Jun 2022 14:58:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=6x6Z4E26nV0ZtU/SyJqV7Zl5vmGkEtDni/w+IrGDa38=;
+        b=eEsTcA/FaqNfiUT/PmbTpXPlMbPGRT3Z+1Lsr84kB5KF/nmelhYk0S+ejtndA7k+Yk
+         DGYAnXJBWkAt01cR+0z4bX3PXB7gzA7JIdaDK1jEmh6oflXH0ciJcCO1jJtByL5s6v42
+         lYrCKjBkgG5lr4uud48ybA7dzgfCwpH40EybioQ4m/7Jfh1lhKqRTKJ7Ozv6erp8v58f
+         lEQ5Pm8VRIsN4Ufsbtb5+TgR06QqvIqSvsnFZWLsmlqDe8c2xWhZtzrX17D441fbte9V
+         Dx9yyIjOH93tRXBlfqnZg9ud+6HW43ptI1olMVzCVy1G/DJIzSPzIOayzd8BZ7LGvZ6v
+         LtDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=6x6Z4E26nV0ZtU/SyJqV7Zl5vmGkEtDni/w+IrGDa38=;
+        b=iucYNXsrB8yq9lMOHLzYw6w1kb1PGNOQmSzK3AfmfuGeY1pfOtd2onVUWDS8K5fvqc
+         To/9UPJEOjlolxQCYiOjt49TlDVWOrKz+AJijwpXKpHDcbZiYcdP7vsrfiZPflAgAmag
+         JHrgWc4a462IHd6zLXTTVu+NO1lv6AaH6n2/WN0YlUfIWhG6BO2cmzBA1nQa8dAYQl5/
+         6N8bCL2wlXKqb9eqQ26uqx1N5PHBQfxM+s2gvFro4ptZI9El0skipJWRw4wLJHo+MDSw
+         ojH9UllARWd999zYh3CFqabxM+y5DgUwSpwWFxXx8ChHz7X7woUtQmaU0/RD7FGWgPq+
+         9BhQ==
+X-Gm-Message-State: AJIora/TFrh1myXjpEahToyxZ6jf7f+AHPw2f2zvnTxBC2NBMD0EbSwW
+        5jRNVk0FWqfUqIXo+7PkeIKTQDXrrpw=
+X-Google-Smtp-Source: AGRyM1twBJGNS79yLEz+PXmwXUsFzg02LWoSSYdaqbbydRVznHpppNmORI5PDc+RwAb2+O1GvzzvJg==
+X-Received: by 2002:a63:6f43:0:b0:408:d61b:77b0 with SMTP id k64-20020a636f43000000b00408d61b77b0mr804444pgc.529.1656107894640;
+        Fri, 24 Jun 2022 14:58:14 -0700 (PDT)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id o17-20020a170902779100b0015e8d4eb218sm2289717pll.98.2022.06.24.14.58.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 14:58:14 -0700 (PDT)
+Message-ID: <50d6f0bc-030d-9529-0665-e2b3e7c792d8@gmail.com>
+Date:   Sat, 25 Jun 2022 06:58:09 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 1V_946ppO6HWmlH_8yWDoCHMtCVoOcGm
-X-Proofpoint-GUID: 1V_946ppO6HWmlH_8yWDoCHMtCVoOcGm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-24_09,2022-06-24_01,2022-06-22_01
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: en-US
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
+        Akira Yokosawa <akiyks@gmail.com>
+From:   Akira Yokosawa <akiyks@gmail.com>
+Subject: [PATCH v2] docs/doc-guide: Mention make variable SPHINXDIRS
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-huge_vmalloc_supported() exposes vmap_allow_huge so that users of vmalloc
-APIs could know whether vmalloc will return huge pages.
+SPHINXDIRS is useful when you want to test build only those
+documents affected by your changes.
 
-Suggested-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Mention it in the "Sphinx Build" section.
+
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Cc: Maciej W. Rozycki <macro@orcam.me.uk>
 ---
- include/linux/vmalloc.h | 6 ++++++
- mm/vmalloc.c            | 5 +++++
- 2 files changed, 11 insertions(+)
+v1 -> v2:
+  - Added command example (Jon)
 
-diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
-index 59d3e1f3e108..aa2182959fc5 100644
---- a/include/linux/vmalloc.h
-+++ b/include/linux/vmalloc.h
-@@ -243,11 +243,17 @@ static inline void set_vm_flush_reset_perms(void *addr)
- 	if (vm)
- 		vm->flags |= VM_FLUSH_RESET_PERMS;
- }
-+bool huge_vmalloc_supported(void);
+v1: https://lore.kernel.org/r/ff89c064-e24a-0f2f-fc03-b029e5d04338@gmail.com/
+--
+ Documentation/doc-guide/sphinx.rst | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/doc-guide/sphinx.rst b/Documentation/doc-guide/sphinx.rst
+index edc4fa023986..1228b85f6f77 100644
+--- a/Documentation/doc-guide/sphinx.rst
++++ b/Documentation/doc-guide/sphinx.rst
+@@ -151,6 +151,13 @@ If the theme is not available, it will fall-back to the classic one.
  
- #else
- static inline void set_vm_flush_reset_perms(void *addr)
- {
- }
+ The Sphinx theme can be overridden by using the ``DOCS_THEME`` make variable.
+ 
++There is another make variable ``SPHINXDIRS``, which is useful when test
++building a subset of documentation.  For example, you can build documents
++under ``Documentation/doc-guide`` by running
++``make SPHINXDIRS=doc-guide htmldocs``.
++The documentation section of ``make help`` will show you the list of
++subdirectories you can specify.
 +
-+static inline bool huge_vmalloc_supported(void)
-+{
-+	return false;
-+}
- #endif
+ To remove the generated documentation, run ``make cleandocs``.
  
- /* for /proc/kcore */
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index effd1ff6a4b4..0a5add4b5b2d 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -72,6 +72,11 @@ early_param("nohugevmalloc", set_nohugevmalloc);
- static const bool vmap_allow_huge = false;
- #endif	/* CONFIG_HAVE_ARCH_HUGE_VMALLOC */
- 
-+bool huge_vmalloc_supported(void)
-+{
-+	return vmap_allow_huge;
-+}
-+
- bool is_vmalloc_addr(const void *x)
- {
- 	unsigned long addr = (unsigned long)kasan_reset_tag(x);
+ .. [#ink] Having ``inkscape(1)`` from Inkscape (https://inkscape.org)
+
+base-commit: 0ebe4dd124d3a0e708ea24734c13d52657e36363
 -- 
-2.30.2
+2.25.1
 
