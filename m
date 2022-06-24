@@ -2,90 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC25C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A119C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbiFXISo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 04:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39544 "EHLO
+        id S231488AbiFXISr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 04:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbiFXISd (ORCPT
+        with ESMTP id S231452AbiFXISh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 04:18:33 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522836363F
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:18:32 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id cw10so3184911ejb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:18:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ku+g6mH8ZtuEKNgu6VjhrNGoqiS6ry/wCTbIBt3/GQE=;
-        b=SrzkAYFywwE4KrBRkZEgbZe97t9oQ6QOcINHeDh+qKi+h/tULRuRL9up5ahQJi0BHx
-         1ERpQV3i5md1keFw6ib4iuscoIXbRMc4OoSTfkf/0JuyBuMx2yE5d+VuCZKlb+e2ydAv
-         5qFTFHiUB3q+1qqLpxnDIPd/vqeriUMxtl3SOGo73K2fG9EtHuYeePfSheEb8/8ANM+k
-         eG4cghoyIplOCn2+G4c+P8N3X+vglkd9sN1Hc29bRaUxH/EotEksy1u7fQBq3yGl79XY
-         IsC5muYGdmRxX1LUj98aoURRTymJvls2yUuxwEUs1nF9bOpnmtzupShon/p7TptCzyHp
-         /dTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ku+g6mH8ZtuEKNgu6VjhrNGoqiS6ry/wCTbIBt3/GQE=;
-        b=WVSadrtSnwh/nNl4gA54iaJu+Fu8XoGr9fSx4kjVt6jGRVCBDZBnhwWuq1HqVhetp/
-         hy/bJjXBkQf3HRQSX0WlCj1ehVN9rGCqKtr018/c3j2g9BvyhAAtRaihXNOUvbiUr3UZ
-         O/vtZh6Iyq0NecwSIMgM44HQOECfVpkxxObJE0w+q58viWXuPle1JutiE4pmvrVni7H4
-         3PDYbjgsAjZSsQHHnEolT4NBduVmkjx/BsXfU1s/Ascg5eURq1inS+MGPslG2TmsEswE
-         FWN2UMjDna42Ft+2zCZOq58C8+gSIX1K/zjUR7G8Y7NTUhGrAL4esP/nwyz6ftuW2Ufc
-         XmsQ==
-X-Gm-Message-State: AJIora+eiUsUHZHD4jAmaC51LhrKOSN7Ci4519PMQe5Jl13bIKwRLPY/
-        4JWy3CesZzlnyzDhQXc/fd09PQ==
-X-Google-Smtp-Source: AGRyM1vDJ1ilNFbcJCloY+qyC5NXLH/wPECYN7/lSbVjCsXgDAbxJtcZoGXGprbeIgu7cqm5JYVB2A==
-X-Received: by 2002:a17:906:147:b0:712:1288:348f with SMTP id 7-20020a170906014700b007121288348fmr11899014ejh.324.1656058710733;
-        Fri, 24 Jun 2022 01:18:30 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id a18-20020aa7cf12000000b0043503d2fa35sm1383360edy.87.2022.06.24.01.18.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 01:18:30 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        arm@kernel.org, soc@kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [GIT PULL] memory: drivers for v5.19
-Date:   Fri, 24 Jun 2022 10:18:28 +0200
-Message-Id: <20220624081828.33649-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Fri, 24 Jun 2022 04:18:37 -0400
+Received: from mail.greatagencyonline.pl (mail.greatagencyonline.pl [89.40.125.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215C46E7A1
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:18:36 -0700 (PDT)
+Received: by mail.greatagencyonline.pl (Postfix, from userid 1001)
+        id 753A2A6321; Fri, 24 Jun 2022 09:06:13 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=greatagencyonline.pl;
+        s=mail; t=1656058048;
+        bh=ksvwLPFdjL017OLwir5xHXy3Vmrj/5fhZ5DwBI62qzc=;
+        h=Date:From:To:Subject:From;
+        b=ll1mTG+h29gh3apszQZruTXwKEond2gwQ7z5x1/f2r1wMUHfxboJd+3KsDTGacqqy
+         COx7+etKjNQrY9CXRG5VjyLmAIV5pBHs2qPSVC1VpRE7yul38VuYwT3/cJPR4tqa4n
+         JFf6k2oDbKKExDgvfa1hmfpB5bLQCU3jBHIBx0DoksC4TN1bAzYxeaqhscGghIzjxY
+         ykAf52YsdBUtcihr+YJJf5VhkdLc9Kxs9GywKIn0U3Gwg4mNrG8qEz7W2Q2DKSwAzl
+         /driWRPPDkmJavLyPsGgiali69SIDuiEziaJIJtbR86NVRB12u70A7cpvgouYox4zE
+         5oYQnJOtc/04g==
+Received: by mail.greatagencyonline.pl for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 08:05:17 GMT
+Message-ID: <20220624074502-0.1.4o.1flib.0.5hpnfh2xdw@greatagencyonline.pl>
+Date:   Fri, 24 Jun 2022 08:05:17 GMT
+From:   =?UTF-8?Q? "Miko=C5=82aj_Rudzik" ?= 
+        <mikolaj.rudzik@greatagencyonline.pl>
+To:     <linux-kernel@vger.kernel.org>
+Subject: =?UTF-8?Q?Nap=C5=82yw_Klient=C3=B3w_ze_strony?=
+X-Mailer: mail.greatagencyonline.pl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+Dzie=C5=84 dobry,
 
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+chcia=C5=82bym poinformowa=C4=87 Pa=C5=84stwa o mo=C5=BCliwo=C5=9Bci pozy=
+skania nowych zlece=C5=84 ze strony www.
 
-are available in the Git repository at:
+Widzimy zainteresowanie potencjalnych Klient=C3=B3w Pa=C5=84stwa firm=C4=85=
+, dlatego ch=C4=99tnie pomo=C5=BCemy Pa=C5=84stwu dotrze=C4=87 z ofert=C4=
+=85 do wi=C4=99kszego grona odbiorc=C3=B3w poprzez efektywne metody pozyc=
+jonowania strony w Google.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-mem-ctrl.git tags/memory-controller-drv-5.20
+Czy m=C3=B3g=C5=82bym liczy=C4=87 na kontakt zwrotny?
 
-for you to fetch changes up to 0d97f2176dec9c1e070215c4e28ba87e036458c9:
 
-  memory: mtk-smi: Add support for MT6795 Helio X10 (2022-06-06 11:11:50 +0200)
-
-----------------------------------------------------------------
-Memory controller drivers for v5.20
-
-Add MediaTek MT6795 Helio X10 SMI support.
-
-----------------------------------------------------------------
-AngeloGioacchino Del Regno (2):
-      dt-bindings: memory: mtk-smi: Add MT6795 Helio X10 bindings
-      memory: mtk-smi: Add support for MT6795 Helio X10
-
- .../memory-controllers/mediatek,smi-common.yaml         |  1 +
- .../bindings/memory-controllers/mediatek,smi-larb.yaml  |  1 +
- drivers/memory/mtk-smi.c                                | 17 +++++++++++++++++
- 3 files changed, 19 insertions(+)
+Pozdrawiam,
+Miko=C5=82aj Rudzik
