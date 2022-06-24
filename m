@@ -2,253 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35721C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 03:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B09C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 03:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbiFXDzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 23:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
+        id S231235AbiFXD4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 23:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229728AbiFXDzx (ORCPT
+        with ESMTP id S229728AbiFXDz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 23:55:53 -0400
-Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9238D515A1;
-        Thu, 23 Jun 2022 20:55:51 -0700 (PDT)
-IronPort-Data: =?us-ascii?q?A9a23=3AON+mDag33EU2n51+SN8rSLyRX161jhIKZh0ujC4?=
- =?us-ascii?q?5NGQNrF6WrkUDyGZMXzjUMqyJZjT1edFzOt7gox4OsJXTzd9kTVRv+3w8FHgiR?=
- =?us-ascii?q?ejtX4rAdhiqV8+xwmwvdGo+toNGLICowPkcFhcwnT/wdOixxZVA/fvQHOCkUra?=
- =?us-ascii?q?dYnkZqTJME0/NtzoywobVvaY42bBVMyvV0T/Di5W31G2NglaYAUpIg063ky6Di?=
- =?us-ascii?q?dyp0N8uUvPSUtgQ1LPWvyF94JvyvshdJVOgKmVfNrbSq+ouUNiEEm3lExcFUrt?=
- =?us-ascii?q?Jk57wdAsEX7zTIROTzHFRXsBOgDAb/mprjPl9b6FaNC+7iB3Q9zx14NFMp5yxS?=
- =?us-ascii?q?wYgOIXCheYcTwJFVSp5OMWq/ZeeeyXh7pTLkB2un3zEhq8G4FsNFYcG8+B+Gnp?=
- =?us-ascii?q?F9fEwITsIKBeZiIqexL+8TMFvi94lIc2tO5kQ0llkzDfEHbMlTIrFTqHi+9BVx?=
- =?us-ascii?q?nEzi9pIEPKYYNAWARJrbRLdc1hVNlIeIIwxkf3uhXTldTBc7lWPqsIf4Wfc5B5?=
- =?us-ascii?q?w3aDgdtHcEuFm7+09cl2w/zqApjqmREpBcoH39NZMyVr07senoM8xcNt6+GWEy?=
- =?us-ascii?q?8NX?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ADD9WE6xjrp2YTTTPNTqJKrPwEL1zdoMgy1kn?=
- =?us-ascii?q?xilNoH1uA6ilfqWV8cjzuiWbtN9vYhsdcLy7WZVoIkmskKKdg7NhXotKNTOO0A?=
- =?us-ascii?q?SVxepZnOnfKlPbexHWx6p00KdMV+xEAsTsMF4St63HyTj9P9E+4NTvysyVuds?=
- =?us-ascii?q?=3D?=
-X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
-   d="scan'208";a="125670078"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 24 Jun 2022 11:55:50 +0800
-Received: from G08CNEXMBPEKD06.g08.fujitsu.local (unknown [10.167.33.206])
-        by cn.fujitsu.com (Postfix) with ESMTP id 4B6094D68A22;
-        Fri, 24 Jun 2022 11:55:45 +0800 (CST)
-Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
- G08CNEXMBPEKD06.g08.fujitsu.local (10.167.33.206) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Fri, 24 Jun 2022 11:55:45 +0800
-Received: from localhost.localdomain (10.167.225.141) by
- G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Fri, 24 Jun 2022 11:55:45 +0800
-From:   Li Zhijian <lizhijian@fujitsu.com>
-To:     Bart Van Assche <bvanassche@acm.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "Leon Romanovsky" <leon@kernel.org>, <linux-rdma@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>
-Subject: [RFC PATCH] RDMA/srp: Fix use-after-free in srp_exit_cmd_priv
-Date:   Fri, 24 Jun 2022 12:02:53 +0800
-Message-ID: <20220624040253.1420844-1-lizhijian@fujitsu.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 23 Jun 2022 23:55:56 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F315159E;
+        Thu, 23 Jun 2022 20:55:56 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id d129so1253596pgc.9;
+        Thu, 23 Jun 2022 20:55:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=aLjJG3wTDdhEgtq1ZKtCCF6LdFjXWGOjNdpJprykOdA=;
+        b=ZM1bUECxFa2yoUSkcaJn1sj2GOOIwzyJ9lQP4IWIXeIoHFS2b1SqfE9M0yGKlL0S29
+         FZWBnuXVNmCAgHYU7zhV7rd3panA+a5OVzPpNAwhg6qmRFnPYljgtZ/KcEEHyc3mQmwr
+         bApTxzi2uUxj0+6etZ+FqXsmJso/hZhfYKJMaJ5Opp2ZiiPUAcmbbp8uGKgyNF+et1xS
+         9bhDpUvdglGyneVlAraINvOaasl9nYYnEfaRiaME2q6iwm+/pRek09a+BjO5vEh6UcIx
+         4KJCjaArPcGNAKrJ4eKCz17Eh2bsTSsgzdhfX4b66F/I9kPsCf1tQoy00DckBGTth7PY
+         o5zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aLjJG3wTDdhEgtq1ZKtCCF6LdFjXWGOjNdpJprykOdA=;
+        b=7AXzKOuzedt9gfXggQYeYbWE3ZPlj7wOzj+YU8+cKk0rvFrWkf93CRzxXxEdgJIOHi
+         q81fXTXpXK+6pnuuWssSkFsjHDlHf449E/xGEb8ZGfW3F6jgAdgTIo2yYl/Z2HfuBLvB
+         bnVoVKhcG1zCPTqF9eSsg0udEv2BlteK6tSTrGTO6GYcA+EaWoJrWbKXdTimHzE6/rEs
+         lwm/3N528Vt47TfIQS0dvetQs3c42Y5ejDD6aSCvwa97/dRxuoCinCwiXUv0JMOmpR+o
+         rSh3vgLH91kqxqYGWWh0RtnSAo3J+/qDaQn+3BfR5PBwXa6FkWwpTKl6Pvpyxgy9nguC
+         yuPg==
+X-Gm-Message-State: AJIora9hEsMz72f1GueG6yHWtX4iGOSrD2KIIdp7IACNisX28s7Kn0H8
+        xs1L0HAk8YvMFcaAptTGxQTlegoldbg=
+X-Google-Smtp-Source: AGRyM1tlRVFPuMu7yVFH++RQkdtWXolPU+PEGhyLqYRxXv0PonINvxdj8vPhSlV7RbbqORyIgKCG2w==
+X-Received: by 2002:a63:3c12:0:b0:40d:66f:8241 with SMTP id j18-20020a633c12000000b0040d066f8241mr10181476pga.612.1656042955417;
+        Thu, 23 Jun 2022 20:55:55 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id a4-20020a170902710400b0016a1c61c603sm588280pll.154.2022.06.23.20.55.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 20:55:54 -0700 (PDT)
+Message-ID: <62b535ca.1c69fb81.b0647.1529@mx.google.com>
+X-Google-Original-Message-ID: <20220624035553.GA980944@cgel.zte@gmail.com>
+Date:   Fri, 24 Jun 2022 03:55:53 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Namjae Jeon <linkinjeon@kernel.org>
+Cc:     Eric Biggers <ebiggers@kernel.org>, xu.xin16@zte.com.cn,
+        anton@tuxera.com, linux-ntfs-dev@lists.sourceforge.net,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com,
+        Songyi Zhang <zhang.songyi@zte.com.cn>,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Jiang Xuexin <jiang.xuexin@zte.com.cn>,
+        Zhang wenya <zhang.wenya1@zte.com.cn>
+Subject: Re: [PATCH v2] fs/ntfs: fix BUG_ON of ntfs_read_block()
+References: <20220623033635.973929-1-xu.xin16@zte.com.cn>
+ <20220623094956.977053-1-xu.xin16@zte.com.cn>
+ <YrSeAGmk4GZndtdn@sol.localdomain>
+ <CAKYAXd8qoLKbWGX7omYUfarSugRnose8X8o3Zhb1XctiUtamQg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-yoursite-MailScanner-ID: 4B6094D68A22.AE690
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKYAXd8qoLKbWGX7omYUfarSugRnose8X8o3Zhb1XctiUtamQg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-srp_exit_cmd_priv() will try to access srp_device by Scsi_Host like below:
+On Fri, Jun 24, 2022 at 11:33:28AM +0900, Namjae Jeon wrote:
+> 2022-06-24 2:08 GMT+09:00, Eric Biggers <ebiggers@kernel.org>:
+> > On Thu, Jun 23, 2022 at 09:49:56AM +0000, cgel.zte@gmail.com wrote:
+> >> From: xu xin <xu.xin16@zte.com.cn>
+> >>
+> >> As the bug description at
+> >> https://lore.kernel.org/lkml/20220623033635.973929-1-xu.xin16@zte.com.cn/
+> >> attckers can use this bug to crash the system.
+> >>
+> >> So to avoid panic, remove the BUG_ON, and use ntfs_warning to output a
+> >> warning to the syslog and return instead until someone really solve
+> >> the problem.
+> >>
+> >> Cc: stable@vger.kernel.org
+> >> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> >> Reported-by: syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com
+> >> Reviewed-by: Songyi Zhang <zhang.songyi@zte.com.cn>
+> >> Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
+> >> Reviewed-by: Jiang Xuexin<jiang.xuexin@zte.com.cn>
+> >> Reviewed-by: Zhang wenya<zhang.wenya1@zte.com.cn>
+> >> Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+> >> ---
+> >>
+> >> Change for v2:
+> >>  - Use ntfs_warning instead of WARN().
+> >>  - Add the tag Cc: stable@vger.kernel.org.
+> >> ---
+> >>  fs/ntfs/aops.c | 7 ++++++-
+> >>  1 file changed, 6 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/fs/ntfs/aops.c b/fs/ntfs/aops.c
+> >> index 5f4fb6ca6f2e..84d68efb4ace 100644
+> >> --- a/fs/ntfs/aops.c
+> >> +++ b/fs/ntfs/aops.c
+> >> @@ -183,7 +183,12 @@ static int ntfs_read_block(struct page *page)
+> >>  	vol = ni->vol;
+> >>
+> >>  	/* $MFT/$DATA must have its complete runlist in memory at all times. */
+> >> -	BUG_ON(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni));
+> >> +	if (unlikely(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni))) {
+> >> +		ntfs_warning(vi->i_sb, "Error because ni->runlist.rl, ni->mft_no, "
+> >> +				"and NInoAttr(ni) is null.");
+> >> +		unlock_page(page);
+> >> +		return -EINVAL;
+> >> +	}
+> >
+> > A better warning message that doesn't rely on implementation details
+> > (struct
+> > field and macro names) would be "Runlist of $MFT/$DATA is not cached".
+> > Also,
+> > why does this situation happen in the first place?  Is there a way to
+> > prevent
+> > this situation in the first place?
+> 
+> ntfs_mapping_pairs_decompress() should return error pointer instead of NULL.
+> Callers is checking error value using IS_ERR(). and the mapping pairs
+> array of @MFT entry is empty, I think it's corrupted, it should cause
+> mount failure.
+> 
+> I haven't checked if this patch fix the problem. Xu, Can you check it ?
+> 
 
- Scsi_Host                srp_target_port     srp_host         srp_device
-+------------------+ +-- +--------------+  +>+----------+   +->+---------+
-|                  | |   |              |  | |          |   |  |         |
-|                  | |   |  *srp_host   +--+ | *srp_dev +---+  | *dev    |
-+-+hostdata--------+-+   |              |    |          |      |         |
-| | srp_target_port|     |              |    |          |      |         |
-| |                |     |              |    |          |      |         |
-| |                |     |              |    |          |      |         |
-+-+----------------+---- +--------------+    +----------+      +---------+
+I have test it and it fixes the problem.
 
-But sometims Scsi_Host still keeps the reference to srp_host that is
-possible released already. This could be happend if i frequently abort
-(Ctrl-c) the blktests during it was running and then cause below error:
+Thanks.
 
-[  952.294952] scsi 9:0:0:1: alua: Detached
-[  952.298232] ==================================================================
-[  952.298235] BUG: KASAN: use-after-free in srp_exit_cmd_priv+0x27/0xd0 [ib_srp]
-[  952.298254] Read of size 8 at addr ffff888100337000 by task multipathd/16727
-[  952.298258]
-[  952.298263] CPU: 0 PID: 16727 Comm: multipathd Not tainted 5.19.0-rc1-roce-flush+ #78
-[  952.298268] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-27-g64f37cc530f1-prebuilt.qemu.org 04/01/2014
-[  952.298272] Call Trace:
-[  952.298281]  <TASK>
-[  952.298283]  dump_stack_lvl+0x34/0x44
-[  952.298303]  print_report.cold+0x5e/0x5db
-[  952.298317]  ? schedule_timeout+0x1c4/0x210
-[  952.298329]  ? srp_exit_cmd_priv+0x27/0xd0 [ib_srp]
-[  952.298343]  kasan_report+0xab/0x120
-[  952.298356]  ? srp_exit_cmd_priv+0x27/0xd0 [ib_srp]
-[  952.298370]  srp_exit_cmd_priv+0x27/0xd0 [ib_srp]
-[  952.298384]  scsi_mq_exit_request+0x4d/0x70
-[  952.298394]  blk_mq_free_rqs+0x143/0x410
-[  952.298406]  __blk_mq_free_map_and_rqs+0x6e/0x100
-[  952.298413]  blk_mq_free_tag_set+0x2b/0x160
-[  952.298419]  scsi_host_dev_release+0xf3/0x1a0
-[  952.298427]  device_release+0x54/0xe0
-[  952.298438]  kobject_put+0xa5/0x120
-[  952.298451]  device_release+0x54/0xe0
-[  952.298456]  kobject_put+0xa5/0x120
-[  952.298461]  scsi_device_dev_release_usercontext+0x4c1/0x4e0
-[  952.298468]  ? scsi_device_cls_release+0x10/0x10
-[  952.298474]  execute_in_process_context+0x23/0x90
-[  952.298483]  device_release+0x54/0xe0
-[  952.298487]  kobject_put+0xa5/0x120
-[  952.298493]  scsi_disk_release+0x3f/0x50
-[  952.298500]  device_release+0x54/0xe0
-[  952.298504]  kobject_put+0xa5/0x120
-[  952.298509]  disk_release+0x17f/0x1b0
-[  952.298516]  device_release+0x54/0xe0
-[  952.298520]  kobject_put+0xa5/0x120
-[  952.298526]  dm_put_table_device+0xa3/0x160 [dm_mod]
-[  952.298559]  dm_put_device+0xd0/0x140 [dm_mod]
-[  952.298592]  free_priority_group+0xd8/0x110 [dm_multipath]
-[  952.298602]  free_multipath+0x94/0xe0 [dm_multipath]
-[  952.298612]  dm_table_destroy+0xa2/0x1e0 [dm_mod]
-[  952.298645]  __dm_destroy+0x196/0x350 [dm_mod]
-[  952.298676]  dev_remove+0x10c/0x160 [dm_mod]
-[  952.298709]  ctl_ioctl+0x2c2/0x590 [dm_mod]
-[  952.298751]  ? table_clear+0x100/0x100 [dm_mod]
-[  952.298784]  ? remove_all+0x40/0x40 [dm_mod]
-[  952.298820]  ? __blkcg_punt_bio_submit+0xd0/0xd0
-[  952.298828]  ? __rcu_read_unlock+0x43/0x60
-[  952.298838]  dm_ctl_ioctl+0x5/0x10 [dm_mod]
-[  952.298870]  __x64_sys_ioctl+0xb4/0xf0
-[  952.298784]  ? remove_all+0x40/0x40 [dm_mod]
-[  952.298820]  ? __blkcg_punt_bio_submit+0xd0/0xd0
-[  952.298828]  ? __rcu_read_unlock+0x43/0x60
-[  952.298838]  dm_ctl_ioctl+0x5/0x10 [dm_mod]
-[  952.298870]  __x64_sys_ioctl+0xb4/0xf0
-[  952.298877]  do_syscall_64+0x3b/0x90
-[  952.298884]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[  952.298890] RIP: 0033:0x7f1d7f4654eb
-[  952.298896] Code: ff ff ff 85 c0 79 9b 49 c7 c4 ff ff ff ff 5b 5d 4c 89 e0 41 5c c3 66 0f 1f 84 00 00 00 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 55 b9 0c 00 f7 d8 64 89 01 48
-[  952.298903] RSP: 002b:00007f1d7de21558 EFLAGS: 00000206 ORIG_RAX: 0000000000000010
-[  952.298912] RAX: ffffffffffffffda RBX: 00007f1d7f682050 RCX: 00007f1d7f4654eb
-[  952.298916] RDX: 00007f1d6c016730 RSI: 00000000c138fd04 RDI: 0000000000000005
-[  952.298919] RBP: 00007f1d7f6be2b6 R08: 00007f1d7de1f2b0 R09: 00007f1d7de1f200
-[  952.298922] R10: 0000000000000001 R11: 0000000000000206 R12: 00007f1d6c001100
-[  952.298925] R13: 00007f1d6c016760 R14: 00007f1d6c0167e0 R15: 00007f1d6c016730
-[  952.298930]  </TASK>
-[  952.298933]
-[  952.298934] Allocated by task 16887:
-[  952.298939]  kasan_save_stack+0x1e/0x40
-[  952.298944]  __kasan_kmalloc+0x81/0xa0
-[  952.298948]  srp_add_one+0x32a/0x540 [ib_srp]
-[  952.298961]  add_client_context+0x23b/0x300 [ib_core]
-[  952.299043]  ib_register_client+0x1d5/0x220 [ib_core]
-[  952.299123]  0xffffffffc0a60149
-[  952.299125]  do_one_initcall+0x84/0x280
-[  952.299132]  do_init_module+0xdf/0x2e0
-[  952.299136]  load_module+0x2b9e/0x2c90
-[  952.299139]  __do_sys_finit_module+0x111/0x190
-[  952.299143]  do_syscall_64+0x3b/0x90
-[  952.299147]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[  952.299152]
-[  952.299153] Freed by task 17289:
-[  952.299156]  kasan_save_stack+0x1e/0x40
-[  952.299160]  kasan_set_track+0x21/0x30
-[  952.299164]  kasan_set_free_info+0x20/0x30
-[  952.299169]  __kasan_slab_free+0x108/0x170
-[  952.299173]  kfree+0x9a/0x320
-[  952.299177]  srp_remove_one+0x114/0x180 [ib_srp]
-[  952.299189]  remove_client_context+0x8f/0xd0 [ib_core]
-[  952.299269]  disable_device+0xee/0x1e0 [ib_core]
-[  952.299348]  __ib_unregister_device+0x59/0xf0 [ib_core]
-[  952.299429]  ib_unregister_device_and_put+0x3b/0x50 [ib_core]
-[  952.299509]  nldev_dellink+0x126/0x1b0 [ib_core]
-[  952.299592]  rdma_nl_rcv_msg+0x1cc/0x310 [ib_core]
-[  952.299673]  rdma_nl_rcv+0x172/0x200 [ib_core]
-[  952.299760]  netlink_unicast+0x36b/0x4a0
-[  952.299770]  netlink_sendmsg+0x3a9/0x6d0
-[  952.299774]  sock_sendmsg+0x91/0xa0
-[  952.299783]  __sys_sendto+0x16f/0x210
-[  952.299788]  __x64_sys_sendto+0x6f/0x80
-[  952.299792]  do_syscall_64+0x3b/0x90
-[  952.299795]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[  952.299801]
-[  952.299801] Last potentially related work creation:
-[  952.299803]  kasan_save_stack+0x1e/0x40
-[  952.299807]  __kasan_record_aux_stack+0x97/0xa0
-[  952.299812]  call_rcu+0x41/0x580
-[  952.299816]  rht_deferred_worker+0x552/0x700
-[  952.299830]  kthread+0x167/0x1a0
-[  952.299835]  ret_from_fork+0x22/0x30
-[  952.299839]
-[  952.299840] The buggy address belongs to the object at ffff888100337000
-[  952.299840]  which belongs to the cache kmalloc-1k of size 1024
-[  952.299844] The buggy address is located 0 bytes inside of
-[  952.299844]  1024-byte region [ffff888100337000, ffff888100337400)
-[  952.299848]
-[  952.299849] The buggy address belongs to the physical page:
-[  952.299850] page:000000005d3ee749 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x100334
-[  952.299857] head:000000005d3ee749 order:2 compound_mapcount:0 compound_pincount:0
-[  952.299860] flags: 0x100000000010200(slab|head|node=0|zone=2)
-[  952.299868] raw: 0100000000010200 0000000000000000 dead000000000001 ffff888100041dc0
-[  952.299872] raw: 0000000000000000 0000000000080008 00000001ffffffff 0000000000000000
-[  952.299874] page dumped because: kasan: bad access detected
-[  952.299876]
-[  952.299876] Memory state around the buggy address:
-[  952.299878]  ffff888100336f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  952.299882]  ffff888100336f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  952.299885] >ffff888100337000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  952.299887]                    ^
-[  952.299889]  ffff888100337080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  952.299892]  ffff888100337100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-
-Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
----
-This patch is mainly to report the use-after-free bug. It seems the proposal
-increasing the IB device's reference count is a bit ugly. Feedbacks and
-ideas are very welcome.
----
- drivers/infiniband/ulp/srp/ib_srp.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/infiniband/ulp/srp/ib_srp.c b/drivers/infiniband/ulp/srp/ib_srp.c
-index 6058abf42ba7..5981a0ea7a19 100644
---- a/drivers/infiniband/ulp/srp/ib_srp.c
-+++ b/drivers/infiniband/ulp/srp/ib_srp.c
-@@ -979,6 +979,8 @@ static int srp_exit_cmd_priv(struct Scsi_Host *shost, struct scsi_cmnd *cmd)
- 				    DMA_TO_DEVICE);
- 	}
- 	kfree(req->indirect_desc);
-+	/* pair with get_device() in srp_init_cmd_priv() */
-+	put_device(&ibdev->dev);
- 
- 	return 0;
- }
-@@ -1006,12 +1008,14 @@ static int srp_init_cmd_priv(struct Scsi_Host *shost, struct scsi_cmnd *cmd)
- 				     target->indirect_size,
- 				     DMA_TO_DEVICE);
- 	if (ib_dma_mapping_error(ibdev, dma_addr)) {
-+		get_device(&ibdev->dev);
- 		srp_exit_cmd_priv(shost, cmd);
- 		goto out;
- 	}
- 
- 	req->indirect_dma_addr = dma_addr;
- 	ret = 0;
-+	get_device(&ibdev->dev);
- 
- out:
- 	return ret;
--- 
-2.31.1
-
-
-
+> diff --git a/fs/ntfs/runlist.c b/fs/ntfs/runlist.c
+> index 97932fb5179c..31263fe0772f 100644
+> --- a/fs/ntfs/runlist.c
+> +++ b/fs/ntfs/runlist.c
+> @@ -766,8 +766,11 @@ runlist_element
+> *ntfs_mapping_pairs_decompress(const ntfs_volume *vol,
+>                 return ERR_PTR(-EIO);
+>         }
+>         /* If the mapping pairs array is valid but empty, nothing to do. */
+> -       if (!vcn && !*buf)
+> +       if (!vcn && !*buf) {
+> +               if (!old_rl)
+> +                       return ERR_PTR(-EIO);
+>                 return old_rl;
+> +       }
+>         /* Current position in runlist array. */
+>         rlpos = 0;
+>         /* Allocate first page and set current runlist size to one page. */
+> 
+> >
+> > - Eric
+> >
