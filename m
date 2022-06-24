@@ -2,53 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F070C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A917EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232384AbiFXRi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:38:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        id S232287AbiFXRi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231253AbiFXRhM (ORCPT
+        with ESMTP id S231851AbiFXRha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:37:12 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9726362F
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:37:11 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id r6-20020a5b06c6000000b006693f6a6d67so2759142ybq.7
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:37:11 -0700 (PDT)
+        Fri, 24 Jun 2022 13:37:30 -0400
+Received: from mail-ua1-x949.google.com (mail-ua1-x949.google.com [IPv6:2607:f8b0:4864:20::949])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2234162C13
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:37:29 -0700 (PDT)
+Received: by mail-ua1-x949.google.com with SMTP id j14-20020ab01d0e000000b0037f3ad22193so1059489uak.0
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:37:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=DnSvOCh5sWPJ7lcBADLIxPbYxItP++yx8CJTrhTsmkQ=;
-        b=US3MsLbvouGIjHoGSmamHgOBwfVLiqHYYcRvXBkO6HEAmTlF5CdcIRrqyBB5+4Y/DV
-         R5ICOEZyQShiEkEjw9K8OxlWQ7I2pDRlr90/Vfu04GIdVuiVQX/VzfipMXKUc0bL1aEa
-         TCR4uXZB7kclJoTtfEbTGbDmqCNSbz2QMvIDHzOXNXYuywQu3Jt5n7X+BkFVBu9sQGQH
-         qf7yTmkeJo9FYAv+IGlcghgPupGKieeYs5gqVMSXqpXZm+f8BJ0HwTzLUGcqBermMTbW
-         c36PY+n2Trkho0VVxb4xR3d/LJtyTy475z4gDUpnvFEDh6r5hNbWx3oK1N8zswbyUhI0
-         Z1og==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=fLhWVrtL3jCVQZTI/SpR/dF9bcFaOpNW6kUek+4VMrQ=;
+        b=h/ysFkhblpzJ+iMXOAuoAW1RCDzHD/+S02IOwgDp+W1ftcj/5GpmKopNXVJGmI11dt
+         mAS2/ecnjScCvn9y+SSrPgkps+68W5ymor9ZeqP24UdBQp7MkKwq9sGbZh9bcS3Kot12
+         BGqJ5gfYWmse/+yrqaROihgM78qPJlOL2tffwnW0DZUm7UP9c6M6BVGl7wnznm72cE8e
+         Gmgcs44D/bkYNixg8jOWwZMa5AJhJKIcbwa6ooNOCsk7KyEQSYEcelE/7NURJzuTXfld
+         QKmlDWTSdSuaR2EkI87u4H/5x0GVEh50Cju+5MyrG72wa/G6IgHcBFf2GIqziepRDeTo
+         ynXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=DnSvOCh5sWPJ7lcBADLIxPbYxItP++yx8CJTrhTsmkQ=;
-        b=AifhVqrYv8ZNaSM5bocGmV/IpvI8lQImHHjbBTxI1IjE12XV3jjxIWWwb4kc/9iOta
-         oa6cXwocrdnPcLFlYXXmRBB++WwJCHBSdUi0aGeDIR945LDZHrtOjI4nbG2qMqm4Gmus
-         9r6jTidb8U2MoDOBjSEoi3Ror+cR6xmSwCvxVTkEUTDmvwGE5VeXDORj2ul4fNHYphvy
-         mUeuTUOlAwpXgoqi+7/MVyCS0iWnm7X0SviMr5QeQTNrlurXfdA4bWsFhgJoE5obB+mH
-         V6aWqyqJguKVwXsef5Izy8yuQZz4rn+mFkqQc/eTHyPEt424fHBsWMfyINwu8ap+nfAG
-         sGhw==
-X-Gm-Message-State: AJIora/Hiv41ZlqgI0s3pTwqCLfsLeyhzG+iwfW73kCYEcrA5TkZtd6f
-        BWlLOj+CerZugam2T65GPetzRl7uOEFHVt17
-X-Google-Smtp-Source: AGRyM1sxobI/l4pLwInW1LtYNGLaoAuSoGnzo1OK2TOmy0CL3gA7mqZqEuZ+4c429ObGraQpvHH4PWrpOdiqB6vM
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=fLhWVrtL3jCVQZTI/SpR/dF9bcFaOpNW6kUek+4VMrQ=;
+        b=HTZlH8smlUzrKWjBJfkuXoGi6myGN96LENsE/GGbMTbNpOl67OZ4hdkdyNQGESX7/U
+         lLoKjGadfStgy/uhR7z9+lIZC4zieMWHRS2MaKm8h4JhzthzFXcMrlNTgtem1kD7s1MH
+         3Qu3vaWsFPInwfTXPI+TobMEanNxfxJRSONVdisEdGaNuBIQJFB77kocw1nuomo4UfHo
+         k0aaRp3uRWMzY6wOkEw2c2aTVzrP58inFMpP1GUefxZmkAoGdehT/l1TnWXoJKLtFRQe
+         QSqHiKbrhOo1eLcAbbW/+uIG5EMM5ENYAtxARHDbg/RxNFNAgi+6I6+hSMg9xX6PkBiX
+         JOyA==
+X-Gm-Message-State: AJIora/OB0iYlODwmQ3XsPMTYPdWcknlG5GfZN/iXZX4UaHISG+JgxqF
+        Qw7ENSb69PLJafsrXO8CInTUmCJagC2ThSN9
+X-Google-Smtp-Source: AGRyM1uRSxwvI1ZalFt+ckvzYpzesshV4sVRNlb4t9wpXcehiUcvJo2Hg3rBOz88Imnv+bFCKqP3jsH6tlItOe1M
 X-Received: from jthoughton.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:2a4f])
- (user=jthoughton job=sendgmr) by 2002:a25:3414:0:b0:66c:7e27:12ec with SMTP
- id b20-20020a253414000000b0066c7e2712ecmr276068yba.439.1656092230261; Fri, 24
- Jun 2022 10:37:10 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 17:36:30 +0000
-Message-Id: <20220624173656.2033256-1-jthoughton@google.com>
+ (user=jthoughton job=sendgmr) by 2002:a67:c30f:0:b0:354:45bf:748c with SMTP
+ id r15-20020a67c30f000000b0035445bf748cmr351vsj.13.1656092248216; Fri, 24 Jun
+ 2022 10:37:28 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 17:36:43 +0000
+In-Reply-To: <20220624173656.2033256-1-jthoughton@google.com>
+Message-Id: <20220624173656.2033256-14-jthoughton@google.com>
 Mime-Version: 1.0
+References: <20220624173656.2033256-1-jthoughton@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [RFC PATCH 00/26] hugetlb: Introduce HugeTLB high-granularity mapping
+Subject: [RFC PATCH 13/26] hugetlb: add huge_pte_alloc_high_granularity
 From:   James Houghton <jthoughton@google.com>
 To:     Mike Kravetz <mike.kravetz@oracle.com>,
         Muchun Song <songmuchun@bytedance.com>,
@@ -67,198 +71,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This RFC introduces the concept of HugeTLB high-granularity mapping
-(HGM)[1].  In broad terms, this series teaches HugeTLB how to map HugeTLB
-pages at different granularities, and, more importantly, to partially map
-a HugeTLB page.  This cover letter will go over
- - the motivation for these changes
- - userspace API
- - some of the changes to HugeTLB to make this work
- - limitations & future enhancements
+This function is to be used to do a HugeTLB page table walk where we may
+need to split a leaf-level huge PTE into a new page table level.
 
-High-granularity mapping does *not* involve dissolving the hugepages
-themselves; it only affects how they are mapped.
+Consider the case where we want to install 4K inside an empty 1G page:
+1. We walk to the PUD and notice that it is pte_none.
+2. We split the PUD by calling `hugetlb_split_to_shift`, creating a
+   standard PUD that points to PMDs that are all pte_none.
+3. We continue the PT walk to find the PMD. We split it just like we
+   split the PUD.
+4. We find the PTE and give it back to the caller.
 
----- Motivation ----
+To avoid concurrent splitting operations on the same page table entry,
+we require that the mapping rwsem is held for writing while collapsing
+and for reading when doing a high-granularity PT walk.
 
-Being able to map HugeTLB memory with PAGE_SIZE PTEs has important use
-cases in post-copy live migration and memory failure handling.
+Signed-off-by: James Houghton <jthoughton@google.com>
+---
+ include/linux/hugetlb.h | 23 ++++++++++++++
+ mm/hugetlb.c            | 67 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 90 insertions(+)
 
-- Live Migration (userfaultfd)
-For post-copy live migration, using userfaultfd, currently we have to
-install an entire hugepage before we can allow a guest to access that page.
-This is because, right now, either the WHOLE hugepage is mapped or NONE of
-it is.  So either the guest can access the WHOLE hugepage or NONE of it.
-This makes post-copy live migration for 1G HugeTLB-backed VMs completely
-infeasible.
-
-With high-granularity mapping, we can map PAGE_SIZE pieces of a hugepage,
-thereby allowing the guest to access only PAGE_SIZE chunks, and getting
-page faults on the rest (and triggering another demand-fetch). This gives
-userspace the flexibility to install PAGE_SIZE chunks of memory into a
-hugepage, making migration of 1G-backed VMs perfectly feasible, and it
-vastly reduces the vCPU stall time during post-copy for 2M-backed VMs.
-
-At Google, for a 48 vCPU VM in post-copy, we can expect these approximate
-per-page median fetch latencies:
-     4K: <100us
-     2M: >10ms
-Being able to unpause a vCPU 100x quicker is helpful for guest stability,
-and being able to use 1G pages at all can significant improve steady-state
-guest performance.
-
-After fully copying a hugepage over the network, we will want to collapse
-the mapping down to what it would normally be (e.g., one PUD for a 1G
-page). Rather than having the kernel do this automatically, we leave it up
-to userspace to tell us to collapse a range (via MADV_COLLAPSE, co-opting
-the API that is being introduced for THPs[2]).
-
-- Memory Failure
-When a memory error is found within a HugeTLB page, it would be ideal if we
-could unmap only the PAGE_SIZE section that contained the error. This is
-what THPs are able to do. Using high-granularity mapping, we could do this,
-but this isn't tackled in this patch series.
-
----- Userspace API ----
-
-This patch series introduces a single way to take advantage of
-high-granularity mapping: via UFFDIO_CONTINUE. UFFDIO_CONTINUE allows
-userspace to resolve MINOR page faults on shared VMAs.
-
-To collapse a HugeTLB address range that has been mapped with several
-UFFDIO_CONTINUE operations, userspace can issue MADV_COLLAPSE. We expect
-userspace to know when all pages (that they care about) have been fetched.
-
----- HugeTLB Changes ----
-
-- Mapcount
-The way mapcount is handled is different from the way that it was handled
-before. If the PUD for a hugepage is not none, a hugepage's mapcount will
-be increased. This scheme means that, for hugepages that aren't mapped at
-high granularity, their mapcounts will remain the same as what they would
-have been pre-HGM.
-
-- Page table walking and manipulation
-A new function, hugetlb_walk_to, handles walking HugeTLB page tables for
-high-granularity mappings. Eventually, it's possible to merge
-hugetlb_walk_to with huge_pte_offset and huge_pte_alloc.
-
-We keep track of HugeTLB page table entries with a new struct, hugetlb_pte.
-This is because we generally need to know the "size" of a PTE (previously
-always just huge_page_size(hstate)).
-
-For every page table manipulation function that has a huge version (e.g.
-huge_ptep_get and ptep_get), there is a wrapper for it (e.g.
-hugetlb_ptep_get).  The correct version is used depending on if a HugeTLB
-PTE really is "huge".
-
-- Synchronization
-For existing bits of HugeTLB, synchronization is unchanged. For splitting
-and collapsing HugeTLB PTEs, we require that the i_mmap_rw_sem is held for
-writing, and for doing high-granularity page table walks, we require it to
-be held for reading.
-
----- Limitations & Future Changes ----
-
-This patch series only implements high-granularity mapping for VM_SHARED
-VMAs.  I intend to implement enough HGM to support 4K unmapping for memory
-failure recovery for both shared and private mappings.
-
-The memory failure use case poses its own challenges that can be
-addressed, but I will do so in a separate RFC.
-
-Performance has not been heavily scrutinized with this patch series. There
-are places where lock contention can significantly reduce performance. This
-will be addressed later.
-
-The patch series, as it stands right now, is compatible with the VMEMMAP
-page struct optimization[3], as we do not need to modify data contained
-in the subpage page structs.
-
-Other omissions:
- - Compatibility with userfaultfd write-protect (will be included in v1).
- - Support for mremap() (will be included in v1). This looks a lot like
-   the support we have for fork().
- - Documentation changes (will be included in v1).
- - Completely ignores PMD sharing and hugepage migration (will be included
-   in v1).
- - Implementations for architectures that don't use GENERAL_HUGETLB other
-   than arm64.
-
----- Patch Breakdown ----
-
-Patch 1     - Preliminary changes
-Patch 2-10  - HugeTLB HGM core changes
-Patch 11-13 - HugeTLB HGM page table walking functionality
-Patch 14-19 - HugeTLB HGM compatibility with other bits
-Patch 20-23 - Userfaultfd and collapse changes
-Patch 24-26 - arm64 support and selftests
-
-[1] This used to be called HugeTLB double mapping, a bad and confusing
-    name. "High-granularity mapping" is not a great name either. I am open
-    to better names.
-[2] https://lore.kernel.org/linux-mm/20220604004004.954674-10-zokeefe@google.com/
-[3] commit f41f2ed43ca5 ("mm: hugetlb: free the vmemmap pages associated with each HugeTLB page")
-
-James Houghton (26):
-  hugetlb: make hstate accessor functions const
-  hugetlb: sort hstates in hugetlb_init_hstates
-  hugetlb: add make_huge_pte_with_shift
-  hugetlb: make huge_pte_lockptr take an explicit shift argument.
-  hugetlb: add CONFIG_HUGETLB_HIGH_GRANULARITY_MAPPING
-  mm: make free_p?d_range functions public
-  hugetlb: add hugetlb_pte to track HugeTLB page table entries
-  hugetlb: add hugetlb_free_range to free PT structures
-  hugetlb: add hugetlb_hgm_enabled
-  hugetlb: add for_each_hgm_shift
-  hugetlb: add hugetlb_walk_to to do PT walks
-  hugetlb: add HugeTLB splitting functionality
-  hugetlb: add huge_pte_alloc_high_granularity
-  hugetlb: add HGM support for hugetlb_fault and hugetlb_no_page
-  hugetlb: make unmapping compatible with high-granularity mappings
-  hugetlb: make hugetlb_change_protection compatible with HGM
-  hugetlb: update follow_hugetlb_page to support HGM
-  hugetlb: use struct hugetlb_pte for walk_hugetlb_range
-  hugetlb: add HGM support for copy_hugetlb_page_range
-  hugetlb: add support for high-granularity UFFDIO_CONTINUE
-  hugetlb: add hugetlb_collapse
-  madvise: add uapi for HugeTLB HGM collapse: MADV_COLLAPSE
-  userfaultfd: add UFFD_FEATURE_MINOR_HUGETLBFS_HGM
-  arm64/hugetlb: add support for high-granularity mappings
-  selftests: add HugeTLB HGM to userfaultfd selftest
-  selftests: add HugeTLB HGM to KVM demand paging selftest
-
- arch/arm64/Kconfig                            |   1 +
- arch/arm64/mm/hugetlbpage.c                   |  63 ++
- arch/powerpc/mm/pgtable.c                     |   3 +-
- arch/s390/mm/gmap.c                           |   8 +-
- fs/Kconfig                                    |   7 +
- fs/proc/task_mmu.c                            |  35 +-
- fs/userfaultfd.c                              |  10 +-
- include/asm-generic/tlb.h                     |   6 +-
- include/linux/hugetlb.h                       | 177 +++-
- include/linux/mm.h                            |   7 +
- include/linux/pagewalk.h                      |   3 +-
- include/uapi/asm-generic/mman-common.h        |   2 +
- include/uapi/linux/userfaultfd.h              |   2 +
- mm/damon/vaddr.c                              |  34 +-
- mm/hmm.c                                      |   7 +-
- mm/hugetlb.c                                  | 987 +++++++++++++++---
- mm/madvise.c                                  |  23 +
- mm/memory.c                                   |   8 +-
- mm/mempolicy.c                                |  11 +-
- mm/migrate.c                                  |   3 +-
- mm/mincore.c                                  |   4 +-
- mm/mprotect.c                                 |   6 +-
- mm/page_vma_mapped.c                          |   3 +-
- mm/pagewalk.c                                 |  18 +-
- mm/userfaultfd.c                              |  57 +-
- .../testing/selftests/kvm/include/test_util.h |   2 +
- tools/testing/selftests/kvm/lib/kvm_util.c    |   2 +-
- tools/testing/selftests/kvm/lib/test_util.c   |  14 +
- tools/testing/selftests/vm/userfaultfd.c      |  61 +-
- 29 files changed, 1314 insertions(+), 250 deletions(-)
-
+diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
+index 605aa19d8572..321f5745d87f 100644
+--- a/include/linux/hugetlb.h
++++ b/include/linux/hugetlb.h
+@@ -1176,14 +1176,37 @@ static inline void set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
+ }
+ #endif	/* CONFIG_HUGETLB_PAGE */
+ 
++enum split_mode {
++	HUGETLB_SPLIT_NEVER   = 0,
++	HUGETLB_SPLIT_NONE    = 1 << 0,
++	HUGETLB_SPLIT_PRESENT = 1 << 1,
++	HUGETLB_SPLIT_ALWAYS  = HUGETLB_SPLIT_NONE | HUGETLB_SPLIT_PRESENT,
++};
+ #ifdef CONFIG_HUGETLB_HIGH_GRANULARITY_MAPPING
+ /* If HugeTLB high-granularity mappings are enabled for this VMA. */
+ bool hugetlb_hgm_enabled(struct vm_area_struct *vma);
++int huge_pte_alloc_high_granularity(struct hugetlb_pte *hpte,
++				    struct mm_struct *mm,
++				    struct vm_area_struct *vma,
++				    unsigned long addr,
++				    unsigned int desired_sz,
++				    enum split_mode mode,
++				    bool write_locked);
+ #else
+ static inline bool hugetlb_hgm_enabled(struct vm_area_struct *vma)
+ {
+ 	return false;
+ }
++static inline int huge_pte_alloc_high_granularity(struct hugetlb_pte *hpte,
++					   struct mm_struct *mm,
++					   struct vm_area_struct *vma,
++					   unsigned long addr,
++					   unsigned int desired_sz,
++					   enum split_mode mode,
++					   bool write_locked)
++{
++	return -EINVAL;
++}
+ #endif
+ 
+ static inline spinlock_t *huge_pte_lock(struct hstate *h,
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index eaffe7b4f67c..6e0c5fbfe32c 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -7166,6 +7166,73 @@ static int hugetlb_split_to_shift(struct mm_struct *mm, struct vm_area_struct *v
+ 	tlb_finish_mmu(&tlb);
+ 	return ret;
+ }
++
++/*
++ * Similar to huge_pte_alloc except that this can be used to create or walk
++ * high-granularity mappings. It will automatically split existing HugeTLB PTEs
++ * if required by @mode. The resulting HugeTLB PTE will be returned in @hpte.
++ *
++ * There are three options for @mode:
++ *  - HUGETLB_SPLIT_NEVER   - Never split.
++ *  - HUGETLB_SPLIT_NONE    - Split empty PTEs.
++ *  - HUGETLB_SPLIT_PRESENT - Split present PTEs.
++ *  - HUGETLB_SPLIT_ALWAYS  - Split both empty and present PTEs.
++ */
++int huge_pte_alloc_high_granularity(struct hugetlb_pte *hpte,
++				    struct mm_struct *mm,
++				    struct vm_area_struct *vma,
++				    unsigned long addr,
++				    unsigned int desired_shift,
++				    enum split_mode mode,
++				    bool write_locked)
++{
++	struct address_space *mapping = vma->vm_file->f_mapping;
++	bool has_write_lock = write_locked;
++	unsigned long desired_sz = 1UL << desired_shift;
++	int ret;
++
++	BUG_ON(!hpte);
++
++	if (has_write_lock)
++		i_mmap_assert_write_locked(mapping);
++	else
++		i_mmap_assert_locked(mapping);
++
++retry:
++	ret = 0;
++	hugetlb_pte_init(hpte);
++
++	ret = hugetlb_walk_to(mm, hpte, addr, desired_sz,
++			      !(mode & HUGETLB_SPLIT_NONE));
++	if (ret || hugetlb_pte_size(hpte) == desired_sz)
++		goto out;
++
++	if (
++		((mode & HUGETLB_SPLIT_NONE) && hugetlb_pte_none(hpte)) ||
++		((mode & HUGETLB_SPLIT_PRESENT) &&
++		  hugetlb_pte_present_leaf(hpte))
++	   ) {
++		if (!has_write_lock) {
++			i_mmap_unlock_read(mapping);
++			i_mmap_lock_write(mapping);
++			has_write_lock = true;
++			goto retry;
++		}
++		ret = hugetlb_split_to_shift(mm, vma, hpte, addr,
++					     desired_shift);
++	}
++
++out:
++	if (has_write_lock && !write_locked) {
++		/* Drop the write lock. */
++		i_mmap_unlock_write(mapping);
++		i_mmap_lock_read(mapping);
++		has_write_lock = false;
++		goto retry;
++	}
++
++	return ret;
++}
+ #endif /* CONFIG_HUGETLB_HIGH_GRANULARITY_MAPPING */
+ 
+ /*
 -- 
 2.37.0.rc0.161.g10f37bed90-goog
 
