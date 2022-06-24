@@ -2,75 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4713C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB01DCCA482
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbiFXTLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 15:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
+        id S230504AbiFXTNG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 15:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbiFXTLh (ORCPT
+        with ESMTP id S231512AbiFXTMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 15:11:37 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB70E82396;
-        Fri, 24 Jun 2022 12:11:36 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        Fri, 24 Jun 2022 15:12:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5257081DBA;
+        Fri, 24 Jun 2022 12:12:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 3B27A31A;
-        Fri, 24 Jun 2022 19:11:36 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 3B27A31A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1656097896; bh=/hcWFSxgiaiNcPhaw2iwtRiQyURtEUizPdBnFLZxYPw=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=G/U+ZVLp6azbvZkvALXTUCqCtphtC5wJVs/vvq7aN/jIuetNE/bTvWw8LGMdDxnvF
-         AkQi1BerBWi0MZxZy0xDGs4qoDsUPnh3a+qrC9utEw3dy2hlP5shimQnO1+OHfJSWG
-         qH+2FwUo5jp86gWWP2R2GKx4iGn5mNRT+SKNv/j0za9cEzxrEh6T6zcaO/Vj0u64Ne
-         zA3FFwt1POOanp4EVM4PmRgF4zMRnSIpUSyxgLRWia5HT/xWendEuuOZuZEti4fCsS
-         cYC+uDR9r/+zZa2WFjnnYDLCvRzKIaXmrpK/Gf335Fk2N42wIPL1tXnONVEs+ZTROe
-         UAlX1pQMLjKmA==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Deming Wang <wangdeming@inspur.com>, miklos@szeredi.hu
-Cc:     linux-unionfs@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Deming Wang <wangdeming@inspur.com>
-Subject: Re: [PATCH] media: docs: Modify the section of User xattr
-In-Reply-To: <20220624014605.2007-1-wangdeming@inspur.com>
-References: <20220624014605.2007-1-wangdeming@inspur.com>
-Date:   Fri, 24 Jun 2022 13:11:35 -0600
-Message-ID: <87wnd55120.fsf@meer.lwn.net>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E43D1621A3;
+        Fri, 24 Jun 2022 19:12:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62EC7C34114;
+        Fri, 24 Jun 2022 19:12:48 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="itCPwM20"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656097966;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4Opv7H7b7jpTZpdXbND2IHSq5Uo5YT03x2GlaOQr9ns=;
+        b=itCPwM20JiYyV1kN1+KDhxgW9w0RihJJu6flpMpZtuZ8oJ0DFV0juVxcxWghz5ae4y59Tq
+        Ek+LUY8t7g9LNLYunYWoKtKz/TxRPNMbQi+OIJnRX5c10ispOAwInSzEKzTvsqvdPGS/KJ
+        WibS2bs7Fpa7NZsS7PEwJlz0XS9DXCs=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1fb3e598 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 24 Jun 2022 19:12:46 +0000 (UTC)
+Date:   Fri, 24 Jun 2022 21:12:42 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Gregory Erwin <gregerwin256@gmail.com>
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Rui Salvaterra <rsalvaterra@gmail.com>, stable@vger.kernel.org
+Subject: Re: [PATCH] ath9k: rng: escape sleep loop when unregistering
+Message-ID: <YrYMqqqoK7HBAXgJ@zx2c4.com>
+References: <YrUKUt5nvX8qf1Je@zx2c4.com>
+ <20220624011449.1473399-1-Jason@zx2c4.com>
+ <CAO+Okf5k+C+SE6pMVfPf-d8MfVPVq4PO7EY8Hys_DVXtent3HA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAO+Okf5k+C+SE6pMVfPf-d8MfVPVq4PO7EY8Hys_DVXtent3HA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Deming Wang <wangdeming@inspur.com> writes:
+Hi Gregory,
 
-> Delete duplicate words of "the".
->
-> Signed-off-by: Deming Wang <wangdeming@inspur.com>
-> ---
->  Documentation/filesystems/overlayfs.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/Documentation/filesystems/overlayfs.rst b/Documentation/filesystems/overlayfs.rst
-> index 7da6c30ed596..4c76fda07645 100644
-> --- a/Documentation/filesystems/overlayfs.rst
-> +++ b/Documentation/filesystems/overlayfs.rst
-> @@ -607,7 +607,7 @@ can be removed.
->  User xattr
->  ----------
->  
-> -The the "-o userxattr" mount option forces overlayfs to use the
-> +The "-o userxattr" mount option forces overlayfs to use the
->  "user.overlay." xattr namespace instead of "trusted.overlay.".  This is
->  useful for unprivileged mounting of overlayfs.
+On Thu, Jun 23, 2022 at 10:25:26PM -0700, Gregory Erwin wrote:
+> Hi Jason,
+> 
+> I think you are on the right track, but even with this patch
+> 'ip link set wlan0 down' blocks until the hwrng reader gives up.
+> The reader can either be userspace (dd, cat, etc) or it can also
+> be the rng_core module. I can replicate the hang in the two different
+> situations, so I gathered two stack traces for 'ip' depending on the
+> reader of hwrng:
 
-I've applied this but changed the patch title.  This is not a media
-patch, and "modify" tells the reader nothing; it's now "docs: Remove
-duplicate word".
+Thanks for the traces. I'll send a v2 to you shortly.
 
-Thanks,
-
-jon
+Jason
