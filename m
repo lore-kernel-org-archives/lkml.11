@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65950C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 008B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbiFXPy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 11:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57094 "EHLO
+        id S230333AbiFXPzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 11:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbiFXPyx (ORCPT
+        with ESMTP id S229763AbiFXPyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 24 Jun 2022 11:54:53 -0400
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9BE2B249;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8839D220DD;
         Fri, 24 Jun 2022 08:54:52 -0700 (PDT)
 Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OACoqK008409;
-        Fri, 24 Jun 2022 17:54:31 +0200
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OACoqJ008409;
+        Fri, 24 Jun 2022 17:54:29 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=selector1;
- bh=4r2PCbf64n8yNmLDUAE0q0TrU9hPbWG72osAS8laDjs=;
- b=6fpoD94BsSrRP+1zS8jaMalI9UEVkeKgfUQn7CmysKIb4WPdV5LrLZ77EFHYcse6d63p
- qWo9yPM3PqDuWRtVP33gWxhKD4fL61SRb1NWYKVCF5hrmkIbAnr2dYKYm7Jwxwx6K1Jo
- ZZXX0hmS0zkCsrUKp2jm9DZGYtP6qWOl8tyNSkhXoJ58VdRz6PPPy2lIX6bDxnqQFs6+
- 2pg+QjUJdmMvgrW8hLpGam9rJ2KLVUd1qcT7SvAPeM516zEN7xgglUroVU+KF5kuH7Ji
- UDpurqGdq3y1lXFnzwv2ylPadS3huOfGjTZb2nTZyUnp9VUejl5tbgwmqTMbYU9mXmqM sw== 
+ bh=7/bOI7TEIFVnFPcAJsm21Q38+kF86W/a+cDXQllSLJw=;
+ b=DQ0lda7E7dCFGZyU+4r7q04qvD1IZIaacgx2zMzpkMY7nwVO2LSXUv5SywLtZE++4jl4
+ MiXGUeXVy1bNHr6mPiaLs0utd1Exg5H3XBC4yaVlJ1UdRl5Vut1U8sW100bd915TZRUX
+ Ncm66zHmr2sQRIX42+X9jp5ikENVtlnN15QVvtFa0Fp87s+GMXJlDzTMeNnH1qvI552N
+ IbvaqKntn0i74DgfSangeEMY5SRtJWfUTNrZCCJ9MSwbQ9MpGM84U7N95DTSZuIC9ZBG
+ 1QwvIS+cIp7ThPwwrUMGw+v9FL5YP3EvAqrer5NsEHXF9NtSxYCZy8H11dms/QU6QQtt 7w== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gwbaqhn89-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gwbaqhn85-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 17:54:31 +0200
+        Fri, 24 Jun 2022 17:54:29 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9BD7F10002A;
-        Fri, 24 Jun 2022 17:54:30 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8C03E10003A;
+        Fri, 24 Jun 2022 17:54:28 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 95EC1226FB9;
-        Fri, 24 Jun 2022 17:54:30 +0200 (CEST)
-Received: from localhost (10.75.127.48) by SHFDAG1NODE2.st.com (10.75.129.70)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 870C7226FB9;
+        Fri, 24 Jun 2022 17:54:28 +0200 (CEST)
+Received: from localhost (10.75.127.51) by SHFDAG1NODE2.st.com (10.75.129.70)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 24 Jun
- 2022 17:54:27 +0200
+ 2022 17:54:26 +0200
 From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 To:     <robh+dt@kernel.org>, <heikki.krogerus@linux.intel.com>,
         <gregkh@linuxfoundation.org>
@@ -49,16 +49,16 @@ CC:     <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <amelie.delaunay@foss.st.com>, <alexandre.torgue@foss.st.com>,
         <fabrice.gasnier@foss.st.com>
-Subject: [PATCH 4/4] usb: typec: ucsi: stm32g0: add support for power management
-Date:   Fri, 24 Jun 2022 17:54:13 +0200
-Message-ID: <20220624155413.399190-5-fabrice.gasnier@foss.st.com>
+Subject: [PATCH 1/4] dt-bindings: usb: typec: add bindings for stm32g0 controller
+Date:   Fri, 24 Jun 2022 17:54:10 +0200
+Message-ID: <20220624155413.399190-2-fabrice.gasnier@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220624155413.399190-1-fabrice.gasnier@foss.st.com>
 References: <20220624155413.399190-1-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
+X-Originating-IP: [10.75.127.51]
 X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
  (10.75.129.70)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -68,105 +68,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Type-C connector can be used as a wakeup source (typically to detect
-changes on the port, attach or detach...).
-Add suspend / resume routines to enable wake irqs, and signal a wakeup
-event in case the IRQ has fired while in suspend.
-The i2c core is doing the necessary initialization when the "wakeup-source"
-flag is provided.
-Note: the interrupt handler shouldn't be called before the i2c bus resumes.
-So, the interrupts are disabled during suspend period, and re-enabled
-upon resume, to avoid i2c transfer while suspended, from the irq handler.
+This patch adds DT schema documentation for the STM32G0 Type-C controller.
+STM32G0 provides an integrated USB Type-C and power delivery interface.
+It can be programmed with a firmware to handle UCSI protocol over I2C
+interface. A GPIO is used as an interrupt line.
+It may be used as a wakeup source, so use optional "wakeup-source" and
+"power-domains" properties to support wakeup.
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 ---
- drivers/usb/typec/ucsi/ucsi_stm32g0.c | 52 +++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ .../bindings/usb/st,typec-stm32g0.yaml        | 83 +++++++++++++++++++
+ 1 file changed, 83 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/usb/st,typec-stm32g0.yaml
 
-diff --git a/drivers/usb/typec/ucsi/ucsi_stm32g0.c b/drivers/usb/typec/ucsi/ucsi_stm32g0.c
-index 91222f4e07aee..1c7f4b92eba7c 100644
---- a/drivers/usb/typec/ucsi/ucsi_stm32g0.c
-+++ b/drivers/usb/typec/ucsi/ucsi_stm32g0.c
-@@ -66,6 +66,8 @@ struct ucsi_stm32g0 {
- 	unsigned long flags;
- 	const char *fw_name;
- 	struct ucsi *ucsi;
-+	bool suspended;
-+	bool wakeup_event;
- };
- 
- /*
-@@ -416,6 +418,9 @@ static irqreturn_t ucsi_stm32g0_irq_handler(int irq, void *data)
- 	u32 cci;
- 	int ret;
- 
-+	if (g0->suspended)
-+		g0->wakeup_event = true;
+diff --git a/Documentation/devicetree/bindings/usb/st,typec-stm32g0.yaml b/Documentation/devicetree/bindings/usb/st,typec-stm32g0.yaml
+new file mode 100644
+index 0000000000000..b2729bd015a1a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/usb/st,typec-stm32g0.yaml
+@@ -0,0 +1,83 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/usb/st,typec-stm32g0.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 +
- 	ret = ucsi_stm32g0_read(g0->ucsi, UCSI_CCI, &cci, sizeof(cci));
- 	if (ret)
- 		return IRQ_NONE;
-@@ -696,6 +701,52 @@ static int ucsi_stm32g0_remove(struct i2c_client *client)
- 	return 0;
- }
- 
-+static int ucsi_stm32g0_suspend(struct device *dev)
-+{
-+	struct ucsi_stm32g0 *g0 = dev_get_drvdata(dev);
-+	struct i2c_client *client = g0->client;
++title: STMicroelectronics STM32G0 Type-C controller bindings
 +
-+	if (g0->in_bootloader)
-+		return 0;
++description: |
++  The STM32G0 MCU can be programmed to control Type-C connector(s) through I2C
++  typically using the UCSI protocol over I2C, with a dedicated alert
++  (interrupt) pin.
 +
-+	/* Keep the interrupt disabled until the i2c bus has been resumed */
-+	disable_irq(client->irq);
++maintainers:
++  - Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 +
-+	g0->suspended = true;
-+	g0->wakeup_event = false;
++properties:
++  compatible:
++    const: st,stm32g0-typec
 +
-+	if (device_may_wakeup(dev) || device_wakeup_path(dev))
-+		enable_irq_wake(client->irq);
++  reg:
++    maxItems: 1
 +
-+	return 0;
-+}
++  interrupts:
++    maxItems: 1
 +
-+static int ucsi_stm32g0_resume(struct device *dev)
-+{
-+	struct ucsi_stm32g0 *g0 = dev_get_drvdata(dev);
-+	struct i2c_client *client = g0->client;
++  connector:
++    type: object
++    allOf:
++      - $ref: ../connector/usb-connector.yaml#
 +
-+	if (g0->in_bootloader)
-+		return 0;
++  firmware-name:
++    description: |
++      Should contain the name of the default firmware image
++      file located on the firmware search path
 +
-+	if (device_may_wakeup(dev) || device_wakeup_path(dev))
-+		disable_irq_wake(client->irq);
++  wakeup-source: true
++  power-domains: true
 +
-+	enable_irq(client->irq);
++required:
++  - compatible
++  - reg
++  - interrupts
 +
-+	/* Enforce any pending handler gets called to signal a wakeup_event */
-+	synchronize_irq(client->irq);
++additionalProperties: false
 +
-+	if (g0->wakeup_event)
-+		pm_wakeup_event(g0->dev, 0);
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c5 {
++      #address-cells = <1>;
++      #size-cells = <0>;
 +
-+	g0->suspended = false;
++      stm32g0@53 {
++        compatible = "st,stm32g0-typec";
++        reg = <0x53>;
++        /* Alert pin on GPIO PE12 */
++        interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
++        interrupt-parent = <&gpioe>;
 +
-+	return 0;
-+}
++        /* Example with one type-C connector */
++        connector {
++          compatible = "usb-c-connector";
++          label = "USB-C";
 +
-+static DEFINE_SIMPLE_DEV_PM_OPS(ucsi_stm32g0_pm_ops, ucsi_stm32g0_suspend, ucsi_stm32g0_resume);
++          port {
++            con_usb_c_ep: endpoint {
++              remote-endpoint = <&usbotg_hs_ep>;
++            };
++          };
++        };
++      };
++    };
 +
- static const struct of_device_id __maybe_unused ucsi_stm32g0_typec_of_match[] = {
- 	{ .compatible = "st,stm32g0-typec" },
- 	{},
-@@ -712,6 +763,7 @@ static struct i2c_driver ucsi_stm32g0_i2c_driver = {
- 	.driver = {
- 		.name = "ucsi-stm32g0-i2c",
- 		.of_match_table = of_match_ptr(ucsi_stm32g0_typec_of_match),
-+		.pm = pm_sleep_ptr(&ucsi_stm32g0_pm_ops),
- 	},
- 	.probe = ucsi_stm32g0_probe,
- 	.remove = ucsi_stm32g0_remove,
++    usbotg_hs {
++      usb-role-switch;
++      port {
++        usbotg_hs_ep: endpoint {
++          remote-endpoint = <&con_usb_c_ep>;
++        };
++      };
++    };
++...
 -- 
 2.25.1
 
