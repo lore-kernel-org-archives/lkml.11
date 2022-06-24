@@ -2,104 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED76C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 23:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 23:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231874AbiFXXpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 19:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41266 "EHLO
+        id S231830AbiFXXr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 19:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231826AbiFXXpr (ORCPT
+        with ESMTP id S231190AbiFXXr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 19:45:47 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307B48AC21
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 16:45:46 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id z12so3033789qki.3
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 16:45:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z3MRZDPjbjqka5SFCsRF0GaePuedl2AIb6glbaDxLPo=;
-        b=T1jZ/wuAXd4vkBbmbjvR4zc2gMr+VrXytSGHLBHq2r677FwX7N3/8VRvVeku7U9PL4
-         z5UOWQn1DzpuX52KtITNRF3Ywiklcq2o9+xtPOrMchkBSRMQBAh9u2490x1FYlA83+Fw
-         3q7/7YYig0nseD0c+Z92CqG7EJ7irgF7zexvcR/iaNm9ym7oke5sLufp9rSdU2HBRYgn
-         lFpWRdhpyb2VnBVu1ENsguh/VNuNa9AdK2OKDjFndacjelg0wh+eEtq2hlJ801HyxLXn
-         OQxYh3jQLwSrcxj2ROwUU9NLUWQl/Z1tLvlA65PmyaHELR6gJsMf2lJpP1DYZsm88RIG
-         kRmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z3MRZDPjbjqka5SFCsRF0GaePuedl2AIb6glbaDxLPo=;
-        b=OEPFMor6MoxtjiJ4Cq9PqzkYR37i6LxQYNyqLADK+lbIT2bYMh6yRuF0ijt4O3uZ94
-         0tvlhuFak4ovS8VMZRIP0wx+4yz3dnD8XO1aF6z0n2fV18fLtgtnGw3xIfNte8GbNlYo
-         BNNiXtwy4NECGdJUTVyHvYV+rBXRD0Fs3BrfZ5nUxEnRcHJcn0CIaVOeQWLObt55CzCB
-         p7DZhSZdmM74r/dV9sTgtRJ/WQmOF0K5lEANKI1rVhIe7fgecnU6lHev6HDiYN6FAHZ0
-         QS5/I3nffERUAqL5VngchHjwHBxhOKT6+JfVa/hXD2ACq06xUpcev0yrpPCGSTKmYLYf
-         705Q==
-X-Gm-Message-State: AJIora9mEPI/WhS8sD4z2dsnPn8YaqI6Q5AfNJMWQzyGJCMRzgbkcoBr
-        EpIDXRE7Rsr/q8vIRJAXWtuMabMUlAeq1tLV/KaXng==
-X-Google-Smtp-Source: AGRyM1v/i8BJMvLqu4IlBuePJHdL20SOPQr3QObkB7VQeNVKxSUFFYLdnJmiIKpbsI6PhCqNqVQetH1um/ElYuHDTPU=
-X-Received: by 2002:a05:620a:31a0:b0:6a7:549f:a788 with SMTP id
- bi32-20020a05620a31a000b006a7549fa788mr1331198qkb.203.1656114345250; Fri, 24
- Jun 2022 16:45:45 -0700 (PDT)
+        Fri, 24 Jun 2022 19:47:27 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03A38BEC4;
+        Fri, 24 Jun 2022 16:47:26 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 70CD71F891;
+        Fri, 24 Jun 2022 23:47:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1656114445; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aobWKircXEKbGTkT46vsoN1mG2oAxEWPsS6CajoA/6U=;
+        b=uoAaIrouqAUg4vn7RsvgiNCjACanuj9PzdM5fzvNQcyYQ5WhnxPSzG9ByaKlAXiBqmQkwx
+        8qn89Q9/xpl/cQmHs0Rw9pHZ1yP8J0RXVfZlqJlenR1qjqOD4WTtP6HcEsqzhBGVp+UBvJ
+        mDJwXEj0PoIDF9jnXRVQ6XzorSdnXhc=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 38B7113ACA;
+        Fri, 24 Jun 2022 23:47:25 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id n38fDA1NtmLyUgAAMHmgww
+        (envelope-from <mwilck@suse.com>); Fri, 24 Jun 2022 23:47:25 +0000
+Message-ID: <c2dfae29bb2aa3b6286a3a225a27b116761b9e53.camel@suse.com>
+Subject: Re: [PATCH] lib/sbitmap: Fix invalid loop in
+ __sbitmap_queue_get_batch()
+From:   Martin Wilck <mwilck@suse.com>
+To:     wuchi <wuchi.zero@gmail.com>, axboe@kernel.dk,
+        andriy.shevchenko@linux.intel.com
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sat, 25 Jun 2022 01:47:24 +0200
+In-Reply-To: <20220605145835.26916-1-wuchi.zero@gmail.com>
+References: <20220605145835.26916-1-wuchi.zero@gmail.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.44.2 
 MIME-Version: 1.0
-References: <1656090912-18074-1-git-send-email-quic_khsieh@quicinc.com>
- <1656090912-18074-2-git-send-email-quic_khsieh@quicinc.com>
- <CAD=FV=XD0Nb8GiaqEM52rEkUeVjuo46hBv9YUizdDu9zOH6QfA@mail.gmail.com> <0632e72a-3bd2-6320-4a00-6d3cf7d40513@quicinc.com>
-In-Reply-To: <0632e72a-3bd2-6320-4a00-6d3cf7d40513@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Sat, 25 Jun 2022 02:45:33 +0300
-Message-ID: <CAA8EJpqfdzmcpGeLHr5wBA7B91rAegoJhpFG=CYyJ4C2gxVBXw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/3] drm/msm/dp: move struc of msm_display_info to msm_drv.h
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     Doug Anderson <dianders@chromium.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Vinod Koul <vkoul@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 25 Jun 2022 at 00:51, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
-> On 6/24/2022 2:40 PM, Doug Anderson wrote:
-> > On Fri, Jun 24, 2022 at 10:15 AM Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
+T24gU3VuLCAyMDIyLTA2LTA1IGF0IDIyOjU4ICswODAwLCB3dWNoaSB3cm90ZToKPiAxLiBHZXR0
+aW5nIG5leHQgaW5kZXggYmVmb3JlIGNvbnRpbnVlIGJyYW5jaC4KPiAyLiBDaGVja2luZyBmcmVl
+IGJpdHMgd2hlbiBzZXR0aW5nIHRoZSB0YXJnZXQgYml0cy4gT3RoZXJ3aXNlLAo+IGl0IG1heSBy
+ZXVzZSB0aGUgYnVzeWluZyBiaXRzLgo+IAo+IFNpZ25lZC1vZmYtYnk6IHd1Y2hpIDx3dWNoaS56
+ZXJvQGdtYWlsLmNvbT4KClJldmlld2VkLWJ5OiBNYXJ0aW4gV2lsY2sgPG13aWxja0BzdXNlLmNv
+bT4KCj4gLS0tCj4goGxpYi9zYml0bWFwLmMgfCA1ICsrKystCj4goDEgZmlsZSBjaGFuZ2VkLCA0
+IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKPiAKPiBkaWZmIC0tZ2l0IGEvbGliL3NiaXRt
+YXAuYyBiL2xpYi9zYml0bWFwLmMKPiBpbmRleCBhZTRmZDRkZTllYmUuLjI5ZWIwNDg0MjE1YSAx
+MDA2NDQKPiAtLS0gYS9saWIvc2JpdG1hcC5jCj4gKysrIGIvbGliL3NiaXRtYXAuYwo+IEBAIC01
+MjgsNyArNTI4LDcgQEAgdW5zaWduZWQgbG9uZyBfX3NiaXRtYXBfcXVldWVfZ2V0X2JhdGNoKHN0
+cnVjdAo+IHNiaXRtYXBfcXVldWUgKnNicSwgaW50IG5yX3RhZ3MsCj4goAo+IKCgoKCgoKCgoKCg
+oKCgoKBzYml0bWFwX2RlZmVycmVkX2NsZWFyKG1hcCk7Cj4goKCgoKCgoKCgoKCgoKCgoGlmICht
+YXAtPndvcmQgPT0gKDFVTCA8PCAobWFwX2RlcHRoIC0gMSkpIC0gMSkKPiAtoKCgoKCgoKCgoKCg
+oKCgoKCgoKCgoKBjb250aW51ZTsKPiAroKCgoKCgoKCgoKCgoKCgoKCgoKCgoKBnb3RvIG5leHQ7
+Cj4goAo+IKCgoKCgoKCgoKCgoKCgoKBuciA9IGZpbmRfZmlyc3RfemVyb19iaXQoJm1hcC0+d29y
+ZCwgbWFwX2RlcHRoKTsKPiCgoKCgoKCgoKCgoKCgoKCgaWYgKG5yICsgbnJfdGFncyA8PSBtYXBf
+ZGVwdGgpIHsKPiBAQCAtNTM5LDYgKzUzOSw4IEBAIHVuc2lnbmVkIGxvbmcgX19zYml0bWFwX3F1
+ZXVlX2dldF9iYXRjaChzdHJ1Y3QKPiBzYml0bWFwX3F1ZXVlICpzYnEsIGludCBucl90YWdzLAo+
+IKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoGdldF9tYXNrID0gKCgxVUwgPDwgbWFwX3RhZ3MpIC0g
+MSkgPDwgbnI7Cj4goKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgZG8gewo+IKCgoKCgoKCgoKCgoKCg
+oKCgoKCgoKCgoKCgoKCgoKCgdmFsID0gUkVBRF9PTkNFKG1hcC0+d29yZCk7Cj4gK6CgoKCgoKCg
+oKCgoKCgoKCgoKCgoKCgoKCgoKCgoKBpZiAoKHZhbCAmIH5nZXRfbWFzaykgIT0gdmFsKQo+ICug
+oKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKBnb3RvIG5leHQ7Cj4goKCgoKCg
+oKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKByZXQgPSBhdG9taWNfbG9uZ19jbXB4Y2hnKHB0ciwg
+dmFsLAo+IGdldF9tYXNrIHwgdmFsKTsKPiCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKB9IHdoaWxl
+IChyZXQgIT0gdmFsKTsKPiCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKBnZXRfbWFzayA9IChnZXRf
+bWFzayAmIH5yZXQpID4+IG5yOwo+IEBAIC01NDksNiArNTUxLDcgQEAgdW5zaWduZWQgbG9uZyBf
+X3NiaXRtYXBfcXVldWVfZ2V0X2JhdGNoKHN0cnVjdAo+IHNiaXRtYXBfcXVldWUgKnNicSwgaW50
+IG5yX3RhZ3MsCj4goKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKByZXR1cm4gZ2V0X21h
+c2s7Cj4goKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgfQo+IKCgoKCgoKCgoKCgoKCgoKB9Cj4gK25l
+eHQ6Cj4goKCgoKCgoKCgoKCgoKCgoC8qIEp1bXAgdG8gbmV4dCBpbmRleC4gKi8KPiCgoKCgoKCg
+oKCgoKCgoKCgaWYgKCsraW5kZXggPj0gc2ItPm1hcF9ucikKPiCgoKCgoKCgoKCgoKCgoKCgoKCg
+oKCgoKBpbmRleCA9IDA7Cgo=
 
-> >> +struct msm_display_info {
-> >> +       int intf_type;
-> >> +       uint32_t capabilities;
-> >> +       uint32_t num_of_h_tiles;
-> >> +       uint32_t h_tile_instance[MAX_H_TILES_PER_DISPLAY];
-> >> +       bool is_te_using_watchdog_timer;
-> > ...but then when you "move" the structure to its new location, which
-> > should be a noop, then <poof> the "dsc" variable vanishes (along with
-> > the kernel doc description of it before the structure).
->
-> Sorry, i did not resolve the conflicts correctly  when i cherry-pick
-> them to msm-next tree.
->
-> Will fix them.
-
-I would strongly suggest doing development on top of msm/next or
-linux-next. Using any other tree results in lots of problems starting
-from the lame Fixes tags that we have been constantly seeing for the
-last few months, conflicts when the patch is being rebased or
-cherry-picked and ending up with the patches not being tested with the
-tree that they are being applied to.
-
--- 
-With best wishes
-Dmitry
