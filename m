@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C1FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 04:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A05C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 04:50:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231660AbiFXEun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 00:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
+        id S231448AbiFXEus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 00:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231880AbiFXEs3 (ORCPT
+        with ESMTP id S231879AbiFXEsc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 00:48:29 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FE869275
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 21:48:27 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id a14so1335521pgh.11
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 21:48:27 -0700 (PDT)
+        Fri, 24 Jun 2022 00:48:32 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A4B69981
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 21:48:29 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id l6so1078513plg.11
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 21:48:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
         h=subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding:cc:from:to;
-        bh=YbFhCGzhKhLbr2G2ThS1s0sN7jwXYQ4vWhYkrXF5osc=;
-        b=kkxvDxX6n5CO12HAysNPgLTCaKTovZj6n1W4WM6NrdWPKdt8jHf/gjXiqu7I26pISm
-         ua6NuOBU0e747Hkio56Q5FXCk7rSyhq3Y6Zq55CZ25pU97Fj2MfR7zJOcZ41hi7FIff1
-         UZdKWwl3KHRXa7tdvTwjrgx6d6+yqM9BG8AZIhTjl1u7f/aVNNosUAXA5LKe9/MYnIvG
-         LlPZDl/L+rPWYZtuuiuwai4BFZqZ2PEnrQKWLvGk7JAWOVawnMXlmZxb2Q+2Kgculowg
-         wQXZjqI2+6jVMZLja/f8RD2VIlQY6lApwCHArAD4TdMuo1d9XJYF0lETVOugyAaATC3x
-         mPRg==
+        bh=wG/cL1k0Db5CVASFDb2IJyBBfutIm8qgplfgRR5fvCw=;
+        b=w8F/BHDTxvIXVC6FheFa0ViKJnTjyUoyIMvRk0YYdJtATT1LrUdw4skWF37W1cigG1
+         8x26sID7xOkrcZRAchZerfjH7lOACfj2tmNIrBZ1/r2GPmzAKWlx6frKuZjlCffBR3dT
+         cILziiDXGtRMOmeDIPoYZvVFfjJHND4L3eYFVKazXRkfaPzs5IxUG8YfnCnNLEcIIGiZ
+         ucX6bRmC3mnNG88dA73+TR1MtLtUG2atpNDco24+MUvNN7l5Tt8gB3lTehD+HUIQi1N8
+         eABa8iunfXAEsLk03BnTZMhn+68TeYVz2heeoCqjLyH8V0dLx6q5hl8IYX/wXoFj5UTt
+         CYsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding:cc:from:to;
-        bh=YbFhCGzhKhLbr2G2ThS1s0sN7jwXYQ4vWhYkrXF5osc=;
-        b=Y/dBo9VSt6pNJSd45tlBUJ0FdEvzGLKii8vL4ZZMZxUXnJWBjlajBsVYhOMN2svyvG
-         SvVjnz/AHnaXw912vUbi33dciawoTlJZEuBQlHq+LGEmoWOADoHvNpXryvUH2LelibAI
-         WzSNr7JfAIcL4EwjUjGsnM9wAAbWlWmJ/DVUwbgB+cBIoN9ydc9co+3Rmxb5cmLquqPv
-         fixIlSPFRqc9W2PswBERJIPaev+6nlQJIchunF+KEXxZ8Web6LjXwSf/OzIZQZR9Ekk7
-         ie/iBHFFSimXOEBEOnEYBnlBuOcqQ9PQGoEh70XtAPqxugN/bLXR2I1ZQKqb09mObihK
-         DjzA==
-X-Gm-Message-State: AJIora/aEwZGWDdyME0QP03nmaH/7i0spKevRJtEDRXv/mgwz6OE7yLQ
-        YKj+rk/ORCIoE8dt893Mrp6RQg==
-X-Google-Smtp-Source: AGRyM1vJW29/sVxuMxr0tG1PDaIe69h+YLS81Q9kQN6GZXjLMUjcoObBkYAeIvvbIZG+ephEELUDwg==
-X-Received: by 2002:aa7:9470:0:b0:525:4214:bd9e with SMTP id t16-20020aa79470000000b005254214bd9emr13914582pfq.11.1656046106909;
-        Thu, 23 Jun 2022 21:48:26 -0700 (PDT)
+        bh=wG/cL1k0Db5CVASFDb2IJyBBfutIm8qgplfgRR5fvCw=;
+        b=OdhvGP/tnbS4vJtKYiO2e6CX9W2GN7UFrF3m2FqZkKZrRsn4XAJuM1fCfeXYt/NABT
+         cqzTPOydZ57M2IlOLA4lxUkWlD1aFENjl9NYfqR8kJYWQdUAhMMgjE2LpcTt8Xsv2FH+
+         lNnoJVnDYDc1sI1CZEeP12H0gAYCP+nAIJUnsLgBDsPqAPjlqSm4PLres5Tvt/TXOppS
+         AQQ9iqCY9rX+jRJCqESzH/FXYxS8LMVISn4mbqDe6EgP+ksXkld6R2T+cWnqLIznqGbi
+         JMOl4SorXu0JbXFejL7YYb970JyL0xufFERTdsfVgATp6I82K4nnDgSrgHY15GKZheVp
+         HfSQ==
+X-Gm-Message-State: AJIora+JywpV30IavqPuYbt1wPsHWvbMayt2S5HUvJK2Cb1vky8831Cw
+        UPmHroEy0Gbl4fxpZhX0Ix5nkQ==
+X-Google-Smtp-Source: AGRyM1tDIqY+T0/4qiFzu9A4UssddVx4//CxdxfSa1dBpSxtstyE6Y1jCr4wGD+7ippEZV5Y3XJaZw==
+X-Received: by 2002:a17:902:b681:b0:16a:f81:6b02 with SMTP id c1-20020a170902b68100b0016a0f816b02mr31620723pls.28.1656046109159;
+        Thu, 23 Jun 2022 21:48:29 -0700 (PDT)
 Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id j5-20020a63ec05000000b0040d2f92d30fsm503488pgh.88.2022.06.23.21.48.26
+        by smtp.gmail.com with ESMTPSA id ik14-20020a170902ab0e00b0015e8d4eb2e3sm651922plb.301.2022.06.23.21.48.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 21:48:26 -0700 (PDT)
-Subject: [PATCH v2 2/5] ima: Fix a build issue on 32-bit platforms
-Date:   Thu, 23 Jun 2022 21:48:08 -0700
-Message-Id: <20220624044811.9682-3-palmer@rivosinc.com>
+        Thu, 23 Jun 2022 21:48:28 -0700 (PDT)
+Subject: [PATCH v2 4/5] RISC-V: purgatory: Use XLEN-length loads to support rv32
+Date:   Thu, 23 Jun 2022 21:48:10 -0700
+Message-Id: <20220624044811.9682-5-palmer@rivosinc.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220624044811.9682-1-palmer@rivosinc.com>
 References: <20220624044811.9682-1-palmer@rivosinc.com>
@@ -66,27 +66,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ima_dump_measurement_list() took an "unsigned long *", but was passed a
-size_t.  This triggers build warnings on 32-bit RISC-V.
+This uses an explicit "ld" to load up target address, which dosn't work
+on rv32.  Convert it to a REG_L macro, like everywhere else.
 
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 ---
- security/integrity/ima/ima_kexec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/purgatory/entry.S | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/security/integrity/ima/ima_kexec.c b/security/integrity/ima/ima_kexec.c
-index 13753136f03f..f2a94ec3002a 100644
---- a/security/integrity/ima/ima_kexec.c
-+++ b/security/integrity/ima/ima_kexec.c
-@@ -15,7 +15,7 @@
- #include "ima.h"
+diff --git a/arch/riscv/purgatory/entry.S b/arch/riscv/purgatory/entry.S
+index 0194f4554130..71c50fef051c 100644
+--- a/arch/riscv/purgatory/entry.S
++++ b/arch/riscv/purgatory/entry.S
+@@ -8,6 +8,8 @@
+  *
+  */
  
- #ifdef CONFIG_IMA_KEXEC
--static int ima_dump_measurement_list(unsigned long *buffer_size, void **buffer,
-+static int ima_dump_measurement_list(size_t *buffer_size, void **buffer,
- 				     unsigned long segment_size)
- {
- 	struct ima_queue_entry *qe;
++#include <asm/asm.h>
++
+ .macro	size, sym:req
+ 	.size \sym, . - \sym
+ .endm
+@@ -26,7 +28,7 @@ purgatory_start:
+ 	/* Start new image. */
+ 	mv	a0, s0
+ 	mv	a1, s1
+-	ld	a2, riscv_kernel_entry
++	REG_L	a2, riscv_kernel_entry
+ 	jr	a2
+ 
+ size purgatory_start
+@@ -41,7 +43,7 @@ size purgatory_start
+ 
+ .globl riscv_kernel_entry
+ riscv_kernel_entry:
+-	.quad	0
++	REG_ASM	0
+ size riscv_kernel_entry
+ 
+ .end
 -- 
 2.34.1
 
