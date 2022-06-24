@@ -2,198 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0ADCCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbiFXVSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 17:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
+        id S231204AbiFXVSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 17:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230423AbiFXVSF (ORCPT
+        with ESMTP id S230423AbiFXVSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 17:18:05 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4971063DF
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:18:02 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id u12so7115453eja.8
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:18:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kOvhoEpSE/InAZniXEti7vxsLeyf1a5ZFLlDrYfEPAA=;
-        b=M1hPxnJUFy/KS9mddV1ZPCrOTUCJOFrbdOpyi7j0ftrXkyhBEEnYliwfUMRIJpc302
-         UerGSaJuJ0U+ZQOOBbu9YnTTWBPqzn6BGm20kcHK021zUKyUQcLbeROv76yKvkCA4wL5
-         TKPV/NeXPSFred9jnh+TebuOPhqPca6DgiiGGp4t7notg/0HrutadjdFHCaRzrR60/SS
-         kEf+UPdtfuMWWyAGy3sWvPgk2BDAIWToAkVEoiSpYe94Nv1jd3nvOoAgAb/ln/G4XSiC
-         GAFPYKei8IcLsfKWZvc/9gQfNai9RmMKWnJqWlZq+QZRlzREX3RhLKN999kWcpZY7b77
-         80Uw==
+        Fri, 24 Jun 2022 17:18:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1A704F46C
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:18:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656105524;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=c3ciFIS1tCZAKBLlEA3LLrsEdfv6a6xB/Mxc/YJONLM=;
+        b=IXI349GI6u0DfARveOaCA+sYHIH3mkJ2n04UOBAoIyu7+hPqpRYgMCucMCQ72O6CeuCQcI
+        9c3X67pNBNo5w5o8fMffqk3NBLUGT38yNlR16ubf5uHLI0HgOv4Bh4sHxaW6cCsFUWdCKl
+        eXktH6QFqorD0nRAvFyUGE11CKylIj4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-675-VaNEPkeVPtmbHZ_UohYppg-1; Fri, 24 Jun 2022 17:18:43 -0400
+X-MC-Unique: VaNEPkeVPtmbHZ_UohYppg-1
+Received: by mail-wm1-f69.google.com with SMTP id bg6-20020a05600c3c8600b003a03d5d19e4so900875wmb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:18:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kOvhoEpSE/InAZniXEti7vxsLeyf1a5ZFLlDrYfEPAA=;
-        b=ahOeQ0ESiNX3lNbIdT0S3oBwbm0kEytPDHik+7ZSZ9aGuAkvHtQc9eKG5cOLxqwd53
-         9m1VmyvmMeKIJAon2FIXgmYqTS4H/wmO3UcuWrYwo8/MzIfm2+bR+wpFDqYxgtS6fa7p
-         ABhtpxVQmSK+fA97D2REAHoNQGE26UOTjrq8oyO0CHhonKgD1KW1KFLlbotUxmS1+A5z
-         2RfcOf3/susUrUm6aUJQVXv4bB7YuAde9E5Un5MmNO8+cc7L3T9iPMet+3lh8hVCWhVG
-         vaxBrNyapQ+OWC3LbESYUu8xhV2aeRlBwZ3wJXTEp+1OP3k3omp3/JneUSg/UA7tRhXI
-         8rTw==
-X-Gm-Message-State: AJIora+v64z1SJFETZGdA6jm2eWGXMIHhAaHFWYD90OUrxEYZwbaiv3n
-        fzqOp+1f5XXXATQZ+UI70X+OIgcFoHsq18BUXKB5jQ==
-X-Google-Smtp-Source: AGRyM1sSg7LIinwzTB+qnSxgsQphAXAb9tAoVzunteBdzvrsgIwf9MXdDqBKLlkpEVBLtUpHvFPPJdLDYUqh2lPKgqo=
-X-Received: by 2002:a17:907:d25:b0:711:ea61:63aa with SMTP id
- gn37-20020a1709070d2500b00711ea6163aamr992776ejc.584.1656105480525; Fri, 24
- Jun 2022 14:18:00 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=c3ciFIS1tCZAKBLlEA3LLrsEdfv6a6xB/Mxc/YJONLM=;
+        b=Nk6Gd1wIxmj59kw/xxaVPKkpuSy2Sk9CKEGi2EIKtwvskYoJ1UBaI6EuVhIwkt1R4g
+         LSUWevF4/gHQ4cx0LdwRDS2gC0osZfKkcJgl4XRe7bpzsoTTS7gocLfiaAKdlf+p3+rA
+         DRiMvUbbLt848z0wPUBFur++Y4wdHZ20UtU+P7AXLiD0zaV9LeH2V3qbd9NLvj6nEeHN
+         6R6DXlcYftCWHgKHHs1MX3krNWTBxp61Bb/45fOtT3Nur3k1vDrD4ggGAmzTermMpLNN
+         sPvP3PEkqjAjBgjJtCDtXtvZRhgwYeQVGJWv25/2uzKgyMPGWt4cnmA7vkoDGt1hxbXT
+         kzZg==
+X-Gm-Message-State: AJIora+8IX9i6e+esMuRCU5N8tac4/FYR4tEZ5+dh5wAPHnyDNwz4bqy
+        Vmogopze+FhuOLJjQODpkqnE6wCrl4a04ImwIYBaLgVnPjl3+iQtX6iC6PFLb67hC8Q6vKUzT8v
+        xFdQ3Lz7nPNzfqbV/ySKxK3Ik
+X-Received: by 2002:a05:600c:198f:b0:39c:8417:5daf with SMTP id t15-20020a05600c198f00b0039c84175dafmr6207778wmq.110.1656105522365;
+        Fri, 24 Jun 2022 14:18:42 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vMlC5khdVqL0HumKEX5jn7jG3b+wyoISHiyI1POCQHuV+/axV4wKi0xGt4Y2ytkR+CNqyTFg==
+X-Received: by 2002:a05:600c:198f:b0:39c:8417:5daf with SMTP id t15-20020a05600c198f00b0039c84175dafmr6207762wmq.110.1656105522117;
+        Fri, 24 Jun 2022 14:18:42 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id q11-20020adfea0b000000b0020fff0ea0a3sm3142713wrm.116.2022.06.24.14.18.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 14:18:41 -0700 (PDT)
+Message-ID: <b16eba9c-30cc-c71f-ad95-eb5398f84af8@redhat.com>
+Date:   Fri, 24 Jun 2022 23:18:40 +0200
 MIME-Version: 1.0
-References: <CABdmKX3ZV6-u-oLvW_wWavAMBfrsZ=C_rCgK_Uz4VjxcRvRFew@mail.gmail.com>
- <81026ef07c1ce20f8673b75b17bab79a2b39c548.camel@ndufresne.ca>
- <CABdmKX2LxZ6zZR=fhXfnuWCB2BR+gzDd1-t1DD2A2XP24wvuGQ@mail.gmail.com>
- <Yn6DpUsoSz1/15Kc@slm.duckdns.org> <CABdmKX1xvm87WMEDkMc9Aye46E4zv1-scenwgaRxHesrOCsaYg@mail.gmail.com>
- <YodHjYlMx1XGtM2+@slm.duckdns.org> <CABdmKX2Ok023rN1drQgXVZLKUO_DVYrzmEamCgMMu6BPO67yhQ@mail.gmail.com>
- <CABdmKX0WV8VWgeafVGJ++nJ4xsJD7Wpz=3KX=BW1du=huttfvw@mail.gmail.com>
- <YrYbwu0iIAJJGXVg@phenom.ffwll.local> <CANDhNCqGjaq-SFvWwkqnEFj4tJcRqCYupZ03wLyCexqTH5MqMg@mail.gmail.com>
- <YrYgWCTtZqfvCt5D@phenom.ffwll.local>
-In-Reply-To: <YrYgWCTtZqfvCt5D@phenom.ffwll.local>
-From:   "T.J. Mercier" <tjmercier@google.com>
-Date:   Fri, 24 Jun 2022 14:17:49 -0700
-Message-ID: <CABdmKX0bJDLwK7JEDGVb=KHtoVbZgnXYr8UE5eUpLYuAyiWwyw@mail.gmail.com>
-Subject: Re: [PATCH v7 0/6] Proposal for a GPU cgroup controller
-To:     John Stultz <jstultz@google.com>,
-        "T.J. Mercier" <tjmercier@google.com>, Tejun Heo <tj@kernel.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        kernel-team@android.com, cgroups@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-kselftest@vger.kernel.org
-Cc:     Daniel Vetter <daniel@ffwll.ch>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 3/3] drm/doc: Add KUnit documentation
+Content-Language: en-US
+To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        airlied@linux.ie, jani.nikula@linux.intel.com,
+        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>
+References: <20220613171738.111013-1-jose.exposito89@gmail.com>
+ <20220613171738.111013-4-jose.exposito89@gmail.com>
+ <c50e5c87-3198-08b7-1e32-d0959af1f296@redhat.com>
+ <YrYmR+aCdO3ldORB@phenom.ffwll.local>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YrYmR+aCdO3ldORB@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 1:36 PM Daniel Vetter <daniel@ffwll.ch> wrote:
->
-> On Fri, Jun 24, 2022 at 01:32:45PM -0700, John Stultz wrote:
-> > On Fri, Jun 24, 2022 at 1:17 PM Daniel Vetter <daniel@ffwll.ch> wrote:
-> > >
-> > > On Wed, Jun 15, 2022 at 10:31:21AM -0700, T.J. Mercier wrote:
-> > > > On Fri, May 20, 2022 at 9:25 AM T.J. Mercier <tjmercier@google.com> wrote:
-> > > > >
-> > > > > On Fri, May 20, 2022 at 12:47 AM Tejun Heo <tj@kernel.org> wrote:
-> > > > > >
-> > > > > > Hello,
-> > > > > >
-> > > > > > On Tue, May 17, 2022 at 04:30:29PM -0700, T.J. Mercier wrote:
-> > > > > > > Thanks for your suggestion. This almost works. "dmabuf" as a key could
-> > > > > > > work, but I'd actually like to account for each heap. Since heaps can
-> > > > > > > be dynamically added, I can't accommodate every potential heap name by
-> > > > > > > hardcoding registrations in the misc controller.
-> > > > > >
-> > > > > > On its own, that's a pretty weak reason to be adding a separate gpu
-> > > > > > controller especially given that it doesn't really seem to be one with
-> > > > > > proper abstractions for gpu resources. We don't want to keep adding random
-> > > > > > keys to misc controller but can definitely add limited flexibility. What
-> > > > > > kind of keys do you need?
-> > > > > >
-> > > > > Well the dmabuf-from-heaps component of this is the initial use case.
-> > > > > I was envisioning we'd have additional keys as discussed here:
-> > > > > https://lore.kernel.org/lkml/20220328035951.1817417-1-tjmercier@google.com/T/#m82e5fe9d8674bb60160701e52dae4356fea2ddfa
-> > > > > So we'd end up with a well-defined core set of keys like "system", and
-> > > > > then drivers would be free to use their own keys for their own unique
-> > > > > purposes which could be complementary or orthogonal to the core set.
-> > > > > Yesterday I was talking with someone who is interested in limiting gpu
-> > > > > cores and bus IDs in addition to gpu memory. How to define core keys
-> > > > > is the part where it looks like there's trouble.
-> > > > >
-> > > > > For my use case it would be sufficient to have current and maximum
-> > > > > values for an arbitrary number of keys - one per heap. So the only
-> > > > > part missing from the misc controller (for my use case) is the ability
-> > > > > to register a new key at runtime as heaps are added. Instead of
-> > > > > keeping track of resources with enum misc_res_type, requesting a
-> > > > > resource handle/ID from the misc controller at runtime is what I think
-> > > > > would be required instead.
-> > > > >
-> > > > Quick update: I'm going to make an attempt to modify the misc
-> > > > controller to support a limited amount of dynamic resource
-> > > > registration/tracking in place of the new controller in this series.
-> > > >
-> > > > Thanks everyone for the feedback.
-> > >
-> > > Somehow I missed this entire chain here.
-> > >
-> > > I'm not a fan, because I'm kinda hoping we could finally unify gpu memory
-> > > account. Atm everyone just adds their one-off solution in a random corner:
-> > > - total tracking in misc cgroup controller
-> > > - dma-buf sysfs files (except apparently too slow so it'll get deleted
-> > >   again)
-> > > - random other stuff on open device files os OOM killer can see it
-> > >
-> > > This doesn't look good.
-> >
-> > But I also think one could see it as "gpu memory" is the drm subsystem
-> > doing the same thing (in that it's artificially narrow to gpus). It
-> > seems we need something to account for buffers allocated by drivers,
-> > no matter which subsystem it was in (drm, v4l2, or networking or
-> > whatever).
->
-> This is what the gpucg was. It wasn't called the dmabuf cg because we want
-> to account also memory of other types (e.g. drm gem buffer objects which
-> aren't exported), and I guess people didn't dare call it an xpu.
->
-> But this was absolutely for a lot more than just "gpu drivers in drm".
-> Better names welcome.
-> -Daniel
-> --
-> Daniel Vetter
-> Software Engineer, Intel Corporation
-> http://blog.ffwll.ch
+Hello Daniel,
 
-From an API perspective the two approaches (misc vs GPU) seem similar
-to me. Someone comes up with a name of a resource they want to track,
-and it's added as a key in a cgroup interface file as drivers register
-and perform accounting on that resource. Considering just the naming,
-what do you see as the appeal of a controller named GPU/XPU vs one
-named Misc? Folks seem to have assumptions about the type of resources
-a "GPU" controller should be tracking, and potentially also how
-different resources are grouped under a single resource name. So is
-your thought that non-graphics related accounting of the same sort
-should be using a differently named controller, even if that
-controller could have the same implementation?
+On 6/24/22 23:01, Daniel Vetter wrote:
+> On Tue, Jun 14, 2022 at 02:58:29PM +0200, Javier Martinez Canillas wrote:
+>> Hello José,
+>>
+>> On 6/13/22 19:17, José Expósito wrote:
+>>
+>> [snip]
+>>
+>>> +KUnit (Kernel unit testing framework) provides a common framework for unit tests
+>>> +within the Linux kernel.
+>>> +
+>>
+>> I think that it will be useful to have a reference to the KUnit kernel doc here,
+>> something like the following:
+>>
+>> `KUnit <https://docs.kernel.org/dev-tools/kunit/index.html>`_ (Kernel Unit...
+>>
+>>> +This section covers the specifics for the DRM subsystem. For general information
+>>> +about KUnit, please refer to Documentation/dev-tools/kunit/start.rst.
+>>> +
+>>> +How to run the tests?
+>>> +~~~~~~~~~~~~~~~~~~~~~
+>>> +
+>>> +In order to facilitate running the test suite, a configuration file is present
+>>> +in ``drivers/gpu/drm/kunit/.kunitconfig``. It can be used by ``kunit.py`` as
+>>> +follows:
+>>> +
+>>> +.. code-block:: bash
+>>> +
+>>> +	$ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/gpu/drm/kunit \
+>>> +		--kconfig_add CONFIG_VIRTIO_UML=y \
+>>> +		--kconfig_add CONFIG_UML_PCI_OVER_VIRTIO=y
+>>> +
+>>> +.. note::
+>>> +	The configuration included in ``.kunitconfig`` should be as generic as
+>>> +	possible.
+>>> +	``CONFIG_VIRTIO_UML`` and ``CONFIG_UML_PCI_OVER_VIRTIO`` are not
+>>> +	included in it because they are only required for User Mode Linux.
+>>> +
+>>> +
+>>
+>> Maybe also add something like this ?
+>>
+>> For example, the following command can be used to run the test for x86_64:
+>>
+>> 	$ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/gpu/drm/kunit \
+>> 		--arch=x86_64
+>>
+>> Regardless, the patch looks good to me:
+>>
+>> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+> 
+> Hey so since you have a bunch of patches merged into drm already but seem
+> to lack drm-misc commit rights to push these yourself I think it's time to
+> get those:
+> 
+> https://drm.pages.freedesktop.org/maintainer-tools/commit-access.html#drm-misc
+>
+> And I guess Javier can help you with any questions you might have and make
+> sure the request gets through by poking folks on #dri-devel irc?
+>
 
-My thought is that the resource names should be as specific as
-possible to allow fine-grained accounting, and leave any grouping of
-resources to userspace. We can do that under any controller. If you'd
-like to see a separate controller for graphics related stuff... well
-that's what I was aiming for with the GPU cgroup controller. It's just
-that dmabufs from heaps are the first use-case wired up.
+Yes, he already requested commit access and got the acks, so I think is
+just a matter of time until he has this sorted out.
 
-I haven't put much time into the misc controller effort yet, and I'd
-still be happy to see the GPU controller accepted if we can agree
-about how it'd be used going forward. Daniel, I think you're in a
-great position to comment about this. :) If there's a place where the
-implementation is missing the mark, then let's change it. Are the
-controller and resource naming the only issues?
+José, please don't hesitate to ask if you need any help or clarification
+once you have a setup to push your patches. The dim documentation [0] is
+superb but I know that it can be somewhat stressful the first time :)
+
+[0]: https://drm.pages.freedesktop.org/maintainer-tools/dim.html
+ -- 
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
