@@ -2,51 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27774CCA487
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8047CCA480
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232873AbiFXOgo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        id S232917AbiFXOgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232678AbiFXOfg (ORCPT
+        with ESMTP id S232695AbiFXOfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:35:36 -0400
+        Fri, 24 Jun 2022 10:35:41 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A58FD5D114;
-        Fri, 24 Jun 2022 07:35:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3E795DC36;
+        Fri, 24 Jun 2022 07:35:10 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id B55205BDE;
-        Fri, 24 Jun 2022 17:36:06 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com B55205BDE
+        by mail.baikalelectronics.com (Postfix) with ESMTP id E3DCF16C2;
+        Fri, 24 Jun 2022 17:17:46 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com E3DCF16C2
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1656081366;
-        bh=rjRZBvCMlt5PIqYs9JNe+ubm8Wj01phchJzK/QsE8k4=;
+        d=baikalelectronics.ru; s=mail; t=1656080266;
+        bh=k9bAgIwAU1eSDSAOvId6WLyM2VAwff02HhIivmyRPvg=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=jjVdOU2+1bi6h7tgZoG8rYByVjQQ76LAMHfqMH3bL9EIgcjCP2o7weq+hgepz4etF
-         XfQxzkE9G0ZrtDtE0/thDfIzRdUQDznN+Tv24/bzGLf9QvQUD3AHzmU4VWCiuBoTh7
-         E31wlFfQUo6+INj0NaVflcwKgfTg+O865U22rqW4=
+        b=Klm+jqAmLdOp9klTxYxXrTP5VcPkIzyufPE5vJFG6uL3wCDvPEN3vkUbtaSkhwVoT
+         dzkX2E4xmoqPg49FF4c+4uqO2mFTzt3Je0C8ryrbUOVqtBB9gmzzggYfe36Mh0y7Rk
+         5nXJ3UOUh81ockly/RGDK0tfAy98jfiGaF59MmFI=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jun 2022 17:34:46 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jun 2022 17:16:27 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Alexey Brodkin <abrodkin@synopsys.com>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        <linux-usb@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v5 18/18] PCI: dwc-plat: Drop dw_plat_pcie_of_match forward declaration
-Date:   Fri, 24 Jun 2022 17:34:28 +0300
-Message-ID: <20220624143428.8334-19-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru>
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Patrice Chotard <patrice.chotard@st.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linuxppc-dev@lists.ozlabs.org>,
+        <linux-snps-arc@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH RESEND v9 2/5] arm: dts: lpc18xx: Harmonize EHCI/OHCI DT nodes name
+Date:   Fri, 24 Jun 2022 17:16:18 +0300
+Message-ID: <20220624141622.7149-3-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220624141622.7149-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220624141622.7149-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -55,34 +66,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The denoted forward declaration used to be required to get the OF-device
-ID structure by calling the of_match_device() method. The later method
-invocation has been replaced with the of_device_get_match_data() call in
-the commit 5c204204cf24 ("PCI: designware-plat: Prefer
-of_device_get_match_data()"). Thus the forward declaration of the
-OF-compatible device strings no longer needed. Drop it for good.
+In accordance with the Generic EHCI/OHCI bindings the corresponding node
+name is suppose to comply with the Generic USB HCD DT schema, which
+requires the USB nodes to have the name acceptable by the regexp:
+"^usb(@.*)?" . Make sure the "generic-ehci" and "generic-ohci"-compatible
+nodes are correctly named.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+Acked-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-designware-plat.c | 2 --
- 1 file changed, 2 deletions(-)
+ arch/arm/boot/dts/lpc18xx.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-plat.c b/drivers/pci/controller/dwc/pcie-designware-plat.c
-index 59bd85d4190b..1fcfb840f238 100644
---- a/drivers/pci/controller/dwc/pcie-designware-plat.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-plat.c
-@@ -29,8 +29,6 @@ struct dw_plat_pcie_of_data {
- 	enum dw_pcie_device_mode	mode;
- };
+diff --git a/arch/arm/boot/dts/lpc18xx.dtsi b/arch/arm/boot/dts/lpc18xx.dtsi
+index 10b8249b8ab6..82ffd7b0ad8a 100644
+--- a/arch/arm/boot/dts/lpc18xx.dtsi
++++ b/arch/arm/boot/dts/lpc18xx.dtsi
+@@ -121,7 +121,7 @@ mmcsd: mmcsd@40004000 {
+ 			status = "disabled";
+ 		};
  
--static const struct of_device_id dw_plat_pcie_of_match[];
--
- static const struct dw_pcie_host_ops dw_plat_pcie_host_ops = {
- };
+-		usb0: ehci@40006100 {
++		usb0: usb@40006100 {
+ 			compatible = "nxp,lpc1850-ehci", "generic-ehci";
+ 			reg = <0x40006100 0x100>;
+ 			interrupts = <8>;
+@@ -133,7 +133,7 @@ usb0: ehci@40006100 {
+ 			status = "disabled";
+ 		};
  
+-		usb1: ehci@40007100 {
++		usb1: usb@40007100 {
+ 			compatible = "nxp,lpc1850-ehci", "generic-ehci";
+ 			reg = <0x40007100 0x100>;
+ 			interrupts = <9>;
 -- 
 2.35.1
 
