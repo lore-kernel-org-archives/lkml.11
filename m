@@ -2,140 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B74C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8B2C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbiFXIEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 04:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52064 "EHLO
+        id S229669AbiFXIEh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 04:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230488AbiFXIDx (ORCPT
+        with ESMTP id S230320AbiFXIE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 04:03:53 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1C16DB03
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:03:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656057832; x=1687593832;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=ENT73aWnAztm46LKNlhTKMt+fCuUob46bDVIkTPIOIg=;
-  b=nTpZR8UMd+xcgXDZMfGM/P9vDLwVQ785v+RbLTsDPd3Zipn8S7wOMSgV
-   CgYb+8kH8ZV4fbbv5WoGCyJkhY6p4j3l5B85jq4ksT+FHCfP2jbzxo5UW
-   PoGzcMws+zGwkyltFrAxqCVkxbGiFo2GjQHawqL2SheR+Wz/PYsTOBHTe
-   SBj31bUOjw1jSo2tLI/uHK73nMMLA4/Sqe7sk7B6HZTKnXL1GAW2RjQXT
-   mBEN43DmbHpzBfRPd9/Ghwj0nD5H7SLPcojsD1WHasXL6TXvRvi3fqTp/
-   DOmsiGCxYz65E/J+uDh6xwINwpiBua+Ckbsbj8NpOC2FVby4NLdhhrjVz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="306415899"
-X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
-   d="scan'208";a="306415899"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 01:03:48 -0700
-X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
-   d="scan'208";a="621643208"
-Received: from bard-ubuntu.sh.intel.com ([10.239.185.57])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 01:03:45 -0700
-From:   Bard Liao <yung-chuan.liao@linux.intel.com>
-To:     alsa-devel@alsa-project.org, vkoul@kernel.org
-Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org, tiwai@suse.de,
-        broonie@kernel.org, gregkh@linuxfoundation.org,
-        srinivas.kandagatla@linaro.org,
-        pierre-louis.bossart@linux.intel.com, sanyog.r.kale@intel.com,
-        bard.liao@intel.com
-Subject: [PATCH v3 2/2] ASoC: SOF: Intel: add trigger callback into sdw_callback
-Date:   Fri, 24 Jun 2022 16:03:26 +0800
-Message-Id: <20220624080326.29139-3-yung-chuan.liao@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220624080326.29139-1-yung-chuan.liao@linux.intel.com>
-References: <20220624080326.29139-1-yung-chuan.liao@linux.intel.com>
+        Fri, 24 Jun 2022 04:04:28 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894596DB12
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:04:27 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id cf14so2300858edb.8
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:04:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4OtMpzHKzt91qkm5V15gkjdA78bNtdhhU+jDtTaRt8Y=;
+        b=fYHxbPX9kMi6QwUH5r9LNDwsFslHQChYVUSoxHKqS/Sbczv6WsqcHg5LMjF1kCYhhr
+         vRGm0im6lsDWbXAJKv4sKfTccMFIr45np2W1U/CyUfs/1NFNwRrPMHmTUV8+SBqptfwI
+         NX8szonEbOKl/DNlTLpBRZ4aX4fWv0FNUsFEY9zvg/pct5z6R1DHQkFjrWLPq5bSwx9j
+         UyESn/oJRH4JabPxCnH7VWt/iz7En1csAUD/cV/6CtWKwuZRYZM+P4MfpkU6ONKwV7ff
+         tZU4bhM0RukM0tUnE0G+xx2tUba3uwJY3QjWMJ+gkin/6rg5N7DMYAd2Q1kBYrEFh4s2
+         k7vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4OtMpzHKzt91qkm5V15gkjdA78bNtdhhU+jDtTaRt8Y=;
+        b=VtfYrIdbDrojvcaFcCc71y/S3xdvSP3voQ6D77NVkU/SrR4csKxqIVD+CI6nFRgq2Y
+         DCBGnLUmwdru9OLPJH3TBkktrhG9Yk7u1l9F0u/Ba8rS94l9Sr+O9AzioRd5aQ5G3OPq
+         /dXhxNmjI1lp7mTQQxQ1BlLopUkAlHexw7TDiUkJ58ZA7RxEsL4A41X/JS0gC6IU/iN6
+         mac3Ci8Yi2vDNayI4zQO2K9F7opA8NSj7rF7SVbcuAUD1RcZxy4ZrHk9FT07p+pockGp
+         rlfMBXU9u55QYS7OBSSpIdAktNo/j3zzZVk/iKeqmsHm7qmyRMlTldWTxEWWisjdbQ+c
+         5aIA==
+X-Gm-Message-State: AJIora+8Z/YiHNH3uG6GTZjFrzuEAHBVv2GksyO5eJQZvlpxs1j14wWf
+        5Bmw7/ZvwkvgwicZ99fj+t7fBA==
+X-Google-Smtp-Source: AGRyM1vO8srbTPpU08tP7uU1GPYZF7L70IU0e2vDNGf8P3wJz+25K67GBLB56/dBsIiBV+Kf80UloQ==
+X-Received: by 2002:a05:6402:254c:b0:435:c541:fc8d with SMTP id l12-20020a056402254c00b00435c541fc8dmr10378580edb.385.1656057866189;
+        Fri, 24 Jun 2022 01:04:26 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id d6-20020a170906174600b00715705dd23asm684580eje.89.2022.06.24.01.04.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 01:04:25 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        arm@kernel.org, soc@kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [GIT PULL fixes] ARM: samsung: fixes for v5.19
+Date:   Fri, 24 Jun 2022 10:04:23 +0200
+Message-Id: <20220624080423.31427-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For IPC4, we need to set pipeline state in BE DAI trigger.
+Hi,
 
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
----
- sound/soc/sof/intel/hda-dai.c | 14 +++++++++++---
- sound/soc/sof/intel/hda.c     |  2 +-
- sound/soc/sof/intel/hda.h     |  1 +
- 3 files changed, 13 insertions(+), 4 deletions(-)
+Two fixes for v5.19.
 
-diff --git a/sound/soc/sof/intel/hda-dai.c b/sound/soc/sof/intel/hda-dai.c
-index ed74a1f264e8..ce5a39326dce 100644
---- a/sound/soc/sof/intel/hda-dai.c
-+++ b/sound/soc/sof/intel/hda-dai.c
-@@ -714,8 +714,7 @@ static const struct snd_soc_dai_ops ipc3_ssp_dai_ops = {
- 	.shutdown = ssp_dai_shutdown,
- };
- 
--static int ipc4_be_dai_trigger(struct snd_pcm_substream *substream,
--			       int cmd, struct snd_soc_dai *dai)
-+static int ipc4_be_dai_common_trigger(struct snd_soc_dai *dai, int cmd, int stream)
- {
- 	struct snd_sof_widget *pipe_widget;
- 	struct sof_ipc4_pipeline *pipeline;
-@@ -724,7 +723,7 @@ static int ipc4_be_dai_trigger(struct snd_pcm_substream *substream,
- 	struct snd_sof_dev *sdev;
- 	int ret;
- 
--	w = snd_soc_dai_get_widget(dai, substream->stream);
-+	w = snd_soc_dai_get_widget(dai, stream);
- 	swidget = w->dobj.private;
- 	pipe_widget = swidget->pipe_widget;
- 	pipeline = pipe_widget->private;
-@@ -759,6 +758,12 @@ static int ipc4_be_dai_trigger(struct snd_pcm_substream *substream,
- 	return 0;
- }
- 
-+static int ipc4_be_dai_trigger(struct snd_pcm_substream *substream,
-+			       int cmd, struct snd_soc_dai *dai)
-+{
-+	return ipc4_be_dai_common_trigger(dai, cmd, substream->stream);
-+}
-+
- static const struct snd_soc_dai_ops ipc4_dmic_dai_ops = {
- 	.trigger = ipc4_be_dai_trigger,
- };
-@@ -810,6 +815,9 @@ void hda_set_dai_drv_ops(struct snd_sof_dev *sdev, struct snd_sof_dsp_ops *ops)
- 		if (!hda_use_tplg_nhlt)
- 			ipc4_data->nhlt = intel_nhlt_init(sdev->dev);
- 
-+		if (IS_ENABLED(CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE))
-+			sdw_callback.trigger = ipc4_be_dai_common_trigger;
-+
- 		break;
- 	}
- 	default:
-diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index bc07df1fc39f..cdd3601e84f5 100644
---- a/sound/soc/sof/intel/hda.c
-+++ b/sound/soc/sof/intel/hda.c
-@@ -147,7 +147,7 @@ static int sdw_free_stream(struct device *dev,
- 	return hda_ctrl_dai_widget_free(w, SOF_DAI_CONFIG_FLAGS_NONE, &data);
- }
- 
--static const struct sdw_intel_ops sdw_callback = {
-+struct sdw_intel_ops sdw_callback = {
- 	.params_stream = sdw_params_stream,
- 	.free_stream = sdw_free_stream,
- };
-diff --git a/sound/soc/sof/intel/hda.h b/sound/soc/sof/intel/hda.h
-index dc713c20ba1d..5439fcfe2b4d 100644
---- a/sound/soc/sof/intel/hda.h
-+++ b/sound/soc/sof/intel/hda.h
-@@ -778,5 +778,6 @@ irqreturn_t cnl_ipc4_irq_thread(int irq, void *context);
- int cnl_ipc4_send_msg(struct snd_sof_dev *sdev, struct snd_sof_ipc_msg *msg);
- irqreturn_t hda_dsp_ipc4_irq_thread(int irq, void *context);
- int hda_dsp_ipc4_send_msg(struct snd_sof_dev *sdev, struct snd_sof_ipc_msg *msg);
-+extern struct sdw_intel_ops sdw_callback;
- 
- #endif
--- 
-2.17.1
+Best regards,
+Krzysztof
 
+
+The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+
+  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git tags/samsung-fixes-5.19
+
+for you to fetch changes up to c4c79525042a4a7df96b73477feaf232fe44ae81:
+
+  ARM: exynos: Fix refcount leak in exynos_map_pmu (2022-06-06 10:40:57 +0200)
+
+----------------------------------------------------------------
+Samsung fixes for v5.19
+
+Both fixes are for issues present before v5.19 merge window:
+1. Correct UART clocks on Exynos7885.  Although the initial, fixed
+   DTS commit is from v5.18, the issue will be exposed with a upcoming fix
+   to Exynos7885 clock driver, so we need to correct the DTS earlier.
+2. Fix theoretical OF node leak in Exynos machine code.
+
+----------------------------------------------------------------
+David Virag (1):
+      arm64: dts: exynos: Correct UART clocks on Exynos7885
+
+Miaoqian Lin (1):
+      ARM: exynos: Fix refcount leak in exynos_map_pmu
+
+ arch/arm/mach-exynos/exynos.c              |  1 +
+ arch/arm64/boot/dts/exynos/exynos7885.dtsi | 12 ++++++------
+ 2 files changed, 7 insertions(+), 6 deletions(-)
