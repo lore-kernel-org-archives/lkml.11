@@ -2,126 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EECBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C6C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230308AbiFXQCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 12:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33946 "EHLO
+        id S230441AbiFXQEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 12:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230185AbiFXQCi (ORCPT
+        with ESMTP id S230410AbiFXQEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 12:02:38 -0400
-Received: from forward500p.mail.yandex.net (forward500p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CFC52E75
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:02:36 -0700 (PDT)
-Received: from myt6-e228e91c65dd.qloud-c.yandex.net (myt6-e228e91c65dd.qloud-c.yandex.net [IPv6:2a02:6b8:c12:42a5:0:640:e228:e91c])
-        by forward500p.mail.yandex.net (Yandex) with ESMTP id AD567F04F2E;
-        Fri, 24 Jun 2022 19:01:26 +0300 (MSK)
-Received: from myt5-ca5ec8faf378.qloud-c.yandex.net (myt5-ca5ec8faf378.qloud-c.yandex.net [2a02:6b8:c12:2514:0:640:ca5e:c8fa])
-        by myt6-e228e91c65dd.qloud-c.yandex.net (mxback/Yandex) with ESMTP id Cpu7h3Tut9-1PgmlxSt;
-        Fri, 24 Jun 2022 19:01:26 +0300
-X-Yandex-Fwd: 2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1656086486;
-        bh=Od97yBVEB4xl89bfu7RN4gha8Ggf6tred2IKE8Y/ikg=;
-        h=In-Reply-To:References:Date:Subject:Cc:To:From:Message-Id;
-        b=d974ooxfFUysBu9E+rf/JT1jxMMbkAAQqTLxQpILPVr9Qa6L16K+LVoLCZhdEkGq3
-         Sgww9ZUHNRO1wBhf6vDXPQl3LynbA+blqByd1VF43/AMSL3z24qbA91j5DHb6GezGx
-         ZA3EHvYAYCNujbvd9CCfdBQXnVkJWN86e9+5FoaQ=
-Authentication-Results: myt6-e228e91c65dd.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
-Received: by myt5-ca5ec8faf378.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id iVUkuL8Azf-1PMKOJDi;
-        Fri, 24 Jun 2022 19:01:25 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Nikita Shubin <nikita.shubin@maquefel.me>
-To:     Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <anup@brainfault.org>
-Cc:     =?UTF-8?q?Jo=C3=A3o=20M=C3=A1rio=20Domingos?= 
-        <joao.mario@tecnico.ulisboa.pt>, linux@yadro.com,
-        Nikita Shubin <n.shubin@yadro.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/5] drivers/perf: riscv_pmu_sbi: perf format
-Date:   Fri, 24 Jun 2022 19:00:51 +0300
-Message-Id: <20220624160117.3206-2-nikita.shubin@maquefel.me>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220624160117.3206-1-nikita.shubin@maquefel.me>
-References: <20220624160117.3206-1-nikita.shubin@maquefel.me>
+        Fri, 24 Jun 2022 12:04:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16E872CE19
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:04:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656086692;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ln1Z2E1M7p8doCl1L1YnM9NdRf2Z0FbPrSaV1f2IMzE=;
+        b=E9V3fR12hLP99ec6uCVDDY6Qv/9q47k5/oi0uBKSbLntp45ibHXeI5NsTNeJPxnGZ1YxiQ
+        ArzM1axWsXdGxMQhhiIbWh1RAY2LzcEAdu1B/Y1/bAYwvhV1aelWE35Y8U53asnHXNW0yq
+        KBM/vZTDIDCWmtnHKuoktRaqR4Fkra8=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-202-HoyuuNK7MGudK1fRyO3puA-1; Fri, 24 Jun 2022 12:04:50 -0400
+X-MC-Unique: HoyuuNK7MGudK1fRyO3puA-1
+Received: by mail-il1-f198.google.com with SMTP id d1-20020a923601000000b002d93c039d9fso1661637ila.9
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:04:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Ln1Z2E1M7p8doCl1L1YnM9NdRf2Z0FbPrSaV1f2IMzE=;
+        b=WmMoFjNOYgy0XEaeOqUiZ/c1zV+E4ZjEsGZ2pDhzo1YqdoVUWO4U8gTvnWcKYM0qa0
+         miTdQlfh/G19beH5uOE4AP2+5P8h1JTTyE5EOkkO3PHoDbZXAdEfE0ZMiFkd1GPMVxP1
+         4/h1EOhpd+F296K1BFYC7L+VEKccLo+KSe5CXGoqrWfYGqxdBdXY96HfG7vYRB54yly4
+         +XixB/k2ISEQ4UgjpacRFHpBV08OVsBZAvU62VqQYmF/6EcQIi9Zafxlao1Mu9rZu05m
+         ottJvx91wSnoj/stsrzNhxdw+nTbJNjyNrqkMskAzbfMWU0JX8j1l6ROwMGKusIGFW3C
+         MApw==
+X-Gm-Message-State: AJIora9VuFXraDTHTcQ9p+3yyUQag2RP5RiuqNxaFw1d3ZNzXq9tWdx0
+        j3gR196sBvRCyGGv0LmfR8nkkNaEIzcCnnVVX5hS+I1+yWo49OdqvAHyFn9yOCqLbOvYYaAozzw
+        WpluWJJsDoqRWXeGEfJ9Vdtn8
+X-Received: by 2002:a05:6638:300e:b0:335:c73c:3d25 with SMTP id r14-20020a056638300e00b00335c73c3d25mr8993396jak.77.1656086689942;
+        Fri, 24 Jun 2022 09:04:49 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tkLdQdoyXEGpgj4BclSWirmWj1t+0EzYv/auBwq1GquIs3qt+6zmVH3RnW4cPTN1eyU02Q0Q==
+X-Received: by 2002:a05:6638:300e:b0:335:c73c:3d25 with SMTP id r14-20020a056638300e00b00335c73c3d25mr8993376jak.77.1656086689538;
+        Fri, 24 Jun 2022 09:04:49 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id a30-20020a027a1e000000b00339c67df872sm1216387jac.129.2022.06.24.09.04.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 09:04:49 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 10:04:47 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>, cohuck@redhat.com,
+        iommu@lists.linux.dev, iommu@lists.linux-foundation.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
+Message-ID: <20220624100447.4ec983fb.alex.williamson@redhat.com>
+In-Reply-To: <42679e49-4a04-4700-f420-f6ffe0f4b7d1@arm.com>
+References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
+        <20220622161721.469fc9eb.alex.williamson@redhat.com>
+        <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
+        <20220623170044.1757267d.alex.williamson@redhat.com>
+        <20220624015030.GJ4147@nvidia.com>
+        <20220624081159.508baed3.alex.williamson@redhat.com>
+        <20220624141836.GS4147@nvidia.com>
+        <20220624082831.22de3d51.alex.williamson@redhat.com>
+        <42679e49-4a04-4700-f420-f6ffe0f4b7d1@arm.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Shubin <n.shubin@yadro.com>
+On Fri, 24 Jun 2022 16:12:55 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-Update driver to export formatting and event information to sysfs so it
-can be used by the perf user space tools with the syntaxes:
+> On 2022-06-24 15:28, Alex Williamson wrote:
+> > On Fri, 24 Jun 2022 11:18:36 -0300
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >   
+> >> On Fri, Jun 24, 2022 at 08:11:59AM -0600, Alex Williamson wrote:  
+> >>> On Thu, 23 Jun 2022 22:50:30 -0300
+> >>> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >>>      
+> >>>> On Thu, Jun 23, 2022 at 05:00:44PM -0600, Alex Williamson wrote:
+> >>>>      
+> >>>>>>>> +struct vfio_device *vfio_device_get_from_iommu(struct iommu_group *iommu_group)
+> >>>>>>>> +{
+> >>>>>>>> +	struct vfio_group *group = vfio_group_get_from_iommu(iommu_group);
+> >>>>>>>> +	struct vfio_device *device;  
+> >>>>>>>
+> >>>>>>> Check group for NULL.  
+> >>>>>>
+> >>>>>> OK - FWIW in context this should only ever make sense to call with an
+> >>>>>> iommu_group which has already been derived from a vfio_group, and I did
+> >>>>>> initially consider a check with a WARN_ON(), but then decided that the
+> >>>>>> unguarded dereference would be a sufficiently strong message. No problem
+> >>>>>> with bringing that back to make it more defensive if that's what you prefer.  
+> >>>>>
+> >>>>> A while down the road, that's a bit too much implicit knowledge of the
+> >>>>> intent and single purpose of this function just to simply avoid a test.  
+> >>>>
+> >>>> I think we should just pass the 'struct vfio_group *' into the
+> >>>> attach_group op and have this API take that type in and forget the
+> >>>> vfio_group_get_from_iommu().  
+> >>>
+> >>> That's essentially what I'm suggesting, the vfio_group is passed as an
+> >>> opaque pointer which type1 can use for a
+> >>> vfio_group_for_each_vfio_device() type call.  Thanks,  
+> >>
+> >> I don't want to add a whole vfio_group_for_each_vfio_device()
+> >> machinery that isn't actually needed by anything.. This is all
+> >> internal, we don't need to design more than exactly what is needed.
+> >>
+> >> At this point if we change the signature of the attach then we may as
+> >> well just pass in the representative vfio_device, that is probably
+> >> less LOC overall.  
+> > 
+> > That means that vfio core still needs to pick an arbitrary
+> > representative device, which I find in fundamental conflict to the
+> > nature of groups.  Type1 is the interface to the IOMMU API, if through
+> > the IOMMU API we can make an assumption that all devices within the
+> > group are equivalent for a given operation, that should be done in type1
+> > code, not in vfio core.  A for-each interface is commonplace and not
+> > significantly more code or design than already proposed.  Thanks,  
+> 
+> It also occurred to me this morning that there's another middle-ground 
+> option staring out from the call-wrapping notion I mentioned yesterday - 
+> while I'm not keen to provide it from the IOMMU API, there's absolutely 
+> no reason that VFIO couldn't just use the building blocks by itself, and 
+> in fact it works out almost absurdly simple:
+> 
+> static bool vfio_device_capable(struct device *dev, void *data)
+> {
+> 	return device_iommu_capable(dev, (enum iommu_cap)data);
+> }
+> 
+> bool vfio_group_capable(struct iommu_group *group, enum iommu_cap cap)
+> {
+> 	return iommu_group_for_each_dev(group, (void *)cap, vfio_device_capable);
+> }
+> 
+> and much the same for iommu_domain_alloc() once I get that far. The 
+> locking concern neatly disappears because we're no longer holding any 
+> bus or device pointer that can go stale. How does that seem as a 
+> compromise for now, looking forward to Jason's longer-term view of 
+> rearranging the attach_group process such that a vfio_device falls 
+> naturally to hand?
 
-perf stat -e cpu/event=0x05
-perf stat -e cpu/event=0x05,firmware=0x1/
+Yup, that seems like another way to do it, a slight iteration on the
+current bus_type flow, and also avoids any sort of arbitrary
+representative device being passed around as an API.
 
-63-bit is used to distinguish hardware events from firmware. Firmware
-events are defined by "RISC-V Supervisor Binary Interface
-Specification".
+For clarity of the principle that all devices within the group should
+have the same capabilities, we could even further follow the existing
+bus_type and do a sanity test here at the same time, or perhaps simply
+stop after the first device to avoid the if-any-device-is-capable
+semantics implied above.  Thanks,
 
-perf stat -e cpu/event=0x05,firmware=0x1/
-
-is equivalent to
-
-perf stat -e r8000000000000005
-
-Inspired-by: João Mário Domingos <joao.mario@tecnico.ulisboa.pt>
-Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
-Link: https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc
----
- drivers/perf/riscv_pmu_sbi.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
-index dca3537a8dcc..2b5861a10d8e 100644
---- a/drivers/perf/riscv_pmu_sbi.c
-+++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -21,6 +21,25 @@
- #include <asm/sbi.h>
- #include <asm/hwcap.h>
- 
-+PMU_FORMAT_ATTR(event, "config:0-62");
-+PMU_FORMAT_ATTR(firmware, "config:63-63");
-+
-+static struct attribute *riscv_arch_formats_attr[] = {
-+	&format_attr_event.attr,
-+	&format_attr_firmware.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group riscv_pmu_format_group = {
-+	.name = "format",
-+	.attrs = riscv_arch_formats_attr,
-+};
-+
-+static const struct attribute_group *riscv_pmu_attr_groups[] = {
-+	&riscv_pmu_format_group,
-+	NULL,
-+};
-+
- union sbi_pmu_ctr_info {
- 	unsigned long value;
- 	struct {
-@@ -720,6 +739,7 @@ static int pmu_sbi_device_probe(struct platform_device *pdev)
- 		pmu->pmu.capabilities |= PERF_PMU_CAP_NO_INTERRUPT;
- 		pmu->pmu.capabilities |= PERF_PMU_CAP_NO_EXCLUDE;
- 	}
-+	pmu->pmu.attr_groups = riscv_pmu_attr_groups;
- 	pmu->num_counters = num_counters;
- 	pmu->ctr_start = pmu_sbi_ctr_start;
- 	pmu->ctr_stop = pmu_sbi_ctr_stop;
--- 
-2.35.1
+Alex
 
