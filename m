@@ -2,67 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F3EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D20C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbiFXR0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
+        id S230449AbiFXR1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232438AbiFXR01 (ORCPT
+        with ESMTP id S232517AbiFXR0o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:26:27 -0400
-Received: from mailrelay2-1.pub.mailoutpod1-cph3.one.com (mailrelay2-1.pub.mailoutpod1-cph3.one.com [46.30.210.183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D34315816
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:25:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=rsa1;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=YImQrOCjpI1Pf4sniYSIQE78QxCL87Zrr2ZodYXVNnY=;
-        b=fWqRVZB/Piz7vR6GT/pFrKYPjNsODm6Lt5B5pbB2athdA4enwZe3cwndBcrnJ57M6ATcujp0kKW2S
-         F6fM7giyCy9Eh1wtt9/qJRhGx2q7M8tLUenHtxp2qOh/9dtEarCJJcJCpYgFrHU3kLAUqx6xlAk2hW
-         70PpcGcRobBymntLPaACuMV0fd5rBXAsNsmR3OMe5ki6m1TsvkwaAPK8HgZfdjLmdpC6brj1laBfET
-         IqcPFOkzGb1JR0K7XH4FVH5btEvWwMgBg2tNiNr8kWwTgCqfciZjWE6pHIncd9tFNOaIoAD22KMoN+
-         RfT6/ejTF77vupkcDkBHddZGHkF8W7w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=ed1;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=YImQrOCjpI1Pf4sniYSIQE78QxCL87Zrr2ZodYXVNnY=;
-        b=0aamlKaxWOlroxmiYOuL5/s5MGru3Ba31/MhPmFhmYdTmN8Rn2J7h0+f9Zgt2oxQkHzfCsZIhEUVg
-         8SIHF1ECA==
-X-HalOne-Cookie: 96a8abf5ab4b9e66dba2a4c7a0ea66e15d8eb3a2
-X-HalOne-ID: 9728a25b-f3e2-11ec-a916-d0431ea8a290
-Received: from mailproxy4.cst.dirpod4-cph3.one.com (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
-        by mailrelay2.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
-        id 9728a25b-f3e2-11ec-a916-d0431ea8a290;
-        Fri, 24 Jun 2022 17:25:06 +0000 (UTC)
-Date:   Fri, 24 Jun 2022 19:25:05 +0200
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     paul@crapouillou.net, airlied@linux.ie, linux-mips@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/ingenic: Use resource_size function on resource
- object
-Message-ID: <YrXzccaCsBpPHTYw@ravnborg.org>
-References: <20220624013159.88646-1-jiapeng.chong@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220624013159.88646-1-jiapeng.chong@linux.alibaba.com>
+        Fri, 24 Jun 2022 13:26:44 -0400
+Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D77911A16;
+        Fri, 24 Jun 2022 10:26:41 -0700 (PDT)
+Received: by mail-il1-f181.google.com with SMTP id w10so1925409ilj.4;
+        Fri, 24 Jun 2022 10:26:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=B5w8YwmvaMvgaa+XdQ9K9wrK3DoeF6dUpZwQeNncYzU=;
+        b=5S7jZ2DwxYsqIR3F3tWMPBX8DGfNIddNGlGBHhoqeKJpFE3T6hwbSs5XOQqDDW56Cz
+         03jhUSUFO39oM6HFQYCNh69dIckGooiN/NdiywpXmlH0XkBt3t8UCU1UjZUv2qlmITLb
+         2RakjGSEGXWQ9CoMkXDsWmXO4XWuuIjV+m/GtbNXSAznV7+VYjIJNh70zfWTu96fmUQf
+         VGjAxBvNPCGOsj2Nr4PcLi+YRqvfYSKypR/Lv2zBj4xaI+HmH3ZjAsJMdVCywVMIS7wS
+         9JzQGz9zEJiS+a42yZVvYh59pmsJUMp4vaBG2p5x/MZccLIX0JXBHpj/xV4SChopvZDu
+         w3fQ==
+X-Gm-Message-State: AJIora90fsaort/i9rOCMZCyLofP95JBXe+zxdeByaXa5WAgDiCmLG8n
+        6w3/X2ouort14KNNgJ2L2+kgHB+7tg==
+X-Google-Smtp-Source: AGRyM1v4lwCvNUsULQiN1Fb/2fRNm5hCntJ8GiYUQcFu8to/stf++2gRR+lEsPmEbGiKxezIqCr1NQ==
+X-Received: by 2002:a92:7c06:0:b0:2d6:605d:8164 with SMTP id x6-20020a927c06000000b002d6605d8164mr29024ilc.179.1656091600683;
+        Fri, 24 Jun 2022 10:26:40 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id c10-20020a92940a000000b002d90c9077a2sm1338850ili.57.2022.06.24.10.26.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 10:26:40 -0700 (PDT)
+Received: (nullmailer pid 146340 invoked by uid 1000);
+        Fri, 24 Jun 2022 17:26:34 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Kent Gustavsson <kent@minoris.se>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>
+In-Reply-To: <20220623170844.2189814-5-marcus.folkesson@gmail.com>
+References: <20220623170844.2189814-1-marcus.folkesson@gmail.com> <20220623170844.2189814-5-marcus.folkesson@gmail.com>
+Subject: Re: [PATCH 05/10] dt-bindings: iio: adc: mcp3911: add microchip,data-ready-hiz entry
+Date:   Fri, 24 Jun 2022 11:26:34 -0600
+Message-Id: <1656091594.379237.146339.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jiapeng,
-
-On Fri, Jun 24, 2022 at 09:31:59AM +0800, Jiapeng Chong wrote:
-> This was found by coccicheck:
+On Thu, 23 Jun 2022 19:08:39 +0200, Marcus Folkesson wrote:
+> The Data Ready Output Pin is either hard wired to work as high
+> impedance or push-pull. Make it configurable.
 > 
-> ./drivers/gpu/drm/ingenic/ingenic-drm-drv.c:1149:35-38: WARNING: Suspicious code. resource_size is maybe missing with res.
+> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+> ---
+>  .../devicetree/bindings/iio/adc/microchip,mcp3911.yaml    | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-Nice one, now I have to go back and fix my code as well.
 
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml: properties:microchip,data-ready-hiz: 'oneOf' conditional failed, one must be fixed:
+	Additional properties are not allowed ('default' was unexpected)
+		hint: A vendor boolean property can use "type: boolean"
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml: properties:microchip,data-ready-hiz: 'oneOf' conditional failed, one must be fixed:
+		'enum' is a required property
+		'const' is a required property
+		hint: A vendor string property with exact values has an implicit type
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	Additional properties are not allowed ('default', 'type' were unexpected)
+		hint: A vendor string property with exact values has an implicit type
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml: properties:microchip,data-ready-hiz: 'oneOf' conditional failed, one must be fixed:
+		'$ref' is a required property
+		'allOf' is a required property
+		hint: A vendor property needs a $ref to types.yaml
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml: ignoring, error in schema: properties: microchip,data-ready-hiz
+Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.example.dtb:0:0: /example-0/spi/adc@0: failed to match any schema with compatible: ['microchip,mcp3911']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
