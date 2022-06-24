@@ -2,176 +2,316 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA54C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 07:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F66C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 07:18:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbiFXHRx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 03:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
+        id S229808AbiFXHS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 03:18:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbiFXHRv (ORCPT
+        with ESMTP id S229478AbiFXHSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 03:17:51 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07DC647B6;
-        Fri, 24 Jun 2022 00:17:50 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 419C621ADD;
-        Fri, 24 Jun 2022 07:17:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1656055069; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=t7bHq2GOvblHV/4S6ltRpcz31v7nV42QiSf36/Vkkk8=;
-        b=Rwsvdd+hFgx42ukTbB3+DKo8T7bylSd0RKq7k4PE2+vs/lBQzVQz4732Z0Mi9cosmF3fey
-        MoVykvbnmwP64GMjZF3WINTD4mpZa+5lWSxOYSmBf5th2cEeJFrXJWo1Bt35zs4zCcA/7R
-        oxFvOQWVLrHV2EV7TJgPc0ztgE8hv4g=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id BC37E2C1D8;
-        Fri, 24 Jun 2022 07:17:48 +0000 (UTC)
-Date:   Fri, 24 Jun 2022 09:17:47 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Uladzislau Rezki <urezki@gmail.com>, rcu@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>
-Subject: Re: [RFC PATCH] rcu: back off on allocation failure in
- fill_page_cache_func
-Message-ID: <YrVlG2XmKHcUSkTS@dhcp22.suse.cz>
-References: <20220622114711.28154-1-mhocko@kernel.org>
- <YrNlXkLfDpd+Ulxf@pc638.lan>
- <20220624033950.GP1790663@paulmck-ThinkPad-P17-Gen-1>
+        Fri, 24 Jun 2022 03:18:55 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57806647BC
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 00:18:51 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id y10-20020a9d634a000000b006167f7ce0c5so1309791otk.0
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 00:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TlCklXqXir+UR5t7qk7lKX7NWbT2pDB/489tY0Ei/lA=;
+        b=T+gq6JuT5nQ06hgLvArGTAiVKwENDq4hRSLXFsagTHYICMKvtt6t89qiUO4tvltGsV
+         OWe9Mh3AIFDyyhjKoMbyUeq/PuwCuC2nbjQ9oyQ75YrMUIpWjput+SWKDVJOruzqY1K/
+         +ImFg48zAaufC0Ja/vlG5Xb6bzpGUJuA+F1TgEDg/A9+/rafZXBcIZvrS9W0oaW380/T
+         tgGoR1KIhSLkBJGCkBM4QqVP1DU6w5jp8WUed3CdlGljY79oqlpd4x/A7fnhUAk9+mkD
+         nTU3Q2lqn933JbxWHjVKdQXL075Zk4sihan8lldsPRfA2SdtyQApoP+4OFxaf2U0lm9z
+         pf5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TlCklXqXir+UR5t7qk7lKX7NWbT2pDB/489tY0Ei/lA=;
+        b=rSgsHdWl0GjpyD7AB+4DpbpzRfZYYTLkYJ3xPpzLn/YqKLPKPTWNjF+i3AXV/4gwwZ
+         2oIdqzQGh447uCQ8sMiJ+IWkEf4wkJkg9jBh2pbU7SMyoByqGNeIHa9iegeW7I0Y7xkn
+         p2vCC1c7MHf8FujOLHq5ldExA/2akWE5t/QbjK1M7p1/IDu7gcdzzIqptHxp1rErFLkf
+         bOYTmA1bvq+ZdAd5X1VQuES0qGxe1XcRGyZ1wbOYYK38XqDLiyk1FiK84T497E+Qkyrb
+         E2NBe0/el8hX67nSSbmTKvC3J91eFM9+gXYxYyAJ06tSPUIMfr92qbMn/XDDvPNzf7Cn
+         xSgQ==
+X-Gm-Message-State: AJIora9c5elxtk6TzSnju8pdZoPBzz6vs4sAMjFJWREAJ1yjRzIWKhPp
+        eOVmHL3IWIuwGrE7P0BAq9ylNCnNUvc=
+X-Google-Smtp-Source: AGRyM1snaUJxUjb5wrRsmmLAQLqK+mPMkAGmPKC1jmjCeNtoQscdDMz5Q444HxsO7WbSqOzQo5d3yA==
+X-Received: by 2002:a05:6830:2390:b0:60c:20cf:5946 with SMTP id l16-20020a056830239000b0060c20cf5946mr5540783ots.88.1656055130589;
+        Fri, 24 Jun 2022 00:18:50 -0700 (PDT)
+Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
+        by smtp.gmail.com with ESMTPSA id l17-20020a05687014d100b000f349108868sm1330505oab.44.2022.06.24.00.18.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 00:18:50 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 02:18:48 -0500
+From:   Rebecca Mckeever <remckee0@gmail.com>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v3 2/4] memblock tests: add verbose output to memblock
+ tests
+Message-ID: <YrVlWD5qJnr9OTik@bertie>
+References: <cover.1655889641.git.remckee0@gmail.com>
+ <004e021cc3cb7be8749361b3b1cb324459b9cb9f.1655889641.git.remckee0@gmail.com>
+ <YrPsUrJ5R5UaIGBS@kernel.org>
+ <YrQIkswtqUAz9cUt@bertie>
+ <YrR7XuV3Yoi4e2mf@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220624033950.GP1790663@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <YrR7XuV3Yoi4e2mf@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 23-06-22 20:39:50, Paul E. McKenney wrote:
-> On Wed, Jun 22, 2022 at 08:54:22PM +0200, Uladzislau Rezki wrote:
-> > On Wed, Jun 22, 2022 at 01:47:11PM +0200, Michal Hocko wrote:
-> > > From: Michal Hocko <mhocko@suse.com>
+On Thu, Jun 23, 2022 at 09:40:30AM -0500, Mike Rapoport wrote:
+> On Thu, Jun 23, 2022 at 01:30:42AM -0500, Rebecca Mckeever wrote:
+> > On Wed, Jun 22, 2022 at 11:30:10PM -0500, Mike Rapoport wrote:
+> > > On Wed, Jun 22, 2022 at 04:29:07AM -0500, Rebecca Mckeever wrote:
+> > > > Add and use functions for printing verbose testing output.
+> > > > 
+> > > > If the Memblock simulator was compiled with VERBOSE=1:
+> > > >   prefix_push() appends the given string to a prefix string that will be
+> > > >     printed in the test functions.
+> > > >   prefix_pop() removes the last prefix from the prefix string.
+> > > >   prefix_reset() clears the prefix string.
+> > > >   test_fail() prints a message after a test fails containing the test
+> > > >     number of the failing test and the prefix.
+> > > >   test_pass() prints a message after a test passes containing its test
+> > > >     number and the prefix.
+> > > >   test_print() prints the given formatted output string.
+> > > > 
+> > > > If the Memblock simulator was not compiled with VERBOSE=1, these
+> > > > functions do nothing.
+> > > > 
+> > > > Add the assert wrapper macros ASSERT_EQ(), ASSERT_NE(), and ASSERT_LT().
+> > > > If the assert condition fails, these macros call test_fail() before
+> > > > executing assert().
+> > > > 
+> > > > Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+> > > > ---
+> > > >  tools/testing/memblock/tests/alloc_api.c      | 241 ++++++++----
+> > > >  .../memblock/tests/alloc_helpers_api.c        | 135 +++++--
+> > > >  tools/testing/memblock/tests/alloc_nid_api.c  | 371 ++++++++++++------
+> > > >  tools/testing/memblock/tests/basic_api.c      | 365 ++++++++++++-----
+> > > >  tools/testing/memblock/tests/common.c         |  58 +++
+> > > >  tools/testing/memblock/tests/common.h         |  54 +++
+> > > >  6 files changed, 880 insertions(+), 344 deletions(-)
+> > > > 
+> > > > diff --git a/tools/testing/memblock/tests/alloc_api.c b/tools/testing/memblock/tests/alloc_api.c
+> > > > index d1aa7e15c18d..96df033d4300 100644
+> > > > --- a/tools/testing/memblock/tests/alloc_api.c
+> > > > +++ b/tools/testing/memblock/tests/alloc_api.c
 > > > 
-> > > fill_page_cache_func allocates couple of pages to store
-> > > kvfree_rcu_bulk_data. This is a lightweight (GFP_NORETRY) allocation
-> > > which can fail under memory pressure. The function will, however keep
-> > > retrying even when the previous attempt has failed.
+> > > ...
 > > > 
-> > > While this is not really incorrect there is one thing to consider. This
-> > > allocation is invoked from the WQ context and that means that if the
-> > > memory reclaim gets stuck it can hog the worker for quite some time.
-> > > WQ concurrency is only triggered when the worker context sleeps and that
-> > > is not guaranteed for __GFP_NORETRY allocation attempts (see
-> > > should_reclaim_retry).
+> > > > @@ -729,6 +820,12 @@ static int alloc_no_memory_check(void)
+> > > >  
+> > > >  int memblock_alloc_checks(void)
+> > > >  {
+> > > > +	static const char func_testing[] = "memblock_alloc";
+> > > > +
+> > > > +	prefix_reset();
+> > > > +	prefix_push(func_testing);
+> > > > +	test_print("Running %s tests...\n", func_testing);
 > > > 
-> > > We have seen WQ lockups
-> > > kernel: BUG: workqueue lockup - pool cpus=93 node=1 flags=0x1 nice=0 stuck for 32s!
-> > > [...]
-> > > kernel: pool 74: cpus=37 node=0 flags=0x1 nice=0 hung=32s workers=2 manager: 2146
-> > > kernel:   pwq 498: cpus=249 node=1 flags=0x1 nice=0 active=4/256 refcnt=5
-> > > kernel:     in-flight: 1917:fill_page_cache_func
-> > > kernel:     pending: dbs_work_handler, free_work, kfree_rcu_monitor
+> > > Why not 
 > > > 
-> > > Originaly, we thought that several retries with direct reclaim being
-> > > stuck is the underlying reason but we couldn't have confirmed that and
-> > > have seen a similar lockups detected even without any heavy memory
-> > > pressure so there is likely something else/more going on. On the other
-> > > hand failing the allocation shouldn't have a big impact and from the
-> > > code it is not really obvious why retrying is desirable so back off
-> > > after the allocation failure.
+> > > 	test_print("Running memblock_alloc tests...\n");
 > > > 
-> > > Cc: Uladzislau Rezki (Sony) <urezki@gmail.com>
-> > > Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> > > Cc: Frederic Weisbecker <frederic@kernel.org>
-> > > Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-> > > Cc: Josh Triplett <josh@joshtriplett.org>
-> > > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> > > Cc: Lai Jiangshan <jiangshanlai@gmail.com>
-> > > Cc: Joel Fernandes <joel@joelfernandes.org>
-> > > Signed-off-by: Michal Hocko <mhocko@suse.com>
-> > > ---
+> > > ?
 > > > 
-> > > Hi,
-> > > I am sending this as an RFC because I couldn't prove that the WQ
-> > > concurency issue as a result from the allocation retry is really a
-> > > problem. On the other hand I couldn't see a good reason to retry after a
-> > > previous failure. While the kswapd running in the background could have
-> > > released some memory this is a not really guaranteed and mostly a
-> > > wishful thinking.
-> > > 
-> > > I do not understand the code well enough so I could be easily missing
-> > > something. If the patch is a wrong thing to do then it would be really
-> > > nice to add a comment why the retry is desirable and a good thing to do.
-> > > 
-> > > The retry loop should be bound to rcu_min_cached_objs which is quite
-> > > small but configurable so this can get large in some setups.
-> > > 
-> > > Thanks
-> > > 
-> > >  kernel/rcu/tree.c | 17 +++++++++--------
-> > >  1 file changed, 9 insertions(+), 8 deletions(-)
-> > > 
-> > > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> > > index c25ba442044a..54a3a19c4c0b 100644
-> > > --- a/kernel/rcu/tree.c
-> > > +++ b/kernel/rcu/tree.c
-> > > @@ -3508,15 +3508,16 @@ static void fill_page_cache_func(struct work_struct *work)
-> > >  		bnode = (struct kvfree_rcu_bulk_data *)
-> > >  			__get_free_page(GFP_KERNEL | __GFP_NORETRY | __GFP_NOMEMALLOC | __GFP_NOWARN);
-> > >  
-> > > -		if (bnode) {
-> > > -			raw_spin_lock_irqsave(&krcp->lock, flags);
-> > > -			pushed = put_cached_bnode(krcp, bnode);
-> > > -			raw_spin_unlock_irqrestore(&krcp->lock, flags);
-> > > +		if (!bnode)
-> > > +			break;
-> > >  
-> > > -			if (!pushed) {
-> > > -				free_page((unsigned long) bnode);
-> > > -				break;
-> > > -			}
-> > > +		raw_spin_lock_irqsave(&krcp->lock, flags);
-> > > +		pushed = put_cached_bnode(krcp, bnode);
-> > > +		raw_spin_unlock_irqrestore(&krcp->lock, flags);
-> > > +
-> > > +		if (!pushed) {
-> > > +			free_page((unsigned long) bnode);
-> > > +			break;
-> > >  		}
-> > >  	}
-> > >  
-> > > -- 
-> > > 2.30.2
-> > >
-> > OK. You would like to break the loop once an allocation does not succeed.
-> > To me it also makes sense, i mean there is no reason to repeat it several
-> > times that can lead to worqueue hogging.
+> > > (applies to other cases below)
 > > 
-> > Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-
-Thanks for the review!
-
-> Queued for testing and further review, thank you both!
+> > Both prefix_push() and test_print() are using that string, and I thought
+> > it made sense to use a constant instead of hard coding the string in both
+> > places. Is it better to hard code the string in this case?
 > 
-> My normal process would send this not into the upcoming merge window
-> (v5.20?) but instead into the next one (v6.0?).  Please let me know if
-> this is more urgent then that, and I will see what I can do.
-
-No, it is not really urgent. As I've said, it turned out that there are
-other contributors to the WQ stalls so this is mostly a cosmetic change.
-
-Thanks!
--- 
-Michal Hocko
-SUSE Labs
+> Oh, missed that.
+> I'd drop static, it doesn't really matter here.
+>  
+Will do.
+> > > > +
+> > > >  	reset_memblock_attributes();
+> > > >  	dummy_physical_memory_init();
+> > > 
+> > > ...
+> > > 
+> > > > diff --git a/tools/testing/memblock/tests/alloc_helpers_api.c b/tools/testing/memblock/tests/alloc_helpers_api.c
+> > > > index 963a966db461..f6eaed540427 100644
+> > > > --- a/tools/testing/memblock/tests/alloc_helpers_api.c
+> > > > +++ b/tools/testing/memblock/tests/alloc_helpers_api.c
+> > > 
+> > > ...
+> > > 
+> > > > @@ -378,6 +423,12 @@ static int alloc_from_min_addr_cap_check(void)
+> > > >  
+> > > >  int memblock_alloc_helpers_checks(void)
+> > > >  {
+> > > > +	static const char func_testing[] = "memblock_alloc_from";
+> > > > +
+> > > > +	prefix_reset();
+> > > > +	prefix_push(func_testing);
+> > > > +	test_print("Running %s tests...\n", func_testing);
+> > > > +
+> > > >  	reset_memblock_attributes();
+> > > >  	dummy_physical_memory_init();
+> > > >  
+> > > > diff --git a/tools/testing/memblock/tests/alloc_nid_api.c b/tools/testing/memblock/tests/alloc_nid_api.c
+> > > > index 6390206e50e1..601f4a7ee30d 100644
+> > > > --- a/tools/testing/memblock/tests/alloc_nid_api.c
+> > > > +++ b/tools/testing/memblock/tests/alloc_nid_api.c
+> > > 
+> > > ...
+> > > 
+> > > > @@ -1150,6 +1263,12 @@ static int alloc_try_nid_low_max_check(void)
+> > > >  
+> > > >  int memblock_alloc_nid_checks(void)
+> > > >  {
+> > > > +	static const char func_testing[] = "memblock_alloc_try_nid";
+> > > > +
+> > > > +	prefix_reset();
+> > > > +	prefix_push(func_testing);
+> > > > +	test_print("Running %s tests...\n", func_testing);
+> > > > +
+> > > >  	reset_memblock_attributes();
+> > > >  	dummy_physical_memory_init();
+> > > >  
+> > > > @@ -1170,5 +1289,7 @@ int memblock_alloc_nid_checks(void)
+> > > >  
+> > > >  	dummy_physical_memory_cleanup();
+> > > >  
+> > > > +	prefix_pop();
+> > > > +
+> > > >  	return 0;
+> > > >  }
+> > > > diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
+> > > > index a7bc180316d6..f223a9a57be7 100644
+> > > > --- a/tools/testing/memblock/tests/basic_api.c
+> > > > +++ b/tools/testing/memblock/tests/basic_api.c
+> > > > @@ -4,21 +4,30 @@
+> > > >  #include "basic_api.h"
+> > > >  
+> > > >  #define EXPECTED_MEMBLOCK_REGIONS			128
+> > > > +#define FUNC_ADD					"memblock_add"
+> > > > +#define FUNC_RESERVE					"memblock_reserve"
+> > > > +#define FUNC_REMOVE					"memblock_remove"
+> > > > +#define FUNC_FREE					"memblock_free"
+> > > >  
+> > > >  static int memblock_initialization_check(void)
+> > > >  {
+> > > > -	assert(memblock.memory.regions);
+> > > > -	assert(memblock.memory.cnt == 1);
+> > > > -	assert(memblock.memory.max == EXPECTED_MEMBLOCK_REGIONS);
+> > > > -	assert(strcmp(memblock.memory.name, "memory") == 0);
+> > > > +	prefix_push(__func__);
+> > > >  
+> > > > -	assert(memblock.reserved.regions);
+> > > > -	assert(memblock.reserved.cnt == 1);
+> > > > -	assert(memblock.memory.max == EXPECTED_MEMBLOCK_REGIONS);
+> > > > -	assert(strcmp(memblock.reserved.name, "reserved") == 0);
+> > > > +	ASSERT_NE(memblock.memory.regions, NULL);
+> > > > +	ASSERT_EQ(memblock.memory.cnt, 1);
+> > > > +	ASSERT_EQ(memblock.memory.max, EXPECTED_MEMBLOCK_REGIONS);
+> > > > +	ASSERT_EQ(strcmp(memblock.memory.name, "memory"), 0);
+> > > >  
+> > > > -	assert(!memblock.bottom_up);
+> > > > -	assert(memblock.current_limit == MEMBLOCK_ALLOC_ANYWHERE);
+> > > > +	ASSERT_NE(memblock.reserved.regions, NULL);
+> > > > +	ASSERT_EQ(memblock.reserved.cnt, 1);
+> > > > +	ASSERT_EQ(memblock.memory.max, EXPECTED_MEMBLOCK_REGIONS);
+> > > > +	ASSERT_EQ(strcmp(memblock.reserved.name, "reserved"), 0);
+> > > > +
+> > > > +	ASSERT_EQ(memblock.bottom_up, false);
+> > > > +	ASSERT_EQ(memblock.current_limit, MEMBLOCK_ALLOC_ANYWHERE);
+> > > > +
+> > > > +	test_pass();
+> > > > +	prefix_pop();
+> > > >  
+> > > >  	return 0;
+> > > >  }
+> > > > @@ -40,14 +49,19 @@ static int memblock_add_simple_check(void)
+> > > >  		.size = SZ_4M
+> > > >  	};
+> > > >  
+> > > > +	prefix_push(__func__);
+> > > > +
+> > > >  	reset_memblock_regions();
+> > > >  	memblock_add(r.base, r.size);
+> > > >  
+> > > > -	assert(rgn->base == r.base);
+> > > > -	assert(rgn->size == r.size);
+> > > > +	ASSERT_EQ(rgn->base, r.base);
+> > > > +	ASSERT_EQ(rgn->size, r.size);
+> > > > +
+> > > > +	ASSERT_EQ(memblock.memory.cnt, 1);
+> > > > +	ASSERT_EQ(memblock.memory.total_size, r.size);
+> > > >  
+> > > > -	assert(memblock.memory.cnt == 1);
+> > > > -	assert(memblock.memory.total_size == r.size);
+> > > > +	test_pass();
+> > > > +	prefix_pop();
+> > > >  
+> > > >  	return 0;
+> > > >  }
+> > > > @@ -69,18 +83,27 @@ static int memblock_add_node_simple_check(void)
+> > > >  		.size = SZ_16M
+> > > >  	};
+> > > >  
+> > > > +	prefix_pop();
+> > > > +	prefix_push("memblock_add_node");
+> > > > +	prefix_push(__func__);
+> > > 
+> > > I think there is no need to change the prefix from memblock_add to
+> > > memblock_add_node here.
+> > > 
+> > > ok 3 : memblock_add: memblock_add_node_simple_check: passed
+> > > 
+> > > provides enough information.
+> > >
+> > 
+> > Will do.
+> > 
+> > > > +
+> > > >  	reset_memblock_regions();
+> > > >  	memblock_add_node(r.base, r.size, 1, MEMBLOCK_HOTPLUG);
+> > > >  
+> > > > -	assert(rgn->base == r.base);
+> > > > -	assert(rgn->size == r.size);
+> > > > +	ASSERT_EQ(rgn->base, r.base);
+> > > > +	ASSERT_EQ(rgn->size, r.size);
+> > > >  #ifdef CONFIG_NUMA
+> > > > -	assert(rgn->nid == 1);
+> > > > +	ASSERT_EQ(rgn->nid, 1);
+> > > >  #endif
+> > > > -	assert(rgn->flags == MEMBLOCK_HOTPLUG);
+> > > > +	ASSERT_EQ(rgn->flags, MEMBLOCK_HOTPLUG);
+> > > > +
+> > > > +	ASSERT_EQ(memblock.memory.cnt, 1);
+> > > > +	ASSERT_EQ(memblock.memory.total_size, r.size);
+> > > >  
+> > > > -	assert(memblock.memory.cnt == 1);
+> > > > -	assert(memblock.memory.total_size == r.size);
+> > > > +	test_pass();
+> > > > +	prefix_pop();
+> > > > +	prefix_pop();
+> > > > +	prefix_push(FUNC_ADD);
+> > > >  
+> > > >  	return 0;
+> > > >  }
+> > > 
+> > > -- 
+> > > Sincerely yours,
+> > > Mike.
+> > 
+> > Thanks,
+> > Rebecca
+> 
+> -- 
+> Sincerely yours,
+> Mike.
