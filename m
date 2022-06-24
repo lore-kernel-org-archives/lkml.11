@@ -2,125 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3EE1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:18:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4739C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbiFXRSc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38572 "EHLO
+        id S232105AbiFXRS7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232066AbiFXRSR (ORCPT
+        with ESMTP id S231199AbiFXRSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:18:17 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900022DA99
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:18:16 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id q8-20020a17090311c800b0016a125c933fso1574969plh.4
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:18:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=M0UiwptlSyW8L+ANHt+ZpR61B6xI8IZ3E4fBNYs6MYg=;
-        b=XrRDk09dnK9G28hf25NsPO2C2O+/LCbUKVT9HMDoIVz3XYOG2M5T+Ff+QUGBKbWeQ+
-         lzl8ylTlJL2SO4Yb+KkHcwOmjaU7KyMkKX+2mkEGnOnKcaBtAU4laopLRua2YlgYbzni
-         CrgEpoEvRdSlzEOrR4SjYkbLiAQMILSTc20i2WoG3Yd8n1Qu1T7g4zjiqTZXApodAnQA
-         GMDSui5nHkJYMdalw4RAeTDx1Ch3xlqDHebtZvpC1DT+9ynLlvlwIcUQRPI2zj65BTlE
-         69wCilA/Soh7oQqcHPhvrYxTf0elWBUfQLoDoIaSeasZTWBWk0iNP67J/TBttFEqwDWu
-         a/yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=M0UiwptlSyW8L+ANHt+ZpR61B6xI8IZ3E4fBNYs6MYg=;
-        b=Y2EJ+cbjToCOoVmu7gN++tIS8K5mjy8zAv/StV3rZU0leLeZQjyquQ4+Bz1k4lkXMf
-         iz1FCWyflNl6T3J6LxnlHvTO79doN7fuxoxmWW3Xjsc71py3IeIaIu7KXZ8hBKtB1U7i
-         +jiyyR0lPhe9Q6AjQ9Yr6UfkFc6cUd9TOsqwv1gV2ZT+vRTGW0VJ4S/fejXRSwZTz82U
-         nzJUy5lyTF6mBwXbPCqf7EdJluq0ft9ie+iSTwrGBWcxhy/e/Zwrsafvg+1Y7xb/oJ1C
-         ywtdt1i61OX1pbw2wwqW3Goe9xnk7XIg0v8CEhYfADEyhQerWMBa2LktMu1O+fP9di+v
-         zQpg==
-X-Gm-Message-State: AJIora/YnhaA8DS+pMjvtX5pDsBrYeeJifnHU64dx+220rivpBlfpC7x
-        UGXdNiVBlojx/f4QVWIkCZLuaa8i+0k=
-X-Google-Smtp-Source: AGRyM1vZh/Fkd6KxNePHgTeQcVycyBP64A6qITCO6uIzEtiy7++NE/gKLrH2ufPgnbUrWMrwnL3Xlb3MaU0=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:902:c94b:b0:16a:3f98:84fd with SMTP id
- i11-20020a170902c94b00b0016a3f9884fdmr120863pla.70.1656091095691; Fri, 24 Jun
- 2022 10:18:15 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 24 Jun 2022 17:18:08 +0000
-In-Reply-To: <20220624171808.2845941-1-seanjc@google.com>
-Message-Id: <20220624171808.2845941-4-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220624171808.2845941-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH 3/3] KVM: x86/mmu: Buffer nested MMU split_desc_cache only by
- default capacity
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 24 Jun 2022 13:18:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA2DADD6
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656091130;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3ufRTEzneH/kSvKyDxUKVLcSwThbG62Wnx3AVy3a8ow=;
+        b=XmE4ABpLfq/HFSQf/Gee2dCgzI0jmjgNj7Mxz1+tMD7Bk8jjeUp6g0QXa83IVKyLUEkPmE
+        xgYwZlRp533ZC5ywBf9r+ShWWqjTfjYGjCkAgXps0ZBLglIGMaJdOhLXxj76pSuOJvFyY0
+        q3Rb48wt+JVJrS64XokcEF4vcjWY23M=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-641-xmyJLnTsMjeZute6Im-4Cw-1; Fri, 24 Jun 2022 13:18:49 -0400
+X-MC-Unique: xmyJLnTsMjeZute6Im-4Cw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 349BF3C0E22D;
+        Fri, 24 Jun 2022 17:18:49 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1D673492C3B;
+        Fri, 24 Jun 2022 17:18:49 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: [PATCH v2 1/8] KVM: x86: complete fast IN directly with complete_emulator_pio_in()
+Date:   Fri, 24 Jun 2022 13:18:41 -0400
+Message-Id: <20220624171848.2801602-2-pbonzini@redhat.com>
+In-Reply-To: <20220624171848.2801602-1-pbonzini@redhat.com>
+References: <20220624171848.2801602-1-pbonzini@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Buffer split_desc_cache, the cache used to allcoate rmap list entries,
-only by the default cache capacity (currently 40), not by doubling the
-minimum (513).  Aliasing L2 GPAs to L1 GPAs is uncommon, thus eager page
-splitting is unlikely to need 500+ entries.  And because each object is a
-non-trivial 128 bytes (see struct pte_list_desc), those extra ~500
-entries means KVM is in all likelihood wasting ~64kb of memory per VM.
+Use complete_emulator_pio_in() directly when completing fast PIO, there's
+no need to bounce through emulator_pio_in(): the comment about ECX
+changing doesn't apply to fast PIO, which isn't used for string I/O.
 
-Link: https://lore.kernel.org/all/YrTDcrsn0%2F+alpzf@google.com
-Cc: David Matlack <dmatlack@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+No functional change intended.
+
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 26 +++++++++++++++++---------
- 1 file changed, 17 insertions(+), 9 deletions(-)
+ arch/x86/kvm/x86.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index e2213eeadebc..069ddf874af1 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -6125,17 +6125,25 @@ static bool need_topup_split_caches_or_resched(struct kvm *kvm)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index d88600e41ff8..d66a873f4427 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8871,11 +8871,7 @@ static int complete_fast_pio_in(struct kvm_vcpu *vcpu)
+ 	/* For size less than 4 we merge, else we zero extend */
+ 	val = (vcpu->arch.pio.size < 4) ? kvm_rax_read(vcpu) : 0;
  
- static int topup_split_caches(struct kvm *kvm)
- {
--	int r;
--
--	lockdep_assert_held(&kvm->slots_lock);
--
- 	/*
--	 * Setting capacity == min would cause KVM to drop mmu_lock even if
--	 * just one object was consumed from the cache, so make capacity
--	 * larger than min.
-+	 * Allocating rmap list entries when splitting huge pages for nested
-+	 * MMUs is uncommon as KVM needs to allocate if and only if there is
-+	 * more than one rmap entry for a gfn, i.e. requires an L1 gfn to be
-+	 * aliased by multiple L2 gfns.  Aliasing gfns when using TDP is very
-+	 * atypical for VMMs; a few gfns are often aliased during boot, e.g.
-+	 * when remapping firmware, but aliasing rarely occurs post-boot).  If
-+	 * there is only one rmap entry, rmap->val points directly at that one
-+	 * entry and doesn't need to allocate a list.  Buffer the cache by the
-+	 * default capacity so that KVM doesn't have to topup the cache if it
-+	 * encounters an aliased gfn or two.
- 	 */
--	r = __kvm_mmu_topup_memory_cache(&kvm->arch.split_desc_cache,
--					 2 * SPLIT_DESC_CACHE_MIN_NR_OBJECTS,
-+	const int capacity = SPLIT_DESC_CACHE_MIN_NR_OBJECTS +
-+			     KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE;
-+	int r;
-+
-+	lockdep_assert_held(&kvm->slots_lock);
-+
-+	r = __kvm_mmu_topup_memory_cache(&kvm->arch.split_desc_cache, capacity,
- 					 SPLIT_DESC_CACHE_MIN_NR_OBJECTS);
- 	if (r)
- 		return r;
+-	/*
+-	 * Since vcpu->arch.pio.count == 1 let emulator_pio_in perform
+-	 * the copy and tracing
+-	 */
+-	emulator_pio_in(vcpu, vcpu->arch.pio.size, vcpu->arch.pio.port, &val, 1);
++	complete_emulator_pio_in(vcpu, &val);
+ 	kvm_rax_write(vcpu, val);
+ 
+ 	return kvm_skip_emulated_instruction(vcpu);
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
+2.31.1
+
 
