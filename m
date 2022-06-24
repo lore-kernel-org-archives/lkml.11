@@ -2,99 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2DFCCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3B0CCA48B
 	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232129AbiFXR13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50376 "EHLO
+        id S232241AbiFXR1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232515AbiFXR0i (ORCPT
+        with ESMTP id S232202AbiFXR05 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:26:38 -0400
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DCEF3B;
-        Fri, 24 Jun 2022 10:26:37 -0700 (PDT)
-Received: by mail-io1-f54.google.com with SMTP id y18so3400641iof.2;
-        Fri, 24 Jun 2022 10:26:37 -0700 (PDT)
+        Fri, 24 Jun 2022 13:26:57 -0400
+Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8358FEE33;
+        Fri, 24 Jun 2022 10:26:56 -0700 (PDT)
+Received: by mail-io1-f53.google.com with SMTP id s17so3379510iob.7;
+        Fri, 24 Jun 2022 10:26:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=Rz662/Zn6lBlNQLMw1j2/Ac9WyQjxNUeH6Y/SpV0998=;
-        b=llCGrGPy2oR3UKUKf92bQ7HPvyH94xU18QAtz39/zJ78OzV/wJOV6MewVxagwVmFrj
-         ocSPqFdKXi4WcXGk5R59hBO9UbRAonS6C061QG1hHZiu4qe9dXrz3wxld9o9eWBuHoCw
-         lnsurBw0TkSAAJUqwuszZd1cpmFFQKd44M/3WmKL/f/AZR/fKUws/n4JHNh6keyMDu1t
-         /v4J0eHByVXMFcedxp8hJwSX/Ykgk9nG+ciRvsprWup7XZf0IjzTWbnW9RJYZf0qgX5H
-         C0yiONSJLfGSqXeszWD5EkU3dahYDHtCc0shE97+mDBJCJNxZX6GQ9ouynQFctqnJIT1
-         GStQ==
-X-Gm-Message-State: AJIora+a6jTBNSUcw2M4/LG6SXG45P4gjc1HpzQb5DDXcJEp4LPXoVU7
-        9G+J3kZC+mi+e8YX1W1hvYM7+mCpog==
-X-Google-Smtp-Source: AGRyM1s17ABWF+9JuVgOsvDU0B+DYN2MEhcfHVJ1KI3e8M1JaSdgtpWOtkEOvhi77t18qdtOVHEj5Q==
-X-Received: by 2002:a05:6602:2c95:b0:669:e6fa:c3d4 with SMTP id i21-20020a0566022c9500b00669e6fac3d4mr33108iow.33.1656091595980;
-        Fri, 24 Jun 2022 10:26:35 -0700 (PDT)
+        bh=f/f/wxl/bFty+5iBK1OwUM+39GiNxLXhVThB2jedR6c=;
+        b=Jojdlag4e+QpNJC/V3YDooxNBMdb9zmULnQdLRudOCPnpUjbGdy7NRdLpo38XAjG/A
+         dPgWwT8MHIuGGws9IJiPPn212fiQzk4Eru0aYkgWoagSlxN3HTGwRBag6217Ph+RgGDI
+         Lv0UKlj8GNjM+P824BI/wy45sqhRbr2yIr6jEIbGRUMApf+yJ8Mod/bsszPz8NI1lKIB
+         pLv13NL8aR5sg+pmD7t/nPR9afmeN3/i2qJy02IQ0aIl+HUiyrfVm6Z8++iT3IFa6Y6p
+         Lto3t1noeviCHl+OA4Fy5os4uMacIGIjNZ0ir3bDfZXBcEM+EjQXoJVdvZQ8w6GAiqwQ
+         blmw==
+X-Gm-Message-State: AJIora+bE+qofxDb8mNUI2azShG6eNKQefs4CK0BmmN/I1GlO3YwnoXK
+        QjkSQRwWgtmh98isAbewCw==
+X-Google-Smtp-Source: AGRyM1vcSlSWL1sgowZx/3+XTz8PV774nht015v17RE+GXDieDsLBz3KrAnzO9PGOXvDejvBdCXeqg==
+X-Received: by 2002:a5d:9342:0:b0:654:9336:81d7 with SMTP id i2-20020a5d9342000000b00654933681d7mr43080ioo.136.1656091615761;
+        Fri, 24 Jun 2022 10:26:55 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id m16-20020a92cad0000000b002d79f619517sm1370186ilq.26.2022.06.24.10.26.34
+        by smtp.gmail.com with ESMTPSA id s12-20020a92d90c000000b002d92c91da91sm1344661iln.77.2022.06.24.10.26.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 10:26:35 -0700 (PDT)
-Received: (nullmailer pid 146329 invoked by uid 1000);
+        Fri, 24 Jun 2022 10:26:55 -0700 (PDT)
+Received: (nullmailer pid 146352 invoked by uid 1000);
         Fri, 24 Jun 2022 17:26:34 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Sebastian Ene <sebastianene@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, will@kernel.org,
-        vdonnefort@google.com, maz@kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220621080308.3952915-2-sebastianene@google.com>
-References: <20220621080308.3952915-1-sebastianene@google.com> <20220621080308.3952915-2-sebastianene@google.com>
-Subject: Re: [PATCH v7 1/2] dt-bindings: vcpu_stall_detector: Add qemu,vcpu-stall-detector compatible
+To:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+In-Reply-To: <20220623094614.1410180-3-stephan.gerhold@kernkonzept.com>
+References: <20220623094614.1410180-1-stephan.gerhold@kernkonzept.com> <20220623094614.1410180-3-stephan.gerhold@kernkonzept.com>
+Subject: Re: [PATCH 2/3] regulator: dt-bindings: qcom,smd-rpm: Add PM8909
 Date:   Fri, 24 Jun 2022 11:26:34 -0600
-Message-Id: <1656091594.340446.146328.nullmailer@robh.at.kernel.org>
+Message-Id: <1656091594.427255.146351.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 21 Jun 2022 08:03:08 +0000, Sebastian Ene wrote:
-> The VCPU stall detection mechanism allows to configure the expiration
-> duration and the internal counter clock frequency measured in Hz.
-> Add these properties in the schema.
+On Thu, 23 Jun 2022 11:46:13 +0200, Stephan Gerhold wrote:
+> Document the "qcom,rpm-pm8909-regulators" compatible for describing
+> the regulators available in the PM8909 PMIC (controlled via the RPM
+> firmware).
 > 
-> While this is a memory mapped virtual device, it is expected to be loaded
-> when the DT contains the compatible: "qemu,vcpu-stall-detector" node.
-> In a protected VM we trust the generated DT nodes and we don't rely on
-> the host to present the hardware peripherals.
+> PM8909 is very similar to the existing PM8916 but lacks 3 of the
+> regulators (s3, s4 and l16).
 > 
-> Signed-off-by: Sebastian Ene <sebastianene@google.com>
+> Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 > ---
->  .../misc/qemu,vcpu-stall-detector.yaml        | 50 +++++++++++++++++++
->  1 file changed, 50 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/misc/qemu,vcpu-stall-detector.yaml
+>  .../devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/misc/qemu,vcpu-stall-detector.example.dtb: vmwdt@9030000: 'reg' does not match any of the regexes: 'pinctrl-[0-9]+'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/misc/qemu,vcpu-stall-detector.yaml
+Full log is available here: https://patchwork.ozlabs.org/patch/
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+pm8994-regulators: 'vdd_lvs1_2' does not match any of the regexes: '.*-supply$', '^((s|l|lvs|5vs)[0-9]*)|(boost-bypass)|(bob)$', 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/qcom/msm8992-lg-bullhead-rev-101.dtb
+	arch/arm64/boot/dts/qcom/msm8992-lg-bullhead-rev-10.dtb
+	arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dtb
 
