@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA4BCCA481
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91955C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232163AbiFXOnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:43:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43258 "EHLO
+        id S233278AbiFXOn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233268AbiFXOm2 (ORCPT
+        with ESMTP id S233283AbiFXOm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 24 Jun 2022 10:42:28 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1DE6DB13;
-        Fri, 24 Jun 2022 07:42:01 -0700 (PDT)
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A92699A4;
+        Fri, 24 Jun 2022 07:42:06 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 82F37E0007;
-        Fri, 24 Jun 2022 14:41:57 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4A393E0004;
+        Fri, 24 Jun 2022 14:42:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656081719;
+        t=1656081725;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kCft54/wbUztXKT2urhOKH33tJlwwROSYaG1fJeAUws=;
-        b=D2lYTIhpL038nrCagiLkVk4c16dXgdjYcbnmyg4v5uqqh9QctlfSpoENa+yiwHvrR544zu
-        Kq+Gi8tOmAElIEwYEt+U4UFVEY6ljrpdpYFnjMf7psRM3yHMoVoDmXBzGMkxml3yvJAzPV
-        CCcSFOIwggZc7VRi/HsIVqZw7PXIf6ySym7S7L26/JDyA50J/nWdarBdNcJccRBTubeJ9s
-        rxu1+HJ3/EsURTMhGm+j/ib3AK0nN+ByeTYdriuSixJUWoA46YGZFfGRKfkipkidAIlYa/
-        su7oThGFtJg6eMyLTP6jt/cSTTBTzu47BziMrSryasj8gVFhHzbeB03KlC8+Ug==
+        bh=FQij7mCfnJHoDF7zotZXCK8UVcvCW4ACLuxR+tRJWhU=;
+        b=CJs08ASXPXbmYAvC488Xi3/KvpNLab5Qp8VPNYXHLI3/8hGewR9r+9SqnPTroyqeII1vS2
+        XE8hTEm8EkSk4l7+Cwqyc3+be4Qh6x+5+ZKZYjbzs/m+wvZzPULSnT2drnEi7qYn+/8q7+
+        zbwqDKsROL7e5Lao984Ay/m3b6d1Sk67e2Mw2zGVi/HoQsH3tyh6qW2ZKdMunVHjrmWe72
+        AZLHsU36RWFouzyjKe/j+Ry6UgDopyHXNAoVJygdXUurX5szSMGmIPyOc15mbonZT6WHYs
+        8FNB3/3tkH1KcpouxZEtrp9dhCpuW593zClII8/p/fHqrK9u22XZs02sqlLG2Q==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,9 +57,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v9 13/16] ARM: dts: r9a06g032: describe GMAC2
-Date:   Fri, 24 Jun 2022 16:39:58 +0200
-Message-Id: <20220624144001.95518-14-clement.leger@bootlin.com>
+Subject: [PATCH net-next v9 15/16] ARM: dts: r9a06g032-rzn1d400-db: add switch description
+Date:   Fri, 24 Jun 2022 16:40:00 +0200
+Message-Id: <20220624144001.95518-16-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220624144001.95518-1-clement.leger@bootlin.com>
 References: <20220624144001.95518-1-clement.leger@bootlin.com>
@@ -70,47 +70,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RZ/N1 SoC includes two MAC named GMACx that are compatible with the
-"snps,dwmac" driver. GMAC1 is connected directly to the MII converter
-port 1. GMAC2 however can be used as the MAC for the switch CPU
-management port or can be muxed to be connected directly to the MII
-converter port 2. This commit add description for the GMAC2 which will
-be used by the switch description.
+Add description for the switch, GMAC2 and MII converter. With these
+definitions, the switch port 0 and 1 (MII port 5 and 4) are working on
+RZ/N1D-DB board.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- arch/arm/boot/dts/r9a06g032.dtsi | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts | 117 ++++++++++++++++++++
+ 1 file changed, 117 insertions(+)
 
-diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-index f6241af33112..42ce02e51e8d 100644
---- a/arch/arm/boot/dts/r9a06g032.dtsi
-+++ b/arch/arm/boot/dts/r9a06g032.dtsi
-@@ -304,6 +304,24 @@ dma1: dma-controller@40105000 {
- 			data-width = <8>;
- 		};
+diff --git a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+index 3f8f3ce87e12..4227aba70c30 100644
+--- a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
++++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+@@ -8,6 +8,8 @@
  
-+		gmac2: ethernet@44002000 {
-+			compatible = "renesas,r9a06g032-gmac", "renesas,rzn1-gmac", "snps,dwmac";
-+			reg = <0x44002000 0x2000>;
-+			interrupt-parent = <&gic>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
-+			clocks = <&sysctrl R9A06G032_HCLK_GMAC1>;
-+			clock-names = "stmmaceth";
-+			power-domains = <&sysctrl>;
-+			snps,multicast-filter-bins = <256>;
-+			snps,perfect-filter-entries = <128>;
-+			tx-fifo-depth = <2048>;
-+			rx-fifo-depth = <4096>;
-+			status = "disabled";
+ /dts-v1/;
+ 
++#include <dt-bindings/pinctrl/rzn1-pinctrl.h>
++#include <dt-bindings/net/pcs-rzn1-miic.h>
+ #include "r9a06g032.dtsi"
+ 
+ / {
+@@ -31,3 +33,118 @@ &wdt0 {
+ 	timeout-sec = <60>;
+ 	status = "okay";
+ };
++
++&gmac2 {
++	status = "okay";
++	phy-mode = "gmii";
++	fixed-link {
++		speed = <1000>;
++		full-duplex;
++	};
++};
++
++&switch {
++	status = "okay";
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>;
++
++	dsa,member = <0 0>;
++
++	mdio {
++		clock-frequency = <2500000>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		switch0phy4: ethernet-phy@4 {
++			reg = <4>;
++			micrel,led-mode = <1>;
 +		};
 +
- 		eth_miic: eth-miic@44030000 {
- 			compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
- 			#address-cells = <1>;
++		switch0phy5: ethernet-phy@5 {
++			reg = <5>;
++			micrel,led-mode = <1>;
++		};
++	};
++};
++
++&switch_port0 {
++	label = "lan0";
++	phy-mode = "mii";
++	phy-handle = <&switch0phy5>;
++	status = "okay";
++};
++
++&switch_port1 {
++	label = "lan1";
++	phy-mode = "mii";
++	phy-handle = <&switch0phy4>;
++	status = "okay";
++};
++
++&switch_port4 {
++	status = "okay";
++};
++
++&eth_miic {
++	status = "okay";
++	renesas,miic-switch-portin = <MIIC_GMAC2_PORT>;
++};
++
++&mii_conv4 {
++	renesas,miic-input = <MIIC_SWITCH_PORTB>;
++	status = "okay";
++};
++
++&mii_conv5 {
++	renesas,miic-input = <MIIC_SWITCH_PORTA>;
++	status = "okay";
++};
++
++&pinctrl{
++	pins_mdio1: pins_mdio1 {
++		pinmux = <
++			RZN1_PINMUX(152, RZN1_FUNC_MDIO1_SWITCH)
++			RZN1_PINMUX(153, RZN1_FUNC_MDIO1_SWITCH)
++		>;
++	};
++	pins_eth3: pins_eth3 {
++		pinmux = <
++			RZN1_PINMUX(36, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(37, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(38, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(39, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(40, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(41, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(42, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(43, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(44, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(45, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(46, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(47, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++		>;
++		drive-strength = <6>;
++		bias-disable;
++	};
++	pins_eth4: pins_eth4 {
++		pinmux = <
++			RZN1_PINMUX(48, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(49, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(50, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(51, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(52, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(53, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(54, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(55, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(56, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(57, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(58, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++			RZN1_PINMUX(59, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
++		>;
++		drive-strength = <6>;
++		bias-disable;
++	};
++};
 -- 
 2.36.1
 
