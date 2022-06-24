@@ -2,116 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 720E4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9BD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232006AbiFXSrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 14:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45264 "EHLO
+        id S232014AbiFXSro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 14:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbiFXSrL (ORCPT
+        with ESMTP id S229450AbiFXSrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 14:47:11 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDB181517
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:47:11 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OISMin021675;
-        Fri, 24 Jun 2022 18:44:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=a17ObSYsWh6tn4CWa+MosTekLvuw/eiyWyZit57N7os=;
- b=B264IqGvGGJwN3lTrBK3EYaDKqbCachL5/RpcxArXMxjd1uJQGnnP1etvz6MCJzNSgPT
- bDHU8+dY8HmfrhfV8K3BAmIOcBO5BhnaT3CjTvhjp+ZxcFyUL53x7UBNlmw/8FSQspAe
- QyfBJcjhbrxI6+/mOa9ZeKHCrdTZ6hWCSucRDNDbDLLbeYP4c6+lkJMUZ6Iee9jlFYuU
- YDkkYOTtVPBFMRv2s5np8AZgxmJ6lyVViZFsCA3HIge07XvitIsAjk0yrzDy84xhviLR
- LP67Nsk7jI2T3CJd7h2qiTPqjTETlEhEMZVROte3SlGJ3PVX/YCzQx1xc96plTfwBNOi +w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gwjjygeaf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 18:44:39 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25OIYA1s010161;
-        Fri, 24 Jun 2022 18:44:39 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gwjjyge9u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 18:44:39 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25OIa2Ho023599;
-        Fri, 24 Jun 2022 18:44:37 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma02fra.de.ibm.com with ESMTP id 3gv3mbaw0a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 18:44:36 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25OIiYB911338124
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 Jun 2022 18:44:34 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4DED5A4040;
-        Fri, 24 Jun 2022 18:44:34 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4D165A4057;
-        Fri, 24 Jun 2022 18:44:30 +0000 (GMT)
-Received: from [9.43.0.85] (unknown [9.43.0.85])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 24 Jun 2022 18:44:30 +0000 (GMT)
-Message-ID: <4f5f06da-c9eb-b36a-51c2-65e7e9845dd8@linux.vnet.ibm.com>
-Date:   Sat, 25 Jun 2022 00:14:29 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v2 0/7] objtool: Enable and implement --mcount option
- on powerpc
-Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "aik@ozlabs.ru" <aik@ozlabs.ru>, "mbenes@suse.cz" <mbenes@suse.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Sathvika Vasireddy <sv@linux.ibm.com>
-References: <cover.1653398233.git.christophe.leroy@csgroup.eu>
- <ac4e3ceb-7de8-2c3f-4689-1730d811bf3d@linux.vnet.ibm.com>
- <ea64b232-e002-9317-dca1-c5933fb94e03@csgroup.eu>
- <0d2a6ea3-71cc-a8e1-22eb-7b66f533b3bf@linux.vnet.ibm.com>
- <18d05edc-6669-0308-7e6a-acd1cccd4f20@csgroup.eu>
- <863b068d-e534-b377-c5d7-2f16fbb11977@linux.vnet.ibm.com>
- <23cd9412-30a4-e9f2-aaa1-eb3fc817711f@csgroup.eu>
-From:   Sathvika Vasireddy <sv@linux.vnet.ibm.com>
-In-Reply-To: <23cd9412-30a4-e9f2-aaa1-eb3fc817711f@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: sDCEWhwosJ4-VKClu71Sat5_qdbG4zNw
-X-Proofpoint-GUID: p2qvBdfzSL2egIKm10kwycRBWGF1UJ4x
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 24 Jun 2022 14:47:41 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E24F81705
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:47:40 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d5so2805509plo.12
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:47:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EJ/rs91GRos3tFmq5ZNamdqFk2L/UuGhKzbbDsYJNtw=;
+        b=qWB89vfGH1eZ6L6P3c9n1ivpU+TWzcjZSdX16pMXH01txP3FPQi+War7M31w2TLl34
+         whyL8MHkzoAU0mmpCh3PFDdDQsnc+wBI+sjdGrzYTFJO8O+ngSkuPWOZGG4k2qF5Ws8I
+         JasJZAIdLjBWosATm3BqRJGTtWLCFv4HPGGEBa81Z8s01sfdW6ydIDagXAZH6y4mn+yP
+         9F/3KHbLswUuBDD5axQy7qtWFUlf9aXZKWRUhWkz71mfuOUphFJ5z0FeduDV4EfmkdJq
+         jjHAGy9ENfKC6bOLcUv/tgitiur9wpENU0XPx/tYJDFgWoARzw6zRgiH27ZywOTfBusZ
+         SRSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EJ/rs91GRos3tFmq5ZNamdqFk2L/UuGhKzbbDsYJNtw=;
+        b=dcNEqBOJIx+/ceJkln+KxkA0NPpRqnYqtPM4Jj8eeltAXK0rtqIdsNMXaLWwos7vO3
+         wWXUPR4f1JQR+OKYeQPQxnxE1Mb6P0O1Z66m1nD9vufTECwJ0OeFigc+w4NM6562hv7B
+         kSwi53q5l18poEGj2coHqDR48I6O9UE2WDsGK8xqGvO1Xeg/KegQECT7l5exEzJ3YMpH
+         ViXntSxzMCZ+GKm1CWfp+49ZCl4KdT1nV4qMtTWSRCOBcHHNWHDre0m9yujXXEo0xdcu
+         s/FNTSafo0Di1lBcgRScVjCzXn1qy+o6LuQzbZkAh78+L22XyZ/qvWELq+3NFT0fZlwp
+         72fw==
+X-Gm-Message-State: AJIora82WIPU4HMyxiHf17tmTpooeyrLHKBOfhPP/3f4cFLU55G53bUu
+        7qqSz8GVJyRggCVHCXlOune21LQWGBR5mg==
+X-Google-Smtp-Source: AGRyM1t+kwMdSiXf0Ks06lYZdaX+jlwhDvq3Ij1wXRalOpgZ6rqgALtYqLbFm7JPfgOMfj26ASZ2mQ==
+X-Received: by 2002:a17:903:245:b0:168:efbc:c10 with SMTP id j5-20020a170903024500b00168efbc0c10mr443245plh.71.1656096459617;
+        Fri, 24 Jun 2022 11:47:39 -0700 (PDT)
+Received: from google.com (55.212.185.35.bc.googleusercontent.com. [35.185.212.55])
+        by smtp.gmail.com with ESMTPSA id 142-20020a621494000000b0052285857864sm2121661pfu.97.2022.06.24.11.47.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 11:47:38 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 11:47:34 -0700
+From:   Zach O'Keefe <zokeefe@google.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, shy828301@gmail.com,
+        willy@infradead.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/16] mm/huge_memory: fix comment of
+ __pud_trans_huge_lock
+Message-ID: <YrYGxgXocKIx190t@google.com>
+References: <20220622170627.19786-1-linmiaohe@huawei.com>
+ <20220622170627.19786-4-linmiaohe@huawei.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-24_08,2022-06-23_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=741 malwarescore=0 bulkscore=0 phishscore=0 suspectscore=0
- mlxscore=0 impostorscore=0 adultscore=0 clxscore=1015 spamscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206240072
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622170627.19786-4-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+On 23 Jun 01:06, Miaohe Lin wrote:
+> __pud_trans_huge_lock returns page table lock pointer if a given pud maps
+> a thp instead of 'true' since introduced. Fix corresponding comments.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/huge_memory.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index 83fb6c3442ff..a26580da8011 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -1903,10 +1903,10 @@ spinlock_t *__pmd_trans_huge_lock(pmd_t *pmd, struct vm_area_struct *vma)
+>  }
+>  
+>  /*
+> - * Returns true if a given pud maps a thp, false otherwise.
+> + * Returns page table lock pointer if a given pud maps a thp, NULL otherwise.
+>   *
+> - * Note that if it returns true, this routine returns without unlocking page
+> - * table lock. So callers must unlock it.
+> + * Note that if it returns page table lock pointe, this routine returns without
 
-On 24/06/22 12:38, Christophe Leroy wrote:
-> Is everything going ok ? Don't hesitate if you need help.
+s/pointe/pointer
 
-Yeah, sure. Thanks!
-
-I just posted RFC v3 here: 
-https://patchwork.ozlabs.org/project/linuxppc-dev/cover/20220624183238.388144-1-sv@linux.ibm.com/
-
+> + * unlocking page table lock. So callers must unlock it.
+>   */
+>  spinlock_t *__pud_trans_huge_lock(pud_t *pud, struct vm_area_struct *vma)
+>  {
+> -- 
+> 2.23.0
+> 
