@@ -2,127 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 619C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616F3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:37:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232003AbiFXJgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 05:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52928 "EHLO
+        id S230473AbiFXJhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 05:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231605AbiFXJgb (ORCPT
+        with ESMTP id S229792AbiFXJhj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 05:36:31 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F347946E;
-        Fri, 24 Jun 2022 02:36:28 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LTsQp4yZVzkWVf;
-        Fri, 24 Jun 2022 17:34:42 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 24 Jun 2022 17:36:01 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 24 Jun
- 2022 17:36:00 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>
-CC:     <Frank.Li@nxp.com>, <jdmason@kudzu.us>, <kishon@ti.com>,
-        <lpieralisi@kernel.org>, <kw@linux.com>, <bhelgaas@google.com>
-Subject: [PATCH -next] PCI: endpoint: pci-epf-vntb: fix error handle in epf_ntb_mw_bar_init()
-Date:   Fri, 24 Jun 2022 17:46:04 +0800
-Message-ID: <20220624094604.2159713-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 24 Jun 2022 05:37:39 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E354E79444
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 02:37:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Atd5LJgXzo1vZyeUf+/KGPTNYBq0h/PGUpmKMol4gKA=; b=CGjsvzJofFcrSPSXw0tb9JZiNv
+        bAjIyAK0C8xhrporVTwUtjJ5S9Bhet9G683UECw5n0B3opQx6T6ZHqFCNqMKnGBAleljYNhSuSJ1k
+        FkxD2OAGmBd8YmAkhX2R9OfQeeKFFw4fWJTbMcazC1ve4FxYYkJuxS0WL50NXpgrAQy67XeHl5Hcn
+        TQOhio3h4WBwWNXowMO9xq8t3pYSeXD71b2O1EniUpw95+sXhct3/LUCWeeejxkQtsV/AMHua4Xwl
+        QFoQddXjiHw8HAUg8s6PFY++qFbISJ7bK62hKaVa2Jd7wbObdueD+4y+fJu58hc31VC2hwWxBbmwM
+        Fm/H6pnA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o4fkh-001SaQ-OI; Fri, 24 Jun 2022 09:37:23 +0000
+Date:   Fri, 24 Jun 2022 02:37:23 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Laurent Dufour <ldufour@linux.ibm.com>
+Cc:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        nathanl@linux.ibm.com, haren@linux.vnet.ibm.com, npiggin@gmail.com,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] watchdog: export watchdog_mutex and
+ lockup_detector_reconfigure
+Message-ID: <YrWF0w3mpYA//BX6@infradead.org>
+References: <20220614135414.37746-1-ldufour@linux.ibm.com>
+ <20220614135414.37746-3-ldufour@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614135414.37746-3-ldufour@linux.ibm.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In error case of epf_ntb_mw_bar_init(), memory window BARs should be
-cleared, so add 'num_mws' parameter in epf_ntb_mw_bar_clear() and
-calling it in error path to clear the BARs. Also add missing error
-code when pci_epc_mem_alloc_addr() fails.
+On Tue, Jun 14, 2022 at 03:54:12PM +0200, Laurent Dufour wrote:
+> The watchdog_mutex is exported to allow some variable to be changed under
+> its protection and prevent any conflict.
+> The lockup_detector_reconfigure() function is exported and is expected to
+> be called under the protection of watchdog_mutex.
 
-Fixes: ff32fac00d97 ("NTB: EPF: support NTB transfer between PCI RC and EP connection")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/pci/endpoint/functions/pci-epf-vntb.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-index ebf7e243eefa..d8ed640c16c4 100644
---- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-@@ -567,6 +567,8 @@ static int epf_ntb_db_bar_init(struct epf_ntb *ntb)
- 	return -1;
- }
- 
-+static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb, int num_mws);
-+
- /**
-  * epf_ntb_db_bar_clear() - Clear doorbell BAR and free memory
-  *   allocated in peers outbound address space
-@@ -625,6 +627,11 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
- 							      &ntb->vpci_mw_phy[i],
- 							      size);
- 		if (!ntb->vpci_mw_addr[i]) {
-+			pci_epc_clear_bar(ntb->epf->epc,
-+					  ntb->epf->func_no,
-+					  ntb->epf->vfunc_no,
-+					  &ntb->epf->bar[barno]);
-+			ret = -ENOMEM;
- 			dev_err(dev, "Failed to allocate source address\n");
- 			goto err_alloc_mem;
- 		}
-@@ -632,6 +639,7 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
- 
- 	return ret;
- err_alloc_mem:
-+	epf_ntb_mw_bar_clear(ntb, i);
- 	return ret;
- }
- 
-@@ -640,12 +648,12 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
-  * @ntb: NTB device that facilitates communication between HOST and vHOST
-  *
-  */
--static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb)
-+static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb, int num_mws)
- {
- 	enum pci_barno barno;
- 	int i;
- 
--	for (i = 0; i < ntb->num_mws; i++) {
-+	for (i = 0; i < num_mws; i++) {
- 		barno = ntb->epf_ntb_bar[BAR_MW0 + i];
- 		pci_epc_clear_bar(ntb->epf->epc,
- 				  ntb->epf->func_no,
-@@ -774,7 +782,7 @@ static int epf_ntb_epc_init(struct epf_ntb *ntb)
- 	return 0;
- 
- err_write_header:
--	epf_ntb_mw_bar_clear(ntb);
-+	epf_ntb_mw_bar_clear(ntb, ntb->num_mws);
- err_mw_bar_init:
- 	epf_ntb_db_bar_clear(ntb);
- err_db_bar_init:
-@@ -794,7 +802,7 @@ static int epf_ntb_epc_init(struct epf_ntb *ntb)
- static void epf_ntb_epc_cleanup(struct epf_ntb *ntb)
- {
- 	epf_ntb_db_bar_clear(ntb);
--	epf_ntb_mw_bar_clear(ntb);
-+	epf_ntb_mw_bar_clear(ntb, ntb->num_mws);
- }
- 
- #define EPF_NTB_R(_name)						\
--- 
-2.25.1
-
+Please provide an actual function accessor instead of directly touching
+a global lock.
