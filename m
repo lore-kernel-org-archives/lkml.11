@@ -2,59 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C7ACCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 918F6C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:36:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231701AbiFXVgM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 17:36:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36152 "EHLO
+        id S231794AbiFXVgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 17:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231654AbiFXVgK (ORCPT
+        with ESMTP id S231654AbiFXVgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 17:36:10 -0400
-X-Greylist: delayed 925 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Jun 2022 14:36:09 PDT
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A623EAAE;
-        Fri, 24 Jun 2022 14:36:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=SUgKVs7/jGpSheyNCdz1EXXAE1ML6F++Sd+H1f8ytmI=; b=M0xPDd0kpxH31Z+9AznHLvJ8i5
-        zH8g7c0LrB8nY1Xat6Pkm99puJdkFashMSuD5+kB29DS3PPh9bsdQWzV/w8pcIFronN7/JS/s+xrZ
-        i7MwI+N0GKGbbtBLrX+09Mzzf3J0Tjee35AfXJvbg2cD9NCJ3vurUtN/kaBTzFNSsZqzteqhcE3Kw
-        2GNrkBMlvgF/9l3axE+kCy/PrA3DDnZk1Bw+gwwgqhVRz3LIHNAe/Gmy/DJiuJhJrlZvkZ3ADJLhK
-        VfQHh42RY9uuWA0kH3hYl8iAgIo6iD81OTPI9hADxYZbpDhK4HiMqNANBOMM09c6hHtjUhp4rY19v
-        ZGzogQiA==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1o4qjH-0044TB-Lp;
-        Fri, 24 Jun 2022 21:20:40 +0000
-Date:   Fri, 24 Jun 2022 22:20:39 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
-        linux-cifs@vger.kernel.org, Namjae Jeon <namjae.jeon@samsung.com>,
-        Steve French <stfrench@microsoft.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Subject: Re: [PATCH 1/6] ksmbd: use vfs_llseek instead of dereferencing NULL
-Message-ID: <YrYqp1eaxEcQxIeo@ZenIV>
-References: <20220624165631.2124632-1-Jason@zx2c4.com>
- <20220624165631.2124632-2-Jason@zx2c4.com>
+        Fri, 24 Jun 2022 17:36:19 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583513EAAE
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:36:18 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2ef5380669cso36560247b3.9
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:36:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=cGTylEOWtLkcLIsxYVoGzfL+q0nSap9+8NoSlXBuXe4=;
+        b=cmDy8lsyV2rPNiNRuYkEb5rHWD8XZVHKqJZAeKf3TnWZFLlj+/DTdLUMbXEmtTuv9s
+         4KLbNJHfJqFtWZDtoSIB0jA5BkjqsNets6Rbr/qrINRnJTlQirI2k20GLR/Ql3zSe9Wq
+         Pb5aXUq1NZ5lDKQQMD7a39HTujZM62LjFsQtIqhJoX7pGAoQGMqpg1+inV2FswApITO2
+         CmT3BH618Yqgt62CZsqxQ5e1jZosKUxMbd0fExcTgjLrAxPBxkG7CVcmjw/O8dvTmdbG
+         l6UouC6UHf0T16KEM/mMUtmMtJOh0vyJl540PkTEmkGnFr3Ic8OHzXavkS9AsevSsxDH
+         c7uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=cGTylEOWtLkcLIsxYVoGzfL+q0nSap9+8NoSlXBuXe4=;
+        b=Ck47hAgGjuuZjSk05lJ4a11GaykJMF2di9lXeAQ7yb6p/6BiKyGsIK//4xvAXu5Zsy
+         SvwPouPn6QVjgYaavxtgw8prA1415weMg4SE93rYiLbZlzxYWj1aPLEYiufxgdWajIA0
+         vwrzWIa+MB9DBZK5vL1Kp3i8MlA3H3zJjmWMxgin2Iv3pRXuaWrnSU20oi7Tv8tZMvfo
+         ARTcKWhPNNp21pKmlpoUPrxrWuqP/+ku1GR56ag1D9uJ40xatxKhJcXfxpsmdBGp5Pvc
+         zAAXXux16IYGaWGRMHdqIbdAQvMgvjYlKrBPhuavwduKV6O2tITCbJ9ohgot+6e1ner5
+         WxSg==
+X-Gm-Message-State: AJIora8tN+D1rPar/GocM6bzEF+WGbJ8lfPH9w1bjsN1p13QVJ1EBd/D
+        uOQADGrvtL9JMLcjQrLy8mfoJ/KyRPdu6BDNGuKocw==
+X-Google-Smtp-Source: AGRyM1v7bTPADut4sgzebmriq1YeKB4PBfCCubvcMefuaUSK78eOKMtZqJdaXmsewcrgPAHhOp3HhKhV310/qVQEQyc=
+X-Received: by 2002:a0d:cc54:0:b0:317:752c:bcf3 with SMTP id
+ o81-20020a0dcc54000000b00317752cbcf3mr1068283ywd.437.1656106577632; Fri, 24
+ Jun 2022 14:36:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220624165631.2124632-2-Jason@zx2c4.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+References: <20220623115631.22209-1-peterwu.pub@gmail.com> <20220623115631.22209-13-peterwu.pub@gmail.com>
+ <CACRpkdZatfOFmeGXepTrjAk1or4W6KNUEaXnP+srRebfM=52AA@mail.gmail.com>
+ <CACRpkdbzZqerE_2PeGMUWRbtjK=9P8V763cj83ZqjP4n6AVHAg@mail.gmail.com> <CA+hk2fZEG0TxMGhGJY21w=MmXgKsH5mYCYynQV1jbhpOCyf3qg@mail.gmail.com>
+In-Reply-To: <CA+hk2fZEG0TxMGhGJY21w=MmXgKsH5mYCYynQV1jbhpOCyf3qg@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 24 Jun 2022 23:36:06 +0200
+Message-ID: <CACRpkdYoR9SGQdxJQmUReP7SLk_BxG0yuTWAL__o90PuO8sCqA@mail.gmail.com>
+Subject: Re: [PATCH v3 12/14] leds: mt6370: Add Mediatek MT6370 current sink
+ type LED Indicator support
+To:     szuni chen <szunichen@gmail.com>
+Cc:     ChiaEn Wu <peterwu.pub@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
+        Helge Deller <deller@gmx.de>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        alice_chen@richtek.com, Linux PM <linux-pm@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        ChiYuan Huang <cy_huang@richtek.com>, chiaen_wu@richtek.com,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 06:56:26PM +0200, Jason A. Donenfeld wrote:
-> By not checking whether llseek is NULL, this might jump to NULL. Also,
-> it doesn't check FMODE_LSEEK. Fix this by using vfs_llseek(), which
-> always does the right thing.
+On Fri, Jun 24, 2022 at 9:20 AM szuni chen <szunichen@gmail.com> wrote:
 
-Acked-by: Al Viro <viro@zeniv.linux.org.uk>
+> > I meant this one. Move that into drivers/leds/flash
+> >  drivers/leds/flash/leds-mt6370-flash.c             |  657 ++++++++++++
+>
+> In next version, I'll use "leds: flash: ......" instead of "leds:
+> flashlight: ......" in subject.
+> May I confirm that the driver has already in the drivers/leds/flash,
+> so I don=E2=80=99t have to move it in next version?
+
+Yeah you're right, I am just writing wrong comments today, it is already
+correct. Sorry!
+
+Yours,
+Linus Walleij
