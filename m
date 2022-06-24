@@ -2,184 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D460CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1982AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231518AbiFXMpp convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 08:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
+        id S231565AbiFXMqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 08:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230152AbiFXMpo (ORCPT
+        with ESMTP id S231531AbiFXMqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 08:45:44 -0400
-X-Greylist: delayed 299 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Jun 2022 05:45:43 PDT
-Received: from mail4.swissbit.com (mail4.swissbit.com [176.95.1.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E63349B43
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 05:45:43 -0700 (PDT)
-Received: from mail4.swissbit.com (localhost [127.0.0.1])
-        by DDEI (Postfix) with ESMTP id 22505122F2C;
-        Fri, 24 Jun 2022 14:40:42 +0200 (CEST)
-Received: from mail4.swissbit.com (localhost [127.0.0.1])
-        by DDEI (Postfix) with ESMTP id 127B2122E05;
-        Fri, 24 Jun 2022 14:40:42 +0200 (CEST)
-X-TM-AS-ERS: 10.149.2.84-127.5.254.253
-X-TM-AS-SMTP: 1.0 ZXguc3dpc3NiaXQuY29t Y2xvZWhsZUBoeXBlcnN0b25lLmNvbQ==
-X-DDEI-TLS-USAGE: Used
-Received: from ex.swissbit.com (SBDEEX02.sbitdom.lan [10.149.2.84])
-        by mail4.swissbit.com (Postfix) with ESMTPS;
-        Fri, 24 Jun 2022 14:40:42 +0200 (CEST)
-Received: from sbdeex02.sbitdom.lan (10.149.2.84) by sbdeex02.sbitdom.lan
- (10.149.2.84) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Fri, 24 Jun
- 2022 14:40:41 +0200
-Received: from sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74]) by
- sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74%8]) with mapi id
- 15.02.1118.009; Fri, 24 Jun 2022 14:40:41 +0200
-From:   =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
-To:     "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
-CC:     Avri Altman <Avri.Altman@wdc.com>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>
-Subject: [PATCH] mmc: block: Add single read for 4k sector cards
-Thread-Topic: [PATCH] mmc: block: Add single read for 4k sector cards
-Thread-Index: AdiHGlstOTiMmBAQQCyuCs385lDFyw==
-Date:   Fri, 24 Jun 2022 12:40:41 +0000
-Message-ID: <0fee7b89d21a472f97aa5b079abd1ce1@hyperstone.com>
-Accept-Language: en-US, de-DE
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.153.3.44]
-Content-Type: text/plain;
-        charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+        Fri, 24 Jun 2022 08:46:12 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671614AE24
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 05:46:11 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OCfutX015325;
+        Fri, 24 Jun 2022 12:45:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=U2/9YArPeR4A0exNf3XtNGgMv7CtlE/RHX3Ooijd5jE=;
+ b=XxbyCBOU9YU9DSNeUTRQ4aFazwcyvTZWOOLHuM1lIJgRBALWd9TwxYtJ9ZwM6HP81sCo
+ bDJXRZzeRYh2uF+Nihuys129rHGlDLt2FqENWOaevjzDnUZrW+laXEDt139svUwh8FHK
+ Qyc0+tPmaQkVtggm4j0kukPEiBYp/6FCeJCUvdCUk5bp9WTgVozT41GeSMYo65p769H7
+ AEvARL8GClYqq3nJojl6duOz/cxvfnVZwpfR3R2rAGZmBR2DLVf6UnjT1/KO9/eOFfhR
+ R/CqMDJ/oToik8FvPQ//iLPTd/Bcl50JoOQLJDhz8EMBnyCpqLSCB2aCt/QkH0+2v7D7 KQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gwdgeg30u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 24 Jun 2022 12:45:43 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25OCg7ee015690;
+        Fri, 24 Jun 2022 12:45:43 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gwdgeg2yh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 24 Jun 2022 12:45:43 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25OCJwGG009871;
+        Fri, 24 Jun 2022 12:45:40 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma02fra.de.ibm.com with ESMTP id 3gv3mbahg9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 24 Jun 2022 12:45:40 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25OCilDZ21692714
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 24 Jun 2022 12:44:47 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 358CDA404D;
+        Fri, 24 Jun 2022 12:45:38 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CDC2EA4051;
+        Fri, 24 Jun 2022 12:45:37 +0000 (GMT)
+Received: from [9.101.4.33] (unknown [9.101.4.33])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 24 Jun 2022 12:45:37 +0000 (GMT)
+Message-ID: <97ae3ac2-c0a8-d675-50a4-0daf960c7f05@linux.ibm.com>
+Date:   Fri, 24 Jun 2022 14:45:37 +0200
 MIME-Version: 1.0
-X-TMASE-Version: DDEI-5.1-9.0.1002-26974.007
-X-TMASE-Result: 10--1.071700-10.000000
-X-TMASE-MatchedRID: ewN4Wv8Mz/gus6wjYQDwl99JA2lmQRNUWQ3R4k5PTnDAuQ0xDMaXkH4q
-        tYI9sRE/7qN2AY1LBYfvpVnoxBz4V1nAOGOnLpRWiSe9g7mQdJz2/fdRbxY1gMiCh8yBqE+tCSf
-        ieByOJzyHzvZ8Ho0SWhr4VwoL73En240GxxcfXA2/QNwZdfw3FX0tCKdnhB58nFK7VE/xL0n6C0
-        ePs7A07RjOlt1Pi553tOynRD8m3+BCKFXFAIynFeXXc05xgJDleF//xuBYsls=
-X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,33:0,34:0-0
-X-TMASE-INERTIA: 0-0;;;;
-X-TMASE-XGENCLOUD: cdbb541e-dd56-4039-a072-77fe6955c7e7-0-0-200-0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH v2 2/4] watchdog: export watchdog_mutex and
+ lockup_detector_reconfigure
+Content-Language: fr
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        nathanl@linux.ibm.com, haren@linux.vnet.ibm.com, npiggin@gmail.com,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220614135414.37746-1-ldufour@linux.ibm.com>
+ <20220614135414.37746-3-ldufour@linux.ibm.com>
+ <YrWF0w3mpYA//BX6@infradead.org>
+From:   Laurent Dufour <ldufour@linux.ibm.com>
+In-Reply-To: <YrWF0w3mpYA//BX6@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: nSKlA-sfknZJQa0Ka38-SLnvKhTv4gFO
+X-Proofpoint-GUID: vX6G5QeXuE40TcchbWa2XA4NgLHmUbJz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-24_07,2022-06-23_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 bulkscore=0 phishscore=0 adultscore=0 clxscore=1011
+ impostorscore=0 mlxlogscore=999 suspectscore=0 mlxscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206240049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cards with 4k native sector size may only be read 4k-aligned,
-accommodate for this in the single read recovery and use it.
+On 24/06/2022, 11:37:23, Christoph Hellwig wrote:
+> On Tue, Jun 14, 2022 at 03:54:12PM +0200, Laurent Dufour wrote:
+>> The watchdog_mutex is exported to allow some variable to be changed under
+>> its protection and prevent any conflict.
+>> The lockup_detector_reconfigure() function is exported and is expected to
+>> be called under the protection of watchdog_mutex.
+> 
+> Please provide an actual function accessor instead of directly touching
+> a global lock.
 
-Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
----
- drivers/mmc/core/block.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+Thanks Christoph,
 
-diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
-index f4a1281658db..6f0b24cb0747 100644
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -176,7 +176,7 @@ static inline int mmc_blk_part_switch(struct mmc_card *card,
- 				      unsigned int part_type);
- static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
- 			       struct mmc_card *card,
--			       int disable_multi,
-+			       int recovery_mode,
- 			       struct mmc_queue *mq);
- static void mmc_blk_hsq_req_done(struct mmc_request *mrq);
- 
-@@ -1302,7 +1302,7 @@ static void mmc_blk_eval_resp_error(struct mmc_blk_request *brq)
- }
- 
- static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
--			      int disable_multi, bool *do_rel_wr_p,
-+			      int recovery_mode, bool *do_rel_wr_p,
- 			      bool *do_data_tag_p)
- {
- 	struct mmc_blk_data *md = mq->blkdata;
-@@ -1372,8 +1372,11 @@ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
- 		 * at a time in order to accurately determine which
- 		 * sectors can be read successfully.
- 		 */
--		if (disable_multi)
-+		if (recovery_mode) {
- 			brq->data.blocks = 1;
-+			if (mmc_large_sector(card))
-+				brq->data.blocks = 8;
-+		}
- 
- 		/*
- 		 * Some controllers have HW issues while operating
-@@ -1590,7 +1593,7 @@ static int mmc_blk_cqe_issue_rw_rq(struct mmc_queue *mq, struct request *req)
- 
- static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
- 			       struct mmc_card *card,
--			       int disable_multi,
-+			       int recovery_mode,
- 			       struct mmc_queue *mq)
- {
- 	u32 readcmd, writecmd;
-@@ -1599,7 +1602,7 @@ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
- 	struct mmc_blk_data *md = mq->blkdata;
- 	bool do_rel_wr, do_data_tag;
- 
--	mmc_blk_data_prep(mq, mqrq, disable_multi, &do_rel_wr, &do_data_tag);
-+	mmc_blk_data_prep(mq, mqrq, recovery_mode, &do_rel_wr, &do_data_tag);
- 
- 	brq->mrq.cmd = &brq->cmd;
- 
-@@ -1690,7 +1693,7 @@ static int mmc_blk_fix_state(struct mmc_card *card, struct request *req)
- 
- #define MMC_READ_SINGLE_RETRIES	2
- 
--/* Single sector read during recovery */
-+/* Single (native) sector read during recovery */
- static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
- {
- 	struct mmc_queue_req *mqrq = req_to_mmc_queue_req(req);
-@@ -1698,6 +1701,7 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
- 	struct mmc_card *card = mq->card;
- 	struct mmc_host *host = card->host;
- 	blk_status_t error = BLK_STS_OK;
-+	size_t bytes_per_read = mmc_large_sector(card) ? 4069 : 512;
- 
- 	do {
- 		u32 status;
-@@ -1732,13 +1736,13 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
- 		else
- 			error = BLK_STS_OK;
- 
--	} while (blk_update_request(req, error, 512));
-+	} while (blk_update_request(req, error, bytes_per_read));
- 
- 	return;
- 
- error_exit:
- 	mrq->data->bytes_xfered = 0;
--	blk_update_request(req, BLK_STS_IOERR, 512);
-+	blk_update_request(req, BLK_STS_IOERR, bytes_per_read);
- 	/* Let it try the remaining request again */
- 	if (mqrq->retries > MMC_MAX_RETRIES - 1)
- 		mqrq->retries = MMC_MAX_RETRIES - 1;
-@@ -1879,10 +1883,8 @@ static void mmc_blk_mq_rw_recovery(struct mmc_queue *mq, struct request *req)
- 		return;
- 	}
- 
--	/* FIXME: Missing single sector read for large sector size */
--	if (!mmc_large_sector(card) && rq_data_dir(req) == READ &&
--	    brq->data.blocks > 1) {
--		/* Read one sector at a time */
-+	if (rq_data_dir(req) == READ && brq->data.blocks > 1) {
-+		/* Read one (native) sector at a time */
- 		mmc_blk_read_single(mq, req);
- 		return;
- 	}
--- 
-2.36.1
-Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
-Managing Director: Dr. Jan Peter Berns.
-Commercial register of local courts: Freiburg HRB381782
+I'll try to not touch to that mutex, if that's not doable, I'll create
+function accessor as you're suggesting.
 
