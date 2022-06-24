@@ -2,128 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7325C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 04:14:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EE7CCA492
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 04:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbiFXEOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 00:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54406 "EHLO
+        id S230447AbiFXEUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 00:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiFXEOF (ORCPT
+        with ESMTP id S229970AbiFXEUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 00:14:05 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 467214FC5D
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 21:14:03 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id n144so2477203ybf.12
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 21:14:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1qA3djIvmCXy0qDgHJwJPAvZJI/yB7Iv/v6zV71DlqI=;
-        b=dbZ9+ZC5GXZBRWNne1PZdMvrN9BTVVpQyaGafXlsAtWJeAd9l8oyXDXIqFysIl9GVm
-         N4H+lFbi6/LBOckdOGoUbN7WtfvcNbNBOeOFC7rh5NtINkkrczh+6eZUtMSYo2E3AY9Q
-         KYGicWB9gM91hpq5XTmgvSFGXfHwUfmiFGF4JIDqGyLQZ9Ioy2r1nLhocjJhDW2tTunF
-         +GaqHi5XbJRMj4kjJ73QHO1rFkP1twxXYdL2Vjmx+CyHxUvo5vkbtNGr14PQ0ANIM6bW
-         nq7VV+wsKB9fTNwybydirk3rRQxeekz89JST0ITd5vaJmhm+joNueRsC/J/thMNGvbjz
-         MofQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1qA3djIvmCXy0qDgHJwJPAvZJI/yB7Iv/v6zV71DlqI=;
-        b=Nt8x5oBuAgt09l4Q0qbZ5bF4UDX3rOAglw3tgiyBMExJpWAKs2HwJczzmtwC5A0Erm
-         jKS0ITLK5egDP9jT92cbUa7JKrp8IhSBqJm/+wEYViW3BSC45g7vxqNPCDjDRzDm5pz1
-         dmZ6oEx5D1s56q+rjIJaasTeMzCYyTqbBjGXAm1aeaAbcCA7yUKW7o00F4v5T2FeL29Z
-         Vcz5C3edNViOGQ1ROkMacZew8SmDtE9++syL91PwvIoNBAbJAn5/H5qdi3/rzi75oJyA
-         TSD1ptYg0s1tXWcqBLt+YkTWk/WWOfnf8NEVpiA68B7R5U72w1Fh+FUrEtQDWA876ZSz
-         Kvdw==
-X-Gm-Message-State: AJIora+kowkIlJrYyni/rHXkjAl45x2sYvi80zJy/2NQ14SJALu6AfxP
-        kOeoHu/VBeohpEejmFUIgjWwRJug0u/RhWWoi8TGNA==
-X-Google-Smtp-Source: AGRyM1u5NmicPX8kPXvz1kiPZ+hNXNfnIUMJsLYPxSR6t62siw34qIBUx64zMORNQHZNj8XRPh/W7Dh2yu7XetMiJhw=
-X-Received: by 2002:a25:6c5:0:b0:669:a17a:2289 with SMTP id
- 188-20020a2506c5000000b00669a17a2289mr9871960ybg.231.1656044042254; Thu, 23
- Jun 2022 21:14:02 -0700 (PDT)
+        Fri, 24 Jun 2022 00:20:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A95A4FC6A;
+        Thu, 23 Jun 2022 21:20:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EB38620E3;
+        Fri, 24 Jun 2022 04:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 62578C341CC;
+        Fri, 24 Jun 2022 04:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656044413;
+        bh=FhwJzvp4jNVmC9Z/HccWr1dnATRfH+9ZOVhIkS4JuX0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kOoUIwiE6dZRciGdGtFWrtLn+i6IJ+X1FoJS8Dxs7xZtDN48UccFcee7p5YPqrhNp
+         Y8rV7WPOT4ok7xokXqxPNSS0Fzf8+idlF5WkHc5p819OHgd/7GNLUyZwTkfcFr+Hyu
+         dS1harg/IuFMzSY/+Tj2dTiJ5NY5Wk18ecM2FpntB9ddLVu7Id0DL5oIZlUMOqD6IM
+         /KJig2V2zqUAyxEMrUYOQv3fn5W49LaDUXzUwhfseSfl+XFpuuGZK0eGWPm/nKllBg
+         PzbBAKgbR2xIPot3El2Ppv9uhe9nFfIKcoPvfkeLyFxcQEu+uvzd/lpjxGVL+jNAXF
+         2HP4vwylEb8aA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4759EE8DBDA;
+        Fri, 24 Jun 2022 04:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
- <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
- <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com> <20220623185730.25b88096@kernel.org>
-In-Reply-To: <20220623185730.25b88096@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 24 Jun 2022 06:13:51 +0200
-Message-ID: <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        "Tang, Feng" <feng.tang@intel.com>, zhengjun.xing@linux.intel.com,
-        fengwei.yin@intel.com, Ying Xu <yinxu@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [RESEND PATCH] net/ncsi: use proper "mellanox" DT vendor prefix
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165604441328.4225.4187173876361139168.git-patchwork-notify@kernel.org>
+Date:   Fri, 24 Jun 2022 04:20:13 +0000
+References: <20220622115416.7400-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220622115416.7400-1-krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     sam@mendozajonas.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 3:57 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 23 Jun 2022 18:50:07 -0400 Xin Long wrote:
-> > From the perf data, we can see __sk_mem_reduce_allocated() is the one
-> > using CPU the most more than before, and mem_cgroup APIs are also
-> > called in this function. It means the mem cgroup must be enabled in
-> > the test env, which may explain why I couldn't reproduce it.
-> >
-> > The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small as
-> > possible") uses sk_mem_reclaim(checking reclaimable >= PAGE_SIZE) to
-> > reclaim the memory, which is *more frequent* to call
-> > __sk_mem_reduce_allocated() than before (checking reclaimable >=
-> > SK_RECLAIM_THRESHOLD). It might be cheap when
-> > mem_cgroup_sockets_enabled is false, but I'm not sure if it's still
-> > cheap when mem_cgroup_sockets_enabled is true.
-> >
-> > I think SCTP netperf could trigger this, as the CPU is the bottleneck
-> > for SCTP netperf testing, which is more sensitive to the extra
-> > function calls than TCP.
-> >
-> > Can we re-run this testing without mem cgroup enabled?
->
-> FWIW I defer to Eric, thanks a lot for double checking the report
-> and digging in!
+Hello:
 
-I did tests with TCP + memcg and noticed a very small additional cost
-in memcg functions,
-because of suboptimal layout:
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Extract of an internal Google bug, update from June 9th:
+On Wed, 22 Jun 2022 13:54:16 +0200 you wrote:
+> "mlx" Devicetree vendor prefix is not documented and instead "mellanox"
+> should be used.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> ---
+> 
+> [...]
 
---------------------------------
-I have noticed a minor false sharing to fetch (struct
-mem_cgroup)->css.parent, at offset 0xc0,
-because it shares the cache line containing struct mem_cgroup.memory,
-at offset 0xd0
+Here is the summary with links:
+  - [RESEND] net/ncsi: use proper "mellanox" DT vendor prefix
+    https://git.kernel.org/netdev/net/c/ad887a507d73
 
-Ideally, memcg->socket_pressure and memcg->parent should sit in a read
-mostly cache line.
------------------------
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-But nothing that could explain a "-69.4% regression"
 
-memcg has a very similar strategy of per-cpu reserves, with
-MEMCG_CHARGE_BATCH being 32 pages per cpu.
-
-It is not clear why SCTP with 10K writes would overflow this reserve constantly.
-
-Presumably memcg experts will have to rework structure alignments to
-make sure they can cope better
-with more charge/uncharge operations, because we are not going back to
-gigantic per-socket reserves,
-this simply does not scale.
