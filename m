@@ -2,186 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62641C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2959C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:34:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232564AbiFXOeu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34380 "EHLO
+        id S232578AbiFXOey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232514AbiFXOeo (ORCPT
+        with ESMTP id S232518AbiFXOeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 24 Jun 2022 10:34:44 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A901A3585B;
-        Fri, 24 Jun 2022 07:34:40 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 61F7516DB;
-        Fri, 24 Jun 2022 17:35:54 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 61F7516DB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1656081354;
-        bh=D/jv/RvMWTglXoeqY+qoOMt9KuSdfPqgrSmhY8bt2mg=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=R+erWUPLpCYYc3E/9rWEU+OPHZoYmKMqmFSuZ2x329YFaHKyS/iGFI0qRIiNo2B+H
-         YuRVziqrdOgMCb1vHxPkZ8zovVc4/W1BpcAw2rZ06QjC7lh/cQsWDUtU/VADalI1kB
-         5ZOxQGLCE7GW1QNOYrHdTCHC4uPtAoKB+Pto3x/I=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jun 2022 17:34:34 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Pankaj Dubey <pankaj.dubey@samsung.com>,
-        Shradha Todi <shradha.t@samsung.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v5 04/18] PCI: dwc: Set INCREASE_REGION_SIZE flag based on limit address
-Date:   Fri, 24 Jun 2022 17:34:14 +0300
-Message-ID: <20220624143428.8334-5-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru>
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id EFA614EDE3
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:34:41 -0700 (PDT)
+Received: (qmail 34279 invoked by uid 1000); 24 Jun 2022 10:34:40 -0400
+Date:   Fri, 24 Jun 2022 10:34:40 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     syzbot <syzbot+aa620fb1ece874a3f34c@syzkaller.appspotmail.com>
+Cc:     Julia.Lawall@inria.fr, andreyknvl@gmail.com, balbi@kernel.org,
+        gregkh@linuxfoundation.org, hdanton@sina.com, jannh@google.com,
+        jj251510319013@gmail.com, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, schspa@gmail.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] KASAN: null-ptr-deref Read in ida_free (2)
+Message-ID: <YrXLgOCf4e4kmIzH@rowland.harvard.edu>
+References: <000000000000fd80ab05e2314a27@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000fd80ab05e2314a27@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It was wrong to use the region size parameter in order to determine
-whether the INCREASE_REGION_SIZE flag needs to be set for the outbound
-iATU entry because in general there are cases when combining a region base
-address and size together produces the out of bounds upper range limit
-while upper_32_bits(size) still returns zero. So having a region size
-within the permitted values doesn't mean the region limit address will fit
-to the corresponding CSR. Here is the way iATU calculates the in- and
-outbound untranslated regions if the INCREASE_REGION_SIZE flag is cleared
-[1]:
+On Fri, Jun 24, 2022 at 06:10:22AM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    08897940f458 Add linux-next specific files for 20220623
+> git tree:       linux-next
+> console+strace: https://syzkaller.appspot.com/x/log.txt?x=14fc8c60080000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=fb185a52c6ad0a8e
+> dashboard link: https://syzkaller.appspot.com/bug?extid=aa620fb1ece874a3f34c
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=116b4140080000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17ab12e4080000
+> 
+> The issue was bisected to:
+> 
+> commit f2d8c2606825317b77db1f9ba0fc26ef26160b30
+> Author: Alan Stern <stern@rowland.harvard.edu>
+> Date:   Mon Jun 13 14:17:03 2022 +0000
+> 
+>     usb: gadget: Fix non-unique driver names in raw-gadget driver
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15b40318080000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=17b40318080000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13b40318080000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+aa620fb1ece874a3f34c@syzkaller.appspotmail.com
+> Fixes: f2d8c2606825 ("usb: gadget: Fix non-unique driver names in raw-gadget driver")
+> 
+> ==================================================================
+> BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:71 [inline]
+> BUG: KASAN: null-ptr-deref in test_bit include/asm-generic/bitops/instrumented-non-atomic.h:134 [inline]
+> BUG: KASAN: null-ptr-deref in ida_free+0x1b6/0x2e0 lib/idr.c:510
+> Read of size 8 at addr 0000000000000000 by task syz-executor185/3627
+> 
+> CPU: 1 PID: 3627 Comm: syz-executor185 Not tainted 5.19.0-rc3-next-20220623-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+>  check_region_inline mm/kasan/generic.c:183 [inline]
+>  kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+>  instrument_atomic_read include/linux/instrumented.h:71 [inline]
+>  test_bit include/asm-generic/bitops/instrumented-non-atomic.h:134 [inline]
+>  ida_free+0x1b6/0x2e0 lib/idr.c:510
+>  dev_free+0xec/0x700 drivers/usb/gadget/legacy/raw_gadget.c:212
+>  kref_put include/linux/kref.h:65 [inline]
+>  raw_release+0x219/0x290 drivers/usb/gadget/legacy/raw_gadget.c:424
+>  __fput+0x277/0x9d0 fs/file_table.c:317
+>  task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+>  exit_task_work include/linux/task_work.h:38 [inline]
+>  do_exit+0xb05/0x2a00 kernel/exit.c:795
+>  do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+>  __do_sys_exit_group kernel/exit.c:936 [inline]
+>  __se_sys_exit_group kernel/exit.c:934 [inline]
+>  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> RIP: 0033:0x7f12d28b6bd9
+> Code: Unable to access opcode bytes at RIP 0x7f12d28b6baf.
+> RSP: 002b:00007ffea2859da8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+> RAX: ffffffffffffffda RBX: 00007f12d292b3f0 RCX: 00007f12d28b6bd9
+> RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+> RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 000000000000000b
+> R10: 00007ffea2857e00 R11: 0000000000000246 R12: 00007f12d292b3f0
+> R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+>  </TASK>
+> ==================================================================
 
-  Start address:                      End address:
-63              31              0   63              31              0
-+---------------+---------------+   +---------------+---------------+
-|               |         |  0s |   |               |         |  Fs |
-+---------------+---------------+   +---------------+---------------+
-   upper base   |   lower base       !upper! base   | limit address
-     address          address           address
+This should be fixed by the patch that was just merged.
 
-So the region start address is determined by the iATU lower and upper base
-address registers, while the region upper boundary is calculated based on
-the 32-bits limit address register and the upper part of the base address.
-In accordance with that logic for instance the range
-0xf0000000 @ 0x20000000 does have the size smaller than 4GB, but the
-actual limit address turns to be invalid forming the untranslated address
-map as [0xf0000000; 0x1000FFFF], which isn't what the original range was.
-In order to fix that we need to check whether the size after being added
-to the lower part of the base address causes the 4GB range overflow. If it
-does then we need to set the INCREASE_REGION_SIZE flag thus activating the
-extended limit address by means of an additional iATU CSR (upper limit
-address register) [2]:
+Alan Stern
 
-  Start address:                      End address:
-63              31              0   63      x       31              0
-+---------------+---------------+   +---------------+---------------+
-|               |         |  0s |   |       |       |         |  Fs |
-+---------------+---------------+   +---------------+---------------+
-   upper base   |  lower base         upper | upper | limit address
-     address         address          base  | limit |
-                                     address|address|
-
-Otherwise there is enough room in the 32-bits wide limit address register,
-and the flag can be left unset.
-
-Note the case when the size-based flag setting approach is correct implies
-requiring to have the size-aligned base addresses only. But that
-constraint isn't relevant to the PCIe ranges accepted by the kernel.
-There is also no point in implementing it either seeing the problem can be
-easily fixed by checking the whole limit address instead of the region
-size.
-
-[1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
-    v5.40a, March 2019, fig.3-36, p.175
-[2] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
-    v5.40a, March 2019, fig.3-37, p.176
-
-Fixes: 5b4cf0f65324 ("PCI: dwc: Add upper limit address for outbound iATU")
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-
----
-
-Changelog v2:
-- Fix the end address in the example of the patch log. It should be
-  0x1000FFFF and not 0x0000FFFF (@Manivannan).
----
- drivers/pci/controller/dwc/pcie-designware.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index 84fef21efdbc..347251bf87d0 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -287,8 +287,8 @@ static void dw_pcie_prog_outbound_atu_unroll(struct dw_pcie *pci, u8 func_no,
- 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_UPPER_TARGET,
- 				 upper_32_bits(pci_addr));
- 	val = type | PCIE_ATU_FUNC_NUM(func_no);
--	val = upper_32_bits(size - 1) ?
--		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
-+	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr))
-+		val |= PCIE_ATU_INCREASE_REGION_SIZE;
- 	if (pci->version == 0x490A)
- 		val = dw_pcie_enable_ecrc(val);
- 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL1, val);
-@@ -315,6 +315,7 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 					u64 pci_addr, u64 size)
- {
- 	u32 retries, val;
-+	u64 limit_addr;
- 
- 	if (pci->ops && pci->ops->cpu_addr_fixup)
- 		cpu_addr = pci->ops->cpu_addr_fixup(pci, cpu_addr);
-@@ -325,6 +326,8 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 		return;
- 	}
- 
-+	limit_addr = cpu_addr + size - 1;
-+
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT,
- 			   PCIE_ATU_REGION_OUTBOUND | index);
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_BASE,
-@@ -332,17 +335,18 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_BASE,
- 			   upper_32_bits(cpu_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LIMIT,
--			   lower_32_bits(cpu_addr + size - 1));
-+			   lower_32_bits(limit_addr));
- 	if (pci->version >= 0x460A)
- 		dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_LIMIT,
--				   upper_32_bits(cpu_addr + size - 1));
-+				   upper_32_bits(limit_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_TARGET,
- 			   lower_32_bits(pci_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_TARGET,
- 			   upper_32_bits(pci_addr));
- 	val = type | PCIE_ATU_FUNC_NUM(func_no);
--	val = ((upper_32_bits(size - 1)) && (pci->version >= 0x460A)) ?
--		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
-+	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr) &&
-+	    pci->version >= 0x460A)
-+		val |= PCIE_ATU_INCREASE_REGION_SIZE;
- 	if (pci->version == 0x490A)
- 		val = dw_pcie_enable_ecrc(val);
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_CR1, val);
--- 
-2.35.1
-
+#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git 90bc2af24638
