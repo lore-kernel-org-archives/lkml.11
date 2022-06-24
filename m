@@ -2,87 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0740CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:26:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15235C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232504AbiFXP0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 11:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
+        id S232684AbiFXP06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 11:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232671AbiFXP0t (ORCPT
+        with ESMTP id S229888AbiFXP0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 11:26:49 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D67515B1;
-        Fri, 24 Jun 2022 08:26:44 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 91C1A1BF20E;
-        Fri, 24 Jun 2022 15:26:42 +0000 (UTC)
+        Fri, 24 Jun 2022 11:26:50 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421CD517C4
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 08:26:47 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6894C1C000A;
+        Fri, 24 Jun 2022 15:26:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656084403;
+        t=1656084405;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=wD+f6RoGESWUd50gh7hz7GMhaUjGtOMiPEM0xd+2bV0=;
-        b=cgY6IVNZI/ieXXDiDCYRs5umVd/6Ukdb3BWmr4gdPExgBMLGe3VOqnFnZ0hd2GtAhLRL20
-        l46SHG2lov1Bpg/q79ePfs2pN9NsPM873tK8xmHjrKQjH7HaO4P0tI2b4F6apBhdfkcWJW
-        StfaKubcvYfB6BVrD1BYL75Jhjy3U2rJTYFis866+9ilIqY+ESRVljAaElGmp7kQDYqw1f
-        5RH6LsoEq6EMjc/fmojJzV/ZKY9IICw85qze8XCcgLNqktd7uowXOBtbLmnxEAbLkf7avK
-        YXl0mkHXjJ9/ReWXv7ZhHrIBYG/iPX7HuywWW5OejJv2kZ1ABc+4Nv//Bxv9kA==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [PATCH] MIPS: mscc: ocelot: enable FDMA usage
-Date:   Fri, 24 Jun 2022 17:25:48 +0200
-Message-Id: <20220624152548.128700-1-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.1
+         in-reply-to:in-reply-to:references:references;
+        bh=cOBna43ZB0lJCDekpVEqf7GVrwOErW7lnHWKCAFoDIg=;
+        b=VIeBbMouu4FRIkCnML49qgRcF+vMECewXOrt2LsveUbMwYzLoZV83L0rJtnBz1noP2j03E
+        IBxv5QWf0a4wVWi990MihCbQvPsjeLNwONphIbUivuA4IW4mlLiGMc+tJJi1kYOj7EjynR
+        3VdI+xTP7u0Pz10bcayLH6mo0edU+NJwkHcfGku0Eyik8FZRIp2k81i+/ee7H4CS49UXzx
+        Z4dOBD7G+mjJuBlKza7OVSaQ2v+AMu9j3BKJjxSh7jHhkOxL/3JBZJKgBq3Ijs9x+Pp+U/
+        BpdQ1+QutoMfiAdcyKDvLc3usPeHUkBgIKyvkdI77hpr3+X8NIgvRpE21SYyuw==
+Date:   Fri, 24 Jun 2022 17:26:44 +0200
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     kbuild-all@lists.01.org, lkp@intel.com,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drm: fix device_node_continue.cocci warnings (fwd)
+Message-ID: <YrXXtIYHk2o5ZS9G@aptenodytes>
+References: <alpine.DEB.2.22.394.2206121300120.3447@hadrien>
+ <YrXTY77HjvNnuc1B@aptenodytes>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="j8s6M7Kf9VxwIgM8"
+Content-Disposition: inline
+In-Reply-To: <YrXTY77HjvNnuc1B@aptenodytes>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-Enable FDMA usage by adding "fdma" resource in regs and interrupts.
+--j8s6M7Kf9VxwIgM8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- arch/mips/boot/dts/mscc/ocelot.dtsi | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+Hi,
 
-diff --git a/arch/mips/boot/dts/mscc/ocelot.dtsi b/arch/mips/boot/dts/mscc/ocelot.dtsi
-index cfc219a72bdd..6bd8a1ad94da 100644
---- a/arch/mips/boot/dts/mscc/ocelot.dtsi
-+++ b/arch/mips/boot/dts/mscc/ocelot.dtsi
-@@ -136,13 +136,14 @@ switch@1010000 {
- 			      <0x1880000 0x10000>,
- 			      <0x1040000 0x10000>,
- 			      <0x1050000 0x10000>,
--			      <0x1060000 0x10000>;
-+			      <0x1060000 0x10000>,
-+			      <0x1a0 0x1c4>;
- 			reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
- 				    "port2", "port3", "port4", "port5", "port6",
- 				    "port7", "port8", "port9", "port10", "qsys",
--				    "ana", "s0", "s1", "s2";
--			interrupts = <18 21 22>;
--			interrupt-names = "ptp_rdy", "xtr", "inj";
-+				    "ana", "s0", "s1", "s2", "fdma";
-+			interrupts = <18 21 22 16>;
-+			interrupt-names = "ptp_rdy", "xtr", "inj", "fdma";
- 
- 			ethernet-ports {
- 				#address-cells = <1>;
--- 
-2.36.1
+On Fri 24 Jun 22, 17:08, Paul Kocialkowski wrote:
+> Hi Julia,
+>=20
+> On Sun 12 Jun 22, 13:02, Julia Lawall wrote:
+> > The of_node_put does not seem to be needed.  Note that there is none at
+> > the preceeding continues.
+>=20
+> That looks like a correct fix, thanks!
 
+Pushed to drm-misc-next, thanks!
+
+Paul
+
+> > julia
+> >=20
+> > ---------- Forwarded message ----------
+> > Date: Sat, 11 Jun 2022 06:02:45 +0800
+> > From: kernel test robot <lkp@intel.com>
+> > To: kbuild@lists.01.org
+> > Cc: lkp@intel.com, Julia Lawall <julia.lawall@lip6.fr>
+> > Subject: [PATCH] drm: fix device_node_continue.cocci warnings
+> >=20
+> > CC: kbuild-all@lists.01.org
+> > BCC: lkp@intel.com
+> > CC: Linux Memory Management List <linux-mm@kvack.org>
+> > TO: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > CC: Maxime Ripard <mripard@kernel.org>
+> > CC: David Airlie <airlied@linux.ie>
+> > CC: Daniel Vetter <daniel@ffwll.ch>
+> > CC: dri-devel@lists.freedesktop.org
+> > CC: linux-kernel@vger.kernel.org
+> >=20
+> > From: kernel test robot <lkp@intel.com>
+> >=20
+> > drivers/gpu/drm/logicvc/logicvc_layer.c:616:2-13: ERROR: probable doubl=
+e put.
+> >=20
+> >  Device node iterators put the previous value of the index variable, so=
+ an
+> >  explicit put causes a double put.
+> >=20
+> > Generated by: scripts/coccinelle/iterators/device_node_continue.cocci
+> >=20
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: kernel test robot <lkp@intel.com>
+> > ---
+> >=20
+> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next=
+=2Egit master
+> > head:   6d0c806803170f120f8cb97b321de7bd89d3a791
+> > commit: efeeaefe9be56e8ae5e5b4e9ff6d2275ec977ec5 [2027/2566] drm: Add s=
+upport for the LogiCVC display controller
+> > :::::: branch date: 17 hours ago
+> > :::::: commit date: 31 hours ago
+> >=20
+> > Please take the patch only if it's a positive warning. Thanks!
+> >=20
+> >  drivers/gpu/drm/logicvc/logicvc_layer.c |    2 --
+> >  1 file changed, 2 deletions(-)
+> >=20
+> > --- a/drivers/gpu/drm/logicvc/logicvc_layer.c
+> > +++ b/drivers/gpu/drm/logicvc/logicvc_layer.c
+> > @@ -612,8 +612,6 @@ int logicvc_layers_init(struct logicvc_d
+> >  		ret =3D logicvc_layer_init(logicvc, layer_node, index);
+> >  		if (ret)
+> >  			goto error;
+> > -
+> > -		of_node_put(layer_node);
+> >  	}
+> >=20
+> >  	of_node_put(layers_node);
+>=20
+> --=20
+> Paul Kocialkowski, Bootlin
+> Embedded Linux and kernel engineering
+> https://bootlin.com
+
+
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--j8s6M7Kf9VxwIgM8
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmK117MACgkQ3cLmz3+f
+v9GFUwf/az5hyKfcTdyQcgK2Hh4Cjqq2ZHdkl8bUbiYalB83GruGXqXVrp5DZ2+v
+sIg19Ssgv1GMiTAvVZuT8EqHpZPcoPQceVKyFp4S7EmBmxctiyTq7/3FBGZPf8i3
+FO2hGK3lbgfL0ur+sUuPugzW8/iUWg2AsWuuzGvEJaTtZmOURPSgJrdgrQrCJK4Q
+AO4PGOvd8lqC/yqFokvr/XFFnOpm3qF2jdOUJpQ0/n3heMLYHnGmY5XC7VD2LmNf
+wAVKcakylgPhpDTrbx//lZ6Q1SW/UiWsnexGIIjvBRd4tU+j07A6eQqPx+f1UmsA
+9VVviBqMk2ytHuOAOHBjNx+34d/S4Q==
+=0QdG
+-----END PGP SIGNATURE-----
+
+--j8s6M7Kf9VxwIgM8--
