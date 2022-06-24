@@ -2,71 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6077EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230320AbiFXLI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 07:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40458 "EHLO
+        id S230271AbiFXLNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 07:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiFXLI0 (ORCPT
+        with ESMTP id S229523AbiFXLNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 07:08:26 -0400
-Received: from 11.mo582.mail-out.ovh.net (11.mo582.mail-out.ovh.net [188.165.38.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3EB6522C8
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 04:08:24 -0700 (PDT)
-Received: from player694.ha.ovh.net (unknown [10.111.208.149])
-        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 813C8250E7
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:03:02 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player694.ha.ovh.net (Postfix) with ESMTPSA id A079C2BDB6F28;
-        Fri, 24 Jun 2022 11:02:58 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-106R0063cb03ecb-227a-4b1b-a9b4-809ab7d74b16,
-                    3A36F777C3506A3F96EA03190DC1808DFCB0D32C) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Stephen Kitt <steve@sk2.org>, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org
-Subject: [PATCH] docs: admin-guide/sysctl: escape % symbols
-Date:   Fri, 24 Jun 2022 13:02:30 +0200
-Message-Id: <20220624110230.595740-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Fri, 24 Jun 2022 07:13:30 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907E335861
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 04:13:29 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id t5so4052974eje.1
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 04:13:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0zlxTVnvbHpKy0DwhHrN4iNAtQ8jGGjP1mEZMb9Cqfc=;
+        b=BZ40dSXMcmZVrrFgwl+Svd+XT2GC1ZjSxQe9gAJ3i1aM9JQG6gU+AV52iu7Fpu+iwr
+         AFTy+gCgeUc9N/+qCzAIBTlf1Ic+VQE6/mjVzQIaXg8pgqLlubqvTatTI0AS44CWLCA8
+         2N44cmo7bFuCuT1V7gvfWlEI7yslFcHD0dH/5M1Mna5ZM7b2YQ13e8ssvEqwA93ACrfI
+         5bAePAt2QvDX9rB3N64/NHt0r2E/fA0why7b54JgxQPrkaRdEJCNwkX80Iu130RMgidl
+         oT8yc1svJdnXmoY92DuwF8QGj45XnrCYInJwlsyVWjLh8KJsw7u9b8nRVUP7NMuPRHIr
+         X3OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0zlxTVnvbHpKy0DwhHrN4iNAtQ8jGGjP1mEZMb9Cqfc=;
+        b=sHXK3u+Sbpx74bOlo72Wfq2wyAvhVV2XhB1jU0cOcX35oSZz+Xq3HugKbTUbd5z6Zw
+         FkP4VTydXGmbAcYEQ0hQoKltx1n35DIIhxuyV9KGciGkk75u+ZSLUH0MilVUJqM2R/ux
+         hnMdpYB9L1ZFO8wETyQmrBU+K1mZPC35jW2OjeyYV88Jzu/PnpWYp+iijA0FQ+bUiet9
+         66k/uonQjhzhAvOfbbwMTj/l2dVI8Zh+RE4O9WWidH5UR0bkRG4yxVFY8oe7bb28Qy0r
+         RyNTF7+S1YfEUcEkBwxLRDlBwssLYL4xf7QqECrJcPorjuVCm/9zWxDoamiR+Wsefg21
+         n8hA==
+X-Gm-Message-State: AJIora//kEF6OogWCq+tYtugsblTiT3gb+a07BQC8r+YRncvJIYAdHsx
+        q3oOoCz/V9ZsKl4ob2XBDp9q2Q==
+X-Google-Smtp-Source: AGRyM1sIeHNs7Q5rcCDUucuqRivorQ8lvaJWn3CypW2Y1pnrMMJZxiu2vO3vGBttNwZ8JeR2lpFs/w==
+X-Received: by 2002:a17:907:72d6:b0:722:e59a:72f4 with SMTP id du22-20020a17090772d600b00722e59a72f4mr13068601ejc.158.1656069208122;
+        Fri, 24 Jun 2022 04:13:28 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id x22-20020a170906711600b00722e4bab163sm898877ejj.200.2022.06.24.04.13.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 04:13:27 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Dan Murphy <dmurphy@ti.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: leds: lp50xx: fix LED children names
+Date:   Fri, 24 Jun 2022 13:13:25 +0200
+Message-Id: <20220624111325.96478-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11089551134924441172
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudefledgfeefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepleegteeujeffjeefjeevhfdtudefjefgteelgedtudekleeiledvvdetudevjedtnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrieelgedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehkedv
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-% symbols need to be escaped to render correctly here, do so.
+The lp50xx LEDs expects to have single-color LED children with unit
+addresses.  This is required by the driver and provided by existing
+DTSes.  Fix the binding to match actual usage.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fixes: dce1452301e7 ("dt: bindings: lp50xx: Introduce the lp50xx family of RGB drivers")
 ---
- Documentation/admin-guide/sysctl/kernel.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/leds/leds-lp50xx.yaml | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
-index ddccd1077462..079a51ed88a9 100644
---- a/Documentation/admin-guide/sysctl/kernel.rst
-+++ b/Documentation/admin-guide/sysctl/kernel.rst
-@@ -38,8 +38,8 @@ acct
+diff --git a/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml b/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
+index f12fe5b53f30..c274a10bbde6 100644
+--- a/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
++++ b/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
+@@ -65,8 +65,14 @@ patternProperties:
+           for the child node.  The LED modules can either be used stand alone
+           or grouped into a module bank.
  
- If BSD-style process accounting is enabled these values control
- its behaviour. If free space on filesystem where the log lives
--goes below ``lowwater``% accounting suspends. If free space gets
--above ``highwater``% accounting resumes. ``frequency`` determines
-+goes below ``lowwater``\% accounting suspends. If free space gets
-+above ``highwater``\% accounting resumes. ``frequency`` determines
- how often do we check the amount of free space (value is in
- seconds). Default:
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
+     patternProperties:
+-      "(^led-[0-9a-f]$|led)":
++      "^led@[0-9a-f]+$":
+         type: object
+         $ref: common.yaml#
  
-
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-2.30.2
+2.34.1
 
