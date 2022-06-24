@@ -2,86 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E08C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 01:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C47CCA480
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 01:21:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbiFXBU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 21:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33836 "EHLO
+        id S230317AbiFXBVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 21:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiFXBU5 (ORCPT
+        with ESMTP id S229437AbiFXBVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 21:20:57 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E0856FA1;
-        Thu, 23 Jun 2022 18:20:55 -0700 (PDT)
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LTfRb5l7tzkWbZ;
-        Fri, 24 Jun 2022 09:19:39 +0800 (CST)
-Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
- dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 24 Jun 2022 09:20:54 +0800
-Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
- (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 24 Jun
- 2022 09:20:53 +0800
-From:   Ren Zhijie <renzhijie2@huawei.com>
-To:     <kishon@ti.com>, <lpieralisi@kernel.org>, <kw@linux.com>,
-        <bhelgaas@google.com>, <jdmason@kudzu.us>, <Frank.Li@nxp.com>
-CC:     <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Ren Zhijie <renzhijie2@huawei.com>
-Subject: [PATCH -next] PCI: endpoint: Fix Kconfig dependency
-Date:   Fri, 24 Jun 2022 09:19:11 +0800
-Message-ID: <20220624011911.164146-1-renzhijie2@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.34]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500008.china.huawei.com (7.185.36.147)
-X-CFilter-Loop: Reflected
+        Thu, 23 Jun 2022 21:21:19 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E2756FA1;
+        Thu, 23 Jun 2022 18:21:17 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VHETYia_1656033648;
+Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VHETYia_1656033648)
+          by smtp.aliyun-inc.com;
+          Fri, 24 Jun 2022 09:21:15 +0800
+From:   Liu Song <liusong@linux.alibaba.com>
+To:     corbet@lwn.net, will@kernel.org
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: correct the effect of mitigations off on kpti
+Date:   Fri, 24 Jun 2022 09:20:48 +0800
+Message-Id: <1656033648-84181-1-git-send-email-liusong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_NTB is not set and CONFIG_PCI_EPF_VNTB is y.
+From: Liu Song <liusong@linux.alibaba.com>
 
-make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-, will be failed, like this:
+If KASLR is enabled, then kpti will be forced to be enabled even if
+mitigations off, so we need to adjust the description of this parameter.
 
-drivers/pci/endpoint/functions/pci-epf-vntb.o: In function `epf_ntb_cmd_handler':
-pci-epf-vntb.c:(.text+0x95e): undefined reference to `ntb_db_event'
-pci-epf-vntb.c:(.text+0xa1f): undefined reference to `ntb_link_event'
-pci-epf-vntb.c:(.text+0xa42): undefined reference to `ntb_link_event'
-drivers/pci/endpoint/functions/pci-epf-vntb.o: In function `pci_vntb_probe':
-pci-epf-vntb.c:(.text+0x1250): undefined reference to `ntb_register_device'
-
-The functions ntb_*() are defined in drivers/ntb/core.c, which need CONFIG_NTB setting y to be build-in.
-To fix this build error, add depends on NTB.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: ff32fac00d97("NTB: EPF: support NTB transfer between PCI RC and EP connection")
-Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
-Acked-by: Frank Li <frank.li@nxp.com>
-
+Signed-off-by: Liu Song <liusong@linux.alibaba.com>
 ---
-v2: Fix some commit message errors
----
- drivers/pci/endpoint/functions/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/admin-guide/kernel-parameters.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/endpoint/functions/Kconfig b/drivers/pci/endpoint/functions/Kconfig
-index 362555b024e8..9beee4f0f4ee 100644
---- a/drivers/pci/endpoint/functions/Kconfig
-+++ b/drivers/pci/endpoint/functions/Kconfig
-@@ -29,6 +29,7 @@ config PCI_EPF_NTB
- config PCI_EPF_VNTB
-         tristate "PCI Endpoint NTB driver"
-         depends on PCI_ENDPOINT
-+        depends on NTB
-         select CONFIGFS_FS
-         help
-           Select this configuration option to enable the Non-Transparent
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 8090130..5b9e7f3 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3162,7 +3162,7 @@
+ 				improves system performance, but it may also
+ 				expose users to several CPU vulnerabilities.
+ 				Equivalent to: nopti [X86,PPC]
+-					       kpti=0 [ARM64]
++					       if nokaslr then kpti=0 [ARM64]
+ 					       nospectre_v1 [X86,PPC]
+ 					       nobp=0 [S390]
+ 					       nospectre_v2 [X86,PPC,S390,ARM64]
 -- 
-2.17.1
+1.8.3.1
 
