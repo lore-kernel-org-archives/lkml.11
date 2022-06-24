@@ -2,104 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D35B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 07:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA11BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 07:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbiFXHbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 03:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
+        id S229894AbiFXHda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 03:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiFXHbe (ORCPT
+        with ESMTP id S229546AbiFXHd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 03:31:34 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243D869F9B
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 00:31:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=YUOFk9b/9Pi1CdCvUNVXTceplFA6AUnlxbx60+B9dcw=; b=RJTk89S0PROMbL6UJk2GB9VH3Y
-        boeJy6Fj/P3iLWMgCWFlNP3yc/NKsj45HMoRB6NW4brd62BOJZ4x83+r70cNzXE8C5z51MD8iOFTe
-        Ul5fyyepJRjpetwqojKickySBiGksoqGJlzowtIzK2zR/rBThomoSBT5GQCtRmYuZzTkbMj1oC/kt
-        u1Kb9cke5RT3KWTV7TpFnCmmEAQdPdrGlKGltV3CimQXtsUgfl5gJL+mVr0cAwsW3fqhS3OXtz9jH
-        4PgH8xTBUqKAgqmgXYl9JOgYKEaUdJomU/8dUP4crr70QUcZdsS23aqMej5/pYesXrwoCwZfT4h8A
-        NFe9nn0Q==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o4dlQ-00C6VQ-E8; Fri, 24 Jun 2022 07:30:15 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6445C3002C1;
-        Fri, 24 Jun 2022 09:29:58 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 4C88D29B3A655; Fri, 24 Jun 2022 09:29:58 +0200 (CEST)
-Date:   Fri, 24 Jun 2022 09:29:58 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     K Prateek Nayak <kprateek.nayak@amd.com>
-Cc:     Chen Yu <yu.c.chen@intel.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Mel Gorman <mgorman@suse.de>, Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Barry Song <21cnbao@gmail.com>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        Len Brown <len.brown@intel.com>,
-        Ben Segall <bsegall@google.com>,
-        Aubrey Li <aubrey.li@intel.com>,
-        Abel Wu <wuyun.abel@bytedance.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Tim Chen <tim.c.chen@intel.com>, linux-kernel@vger.kernel.org,
-        Yicong Yang <yangyicong@hisilicon.com>,
-        Mohini Narkhede <mohini.narkhede@intel.com>
-Subject: Re: [PATCH v4] sched/fair: Introduce SIS_UTIL to search idle CPU
- based on sum of util_avg
-Message-ID: <YrVn9t2kLHB21uG1@hirez.programming.kicks-ass.net>
-References: <20220612163428.849378-1-yu.c.chen@intel.com>
- <76c94a3b-6ca2-e0e2-c618-42b147d2737d@amd.com>
+        Fri, 24 Jun 2022 03:33:29 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D0F4EF71
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 00:33:27 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id k20so1390943qkj.1
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 00:33:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=vrull.eu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fR6uKfBDYRieZiuAMXFfm7AitfVVlF5V4Jud/klMDd0=;
+        b=rBsMrbkOvHn2lXCYMQP3Wze/vl2AJoykTr0v0omTH75CKCTzEQINNWWBGN+2N94qPS
+         lboLFvCO1H+csqUpI/DfYbOIdCZvQUM8nC8x7eTXRmW3+3KC9ArjftWj3gY2Ld/RZTVA
+         8BKqI8dnZPVNp1VInit08K9O92G56LBkXs3gevqoY2NKwxuf8WbjkGx2xsu0J1gqJa+S
+         aybJWcWeYQ4qCjVsldNl2BDAnCq+rnwJmWZP1Wdme5lOG0KHw9H33siUdxHRs+jwk1I7
+         pNwBXN5qGg7TBo4g5SXSxJmyLzOKtRfWUslXzvkOIgLfruSt2u1vor59m0ld+bBr9ZaV
+         EZuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fR6uKfBDYRieZiuAMXFfm7AitfVVlF5V4Jud/klMDd0=;
+        b=QDu3tmK1gRBJyN76LTZ1h+eXctayjsPf4WXHgzrOwWEFlSqHVR/YteaFn6kEt6S9rt
+         h2NAgaH2QDh1Mg0c/piv7KHm4Xfl+0pZXSib+sy5iuFq7GtB/nDZ8bsbMKneiW+TuIvB
+         qE/IfhaL6DLUI0wCN4dnXrwc45ej54XKO6i/j/SA0ViGrnIbeu5wUkC6ipB/Q7uSyOfg
+         lU4x1GWMQDoqgpzSGv/9F1VSqRgIo7f3Ti8usYHmhJFE6/N1eyXFI+YuIZby8Iw9EVLJ
+         zc8Jy2s9JawCSPOgQsQlrhQH8eQSbBvkC7PG4UKmX1818ly4qAJKm+RweArzrQJ4rEvr
+         q2Aw==
+X-Gm-Message-State: AJIora967r4cJVB98ty6xIcyCB1Uu5hFY1sue0jEyNRTPbPEnKujsXz7
+        ysW8r/jsz1fjyEAnJMLLcNLdeFnZom173bZ9kjQfsA==
+X-Google-Smtp-Source: AGRyM1vW1GrBPEbbxDBjM3RFXMgO6JY9qkykLiXUWcYVbtoEe0fi2Nqvgwk1vmP6EaWE+FZAKs3xUig5WBYfQruzVC0=
+X-Received: by 2002:a05:620a:4591:b0:6a7:5a82:3d2d with SMTP id
+ bp17-20020a05620a459100b006a75a823d2dmr9266728qkb.694.1656056006349; Fri, 24
+ Jun 2022 00:33:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <76c94a3b-6ca2-e0e2-c618-42b147d2737d@amd.com>
+References: <20220623152948.1607295-1-christoph.muellner@vrull.eu> <1903087.PYKUYFuaPT@diego>
+In-Reply-To: <1903087.PYKUYFuaPT@diego>
+From:   =?UTF-8?Q?Christoph_M=C3=BCllner?= <christoph.muellner@vrull.eu>
+Date:   Fri, 24 Jun 2022 09:33:15 +0200
+Message-ID: <CAEg0e7g2jfT1X0pMo8oNaaeQ5B6d=qJe-YK0r8vrDzbFYE_ARQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v2] riscv: Add Zawrs support for spinlocks
+To:     =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        Aaron Durbin <adurbin@rivosinc.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Atish Patra <atishp@atishpatra.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 12:06:55PM +0530, K Prateek Nayak wrote:
-> Hello Chenyu,
-> 
-> I'm sorry for the delay. The testing took a while but below are
-> the results from testing on our system.
-> 
-> tl;dr
-> 
-> o We ran all the tests with with SIS_PROP disabled.
-> o tbench reaches close to saturation early with 256 clients.
-> o schbench shows improvements for low worker counts.
-> o All other benchmark results seem comparable to tip.
->   We don't see any serious regressions with v4.
-> 
-> > @@ -61,6 +61,7 @@ SCHED_FEAT(TTWU_QUEUE, true)
-> >   * When doing wakeups, attempt to limit superfluous scans of the LLC domain.
-> >   */
-> >  SCHED_FEAT(SIS_PROP, true)
-> 
-> SIS_PROP was disabled in our testing as follows:
-> 
-> --
-> -SCHED_FEAT(SIS_PROP, true)
-> +SCHED_FEAT(SIS_PROP, false)
+On Thu, Jun 23, 2022 at 6:32 PM Heiko St=C3=BCbner <heiko@sntech.de> wrote:
+>
+> Hi Christoph,
+>
+> Am Donnerstag, 23. Juni 2022, 17:29:48 CEST schrieb Christoph Muellner:
+> > From: Christoph M=C3=BCllner <christoph.muellner@vrull.eu>
+> >
+> > The current RISC-V code uses the generic ticket lock implementation,
+> > that calls the macros smp_cond_load_relaxed() and smp_cond_load_acquire=
+().
+> > Currently, RISC-V uses the generic implementation of these macros.
+> > This patch introduces a RISC-V specific implementation, of these
+> > macros, that peels off the first loop iteration and modifies the waitin=
+g
+> > loop such, that it is possible to use the WRS.STO instruction of the Za=
+wrs
+> > ISA extension to stall the CPU.
+> >
+> > The resulting implementation of smp_cond_load_*() will only work for
+> > 32-bit or 64-bit types for RV64 and 32-bit types for RV32.
+> > This is caused by the restrictions of the LR instruction (RISC-V only
+> > has LR.W and LR.D). Compiler assertions guard this new restriction.
+> >
+> > This patch uses the existing RISC-V ISA extension framework
+> > to detect the presents of Zawrs at run-time.
+> > If available a NOP instruction will be replaced by WRS.NTO or WRS.STO.
+> >
+> > The whole mechanism is gated by Kconfig setting, which defaults to Y.
+> >
+> > The Zawrs specification can be found here:
+> > https://github.com/riscv/riscv-zawrs/blob/main/zawrs.adoc
+> >
+> > Note, that the Zawrs extension is not frozen or ratified yet.
+> > Therefore this patch is an RFC and not intended to get merged.
+> >
+> > Changes since v1:
+> > * Adding "depends on !XIP_KERNEL" to RISCV_ISA_ZAWRS
+> > * Fixing type checking code in __smp_load_reserved*
+> > * Adjustments according to the specification change
+> >
+> > Signed-off-by: Christoph M=C3=BCllner <christoph.muellner@vrull.eu>
+>
+> With the matching Qemu-Patch on
+> - rv64 + Debian rootfs
+> - rv32 + 32bit-Buildroot rootfs
+>
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
+>
+> apart from the one nit below
+> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+>
+> > ---
+> >  arch/riscv/Kconfig                   | 11 ++++
+> >  arch/riscv/include/asm/barrier.h     | 92 ++++++++++++++++++++++++++++
+> >  arch/riscv/include/asm/errata_list.h | 19 +++++-
+> >  arch/riscv/include/asm/hwcap.h       |  3 +-
+> >  arch/riscv/kernel/cpu.c              |  1 +
+> >  arch/riscv/kernel/cpufeature.c       | 13 ++++
+> >  6 files changed, 136 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> > index 32ffef9f6e5b..9d40569237c9 100644
+> > --- a/arch/riscv/Kconfig
+> > +++ b/arch/riscv/Kconfig
+> > @@ -358,6 +358,17 @@ config RISCV_ISA_C
+> >
+> >          If you don't know what to do here, say Y.
+> >
+> > +config RISCV_ISA_ZAWRS
+> > +     bool "Zawrs extension support"
+> > +     depends on !XIP_KERNEL
+> > +     select RISCV_ALTERNATIVE
+> > +     default y
+> > +     help
+> > +        Adds support to dynamically detect the presence of the Zawrs e=
+xtension
+> > +        (wait for reservation set) and enable its usage.
+> > +
+> > +        If you don't know what to do here, say Y.
+> > +
+> >  config RISCV_ISA_SVPBMT
+> >       bool "SVPBMT extension support"
+> >       depends on 64BIT && MMU
+> > diff --git a/arch/riscv/include/asm/barrier.h b/arch/riscv/include/asm/=
+barrier.h
+> > index d0e24aaa2aa0..1f9628aaa7cb 100644
+> > --- a/arch/riscv/include/asm/barrier.h
+> > +++ b/arch/riscv/include/asm/barrier.h
+> > @@ -12,6 +12,8 @@
+> >
+> >  #ifndef __ASSEMBLY__
+> >
+> > +#include <asm/errata_list.h>
+> > +
+> >  #define nop()                __asm__ __volatile__ ("nop")
+> >
+> >  #define RISCV_FENCE(p, s) \
+> > @@ -42,6 +44,64 @@ do {                                                =
+                       \
+> >       ___p1;                                                          \
+> >  })
+> >
+> > +#if __riscv_xlen =3D=3D 64
+> > +
+>
+> nit: I guess we could do without the extra blanks?
+> asm.h does so, and also the #else block below also doesn't
+> use them ;-) . But I guess that is more a style debate
 
-So how about I make this change.
+Ok, will remove the empty lines in a new revision.
 
-> With v4 on the current tip, I don't see any need for
-> a special case for systems with smaller LLCs with
-> SIS_PROP disabled and SIS_UITL enable. Even SIS Efficiency
-> seems to be better with SIS_UTIL for hackbench.
-> 
-> Tested-by: K Prateek Nayak <kprateek.nayak@amd.com> 
+Thanks!
 
-And apply this thing, lets see how it fares..
+
+>
+> > +#define __riscv_lrsc_word(t)                                         \
+> > +     (sizeof(t) =3D=3D sizeof(int) ||                                 =
+   \
+> > +      sizeof(t) =3D=3D sizeof(long))
+> > +
+> > +#elif __riscv_xlen =3D=3D 32
+> > +
+> > +#define __riscv_lrsc_word(t)                                         \
+> > +     (sizeof(t) =3D=3D sizeof(int))
+> > +
+> > +#else
+> > +#error "Unexpected __riscv_xlen"
+> > +#endif /* __riscv_xlen */
+>
+> [...]
+>
+> Thanks
+> Heiko
+>
+>
