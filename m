@@ -2,67 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D88D4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87309C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231758AbiFXLpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 07:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36882 "EHLO
+        id S231259AbiFXL76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 07:59:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231713AbiFXLpH (ORCPT
+        with ESMTP id S230520AbiFXL74 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 07:45:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016967B36C;
-        Fri, 24 Jun 2022 04:45:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 889376222A;
-        Fri, 24 Jun 2022 11:45:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627FBC34114;
-        Fri, 24 Jun 2022 11:45:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656071105;
-        bh=/2OHaS3MR1kb2k5L74fvco5RgmKK7foP/ilWbPMO+Es=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lGpUqG7MHtWZJ87v8qMZ8ChuH6aRq0Gij61Z4bVzYhrhQQ75WsPx7c69tzhoaYEa/
-         aE7zP6Dl4KJISHZSD46fhRnKFzXrLYqEaopQSxpqsXrgsHRUcnpFJ70meLA4RJo6rq
-         9ak1wnwEgWOwgHNYSlzSXlnmIkBDzsReYMuNiYRs=
-Date:   Fri, 24 Jun 2022 13:42:02 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     neal_liu@aspeedtech.com, balbi@kernel.org, joel@jms.id.au,
-        andrew@aj.id.au, sumit.semwal@linaro.org, christian.koenig@amd.com,
-        linux-aspeed@lists.ozlabs.org, linux-usb@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH] usb: gadget: Fix unsigned comparison with less than zero
-Message-ID: <YrWjCnNJohij691b@kroah.com>
-References: <20220623084347.38207-1-jiapeng.chong@linux.alibaba.com>
+        Fri, 24 Jun 2022 07:59:56 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC6686F79A;
+        Fri, 24 Jun 2022 04:59:54 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id z13so4010067lfj.13;
+        Fri, 24 Jun 2022 04:59:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iZCsld/Kwu7GK8ETue9xYaG0XWT7s0wsxnFfMbbKZpw=;
+        b=q5GFNawCB7XD7hhK4bKucbqihbOQVduc4fBNFokKiL9iwTssnAnfwEeAvxMhnNHfhr
+         pdZY42syRC7AUTNrsnZ8pBTpbswErIrN7Wf01LvwxrePY0LDckvuftmQqnMD2C4ZuxX1
+         QiyVKAffeNqGlwuSVBZWzMMMZQAk79546oNQJHPntzPjAXSW2kQGg9E3K6oiqrdHG7WQ
+         sZAe6hyg3epf46+llJNZryZ+XvKvQSS3Mm5fVFQEH3Q6/ZBeYkF3BkiBO9zO5qQp8ak0
+         EXmvHEeiUCAwRBaBfQP7uiJn0925IlAnU8uABCbm7Z85rMYyn5AS2VM1v8OzoThDw2nH
+         88HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iZCsld/Kwu7GK8ETue9xYaG0XWT7s0wsxnFfMbbKZpw=;
+        b=BOPeL851R3tsIJI2qSIqrklsNgWnH5r4YfSgJPEED331TfE85R8bK3Oq+Nlsbfsdp+
+         UrbGbJyLYUjxA73G6zbCDUd3MXaHcoCrQhel7r9vn8sBPawtZ2m4C5FQZxRbI2yKC87q
+         kLPhxvD5wAGrugiU0cxJIje2evBEZaRVUw3BQZ96ifdXNu+/2rLQAS4R9JGzWJ+68NP0
+         LaBns2WN69/50ysDv72fY/kOwi3M+ouBamQsjk9XXePHssafnd+JhkFods4bwff52sG2
+         zjtiAU2xdVAxGw153uhtxrFrowxjCBobWae2yOrB3msbbS1XPeDVW2Sm5z8M+yCzE3fL
+         SqDA==
+X-Gm-Message-State: AJIora99xA4DSuqccUHdGhA09gJuJQ+vBaWwBgJZROYt3E8l00bc4TWZ
+        3gKoQvgCGYdSEpmFYMaS/nE=
+X-Google-Smtp-Source: AGRyM1sFbNItZpRs+PanpXqkVxryAqQQaTc2hSmSvHlaEy9mIvpaKCYqmgB14os3iTdcKVQkoOsXtQ==
+X-Received: by 2002:a19:9209:0:b0:47d:bb62:9103 with SMTP id u9-20020a199209000000b0047dbb629103mr8845659lfd.314.1656071992959;
+        Fri, 24 Jun 2022 04:59:52 -0700 (PDT)
+Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id e20-20020a2ea554000000b00258eac98baasm258521ljn.77.2022.06.24.04.59.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 04:59:52 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 14:01:42 +0200
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 04/10] iio: adc: mcp3911: add support for interrupts
+Message-ID: <YrWnppnMcsqfFxaw@gmail.com>
+References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
+ <20220623170844.2189814-4-marcus.folkesson@gmail.com>
+ <CAHp75VcMtz1ax3SEAwM8fCWqV-7ZZW6FWRB9v4W0k0Fi4CJ8-g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="uHkWNRERGs3Dz+ti"
 Content-Disposition: inline
-In-Reply-To: <20220623084347.38207-1-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <CAHp75VcMtz1ax3SEAwM8fCWqV-7ZZW6FWRB9v4W0k0Fi4CJ8-g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 04:43:47PM +0800, Jiapeng Chong wrote:
-> This was found by coccicheck:
-> 
-> ./drivers/usb/gadget/udc/aspeed_udc.c:496:8-13: WARNING: Unsigned expression compared with zero: chunk >= 0.
 
-What does this mean?  Where is the error?
+--uHkWNRERGs3Dz+ti
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Please explain the reason for changes, not just the output of a random
-tool that you ran on the code.
 
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+On Thu, Jun 23, 2022 at 09:04:51PM +0200, Andy Shevchenko wrote:
+> Unwanted blank line.
+>=20
 
-What commit does this fix?
+Removed
 
-thanks,
+> > +static int mcp3911_set_trigger_state(struct iio_trigger *trig, bool en=
+able)
+> > +{
+>=20
+> > +       bool dr_hiz;
+>=20
+> As far as I can see you don't need this variable, just call if
+> (device_property_...(...)).
 
-greg k-h
+Fixed
+
+>=20
+> Unneeded blank line.
+
+Removed
+
+Thanks,
+Marcus Folkesson
+
+--uHkWNRERGs3Dz+ti
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmK1p6AACgkQiIBOb1ld
+UjI4bxAAtxliZ5qiESZfQzSB1pwoRXxWZIKt87PbqOLd1Rrs/8hqyIfy0za/LqYu
+x/NdKAEN9GaTUdSmFnxTPmMV11bIxS/UJwRd8EqiyOk+cp7riJS9u8ICfM/WSEj6
+tn2SL/6pvIXoTrmu0pMHvYiVQVfJYVT4urJ6Xd/RktI/FbPi85lfvn69o7aLvqXA
+vTD+3rkupbuIV22FOxr/V7PIS67d53QhbDhv+F14EqQEgK32HM2zFDDORAXSWwIz
+5cVN7H0Ze+ejE5cIXUxKdwY7gFD5vkgSU4kZ5qGjtn2Vy5V7PmyB2t/bTxhqYoFI
+maJ2nuBHaiqKE7vlQnOCk7VDw5Eloc+1HwH5/P4eZeKdcQ9b1RfDi/zLqrkesYtE
+D874CkONDMXwgNxM1US0QGxQO1vltfnGOqu6k0j4NKIULADtXBoQba1ewj/KAB9n
+VFOQxEuXqJ21RGqdMdxN+1UEn8k+ixbgWPYXovn3JtNYsf/2aO3leB7kNGUmqCr+
+rhkFumra2F8k8G5VZsLeJ+9+8YBrx7V6P2cbXiOHbiKYxnPec2pyzUwRTaf8QvoC
+6QVHPu0xnVyZ8bYatWtNYejPIFKHZsz8wFfE/KyvYA34TX2x7mRlllJIjPMfLlE2
+TKkcGvA/Z5vxnZzUaP3cz3nuCwg4YuOj4O5zfbxnkH9PhxszIHY=
+=5y0I
+-----END PGP SIGNATURE-----
+
+--uHkWNRERGs3Dz+ti--
