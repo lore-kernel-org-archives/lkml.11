@@ -2,159 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 370D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbiFXQBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 12:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
+        id S230187AbiFXQBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 12:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbiFXQBm (ORCPT
+        with ESMTP id S230077AbiFXQBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 12:01:42 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D2B52533
+        Fri, 24 Jun 2022 12:01:43 -0400
+Received: from forward501p.mail.yandex.net (forward501p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9301B52534
         for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:01:41 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id i10so3790093wrc.0
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:01:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ffiO6A2PsfBMr7NqXQDGe4LlsBtZjortKK8FGiE8TGs=;
-        b=kgIGHkC9AmqJrRisa88gEb2JSgScN9bTHPrFYutqUu3j4EstnyWyH4Vt4PYgnr9wM7
-         g1Jv7MXUI3WAB6EsQuB5VZz7SP0td1kZM8aHXB3334K4ewpr7f3MXm8FbbdOznRGguvS
-         9npxt9kXyuL8dePxN4eNBJih2eAKLJYfnropKFhsxtJFb5vn9xZLZDaeLxxdOT+uhgu7
-         3g9Tgk1Q4KU08dTsHPkDehTnAWTp6s9QGlC+C82CA4Ykt8mHcGCE9bINdYKZj0AXVxyb
-         K3pJ1DpOKkUR6dPZXOp4lH/wfDAGpvVFshjIujmrGNIAff8cayGDyBrUKkUCR6/UtDUa
-         54lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ffiO6A2PsfBMr7NqXQDGe4LlsBtZjortKK8FGiE8TGs=;
-        b=1mIBFLzH+lInE29NbjK0pJMxEhz7UcZV1mPl0xJRMulDd/i3w4u7OVyH/Vi79oczS2
-         so0qdmlPUbYOzzSq4vZenW6oR+zQc6sEbXpXLZS7dJUQmanQSAKH5JmSlgKa38V6wTm8
-         PanSrhQORLkAsrmRYfAAFSzBjB2GbDGn+xlPIHPnXoWIESqY4ia3vKHS2+ydmj0HIhxp
-         TROBLoNLiCKZy5AtfXdrfm+KVi9ATKhtnM7zKRcz+x0/XoXMzhLBWhrY32tvj9hge6X0
-         HaCp+dGcUM5ikKpd5u1Th7stVusVyWvE7B022RYybNPHomvGVYhXFWH2M0zXhUsGII0I
-         cydA==
-X-Gm-Message-State: AJIora8mChnemURhyDIeBrl1zVwiAXnEi8+giXVUw3vywBf1NXGUckMp
-        dyMMA2bkIIb5FhOUu2uT7PclLQ==
-X-Google-Smtp-Source: AGRyM1vKGC5ccFr+1PSGrjWJ2Vn9gJPfJi5n/uVuZ8+6JKiJ9SiV5LkmBEgKYLw1Q+Ux8lewMHEdMg==
-X-Received: by 2002:a05:6000:381:b0:21b:9a20:7edb with SMTP id u1-20020a056000038100b0021b9a207edbmr13997766wrf.71.1656086499812;
-        Fri, 24 Jun 2022 09:01:39 -0700 (PDT)
-Received: from [192.168.0.237] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id z17-20020a5d6551000000b0021b932de5d6sm2720639wrv.39.2022.06.24.09.01.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jun 2022 09:01:39 -0700 (PDT)
-Message-ID: <ac726845-01ec-4f35-7197-4c52fc483644@linaro.org>
-Date:   Fri, 24 Jun 2022 18:01:38 +0200
+Received: from myt5-d8fb82618a34.qloud-c.yandex.net (myt5-d8fb82618a34.qloud-c.yandex.net [IPv6:2a02:6b8:c12:59a3:0:640:d8fb:8261])
+        by forward501p.mail.yandex.net (Yandex) with ESMTP id B2D0B6215D67;
+        Fri, 24 Jun 2022 19:01:36 +0300 (MSK)
+Received: from myt5-ca5ec8faf378.qloud-c.yandex.net (myt5-ca5ec8faf378.qloud-c.yandex.net [2a02:6b8:c12:2514:0:640:ca5e:c8fa])
+        by myt5-d8fb82618a34.qloud-c.yandex.net (mxback/Yandex) with ESMTP id cyUyyZV0wd-1afeYLWn;
+        Fri, 24 Jun 2022 19:01:36 +0300
+X-Yandex-Fwd: 2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1656086496;
+        bh=abAFNI17TtevmvwX9RIhVhlH0z4SjFXAqbUQQLt25Yw=;
+        h=In-Reply-To:References:Date:Subject:Cc:To:From:Message-Id;
+        b=iLGXD1rC/AY6NKP7zBvtime9CVxW1/ZTQblFSr7nQbojY7tklxefLb/vqLudWfxHP
+         FH93mkv2rQIX2iPBgUWD6YzBoUmZ1EdCadbYEHx8hltDilu+KmZJGJVEHp5qhxL4ki
+         BUoiCtHlvwF+KHY3tBi3Aqd1lIMrFO7BEIW2O5S8=
+Authentication-Results: myt5-d8fb82618a34.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
+Received: by myt5-ca5ec8faf378.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id iVUkuL8Azf-1ZMKvOse;
+        Fri, 24 Jun 2022 19:01:35 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+From:   Nikita Shubin <nikita.shubin@maquefel.me>
+To:     Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>
+Cc:     =?UTF-8?q?Jo=C3=A3o=20M=C3=A1rio=20Domingos?= 
+        <joao.mario@tecnico.ulisboa.pt>, linux@yadro.com,
+        Nikita Shubin <n.shubin@yadro.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH v4 3/5] perf arch events: riscv arch std event files
+Date:   Fri, 24 Jun 2022 19:00:53 +0300
+Message-Id: <20220624160117.3206-4-nikita.shubin@maquefel.me>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220624160117.3206-1-nikita.shubin@maquefel.me>
+References: <20220624160117.3206-1-nikita.shubin@maquefel.me>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] ASoC: dt-bindings: fsl,micfil: Convert format to
- json-schema
-Content-Language: en-US
-To:     Shengjiu Wang <shengjiu.wang@nxp.com>, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     shengjiu.wang@gmail.com
-References: <1655980125-24141-1-git-send-email-shengjiu.wang@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1655980125-24141-1-git-send-email-shengjiu.wang@nxp.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/06/2022 12:28, Shengjiu Wang wrote:
-> Convert the NXP MICFIL binding to DT schema format using json-schema.
-> 
-> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-> ---
->  .../devicetree/bindings/sound/fsl,micfil.txt  | 33 ---------
->  .../devicetree/bindings/sound/fsl,micfil.yaml | 73 +++++++++++++++++++
->  2 files changed, 73 insertions(+), 33 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.txt
->  create mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.txt b/Documentation/devicetree/bindings/sound/fsl,micfil.txt
-> deleted file mode 100644
-> index 1ea05d4996c7..000000000000
-> --- a/Documentation/devicetree/bindings/sound/fsl,micfil.txt
-> +++ /dev/null
-> @@ -1,33 +0,0 @@
-> -NXP MICFIL Digital Audio Interface (MICFIL).
-> -
-> -The MICFIL digital interface provides a 16-bit audio signal from a PDM
-> -microphone bitstream in a configurable output sampling rate.
-> -
-> -Required properties:
-> -
-> -  - compatible		: Compatible list, contains "fsl,imx8mm-micfil"
-> -			  or "fsl,imx8mp-micfil"
-> -
-> -  - reg			: Offset and length of the register set for the device.
-> -
-> -  - interrupts		: Contains the micfil interrupts.
-> -
-> -  - clocks		: Must contain an entry for each entry in clock-names.
-> -
-> -  - clock-names		: Must include the "ipg_clk" for register access and
-> -			  "ipg_clk_app" for internal micfil clock.
-> -
-> -  - dmas		: Generic dma devicetree binding as described in
-> -			  Documentation/devicetree/bindings/dma/dma.txt.
-> -
-> -Example:
-> -micfil: micfil@30080000 {
-> -	compatible = "fsl,imx8mm-micfil";
-> -	reg = <0x0 0x30080000 0x0 0x10000>;
-> -	interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
-> -		     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
-> -	clocks = <&clk IMX8MM_CLK_PDM_IPG>,
-> -		 <&clk IMX8MM_CLK_PDM_ROOT>;
-> -	clock-names = "ipg_clk", "ipg_clk_app";
-> -	dmas = <&sdma2 24 26 0x80000000>;
-> -};
-> diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.yaml b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
-> new file mode 100644
-> index 000000000000..74c77f4cf7a4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
-> @@ -0,0 +1,73 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/sound/fsl,micfil.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: NXP MICFIL Digital Audio Interface (MICFIL)
-> +
-> +maintainers:
-> +  - Shengjiu Wang <shengjiu.wang@nxp.com>
-> +
-> +description: |
-> +  The MICFIL digital interface provides a 16-bit or 24-bit audio signal
-> +  from a PDM microphone bitstream in a configurable output sampling rate.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - fsl,imx8mm-micfil
-> +      - fsl,imx8mp-micfil
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 4
+From: Nikita Shubin <n.shubin@yadro.com>
 
-You should describe the interrupts/items. Similarly to clocks.
+cycles, time and instret counters are defined by RISC-V privileged
+spec and they should be available on any RISC-V implementation, epose them
+to arch std event files, so they can be reused by particular PMU
+bindings.
 
-Best regards,
-Krzysztof
+Derived-from-code-by: João Mário Domingos <joao.mario@tecnico.ulisboa.pt>
+Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
+---
+ .../pmu-events/arch/riscv/riscv-generic.json  | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 tools/perf/pmu-events/arch/riscv/riscv-generic.json
+
+diff --git a/tools/perf/pmu-events/arch/riscv/riscv-generic.json b/tools/perf/pmu-events/arch/riscv/riscv-generic.json
+new file mode 100644
+index 000000000000..a7ffbe87a0f7
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/riscv/riscv-generic.json
+@@ -0,0 +1,20 @@
++[
++  {
++    "PublicDescription": "CPU Cycles",
++    "EventCode": "0x00",
++    "EventName": "riscv_cycles",
++    "BriefDescription": "CPU cycles RISC-V generic counter"
++  },
++  {
++    "PublicDescription": "CPU Time",
++    "EventCode": "0x01",
++    "EventName": "riscv_time",
++    "BriefDescription": "CPU time RISC-V generic counter"
++  },
++  {
++    "PublicDescription": "CPU Instructions",
++    "EventCode": "0x02",
++    "EventName": "riscv_instret",
++    "BriefDescription": "CPU retired instructions RISC-V generic counter"
++  }
++]
+-- 
+2.35.1
+
