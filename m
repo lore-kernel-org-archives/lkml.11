@@ -2,198 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1677CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 06:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F99C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 06:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230430AbiFXGYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 02:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
+        id S229469AbiFXGZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 02:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiFXGYV (ORCPT
+        with ESMTP id S229441AbiFXGZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 02:24:21 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485DC4F9C7
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:24:20 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id p69so1720653iod.10
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:24:20 -0700 (PDT)
+        Fri, 24 Jun 2022 02:25:20 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650494F9E0;
+        Thu, 23 Jun 2022 23:25:20 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id a17so1272189pls.6;
+        Thu, 23 Jun 2022 23:25:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hjEUcM5dZzyfw79N6+5GwuY0eEBwOPNksbspIFfV09w=;
-        b=oKMYNfW75/HQsRJxhpAC3D8HUXGn9wDRDe5KJRi9m8c46OXlYAk0Bq/Wy8bjJ/Zjuj
-         nVPcig2kMQDqRRcTLW+7DNGYfpUeIb69wyO7riRaiM38xk88DVEoD9MYu1u+iRoajboa
-         WclNMfqkYNcqB4I1uECvnp4bpkeyd00Qwb/KbSsFPkgmjcbGij/S33Iq+8Z4S38OJqpF
-         mYphJl9CwP7u4Zne/11wYQsHsxo82MHyx0GrWwV0EwkEPB0Bf1Zjed9Kf1ue9LIfKs4+
-         xkg/KWPeNAOgYmG+uPa7KyPwWm7UJu5N82uSuGywSwrBAzivgqTWcC/aGSo9p4Qf0WQc
-         1TSg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YzS6DEPqt3lHPSZZNgKFpPjyHQrp9ZFD5gLKipQgADQ=;
+        b=ldlfMmihFpyEyNLk9EveOKgKcvWKoGOxwobyUknq3LvuLaw2a+jnMEbmbIoIZtaF8O
+         O8V7HKonaKZWwESgR+UqQx4Ofjdix8p0C6wAKAPiJ9mdXbz5NRWouIiwCow+pkN0QPrk
+         bAJds845htlNu511f1gkeIIy6GtXtpVZQAfYxT1xVQGgSOWpQeN99J9Z/kX+psUkJgwP
+         0y11bFBVd83ef98m/bTy8mce/D7vmIFX+ICNpiGjmn9aD4EswVuosypYBNrDOTVErCaB
+         8Nvk/nMF1dajggwP5lvuAqaLQXR1GXLnV5tLZDtB4JJ1r1hPr+xvE6LILsEGSamXY0ZX
+         trMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hjEUcM5dZzyfw79N6+5GwuY0eEBwOPNksbspIFfV09w=;
-        b=YN4PpcA/xtCCLtZeaWNJ0YoCOUPPLdK0TkjL2geOF9g6I1ib9g7/m7QVyOAwtXacW/
-         6oxVpSJazLt1qXnH9HQq+vDnj1Ex6Dkb7aZy4h/ILwpUwI/AaXvAEmI5o/ozIc1DzyE7
-         /G3KyCZ4Kpdeu90sCzgfIZlb/XSvNIWmDly0KPWMOXUr4H42lRmkgqpeeZ/U0QtUoNE0
-         FnUyALk27v01oi4H1HVOKnbrs49po5WzWlQU8/pGlRgT+PPBqmFEHETw18A/olHF79pW
-         JqaSyuU/qWJCKxO9d16u7MtvHlSy3Y1L6vbysKU1qAC6KF7Kheu6HdTVM7YappboFjE/
-         3eVA==
-X-Gm-Message-State: AJIora8VU/vkgGmJh8GuWI55RqLRWzTM9m8fK5Z2vnnEiBjdK5encTiY
-        reHeCS9m5kYoH3BGriZP/Lnq2r7jJddnSqF8SQNU2uusbSGiDA==
-X-Google-Smtp-Source: AGRyM1vOMbCrYNEm+moREM6h/f63nQBMVM5suou8CIgz910cLDSzB3txAqvyyvsMKZz2SWhIFsXcjL5ARZrsn/zpxdI=
-X-Received: by 2002:a02:85e3:0:b0:339:cf24:68f6 with SMTP id
- d90-20020a0285e3000000b00339cf2468f6mr7749121jai.161.1656051859648; Thu, 23
- Jun 2022 23:24:19 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YzS6DEPqt3lHPSZZNgKFpPjyHQrp9ZFD5gLKipQgADQ=;
+        b=O3wJqyRqv/fEsO6GvlVXtI3YhJCNzN56P3ikgluWbWHaMjlUq2HO5cFZ0Qj74c7SKi
+         VZSA+hJ6nruLoOzCJ73I0eU7ADe5F+50855C8E19rNvFutuScKYzZMifm2J44PIre+ry
+         JE05DbvXxhKVsEahm3OZzKbr9AmYP2n23iq4QyIXDvqb91hMMg7T0ncQ/7H3XX8hYvTi
+         Xmeqh4ujK5sFl9PYIU7Ewcp0kvvuhVhFAwGK4BPzncAwqXwVupZAKFs883dSoFRIMuG1
+         NlA0rdCOwGWp33wLAu5T+ov8Ip7DZ7fcuXD6J3thzol4UitQjQEn/cWu6Tm4RbyrGU/e
+         EGdg==
+X-Gm-Message-State: AJIora/Z2dKfoiJrwC2Lcyo8gxK3Frsq5a313SZY/MhzJW3TwgNhdoCx
+        Fv95ZuPgcnMmsdh0WJvB/rw=
+X-Google-Smtp-Source: AGRyM1thgI+CyzAM+KdY/bGmMul5M/V1mcgFSjjfRva8yMVO3W7abyn1Ry2ZWFlUXlV784O7kbFTSQ==
+X-Received: by 2002:a17:902:d905:b0:16a:2917:73dc with SMTP id c5-20020a170902d90500b0016a291773dcmr23306983plz.6.1656051919783;
+        Thu, 23 Jun 2022 23:25:19 -0700 (PDT)
+Received: from archdragon (dragonet.kaist.ac.kr. [143.248.133.220])
+        by smtp.gmail.com with ESMTPSA id a25-20020aa79719000000b0052551c1a413sm760337pfg.204.2022.06.23.23.25.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 23:25:19 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 15:25:15 +0900
+From:   "Dae R. Jeong" <threeearcat@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: KASAN: use-after-free Read in cfusbl_device_notify
+Message-ID: <YrVYywPFYiqWJo4a@archdragon>
+References: <YrVUujEka5jSXZvt@archdragon>
+ <CANn89iKLpGamedvzZjnhpNUUpPJ7ueiGo62DH0XM+omQvhr9HA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220621125651.14954-1-11123156@vivo.com> <YrSzLNCSg/8fWZ1j@redhat.com>
- <CAFQAk7h3ZVD8BGbg_z+o+=T=dX0qdRm4b8+g0ZOsv-C-o3WvsA@mail.gmail.com>
-In-Reply-To: <CAFQAk7h3ZVD8BGbg_z+o+=T=dX0qdRm4b8+g0ZOsv-C-o3WvsA@mail.gmail.com>
-From:   Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-Date:   Fri, 24 Jun 2022 14:24:08 +0800
-Message-ID: <CAFQAk7gLTYCmX3-4ABkc4Kg-BhO9YvEmZCg8aogkNsEHjkK35g@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] fuse: force sync attr when inode is invalidated
-To:     Vivek Goyal <vgoyal@redhat.com>
-Cc:     wubo <11123156@vivo.com>, miklos@szeredi.hu,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wu Bo <bo.wu@vivo.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iKLpGamedvzZjnhpNUUpPJ7ueiGo62DH0XM+omQvhr9HA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 10:27 AM Jiachen Zhang
-<zhangjiachen.jaycee@bytedance.com> wrote:
+On Fri, Jun 24, 2022 at 08:15:54AM +0200, Eric Dumazet wrote:
+> On Fri, Jun 24, 2022 at 8:08 AM Dae R. Jeong <threeearcat@gmail.com> wrote:
+> >
+> > Hello,
+> >
+> > We observed a crash "KASAN: use-after-free Read in cfusbl_device_notify" during fuzzing.
+> 
+> This is a known problem.
+> 
+> Some drivers do not like NETDEV_UNREGISTER being delivered multiple times.
 >
-> On Fri, Jun 24, 2022 at 3:26 AM Vivek Goyal <vgoyal@redhat.com> wrote:
-> >
-> > On Tue, Jun 21, 2022 at 08:56:51PM +0800, wubo wrote:
-> > > From: Wu Bo <bo.wu@vivo.com>
-> > >
-> > > Now the fuse driver only trust it's local inode size when
-> > > writeback_cache is enabled. Even the userspace server tell the driver
-> > > the inode cache is invalidated, the size attrabute will not update. And
-> > > will keep it's out-of-date size till the inode cache is dropped. This is
-> > > not reasonable.
-> >
-> > BTW, can you give more details about what's the use case. With
-> > writeback_cache, writes can be cached in fuse and not sent to
-> > file server immediately. And I think that's why fuse trusts
-> > local i_size.
-> >
-> > With writeback_cache enabled, I don't think file should be modified
-> > externally (outside the fuse client).
-> >
-> > So what's that use case where file size cached in fuse is out of
-> > date. You probably should not use writeback_cache if you are
-> > modifying files outside the fuse client.
-> >
-> > Having said that I am not sure why FUSE_NOTIFY_INVAL_INODE was added to
-> > begin with. If files are not supposed to be modifed outside the fuse
-> > client, why are we dropping acls and invalidating attrs. If intent is
-> > just to drop page cache, then it should have been just that nothing
-> > else.
-> >
-> > So up to some extent, FUSE_NOTIFY_INVAL_INODE is somewhat confusing. Would
-> > have been good if there was some documentation for it.
-> >
-> > Thanks
-> > Vivek
-> >
->
-> Hi Wu and Vivek,
->
-> Recently, we have had some discussions about the writeback_cache
-> revalidation on the mailing list [1][2]. Miklos gave his initial
-> patchset about writeback_cache v2, which supports c/mtime and size
-> updates [1]. However, those methods do not make use of reverse
-> messages, as virtio-fs does not support reverse notification yet. I'm
-> going to send out a new version of that patch based on the discussion
-> and with more considerations.
+> Make sure in your fuzzing to have NET_DEV_REFCNT_TRACKER=y
+> 
+> Thanks.
 
-The new patch:
-https://lore.kernel.org/linux-fsdevel/20220624055825.29183-1-zhangjiachen.jaycee@bytedance.com/
+Our config already have CONFIG_NET_DEV_REFCNT_TRACKER=y.
+Anyway, this UAF report seems not interesting.
 
-Thanks,
-Jiachen
+Thank you for your quick reply.
 
->
-> I also agree that, semantically, FUSE_NOTIFY_INVAL_INODE should
-> invalidate i_size as well. So I think this patch is a good supplement
-> for FUSE_NOTIFY_INVAL_INODE. But we need to be more careful as the
-> size can be updated from server to kernel, and from kernel to server.
-> I will leave some comments about such issues in the following code.
->
-> For the use case, writeback_cache is superb over write-through mode in
-> write-intensive scenarios, but its consistency among multiple clients
-> is too bad (almost no consistency). I think it's good to give a little
-> more consistency to writeback_cache.
->
-> [1] https://lore.kernel.org/linux-fsdevel/20220325132126.61949-1-zhangjiachen.jaycee@bytedance.com/
-> [2] https://lore.kernel.org/linux-fsdevel/20220608104202.19461-1-zhangjiachen.jaycee@bytedance.com/
->
-> > >
-> > > Signed-off-by: Wu Bo <bo.wu@vivo.com>
-> > > ---
-> > >  fs/fuse/inode.c | 10 +++++++++-
-> > >  1 file changed, 9 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/fs/fuse/inode.c b/fs/fuse/inode.c
-> > > index 8c0665c5dff8..a4e62c7f2b83 100644
-> > > --- a/fs/fuse/inode.c
-> > > +++ b/fs/fuse/inode.c
-> > > @@ -162,6 +162,11 @@ static ino_t fuse_squash_ino(u64 ino64)
-> > >       return ino;
-> > >  }
-> > >
-> > > +static bool fuse_force_sync(struct fuse_inode *fi)
-> > > +{
-> > > +     return fi->i_time == 0;
-> > > +}
-> > > +
-> > >  void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
-> > >                                  u64 attr_valid, u32 cache_mask)
-> > >  {
-> > > @@ -222,8 +227,10 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
-> > >  u32 fuse_get_cache_mask(struct inode *inode)
-> > >  {
-> > >       struct fuse_conn *fc = get_fuse_conn(inode);
-> > > +     struct fuse_inode *fi = get_fuse_inode(inode);
-> > > +     bool is_force_sync = fuse_force_sync(fi);
-> > >
-> > > -     if (!fc->writeback_cache || !S_ISREG(inode->i_mode))
-> > > +     if (!fc->writeback_cache || !S_ISREG(inode->i_mode) || is_force_sync)
-> > >               return 0;
-> > >
-> > >       return STATX_MTIME | STATX_CTIME | STATX_SIZE;
-> > > @@ -437,6 +444,7 @@ int fuse_reverse_inval_inode(struct fuse_conn *fc, u64 nodeid,
-> > >       fi = get_fuse_inode(inode);
-> > >       spin_lock(&fi->lock);
-> > >       fi->attr_version = atomic64_inc_return(&fc->attr_version);
-> > > +     fi->i_time = 0;
-> > >       spin_unlock(&fi->lock);
->
-> Seems fuse_reverse_inval_inode() only drops page cache from offset to
-> offset+len, should we only invalidate i_time on a full cache drop?
-> Otherwise, as the server size is stale, the users may see a file is
-> truncated.
->
-> Also, what if a FUSE_GETATTR request gets the attr_version after
-> fuse_reverse_inval_inode() increases it, but tries to update i_size
-> after the invalidate_inode_pages2_range() in
-> fuse_reverse_inval_inode()? In this case, server_size can be updated
-> by invalidate_inode_pages2_range(), and FUSE_GETATTR might gets a
-> stale server_size. Meanwhile, as FUSE_GETATTR has got the newest
-> attr_version, the kernel_size will still be updated. This can cause
-> false truncation even for a single FUSE client. So we may need to do
-> more about the attr_version in writeback mode.
->
-> Thanks,
-> Jiachen
->
-> > >
-> > >       fuse_invalidate_attr(inode);
-> > > --
-> > > 2.35.1
-> > >
-> >
+
+Best regards,
+Dae R. Jeong.
