@@ -2,146 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D35B6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 10:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA6CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 10:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230481AbiFXKBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 06:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47188 "EHLO
+        id S231142AbiFXKCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 06:02:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbiFXKBk (ORCPT
+        with ESMTP id S230521AbiFXKCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 06:01:40 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF41B7A1A1;
-        Fri, 24 Jun 2022 03:01:39 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-3178ea840easo19298757b3.13;
-        Fri, 24 Jun 2022 03:01:39 -0700 (PDT)
+        Fri, 24 Jun 2022 06:02:23 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766347A1AC
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 03:02:21 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ge10so3642741ejb.7
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 03:02:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WIvuhv2O2LJCEA/cN0nPJqVqA1J4nPDoUe8QnZLZj2o=;
-        b=OanFfdyuKWF/daWLttmMlN7K0lRksfwYbjOsxSKcHo34GCUcbPBriX5mcqX8lLgrog
-         8Ptx1jfKsJY0bB7uGBoWlYtGGu4nC1+GVlG/m0Pck2Wvm6Rwyadt01y+fUxnUdxodFD1
-         GFPSAjSKnKV0IluZSwSLEwFHrLFsclN6mGg4Aizheu7R29WvVsteR32S86H+xPZQ9IAk
-         shfRsHsiL6cGYE+ydspOeHaia/esEdz46UL3kvYHPbc2cwzVlm7kc0sK6Zs7TNbihsNg
-         FNr9gvBxhLU8gXS5OjhqS3rggnw91+1tg4pu5g9cYg3fyPGJsyU2DdhcDyD+zbSBn2+4
-         Nj7A==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GtDx/4MtrxYt8hYrk4oMF8kIZqBnmvODq04HfBb169o=;
+        b=EPz+7sJNDH++V1yMWLrc5mRkOsO+NqZvLBrjqveEPoRRpCThZZ41cOoejZek82+QIG
+         28oBv6aGSlevvdxpkzAkvGzcY201imYWhlJNA5NPN/m/8oVaPWKug7D1CfKK5p14lz55
+         QffaEfY+Y4qMXPxB1unyi1u8N9j+/oWBz86a0NptnrYcqC0/eNqg04+K8wUCbeMzYdbd
+         GKmEV6EeeXdzPfmU6cAv14I0z3c8CIK8QUt7x3COZTbu11U1q0p/q8r+5Xmrpth5PUnh
+         VVO2uDmWpLrqkcL+bp5CZJkgvJYl9JM6P22l9/2AL9SIT3Mzf3uyf3FQsdeWRsijrCKz
+         kLfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WIvuhv2O2LJCEA/cN0nPJqVqA1J4nPDoUe8QnZLZj2o=;
-        b=RhUkS6KrTw1Icy4UdsgBcJGErROmyLvynwbynSWU9RcewG2TpoV/CrXN+upet5kzsp
-         PQuBnKWPFQ4iDwnGu1iIyRtJc9Q8m1MjTULcbgUUcj/AomDBl6YtdRQ7HrWh0PMN5/qw
-         gr1l7YVZXLuFjcVmZC8ptO3v9kbakWhk+66YaDU/Kru6cN/G5Qbjnq2B5by0KuZ00THL
-         gh9nMno4HmXxTa+glVxh+UY+Mgx7ugaSM/BCmLKR00Afne3AnF1DFy5zS/kk5yzYHYSG
-         ep35dT5H8sc7t//LK1b/vYA2ZNDN/LOw8Z8W/wQuAuF/Rdg14aIbp9nkH9o2ecg9dwLR
-         blcQ==
-X-Gm-Message-State: AJIora89i57912md6/aVtpiJx7UBUddXVOsiNFMvZIUwLSQqxkqK+A6u
-        4frNslTYk4CoKnRLwEgEJyHEVO+6ObICIufrOt0=
-X-Google-Smtp-Source: AGRyM1uZqW7BeQR39fipb9XeJooEfmtD6YpdpSLjgsLZ1D0uhV9s/Y+ZgP2nYziC4BGU2b9eW/L214EfjspICcNXG1s=
-X-Received: by 2002:a81:600a:0:b0:318:81bc:e928 with SMTP id
- u10-20020a81600a000000b0031881bce928mr6392488ywb.119.1656064898995; Fri, 24
- Jun 2022 03:01:38 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GtDx/4MtrxYt8hYrk4oMF8kIZqBnmvODq04HfBb169o=;
+        b=QKqtCaQt8jJqmTSA01utTANjbroQi/acBkJuxOmu0vxIHBUzm/3sxDtl8iV8LHRbG3
+         DfPv6vurKWR0yqywY+TBDHGu1/I86ok5HfxoL7d1K40eIieWwnnvBIHRFln+9GZ0xqH/
+         KpgMJd1JLRsmtA2H/GejbOslgkwpBLj6LYmTEfrnER8d0RIbTTfEyRY/JFgU1mg+M6c7
+         7aOIVE695TmZYV/83ARIW3OKbkvkvfdn4iKlQhhlAy1bBl/e7zmBYV6Yf5qatDRVpR2b
+         raYkI2UM5nPfiuPsnz8JtTegZLZfe1+wsRgVlRoCdAWGXASEbzmXSDleGi4JrYE6aySm
+         cHOg==
+X-Gm-Message-State: AJIora+JLttzMMSGxZLx+aOPghFf+MGePSUCT6nxdvPRaZfdNL3dXC3C
+        eASiQvUboO2l9arSkvYly/txRw==
+X-Google-Smtp-Source: AGRyM1sefjpiKJ7ux0kcypv9fmdJCP+pCzqZ3OVhjn3YCPERtUsWGvmVzsziW2GqNk3WP0rJOKi51A==
+X-Received: by 2002:a17:906:5047:b0:710:456a:695e with SMTP id e7-20020a170906504700b00710456a695emr12397953ejk.433.1656064940041;
+        Fri, 24 Jun 2022 03:02:20 -0700 (PDT)
+Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id uz12-20020a170907118c00b00711aed17047sm850487ejb.28.2022.06.24.03.02.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 03:02:18 -0700 (PDT)
+Message-ID: <5a19a73a-e81a-8f7e-e26c-6c1d8e8331a4@linaro.org>
+Date:   Fri, 24 Jun 2022 12:02:17 +0200
 MIME-Version: 1.0
-References: <20220524172214.5104-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220524172214.5104-2-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdVos-hVhGar91oBvZaCOLfjdsNR7vRGnX-KuNt0UX3xWQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdVos-hVhGar91oBvZaCOLfjdsNR7vRGnX-KuNt0UX3xWQ@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Fri, 24 Jun 2022 11:01:12 +0100
-Message-ID: <CA+V-a8vDF-GwfqgerWFNOrKGukdYk52OrcbprJv-=9J-M4VbUA@mail.gmail.com>
-Subject: Re: [PATCH RFC 1/2] dt-bindings: interrupt-controller: sifive,plic:
- Document Renesas RZ/Five SoC
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] dt-bindings: mmc: mtk-sd: Set clocks based on
+ compatible
+Content-Language: en-US
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     kernel@collabora.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Wenbin Mei <wenbin.mei@mediatek.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-mmc@vger.kernel.org
+References: <20220623154038.771874-1-nfraprado@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220623154038.771874-1-nfraprado@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
+On 23/06/2022 17:40, Nícolas F. R. A. Prado wrote:
+> The binding was describing a single clock list for all platforms, but
+> that's not really suitable: mt2712 requires an extra 'bus_clk' on some
+> of its controllers, while mt8192 requires four different extra clocks.
+> The rest of the platforms can share the same 3 clocks, with the third
+> being optional as it's not present on all platforms.
+> 
+> Move the clock definitions inside if blocks that match on the
+> compatibles. In practice this gets rid of dtbs_check warnings on mt8192,
+> since the 'bus_clk' clock from mt2712 is no longer expected on this
+> platform.
 
-Thank you for the review.
+And now we see that you introduce incompatible change and ABI break.
+This should not be combined with that patch but instead separate patch
+explaining why ABI break is ok.
 
-On Thu, Jun 9, 2022 at 10:42 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Tue, May 24, 2022 at 7:22 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > Document Renesas RZ/Five (R9A07G043) SoC.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> Thanks for your patch!
->
-> > --- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-> > +++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-> > @@ -28,7 +28,10 @@ description:
-> >
-> >    While the PLIC supports both edge-triggered and level-triggered interrupts,
-> >    interrupt handlers are oblivious to this distinction and therefore it is not
-> > -  specified in the PLIC device-tree binding.
-> > +  specified in the PLIC device-tree binding for SiFive PLIC (and similar PLIC's),
-> > +  but for the Renesas RZ/Five Soc (AX45MP AndesCore) which has NCEPLIC100 we need
-> > +  to specify the interrupt type as the flow for EDGE interrupts is different
-> > +  compared to LEVEL interrupts.
-> >
-> >    While the RISC-V ISA doesn't specify a memory layout for the PLIC, the
-> >    "sifive,plic-1.0.0" device is a concrete implementation of the PLIC that
-> > @@ -57,6 +60,7 @@ properties:
-> >            - enum:
-> >                - allwinner,sun20i-d1-plic
-> >            - const: thead,c900-plic
-> > +      - const: renesas-r9a07g043-plic
->
-> renesas,r9a07g043-plic
->
-Agreed.
-
-> >
-> >    reg:
-> >      maxItems: 1
-> > @@ -64,8 +68,7 @@ properties:
-> >    '#address-cells':
-> >      const: 0
-> >
-> > -  '#interrupt-cells':
-> > -    const: 1
-> > +  '#interrupt-cells': true
-> >
-> >    interrupt-controller: true
-> >
-> > @@ -91,6 +94,35 @@ required:
-> >    - interrupts-extended
-> >    - riscv,ndev
-> >
-> > +if:
-> > +  properties:
-> > +    compatible:
-> > +      contains:
-> > +        const: renesas-r9a07g043-plic
->
-> renesas,r9a07g043-plic
->
-ditto.
-
-Cheers,
-Prabhakar
+Best regards,
+Krzysztof
