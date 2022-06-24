@@ -2,139 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D361BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26673C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232025AbiFXVCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 17:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34138 "EHLO
+        id S231774AbiFXVE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 17:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231387AbiFXVCH (ORCPT
+        with ESMTP id S230284AbiFXVEY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 17:02:07 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA22552E79
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:02:06 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id ej4so5086540edb.7
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:02:06 -0700 (PDT)
+        Fri, 24 Jun 2022 17:04:24 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FB67A6C7
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:04:23 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OHdORV017930;
+        Fri, 24 Jun 2022 21:04:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-type : content-id :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=RaQdorPDGBosB+eXnBw1xLm5w3W/cZHiEfuq5spPXCY=;
+ b=zBQea/8SpTlSvuOHWezeujLUoYhBkzvkRRI/bu4rOeAWeo0qa5/VTD1q3mObAkOFbs86
+ I0dGMz2dg7XRIFleOTX2qF4Cf8s1/SHVma+hrLUjolh8GyFBfpGzggIn0VOmNq8UZIkh
+ Y/ByP0pnJAHOo/5FiUkLVb6FkVfXW/zhszNau5IkLlXn/dPwcTj/huzCgQjqI/ksLvdm
+ pUfB1t10DzfJc1J2oq62D2G501Vibetau8PZewae1FAdksZrP20daxXtmFbXduuUyA7e
+ HM81qO/uLBgDafL9+rNuS10Wce3nZULSwYJEVc5VEUI2N6mb/xUkW0baMhYrTehCowJu Vg== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gs6at6t0j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 24 Jun 2022 21:04:10 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25OKug2W003091;
+        Fri, 24 Jun 2022 21:04:10 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2046.outbound.protection.outlook.com [104.47.66.46])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gtd9xgthq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 24 Jun 2022 21:04:09 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XKDV6PrU4+H5of4GC1vNk4qjTUNYjmbuzc476n/TUnQ5ejBeB3RC1vASWKx3pe1KnySLsg7hCsn7jGLm2nOEBXNSd0fuTXCrySMbIUB3bsB2Cz1G8vxPq1p+h/sCNiWf2zdMjcclfTv+GiqJSB9uLkW8Z4e7XcSCVJHMt/1zYaSWlBJvFuGx5iaojT3gUk+yvnYbJ+OByDOeAkVxpuQanoq5bvrdtZPVxhA79slmVfkq8Y3sMU/OdEmy6RflSYz3jkYtTTPI/hc5OAM576V+j6xPBpPFjXVRU/qOmAsdKosvnpBR34HD7DiAWR4XLZPUC18yoz20DbrAmF2VOsARmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RaQdorPDGBosB+eXnBw1xLm5w3W/cZHiEfuq5spPXCY=;
+ b=EaEF/xaPGg5F1zN9DW48R6u+u1Pa5D26jEmYVsDTVC4BAz7cgxinZeImeJ9YSTiGJ0c8G40SQPNk/p8c/Cd8Rxaf+qSQ9xk+HAiHzh3lbuMH492CK1Np7skswZMZO1L9ffrI5JbAak5hoP77+YdH+2v7svcYie9SYiDrITqgjuMU/QrhnmRcpRXufBCpEp6Kp6al+NXYj5cZBq1RopG2iVTPeTuh8daykAVVTMen1ueMSkiec3oZO2OpPmxtg0Ai42XM6FRp99qgGs+LO10tvQ9LTQDVUx3Z2GH8+Nt3FCWQPdNj4rgZNe9PZHOeUjtb4jUn73CCRnChRcG2+T8l1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Or58d3ZkEn57TFqLS2gsXrc8iLHGrlKLbW8WGHYFJRc=;
-        b=hAWheESAndEXKAPbcUiqlEueWvXAeJOuFEGkSwpyB7xj3pkczS6kBS5vMNKLC+N4hl
-         fbhuEaZlkv9aPLOglB7zgD6r6ICdBm9a8yhU/IVxiTyr0mJTB3BqtymT1jMS0XFgybXq
-         Wef4CYmSGYRxPZYezK9LaBzQifGnobDAuguds=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Or58d3ZkEn57TFqLS2gsXrc8iLHGrlKLbW8WGHYFJRc=;
-        b=sHwWrjJXKMx/+w3GZHsUtPHfIyor13KvkDNmRa3lkvqPO35utiHc+O+hHIH5qTYdE1
-         i3fWNyzfve+EWlIzkRBZwf+urL5FcSMa0eqNeVxO2a5i/qOTZUlO8stn2dNaPqL5v3Bl
-         xTS37uBoPvH0e6MliS+lymaFXwCjNAK2fy2DSa3fkMqsXgevnZ1DMVGP/RAHvl3nyNNo
-         /Unc2bcpo9jaMhcHUq/88udUqqjVNeEu0qEFoWTiDmC6rdNQvy1ZLkYM6KRX3c3X1Bfa
-         k8qPnz2T5nQtrIyHHnChmvf6D2c3sBPs5XbgXMyaZudaFBDmftVDK8QthBuzntVSwGhi
-         c40g==
-X-Gm-Message-State: AJIora/ltbhgX7U1yG6rtfXONYFaQbgpva58l5ITfMvykSIWA7QnFZ+h
-        7qm+++/e16Dy4PyKsGLBDSvNx1xwHxyslt37zP8=
-X-Google-Smtp-Source: AGRyM1uwkgPxndbEt7D8AHMIMyiQvD4GdIPvDw8QFYAx/8rCi6dsu7Phji5IKnkJVFbrCamxHCYfEw==
-X-Received: by 2002:a05:6402:5412:b0:435:5997:ccb5 with SMTP id ev18-20020a056402541200b004355997ccb5mr1201530edb.167.1656104525243;
-        Fri, 24 Jun 2022 14:02:05 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id a21-20020a056402169500b004357063bf60sm2780376edv.41.2022.06.24.14.02.04
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jun 2022 14:02:04 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id n1so4623698wrg.12
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:02:04 -0700 (PDT)
-X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id
- b13-20020adff90d000000b0020cde324d35mr874128wrr.583.1656104524155; Fri, 24
- Jun 2022 14:02:04 -0700 (PDT)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RaQdorPDGBosB+eXnBw1xLm5w3W/cZHiEfuq5spPXCY=;
+ b=Cuwlryh2Y9/X2ZHsEwWa9/Zg40aXzLU1T9TSnh25EXUdrkq7SrGDCyzRoMY+HOX/QcEbuPKr4LvCXFjl7MkhvvW3cf0VMbDq0LAOq2N7LIzUGMvcEBXrfO0qAM2C0NhLopoG69xrxU2wg1fuPfeGkTTYXdYcNCeqSL5oJV2f/m4=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by DM6PR10MB3082.namprd10.prod.outlook.com (2603:10b6:5:70::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.19; Fri, 24 Jun
+ 2022 21:04:07 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::f59a:175d:d24:949c]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::f59a:175d:d24:949c%7]) with mapi id 15.20.5373.016; Fri, 24 Jun 2022
+ 21:04:07 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Yury Norov <yury.norov@gmail.com>
+Subject: power9 slab-out-of-bounds in _find_First_zero_bit
+Thread-Topic: power9 slab-out-of-bounds in _find_First_zero_bit
+Thread-Index: AQHYiA3x5VQrcuJdXESkF1Wg/+Ovsg==
+Date:   Fri, 24 Jun 2022 21:04:07 +0000
+Message-ID: <20220624210400.gic4akzlwwdqkxym@revolver>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 913d7c28-6159-4faa-47c8-08da562513fb
+x-ms-traffictypediagnostic: DM6PR10MB3082:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XFE7j7x0QOXvmytiBGZ4UFtTtFL4hVwpisRFKYrqtZVc8SXDC05WK4xTqTAtIUXf4lcW8uHOytWRRsjNYhmO3CJ9VcezOUOcMEw0kf3h8dLggY//t7eJt1r+NayE+ovUF6pIJzurDUqnawqjel3QhFGq69jyvQgvStnc+VxV3pSvX/VQLzh0tO6uiMm8hKyN0+Oqhn3riDhlFHdCXrHm21wkJqS7knzOHYM8X9iMhq/xnWYcelPSzKTKHJqWkn51jkVfYb+wJVqzzX/NsYRa2LsE9I8nccU4wg0V55fbtPU3w/FPLNLVBER6ZVoLfqLt5fxVtfQXhGpSrKENHKxtFURdDRNkzltcLHSsw8zXGIw7GPqpvmSS0BTfg2c0qyxn+5F1P3hmZRwwcQhvN21s8FuW9w89conFsQo/i+7Bg27C81OQocPkA4CuBTvhO1qEaOyxCeN6VV31aufG44ajpOP7ZZtGNvf1mRcretpE8RBG8lL0IbOoDy1tPgee+gNmZ/chMe+ZUiv2JonZsa8VAAc0oKklGYMQvWo6VcroY7ajnpGNFscm40md/kx/8jgjqRyV6sdC5nSVSuQlKp1xWSEN/qxjcoXBaFj/0+yNJaaT9DFbY+8LSIoL66/LSohgLVN8F7RqLzKbxf/zIiglzsf8bJrQE4eI+UFxvLfgbxiroXfK4fLxpy1zZO1ryWQ8R6viq67fs++/7QrKtY/66p1rPgjnIswFgcuPOoDMy5P25Cu5wZ4yz3sJgi/qad62AiUXmr8CT7mF4Udm0HyfubAX7hR33iRX/k/TolK9dE4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(396003)(346002)(366004)(39860400002)(376002)(136003)(71200400001)(66446008)(91956017)(44832011)(8676002)(66476007)(66556008)(5660300002)(8936002)(76116006)(316002)(2906002)(6486002)(4326008)(33716001)(64756008)(66946007)(186003)(38100700002)(41300700001)(9686003)(110136005)(6512007)(83380400001)(478600001)(122000001)(1076003)(86362001)(38070700005)(6506007)(26005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?H7Qkab6qY9ZQbMsa6QOqUCYX2bFYq6L82j0ex6ZUApY1oegRVrZKdXeggCMS?=
+ =?us-ascii?Q?VM83y5yioTL8WIYaoC366iUND+H2qCkJyOLFzZ5sarCWGJRoV1ZVEf747N7G?=
+ =?us-ascii?Q?ji+gTnzOo3HWK8g+MdTuCyuL9wgRyMV5kDiuGKyfYdlyIPIkyB1dNCOwh43X?=
+ =?us-ascii?Q?8F8+Ugny7Qt4hxuMGFekleO22u9h+U0Ow8umXO+utvzeUXOkoU34nskFxgyC?=
+ =?us-ascii?Q?gD2I65eZH5DRy8Emzfmwe69g3Sg+zLq1mh6iP8EzsMVqP1HCu0Eo3Rev/rv6?=
+ =?us-ascii?Q?TpNx0zTAe5NTCIn8w8gmpwBSDGaCgJaBsuxN83TfyXktjTPNxQNMzXcB9Mve?=
+ =?us-ascii?Q?OEWP2y5POiKftRU3knDtBcbIeh7J4W5aSf8dnkzZsAN/pjaPjUfhL8zTwRbC?=
+ =?us-ascii?Q?PH/KnbynZ6TwLb/xYWHU5aY1dxBuuCSR0uZ5+TUWXfvqdP+8MRoOZE220S8Y?=
+ =?us-ascii?Q?nQaSsU6U4dFNDRdC7156wmZ6kvwIjN3U0shsIdY7iK+taerMdwP22DMfflhr?=
+ =?us-ascii?Q?h7+wlZW/N0PPRt/t4Q5wm3tmZ0QE+sxYMrW9gKAZHbXGV60tXYejicNfX617?=
+ =?us-ascii?Q?SHFEi5L4toyM9BgcuXcA5RMBkqDULwb7DCxLv5rQqzkdEh3STl/Oet775kJZ?=
+ =?us-ascii?Q?nbH/3Q5p7I4PQcKsViDTnUeVxMDLLY+vyxCJYYoKLKPlIF1cVbn6qx4avQMA?=
+ =?us-ascii?Q?RYqCpZ/6+q9vKv6OD5TcLQ6lS96MsPtcxgRsutGA3iqh324fGOuUibaosQTV?=
+ =?us-ascii?Q?doQIF4TgpKBcgfStprrampoC9CZv/ctNA4Z7tKRMRjcxAqfM/+zLqP3lbA6X?=
+ =?us-ascii?Q?+U4B4kgNyiZ3gh6X2L8wkQRJgQoWMR29RoUvuLmqLvchUaiUvpkyzQ/Eukw2?=
+ =?us-ascii?Q?hCvd9D4BYeNbRu9UedEJhVZCpUAOTLqkcfJ+qTj1FxA5JDaKHJ4+C90sXNlc?=
+ =?us-ascii?Q?zL/n0/n+yOvnKZKTurQYsfa0+tdhAoPmU3hCQXsiHyGMzeGb6hoQW3fHc/gi?=
+ =?us-ascii?Q?gE1nP3fktcZjlPCyCUm2tiI2Y0uRMmvMD+qngN2JSDYX1OhRo7Px29oSb5dY?=
+ =?us-ascii?Q?MmG6ODXpPpEj1t89LI7bBvPfvA6uLnC3v+6Yx9CcHpo6dB5qiuBGw/9Zcxoo?=
+ =?us-ascii?Q?gicuROSv4roqyiz/EndvwNEmvlonyptxR/TcjsL4FXDHKT5krGHaxew+2qqE?=
+ =?us-ascii?Q?B1HLpuds3fzp9Pt5WSBZhna810W87kaSDmKClu/uOd5f4ScXhLqYUpDyaHdy?=
+ =?us-ascii?Q?y45sZc/8sD7GJUCFJ8TEwPHj0cGX30ILY2ZYLX2Kpi9LdCm3iN9Ibx4iuGEv?=
+ =?us-ascii?Q?T40iLmRu5gl81Jp8zoZLUAWGH1mL1edEB09vSiAyU/zY7w3ym7ua6EAvpRAe?=
+ =?us-ascii?Q?DUcMY2Q6bqbWyZ41rIrKhTW5Tve9bIHJiNf73k+wbOOX+J913t+kB5oSp3wX?=
+ =?us-ascii?Q?sD7u5gj13BL+cUmeuSftdquSt99gbvlcutKYjCa/uPJN4E6WnJ6tOKJ0I3VE?=
+ =?us-ascii?Q?uoLPGMo3EDO4/qXCmYBzfpVD4a/52oKuhNhv3EjwjFUMsEIlzze7oI4evhoZ?=
+ =?us-ascii?Q?O4wd85dXw2BpvVrwamvRG2WOBIRERs7Hz4/GOEolpg+R5H1sYpOadl8EIL3H?=
+ =?us-ascii?Q?iw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <37AA98ED64A78646AD7A02D2C5D8BB19@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220624185612.35493-1-joebar@chromium.org>
-In-Reply-To: <20220624185612.35493-1-joebar@chromium.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 24 Jun 2022 14:01:52 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UbrdqXYaabK0YEyjX0zszxMkU72-4fc10zyPTs_oKG_w@mail.gmail.com>
-Message-ID: <CAD=FV=UbrdqXYaabK0YEyjX0zszxMkU72-4fc10zyPTs_oKG_w@mail.gmail.com>
-Subject: Re: [PATCH v11 0/5] arm64: dts: qcom: sc7180: Add five new
- trogdor-based boards
-To:     "Joseph S. Barrera III" <joebar@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 913d7c28-6159-4faa-47c8-08da562513fb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2022 21:04:07.4891
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: odizNqW3pmAgBqCI3amokUTIMMZrM7OIxVPioRY6eTBWqVqUt0DIccsSx5wUDk9gert890V3Q+IXbNeVT0eYKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3082
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
+ definitions=2022-06-24_09:2022-06-24,2022-06-24 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=698 suspectscore=0
+ phishscore=0 malwarescore=0 mlxscore=0 spamscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206240080
+X-Proofpoint-ORIG-GUID: xa1totMhVfvo-ZTXpaSYdwh8imZvTu1c
+X-Proofpoint-GUID: xa1totMhVfvo-ZTXpaSYdwh8imZvTu1c
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hello,
 
-On Fri, Jun 24, 2022 at 11:57 AM Joseph S. Barrera III
-<joebar@chromium.org> wrote:
->
-> This series adds five new trogdor-based boards to upstream.
-> The patches should be applied *after* applying
-> https://lore.kernel.org/all/20220602190621.1646679-1-swboyd@chromium.org/
-> (arm64: dts: qcom: Remove duplicate sc7180-trogdor include on lazor/homestar)
->
-> The patches do *not* expect
-> https://lore.kernel.org/all/20220518172525.3319993-1-swboyd@chromium.org/
-> (sc7180-trogdor: Split out keyboard node and describe detachables)
-> to be applied.
->
-> The compatibles in this series are documented by Doug's series
-> https://lore.kernel.org/r/20220520143502.v4.5.Ie8713bc0377672ed8dd71189e66fc0b77226fb85@changeid
->
-> Changes in v11:
-> - Add 'include sc7180-trogdor.dtsi' to sc7180-trogdor-pazquel-* files.
-> - Add 'include sc7180-trogdor.dtsi' to sc7180-trogdor-kingoftown-* files.
-> - Restore 'include sc7180.dtsi' to sc7180-trogdor-ti-sn65dsi86.dtsi.
+When trying v5.19-rc3 on my ppc64 VM with KASANs enabled, I get the
+following on boot:
 
-I'm a bit baffled. Why did you add an include of "sc7180.dtsi" to
-sc7180-trogdor-ti-sn65dsi86.dtsi? Am I missing something? The way you
-have it will cause "sc7180.dtsi" to be included twice. For instance,
-let's look at "sc7180-trogdor-coachz-r3.dts". It has:
+[    0.174621] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[    0.175501] BUG: KASAN: slab-out-of-bounds in _find_first_zero_bit+0x40/=
+0x140
+[    0.176132] Read of size 8 at addr c00000000f7f0410 by task swapper/0/1
+[    0.176900]=20
+[    0.177844] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W         5.=
+19.0-rc3+ #8
+[    0.179461] Call Trace:
+[    0.179907] [c0000000119677d0] [c0000000075af350] dump_stack_lvl+0x74/0x=
+a8 (unreliable)
+[    0.181107] [c000000011967810] [c000000000632220] print_report+0x330/0x7=
+40
+[    0.181977] [c0000000119678e0] [c000000000632980] kasan_report+0x100/0x1=
+f0
+[    0.182788] [c0000000119679c0] [c000000000634de4] __asan_load8+0xa4/0xe0
+[    0.183560] [c0000000119679e0] [c0000000018b92b0] _find_first_zero_bit+0=
+x40/0x140
+[    0.184119] [c000000011967a20] [c0000000000c5f7c] xive_spapr_get_ipi+0xc=
+c/0x220
+[    0.184689] [c000000011967ad0] [c0000000000c1adc] xive_setup_cpu_ipi+0x1=
+ec/0x420
+[    0.185231] [c000000011967b90] [c00000000a033b3c] pSeries_smp_probe+0x44=
+/0xd4
+[    0.185825] [c000000011967bc0] [c00000000a01c77c] smp_prepare_cpus+0x62c=
+/0x688
+[    0.186359] [c000000011967cb0] [c00000000a00ea94] kernel_init_freeable+0=
+x24c/0x520
+[    0.186893] [c000000011967d90] [c000000000012b00] kernel_init+0x30/0x1c0
+[    0.187395] [c000000011967e10] [c00000000000ce54] ret_from_kernel_thread=
++0x5c/0x64
+[    0.188124]=20
+[    0.188429] Allocated by task 0:
+[    0.188820]  kasan_save_stack+0x34/0x70
+[    0.189298]  __kasan_kmalloc+0xb8/0xf0
+[    0.189617]  __kmalloc+0x148/0x570
+[    0.189909]  xive_spapr_init+0x478/0x6fc
+[    0.190212]  pseries_init_irq+0x48/0x284
+[    0.190523]  init_IRQ+0x4c/0x8c
+[    0.190810]  start_kernel+0x25c/0x4d0
+[    0.191130]  start_here_common+0x1c/0x20
+[    0.191549]=20
+[    0.191845] The buggy address belongs to the object at c00000000f7f0410
+[    0.191845]  which belongs to the cache kmalloc-8 of size 8
+[    0.192594] The buggy address is located 0 bytes inside of
+[    0.192594]  8-byte region [c00000000f7f0410, c00000000f7f0418)
+[    0.193250]=20
+[    0.193499] The buggy address belongs to the physical page:
+[    0.194324] page:c00c00000003dfc0 refcount:1 mapcount:0 mapping:00000000=
+00000000 index:0x0 pfn:0xf7f
+[    0.195277] flags: 0x7ffff000000200(slab|node=3D0|zone=3D0|lastcpupid=3D=
+0x7ffff)
+[    0.196521] raw: 007ffff000000200 0000000000000000 5deadbeef0000122 c000=
+00000f7e0300
+[    0.197023] raw: 0000000000000000 0000000086660666 00000001ffffffff 0000=
+000000000000
+[    0.197558] page dumped because: kasan: bad access detected
+[    0.197938]=20
+[    0.198128] Memory state around the buggy address:
+[    0.198676]  c00000000f7f0300: fc fc fc fc 03 fc fc fc fc 03 fc fc fc fc=
+ 03 fc
+[    0.199218]  c00000000f7f0380: fc fc fc 03 fc fc fc fc 03 fc fc fc fc 03=
+ fc fc
+[    0.199671] >c00000000f7f0400: fc fc 02 fc fc fc fc 04 fc fc fc fc 04 fc=
+ fc fc
+[    0.200122]                          ^
+[    0.200464]  c00000000f7f0480: fc 00 fc fc fc fc fa fc fc fc fc 02 fc fc=
+ fc fc
+[    0.200905]  c00000000f7f0500: fa fc fc fc fc fa fc fc fc fc fa fc fc fc=
+ fc 00
+[    0.201379] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
-#include "sc7180-trogdor-coachz.dtsi"
 
-That will in turn cause these includes:
-
-#include "sc7180-trogdor.dtsi"
-#include "sc7180-trogdor-ti-sn65dsi86.dtsi"
-
-That will in turn do:
-
-/* From sc7180-trogdor.dtsi */
-#include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/input/gpio-keys.h>
-#include <dt-bindings/input/input.h>
-#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
-#include <dt-bindings/sound/sc7180-lpass.h>
-
-#include "sc7180.dtsi"
-#include "pm6150.dtsi"
-#include "pm6150l.dtsi"
-
-/* From sc7180-trogdor-ti-sn65dsi86.dtsi */
-#include "sc7180.dtsi"
-#include <dt-bindings/gpio/gpio.h>
-
-...and, as you can see, "sc7180.dtsi" will get included twice. That
-will break things since it will undo some of the changes that
-sc7180-trogdor.dtsi did. ...and, in fact, I just tried putting your
-patches on an sc7180 device that uses the TI bridge chip and it,
-unsurprisingly, doesn't boot.
-
-If you just remove that one addition then I think we can finally be
-done with this series. I tried that and my device boots.
-
--Doug
+Thanks,
+Liam=
