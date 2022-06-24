@@ -2,172 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 319E5CCA481
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E76FCCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:40:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbiFXLjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 07:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
+        id S230308AbiFXLkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 07:40:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiFXLjm (ORCPT
+        with ESMTP id S230092AbiFXLkB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 07:39:42 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CB36802C
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 04:39:40 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id g26so4130211ejb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 04:39:40 -0700 (PDT)
+        Fri, 24 Jun 2022 07:40:01 -0400
+Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D7F68038;
+        Fri, 24 Jun 2022 04:40:00 -0700 (PDT)
+Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
+        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id D4CF01D74;
+        Fri, 24 Jun 2022 11:39:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Wj6+le4xQYgRWhbJ4o+JcrPIptpoGXL5M4xVrdtZbXI=;
-        b=O26iv82q0trCWgDQwRmW6rUiSusM7pWvnNkO+V25QbNy7sOhu5esaQuJS7PwEwU3me
-         Y5h7BfA9Gsbe2XrGvelcv6XAS5b+QDIjWuyq9j37ZvWmhRmJ48gmjKfPI+n6s0JkG0Im
-         CDVkH9TIGF7b8/w7lXV62OP94WgbzGfx7wpTJbGIrqDtM3uOjQnbLKSKlKwAtePFBT0V
-         p0UC7KC2dcsZiVk+jsW+BB+3hwR39LVFSI68D3J4t1grJmX1kHAWk4K42QCX24AX1oi0
-         SbMSM89C1Pj1C7dtRAeCcSnHR7lTOSfcpvpwV+KgsO9loIxaBH/9by5n0QkWSZvgYpVw
-         4zZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Wj6+le4xQYgRWhbJ4o+JcrPIptpoGXL5M4xVrdtZbXI=;
-        b=WHQmK1oUXYoZg3gr3gnis/G+cupxHRXEVkA0HFjszi3Rh932mttFOCwpoWxD8jXE/C
-         zcDCGbHFbRDeKA4zsCooC+BswUDEgftyZBW26/T2T5iQ80LkzACbwFIZlz6rnHXWPJU7
-         8q65+AQeivN0zzhJ/01MEN1Iz+aDcpyWN8AcYRmbhWKk4t4IoLuOcmCiJJHfdNWscxrY
-         6B7L1Os6T0CoVlTGCumFf982VHyhAYbU5LOgaPNRpFxDZ2eimNpe4zTgdMlua6yyn/df
-         3dqRz+24Y+lZHx8gCU1jPc9H9fpfYC1n8o2CSWsOmCY6ws0WJtzrSV7mpxUXPA4qHLYF
-         KGFA==
-X-Gm-Message-State: AJIora9dC/115FEbq1umKJ+jPfDY3xAWLN0bcvp+frerXj3+W6Wceqto
-        Io9YhtXafRkRP8UmTBRxw5a1ug==
-X-Google-Smtp-Source: AGRyM1tMl63rWpj4b70pBJHZZBdq7tLURrxHPvEhTWmOq2GveNEsVZf4u0behvJ6CGqQ22A5aqS+/g==
-X-Received: by 2002:a17:907:7e81:b0:726:2912:7467 with SMTP id qb1-20020a1709077e8100b0072629127467mr7207432ejc.373.1656070778635;
-        Fri, 24 Jun 2022 04:39:38 -0700 (PDT)
-Received: from [192.168.0.235] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id r1-20020a17090638c100b007219c20dcd8sm962517ejd.196.2022.06.24.04.39.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jun 2022 04:39:38 -0700 (PDT)
-Message-ID: <8956c98e-657c-0263-c8d9-d6beb54410f9@linaro.org>
-Date:   Fri, 24 Jun 2022 13:39:36 +0200
+        d=paragon-software.com; s=mail; t=1656070746;
+        bh=1/1elZUUKD7tI89T7KFg5z8eRLmsFz1VvhO0iissUGM=;
+        h=Date:To:CC:From:Subject;
+        b=c+aKHTPDJ7weN0SbS1MeDAVimh04arl+fffqRMGC/+RUZD0l9nKZAVGpzcpwecB+H
+         1UXGCkaQBh5BaEwdmFuV/SiHo4xN7Sh7rEixz3pFablhbNpOD5K9HXmCClrkDsbmPS
+         gihoAjBkkcduYeeACf6pXxj1rhycO6i0cw3jDs3I=
+Received: from [172.30.8.65] (172.30.8.65) by
+ vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Fri, 24 Jun 2022 14:39:57 +0300
+Message-ID: <f76c96bb-fdea-e1e5-5f47-c092af5fe556@paragon-software.com>
+Date:   Fri, 24 Jun 2022 14:39:57 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 06/14] dt-bindings: mfd: Add Mediatek MT6370
+ Thunderbird/91.9.0
 Content-Language: en-US
-To:     ChiaEn Wu <peterwu.pub@gmail.com>, lee.jones@linaro.org,
-        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de
-Cc:     chiaen_wu@richtek.com, alice_chen@richtek.com,
-        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com
-References: <20220623115631.22209-1-peterwu.pub@gmail.com>
- <20220623115631.22209-7-peterwu.pub@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220623115631.22209-7-peterwu.pub@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     <ntfs3@lists.linux.dev>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
+From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 0/3] fs/ntfs3: Various bug fixes
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.30.8.65]
+X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
+ vdlg-exch-02.paragon-software.com (172.30.1.105)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/06/2022 13:56, ChiaEn Wu wrote:
-> From: ChiYuan Huang <cy_huang@richtek.com>
-> 
-> Add Mediatek MT6370 binding documentation.
-> 
-> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-> ---
-> 
-> v3
-> - Use " in entire patchset
-> - Refine ADC description
-> - Rename "enable-gpio" to "enable-gpios" in "regualtor"
-> - Change "/schemas/" to "../" in every reference of all MT6370 modules
-> ---
->  .../devicetree/bindings/mfd/mediatek,mt6370.yaml   | 280 +++++++++++++++++++++
->  include/dt-bindings/iio/adc/mediatek,mt6370_adc.h  |  18 ++
->  2 files changed, 298 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
->  create mode 100644 include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
-> 
-> diff --git a/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-> new file mode 100644
-> index 0000000..fa9da13
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-> @@ -0,0 +1,280 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mfd/mediatek,mt6370.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Mediatek MT6370 SubPMIC
-> +
-> +maintainers:
-> +  - ChiYuan Huang <cy_huang@richtek.com>
-> +
-> +description: |
-> +  MT6370 is a highly-integrated smart power management IC, which includes a
-> +  single cell Li-Ion/Li-Polymer switching battery charger, a USB Type-C &
-> +  Power Delivery (PD) controller, dual flash LED current sources, a RGB LED
-> +  driver, a backlight WLED driver, a display bias driver and a general LDO for
-> +  portable devices.
-> +
-> +properties:
-> +  compatible:
-> +    const: mediatek,mt6370
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  wakeup-source: true
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  interrupt-controller: true
-> +
-> +  "#interrupt-cells":
-> +    const: 1
-> +
-> +  adc:
-> +    type: object
-> +    description: |
-> +      Provides 9 channels for system monitoring, including VBUSDIV5 (lower
-> +      accuracy, higher measure range), VBUSDIV2 (higher accuracy, lower
-> +      measure range), VBAT, VSYS, CHG_VDDP, TS_BAT, IBUS, IBAT, and TEMP_JC.
-> +
-> +    properties:
-> +      compatible:
-> +        const: mediatek,mt6370-adc
-> +
-> +      "#io-channel-cells":
-> +        const: 1
-> +
-> +    required:
-> +      - compatible
-> +      - "#io-channel-cells"
-> +
-> +  backlight:
-> +    type: object
-> +    $ref: ../leds/backlight/mediatek,mt6370-backlight.yaml#
+These commits fix 3 xfstests
+Patches are based on version with FALLOC_FL_INSERT_RANGE support
+https://lore.kernel.org/ntfs3/ab1c8348-acde-114f-eb66-0074045731a4@paragon-software.com/T/#t
 
-This was correct before: /schemas/leds/ ....
+Konstantin Komarov (3):
+   fs/ntfs3: Do not change mode if ntfs_set_ea failed
+   fs/ntfs3: Check reserved size for maximum allowed
+   fs/ntfs3: extend ni_insert_nonresident to return inserted
+     ATTR_LIST_ENTRY
 
-Same in other places.
+  fs/ntfs3/attrib.c  | 46 +++++++++++++++++++++++++++++++---------------
+  fs/ntfs3/file.c    |  3 ---
+  fs/ntfs3/frecord.c |  4 ++--
+  fs/ntfs3/index.c   |  2 +-
+  fs/ntfs3/ntfs_fs.h |  2 +-
+  fs/ntfs3/xattr.c   | 20 ++++++++++----------
+  6 files changed, 45 insertions(+), 32 deletions(-)
 
+-- 
+2.36.1
 
-Best regards,
-Krzysztof
