@@ -2,84 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D683CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 07:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2356EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 07:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230008AbiFXHv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 03:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
+        id S229885AbiFXHyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 03:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbiFXHv4 (ORCPT
+        with ESMTP id S229669AbiFXHyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 03:51:56 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB7653A5D
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 00:51:55 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4e6S-0005uS-NW; Fri, 24 Jun 2022 09:51:44 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4e6N-002NyH-PG; Fri, 24 Jun 2022 09:51:41 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4e6O-00DAhE-GW; Fri, 24 Jun 2022 09:51:40 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Anton Lundin <glance@acc.umu.se>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>
-Subject: [PATCH net v1 1/2] net: asix: fix "can't send until first packet is send" issue
-Date:   Fri, 24 Jun 2022 09:51:38 +0200
-Message-Id: <20220624075139.3139300-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Fri, 24 Jun 2022 03:54:14 -0400
+X-Greylist: delayed 1443 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Jun 2022 00:54:13 PDT
+Received: from qproxy1-pub.mail.unifiedlayer.com (qproxy1-pub.mail.unifiedlayer.com [173.254.64.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E8D56C39
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 00:54:12 -0700 (PDT)
+Received: from outbound-ss-820.bluehost.com (outbound-ss-820.bluehost.com [69.89.24.241])
+        by qproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id E88878034C99
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:30:07 +0000 (UTC)
+Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
+        by progateway2.mail.pro1.eigbox.com (Postfix) with ESMTP id 6008410047F91
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:30:07 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 4dlWo9VSxNVEz4dlXolHfh; Fri, 24 Jun 2022 07:30:07 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=I5+g+Psg c=1 sm=1 tr=0 ts=62b567ff
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=JPEYwPQDsx4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=BDCG8O_D2SPVAq3EX74A:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=1pbidx4Zj62Ae0b8zWpxSsqtoFCZZsq8doWM/bDLAEQ=; b=X6OfZQCsp/pYDd7hzMH1y4G6g8
+        BLLjZNpG1hFMr59+3tu1EgkGzHoijj39HGTXqQACFzey3s2+NkLlrc0G5UwyrVcvb6mapQTVBmNo6
+        BQG5i6OY1A7Fd8NMBVJ17TJY9DkrCr4N1pk3g01cqTPlOK2ElIGmtlx7BiFvzAo6jUwJwq8kicG8/
+        PHLtiGhNNe7NJla3hQ+5l7H6p1/KLJUbAh4W6ChzwFyyc2u/rcdwFbz61jNzLamIFo4WxZE3vvhLH
+        ZcacDIMN+Ezj3MdkWJ1d9YKR/TX2GPa+F2iSxiZbLi0qG2NGOCSLfcZUF7a78MpIZo/FUkKmDPUwv
+        MKpDp0Vg==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:45490 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1o4dlV-003560-TM;
+        Fri, 24 Jun 2022 01:30:05 -0600
+Subject: Re: [PATCH 5.18 00/11] 5.18.7-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220623164322.315085512@linuxfoundation.org>
+In-Reply-To: <20220623164322.315085512@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <6434df07-bb16-759b-edaf-d1d0e18dc4dd@w6rz.net>
+Date:   Fri, 24 Jun 2022 00:30:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1o4dlV-003560-TM
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:45490
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If cable is attached after probe sequence, the usbnet framework would
-not automatically start processing RX packets except at least one
-packet was transmitted.
+On 6/23/22 9:45 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.7 release.
+> There are 11 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.7-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-On systems with any kind of address auto configuration this issue was
-not detected, because some packets are send immediately after link state
-is changed to "running".
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-With this patch we will notify usbnet about link status change provided by the
-PHYlib.
-
-Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
-Reported-by: Anton Lundin <glance@acc.umu.se>
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/usb/asix_common.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index 632fa6c1d5e3..b4a1b7abcfc9 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -431,6 +431,7 @@ void asix_adjust_link(struct net_device *netdev)
- 
- 	asix_write_medium_mode(dev, mode, 0);
- 	phy_print_status(phydev);
-+	usbnet_link_change(dev, phydev->link, 0);
- }
- 
- int asix_write_gpio(struct usbnet *dev, u16 value, int sleep, int in_pm)
--- 
-2.30.2
+Tested-by: Ron Economos <re@w6rz.net>
 
