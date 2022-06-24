@@ -2,84 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E772C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFF3CCA481
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232395AbiFXPLa convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 11:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
+        id S232471AbiFXPMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 11:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbiFXPL1 (ORCPT
+        with ESMTP id S232478AbiFXPMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 11:11:27 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2588E4CD7F
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 08:11:25 -0700 (PDT)
-Received: from mail-yb1-f176.google.com ([209.85.219.176]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N1Oft-1ngfqK3s4p-012niI for <linux-kernel@vger.kernel.org>; Fri, 24 Jun
- 2022 17:11:24 +0200
-Received: by mail-yb1-f176.google.com with SMTP id d5so5000799yba.5
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 08:11:23 -0700 (PDT)
-X-Gm-Message-State: AJIora+xZouIQgJlXCJt6C8QmN9QLyfmR9yGjUtFRkA+2fUgxzAseTnO
-        EPHTHWo4D6DyYeYJEDUqmrYDHxcDPdidWfD/Ghk=
-X-Google-Smtp-Source: AGRyM1vJJnhlcyd7ZSZrixr3FMT9677Grp/rNK0TzdIxtZ3Z0+OUPG5WXg1A6g8fJkwRsaVEZy+JKkarEpgkYASSVk4=
-X-Received: by 2002:a25:9f87:0:b0:669:4345:a8c0 with SMTP id
- u7-20020a259f87000000b006694345a8c0mr15555982ybq.472.1656083482781; Fri, 24
- Jun 2022 08:11:22 -0700 (PDT)
+        Fri, 24 Jun 2022 11:12:33 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 093CF4D9C6;
+        Fri, 24 Jun 2022 08:12:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656083553; x=1687619553;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=RCpAULu+w1rxPcpxp+L8sVNGICCPU38qWIgGSWnp7mE=;
+  b=b19ardBcYiML+Quxyslthyu2p8idR2chefYG72mXDlcZcviG7tMUbgfB
+   Fug8iJpm8b9CU/tJXv/hsezJFUna54S2YAX1qHBNvlD8PxXXUME1jaB5V
+   PtZBq5K2iZmgPU/5PqqqYhAZvKA0ZrmiXWVw6qQ6DAqHEfdgOqSKQOyrJ
+   0=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 24 Jun 2022 08:12:32 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 08:12:32 -0700
+Received: from [10.253.8.98] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 24 Jun
+ 2022 08:12:29 -0700
+Message-ID: <5eb95408-6e49-8e59-5684-c21e49f443a3@quicinc.com>
+Date:   Fri, 24 Jun 2022 23:12:27 +0800
 MIME-Version: 1.0
-References: <20220605075841.19929-1-linmq006@gmail.com> <m3wnd76ako.fsf@t19.piap.pl>
-In-Reply-To: <m3wnd76ako.fsf@t19.piap.pl>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 24 Jun 2022 17:11:06 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3dDJrPPM6gRc+s7OQStphWdvWRdcELtNBXSzvd+gxoLw@mail.gmail.com>
-Message-ID: <CAK8P3a3dDJrPPM6gRc+s7OQStphWdvWRdcELtNBXSzvd+gxoLw@mail.gmail.com>
-Subject: Re: [PATCH] ARM: cns3xxx: Fix refcount leak in cns3xxx_init
-To:     =?UTF-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
-Cc:     Miaoqian Lin <linmq006@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2] Bluetooth: Fix CVSD SCO setup failure
+Content-Language: en-US
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
+        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>
+References: <1654772974-10357-1-git-send-email-quic_zijuhu@quicinc.com>
+From:   quic_zijuhu <quic_zijuhu@quicinc.com>
+In-Reply-To: <1654772974-10357-1-git-send-email-quic_zijuhu@quicinc.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:n5MdKEkkXMtSOTgpnCbms+npJ8lvJY407XvU7TA1qF8g1iVn6N8
- L4R5ILDoOjNhCC818KJPhZlk3uSJWi0NyBHWsOd+ORkLliTib7hInjrqTAlxe4weXMsySB0
- GpdD/vmUD3jotPL16aTRlTKB20QhBAYjgklq//L6qg+C3vKrFllgd3nf831kUfEJs8kPr3X
- xI4uUbcIxZi6RKB3iPUBA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:DaDFQRbkddw=:iRyVpdIvaPcMifQWf/V16x
- tNXUWZFwK9HB6guS2imJ+ZzASCa8AlLsg6ct5wPIwte6LGTYaBM/5HhzueBgUEApWwpQRF1wN
- h0uL1B+puZVsJjDyqfL5uGzxFdUr4RudSZfZUyxuanD4BBdKTPWsnieyuB0gLbepaFKewMxnQ
- R2lQzKmfs14OAN1703EUiGuj50PD3xir7F/q/s/mN3ROeyVQolTSc1iKnDqpuo8xXbY+3UGQ4
- FCAj7fL2AB9NF9eUMerCui2HhUBmuL+n+ydUu0JGUBoDDT1N8Pm4s7hGya1ertS5qMCVn02ju
- rhpNfbK2iw1v5p0I27UUj5N5YjmKDr+MxIVteEfifR3soAd0mqoLch5az4ERhuWrIAnMQENAv
- 6aVQqR8OraT8wG84h8eNv8wRHMG9GzOaXNrpGw1hVIR0LFyWfQmAPaZ0sfpTHdlEuV5gvYBUO
- KR1vJ/4aFzfMR08Oxk/7n+jQvfr57/RVfQ/+A0Mrc+8L/TBgJ1tbR+ukDq6EP4nCeJ23ZfeoB
- Er79jVhYwZ5rwJBdZ5dH4H5qfp5JuJfRmbQspDDII8kVtyOovGH4biOkcAXt5vLKcv7zx4XGK
- 909ovtfbbewNllEqyw7RvbZAKG/tZPIVbVMrnS09D+NhpdeafI4KiPQKaMwBs8CC3SrPVh9TM
- I1VadikK8/zcLS5kfcpgUwwHB8mO9O+rbp3DUpE2kMHA7QA0vXv2dZm8icmVIupiu47yx8gDT
- yExTsjNNwlGPbb9THIUk5xjj+aHcYrqVv7yHQA==
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 10:36 AM Krzysztof Hałasa <khalasa@piap.pl> wrote:
->
-> Miaoqian Lin <linmq006@gmail.com> writes:
->
-> > of_find_compatible_node() returns a node pointer with refcount
-> > incremented, we should use of_node_put() on it when done.
-> > Add missing of_node_put() to avoid refcount leak.
-> >
-> > Fixes: 415f59142d9d ("ARM: cns3xxx: initial DT support")
-> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
->
-> Acked-by: Krzysztof Halasa <khalasa@piap.pl>
->
-> Arnd, I guess you are in the best position to pick this patch up?
-> Thanks to both of you.
-
-Done now, thanks!
-
-        Arnd
+On 6/9/2022 7:09 PM, Zijun Hu wrote:
+> It will set up SCO after all CVSD eSCO attempts failure, but
+> still fails to set up SCO finally due to wrong D1/D0 @retrans_effort
+> within @esco_param_cvsd, so change it from 0x1 to 0xff to avoid
+> Invalid HCI Command Parameters error.
+> 
+> < HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3427
+>         Handle: 3
+>         Transmit bandwidth: 8000
+>         Receive bandwidth: 8000
+>         Max latency: 65535
+>         Setting: 0x0060
+>           Input Coding: Linear
+>           Input Data Format: 2's complement
+>           Input Sample Size: 16-bit
+>           # of bits padding at MSB: 0
+>           Air Coding Format: CVSD
+>         Retransmission effort: Optimize for power consumption (0x01)
+>         Packet type: 0x03c4
+>           HV3 may be used
+>           2-EV3 may not be used
+>           3-EV3 may not be used
+>           2-EV5 may not be used
+>           3-EV5 may not be used
+>> HCI Event: Command Status (0x0f) plen 4               #3428
+>       Setup Synchronous Connection (0x01|0x0028) ncmd 1
+>         Status: Success (0x00)
+>> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3429
+>         Status: Invalid HCI Command Parameters (0x12)
+>         Handle: 0
+>         Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
+>         Link type: SCO (0x00)
+>         Transmission interval: 0x00
+>         Retransmission window: 0x00
+>         RX packet length: 0
+>         TX packet length: 0
+>         Air mode: u-law log (0x00)
+> 
+> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+> ---
+>  net/bluetooth/hci_conn.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+> index 7829433d54c1..2627d5ac15d6 100644
+> --- a/net/bluetooth/hci_conn.c
+> +++ b/net/bluetooth/hci_conn.c
+> @@ -45,8 +45,8 @@ static const struct sco_param esco_param_cvsd[] = {
+>  	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000a,	0x01 }, /* S3 */
+>  	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x0007,	0x01 }, /* S2 */
+>  	{ EDR_ESCO_MASK | ESCO_EV3,   0x0007,	0x01 }, /* S1 */
+> -	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0x01 }, /* D1 */
+> -	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0x01 }, /* D0 */
+> +	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0xff }, /* D1 */
+> +	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0xff }, /* D0 */
+>  };
+>  
+>  static const struct sco_param sco_param_cvsd[] = {
+could you code review for this change?
