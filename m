@@ -2,199 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C1CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D50FCCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232385AbiFXOKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
+        id S232425AbiFXOMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232418AbiFXOKG (ORCPT
+        with ESMTP id S231823AbiFXOMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:10:06 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C87562C4
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:10:00 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25ODBlUR019365;
-        Fri, 24 Jun 2022 14:09:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=hIACM6BfZZgoZ9/t+CT5affcXAiGhhbM8EZitKpG2cI=;
- b=IcbuAN/yVxqYpjtBzi6O5YOpLcR6cuKqErfGEjfSwM0h9pnMeG2S5ezN+1x46qeGBLWl
- 57p7JpeeSOTnyeAaX1VTqcEL1+9wrWz2Qxc9Ghy2WbKEzUaaDcs2b1IFQiswNVk24niY
- xMeThWVaU4yJ4gZw5gJkvCoGP4tm/n3gYAcReUdJvQI9kfPVZWXlcoelV/iTZHoewk0n
- orGaKg79TbEkTSZ5GrUsAW+rdJSJ2Ouy+X9nMGGpnsIrnxgt6b9yy7NBsSfMNPYt7TVq
- 0iEzPOmP+hbyFAAUiwJnKdhLm84ksRkCJ84zWQSCXZBvxy14VaFubtD8SaWkwGlYVeqa xg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gw9hyrru9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 14:09:40 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25ODSLsb022052;
-        Fri, 24 Jun 2022 14:09:40 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gw9hyrrth-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 14:09:40 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25OE6CNN016148;
-        Fri, 24 Jun 2022 14:09:37 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04ams.nl.ibm.com with ESMTP id 3gs6b994d8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 14:09:37 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25OE9Z1O18940342
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 Jun 2022 14:09:35 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5FC4CA4057;
-        Fri, 24 Jun 2022 14:09:35 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0C5E1A4040;
-        Fri, 24 Jun 2022 14:09:35 +0000 (GMT)
-Received: from [9.101.4.33] (unknown [9.101.4.33])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 24 Jun 2022 14:09:34 +0000 (GMT)
-Message-ID: <040a8f52-980f-146c-6811-9a0ce9157f08@linux.ibm.com>
-Date:   Fri, 24 Jun 2022 16:09:34 +0200
+        Fri, 24 Jun 2022 10:12:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B70744EF71
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:12:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656079924;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4yoKMHx8hwjlhiED35XD21wSiT8cy5Qt0nttKMguOFA=;
+        b=gM74VIlpfWtOY3vqOhJD2oTcCFKJlFF9sAlvuU4t3VkJTCls8HQFdnc9xG080ECTjPeltR
+        P1UGVbgzwotAhtTmvUokDsDpAM44rxioR+vEOjfbGHjf9oZYAZy7y29geOAPbG8uKJPqjT
+        aUUraqzk+09YCg0y7d82A8nmW7aKeoA=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-132-V6cZTrX8P1myjBs2Rwwazw-1; Fri, 24 Jun 2022 10:12:03 -0400
+X-MC-Unique: V6cZTrX8P1myjBs2Rwwazw-1
+Received: by mail-il1-f200.google.com with SMTP id f18-20020a056e020c7200b002d949d97ed9so1470392ilj.7
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:12:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=4yoKMHx8hwjlhiED35XD21wSiT8cy5Qt0nttKMguOFA=;
+        b=s9zf8Ehm0z2tl7SOYC35NW/aeVoSHw5ca26y919JfYD+JxZudXusxlbiTrCgzAEzcv
+         r7Ktv784WPPBZkWStQ9NrkwCPj9H/WMpr2L+BI14ayHjkqUAnnciyzOmyNKptTiMapdD
+         s7SPOka0zGJwWb6dbTrSZK6oq2yPrggr+qzvyVBpjoz82hjmPhkzcVbzn1w2aDBFu6Qz
+         /kV48fVkoyuKmDYMOC9GU5kRSvQLTZGe/LnCpB17tyMiRvgizBCKzNeVCrUJIFDUaI0N
+         4HwGjYAs+kdgi8Frly3Y8ouMK78oNe0B462y6XPro5j4ZeXnFv4Kl+RdDi7bf4MhC702
+         2J8g==
+X-Gm-Message-State: AJIora/j143QF26oPPmiUC4cxjO3d/U8GR1W3Pno1rxJ/VvbFJ/nNPde
+        Z9Oly+OwEZyZHCgMgkLJY9Qd2V64NWvc7hEcYd2qUUR0TmcMSQJaLS+r/NYnEO0h/rKy+i2yM2Z
+        vXNKjL+jRimzFXlJiOr6B5Kzy
+X-Received: by 2002:a05:6e02:1a49:b0:2d9:500e:4a06 with SMTP id u9-20020a056e021a4900b002d9500e4a06mr5757823ilv.43.1656079921967;
+        Fri, 24 Jun 2022 07:12:01 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1svZazEj69RanON2dp4ypTbHsA9NUh03zO72gJcjs8JfjOdXtOKKxzpMQNeXHU8+oJ9Wo4RqA==
+X-Received: by 2002:a05:6e02:1a49:b0:2d9:500e:4a06 with SMTP id u9-20020a056e021a4900b002d9500e4a06mr5757804ilv.43.1656079921645;
+        Fri, 24 Jun 2022 07:12:01 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id t8-20020a5e9908000000b00674eedf7bbfsm1286144ioj.33.2022.06.24.07.12.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 07:12:00 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 08:11:59 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>, cohuck@redhat.com,
+        iommu@lists.linux.dev, iommu@lists.linux-foundation.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
+Message-ID: <20220624081159.508baed3.alex.williamson@redhat.com>
+In-Reply-To: <20220624015030.GJ4147@nvidia.com>
+References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
+        <20220622161721.469fc9eb.alex.williamson@redhat.com>
+        <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
+        <20220623170044.1757267d.alex.williamson@redhat.com>
+        <20220624015030.GJ4147@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH v2 4/4] pseries/mobility: Set NMI watchdog factor during
- LPM
-Content-Language: fr
-To:     Nathan Lynch <nathanl@linux.ibm.com>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        haren@linux.vnet.ibm.com, npiggin@gmail.com
-References: <20220614135414.37746-1-ldufour@linux.ibm.com>
- <20220614135414.37746-5-ldufour@linux.ibm.com> <87sfnvmgql.fsf@linux.ibm.com>
-From:   Laurent Dufour <ldufour@linux.ibm.com>
-In-Reply-To: <87sfnvmgql.fsf@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: yuO9Fjnte4pDDmNfCbBbDPgSyskw8CeR
-X-Proofpoint-ORIG-GUID: ZghCb-F_2QSGKahCJ6XSXNfeCCuz7BnB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-24_07,2022-06-23_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- lowpriorityscore=0 spamscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0
- priorityscore=1501 clxscore=1015 suspectscore=0 mlxscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206240055
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/06/2022, 19:28:34, Nathan Lynch wrote:
-> Laurent Dufour <ldufour@linux.ibm.com> writes:
->> diff --git a/arch/powerpc/platforms/pseries/mobility.c b/arch/powerpc/platforms/pseries/mobility.c
->> index 179bbd4ae881..4284ceaf9060 100644
->> --- a/arch/powerpc/platforms/pseries/mobility.c
->> +++ b/arch/powerpc/platforms/pseries/mobility.c
->> @@ -48,6 +48,39 @@ struct update_props_workarea {
->>  #define MIGRATION_SCOPE	(1)
->>  #define PRRN_SCOPE -2
->>  
->> +#ifdef CONFIG_PPC_WATCHDOG
->> +static unsigned int lpm_nmi_wd_factor = 200;
->> +
->> +#ifdef CONFIG_SYSCTL
->> +static struct ctl_table lpm_nmi_wd_factor_ctl_table[] = {
->> +	{
->> +		.procname	= "lpm_nmi_watchdog_factor",
+On Thu, 23 Jun 2022 22:50:30 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Thu, Jun 23, 2022 at 05:00:44PM -0600, Alex Williamson wrote:
 > 
-> Assuming the basic idea is acceptable, I suggest making the user-visible
-> name more generic (e.g. "nmi_watchdog_factor") in case it makes sense to
-> apply this to other contexts in the future.
-
-Fair enough, indeed, I was wondering if "lpm" is meaningful.
-
+> > > >> +struct vfio_device *vfio_device_get_from_iommu(struct iommu_group *iommu_group)
+> > > >> +{
+> > > >> +	struct vfio_group *group = vfio_group_get_from_iommu(iommu_group);
+> > > >> +	struct vfio_device *device;    
+> > > > 
+> > > > Check group for NULL.    
+> > > 
+> > > OK - FWIW in context this should only ever make sense to call with an 
+> > > iommu_group which has already been derived from a vfio_group, and I did 
+> > > initially consider a check with a WARN_ON(), but then decided that the 
+> > > unguarded dereference would be a sufficiently strong message. No problem 
+> > > with bringing that back to make it more defensive if that's what you prefer.  
+> > 
+> > A while down the road, that's a bit too much implicit knowledge of the
+> > intent and single purpose of this function just to simply avoid a test.  
 > 
->> +		.data		= &lpm_nmi_wd_factor,
->> +		.maxlen		= sizeof(int),
->> +		.mode		= 0644,
->> +		.proc_handler	= proc_douintvec_minmax,
->> +	},
->> +	{}
->> +};
->> +static struct ctl_table lpm_nmi_wd_factor_sysctl_root[] = {
->> +	{
->> +		.procname       = "kernel",
->> +		.mode           = 0555,
->> +		.child          = lpm_nmi_wd_factor_ctl_table,
->> +	},
->> +	{}
->> +};
->> +
->> +static int __init register_lpm_nmi_wd_factor_sysctl(void)
->> +{
->> +	register_sysctl_table(lpm_nmi_wd_factor_sysctl_root);
->> +
->> +	return 0;
->> +}
->> +device_initcall(register_lpm_nmi_wd_factor_sysctl);
->> +#endif /* CONFIG_SYSCTL */
->> +#endif /* CONFIG_PPC_WATCHDOG */
->> +
->>  static int mobility_rtas_call(int token, char *buf, s32 scope)
->>  {
->>  	int rc;
->> @@ -702,6 +735,7 @@ static int pseries_suspend(u64 handle)
->>  static int pseries_migrate_partition(u64 handle)
->>  {
->>  	int ret;
->> +	unsigned int factor = lpm_nmi_wd_factor;
->>  
->>  	ret = wait_for_vasi_session_suspending(handle);
->>  	if (ret)
->> @@ -709,6 +743,13 @@ static int pseries_migrate_partition(u64 handle)
->>  
->>  	vas_migration_handler(VAS_SUSPEND);
->>  
->> +#ifdef CONFIG_PPC_WATCHDOG
->> +	if (factor) {
->> +		pr_info("Set the NMI watchdog factor to %u%%\n", factor);
->> +		watchdog_nmi_set_lpm_factor(factor);
->> +	}
->> +#endif /* CONFIG_PPC_WATCHDOG */
->> +
->>  	ret = pseries_suspend(handle);
->>  	if (ret == 0) {
->>  		post_mobility_fixup();
->> @@ -716,6 +757,13 @@ static int pseries_migrate_partition(u64 handle)
->>  	} else
->>  		pseries_cancel_migration(handle, ret);
->>  
->> +#ifdef CONFIG_PPC_WATCHDOG
->> +	if (factor) {
->> +		pr_info("Restoring NMI watchdog timer\n");
->> +		watchdog_nmi_set_lpm_factor(0);
->> +	}
->> +#endif /* CONFIG_PPC_WATCHDOG */
->> +
-> 
-> A couple more suggestions:
-> 
-> * Move the prints into a single statement in watchdog_nmi_set_lpm_factor().
+> I think we should just pass the 'struct vfio_group *' into the
+> attach_group op and have this API take that type in and forget the
+> vfio_group_get_from_iommu().
 
-You're right that sounds a better place.
+That's essentially what I'm suggesting, the vfio_group is passed as an
+opaque pointer which type1 can use for a
+vfio_group_for_each_vfio_device() type call.  Thanks,
 
-> 
-> * Add no-op versions of watchdog_nmi_set_lpm_factor for
->   !CONFIG_PPC_WATCHDOG so we can minimize the #ifdef here.
->
-
-Furthermore, this breaks compilation when !CONFIG_PPC_WATCHDOG because
-lpm_nmi_wd_factor is not defined. I'll rework that part.
-
-> Otherwise this looks fine to me.
-
-Thanks,
-Laurent.
+Alex
 
