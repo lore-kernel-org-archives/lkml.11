@@ -2,37 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B00BCCA483
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB44CCA486
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233064AbiFXOkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40520 "EHLO
+        id S233039AbiFXOkT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232933AbiFXOkA (ORCPT
+        with ESMTP id S232952AbiFXOkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:40:00 -0400
+        Fri, 24 Jun 2022 10:40:02 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 711BE64789;
-        Fri, 24 Jun 2022 07:39:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3AF46478C;
+        Fri, 24 Jun 2022 07:40:00 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 8D55C5BC7;
-        Fri, 24 Jun 2022 17:41:15 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 8D55C5BC7
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 20FB55BC4;
+        Fri, 24 Jun 2022 17:41:17 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 20FB55BC4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1656081675;
-        bh=kzvAT0+XskKc4to3kewrh91J9sNB+uuliISSGHATFPk=;
+        d=baikalelectronics.ru; s=mail; t=1656081677;
+        bh=HNzyGB75vOKBf/KQS7MyNy2Qi9SJ0rp02cRFk+21zK8=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=XQENv9N1sUaPpTStJTlDPdNlzSD1PNpG9LQR7l0xjkLjLThmJXr1z08rM//NiWmU5
-         DOnEKhdIJudgdXJ/kO9WtmEAgBrCS57J0JhiltadeDF9+Ga/sc+kIyTgbDyAuLpGw6
-         n4OwYakUgReu67pgNbAC5lerS7y7mp7X8htbYgsU=
+        b=HJwsX+3ubqAA8MwyLJ64Y0nKMirYf9F6Skck63A24rX62Azgcf27ylH7/UCY7FeNw
+         o8NPx3AD+qqU9/F/DXbkV8xH2eRNil01XN/v6nu54W3mfgS7POKBtHXewVwGf1cixO
+         R04kMpY+7lFeFje8ft9T5XRLxw9c/6ix5igkk+GU=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jun 2022 17:39:55 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jun 2022 17:39:57 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Jingoo Han <jingoohan1@gmail.com>,
         Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Rahul Tanwar <rtanwar@maxlinear.com>,
         Lorenzo Pieralisi <lpieralisi@kernel.org>,
         =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
@@ -43,9 +44,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         Rob Herring <robh+dt@kernel.org>, <linux-pci@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v4 04/15] PCI: dwc: Add IP-core version detection procedure
-Date:   Fri, 24 Jun 2022 17:39:36 +0300
-Message-ID: <20220624143947.8991-5-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH RESEND v4 06/15] PCI: intel-gw: Drop manual DW PCIe controller version setup
+Date:   Fri, 24 Jun 2022 17:39:38 +0300
+Message-ID: <20220624143947.8991-7-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -56,124 +57,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since DWC PCIe v4.70a the controller version and version type can be read
-from the PORT_LOGIC.PCIE_VERSION_OFF and PORT_LOGIC.PCIE_VERSION_TYPE_OFF
-registers respectively. Seeing the generic code has got version-dependent
-parts let's use these registers to find out the controller version.  The
-detection procedure is executed for both RC and EP modes right after the
-platform-specific initialization. We can't do that earlier since the
-glue-drivers can perform the DBI-related setups there including the bus
-reference clocks activation, without which the CSRs just can't be read.
+Since the DW PCIe common code now supports the IP-core version
+auto-detection there is no point manually setting the version up for the
+controllers newer than v4.70a. In particular Intel GW PCIe platform code
+can be set free from the manual version setup, which as a positive side
+effect causes the private device data removal too.
 
-Note the CSRs content is zero on the older DWC PCIe controller. In that
-case we have no choice but to rely on the platform setup.
-
+Suggested-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Rob Herring <robh@kernel.org>
 
 ---
 
-Changelog v2:
-- Move the IP-core version detection procedure call from
-  dw_pcie_ep_init_complete() to dw_pcie_ep_init().
----
- .../pci/controller/dwc/pcie-designware-ep.c   |  2 ++
- .../pci/controller/dwc/pcie-designware-host.c |  2 ++
- drivers/pci/controller/dwc/pcie-designware.c  | 24 +++++++++++++++++++
- drivers/pci/controller/dwc/pcie-designware.h  |  6 +++++
- 4 files changed, 34 insertions(+)
+Folks, I don't have Intel GW PCIe hw instance to test it out. Could you
+please make sure this patch doesn't brake anything?
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
-index 1e35542d6f72..ffbd3af6d65a 100644
---- a/drivers/pci/controller/dwc/pcie-designware-ep.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
-@@ -711,6 +711,8 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
- 	ep->phys_base = res->start;
- 	ep->addr_size = resource_size(res);
+Changelog v3:
+- This is a new patch create as a result of the discussion:
+  https://lore.kernel.org/linux-pci/20220503214638.1895-6-Sergey.Semin@baikalelectronics.ru/
+---
+ drivers/pci/controller/dwc/pcie-intel-gw.c | 16 +---------------
+ 1 file changed, 1 insertion(+), 15 deletions(-)
+
+diff --git a/drivers/pci/controller/dwc/pcie-intel-gw.c b/drivers/pci/controller/dwc/pcie-intel-gw.c
+index 371b5aa189d1..a44f685ec94d 100644
+--- a/drivers/pci/controller/dwc/pcie-intel-gw.c
++++ b/drivers/pci/controller/dwc/pcie-intel-gw.c
+@@ -58,10 +58,6 @@
+ #define BUS_IATU_OFFSET			SZ_256M
+ #define RESET_INTERVAL_MS		100
  
-+	dw_pcie_version_detect(pci);
-+
- 	dw_pcie_iatu_detect(pci);
+-struct intel_pcie_soc {
+-	u32	pcie_ver;
+-};
+-
+ struct intel_pcie {
+ 	struct dw_pcie		pci;
+ 	void __iomem		*app_base;
+@@ -394,13 +390,8 @@ static const struct dw_pcie_host_ops intel_pcie_dw_ops = {
+ 	.host_init =		intel_pcie_rc_init,
+ };
  
- 	ep->ib_window_map = devm_kcalloc(dev,
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 95256434913f..b1437b37140f 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -405,6 +405,8 @@ int dw_pcie_host_init(struct dw_pcie_rp *pp)
- 		}
- 	}
+-static const struct intel_pcie_soc pcie_data = {
+-	.pcie_ver =		DW_PCIE_VER_520A,
+-};
+-
+ static int intel_pcie_probe(struct platform_device *pdev)
+ {
+-	const struct intel_pcie_soc *data;
+ 	struct device *dev = &pdev->dev;
+ 	struct intel_pcie *pcie;
+ 	struct dw_pcie_rp *pp;
+@@ -424,12 +415,7 @@ static int intel_pcie_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
-+	dw_pcie_version_detect(pci);
-+
- 	dw_pcie_iatu_detect(pci);
+-	data = device_get_match_data(dev);
+-	if (!data)
+-		return -ENODEV;
+-
+ 	pci->ops = &intel_pcie_ops;
+-	pci->version = data->pcie_ver;
+ 	pp->ops = &intel_pcie_dw_ops;
  
- 	dw_pcie_setup_rc(pp);
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index f10a7d5d94e8..cbb36ccaa48b 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -16,6 +16,30 @@
- #include "../../pci.h"
- #include "pcie-designware.h"
+ 	ret = dw_pcie_host_init(pp);
+@@ -447,7 +433,7 @@ static const struct dev_pm_ops intel_pcie_pm_ops = {
+ };
  
-+void dw_pcie_version_detect(struct dw_pcie *pci)
-+{
-+	u32 ver;
-+
-+	/* The content of the CSR is zero on DWC PCIe older than v4.70a */
-+	ver = dw_pcie_readl_dbi(pci, PCIE_VERSION_NUMBER);
-+	if (!ver)
-+		return;
-+
-+	if (pci->version && pci->version != ver)
-+		dev_warn(pci->dev, "Versions don't match (%08x != %08x)\n",
-+			 pci->version, ver);
-+	else
-+		pci->version = ver;
-+
-+	ver = dw_pcie_readl_dbi(pci, PCIE_VERSION_TYPE);
-+
-+	if (pci->type && pci->type != ver)
-+		dev_warn(pci->dev, "Types don't match (%08x != %08x)\n",
-+			 pci->type, ver);
-+	else
-+		pci->type = ver;
-+}
-+
- /*
-  * These interfaces resemble the pci_find_*capability() interfaces, but these
-  * are for configuring host controllers, which are bridges *to* PCI devices but
-diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
-index 6b81530fb2ca..7899808bdbc6 100644
---- a/drivers/pci/controller/dwc/pcie-designware.h
-+++ b/drivers/pci/controller/dwc/pcie-designware.h
-@@ -85,6 +85,9 @@
- #define PCIE_PORT_MULTI_LANE_CTRL	0x8C0
- #define PORT_MLTI_UPCFG_SUPPORT		BIT(7)
- 
-+#define PCIE_VERSION_NUMBER		0x8F8
-+#define PCIE_VERSION_TYPE		0x8FC
-+
- #define PCIE_ATU_VIEWPORT		0x900
- #define PCIE_ATU_REGION_INBOUND		BIT(31)
- #define PCIE_ATU_REGION_OUTBOUND	0
-@@ -279,6 +282,7 @@ struct dw_pcie {
- 	struct dw_pcie_ep	ep;
- 	const struct dw_pcie_ops *ops;
- 	u32			version;
-+	u32			type;
- 	int			num_lanes;
- 	int			link_gen;
- 	u8			n_fts[2];
-@@ -290,6 +294,8 @@ struct dw_pcie {
- #define to_dw_pcie_from_ep(endpoint)   \
- 		container_of((endpoint), struct dw_pcie, ep)
- 
-+void dw_pcie_version_detect(struct dw_pcie *pci);
-+
- u8 dw_pcie_find_capability(struct dw_pcie *pci, u8 cap);
- u16 dw_pcie_find_ext_capability(struct dw_pcie *pci, u8 cap);
+ static const struct of_device_id of_intel_pcie_match[] = {
+-	{ .compatible = "intel,lgm-pcie", .data = &pcie_data },
++	{ .compatible = "intel,lgm-pcie" },
+ 	{}
+ };
  
 -- 
 2.35.1
