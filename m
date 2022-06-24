@@ -2,48 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8F7CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:37:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22DC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232818AbiFXOhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35814 "EHLO
+        id S232983AbiFXOhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232708AbiFXOfn (ORCPT
+        with ESMTP id S232524AbiFXOfo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:35:43 -0400
+        Fri, 24 Jun 2022 10:35:44 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48B1C5DF3B;
-        Fri, 24 Jun 2022 07:35:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D7254EF41;
+        Fri, 24 Jun 2022 07:35:17 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 6257D16CC;
-        Fri, 24 Jun 2022 17:20:22 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 6257D16CC
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 95B3D16C0;
+        Fri, 24 Jun 2022 17:17:45 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 95B3D16C0
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1656080422;
-        bh=zn6W9aYwFRm9r2y9H+QN9BCOOgvuf6XCDjzAh+V3fVs=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=ql4Y/sJoO2KUXd5ZpqEPcUAqAJTbn8VEy+V+K/MKnva2KMQ1miOIAiyYSf/S6RimI
-         ezgdhuBJpsmLvlqNeXbrwhxIceJbkD9BgFlfTSqzlCYYniew8VzjHCBI/dc6c6wZya
-         4y0vdjHi18uA2x1ye6VoAz3SjL5s3lKdIDKbFjbs=
+        d=baikalelectronics.ru; s=mail; t=1656080266;
+        bh=gBO/Fzd57VMdbFrJwQvKed9BQE5emVVvGrhVWB1wuys=;
+        h=From:To:CC:Subject:Date:From;
+        b=T3jUpF2mg1ifssmj2BLTpIeonf7tZ9POgcShAWvunW2aoQY7wFVMvXCKCfS0HdEKO
+         jTquOmGBsEk9lJCatArY/PSLAOdFDO6GX/AETPiPv4aQVzYpmHMH2pUiyHSDt6TzqF
+         FedEE1DTPTYIl+EWVNTDGRxutTQAVSCGR7zccvqE=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jun 2022 17:19:02 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jun 2022 17:16:25 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Alexey Brodkin <abrodkin@synopsys.com>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        <linux-usb@vger.kernel.org>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        <linux-clk@vger.kernel.org>, <linux-mips@vger.kernel.org>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Patrice Chotard <patrice.chotard@st.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linuxppc-dev@lists.ozlabs.org>,
+        <linux-snps-arc@lists.infradead.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v5 5/8] clk: baikal-t1: Add SATA internal ref clock buffer
-Date:   Fri, 24 Jun 2022 17:18:49 +0300
-Message-ID: <20220624141853.7417-6-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220624141853.7417-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220624141853.7417-1-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH RESEND v9 0/5] dt-bindings: usb: Harmonize xHCI/EHCI/OHCI/DWC3 nodes name
+Date:   Fri, 24 Jun 2022 17:16:16 +0300
+Message-ID: <20220624141622.7149-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -52,230 +63,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It turns out the internal SATA reference clock signal will stay
-unavailable for the SATA interface consumer until the buffer on it's way
-is ungated. So aside with having the actual clock divider enabled we need
-to ungate a buffer placed on the signal way to the SATA controller (most
-likely some rudiment from the initial SoC release). Seeing the switch flag
-is placed in the same register as the SATA-ref clock divider at a
-non-standard ffset, let's implement it as a separate clock controller with
-the set-rate propagation to the parental clock divider wrapper. As such
-we'll be able to disable/enable and still change the original clock source
-rate.
+As the subject states this series is an attempt to harmonize the xHCI,
+EHCI, OHCI and DWC USB3 DT nodes with the DT schema introduced in the
+framework of the patchset [1].
 
-Fixes: 353afa3a8d2e ("clk: Add Baikal-T1 CCU Dividers driver")
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Firstly as Krzysztof suggested we've deprecated a support of DWC USB3
+controllers with "synopsys,"-vendor prefix compatible string in favor of
+the ones with valid "snps,"-prefix. It's done in all the DTS files,
+which have been unfortunate to define such nodes.
 
----
+Secondly we suggest to fix the snps,quirk-frame-length-adjustment property
+declaration in the Amlogic meson-g12-common.dtsi DTS file, since it has
+been erroneously declared as boolean while having uint32 type. Neil said
+it was ok to init that property with 0x20 value.
 
+Thirdly the main part of the patchset concern fixing the xHCI, EHCI/OHCI
+and DWC USB3 DT nodes name as in accordance with their DT schema the
+corresponding node name is suppose to comply with the Generic USB HCD DT
+schema, which requires the USB nodes to have the name acceptable by the
+regexp: "^usb(@.*)?". Such requirement had been applicable even before we
+introduced the new DT schema in [1], but as we can see it hasn't been
+strictly implemented for a lot the DTS files. Since DT schema is now
+available the automated DTS validation shall make sure that the rule isn't
+violated.
+
+Note most of these patches have been a part of the last three patches of
+[1]. But since there is no way to have them merged in in a combined
+manner, I had to move them to the dedicated series and split them up so to
+be accepted by the corresponding subsystem maintainers one-by-one.
+
+[1] Link: https://lore.kernel.org/linux-usb/20201014101402.18271-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v1:
+- As Krzysztof suggested I've created a script which checked whether the
+  node names had been also updated in all the depended dts files. As a
+  result I found two more files which should have been also modified:
+  arch/arc/boot/dts/{axc003.dtsi,axc003_idu.dtsi}
+- Correct the USB DWC3 nodes name found in
+  arch/arm64/boot/dts/apm/{apm-storm.dtsi,apm-shadowcat.dtsi} too.
+
+Link: https://lore.kernel.org/linux-usb/20201020115959.2658-1-Sergey.Semin@baikalelectronics.ru
+Changelog v2:
+- Drop the patch:
+  [PATCH 01/29] usb: dwc3: Discard synopsys,dwc3 compatibility string
+  and get back the one which marks the "synopsys,dwc3" compatible string
+  as deprecated into the DT schema related series.
+- Drop the patches:
+  [PATCH 03/29] arm: dts: am437x: Correct DWC USB3 compatible string
+  [PATCH 04/29] arm: dts: exynos: Correct DWC USB3 compatible string
+  [PATCH 07/29] arm: dts: bcm53x: Harmonize EHCI/OHCI DT nodes name
+  [PATCH 08/29] arm: dts: stm32: Harmonize EHCI/OHCI DT nodes name
+  [PATCH 16/29] arm: dts: bcm5301x: Harmonize xHCI DT nodes name
+  [PATCH 19/29] arm: dts: exynos: Harmonize DWC USB3 DT nodes name
+  [PATCH 21/29] arm: dts: ls1021a: Harmonize DWC USB3 DT nodes name
+  [PATCH 22/29] arm: dts: omap5: Harmonize DWC USB3 DT nodes name
+  [PATCH 24/29] arm64: dts: allwinner: h6: Harmonize DWC USB3 DT nodes name
+  [PATCH 26/29] arm64: dts: exynos: Harmonize DWC USB3 DT nodes name
+  [PATCH 27/29] arm64: dts: layerscape: Harmonize DWC USB3 DT nodes name
+  since they have been applied to the corresponding maintainers repos.
+- Fix drivers/usb/dwc3/dwc3-qcom.c to be looking for the "usb@"-prefixed
+  sub-node and falling back to the "dwc3@"-prefixed one on failure.
+
+Link: https://lore.kernel.org/linux-usb/20201111091552.15593-1-Sergey.Semin@baikalelectronics.ru
+Changelog v3:
+- Drop the patches:
+  [PATCH v2 04/18] arm: dts: hisi-x5hd2: Harmonize EHCI/OHCI DT nodes name
+  [PATCH v2 06/18] arm64: dts: hisi: Harmonize EHCI/OHCI DT nodes name
+  [PATCH v2 07/18] mips: dts: jz47x: Harmonize EHCI/OHCI DT nodes name
+  [PATCH v2 08/18] mips: dts: sead3: Harmonize EHCI/OHCI DT nodes name
+  [PATCH v2 09/18] mips: dts: ralink: mt7628a: Harmonize EHCI/OHCI DT nodes name
+  [PATCH v2 11/18] arm64: dts: marvell: cp11x: Harmonize xHCI DT nodes name
+  [PATCH v2 12/18] arm: dts: marvell: armada-375: Harmonize DWC USB3 DT nodes name
+  [PATCH v2 16/18] arm64: dts: hi3660: Harmonize DWC USB3 DT nodes name
+  since they have been applied to the corresponding maintainers repos.
+
+Link: https://lore.kernel.org/linux-usb/20201205155621.3045-1-Sergey.Semin@baikalelectronics.ru
 Changelog v4:
-- This is a new patch created on v4 lap of the series.
----
- drivers/clk/baikal-t1/ccu-div.c     | 64 +++++++++++++++++++++++++++++
- drivers/clk/baikal-t1/ccu-div.h     |  4 ++
- drivers/clk/baikal-t1/clk-ccu-div.c | 18 +++++++-
- 3 files changed, 85 insertions(+), 1 deletion(-)
+- Just resend.
 
-diff --git a/drivers/clk/baikal-t1/ccu-div.c b/drivers/clk/baikal-t1/ccu-div.c
-index bbfa3526ee10..a6642f3d33d4 100644
---- a/drivers/clk/baikal-t1/ccu-div.c
-+++ b/drivers/clk/baikal-t1/ccu-div.c
-@@ -34,6 +34,7 @@
- #define CCU_DIV_CTL_CLKDIV_MASK(_width) \
- 	GENMASK((_width) + CCU_DIV_CTL_CLKDIV_FLD - 1, CCU_DIV_CTL_CLKDIV_FLD)
- #define CCU_DIV_CTL_LOCK_SHIFTED	BIT(27)
-+#define CCU_DIV_CTL_GATE_REF_BUF	BIT(28)
- #define CCU_DIV_CTL_LOCK_NORMAL		BIT(31)
- 
- #define CCU_DIV_RST_DELAY_US		1
-@@ -170,6 +171,40 @@ static int ccu_div_gate_is_enabled(struct clk_hw *hw)
- 	return !!(val & CCU_DIV_CTL_EN);
- }
- 
-+static int ccu_div_buf_enable(struct clk_hw *hw)
-+{
-+	struct ccu_div *div = to_ccu_div(hw);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&div->lock, flags);
-+	regmap_update_bits(div->sys_regs, div->reg_ctl,
-+			   CCU_DIV_CTL_GATE_REF_BUF, 0);
-+	spin_unlock_irqrestore(&div->lock, flags);
-+
-+	return 0;
-+}
-+
-+static void ccu_div_buf_disable(struct clk_hw *hw)
-+{
-+	struct ccu_div *div = to_ccu_div(hw);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&div->lock, flags);
-+	regmap_update_bits(div->sys_regs, div->reg_ctl,
-+			   CCU_DIV_CTL_GATE_REF_BUF, CCU_DIV_CTL_GATE_REF_BUF);
-+	spin_unlock_irqrestore(&div->lock, flags);
-+}
-+
-+static int ccu_div_buf_is_enabled(struct clk_hw *hw)
-+{
-+	struct ccu_div *div = to_ccu_div(hw);
-+	u32 val = 0;
-+
-+	regmap_read(div->sys_regs, div->reg_ctl, &val);
-+
-+	return !(val & CCU_DIV_CTL_GATE_REF_BUF);
-+}
-+
- static unsigned long ccu_div_var_recalc_rate(struct clk_hw *hw,
- 					     unsigned long parent_rate)
- {
-@@ -323,6 +358,7 @@ static const struct ccu_div_dbgfs_bit ccu_div_bits[] = {
- 	CCU_DIV_DBGFS_BIT_ATTR("div_en", CCU_DIV_CTL_EN),
- 	CCU_DIV_DBGFS_BIT_ATTR("div_rst", CCU_DIV_CTL_RST),
- 	CCU_DIV_DBGFS_BIT_ATTR("div_bypass", CCU_DIV_CTL_SET_CLKDIV),
-+	CCU_DIV_DBGFS_BIT_ATTR("div_buf", CCU_DIV_CTL_GATE_REF_BUF),
- 	CCU_DIV_DBGFS_BIT_ATTR("div_lock", CCU_DIV_CTL_LOCK_NORMAL)
- };
- 
-@@ -441,6 +477,9 @@ static void ccu_div_var_debug_init(struct clk_hw *hw, struct dentry *dentry)
- 			continue;
- 		}
- 
-+		if (!strcmp("div_buf", name))
-+			continue;
-+
- 		bits[didx] = ccu_div_bits[bidx];
- 		bits[didx].div = div;
- 
-@@ -477,6 +516,21 @@ static void ccu_div_gate_debug_init(struct clk_hw *hw, struct dentry *dentry)
- 				   &ccu_div_dbgfs_fixed_clkdiv_fops);
- }
- 
-+static void ccu_div_buf_debug_init(struct clk_hw *hw, struct dentry *dentry)
-+{
-+	struct ccu_div *div = to_ccu_div(hw);
-+	struct ccu_div_dbgfs_bit *bit;
-+
-+	bit = kmalloc(sizeof(*bit), GFP_KERNEL);
-+	if (!bit)
-+		return;
-+
-+	*bit = ccu_div_bits[3];
-+	bit->div = div;
-+	debugfs_create_file_unsafe(bit->name, ccu_div_dbgfs_mode, dentry, bit,
-+				   &ccu_div_dbgfs_bit_fops);
-+}
-+
- static void ccu_div_fixed_debug_init(struct clk_hw *hw, struct dentry *dentry)
- {
- 	struct ccu_div *div = to_ccu_div(hw);
-@@ -489,6 +543,7 @@ static void ccu_div_fixed_debug_init(struct clk_hw *hw, struct dentry *dentry)
- 
- #define ccu_div_var_debug_init NULL
- #define ccu_div_gate_debug_init NULL
-+#define ccu_div_buf_debug_init NULL
- #define ccu_div_fixed_debug_init NULL
- 
- #endif /* !CONFIG_DEBUG_FS */
-@@ -520,6 +575,13 @@ static const struct clk_ops ccu_div_gate_ops = {
- 	.debug_init = ccu_div_gate_debug_init
- };
- 
-+static const struct clk_ops ccu_div_buf_ops = {
-+	.enable = ccu_div_buf_enable,
-+	.disable = ccu_div_buf_disable,
-+	.is_enabled = ccu_div_buf_is_enabled,
-+	.debug_init = ccu_div_buf_debug_init
-+};
-+
- static const struct clk_ops ccu_div_fixed_ops = {
- 	.recalc_rate = ccu_div_fixed_recalc_rate,
- 	.round_rate = ccu_div_fixed_round_rate,
-@@ -566,6 +628,8 @@ struct ccu_div *ccu_div_hw_register(const struct ccu_div_init_data *div_init)
- 	} else if (div_init->type == CCU_DIV_GATE) {
- 		hw_init.ops = &ccu_div_gate_ops;
- 		div->divider = div_init->divider;
-+	} else if (div_init->type == CCU_DIV_BUF) {
-+		hw_init.ops = &ccu_div_buf_ops;
- 	} else if (div_init->type == CCU_DIV_FIXED) {
- 		hw_init.ops = &ccu_div_fixed_ops;
- 		div->divider = div_init->divider;
-diff --git a/drivers/clk/baikal-t1/ccu-div.h b/drivers/clk/baikal-t1/ccu-div.h
-index b6a9c8e45318..4eb49ff4803c 100644
---- a/drivers/clk/baikal-t1/ccu-div.h
-+++ b/drivers/clk/baikal-t1/ccu-div.h
-@@ -15,8 +15,10 @@
- 
- /*
-  * CCU Divider private clock IDs
-+ * @CCU_SYS_SATA_CLK: CCU SATA internal clock
-  * @CCU_SYS_XGMAC_CLK: CCU XGMAC internal clock
-  */
-+#define CCU_SYS_SATA_CLK		-1
- #define CCU_SYS_XGMAC_CLK		-2
- 
- /*
-@@ -37,11 +39,13 @@
-  * enum ccu_div_type - CCU Divider types
-  * @CCU_DIV_VAR: Clocks gate with variable divider.
-  * @CCU_DIV_GATE: Clocks gate with fixed divider.
-+ * @CCU_DIV_BUF: Clock gate with no divider.
-  * @CCU_DIV_FIXED: Ungateable clock with fixed divider.
-  */
- enum ccu_div_type {
- 	CCU_DIV_VAR,
- 	CCU_DIV_GATE,
-+	CCU_DIV_BUF,
- 	CCU_DIV_FIXED
- };
- 
-diff --git a/drivers/clk/baikal-t1/clk-ccu-div.c b/drivers/clk/baikal-t1/clk-ccu-div.c
-index 3953ae5664be..90f4fda406ee 100644
---- a/drivers/clk/baikal-t1/clk-ccu-div.c
-+++ b/drivers/clk/baikal-t1/clk-ccu-div.c
-@@ -76,6 +76,16 @@
- 		.divider = _divider				\
- 	}
- 
-+#define CCU_DIV_BUF_INFO(_id, _name, _pname, _base, _flags)	\
-+	{							\
-+		.id = _id,					\
-+		.name = _name,					\
-+		.parent_name = _pname,				\
-+		.base = _base,					\
-+		.type = CCU_DIV_BUF,				\
-+		.flags = _flags					\
-+	}
-+
- #define CCU_DIV_FIXED_INFO(_id, _name, _pname, _divider)	\
- 	{							\
- 		.id = _id,					\
-@@ -188,11 +198,14 @@ static const struct ccu_div_rst_map axi_rst_map[] = {
-  * for the SoC devices registers IO-operations.
-  */
- static const struct ccu_div_info sys_info[] = {
--	CCU_DIV_VAR_INFO(CCU_SYS_SATA_REF_CLK, "sys_sata_ref_clk",
-+	CCU_DIV_VAR_INFO(CCU_SYS_SATA_CLK, "sys_sata_clk",
- 			 "sata_clk", CCU_SYS_SATA_REF_BASE, 4,
- 			 CLK_SET_RATE_GATE,
- 			 CCU_DIV_SKIP_ONE | CCU_DIV_LOCK_SHIFTED |
- 			 CCU_DIV_RESET_DOMAIN),
-+	CCU_DIV_BUF_INFO(CCU_SYS_SATA_REF_CLK, "sys_sata_ref_clk",
-+			 "sys_sata_clk", CCU_SYS_SATA_REF_BASE,
-+			 CLK_SET_RATE_PARENT),
- 	CCU_DIV_VAR_INFO(CCU_SYS_APB_CLK, "sys_apb_clk",
- 			 "pcie_clk", CCU_SYS_APB_BASE, 5,
- 			 CLK_IS_CRITICAL, CCU_DIV_RESET_DOMAIN),
-@@ -398,6 +411,9 @@ static int ccu_div_clk_register(struct ccu_div_data *data)
- 			init.base = info->base;
- 			init.sys_regs = data->sys_regs;
- 			init.divider = info->divider;
-+		} else if (init.type == CCU_DIV_BUF) {
-+			init.base = info->base;
-+			init.sys_regs = data->sys_regs;
- 		} else {
- 			init.divider = info->divider;
- 		}
+Link: https://lore.kernel.org/linux-usb/20201210091756.18057-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v5:
+- Drop the patch:
+  [PATCH v4 02/10] arm64: dts: amlogic: meson-g12: Set FL-adj property value
+  since it has been applied to the corresponding maintainers repos.
+- Get back the patch:
+  [PATCH 21/29] arm: dts: ls1021a: Harmonize DWC USB3 DT nodes name
+  as it has been missing in the kernel 5.11-rc7
+- Rebase onto the kernel 5.11-rc7.
+
+Link: https://lore.kernel.org/lkml/20210208135154.6645-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v6:
+- Just resend and add linux-usb.vger.kernel.org to the list of Ccecipients.
+
+Link: https://lore.kernel.org/linux-usb/20210210172850.20849-1-Sergey.Semin@baikalelectronics.ru
+Link: https://lore.kernel.org/linux-usb/20210212205521.14280-1-Sergey.Semin@baikalelectronics.ru
+Changelog v7:
+- Replace "of_get_child_by_name(np, "usb") ?: of_get_child_by_name(np, "dwc3");"
+  pattern with using of_get_compatible_child() method in the Qcom DWC3 driver.
+- Drop the patches:
+  [PATCH v6 01/10] arm: dts: ls1021a: Harmonize DWC USB3 DT nodes name
+  [PATCH v6 02/10] arm: dts: keystone: Correct DWC USB3 compatible string
+  [PATCH v6 06/10] arm: dts: keystone: Harmonize DWC USB3 DT nodes name
+  since they have been applied to the corresponding maintainers repos.
+- Cleanup the list of recipients.
+- Rebase onto kernel 5.12-rc4.
+
+Link: https://lore.kernel.org/lkml/20210324204836.29668-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v8:
+- Just resend.
+
+Link: https://lore.kernel.org/lkml/20210409113029.7144-1-Sergey.Semin@baikalelectronics.ru
+Changelog v9:
+- Drop the patches:
+  [PATCH RESEND v8 1/8] arm: dts: ls1021a: Harmonize DWC USB3 DT nodes name
+  [PATCH RESEND v8 7/8] usb: dwc3: qcom: Detect DWC3 DT-nodes using compatible string
+  since they have been applied to the corresponding maintainers repos.
+- Rebase onto the kernel 5.19-rcX.
+
+Cc: Khuong Dinh <khuong@os.amperecomputing.com>
+Cc: Patrice Chotard <patrice.chotard@st.com>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-snps-arc@lists.infradead.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Serge Semin (5):
+  arc: dts: Harmonize EHCI/OHCI DT nodes name
+  arm: dts: lpc18xx: Harmonize EHCI/OHCI DT nodes name
+  powerpc: dts: akebono: Harmonize EHCI/OHCI DT nodes name
+  arm: dts: stih407-family: Harmonize DWC USB3 DT nodes name
+  arm64: dts: apm: Harmonize DWC USB3 DT nodes name
+
+ arch/arc/boot/dts/axc003.dtsi              | 4 ++--
+ arch/arc/boot/dts/axc003_idu.dtsi          | 4 ++--
+ arch/arc/boot/dts/axs10x_mb.dtsi           | 4 ++--
+ arch/arc/boot/dts/hsdk.dts                 | 4 ++--
+ arch/arc/boot/dts/vdk_axs10x_mb.dtsi       | 2 +-
+ arch/arm/boot/dts/lpc18xx.dtsi             | 4 ++--
+ arch/arm/boot/dts/stih407-family.dtsi      | 2 +-
+ arch/arm64/boot/dts/apm/apm-shadowcat.dtsi | 4 ++--
+ arch/arm64/boot/dts/apm/apm-storm.dtsi     | 6 +++---
+ arch/powerpc/boot/dts/akebono.dts          | 6 +++---
+ 10 files changed, 20 insertions(+), 20 deletions(-)
+
 -- 
 2.35.1
 
