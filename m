@@ -2,154 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 345B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 20:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DEBCCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 20:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbiFXUjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 16:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47892 "EHLO
+        id S231411AbiFXUlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 16:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiFXUi7 (ORCPT
+        with ESMTP id S229441AbiFXUlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 16:38:59 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB2B4F1F2
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 13:38:58 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id ay16so6984238ejb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 13:38:58 -0700 (PDT)
+        Fri, 24 Jun 2022 16:41:50 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F6363630;
+        Fri, 24 Jun 2022 13:41:49 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id w20so6385682lfa.11;
+        Fri, 24 Jun 2022 13:41:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TavfSfTVVwaJ2oAtAxMPPR7datLV9IX5RQLV0Gzrz9w=;
-        b=a6mFv9EjMZlxmWaLmjgPajKDMLzFtIpxIiqJTFDSPKn3to/9UQV68jYUhKQ6utybIf
-         mfVHbTLaNkpYEZ6hUgACgXRyWgdh3q/LFTvB2N/EmvEarFGKOTZKJRB/qVD9mQrJgI53
-         JTQWQyAMwB8Pm+nw2EWj+QG+doXYDWavHwXtw=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/jG5W+ePlStAo427FPsgRmaP+U/0rD3zZzMdqRYYbmg=;
+        b=J+tGRTrSFTb1R8Vpr8cSIVIm/o2Vqxs+I2fXmSTA2UCTtbWmE8Fg0sRokRImAhBYJw
+         xq7CLvEwVzlTrLtsqp1g006ujV5OnJj6pfhLyOXJVcvgkrAaVPto4YFjTBaYYLnZklOc
+         RvhVBLvpez2CY1JRQ9ku0JYimoPj+tDA9JkYdy9BkhyGCoZWIqk092HsH7cBc3aIziGu
+         TkTChrOWEoXvt6JpnGete/IfDHoeui49vS+4xpjhT6JRSieX1d7duusa0LwdX9qk+Bnw
+         AX5WP9DSydJ1DC6VDm1jnKdb1rbFKACQ2BUrbWYCFK32Rs0jp3v3FvMwz9aYq+5feFhg
+         HGQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TavfSfTVVwaJ2oAtAxMPPR7datLV9IX5RQLV0Gzrz9w=;
-        b=E38+NMvfybsj08a7tXHkMrN/Dn5VXJNGaY98u86kznv9uFFZAWkLihYiORuZ8/KpxZ
-         xTm7PmUQnujLVrO44+MDIomDyA8HfcMqgbXxFF8ng9wkYSm+Xy4Me5QoOLrM8ya+T9fn
-         NBVoIokZ6Oaq4czBRr40e971ZRzE5l0eU8B+h9G8CnJrHVSIQSwK6sKjBKq9KClTPsJF
-         vMjR9OJbid7v9sbhT75zAOaGyOcWaHXcHB2cOX1hj/8JAvCKCi06u0YAQhjtuaSiusmW
-         DWSpwv3k6pOCRaYe3fvA2cGNd5LhHX16URndh1h4I5T125KP5mMMMKg1uiR53KHXFIXH
-         +3Bw==
-X-Gm-Message-State: AJIora9Tj3UN7ByNSq7tiwJwc2IRa4E5YoeaOioxbVfCBMn9usXgZ5pI
-        6ujJrdGtgR/CVQOFtDFPCdlf0Orz3bDAjaog
-X-Google-Smtp-Source: AGRyM1vPMke7/PNzczfgu+IJ6CwI4KyfyXIq6hYNVbT3fbr20hFDyPQbRG3aYykAzWTImh22sD3pVQ==
-X-Received: by 2002:a17:906:77c8:b0:722:e753:fbbe with SMTP id m8-20020a17090677c800b00722e753fbbemr802451ejn.692.1656103136630;
-        Fri, 24 Jun 2022 13:38:56 -0700 (PDT)
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
-        by smtp.gmail.com with ESMTPSA id c19-20020a170906155300b006fea43db5c1sm1652940ejd.21.2022.06.24.13.38.56
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jun 2022 13:38:56 -0700 (PDT)
-Received: by mail-ej1-f43.google.com with SMTP id mf9so7095849ejb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 13:38:56 -0700 (PDT)
-X-Received: by 2002:adf:d1c1:0:b0:21b:a5e9:b7b2 with SMTP id
- b1-20020adfd1c1000000b0021ba5e9b7b2mr857431wrd.405.1656102812967; Fri, 24 Jun
- 2022 13:33:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220609121838.v22.2.I7c9a1f1d6ced41dd8310e8a03da666a32364e790@changeid>
- <CAD=FV=W6erE8ByabmYSL_OWJPKYGqysDMGYQX6j7_PSEYGZ4YQ@mail.gmail.com>
- <YqpprpUHmlD62YzI@google.com> <CAD=FV=VNDamV4+j07TrnX3cUs2-D5ySbeQ-zfU=Eef8+WagGig@mail.gmail.com>
- <Yqub17iT4O7aqFMi@google.com> <CAD=FV=VEztPLhsrJecZUdyHCW7ZfFTVvxyqY5CqRVv2mWyrLog@mail.gmail.com>
- <YquoSMiQS+RG8rOM@google.com> <CAD=FV=W81pSEUbzw2ZQgs_TJ9MLnHQHiDopZXZ6bHdS7QMzAyA@mail.gmail.com>
- <YqvMffveCPiKQEUk@google.com> <CAD=FV=UJOStPfRR3Hq2DmRBSH-HCtZ16hAU9eVH5w6Hm=WSJRQ@mail.gmail.com>
- <YqytDNB2y4+qT8GD@google.com>
-In-Reply-To: <YqytDNB2y4+qT8GD@google.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 24 Jun 2022 13:33:19 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UT0XtMjZ9syQPGXeTEaUrwGTb_LgDow+cofgmx4D30VA@mail.gmail.com>
-Message-ID: <CAD=FV=UT0XtMjZ9syQPGXeTEaUrwGTb_LgDow+cofgmx4D30VA@mail.gmail.com>
-Subject: Re: [PATCH v22 2/3] usb: misc: Add onboard_usb_hub driver
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/jG5W+ePlStAo427FPsgRmaP+U/0rD3zZzMdqRYYbmg=;
+        b=4g633KW7j9ex4QmL5MknDRJlC566VDtFOQ3ajoCrqEZbfrZwfLB+L5vkkm0kQXBP4A
+         3kyHzeO+8E20MObWfvJAxc70tiZfhzvvhxMHEhddSkpL3ZALJ/0OItLMG7o5HJg2vOkb
+         efZXLfKwL/fHefrv5cJLzGtv6qyzjoKDd0T+GmiNqL1kJqx0UnkNlOvBudkhU03p/yCc
+         BG6Mrp1uymkKdMH78+C6P6YR7jcLKX/F0tp21kEKrrpnZqWL2WV+0x1s7fDlIN9gFtM6
+         lqlSkaiOynY6zO0FaJwg6d+/2pJJWv1kwtb6acjcdYN/k9AxH9ItqwUrrb+JVPy7Rfn0
+         /wkA==
+X-Gm-Message-State: AJIora9MgOVNkvknWycY94gxfhV+IawDQ86jaw6jLmmKZ8MTfEdZuqVP
+        VVmF/bIKPLY5tATNZCmHoSQYBgzhJkapUg==
+X-Google-Smtp-Source: AGRyM1uctHDCNUKjjxfR1aVDBN/pntJ2Pv6ctSxnvIPYmNdb7JIuhWvHsn1bfb+oEyhecmXfDr12sw==
+X-Received: by 2002:ac2:5616:0:b0:47f:8d53:f602 with SMTP id v22-20020ac25616000000b0047f8d53f602mr419029lfd.169.1656103302868;
+        Fri, 24 Jun 2022 13:41:42 -0700 (PDT)
+Received: from mobilestation ([95.79.189.214])
+        by smtp.gmail.com with ESMTPSA id s9-20020a056512314900b0047f88d15ec0sm506070lfi.251.2022.06.24.13.41.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 13:41:42 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 23:41:39 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Felipe Balbi <balbi@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        LKML <linux-kernel@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Alexey Brodkin <abrodkin@synopsys.com>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Bastien Nocera <hadess@hadess.net>,
-        Peter Chen <peter.chen@kernel.org>,
-        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+        linux-usb@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Patrice Chotard <patrice.chotard@st.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-snps-arc@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v9 2/5] arm: dts: lpc18xx: Harmonize EHCI/OHCI DT
+ nodes name
+Message-ID: <20220624204139.ndyi437ye7c2gl45@mobilestation>
+References: <20220624141622.7149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220624141622.7149-3-Sergey.Semin@baikalelectronics.ru>
+ <1f426a67-2cf2-b67e-3cd0-a4c452591baa@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1f426a67-2cf2-b67e-3cd0-a4c452591baa@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, Jun 24, 2022 at 07:14:44PM +0200, Krzysztof Kozlowski wrote:
+> On 24/06/2022 16:16, Serge Semin wrote:
+> > In accordance with the Generic EHCI/OHCI bindings the corresponding node
+> > name is suppose to comply with the Generic USB HCD DT schema, which
+> > requires the USB nodes to have the name acceptable by the regexp:
+> > "^usb(@.*)?" . Make sure the "generic-ehci" and "generic-ohci"-compatible
+> > nodes are correctly named.
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+> > Acked-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > ---
+> >  arch/arm/boot/dts/lpc18xx.dtsi | 4 ++--
+> 
 
-On Fri, Jun 17, 2022 at 9:34 AM Matthias Kaehlcke <mka@chromium.org> wrote:
->
-> > Looking at the "companion-hub" case with fresh eyes, too, I wonder if
-> > that can be simpler. If we find a companion hub, do we need both the
-> > check for usb_hcd_is_primary_hcd() and the check to see whether the
-> > pdev was already created?
->
-> I was also doubting about this and concluded that it is still needed.
->
-> Let's use once more the trogdor config as example, which has one physical
-> onboard hub chip with a USB 3.1 hub and a USB 2.1 companion hub, connected
-> to the dwc3 controller:
->
-> &usb_1_dwc3 {
->         dr_mode = "host";
->         #address-cells = <1>;
->         #size-cells = <0>;
->
->         /* 2.x hub on port 1 */
->         usb_hub_2_x: hub@1 {
->                 compatible = "usbbda,5411";
->                 reg = <1>;
->                 vdd-supply = <&pp3300_hub>;
->                 companion-hub = <&usb_hub_3_x>;
->         };
->
->         /* 3.x hub on port 2 */
->         usb_hub_3_x: hub@2 {
->                 compatible = "usbbda,411";
->                 reg = <2>;
->                 vdd-supply = <&pp3300_hub>;
->                 companion-hub = <&usb_hub_2_x>;
->         };
-> };
->
-> Let's assume we don't check for the pdev. With our change above for root hubs
-> the loop is now only executed for the primary HCD. In the first iteration
-> we encounter the 2.x hub, it has a companion hub, but that alone doesn't
-> tell us much, so we create a pdev. In the next iteration we encouter the
-> 3.x hub, it also has a companion hub, but we don't know/check that the
-> companion already has a pdev, so we create another one for the same
-> physical hub.
+> You should split the patchset per architecture, because maybe that's why
+> no one picks it up?
 
-Ah, you are correct. You only run into that case for the root hub,
-correct? For everything else it's impossible?
+Each patch is sent out to the corresponding mailing list and the
+maintainers. I don't think splitting the patchset into the subsets will
+be more efficient especially seeing the initial patchset consisted of
+30 patches of which only five left.
 
-...and I guess things would be different if inside the loop you
-actually set "hcd" to point to the "hcd" of the child device. I guess
-that's where my confusion keeps stemming from. "hcd" is the parent's
-host controller which is not always the same as the child's host
-controller.
+I was very busy last year with another activities so what was left of this
+patchset was stalling on my local repo all that time. I have been very
+surprised to realise that the submitted part still hasn't been merged in for
+all that time. So I've got back to resubmitting the series.
 
-It would have been keen if we could somehow know the child's host
-controller and get a pointer to that, but we can't because the child
-device hasn't been enumerated yet.
+* Though the Qualcom dts have been fixed by you lately.
 
-OK, I'm convinced. I'll mention it in your v23 but maybe I'll have a
-slightly better chance of figuring this out if/when I look at this
-again if we rename "hcd" to "parent_hcd".
+> 
+> Let me pick up ARM bits through my cleanup series. If anyone objects,
+> please let me know.
 
+Ok. Thanks.
 
--Doug
+-Sergey
+
+> 
+> Best regards,
+> Krzysztof
