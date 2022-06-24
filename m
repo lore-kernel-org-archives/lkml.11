@@ -2,133 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56427C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232201AbiFXRTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
+        id S232256AbiFXRTs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:19:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231228AbiFXRSx (ORCPT
+        with ESMTP id S232226AbiFXRTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:18:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1D2C4FC63
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:18:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656091131;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M2VwHIzlgf6suh30aCXnA2oy96t8J5oIFCGlpyPJlL0=;
-        b=hGFUvUq74DaZIiH8waaYrc64Ll1O+5UZH5IqI1/JsLndDQKJ13y0zSw35YUliJM8EvSr36
-        milW6ZpqHdkrPpVkoh7o6W/+upy0g/X7jQbKC0GiyR8ZPZMZKpzN5UHavNQiQ0ngc2gnYk
-        QAvXOUEQMzt7KiZb3D5siWLalidSpZo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-663-TBuJJVdHPdGQ85PvV6Cz5Q-1; Fri, 24 Jun 2022 13:18:50 -0400
-X-MC-Unique: TBuJJVdHPdGQ85PvV6Cz5Q-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F26CA801231;
-        Fri, 24 Jun 2022 17:18:49 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DAD87492C3B;
-        Fri, 24 Jun 2022 17:18:49 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: [PATCH v2 7/8] KVM: x86: de-underscorify __emulator_pio_in
-Date:   Fri, 24 Jun 2022 13:18:47 -0400
-Message-Id: <20220624171848.2801602-8-pbonzini@redhat.com>
-In-Reply-To: <20220624171848.2801602-1-pbonzini@redhat.com>
-References: <20220624171848.2801602-1-pbonzini@redhat.com>
+        Fri, 24 Jun 2022 13:19:04 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A436B6809F
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:19:01 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id o9so4358667edt.12
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:19:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1mS7MeLhqDF7A//E5jhahypB/uovVI38NPPCc6RFQiA=;
+        b=wK1ybY4CMPD/YhNJv23Qg1YqoIQNUGv2qDLbhKLlEQ5sqGRcXIZl4ppBi5VxBgUEZP
+         Q5E31vOb3OBa5sHriAEnzm8iG/QPcJZ6C4WNwsRfovG9jffNupHbCS320644Ira5RO5+
+         e0nkL2q9J7UDXrq+Z9XEtGorNlDdpAtEgcKrvPRgG+Dfc1/ss0mkrDvgndsYowaOvZi7
+         H0f71PiR3zR6BVxvifMWTAjd/ucp6t8aaZsi2Zn2jth4JGkKV/weLgkEIDmqdP3FIXQ0
+         SH2e30+e009E3e8qOZq8XwLFbRhQBIr9UqCXxjjGaBJleMnleMlL51oDiM1gUUdlilcI
+         rQcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1mS7MeLhqDF7A//E5jhahypB/uovVI38NPPCc6RFQiA=;
+        b=fP3iK5JmquM3Gk3ujBxZEoV0vt0YeZxW4QEEwc53E1DggRCevJxzFLNloaJ7IrtwLR
+         8Da7YHxpg5dkmGxYxac1Gp+KgJF+CVyZybyR64eLrFqrBekzwHBOUuQiNdkohYwZYfDG
+         J5ysXNVEiCGSXSR4eFHEyDHyZKBOvLIt+vQ6sQ60VOivVYJHX2T0/S4/eKuIV2OlbYTB
+         t2ZBK015uR06ZzuukTis3SBXMAfyGn60Gbr3RX+JUhW4tggPXbxMGwzw8ogY2On6nTo0
+         21w1cW+HK4JkKVD4dkiJrgnoAbUWL0uhaJh8HMqSKtDyVPc55tByVBOFiUkRQAdCaHE8
+         KvLw==
+X-Gm-Message-State: AJIora9ZiBhcr5unL83VbM8j12w0HFkbA2ItVfmlGxsAZyugRFrvxZ8d
+        VvEen83ShLlThu02l+nhyOIFEg==
+X-Google-Smtp-Source: AGRyM1tGTpZKHip8vrhphzvWpCMKPL/90cL8453ozIuX6HfyfUoBcF1h+aKQ1UNEk0xmQKnKS7KfJQ==
+X-Received: by 2002:a05:6402:104a:b0:435:c7cd:11dc with SMTP id e10-20020a056402104a00b00435c7cd11dcmr105928edu.335.1656091140072;
+        Fri, 24 Jun 2022 10:19:00 -0700 (PDT)
+Received: from [192.168.0.237] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id r13-20020a170906a20d00b006fec9cf9237sm1419402ejy.130.2022.06.24.10.18.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 10:18:59 -0700 (PDT)
+Message-ID: <59d8a34a-a211-d00a-2243-6ad51cfa4204@linaro.org>
+Date:   Fri, 24 Jun 2022 19:18:57 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH RESEND v9 4/5] arm: dts: stih407-family: Harmonize DWC
+ USB3 DT nodes name
+Content-Language: en-US
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Alexey Brodkin <abrodkin@synopsys.com>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-usb@vger.kernel.org,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Patrice Chotard <patrice.chotard@st.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-snps-arc@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220624141622.7149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220624141622.7149-5-Sergey.Semin@baikalelectronics.ru>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220624141622.7149-5-Sergey.Semin@baikalelectronics.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now all callers except emulator_pio_in_emulated are using
-__emulator_pio_in/complete_emulator_pio_in explicitly.
-Move the "either copy the result or attempt PIO" logic in
-emulator_pio_in_emulated, and rename __emulator_pio_in to
-just emulator_pio_in.
+On 24/06/2022 16:16, Serge Semin wrote:
+> In accordance with the DWC USB3 bindings the corresponding node
+> name is suppose to comply with the Generic USB HCD DT schema, which
+> requires the USB nodes to have the name acceptable by the regexp:
+> "^usb(@.*)?" . Make sure the "snps,dwc3"-compatible nodes are correctly
+> named.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Acked-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Reviewed-by: Patrice Chotard <patrice.chotard@st.com>
+> ---
+>  arch/arm/boot/dts/stih407-family.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
+> index 1713f7878117..7ba528315dbe 100644
+> --- a/arch/arm/boot/dts/stih407-family.dtsi
+> +++ b/arch/arm/boot/dts/stih407-family.dtsi
+> @@ -725,7 +725,7 @@ st_dwc3: dwc3@8f94000 {
+>  
+>  			status = "disabled";
+>  
+> -			dwc3: dwc3@9900000 {
+> +			dwc3: usb@9900000 {
 
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/kvm/x86.c | 24 +++++++++---------------
- 1 file changed, 9 insertions(+), 15 deletions(-)
-
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index b824ffc63b17..1a017a5a680b 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -7626,8 +7626,8 @@ static int emulator_pio_in_out(struct kvm_vcpu *vcpu, int size,
- 	return 0;
- }
- 
--static int __emulator_pio_in(struct kvm_vcpu *vcpu, int size,
--			     unsigned short port, void *val, unsigned int count)
-+static int emulator_pio_in(struct kvm_vcpu *vcpu, int size,
-+      			   unsigned short port, void *val, unsigned int count)
- {
- 	int r = emulator_pio_in_out(vcpu, size, port, val, count, true);
- 	if (r)
-@@ -7645,9 +7645,11 @@ static void complete_emulator_pio_in(struct kvm_vcpu *vcpu, void *val)
- 	vcpu->arch.pio.count = 0;
- }
- 
--static int emulator_pio_in(struct kvm_vcpu *vcpu, int size,
--			   unsigned short port, void *val, unsigned int count)
-+static int emulator_pio_in_emulated(struct x86_emulate_ctxt *ctxt,
-+				    int size, unsigned short port, void *val,
-+				    unsigned int count)
- {
-+	struct kvm_vcpu *vcpu = emul_to_vcpu(ctxt);
- 	if (vcpu->arch.pio.count) {
- 		/*
- 		 * Complete a previous iteration that required userspace I/O.
-@@ -7660,15 +7662,7 @@ static int emulator_pio_in(struct kvm_vcpu *vcpu, int size,
- 		return 1;
- 	}
- 
--	return __emulator_pio_in(vcpu, size, port, val, count);
--}
--
--static int emulator_pio_in_emulated(struct x86_emulate_ctxt *ctxt,
--				    int size, unsigned short port, void *val,
--				    unsigned int count)
--{
--	return emulator_pio_in(emul_to_vcpu(ctxt), size, port, val, count);
--
-+	return emulator_pio_in(vcpu, size, port, val, count);
- }
- 
- static int emulator_pio_out(struct kvm_vcpu *vcpu, int size,
-@@ -8886,7 +8880,7 @@ static int kvm_fast_pio_in(struct kvm_vcpu *vcpu, int size,
- 	/* For size less than 4 we merge, else we zero extend */
- 	val = (size < 4) ? kvm_rax_read(vcpu) : 0;
- 
--	ret = __emulator_pio_in(vcpu, size, port, &val, 1);
-+	ret = emulator_pio_in(vcpu, size, port, &val, 1);
- 	if (ret) {
- 		kvm_rax_write(vcpu, val);
- 		return ret;
-@@ -13277,7 +13271,7 @@ static int kvm_sev_es_ins(struct kvm_vcpu *vcpu, unsigned int size,
- 	for (;;) {
- 		unsigned int count =
- 			min_t(unsigned int, PAGE_SIZE / size, vcpu->arch.sev_pio_count);
--		if (!__emulator_pio_in(vcpu, size, port, vcpu->arch.sev_pio_data, count))
-+		if (!emulator_pio_in(vcpu, size, port, vcpu->arch.sev_pio_data, count))
- 			break;
- 
- 		/* Emulation done by the kernel.  */
--- 
-2.31.1
+This does not apply. What tree is it based on?
 
 
+Best regards,
+Krzysztof
