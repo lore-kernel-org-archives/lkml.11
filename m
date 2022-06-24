@@ -2,86 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFF4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC51C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233007AbiFXOhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
+        id S232901AbiFXOhw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232680AbiFXOgl (ORCPT
+        with ESMTP id S232791AbiFXOhC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:36:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADC260E1D
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:35:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D89E0CE2A5A
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:35:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B398BC34114;
-        Fri, 24 Jun 2022 14:35:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656081342;
-        bh=t/Tf6J/AANuVldAvrbb1l1OA4Ss/PFndiFh59pDsU/o=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=RCGpbBTyD76YoVkatmj8Squ9IMzjadZE+jZnOY9R11r52qjKSGEHg3EhHiy7okVTv
-         mB07dyC5yirbzQFV2nl4vP78c2wisWp5jr0X1gvgbg2UlQg/ZCqLQI73y3BUGXlVrD
-         liwNuSMaPPuDf35KEkHTQQi5qZyFXBYGf8NH37HFE7zJ5zgHzaBxum0WiZRqYqnIuZ
-         t9JFLs4WcBR4o+zpDk0S1UhM9z4456uZdXAUAMpm+EnFG8L5A5vR7ntEpMkusdAQmH
-         qHUFpXrD9QyFkrm71oerugNAUWq7asR0llnPjtOWgKlbdTx92usJZBKY5KEOVWY3gN
-         924C5Mr5WDFmA==
-From:   Mark Brown <broonie@kernel.org>
-To:     james.schulman@cirrus.com, cristian.ciocaltea@collabora.com,
-        tiwai@suse.com, lgirdwood@gmail.com, david.rhodes@cirrus.com,
-        rf@opensource.cirrus.com, tanureal@opensource.cirrus.com,
-        perex@perex.cz
-Cc:     kernel@collabora.com, alsa-devel@alsa-project.org,
-        patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
-In-Reply-To: <20220621213819.262537-1-cristian.ciocaltea@collabora.com>
-References: <20220621213819.262537-1-cristian.ciocaltea@collabora.com>
-Subject: Re: [PATCH] ASoC: cs35l41: Add support for CLSA3541 ACPI device ID
-Message-Id: <165608133945.445804.16792879989339290449.b4-ty@kernel.org>
-Date:   Fri, 24 Jun 2022 15:35:39 +0100
+        Fri, 24 Jun 2022 10:37:02 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF24A563AC
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:36:53 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 058F86000F;
+        Fri, 24 Jun 2022 14:36:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1656081411;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xDw6yLjQXYdImD1b38J6a4KT0sSwWeEKKVw++nHyiiw=;
+        b=GBxJLAsyGFOR7YXJ3b4olBaDJSFns7lV4HmQmwrj3DjgMCKbU2icOOKzmjc+EMul1fe9jA
+        +0If9CrUQeij0YepDQtCI7n4sW9FwarvheMa8DB0lTTyyGVTGNSFEdBkPp+5tTgidpI4Eh
+        tzQm5LqkArdPvo+055PB17JYqLEOWfE27u2f/Ljv1i5t1Xy9hgwVuv9bRrFDj5Gsy+C2jT
+        u1BHUrNEb+oI9BPrxMiuNUF+2Dt2kXh4O2IRZLT2c4/kIdckKcENhLcmNlVwERawDZLi7B
+        XGz96yohFeR1z9dg6h29VIotoeGdSJFbt5jj5KESfvkxHuGXtmDtiHpPKbHz9w==
+Date:   Fri, 24 Jun 2022 16:36:50 +0200
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        airlied@linux.ie, daniel@ffwll.ch, mripard@kernel.org
+Subject: Re: [PATCH -next] drm/logicvc: add missing of_node_put() in
+ logicvc_layers_init()
+Message-ID: <YrXMAvuHJgls+wNM@aptenodytes>
+References: <20220614112112.1537319-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="xxTdvUN19r+Gzqln"
+Content-Disposition: inline
+In-Reply-To: <20220614112112.1537319-1-yangyingliang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 22 Jun 2022 00:38:19 +0300, Cristian Ciocaltea wrote:
-> Add support for the CLSA3541 ACPI device ID used on Valve's Steam Deck.
-> The driver is fully compatible with the indicated hardware, hence no
-> additional changes are required.
-> 
-> 
 
-Applied to
+--xxTdvUN19r+Gzqln
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Hi Yang,
 
-Thanks!
+On Tue 14 Jun 22, 19:21, Yang Yingliang wrote:
+> The of_node_put() need be called in error path in logicvc_layers_init().
+>=20
+> Fixes: efeeaefe9be5 ("drm: Add support for the LogiCVC display controller=
+")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-[1/1] ASoC: cs35l41: Add support for CLSA3541 ACPI device ID
-      commit: 658e95953075ca781ef8712d0a3203e485888c7f
+Thanks for the fix!
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+Acked-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+Cheers,
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+Paul
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+> ---
+>  drivers/gpu/drm/logicvc/logicvc_layer.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/gpu/drm/logicvc/logicvc_layer.c b/drivers/gpu/drm/lo=
+gicvc/logicvc_layer.c
+> index bae1c7f99569..00a37563a6dc 100644
+> --- a/drivers/gpu/drm/logicvc/logicvc_layer.c
+> +++ b/drivers/gpu/drm/logicvc/logicvc_layer.c
+> @@ -610,8 +610,11 @@ int logicvc_layers_init(struct logicvc_drm *logicvc)
+>  		}
+> =20
+>  		ret =3D logicvc_layer_init(logicvc, layer_node, index);
+> -		if (ret)
+> +		if (ret) {
+> +			of_node_put(layer_node);
+> +			of_node_put(layers_node);
+>  			goto error;
+> +		}
+> =20
+>  		of_node_put(layer_node);
+>  	}
+> --=20
+> 2.25.1
+>=20
 
-Thanks,
-Mark
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--xxTdvUN19r+Gzqln
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmK1zAIACgkQ3cLmz3+f
+v9FN7Qf+LIL1J4SHKzIrLJHuIEUfhHXkXKC8tqdNPVLJP7DFRbJyiHzqRLF0KzDd
+7/X2s5prFv14Fd0/uSUB2IVz1hIdwR1cSJ5BqXC2qAuFvNqO00OGho6uOqDCUYKn
+Zos0vutZM/2ha2cV3JunHcooZk1Quw+qrUw6Al8aFFg088CZsVngKj3hI80QkID4
+RPGJcQ25iRBQdSI7jxtyqHV47xJ3ZnQ+kTDkrkvJ/AbCs5sxPZMgyVfM+fRPuAOD
+F8kV0Vt7MzRp4sunrtsoDuwnsr0Il+odbx9W9z6M/VMYuV2ZIUSGOglY74JLR0aV
+3ZzGDtLtSrjL0DAMu4qT5fONgxuRTA==
+=7SJk
+-----END PGP SIGNATURE-----
+
+--xxTdvUN19r+Gzqln--
