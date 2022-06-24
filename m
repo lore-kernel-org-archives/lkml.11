@@ -2,179 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8483C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3934AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbiFXLov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 07:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
+        id S231630AbiFXLo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 07:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231405AbiFXLoq (ORCPT
+        with ESMTP id S231545AbiFXLou (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 07:44:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693B24EDEC;
-        Fri, 24 Jun 2022 04:44:45 -0700 (PDT)
+        Fri, 24 Jun 2022 07:44:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6F17A6FC
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 04:44:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0496762217;
-        Fri, 24 Jun 2022 11:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A0A4C34114;
-        Fri, 24 Jun 2022 11:44:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB8EBB82863
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:44:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 420AAC34114;
+        Fri, 24 Jun 2022 11:44:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656071084;
-        bh=AcvMVXTJvvDQHsxFy3AQJir0CG0f8T75wQupw6/jENE=;
+        s=korg; t=1656071087;
+        bh=qxPeo/Nw6Qd0O6UxjAzSWKbn3EkYBlOSQmLxfp1xVqU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f4BOHPFOKTKfh60lu4Lk8o4a5f0ylzGKfok36U5sdharBpc+04raj+x1Tdtdm97Gh
-         fD4xz+TQm32fuy4OQ02Qytltg9xzaQHtnZL2C1WUtuPWGSAYLQgrv5E2o6zqRAcXoC
-         qRHv5ws0gMheJc5CAOMCvmsye0e9GXXpH9BdDLuU=
-Date:   Fri, 24 Jun 2022 13:09:26 +0200
+        b=0EwM7Uv0+2NcfGDCx1hqjO6z98pnx8FCDHV3bgx5T17byHhpPBRq00eBcgVRJoQC7
+         +YbA33Gp83lbi6JLVzcp5DgOzAuRzplv8KQcHMqd46ynPIjmuL3TfFUFnxGlLgqp3i
+         9W6eW8TNA19GFYIdNRpuAhYfmy9ah2nD0odehepQ=
+Date:   Fri, 24 Jun 2022 13:32:03 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: [PATCH 5.15 33/33] selftests/bpf: Add test for reg2btf_ids out
- of bounds access
-Message-ID: <YrWbZi7jt1x83tRC@kroah.com>
-References: <20220429104052.345760505@linuxfoundation.org>
- <20220429104053.296096344@linuxfoundation.org>
- <CAMy_GT9YbgqsoLbCDqhHpXNW6EejgK+YaE4YPxpxcmer+qn-1g@mail.gmail.com>
+To:     Felix Schlepper <f3sch.git@outlook.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-staging@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 3/3] Staging: rtl8192e: Cleaning up error handling
+Message-ID: <YrWgsxH/yyEQdvEx@kroah.com>
+References: <cover.1655975970.git.f3sch.git@outlook.com>
+ <13b32131cd00a1f0b8793657a24ada71240a8350.1655975970.git.f3sch.git@outlook.com>
+ <CAHp75VcQcKaYUP_JsmTFOY-pbOR39+TMw=5ADbb2BRGoMijCMw@mail.gmail.com>
+ <20220624052118.GT16517@kadam>
+ <AM9P190MB1299F18B717D3A5D3E6DE6D4A5B49@AM9P190MB1299.EURP190.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMy_GT9YbgqsoLbCDqhHpXNW6EejgK+YaE4YPxpxcmer+qn-1g@mail.gmail.com>
+In-Reply-To: <AM9P190MB1299F18B717D3A5D3E6DE6D4A5B49@AM9P190MB1299.EURP190.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 06:33:57PM +0800, Po-Hsu Lin wrote:
-> On Fri, Apr 29, 2022 at 6:47 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
+On Fri, Jun 24, 2022 at 10:41:42AM +0200, Felix Schlepper wrote:
+> On 24.06.2022 08:21, Dan Carpenter wrote:
+> > On Thu, Jun 23, 2022 at 11:20:49PM +0200, Andy Shevchenko wrote:
+> > > On Thu, Jun 23, 2022 at 10:44 PM Felix Schlepper <f3sch.git@outlook.com> wrote:
+> > > >
+> > > > Moved error handling to one common block.
+> > > > This removes double checking if all txb->fragments[]
+> > > > were initialized.
+> > > > The original code worked fine, but this is cleaner.
+> > >
+> > > ...
+> > >
+> > > > +err_free:
+> > > > +       while (--i >= 0)
+> > >
+> > >   while (i--)
+> > >
+> > > will suffice.
+> > >
 > >
-> > From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > Either one is fine.  You prefer this format.  I prefer that other
+> > format.  I told Felix he could use either format without expressing any
+> > bias and he chose my format.  That means he loves me more.
 > >
-> > commit 13c6a37d409db9abc9c0bfc6d0a2f07bf0fff60e upstream.
-> >
-> > This test tries to pass a PTR_TO_BTF_ID_OR_NULL to the release function,
-> > which would trigger a out of bounds access without the fix in commit
-> > 45ce4b4f9009 ("bpf: Fix crash due to out of bounds access into reg2btf_ids.")
-> > but after the fix, it should only index using base_type(reg->type),
-> > which should be less than __BPF_REG_TYPE_MAX, and also not permit any
-> > type flags to be set for the reg->type.
-> >
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > Link: https://lore.kernel.org/bpf/20220220023138.2224652-1-memxor@gmail.com
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >  tools/testing/selftests/bpf/verifier/calls.c |   19 +++++++++++++++++++
-> >  1 file changed, 19 insertions(+)
-> >
-> > --- a/tools/testing/selftests/bpf/verifier/calls.c
-> > +++ b/tools/testing/selftests/bpf/verifier/calls.c
-> > @@ -108,6 +108,25 @@
-> >         .errstr = "R0 min value is outside of the allowed memory range",
-> >  },
-> >  {
-> > +       "calls: trigger reg2btf_ids[reg->type] for reg->type > __BPF_REG_TYPE_MAX",
-> > +       .insns = {
-> > +       BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-> > +       BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-> > +       BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 0),
-> > +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-> > +       BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-> > +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-> > +       BPF_EXIT_INSN(),
-> > +       },
-> > +       .prog_type = BPF_PROG_TYPE_SCHED_CLS,
-> > +       .result = REJECT,
-> > +       .errstr = "arg#0 pointer type STRUCT prog_test_ref_kfunc must point",
-> > +       .fixup_kfunc_btf_id = {
-> > +               { "bpf_kfunc_call_test_acquire", 3 },
-> > +               { "bpf_kfunc_call_test_release", 5 },
-> > +       },
-> > +},
-> > +{
-> >         "calls: overlapping caller/callee",
-> >         .insns = {
-> >         BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 0),
-> >
-> >
+> > regards,
+> > dan carpenter
+> Andy's advice is of course much appreciated but I prefer Dan's style <3.
 > 
-> Hello Greg,
-> 
-> When I tried to build the bpf selftest from 5.15.49 source tree on a
-> Ubuntu Jammy instance running with 5.15.49-051549-generic, I got the
-> following error message:
-> 
-> In file included from
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/tests.h:21,
->                  from test_verifier.c:432:
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:124:10:
-> error: ‘struct bpf_test’ has no member named ‘fixup_kfunc_btf_id’
->   124 |         .fixup_kfunc_btf_id = {
->       |          ^~~~~~~~~~~~~~~~~~
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:124:9:
-> warning: braces around scalar initializer
->   124 |         .fixup_kfunc_btf_id = {
->       |         ^
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:124:9:
-> note: (near initialization for ‘tests[150].errstr_unpriv’)
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:125:17:
-> warning: braces around scalar initializer
->   125 |                 { "bpf_kfunc_call_test_acquire", 3 },
->       |                 ^
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:125:17:
-> note: (near initialization for ‘tests[150].errstr_unpriv’)
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:125:50:
-> warning: excess elements in scalar initializer
->   125 |                 { "bpf_kfunc_call_test_acquire", 3 },
->       |                                                  ^
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:125:50:
-> note: (near initialization for ‘tests[150].errstr_unpriv’)
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:17:
-> warning: braces around scalar initializer
->   126 |                 { "bpf_kfunc_call_test_release", 5 },
->       |                 ^
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:17:
-> note: (near initialization for ‘tests[150].errstr_unpriv’)
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:50:
-> warning: excess elements in scalar initializer
->   126 |                 { "bpf_kfunc_call_test_release", 5 },
->       |                                                  ^
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:50:
-> note: (near initialization for ‘tests[150].errstr_unpriv’)
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:17:
-> warning: excess elements in scalar initializer
->   126 |                 { "bpf_kfunc_call_test_release", 5 },
->       |                 ^
-> /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:17:
-> note: (near initialization for ‘tests[150].errstr_unpriv’)
-> make: *** [Makefile:508:
-> /home/ubuntu/linux/tools/testing/selftests/bpf/test_verifier] Error 1
-> 
-> Which is introduced by this commit f59e6886c "selftests/bpf: Add test
-> for reg2btf_ids out of bounds access" on 5.15. With this commit
-> reverted, there will be another error in progs/timer_crash.c like in
-> 5.10 [1]:
-> 
-> progs/timer_crash.c:8:19: error: field has incomplete type 'struct bpf_timer'
->         struct bpf_timer timer;
->                          ^
-> /home/ubuntu/linux/tools/testing/selftests/bpf/tools/include/bpf/bpf_helper_defs.h:39:8:
-> note: forward declaration of 'struct bpf_timer'
-> struct bpf_timer;
->        ^
-> 1 error generated.
-> 
-> Maybe commit "selftests/bpf: Add test for bpf_timer overwriting crash"
-> should be reverted on 5.15 as well.
+> On another note, the thread is quite messy now, since all my previous
+> failed attempts to send are now threaded to this one.
+> How would I go about solving this? Sending another v5 version, the v4
+> with [RESEND PATCH v4...] or does this even need any action on my part?
 
-Should the test be fixed instead?
+Please resend a v5, as I now have 3 different copies of a v4 series in
+my inbox, which makes no sense at all.
 
-I'll take patches for either, thanks.
+Remember, make it obvious as to what to do for those of us who have to
+handle 1000+ emails a day...
+
+thanks,
 
 greg k-h
