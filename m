@@ -2,104 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B35CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 13:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A08CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 13:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232153AbiFXNzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 09:55:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53290 "EHLO
+        id S231877AbiFXN4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 09:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbiFXNzM (ORCPT
+        with ESMTP id S230073AbiFXN4S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 09:55:12 -0400
-Received: from relay.uni-heidelberg.de (relay.uni-heidelberg.de [129.206.100.212])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023C246152
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 06:55:08 -0700 (PDT)
-X-IPAS-Result: =?us-ascii?q?A2DwBAA6wbViffxkzoFagliEfJQQAQEBBoxvA4cciieCB?=
- =?us-ascii?q?wEBAQEBAQEBAQlCBAEBPQECig8nNgcOAQIEAQEBAQMCAwEBAQEBAQMBAQYBA?=
- =?us-ascii?q?QEBAQcEFAEBIzwnhXWGQwYnCwFGEFFXGYJ4AgEBgmYBAzCsfTKBAYZZAYE/g?=
- =?us-ascii?q?WWBPYlXhR+BQIEQgRUzgzWFEYVuBJlHCgMJBAcFRhcSTjEhAkULHAEIBgYHA?=
- =?us-ascii?q?QgBBQgoBAIBAQEGBRgUAQMBARMSBRMMBygKEgISDAobBwcDCwUyDQIOBwEBD?=
- =?us-ascii?q?A8BAg8DAQIRAQcCCRIIBg8rCAMBAQMBBwECAgMgCwIDFgkHCAIBAgUCAgEDD?=
- =?us-ascii?q?wEIChwSEBQCBA0EHgkCCAECGR4sBwICBA4DIx0ICwoDDgMEAwEQAhgHAgEVA?=
- =?us-ascii?q?QUCBAgEAQMGAwgVGQENJwQHAxICDQEGAQIGAQEFBQEDGAgDFAMFAQIIAxYHA?=
- =?us-ascii?q?QIhBQomCQQNAwEiGwIDAwEEGwoCAQICBRYFAgEBAgMCBhUGAgI/LxEdDQgEC?=
- =?us-ascii?q?AQJEhwjAQIMAQQBAgcvBQQtAgEBHgQFAQUPAggBARYCBgQDAgIDAQECARYCE?=
- =?us-ascii?q?AgCCCcXBxMzGQEFNxQODwEDBggZHCIHCQcFBhYDDhUnHikFBxESGw8EDQ0KN?=
- =?us-ascii?q?CAWJAEBDgUDARIZEQ4HFApTJiEVEAYBKxYDBAEDAwIGHAECAyUCEgYOBQEiH?=
- =?us-ascii?q?RmbD4EOgUTCZQeDURABoDWWYgKSAJZwom6ETjWBMws3gUxNI4M4URkPnHJzO?=
- =?us-ascii?q?wIGCwEBAwmPAQEB?=
-IronPort-Data: A9a23:KrJBhqKNiM92xgSkFE+RWpUlxSXFcZb7ZxGr2PjKsXjdYENS1zwCm
- GIYDDvUaP7eMGahc9FyOtng/UhVvMOGy95lHVAd+CA2RRqmi+KcWIvDfhmsV8+xwm8vaGo9s
- q3yv/GZdJhcokf0/0vrav67xZVF/fngqoDUUIYoAQgsA14+IMsdoUg7wbRh3NQ02YLR7z6l4
- LseneWOYDdJ5BYpagr424rbwP+4lK2v0N+wlgVWicFj5DcypVFMZH4sDfnZw0/Df2VhNrXSq
- 9AvbF2O1jixEx8FUrtJm1tgG6EAaua60QOm0hK6V0U+6/RPjnRa70o1CBYTQR9IgCmYkf519
- OhEvsauEgEbPJeVmM1IBnG0EwkmVUFH0LrOIHzn6IqOyUyDc3btz/hqBkwsMssU946bA0kXr
- 61ecmhTKEnb36TsnejTpupE36zPKOHwN4Mbt2l4wCvxFuo7TdbeRaSP5dJZ0Do0jM1UErDSa
- qL1bBI2MkmZPE0RZQ9/5JQWm7ezwSD0enpjp0uvp5gGx0LM3jVV+e24WDbSUofWG5kPxx7wS
- nj912vjDx4ZNPSbyDyY4nyrm+nDlD/6X4RUE6e3ntZugVuO1ikIFBQZVF20if24kVKlHdZeL
- VEEvCYjs8Aa+hewRdm7UBykiHmZohobXNkWGOo/gCmJy6zJ80OaC3ICQzppdtMrrok1SCYs2
- 1vPmMnmbQGDq5WQQHOZru7SsDWzfCgYLGMPYSUJVwRD79SLTJwPYgznFsloDL+7oNnJJDj7m
- S7Rqho8vewTpJtev0mkxmzvjzWpr5nPawc64ATLQ26ohj+Vgqb4OOREDnCGvJ59wJalokqp4
- ClYwpDBhAwaJcHTxHTUKAkYNOzxv5643CvgbUlHM7RJG96F23OicY1U6jxkKy+F2e5aKGazO
- Cc/VSt77ZNeOj6Vxnttf568Ds4n16eIKDgIfvXdb94WO95scg7C/CxvaUOU1W33nw4gnMnT2
- Kt3k+7yXR726ow+klJaotvxN5dwmkjSIkuPHPjGI+yPi+b2WZJsYe5t3KGyRu449riYhw7e7
- sxSMcCHoz0GDrCgOnGGqdRCdQtRRZTeOXwQg5INHgJkClQ4cFzN99eOmdvNhqQ/x/UIyL6Wl
- p1DchYAlASj7ZE4Fel6Qis/Nu+1BM4XQYMTNyEoIkulk2UlYJii9rwea4p/e7Q76+t5zpZJo
- wotJK297gB0YmqcoVw1M8KixLGOgTzx2GpiyQL5O2VlF3OhLiSVkuLZkvzHrnhQV3Tr6ppl/
- dVNFGrzGPI+euirN+6OANrH8r97lSF1dD5aN6cQHuRuRQ==
-IronPort-HdrOrdr: A9a23:QRT4sKGk2ddMwRW3pLqE0ceALOsnbusQ8zAXPiFKOGVom6mj/f
- xG885rsCMc5AxhOk3I3OrwW5VoIkm8yXcW2/h0AV7KZmCP01dAbrsD0WKI+UyGJ8SRzJ866U
- 6iScRD4R/LYGSSQfyU3OBwKbgd/OU=
-X-IronPort-Anti-Spam-Filtered: true
-Received: from mail01.uni-heidelberg.de ([129.206.100.252])
-  by relay.uni-heidelberg.de with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 24 Jun 2022 15:55:02 +0200
-Received: from localhost (ip2505f6aa.dynamic.kabel-deutschland.de [37.5.246.170])
-        (Authenticated sender: ln194)
-        by mail01.uni-heidelberg.de (Postfix) with ESMTPSA id 4005830011A5C;
-        Fri, 24 Jun 2022 15:55:02 +0200 (CEST)
-From:   Felix Schlepper <f3sch.git@outlook.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Felix Schlepper <f3sch.git@outlook.com>
-Subject: [PATCH v5 2/3] Staging: rtl8192e: Using kzalloc and delete memset
-Date:   Fri, 24 Jun 2022 15:54:54 +0200
-Message-Id: <9727fe31c675f2f3052ca2fa586d137dd856ac91.1656078068.git.f3sch.git@outlook.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1656078068.git.f3sch.git@outlook.com>
-References: <cover.1656078068.git.f3sch.git@outlook.com>
+        Fri, 24 Jun 2022 09:56:18 -0400
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678DA4D608
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 06:56:17 -0700 (PDT)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id 03495672; Fri, 24 Jun 2022 15:56:15 +0200 (CEST)
+Date:   Fri, 24 Jun 2022 15:56:14 +0200
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org
+Subject: [git pull] IOMMU Fixes for Linux v5.19-rc3
+Message-ID: <YrXCfic1ua0DdDBQ@8bytes.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="i5gdFe3KS1rh1Ndu"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By using kzalloc, we can delete a memset.  The practical difference
-is that using kzalloc() will zero out the txb->fragments[] array.
-The original code worked fine, but zeroing everything seems nicer.
 
-Signed-off-by: Felix Schlepper <f3sch.git@outlook.com>
----
- drivers/staging/rtl8192e/rtllib_tx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+--i5gdFe3KS1rh1Ndu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/staging/rtl8192e/rtllib_tx.c b/drivers/staging/rtl8192e/rtllib_tx.c
-index f2ef32e943ae..1307cf55741a 100644
---- a/drivers/staging/rtl8192e/rtllib_tx.c
-+++ b/drivers/staging/rtl8192e/rtllib_tx.c
-@@ -205,11 +205,10 @@ static struct rtllib_txb *rtllib_alloc_txb(int nr_frags, int txb_size,
- 	struct rtllib_txb *txb;
- 	int i;
- 
--	txb = kmalloc(struct_size(txb, fragments, nr_frags), gfp_mask);
-+	txb = kzalloc(struct_size(txb, fragments, nr_frags), gfp_mask);
- 	if (!txb)
- 		return NULL;
- 
--	memset(txb, 0, sizeof(struct rtllib_txb));
- 	txb->nr_frags = nr_frags;
- 	txb->frag_size = cpu_to_le16(txb_size);
- 
--- 
-2.36.1
+Hi Linus,
 
+The following changes since commit a111daf0c53ae91e71fd2bfe7497862d14132e3e:
+
+  Linux 5.19-rc3 (2022-06-19 15:06:47 -0500)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.19-rc3
+
+for you to fetch changes up to c242507c1b895646b4a25060df13b6214805759f:
+
+  MAINTAINERS: Add new IOMMU development mailing list (2022-06-24 15:36:11 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v5.19-rc3
+
+Including:
+
+	- Add a new IOMMU mailing list to the MAINTAINERS file to
+	  prepare for the a list migration happening on July 5th. The
+	  old list needs to stay in place until the switch happens to
+	  guarantee seemless archiving of list email.
+
+	- Fix compatible device-tree string for rcar-gen4 in Renesas
+	  IOMMU driver.
+
+----------------------------------------------------------------
+Joerg Roedel (1):
+      MAINTAINERS: Add new IOMMU development mailing list
+
+Yoshihiro Shimoda (1):
+      iommu/ipmmu-vmsa: Fix compatible for rcar-gen4
+
+ MAINTAINERS                | 11 +++++++++++
+ drivers/iommu/ipmmu-vmsa.c |  2 +-
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--i5gdFe3KS1rh1Ndu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmK1wn4ACgkQK/BELZcB
+GuOZaBAApa52HkW7MJ1GuhOvN0LLqNWMUOI1ED+dgNjSeLXH47WANnM4g/23uXfl
+82YBQ8Gp8Cq+Xtv9cJPb1ol5GwXYrG4c3FMwqcwp9l8fLwyb1VwPXPNvFrHSrrin
+GqVuBuWzv1M4k2yrggeVMztd9pt2N4OFfnzSbVTxGoErbbSv3S0o6o7/N0Gk79AY
+5GrOVCGKZXz6lgJzzyBQBOb35IHBkFHzZm0GLCO6xOGBxSsChAWGOqOkC5acggJo
+i6aaukPeD4Das20Vkph9Q/xKSGEIfZwhC4Bh/tuUEczgdKopoDO7uua/yX2POdJK
+E1o1T7+OaklNFofIbGBm/83FcjOqQ6V8pkMmuvisvhoxm7CWdFqUg5IwSyCKsMjW
+jlAduZ12RqYv6fPWisdkGxwZXtJhe+tYMFl/SBMpYZ0fGSg78QrXM0w3oWErsU7a
+UAu0Ev8kglohHLpHTBQLM3dKNhaTgs1ZUZP0ZrY52jfcoyC7sb9H5NUmfMBS2ja2
+nLxZsKkdC42ZzrtgB4g0PeIlykD/iZ/gA9nlwoOFoOZEnl9jM3WlTUmRgJvk9WIu
+n31JiCJlOgAEOKVgQqnwgvdUi8UdU2rdUAOfeK/A/elUWg5dGUqxEZ33xIVQlyZr
+ZVDw7hdIMAF/0p33z3Lpo9ydGZ5lpD8SrlcvKDFdaNjj0PGJZMo=
+=ajTF
+-----END PGP SIGNATURE-----
+
+--i5gdFe3KS1rh1Ndu--
