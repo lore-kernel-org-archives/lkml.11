@@ -2,150 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F214C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 00:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5675DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 00:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230244AbiFXA2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 20:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
+        id S230513AbiFXA3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 20:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230023AbiFXA2M (ORCPT
+        with ESMTP id S229966AbiFXA3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 20:28:12 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7B01180D
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 17:28:09 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id e63so932872pgc.5
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 17:28:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=P4Yje83rZYDRwuL9uo9EpMh58B6jkiYDBp8jSKu+8xU=;
-        b=IUqbXQUyFPdxLRIJZ1sfcGFJ6lHDyH0SdlPGW96Ps+WO1W4m4JbAiwTZdMkKacl+MM
-         D5DjVbMguKKKfOEV6Yl7t72SfBwhAbK41aGj+mBhVLVvxmMIHEFzk4sjh5+rBvGALNqO
-         S8Gh5ygMb3xtpnxKqjFVqaOSvF9ykpbsXzfCOPU5EUZ0FlEC4iAXFhvTstnDtI1yLm+M
-         xr+F1GL0yzIohwkliEUKWoxjNr9v+ywYg/NrPryFnFrmULKs5kAeouQDX+51rEAxuH3s
-         ukYigjwuqbpal/SjKujJSmPK9uKTCEV6aWpTqgK24biQzsVZP6+UYL/wqYWc4g+StEYW
-         xi5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P4Yje83rZYDRwuL9uo9EpMh58B6jkiYDBp8jSKu+8xU=;
-        b=YsxQN55xaawp5IMpVdt/eos5jXFCHZEDw2GR+LJS++XKcIVaxJCi/b1ULbOHu+P+yK
-         bGQ/lPEPb5msQKEDth34qfltOmM1la7tktx6Iz/GNZMJv5PvRHgAH31ObsiAt+Qt/8nM
-         gPce2t0PHQW1yQCZl0Xt/xvVv/JBWg3kThzk264Usz1rCHDYdY4y1BQm548DTuYImFwW
-         HUbFQAzHxBlOtj4ki5/83vbNGNiOXtCz1O5+jHiXlnX+lmMbp8OWVePKImkmYYMQ9noA
-         n8kmS7ViEtgp+xgDYAPn6rVSdMfA5epiRBFHCeQu3a9CBjL8Emrup0q4H3mZ/+M2sGDp
-         sXpQ==
-X-Gm-Message-State: AJIora8tE7ShswYFj71uyQX6LoQNI4Yb6EtjxZFvh3G1a11B/cGxxVAh
-        eyBDfT80M7VjvViRPHirJ7kmcA==
-X-Google-Smtp-Source: AGRyM1s4tA8aTDDu3gGkINrxoWIx2aC28XlcSQwcSIGGo+MPKiMLb03umdr2bcjVfA21s3ZLy9ye1w==
-X-Received: by 2002:a63:7046:0:b0:40c:af8d:a6 with SMTP id a6-20020a637046000000b0040caf8d00a6mr9703157pgn.38.1656030488471;
-        Thu, 23 Jun 2022 17:28:08 -0700 (PDT)
-Received: from localhost ([122.172.201.58])
-        by smtp.gmail.com with ESMTPSA id s11-20020a170902a50b00b001620eb3a2d6sm374708plq.203.2022.06.23.17.28.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 17:28:07 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 05:58:05 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Jon Hunter <jonathanh@nvidia.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Rafael Wysocki <rjw@rjwysocki.net>,
-        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 21/31] soc/tegra: Remove the call to
- devm_pm_opp_set_clkname()
-Message-ID: <20220624002805.anv62ufihdrncwus@vireshk-i7>
-References: <cover.1653564321.git.viresh.kumar@linaro.org>
- <1e88b248352afe03cd3bf0e887b1f2be86b5afb5.1653564321.git.viresh.kumar@linaro.org>
- <12c085af-1202-95cf-e9ad-ddcfbdadf0d6@nvidia.com>
+        Thu, 23 Jun 2022 20:29:37 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2061.outbound.protection.outlook.com [40.107.102.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B73152E41
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 17:29:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dUdz4MbihJlKWbc3xatLVS34AUCF5W4QTkqICoE7Rx6+diFwd5sQJyIaw2u6ucgHdBlKLk7ORiZHSPNHiBU3kVb8gFyBDuxFpDC8t6uPX6bS6IrK6jmcRbXq1d3AUPl3JEUsp13dBTr3lNTeC5/qdmye4whPkgOgiEkVpOdf71AOcXTvu7MKHWROqXhi0Et6tmKc2FKiPSwYa9DeIP93WyJHxmPPrnIrkxk5seMHi/iZUsln0VZVG8zuHjPlpRx9FJPJwHr5ONfmVZ8kl2348yuM1j0o1IQyQvNcCWSypsNNqfb3DHMDcnxy7T1BFa822AZ38nDaM/QwWJ7yO/z/iw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UkgLy4SZuvZGBlOytv9QrP8VV00CeP3AaIXXDE1Sd6U=;
+ b=Am60atOWz/GQNtdJizmUJL24Em+TXR/Ts12PUr6cpHoN1vHtf2Dsr3QeoCEcHyAqqwRSFUqFYaca2yjvyp7gx++Uf2kow2z/ERJ+aqHi1gIR64VMGIWuh8Tr3N1r6RjY77a2Ftw+WeAPfztWfDGIKcIU1UAb9eh8uTqG6kIDGMS1votKO1dytIe94BRtKaVoE8Y/OfQDSzcXb6CxlSUyzZBW4odJWGEEOvDCjSV0LXueJbNBhGAEps6zvGTeEE9qjeLOj+v+b8uijm9gAiofk5Cj6SYaw6/JJcacJ7WJVLaSmqUsb2k2a1yRPmYEYEXX2SWVqJ0NGnIezjycnQVlKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UkgLy4SZuvZGBlOytv9QrP8VV00CeP3AaIXXDE1Sd6U=;
+ b=JXA3WbtiaEnVd7o9iCaT0DUe90MY+S2sOx4F9F75XZBvB+kLylRXidLvUx/hHLziNooJuWRXWU6HNMHSaPhQ+vYdzUIsm0KHxX1Y1Myw8dPHRpcBdKEFSGqBqe2r4TKqGxXdnn8aiCi0oIKQuTrmSPgyCf30d310Da/WseD8lOHIRXysXnxtAgKD5z+EPiq06o3jRNySjhOLJjJktbUlhrbGxuu5PI/4DkyPRp01hmEO9DXIrGQKDLTZSqrfNoIUU+/u/lwsY8v0j5rcUEbu8ON/ZG61+qNjXRwxcPz6WI0zDD9+Ap9TRB1fVYXcf5K+Pu3XFhN7WBjTLb4s/qt3WQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
+ by CY5PR12MB6598.namprd12.prod.outlook.com (2603:10b6:930:42::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Fri, 24 Jun
+ 2022 00:29:33 +0000
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::eca6:a4a7:e2b2:27e7]) by BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::eca6:a4a7:e2b2:27e7%5]) with mapi id 15.20.5373.016; Fri, 24 Jun 2022
+ 00:29:33 +0000
+References: <165490039431.944052.12458624139225785964.stgit@omen>
+ <bb120b4a-e6f6-de81-35f0-9803acf9b0be@redhat.com>
+ <20220615155659.GA7684@nvidia.com>
+ <cb7efb0f-5537-5ce4-7aec-bb10ea81d5de@redhat.com>
+ <20220623142139.462a0841.alex.williamson@redhat.com>
+ <20220623204712.GG4147@nvidia.com>
+User-agent: mu4e 1.6.9; emacs 27.1
+From:   Alistair Popple <apopple@nvidia.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        akpm@linux-foundation.org, minchan@kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, paulmck@kernel.org,
+        jhubbard@nvidia.com, joaodias@google.com
+Subject: Re: [PATCH] mm: Re-allow pinning of zero pfns
+Date:   Fri, 24 Jun 2022 10:11:01 +1000
+In-reply-to: <20220623204712.GG4147@nvidia.com>
+Message-ID: <87a6a2zyxk.fsf@nvdebian.thelocal>
+Content-Type: text/plain
+X-ClientProxiedBy: SY4P282CA0018.AUSP282.PROD.OUTLOOK.COM
+ (2603:10c6:10:a0::28) To BYAPR12MB3176.namprd12.prod.outlook.com
+ (2603:10b6:a03:134::26)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <12c085af-1202-95cf-e9ad-ddcfbdadf0d6@nvidia.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a509fe0a-45d6-494d-f6c7-08da55789c2d
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6598:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: D08yxLdLvOZmVnW+D234XAXAiDyM0N/mzRDT3/1WjCAG6fLBcW+yJQER8H/svNUz5aBQYfRridGpu6UO0WD2mA5ploQIYkyID7gQBB6WSrIyWeYEEn1I8+eBwCNQcPJ67Oe8OIzEzlVPp8ObhseAnUVi2/SpXZHdC6I5spSMHtoPtdT2NZAj5gcW2DPMl04eZ0Y3uujaFWoMOO2tJX6pKr8qG4V7RQdvfMBGA5geXESMtE1L3IMU4zYk3DeYW3S9VQ392ctWvD5SmjazIJpkFldOmFa+X1SztMm0p9OnkZipROHmcbmruzgre6NHAqN2kEQ3p0R37movMsEXFMJa69XOiPzwQN6q0iZyi+lGWwfMhmiNpoYHJjJabDdHMQ09DtRN49DrE7EK/aSrtsaAsrlCzOPrP7Ab60SR0Nzolfh+XltqsGTzLKmrbU9aI5pCx+9CSxsnXn45/Ap8ag3Z3SoSGsJOi+JGCTMyVvTfFWwt8DLc/bMsEq+K4JK85R0nEBcDg34+242uorSSAQOtnI01yauutDkSSA6atHv2xxGZiE2jIminoG/offx6n9YunbduK/0EL6pokqgRmJ9kqZMzV1XwK0ype5wtYhrmc/XzdsXr9S7fdkx0K5G+K5hlmbSFyfrJnG2yvInnB9Vc7ktMYRih5VzNrpRochUSSS2TKbX+gs+x+JxkDr9dRniihzasi3dChqNT2w3o/ehcvXhcWA+F+/2ZdpC6TKnfV0M=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(346002)(396003)(39860400002)(136003)(9686003)(6506007)(26005)(83380400001)(6486002)(6862004)(6666004)(41300700001)(5660300002)(8936002)(8676002)(478600001)(6512007)(2906002)(316002)(54906003)(38100700002)(86362001)(66556008)(6636002)(66946007)(66476007)(4326008)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kvp8DHabdD6SFutCwRxIEuA7rszKrxw3PioxUSNsGTlK29pTOfVzjGcHqfhb?=
+ =?us-ascii?Q?uIunKUF4IQZt/rvg/Tak59EcCulMHbW8INWXXXb7q0/ABzYUJphCl2rIiUvh?=
+ =?us-ascii?Q?NRFAHFIz9uPrZ4Igg3yPTDPXdNah3tQExAhwvs1wpYT+hMGIHNqiAIXPgqR+?=
+ =?us-ascii?Q?wfG6CFzbCOwvj8zapSiKUN+zkYNI1tLCxT528YU+BwK+no1C18lmlXGCjK+b?=
+ =?us-ascii?Q?NU+/jQoEUJJYjWQ7lzd5qBxYb/ZhZEs3EF4iaK+3DDHZdqfUxKwk2+zpV0pg?=
+ =?us-ascii?Q?YP6iMU2nCpv31izqDQ38WeU+WlQL6BhX7a8QIfRIhSKgRfl9dwMydj3DtVRQ?=
+ =?us-ascii?Q?RieiE4IRy/vUlZoPNDEuficiJVDEv+QAonTMalaI0Lzr4G/ggk8lajiX3w6g?=
+ =?us-ascii?Q?ulbI0Wq2N16wQcSnYSACo0z3J8nAAEseaxkeMP4UEetzfsmKpqubvwLWPM/w?=
+ =?us-ascii?Q?UhypjIJM8l+uPtWCVZ3ufWapDUxqZ55iJQNr7fVhvxU5YwqC39DwOMg/Atvh?=
+ =?us-ascii?Q?VaUwfGcwzUNGHQXJPptacAWn8aeSDWqRNlpBd/QqiUZfZ/25VHfB6PZfv0sO?=
+ =?us-ascii?Q?TMHUHMkQ+zTO0MZGGCs2QBMOwFn9ioG1kPcPxnEHi6WV/ULIIBL4u4+wHX9f?=
+ =?us-ascii?Q?4kpi/YImJQNLFw1Z8vKXzJ5r8wjr8TBRe4MOAm/9mFc9qUfjfXP8I/PY2KBY?=
+ =?us-ascii?Q?MMHv27C04YErJRx9ai4sgS4giMyPS1RBwlJz+miktdQYpZX6f0Q1vnhDeBwn?=
+ =?us-ascii?Q?lTzl23ErIENqDq3r4Kbx6PbghJyJDrq6Rt+h6njr4aBdDGEFa9Y1KnkPddGF?=
+ =?us-ascii?Q?RFMCbJWA0t4IWfwDzmYyx+Fbl3SXECz8s3/sDE7LHn52sEG/wLYNTM48cNkk?=
+ =?us-ascii?Q?Hsj5494j0LvzFcAfoomkY2gIt77c9jrTOwlxazknt4aiCgpz3In4E+mBhNMg?=
+ =?us-ascii?Q?UMdns6X7wkWRdzikz5RjRGSkUXua1XW4UuXnP90RzsUbMxsdax80zzE8AUK/?=
+ =?us-ascii?Q?gBlsOR9wDGo89ppzmqB5FebJJ7ChvriIJpG2Rder/dJkbtbaR5EigcbmVjSq?=
+ =?us-ascii?Q?Zk5zMhpjKtEie0cmCtpMouEzraOKYXEHu2v6+MBEG8uzW2UmEVsHrMbgbWy+?=
+ =?us-ascii?Q?AizBdotFK2UQtAkvqibkWwooMb/GuAnC1e8kDcmXvy+qkZj+75O7Y8jsMDwL?=
+ =?us-ascii?Q?ANS0gjKQ7L3lIW/ik7QutTXb4U8qG/V+/aZD2KndX3Hv23cD7YemCjKSu5Ca?=
+ =?us-ascii?Q?yFoxkERyP35Yi/CA57L1KDDtKz6yeo4Cm/RB1/fGlmoFxvOpGQDJErCiBmMi?=
+ =?us-ascii?Q?7QSLfaMluav5vSUKbaj+HLC07W/o8sUZ73CpCOC6pwdOOjWEH3BMOzVLeniw?=
+ =?us-ascii?Q?dTPiSF7wFh7U8W3htJpUdRdarLdhEakiWQwhGXWCiCkR9dlzeMa74Wahj8Xa?=
+ =?us-ascii?Q?a2DbFIDUeu0fl4HflHW2+Nn83aCWNdezuW1g36jqHl05AcLyh0qiTFsPk2b/?=
+ =?us-ascii?Q?Ehzs1V+z+zeGLNwaTPWJlMcgGjTnH/MWkREIjh1UuWjXiEzW9bgSAzVZnSBl?=
+ =?us-ascii?Q?1N92DP60lQM1U3kWW4F3WRGizODU65vJckskgPnR?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a509fe0a-45d6-494d-f6c7-08da55789c2d
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 00:29:33.2915
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iqEcVyF1SN+PEB4dxYgiGjzRh6PJx2w5OjAjcQOEjlNXUVDjP7pRoB/3vpC3gmrF/ubkid1oRTmgqe0vHC7H0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6598
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23-06-22, 22:15, Jon Hunter wrote:
-> On 26/05/2022 12:42, Viresh Kumar wrote:
-> > diff --git a/drivers/soc/tegra/common.c b/drivers/soc/tegra/common.c
-> > index 32c346b72635..49a5360f4507 100644
-> > --- a/drivers/soc/tegra/common.c
-> > +++ b/drivers/soc/tegra/common.c
-> > @@ -108,12 +108,6 @@ int devm_tegra_core_dev_init_opp_table(struct device *dev,
-> >   	u32 hw_version;
-> >   	int err;
-> > -	err = devm_pm_opp_set_clkname(dev, NULL);
-> > -	if (err) {
-> > -		dev_err(dev, "failed to set OPP clk: %d\n", err);
-> > -		return err;
-> > -	}
-> > -
-> >   	/* Tegra114+ doesn't support OPP yet */
-> >   	if (!of_machine_is_compatible("nvidia,tegra20") &&
-> >   	    !of_machine_is_compatible("nvidia,tegra30"))
-> 
-> 
-> This appears to be breaking a few Tegra drivers. For example, on Tegra210
-> Jetson TX1 I am seeing the following and the eMMC is no longer working ...
-> 
-> [    0.526729] sdhci-tegra 700b0600.mmc: dev_pm_opp_set_rate: device's opp table doesn't exist
-> [    0.526733] sdhci-tegra 700b0600.mmc: failed to set clk rate to 400000Hz: -19
-> [    0.528830] sdhci-tegra 700b0600.mmc: dev_pm_opp_set_rate: device's opp table doesn't exist
-> [    0.528833] sdhci-tegra 700b0600.mmc: failed to set clk rate to 400000Hz: -19
-> 
-> I have seen another instance of this on Jetson Xavier NX ...
-> 
-> [   12.301336] tegra-pwm 32d0000.pwm: dev_pm_opp_set_rate: device's opp table doesn't exist
-> [   12.301350] tegra-pwm 32d0000.pwm: Failed to set max frequency: -19
-> 
-> Bisect is point to this commit and so something is not working as
-> expected.
 
-Thanks again Jon.
+Jason Gunthorpe <jgg@nvidia.com> writes:
 
-This is what happens when the special code doesn't have a comment
-attached with it. Neither the reviewer, nor the author remember why
-the special piece was required :)
+> On Thu, Jun 23, 2022 at 02:21:39PM -0600, Alex Williamson wrote:
+>
+>> check_and_migrate_movable_pages() perpetually returns zero.  I believe
+>> this is because folio_is_pinnable() previously returned true, and now
+>> returns false.
+>
+> Indeed, it is a bug that check_and_migrate_movable_pages() returns
+> 0 when it didn't do anything. It should return an error code.
+>
+> Hum.. Alistair, maybe you should look at this as well, I'm struggling
+> alot to understand how it is safe to drop the reference on the page
+> but hold a pointer to it on the movable_page_list - sure it was
+> isolated - but why does that mean it won't be concurrently unmapped
+> and freed?
 
-I had to go through the whole sequence, along with DT to understand
-what might have broken this stuff :)
+folio_isolate_lru() takes a reference on the page so you're safe from it
+being freed. If it gets unmapped it will be freed when the matching
+putback_movable_pages() is called.
 
-I will drop this patch and add this comment in its place:
+> Anyhow, it looks like the problem is the tortured logic in this
+> function, what do you think about this:
 
-diff --git a/drivers/soc/tegra/common.c b/drivers/soc/tegra/common.c
-index 32c346b72635..9f3fdeb1a11c 100644
---- a/drivers/soc/tegra/common.c
-+++ b/drivers/soc/tegra/common.c
-@@ -108,6 +108,13 @@ int devm_tegra_core_dev_init_opp_table(struct device *dev,
-        u32 hw_version;
-        int err;
+At a glance it seems reasonable, although I fear it might conflict with
+my changes for device coherent migration. Agree the whole
+check_and_migrate_movable_pages() logic is pretty tortured though, and I
+don't think I'm making it better so would be happy to try cleaning it up
+futher once the device coherent changes are in.
 
-+       /*
-+        * For some devices we don't have any OPP table in the DT, and in order
-+        * to use the same code path for all the devices, we create a dummy OPP
-+        * table for them via this call. The dummy OPP table is only capable of
-+        * doing clk_set_rate() on invocation of dev_pm_opp_set_rate() and
-+        * doesn't provide any other functionality.
-+        */
-        err = devm_pm_opp_set_clkname(dev, NULL);
-        if (err) {
-                dev_err(dev, "failed to set OPP clk: %d\n", err);
-
-
-Though there will still be a problem here with my changes, we don't
-accept NULL clkname anymore for the set-clkname API. And tegra does
-this to pick the first clock available in DT (at index 0) I think.
-Other drivers (mostly qcom) who need such dummy OPP table, provide a
-real clock name instead. Will it be possible to pass that here somehow
-?
-
--- 
-viresh
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 5512644076246d..2ffcb3f4ff4a7b 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -1879,10 +1879,15 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>  					    unsigned int gup_flags)
+>  {
+>  	unsigned long isolation_error_count = 0, i;
+> +	struct migration_target_control mtc = {
+> +		.nid = NUMA_NO_NODE,
+> +		.gfp_mask = GFP_USER | __GFP_NOWARN,
+> +	};
+>  	struct folio *prev_folio = NULL;
+>  	LIST_HEAD(movable_page_list);
+>  	bool drain_allow = true;
+> -	int ret = 0;
+> +	int not_migrated;
+> +	int ret;
+>
+>  	for (i = 0; i < nr_pages; i++) {
+>  		struct folio *folio = page_folio(pages[i]);
+> @@ -1919,16 +1924,13 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>  				    folio_nr_pages(folio));
+>  	}
+>
+> -	if (!list_empty(&movable_page_list) || isolation_error_count)
+> -		goto unpin_pages;
+> -
+>  	/*
+>  	 * If list is empty, and no isolation errors, means that all pages are
+> -	 * in the correct zone.
+> +	 * in the correct zone, nothing to do.
+>  	 */
+> -	return nr_pages;
+> +	if (list_empty(&movable_page_list) && !isolation_error_count)
+> +		return nr_pages;
+>
+> -unpin_pages:
+>  	if (gup_flags & FOLL_PIN) {
+>  		unpin_user_pages(pages, nr_pages);
+>  	} else {
+> @@ -1936,20 +1938,22 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>  			put_page(pages[i]);
+>  	}
+>
+> -	if (!list_empty(&movable_page_list)) {
+> -		struct migration_target_control mtc = {
+> -			.nid = NUMA_NO_NODE,
+> -			.gfp_mask = GFP_USER | __GFP_NOWARN,
+> -		};
+> +	if (isolation_error_count) {
+> +		ret = -EINVAL;
+> +		goto err_putback;
+> +	}
+>
+> -		ret = migrate_pages(&movable_page_list, alloc_migration_target,
+> -				    NULL, (unsigned long)&mtc, MIGRATE_SYNC,
+> -				    MR_LONGTERM_PIN, NULL);
+> -		if (ret > 0) /* number of pages not migrated */
+> -			ret = -ENOMEM;
+> +	not_migrated = migrate_pages(&movable_page_list, alloc_migration_target,
+> +				     NULL, (unsigned long)&mtc, MIGRATE_SYNC,
+> +				     MR_LONGTERM_PIN, NULL);
+> +	if (not_migrated > 0) {
+> +		ret = -ENOMEM;
+> +		goto err_putback;
+>  	}
+> +	return 0;
+>
+> -	if (ret && !list_empty(&movable_page_list))
+> +err_putback:
+> +	if (!list_empty(&movable_page_list))
+>  		putback_movable_pages(&movable_page_list);
+>  	return ret;
+>  }
+>
+>> If I generate an errno here, QEMU reports failing on the pc.rom memory
+>> region at 0xc0000.  Thanks,
+>
+> Ah, a ROM region that is all zero'd makes some sense why it has gone
+> unnoticed as a bug.
+>
+> Jason
