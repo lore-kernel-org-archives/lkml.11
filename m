@@ -2,94 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9791FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:06:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 041F5CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231243AbiFXIGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 04:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53570 "EHLO
+        id S231688AbiFXIGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 04:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231373AbiFXIFl (ORCPT
+        with ESMTP id S231268AbiFXIGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 04:05:41 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADFE6E7AE;
-        Fri, 24 Jun 2022 01:05:06 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id q6so3012304eji.13;
-        Fri, 24 Jun 2022 01:05:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EK5bTabBrzOC4s5o5qACkkoAhewHbBIhpYTiUtnXhVE=;
-        b=JwN96QcsgT/HsX0Xpol3mA630eF5N5PgavN/AUY9qBXwAsuVmy5cd/GZroEBwxc86X
-         ZaDki0JPCb7oEXIMUIfGTswi25k7wAP19cnFbDOv/5t9BukJv9rDcgt58DFQ74NADH2u
-         CYXiAOkYs3SpdYAaOxY3UUVCX6ptHEJ6TRdbP7p4or3Zgu3/WAjyLLMK5jZ7vcqCp7eW
-         EZMJA+g9/yiNDw7fyROAvFU5wIayjnD37MVXkIpRkTRGWcd7zygExPX5kLKinTCY8K/T
-         5pdb6n5eb6/P1j1smDPETJawXNBlVLLfjUdE34ynUZs+JMkdILaXVbWdyIS5dNH8CO+w
-         oVxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EK5bTabBrzOC4s5o5qACkkoAhewHbBIhpYTiUtnXhVE=;
-        b=kCJf2k3X5MoX9kD1lSJnnK95Y5OR4Q4dPajw0uVAm8iuRGfEdaeGKZ1L31zjY3iZlY
-         eK6Kjtmj6X0341nwUHA+mVHJ7q4WUFliDHfeeEQYYFGg4IViIVUhLRdV4Gy39ftqfZgi
-         53RRbWtc+CJtSKU3a0MkKF4LkPbOOnS0JYz5NLM1TzqfqqTUkrTqi3lNuQKPz/01O5nG
-         YoDFKyKKIMba6p/ZtClpglZFYGzs9obczrcfnr/d3FSPar6msl4rmnKoD3iNwyeCyMd7
-         VUunAL1oYggh+N+YfZQ//Jcg4iUspN6HmtIbQmHiHiEFMXogFqT9qP02XfO7fu7BVIGg
-         DTTA==
-X-Gm-Message-State: AJIora/+32/ulkw+uG2WW1Zr3LqfLFnySJx6L/UduM9utPWQ3TAD7uBR
-        XgdCWhBMgu9gfaQRdbnZHIomBAfqpEw=
-X-Google-Smtp-Source: AGRyM1tgbH7HQwAMplhNlcow9evBtQqHgtM4KLSWjdQaSt6HlGVy+kDMyMimMYEkA9mtx94cpAF30g==
-X-Received: by 2002:a17:906:7a54:b0:722:e8e3:ef60 with SMTP id i20-20020a1709067a5400b00722e8e3ef60mr11829570ejo.453.1656057904986;
-        Fri, 24 Jun 2022 01:05:04 -0700 (PDT)
-Received: from able.fritz.box (p57b0bd9f.dip0.t-ipconnect.de. [87.176.189.159])
-        by smtp.gmail.com with ESMTPSA id c19-20020a170906155300b006fea43db5c1sm697779ejd.21.2022.06.24.01.05.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 01:05:04 -0700 (PDT)
-From:   "=?UTF-8?q?Christian=20K=C3=B6nig?=" 
-        <ckoenig.leichtzumerken@gmail.com>
-X-Google-Original-From: =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-To:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        dri-devel@lists.freedesktop.org
-Cc:     mhocko@suse.com,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Subject: [PATCH 14/14] drm/tegra: use drm_file_rss
-Date:   Fri, 24 Jun 2022 10:04:44 +0200
-Message-Id: <20220624080444.7619-15-christian.koenig@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220624080444.7619-1-christian.koenig@amd.com>
-References: <20220624080444.7619-1-christian.koenig@amd.com>
+        Fri, 24 Jun 2022 04:06:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 050A374E71
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:05:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656057943;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=cpTVcivxQYlw34vR4UsX5en4XWzp55XZiHJpLQUr5MCvwMyLRCpnDK6Udma6TY0W4lWCf3
+        I2ERFitJXDM9Gm2HM6oviKTgHhCy3MkKtmsqI0Hy2s75S/bipouKqTebTWW0jSHLa3pOkJ
+        5A4mdx8WpwvNYqDheBGp+r55wlmNW1k=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-263-Qyj2W5XcPpqFURNIJGTQaw-1; Fri, 24 Jun 2022 04:05:41 -0400
+X-MC-Unique: Qyj2W5XcPpqFURNIJGTQaw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F39FC101E167;
+        Fri, 24 Jun 2022 08:05:40 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C22012166B26;
+        Fri, 24 Jun 2022 08:05:40 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Zeng Guang <guang.zeng@intel.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Shuah Khan <shuah@kernel.org>, Gao Chao <chao.gao@intel.com>,
+        linux-kselftest@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] KVM: selftest: Enhance handling WRMSR ICR register in x2APIC mode
+Date:   Fri, 24 Jun 2022 04:05:35 -0400
+Message-Id: <20220624080535.2720845-1-pbonzini@redhat.com>
+In-Reply-To: <20220623094511.26066-1-guang.zeng@intel.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This allows the OOM killer to make a better decision which process to reap.
+Queued, thanks.
 
-Signed-off-by: Christian König <christian.koenig@amd.com>
----
- drivers/gpu/drm/tegra/drm.c | 1 +
- 1 file changed, 1 insertion(+)
+Paolo
 
-diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
-index 4cdc8faf798f..cc0c2fc57250 100644
---- a/drivers/gpu/drm/tegra/drm.c
-+++ b/drivers/gpu/drm/tegra/drm.c
-@@ -804,6 +804,7 @@ static const struct file_operations tegra_drm_fops = {
- 	.read = drm_read,
- 	.compat_ioctl = drm_compat_ioctl,
- 	.llseek = noop_llseek,
-+	.file_rss = drm_file_rss,
- };
- 
- static int tegra_drm_context_cleanup(int id, void *p, void *data)
--- 
-2.25.1
 
