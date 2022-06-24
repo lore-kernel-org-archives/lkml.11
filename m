@@ -2,115 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F37BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 10:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC90C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 10:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbiFXKGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 06:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50816 "EHLO
+        id S230439AbiFXKKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 06:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbiFXKGk (ORCPT
+        with ESMTP id S230415AbiFXKKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 06:06:40 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2007A1BC
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 03:06:38 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id r1so1684761plo.10
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 03:06:38 -0700 (PDT)
+        Fri, 24 Jun 2022 06:10:01 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051037A6D9
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 03:09:59 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id g26so3699103ejb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 03:09:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rzjfNYKrqhxMk1VlBLe96xLY69I5gRU2mkadogGFCrg=;
-        b=OzviWgi3D4BmXgdNyxDqNp8wdki7LTNyu3yYxle8BEe3w71ardsjbbrclGRMuM/m/7
-         2r/AbJQUOgMqd8A4Tag765+P+gThOQ9fPbjaAHaO/RYqf0yBCoeaJRJM1ZjJQMuPFeDd
-         m/SArk3X1y8TgqfmK96SRrMbrMwCCxcmAb2VqyLsgQmO9v/Sl2rzcn2fP6R3WQVomgqy
-         3Uqpe4jdMRjf2j+RQZwftcg/UEctsx5+MaR9VUs001xJeduTsdXslSEiQVYiZn+Zl8RI
-         +mRC0PRoMNwZcA8CrXxDoHQYN+fdlrZqTUnDIQg2dTUP2w1D41eAEQKGlHOMz5O2/M7A
-         U3vQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=lorZHDjvGx5GD+gar7tqgB1Qj4XdO8WewdyIcYo1mvQ=;
+        b=Ti+fVnTmNKYwrAedrBvndCldoW4NlBmv0536IQ1k7OjvfHGtm0ly+8LwT7LHpGHzlz
+         LafqDygKvgifpswBtGLrtk9U7xuH7aey9fjumlhSjD2X+iwlgI3p2XPtC7usywyN7xGY
+         W2A8LzDsZUGZY5uV7/tcGbZ1zfr+6u4F5Xye6rZDK8hni7hRyauGtjHMj53vdiF4nE9N
+         yE03ZJQdZx2IMeDGIfYUqCYHP4GkOp77AX6oMkRLiGOFVczBaH/FqSkmXXaTLaqqI4aU
+         ZZfC0gnTBThlESIIWgvLVe41AgjoHBQKfZAsMM2f26Sz4jxuYocBYsA3qE3lyJ7g+E/6
+         4bfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=rzjfNYKrqhxMk1VlBLe96xLY69I5gRU2mkadogGFCrg=;
-        b=BXnRg1cv0LA//aO6laPwNDvkcNQtGnjKq9jSN+M8eAeKKln74I0GRj1yEyM6cvEoo3
-         UtPy2Dj/mNQfT5znbAqB/KN07fKIjO69UclhPYTENaEqM8fVzp6wbZbAS/SZIujXGJVj
-         y0E+WNGH/sG2reZDbXVq9njPJ6ZLEgjfsLO4R0hPorPopoTDjmuhTTSbS5FqokeK+cbL
-         ivLrceW4Qa+/ArGSF2s6t52gq/mFxxVGZObAB/VArrcBelsg87fCCkUvdxa7a9O99Ibw
-         6SGi0WuXHuv+6b7y/bY97m85hhOSke3w4KbgfnzQSrtH/xAHnodXaABvRC9MCy1zWWyD
-         Yqwg==
-X-Gm-Message-State: AJIora+FpjDFslTchWi8qC/SyKZu/oNtXDZFthTwqSzgX9az5NGC9SPV
-        4ATWdzQVJQTfgfeIQV9V2YBrJByJ/txF0Q==
-X-Google-Smtp-Source: AGRyM1uySwk12x2mLWZbElv72CElvZkfYQ6iIOcOv5LdUrY1Og+VC6WHLWukYFQNKSRZdNH6X1NHbw==
-X-Received: by 2002:a17:902:bb95:b0:169:4d7:fee with SMTP id m21-20020a170902bb9500b0016904d70feemr41038819pls.80.1656065198159;
-        Fri, 24 Jun 2022 03:06:38 -0700 (PDT)
-Received: from FVFDK26JP3YV.bytedance.net ([139.177.225.234])
-        by smtp.gmail.com with ESMTPSA id jh5-20020a170903328500b0015e8d4eb2b4sm1366397plb.254.2022.06.24.03.06.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 24 Jun 2022 03:06:37 -0700 (PDT)
-From:   Lei He <helei.sig11@bytedance.com>
-To:     herbert@gondor.apana.org.au, davem@davemloft.net
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        pizhenwei@bytedance.com, lei he <helei.sig11@bytedance.com>
-Subject: [PATCH] crypto: testmgr - fix version number of RSA tests
-Date:   Fri, 24 Jun 2022 18:06:25 +0800
-Message-Id: <20220624100625.47844-1-helei.sig11@bytedance.com>
-X-Mailer: git-send-email 2.29.2
+        bh=lorZHDjvGx5GD+gar7tqgB1Qj4XdO8WewdyIcYo1mvQ=;
+        b=zxwHRm5nlex18DrjNr3Xfp96RRRZVbnH+ybl8ip4Z6XtQT3+UjFkkVtEIH/ZBYPyg5
+         1440lQc83xgOtW+I+6givV5wB5dTUvEYfqLzv982GaYcg/y/a+07jAnEXsCPXhK8H/dt
+         HvD5fjh5oKZRDAdQCX21aanp4CHrN7GohGAM1im0dCwSqZjvez4htn9wW0eRvA+VeuZ6
+         UidHHzUrVO3vzcoDnZ2D0lp1Cy52fsAY1t08zqupyIW5XKeYMenaSTMZVGivYcuOxNDn
+         Q0Hk//axlKQpuzfTR5eUsnGVngi8qvwb5E2/d+U7qgdCVIng/cWwmU0QGZu1RY9OdTCu
+         /3oQ==
+X-Gm-Message-State: AJIora/eZpqlDxG559Do0ShulkUnw1cHBInBYY3KgoTdxjzw0tDnd8V6
+        /A4MQYuTy03+OxpM8qgMnu8TWQ==
+X-Google-Smtp-Source: AGRyM1uKgLP0q+F3EV/ZKpI4bKmuL8O9cSoJ6Y20J5j3QtItOyrNB6oS6chuuxpNORk9LaAzvkhBRg==
+X-Received: by 2002:a17:907:3f21:b0:722:ca29:7ec9 with SMTP id hq33-20020a1709073f2100b00722ca297ec9mr12231536ejc.417.1656065397338;
+        Fri, 24 Jun 2022 03:09:57 -0700 (PDT)
+Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id v10-20020a1709063bca00b006ffa19b7782sm841359ejf.74.2022.06.24.03.09.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 03:09:56 -0700 (PDT)
+Message-ID: <3e8e2ad5-9a1c-44f3-cff9-50ad2124c9f9@linaro.org>
+Date:   Fri, 24 Jun 2022 12:09:54 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v5 03/14] dt-bindings: pinctrl: imx: Add fsl,scu-iomux
+ yaml file
+Content-Language: en-US
+To:     Viorel Suman <viorel.suman@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Stefan Agner <stefan@agner.ch>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Abel Vesa <abelvesa@kernel.org>,
+        Oliver Graute <oliver.graute@kococonnector.com>,
+        Mirela Rabulea <mirela.rabulea@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>, Liu Ying <victor.liu@nxp.com>,
+        Ming Qian <ming.qian@nxp.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Abel Vesa <abel.vesa@nxp.com>
+References: <20220616164303.790379-1-viorel.suman@nxp.com>
+ <20220616164303.790379-4-viorel.suman@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220616164303.790379-4-viorel.suman@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lei he <helei.sig11@bytedance.com>
+On 16/06/2022 18:42, Viorel Suman wrote:
+> From: Abel Vesa <abel.vesa@nxp.com>
+> 
+> In order to replace the fsl,scu txt file from bindings/arm/freescale,
+> we need to split it between the right subsystems. This patch documents
+> separately the 'iomux/pinctrl' child node of the SCU main node.
+> 
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
+> ---
+>  .../bindings/pinctrl/fsl,scu-pinctrl.yaml     | 47 +++++++++++++++++++
 
-According to PKCS#1 standard, the 'otherPrimeInfos' field contains
-the information for the additional primes r_3, ..., r_u, in order.
-It shall be omitted if the version is 0 and shall contain at least
-one instance of OtherPrimeInfo if the version is 1, see:
-	https://www.rfc-editor.org/rfc/rfc3447#page-44
+Since this is a conversion, I expect removal of existing bindings. This
+applies to each other patch as well.
 
-Replace the version number '1' with 0, otherwise, some drivers may
-not pass the run-time tests.
+>  1 file changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/fsl,scu-pinctrl.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pinctrl/fsl,scu-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/fsl,scu-pinctrl.yaml
+> new file mode 100644
+> index 000000000000..7a08c60da66f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pinctrl/fsl,scu-pinctrl.yaml
+> @@ -0,0 +1,47 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pinctrl/fsl,scu-pinctrl.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: i.MX SCU Client Device Node - Pinctrl bindings based on SCU Message Protocol
+> +
+> +maintainers:
+> +  - Dong Aisheng <aisheng.dong@nxp.com>
+> +
+> +description: i.MX SCU Client Device Node
+> +  Client nodes are maintained as children of the relevant IMX-SCU device node.
+> +  This binding uses the i.MX common pinctrl binding.
+> +  (Documentation/devicetree/bindings/pinctrl/fsl,imx-pinctrl.txt)
+> +
+> +properties:
+> +  compatible:
+> +    items:
 
-Signed-off-by: lei he <helei.sig11@bytedance.com>
----
- crypto/testmgr.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+You have only one item, so no items.
 
-diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index 4d7449fc6a65..d57f24b906f1 100644
---- a/crypto/testmgr.h
-+++ b/crypto/testmgr.h
-@@ -186,7 +186,7 @@ static const struct akcipher_testvec rsa_tv_template[] = {
- #ifndef CONFIG_CRYPTO_FIPS
- 	.key =
- 	"\x30\x81\x9A" /* sequence of 154 bytes */
--	"\x02\x01\x01" /* version - integer of 1 byte */
-+	"\x02\x01\x00" /* version - integer of 1 byte */
- 	"\x02\x41" /* modulus - integer of 65 bytes */
- 	"\x00\xAA\x36\xAB\xCE\x88\xAC\xFD\xFF\x55\x52\x3C\x7F\xC4\x52\x3F"
- 	"\x90\xEF\xA0\x0D\xF3\x77\x4A\x25\x9F\x2E\x62\xB4\xC5\xD9\x9C\xB5"
-@@ -216,7 +216,7 @@ static const struct akcipher_testvec rsa_tv_template[] = {
- 	}, {
- 	.key =
- 	"\x30\x82\x01\x1D" /* sequence of 285 bytes */
--	"\x02\x01\x01" /* version - integer of 1 byte */
-+	"\x02\x01\x00" /* version - integer of 1 byte */
- 	"\x02\x81\x81" /* modulus - integer of 129 bytes */
- 	"\x00\xBB\xF8\x2F\x09\x06\x82\xCE\x9C\x23\x38\xAC\x2B\x9D\xA8\x71"
- 	"\xF7\x36\x8D\x07\xEE\xD4\x10\x43\xA4\x40\xD6\xB6\xF0\x74\x54\xF5"
-@@ -260,7 +260,7 @@ static const struct akcipher_testvec rsa_tv_template[] = {
- #endif
- 	.key =
- 	"\x30\x82\x02\x20" /* sequence of 544 bytes */
--	"\x02\x01\x01" /* version - integer of 1 byte */
-+	"\x02\x01\x00" /* version - integer of 1 byte */
- 	"\x02\x82\x01\x01\x00" /* modulus - integer of 256 bytes */
- 	"\xDB\x10\x1A\xC2\xA3\xF1\xDC\xFF\x13\x6B\xED\x44\xDF\xF0\x02\x6D"
- 	"\x13\xC7\x88\xDA\x70\x6B\x54\xF1\xE8\x27\xDC\xC3\x0F\x99\x6A\xFA"
+> +      - enum:
+> +          - fsl,imx8qm-iomuxc
+> +          - fsl,imx8qxp-iomuxc
+> +          - fsl,imx8dxl-iomuxc
+> +
+> +patternProperties:
+> +  "grp$":
+> +    type: object
 
-base-commit: 92f20ff72066d8d7e2ffb655c2236259ac9d1c5d
--- 
-2.20.1
+You need to describe the children and then additionalProperties:false.
+See other pinctrl bindings for example.
 
+> +
+> +required:
+> +  - compatible
+> +
+
+Missing allOf referencing pinctrl.
+
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/pinctrl/pads-imx8qxp.h>
+> +
+> +    pinctrl {
+> +             compatible = "fsl,imx8qxp-iomuxc";
+> +
+> +             pinctrl_lpuart0: lpuart0grp {
+> +                    fsl,pins = <
+> +                            IMX8QXP_UART0_RX_ADMA_UART0_RX   0x06000020
+> +                            IMX8QXP_UART0_TX_ADMA_UART0_TX   0x06000020
+> +                    >;
+> +             };
+> +    };
+
+
+Best regards,
+Krzysztof
