@@ -2,90 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C494C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 01:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E08C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 01:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229792AbiFXBTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 21:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
+        id S229823AbiFXBU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 21:20:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230317AbiFXBS7 (ORCPT
+        with ESMTP id S229437AbiFXBU5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 21:18:59 -0400
-Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06C8D60C4B;
-        Thu, 23 Jun 2022 18:18:51 -0700 (PDT)
-IronPort-Data: =?us-ascii?q?A9a23=3ApbAfHaljoqFHtTYw4PSAE1Do5gxsJERdPkR7XQ2?=
- =?us-ascii?q?eYbTBsI5bp2EAnTMaW2iEOK6DZTH3L9kiYNu+oRhV6JXdmINnTgM/+CA2RRqmi?=
- =?us-ascii?q?+KfW43BcR2Y0wB+jyH7ZBs+qZ1YM7EsFehsJpPnjkrrYuiJQUVUj/nSHOKmULe?=
- =?us-ascii?q?cY0ideCc/IMsfoUM68wIGqt4w6TSJK1vlVeLa+6UzCnf8s9JHGj58B5a4lf9al?=
- =?us-ascii?q?K+aVAX0EbAJTasjUFf2zxH5BX+ETE27ByOQroJ8RoZWSwtfpYxV8F81/z91Yj+?=
- =?us-ascii?q?kur39NEMXQL/OJhXIgX1TM0SgqkEa4HVsjeBgb7xBAatUo2zhc9RZzNRftZ2yS?=
- =?us-ascii?q?A4vFqPRmuUBSAQeGCZ7VUFD0OadfCbj75POkyUqdFOpmZ2CFnoeP4Aa8M5zAGd?=
- =?us-ascii?q?T5boZIjVLZReG78qzyainS+8qnsk/IdPwMYU3vWtpxjXUS/0hRPjrR6TM+M8d3?=
- =?us-ascii?q?zoqgM1KNejRatBfajd1ahnEJRpVNT8/DJM4gfftnXLkchVGp1+P46k6+W7eyEp?=
- =?us-ascii?q?2yreFDTZ/UrRmXu0MxgDB+D2ApD+/X3kn2BWk4WLt2hqRaiXnxEsXgL4vKYA?=
- =?us-ascii?q?=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A5LRtAat2LEvGqXJKbbGtEzcB7skDntV00zEX?=
- =?us-ascii?q?/kB9WHVpmszxra6TdZMgpHvJYVcqKRYdcL+7WJVoLUmxyXcX2/h1AV7BZniEhI?=
- =?us-ascii?q?LAFugLhuGO/9SKIUzDH4BmupuIC5IOauEYE2IK9vrS0U2pFco62tmb/OSNjefa?=
- =?us-ascii?q?9X1kSgZncMhbnn5EIzfeAktrXxNHGJZ8MJKd4/BMrz2mdW9SQd+8AhA+LpD+ju?=
- =?us-ascii?q?yOhJT7egQHGhJizAGPiAmj4Ln8HwPd/jp2aUIo/Ysf?=
-X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
-   d="scan'208";a="125646754"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 24 Jun 2022 09:18:51 +0800
-Received: from G08CNEXMBPEKD06.g08.fujitsu.local (unknown [10.167.33.206])
-        by cn.fujitsu.com (Postfix) with ESMTP id CDBF54D1719F;
-        Fri, 24 Jun 2022 09:18:48 +0800 (CST)
-Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
- G08CNEXMBPEKD06.g08.fujitsu.local (10.167.33.206) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Fri, 24 Jun 2022 09:18:48 +0800
-Received: from localhost.localdomain (10.167.225.141) by
- G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Fri, 24 Jun 2022 09:18:48 +0800
-From:   Li Zhijian <lizhijian@fujitsu.com>
-To:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        <linux-scsi@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>
-Subject: [PATCH] scsi: Enlarge log buffer length to 256
-Date:   Fri, 24 Jun 2022 09:25:42 +0800
-Message-ID: <20220624012542.1384858-1-lizhijian@fujitsu.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 23 Jun 2022 21:20:57 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E0856FA1;
+        Thu, 23 Jun 2022 18:20:55 -0700 (PDT)
+Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LTfRb5l7tzkWbZ;
+        Fri, 24 Jun 2022 09:19:39 +0800 (CST)
+Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
+ dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 24 Jun 2022 09:20:54 +0800
+Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
+ (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 24 Jun
+ 2022 09:20:53 +0800
+From:   Ren Zhijie <renzhijie2@huawei.com>
+To:     <kishon@ti.com>, <lpieralisi@kernel.org>, <kw@linux.com>,
+        <bhelgaas@google.com>, <jdmason@kudzu.us>, <Frank.Li@nxp.com>
+CC:     <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Ren Zhijie <renzhijie2@huawei.com>
+Subject: [PATCH -next] PCI: endpoint: Fix Kconfig dependency
+Date:   Fri, 24 Jun 2022 09:19:11 +0800
+Message-ID: <20220624011911.164146-1-renzhijie2@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-yoursite-MailScanner-ID: CDBF54D1719F.AF85B
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.34]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500008.china.huawei.com (7.185.36.147)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-scsi_report_sense() is possble to print messages exceeding 128 bytes:
-[  475.156955] sd 9:0:0:0: Warning! Received an indication that the LUN assignments on this target have changed. The Linux SCSI layer does not automatical
+If CONFIG_NTB is not set and CONFIG_PCI_EPF_VNTB is y.
 
-Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
+make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-, will be failed, like this:
+
+drivers/pci/endpoint/functions/pci-epf-vntb.o: In function `epf_ntb_cmd_handler':
+pci-epf-vntb.c:(.text+0x95e): undefined reference to `ntb_db_event'
+pci-epf-vntb.c:(.text+0xa1f): undefined reference to `ntb_link_event'
+pci-epf-vntb.c:(.text+0xa42): undefined reference to `ntb_link_event'
+drivers/pci/endpoint/functions/pci-epf-vntb.o: In function `pci_vntb_probe':
+pci-epf-vntb.c:(.text+0x1250): undefined reference to `ntb_register_device'
+
+The functions ntb_*() are defined in drivers/ntb/core.c, which need CONFIG_NTB setting y to be build-in.
+To fix this build error, add depends on NTB.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: ff32fac00d97("NTB: EPF: support NTB transfer between PCI RC and EP connection")
+Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
+Acked-by: Frank Li <frank.li@nxp.com>
+
 ---
- drivers/scsi/scsi_logging.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v2: Fix some commit message errors
+---
+ drivers/pci/endpoint/functions/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/scsi_logging.c b/drivers/scsi/scsi_logging.c
-index b02af340c2d3..edc3fe8c7e0f 100644
---- a/drivers/scsi/scsi_logging.c
-+++ b/drivers/scsi/scsi_logging.c
-@@ -17,7 +17,7 @@
- 
- static char *scsi_log_reserve_buffer(size_t *len)
- {
--	*len = 128;
-+	*len = 256;
- 	return kmalloc(*len, GFP_ATOMIC);
- }
- 
+diff --git a/drivers/pci/endpoint/functions/Kconfig b/drivers/pci/endpoint/functions/Kconfig
+index 362555b024e8..9beee4f0f4ee 100644
+--- a/drivers/pci/endpoint/functions/Kconfig
++++ b/drivers/pci/endpoint/functions/Kconfig
+@@ -29,6 +29,7 @@ config PCI_EPF_NTB
+ config PCI_EPF_VNTB
+         tristate "PCI Endpoint NTB driver"
+         depends on PCI_ENDPOINT
++        depends on NTB
+         select CONFIGFS_FS
+         help
+           Select this configuration option to enable the Non-Transparent
 -- 
-2.31.1
-
-
+2.17.1
 
