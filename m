@@ -2,157 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8305C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D460CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231421AbiFXMoj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 08:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
+        id S231518AbiFXMpp convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 08:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230152AbiFXMof (ORCPT
+        with ESMTP id S230152AbiFXMpo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 08:44:35 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2068.outbound.protection.outlook.com [40.107.93.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D127548E6C;
-        Fri, 24 Jun 2022 05:44:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jtad9WJdZf9glkRPJr7PyJ1YUNA0TIQ+I4SBATtAmRVllyYK8OdLOMhgSBdrU1r/C3dPROVZUqrkIufDoGFbYWTW5xj26hJTEY/o3IUY5DVHzC6vR4ddCwgMgYlAyWr4NV2lUnltJCd6b7xurbdvdwnPF/3TuPKxWHiPDdGkdAPcvAcp/bK72a9d6LIBqtryUEjrtxyQYJvnpZGyeKeVQ+B/Ngwo1vNHBogE6xzqNnSa2PtqyTZ3DBKVdEJRD/JrxrGwiadnrrDwoYVabnwSyw/ceNsI1FrDSTMCOzEnjpWJePjuqk09QvPJZfiXr1VWCXpubdgl9MhSrZ8LtnPqEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2PRhaygxHrBAAgy+CgxiIg7U/HPzu9LjHwSE52EAl/Q=;
- b=O+vuJA63si4FOP8Z02bdWcIH/0wggZNoWZGXnPQ3tTGKKKCJ/nUPLZnzBM9TASp0brtQiTHKMhwiCO++CNAM90pmdPdjP91Uu5xwJFfPF/SvkG4GMLzRNBdlPw9FHRAOBCL/Ci6LdaUxbkwudC+Mtv5RE6s6YJ+WMhTOx+JUIvOlGtH84aOHKdqY0WX1xvDoIwtiSCsGLYso/PsXbzTFLiyM9g5quLh5d2uSRfB7dm8GTCkXVOzNzD6y/mFymQAOgujLS6yg6GRAMKRuKCRL1Wn6SqIFO4Ve6vFM/UjiPkWLdcIcRS7wpna/mlu4Ognj/mldQ3xKqRsProBa+gkoNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2PRhaygxHrBAAgy+CgxiIg7U/HPzu9LjHwSE52EAl/Q=;
- b=TUEmVO2y+2Ih6jRF886ZqgsDOOVuY+MFmjsuYwUjKwGjaaUWc47bqIK5/gf04KIsDSnjqxAQbha3sO9QmHQ1zYuTGOcVrwjWjr13CQUE20BBrSeq+wt+tdH+atn0QfRQcHezk+Dk3WMeAOacld8TPPUmBdNgAGcZrYiI+74jOpx7APrgT1T0CGi5ok9BnR6Rwruc9J2ZxsxQNlz5pZVsVdRdefq5mP7ifCpuKdlGuP+lMZPWOvT83K/cagTv6t7c6xojKgmaZPf5s5z8ykNnVzdOEgaNE2kuK/32O0lAKJ1q+sACGZ7YLT1eaPOGASPRPeLusiBWilozZF5Z3YHjTA==
-Received: from CH2PR12MB3895.namprd12.prod.outlook.com (2603:10b6:610:2a::13)
- by CH2PR12MB3846.namprd12.prod.outlook.com (2603:10b6:610:24::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Fri, 24 Jun
- 2022 12:44:33 +0000
-Received: from CH2PR12MB3895.namprd12.prod.outlook.com
- ([fe80::45a7:d9:1cdd:3e9b]) by CH2PR12MB3895.namprd12.prod.outlook.com
- ([fe80::45a7:d9:1cdd:3e9b%5]) with mapi id 15.20.5353.022; Fri, 24 Jun 2022
- 12:44:33 +0000
-From:   Asmaa Mnebhi <asmaa@nvidia.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Sebastian Reichel <sre@kernel.org>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: RE: linux-next: build failure after merge of the battery tree
-Thread-Topic: linux-next: build failure after merge of the battery tree
-Thread-Index: AQHYhD7/SjaYCOIaYU+H8cFj+TXaJK1d4QAAgACmE/A=
-Date:   Fri, 24 Jun 2022 12:44:32 +0000
-Message-ID: <CH2PR12MB38951BF631A307CD350B47A9D7B49@CH2PR12MB3895.namprd12.prod.outlook.com>
-References: <20220620104503.11c0f2e1@canb.auug.org.au>
- <20220624124730.3516928c@canb.auug.org.au>
-In-Reply-To: <20220624124730.3516928c@canb.auug.org.au>
-Accept-Language: en-US
-Content-Language: en-US
+        Fri, 24 Jun 2022 08:45:44 -0400
+X-Greylist: delayed 299 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Jun 2022 05:45:43 PDT
+Received: from mail4.swissbit.com (mail4.swissbit.com [176.95.1.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E63349B43
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 05:45:43 -0700 (PDT)
+Received: from mail4.swissbit.com (localhost [127.0.0.1])
+        by DDEI (Postfix) with ESMTP id 22505122F2C;
+        Fri, 24 Jun 2022 14:40:42 +0200 (CEST)
+Received: from mail4.swissbit.com (localhost [127.0.0.1])
+        by DDEI (Postfix) with ESMTP id 127B2122E05;
+        Fri, 24 Jun 2022 14:40:42 +0200 (CEST)
+X-TM-AS-ERS: 10.149.2.84-127.5.254.253
+X-TM-AS-SMTP: 1.0 ZXguc3dpc3NiaXQuY29t Y2xvZWhsZUBoeXBlcnN0b25lLmNvbQ==
+X-DDEI-TLS-USAGE: Used
+Received: from ex.swissbit.com (SBDEEX02.sbitdom.lan [10.149.2.84])
+        by mail4.swissbit.com (Postfix) with ESMTPS;
+        Fri, 24 Jun 2022 14:40:42 +0200 (CEST)
+Received: from sbdeex02.sbitdom.lan (10.149.2.84) by sbdeex02.sbitdom.lan
+ (10.149.2.84) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Fri, 24 Jun
+ 2022 14:40:41 +0200
+Received: from sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74]) by
+ sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74%8]) with mapi id
+ 15.02.1118.009; Fri, 24 Jun 2022 14:40:41 +0200
+From:   =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
+To:     "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
+CC:     Avri Altman <Avri.Altman@wdc.com>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>
+Subject: [PATCH] mmc: block: Add single read for 4k sector cards
+Thread-Topic: [PATCH] mmc: block: Add single read for 4k sector cards
+Thread-Index: AdiHGlstOTiMmBAQQCyuCs385lDFyw==
+Date:   Fri, 24 Jun 2022 12:40:41 +0000
+Message-ID: <0fee7b89d21a472f97aa5b079abd1ce1@hyperstone.com>
+Accept-Language: en-US, de-DE
+Content-Language: de-DE
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4b6c441d-202b-4c2e-e468-08da55df49c2
-x-ms-traffictypediagnostic: CH2PR12MB3846:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3sh1xSouSecOM4QtOJ5ScLZ7hgwr+n8x4XEz+WWZfZ1gmVjDsATJiZ4yybd924PgBct56jY2xdcL6V2Ftdh9KHDo3xW+fXKnhqNPKRvAcrcAAvM/DzKZnJQV40e35bnu9AEReM6tkQcbQCirATWyRNVkebwOGyv9vnLuTKW81406kp7pSiw6BflXQn1q4hYSqXSTpVxQUXetlAUUBDsIen93hNtvyQo40g+6ODI475wuJm0EJXS8eE8Ib+I3ryaS57AHNf/A4ULMB7biCBht4iJrqYfiVEe+YLYjXdQFf9YsPpVi7GNS4Tw0XvO6lWmngBdwICpZlD2cqh3gLKN+OZ6/UGSZ/oKRMmKc8WbzJP8NJjgXIQPH8rf6FXrgPSm+2hR9cVshLy3DiSpnH95+CE1X/dHLH+cioWz7V2RGPuklk3Nkxd8gYrGtREbh/q+jNS6PXXh42NLa4Y1JvQ7ethR2iFzn6K1wWYwUUThleMnKpLnegUxXVxFoHSusr5wxbdhqB0MkXetGZSRNKu0WI9pYxZHd9Ovoq4MytaAmI/4DFEPvLwAsN+WmRx0vT+hTVF2oNEJfW/ADdrbna33HIB9hnP76G8SEfIqbgFdXpnAjXow+MWEgf0FyqA7lemijDeLii4fgs5YZ0m8Igvaax7VRZJeHqB1HwSR/oJS0B8f4QizvcH1azLRNr//TpWKxCoyy7U1cSU9JO99PKhb8KVMQCNMRJXjXPL9ZFMp9AvVd4+LoZyZdYiBv117ZEH0yPIFAdPb5+/eiFh9nF51heUa9jJxsUqHMzJmqr9VlQ2g=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB3895.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(396003)(39860400002)(366004)(376002)(66556008)(66446008)(66476007)(64756008)(110136005)(54906003)(316002)(76116006)(4326008)(8936002)(66946007)(38100700002)(26005)(186003)(8676002)(6506007)(83380400001)(53546011)(7696005)(86362001)(478600001)(9686003)(122000001)(38070700005)(71200400001)(33656002)(2906002)(41300700001)(55016003)(5660300002)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?e5wbGLSs/g5kNvrPQdjkVBFzkI1cbyL0SS0931JURCZLVpPSIQ8j+Wjrtl4C?=
- =?us-ascii?Q?rTN9KBOhHBUGEq5BZZwzycMrbF84cu2CtNIrzXlk+GtgQI1i9Es74hWGdbEQ?=
- =?us-ascii?Q?ypk3yVDEBhFJA66vYgMd6eCF05b8hcXpIo+4Wxy8gnuTShHiYvbuKemg19vE?=
- =?us-ascii?Q?h2jCoDPafsRKR7qHnMbQouwLftCQUMdqchu+c1qPtO0XYfVcSz9fz4p44A+Z?=
- =?us-ascii?Q?FMH35O7TILEeR47uG8t5wNVVSjQN/6k2eF1az9Ga66qJx7ed4VQMTt21y5Zw?=
- =?us-ascii?Q?dcx/nCre7Ex0tXePTNwxT4XU82PcZaHsQPy3tnIoqwo9T0XKPtABil9KTrD9?=
- =?us-ascii?Q?A0AS0Al+Ifu+zbn9QPR7O1j99+tyUpIpOqBCeAMiu0h4BWfpsxTAyv8uwZzb?=
- =?us-ascii?Q?l4vJVA/DKOVLTDhLWzkTInH8v8CwjH8Y59dQsuhdFGHXoAaa9vaxd1iLHvUl?=
- =?us-ascii?Q?/bSYqeZK0fPQSppGrub7gVQiwUFD6j+ycPA1zI3glLbQQgTPVYoAUfxpWt9J?=
- =?us-ascii?Q?knxEdiXA+5IzXxb8Kla2m20WqVQoq9eaZ2Z71kOgnCqY8EmuHjGy7D6CqQdP?=
- =?us-ascii?Q?h8Ktkc25LFFIT3gx65wyVj/MUPdwwGbhT83X+G9GFmZgBA6gk2wEb/Bx5zjA?=
- =?us-ascii?Q?PwM1x+kO46F90uzJgp2OVZwRCZM6N8yErO4NMVJy2YApBTr8l7tLTj//SfQQ?=
- =?us-ascii?Q?aoGZGkJyEAMAxm11osl9y+4/ymndmSf1NPABXb2kqNADHELHt24os1WPSPaq?=
- =?us-ascii?Q?l88JHC2VTaMkmrTPxVMoCU8vGXHcsQ9a371kmE+PmO8vgIiQ3zlJ4qj+wXB7?=
- =?us-ascii?Q?d5jc4FMI5X+om03qRE6o1CfAYOveHyBqHHdK2oVvOgSpoV928jpGK3fp3vCt?=
- =?us-ascii?Q?plBOO9M2JQTdeQYC6ufSK4PTIqwByo65j8F/MGIP9PogH9lmWs9LXXxZ3bS7?=
- =?us-ascii?Q?dhVdyjKVnPBcgQ2r6abBTmog/bXWqAC7fmwUu/03ar16lSiUfD9Quh+/LNFO?=
- =?us-ascii?Q?jMSao3TrfyFz06aOiwQUJXJfjSn7Q42hpgGOSTtOuaZeL8GqC4Fe0B1tEe4H?=
- =?us-ascii?Q?5eFqaTbHmfWNcv3Kylzknw7E77Jl2uVT9yzSioYrDUO0VXVLk5wLNl+Ir4YQ?=
- =?us-ascii?Q?Tfx9erZkRUCgiPCAq/8mCASj6XtRzcZ68kKRdZ0E3qS6ZEf1N2dfPr17Bdml?=
- =?us-ascii?Q?q+wdkyL+2ITvpp6Io4C5F03Yu2YIG3KPaOPZh3F8jiOhgTki9fm0yfKolVtd?=
- =?us-ascii?Q?UYVJzuWGg+yypV7GlluVv6jZZxfCwHdmWA+ragceRiWP+uAnyBDKodXKzKmO?=
- =?us-ascii?Q?5tzK5Nt1fxo48RU9agEyihCKXfpdpeUto7ciDD4xlXAXFcz8szLRw2KmWp33?=
- =?us-ascii?Q?HoFv2jbo+/XtnY/RttGhnlifwer3jOIDsdR4K3Jh7Sp6FJPajHIndlfSpJ40?=
- =?us-ascii?Q?DPr9pnlR5cuToaH0HQrTBgTo4uB4s6kpvL2AtUGGGH7ynrj88Y0gdTDvdbfm?=
- =?us-ascii?Q?29K+rcyd2Qd8zsswDM2z2HucXMn8/DiZNmoiCPWGhIiK5H6J5Mv8M8F0z79b?=
- =?us-ascii?Q?XBOApwEaZ1I98KZc5B8=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-originating-ip: [10.153.3.44]
+Content-Type: text/plain;
+        charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB3895.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b6c441d-202b-4c2e-e468-08da55df49c2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2022 12:44:32.9767
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 14aRt7TtSoi3iZLn6Gw1iE7jA9FxjSkAs5QYg9pfPFoC0q3BSbLc2QQ1m0ks2NkNK65SSszIa/67TflDWr0dAw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3846
+X-TMASE-Version: DDEI-5.1-9.0.1002-26974.007
+X-TMASE-Result: 10--1.071700-10.000000
+X-TMASE-MatchedRID: ewN4Wv8Mz/gus6wjYQDwl99JA2lmQRNUWQ3R4k5PTnDAuQ0xDMaXkH4q
+        tYI9sRE/7qN2AY1LBYfvpVnoxBz4V1nAOGOnLpRWiSe9g7mQdJz2/fdRbxY1gMiCh8yBqE+tCSf
+        ieByOJzyHzvZ8Ho0SWhr4VwoL73En240GxxcfXA2/QNwZdfw3FX0tCKdnhB58nFK7VE/xL0n6C0
+        ePs7A07RjOlt1Pi553tOynRD8m3+BCKFXFAIynFeXXc05xgJDleF//xuBYsls=
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,33:0,34:0-0
+X-TMASE-INERTIA: 0-0;;;;
+X-TMASE-XGENCLOUD: cdbb541e-dd56-4039-a072-77fe6955c7e7-0-0-200-0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I sent a patch on Tuesday and added you as a reviewer. Could you please tak=
-e a look?
-The name of the email/patch: "[PATCH v1 1/1] linux-next: Fix build failure =
-in pwr-mlxbf.c"
+Cards with 4k native sector size may only be read 4k-aligned,
+accommodate for this in the single read recovery and use it.
 
-Thanks.
-Asmaa
+Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+---
+ drivers/mmc/core/block.c | 26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
 
------Original Message-----
-From: Stephen Rothwell <sfr@canb.auug.org.au>=20
-Sent: Thursday, June 23, 2022 10:48 PM
-To: Sebastian Reichel <sre@kernel.org>
-Cc: Asmaa Mnebhi <asmaa@nvidia.com>; Linux Kernel Mailing List <linux-kerne=
-l@vger.kernel.org>; Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the battery tree
+diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+index f4a1281658db..6f0b24cb0747 100644
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -176,7 +176,7 @@ static inline int mmc_blk_part_switch(struct mmc_card *card,
+ 				      unsigned int part_type);
+ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 			       struct mmc_card *card,
+-			       int disable_multi,
++			       int recovery_mode,
+ 			       struct mmc_queue *mq);
+ static void mmc_blk_hsq_req_done(struct mmc_request *mrq);
+ 
+@@ -1302,7 +1302,7 @@ static void mmc_blk_eval_resp_error(struct mmc_blk_request *brq)
+ }
+ 
+ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+-			      int disable_multi, bool *do_rel_wr_p,
++			      int recovery_mode, bool *do_rel_wr_p,
+ 			      bool *do_data_tag_p)
+ {
+ 	struct mmc_blk_data *md = mq->blkdata;
+@@ -1372,8 +1372,11 @@ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+ 		 * at a time in order to accurately determine which
+ 		 * sectors can be read successfully.
+ 		 */
+-		if (disable_multi)
++		if (recovery_mode) {
+ 			brq->data.blocks = 1;
++			if (mmc_large_sector(card))
++				brq->data.blocks = 8;
++		}
+ 
+ 		/*
+ 		 * Some controllers have HW issues while operating
+@@ -1590,7 +1593,7 @@ static int mmc_blk_cqe_issue_rw_rq(struct mmc_queue *mq, struct request *req)
+ 
+ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 			       struct mmc_card *card,
+-			       int disable_multi,
++			       int recovery_mode,
+ 			       struct mmc_queue *mq)
+ {
+ 	u32 readcmd, writecmd;
+@@ -1599,7 +1602,7 @@ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 	struct mmc_blk_data *md = mq->blkdata;
+ 	bool do_rel_wr, do_data_tag;
+ 
+-	mmc_blk_data_prep(mq, mqrq, disable_multi, &do_rel_wr, &do_data_tag);
++	mmc_blk_data_prep(mq, mqrq, recovery_mode, &do_rel_wr, &do_data_tag);
+ 
+ 	brq->mrq.cmd = &brq->cmd;
+ 
+@@ -1690,7 +1693,7 @@ static int mmc_blk_fix_state(struct mmc_card *card, struct request *req)
+ 
+ #define MMC_READ_SINGLE_RETRIES	2
+ 
+-/* Single sector read during recovery */
++/* Single (native) sector read during recovery */
+ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ {
+ 	struct mmc_queue_req *mqrq = req_to_mmc_queue_req(req);
+@@ -1698,6 +1701,7 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ 	struct mmc_card *card = mq->card;
+ 	struct mmc_host *host = card->host;
+ 	blk_status_t error = BLK_STS_OK;
++	size_t bytes_per_read = mmc_large_sector(card) ? 4069 : 512;
+ 
+ 	do {
+ 		u32 status;
+@@ -1732,13 +1736,13 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ 		else
+ 			error = BLK_STS_OK;
+ 
+-	} while (blk_update_request(req, error, 512));
++	} while (blk_update_request(req, error, bytes_per_read));
+ 
+ 	return;
+ 
+ error_exit:
+ 	mrq->data->bytes_xfered = 0;
+-	blk_update_request(req, BLK_STS_IOERR, 512);
++	blk_update_request(req, BLK_STS_IOERR, bytes_per_read);
+ 	/* Let it try the remaining request again */
+ 	if (mqrq->retries > MMC_MAX_RETRIES - 1)
+ 		mqrq->retries = MMC_MAX_RETRIES - 1;
+@@ -1879,10 +1883,8 @@ static void mmc_blk_mq_rw_recovery(struct mmc_queue *mq, struct request *req)
+ 		return;
+ 	}
+ 
+-	/* FIXME: Missing single sector read for large sector size */
+-	if (!mmc_large_sector(card) && rq_data_dir(req) == READ &&
+-	    brq->data.blocks > 1) {
+-		/* Read one sector at a time */
++	if (rq_data_dir(req) == READ && brq->data.blocks > 1) {
++		/* Read one (native) sector at a time */
+ 		mmc_blk_read_single(mq, req);
+ 		return;
+ 	}
+-- 
+2.36.1
+Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
+Managing Director: Dr. Jan Peter Berns.
+Commercial register of local courts: Freiburg HRB381782
 
-Hi all,
-
-On Mon, 20 Jun 2022 10:45:03 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->=20
-> After merging the battery tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
->=20
-> drivers/power/reset/pwr-mlxbf.c: In function 'pwr_mlxbf_probe':
-> drivers/power/reset/pwr-mlxbf.c:67:15: error: implicit declaration of fun=
-ction 'devm_work_autocancel' [-Werror=3Dimplicit-function-declaration]
->    67 |         err =3D devm_work_autocancel(dev, &priv->send_work, pwr_m=
-lxbf_send_work);
->       |               ^~~~~~~~~~~~~~~~~~~~
-> cc1: all warnings being treated as errors
->=20
-> Caused by commit
->=20
->   a4c0094fcf76 ("power: reset: pwr-mlxbf: add BlueField SoC power control=
- driver")
->=20
-> I have used the battery tree from next-20220617 for today.
-
-I am still seeing this failure.
-
---=20
-Cheers,
-Stephen Rothwell
