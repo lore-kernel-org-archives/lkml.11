@@ -2,94 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0146C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45813C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbiFXS7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 14:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
+        id S231686AbiFXTAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 15:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiFXS72 (ORCPT
+        with ESMTP id S229586AbiFXS77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 14:59:28 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD847C53B;
-        Fri, 24 Jun 2022 11:59:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656097168; x=1687633168;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ZkJlVC384UNpflENkvCHqRU0Ni7nxmoR7Jcb/6VX51s=;
-  b=kxkKZjc1nzvBtRfk30aZIwd+z/+q/wSLgmlRL/gGD4JMmpmzrODj86KZ
-   9iJ1hO2/+lLdQKXPvy30OstE7e+8GaGBI8QclR9jfgXautYgSMiQ0+0sQ
-   wf47/P08vvlvmWIZcmRXkDNtgnie9i/TAGi9qy2lvNqewxnPJQqDXvywO
-   M=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Jun 2022 11:59:27 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 11:59:27 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 24 Jun 2022 11:59:27 -0700
-Received: from [10.110.111.5] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 24 Jun
- 2022 11:59:26 -0700
-Message-ID: <0251f2c9-0f66-7dc9-7fb6-cc41a8dfd918@quicinc.com>
-Date:   Fri, 24 Jun 2022 11:59:25 -0700
+        Fri, 24 Jun 2022 14:59:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FCA81A39;
+        Fri, 24 Jun 2022 11:59:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5A136201E;
+        Fri, 24 Jun 2022 18:59:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2713CC34114;
+        Fri, 24 Jun 2022 18:59:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656097197;
+        bh=Ehv96mzwD9x4fzKR144NLvZwEwTNqOQbQuPP+zLDXss=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LhWeh8VSMIM7b9Nr2r4zP1lY3fxqRzoG3MrWkf9NfT+Tn9Eg/nZNdyyr3FXcIfgs4
+         14gIp/awX+03Cu7Lf9nZHsdwMBRctWQwTrcsIAkWqlCWncJmhTjAe1ESxQUacx9vjf
+         YOK/SjfHjyq1eA6LW306pbyODGddKguZbPWjwxjr6c74oYkzm1zQbveuoEVnXTap1m
+         ALr+cnMnOEJtray/NbjIpjtGQNue3H07wLNPKOOg7p83Ae4m4GMC9w/v0KbStvtyRD
+         5pK/q65NsuyRRTRJeOWoCXj9vcgHkWpiTcoiC8BtfhTrSwudROioFXIVTw6AsA0iBW
+         pp2AEMs2X9wOQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 1092C4096F; Fri, 24 Jun 2022 15:59:55 -0300 (-03)
+Date:   Fri, 24 Jun 2022 15:59:55 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: Re: [PATCHSET 0/7] perf lock: New lock contention tracepoints
+ support (v4)
+Message-ID: <YrYJq8UQ04FFN12/@kernel.org>
+References: <20220615163222.1275500-1-namhyung@kernel.org>
+ <CAM9d7cjD=at=AtKmvMLogjN6mieWVR2kk-HigxO01cvPPRGFBg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] brcmfmac: Remove #ifdef guards for PM related
- functions
-Content-Language: en-US
-To:     Paul Cercueil <paul@crapouillou.net>
-CC:     Arend Van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220623124221.18238-1-paul@crapouillou.net>
- <9f623bb6-8957-0a9a-3eb7-9a209965ea6e@gmail.com>
- <3013994a-487c-56eb-42d6-b8cdf7615405@quicinc.com>
- <WHVZDR.GB0H9SQC9PDP@crapouillou.net>
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <WHVZDR.GB0H9SQC9PDP@crapouillou.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM9d7cjD=at=AtKmvMLogjN6mieWVR2kk-HigxO01cvPPRGFBg@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/24/2022 11:32 AM, Paul Cercueil wrote:
-> Hi,
-> 
-> Le ven., juin 24 2022 at 09:31:22 -0700, Jeff Johnson 
-> <quic_jjohnson@quicinc.com> a écrit :
->> On 6/24/2022 2:24 AM, Arend Van Spriel wrote:
->>> On 6/23/2022 2:42 PM, Paul Cercueil wrote:
->>
->> [snip]
->>
->>>> -    if (sdiodev->freezer) {
->>>> +    if (IS_ENABLED(CONFIG_PM_SLEEP) && sdiodev->freezer) {
->>>
->>> This change is not necessary. sdiodev->freezer will be NULL when 
->>> CONFIG_PM_SLEEP is not enabled.
->>
->> but won't the compiler be able to completely optimize the code away if 
->> the change is present?
-> 
-> That's correct. But do we want to complexify a bit the code for the sake 
-> of saving a few bytes? I leave that as an open question to the 
-> maintainer, I'm really fine with both options.
+Em Fri, Jun 24, 2022 at 09:40:05AM -0700, Namhyung Kim escreveu:
+>> Ping!  Any comments?
 
-I'm fine either way as well. I'd have stronger opinions if ath drivers 
-were involved ;)
+ 
+I'll take a look and test it soon.
+
+- Arnaldo
+
+> 
+> On Wed, Jun 15, 2022 at 9:32 AM Namhyung Kim <namhyung@kernel.org> wrote:
+> >
+> > Hello,
+> >
+> > Kernel v5.19 will have a new set of tracepoints to track lock
+> > contentions for various lock types.  Unlike tracepoints in LOCKDEP and
+> > LOCK_STAT, it's hit only for contended locks and lock names are not
+> > available.  So it needs to collect stack traces and display the caller
+> > function instead.
+> >
+> > Changes in v4)
+> >  * add Acked-by from Ian
+> >  * more comments on trace_lock_handler
+> >  * don't create stats in the contention_end handler
+> >
+> > Changes in v3)
+> >  * fix build error
+> >  * support data from different kernels/machines
+> >  * skip bad stat unless there's actual bad ones
+> >
+> > Changes in v2)
+> >  * add Acked-by from Ian
+> >  * print time with a unit for compact output
+> >  * add some comments  (Ian)
+> >  * remove already applied patch
+> >
+> > This patchset merely adds support for the new tracepoints to the
+> > existing perf lock commands.  So there's no change to the user.  Later
+> > I'll add new a sub-command dedicated to the tracepoints to make use of
+> > the additional information.
+> >
+> > Example output:
+> >
+> >   $ sudo perf lock record -a sleep 3
+> >
+> >   $ perf lock report -F acquired,contended,avg_wait,wait_total
+> >
+> >                   Name   acquired  contended     avg wait    total wait
+> >
+> >    update_blocked_a...         40         40      3.61 us     144.45 us
+> >    kernfs_fop_open+...          5          5      3.64 us      18.18 us
+> >     _nohz_idle_balance          3          3      2.65 us       7.95 us
+> >    tick_do_update_j...          1          1      6.04 us       6.04 us
+> >     ep_scan_ready_list          1          1      3.93 us       3.93 us
+> >   ...
+> >
+> > You can find the code in the 'perf/lock-contention-v4' branch at
+> >
+> >   git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
+> >
+> > Thanks,
+> > Namhyung
+> >
+> >
+> > Namhyung Kim (7):
+> >   perf lock: Print wait times with unit
+> >   perf lock: Allow to use different kernel symbols
+> >   perf lock: Skip print_bad_events() if nothing bad
+> >   perf lock: Add lock contention tracepoints record support
+> >   perf lock: Handle lock contention tracepoints
+> >   perf record: Allow to specify max stack depth of fp callchain
+> >   perf lock: Look up callchain for the contended locks
+> >
+> >  tools/perf/Documentation/perf-lock.txt   |   7 +
+> >  tools/perf/Documentation/perf-record.txt |   5 +
+> >  tools/perf/builtin-lock.c                | 426 ++++++++++++++++++++++-
+> >  tools/perf/util/callchain.c              |  18 +-
+> >  4 files changed, 434 insertions(+), 22 deletions(-)
+> >
+> >
+> > base-commit: 9886142c7a2226439c1e3f7d9b69f9c7094c3ef6
+> > --
+> > 2.36.1.476.g0c4daa206d-goog
+> >
+
+-- 
+
+- Arnaldo
