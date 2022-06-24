@@ -2,125 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13254CCA473
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72269C433EF
 	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232066AbiFXRhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
+        id S231238AbiFXRhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231510AbiFXRhV (ORCPT
+        with ESMTP id S231162AbiFXRhJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:37:21 -0400
-Received: from mail-ua1-x949.google.com (mail-ua1-x949.google.com [IPv6:2607:f8b0:4864:20::949])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EF05DF3E
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:37:21 -0700 (PDT)
-Received: by mail-ua1-x949.google.com with SMTP id g21-20020ab02455000000b0037f227fdc94so1016494uan.10
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:37:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=LYP6EWO0tHkDZ/Eb/N4ct/rtumW77ceMKYt6OWO28gw=;
-        b=XFGCLL1FPCDch3s8zoHY1/aiVrNxiWrnh/6o6qV/K2RAwhUG1NoqoYSivh5BlEjSSN
-         JSeDqdD7wmJqUHehWTyabP/SFxoPxLcdmJQciamvw0zZEkmrFOLEfH5MKvY7BMKKaRs5
-         OeQHOUrdz9iPL7xkNs8N8nJEHEVe58C79l9VExLO0snSG9Lzk432UZi5FNR67YMTpjNb
-         nWD0bA1/rl29atfGjcsEE2x8Ah2JCvGLGQcQO7+KX8SrBMuFX9ufi1FM9t5s4yyq73GD
-         HMYrizZfRIn1go+aVU8Gs1V6ny5gGjt1jqAVjKkGM9IiyAl9gtwolhjj4PEcCHbqvzlV
-         R5nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=LYP6EWO0tHkDZ/Eb/N4ct/rtumW77ceMKYt6OWO28gw=;
-        b=Xbjlai8HJblQNR4MXddm3IrZpIt07whGkmf8QNrs9IMMwCWHhAR/uoGi9CEMoHqaSZ
-         WNPjsNQOkHkCPId9x7BoZMgeQqYPfBaoFubJZdY1uEztY5ArfK6RkGPxvy+/nqDCqk32
-         n4YfQi0gF2Os2O4EOud95873Q1cgqSjhNw/dTRC0EWGK+HwAVSmsFHwBrWqudfU6VlV1
-         qaxI38RTaTQ11DH01EQmYB7vl0YuoGxf9i205OdYsdk7kTzZMhkkuIvA0tictQs4wkPH
-         9wUHkiNuBOqP84MZ1MyHSlEm3IixL2TbpKB2HW+e2ddjlb7xR9W07+bcX2ragW7EuE3e
-         Qr/g==
-X-Gm-Message-State: AJIora8tujQEcdfTbZwq0ghOhXc+epdwuAtrQ2lTMPSs5t0D0uzjzhuq
-        b2Y/rE1Mva2KTMvjepcPpeEF1fHdoACxq7wB
-X-Google-Smtp-Source: AGRyM1ssMLMIRbwDkEduAqDq4DS/T59s9retjKTDy0iTSci5NwCImR9/ISla7A1bU/FQrm45/Cl8LL0Be0TLQc6l
-X-Received: from jthoughton.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:2a4f])
- (user=jthoughton job=sendgmr) by 2002:a05:6102:374d:b0:34c:1f02:aa59 with
- SMTP id u13-20020a056102374d00b0034c1f02aa59mr21351211vst.21.1656092240411;
- Fri, 24 Jun 2022 10:37:20 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 17:36:38 +0000
-In-Reply-To: <20220624173656.2033256-1-jthoughton@google.com>
-Message-Id: <20220624173656.2033256-9-jthoughton@google.com>
-Mime-Version: 1.0
-References: <20220624173656.2033256-1-jthoughton@google.com>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [RFC PATCH 08/26] hugetlb: add hugetlb_free_range to free PT structures
-From:   James Houghton <jthoughton@google.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Peter Xu <peterx@redhat.com>
-Cc:     David Hildenbrand <david@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Jue Wang <juew@google.com>,
-        Manish Mishra <manish.mishra@nutanix.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        James Houghton <jthoughton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 24 Jun 2022 13:37:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 64AB262C13
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:37:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656092226;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TqUnppsLw+ptEFOWt96xqRoxkSJ1xKv0wtk/TcEKVps=;
+        b=BFVrBJQ8bT/BPBVGa4c75qhAS4AJy4MEv76CafLHiIWRngrNDiatuvtwp/WTrPDg+91+Lj
+        ZcTB0EspBYkmdIzRQB5FtUt00NhNDrZ6Z57EqemqGtHHaJPxBlg3Fyz/2Kti7aYdIwXMF4
+        e/Cw8aoo1MZEhdUZqNZ8EjusYGuFJEs=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-352-NlKausoxPTGBlsCfhDCECA-1; Fri, 24 Jun 2022 13:37:01 -0400
+X-MC-Unique: NlKausoxPTGBlsCfhDCECA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B88F729AB442;
+        Fri, 24 Jun 2022 17:37:00 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.22.9.80])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0226A492C3B;
+        Fri, 24 Jun 2022 17:36:59 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id B7C8E2209F9; Fri, 24 Jun 2022 13:36:59 -0400 (EDT)
+Date:   Fri, 24 Jun 2022 13:36:59 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Tycho Andersen <tycho@tycho.pizza>
+Cc:     Eric Biederman <ebiederm@xmission.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        fuse-devel@lists.sourceforge.net, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: strange interaction between fuse + pidns
+Message-ID: <YrX2O4Yv8elsQkF9@redhat.com>
+References: <YrShFXRLtRt6T/j+@risky>
+ <YrThSLvG8JSLHG4j@redhat.com>
+ <YrT6Hdqp36HLK9PJ@netflix>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrT6Hdqp36HLK9PJ@netflix>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a helper function for freeing the bits of the page table that
-map a particular HugeTLB PTE.
+On Thu, Jun 23, 2022 at 05:41:17PM -0600, Tycho Andersen wrote:
+> On Thu, Jun 23, 2022 at 05:55:20PM -0400, Vivek Goyal wrote:
+> > So in this case single process is client as well as server. IOW, one
+> > thread is fuse server servicing fuse requests and other thread is fuse
+> > client accessing fuse filesystem?
+> 
+> Yes. Probably an abuse of the API and something people Should Not Do,
+> but as you say the kernel still shouldn't lock up like this.
+> 
+> > > since the thread has a copy of
+> > > the fd table with an fd pointing to the same fuse device, the reference
+> > > count isn't decremented to zero in fuse_dev_release(), and the task hangs
+> > > forever.
+> > 
+> > So why did fuse server thread stop responding to fuse messages. Why
+> > did it not complete flush.
+> 
+> In this particular case I think it's because the application crashed
+> for unrelated reasons and tried to exit the pidns, hitting this
+> problem.
+> 
+> > BTW, unkillable wait happens on ly fc->no_interrupt = 1. And this seems
+> > to be set only if server probably some previous interrupt request
+> > returned -ENOSYS.
+> > 
+> > fuse_dev_do_write() {
+> >                 else if (oh.error == -ENOSYS)
+> >                         fc->no_interrupt = 1;
+> > }
+> > 
+> > So a simple workaround might be for server to implement support for
+> > interrupting requests.
+> 
+> Yes, but that is the libfuse default IIUC.
 
-Signed-off-by: James Houghton <jthoughton@google.com>
----
- include/linux/hugetlb.h |  2 ++
- mm/hugetlb.c            | 17 +++++++++++++++++
- 2 files changed, 19 insertions(+)
+Looking at libfuse code. I understand low level API interface and for
+that looks like generic code itself will take care of this (without
+needing support from filesystem).
 
-diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-index 1d4ec9dfdebf..33ba48fac551 100644
---- a/include/linux/hugetlb.h
-+++ b/include/linux/hugetlb.h
-@@ -107,6 +107,8 @@ bool hugetlb_pte_none_mostly(const struct hugetlb_pte *hpte);
- pte_t hugetlb_ptep_get(const struct hugetlb_pte *hpte);
- void hugetlb_pte_clear(struct mm_struct *mm, const struct hugetlb_pte *hpte,
- 		       unsigned long address);
-+void hugetlb_free_range(struct mmu_gather *tlb, const struct hugetlb_pte *hpte,
-+			unsigned long start, unsigned long end);
- 
- struct hugepage_subpool {
- 	spinlock_t lock;
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 1a1434e29740..a2d2ffa76173 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -1120,6 +1120,23 @@ static bool vma_has_reserves(struct vm_area_struct *vma, long chg)
- 	return false;
- }
- 
-+void hugetlb_free_range(struct mmu_gather *tlb, const struct hugetlb_pte *hpte,
-+			unsigned long start, unsigned long end)
-+{
-+	unsigned long floor = start & hugetlb_pte_mask(hpte);
-+	unsigned long ceiling = floor + hugetlb_pte_size(hpte);
-+
-+	if (hugetlb_pte_size(hpte) >= PGDIR_SIZE) {
-+		free_p4d_range(tlb, (pgd_t *)hpte->ptep, start, end, floor, ceiling);
-+	} else if (hugetlb_pte_size(hpte) >= P4D_SIZE) {
-+		free_pud_range(tlb, (p4d_t *)hpte->ptep, start, end, floor, ceiling);
-+	} else if (hugetlb_pte_size(hpte) >= PUD_SIZE) {
-+		free_pmd_range(tlb, (pud_t *)hpte->ptep, start, end, floor, ceiling);
-+	} else if (hugetlb_pte_size(hpte) >= PMD_SIZE) {
-+		free_pte_range(tlb, (pmd_t *)hpte->ptep, start);
-+	}
-+}
-+
- bool hugetlb_pte_present_leaf(const struct hugetlb_pte *hpte)
- {
- 	pgd_t pgd;
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+libfuse/lib/fuse_lowlevel.c
+
+do_interrupt().
+
+> 
+> > Having said that, this does sounds like a problem and probably should
+> > be fixed at kernel level.
+> > 
+> > > 
+> > > diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+> > > index 0e537e580dc1..c604dfcaec26 100644
+> > > --- a/fs/fuse/dev.c
+> > > +++ b/fs/fuse/dev.c
+> > > @@ -297,7 +297,6 @@ void fuse_request_end(struct fuse_req *req)
+> > >  		spin_unlock(&fiq->lock);
+> > >  	}
+> > >  	WARN_ON(test_bit(FR_PENDING, &req->flags));
+> > > -	WARN_ON(test_bit(FR_SENT, &req->flags));
+> > >  	if (test_bit(FR_BACKGROUND, &req->flags)) {
+> > >  		spin_lock(&fc->bg_lock);
+> > >  		clear_bit(FR_BACKGROUND, &req->flags);
+> > > @@ -381,30 +380,33 @@ static void request_wait_answer(struct fuse_req *req)
+> > >  			queue_interrupt(req);
+> > >  	}
+> > >  
+> > > -	if (!test_bit(FR_FORCE, &req->flags)) {
+> > > -		/* Only fatal signals may interrupt this */
+> > > -		err = wait_event_killable(req->waitq,
+> > > -					test_bit(FR_FINISHED, &req->flags));
+> > > -		if (!err)
+> > > -			return;
+> > > +	/* Only fatal signals may interrupt this */
+> > > +	err = wait_event_killable(req->waitq,
+> > > +				test_bit(FR_FINISHED, &req->flags));
+> > 
+> > Trying to do a fatal signal killable wait sounds reasonable. But I am
+> > not sure about the history.
+> > 
+> > - Why FORCE requests can't do killable wait.
+> > - Why flush needs to have FORCE flag set.
+> 
+> args->force implies a few other things besides this killable wait in
+> fuse_simple_request(), most notably:
+> 
+> req = fuse_request_alloc(fm, GFP_KERNEL | __GFP_NOFAIL);
+> 
+> and
+> 
+> __set_bit(FR_WAITING, &req->flags);
+
+FR_WAITING stuff is common between both type of requests. We set it
+in fuse_get_req() as well which is called for non-force requests.
+
+So there seem to be only two key difference. 
+
+- We allocate request with flag __GFP_NOFAIL for force. So don't
+  want memory allocation to fail.
+
+- And this special casing of non-killable wait. 
+
+Miklos probably will have more thoughts on this. 
+
+Thanks
+Vivek
+
+> 
+> seems like it probably can be invoked from some non-user/atomic
+> context somehow?
+> 
+> > > +	if (!err)
+> > > +		return;
+> > >  
+> > > -		spin_lock(&fiq->lock);
+> > > -		/* Request is not yet in userspace, bail out */
+> > > -		if (test_bit(FR_PENDING, &req->flags)) {
+> > > -			list_del(&req->list);
+> > > -			spin_unlock(&fiq->lock);
+> > > -			__fuse_put_request(req);
+> > > -			req->out.h.error = -EINTR;
+> > > -			return;
+> > > -		}
+> > > +	spin_lock(&fiq->lock);
+> > > +	/* Request is not yet in userspace, bail out */
+> > > +	if (test_bit(FR_PENDING, &req->flags)) {
+> > > +		list_del(&req->list);
+> > >  		spin_unlock(&fiq->lock);
+> > > +		__fuse_put_request(req);
+> > > +		req->out.h.error = -EINTR;
+> > > +		return;
+> > >  	}
+> > > +	spin_unlock(&fiq->lock);
+> > >  
+> > >  	/*
+> > > -	 * Either request is already in userspace, or it was forced.
+> > > -	 * Wait it out.
+> > > +	 * Womp womp. We sent a request to userspace and now we're getting
+> > > +	 * killed.
+> > >  	 */
+> > > -	wait_event(req->waitq, test_bit(FR_FINISHED, &req->flags));
+> > > +	set_bit(FR_INTERRUPTED, &req->flags);
+> > > +	/* matches barrier in fuse_dev_do_read() */
+> > > +	smp_mb__after_atomic();
+> > > +	/* request *must* be FR_SENT here, because we ignored FR_PENDING before */
+> > > +	WARN_ON(!test_bit(FR_SENT, &req->flags));
+> > > +	queue_interrupt(req);
+> > >  }
+> > >  
+> > >  static void __fuse_request_send(struct fuse_req *req)
+> > > 
+> > > avaialble as a full patch here:
+> > > https://github.com/tych0/linux/commit/81b9ff4c8c1af24f6544945da808dbf69a1293f7
+> > > 
+> > > but now things are even weirder. Tasks are stuck at the killable wait, but with
+> > > a SIGKILL pending for the thread group.
+> > 
+> > That's strange. No idea what's going on.
+> 
+> Thanks for taking a look. This is where it falls apart for me. In
+> principle the patch seems simple, but this sleeping behavior is beyond
+> my understanding.
+> 
+> Tycho
+> 
 
