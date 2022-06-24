@@ -2,57 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C47CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 01:21:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2096AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 01:21:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230317AbiFXBVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 21:21:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34174 "EHLO
+        id S230378AbiFXBVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 21:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiFXBVT (ORCPT
+        with ESMTP id S230177AbiFXBVo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 21:21:19 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E2756FA1;
-        Thu, 23 Jun 2022 18:21:17 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VHETYia_1656033648;
-Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VHETYia_1656033648)
-          by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 09:21:15 +0800
-From:   Liu Song <liusong@linux.alibaba.com>
-To:     corbet@lwn.net, will@kernel.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: correct the effect of mitigations off on kpti
-Date:   Fri, 24 Jun 2022 09:20:48 +0800
-Message-Id: <1656033648-84181-1-git-send-email-liusong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        Thu, 23 Jun 2022 21:21:44 -0400
+Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8717A5DF2A
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 18:21:43 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id SXT00038;
+        Fri, 24 Jun 2022 09:21:38 +0800
+Received: from localhost.localdomain (10.200.104.82) by
+ jtjnmail201612.home.langchao.com (10.100.2.12) with Microsoft SMTP Server id
+ 15.1.2308.27; Fri, 24 Jun 2022 09:21:38 +0800
+From:   Deming Wang <wangdeming@inspur.com>
+To:     <hare@suse.de>, <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Deming Wang <wangdeming@inspur.com>
+Subject: [PATCH] scsi: fcoe: Modify function description
+Date:   Thu, 23 Jun 2022 21:21:36 -0400
+Message-ID: <20220624012136.1824-1-wangdeming@inspur.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.200.104.82]
+tUid:   20226240921385fbf5f4e61cf2720b3f2231ebd89348c
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Song <liusong@linux.alibaba.com>
+Delete duplicate words of "the".
 
-If KASLR is enabled, then kpti will be forced to be enabled even if
-mitigations off, so we need to adjust the description of this parameter.
-
-Signed-off-by: Liu Song <liusong@linux.alibaba.com>
+Signed-off-by: Deming Wang <wangdeming@inspur.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt | 2 +-
+ drivers/scsi/fcoe/fcoe_ctlr.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 8090130..5b9e7f3 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3162,7 +3162,7 @@
- 				improves system performance, but it may also
- 				expose users to several CPU vulnerabilities.
- 				Equivalent to: nopti [X86,PPC]
--					       kpti=0 [ARM64]
-+					       if nokaslr then kpti=0 [ARM64]
- 					       nospectre_v1 [X86,PPC]
- 					       nobp=0 [S390]
- 					       nospectre_v2 [X86,PPC,S390,ARM64]
+diff --git a/drivers/scsi/fcoe/fcoe_ctlr.c b/drivers/scsi/fcoe/fcoe_ctlr.c
+index 39e16eab47aa..c9fa1bf98505 100644
+--- a/drivers/scsi/fcoe/fcoe_ctlr.c
++++ b/drivers/scsi/fcoe/fcoe_ctlr.c
+@@ -689,7 +689,7 @@ static int fcoe_ctlr_encaps(struct fcoe_ctlr *fip, struct fc_lport *lport,
+  *
+  * The caller must check that the length is a multiple of 4.
+  * The SKB must have enough headroom (28 bytes) and tailroom (8 bytes).
+- * The the skb must also be an fc_frame.
++ * The skb must also be an fc_frame.
+  *
+  * This is called from the lower-level driver with spinlocks held,
+  * so we must not take a mutex here.
 -- 
-1.8.3.1
+2.27.0
 
