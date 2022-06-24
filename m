@@ -2,172 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E6E3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD676CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231767AbiFXMAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 08:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        id S231784AbiFXMAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 08:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230227AbiFXMAS (ORCPT
+        with ESMTP id S230227AbiFXMAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 08:00:18 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4BA76698;
-        Fri, 24 Jun 2022 05:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656072018; x=1687608018;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=L7CObdet2addz1owDfCnobhk+prLUKmCD2n9OZyHCsg=;
-  b=VjCFyDG2opOkEf+Yo/6i5GrglXyLDCnR2kPteo5r+D1GFR4ixyVtduEv
-   Hy2hG4WjwKyBWIMVnwGJa7RGq+6L5n18R5mSr9WLF3W9+gzr6XfN/hl4K
-   fXOetOa6+1FCHCHsY6FwpJRrQdzof3q3oKzX9K9rUTe4l2tUbAhbDjuGW
-   0RjCy9HEOyAYMb5i2vGC1/J2Dv0XNRtOkemRGFpOTqVH3VRIR5FoWzMIK
-   jKjxOXI//nhlVkOTd5TxcEdrlj1nv+QMSS521Q9JAq0JxgwCuI+2lWs3+
-   QCXh+IeKjvV3cPJPgoH6sAtTGlUiC5ZQ/ZWp+OmS0+vLN+kaW1z7md01f
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="281029066"
-X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
-   d="scan'208";a="281029066"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 05:00:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
-   d="scan'208";a="586552764"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.116])
-  by orsmga007.jf.intel.com with ESMTP; 24 Jun 2022 05:00:15 -0700
-From:   niravkumar.l.rabara@intel.com
-To:     niravkumar.l.rabara@intel.com
-Cc:     devicetree@vger.kernel.org, dinguyen@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org
-Subject: [PATCH] arm64: dts: altera: socfpga_stratix10: move clocks out of soc node
-Date:   Fri, 24 Jun 2022 19:59:11 +0800
-Message-Id: <20220624115911.3389627-1-niravkumar.l.rabara@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220624031017.3247656-1-niravkumar.l.rabara@intel.com>
-References: <20220624031017.3247656-1-niravkumar.l.rabara@intel.com>
+        Fri, 24 Jun 2022 08:00:35 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F140F7E01A;
+        Fri, 24 Jun 2022 05:00:34 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id i18so4067252lfu.8;
+        Fri, 24 Jun 2022 05:00:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=J1XdX7mOs4PQCvPjX3AV+egf4qnkDx5R0ibjLDjwibs=;
+        b=UKoCy6PQNnLbaiwtrlNx8qDRYYRIW+/RmEVjVX69sDkqGDyi4CYG2prmRse77pE+Rn
+         jd5lu6z2rdDzKWxSkJBYHs3fQZGf5EgJeaWIgBVgT45ZDjwjFWSvIhIkfi/hFc0Q/M95
+         bTHwdk0jXuUC/Qp9NUg4nJMOm+gwUpdJtHO4fAhvbYV82znCfMp8lY1qEX1mB7U6MQvx
+         6ppaotQDGPGiknEQ3Ul/PNSHMLdXMrAgNnGGgxLtQTTXDURtPtaZqdWGpO+ZR04mWXX2
+         Yz+L00cfW8ub+BMhNXlk8KbMkid1nvBy/ukyfQQyYI2pNtfzl/QkHHhGNHr+6uqtzfNq
+         7aew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=J1XdX7mOs4PQCvPjX3AV+egf4qnkDx5R0ibjLDjwibs=;
+        b=ueXay0lJht/+lVImvFdVWEs5ZfVbB00NHMvxfOhNEZN/wGpwvRF1TknZD+ccKBHxyv
+         KwH2GvDZVC4jUQOmigMmN8PoeoDh+f0H6eRaagisDQWuZPjmemUiwCmvyy7YNSCDMNC3
+         9sXKUaiLZVNOnSHK0astHOpXFFhHzjIfj29R43GAJCRiB4FLLNa3dWL0rGD71thh4uYN
+         tiaSCHw190Q5Ub7lEWrhIx8amxGH6p24oezz4HkPzbF7TEROE7OSAB8Zj0upouzoSx8r
+         MOxX6S1nMvqVP8e9lGm9TRDyavl5s+YPLdtPOnXsr2Y06SIX5KIrMBKYbVy9FpfyUCf1
+         vMJw==
+X-Gm-Message-State: AJIora94DIPME+YLNQzcXqmnMQp9nhqnIA9rqRNdgM9eAxdJ8gA16K2y
+        TCqUCdR/IOpluk03TCEnJs4=
+X-Google-Smtp-Source: AGRyM1u+LiVLlOxu1rGzTrm6JXEBuzVL6bEDjNHjy7py4Y0a2Hev3JC4qUfQD++9Zijsn+4QP17sEQ==
+X-Received: by 2002:a05:6512:11c4:b0:47f:2356:8ce2 with SMTP id h4-20020a05651211c400b0047f23568ce2mr8515752lfr.365.1656072033321;
+        Fri, 24 Jun 2022 05:00:33 -0700 (PDT)
+Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id g6-20020a056512118600b0047fac765f39sm333119lfr.219.2022.06.24.05.00.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 05:00:32 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 14:02:22 +0200
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 08/10] iio: adc: mcp3911: add support for phase
+Message-ID: <YrWnzh0cH70rlb+M@gmail.com>
+References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
+ <20220623170844.2189814-8-marcus.folkesson@gmail.com>
+ <CAHp75Vff8Avpxany=5j3e+4gmAAefJgDVX3riONN-=VLwj1HNQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="mGSgN1urBpJYjTZ/"
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vff8Avpxany=5j3e+4gmAAefJgDVX3riONN-=VLwj1HNQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
 
-The clocks are not part of the SoC but provided on the board
-(external oscillators). Moving them out of soc node.
+--mGSgN1urBpJYjTZ/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
----
- .../boot/dts/altera/socfpga_stratix10.dtsi    | 56 +++++++++----------
- .../dts/altera/socfpga_stratix10_socdk.dts    | 10 ++--
- 2 files changed, 32 insertions(+), 34 deletions(-)
+On Thu, Jun 23, 2022 at 09:07:21PM +0200, Andy Shevchenko wrote:
+> > +               ret =3D mcp3911_write(adc, MCP3911_REG_PHASE, val,
+> > +                                   2);
+>=20
+> One line.
 
-diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-index aa2bba75265f..5c7d926d18f7 100644
---- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-+++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-@@ -97,6 +97,34 @@ intc: interrupt-controller@fffc1000 {
- 		      <0x0 0xfffc6000 0x0 0x2000>;
- 	};
- 
-+	clocks {
-+		cb_intosc_hs_div2_clk: cb-intosc-hs-div2-clk {
-+			#clock-cells = <0>;
-+			compatible = "fixed-clock";
-+		};
-+
-+		cb_intosc_ls_clk: cb-intosc-ls-clk {
-+			#clock-cells = <0>;
-+			compatible = "fixed-clock";
-+		};
-+
-+		f2s_free_clk: f2s-free-clk {
-+			#clock-cells = <0>;
-+			compatible = "fixed-clock";
-+		};
-+
-+		osc1: osc1 {
-+			#clock-cells = <0>;
-+			compatible = "fixed-clock";
-+		};
-+
-+		qspi_clk: qspi-clk {
-+			#clock-cells = <0>;
-+			compatible = "fixed-clock";
-+			clock-frequency = <200000000>;
-+		};
-+	};
-+
- 	soc {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
-@@ -119,34 +147,6 @@ clkmgr: clock-controller@ffd10000 {
- 			#clock-cells = <1>;
- 		};
- 
--		clocks {
--			cb_intosc_hs_div2_clk: cb-intosc-hs-div2-clk {
--				#clock-cells = <0>;
--				compatible = "fixed-clock";
--			};
--
--			cb_intosc_ls_clk: cb-intosc-ls-clk {
--				#clock-cells = <0>;
--				compatible = "fixed-clock";
--			};
--
--			f2s_free_clk: f2s-free-clk {
--				#clock-cells = <0>;
--				compatible = "fixed-clock";
--			};
--
--			osc1: osc1 {
--				#clock-cells = <0>;
--				compatible = "fixed-clock";
--			};
--
--			qspi_clk: qspi-clk {
--				#clock-cells = <0>;
--				compatible = "fixed-clock";
--				clock-frequency = <200000000>;
--			};
--		};
--
- 		gmac0: ethernet@ff800000 {
- 			compatible = "altr,socfpga-stmmac-a10-s10", "snps,dwmac-3.74a", "snps,dwmac";
- 			reg = <0xff800000 0x2000>;
-diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dts b/arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dts
-index 5159cd5771dc..48424e459f12 100644
---- a/arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dts
-+++ b/arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dts
-@@ -52,12 +52,6 @@ ref_033v: regulator-v-ref {
- 	};
- 
- 	soc {
--		clocks {
--			osc1 {
--				clock-frequency = <25000000>;
--			};
--		};
--
- 		eccmgr {
- 			sdmmca-ecc@ff8c8c00 {
- 				compatible = "altr,socfpga-s10-sdmmc-ecc",
-@@ -113,6 +107,10 @@ &mmc {
- 	bus-width = <4>;
- };
- 
-+&osc1 {
-+	clock-frequency = <25000000>;
-+};
-+
- &uart0 {
- 	status = "okay";
- };
--- 
-2.25.1
+Fixed
 
+>=20
+> --=20
+> With Best Regards,
+> Andy Shevchenko
+
+
+Thanks,
+Marcus Folkesson
+
+--mGSgN1urBpJYjTZ/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmK1p8kACgkQiIBOb1ld
+UjLmTA//a76BF2w9eDtrW+vPPvplu0HpGwk7vkF4F+EfwS/1kfSOI2lY2/N5ufdf
+AiPYouf0mNyCfjMf86DxGiBjIBoKEdo5d9AW5SYEGv/8kHxTm3gzdy5Y2GR5WSnv
+Z0mVcmb3g1rSvHJgk8tKkpk/Q+SRuNy31rpwnLZn+nNAlFQ90dH8lrFCvrXvi47O
+llYbO7kVLU5ZsA5rwv5cNfF0+XDXYjVwQ7ukxr47eHc41F+djhjn/Ozg32gdbuxq
+3Pbb4RZOfI86NEzey3xlye990lQgkatFIzPRKqqxMCIBIfkJEcUNBdh9vTAeUimg
+krEGwYjtZmMvluGtTbHMUZT5GxNxqpQNndiMsUb7l29EMwrnSsxon7UrPAL3zIq4
+X0UMQAd6lDA5oL9s/IR8KT96EWutvLuoD6MQbBEArHBr2qEcAKsGMjvx/E3onFx2
+nK7OIWIdXbNuosADCCv3of98nDOkm6ihDWnDudxAej8y2SFdwCiDwOzVkSPTP0/Z
+ER4K35QrFawzdyUFwUEWry08WODwndPJIFPSSsDxDKBgbNGQGIgyTRE4N3H4atNq
+0KEJ0Pk9BzjomNkS5qed13yIncbkz1K3RTuzpmuaOFKJ9/YswcL2i6Xv//uhDlKj
+bAlsUopqWKPN0dbYO916HwDHEhkMXpi4qJt7/qdsQlcG4GxFc4Y=
+=Tm0t
+-----END PGP SIGNATURE-----
+
+--mGSgN1urBpJYjTZ/--
