@@ -2,94 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC3B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 06:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A121BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 06:30:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbiFXG2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 02:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
+        id S230061AbiFXGaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 02:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229818AbiFXG2D (ORCPT
+        with ESMTP id S229476AbiFXGaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 02:28:03 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706D1E86
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:27:53 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id m2so1289450plx.3
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:27:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=souzsk9ifgaOyhU9GyyRqJqftjYrRuWLP0PcFjYsfu8=;
-        b=KyEw12z175h99BsAPf+680LU1Vw0hBAVoNyKMZ4NUwuf+4nIXSThxl/0N55GHg2y8o
-         8kqU6KP7vF31ek/SIIZRj9KSjD/p1SdUc5XKkR96tv+Y9Qg01Sx3YAlD72NtYheZP38s
-         oZp2QBfDJMcfcinxmS0Z7OwvrTrjkH7/MPN3Y4c3pousqF3/jt3oleM2Hld5QUgs/8lD
-         kAsyOSG2uPj2YKcNzqWtciHRUKouUkgILH84cBIwuJJYfvQU/Ba9tM1uPcXErka4hru0
-         T41gFV8rGj2MDjE7p3GKz0jeG91od8JHErxUiac3XQgmIG9xTto7syEnX6HeFVDoHsjY
-         md8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=souzsk9ifgaOyhU9GyyRqJqftjYrRuWLP0PcFjYsfu8=;
-        b=48lpVyi4+Q68xF7CbROwvj1oZgkWXsvzAEA2/OP+17v6WUIDh4e3inoq9UovJmkkie
-         uSr7VqTVooxihS4L6iE026uHnTvvx8YHM0snd93NpOE0fDZSblb8x3fbSfGUW7qdxDi9
-         Kl2yRSSZOFVIajuTjXEKfj/FSZksB+wYcRqrQzeSnCKlSvfkq+TwZvbplj8utNgrF9dn
-         7Y3xrKKrDf5FNOOQKyCzQaVhU0X+0/VEQH5UIqLIVn8WqgMVtYzRCrSP23GmW/0EgOji
-         /SXR29ibhh7Js+ePspEUUni/QwgwN5iwVDCpixxOrOJLkuhNajgjHmbQ2U8K0vi0Z/cA
-         PgNw==
-X-Gm-Message-State: AJIora+OLiMb4LD/d3VkiDUfmJPVleAqdtSmLZ77TQW1tXWuTc5GyjUf
-        kgfsjCq5u1VHwuYXbfRV/w4=
-X-Google-Smtp-Source: AGRyM1vFrewjQ48AKeMSGqOtzS022Czh3FVGN2IYms/9D0wWur/GvFJ9xtZEUMTZOtbLzkC9uhM7SA==
-X-Received: by 2002:a17:902:e5d0:b0:16a:6f96:ec5 with SMTP id u16-20020a170902e5d000b0016a6f960ec5mr109836plf.72.1656052072909;
-        Thu, 23 Jun 2022 23:27:52 -0700 (PDT)
-Received: from localhost (c-67-180-87-133.hsd1.ca.comcast.net. [67.180.87.133])
-        by smtp.gmail.com with ESMTPSA id n22-20020a17090a161600b001ecd48b80a2sm3118421pja.5.2022.06.23.23.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 23:27:52 -0700 (PDT)
-From:   Chang Yu <marcus.yu.56@gmail.com>
-To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Chang Yu <marcus.yu.56@gmail.com>
-Subject: [PATCH v3] staging: r8188eu: core/rtw_recv.c: clean up nested if statements
-Date:   Thu, 23 Jun 2022 23:27:05 -0700
-Message-Id: <20220624062705.436690-1-marcus.yu.56@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623031515.402691-1-marcus.yu.56@gmail.com>
-References: 
+        Fri, 24 Jun 2022 02:30:10 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC810522D2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:30:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=eM3nPBUw4PZqEb4da6i4+WfgBSGu0ZhJXRXjJDXCY9o=; b=i9qQhcdkZ9YRwP2xlPKLAlC1kE
+        U5oCUS92EsXe4sMJC27RUPI4Jb2Sa1N/9Lny1UbMxaPjFJcwVtohB4yKHOzzN2iVAQZ/uq62Atrq6
+        Sk1g9vIZ85uAzLvLlCM7x0W4p6r6AGnUbDBY1EoQ0CoIa1qjZATHx/6PvmNeYDF7oYYYEPMJdurML
+        c+unsTDU5AmsUN+FD+NAt4iUFES+NPq27r20RJKcJMKiqRh3rbWg3Ra32s6m32ADTbywqxezpkIhT
+        nJ0kDrIUxZKTCEVl8lCQAU9ckiK/HS1FzgOKCjwDjxbiWhZOzAFbf3X7tI2u5+wC5QGUP/XxTplYS
+        Nxc6Zz0A==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o4cpS-000qZQ-C0; Fri, 24 Jun 2022 06:30:06 +0000
+Date:   Thu, 23 Jun 2022 23:30:06 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Joerg Roedel <joro@8bytes.org>
+Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        iommu@lists.linux.dev, Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH] MAINTAINERS: Add new IOMMU development mailing list
+Message-ID: <YrVZ7g3AKzoI0uMG@infradead.org>
+References: <20220622082601.31678-1-joro@8bytes.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622082601.31678-1-joro@8bytes.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Combine two nested if statements into a single one to fix indentation
-issue and improve readability, as suggested by checkpatch.pl
+On Wed, Jun 22, 2022 at 10:26:01AM +0200, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> The IOMMU mailing list will move from lists.linux-foundation.org to
+> lists.linux.dev. The hard switch of the archive will happen on July
+> 5th, but add the new list now already so that people start using the
+> list when sending patches.
 
-Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_recv.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index 6564e82ddd66..020bc212532f 100644
---- a/drivers/staging/r8188eu/core/rtw_recv.c
-+++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -166,10 +166,8 @@ int rtw_free_recvframe(struct recv_frame *precvframe, struct __queue *pfree_recv
- 
- 	list_add_tail(&precvframe->list, get_list_head(pfree_recv_queue));
- 
--	if (padapter) {
--		if (pfree_recv_queue == &precvpriv->free_recv_queue)
--				precvpriv->free_recvframe_cnt++;
--	}
-+	if (padapter && (pfree_recv_queue == &precvpriv->free_recv_queue))
-+		precvpriv->free_recvframe_cnt++;
- 
- 	spin_unlock_bh(&pfree_recv_queue->lock);
- 
--- 
-2.36.1
+iommu@lists.linux-foundation.org is also listed for various other
+MAINTAINERS entries.  Can you please send a list to update all of them
+to Linus ASAP, including for 5.19 and -stable?
 
