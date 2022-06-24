@@ -2,466 +2,285 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 910C9CCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:41:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA57FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230032AbiFXSlH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 14:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40212 "EHLO
+        id S231774AbiFXSlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 14:41:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiFXSlF (ORCPT
+        with ESMTP id S231534AbiFXSlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 14:41:05 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDFD81268;
-        Fri, 24 Jun 2022 11:41:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1656096057; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aP2GWjAY8tTeHxJL3lRG6JblOqVNcNfjxS45eRxJL50=;
-        b=SoaqmUIUdkihuZ0kA76Saf4Fu6K9/mb9blMKf9wEkAXWim9bO3BOPfmVuGucAKS2IV4vg6
-        Jazmi0j6qtB5eHKyLBTIGqCsZTBU0GXTmKhXIycWw2lYAYNt6Qprn+jaeIv2ej/Kp+IHfB
-        gFAMa6F1VNCU66ePtMtTHfMRnIpSkZo=
-Date:   Fri, 24 Jun 2022 19:40:47 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 1/2] MIPS: dts: correct gpio-keys names and properties
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rahul Bedarkar <rahulbedarkar89@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        =?iso-8859-9?b?QXL9bucg3E5BTA==?= <arinc.unal@arinc9.com>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Message-Id: <ZVVZDR.R2QT2GMTT9WS1@crapouillou.net>
-In-Reply-To: <20220624170740.66271-1-krzysztof.kozlowski@linaro.org>
-References: <20220624170740.66271-1-krzysztof.kozlowski@linaro.org>
+        Fri, 24 Jun 2022 14:41:17 -0400
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161597E03A
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:41:16 -0700 (PDT)
+Received: by mail-vs1-xe2c.google.com with SMTP id k25so3105370vso.6
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:41:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T4+jlKA2MuKfsqlQKQKRe/HqT1miRmg69fLPyVUKNjQ=;
+        b=sxIcJSo63iX/SUVe7VfaQTahrlYlzTbAqhphyNGj0SW7URdt4yFUBgZ3H/7DdTDtdJ
+         jERetC1D7ido45YuTMmqALusV1vuqlW/+4ahHlPrtQZDExVxvlql3uXoDA0z7RQrG3hU
+         7bOtosRuG3wuj6utg3QdICOx4noPHXnSyFpWtrYtr0GTlSlk3+gs7bAFkenDk+0WiHSz
+         xeM1mFJp70kd2OQNuXqwf2mNg2mER4sOK/n30s4RHG/6d7q8AhosdtPKmRNky0Oo50tc
+         uayr0eDY1/S4asl0jq7HGQIcaJ/Pe6BkFqrajWJ33Qv9kXgkmIO2bXCk8F1BcassR6e5
+         F+6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T4+jlKA2MuKfsqlQKQKRe/HqT1miRmg69fLPyVUKNjQ=;
+        b=K4jl6zBkFtvx6DZbFKQq5U836PD18zgGxQBikRPIa4wLnakXPvKOYKS3ywwH3oQJuv
+         mt/isfatNYnr2F0NYXHOOW4wzCGkwsARKmWb3L6JDWG1WGcj6hH/ecRgTEkllnMISh4Q
+         tCUkAOBY0B1Mj/lgyG7/kBBF2MG7qdO27i4JJwHhUqwA1ywKRrKnKPoIjZ6tLGOvAbQ1
+         YB2T8o2/fsvgYHTGpLsyX4A3HYQcR7TcjREWuzktEtOcBS9DTVZPTxS4ZlbAjUA/QQwd
+         kXbFYNI7//mUMwLMHgcc9hKUNq1Ic3kYpFNNPwdOkjrMy2MdB7anMofGqKyxWNRDx8S1
+         7LdQ==
+X-Gm-Message-State: AJIora+fxzOWx+vaVTsXH4dRCnZPNPn4ztztDfGENjc8/QWcAQ/H9OaF
+        u3CBMVGESiYSulQCVeTE4hQOhOqEJMsmT8eUoPIKcA==
+X-Google-Smtp-Source: AGRyM1tpbBpZdu8urdU2pKi1QbESSp0kafQg59HKzIsbrmnN65/hgao4dXfEylcaaE1oyNBDFWU75sNC8P+NMaJwQDU=
+X-Received: by 2002:a05:6102:101:b0:354:355b:711b with SMTP id
+ z1-20020a056102010100b00354355b711bmr329617vsq.61.1656096074970; Fri, 24 Jun
+ 2022 11:41:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+References: <20220624173656.2033256-1-jthoughton@google.com>
+In-Reply-To: <20220624173656.2033256-1-jthoughton@google.com>
+From:   Mina Almasry <almasrymina@google.com>
+Date:   Fri, 24 Jun 2022 11:41:03 -0700
+Message-ID: <CAHS8izPnJd5EQjUi9cOk=03u3X1rk0PexTQZi+bEE4VMtFfksQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 00/26] hugetlb: Introduce HugeTLB high-granularity mapping
+To:     James Houghton <jthoughton@google.com>
+Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Xu <peterx@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Jue Wang <juew@google.com>,
+        Manish Mishra <manish.mishra@nutanix.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+On Fri, Jun 24, 2022 at 10:37 AM James Houghton <jthoughton@google.com> wrote:
+>
+> This RFC introduces the concept of HugeTLB high-granularity mapping
+> (HGM)[1].  In broad terms, this series teaches HugeTLB how to map HugeTLB
+> pages at different granularities, and, more importantly, to partially map
+> a HugeTLB page.  This cover letter will go over
+>  - the motivation for these changes
+>  - userspace API
+>  - some of the changes to HugeTLB to make this work
+>  - limitations & future enhancements
+>
+> High-granularity mapping does *not* involve dissolving the hugepages
+> themselves; it only affects how they are mapped.
+>
+> ---- Motivation ----
+>
+> Being able to map HugeTLB memory with PAGE_SIZE PTEs has important use
+> cases in post-copy live migration and memory failure handling.
+>
+> - Live Migration (userfaultfd)
+> For post-copy live migration, using userfaultfd, currently we have to
+> install an entire hugepage before we can allow a guest to access that page.
+> This is because, right now, either the WHOLE hugepage is mapped or NONE of
+> it is.  So either the guest can access the WHOLE hugepage or NONE of it.
+> This makes post-copy live migration for 1G HugeTLB-backed VMs completely
+> infeasible.
+>
+> With high-granularity mapping, we can map PAGE_SIZE pieces of a hugepage,
+> thereby allowing the guest to access only PAGE_SIZE chunks, and getting
+> page faults on the rest (and triggering another demand-fetch). This gives
+> userspace the flexibility to install PAGE_SIZE chunks of memory into a
+> hugepage, making migration of 1G-backed VMs perfectly feasible, and it
+> vastly reduces the vCPU stall time during post-copy for 2M-backed VMs.
+>
+> At Google, for a 48 vCPU VM in post-copy, we can expect these approximate
+> per-page median fetch latencies:
+>      4K: <100us
+>      2M: >10ms
+> Being able to unpause a vCPU 100x quicker is helpful for guest stability,
+> and being able to use 1G pages at all can significant improve steady-state
+> guest performance.
+>
+> After fully copying a hugepage over the network, we will want to collapse
+> the mapping down to what it would normally be (e.g., one PUD for a 1G
+> page). Rather than having the kernel do this automatically, we leave it up
+> to userspace to tell us to collapse a range (via MADV_COLLAPSE, co-opting
+> the API that is being introduced for THPs[2]).
+>
+> - Memory Failure
+> When a memory error is found within a HugeTLB page, it would be ideal if we
+> could unmap only the PAGE_SIZE section that contained the error. This is
+> what THPs are able to do. Using high-granularity mapping, we could do this,
+> but this isn't tackled in this patch series.
+>
+> ---- Userspace API ----
+>
+> This patch series introduces a single way to take advantage of
+> high-granularity mapping: via UFFDIO_CONTINUE. UFFDIO_CONTINUE allows
+> userspace to resolve MINOR page faults on shared VMAs.
+>
+> To collapse a HugeTLB address range that has been mapped with several
+> UFFDIO_CONTINUE operations, userspace can issue MADV_COLLAPSE. We expect
+> userspace to know when all pages (that they care about) have been fetched.
+>
 
-Le ven., juin 24 2022 at 19:07:39 +0200, Krzysztof Kozlowski=20
-<krzysztof.kozlowski@linaro.org> a =E9crit :
-> gpio-keys children do not use unit addresses.
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->=20
-> ---
->=20
-> See:=20
-> https://lore.kernel.org/all/20220616005224.18391-1-krzysztof.kozlowski@li=
-naro.org/
-> ---
->  arch/mips/boot/dts/img/pistachio_marduk.dts   |  4 +--
->  arch/mips/boot/dts/ingenic/gcw0.dts           | 31=20
-> +++++++++----------
->  arch/mips/boot/dts/ingenic/rs90.dts           | 18 +++++------
->  arch/mips/boot/dts/pic32/pic32mzda_sk.dts     |  9 ++----
->  .../boot/dts/qca/ar9132_tl_wr1043nd_v1.dts    |  6 ++--
->  arch/mips/boot/dts/qca/ar9331_dpt_module.dts  |  4 +--
->  .../mips/boot/dts/qca/ar9331_dragino_ms14.dts |  6 ++--
->  arch/mips/boot/dts/qca/ar9331_omega.dts       |  4 +--
->  .../qca/ar9331_openembed_som9331_board.dts    |  4 +--
->  arch/mips/boot/dts/qca/ar9331_tl_mr3020.dts   |  8 ++---
->  10 files changed, 37 insertions(+), 57 deletions(-)
->=20
-> diff --git a/arch/mips/boot/dts/img/pistachio_marduk.dts=20
-> b/arch/mips/boot/dts/img/pistachio_marduk.dts
-> index a8708783f04b..a8da2f992b1a 100644
-> --- a/arch/mips/boot/dts/img/pistachio_marduk.dts
-> +++ b/arch/mips/boot/dts/img/pistachio_marduk.dts
-> @@ -59,12 +59,12 @@ led-1 {
->=20
->  	keys {
->  		compatible =3D "gpio-keys";
-> -		button@1 {
-> +		button-1 {
->  			label =3D "Button 1";
->  			linux,code =3D <0x101>; /* BTN_1 */
->  			gpios =3D <&gpio3 6 GPIO_ACTIVE_LOW>;
->  		};
-> -		button@2 {
-> +		button-2 {
->  			label =3D "Button 2";
->  			linux,code =3D <0x102>; /* BTN_2 */
->  			gpios =3D <&gpio2 14 GPIO_ACTIVE_LOW>;
-> diff --git a/arch/mips/boot/dts/ingenic/gcw0.dts=20
-> b/arch/mips/boot/dts/ingenic/gcw0.dts
-> index 4abb0318416c..5d33f26fd28c 100644
-> --- a/arch/mips/boot/dts/ingenic/gcw0.dts
-> +++ b/arch/mips/boot/dts/ingenic/gcw0.dts
-> @@ -130,89 +130,86 @@ backlight: backlight {
->=20
->  	gpio-keys {
->  		compatible =3D "gpio-keys";
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
+Thanks James! Cover letter looks good. A few questions:
 
-Are you sure you can remove these?
+Why not have the kernel collapse the hugepage once all the 4K pages
+have been fetched automatically? It would remove the need for a new
+userspace API, and AFACT there aren't really any cases where it is
+beneficial to have a hugepage sharded into 4K mappings when those
+mappings can be collapsed.
 
-Looking at paragraph 2.3.5 of the DT spec, I would think they have to=20
-stay (although with #address-cells =3D <0>).
+> ---- HugeTLB Changes ----
+>
+> - Mapcount
+> The way mapcount is handled is different from the way that it was handled
+> before. If the PUD for a hugepage is not none, a hugepage's mapcount will
+> be increased. This scheme means that, for hugepages that aren't mapped at
+> high granularity, their mapcounts will remain the same as what they would
+> have been pre-HGM.
+>
 
-Cheers,
--Paul
+Sorry, I didn't quite follow this. It says mapcount is handled
+differently, but the same if the page is not mapped at high
+granularity. Can you elaborate on how the mapcount handling will be
+different when the page is mapped at high granularity?
 
-> -
->  		autorepeat;
->=20
-> -		button@0 {
-> +		button-0 {
->  			label =3D "D-pad up";
->  			linux,code =3D <KEY_UP>;
->  			linux,can-disable;
->  			gpios =3D <&gpe 21 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@1 {
-> +		button-1 {
->  			label =3D "D-pad down";
->  			linux,code =3D <KEY_DOWN>;
->  			linux,can-disable;
->  			gpios =3D <&gpe 25 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@2 {
-> +		button-2 {
->  			label =3D "D-pad left";
->  			linux,code =3D <KEY_LEFT>;
->  			linux,can-disable;
->  			gpios =3D <&gpe 23 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@3 {
-> +		button-3 {
->  			label =3D "D-pad right";
->  			linux,code =3D <KEY_RIGHT>;
->  			linux,can-disable;
->  			gpios =3D <&gpe 24 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@4 {
-> +		button-4 {
->  			label =3D "Button A";
->  			linux,code =3D <KEY_LEFTCTRL>;
->  			linux,can-disable;
->  			gpios =3D <&gpe 29 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@5 {
-> +		button-5 {
->  			label =3D "Button B";
->  			linux,code =3D <KEY_LEFTALT>;
->  			linux,can-disable;
->  			gpios =3D <&gpe 20 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@6 {
-> +		button-6 {
->  			label =3D "Button Y";
->  			linux,code =3D <KEY_SPACE>;
->  			linux,can-disable;
->  			gpios =3D <&gpe 27 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@7 {
-> +		button-7 {
->  			label =3D "Button X";
->  			linux,code =3D <KEY_LEFTSHIFT>;
->  			linux,can-disable;
->  			gpios =3D <&gpe 28 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@8 {
-> +		button-8 {
->  			label =3D "Left shoulder button";
->  			linux,code =3D <KEY_TAB>;
->  			linux,can-disable;
->  			gpios =3D <&gpb 20 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@9 {
-> +		button-9 {
->  			label =3D "Right shoulder button";
->  			linux,code =3D <KEY_BACKSPACE>;
->  			linux,can-disable;
->  			gpios =3D <&gpe 26 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@10 {
-> +		button-10 {
->  			label =3D "Start button";
->  			linux,code =3D <KEY_ENTER>;
->  			linux,can-disable;
->  			gpios =3D <&gpb 21 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@11 {
-> +		button-11 {
->  			label =3D "Select button";
->  			linux,code =3D <KEY_ESC>;
->  			linux,can-disable;
-> @@ -223,7 +220,7 @@ button@11 {
->  			gpios =3D <&gpd 18 GPIO_ACTIVE_HIGH>;
->  		};
->=20
-> -		button@12 {
-> +		button-12 {
->  			label =3D "Power slider";
->  			linux,code =3D <KEY_POWER>;
->  			linux,can-disable;
-> @@ -231,7 +228,7 @@ button@12 {
->  			wakeup-source;
->  		};
->=20
-> -		button@13 {
-> +		button-13 {
->  			label =3D "Power hold";
->  			linux,code =3D <KEY_PAUSE>;
->  			linux,can-disable;
-> diff --git a/arch/mips/boot/dts/ingenic/rs90.dts=20
-> b/arch/mips/boot/dts/ingenic/rs90.dts
-> index 74fee7f01352..e8df70dd42bf 100644
-> --- a/arch/mips/boot/dts/ingenic/rs90.dts
-> +++ b/arch/mips/boot/dts/ingenic/rs90.dts
-> @@ -52,53 +52,51 @@ backlight: backlight {
->=20
->  	keys@0 {
->  		compatible =3D "gpio-keys";
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
->=20
-> -		key@0 {
-> +		key-0 {
->  			label =3D "D-pad up";
->  			linux,code =3D <KEY_UP>;
->  			gpios =3D <&gpc 10 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		key@1 {
-> +		key-1 {
->  			label =3D "D-pad down";
->  			linux,code =3D <KEY_DOWN>;
->  			gpios =3D <&gpc 11 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		key@2 {
-> +		key-2 {
->  			label =3D "D-pad left";
->  			linux,code =3D <KEY_LEFT>;
->  			gpios =3D <&gpb 31 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		key@3 {
-> +		key-3 {
->  			label =3D "D-pad right";
->  			linux,code =3D <KEY_RIGHT>;
->  			gpios =3D <&gpd 21 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		key@4 {
-> +		key-4 {
->  			label =3D "Button A";
->  			linux,code =3D <KEY_LEFTCTRL>;
->  			gpios =3D <&gpc 31 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		key@5 {
-> +		key-5 {
->  			label =3D "Button B";
->  			linux,code =3D <KEY_LEFTALT>;
->  			gpios =3D <&gpc 30 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		key@6 {
-> +		key-6 {
->  			label =3D "Right shoulder button";
->  			linux,code =3D <KEY_BACKSPACE>;
->  			gpios =3D <&gpc 12 GPIO_ACTIVE_LOW>;
->  			debounce-interval =3D <10>;
->  		};
->=20
-> -		key@7 {
-> +		key-7 {
->  			label =3D "Start button";
->  			linux,code =3D <KEY_ENTER>;
->  			gpios =3D <&gpd 17 GPIO_ACTIVE_LOW>;
-> diff --git a/arch/mips/boot/dts/pic32/pic32mzda_sk.dts=20
-> b/arch/mips/boot/dts/pic32/pic32mzda_sk.dts
-> index d7fa5d55dbf3..ab70637bbec5 100644
-> --- a/arch/mips/boot/dts/pic32/pic32mzda_sk.dts
-> +++ b/arch/mips/boot/dts/pic32/pic32mzda_sk.dts
-> @@ -52,22 +52,19 @@ keys0 {
->  		pinctrl-0 =3D <&user_buttons_s0>;
->  		pinctrl-names =3D "default";
->=20
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
-> -
-> -		button@sw1 {
-> +		button-1 {
->  			label =3D "ESC";
->  			linux,code =3D <1>;
->  			gpios =3D <&gpio1 12 0>;
->  		};
->=20
-> -		button@sw2 {
-> +		button-2 {
->  			label =3D "Home";
->  			linux,code =3D <102>;
->  			gpios =3D <&gpio1 13 0>;
->  		};
->=20
-> -		button@sw3 {
-> +		button-3 {
->  			label =3D "Menu";
->  			linux,code =3D <139>;
->  			gpios =3D <&gpio1 14 0>;
-> diff --git a/arch/mips/boot/dts/qca/ar9132_tl_wr1043nd_v1.dts=20
-> b/arch/mips/boot/dts/qca/ar9132_tl_wr1043nd_v1.dts
-> index 7fccf6357225..f3dff4009ab5 100644
-> --- a/arch/mips/boot/dts/qca/ar9132_tl_wr1043nd_v1.dts
-> +++ b/arch/mips/boot/dts/qca/ar9132_tl_wr1043nd_v1.dts
-> @@ -23,17 +23,15 @@ extosc: ref {
->=20
->  	gpio-keys {
->  		compatible =3D "gpio-keys";
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
->=20
-> -		button@0 {
-> +		button-0 {
->  			label =3D "reset";
->  			linux,code =3D <KEY_RESTART>;
->  			gpios =3D <&gpio 3 GPIO_ACTIVE_LOW>;
->  			debounce-interval =3D <60>;
->  		};
->=20
-> -		button@1 {
-> +		button-1 {
->  			label =3D "qss";
->  			linux,code =3D <KEY_WPS_BUTTON>;
->  			gpios =3D <&gpio 7 GPIO_ACTIVE_LOW>;
-> diff --git a/arch/mips/boot/dts/qca/ar9331_dpt_module.dts=20
-> b/arch/mips/boot/dts/qca/ar9331_dpt_module.dts
-> index 7695d326df11..c857cd22f7db 100644
-> --- a/arch/mips/boot/dts/qca/ar9331_dpt_module.dts
-> +++ b/arch/mips/boot/dts/qca/ar9331_dpt_module.dts
-> @@ -33,10 +33,8 @@ led-0 {
->=20
->  	gpio-keys {
->  		compatible =3D "gpio-keys";
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
->=20
-> -		button@0 {
-> +		button-0 {
->  			label =3D "reset";
->  			linux,code =3D <KEY_RESTART>;
->  			gpios =3D <&gpio 11 GPIO_ACTIVE_LOW>;
-> diff --git a/arch/mips/boot/dts/qca/ar9331_dragino_ms14.dts=20
-> b/arch/mips/boot/dts/qca/ar9331_dragino_ms14.dts
-> index d38aa73f1a2e..40e4c5da0e65 100644
-> --- a/arch/mips/boot/dts/qca/ar9331_dragino_ms14.dts
-> +++ b/arch/mips/boot/dts/qca/ar9331_dragino_ms14.dts
-> @@ -49,16 +49,14 @@ system {
->=20
->  	gpio-keys {
->  		compatible =3D "gpio-keys";
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
->=20
-> -		button@0 {
-> +		button-0 {
->  			label =3D "jumpstart";
->  			linux,code =3D <KEY_WPS_BUTTON>;
->  			gpios =3D <&gpio 11 GPIO_ACTIVE_LOW>;
->  		};
->=20
-> -		button@1 {
-> +		button-1 {
->  			label =3D "reset";
->  			linux,code =3D <KEY_RESTART>;
->  			gpios =3D <&gpio 12 GPIO_ACTIVE_LOW>;
-> diff --git a/arch/mips/boot/dts/qca/ar9331_omega.dts=20
-> b/arch/mips/boot/dts/qca/ar9331_omega.dts
-> index 11778abacf66..ed184d861d5f 100644
-> --- a/arch/mips/boot/dts/qca/ar9331_omega.dts
-> +++ b/arch/mips/boot/dts/qca/ar9331_omega.dts
-> @@ -31,10 +31,8 @@ system {
->=20
->  	gpio-keys {
->  		compatible =3D "gpio-keys";
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
->=20
-> -		button@0 {
-> +		button-0 {
->  			label =3D "reset";
->  			linux,code =3D <KEY_RESTART>;
->  			gpios =3D <&gpio 11 GPIO_ACTIVE_HIGH>;
-> diff --git=20
-> a/arch/mips/boot/dts/qca/ar9331_openembed_som9331_board.dts=20
-> b/arch/mips/boot/dts/qca/ar9331_openembed_som9331_board.dts
-> index e6622f8e8c2b..dc65ebd60bbc 100644
-> --- a/arch/mips/boot/dts/qca/ar9331_openembed_som9331_board.dts
-> +++ b/arch/mips/boot/dts/qca/ar9331_openembed_som9331_board.dts
-> @@ -33,10 +33,8 @@ led-0 {
->=20
->  	gpio-keys {
->  		compatible =3D "gpio-keys";
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
->=20
-> -		button@0 {
-> +		button-0 {
->  			label =3D "reset";
->  			linux,code =3D <KEY_RESTART>;
->  			gpios =3D <&gpio 11 GPIO_ACTIVE_HIGH>;
-> diff --git a/arch/mips/boot/dts/qca/ar9331_tl_mr3020.dts=20
-> b/arch/mips/boot/dts/qca/ar9331_tl_mr3020.dts
-> index c8290d36cfbe..5f424c2cd781 100644
-> --- a/arch/mips/boot/dts/qca/ar9331_tl_mr3020.dts
-> +++ b/arch/mips/boot/dts/qca/ar9331_tl_mr3020.dts
-> @@ -49,22 +49,20 @@ led3g {
->=20
->  	gpio-keys {
->  		compatible =3D "gpio-keys";
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
->=20
-> -		button@0 {
-> +		button-0 {
->  			label =3D "wps";
->  			linux,code =3D <KEY_WPS_BUTTON>;
->  			gpios =3D <&gpio 11 GPIO_ACTIVE_HIGH>;
->  		};
->=20
-> -		button@1 {
-> +		button-1 {
->  			label =3D "sw1";
->  			linux,code =3D <BTN_0>;
->  			gpios =3D <&gpio 18 GPIO_ACTIVE_HIGH>;
->  		};
->=20
-> -		button@2 {
-> +		button-2 {
->  			label =3D "sw2";
->  			linux,code =3D <BTN_1>;
->  			gpios =3D <&gpio 20 GPIO_ACTIVE_HIGH>;
+> - Page table walking and manipulation
+> A new function, hugetlb_walk_to, handles walking HugeTLB page tables for
+> high-granularity mappings. Eventually, it's possible to merge
+> hugetlb_walk_to with huge_pte_offset and huge_pte_alloc.
+>
+> We keep track of HugeTLB page table entries with a new struct, hugetlb_pte.
+> This is because we generally need to know the "size" of a PTE (previously
+> always just huge_page_size(hstate)).
+>
+> For every page table manipulation function that has a huge version (e.g.
+> huge_ptep_get and ptep_get), there is a wrapper for it (e.g.
+> hugetlb_ptep_get).  The correct version is used depending on if a HugeTLB
+> PTE really is "huge".
+>
+> - Synchronization
+> For existing bits of HugeTLB, synchronization is unchanged. For splitting
+> and collapsing HugeTLB PTEs, we require that the i_mmap_rw_sem is held for
+> writing, and for doing high-granularity page table walks, we require it to
+> be held for reading.
+>
+> ---- Limitations & Future Changes ----
+>
+> This patch series only implements high-granularity mapping for VM_SHARED
+> VMAs.  I intend to implement enough HGM to support 4K unmapping for memory
+> failure recovery for both shared and private mappings.
+>
+> The memory failure use case poses its own challenges that can be
+> addressed, but I will do so in a separate RFC.
+>
+> Performance has not been heavily scrutinized with this patch series. There
+> are places where lock contention can significantly reduce performance. This
+> will be addressed later.
+>
+> The patch series, as it stands right now, is compatible with the VMEMMAP
+> page struct optimization[3], as we do not need to modify data contained
+> in the subpage page structs.
+>
+> Other omissions:
+>  - Compatibility with userfaultfd write-protect (will be included in v1).
+>  - Support for mremap() (will be included in v1). This looks a lot like
+>    the support we have for fork().
+>  - Documentation changes (will be included in v1).
+>  - Completely ignores PMD sharing and hugepage migration (will be included
+>    in v1).
+>  - Implementations for architectures that don't use GENERAL_HUGETLB other
+>    than arm64.
+>
+> ---- Patch Breakdown ----
+>
+> Patch 1     - Preliminary changes
+> Patch 2-10  - HugeTLB HGM core changes
+> Patch 11-13 - HugeTLB HGM page table walking functionality
+> Patch 14-19 - HugeTLB HGM compatibility with other bits
+> Patch 20-23 - Userfaultfd and collapse changes
+> Patch 24-26 - arm64 support and selftests
+>
+> [1] This used to be called HugeTLB double mapping, a bad and confusing
+>     name. "High-granularity mapping" is not a great name either. I am open
+>     to better names.
+
+I would drop 1 extra word and do "granular mapping", as in the mapping
+is more granular than what it normally is (2MB/1G, etc).
+
+> [2] https://lore.kernel.org/linux-mm/20220604004004.954674-10-zokeefe@google.com/
+> [3] commit f41f2ed43ca5 ("mm: hugetlb: free the vmemmap pages associated with each HugeTLB page")
+>
+> James Houghton (26):
+>   hugetlb: make hstate accessor functions const
+>   hugetlb: sort hstates in hugetlb_init_hstates
+>   hugetlb: add make_huge_pte_with_shift
+>   hugetlb: make huge_pte_lockptr take an explicit shift argument.
+>   hugetlb: add CONFIG_HUGETLB_HIGH_GRANULARITY_MAPPING
+>   mm: make free_p?d_range functions public
+>   hugetlb: add hugetlb_pte to track HugeTLB page table entries
+>   hugetlb: add hugetlb_free_range to free PT structures
+>   hugetlb: add hugetlb_hgm_enabled
+>   hugetlb: add for_each_hgm_shift
+>   hugetlb: add hugetlb_walk_to to do PT walks
+>   hugetlb: add HugeTLB splitting functionality
+>   hugetlb: add huge_pte_alloc_high_granularity
+>   hugetlb: add HGM support for hugetlb_fault and hugetlb_no_page
+>   hugetlb: make unmapping compatible with high-granularity mappings
+>   hugetlb: make hugetlb_change_protection compatible with HGM
+>   hugetlb: update follow_hugetlb_page to support HGM
+>   hugetlb: use struct hugetlb_pte for walk_hugetlb_range
+>   hugetlb: add HGM support for copy_hugetlb_page_range
+>   hugetlb: add support for high-granularity UFFDIO_CONTINUE
+>   hugetlb: add hugetlb_collapse
+>   madvise: add uapi for HugeTLB HGM collapse: MADV_COLLAPSE
+>   userfaultfd: add UFFD_FEATURE_MINOR_HUGETLBFS_HGM
+>   arm64/hugetlb: add support for high-granularity mappings
+>   selftests: add HugeTLB HGM to userfaultfd selftest
+>   selftests: add HugeTLB HGM to KVM demand paging selftest
+>
+>  arch/arm64/Kconfig                            |   1 +
+>  arch/arm64/mm/hugetlbpage.c                   |  63 ++
+>  arch/powerpc/mm/pgtable.c                     |   3 +-
+>  arch/s390/mm/gmap.c                           |   8 +-
+>  fs/Kconfig                                    |   7 +
+>  fs/proc/task_mmu.c                            |  35 +-
+>  fs/userfaultfd.c                              |  10 +-
+>  include/asm-generic/tlb.h                     |   6 +-
+>  include/linux/hugetlb.h                       | 177 +++-
+>  include/linux/mm.h                            |   7 +
+>  include/linux/pagewalk.h                      |   3 +-
+>  include/uapi/asm-generic/mman-common.h        |   2 +
+>  include/uapi/linux/userfaultfd.h              |   2 +
+>  mm/damon/vaddr.c                              |  34 +-
+>  mm/hmm.c                                      |   7 +-
+>  mm/hugetlb.c                                  | 987 +++++++++++++++---
+>  mm/madvise.c                                  |  23 +
+>  mm/memory.c                                   |   8 +-
+>  mm/mempolicy.c                                |  11 +-
+>  mm/migrate.c                                  |   3 +-
+>  mm/mincore.c                                  |   4 +-
+>  mm/mprotect.c                                 |   6 +-
+>  mm/page_vma_mapped.c                          |   3 +-
+>  mm/pagewalk.c                                 |  18 +-
+>  mm/userfaultfd.c                              |  57 +-
+>  .../testing/selftests/kvm/include/test_util.h |   2 +
+>  tools/testing/selftests/kvm/lib/kvm_util.c    |   2 +-
+>  tools/testing/selftests/kvm/lib/test_util.c   |  14 +
+>  tools/testing/selftests/vm/userfaultfd.c      |  61 +-
+>  29 files changed, 1314 insertions(+), 250 deletions(-)
+>
 > --
-> 2.34.1
->=20
-
-
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
