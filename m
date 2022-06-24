@@ -2,91 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4468C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 20:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBEACC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 20:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbiFXUNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 16:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
+        id S229850AbiFXUNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 16:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229964AbiFXUNN (ORCPT
+        with ESMTP id S230125AbiFXUNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 16:13:13 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254E731532
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 13:13:12 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id r66so3385982pgr.2
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 13:13:12 -0700 (PDT)
+        Fri, 24 Jun 2022 16:13:34 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C425D56C1C
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 13:13:32 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id sb34so6802156ejc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 13:13:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JO7J5gYwMc2oJpLpkWigLEC53bU/Q4t+rjJSx2/0CdY=;
-        b=eGNfcAvYM1eEBkUwfnn/Tbo9MYHzrrNAEqTo3aweTmsmcvdHJIQolhJdks3ZI06Hnz
-         ToODfaBXKu5XQl3iJjSxgXgx6b2mCmS/au7xy6QtVRe0KR4YlQCAc0i1LzEkzN2B9d7a
-         f9wuhNf0912A84p4kuE5f2tjgeK9s/ObIhPYY=
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ZDlqgf14zeOe/H6KdqMqyUaKiEwdFOQWmVC6blo0CJY=;
+        b=dWEF+ZHzCmMX3vcid8rxsyHe6NbxfY6excwXrVhOubtLlgnEWZT/dpXietutVee1Fj
+         2f/uIx02gGRTvTkl8pSE5tlyzd5bJEJoaLMuorMexDf/awqadeFajEtUxRRT+F12z6hU
+         GLx17PMC/lwy7o+XF53FIg5bKhHEwWQ+j6LZI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JO7J5gYwMc2oJpLpkWigLEC53bU/Q4t+rjJSx2/0CdY=;
-        b=1Bt2df7BaGPbNgXSm0l5F9V97mH8RKzWvU57PKjiETF59feUOondqfWt9KMgHKzkb7
-         9mpFqnJzF+x+0ZQLrcJ7aY4vVM2eWi6V3Xg1UaKburufBYrYzx8I3iQGM2HRkqyAocYI
-         36vi2qwj7gPqhkWi0eVFV0QL5uOGxhMvjLeZeA3ADJz8UDFt7BqDYLBEGkMrT5OJqaO/
-         yQH6s5S5jX9BV0lMcqhsdXb1ALonfbWnPIp13AwQhfVH2inlfILE7ALGxPsLSmpVmCdx
-         tKNG8LBDERpkkpRiSsfaFJm6zFN4HNziPArWMBv0KMAC4ighG8gHqUMfiZ/7wEFsEM2m
-         ZPsg==
-X-Gm-Message-State: AJIora+nhvWN1Q54fI7X6hiozBc+FwK5wZTtRkLUtgnckEeVd7iSXubA
-        RLlsDbxcMUk+CwIvxNMB6Cd9uw==
-X-Google-Smtp-Source: AGRyM1skZyJeAmzbptZd5plp8ZRer/MKu/mlvmAuyKbVM9kantiVUC5Iiok1Xs7xFNvbtfSGSAKjZw==
-X-Received: by 2002:a63:8c1b:0:b0:40c:7af0:cdaa with SMTP id m27-20020a638c1b000000b0040c7af0cdaamr513452pgd.326.1656101591612;
-        Fri, 24 Jun 2022 13:13:11 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d10-20020a170902e14a00b0016196bd15f4sm2228549pla.15.2022.06.24.13.13.10
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=ZDlqgf14zeOe/H6KdqMqyUaKiEwdFOQWmVC6blo0CJY=;
+        b=cYEf0ETo8i9brIluJXgi1nCxxY2ixvsHdPKtUOb8YP7XvsARR853B7MfO2Emek0XbG
+         IgWAmwNkvMlk90eB7DUcDE30axy36BiOnUudeEu0DO3QhrRE6lbHTzrvE8pmF6vf7wcq
+         QGrnsM7mcs0yzV7LDNtX3Bb9br5Gm+q09MKxWKzYu/OQ257+xgBuqoWyufVMMec8bsf2
+         S42PSZkpvPEvu95Aq8vVSj6qOXgyEVhCxkeeYtkjyXcCIGH0YQNZOQ+G7gxF0Bcum68+
+         fd1nggOEPn2oFpsxLaJIJ/HjN+j5sn04cvGpytHx6Urs6vmCZubMW2HH4/4XA7U8GIh2
+         nJWQ==
+X-Gm-Message-State: AJIora8wIN5KCLlvcwkltbHLQOlWDD5rWf/dPe7eqxD9lipLH2GKeSd4
+        BXnMrqRL7GweIh67Mqot8hwdMQ==
+X-Google-Smtp-Source: AGRyM1s8V47qxFEGAmWUTGvk4SXZ8+mjeCDjMS6oi3XRVTuZn4mdegCcH3FOFHRRUr8odugvbzEEGw==
+X-Received: by 2002:a17:907:1694:b0:716:14a4:fba with SMTP id hc20-20020a170907169400b0071614a40fbamr791128ejc.290.1656101611140;
+        Fri, 24 Jun 2022 13:13:31 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id bg6-20020a170906a04600b00722e31fcf42sm1622964ejb.184.2022.06.24.13.13.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 13:13:11 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 13:13:10 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Kashyap Desai <kashyap.desai@broadcom.com>,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 3/4][next] scsi: megaraid_sas: Replace one-element
- array with flexible-array member in MR_DRV_RAID_MAP
-Message-ID: <202206241312.EC413977@keescook>
-References: <cover.1628136510.git.gustavoars@kernel.org>
- <b43d4083d9788bb746dc0b2205d6a67ebb609b0d.1628136510.git.gustavoars@kernel.org>
- <202206221457.1A12D768EF@keescook>
- <20220623014533.GA7132@embeddedor>
- <20220623031401.GA8896@embeddedor>
- <202206230816.1383511C@keescook>
- <20220623153825.GA6458@embeddedor>
- <202206241047.903049ED@keescook>
+        Fri, 24 Jun 2022 13:13:30 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 22:13:28 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH 04/11] drm/r128: Fix undefined behavior due to shift
+ overflowing the constant
+Message-ID: <YrYa6DIWbUaABFMp@phenom.ffwll.local>
+Mail-Followup-To: Randy Dunlap <rdunlap@infradead.org>,
+        Borislav Petkov <bp@alien8.de>, LKML <linux-kernel@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        dri-devel@lists.freedesktop.org
+References: <20220405151517.29753-1-bp@alien8.de>
+ <20220405151517.29753-5-bp@alien8.de>
+ <04ff7802-c87a-2ea2-156e-c437446bc072@infradead.org>
+ <YoZAhPj0IJmE8ss8@phenom.ffwll.local>
+ <fc19b80e-3492-4b1a-e7e8-20a6a8ee6cf5@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <202206241047.903049ED@keescook>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fc19b80e-3492-4b1a-e7e8-20a6a8ee6cf5@infradead.org>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 10:48:39AM -0700, Kees Cook wrote:
-> On Thu, Jun 23, 2022 at 05:38:25PM +0200, Gustavo A. R. Silva wrote:
-> > Which object files are you comparing here? because I don't see the zero
-> > change when comparing the before and after of megaraid_sas_fp.o with
-> > the change you propose.
+On Thu, Jun 16, 2022 at 09:06:45AM -0700, Randy Dunlap wrote:
 > 
-> Hm, maybe I did something wrong. But I was looking at megaraid_sas_fp.o
+> 
+> On 5/19/22 06:05, Daniel Vetter wrote:
+> > On Mon, Apr 25, 2022 at 11:46:53AM -0700, Randy Dunlap wrote:
+> >>
+> >>
+> >> On 4/5/22 08:15, Borislav Petkov wrote:
+> >>> From: Borislav Petkov <bp@suse.de>
+> >>>
+> >>> Fix:
+> >>>
+> >>>   drivers/gpu/drm/r128/r128_cce.c: In function ‘r128_do_init_cce’:
+> >>>   drivers/gpu/drm/r128/r128_cce.c:417:2: error: case label does not reduce to an integer constant
+> >>>     case R128_PM4_64BM_64VCBM_64INDBM:
+> >>>     ^~~~
+> >>>   drivers/gpu/drm/r128/r128_cce.c:418:2: error: case label does not reduce to an integer constant
+> >>>     case R128_PM4_64PIO_64VCPIO_64INDPIO:
+> >>>     ^~~~
+> >>>
+> >>> See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+> >>> details as to why it triggers with older gccs only.
+> >>>
+> >>> Signed-off-by: Borislav Petkov <bp@suse.de>
+> >>> Cc: David Airlie <airlied@linux.ie>
+> >>> Cc: Daniel Vetter <daniel@ffwll.ch>
+> >>> Cc: Alex Deucher <alexander.deucher@amd.com>
+> >>> Cc: dri-devel@lists.freedesktop.org
+> >>
+> >> Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+> > 
+> > Pushed to drm-misc-next, thanks for patch&review.
+> > -Daniel
+> > 
+> 
+> Hi,
+> 
+> Will this be merged to mainline any time soonish?
 
-Explaining my process got a bit long, so I wrote a blog post on it.
-Here's how I did my examination of the resulting output:
+It missed the merge window by a hair, so it's in linux-next and will get
+into the next one.
+-Daniel
 
-https://outflux.net/blog/archives/2022/06/24/finding-binary-differences/
+> 
+> thanks.
+> 
+> >>
+> >> Thanks.
+> >>
+> >>> ---
+> >>>  drivers/gpu/drm/r128/r128_drv.h | 4 ++--
+> >>>  1 file changed, 2 insertions(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/drivers/gpu/drm/r128/r128_drv.h b/drivers/gpu/drm/r128/r128_drv.h
+> >>> index 2e1bc01aa5c9..970e192b0d51 100644
+> >>> --- a/drivers/gpu/drm/r128/r128_drv.h
+> >>> +++ b/drivers/gpu/drm/r128/r128_drv.h
+> >>> @@ -300,8 +300,8 @@ extern long r128_compat_ioctl(struct file *filp, unsigned int cmd,
+> >>>  #	define R128_PM4_64PIO_128INDBM		(5  << 28)
+> >>>  #	define R128_PM4_64BM_128INDBM		(6  << 28)
+> >>>  #	define R128_PM4_64PIO_64VCBM_64INDBM	(7  << 28)
+> >>> -#	define R128_PM4_64BM_64VCBM_64INDBM	(8  << 28)
+> >>> -#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15 << 28)
+> >>> +#	define R128_PM4_64BM_64VCBM_64INDBM	(8U  << 28)
+> >>> +#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15U << 28)
+> >>>  #	define R128_PM4_BUFFER_CNTL_NOUPDATE	(1  << 27)
+> >>>  
+> >>>  #define R128_PM4_BUFFER_WM_CNTL		0x0708
+> >>
+> >> -- 
+> >> ~Randy
+> > 
+> 
+> -- 
+> ~Randy
 
 -- 
-Kees Cook
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
