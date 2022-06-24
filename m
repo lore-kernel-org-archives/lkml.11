@@ -2,61 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E329DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:46:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37536C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbiFXTqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 15:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
+        id S231332AbiFXTre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 15:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiFXTqC (ORCPT
+        with ESMTP id S231232AbiFXTrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 15:46:02 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F698239E;
-        Fri, 24 Jun 2022 12:45:59 -0700 (PDT)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 51EB4C0002;
-        Fri, 24 Jun 2022 19:45:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656099958;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=B6gyjsp/NVQ21Eu+gfrxHhHPA4Pr9E0u1UsiQqQsXto=;
-        b=e9wP091Mreqnb9j5xGWwwJybQguYWNuV95jwoN8MEU18GFVahBbKXcPlQCoQnJD2m+GvTU
-        X+mkSxR7jm4f8FH0Q7AeM124+td5ISk2gchS5XCqO18rCMPaboUWhYQJaHcwIjCKKxS0e9
-        CJD6fQAHWsvR9mDfyD3boR16ivPDMFtl6fuaJxwh2s6AbTVfUmG4TffZ1HHmJA56fUzvK0
-        T1eIITdJGOt154RVwQLNkE3kN413SOzYhOd/hKSWIZMQEJrxQyVBBKswC+s2S3A4mUgB0U
-        8QUX16dp+KK1qRa0E8zRsPz0XZRrH4H/xPj2H44YYEYjS+2qx3lgO6pj/1zkng==
-Date:   Fri, 24 Jun 2022 21:45:54 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     linux-rtc@vger.kernel.org, liuke94@huawei.com,
-        a.zummo@towertech.it, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rtc: Directly use ida_alloc()/free()
-Message-ID: <165609993470.34899.12304338641218791663.b4-ty@bootlin.com>
-References: <20220527073636.2474546-1-liuke94@huawei.com>
+        Fri, 24 Jun 2022 15:47:32 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2053.outbound.protection.outlook.com [40.107.95.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE1382690
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 12:47:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lc9OOprB1q/NUhQAnCaiYq0S6GS83MOWoJcjQxHDqDm90kgBsP38etPgwr72+bhqEZgJcamI1XRVJUi9HkHaJsJNZVrN1rz01cssQS62TOJHigzxDVKC/9UrY/ffQjUBTFs6efqAHrdhi9kJU7SWJ635fxCDmuC4mu6TNdWOWZYvRf+JRvNlqLVY2dQKqDvDCnOBAK5oTP95wJwgZ5ORVaEN2lLJ2UkrTokdgvP7PahCvNyfMli3jVZEbJOXg5t/leRBl+E/zvWmGPQRHFI+Z24vTRSjhPGa0lCzmb6c6F+NXbF6q3wgjCDgUt0R6Oc5eJ5mwZsCujSsgyyi4yE6Lw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1penL7l6Fn/cOMbmHfk1TSOTnTV+GjRuKj+LuNLWDkw=;
+ b=Goz6DyJ1L4fdzvTPBeWb+iRfLUfUvoNg4AyGwz9R44KpH2M/J7zjILa+i/VetTg8Vd3FXaFg8j3xmhFlJ8p6mxa1qKMqqjeJ29xKxnrvZmsZ7FcIGpnHXfrPl7xcJFn/x6sjXF7BWqVot2Yr7omNRYmhYnbPVPPw6PTajO5QNZSN/LRphZqvsDyy9WLwmy4xpMWwxacSaBtSUO7Gy1lZuc7/8FLnYYaXpFgWrcQy0BPujZlXjSzyBo2iY4ufiRUEuiHwiyHHZk1ULFiT/U90HHW2mWnDzlU8g7i19b31RUWhFak5YdNXuiX83FgUzaPEdbsgGYIrRHjeCADddf2g6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1penL7l6Fn/cOMbmHfk1TSOTnTV+GjRuKj+LuNLWDkw=;
+ b=oiIkZQ/fCejYqnpZ2mqsMrRsy4CfjSW9087cb/uz//4O7VU7NhJBTuW+senHRenG2Zo7emv3FXXewv9ORW+NcrP1giR0qd9o11VQw+Cec7X2VCsnNUREfsEmXMwrhSh/SadErWZkV83IxRB8zc3ITK7lqkGUB6Xnv63O0ujVqPA=
+Received: from MWHPR14CA0016.namprd14.prod.outlook.com (2603:10b6:300:ae::26)
+ by DM8PR12MB5398.namprd12.prod.outlook.com (2603:10b6:8:3f::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5373.15; Fri, 24 Jun 2022 19:47:28 +0000
+Received: from CO1NAM11FT034.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:ae:cafe::88) by MWHPR14CA0016.outlook.office365.com
+ (2603:10b6:300:ae::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17 via Frontend
+ Transport; Fri, 24 Jun 2022 19:47:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ CO1NAM11FT034.mail.protection.outlook.com (10.13.174.248) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5373.15 via Frontend Transport; Fri, 24 Jun 2022 19:47:28 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 24 Jun
+ 2022 14:47:27 -0500
+Received: from sof-System-Product-Name.amd.com (10.180.168.240) by
+ SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.28
+ via Frontend Transport; Fri, 24 Jun 2022 14:47:23 -0500
+From:   V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <Vijendar.Mukunda@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
+        <Sunil-kumar.Dommati@amd.com>, <venkataprasad.potturu@amd.com>,
+        "V sujith kumar Reddy" <Vsujithkumar.Reddy@amd.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        Akihiko Odaki <akihiko.odaki@gmail.com>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/3] ASoC: amd: acp: Remove rt1019_1 codec conf from machine driver
+Date:   Sat, 25 Jun 2022 01:18:19 +0530
+Message-ID: <20220624194821.287462-2-Vsujithkumar.Reddy@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220624194821.287462-1-Vsujithkumar.Reddy@amd.com>
+References: <20220624194821.287462-1-Vsujithkumar.Reddy@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220527073636.2474546-1-liuke94@huawei.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 47cbb6d9-1bfe-4cfc-8b4b-08da561a5ece
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5398:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fZsNDNXZEmwsbcf2hq5pR1cY98ljkN/73zbYteDYuTDmM0JcZ8kja0OdnkyPJreMg6nD34kUfB0JSifdQrVw3GFOLF5saBNX3uGREkzwo0sN4d/igFd6S4juaRoqHoRLi+p096LMv5vdUKWT+WQxv6gJqTefKc/1GF1nRTRYtOYZ+ZdsHRnQzH8I/PqRcBFT0aomCFEATznaXkp7vygwIYxY4h+Uptfhz1m6yYb66dUTMrk0ElitRvljil8HuE8NQb86UucDSw4kVDuTSh/C6xsw5j/lHD2SGxqfQsL2rhWRMO0FVlNmS9km3KrWEfzW/sDMsaVNy5pmBq9rN2HtXtgW5XANMwzjp882Ogxw1SJyN/D0U7J7XhfotZlqhNa0VwUKT17r1hLOkDkW+l4aVKGT/cnUJ1d8dNjxtSyKX6JaRFjIjm7THLvCaS83E1hG2NCqDWm9BLtRIwCRrmcnT94rSVFeuSPoIrLqRCIs0bcPR+exHrTPoKfnpR/qDMNV2AMRB0UjP8W3mjhFUBDdUkW/z1HsTOJhJ2Z4Vsl6IpyG8U40a0ui8DinX0EuoeDsIERZCo/XdnWM4uv8iNt3SedlrA+pwp65Fb8CLrRi4SUuTQGvEV8k1YEc8QoKsGCOokwv1IGMpgdf5uB1L1dS9tYBM6fw/ZQURZdnSIQKh+MOylBtcS+5tlSfc4uosbBStyYBNI5n6yo6oujX2Ec9qqYq5ikA+vHYgMoRIoFQZVHUVp9wR7RV40e22UDwqz+e8ufWSIKkOb464CBdtIopTDUonKahndqn0Cau/KQL6jVYXm7FYDXweoSpFEdWveVpQhuidwEFmk6A3v9QKsShCg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(346002)(396003)(376002)(36840700001)(46966006)(40470700004)(426003)(316002)(82310400005)(40460700003)(70586007)(47076005)(26005)(40480700001)(83380400001)(8676002)(1076003)(110136005)(186003)(336012)(36756003)(82740400003)(70206006)(5660300002)(2616005)(7696005)(4326008)(8936002)(36860700001)(81166007)(2906002)(478600001)(86362001)(356005)(6666004)(54906003)(41300700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 19:47:28.4204
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47cbb6d9-1bfe-4cfc-8b4b-08da561a5ece
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT034.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5398
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 27 May 2022 07:36:36 +0000, keliu wrote:
-> Use ida_alloc()/ida_free() instead of deprecated
-> ida_simple_get()/ida_simple_remove() .
-> 
-> 
+Remove rt1019_1 codec configuration which has i2c-10EC1019:01 and
+i2c-10EC1019:02 codec components, Now Using default i2c-10EC1019:00
+and i2c-10EC1019:01 codec components.
 
-Applied, thanks!
+Signed-off-by: V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+---
+ sound/soc/amd/acp/acp-mach-common.c | 18 ------------------
+ 1 file changed, 18 deletions(-)
 
-[1/1] rtc: Directly use ida_alloc()/free()
-      commit: 592ff0c8d0648610511f4e4fb532f100168e6e0d
-
-Best regards,
+diff --git a/sound/soc/amd/acp/acp-mach-common.c b/sound/soc/amd/acp/acp-mach-common.c
+index 7530cab24bc8..86145398fa25 100644
+--- a/sound/soc/amd/acp/acp-mach-common.c
++++ b/sound/soc/amd/acp/acp-mach-common.c
+@@ -313,9 +313,6 @@ static const struct snd_soc_ops acp_card_dmic_ops = {
+ SND_SOC_DAILINK_DEF(rt1019,
+ 	DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10EC1019:00", "rt1019-aif"),
+ 			  COMP_CODEC("i2c-10EC1019:01", "rt1019-aif")));
+-SND_SOC_DAILINK_DEF(rt1019_1,
+-		    DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10EC1019:02", "rt1019-aif"),
+-		    COMP_CODEC("i2c-10EC1019:01", "rt1019-aif")));
+ 
+ static const struct snd_soc_dapm_route rt1019_map_lr[] = {
+ 	{ "Left Spk", NULL, "Left SPO" },
+@@ -333,17 +330,6 @@ static struct snd_soc_codec_conf rt1019_conf[] = {
+ 	},
+ };
+ 
+-static struct snd_soc_codec_conf rt1019_1_conf[] = {
+-	{
+-		.dlc = COMP_CODEC_CONF("i2c-10EC1019:02"),
+-		.name_prefix = "Left",
+-	},
+-	{
+-		.dlc = COMP_CODEC_CONF("i2c-10EC1019:01"),
+-		.name_prefix = "Right",
+-	},
+-};
+-
+ static int acp_card_rt1019_init(struct snd_soc_pcm_runtime *rtd)
+ {
+ 	struct snd_soc_card *card = rtd->card;
+@@ -716,10 +702,6 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
+ 			links[i].init = acp_card_rt1019_init;
+ 			card->codec_conf = rt1019_conf;
+ 			card->num_configs = ARRAY_SIZE(rt1019_conf);
+-			links[i].codecs = rt1019_1;
+-			links[i].num_codecs = ARRAY_SIZE(rt1019_1);
+-			card->codec_conf = rt1019_1_conf;
+-			card->num_configs = ARRAY_SIZE(rt1019_1_conf);
+ 		}
+ 		i++;
+ 	}
 -- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.25.1
+
