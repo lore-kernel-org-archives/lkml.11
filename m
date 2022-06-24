@@ -2,75 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C1AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:48:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232026AbiFXSrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 14:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
+        id S232119AbiFXSsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 14:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232004AbiFXSrn (ORCPT
+        with ESMTP id S230164AbiFXSsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 14:47:43 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CB481707
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:47:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=QR+nifWaJ4UF5IaBqn3DWa9vzF87dPVKtCb+08H2uZA=; b=iDGZrrX8g5o5JDPxxBqIqo/DoF
-        JE07AoUkxnNArMhjxqm5fVdIFFt425RkLHWTzxrx0AmeVlc7SnUrY8e+7pFKozJege+9CvgYoDg+d
-        90aCEZ+tO1b9dQFN4GKebYwrg97l7hqqk9AgcYXZlYOR/CuFkjLOFuIEoprG5lz9x0vYEJT8ktTci
-        lmMcqwG4gi1bvQq0cT1Hi+SCduelEKW3vUJDS9bTOQ5uwMvioENHBJs+CVUye0Jx+0g5x3+BX0DGR
-        ezB7KhwtezZBTOvnEs/zSXq4C+kgbLib0h3ev6vsZ7No5QJTW9+87kUw1acI+eQHjXh5s0yugvT6t
-        C69AplGQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o4oL3-0099kP-9L; Fri, 24 Jun 2022 18:47:29 +0000
-Date:   Fri, 24 Jun 2022 19:47:29 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     James Houghton <jthoughton@google.com>
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Jue Wang <juew@google.com>,
-        Manish Mishra <manish.mishra@nutanix.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 00/26] hugetlb: Introduce HugeTLB high-granularity
- mapping
-Message-ID: <YrYGwVf8qbbBA62z@casper.infradead.org>
-References: <20220624173656.2033256-1-jthoughton@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220624173656.2033256-1-jthoughton@google.com>
+        Fri, 24 Jun 2022 14:48:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010EB13F73
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:48:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9097E620C1
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 18:48:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 05D25C34114;
+        Fri, 24 Jun 2022 18:48:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656096497;
+        bh=3J1w5tK6mjwxtr7LiECijv8nqY+fXNQVZHq8x2fidVg=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=tI5vTNH/NjOSZF9IeJJBWnjxI5HuJW14jbTVbG/fNrPINlkkWaYTMZ2i1AXRU735O
+         wRYLVZSYSOt1pZ3tiRhV54/lQfkv4XgKrZ9/eCAwRfCi9vvKILkV1yLQuotJEMGdEh
+         udjAcHdPR5qyOcVwTHNcOM56AGogLHl1mkPfYZglf4vIpczZGvsDf9r4JpnzfnXK+i
+         X/gMaxXZlFAM+V4pgJM6m+iG+lRjGqzjVOOSJ8CkBw+EJeMbNqxcfjiUmuNZ3GEsqe
+         OsVeHTO6l2+7nWordRAPGO0bG0J7SSxYqn3xPOf62X1Y/e7tkUfsS1mUoGuG2KiZQi
+         hv4m72zJk8o/g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E834BE574DA;
+        Fri, 24 Jun 2022 18:48:16 +0000 (UTC)
+Subject: Re: [git pull] drm fixes for 5.19-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAPM=9tyLoZOkc56K2auFtdjhuUxP=Xwj41evB053YZrHyQNSxg@mail.gmail.com>
+References: <CAPM=9tyLoZOkc56K2auFtdjhuUxP=Xwj41evB053YZrHyQNSxg@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAPM=9tyLoZOkc56K2auFtdjhuUxP=Xwj41evB053YZrHyQNSxg@mail.gmail.com>
+X-PR-Tracked-Remote: git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-06-24
+X-PR-Tracked-Commit-Id: 1e9124df8be0a43e4e9a10c5d1140d6ca8e50132
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 38bc4ac431684498126f9baa3a530e5a132f0173
+Message-Id: <165609649694.29080.3941150132522080119.pr-tracker-bot@kernel.org>
+Date:   Fri, 24 Jun 2022 18:48:16 +0000
+To:     Dave Airlie <airlied@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 05:36:30PM +0000, James Houghton wrote:
-> - Page table walking and manipulation
-> A new function, hugetlb_walk_to, handles walking HugeTLB page tables for
-> high-granularity mappings. Eventually, it's possible to merge
-> hugetlb_walk_to with huge_pte_offset and huge_pte_alloc.
-> 
-> We keep track of HugeTLB page table entries with a new struct, hugetlb_pte.
-> This is because we generally need to know the "size" of a PTE (previously
-> always just huge_page_size(hstate)).
-> 
-> For every page table manipulation function that has a huge version (e.g.
-> huge_ptep_get and ptep_get), there is a wrapper for it (e.g.
-> hugetlb_ptep_get).  The correct version is used depending on if a HugeTLB
-> PTE really is "huge".
+The pull request you sent on Fri, 24 Jun 2022 15:55:38 +1000:
 
-I'm disappointed to hear that page table walking is going to become even
-more special.  I'd much prefer it if hugetlb walking were exactly the
-same as THP walking.  This seems like a good time to do at least some
-of that work.
+> git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-06-24
 
-Was there a reason you chose the "more complexity" direction?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/38bc4ac431684498126f9baa3a530e5a132f0173
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
