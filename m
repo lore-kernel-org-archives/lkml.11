@@ -2,183 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C5A6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4243CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 12:05:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbiFXMFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 08:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
+        id S230185AbiFXMFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 08:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiFXMFO (ORCPT
+        with ESMTP id S229615AbiFXMFf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 08:05:14 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E5917E008;
-        Fri, 24 Jun 2022 05:05:10 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 996271BF206;
-        Fri, 24 Jun 2022 12:05:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656072308;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NtimK2j9hjJLarYb6jxp0BccsheWgcp8ThrrZdPqS0o=;
-        b=lt6EZbzuYv4GcSMuTExbY1eY89PGvcNJc6+vh5TlzmLPI8POGBDxBsUHEjPiBRtsJCHbP6
-        jwwgLHJA92XZFsUGodAMK05CQupmO86ogKIAs2lh/oJag4dNkoYexbDM4YPuLXnF2gtdKN
-        hhIGz/AQlbD/sin5T0EdNj70t9wYUAfy0Uspl5HqXPGYqXcjx93qhcoKikhumys8+cSZyS
-        /gsDLEkE/pZaQ/oSM/m4gnoHHEHapNbOALYVIWS3ufUcptiAVvMu4PqPfxI7mJLcHB5ZZ4
-        8TqJx4ESolKJpK0pwDCxg5i4jiarIqepHL2UkvHGr0L+BMAgg4ARmBxOcey5bg==
-Date:   Fri, 24 Jun 2022 14:04:15 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Frank Rowand <frowand.list@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Lizhi Hou <lizhi.hou@xilinx.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v1 1/2] of: base: populate of_root node if not set
-Message-ID: <20220624140415.677a12c1@fixe.home>
-In-Reply-To: <ecf13de1-531f-b73b-b325-44ef78a3f818@gmail.com>
-References: <20220623105044.152832-1-clement.leger@bootlin.com>
-        <20220623105044.152832-2-clement.leger@bootlin.com>
-        <ecf13de1-531f-b73b-b325-44ef78a3f818@gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 24 Jun 2022 08:05:35 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2071.outbound.protection.outlook.com [40.107.212.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E807E008;
+        Fri, 24 Jun 2022 05:05:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XTcVhIbruJ8vtic26Wbn/5mIxsGDAU4PzDQ03wmiYRvs86diG0JT/DUXnwap/nxjNDgz5rXFTWxgBLvg/+zPi8xw6HanawFZZtrXUInSwqwVkfKML3jRaiHpsNXnFkYiZxuvHghyUFE5P++H3l0E+J5NJA/Omziud1qnJsWI+0v+uW3cHApiylwA7KiYGX47mlIRJ/aHsKGpJuuIatkvr34p5TPURkqw7MNVRIUjiG11DUQ7kITnMZKPEIjidv4zQSf+Qr7js8JsfSVcuj106iuZP3H7WJPz9ixMV+YlN/h00Ei9WLGm2+FtFscXR70iprKj0SqZo8oDdNbM/O4yjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ortc5wGMpqDqKCCPWM2IIH9tQFFUqUhhT+2/q3ELuSQ=;
+ b=KEvSYwM+3aSJw64BvSb74ETGHm8jY1Br94dSUTZz7CjJLYWc6MGmMvinVU5VR9Hgq+65huCJQZQvb8Z8LD7G5Kf9x3Rlac5T4ru3pWw3hsQmlRUBZcIXvnk1PvMIJby7kPjqaVv54NrVsCUiT5DYez6lyqUKIZXZyP0v8ypF9zsLn6CRHuiI4QPbi4XpElSTfq5bw/Td9sbm8sVbU4r+MhoCrzw/JwZAMomShAMkUWiqrsAyYkiau1ejRjUf9DvZOoTXEoNDL1CHnt297w2LiqSrqG9cQgx5bMKrT9g+INCjG8/n+K9AlyKYVfcWZvnKDGGYqDAyldm+KMuTNv5clQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=amd.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ortc5wGMpqDqKCCPWM2IIH9tQFFUqUhhT+2/q3ELuSQ=;
+ b=R41Q+QufdbSg/9BL9Pf1huByMjWjprdjTJFBoKnZf43D6oMh/6Z/rzwsWCd256f5b2MHlJEnxewXZnLafYhcBw/gcxTHqbeaGPhCL5rZ+8znvYhG0Rka8Ns4Tp/+1e/PW1OG6pqmhnHM6F9uDYfm2sbRP3RxS592LnpAc9rOjP8=
+Received: from SA1PR03CA0018.namprd03.prod.outlook.com (2603:10b6:806:2d3::29)
+ by SA2PR02MB7724.namprd02.prod.outlook.com (2603:10b6:806:136::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16; Fri, 24 Jun
+ 2022 12:05:33 +0000
+Received: from SN1NAM02FT0056.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:806:2d3:cafe::f1) by SA1PR03CA0018.outlook.office365.com
+ (2603:10b6:806:2d3::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17 via Frontend
+ Transport; Fri, 24 Jun 2022 12:05:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0056.mail.protection.outlook.com (10.97.4.111) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5373.15 via Frontend Transport; Fri, 24 Jun 2022 12:05:32 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 24 Jun 2022 05:05:32 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 24 Jun 2022 05:05:32 -0700
+Envelope-to: git@amd.com,
+ michal.simek@amd.com,
+ linux-arm-kernel@lists.infradead.org,
+ linux-i2c@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Received: from [172.23.64.2] (port=47729 helo=xhdvnc102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <manikanta.guntupalli@xilinx.com>)
+        id 1o4i43-000AgM-TK; Fri, 24 Jun 2022 05:05:32 -0700
+Received: by xhdvnc102.xilinx.com (Postfix, from userid 90444)
+        id 1EF63104545; Fri, 24 Jun 2022 17:35:31 +0530 (IST)
+From:   Manikanta Guntupalli <manikanta.guntupalli@xilinx.com>
+To:     <michal.simek@xilinx.com>, <michal.simek@amd.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <git@amd.com>
+CC:     Manikanta Guntupalli <manikanta.guntupalli@xilinx.com>
+Subject: [PATCH 00/12] i2c: xiic: Added Standard mode and SMBus
+Date:   Fri, 24 Jun 2022 17:35:15 +0530
+Message-ID: <1656072327-13628-1-git-send-email-manikanta.guntupalli@xilinx.com>
+X-Mailer: git-send-email 2.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bdea9280-e027-4fd2-07e0-08da55d9d70c
+X-MS-TrafficTypeDiagnostic: SA2PR02MB7724:EE_
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NLjlBf1799qg2x8s9bhxTf0SPVY8jHWnrj0nya9c55UnUeTSdjZFtgucJlX5R6/7SnCpU8x5w8BRi6mzmC3LNr9kMrA88+KvJRISQgEV883/Rx4TJdWy2ZLyqDt9JacpdJIXRXpJm6l8fOEhd44vh/byKeuI07It+qWb/kMEqJBs1KIi13mHLr6JU47YOSIEUzJ6XI8d8LkogaIN/qsWv10l06rB2WfoHCRYTydA2guD5Z8omUEgSxq4XuSUNF2vR7DU2ombOW2ioWEycDv0zD3mcLafRIroVjlDNavuvD6zcWBL+DXDt7Ngd+DZeHFxFp9JmWfJDKaGGYzkGCekgZBZtKqSf6FFGYLafWCf2Hec97bYSPGDKHfw7TRbQHMAyB6J0/pL3BEuOmEwLrcOd0abE6T0nW8hjvWZOIkgYBLHg9BhduB05THsp/Jg3zODEA8OzveyCY8zcvQr6xT5AlzoQH9VvCSWGPaqyxHjC7oIN3RzlUL7kMb2Q0qBYy4WcYBn2wvJ4ZLSQmgCdnQuxonz69a1dy4ZhcJ1kkX9UtaZ8dLbsKIReBm8vDGAg+/6rnI2SiR+gbtGYDb+l05tUJ83vg4JzPdyePjyaPmR+xndiFtoF4rU2Zs9xy96t7+nkJp+zYmHwGAQu9xibSEEnBH7ew+WSGz4G8Z/wSByaoScxPtuw/4xl1JH8AfeGZghJ8LBGZf7WW+dhZ5vzgROKtQIDvJ4l6jYfhEYHCs8FrOFOYkLavQOzeQmISP+Qsy9MF8cB2JUQenxeF2P53BVV481NGOXVGqyuswaWQ5mznms5Fyo2TTJjh8zm6s5De2NviKjxYTa2pVLxw+FSs8XoSumVsULTIqbYBeYVmSDZtjj5p1z5HfiPkK9wx/ehv8i
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(396003)(346002)(136003)(40470700004)(36840700001)(46966006)(5660300002)(40460700003)(186003)(82310400005)(70206006)(47076005)(42186006)(336012)(966005)(426003)(478600001)(36756003)(36860700001)(2616005)(107886003)(44832011)(7636003)(8936002)(316002)(2906002)(83380400001)(41300700001)(6266002)(26005)(40480700001)(4326008)(6666004)(110136005)(8676002)(356005)(82740400003)(70586007)(102446001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 12:05:32.9563
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: bdea9280-e027-4fd2-07e0-08da55d9d70c
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0056.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR02MB7724
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Thu, 23 Jun 2022 18:15:31 -0500,
-Frank Rowand <frowand.list@gmail.com> a =C3=A9crit :
+-Added standard mode for AXI I2C controller.
+-Added Smbus block read support to xiic driver.
+-Added 'xlnx,axi-iic-2.1' new IP version support.
+-Added dynamic SCL frequency configuration support.
+-Removed 'local_irq_save/restore' calls as discussed
+ here: https://www.spinics.net/lists/linux-i2c/msg46483.html.
+-Corrected the BNB interrupt enable sequence.
 
-> Hi Clement,
->=20
-> I said that I would send a patch to do this, but have failed to follow
-> through.  Sorry about that.
+Raviteja Narayanam (11):
+  i2c: xiic: Add standard mode support for > 255 byte read transfers
+  i2c: xiic: Enter standard mode only for > 255 byte read transfers
+  i2c: xiic: Fix Rx and Tx paths in standard mode repeated start
+  i2c: xiic: Add wait for FIFO empty in send_tx
+  i2c: xiic: Use 'nmsgs' variable instead of repeated_start
+  i2c: xiic: Add smbus_block_read functionality
+  i2c: xiic: Switch to Xiic standard mode for i2c-read
+  i2c: xiic: Remove interrupt enable/disable in Rx path
+  dt-bindings: i2c: xiic: Add 'xlnx,axi-iic-2.1' to compatible
+  i2c: xiic: Update compatible with new IP version
+  i2c: xiic: Add SCL frequency configuration support
 
-Hi Frank, no worries, I just needed this topic to move forward, that's
-why I decided to sent this .
+Srinivas Goud (1):
+  i2c: xiic: Correct the BNB interrupt enable sequence
 
-Thanks !
+ .../bindings/i2c/xlnx,xps-iic-2.00.a.yaml     |   4 +-
+ drivers/i2c/busses/i2c-xiic.c                 | 631 ++++++++++++++++--
+ 2 files changed, 578 insertions(+), 57 deletions(-)
 
-Cl=C3=A9ment
+-- 
+2.25.1
 
->=20
->=20
-> On 6/23/22 06:50, Cl=C3=A9ment L=C3=A9ger wrote:
-> > When enabling CONFIG_OF on a platform where of_root is not populated by
-> > firmware, we end up without a root node. In order to apply overlays and
-> > create subnodes of the root node, we need one. Create this root node
-> > by unflattening an empty builtin dtb with of_fdt_unflatten().
-> >=20
-> > Co-developed-by: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > ---
-> >  drivers/of/Makefile       |  2 +-
-> >  drivers/of/base.c         | 18 ++++++++++++++++--
-> >  drivers/of/empty_root.dts |  6 ++++++
-> >  3 files changed, 23 insertions(+), 3 deletions(-)
-> >  create mode 100644 drivers/of/empty_root.dts
-> >=20
-> > diff --git a/drivers/of/Makefile b/drivers/of/Makefile
-> > index e0360a44306e..ce56c8b95c83 100644
-> > --- a/drivers/of/Makefile
-> > +++ b/drivers/of/Makefile
-> > @@ -1,5 +1,5 @@
-> >  # SPDX-License-Identifier: GPL-2.0
-> > -obj-y =3D base.o device.o platform.o property.o
-> > +obj-y =3D base.o empty_root.dtb.o device.o platform.o property.o
-> >  obj-$(CONFIG_OF_KOBJ) +=3D kobj.o
-> >  obj-$(CONFIG_OF_DYNAMIC) +=3D dynamic.o
-> >  obj-$(CONFIG_OF_FLATTREE) +=3D fdt.o
-> > diff --git a/drivers/of/base.c b/drivers/of/base.c
-> > index d4f98c8469ed..43e0f027a49c 100644
-> > --- a/drivers/of/base.c
-> > +++ b/drivers/of/base.c
-> > @@ -22,6 +22,7 @@
-> >  #include <linux/module.h>
-> >  #include <linux/of.h>
-> >  #include <linux/of_device.h>
-> > +#include <linux/of_fdt.h>
-> >  #include <linux/of_graph.h>
-> >  #include <linux/spinlock.h>
-> >  #include <linux/slab.h>
-> > @@ -163,6 +164,8 @@ void __of_phandle_cache_inv_entry(phandle handle)
-> >  		phandle_cache[handle_hash] =3D NULL;
-> >  }
-> > =20
-> > +extern const char __dtb_empty_root_begin[];
-> > +
-> >  void __init of_core_init(void)
-> >  {
-> >  	struct device_node *np;
-> > @@ -176,6 +179,18 @@ void __init of_core_init(void)
-> >  		pr_err("failed to register existing nodes\n");
-> >  		return;
-> >  	}
-> > +
-> > +	if (!of_root) {
-> > +		void *dt;
-> > +		const unsigned long *fdt =3D (const unsigned long *)
-> > +							__dtb_empty_root_begin;
-> > +		dt =3D of_fdt_unflatten_tree(fdt, NULL, &of_root);
-> > +		if (!dt) {
-> > +			pr_err("Failed to setup empty root dt\n");
-> > +			return;
-> > +		}
-> > +	}
-> > +
-> >  	for_each_of_allnodes(np) {
-> >  		__of_attach_node_sysfs(np);
-> >  		if (np->phandle && !phandle_cache[of_phandle_cache_hash(np->phandle)=
-])
-> > @@ -184,8 +199,7 @@ void __init of_core_init(void)
-> >  	mutex_unlock(&of_mutex);
-> > =20
-> >  	/* Symlink in /proc as required by userspace ABI */
-> > -	if (of_root)
-> > -		proc_symlink("device-tree", NULL, "/sys/firmware/devicetree/base");
-> > +	proc_symlink("device-tree", NULL, "/sys/firmware/devicetree/base");
-> >  } =20
->=20
-> This approach is adding an additional method of unflattening the tree.
-> I would prefer to consolidate in a single location.
->=20
-> I have leveraged this patch series into a different patch series to
-> accomplish that.  I have boot tested with one configuration, but want
-> to test two more configurations before sending the new series.  It
-> should only take "a few minutes".
->=20
-> -Frank
->=20
-> > =20
-> >  static struct property *__of_find_property(const struct device_node *n=
-p,
-> > diff --git a/drivers/of/empty_root.dts b/drivers/of/empty_root.dts
-> > new file mode 100644
-> > index 000000000000..cf9e97a60f48
-> > --- /dev/null
-> > +++ b/drivers/of/empty_root.dts
-> > @@ -0,0 +1,6 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/dts-v1/;
-> > +
-> > +/ {
-> > +
-> > +}; =20
->=20
-
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
