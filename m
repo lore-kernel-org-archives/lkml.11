@@ -2,132 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5584BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C485FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231228AbiFXQgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 12:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
+        id S231373AbiFXQgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 12:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbiFXQgO (ORCPT
+        with ESMTP id S229761AbiFXQga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 12:36:14 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A21F47545
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:36:13 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id b7so3370935ljr.6
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:36:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v0kR56a3js8tVSJ/80FTzZmMgZbMcBIHC4Horg01B0c=;
-        b=VHI4cibUu1nlWHaj0e1TN23hEBzchsJwNJ7pRPD9JLXj/JbuL64WYgN1Dd1IRkvPac
-         ygipsK+DMHwpIQRsRsbkPu/+djsjTlnueymy5PTClA6o5M5jXIqwHrOIrFtmNyXbhiAY
-         kCHtINfa6mI7k46ERe3C4mRVz9huLOLE/9ERK2CbRPYKdq9/dVDOC7BDdmQJZOQ9L3rh
-         kHTOpCht0iCElT4L53YjSkh8ELGmiV/61uC9oA5sOwy8KOLsBFEPRq1xqbTaVTAqzzHA
-         rrsXjD2OIPdEy28yftHFvR5TnUVUVvdaKNm4ZmDwswT0iDB3YQ+h16vkjyIlglLcnDlR
-         Wp6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v0kR56a3js8tVSJ/80FTzZmMgZbMcBIHC4Horg01B0c=;
-        b=ITv/OkvsROU87nHfykx3q4IMD1FgzXG7Tq5j/xEzyvGI0F1eD/z2NRp5vdFhsH+xJz
-         W89cdZ/AQXYB9CV5x2FcUMLEkabk4EEVcLltkGHjUGYH6tbhkzLIizAkJ2u5M9BNxn/V
-         bYATGiNbEp8vO7sbB6sY+QRpWFDXi6xQ4RcCPCaOKWGpwbPaXsuYSFd6Jgp3xl9vGAx9
-         Ru2eJ/5fyWaJEJZvsOUNU1l+7AKWi5f+TTyIj2Q3tb+oaVMKnnzP9Ossu47iIhVeN5c4
-         akIKMQMF3jafvItPITW++/tmiALxiIAWYRLcJXkPFQgJrfERjhS068WcxSrdLMVZR2S8
-         vdMA==
-X-Gm-Message-State: AJIora+aQgW/ujFilgjm+UwStRo0juaVcVWajdTAHFXXcAt7vge3nH4k
-        r6BIYo7j3dJGzwFfUphVU5631oyPKaWkcRXqQug7ZQ==
-X-Google-Smtp-Source: AGRyM1vL+EaPdx915agnP8RGtkdwEKmVIyCaqnwD+c2dfRqzuQVoNAkH4rIjSHdD14nbycbqpt00uWwh6peuqigJjOg=
-X-Received: by 2002:a2e:22c6:0:b0:25a:8c16:baf with SMTP id
- i189-20020a2e22c6000000b0025a8c160bafmr6868072lji.132.1656088571108; Fri, 24
- Jun 2022 09:36:11 -0700 (PDT)
+        Fri, 24 Jun 2022 12:36:30 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5DF4E384;
+        Fri, 24 Jun 2022 09:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656088589; x=1687624589;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ISZpanMTrKMtDF2ptQdE6nRc4RobHD9iXX2SAkgkzm8=;
+  b=J5QyMSv0gVcMNtSsxHtX9zLYLHBe2tFpvYYxAn+R35GIlqjM0rNgchJP
+   xR6QIg0NidV3a93N91zKHsmYa4XpINcmBgR48TMpSfU7Pl4UOEI2qWd0A
+   kJfFm3ax8ClQxkhRlHCU19/2cy5z8fdLjW6WqdsDyh4Wg+YZjB/7jFBIc
+   yYHd/jiLpFnvDGLGtmvUjr1y0DyAEiIo//+0V7D0IL4hgzJ1s0fBGcM5u
+   7WBKT6qs8147m0RIgqpUfQyn5pKKpmsW4xqFL1tUFB+BONQuUzjMmAm9S
+   4kj0hCWxLME6JYJDttTGVorlVmMhDSxT0yxEJw/4dD2kAhYsbHNq9Z08v
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="342726209"
+X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
+   d="scan'208";a="342726209"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 09:36:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
+   d="scan'208";a="835188932"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga006.fm.intel.com with ESMTP; 24 Jun 2022 09:36:25 -0700
+Date:   Sat, 25 Jun 2022 00:28:15 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, git@xilinx.com,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/3] fpga: region: Add fpga-region 'power-domains'
+ property
+Message-ID: <20220624162815.GA2142910@yilunxu-OptiPlex-7050>
+References: <20220523134517.4056873-1-nava.manne@xilinx.com>
+ <20220523134517.4056873-3-nava.manne@xilinx.com>
 MIME-Version: 1.0
-References: <cover.1655761627.git.ashish.kalra@amd.com> <1dbc14735bbc336c171ef8fefd4aef39ddf95816.1655761627.git.ashish.kalra@amd.com>
-In-Reply-To: <1dbc14735bbc336c171ef8fefd4aef39ddf95816.1655761627.git.ashish.kalra@amd.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Fri, 24 Jun 2022 10:35:59 -0600
-Message-ID: <CAMkAt6o7jjZ9baQfTUO-r8+u0doJVqPm=fz88nQwuxh6qpBS_Q@mail.gmail.com>
-Subject: Re: [PATCH Part2 v6 47/49] *fix for stale per-cpu pointer due to
- cond_resched during ghcb mapping
-To:     Ashish Kalra <Ashish.Kalra@amd.com>
-Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>, linux-coco@lists.linux.dev,
-        linux-mm@kvack.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        "Lendacky, Thomas" <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, Marc Orr <marcorr@google.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Alper Gun <alpergun@google.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>, jarkko@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523134517.4056873-3-nava.manne@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 5:15 PM Ashish Kalra <Ashish.Kalra@amd.com> wrote:
->
-> From: Michael Roth <michael.roth@amd.com>
->
-> Signed-off-by: Michael Roth <michael.roth@amd.com>
-
-Can you add a commit description here? Is this a fix for existing
-SEV-ES support or should this be incorporated into a patch in this
-series which adds this issue?
-
+On Mon, May 23, 2022 at 07:15:16PM +0530, Nava kishore Manne wrote:
+> Add fpga-region 'power-domains' property to allow to handle
+> the FPGA/PL power domains.
+> 
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 > ---
->  arch/x86/kvm/svm/svm.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index fced6ea423ad..f78e3b1bde0e 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -1352,7 +1352,7 @@ static void svm_vcpu_free(struct kvm_vcpu *vcpu)
->  static void svm_prepare_switch_to_guest(struct kvm_vcpu *vcpu)
->  {
->         struct vcpu_svm *svm = to_svm(vcpu);
-> -       struct svm_cpu_data *sd = per_cpu(svm_data, vcpu->cpu);
-> +       struct svm_cpu_data *sd;
->
->         if (sev_es_guest(vcpu->kvm))
->                 sev_es_unmap_ghcb(svm);
-> @@ -1360,6 +1360,10 @@ static void svm_prepare_switch_to_guest(struct kvm_vcpu *vcpu)
->         if (svm->guest_state_loaded)
->                 return;
->
-> +       /* sev_es_unmap_ghcb() can resched, so grab per-cpu pointer afterward. */
-> +       barrier();
-> +       sd = per_cpu(svm_data, vcpu->cpu);
+> Changes for v2:
+>               - Updated power-domains description.
+> 
+>  .../devicetree/bindings/fpga/fpga-region.txt       | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/fpga/fpga-region.txt b/Documentation/devicetree/bindings/fpga/fpga-region.txt
+> index 7d3515264838..f299c3749505 100644
+> --- a/Documentation/devicetree/bindings/fpga/fpga-region.txt
+> +++ b/Documentation/devicetree/bindings/fpga/fpga-region.txt
+> @@ -196,6 +196,20 @@ Optional properties:
+>  - config-complete-timeout-us : The maximum time in microseconds time for the
+>  	FPGA to go to operating mode after the region has been programmed.
+>  - child nodes : devices in the FPGA after programming.
+> +- power-domains : A phandle and power domain specifier pair to the power domain
+> +	which is responsible for turning on/off the power to the FPGA/PL region.
+
+Could you help explain what is PL?
+
+> +Example:
+> +	fpga_full: fpga-full {
+> +                compatible = "fpga-region";
+> +                fpga-mgr = <&zynqmp_pcap>;
+> +                #address-cells = <2>;
+> +                #size-cells = <2>;
+> +                ranges;
+> +                power-domains = <&zynqmp_firmware PL_PD>;
+> +        };
 > +
->         /*
->          * Save additional host state that will be restored on VMEXIT (sev-es)
->          * or subsequent vmload of host save area.
-> --
+> +	The PL_PD power domain will be turned on before loading the bitstream
+> +and turned off while removing/unloading the bitstream using overlays.
+
+I think the single power-domain may not cover some use cases that
+of-fpga-region driver supports. It is possible there are already
+devices in fpga-region for static OF tree, or an overlay with no
+'firmware-name' but 'external-fpga-config'. In these cases power domains
+may still be needed, is it?
+
+Another case is the fpga-region may need multiple power domains?
+
+Since the of-fpga-region driver is a generic fpga-region driver, we may
+investigate more for a compatible power-domain solution.
+
+Thanks,
+Yilun
+
+>  
+>  In the example below, when an overlay is applied targeting fpga-region0,
+>  fpga_mgr is used to program the FPGA.  Two bridges are controlled during
+> -- 
 > 2.25.1
->
