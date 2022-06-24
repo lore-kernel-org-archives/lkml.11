@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D94C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B90CCA482
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbiFXV5o convert rfc822-to-8bit (ORCPT
+        id S231565AbiFXV5r convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 17:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49662 "EHLO
+        Fri, 24 Jun 2022 17:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiFXV5j (ORCPT
+        with ESMTP id S231530AbiFXV5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 17:57:39 -0400
+        Fri, 24 Jun 2022 17:57:40 -0400
 Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E80F87B7A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BEB87B7C
         for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:57:39 -0700 (PDT)
 Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OLaDBx012630
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OLaBjh012457
         for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:57:39 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gwcu743ya-1
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gwcu743y9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:57:38 -0700
-Received: from twshared34609.14.frc2.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:57:39 -0700
+Received: from twshared1457.37.frc1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.28; Fri, 24 Jun 2022 14:57:38 -0700
 Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id 11B5C94C3A4A; Fri, 24 Jun 2022 14:57:31 -0700 (PDT)
+        id 078AA94C3A27; Fri, 24 Jun 2022 14:57:25 -0700 (PDT)
 From:   Song Liu <song@kernel.org>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <x86@vger.kernel.org>
 CC:     <dave.hansen@linux.intel.com>, <mcgrof@kernel.org>,
         <rick.p.edgecombe@intel.com>, <kernel-team@fb.com>,
         <daniel@iogearbox.net>, Song Liu <song@kernel.org>
-Subject: [PATCH v5 bpf-next 5/5] bpf: simplify select_bpf_prog_pack_size
-Date:   Fri, 24 Jun 2022 14:57:12 -0700
-Message-ID: <20220624215712.3050672-6-song@kernel.org>
+Subject: [PATCH v5 bpf-next 3/5] vmalloc: WARN for set_vm_flush_reset_perms() on huge pages
+Date:   Fri, 24 Jun 2022 14:57:10 -0700
+Message-ID: <20220624215712.3050672-4-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220624215712.3050672-1-song@kernel.org>
 References: <20220624215712.3050672-1-song@kernel.org>
@@ -45,8 +45,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: KrrfgsGz0Z4vm6zhzZuxbNhLCZXeXXVx
-X-Proofpoint-GUID: KrrfgsGz0Z4vm6zhzZuxbNhLCZXeXXVx
+X-Proofpoint-ORIG-GUID: 7L76DiWj7vF4wWCvjOAGvT6rjW8nKpYx
+X-Proofpoint-GUID: 7L76DiWj7vF4wWCvjOAGvT6rjW8nKpYx
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-06-24_09,2022-06-24_01,2022-06-22_01
@@ -54,46 +54,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use huge_vmalloc_supported to simplify select_bpf_prog_pack_size, so that
-we don't allocate some huge pages and free them immediately.
+VM_FLUSH_RESET_PERMS is not yet ready for huge pages, add a WARN to
+catch misuse soon.
 
 Suggested-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
 Signed-off-by: Song Liu <song@kernel.org>
 ---
- kernel/bpf/core.c | 15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ include/linux/vmalloc.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 83f5a98517d5..fbbfb7534979 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -854,22 +854,15 @@ static LIST_HEAD(pack_list);
- static size_t select_bpf_prog_pack_size(void)
+diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
+index 096d48aa3437..59d3e1f3e108 100644
+--- a/include/linux/vmalloc.h
++++ b/include/linux/vmalloc.h
+@@ -239,6 +239,7 @@ static inline void set_vm_flush_reset_perms(void *addr)
  {
- 	size_t size;
--	void *ptr;
--
--	size = BPF_HPAGE_SIZE * num_online_nodes();
--	ptr = module_alloc_huge(size);
+ 	struct vm_struct *vm = find_vm_area(addr);
  
--	/* Test whether we can get huge pages. If not just use PAGE_SIZE
--	 * packs.
--	 */
--	if (!ptr || !is_vm_area_hugepages(ptr)) {
-+	if (huge_vmalloc_supported()) {
-+		size = BPF_HPAGE_SIZE * num_online_nodes();
-+		bpf_prog_pack_mask = BPF_HPAGE_MASK;
-+	} else {
- 		size = PAGE_SIZE;
- 		bpf_prog_pack_mask = PAGE_MASK;
--	} else {
--		bpf_prog_pack_mask = BPF_HPAGE_MASK;
- 	}
- 
--	vfree(ptr);
- 	return size;
++	WARN_ON_ONCE(is_vm_area_hugepages(addr));
+ 	if (vm)
+ 		vm->flags |= VM_FLUSH_RESET_PERMS;
  }
- 
 -- 
 2.30.2
 
