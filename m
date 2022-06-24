@@ -2,109 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47593C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA34C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 11:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbiFXLlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 07:41:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33296 "EHLO
+        id S231253AbiFXLmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 07:42:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231157AbiFXLl2 (ORCPT
+        with ESMTP id S229546AbiFXLme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 07:41:28 -0400
-Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE907946B;
-        Fri, 24 Jun 2022 04:41:25 -0700 (PDT)
-Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
-        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id A0C5A1D74;
-        Fri, 24 Jun 2022 11:40:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paragon-software.com; s=mail; t=1656070832;
-        bh=wsI+VTIYH+j37kEK0piYgrtJJa0d/rvQA7XicNxJ+L4=;
-        h=Date:Subject:From:To:CC:References:In-Reply-To;
-        b=bzSGPQvPb2+lJosI+YVjCM3AAPt9mWiSgN+DQeyiM49ESMT2kYeyrkfBKKA6My6AP
-         n6y5v92brwcyD2K3CWL9cD0ooDf/IC11Y3KJ5itkAGiV0jbO6rhsrvr9idfm9fFhuw
-         kf5M+ORyzgzZ1emK7Mm1BWxqtv7zwjogQzcWnUW0=
-Received: from [172.30.8.65] (172.30.8.65) by
- vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Fri, 24 Jun 2022 14:41:23 +0300
-Message-ID: <8cb6d3fe-22ed-4166-c047-de0da97c4a11@paragon-software.com>
-Date:   Fri, 24 Jun 2022 14:41:23 +0300
+        Fri, 24 Jun 2022 07:42:34 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094467A1BF;
+        Fri, 24 Jun 2022 04:42:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 470E5CE2670;
+        Fri, 24 Jun 2022 11:42:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FC80C34114;
+        Fri, 24 Jun 2022 11:42:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656070949;
+        bh=A9EbR0TTckgQYks+j0SLebZoHLsX7+FVTH3QCZLBNLI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lfAalIbsPwoYEqi/eNoEEg1XzTA80iuuuHjDWGSr+GpUJkK/uLurfchn3GmDl+VqU
+         I5dzMOTCwocH0S4rK9pBaRu26LTcnt7NBRaiLQKNdT6LYS0d7P4wg9CqE+4ra4BHm6
+         Qbfzq1E8mIw8KEHX1VOPrYqTGJ9T8XW7+r7un5n1wTMyQzBekMq9/agKoRR3qunO/O
+         OGt2rl8mi+rHQ1bj3gl2UBO9PXRMuVJiHRunmSmRbk3kAgD1XZDW8cOP8J8DNpUgeY
+         u/4YoR0xOt9my1L/DSIl4JNJrsNi3+qhjQ0QXSpFNAgTmINbL9CyYwubXia8CFVtGm
+         GJ7A2EjvNT76w==
+Date:   Fri, 24 Jun 2022 12:42:23 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Will Deacon <will@kernel.org>
+Cc:     madvenka@linux.microsoft.com, mark.rutland@arm.com,
+        jpoimboe@redhat.com, ardb@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v15 0/6] arm64: Reorganize the unwinder and implement
+ stack trace reliability checks
+Message-ID: <YrWjH4H7KxLAqfph@sirena.org.uk>
+References: <ff68fb850d42e1adaa6a0a6c9c258acabb898b24>
+ <20220617210717.27126-1-madvenka@linux.microsoft.com>
+ <20220623173224.GB16966@willie-the-truck>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: [PATCH 2/3] fs/ntfs3: Check reserved size for maximum allowed
-Content-Language: en-US
-From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-To:     <ntfs3@lists.linux.dev>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
-References: <f76c96bb-fdea-e1e5-5f47-c092af5fe556@paragon-software.com>
-In-Reply-To: <f76c96bb-fdea-e1e5-5f47-c092af5fe556@paragon-software.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.30.8.65]
-X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
- vdlg-exch-02.paragon-software.com (172.30.1.105)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="TK6aEfPqnhW4wFA2"
+Content-Disposition: inline
+In-Reply-To: <20220623173224.GB16966@willie-the-truck>
+X-Cookie: Help!  I'm trapped in a PDP 11/70!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Also don't mask EFBIG
-Fixes xfstest generic/485
-Fixes: 4342306f0f0d ("fs/ntfs3: Add file operations and implementation")
 
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
----
-  fs/ntfs3/attrib.c | 11 ++++++++++-
-  fs/ntfs3/file.c   |  3 ---
-  2 files changed, 10 insertions(+), 4 deletions(-)
+--TK6aEfPqnhW4wFA2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
-index bea0e70e974a..3bd51cf4d8bd 100644
---- a/fs/ntfs3/attrib.c
-+++ b/fs/ntfs3/attrib.c
-@@ -2114,9 +2114,11 @@ int attr_insert_range(struct ntfs_inode *ni, u64 vbo, u64 bytes)
-  
-  	if (!attr_b->non_res) {
-  		data_size = le32_to_cpu(attr_b->res.data_size);
-+		alloc_size = data_size;
-  		mask = sbi->cluster_mask; /* cluster_size - 1 */
-  	} else {
-  		data_size = le64_to_cpu(attr_b->nres.data_size);
-+		alloc_size = le64_to_cpu(attr_b->nres.alloc_size);
-  		mask = (sbi->cluster_size << attr_b->nres.c_unit) - 1;
-  	}
-  
-@@ -2130,6 +2132,13 @@ int attr_insert_range(struct ntfs_inode *ni, u64 vbo, u64 bytes)
-  		return -EINVAL;
-  	}
-  
-+	/*
-+	 * valid_size <= data_size <= alloc_size
-+	 * Check alloc_size for maximum possible.
-+	 */
-+	if (bytes > sbi->maxbytes_sparse - alloc_size)
-+		return -EFBIG;
-+
-  	vcn = vbo >> sbi->cluster_bits;
-  	len = bytes >> sbi->cluster_bits;
-  
-diff --git a/fs/ntfs3/file.c b/fs/ntfs3/file.c
-index 5ee035e42c21..de37d5c1d60b 100644
---- a/fs/ntfs3/file.c
-+++ b/fs/ntfs3/file.c
-@@ -732,9 +732,6 @@ static long ntfs_fallocate(struct file *file, int mode, loff_t vbo, loff_t len)
-  	if (map_locked)
-  		filemap_invalidate_unlock(mapping);
-  
--	if (err == -EFBIG)
--		err = -ENOSPC;
--
-  	if (!err) {
-  		inode->i_ctime = inode->i_mtime = current_time(inode);
-  		mark_inode_dirty(inode);
--- 
-2.36.1
+On Thu, Jun 23, 2022 at 06:32:24PM +0100, Will Deacon wrote:
+> On Fri, Jun 17, 2022 at 04:07:11PM -0500, madvenka@linux.microsoft.com wrote:
 
+> > as HAVE_RELIABLE_STACKTRACE depends on STACK_VALIDATION which is not present
+> > yet. This patch will be added in the future once Objtool is enhanced to
+> > provide stack validation in some form.
 
+> Given that it's not at all obvious that we're going to end up using objtool
+> for arm64, does this patch series gain us anything in isolation?
+
+Having the reliability information seems like it should be useful in
+general even without doing live patching - we can use it to annotate
+stack traces to warn people about anything that might be suspect in
+there.  For live patching it's probably something we'll want regardless
+of the use of objtool, it's one more robustness check which always
+helps.
+
+--TK6aEfPqnhW4wFA2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmK1ox8ACgkQJNaLcl1U
+h9AEiQf/WqiaUGRvZs/gEhhSFRXD9HBwdbVf2Yd0sL2zEILXUI9Ld3PVgtxktJyV
+05a7Vrm2cj70mtTa9hgXijXG/TdpR1fdGVv+3fOe0PnH6yQQbywUrk/mk2HgmhqE
+56t0MyabelWk9fN2+WqqRtbdko0mCxNE9d/gjH+SaggSuqVEb6WyrwNkb0XA7XlG
+dtNaq76s0mkYqx4owIkSjQouuJeQsy+1Hn2bcbbNa2c7ra/1zL4KOT9cTrK0zDdD
+usmOBhDorWpVeUNkg35q3OoQ+bh4cyLaipMQGVl2wEtGz6ODyBDzGGumHxGZf9Tg
+Z/RjJXHtd4LShvPqKsS9Pzjdpr9V+A==
+=j8JN
+-----END PGP SIGNATURE-----
+
+--TK6aEfPqnhW4wFA2--
