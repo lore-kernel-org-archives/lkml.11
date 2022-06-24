@@ -2,126 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A26C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A845AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:15:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbiFXOOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:14:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43058 "EHLO
+        id S232415AbiFXOPs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232415AbiFXOO0 (ORCPT
+        with ESMTP id S232420AbiFXOP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:14:26 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAD9522F1
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:14:25 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id u12so4964411eja.8
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:14:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vKXulITE9Q0m6cknypGbEmRTpbP1EjAz+x9d3E6n76w=;
-        b=WM9CKv7gT7zU7vpTi0K3r/Fsy6hr4gErMi7Uhx5D8ZWXnpwp5nV2I0gK60bOy6ApgZ
-         N+FYO0ZSwQlymxalgsy6Ly8Q1cs5EtqylTpQS1onazaNHh/QAdjOm3KjMf/62JIeutKb
-         /jWPw7IEdDRFGplLRxf46VWEaEdZZWOh/4m33Se2FISi3Dl3NwV9wnuKTa24nsYmABJ+
-         6otz6uRWjnEfm6bn3lLbrcClSs2+orNEyK/bGwTHYVu7ExjWONqFS8aiDdvhpg3REGlq
-         G+gQnBLG1vcoYSdV29fPHmIqJ3cANv6ORw9MoocptJBf10RLiZW41aLsb9S46m86zMO7
-         x1vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vKXulITE9Q0m6cknypGbEmRTpbP1EjAz+x9d3E6n76w=;
-        b=fH/6TZOqYt2faDU9Iayhcg96weWcQz4lteBQ3rzDj4nKJbsqnTgK6CBv12OABwPuQM
-         OQAsKz+18ce1ucMmxJdgT9x71VbQHVfRmBtnNdTqqPer0iWlfg8Ftj8SLSZ+lJR8Rh6y
-         JttLuJQJJh73lRCYzc0CmpGOwo0GMRkiaSlCpGvR7hgUY8VfL3yiTeFCkrPcyX2HADvP
-         cgTHbsdJmk6jmlWJcIC8IETPvHSaJeEysFc6G77PTgV3zB0SdPBAjiEh1hc/mOCv6m2j
-         lnJQem7h7RQ5AbgXXagKz45V1mccAtmQ3R7SDpHcxFI9CozYgxt5nCZDTiTq+xNfOWkm
-         HkuA==
-X-Gm-Message-State: AJIora/jCYlTbKGXq8l2kl08c48bqkWmGskX4IDq12oKnNLFuxkWDaoS
-        2B0XO7yugiYUgST2QBm+w2A=
-X-Google-Smtp-Source: AGRyM1sE3SDEF4Pd9XY8EECtkkgUIIrqcrKa8ziYJNlqkepoOlzPnpihAXLlbRVuNdxcYbSlwgGvTg==
-X-Received: by 2002:a17:907:97d4:b0:722:e550:7490 with SMTP id js20-20020a17090797d400b00722e5507490mr13935152ejc.625.1656080063750;
-        Fri, 24 Jun 2022 07:14:23 -0700 (PDT)
-Received: from localhost.localdomain (93-103-18-160.static.t-2.net. [93.103.18.160])
-        by smtp.gmail.com with ESMTPSA id j12-20020a1709064b4c00b00722e7e48dfdsm1162718ejv.218.2022.06.24.07.14.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 07:14:23 -0700 (PDT)
-From:   Uros Bizjak <ubizjak@gmail.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Uros Bizjak <ubizjak@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH] compiler-gcc.h: Remove ancient workaround for gcc PR 58670
-Date:   Fri, 24 Jun 2022 16:14:12 +0200
-Message-Id: <20220624141412.72274-1-ubizjak@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Fri, 24 Jun 2022 10:15:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8814B5639E;
+        Fri, 24 Jun 2022 07:15:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F6BBB828DA;
+        Fri, 24 Jun 2022 14:15:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7682C34114;
+        Fri, 24 Jun 2022 14:15:08 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Y1s5r4Kh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656080106;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dpWcY0NYNZuezo2Tw0JtyiSfj9c/CF2JU5aAznNpM8M=;
+        b=Y1s5r4KhWMGGLtWRMz0m53TqO+2HVN6EzdpbVeQB/he3PkOZ+gRFK2y2IDbAoPcrBsyun+
+        7TbkC2jCthSeTFADtebhiEgLk3qSKaFy1BcPBlI2WUySrSlY4uORNVdgTAjRu7fgrJp7mB
+        UtK8UtlG6x/s/673UrhKQZKMybmPtMA=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3fab5d6c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 24 Jun 2022 14:15:06 +0000 (UTC)
+Received: by mail-io1-f50.google.com with SMTP id h85so2832569iof.4;
+        Fri, 24 Jun 2022 07:15:06 -0700 (PDT)
+X-Gm-Message-State: AJIora98ooDFiLUwb4aj9PaKSkKjHVornbJoF8DCfcqrhSN3WZXiG3SC
+        HekbR6vWsiuOoRG6L1FEQDQlmc8dUp99cYDgix8=
+X-Google-Smtp-Source: AGRyM1t1InIqxukka1FzW9hva/iu0Be7xBboO5VNY8Vzat7NBpl5N1IllrbmNr4RPAeG8SjpJkBdnVQx0iRMYpNWvUw=
+X-Received: by 2002:a05:6638:470a:b0:331:bd53:87a2 with SMTP id
+ cs10-20020a056638470a00b00331bd5387a2mr8932516jab.204.1656080105550; Fri, 24
+ Jun 2022 07:15:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220622105435.203922-1-Jason@zx2c4.com> <87a6a2qirw.fsf@linux.ibm.com>
+In-Reply-To: <87a6a2qirw.fsf@linux.ibm.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 24 Jun 2022 16:14:54 +0200
+X-Gmail-Original-Message-ID: <CAHmME9q9XY=nWvfbV+sV_frRaKPGBWSyShUShQyMayA_FpNWPg@mail.gmail.com>
+Message-ID: <CAHmME9q9XY=nWvfbV+sV_frRaKPGBWSyShUShQyMayA_FpNWPg@mail.gmail.com>
+Subject: Re: [PATCH] powerpc/kvm: don't crash on missing rng, and use darn
+To:     Fabiano Rosas <farosas@linux.ibm.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, LKML <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The workaround for 'asm goto' miscompilation introduces a compiler
-barrier quirk that inhibits many useful compiler optimizations. For
-example, __try_cmpxchg_user compiles to:
+Hi Fabiano,
 
-   11375:	41 8b 4d 00          	mov    0x0(%r13),%ecx
-   11379:	41 8b 02             	mov    (%r10),%eax
-   1137c:	f0 0f b1 0a          	lock cmpxchg %ecx,(%rdx)
-   11380:	0f 94 c2             	sete   %dl
-   11383:	84 d2                	test   %dl,%dl
-   11385:	75 c4                	jne    1134b <...>
-   11387:	41 89 02             	mov    %eax,(%r10)
+On Fri, Jun 24, 2022 at 3:43 PM Fabiano Rosas <farosas@linux.ibm.com> wrote:
+>
+> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+>
+> > On POWER8 systems that don't have ibm,power-rng available, a guest that
+> > ignores the KVM_CAP_PPC_HWRNG flag and calls H_RANDOM anyway will
+> > dereference a NULL pointer. And on machines with darn instead of
+> > ibm,power-rng, H_RANDOM won't work at all.
+> >
+> > This patch kills two birds with one stone, by routing H_RANDOM calls to
+> > ppc_md.get_random_seed, and doing the real mode check inside of it.
+> >
+> > Cc: stable@vger.kernel.org # v4.1+
+> > Cc: Michael Ellerman <mpe@ellerman.id.au>
+> > Fixes: e928e9cb3601 ("KVM: PPC: Book3S HV: Add fast real-mode H_RANDOM implementation.")
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> > ---
+> >
+> > This patch must be applied ontop of:
+> > 1) https://github.com/linuxppc/linux/commit/f3eac426657d985b97c92fa5f7ae1d43f04721f3
+> > 2) https://lore.kernel.org/all/20220622102532.173393-1-Jason@zx2c4.com/
+> >
+> >
+> >  arch/powerpc/include/asm/archrandom.h |  5 ----
+> >  arch/powerpc/kvm/book3s_hv_builtin.c  |  5 ++--
+> >  arch/powerpc/platforms/powernv/rng.c  | 33 +++++++--------------------
+> >  3 files changed, 11 insertions(+), 32 deletions(-)
+> >
+> > diff --git a/arch/powerpc/include/asm/archrandom.h b/arch/powerpc/include/asm/archrandom.h
+> > index 11d4815841ab..3af27bb84a3d 100644
+> > --- a/arch/powerpc/include/asm/archrandom.h
+> > +++ b/arch/powerpc/include/asm/archrandom.h
+> > @@ -38,12 +38,7 @@ static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
+> >  #endif /* CONFIG_ARCH_RANDOM */
+> >
+> >  #ifdef CONFIG_PPC_POWERNV
+> > -int pnv_hwrng_present(void);
+> >  int pnv_get_random_long(unsigned long *v);
+> > -int pnv_get_random_real_mode(unsigned long *v);
+> > -#else
+> > -static inline int pnv_hwrng_present(void) { return 0; }
+> > -static inline int pnv_get_random_real_mode(unsigned long *v) { return 0; }
+> >  #endif
+> >
+> >  #endif /* _ASM_POWERPC_ARCHRANDOM_H */
+> > diff --git a/arch/powerpc/kvm/book3s_hv_builtin.c b/arch/powerpc/kvm/book3s_hv_builtin.c
+> > index 799d40c2ab4f..1c6672826db5 100644
+> > --- a/arch/powerpc/kvm/book3s_hv_builtin.c
+> > +++ b/arch/powerpc/kvm/book3s_hv_builtin.c
+> > @@ -176,13 +176,14 @@ EXPORT_SYMBOL_GPL(kvmppc_hcall_impl_hv_realmode);
+> >
+> >  int kvmppc_hwrng_present(void)
+> >  {
+> > -     return pnv_hwrng_present();
+> > +     return ppc_md.get_random_seed != NULL;
+> >  }
+> >  EXPORT_SYMBOL_GPL(kvmppc_hwrng_present);
+> >
+> >  long kvmppc_rm_h_random(struct kvm_vcpu *vcpu)
+> >  {
+> > -     if (pnv_get_random_real_mode(&vcpu->arch.regs.gpr[4]))
+> > +     if (ppc_md.get_random_seed &&
+> > +         ppc_md.get_random_seed(&vcpu->arch.regs.gpr[4]))
+> >               return H_SUCCESS;
+>
+> This is the same as arch_get_random_seed_long, perhaps you could use it
+> instead.
 
-where the barrier inhibits flags propagation from asm when
-compiled with gcc-12.
+Sure, why not. Will send a v2.
 
-When the mentioned quirk is removed, the following code is generated:
-
-   11553:	41 8b 4d 00          	mov    0x0(%r13),%ecx
-   11557:	41 8b 02             	mov    (%r10),%eax
-   1155a:	f0 0f b1 0a          	lock cmpxchg %ecx,(%rdx)
-   1155e:	74 c9                	je     11529 <...>
-   11560:	41 89 02             	mov    %eax,(%r10)
-
-The refered compiler bug:
-
-http://gcc.gnu.org/bugzilla/show_bug.cgi?id=58670
-
-was fixed for gcc-4.8.2.
-
-Current minimum required version of GCC is version 5.1 which has
-the above 'asm goto' miscompilation fixed, so remove the workaround.
-
-Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
----
- include/linux/compiler-gcc.h | 11 -----------
- 1 file changed, 11 deletions(-)
-
-diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-index a0c55eeaeaf1..9b157b71036f 100644
---- a/include/linux/compiler-gcc.h
-+++ b/include/linux/compiler-gcc.h
-@@ -66,17 +66,6 @@
- 		__builtin_unreachable();	\
- 	} while (0)
- 
--/*
-- * GCC 'asm goto' miscompiles certain code sequences:
-- *
-- *   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=58670
-- *
-- * Work it around via a compiler barrier quirk suggested by Jakub Jelinek.
-- *
-- * (asm goto is automatically volatile - the naming reflects this.)
-- */
--#define asm_volatile_goto(x...)	do { asm goto(x); asm (""); } while (0)
--
- #if defined(CONFIG_ARCH_USE_BUILTIN_BSWAP)
- #define __HAVE_BUILTIN_BSWAP32__
- #define __HAVE_BUILTIN_BSWAP64__
--- 
-2.35.3
-
+Jason
