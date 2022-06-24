@@ -2,156 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37536C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CAA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231332AbiFXTre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 15:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
+        id S231420AbiFXTrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 15:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231232AbiFXTrc (ORCPT
+        with ESMTP id S231220AbiFXTrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 15:47:32 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2053.outbound.protection.outlook.com [40.107.95.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE1382690
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 12:47:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lc9OOprB1q/NUhQAnCaiYq0S6GS83MOWoJcjQxHDqDm90kgBsP38etPgwr72+bhqEZgJcamI1XRVJUi9HkHaJsJNZVrN1rz01cssQS62TOJHigzxDVKC/9UrY/ffQjUBTFs6efqAHrdhi9kJU7SWJ635fxCDmuC4mu6TNdWOWZYvRf+JRvNlqLVY2dQKqDvDCnOBAK5oTP95wJwgZ5ORVaEN2lLJ2UkrTokdgvP7PahCvNyfMli3jVZEbJOXg5t/leRBl+E/zvWmGPQRHFI+Z24vTRSjhPGa0lCzmb6c6F+NXbF6q3wgjCDgUt0R6Oc5eJ5mwZsCujSsgyyi4yE6Lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1penL7l6Fn/cOMbmHfk1TSOTnTV+GjRuKj+LuNLWDkw=;
- b=Goz6DyJ1L4fdzvTPBeWb+iRfLUfUvoNg4AyGwz9R44KpH2M/J7zjILa+i/VetTg8Vd3FXaFg8j3xmhFlJ8p6mxa1qKMqqjeJ29xKxnrvZmsZ7FcIGpnHXfrPl7xcJFn/x6sjXF7BWqVot2Yr7omNRYmhYnbPVPPw6PTajO5QNZSN/LRphZqvsDyy9WLwmy4xpMWwxacSaBtSUO7Gy1lZuc7/8FLnYYaXpFgWrcQy0BPujZlXjSzyBo2iY4ufiRUEuiHwiyHHZk1ULFiT/U90HHW2mWnDzlU8g7i19b31RUWhFak5YdNXuiX83FgUzaPEdbsgGYIrRHjeCADddf2g6g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1penL7l6Fn/cOMbmHfk1TSOTnTV+GjRuKj+LuNLWDkw=;
- b=oiIkZQ/fCejYqnpZ2mqsMrRsy4CfjSW9087cb/uz//4O7VU7NhJBTuW+senHRenG2Zo7emv3FXXewv9ORW+NcrP1giR0qd9o11VQw+Cec7X2VCsnNUREfsEmXMwrhSh/SadErWZkV83IxRB8zc3ITK7lqkGUB6Xnv63O0ujVqPA=
-Received: from MWHPR14CA0016.namprd14.prod.outlook.com (2603:10b6:300:ae::26)
- by DM8PR12MB5398.namprd12.prod.outlook.com (2603:10b6:8:3f::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5373.15; Fri, 24 Jun 2022 19:47:28 +0000
-Received: from CO1NAM11FT034.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:ae:cafe::88) by MWHPR14CA0016.outlook.office365.com
- (2603:10b6:300:ae::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17 via Frontend
- Transport; Fri, 24 Jun 2022 19:47:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CO1NAM11FT034.mail.protection.outlook.com (10.13.174.248) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5373.15 via Frontend Transport; Fri, 24 Jun 2022 19:47:28 +0000
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 24 Jun
- 2022 14:47:27 -0500
-Received: from sof-System-Product-Name.amd.com (10.180.168.240) by
- SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.28
- via Frontend Transport; Fri, 24 Jun 2022 14:47:23 -0500
-From:   V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
-To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <Vijendar.Mukunda@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
-        <Sunil-kumar.Dommati@amd.com>, <venkataprasad.potturu@amd.com>,
-        "V sujith kumar Reddy" <Vsujithkumar.Reddy@amd.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        Akihiko Odaki <akihiko.odaki@gmail.com>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/3] ASoC: amd: acp: Remove rt1019_1 codec conf from machine driver
-Date:   Sat, 25 Jun 2022 01:18:19 +0530
-Message-ID: <20220624194821.287462-2-Vsujithkumar.Reddy@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220624194821.287462-1-Vsujithkumar.Reddy@amd.com>
-References: <20220624194821.287462-1-Vsujithkumar.Reddy@amd.com>
+        Fri, 24 Jun 2022 15:47:31 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1FD82691;
+        Fri, 24 Jun 2022 12:47:30 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 2203E31A;
+        Fri, 24 Jun 2022 19:47:30 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 2203E31A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1656100050; bh=5M1OQZAtB4dqYN5TPxJPGihAtQg5IBVNnMf4zWxe6SM=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=NOLMKEoEWgEQCZiTw15GDOgIgGu7w/YiO0ttqunn4PoZNykSEtsn81PqwybPslOcb
+         LMUlDqXvMnV7zw3hJd8R254IUVbyOQTy5aG3YAEU3G8t/aw7GcQGQIcRCUxRSZoQQj
+         3+ZaJ/Ap4EF6hZpZEI9uMS2rZZCIJtAbvvWTeJvMqVZP7F91ydwjag9201fOeTdJfF
+         lm1p8v6KQudeYQyhAXV4oqkOTSYmawRh0xnnnzMB0C5AP4IccFxnsnELZv9yE3HjLu
+         0vQIfAWzoAQ7+vDxXQOLIcvCTjFAmEUCzRdBOewdqkDmGLK95WCXVPv9U+Ti+Lz+Ke
+         VRKqna0bZNDBQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Daniel Latypov <dlatypov@google.com>, brendanhiggins@google.com,
+        davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH 1/3] Documentation: kunit: remove duplicate kunit-tool.rst
+In-Reply-To: <20220603195626.121922-1-dlatypov@google.com>
+References: <20220603195626.121922-1-dlatypov@google.com>
+Date:   Fri, 24 Jun 2022 13:47:29 -0600
+Message-ID: <87pmix3ktq.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 47cbb6d9-1bfe-4cfc-8b4b-08da561a5ece
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5398:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fZsNDNXZEmwsbcf2hq5pR1cY98ljkN/73zbYteDYuTDmM0JcZ8kja0OdnkyPJreMg6nD34kUfB0JSifdQrVw3GFOLF5saBNX3uGREkzwo0sN4d/igFd6S4juaRoqHoRLi+p096LMv5vdUKWT+WQxv6gJqTefKc/1GF1nRTRYtOYZ+ZdsHRnQzH8I/PqRcBFT0aomCFEATznaXkp7vygwIYxY4h+Uptfhz1m6yYb66dUTMrk0ElitRvljil8HuE8NQb86UucDSw4kVDuTSh/C6xsw5j/lHD2SGxqfQsL2rhWRMO0FVlNmS9km3KrWEfzW/sDMsaVNy5pmBq9rN2HtXtgW5XANMwzjp882Ogxw1SJyN/D0U7J7XhfotZlqhNa0VwUKT17r1hLOkDkW+l4aVKGT/cnUJ1d8dNjxtSyKX6JaRFjIjm7THLvCaS83E1hG2NCqDWm9BLtRIwCRrmcnT94rSVFeuSPoIrLqRCIs0bcPR+exHrTPoKfnpR/qDMNV2AMRB0UjP8W3mjhFUBDdUkW/z1HsTOJhJ2Z4Vsl6IpyG8U40a0ui8DinX0EuoeDsIERZCo/XdnWM4uv8iNt3SedlrA+pwp65Fb8CLrRi4SUuTQGvEV8k1YEc8QoKsGCOokwv1IGMpgdf5uB1L1dS9tYBM6fw/ZQURZdnSIQKh+MOylBtcS+5tlSfc4uosbBStyYBNI5n6yo6oujX2Ec9qqYq5ikA+vHYgMoRIoFQZVHUVp9wR7RV40e22UDwqz+e8ufWSIKkOb464CBdtIopTDUonKahndqn0Cau/KQL6jVYXm7FYDXweoSpFEdWveVpQhuidwEFmk6A3v9QKsShCg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(346002)(396003)(376002)(36840700001)(46966006)(40470700004)(426003)(316002)(82310400005)(40460700003)(70586007)(47076005)(26005)(40480700001)(83380400001)(8676002)(1076003)(110136005)(186003)(336012)(36756003)(82740400003)(70206006)(5660300002)(2616005)(7696005)(4326008)(8936002)(36860700001)(81166007)(2906002)(478600001)(86362001)(356005)(6666004)(54906003)(41300700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 19:47:28.4204
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 47cbb6d9-1bfe-4cfc-8b4b-08da561a5ece
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT034.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5398
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove rt1019_1 codec configuration which has i2c-10EC1019:01 and
-i2c-10EC1019:02 codec components, Now Using default i2c-10EC1019:00
-and i2c-10EC1019:01 codec components.
+Daniel Latypov <dlatypov@google.com> writes:
 
-Signed-off-by: V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
----
- sound/soc/amd/acp/acp-mach-common.c | 18 ------------------
- 1 file changed, 18 deletions(-)
+> The information is duplicated now in run_wrapper.rst, which was added in
+> commit 46201d47d6c4 ("Documentation: kunit: Reorganize documentation
+> related to running tests").
+>
+> You cna compare these pages here:
+> https://www.kernel.org/doc/html/v5.18/dev-tools/kunit/run_wrapper.html
+> https://www.kernel.org/doc/html/v5.18/dev-tools/kunit/kunit-tool.html
+>
+> We should have deleted it in then but it got overlooked.
+>
+> Signed-off-by: Daniel Latypov <dlatypov@google.com>
 
-diff --git a/sound/soc/amd/acp/acp-mach-common.c b/sound/soc/amd/acp/acp-mach-common.c
-index 7530cab24bc8..86145398fa25 100644
---- a/sound/soc/amd/acp/acp-mach-common.c
-+++ b/sound/soc/amd/acp/acp-mach-common.c
-@@ -313,9 +313,6 @@ static const struct snd_soc_ops acp_card_dmic_ops = {
- SND_SOC_DAILINK_DEF(rt1019,
- 	DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10EC1019:00", "rt1019-aif"),
- 			  COMP_CODEC("i2c-10EC1019:01", "rt1019-aif")));
--SND_SOC_DAILINK_DEF(rt1019_1,
--		    DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10EC1019:02", "rt1019-aif"),
--		    COMP_CODEC("i2c-10EC1019:01", "rt1019-aif")));
- 
- static const struct snd_soc_dapm_route rt1019_map_lr[] = {
- 	{ "Left Spk", NULL, "Left SPO" },
-@@ -333,17 +330,6 @@ static struct snd_soc_codec_conf rt1019_conf[] = {
- 	},
- };
- 
--static struct snd_soc_codec_conf rt1019_1_conf[] = {
--	{
--		.dlc = COMP_CODEC_CONF("i2c-10EC1019:02"),
--		.name_prefix = "Left",
--	},
--	{
--		.dlc = COMP_CODEC_CONF("i2c-10EC1019:01"),
--		.name_prefix = "Right",
--	},
--};
--
- static int acp_card_rt1019_init(struct snd_soc_pcm_runtime *rtd)
- {
- 	struct snd_soc_card *card = rtd->card;
-@@ -716,10 +702,6 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
- 			links[i].init = acp_card_rt1019_init;
- 			card->codec_conf = rt1019_conf;
- 			card->num_configs = ARRAY_SIZE(rt1019_conf);
--			links[i].codecs = rt1019_1;
--			links[i].num_codecs = ARRAY_SIZE(rt1019_1);
--			card->codec_conf = rt1019_1_conf;
--			card->num_configs = ARRAY_SIZE(rt1019_1_conf);
- 		}
- 		i++;
- 	}
--- 
-2.25.1
+So not that long ago these patches were going through Shuah...it seems
+that's not happening anymore?  I can pick up kunit docs patches,
+certainly.  I've taken the silence on these as assent and applied them.
 
+Thanks,
+
+jon
