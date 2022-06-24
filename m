@@ -2,84 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49559C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20ABFC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232372AbiFXPnr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 11:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49510 "EHLO
+        id S232447AbiFXPoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 11:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232234AbiFXPnn (ORCPT
+        with ESMTP id S232294AbiFXPok (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 11:43:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8B8496A8;
-        Fri, 24 Jun 2022 08:43:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A114B8294A;
-        Fri, 24 Jun 2022 15:43:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D9EC341D1;
-        Fri, 24 Jun 2022 15:43:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656085420;
-        bh=ZrmSkwlqS2brnFN5Iry4JvejPq5gajOP5sg4Z4I3Hws=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=i9DTlTGAF2BSmIOGQb/gQyl7aMHalsUj8NoMTbK5Fd4cCyIuwAgENb43b1h9IH48h
-         qp06qkk0zTx1HwRItvR0GItuPv+lz/7ChUX2E9qCxtTjXMu4b192guwea5c4SjI521
-         4+UtTh2cv+kB26alAMsm83DdMDj5HP1Dh3uN2MA4aDR81torLsE+iHB1xV9EKT5lIO
-         YEBYFhN226Zo4lYaEZEdr9mkWZhgmYyh//FjHYkPt20RneGhxwqQqJoNaBsRywsipP
-         0iHfl24ek2rhJLBp6JuP3w86bddR2dx3a1MCX9Er4aQzEcWmIImB57bGTJCYzWnVbz
-         3KOVO6Rr8xY7w==
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-3177e60d980so28301487b3.12;
-        Fri, 24 Jun 2022 08:43:40 -0700 (PDT)
-X-Gm-Message-State: AJIora+a2tgAI1JsNgqWGQSPRIYyrOsFEVZvt3NWKO1ZwY8EX75G2Bvh
-        plqLVhbtN1Z6cfVaeJLRZH3dt8A3Ekh8k51snUQ=
-X-Google-Smtp-Source: AGRyM1tAwe56Z5fVE7/SpL81F9wGW1RUV71QXwxRBZMigOoQ0lhjNRQtgXoHzM5M7/mN527O+TQVqWtjCC96MjmmS9c=
-X-Received: by 2002:a81:2f84:0:b0:314:2bfd:bf1f with SMTP id
- v126-20020a812f84000000b003142bfdbf1fmr17066465ywv.320.1656085419237; Fri, 24
- Jun 2022 08:43:39 -0700 (PDT)
+        Fri, 24 Jun 2022 11:44:40 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B53D48314
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 08:44:39 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id q6so5435895eji.13
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 08:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uNpK+mBBTUHQ7WDb+nB+qBpNmtp+L0qJueskM+LbU9U=;
+        b=colwbZfShIhrPFPWp9hacqTOa/0vOIMn9OMChd3IGNCNQ2WFNvUOTQP+DH01Wch4wA
+         N5R8jaUi3Q4a5zzW7+YW03PC78z4RTz9NUftsGrx8vLDpC1e0htx5aNz6grMXok5tQZZ
+         JeHVemmLy+OQxQnoHI8Maqk/Kh8XUVkL09DBJXSQouCNPJ1rJPUjEsBOi/PLPI/lVxEN
+         iN22TymTfg/SUBu9IxFgInrnXfZz1PDvC8R23PKcdtTqlo21bbbDp/+0LU7c1idcyuQb
+         kAQqwtda4WESfmPkAuDDlfpueW0qdQoBx25KS9twW34kvTe8vN2t7hU/r+uakWLwhWUv
+         XOlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uNpK+mBBTUHQ7WDb+nB+qBpNmtp+L0qJueskM+LbU9U=;
+        b=le5Qqo2iNM++/bE/4W9kqVKaLOobDwn6quwtJpIcmVYJvektNjrmSyJATMCkXYkU/x
+         79NaG0B/RPQFAf3VG30ukEnRz+Fg23iIVSh0WFenm8xzSHLFO2XZRXjnLBR017H1zljK
+         LeLFgKLzVDqGxCyc5X2S4KTwTx1ZdAxPuUeUgjAIvUKnimvumwk/Bw5U106CXwGfehVh
+         subre8i5FmaogVeh25aguwVO8ur4co++aaOzLYhseH7MoTLexuhAT1JHdMCpQvL2GeOR
+         ptnn8bw2txflJULyac/ZMUPslAzOZVVxjFh1QYo9nk7ND8oH9oxtLWbS5nV5DrMgbzGf
+         BpCg==
+X-Gm-Message-State: AJIora8WYtrMLR0szcX/lFYaU8zaIta2WxsCqaVVHnjBPSRVRV6ZDL0n
+        mgEn2qV9/hziPLRTPxqbaG6kUA==
+X-Google-Smtp-Source: AGRyM1tBon2mhw6kEmJOKmZ7zCt1VvMwGTP8W4a8ouVhnioZMJrYrw2HJ/ZF/csjXzw5h52+oMeodA==
+X-Received: by 2002:a17:907:1b14:b0:6ef:a5c8:afbd with SMTP id mp20-20020a1709071b1400b006efa5c8afbdmr14034942ejc.151.1656085477728;
+        Fri, 24 Jun 2022 08:44:37 -0700 (PDT)
+Received: from [192.168.0.237] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id a18-20020a1709063a5200b006fe8b456672sm1305804ejf.3.2022.06.24.08.44.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 08:44:37 -0700 (PDT)
+Message-ID: <f7506312-b6da-7b16-bed2-370a9c8e9049@linaro.org>
+Date:   Fri, 24 Jun 2022 17:44:36 +0200
 MIME-Version: 1.0
-References: <20220617125750.728590-1-arnd@kernel.org> <20220617125750.728590-3-arnd@kernel.org>
- <7a6df2da-95e8-b2fd-7565-e4b7a51c5b63@gonehiking.org> <CAK8P3a0t_0scofn_2N1Q8wgJ4panKCN58AgnsJSVEj28K614oQ@mail.gmail.com>
- <c955bf95-838f-cc0a-8496-322b831e5648@gonehiking.org>
-In-Reply-To: <c955bf95-838f-cc0a-8496-322b831e5648@gonehiking.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Fri, 24 Jun 2022 17:43:22 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0onDqNtteOjGu7R8vUvy_ycYSYnxJURCcoyxtZDcji=g@mail.gmail.com>
-Message-ID: <CAK8P3a0onDqNtteOjGu7R8vUvy_ycYSYnxJURCcoyxtZDcji=g@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] scsi: BusLogic remove bus_to_virt
-To:     Khalid Aziz <khalid@gonehiking.org>
-Cc:     linux-scsi <linux-scsi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        "Maciej W . Rozycki" <macro@orcam.me.uk>,
-        Matt Wang <wwentao@vmware.com>,
-        Miquel van Smoorenburg <mikevs@xs4all.net>,
-        Mark Salyzyn <salyzyn@android.com>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Denis Efremov <efremov@linux.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/4] dt-bindings: gpio: Add AXP221/AXP223/AXP809
+ compatibles
+Content-Language: en-US
+To:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org
+Cc:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-kernel@vger.kernel.org
+References: <20220621034224.38995-1-samuel@sholland.org>
+ <20220621034224.38995-2-samuel@sholland.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220621034224.38995-2-samuel@sholland.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 5:38 PM Khalid Aziz <khalid@gonehiking.org> wrote:
-> On 6/23/22 08:47, Arnd Bergmann wrote:
->
-> Driver works with this change. next_inbox is the correct pointer to pass.
+On 21/06/2022 05:42, Samuel Holland wrote:
+> These PMICs each have 2 GPIOs with the same register layout as AXP813,
+> but without an ADC function.
+> 
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> ---
+> 
+> Changes in v2:
+>  - Combine multiple "const"s in the binding into an "enum"
+> 
+>  .../devicetree/bindings/gpio/x-powers,axp209-gpio.yaml      | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
-Ok, great! I'll add a 'Tested-by' line then. I was already in the process of
-preparing a v3 patch set, will send out the fixed patch in a bit.
 
-         Arnd
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
