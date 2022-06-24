@@ -2,87 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3B0CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0948C3F2D4
 	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232241AbiFXR1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
+        id S232373AbiFXR1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232202AbiFXR05 (ORCPT
+        with ESMTP id S232142AbiFXR0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:26:57 -0400
-Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8358FEE33;
-        Fri, 24 Jun 2022 10:26:56 -0700 (PDT)
-Received: by mail-io1-f53.google.com with SMTP id s17so3379510iob.7;
-        Fri, 24 Jun 2022 10:26:56 -0700 (PDT)
+        Fri, 24 Jun 2022 13:26:55 -0400
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89ADDBA6;
+        Fri, 24 Jun 2022 10:26:54 -0700 (PDT)
+Received: by mail-io1-f49.google.com with SMTP id y18so3401356iof.2;
+        Fri, 24 Jun 2022 10:26:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=f/f/wxl/bFty+5iBK1OwUM+39GiNxLXhVThB2jedR6c=;
-        b=Jojdlag4e+QpNJC/V3YDooxNBMdb9zmULnQdLRudOCPnpUjbGdy7NRdLpo38XAjG/A
-         dPgWwT8MHIuGGws9IJiPPn212fiQzk4Eru0aYkgWoagSlxN3HTGwRBag6217Ph+RgGDI
-         Lv0UKlj8GNjM+P824BI/wy45sqhRbr2yIr6jEIbGRUMApf+yJ8Mod/bsszPz8NI1lKIB
-         pLv13NL8aR5sg+pmD7t/nPR9afmeN3/i2qJy02IQ0aIl+HUiyrfVm6Z8++iT3IFa6Y6p
-         Lto3t1noeviCHl+OA4Fy5os4uMacIGIjNZ0ir3bDfZXBcEM+EjQXoJVdvZQ8w6GAiqwQ
-         blmw==
-X-Gm-Message-State: AJIora+bE+qofxDb8mNUI2azShG6eNKQefs4CK0BmmN/I1GlO3YwnoXK
-        QjkSQRwWgtmh98isAbewCw==
-X-Google-Smtp-Source: AGRyM1vcSlSWL1sgowZx/3+XTz8PV774nht015v17RE+GXDieDsLBz3KrAnzO9PGOXvDejvBdCXeqg==
-X-Received: by 2002:a5d:9342:0:b0:654:9336:81d7 with SMTP id i2-20020a5d9342000000b00654933681d7mr43080ioo.136.1656091615761;
-        Fri, 24 Jun 2022 10:26:55 -0700 (PDT)
+        bh=W9o9Q8p3oMHAVX7O1A1F5sZAeGnXCxQ/vXrDDAt7Do8=;
+        b=K9u/urnLXEihK8n9xBDGUK+3+AiBADxPbru6i8JVJS0lMyQrGgr8w6WNbRwfZFFFSq
+         4hQbqWh27mpyjP/p2GtFuTeo9yEp9MS6V8pxIQR9H2yZoXnMgXV4KlzWHj4b9l9UtlGO
+         N/4PR1jw/fJpa9g+3wbFvtCYiXm45ydR/G/3Cu3lteTxVSOxr6oQQYmrcsuYe2KdwOCp
+         IVV3SEutDZR/ZG8arGyr8K86zg0inal0H8CTwnSnfYiXdBa5Hi6b5OpbR2DLhRXnar5v
+         QsDTbaxMhfIy7u4usKNPgaCjMmUeizxq9MTzMCjDF5oQSp/aQ4ik/GXUCoKLi794DP/z
+         bvXw==
+X-Gm-Message-State: AJIora/hUVyeeyZcS5BaEIF4ggA7MJVFi8tdJVa9jazOgSeKP01DG6hg
+        axXkiiwcbPFsaaumx4YLrg==
+X-Google-Smtp-Source: AGRyM1sVEh8rq+3905/IcPFgRU7Fy1TLeRbAXiXeOp+CmyUaFz0EH/Vzb8EIUR4m9bvLyRLCKVigUw==
+X-Received: by 2002:a05:6638:31c2:b0:335:dd22:83ec with SMTP id n2-20020a05663831c200b00335dd2283ecmr164947jav.88.1656091613790;
+        Fri, 24 Jun 2022 10:26:53 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id s12-20020a92d90c000000b002d92c91da91sm1344661iln.77.2022.06.24.10.26.54
+        by smtp.gmail.com with ESMTPSA id h22-20020a022b16000000b00339d10e9d22sm1308243jaa.111.2022.06.24.10.26.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 10:26:55 -0700 (PDT)
-Received: (nullmailer pid 146352 invoked by uid 1000);
+        Fri, 24 Jun 2022 10:26:53 -0700 (PDT)
+Received: (nullmailer pid 146332 invoked by uid 1000);
         Fri, 24 Jun 2022 17:26:34 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-In-Reply-To: <20220623094614.1410180-3-stephan.gerhold@kernkonzept.com>
-References: <20220623094614.1410180-1-stephan.gerhold@kernkonzept.com> <20220623094614.1410180-3-stephan.gerhold@kernkonzept.com>
-Subject: Re: [PATCH 2/3] regulator: dt-bindings: qcom,smd-rpm: Add PM8909
+To:     Mikko Perttunen <cyndis@kapsi.fi>
+Cc:     devicetree@vger.kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+        iommu@lists.linux-foundation.org,
+        Thierry Reding <treding@nvidia.com>, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jonathanh@nvidia.com,
+        will@kernel.org, krzysztof.kozlowski@canonical.com,
+        dri-devel@lists.freedesktop.org, thierry.reding@gmail.com
+In-Reply-To: <20220621151022.1416300-3-cyndis@kapsi.fi>
+References: <20220621151022.1416300-1-cyndis@kapsi.fi> <20220621151022.1416300-3-cyndis@kapsi.fi>
+Subject: Re: [PATCH v6 02/10] dt-bindings: display: tegra: Convert to json-schema
 Date:   Fri, 24 Jun 2022 11:26:34 -0600
-Message-Id: <1656091594.427255.146351.nullmailer@robh.at.kernel.org>
+Message-Id: <1656091594.348474.146331.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 11:46:13 +0200, Stephan Gerhold wrote:
-> Document the "qcom,rpm-pm8909-regulators" compatible for describing
-> the regulators available in the PM8909 PMIC (controlled via the RPM
-> firmware).
+On Tue, 21 Jun 2022 18:10:14 +0300, Mikko Perttunen wrote:
+> From: Thierry Reding <treding@nvidia.com>
 > 
-> PM8909 is very similar to the existing PM8916 but lacks 3 of the
-> regulators (s3, s4 and l16).
+> Convert the Tegra host1x controller bindings from the free-form text
+> format to json-schema.
 > 
-> Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+> This also adds the missing display-hub DT bindings that were not
+> previously documented.
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
 > ---
->  .../devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
+>  .../display/tegra/nvidia,tegra114-mipi.txt    |  41 --
+>  .../display/tegra/nvidia,tegra114-mipi.yaml   |  74 ++
+>  .../display/tegra/nvidia,tegra124-dpaux.yaml  | 149 ++++
+>  .../display/tegra/nvidia,tegra124-sor.yaml    | 206 ++++++
+>  .../display/tegra/nvidia,tegra124-vic.yaml    |  71 ++
+>  .../display/tegra/nvidia,tegra186-dc.yaml     |  85 +++
+>  .../tegra/nvidia,tegra186-display.yaml        | 310 ++++++++
+>  .../tegra/nvidia,tegra186-dsi-padctl.yaml     |  45 ++
+>  .../display/tegra/nvidia,tegra20-dc.yaml      | 181 +++++
+>  .../display/tegra/nvidia,tegra20-dsi.yaml     | 159 +++++
+>  .../display/tegra/nvidia,tegra20-epp.yaml     |  70 ++
+>  .../display/tegra/nvidia,tegra20-gr2d.yaml    |  73 ++
+>  .../display/tegra/nvidia,tegra20-gr3d.yaml    | 214 ++++++
+>  .../display/tegra/nvidia,tegra20-hdmi.yaml    | 126 ++++
+>  .../display/tegra/nvidia,tegra20-host1x.txt   | 675 ------------------
+>  .../display/tegra/nvidia,tegra20-host1x.yaml  | 347 +++++++++
+>  .../display/tegra/nvidia,tegra20-isp.yaml     |  67 ++
+>  .../display/tegra/nvidia,tegra20-mpe.yaml     |  73 ++
+>  .../display/tegra/nvidia,tegra20-tvo.yaml     |  58 ++
+>  .../display/tegra/nvidia,tegra20-vi.yaml      | 163 +++++
+>  .../display/tegra/nvidia,tegra210-csi.yaml    |  52 ++
+>  .../pinctrl/nvidia,tegra124-dpaux-padctl.txt  |  59 --
+>  22 files changed, 2523 insertions(+), 775 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra114-mipi.txt
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra114-mipi.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra124-dpaux.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra124-sor.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra124-vic.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra186-dc.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra186-display.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra186-dsi-padctl.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-dc.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-dsi.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-epp.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr2d.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-hdmi.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-isp.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-mpe.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-tvo.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-vi.yaml
+>  create mode 100644 Documentation/devicetree/bindings/display/tegra/nvidia,tegra210-csi.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/pinctrl/nvidia,tegra124-dpaux-padctl.txt
 > 
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+yamllint warnings/errors:
 
-Full log is available here: https://patchwork.ozlabs.org/patch/
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra124-sor.yaml: allOf:1:if:not:properties: {'contains': {'const': 'nvidia,panel'}} should not be valid under {'$ref': '#/definitions/sub-schemas'}
+	hint: A json-schema keyword was found instead of a DT property name.
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra124-sor.yaml: ignoring, error in schema: allOf: 1: if: not: properties
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.example.dtb: gr3d@54180000: resets: [[4294967295, 24]] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.example.dtb: gr3d@54180000: reset-names: ['3d'] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.example.dtb: gr2d@54140000: resets: [[4294967295, 21]] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr2d.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.example.dtb: gr2d@54140000: reset-names: ['2d'] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr2d.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.example.dtb: gr3d@54180000: resets: [[4294967295, 24]] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.example.dtb: gr3d@54180000: reset-names: ['3d'] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml
+Documentation/devicetree/bindings/display/tegra/nvidia,tegra124-sor.example.dtb:0:0: /example-0/sor@54540000: failed to match any schema with compatible: ['nvidia,tegra210-sor']
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr2d.example.dtb: gr2d@54140000: resets: [[4294967295, 21]] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr2d.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr2d.example.dtb: gr2d@54140000: reset-names: ['2d'] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr2d.yaml
 
+doc reference errors (make refcheckdocs):
+MAINTAINERS: Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
+MAINTAINERS: Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
 
-pm8994-regulators: 'vdd_lvs1_2' does not match any of the regexes: '.*-supply$', '^((s|l|lvs|5vs)[0-9]*)|(boost-bypass)|(bob)$', 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/qcom/msm8992-lg-bullhead-rev-101.dtb
-	arch/arm64/boot/dts/qcom/msm8992-lg-bullhead-rev-10.dtb
-	arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dtb
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
