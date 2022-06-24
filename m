@@ -2,110 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E403CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1CFC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbiFXJW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 05:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37582 "EHLO
+        id S230487AbiFXJWp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 05:22:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231628AbiFXJWZ (ORCPT
+        with ESMTP id S230323AbiFXJWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 05:22:25 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2316C699AD
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 02:22:23 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R511e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VHGdsVJ_1656062539;
-Received: from 30.97.49.29(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VHGdsVJ_1656062539)
-          by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 17:22:20 +0800
-Message-ID: <8e55a741-969b-d827-9af0-d793cbc6b2a9@linux.alibaba.com>
-Date:   Fri, 24 Jun 2022 17:22:26 +0800
+        Fri, 24 Jun 2022 05:22:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E6E69FB7
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 02:22:42 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1o4fWT-0001bX-2p; Fri, 24 Jun 2022 11:22:41 +0200
+Message-ID: <1a694037c631c298c6952cdf4bf54fcc6d2f08e9.camel@pengutronix.de>
+Subject: Re: [PATCH v2 1/4] drm/etnaviv: add simple moving average (SMA)
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Christian Gmeiner <christian.gmeiner@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     David Airlie <airlied@linux.ie>,
+        "moderated list:DRM DRIVERS FOR VIVANTE GPU IP" 
+        <etnaviv@lists.freedesktop.org>,
+        "open list:DRM DRIVERS FOR VIVANTE GPU IP" 
+        <dri-devel@lists.freedesktop.org>, Daniel Vetter <daniel@ffwll.ch>,
+        Russell King <linux+etnaviv@armlinux.org.uk>
+Date:   Fri, 24 Jun 2022 11:22:39 +0200
+In-Reply-To: <20220621072050.76229-2-christian.gmeiner@gmail.com>
+References: <20220621072050.76229-1-christian.gmeiner@gmail.com>
+         <20220621072050.76229-2-christian.gmeiner@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/7] migrate_pages(): remove unnecessary
- list_safe_reset_next()
-To:     Huang Ying <ying.huang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>
-References: <20220624025309.1033400-1-ying.huang@intel.com>
- <20220624025309.1033400-3-ying.huang@intel.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20220624025309.1033400-3-ying.huang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Christian,
 
+Am Dienstag, dem 21.06.2022 um 09:20 +0200 schrieb Christian Gmeiner:
+> This adds a SMA algorithm inspired by Exponentially weighted moving
+> average (EWMA) algorithm found in the kernel.
+> 
+Still not sure about this one. I _feel_ that a simple moving average
+over a period of one second does not do a good job of reflecting the
+real GPU load for a bursty workload, where EWMA might be better suited.
+But then I also don't have a real informed opinion to offer on this.
 
-On 6/24/2022 10:53 AM, Huang Ying wrote:
-> Before commit b5bade978e9b ("mm: migrate: fix the return value of
-> migrate_pages()"), the tail pages of THP will be put in the "from"
-> list directly.  So one of the loop cursors (page2) needs to be reset,
-> as is done in try_split_thp() via list_safe_reset_next().  But after
-> the commit, the tail pages of THP will be put in a dedicated
-> list (thp_split_pages).  That is, the "from" list will not be changed
-> during splitting.  So, it's unnecessary to call list_safe_reset_next()
-> anymore.
-> 
-> This is a code cleanup, no functionality changes are expected.
-> 
-> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-> Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Cc: Zi Yan <ziy@nvidia.com>
-> Cc: Yang Shi <shy828301@gmail.com>
+Regards,
+Lucas
+
+> Signed-off-by: Christian Gmeiner <christian.gmeiner@gmail.com>
 > ---
-
-Looks good to me.
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-
-
->   mm/migrate.c | 13 +++++--------
->   1 file changed, 5 insertions(+), 8 deletions(-)
+>  drivers/gpu/drm/etnaviv/etnaviv_sma.h | 53 +++++++++++++++++++++++++++
+>  1 file changed, 53 insertions(+)
+>  create mode 100644 drivers/gpu/drm/etnaviv/etnaviv_sma.h
 > 
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index a271554be7a1..82444e7df9f1 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1300,16 +1300,13 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
->   	return rc;
->   }
->   
-> -static inline int try_split_thp(struct page *page, struct page **page2,
-> -				struct list_head *from)
-> +static inline int try_split_thp(struct page *page, struct list_head *split_pages)
->   {
-> -	int rc = 0;
-> +	int rc;
->   
->   	lock_page(page);
-> -	rc = split_huge_page_to_list(page, from);
-> +	rc = split_huge_page_to_list(page, split_pages);
->   	unlock_page(page);
-> -	if (!rc)
-> -		list_safe_reset_next(page, *page2, lru);
->   
->   	return rc;
->   }
-> @@ -1413,7 +1410,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
->   				/* THP migration is unsupported */
->   				if (is_thp) {
->   					nr_thp_failed++;
-> -					if (!try_split_thp(page, &page2, &thp_split_pages)) {
-> +					if (!try_split_thp(page, &thp_split_pages)) {
->   						nr_thp_split++;
->   						goto retry;
->   					}
-> @@ -1432,7 +1429,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
->   				 */
->   				if (is_thp && !nosplit) {
->   					nr_thp_failed++;
-> -					if (!try_split_thp(page, &page2, &thp_split_pages)) {
-> +					if (!try_split_thp(page, &thp_split_pages)) {
->   						nr_thp_split++;
->   						goto retry;
->   					}
+> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_sma.h b/drivers/gpu/drm/etnaviv/etnaviv_sma.h
+> new file mode 100644
+> index 000000000000..81564d5cbdc3
+> --- /dev/null
+> +++ b/drivers/gpu/drm/etnaviv/etnaviv_sma.h
+> @@ -0,0 +1,53 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2020 Etnaviv Project
+> + */
+> +
+> +#ifndef __ETNAVIV_SMA_H__
+> +#define __ETNAVIV_SMA_H__
+> +
+> +#include <linux/bug.h>
+> +#include <linux/compiler.h>
+> +
+> +/*
+> + * Simple moving average (SMA)
+> + *
+> + * This implements a fixed-size SMA algorithm.
+> + *
+> + * The first argument to the macro is the name that will be used
+> + * for the struct and helper functions.
+> + *
+> + * The second argument, the samples, expresses how many samples are
+> + * used for the SMA algorithm.
+> + */
+> +
+> +#define DECLARE_SMA(name, _samples) \
+> +    struct sma_##name { \
+> +        unsigned long pos; \
+> +        unsigned long sum; \
+> +        unsigned long samples[_samples]; \
+> +    }; \
+> +    static inline void sma_##name##_init(struct sma_##name *s) \
+> +    { \
+> +        BUILD_BUG_ON(!__builtin_constant_p(_samples));	\
+> +        memset(s, 0, sizeof(struct sma_##name)); \
+> +    } \
+> +    static inline unsigned long sma_##name##_read(struct sma_##name *s) \
+> +    { \
+> +        BUILD_BUG_ON(!__builtin_constant_p(_samples));	\
+> +        return s->sum / _samples; \
+> +    } \
+> +    static inline void sma_##name##_add(struct sma_##name *s, unsigned long val) \
+> +    { \
+> +        unsigned long pos = READ_ONCE(s->pos); \
+> +        unsigned long sum = READ_ONCE(s->sum); \
+> +        unsigned long sample = READ_ONCE(s->samples[pos]); \
+> +      \
+> +        BUILD_BUG_ON(!__builtin_constant_p(_samples));	\
+> +      \
+> +       WRITE_ONCE(s->sum, sum - sample + val); \
+> +       WRITE_ONCE(s->samples[pos], val); \
+> +       WRITE_ONCE(s->pos, pos + 1 == _samples ? 0 : pos + 1); \
+> +    }
+> +
+> +#endif /* __ETNAVIV_SMA_H__ */
+
+
