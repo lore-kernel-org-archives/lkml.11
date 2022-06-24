@@ -2,105 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA67C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 03:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 194A5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 03:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbiFXDag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 23:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48066 "EHLO
+        id S230048AbiFXDar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 23:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiFXDaZ (ORCPT
+        with ESMTP id S229996AbiFXDap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 23:30:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BA951E4B;
-        Thu, 23 Jun 2022 20:30:24 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LTjHw3Qj2zhYg1;
-        Fri, 24 Jun 2022 11:28:12 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 24 Jun 2022 11:30:16 +0800
-Received: from [10.174.178.208] (10.174.178.208) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 24 Jun 2022 11:30:15 +0800
-Subject: Re: [PATCH 4.19 000/234] 4.19.249-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, <torvalds@linux-foundation.org>,
-        <akpm@linux-foundation.org>, <linux@roeck-us.net>,
-        <shuah@kernel.org>, <patches@kernelci.org>,
-        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
-        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-        <sudipm.mukherjee@gmail.com>, <slade@sladewatkins.com>
-References: <20220623164343.042598055@linuxfoundation.org>
-From:   Samuel Zou <zou_wei@huawei.com>
-Message-ID: <2893d5c2-88df-5256-48b0-12705d983ea5@huawei.com>
-Date:   Fri, 24 Jun 2022 11:30:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Thu, 23 Jun 2022 23:30:45 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B7F51E4B
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 20:30:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656041444; x=1687577444;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=q+4eN+cEF69t4ZGwy7ZsRs3xDCdXCa0ROUXCC/DmnpU=;
+  b=j3xAKikM3oBxMTqZ8AtqJfCwWJT6+4JijNs7b3ye9i/qr5RvACu4QBMe
+   qs8avBxrA7PQy8ycwgHz8ZFTgbdfKztVp0/uEIFv3mPGItt4q9nl6wTli
+   aY41vqPZcvjqTqoDOUsvD+7IfYqBRUxKCIW8LkBipvdCLJMLH1sQr9bIb
+   3cmGkTHcPuQx2kjMgqn/aYUlE8zWkJ6S7klM6ZEves8CSqSg25MWLl7Gx
+   Y+e/5WnMyP4MChoOzRydbTbA5zKiJjJhwX+UhIhrC4rzwtrK0wzQ1cjej
+   oxy76c5v9ZvRCm+EELCJRP0iQPCJ1T83eEn36sCN+siBFqfU4s5+sTADn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="306377597"
+X-IronPort-AV: E=Sophos;i="5.92,217,1650956400"; 
+   d="scan'208";a="306377597"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 20:30:44 -0700
+X-IronPort-AV: E=Sophos;i="5.92,217,1650956400"; 
+   d="scan'208";a="834946140"
+Received: from fenghuah-mobl.ccr.corp.intel.com (HELO chenyu5-mobl1) ([10.249.168.81])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 20:30:41 -0700
+Date:   Fri, 24 Jun 2022 11:30:32 +0800
+From:   Chen Yu <yu.c.chen@intel.com>
+To:     Abel Wu <wuyun.abel@bytedance.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Josh Don <joshdon@google.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        "Gautham R . Shenoy" <gautham.shenoy@amd.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [External] Re: [PATCH v4 6/7] sched/fair: skip busy cores in SIS
+ search
+Message-ID: <20220624033032.GA14945@chenyu5-mobl1>
+References: <20220619120451.95251-1-wuyun.abel@bytedance.com>
+ <20220619120451.95251-7-wuyun.abel@bytedance.com>
+ <20220621181442.GA37168@chenyu5-mobl1>
+ <543d55e1-fad8-3df3-8bae-d79c0c8d8340@bytedance.com>
 MIME-Version: 1.0
-In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.208]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <543d55e1-fad8-3df3-8bae-d79c0c8d8340@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/6/24 0:41, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.19.249 release.
-> There are 234 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Wed, Jun 22, 2022 at 11:52:19AM +0800, Abel Wu wrote:
+> Hi Chen, thanks for your comments!
 > 
-> Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
-> Anything received after that time might be too late.
+> On 6/22/22 2:14 AM, Chen Yu Wrote:
+> > > ...
+> > Reuse the data from load balance to select the unoccupied candidate
+> > is applicable IMO, which is also aligned with SIS_UTIL path. And I have
+> > a question regarding the update frequency. In v3 patch, the update is
+> > based on periodic tick, which is triggered at most every 1ms(CONFIG_HZ_1000).
+> > Then the periodic SMT load balance is launched every smt_weight ms, usually 2ms.
+> > I expect the 2ms is of the same scale unit as 1ms, and since task tick based
+> > update is acceptable, would excluding the CPU_NEWLY_IDLE balance from this patch
+> > reduce the overhead meanwhile not bring too much inaccuracy?
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.249-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
+> I doubt periodic balancing entry is enough. The ms-scale could still
+> be too large for wakeup path. Say one cpu becomes newly idle just after
+> an update, then it keeps untouchable until next update which is nearly
+> 2ms (even worse in SMT4/8 case) wasting time-slices to do nothing. So
+> newly-idle update is important to keep the filter fresh. And the false
+> positive correction is there to avoid excessive updates due to newly
+> idle, by allowing the false positive cpus to stay in the filter for a
+> little longer.
+
 > 
-> thanks,
+> > > @@ -8757,7 +8794,16 @@ static inline void update_sg_lb_stats(struct lb_env *env,
+> > >   		 * No need to call idle_cpu() if nr_running is not 0
+> > >   		 */
+> > >   		if (!nr_running && idle_cpu(i)) {
+> > > +			/*
+> > > +			 * Prefer the last idle cpu by overwriting
+> > > +			 * preious one. The first idle cpu in this
+> > > +			 * domain (if any) can trigger balancing
+> > > +			 * and fed with tasks, so we'd better choose
+> > > +			 * a candidate in an opposite way.
+> > > +			 */
+> > > +			sds->idle_cpu = i;
+> > Does it mean, only 1 idle CPU in the smt domain would be set to the
+> > idle cpu mask at one time? For SMT4/8 we might lose track of the
+> > idle siblings.
 > 
-> greg k-h
+> Yes. The intention of one-at-a-time propagation is
+> 1) help spreading out load to different cores
+> 2) reduce some update overhead
+> In this way, if the filter contains several cpus of a core, ideally
+> we can sure about that at least one of them is actually unoccupied.
+> For SMT4/8 we still have newly idle balance to make things right.
 > 
+> > >   			sgs->idle_cpus++;
+> > > +
+> > >   			/* Idle cpu can't have misfit task */
+> > >   			continue;
+> > >   		}
+> > > @@ -9273,8 +9319,40 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
+> > >   static void sd_update_state(struct lb_env *env, struct sd_lb_stats *sds)
+> > >   {
+> > > -	if (sds->sd_state == sd_has_icpus && !test_idle_cpus(env->dst_cpu))
+> > > -		set_idle_cpus(env->dst_cpu, true);
+> > > +	struct sched_domain_shared *sd_smt_shared = env->sd->shared;
+> > > +	enum sd_state new = sds->sd_state;
+> > > +	int this = env->dst_cpu;
+> > > +
+> > > +	/*
+> > > +	 * Parallel updating can hardly contribute accuracy to
+> > > +	 * the filter, besides it can be one of the burdens on
+> > > +	 * cache traffic.
+> > > +	 */
+> > > +	if (cmpxchg(&sd_smt_shared->updating, 0, 1))
+> > > +		return;
+> > > +
+> > > +	/*
+> > > +	 * There is at least one unoccupied cpu available, so
+> > > +	 * propagate it to the filter to avoid false negative
+> > > +	 * issue which could result in lost tracking of some
+> > > +	 * idle cpus thus throughupt downgraded.
+> > > +	 */
+> > > +	if (new != sd_is_busy) {
+> > > +		if (!test_idle_cpus(this))
+> > > +			set_idle_cpus(this, true);
+> > > +	} else {
+> > > +		/*
+> > > +		 * Nothing changes so nothing to update or
+> > > +		 * propagate.
+> > > +		 */
+> > > +		if (sd_smt_shared->state == sd_is_busy)
+> > > +			goto out;
+> > > +	}
+> > > +
+> > > +	sd_update_icpus(this, sds->idle_cpu);
+> > I wonder if we could further enhance it to facilitate idle CPU scan.
+> > For example, can we propagate the idle CPUs in smt domain, to its parent
+> > domain in a hierarchic sequence, and finally to the LLC domain. If there is
+> 
+> In fact, it was my first try to cache the unoccupied cpus in SMT
+> shared domain, but the overhead of cpumask ops seems like a major
+> stumbling block.
+> 
+> > a cluster domain between SMT and LLC domain, the cluster domain idle CPU filter
+> > could benefit from this mechanism.
+> > https://lore.kernel.org/lkml/20220609120622.47724-3-yangyicong@hisilicon.com/
+> 
+> Putting SIS into a hierarchical pattern is good for cache locality.
+> But I don't think multi-level filter is appropriate since it could
+> bring too much cache traffic in SIS, 
+Could you please elaborate a little more about the cache traffic? I thought we
+don't save the unoccupied cpus in SMT shared domain, but to store it in middle
+layer shared domain, say, cluster->idle_cpus, this would reduce cache write
+contention compared to writing to llc->idle_cpus directly, because a smaller
+set of CPUs share the idle_cpus filter. Similarly, SIS can only scan the cluster->idle_cpus
+first, without having to query the llc->idle_cpus. This looks like splitting
+a big lock into fine grain small lock.
+> and it could be expected to be
+> a disaster for netperf/tbench or the workloads suffering frequent
+> context switches.
+>
+So this overhead comes from the NEWLY_IDLE case?
 
-Tested on arm64 and x86 for 4.19.249-rc1,
-
-Kernel repo:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-Branch: linux-4.19.y
-Version: 4.19.249-rc1
-Commit: c68bb5c7d26a776d27329893aac58340cb536420
-Compiler: gcc version 7.3.0 (GCC)
-
-arm64:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9009
-passed: 9009
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-x86:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9009
-passed: 9009
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-Tested-by: Hulk Robot <hulkrobot@huawei.com>
+thanks,
+Chenyu
+> > 
+> > Furthermore, even if there is no cluster domain, would a 'virtual' middle
+> > sched domain would help reduce the contention?
+> > Core0(CPU0,CPU1),Core1(CPU2,CPU3) Core2(CPU4,CPU5) Core3(CPU6,CPU7)
+> > We can create cpumask1, which is composed of Core0 and Core1, and cpumask2
+> > which is composed of Core2 and Core3. The SIS would first scan in cpumask1,
+> > if idle cpu is not found, scan cpumask2. In this way, the CPUs in Core0 and
+> > Core1 only updates cpumask1, without competing with Core2 and Core3 on cpumask2.
+> > 
+> Yes, this is the best case, but the worst case is something that
+> we probably can't afford.
+> 
+> Thanks & BR,
+> Abel
