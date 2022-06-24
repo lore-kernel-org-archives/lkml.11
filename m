@@ -2,121 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A2AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37FA3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:06:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbiFXRGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
+        id S231642AbiFXRGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231526AbiFXRGF (ORCPT
+        with ESMTP id S231628AbiFXRGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:06:05 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECF24D60A
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:06:04 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id u9so4297470oiv.12
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:06:04 -0700 (PDT)
+        Fri, 24 Jun 2022 13:06:16 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FDE4B859
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:06:14 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-f2a4c51c45so4575726fac.9
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:06:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0+0vhPEExLAjmHmvWpzqEFXlBkwHLniOzXACImlZjrY=;
-        b=Y3mu5a2lveFJrWpQklsmSrTWN64yCIpvDo+RT/i91W74AZ3BUMW1bIWJYDW8u4SaUl
-         dSSx0h06uVpA/sc7sE//Yjzbsc2ju4EIBKcm6Ctr6i2zNCe316zBQvuG7phJiGVrSvUA
-         v3MwBaqJUkqC0QFHo/T+i+m5qlDKhoen47JoXF+6dwTQgqOHDe88bJKcHJ8Q2MXwNphU
-         QzfqxpHXpilXixRBClD67ppKEhEEeYgmdOCx6zQyUJOT4mfCZ1XX9W4uYAuFUPxuyifF
-         hPvrfJd9IIlsZd7mBsZG3aetEzsk77QGIH10KMy4Cv864w062iG8SILWrde16ZGhHxnX
-         6rfA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CNj4o58y/LRVMbp0gtHvuuSoOAj5isxfmdswamXi6K0=;
+        b=MkHasKomYbS9loFCR6yTgyya6gyA2jpz6NNZRyQJYKW4oQSuwwSFc1O0+9Y+CzVHeJ
+         dfcbWHWh7ZpyY02ZnLqvS+K041Ci2tw2whaK9HXsVT7xwvRN5EhYbREV9vyu61bEYxD9
+         x4+WcBWjeolE1wF1pC28AoFAkMEgKTSAxMIdHv44bGNEwO+xqjOe7zTfiqp7UiqiTfz/
+         gvurZnvU3fxi2A85ArS8/AFoXKBNZX/FIAVVnmdeDQ7aOQL6q2IkW+7VMJtWYlJeByP7
+         1ZkZz9Xj0jVq9QN3dPDo5lnIRJgUBxo8qghwufYSoWhKD0p+oDVx9N8VmlMJBHbZSsV1
+         +pog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0+0vhPEExLAjmHmvWpzqEFXlBkwHLniOzXACImlZjrY=;
-        b=pfqAUX8ZKCritoGMcgDV3We6zxiwd0i1VLpm0zsVxcOKkNvbPZLEy13NAwdy8sIVc9
-         6BUOAFc4TDnZKwNm5uO9mIkk4NdpWTk3OEKyrJ+ajRawETAWein5TNa6fUKiRD0kU1AA
-         iQuWziId8xFPoIuTNS600TRqSGG5Zx4/0kvaCu4B0zLgg1CoXLrjAIHLgQlr0RnmfVKl
-         LoeCYSCP0NkqQPK+dOIHWVMyCzAXQ0NOyPIltDmU0ZqvYHj/I9T3JqV7gppRAYgrHlmo
-         KWy2Xkb6RnD+aBKP9/IR7V2TOTLzVatW44snLOdJ3pDatvI3J/KBTgnoJqgtgFXR2CDs
-         N85A==
-X-Gm-Message-State: AJIora9ysxNnCK0ybCMNmBUS+OMiFMCOfmXsW6YuaGQNDTRVnownXWb9
-        0BBdnvoHL/IyUH+F/uyQ+ku5dQ==
-X-Google-Smtp-Source: AGRyM1txfnmyDcykZy0fXC5KNNgxnfMaOc//EpKeR/oIrHOotIDXvosZFm+cAeMGPhFMd4+XEsa78A==
-X-Received: by 2002:a05:6808:23cb:b0:335:2987:1209 with SMTP id bq11-20020a05680823cb00b0033529871209mr38099oib.69.1656090364070;
-        Fri, 24 Jun 2022 10:06:04 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id i14-20020a056830402e00b0060b128b935csm1807450ots.39.2022.06.24.10.06.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 10:06:03 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 10:08:05 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Taniya Das <tdas@codeaurora.org>
-Cc:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette ? <mturquette@baylibre.com>,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/4] clk: qcom: sc7280: Update clk_init_data to const
- for GCC
-Message-ID: <YrXvdWe5c1ZdS0AR@ripper>
-References: <20220202183528.3911-1-tdas@codeaurora.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CNj4o58y/LRVMbp0gtHvuuSoOAj5isxfmdswamXi6K0=;
+        b=rdbKTy5OgZeV9AMWTVAEstyuZs/YiiqOID8jIX2sYeodM2m4hgx65auvUxkk/7vlXP
+         b3XrGuaB7bAiBXNPWvZNr2zIvKqqv8LCPTBALUQIsSy8To5nb5+BIgL1aH08ykydTbac
+         BEP2dP5BXLgFWmAQEGynPni3GgBWevliLglmeR6UAu8cynUxMTW8O7CH+Zb6LdgoqKdS
+         u8kPjPcMJiUoFIF6CU4z/mf0lC/o6pJfXYaXM3pG33FrDJNpq0yN8KWBvQKK1CI5iiDB
+         Dr4hIGMcQNfCLif2YuIlHOdEwCxO1AnsniEZ40u3HvRwhxbhMDFOh9AlxD36BpwQ0dTC
+         hZAA==
+X-Gm-Message-State: AJIora+XAY6lBjKGCOejjbh/pfhPqElIeBhuB9qin1h+al0bqv+0OuiX
+        9vPsqOywG05/ff5vKkc9bPOXc3DELJDbE44KIfop+Q==
+X-Google-Smtp-Source: AGRyM1uYB2KAHIawaPG0CfnwZruheDErv9xure2U4x9mVl2PvkUR8kfcV3fRPgldBIkl5mlqCOXRHDMBi8/CvVVjito=
+X-Received: by 2002:a05:6870:d620:b0:101:a621:9ea0 with SMTP id
+ a32-20020a056870d62000b00101a6219ea0mr2746901oaq.110.1656090373508; Fri, 24
+ Jun 2022 10:06:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202183528.3911-1-tdas@codeaurora.org>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <CAMkAt6osbEGBFrgn=y1=x4mDHC1aL40BwaW0NdGHF8qmWd7ktA@mail.gmail.com> <5af19000-4482-7eb9-f158-0a461891f087@intel.com>
+In-Reply-To: <5af19000-4482-7eb9-f158-0a461891f087@intel.com>
+From:   Marc Orr <marcorr@google.com>
+Date:   Fri, 24 Jun 2022 10:06:02 -0700
+Message-ID: <CAA03e5F480=psSECDAkXQEvNKk3une-4dJV57Hde4z4MMzh=1A@mail.gmail.com>
+Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted memory
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Peter Gonda <pgonda@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marcelo <marcelo.cerri@canonical.com>, tim.gardner@canonical.com,
+        Khalid ElMously <khalid.elmously@canonical.com>,
+        philip.cox@canonical.com,
+        "the arch/x86 maintainers" <x86@kernel.org>, linux-mm@kvack.org,
+        linux-coco@lists.linux.dev, linux-efi@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 02 Feb 10:35 PST 2022, Taniya Das wrote:
+On Fri, Jun 24, 2022 at 9:57 AM Dave Hansen <dave.hansen@intel.com> wrote:
+>
+> Peter, is your enter key broken?  You seem to be typing all your text in
+> a single unreadable paragraph.
+>
+> On 6/24/22 09:37, Peter Gonda wrote:
+> > if a customer incorrectly labels their image it may fail to boot..
+>
+> You're saying that firmware basically has two choices:
+> 1. Accept all the memory up front and boot slowly, but reliably
+> 2. Use thus "unaccepted memory" mechanism, boot fast, but risk that the
+>    VM loses a bunch of memory.
+>
+> If the guest can't even boot because of a lack of memory, then the
+> pre-accepted chunk is probably too small in the first place.
+>
+> If the customer screws up, they lose a bunch of the RAM they paid for.
+> That seems like a rather self-correcting problem to me.
 
-> Update clk_init_data to const and also use index instead of fw_name for
-> global clock controller.
-> 
-> Fixes: a3cc092196ef6 ("clk: qcom: Add Global Clock controller (GCC) driver for SC7280")
-> Signed-off-by: Taniya Das <tdas@codeaurora.org>
+I think Peter's point is a little more nuanced than that. Once lazy
+accept goes into the guest firmware -- without the feature negotiation
+that Peter is suggesting -- cloud providers now have a bookkeeping
+problem. Which images have kernels that can boot from a guest firmware
+that doesn't pre-validate all the guest memory?
 
-Hi Taniya,
+The way we've been solving similar bookkeeping problems up to now
+(e.g., Which guest can run with CVM features like TDX/SEV enabled?
+Which SEV guests can live migrate?) is as follows. We tag images with
+feature tags. But this is sort of a hack. And not a great one. It's
+confusing to customers, hard for the cloud service provider to
+support, and easy to mess up.
 
-I'm not able to find a new revision of this series in the inbox, could
-you please respin it?
+It would be better if the guest FW knew whether or not the kernel it
+was going to launch supported lazy accept.
 
-> ---
->  drivers/clk/qcom/gcc-sc7280.c | 362 +++++++++++++++++-----------------
->  1 file changed, 181 insertions(+), 181 deletions(-)
-> 
-> diff --git a/drivers/clk/qcom/gcc-sc7280.c b/drivers/clk/qcom/gcc-sc7280.c
-> index 423627d49719..ccecd3d8a6d9 100644
-> --- a/drivers/clk/qcom/gcc-sc7280.c
-> +++ b/drivers/clk/qcom/gcc-sc7280.c
-> @@ -1,6 +1,6 @@
->  // SPDX-License-Identifier: GPL-2.0-only
->  /*
-> - * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
-> + * Copyright (c) 2020-2022, The Linux Foundation. All rights reserved.
->   */
-> 
->  #include <linux/clk-provider.h>
-> @@ -45,10 +45,10 @@ static struct clk_alpha_pll gcc_gpll0 = {
->  	.clkr = {
->  		.enable_reg = 0x52010,
->  		.enable_mask = BIT(0),
-> -		.hw.init = &(struct clk_init_data){
-> +		.hw.init = &(const struct clk_init_data){
-
-And while doing so, please split this into one patch adding the const...
-
->  			.name = "gcc_gpll0",
->  			.parent_data = &(const struct clk_parent_data){
-> -				.fw_name = "bi_tcxo",
-> +				.index = 0,
-
-and a separate patch changing fw_name to index. If there are regressions
-we want to be able to bisect it down to the right one.
-
-Also, please add a define for BI_TCXO, instead of having a comment in
-most places - like I did in gcc-sc8280xp.c (but as we have existing dts
-I don't think it's wise to replace all fw_name entries with .index)..
-
-Thanks,
-Bjorn
+That being said, this does seem like a difficult problem to solve,
+since it's sort of backward from how things work, in that when the
+guest firmware wants to switch between pre-validating all memory vs.
+minimizing what it pre-validates, the guest kernel is not running yet!
+But if there is some way to do this, it would be a huge improvement
+over the current status quo of pushing the feature negotiation up to
+the cloud service provider and ultimately the cloud customer.
