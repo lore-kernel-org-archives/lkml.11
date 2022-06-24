@@ -2,109 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EA0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE00C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbiFXJXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 05:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
+        id S231742AbiFXJYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 05:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231642AbiFXJXq (ORCPT
+        with ESMTP id S231642AbiFXJYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 05:23:46 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A56527CF
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 02:23:44 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LTs7d0brFz1K9QT;
-        Fri, 24 Jun 2022 17:21:33 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 24 Jun 2022 17:23:42 +0800
-Subject: Re: [PATCH v2 2/9] mm/hugetlb: separate path for hwpoison entry in
- copy_hugetlb_page_range()
-To:     Naoya Horiguchi <nao.horiguchi@gmail.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-References: <20220623235153.2623702-1-naoya.horiguchi@linux.dev>
- <20220623235153.2623702-3-naoya.horiguchi@linux.dev>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <be99e9db-3fd0-67de-7776-e6c6e932b965@huawei.com>
-Date:   Fri, 24 Jun 2022 17:23:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Fri, 24 Jun 2022 05:24:07 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E3B527CF;
+        Fri, 24 Jun 2022 02:24:06 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id 73-20020a17090a0fcf00b001eaee69f600so2261387pjz.1;
+        Fri, 24 Jun 2022 02:24:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=p14Bfq9lY4E0mMUKXgjLwooAfP080X4T8JGy7RTxKZM=;
+        b=lHDIN4xQd45EmpZM7fq4IL9dsmpTHiI8Zc/DJNtgSUrfmKxhW0GgUEzB/hyZ3jBY5G
+         lXCLmxPj38MqXU2j3mWBFl7R4CfEfEb5/4GG0onF9h81SalHOJg4oYvZCNR5OxVAC46y
+         B1oCha0DaN1abqTpotJ9CgIk3KaydpAcZzeUKvTFpjDq3SlqQVjnsLXlNCCdHL5GtXW1
+         ORwNLUEJ5lc+UqvP6Riemu5U3stAEDbxAEE2iU5mt331AOO0xTFeOjUSAj8jdbwV0hiV
+         0lFiuhdxdU720+fwoLj+AgD3Xc9g/2DIWv+YfndlvPj0pNNjWK4XNau6xb+PpZw30Fd9
+         TGLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=p14Bfq9lY4E0mMUKXgjLwooAfP080X4T8JGy7RTxKZM=;
+        b=Gp1xSQ2yfrS2EMlA/Dz1G/yjDkTCApzssBKDAAaI6qui81xTdNpMylRbF7pjZom/KR
+         FxEiexXqogpLvePwqz1RNg/Tidd+kC9TDQHBQlBSbyMDRudlAvZH8Y4wgxENpur1P+I0
+         iXO/MgzjmAbxPAjrAXyz6144mxGekUJCKW0/Ofv2tgZ9hRw5SFpNDBCxufxP6iIrX+Lf
+         zW+rl1YmrOFcmWSjOLeey1+RPFj1KcTdf7pXXnyF4s4k4RpBmuEctuUuTPaBQ06AHnVV
+         VPR93avESdJ4KRmtXrQULxNQCEDYmkzvelrjwyqCJ70H3lhfkBUdh1d+zfPN3SWGsUk2
+         oNtA==
+X-Gm-Message-State: AJIora+dziA+TiKWMboLValzCESTb332HBX/+SUOrN7OSyWbMeizt+7i
+        v1F/gTBD5baIUDxE3ZPUpCNkLOENzq4Xxl+GlHw=
+X-Google-Smtp-Source: AGRyM1s94mr/vCjmKyIpDLw/LlzwwUyBZvmU+bavLdyTktJk7cdNYN4G0wPiDr6/y8zQCBcfaNl5lw==
+X-Received: by 2002:a17:902:b597:b0:168:d8ce:4a63 with SMTP id a23-20020a170902b59700b00168d8ce4a63mr43813256pls.57.1656062646212;
+        Fri, 24 Jun 2022 02:24:06 -0700 (PDT)
+Received: from [192.168.178.136] (f215227.upc-f.chello.nl. [80.56.215.227])
+        by smtp.gmail.com with ESMTPSA id w4-20020a17090a780400b001ec732eb801sm3492056pjk.9.2022.06.24.02.24.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 02:24:05 -0700 (PDT)
+Message-ID: <9f623bb6-8957-0a9a-3eb7-9a209965ea6e@gmail.com>
+Date:   Fri, 24 Jun 2022 11:24:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220623235153.2623702-3-naoya.horiguchi@linux.dev>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] brcmfmac: Remove #ifdef guards for PM related
+ functions
 Content-Language: en-US
+To:     Paul Cercueil <paul@crapouillou.net>,
+        Franky Lin <franky.lin@broadcom.com>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220623124221.18238-1-paul@crapouillou.net>
+From:   Arend Van Spriel <aspriel@gmail.com>
+In-Reply-To: <20220623124221.18238-1-paul@crapouillou.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/24 7:51, Naoya Horiguchi wrote:
-> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+On 6/23/2022 2:42 PM, Paul Cercueil wrote:
+> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
+> handle the .suspend/.resume callbacks.
 > 
-> Originally copy_hugetlb_page_range() handles migration entries and hwpoisone
-
-s/hwpoisone/hwpoisoned/
-
-> entries in similar manner.  But recently the related code path has more code
-> for migration entries, and when is_writable_migration_entry() was converted
-> to !is_readable_migration_entry(), hwpoison entries on source processes got
-> to be unexpectedly updated (which is legitimate for migration entries, but
-> not for hwpoison entries).  This results in unexpected serious issues like
-> kernel panic when foking processes with hwpoison entries in pmd.
-
-s/foking/forking/
-
+> These macros allow the suspend and resume functions to be automatically
+> dropped by the compiler when CONFIG_SUSPEND is disabled, without having
+> to use #ifdef guards.
 > 
-> Separate the if branch into one for hwpoison entries and one for migration
-> entries.
+> Some other functions not directly called by the .suspend/.resume
+> callbacks, but still related to PM were also taken outside #ifdef
+> guards.
 > 
-> Fixes: 6c287605fd56 ("mm: remember exclusively mapped anonymous pages with PG_anon_exclusive")
-> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-> Cc: <stable@vger.kernel.org> # 5.18
+> The advantage is then that these functions are now always compiled
+> independently of any Kconfig option, and thanks to that bugs and
+> regressions are easier to catch.
 
-This makes sense to me. Thanks for fixing this.
-
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-
+Reviewed-by: Arend van Spriel <aspriel@gmail.com>
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 > ---
->  mm/hugetlb.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
 > 
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index c538278170a2..f59f43c06601 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -4784,8 +4784,13 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
->  			 * sharing with another vma.
->  			 */
->  			;
-> -		} else if (unlikely(is_hugetlb_entry_migration(entry) ||
-> -				    is_hugetlb_entry_hwpoisoned(entry))) {
-> +		} else if (unlikely(is_hugetlb_entry_hwpoisoned(entry))) {
-> +			bool uffd_wp = huge_pte_uffd_wp(entry);
+> Notes:
+>      v2:
+>      - Move checks for IS_ENABLED(CONFIG_PM_SLEEP) inside functions to keep
+>        the calling functions intact.
+>      - Reword the commit message to explain why this patch is useful.
+> 
+>   .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 38 +++++++------------
+>   .../broadcom/brcm80211/brcmfmac/sdio.c        |  5 +--
+>   .../broadcom/brcm80211/brcmfmac/sdio.h        | 16 --------
+>   3 files changed, 16 insertions(+), 43 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> index 9c598ea97499..11ad878a906b 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> @@ -784,9 +784,11 @@ void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev)
+>   	sdiodev->txglomsz = sdiodev->settings->bus.sdio.txglomsz;
+>   }
+>   
+> -#ifdef CONFIG_PM_SLEEP
+>   static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
+>   {
+> +	if (!IS_ENABLED(CONFIG_PM_SLEEP))
+> +		return 0;
 > +
-> +			if (!userfaultfd_wp(dst_vma) && uffd_wp)
-> +				entry = huge_pte_clear_uffd_wp(entry);
-> +			set_huge_swap_pte_at(dst, addr, dst_pte, entry, sz);
-> +		} else if (unlikely(is_hugetlb_entry_migration(entry))) {
->  			swp_entry_t swp_entry = pte_to_swp_entry(entry);
->  			bool uffd_wp = huge_pte_uffd_wp(entry);
->  
-> 
+>   	sdiodev->freezer = kzalloc(sizeof(*sdiodev->freezer), GFP_KERNEL);
+>   	if (!sdiodev->freezer)
+>   		return -ENOMEM;
+> @@ -799,7 +801,7 @@ static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
+>   
+>   static void brcmf_sdiod_freezer_detach(struct brcmf_sdio_dev *sdiodev)
+>   {
+> -	if (sdiodev->freezer) {
+> +	if (IS_ENABLED(CONFIG_PM_SLEEP) && sdiodev->freezer) {
 
+This change is not necessary. sdiodev->freezer will be NULL when 
+CONFIG_PM_SLEEP is not enabled.
+
+>   		WARN_ON(atomic_read(&sdiodev->freezer->freezing));
+>   		kfree(sdiodev->freezer);
+>   	}
