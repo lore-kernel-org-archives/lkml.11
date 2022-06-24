@@ -2,176 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF73C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52EF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231888AbiFXSuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 14:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        id S230458AbiFXSvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 14:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbiFXSuv (ORCPT
+        with ESMTP id S229751AbiFXSvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 14:50:51 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A6381736;
-        Fri, 24 Jun 2022 11:50:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656096650; x=1687632650;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Ut2SGnvpDx+O8nXdZtY5kkO5aRgYZRiMvdxYgKwPPVE=;
-  b=RNwVstez+6KGZFiIBakNJubuiwt0NJ7XwqexC7M+d0bP/sZEsCbymnvW
-   SmP0l3Gt8mHCxSrgGceRrJlv7Z9wBOOMgB2FwUDLGBzi4sBLEE8JgtAI3
-   /1C1ZND985skhhNG3g0lBhN+sFCtWYLYDwh7Jap7KRCn9Mb1JQRf2SR1K
-   GBmA9s6ZA35C36YNh+JZ01MXXwQWtTyG94BUjJQK9DzVAi3TmKJnXK0W6
-   8qHU5F8V4Rn9JM/nrfNtumoyLMdQfym6WvZrVRWm5W3UsaWZhUqYX/6+v
-   FayPDhs/lcno03Jt3olkTKvgO1n9SI7/aLpO4B8vhcAZmZVRobOX+wKTl
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="260878551"
-X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
-   d="scan'208";a="260878551"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 11:50:50 -0700
-X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
-   d="scan'208";a="731429723"
-Received: from mdedeogl-mobl.amr.corp.intel.com (HELO [10.209.126.186]) ([10.209.126.186])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 11:50:49 -0700
-Message-ID: <765a20f1-681d-33c2-68e9-24cc249fe6f9@intel.com>
-Date:   Fri, 24 Jun 2022 11:50:14 -0700
+        Fri, 24 Jun 2022 14:51:51 -0400
+Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CC681726
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:51:51 -0700 (PDT)
+Received: by mail-vk1-xa29.google.com with SMTP id n187so1606937vkn.11
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:51:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=f+KB5A9ZpXRBOGLRH7DVETVdHE7Tly7PtMb324fnHg0=;
+        b=Bb5vqOXA7AxPyZxq8gpHAGLuTEdugkG+oQaCw8OF59I7gyQQL/F1tIh9p0B+Zw/J01
+         GZJyhBIIwVTeLO0wvEABar0lkjPdHp1P44B3cCUMb0sTaTMbuMKHo0Q60dIR7lsAqUe6
+         lLiGyEH1gkpH5LgBFecM4gCA3r3LugGWPRFTH3gy0xaERpEB4Idl/1Z46GQbMkoLaIml
+         QwH2EVCeeaoKAtf07VekbnP511aRvslqoHt6iYZJcGh+KzFjP+02BYXXjKw2u41b5hIq
+         dc/uEx4Kk0RbUMpD9ht7i4E26ed4S9wYIFh5DbnezOiDmLssWfaUdJDKmG/Bon0jud0g
+         zVFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f+KB5A9ZpXRBOGLRH7DVETVdHE7Tly7PtMb324fnHg0=;
+        b=4Tqn7EzvanLdIiNj/t7Oq6YmX0LXjqxVuJyvZQ4d8cc4RDTp6LKAQikrszwK+hDcZr
+         2jt5xci3v39QWobFnEZx+qUyxocDoan7i4Y3hxDiezChcZaWj5mld2D9Jm2PnXhwwqHK
+         stqWE7lauvb3J+EllPD5XwM9jD2w6Ip7dbLChgpvl1FMOkyGihbx1LFFB46jtzJGk+bS
+         5OmKIXasBnqXJQqZcrLkH6TxqzwwyhErX4UPmIvNkXQqrjTTCA/5pxzxg/JkeY4xmIFB
+         hdseSzoQuPlhxfa3qkH/XyGOSXEA4H/AULEg9VP2rYIaFvwM6WpK7Ac96IWQ0Juqzj5/
+         Wz9A==
+X-Gm-Message-State: AJIora9tyqTZb9e7AZkt9iDKxFDtIpzIv9aNaHttGRGINQpobZngyM78
+        YmTbxXcd2TW23+TKodSvbdrHHvdLRMpOTQ47GH1ubw==
+X-Google-Smtp-Source: AGRyM1uUFolFbpO1U+5VwUItji0OCRCyAC8zr093at7K7mAiNXeD25qxAOkH159LoeV4qyfU76TNovGu9OsiibZszI4=
+X-Received: by 2002:a05:6122:1479:b0:36c:502b:fdda with SMTP id
+ r25-20020a056122147900b0036c502bfddamr149274vkp.14.1656096710059; Fri, 24 Jun
+ 2022 11:51:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v5 08/22] x86/virt/tdx: Shut down TDX module in case of
- error
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1655894131.git.kai.huang@intel.com>
- <89fffc70cdbb74c80bb324364b712ec41e5f8b91.1655894131.git.kai.huang@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <89fffc70cdbb74c80bb324364b712ec41e5f8b91.1655894131.git.kai.huang@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220624173656.2033256-1-jthoughton@google.com> <20220624173656.2033256-3-jthoughton@google.com>
+In-Reply-To: <20220624173656.2033256-3-jthoughton@google.com>
+From:   Mina Almasry <almasrymina@google.com>
+Date:   Fri, 24 Jun 2022 11:51:38 -0700
+Message-ID: <CAHS8izP0+ThdqEmp_v4s+n=Yw15w-JR2tudwVA=rX5WQL-KwMg@mail.gmail.com>
+Subject: Re: [RFC PATCH 02/26] hugetlb: sort hstates in hugetlb_init_hstates
+To:     James Houghton <jthoughton@google.com>
+Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Xu <peterx@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Jue Wang <juew@google.com>,
+        Manish Mishra <manish.mishra@nutanix.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So, the last patch was called:
+On Fri, Jun 24, 2022 at 10:37 AM James Houghton <jthoughton@google.com> wrote:
+>
+> When using HugeTLB high-granularity mapping, we need to go through the
+> supported hugepage sizes in decreasing order so that we pick the largest
+> size that works. Consider the case where we're faulting in a 1G hugepage
+> for the first time: we want hugetlb_fault/hugetlb_no_page to map it with
+> a PUD. By going through the sizes in decreasing order, we will find that
+> PUD_SIZE works before finding out that PMD_SIZE or PAGE_SIZE work too.
+>
 
-	Implement SEAMCALL function
+Mostly nits:
 
-and yet, in this patch, we have a "seamcall()" function.  That's a bit
-confusing and not covered at *all* in this subject.
+Reviewed-by: Mina Almasry <almasrymina@google.com>
 
-Further, seamcall() is the *ONLY* caller of __seamcall() that I see in
-this series.  That makes its presence here even more odd.
-
-The seamcall() bits should either be in their own patch, or mashed in
-with __seamcall().
-
+> Signed-off-by: James Houghton <jthoughton@google.com>
+> ---
+>  mm/hugetlb.c | 40 +++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 37 insertions(+), 3 deletions(-)
+>
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index a57e1be41401..5df838d86f32 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -33,6 +33,7 @@
+>  #include <linux/migrate.h>
+>  #include <linux/nospec.h>
+>  #include <linux/delayacct.h>
+> +#include <linux/sort.h>
+>
+>  #include <asm/page.h>
+>  #include <asm/pgalloc.h>
+> @@ -48,6 +49,10 @@
+>
+>  int hugetlb_max_hstate __read_mostly;
+>  unsigned int default_hstate_idx;
 > +/*
-> + * Wrapper of __seamcall().  It additionally prints out the error
-> + * informationi if __seamcall() fails normally.  It is useful during
-> + * the module initialization by providing more information to the user.
+> + * After hugetlb_init_hstates is called, hstates will be sorted from largest
+> + * to smallest.
 > + */
-> +static u64 seamcall(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
-> +		    struct tdx_module_output *out)
-> +{
-> +	u64 ret;
-> +
-> +	ret = __seamcall(fn, rcx, rdx, r8, r9, out);
-> +	if (ret == TDX_SEAMCALL_VMFAILINVALID || !ret)
-> +		return ret;
-> +
-> +	pr_err("SEAMCALL failed: leaf: 0x%llx, error: 0x%llx\n", fn, ret);
-> +	if (out)
-> +		pr_err("SEAMCALL additional output: rcx 0x%llx, rdx 0x%llx, r8 0x%llx, r9 0x%llx, r10 0x%llx, r11 0x%llx.\n",
-> +			out->rcx, out->rdx, out->r8, out->r9, out->r10, out->r11);
-> +
-> +	return ret;
-> +}
-> +
-> +static void seamcall_smp_call_function(void *data)
-> +{
-> +	struct seamcall_ctx *sc = data;
-> +	struct tdx_module_output out;
-> +	u64 ret;
-> +
-> +	ret = seamcall(sc->fn, sc->rcx, sc->rdx, sc->r8, sc->r9, &out);
-> +	if (ret)
-> +		atomic_set(&sc->err, -EFAULT);
-> +}
-> +
-> +/*
-> + * Call the SEAMCALL on all online CPUs concurrently.  Caller to check
-> + * @sc->err to determine whether any SEAMCALL failed on any cpu.
-> + */
-> +static void seamcall_on_each_cpu(struct seamcall_ctx *sc)
-> +{
-> +	on_each_cpu(seamcall_smp_call_function, sc, true);
-> +}
-
-You can get away with this three-liner seamcall_on_each_cpu() being in
-this patch, but seamcall() itself doesn't belong here.
-
->  /*
->   * Detect and initialize the TDX module.
->   *
-> @@ -138,7 +195,10 @@ static int init_tdx_module(void)
->  
->  static void shutdown_tdx_module(void)
->  {
-> -	/* TODO: Shut down the TDX module */
-> +	struct seamcall_ctx sc = { .fn = TDH_SYS_LP_SHUTDOWN };
-> +
-> +	seamcall_on_each_cpu(&sc);
-> +
->  	tdx_module_status = TDX_MODULE_SHUTDOWN;
+>  struct hstate hstates[HUGE_MAX_HSTATE];
+>
+>  #ifdef CONFIG_CMA
+> @@ -3144,14 +3149,43 @@ static void __init hugetlb_hstate_alloc_pages(struct hstate *h)
+>         kfree(node_alloc_noretry);
 >  }
->  
-> @@ -221,6 +281,9 @@ bool platform_tdx_enabled(void)
->   * CPU hotplug is temporarily disabled internally to prevent any cpu
->   * from going offline.
->   *
-> + * Caller also needs to guarantee all CPUs are in VMX operation during
-> + * this function, otherwise Oops may be triggered.
-
-I would *MUCH* rather have this be a:
-
-	if (!cpu_feature_enabled(X86_FEATURE_VMX))
-		WARN_ONCE("VMX should be on blah blah\n");
-
-than just plain oops.  Even a pr_err() that preceded the oops would be
-nicer than an oops that someone has to go decode and then grumble when
-their binutils is too old that it can't disassemble the TDCALL.
-
-
-
->   * This function can be called in parallel by multiple callers.
->   *
->   * Return:
-> diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
-> index f1a2dfb978b1..95d4eb884134 100644
-> --- a/arch/x86/virt/vmx/tdx/tdx.h
-> +++ b/arch/x86/virt/vmx/tdx/tdx.h
-> @@ -46,6 +46,11 @@
->  #define TDX_KEYID_NUM(_keyid_part)	((u32)((_keyid_part) >> 32))
->  
->  
-> +/*
-> + * TDX module SEAMCALL leaf functions
-> + */
-> +#define TDH_SYS_LP_SHUTDOWN	44
+>
+> +static int compare_hstates_decreasing(const void *a, const void *b)
+> +{
+> +       const int shift_a = huge_page_shift((const struct hstate *)a);
+> +       const int shift_b = huge_page_shift((const struct hstate *)b);
 > +
->  /*
->   * Do not put any hardware-defined TDX structure representations below this
->   * comment!
+> +       if (shift_a < shift_b)
+> +               return 1;
+> +       if (shift_a > shift_b)
+> +               return -1;
+> +       return 0;
+> +}
+> +
+> +static void sort_hstates(void)
 
+Maybe sort_hstates_descending(void) for extra clarity.
+
+> +{
+> +       unsigned long default_hstate_sz = huge_page_size(&default_hstate);
+> +
+> +       /* Sort from largest to smallest. */
+
+I'd remove this redundant comment; it's somewhat obvious what the next
+line does.
+
+> +       sort(hstates, hugetlb_max_hstate, sizeof(*hstates),
+> +            compare_hstates_decreasing, NULL);
+> +
+> +       /*
+> +        * We may have changed the location of the default hstate, so we need to
+> +        * update it.
+> +        */
+> +       default_hstate_idx = hstate_index(size_to_hstate(default_hstate_sz));
+> +}
+> +
+>  static void __init hugetlb_init_hstates(void)
+>  {
+>         struct hstate *h, *h2;
+>
+> -       for_each_hstate(h) {
+> -               if (minimum_order > huge_page_order(h))
+> -                       minimum_order = huge_page_order(h);
+> +       sort_hstates();
+>
+> +       /* The last hstate is now the smallest. */
+
+Same, given that above is sort_hstates().
+
+> +       minimum_order = huge_page_order(&hstates[hugetlb_max_hstate - 1]);
+> +
+> +       for_each_hstate(h) {
+>                 /* oversize hugepages were init'ed in early boot */
+>                 if (!hstate_is_gigantic(h))
+>                         hugetlb_hstate_alloc_pages(h);
+> --
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
