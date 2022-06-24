@@ -2,147 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA267C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 06:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83693C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 06:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiFXGGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 02:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50534 "EHLO
+        id S230283AbiFXGIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 02:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiFXGGM (ORCPT
+        with ESMTP id S229932AbiFXGIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 02:06:12 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C0B45796
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:06:12 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id n10so1286087plp.0
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:06:12 -0700 (PDT)
+        Fri, 24 Jun 2022 02:08:01 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02E35F61;
+        Thu, 23 Jun 2022 23:07:59 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id m14so1246104plg.5;
+        Thu, 23 Jun 2022 23:07:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=59X2Y/lmawDJzmXwQWp9mJFaRGi+BKzpUp2IksdQUqM=;
-        b=OnJXKxUvdaQmcj7PIEfMQNOZQNQrgxlyqFN9pCLtIv2JPQFwKTqbYue+ASHmg7LJHy
-         BLqF6T9A3bZliGYY2FuNcbcMjUFDn1Ukxn/AKAalmbGHX/lN6MWAFZ6lZI6E1JSsxi8w
-         ImtOP5ZnM+BJORSm9xxUjoCkhdO50ENI5Ma8o=
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=C1a6oxIg8BJkfZE7zO8cItN6ndUGTYkyVHxPHeTpF40=;
+        b=WKr12c+NfCT1qWs7/l7kOUmDCjOkDEtJE0iojwr3uImzVmDh7HJYW277+fXhEfg7GD
+         QgpM2KoLEOnbSjK2nyJyNCekZ3e+TOCjFoByNK1lN4ATGRh7RPiaacS1M14Kit//d6Nn
+         chdaGxQBgY3AAwS10ud2EdeLinB40VCTq+yiy8GonRqN9X7RkixdsFItYWj++cPhATPp
+         XZhIuGyBpi9X/dkkIjdsOF6/8Hc6950nWF7H4vCFyTrqcLApUbgmXAV73QedJvSypwYe
+         t5NuVnHELXO+ICW8BSDGIx4cbzCc5IIz5t2QnTaO5WcaGFXEtdbil3gaGJ0OO+yulABH
+         dS8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=59X2Y/lmawDJzmXwQWp9mJFaRGi+BKzpUp2IksdQUqM=;
-        b=NwEfm/qQQ0iXbyLQ93kai0DCrYqA79qRmwai9/QDDhy9BZNZBZkzyHQwjjYYlMZ3CN
-         A0ugLiHY60KOeIu51F7g++MiFXaGhMXwS/4Bc+ahgYi1++SF3Fg7xVh1pV/wbg0KOPrN
-         EtezVKGL7zE+EqeDhtIH+m+YdxJJVZKBF9K3Xz+JBnjzAQSauD/cTkjnEhVEBQ7MW5nr
-         5S9/bibQ4tg00elE5AQBqxg0pXYQi9RO3J1vbRrqOmj7283SO5f3MDefCCWIyyGg42DH
-         oZ/Qkx0tvpmORJ8ESKwO9ELmXV3BDxGQw3raude1rSGLD34NPG9kmGl/WL+SxDgVARvS
-         PLag==
-X-Gm-Message-State: AJIora+XcMm3mW6YYsXmcSUbJebAW9aQGDvLAtoev6b/dwhnr7BM79dH
-        eNGThnl3NGlfnMj93eVX302T2jPvSLbrVg==
-X-Google-Smtp-Source: AGRyM1tFIpPGmWtk1MlqL9vrcPT41S0nFC9urfAPlwORV2qpEJeMO3V45pNMPosGn/lLjhDHolVF8A==
-X-Received: by 2002:a17:902:74c7:b0:16a:1be3:b7f2 with SMTP id f7-20020a17090274c700b0016a1be3b7f2mr27150781plt.42.1656050771473;
-        Thu, 23 Jun 2022 23:06:11 -0700 (PDT)
-Received: from senozhatsky.kddi.com ([240f:75:7537:3187:421d:f075:63ad:7026])
-        by smtp.gmail.com with ESMTPSA id k7-20020a170902694700b0016511314b94sm850765plt.159.2022.06.23.23.06.09
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=C1a6oxIg8BJkfZE7zO8cItN6ndUGTYkyVHxPHeTpF40=;
+        b=mWoX8rFdOvq4p++8q3/l61cnNm0wZbtScGDVoZHTkiu0ULrIgYazOm8NP5feluXcqb
+         iXrlDyMrkXaY1VT3xdLdi7P8wCIPaKO7y0kGm3BLCDuhLDq1sn8VipKwEUxTvZaMGXln
+         uSSlqT4+I+0RIcCsAJmhxWGKOV/v1t2bdD+w3Y9cEcfCXdQ/xfZNMKNrKikXY/LAbsF4
+         WU5kGRR7gR2TY5/HAq7eQUyzpvPnDhH2o2D1vA4gDqaik6T/sRS8wKtJ1b9md9ldcm37
+         FhXcqXTVZdUgx73lFbtOnuHkSGg2uJNdcjvaVcTDGFLRHqicI1UCJexNNzwUf/FmYZrc
+         aSEw==
+X-Gm-Message-State: AJIora/EMUzU8XEqcCN42/aMsJmtGCsWb8SoZZMfS9d/5xjJs2XqijzO
+        IzNMqlByAQDM6u0sGwsmZwc=
+X-Google-Smtp-Source: AGRyM1v8ESIb6rQ28O3KitxnGvx1yyWJil8hGaxHHum8kfhIF2bTjm6+Ii5v6xKTBDFM2Iymad70tg==
+X-Received: by 2002:a17:90a:a40b:b0:1ec:a22d:5c3 with SMTP id y11-20020a17090aa40b00b001eca22d05c3mr2125942pjp.118.1656050879075;
+        Thu, 23 Jun 2022 23:07:59 -0700 (PDT)
+Received: from archdragon (dragonet.kaist.ac.kr. [143.248.133.220])
+        by smtp.gmail.com with ESMTPSA id u22-20020a63f656000000b0040cd8f71424sm654449pgj.69.2022.06.23.23.07.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 23:06:11 -0700 (PDT)
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Minchan Kim <minchan@kernel.org>
-Cc:     Nitin Gupta <ngupta@vflare.org>, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org,
-        Sergey Senozhatsky <senozhatsky@chromium.org>
-Subject: [PATCH v2] zram: do not lookup algorithm in backends table
-Date:   Fri, 24 Jun 2022 15:06:06 +0900
-Message-Id: <20220624060606.1014474-1-senozhatsky@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
+        Thu, 23 Jun 2022 23:07:58 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 15:07:54 +0900
+From:   "Dae R. Jeong" <threeearcat@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: KASAN: use-after-free Read in cfusbl_device_notify
+Message-ID: <YrVUujEka5jSXZvt@archdragon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Always use crypto_has_comp() so that crypto can lookup module,
-call usermodhelper to load the modules, wait for usermodhelper
-to finish and so on. Otherwise crypto will do all of these steps
-under CPU hot-plug lock and this looks like too much stuff to
-handle under the CPU hot-plug lock. Besides this can end up in
-a deadlock when usermodhelper triggers a code path that attempts
-to lock the CPU hot-plug lock, that zram already holds.
+Hello,
 
-An example of such deadlock:
+We observed a crash "KASAN: use-after-free Read in cfusbl_device_notify" during fuzzing.
 
-- path A. zram grabs CPU hot-plug lock, execs /sbin/modprobe from crypto
-  and waits for modprobe to finish
+Unfortunately, we have not found a reproducer for the crash yet. We
+will inform you if we have any update on this crash.
 
-disksize_store
- zcomp_create
-  __cpuhp_state_add_instance
-   __cpuhp_state_add_instance_cpuslocked
-    zcomp_cpu_up_prepare
-     crypto_alloc_base
-      crypto_alg_mod_lookup
-       call_usermodehelper_exec
-        wait_for_completion_killable
-         do_wait_for_common
-          schedule
+Detailed crash information is attached at the end of this email.
 
-- path B. async work kthread that brings in scsi device. It wants to
-  register CPUHP states at some point, and it needs the CPU hot-plug
-  lock for that, which is owned by zram.
 
-async_run_entry_fn
- scsi_probe_and_add_lun
-  scsi_mq_alloc_queue
-   blk_mq_init_queue
-    blk_mq_init_allocated_queue
-     blk_mq_realloc_hw_ctxs
-      __cpuhp_state_add_instance
-       __cpuhp_state_add_instance_cpuslocked
-        mutex_lock
-         schedule
+Best regards,
+Dae R. Jeong.
+------
 
-- path C. modprobe sleeps, waiting for all aync works to finish.
+- Kernel commit:
+b13baccc3850ca
 
-load_module
- do_init_module
-  async_synchronize_full
-   async_synchronize_cookie_domain
-    schedule
+- Crash report: 
+==================================================================
+BUG: KASAN: use-after-free in cfusbl_device_notify+0x155/0xf40 net/caif/caif_usb.c:138
+Read of size 8 at addr ffff88804bc4c6f0 by task kworker/u8:0/18109
 
-Signed-off-by: Sergey Senozhatsky <senozhatsky@chromium.org>
----
- drivers/block/zram/zcomp.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+CPU: 1 PID: 18109 Comm: kworker/u8:0 Not tainted 5.19.0-rc2-31838-gef9c98f9637f #2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Workqueue: netns cleanup_net
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x240/0x35a lib/dump_stack.c:106
+ print_address_description+0x65/0x4f0 mm/kasan/report.c:313
+ print_report+0xf4/0x1e0 mm/kasan/report.c:429
+ kasan_report+0xe5/0x110 mm/kasan/report.c:491
+ cfusbl_device_notify+0x155/0xf40 net/caif/caif_usb.c:138
+ notifier_call_chain kernel/notifier.c:87 [inline]
+ raw_notifier_call_chain+0xd4/0x170 kernel/notifier.c:455
+ call_netdevice_notifiers_info net/core/dev.c:1943 [inline]
+ call_netdevice_notifiers_extack net/core/dev.c:1981 [inline]
+ call_netdevice_notifiers net/core/dev.c:1995 [inline]
+ netdev_wait_allrefs_any net/core/dev.c:10225 [inline]
+ netdev_run_todo+0x14e6/0x23c0 net/core/dev.c:10337
+ default_device_exit_batch+0x99a/0xa10 net/core/dev.c:11329
+ ops_exit_list net/core/net_namespace.c:167 [inline]
+ cleanup_net+0xd23/0x15a0 net/core/net_namespace.c:594
+ process_one_work+0x909/0x12b0 kernel/workqueue.c:2289
+ worker_thread+0xab1/0x1320 kernel/workqueue.c:2436
+ kthread+0x294/0x330 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+ </TASK>
 
-diff --git a/drivers/block/zram/zcomp.c b/drivers/block/zram/zcomp.c
-index 052aa3f65514..0916de952e09 100644
---- a/drivers/block/zram/zcomp.c
-+++ b/drivers/block/zram/zcomp.c
-@@ -63,12 +63,6 @@ static int zcomp_strm_init(struct zcomp_strm *zstrm, struct zcomp *comp)
- 
- bool zcomp_available_algorithm(const char *comp)
- {
--	int i;
--
--	i = sysfs_match_string(backends, comp);
--	if (i >= 0)
--		return true;
--
- 	/*
- 	 * Crypto does not ignore a trailing new line symbol,
- 	 * so make sure you don't supply a string containing
-@@ -217,6 +211,11 @@ struct zcomp *zcomp_create(const char *compress)
- 	struct zcomp *comp;
- 	int error;
- 
-+	/*
-+	 * Crypto API will execute /sbin/modprobe if the compression module
-+	 * is not loaded yet. We must do it here, otherwise we are about to
-+	 * call /sbin/modprobe under CPU hot-plug lock.
-+	 */
- 	if (!zcomp_available_algorithm(compress))
- 		return ERR_PTR(-EINVAL);
- 
--- 
-2.37.0.rc0.104.g0611611a94-goog
+Allocated by task 6688:
+ kasan_save_stack mm/kasan/common.c:38 [inline]
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+ __kasan_kmalloc+0xac/0xe0 mm/kasan/common.c:524
+ kasan_kmalloc include/linux/kasan.h:234 [inline]
+ __kmalloc_node+0xed/0x780 mm/slub.c:4465
+ kmalloc_node include/linux/slab.h:623 [inline]
+ kvmalloc_node+0x6e/0x1a0 mm/util.c:613
+ kvmalloc include/linux/slab.h:750 [inline]
+ kvzalloc include/linux/slab.h:758 [inline]
+ alloc_netdev_mqs+0x94/0x1da0 net/core/dev.c:10576
+ rtnl_create_link+0x4ec/0x1360 net/core/rtnetlink.c:3241
+ veth_newlink+0x4a9/0x1810 drivers/net/veth.c:1749
+ rtnl_newlink_create net/core/rtnetlink.c:3363 [inline]
+ __rtnl_newlink net/core/rtnetlink.c:3580 [inline]
+ rtnl_newlink+0x251d/0x2fc0 net/core/rtnetlink.c:3593
+ rtnetlink_rcv_msg+0x1103/0x1a60 net/core/rtnetlink.c:6089
+ netlink_rcv_skb+0x2b6/0x670 net/netlink/af_netlink.c:2501
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0xc68/0xff0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x11a0/0x1680 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:693 [inline]
+ sock_sendmsg net/socket.c:713 [inline]
+ __sys_sendto+0x544/0x770 net/socket.c:2098
+ __do_sys_sendto net/socket.c:2110 [inline]
+ __se_sys_sendto net/socket.c:2106 [inline]
+ __x64_sys_sendto+0x1bb/0x250 net/socket.c:2106
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x4e/0xa0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
+Freed by task 18109:
+ kasan_save_stack mm/kasan/common.c:38 [inline]
+ kasan_set_track+0x3d/0x60 mm/kasan/common.c:45
+ kasan_set_free_info+0x1f/0x40 mm/kasan/generic.c:370
+ ____kasan_slab_free+0xb2/0xf0 mm/kasan/common.c:366
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1727 [inline]
+ slab_free_freelist_hook+0x20c/0x540 mm/slub.c:1753
+ slab_free mm/slub.c:3507 [inline]
+ kfree+0x117/0x7e0 mm/slub.c:4555
+ device_release+0xf5/0x390
+ kobject_cleanup+0x340/0x4e0 lib/kobject.c:673
+ netdev_run_todo+0x211c/0x23c0 net/core/dev.c:10358
+ default_device_exit_batch+0x99a/0xa10 net/core/dev.c:11329
+ ops_exit_list net/core/net_namespace.c:167 [inline]
+ cleanup_net+0xd23/0x15a0 net/core/net_namespace.c:594
+ process_one_work+0x909/0x12b0 kernel/workqueue.c:2289
+ worker_thread+0xab1/0x1320 kernel/workqueue.c:2436
+ kthread+0x294/0x330 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+
+The buggy address belongs to the object at ffff88804bc4c000
+ which belongs to the cache kmalloc-cg-4k of size 4096
+The buggy address is located 1776 bytes inside of
+ 4096-byte region [ffff88804bc4c000, ffff88804bc4d000)
+
+The buggy address belongs to the physical page:
+page:ffffea00012f1200 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x4bc48
+head:ffffea00012f1200 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000010200 0000000000000000 dead000000000122 ffff88801844c140
+raw: 0000000000000000 0000000000040004 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 6688, tgid 6688 (syz-executor.0), ts 297836664488, free_ts 31867390869
+ prep_new_page mm/page_alloc.c:2456 [inline]
+ get_page_from_freelist+0xa7c/0xf50 mm/page_alloc.c:4198
+ __alloc_pages+0x30e/0x710 mm/page_alloc.c:5426
+ alloc_slab_page+0x66/0x250 mm/slub.c:1797
+ allocate_slab+0xc0/0xe40 mm/slub.c:1942
+ new_slab mm/slub.c:2002 [inline]
+ ___slab_alloc+0x629/0x17a0 mm/slub.c:3002
+ __slab_alloc mm/slub.c:3089 [inline]
+ slab_alloc_node mm/slub.c:3180 [inline]
+ slab_alloc mm/slub.c:3222 [inline]
+ __kmalloc_track_caller+0x53a/0x600 mm/slub.c:4919
+ kmemdup+0x21/0x50 mm/util.c:129
+ _Z7kmemdupPKvU17pass_object_size0mj include/linux/fortify-string.h:456 [inline]
+ __addrconf_sysctl_register+0x97/0x680 net/ipv6/addrconf.c:7061
+ addrconf_sysctl_register+0x1c3/0x2a0 net/ipv6/addrconf.c:7126
+ ipv6_add_dev+0x170e/0x1f80 net/ipv6/addrconf.c:450
+ addrconf_notify+0xa36/0x3730 net/ipv6/addrconf.c:3532
+ notifier_call_chain kernel/notifier.c:87 [inline]
+ raw_notifier_call_chain+0xd4/0x170 kernel/notifier.c:455
+ call_netdevice_notifiers_info net/core/dev.c:1943 [inline]
+ call_netdevice_notifiers_extack net/core/dev.c:1981 [inline]
+ call_netdevice_notifiers net/core/dev.c:1995 [inline]
+ register_netdevice+0x23b1/0x32c0 net/core/dev.c:10078
+ hsr_dev_finalize+0x803/0xd50 net/hsr/hsr_device.c:539
+ hsr_newlink+0xba5/0xcf0 net/hsr/hsr_netlink.c:102
+ rtnl_newlink_create net/core/rtnetlink.c:3363 [inline]
+ __rtnl_newlink net/core/rtnetlink.c:3580 [inline]
+ rtnl_newlink+0x251d/0x2fc0 net/core/rtnetlink.c:3593
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1371 [inline]
+ free_pcp_prepare+0xa65/0xc90 mm/page_alloc.c:1421
+ free_unref_page_prepare mm/page_alloc.c:3343 [inline]
+ free_unref_page+0x7e/0x740 mm/page_alloc.c:3438
+ free_contig_range+0xd9/0x240 mm/page_alloc.c:9314
+ destroy_args+0x153/0xee4 mm/debug_vm_pgtable.c:1031
+ debug_vm_pgtable+0x4bd/0x553 mm/debug_vm_pgtable.c:1354
+ do_one_initcall+0x1a8/0x410 init/main.c:1295
+ do_initcall_level+0x168/0x21d init/main.c:1368
+ do_initcalls+0x50/0x91 init/main.c:1384
+ kernel_init_freeable+0x40d/0x59a init/main.c:1610
+ kernel_init+0x19/0x2c0 init/main.c:1499
+ ret_from_fork+0x1f/0x30
+
+Memory state around the buggy address:
+ ffff88804bc4c580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88804bc4c600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88804bc4c680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                             ^
+ ffff88804bc4c700: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88804bc4c780: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
