@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 561BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFF4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233001AbiFXOhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35046 "EHLO
+        id S233007AbiFXOhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232841AbiFXOgm (ORCPT
+        with ESMTP id S232680AbiFXOgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:36:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB3056C07
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:35:49 -0700 (PDT)
+        Fri, 24 Jun 2022 10:36:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADC260E1D
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:35:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CCAEB82925
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:35:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 646D3C341C0;
-        Fri, 24 Jun 2022 14:35:45 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D89E0CE2A5A
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:35:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B398BC34114;
+        Fri, 24 Jun 2022 14:35:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656081347;
-        bh=fES71k0ZtQMfRPu9DCT9ZOVYdQvNBjl3fNHC6w3pSEc=;
+        s=k20201202; t=1656081342;
+        bh=t/Tf6J/AANuVldAvrbb1l1OA4Ss/PFndiFh59pDsU/o=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Hsmdt5LTyq7cqedpM7gD3mcbjTqTZVbXcWKBNDxL/nyNXh7QuMwjQ7X3ZkyQfEMS5
-         Kdh+uekKRjxFdw0vb9b8c6lwbHpQqddsFR4oHiVYwa5BNCUy3eHchli72h2SDIuN41
-         eWKSgqEpPHVxgOfnphX4wAtuA0nksQX4p+f8jQbXuc8w9G32PNwcLP4/fB62l3+jqw
-         H0LDGLFIFqEz8Kb63K/UqL4SxCQ3FOJjUFbQiuYnFn8KnA0LwJ/rtjmUCDKd0108Hy
-         cAyth5zSs6zw/PuBediVxP+YxqQUm/7CT5eQ6Td9KeKJ1juFc97abm97Yy0gvZjprA
-         ZtYgphvV7oKDg==
+        b=RCGpbBTyD76YoVkatmj8Squ9IMzjadZE+jZnOY9R11r52qjKSGEHg3EhHiy7okVTv
+         mB07dyC5yirbzQFV2nl4vP78c2wisWp5jr0X1gvgbg2UlQg/ZCqLQI73y3BUGXlVrD
+         liwNuSMaPPuDf35KEkHTQQi5qZyFXBYGf8NH37HFE7zJ5zgHzaBxum0WiZRqYqnIuZ
+         t9JFLs4WcBR4o+zpDk0S1UhM9z4456uZdXAUAMpm+EnFG8L5A5vR7ntEpMkusdAQmH
+         qHUFpXrD9QyFkrm71oerugNAUWq7asR0llnPjtOWgKlbdTx92usJZBKY5KEOVWY3gN
+         924C5Mr5WDFmA==
 From:   Mark Brown <broonie@kernel.org>
-To:     jiapeng.chong@linux.alibaba.com, lgirdwood@gmail.com
-Cc:     alsa-devel@alsa-project.org, tiwai@suse.com, heiko@sntech.de,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, perex@perex.cz
-In-Reply-To: <20220624082745.68367-1-jiapeng.chong@linux.alibaba.com>
-References: <20220624082745.68367-1-jiapeng.chong@linux.alibaba.com>
-Subject: Re: [PATCH] ASoC: rockchip: i2s: Fix missing error code in rockchip_i2s_probe()
-Message-Id: <165608134513.445804.8165290048747586515.b4-ty@kernel.org>
-Date:   Fri, 24 Jun 2022 15:35:45 +0100
+To:     james.schulman@cirrus.com, cristian.ciocaltea@collabora.com,
+        tiwai@suse.com, lgirdwood@gmail.com, david.rhodes@cirrus.com,
+        rf@opensource.cirrus.com, tanureal@opensource.cirrus.com,
+        perex@perex.cz
+Cc:     kernel@collabora.com, alsa-devel@alsa-project.org,
+        patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
+In-Reply-To: <20220621213819.262537-1-cristian.ciocaltea@collabora.com>
+References: <20220621213819.262537-1-cristian.ciocaltea@collabora.com>
+Subject: Re: [PATCH] ASoC: cs35l41: Add support for CLSA3541 ACPI device ID
+Message-Id: <165608133945.445804.16792879989339290449.b4-ty@kernel.org>
+Date:   Fri, 24 Jun 2022 15:35:39 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -49,15 +51,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 24 Jun 2022 16:27:45 +0800, Jiapeng Chong wrote:
-> The error code is missing in this code scenario, add the error code
-> '-EINVAL' to the return value 'ret'.
+On Wed, 22 Jun 2022 00:38:19 +0300, Cristian Ciocaltea wrote:
+> Add support for the CLSA3541 ACPI device ID used on Valve's Steam Deck.
+> The driver is fully compatible with the indicated hardware, hence no
+> additional changes are required.
 > 
-> This was found by coccicheck:
 > 
-> sound/soc/rockchip/rockchip_i2s.c:810 rockchip_i2s_probe() warn: missing error code 'ret'.
-> 
-> [...]
 
 Applied to
 
@@ -65,8 +64,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: rockchip: i2s: Fix missing error code in rockchip_i2s_probe()
-      commit: 7f6409fd9b54b6f56444edc996cd28059f215415
+[1/1] ASoC: cs35l41: Add support for CLSA3541 ACPI device ID
+      commit: 658e95953075ca781ef8712d0a3203e485888c7f
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
