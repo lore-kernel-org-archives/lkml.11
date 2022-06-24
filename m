@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F16EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F451C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233289AbiFXOnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
+        id S233543AbiFXOnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233221AbiFXOl4 (ORCPT
+        with ESMTP id S233273AbiFXOm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:41:56 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE1767E7C;
-        Fri, 24 Jun 2022 07:41:53 -0700 (PDT)
+        Fri, 24 Jun 2022 10:42:28 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B636DB0C;
+        Fri, 24 Jun 2022 07:42:03 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2302BE000B;
-        Fri, 24 Jun 2022 14:41:50 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id D552BE0002;
+        Fri, 24 Jun 2022 14:41:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656081712;
+        t=1656081722;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MRhI3o9vUV9HJ/akGG/sCFg0WByQ0Yk8Z88IwMeWHwE=;
-        b=LszXZicJAiBCHt9/JAja5rir+52fZo1vXbIWrM7+P92fDGbiljLyGdFkf1uEBRZu4Zoi/V
-        CyIBXwvvZd3GFACoF3OqAFgPpT32AT9C+PcSYWr3MkEA11Hs4gmcEBw+0dX3B05WHE3FCA
-        OCV58WMfhXwSO8fWLSYHAG8mnK0uVtuR31J4nxqgqDOKeVJmI6OOVi3Fl9d09xwzwgrAGQ
-        qZdy/vanNvGWjvLr2VPaIl3FrGZqKzbFxSJTVYqWAHg5StSPFuYs78mwgluQRG+v1WAiS6
-        ecF+Ah9sZB46iqv5jOnkWv2mQ9CdJ8Fa77MCSALn6ZIW9iBolLaSTZD6wpQu4g==
+        bh=6xeNLWQP+bLd9S9YzewjHuqXtx801Yffd7R3+nQry8U=;
+        b=HhFS6yL4dbKvDNrCg/WqhxvHPf5uhyxKYtFFH0CEibGbNOwjGLDYBKpRqWm8VqRbTzdVEp
+        Ad9vSV6X6AcbaQFUzUPLoJfvFL3Xf1wyvRNVUrUPD5qHEgyN9f5MY5rnbc23r0N/6fmgOs
+        u8pJdLRbGhS0mLy4haacWvWl2uzNrDs9dwWXfLtZXe8k86MnzfjrgNWOvPYvpV8aC3STsC
+        14dPFbW6uSKJ4Tyo2y/yLSQNFxyjQq9oQ5180djmHmnPhjYz7Z9IGR7xP0KxnQCRH+bNxx
+        9PlyICBnw/JEVrOXVPULaEvDO69Vq+IYDbST4CrwDeocRMKB5wL8q/7H5j4Nsg==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,11 +56,10 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Jimmy Lalande <jimmy.lalande@se.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next v9 10/16] dt-bindings: net: snps,dwmac: add "power-domains" property
-Date:   Fri, 24 Jun 2022 16:39:55 +0200
-Message-Id: <20220624144001.95518-11-clement.leger@bootlin.com>
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v9 14/16] ARM: dts: r9a06g032: describe switch
+Date:   Fri, 24 Jun 2022 16:39:59 +0200
+Message-Id: <20220624144001.95518-15-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220624144001.95518-1-clement.leger@bootlin.com>
 References: <20220624144001.95518-1-clement.leger@bootlin.com>
@@ -71,31 +70,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the stmmac driver already uses pm_runtime*() functions, describe
-"power-domains" property in the binding.
+Add description of the switch that is present on the RZ/N1 SoC. This
+description includes ethernet-ports description for all the ports that
+are present on the switch along with their connection to the MII
+converter ports and to the GMAC for the CPU port.
 
-Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- Documentation/devicetree/bindings/net/snps,dwmac.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/boot/dts/r9a06g032.dtsi | 51 ++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 36c85eb3dc0d..09f97fb5596d 100644
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -135,6 +135,9 @@ properties:
-   reset-names:
-     const: stmmaceth
+diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
+index 42ce02e51e8d..5b97fa85474f 100644
+--- a/arch/arm/boot/dts/r9a06g032.dtsi
++++ b/arch/arm/boot/dts/r9a06g032.dtsi
+@@ -361,6 +361,57 @@ mii_conv5: mii-conv@5 {
+ 			};
+ 		};
  
-+  power-domains:
-+    maxItems: 1
++		switch: switch@44050000 {
++			compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
++			reg = <0x44050000 0x10000>;
++			clocks = <&sysctrl R9A06G032_HCLK_SWITCH>,
++				 <&sysctrl R9A06G032_CLK_SWITCH>;
++			clock-names = "hclk", "clk";
++			power-domains = <&sysctrl>;
++			status = "disabled";
 +
-   mac-mode:
-     $ref: ethernet-controller.yaml#/properties/phy-connection-type
-     description:
++			ethernet-ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				switch_port0: port@0 {
++					reg = <0>;
++					pcs-handle = <&mii_conv5>;
++					status = "disabled";
++				};
++
++				switch_port1: port@1 {
++					reg = <1>;
++					pcs-handle = <&mii_conv4>;
++					status = "disabled";
++				};
++
++				switch_port2: port@2 {
++					reg = <2>;
++					pcs-handle = <&mii_conv3>;
++					status = "disabled";
++				};
++
++				switch_port3: port@3 {
++					reg = <3>;
++					pcs-handle = <&mii_conv2>;
++					status = "disabled";
++				};
++
++				switch_port4: port@4 {
++					reg = <4>;
++					ethernet = <&gmac2>;
++					label = "cpu";
++					phy-mode = "internal";
++					status = "disabled";
++					fixed-link {
++						speed = <1000>;
++						full-duplex;
++					};
++				};
++			};
++		};
++
+ 		gic: interrupt-controller@44101000 {
+ 			compatible = "arm,gic-400", "arm,cortex-a7-gic";
+ 			interrupt-controller;
 -- 
 2.36.1
 
