@@ -2,232 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A35FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 13:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3493CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 13:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231503AbiFXNKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 09:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S231620AbiFXNMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 09:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231134AbiFXNKb (ORCPT
+        with ESMTP id S230264AbiFXNMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 09:10:31 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFEA433E9B
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 06:10:27 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OD4kvB025803;
-        Fri, 24 Jun 2022 13:10:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=5EUsxKF75nb373H5i4w5hZ4JUmxePLVjeCKmGuxaqvQ=;
- b=ca+yVVjL6tUedB5H9B3cIm7n25/VkYZF2HJicQSFYu7fHzg3ZxvdkKRNMqDUGLh63CgB
- rIzcLefyEDmFHIzAQh374whTNJrcoIT7tGIGbBCL+R7MdMrCNZqjNvm240NEsFeUqyUB
- JjdwUoCHDg7KMcidegbLjG3CalRbQgNtST8T9FhzRllE6Om95KnXmw0FF6PweLWEuw+q
- AmKcFMTlIaPTJBaPTHZ9I/JwdEuzSGHPiKdjN+zvESp7Kv5jHlT5eOw9cQowS58k6SI2
- I9+eeYp8bGs9EI0QnL3Zq2BI7fJR2gc4ved0RwP6YgI6s20U7YT85kOtS2gvc4TgtvPo 5A== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gs5g25vy5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 Jun 2022 13:10:13 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25OD6jWO017027;
-        Fri, 24 Jun 2022 13:10:12 GMT
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2044.outbound.protection.outlook.com [104.47.57.44])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gtg3yc1sw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 Jun 2022 13:10:12 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Mm1JKzqgIQB8nQ8uUHY3djTtnpqyw3sbmHhAatcUtHjf22oYSym8F/vM7feG3VPjt0BTFDKWKBwukonTqswqr1t9qHB8V22InX+vJBBpI3gZaUy3O3ZlamWeaU+HVQNBiRYmKzmowxKNRdy6Aw9wr623fm33ozhYs+XLPgMeZCk8sWHIrt6T72z43+3A6Tcx+scunFsnq8Cx//0wQ3BP2mrhnHn/Gb/Car+5C82RkwHkvFPGnqRA+CZqJ1m3dHdRrn3VL13hCfiQPs4cRX/MhIqXF5py4ZU3nraIcA1fSK0lZxV+NV3r5U82tHZGd/8cXSlRiIiq8TccUXetx6SvzQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5EUsxKF75nb373H5i4w5hZ4JUmxePLVjeCKmGuxaqvQ=;
- b=WctOXGgq/rtaH1zrdfQSu8LqWXO+gRB6TX2ekijfZf0hyR4sK6rDdzwfAolajmKIGh6jmRQ1/OFtcmwl/Vm8/F1QOlEtVwuUH7+wkdq8vvBPxY9uHkjvbnVDR22TwwGHC8ybhxFTSt06GK3iiDj/qiEMZYv4AlAcfms7v5mumzhCEEqxx/FwwK7unAXWu9loWuvq2KDQwDOoNbYF2MsFtmx/Hnt0DOpGDSoeygeaZx6x4EtJoX+u8b/CfqQoyfnjgRBK3kNe+6IfWQENVpU6+rvRy0phpTRqGzqT9qxi3j8tQwCz1BqjLYcvoLUq3ExHyp9OH74dqa2pnSl2Lzt0lA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5EUsxKF75nb373H5i4w5hZ4JUmxePLVjeCKmGuxaqvQ=;
- b=wN11HLf6mwT0tB6ztFWBktL+snZV6RqJ6LhPphDiA8xxZjrw3KUraYbniCA17A+OsZiO6fngigYHeaektMEJWSibKsYY6J1rSXYUizWp3BEDbMDuQW+s1dYbtxmQ+mRfONdWIVFiH0g6TW8h1fPsNqWgUkJBY4Tyzt/kAxq3GVQ=
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
- by CH0PR10MB4826.namprd10.prod.outlook.com (2603:10b6:610:c4::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16; Fri, 24 Jun
- 2022 13:10:10 +0000
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::f59a:175d:d24:949c]) by SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::f59a:175d:d24:949c%7]) with mapi id 15.20.5373.016; Fri, 24 Jun 2022
- 13:10:10 +0000
-From:   Liam Howlett <liam.howlett@oracle.com>
-To:     David Hildenbrand <david@redhat.com>
-CC:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "damon @ lists . linux . dev" <damon@lists.linux.dev>,
-        SeongJae Park <sj@kernel.org>
-Subject: Re: [PATCH v10 10/69] mmap: use the VMA iterator in
- count_vma_pages_range()
-Thread-Topic: [PATCH v10 10/69] mmap: use the VMA iterator in
- count_vma_pages_range()
-Thread-Index: AQHYhbAKPwckVgdT3kiIP9lsHoyywa1aXCSAgAQv6oA=
-Date:   Fri, 24 Jun 2022 13:10:10 +0000
-Message-ID: <20220624131003.zydflhstzhx4clty@revolver>
-References: <20220621204632.3370049-1-Liam.Howlett@oracle.com>
- <20220621204632.3370049-11-Liam.Howlett@oracle.com>
- <5d3bf51b-3bba-3bd4-db1f-1c0a3930a1e4@redhat.com>
-In-Reply-To: <5d3bf51b-3bba-3bd4-db1f-1c0a3930a1e4@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8e00d607-62a2-4a78-e6a1-08da55e2de47
-x-ms-traffictypediagnostic: CH0PR10MB4826:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rcKbi5OG07AmsD/23DOv/nPL73jWI27d5xfkBZtbRgwD5G5NHEJcTP3/5qR/oZ8BcMkOsSoY/btp/OqDdGnCd8AvYe7rQKVtsjdITxBdspB9poq0eCtPkeS27po6jM7RWHJaGEDNWMIdurzNa9cvEWbTy/StzW0wV5T2lQaxzKdFzmofEkLZywEviac+BlQ/b1MZ//uwRysNerp7n9/AUZJ1WEl52IvB/xLrFd1nf49YLIzxxtgGZnWgeKWTsn5DDf+9WcY6EVTdk3LUTmIosvKbv1z8AN9B8zkAgaDY6nKSgmp4H66qwyzAraTc1u0wXiM/aDGoLwN1QAfpep+6siUargosI9MZne87BMhDw4HhE1dL4Perr8EBIF3JrhT5iEPEqxppScUFvOFM/nXqdCUPVOJGYnd/LaZIExOXaPrEKnZ7I4HHWw20RSRvovZud9WASuAklHODp6V8EXKIA9tMg4bMNOYRhPosunCIHYndeew5rTqcaGc5ahrnFmvK+6x8AB/fHOO14zDZ0USCuunYxow6rSxofCTT2kYlZiWkhLqhR11b+DPIo/7swHnbAG/hN+AptBUty7Wju/Vw7XCeE7IgL5jJ+b4JVfahtF/2Ft2aNGP33AjMoC2vdKBCIwFZ6MhDjvEdEZFNuGUZQUi8Zd08Q/7Kj/AdRT0F5i2x+H2IJAw/I9VRfRR9Qy0ILNhQ6sbUB4Q69kkZRfEPuzSK735a3OVQ34ybzpZEXQS4pPRv1c9FFU0wtDPsPxmN9V2l6EhsK5or6izs/Al7VIN1ngurKJTgJTlWdp2KkVXF36EbYhtWcs9TFNbaQhAto1BzkCWnI1XDFJlYtwZgTw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(376002)(396003)(39860400002)(366004)(346002)(5660300002)(53546011)(1076003)(54906003)(8936002)(122000001)(186003)(966005)(478600001)(44832011)(38070700005)(6916009)(2906002)(6506007)(316002)(4326008)(9686003)(6486002)(33716001)(86362001)(41300700001)(71200400001)(6512007)(66946007)(26005)(38100700002)(76116006)(66446008)(91956017)(8676002)(83380400001)(66476007)(66556008)(64756008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?l2lShuprGykUth8jG6ltJ+V+6uPoYBJQH6lMe8OjDhG4P5Bq0bi8p25ScovD?=
- =?us-ascii?Q?RiOvP/fS4WABBAzeb2BwyMUDioXWjfNDY9zPUZVzbWdVdLhMmHfACYW05uve?=
- =?us-ascii?Q?hHS0Y60ErXcdCMWsG5aKSGjPRIjFMlxz52U+UIf+RhOOApeqTk6H9KoA0CLJ?=
- =?us-ascii?Q?//lspAOxuqIlVd+ztb7GMsK3WoFMF3yyNqyXbufYQOl7c0jHtD9bpE8GpIZu?=
- =?us-ascii?Q?T7VUJSxzC5pBEqVqN5UtDUvDsdo/04cwlZwFtE/Y0ALTww3XvdkeBB1/Q2Hz?=
- =?us-ascii?Q?Dsh1JdNOJlHoQ7KoxlWNC07zJY0I5WgbmPeiqqgKNEtyGjrbkC6ZIY6InOlt?=
- =?us-ascii?Q?z+SR7m/0QS2DLWsvTaJ7AowV8N4w4U9ts7oJaLkS/xf7PrMkFpitEmkD1KAp?=
- =?us-ascii?Q?hlj/njY1RlmolPdSmJcgq7Y4E+28/8bipvElLZHf4HPOYuJPuzLZXJ50w/G6?=
- =?us-ascii?Q?C5esAun5WVSnbVIRN5dK7rPxlQJvZIiy2F4orV7JNMfv36PKiARZckchLaeJ?=
- =?us-ascii?Q?iBESj+TMf9HtgwISChSoe5nxcIM+KLKr2A7k66N5UQpdowAbSpVs7gbmPeA9?=
- =?us-ascii?Q?oy5899LzA3Z1jep7KUSDGi+X183InNAJOvKJL5byDv46sQc09oJPRmY/l+Ic?=
- =?us-ascii?Q?GRCWLnPW2a49TKaVUoRpSW4LKCaO7AQQCLLATIsKgBDFXWhuFKMcfHXkpqxF?=
- =?us-ascii?Q?bYRroJMVnyQuR22al1ejcpFd+aXO5TJix9pfWBNe3hzpyvXsqpJ3VimYNByE?=
- =?us-ascii?Q?Ywgt6uMC8Jsw2YmgaiBjPwv/myRB7gfPFGkTbHcPJMwGLH1VFUDhmZqFJfX/?=
- =?us-ascii?Q?yVhW2uKUtxYKnGUUKW5X36aeODLyNoieoHBPr1ln1qLjyVwYmkAAOIOrHv7M?=
- =?us-ascii?Q?pnDmoTyk60Na2P+JPsc17sKwVZwP2POhMgiF62I5E3mCoOvtXb/xuxdzD041?=
- =?us-ascii?Q?KZuN0phJJk2sSNlOAWgmmecN6agHKNHUu9FceRuSIbS6FYcfZ1Vdnj8RmaVT?=
- =?us-ascii?Q?3+zlLTC217haqtet1glKN1p6MWPHTC7+hO2CyEWcszqF59s+W6FyL3f+5OrE?=
- =?us-ascii?Q?M5HxsCLvdtqN1pRtVFDa/n8Sn1lLs9a8EJ5XaIiPV3RnMTLQvd7qkQKuMqZ/?=
- =?us-ascii?Q?+ICi1z0s4E09Ik4LMQKi9My3UgfW9JrWpiHuxAGhCTm3VUutKCRH18s3UuXZ?=
- =?us-ascii?Q?g/0JI6NCjVEd9JXc6yCLcN5dfc7BRTgPEcntKXR1wh+V6v8IwmckhfniuXob?=
- =?us-ascii?Q?9U6Qdf0LzfU8LoMqAjGBKT0alMEf7f4urODPbpIrwXnxPF8Bzgi7xZr+Ld2U?=
- =?us-ascii?Q?xbqw+aBbUUTEJdC3cyQPboBkZ3D0InpkcB1aZJnY4xX5FnPo4Uf05thQUFpT?=
- =?us-ascii?Q?PKAEhnJD3RjkaarQw0ByLVIXtuYAAvRKEyrzbbo6MMFHwGm0roANGCGLJZxN?=
- =?us-ascii?Q?LlJb+H3ltsjZjGCdP1l6AAboMD/tgFCownTvL/kUtBvCkC6Vf5VUkaFtY0oX?=
- =?us-ascii?Q?763CxNgOEpb61WiqfpZ0OGNzYkJLsMhawIGNNMFRMx33s39XSEOlQItymu8D?=
- =?us-ascii?Q?39CZXDft4vYG5PQon+k6X1M8QQMW5ahy4FdTV6oaYFQB90F1RMVPnuzsVUFI?=
- =?us-ascii?Q?+Q=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E9D495ED8A27674E90A967CD1C9A8B0E@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e00d607-62a2-4a78-e6a1-08da55e2de47
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2022 13:10:10.6101
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3bbFXqYHVs2E3yPcIneWMcDEozGjK6BIymtBHOclYNlY6Emp38IaIZBgMhZ2tw0AgJSgG7RizXzNcH2XgxPJKQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB4826
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-06-24_07:2022-06-23,2022-06-24 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=999
- malwarescore=0 adultscore=0 phishscore=0 bulkscore=0 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206240051
-X-Proofpoint-GUID: 49OxhX8UAQ1mKEVc4DG1a14ZJw9Kkqf9
-X-Proofpoint-ORIG-GUID: 49OxhX8UAQ1mKEVc4DG1a14ZJw9Kkqf9
+        Fri, 24 Jun 2022 09:12:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6D63F32D
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 06:12:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 650AFB82869
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 13:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FC8BC34114;
+        Fri, 24 Jun 2022 13:12:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656076324;
+        bh=kxyG6jurb+bHBPNYbOsX3XEShKNeeCWKCv2DtjwMjtg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=r+dzArFlimCCkaAzmcKIOHFdKD/63XdZblpC6vSVXtYaNiA/kC7Aj3QXATnyZjlM4
+         fOXldcswLQ7DS/xHEPOopvpe68YwTX8tZPcVhgcWuzsbTRPIhFlk7Ja65iybUqtc7+
+         9GYPEg62JMdgrNJpePMDIOAqI4GsVGg/72wNkxK9bFn67QBzapE+BNu/Cg2zu5k4ZR
+         /G1wOXlPhoRxWO9caMYDkbsmI1yAQDP8ZV24/PG8gImIpUp4JCBer6cKLMrYwiTSFf
+         i+vLPlpssq572Puen4QwPmopdMc7LrKNw4bloz/Ah5QvqFFnkaOY2rMrszfmht/ukA
+         hsP2+VUxLR5uA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o4j6P-002rUb-Ve;
+        Fri, 24 Jun 2022 14:12:02 +0100
+Date:   Fri, 24 Jun 2022 14:12:01 +0100
+Message-ID: <87iloq2oke.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Gavin Shan <gshan@redhat.com>
+Cc:     kvmarm@lists.cs.columbia.edu, shijie@amperemail.onmicrosoft.com,
+        linux-kernel@vger.kernel.org, eauger@redhat.com,
+        shan.gavin@gmail.com, Jonathan.Cameron@huawei.com,
+        pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org,
+        oliver.upton@linux.dev, Oliver Upton <oupton@google.com>,
+        James Morse <james.morse@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: Re: [PATCH v7 00/22] Support SDEI Virtualization
+In-Reply-To: <6bdb9280-3530-dc1f-d33e-5bc1c5ac927b@redhat.com>
+References: <20220527080253.1562538-1-gshan@redhat.com>
+        <6bdb9280-3530-dc1f-d33e-5bc1c5ac927b@redhat.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: gshan@redhat.com, kvmarm@lists.cs.columbia.edu, shijie@amperemail.onmicrosoft.com, linux-kernel@vger.kernel.org, eauger@redhat.com, shan.gavin@gmail.com, Jonathan.Cameron@huawei.com, pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org, oliver.upton@linux.dev, oupton@google.com, james.morse@arm.com, mark.rutland@arm.com, catalin.marinas@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* David Hildenbrand <david@redhat.com> [220621 17:13]:
-> On 21.06.22 22:46, Liam Howlett wrote:
-> > From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-> >=20
-> > This simplifies the implementation and is faster than using the linked
-> > list.
-> >=20
-> > Link: https://lkml.kernel.org/r/20220504010716.661115-12-Liam.Howlett@o=
-racle.com
-> > Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> > Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-> > Acked-by: Vlastimil Babka <vbabka@suse.cz>
-> > Cc: Catalin Marinas <catalin.marinas@arm.com>
-> > Cc: David Howells <dhowells@redhat.com>
-> > Cc: SeongJae Park <sj@kernel.org>
-> > Cc: Will Deacon <will@kernel.org>
-> > Cc: Davidlohr Bueso <dave@stgolabs.net>
-> > Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-> > ---
-> >  mm/mmap.c | 24 +++++++-----------------
-> >  1 file changed, 7 insertions(+), 17 deletions(-)
-> >=20
-> > diff --git a/mm/mmap.c b/mm/mmap.c
-> > index 6be7833c781b..d7e6baa2f40f 100644
-> > --- a/mm/mmap.c
-> > +++ b/mm/mmap.c
-> > @@ -675,29 +675,19 @@ munmap_vma_range(struct mm_struct *mm, unsigned l=
-ong start, unsigned long len,
-> > =20
-> >  	return 0;
-> >  }
-> > +
-> >  static unsigned long count_vma_pages_range(struct mm_struct *mm,
-> >  		unsigned long addr, unsigned long end)
-> >  {
-> > -	unsigned long nr_pages =3D 0;
-> > +	VMA_ITERATOR(vmi, mm, addr);
-> >  	struct vm_area_struct *vma;
-> > +	unsigned long nr_pages =3D 0;
-> > =20
-> > -	/* Find first overlapping mapping */
-> > -	vma =3D find_vma_intersection(mm, addr, end);
-> > -	if (!vma)
-> > -		return 0;
-> > -
-> > -	nr_pages =3D (min(end, vma->vm_end) -
-> > -		max(addr, vma->vm_start)) >> PAGE_SHIFT;
-> > -
-> > -	/* Iterate over the rest of the overlaps */
-> > -	for (vma =3D vma->vm_next; vma; vma =3D vma->vm_next) {
-> > -		unsigned long overlap_len;
-> > -
-> > -		if (vma->vm_start > end)
-> > -			break;
-> > +	for_each_vma_range(vmi, vma, end) {
-> > +		unsigned long vm_start =3D max(addr, vma->vm_start);
-> > +		unsigned long vm_end =3D min(end, vma->vm_end);
->=20
-> I thought using max_t and min_t was the latest advisory. I might be
-> wrong and simply kept doing it that way ;)
+Hi Gavin,
 
-They are the same type so I think this is okay.
+On Thu, 23 Jun 2022 07:11:08 +0100,
+Gavin Shan <gshan@redhat.com> wrote:
+> 
+> Hi Oliver,
+> 
+> On 5/27/22 6:02 PM, Gavin Shan wrote:
+> > This series intends to virtualize Software Delegated Exception Interface
+> > (SDEI), which is defined by DEN0054C (v1.1). It allows the hypervisor to
+> > deliver NMI-alike SDEI event to guest and it's needed by Async PF to
+> > deliver page-not-present notification from hypervisor to guest. The code
+> > and the required qemu changes can be found from:
+> > 
+> >     https://developer.arm.com/documentation/den0054/c
+> >     https://github.com/gwshan/linux    ("kvm/arm64_sdei")
+> >     https://github.com/gwshan/qemu     ("kvm/arm64_sdei")
+> > 
+> > The design is quite strightforward by following the specification. The
+> > (SDEI) events are classified into the shared and private ones according
+> > to their scope. The shared event is system or VM scoped, but the private
+> > event is vcpu scoped. This implementation doesn't support the shared
+> > event because all the needed events are private. Besides, the critial
+> > events aren't supported by the implementation either. It means all events
+> > are normal in terms of priority.
+> > 
+> > There are several objects (data structures) introduced to help on the
+> > event registration, enablement, disablement, unregistration, reset,
+> > delivery and handling.
+> > 
+> >    * kvm_sdei_event_handler
+> >      SDEI event handler, which is provided through EVENT_REGISTER
+> >      hypercall, is called when the SDEI event is delivered from
+> >      host to guest.
+> >         * kvm_sdei_event_context
+> >      The saved (preempted) context when SDEI event is delivered
+> >      for handling.
+> >         * kvm_sdei_vcpu
+> >      SDEI events and their states.
+> > 
+> > The patches are organized as below:
+> > 
+> >    PATCH[01-02] Preparatory work to extend smccc_get_argx() and refactor
+> >                 hypercall routing mechanism
+> >    PATCH[03]    Adds SDEI virtualization infrastructure
+> >    PATCH[04-16] Supports various SDEI hypercalls and event handling
+> >    PATCH[17]    Exposes SDEI capability
+> >    PATCH[18-19] Support SDEI migration
+> >    PATCH[20]    Adds document about SDEI
+> >    PATCH[21-22] SDEI related selftest cases
+> > 
+> > The previous revisions can be found:
+> > 
+> >    v6: https://lore.kernel.org/lkml/20220403153911.12332-4-gshan@redhat.com/T/
+> >    v5: https://lore.kernel.org/kvmarm/20220322080710.51727-1-gshan@redhat.com/
+> >    v4: https://lore.kernel.org/kvmarm/20210815001352.81927-1-gshan@redhat.com/
+> >    v3: https://lore.kernel.org/kvmarm/20210507083124.43347-1-gshan@redhat.com/
+> >    v2: https://lore.kernel.org/kvmarm/20210209032733.99996-1-gshan@redhat.com/
+> >    v1: https://lore.kernel.org/kvmarm/20200817100531.83045-1-gshan@redhat.com/
+> > 
+> 
+> Copying Oliver's new email address (oliver.upton@linux.dev).
+> 
+> Please let me know if I need to rebase and repost the series.
 
->=20
-> > =20
-> > -		overlap_len =3D min(end, vma->vm_end) - vma->vm_start;
-> > -		nr_pages +=3D overlap_len >> PAGE_SHIFT;
-> > +		nr_pages +=3D (vm_end - vm_start) / PAGE_SIZE;
->=20
-> PHYS_PFN(vm_end - vm_start)
->=20
-> >  	}
-> > =20
-> >  	return nr_pages;
->=20
-> Reviewed-by: David Hildenbrand <david@redhat.com>
->=20
-> --=20
-> Thanks,
->=20
-> David / dhildenb
-> =
+My main issue with this series is that it is a solution in search of a
+problem. It is only an enabler for Asynchronous Page Fault support,
+and:
+
+- as far as I know, the core Linux/arm64 maintainers have no plan to
+  support APF. Without it, this is a pointless exercise. And even with
+  it, this introduces a Linux specific behaviour in an otherwise
+  architectural hypervisor (something I'm quite keen on avoiding)
+
+- It gives an incentive to other hypervisor vendors to add random crap
+  to the Linux mm subsystem, which is even worse. At this stage, we
+  might as well go back to the Xen PV days altogether.
+
+- I haven't seen any of the KVM/arm64 users actually asking for the
+  APF horror, and the cloud vendors I directly asked had no plan to
+  use it, and not using it on their x86 systems either
+
+- no performance data nor workloads that could help making an informed
+  decision have been disclosed, and the only argument in its favour
+  seems to be "but x86 has it" (hardly a compelling one)
+
+Given the above, I don't see how to justify this series, as it has no
+purpose on its own, no matter how well written it is.
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
