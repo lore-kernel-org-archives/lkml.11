@@ -2,98 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4121EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F3BCCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232441AbiFXOe0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34052 "EHLO
+        id S232440AbiFXOel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232361AbiFXOeY (ORCPT
+        with ESMTP id S232442AbiFXOej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:34:24 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5338C4E3BB
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:34:23 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id t26-20020a9d775a000000b006168f7563daso2012545otl.2
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:34:23 -0700 (PDT)
+        Fri, 24 Jun 2022 10:34:39 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6174E3585B;
+        Fri, 24 Jun 2022 07:34:35 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 69DA016D8;
+        Fri, 24 Jun 2022 17:35:52 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 69DA016D8
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CjIdCdZWGFwSuc3oixIghf0c9pmC77enrG3S29aQdzk=;
-        b=RisIJZG9CAXzvhjel+xoPaFykN4jy2Qs7nCO4uKlGR98zc6xtBpiv9OlIj4MJDJKYc
-         SYE/WmMJwyiyfk0NMdna8DTHYuHzlhHPwTf/dcAFVE1sjpGD7v89NWIKSJ5t92uzQBEZ
-         eBZvVlP8/VSvTFRik84w8DAChz/B5jHVOP9jo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=CjIdCdZWGFwSuc3oixIghf0c9pmC77enrG3S29aQdzk=;
-        b=LTa2JQie9PWLq+LT8hurfIrA+jNG/xh40pWItg1ByGY8LSrnQ+v+m36Z9jZ3SBVDeq
-         NFRV45kiVpAbTbwYYSXd9wN5l5M4jh2AaMxQYphllB2fyZpSOncB9ZwIpqaFBf9bh6ZB
-         LsZEnVOje4PdO1xlIsHEtAZ1t4EpxWHqIbTw/I5/KCW0mU40HueG/kR9hpwvctI97tvq
-         L305Q2VvA0AiWXGyAxF0gU3ptVdNp1KxNd5sVdIP81QrB0RrFdeqe2GZ0cycBnqPD1yx
-         ob6vaDkhGEohih7oAJoawMXidJx871xYJdc0ZaZq/FZyWZctbLGlRT6pIaqtImjLgcIn
-         gBUA==
-X-Gm-Message-State: AJIora8oS3p7nb+n+i/KZJ1E3j0L4XWxBHNVzBW7dRuK5y9AlNxvGkq5
-        OW6z2pMO1p5wokk1o2wz+Foa9Q==
-X-Google-Smtp-Source: AGRyM1sr1U0Q+MAMmwHVe4fuH4P4dltMP1c4GZfhQTtdyFkgESMympT4FHxQZkIXS4a9OageKAm5eQ==
-X-Received: by 2002:a05:6830:246e:b0:616:ab52:7bce with SMTP id x46-20020a056830246e00b00616ab527bcemr1284775otr.143.1656081262597;
-        Fri, 24 Jun 2022 07:34:22 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id o4-20020a9d4104000000b0060bfb4e4033sm1664963ote.9.2022.06.24.07.34.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jun 2022 07:34:22 -0700 (PDT)
-Subject: Re: [PATCH] cpupower: Fix typo in comment
-To:     Xiang wangx <wangxiang@cdjrlc.com>, trenn@suse.com
-Cc:     shuah@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220624065555.33345-1-wangxiang@cdjrlc.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <5e787efe-6e78-59a4-61b9-7ece2ea1fde1@linuxfoundation.org>
-Date:   Fri, 24 Jun 2022 08:34:20 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        d=baikalelectronics.ru; s=mail; t=1656081352;
+        bh=60k0dZt+gQ0eQT86COoWG8c9fkb3Ux99QvTMOhYMyzI=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=re1nww5EulAWPyjiMhcVy1ZXRGQTx88kJ+O/5sIXLqjYVEQzXW06/zj27YgO8F2BM
+         QNl98lWmiRm12NiiJhP95bkPAtjBvxrmpJ7QhixXdPh188r9UFdxMRJfA5gTR0TQeb
+         CxNvMUl3pHLjd7O1+0KNjRk6SSqvTmW/ebgyFhCM=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jun 2022 17:34:32 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH RESEND v5 01/18] PCI: dwc: Stop link in the host init error and de-initialization
+Date:   Fri, 24 Jun 2022 17:34:11 +0300
+Message-ID: <20220624143428.8334-2-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-In-Reply-To: <20220624065555.33345-1-wangxiang@cdjrlc.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/24/22 12:55 AM, Xiang wangx wrote:
-> Delete the redundant word 'cpu'.
-> 
-> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
-> ---
->   tools/power/cpupower/bench/system.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/power/cpupower/bench/system.c b/tools/power/cpupower/bench/system.c
-> index 40f3679e70b5..eb79dd9ac670 100644
-> --- a/tools/power/cpupower/bench/system.c
-> +++ b/tools/power/cpupower/bench/system.c
-> @@ -37,7 +37,7 @@ long long int get_time()
->    * sets the cpufreq governor
->    *
->    * @param governor cpufreq governor name
-> - * @param cpu cpu for which the governor should be set
-> + * @param cpu for which the governor should be set
+It's logically correct to undo everything what was done in case of an
+error is discovered or in the corresponding cleanup counterpart. Otherwise
+the host controller will be left in an undetermined state. Seeing the link
+is set up in the Host-initialization method it will be right to
+de-activate it there in the cleanup-on-error block and stop the link in
+the antagonistic routine - dw_pcie_host_deinit(). The link de-activation
+is a platform-specific thing and is supposed to be implemented in the
+framework of the dw_pcie_ops.stop_link() operation.
 
-This is correct the way it is. It specifies the name of the parameter
-and describes what it is.
+Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../pci/controller/dwc/pcie-designware-host.c    | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
->    *
->    * @retval 0 on success
->    * @retval -1 when failed
-> 
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index 9979302532b7..bc9a7df130ef 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -421,8 +421,14 @@ int dw_pcie_host_init(struct pcie_port *pp)
+ 	bridge->sysdata = pp;
+ 
+ 	ret = pci_host_probe(bridge);
+-	if (!ret)
+-		return 0;
++	if (ret)
++		goto err_stop_link;
++
++	return 0;
++
++err_stop_link:
++	if (pci->ops && pci->ops->stop_link)
++		pci->ops->stop_link(pci);
+ 
+ err_free_msi:
+ 	if (pp->has_msi_ctrl)
+@@ -433,8 +439,14 @@ EXPORT_SYMBOL_GPL(dw_pcie_host_init);
+ 
+ void dw_pcie_host_deinit(struct pcie_port *pp)
+ {
++	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
++
+ 	pci_stop_root_bus(pp->bridge->bus);
+ 	pci_remove_root_bus(pp->bridge->bus);
++
++	if (pci->ops && pci->ops->stop_link)
++		pci->ops->stop_link(pci);
++
+ 	if (pp->has_msi_ctrl)
+ 		dw_pcie_free_msi(pp);
+ }
+-- 
+2.35.1
 
-There is nothing to fix here.
-
-thanks,
--- Shuah
