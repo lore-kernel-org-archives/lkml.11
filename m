@@ -2,77 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D607AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 03:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D9BC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 03:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbiFXDJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 23:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
+        id S229653AbiFXDKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 23:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiFXDJH (ORCPT
+        with ESMTP id S229599AbiFXDJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 23:09:07 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA4C313AE;
-        Thu, 23 Jun 2022 20:09:05 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LThsm5TPjz4xLT;
-        Fri, 24 Jun 2022 13:09:00 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1656040142;
-        bh=K++hI2FDkjV3G5478DzfpzmGcEObLlrEm0qg0VKmAH4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=JHX2Ao+4jSwUp4Lj3ajWxHaaPO+OTH7kx/LBQVq9vuerTA4WfbzY9j1VeA0zTZGbv
-         gcWkiP8DEDI6VrW7PNNv7SmUrjOTBHcGIoIKzsLffPV4aq49KcTKjF1roSxxvzMKok
-         tiRC1n0QTPGF7Bzel47PCPX+J+KSGmVd+Ui9HJ9soXKau2mD1hHEjSNxiyVVXLTlpF
-         lWYq24g9zZHP87qx2D4YMG9CXWdExUBszaJL74+t+p7QKOCh3XK7byz3HiuelNGnza
-         q1+9XMBDq6/VqO8NipT1I3rObNZs3VaiOK6VHqpdduGeZxQWDhaEsMY8ks7q4Vzsoi
-         lnyvRUex8xctA==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Marek Behun <marek.behun@nic.cz>,
-        Josef Schlehofer <josef.schlehofer@nic.cz>
-Subject: Re: [PATCH] powerpc: dts: Add DTS file for CZ.NIC Turris 1.x routers
-In-Reply-To: <20220511143712.22550-1-pali@kernel.org>
-References: <20220511143712.22550-1-pali@kernel.org>
-Date:   Fri, 24 Jun 2022 13:08:59 +1000
-Message-ID: <877d5669mc.fsf@mpe.ellerman.id.au>
+        Thu, 23 Jun 2022 23:09:58 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBCE31510;
+        Thu, 23 Jun 2022 20:09:56 -0700 (PDT)
+X-UUID: e46b4e096a24463f98d0f42d59f0a4c4-20220624
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:2f88d6f8-b022-479a-9c8d-85c4319bb0dc,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:90
+X-CID-INFO: VERSION:1.1.6,REQID:2f88d6f8-b022-479a-9c8d-85c4319bb0dc,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:90
+X-CID-META: VersionHash:b14ad71,CLOUDID:954cea2d-1756-4fa3-be7f-474a6e4be921,C
+        OID:e6ecb027d5d3,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: e46b4e096a24463f98d0f42d59f0a4c4-20220624
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 521942275; Fri, 24 Jun 2022 11:09:51 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Fri, 24 Jun 2022 11:09:50 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Fri, 24 Jun 2022 11:09:50 +0800
+From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>, <ck.hu@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v14 13/15] drm/mediatek: dpi: add config to support direct connection to dpi panels
+Date:   Fri, 24 Jun 2022 11:09:44 +0800
+Message-ID: <20220624030946.14961-14-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220624030946.14961-1-rex-bc.chen@mediatek.com>
+References: <20220624030946.14961-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pali Roh=C3=A1r <pali@kernel.org> writes:
-> CZ.NIC Turris 1.0 and 1.1 are open source routers, they have dual-core
-> PowerPC Freescale P2020 CPU and are based on Freescale P2020RDB-PC-A boar=
-d.
-> Hardware design is fully open source, all firmware and hardware design
-> files are available at Turris project website:
->
-> https://docs.turris.cz/hw/turris-1x/turris-1x/
-> https://project.turris.cz/en/hardware.html
->
-> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
-> ---
->  arch/powerpc/boot/dts/turris1x.dts | 470 +++++++++++++++++++++++++++++
->  1 file changed, 470 insertions(+)
->  create mode 100644 arch/powerpc/boot/dts/turris1x.dts
+MediaTek dpi supports direct connection to dpi panels while dp_intf does not
+support. Therefore, add a config "support_direct_pin" to control this.
 
-The headers say you Cc'ed this to the devicetree list, but I don't see
-it in the devicetree patchwork:
+Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-  https://patchwork.ozlabs.org/project/devicetree-bindings/list/?state=3D*&=
-q=3Dturris&archive=3Dboth
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index 438bf3bc5e4a..0a93cfee2e53 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -129,6 +129,7 @@ struct mtk_dpi_yc_limit {
+  * @is_ck_de_pol: Support CK/DE polarity.
+  * @swap_input_support: Support input swap function.
+  * @color_fmt_trans_support: Enable color format transfer.
++ * @support_direct_pin: IP supports direct connection to dpi panels.
+  * @dimension_mask: Mask used for HWIDTH, HPORCH, VSYNC_WIDTH and VSYNC_PORCH
+  *		    (no shift).
+  * @hvsize_mask: Mask of HSIZE and VSIZE mask (no shift).
+@@ -146,6 +147,7 @@ struct mtk_dpi_conf {
+ 	bool is_ck_de_pol;
+ 	bool swap_input_support;
+ 	bool color_fmt_trans_support;
++	bool support_direct_pin;
+ 	u32 dimension_mask;
+ 	u32 hvsize_mask;
+ 	u32 channel_swap_shift;
+@@ -619,11 +621,13 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
+ 	mtk_dpi_config_channel_limit(dpi);
+ 	mtk_dpi_config_bit_num(dpi, dpi->bit_num);
+ 	mtk_dpi_config_channel_swap(dpi, dpi->channel_swap);
+-	mtk_dpi_config_yc_map(dpi, dpi->yc_map);
+ 	mtk_dpi_config_color_format(dpi, dpi->color_format);
+-	mtk_dpi_config_2n_h_fre(dpi);
+-	mtk_dpi_dual_edge(dpi);
+-	mtk_dpi_config_disable_edge(dpi);
++	if (dpi->conf->support_direct_pin) {
++		mtk_dpi_config_yc_map(dpi, dpi->yc_map);
++		mtk_dpi_config_2n_h_fre(dpi);
++		mtk_dpi_dual_edge(dpi);
++		mtk_dpi_config_disable_edge(dpi);
++	}
+ 	mtk_dpi_sw_reset(dpi, false);
+ 
+ 	return 0;
+@@ -881,6 +885,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+ 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+ 	.is_ck_de_pol = true,
+ 	.swap_input_support = true,
++	.support_direct_pin = true,
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
+@@ -897,6 +902,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+ 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+ 	.is_ck_de_pol = true,
+ 	.swap_input_support = true,
++	.support_direct_pin = true,
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
+@@ -912,6 +918,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+ 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+ 	.is_ck_de_pol = true,
+ 	.swap_input_support = true,
++	.support_direct_pin = true,
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
+@@ -927,6 +934,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+ 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+ 	.is_ck_de_pol = true,
+ 	.swap_input_support = true,
++	.support_direct_pin = true,
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
+-- 
+2.18.0
 
-Which means it hasn't been run through Rob's CI scripts.
-
-Maybe try a resend?
-
-cheers
