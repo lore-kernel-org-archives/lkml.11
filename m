@@ -2,69 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF67C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 03:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F22C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 03:39:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231448AbiFXDhe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 23:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        id S230405AbiFXDjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 23:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230370AbiFXDhQ (ORCPT
+        with ESMTP id S229585AbiFXDjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 23:37:16 -0400
-Received: from out0-158.mail.aliyun.com (out0-158.mail.aliyun.com [140.205.0.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C1953A72;
-        Thu, 23 Jun 2022 20:37:11 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047212;MF=houwenlong.hwl@antgroup.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---.OBfZx4e_1656041828;
-Received: from localhost(mailfrom:houwenlong.hwl@antgroup.com fp:SMTPD_---.OBfZx4e_1656041828)
-          by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 11:37:08 +0800
-From:   "Hou Wenlong" <houwenlong.hwl@antgroup.com>
-To:     kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] KVM: x86/mmu: Use 1 as the size of gfn range for tlb flushing in FNAME(invlpg)()
-Date:   Fri, 24 Jun 2022 11:37:01 +0800
-Message-Id: <52c2dc356b609474d7a92e72710b270861c1c83e.1656039275.git.houwenlong.hwl@antgroup.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1656039275.git.houwenlong.hwl@antgroup.com>
-References: <cover.1656039275.git.houwenlong.hwl@antgroup.com>
+        Thu, 23 Jun 2022 23:39:19 -0400
+Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4D26382;
+        Thu, 23 Jun 2022 20:39:18 -0700 (PDT)
+Received: by mail-vk1-xa2c.google.com with SMTP id j15so658737vkp.5;
+        Thu, 23 Jun 2022 20:39:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1YM6At45nsxzP3H92QjFXsLn4kYFXKkIt+32oCz0R3Q=;
+        b=Yz57J1I9Hc/qEFi7MqNq+W3QBun/g5+K6qIlvKniW4xvveiBXYy3I/gL45kwNgBs4t
+         0yzp/EAnWtlt8ehnmEBDGFXmRPAkGJYtGqflCYi/ZIf0F+jXou6ijRUpnR0ooCtXN/tL
+         nWejgz80BmEGFOtofaQvgtl+4IGdaZfnTOd/81lZVtH0X2n5Uo1+Oh9HUo+R0mXbXPPI
+         37fLSi5PhCEKz5IhqHUfhpARPmGnzmQXB3wM7c0GOCmDxMWyaWz4jBziHr28eznoZKKy
+         U8fzg8N9Zy0Jbz8FTksT74YQyqwpZDwBUlY30Da3tr01HVsl66TgQi7DdiKkV0cNjEIJ
+         x1vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1YM6At45nsxzP3H92QjFXsLn4kYFXKkIt+32oCz0R3Q=;
+        b=utNucYsN4isS8w4II/v7KXxHwdUc3jLYZgWpo3LJBZHEBJLtMSkEvAUulN+qc+kwTZ
+         j0pJGENeONkVL4REbJ6jTREsvNCr24o7y5SGE5RjVjRpBSwRHddxqoQe7sbQ13xZs1Sx
+         VEnoV6BufkmO65fdguYc45GBlSI41YnasRpn9R842Hvs2+d9mzu5H0tLGvNPAt6h/q3Q
+         X7uc8No/qYXsQEk9NoAU28cbgLBwqDDZsuCKP/+aCo7lJ38hdHLGz3ZU3mnfaWjxJK6Z
+         GqDLypyKQoeIVe1e+I5p9Cs65yDmqDJmUN3JGdBOmJkq6WSHOAl0eA2Icy6xwKh9660z
+         OwKw==
+X-Gm-Message-State: AJIora/RAiYJEncoC/4Pm/xIqONCyxuRIwKOwICBy/jNQqhHhziawLgv
+        Z/XtK1bjgsRnnl3trg8zXRLLSOHuJllJ21hPE+I=
+X-Google-Smtp-Source: AGRyM1vEm8ISHtFwwJrzu6NGlZajnuGMiYLI+V6TR4IxyGImHB3OZOSO5J/tFHXQDFjACX2+upR6suqbjNzHYrsGUsc=
+X-Received: by 2002:a1f:d4c5:0:b0:368:a100:4b9a with SMTP id
+ l188-20020a1fd4c5000000b00368a1004b9amr19725345vkg.27.1656041957272; Thu, 23
+ Jun 2022 20:39:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1655458375-30478-1-git-send-email-u0084500@gmail.com>
+ <1655458375-30478-3-git-send-email-u0084500@gmail.com> <CAHp75VfEQ6tu4-NQKwA+63Ae5busUwV+ZRqD6BtbUA+EkCZnWw@mail.gmail.com>
+ <CADiBU3-wO0-0c9y-GpE15ra2AqkAG-ftqTh+hCvYEY-TojZ-pg@mail.gmail.com> <CAHp75VeBdgbyDQXEYb9ZZdi3AU=vPw6aKGWbNLnuA_QoN4LE4A@mail.gmail.com>
+In-Reply-To: <CAHp75VeBdgbyDQXEYb9ZZdi3AU=vPw6aKGWbNLnuA_QoN4LE4A@mail.gmail.com>
+From:   ChiYuan Huang <u0084500@gmail.com>
+Date:   Fri, 24 Jun 2022 11:39:06 +0800
+Message-ID: <CADiBU3_jgoc9ZuVuVH_cvSeQkghOeUDxzLE_VZFtZ9eaTWeqgA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] iio: adc: Add rtq6056 support
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        cy_huang <cy_huang@richtek.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Only SP with PG_LEVLE_4K level could be unsync, so the size of gfn range
-must be 1.
+Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B46=E6=9C=
+=8819=E6=97=A5 =E9=80=B1=E6=97=A5 =E4=B8=8B=E5=8D=886:38=E5=AF=AB=E9=81=93=
+=EF=BC=9A
+>
+> On Sat, Jun 18, 2022 at 5:16 PM ChiYuan Huang <u0084500@gmail.com> wrote:
+> > Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B46=E6=
+=9C=8818=E6=97=A5 =E9=80=B1=E5=85=AD =E5=87=8C=E6=99=A81:08=E5=AF=AB=E9=81=
+=93=EF=BC=9A
+> > > On Fri, Jun 17, 2022 at 11:37 AM cy_huang <u0084500@gmail.com> wrote:
+>
+> ...
+>
+> > > > +KernelVersion: 5.18.2
+> > >
+> > > Wrong version, this won't be part of a stable kernel.
+> > >
+> > From kernel.org, currently the stable kernel version is 5.18.5.
+> > Change to 5.18.5?
+>
+> Nope. You need to use realistic kernel version, and as I said it can't
+> be a stable one.
+>
+> ...
+>
+> > > But for sure you missed
+>
+> > >   types.h
+> > >
+> > Ack in next. But for types.h, i2c.h already include device.h.
+> > And device.h already include types.h.
+> > Is it still needed to declare explicitly for types.h??
+>
+> Yes. You have to include all headers you are a direct user of, except
+> the ones that are guaranteed to be included by others. The types.h is
+> not guaranteed to be included by listed above.
+>
+> ...
+>
+> > > > +       struct device *dev;
+> > > > +       struct regmap *regmap;
+> > >
+> > > Swapping these two might give less code in the generated binary. Have
+> > > you run bloat-o-meter?
+> > >
+> > I never know about this tool.
+> > I'll check it before I submit the next revision.
+> > Thanks for the reminding.
+> >
+> > But from Jonathan's reply, I may remove 'struct regmap *regmap'.
+> > If all function need the 'regmap', a local variable 'regmap' need to
+> > be declared.
+> > To use struct regmap *regmap =3D dev_get_regmap(dev, NULL) is more effe=
+ctive.
+>
+> It's fine, but you may experiment with bloat-o-meter even in that case
+> out of curiosity.
+>
+I tred to only swap these two line for *dev and *regmap.
+Check the below two cases
+1. bloat-o-meter with rtq6056 as the builtin
+add/remove: 0/0 grow/shrink: 0/0 up/down: 0/0 (0)
+Function                                     old     new   delta
+Total: Before=3D24428680, After=3D24428680, chg +0.00%
+2. size tool with rtq6056 as the kernel build
+   text    data     bss     dec     hex filename
+   5261    1155       0    6416    1910 drivers/iio/adc/rtq6056-adc.ko.old
+   text    data     bss     dec     hex filename
+   5261    1155       0    6416    1910 drivers/iio/adc/rtq6056-adc.ko
 
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
----
- arch/x86/kvm/mmu/paging_tmpl.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+It's weird that there's no difference.
 
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index fa78ee0caffd..fc6d8dcff019 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -938,8 +938,7 @@ static void FNAME(invlpg)(struct kvm_vcpu *vcpu, gva_t gva, hpa_t root_hpa)
- 			mmu_page_zap_pte(vcpu->kvm, sp, sptep, NULL);
- 			if (is_shadow_present_pte(old_spte))
- 				kvm_flush_remote_tlbs_with_address(vcpu->kvm,
--					kvm_mmu_page_get_gfn(sp, sptep - sp->spt),
--					KVM_PAGES_PER_HPAGE(sp->role.level));
-+					kvm_mmu_page_get_gfn(sp, sptep - sp->spt), 1);
- 
- 			if (!rmap_can_add(vcpu))
- 				break;
--- 
-2.31.1
+Do I misunderstand something?
 
+> --
+> With Best Regards,
+> Andy Shevchenko
