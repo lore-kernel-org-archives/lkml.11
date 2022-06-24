@@ -2,144 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E871C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:05:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A2AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231537AbiFXRFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58300 "EHLO
+        id S231576AbiFXRGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231400AbiFXRFr (ORCPT
+        with ESMTP id S231526AbiFXRGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:05:47 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1195D108
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:05:45 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id 23so5492947ybe.8
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:05:45 -0700 (PDT)
+        Fri, 24 Jun 2022 13:06:05 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECF24D60A
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:06:04 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id u9so4297470oiv.12
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:06:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=atishpatra.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZIPazKmSsD26XWJDudnBcSzWESOQebME2fbkS0xWFAE=;
-        b=ZT8/bZUMdVEcLuC1UUVyX3uDPk7EQ1xFxdjgEIyJolBUUEmp91wMIr7tSMXYICg7O3
-         aiDzcAiFvFvcQqxElKgz+8FHfBjpwSjJIGbwBK1ZyH9tvCAfGp7EuRH+AHlIpT0Nov6o
-         SaRWF/Es+NNu2GAFCPfW+KJ5+8LLrmhmxsfYM=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0+0vhPEExLAjmHmvWpzqEFXlBkwHLniOzXACImlZjrY=;
+        b=Y3mu5a2lveFJrWpQklsmSrTWN64yCIpvDo+RT/i91W74AZ3BUMW1bIWJYDW8u4SaUl
+         dSSx0h06uVpA/sc7sE//Yjzbsc2ju4EIBKcm6Ctr6i2zNCe316zBQvuG7phJiGVrSvUA
+         v3MwBaqJUkqC0QFHo/T+i+m5qlDKhoen47JoXF+6dwTQgqOHDe88bJKcHJ8Q2MXwNphU
+         QzfqxpHXpilXixRBClD67ppKEhEEeYgmdOCx6zQyUJOT4mfCZ1XX9W4uYAuFUPxuyifF
+         hPvrfJd9IIlsZd7mBsZG3aetEzsk77QGIH10KMy4Cv864w062iG8SILWrde16ZGhHxnX
+         6rfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZIPazKmSsD26XWJDudnBcSzWESOQebME2fbkS0xWFAE=;
-        b=xwnAyXzZGBbVBIMNlGN36f9S+vpZrUJRsZ4t47U7qwJya/na/o45dGh9IfkEfAVMmF
-         MJmNs4wA8jPS1+OALhwjdBhDt7HWyHVCEsOu4xffRrImJPPZyJd8nEi5HoFfGqy4SFef
-         ajlhI6ZHP24mZNWJC5oxpXkl2Msc0qTqo2HRtljE+4HllmYYOU18v3GZSdVoidN+kaRm
-         15mH/8Aro9vAv8ajtjDJkoQIFSNJzxMqAWi07j2LesolNNTv6sAZ7TXLqemQOBpW1vd5
-         hdbyhNOJplHPKHnreNfzdRckiWjJneki8w4GTLqqTJojw4DH38qUKlJ1X2vZiursemnB
-         zeNQ==
-X-Gm-Message-State: AJIora8cuBDiXh3oKEY60ief4Ls67QxLtqFcxLy1zH2BId/u1Fbm5P1h
-        eBZZqTHdjAYqGv3egNpW92KT9JWiy83joWFLlrMi
-X-Google-Smtp-Source: AGRyM1sHDc2cW7clSCW0XylBGUiRR0RTkYDBhReAvtAFsWXBx2x2LeTFy4BM0fMgkJ61RgRmxJo/gZaREWNynpNDYpE=
-X-Received: by 2002:a5b:c4:0:b0:669:15d4:8b68 with SMTP id d4-20020a5b00c4000000b0066915d48b68mr122544ybp.473.1656090344842;
- Fri, 24 Jun 2022 10:05:44 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0+0vhPEExLAjmHmvWpzqEFXlBkwHLniOzXACImlZjrY=;
+        b=pfqAUX8ZKCritoGMcgDV3We6zxiwd0i1VLpm0zsVxcOKkNvbPZLEy13NAwdy8sIVc9
+         6BUOAFc4TDnZKwNm5uO9mIkk4NdpWTk3OEKyrJ+ajRawETAWein5TNa6fUKiRD0kU1AA
+         iQuWziId8xFPoIuTNS600TRqSGG5Zx4/0kvaCu4B0zLgg1CoXLrjAIHLgQlr0RnmfVKl
+         LoeCYSCP0NkqQPK+dOIHWVMyCzAXQ0NOyPIltDmU0ZqvYHj/I9T3JqV7gppRAYgrHlmo
+         KWy2Xkb6RnD+aBKP9/IR7V2TOTLzVatW44snLOdJ3pDatvI3J/KBTgnoJqgtgFXR2CDs
+         N85A==
+X-Gm-Message-State: AJIora9ysxNnCK0ybCMNmBUS+OMiFMCOfmXsW6YuaGQNDTRVnownXWb9
+        0BBdnvoHL/IyUH+F/uyQ+ku5dQ==
+X-Google-Smtp-Source: AGRyM1txfnmyDcykZy0fXC5KNNgxnfMaOc//EpKeR/oIrHOotIDXvosZFm+cAeMGPhFMd4+XEsa78A==
+X-Received: by 2002:a05:6808:23cb:b0:335:2987:1209 with SMTP id bq11-20020a05680823cb00b0033529871209mr38099oib.69.1656090364070;
+        Fri, 24 Jun 2022 10:06:04 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id i14-20020a056830402e00b0060b128b935csm1807450ots.39.2022.06.24.10.06.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 10:06:03 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 10:08:05 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Taniya Das <tdas@codeaurora.org>
+Cc:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette ? <mturquette@baylibre.com>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/4] clk: qcom: sc7280: Update clk_init_data to const
+ for GCC
+Message-ID: <YrXvdWe5c1ZdS0AR@ripper>
+References: <20220202183528.3911-1-tdas@codeaurora.org>
 MIME-Version: 1.0
-References: <20220624160117.3206-1-nikita.shubin@maquefel.me>
-In-Reply-To: <20220624160117.3206-1-nikita.shubin@maquefel.me>
-From:   Atish Patra <atishp@atishpatra.org>
-Date:   Fri, 24 Jun 2022 10:05:34 -0700
-Message-ID: <CAOnJCU+2mOMj7MPzLKVZQ46gRs=ghxP6FK6oWkss0DfN_si3DQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/5] RISC-V: Create unique identification for SoC PMU
-To:     Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     Anup Patel <anup@brainfault.org>,
-        =?UTF-8?B?Sm/Do28gTcOhcmlvIERvbWluZ29z?= 
-        <joao.mario@tecnico.ulisboa.pt>, linux <linux@yadro.com>,
-        Nikita Shubin <n.shubin@yadro.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220202183528.3911-1-tdas@codeaurora.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 9:01 AM Nikita Shubin <nikita.shubin@maquefel.me> wrote:
->
-> From: Nikita Shubin <n.shubin@yadro.com>
->
-> This series aims to provide matching vendor SoC with corresponded JSON bindings.
->
-> The ID string is proposed to be in form of MVENDORID-MARCHID-MIMPID, for example
-> for Sifive Unmatched the corresponding string will be:
->
-> 0x489-0x8000000000000007-0x[[:xdigit:]]+,v1,sifive/u74,core
->
-> Where MIMPID can vary as all impl supported the same number of events, this might not
-> be true for all future SoC however.
->
-> Also added 3 counters which are standart for all RISC-V implementations and SBI firmware
-> events prerry names, as any firmware that supports SBI PMU should also support firmare
-> events.
->
-> Link: https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc
-> Link: https://patchwork.kernel.org/project/linux-riscv/list/?series=648017
+On Wed 02 Feb 10:35 PST 2022, Taniya Das wrote:
+
+> Update clk_init_data to const and also use index instead of fw_name for
+> global clock controller.
+> 
+> Fixes: a3cc092196ef6 ("clk: qcom: Add Global Clock controller (GCC) driver for SC7280")
+> Signed-off-by: Taniya Das <tdas@codeaurora.org>
+
+Hi Taniya,
+
+I'm not able to find a new revision of this series in the inbox, could
+you please respin it?
+
 > ---
-> v3->v4:
-> - drop pmuid in riscv_pmu_sbi, we are using /proc/cpuinfo
-> - rework util/header.c to use /proc/cpuinfo
-> - add SBI firmware events
-> - add firmware and std arch events to U74 pmu bindings
-> - change U74 id string and description in mapfile.csv
-> ---
-> Nikita Shubin (5):
->   drivers/perf: riscv_pmu_sbi: perf format
->   perf tools riscv: Add support for get_cpuid_str function
->   perf arch events: riscv arch std event files
->   perf arch events: riscv sbi firmare std event files
->   perf vendor events riscv: add Sifive U74 JSON file
->
->  drivers/perf/riscv_pmu_sbi.c                  |  20 +++
->  tools/perf/arch/riscv/util/Build              |   1 +
->  tools/perf/arch/riscv/util/header.c           | 109 ++++++++++++++
->  tools/perf/pmu-events/arch/riscv/mapfile.csv  |  17 +++
->  .../pmu-events/arch/riscv/riscv-generic.json  |  20 +++
->  .../arch/riscv/riscv-sbi-firmware.json        | 134 ++++++++++++++++++
->  .../arch/riscv/sifive/u74/firmware.json       |  68 +++++++++
->  .../arch/riscv/sifive/u74/generic.json        |  11 ++
->  .../arch/riscv/sifive/u74/instructions.json   |  92 ++++++++++++
->  .../arch/riscv/sifive/u74/memory.json         |  32 +++++
->  .../arch/riscv/sifive/u74/microarch.json      |  57 ++++++++
->  11 files changed, 561 insertions(+)
->  create mode 100644 tools/perf/arch/riscv/util/header.c
->  create mode 100644 tools/perf/pmu-events/arch/riscv/mapfile.csv
->  create mode 100644 tools/perf/pmu-events/arch/riscv/riscv-generic.json
->  create mode 100644 tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
->  create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/firmware.json
->  create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/generic.json
->  create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/instructions.json
->  create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/memory.json
->  create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/microarch.json
->
-> --
-> 2.35.1
->
+>  drivers/clk/qcom/gcc-sc7280.c | 362 +++++++++++++++++-----------------
+>  1 file changed, 181 insertions(+), 181 deletions(-)
+> 
+> diff --git a/drivers/clk/qcom/gcc-sc7280.c b/drivers/clk/qcom/gcc-sc7280.c
+> index 423627d49719..ccecd3d8a6d9 100644
+> --- a/drivers/clk/qcom/gcc-sc7280.c
+> +++ b/drivers/clk/qcom/gcc-sc7280.c
+> @@ -1,6 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0-only
+>  /*
+> - * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
+> + * Copyright (c) 2020-2022, The Linux Foundation. All rights reserved.
+>   */
+> 
+>  #include <linux/clk-provider.h>
+> @@ -45,10 +45,10 @@ static struct clk_alpha_pll gcc_gpll0 = {
+>  	.clkr = {
+>  		.enable_reg = 0x52010,
+>  		.enable_mask = BIT(0),
+> -		.hw.init = &(struct clk_init_data){
+> +		.hw.init = &(const struct clk_init_data){
 
-Thanks Nikita for reworking on the patches. It is good to specify that
-this series now depends
-on Anup's patch[1] that adds the mvendorid/mimpid to the /proc/cpuinfo.
+And while doing so, please split this into one patch adding the const...
 
-[1] https://lkml.org/lkml/2022/6/20/498
+>  			.name = "gcc_gpll0",
+>  			.parent_data = &(const struct clk_parent_data){
+> -				.fw_name = "bi_tcxo",
+> +				.index = 0,
 
--- 
-Regards,
-Atish
+and a separate patch changing fw_name to index. If there are regressions
+we want to be able to bisect it down to the right one.
+
+Also, please add a define for BI_TCXO, instead of having a comment in
+most places - like I did in gcc-sc8280xp.c (but as we have existing dts
+I don't think it's wise to replace all fw_name entries with .index)..
+
+Thanks,
+Bjorn
