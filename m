@@ -2,145 +2,426 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4255C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B11CCA483
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232274AbiFXOEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58708 "EHLO
+        id S232236AbiFXOGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232261AbiFXOEn (ORCPT
+        with ESMTP id S231160AbiFXOGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:04:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047174ECCD
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:04:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA40DB828DE
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:04:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF55AC34114
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:04:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656079479;
-        bh=rbX4aFBS8SAFyLR0glqQvi20+W7N3nQGaOsW2HPUbuc=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=QJypiEkyuFAeDGL4N2lGmYAhXXk1E61bGEX9OkHAzUIzl1OhR0mFoRY2zL5ujLM9A
-         3oNDkNP43/lufw67/KqAtqUMLy70Xiv4BK1MuY6lFoi19sGuz6i7qVQM/GCeNMhAil
-         4iwbDWQpXT5N9dwNCKlWfvJU00Llh3uOX6/DXeYhFhwiUwjHSRhYPVGxwY9DRPwGx7
-         02rD3kx4EJSqqxbQRcYqui8VCR33vCSJRr2dGVNEvqyyCtw8EivwGJx6Ys4cHqeMsK
-         mzDSneaOIh5x/SbO7dddNM2sj+G1k8S014pqdDI6vfmZjtE8IGVfkEc/olmcplQRue
-         urqQBX6zzbLtw==
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] habanalabs/gaudi: remove unused enum
-Date:   Fri, 24 Jun 2022 17:04:29 +0300
-Message-Id: <20220624140429.1778402-5-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220624140429.1778402-1-ogabbay@kernel.org>
-References: <20220624140429.1778402-1-ogabbay@kernel.org>
+        Fri, 24 Jun 2022 10:06:08 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2788D4EDD2;
+        Fri, 24 Jun 2022 07:06:03 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LTzPL6HFtz1KCB5;
+        Fri, 24 Jun 2022 22:03:50 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 24 Jun 2022 22:06:00 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.61) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 24 Jun 2022 22:05:59 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <jolsa@kernel.org>, <namhyung@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@kernel.org>, <irogers@google.com>,
+        <davemarchevsky@fb.com>, <adrian.hunter@intel.com>,
+        <alexandre.truong@arm.com>, <linux-kernel@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+CC:     <yangjihong1@huawei.com>
+Subject: [RFC v2 01/17] perf kwork: New tool
+Date:   Fri, 24 Jun 2022 22:03:33 +0800
+Message-ID: <20220624140349.16964-2-yangjihong1@huawei.com>
+X-Mailer: git-send-email 2.30.GIT
+In-Reply-To: <20220624140349.16964-1-yangjihong1@huawei.com>
+References: <20220624140349.16964-1-yangjihong1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.61]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Also beautify code by preferring single line wherever possible.
+The perf-kwork tool is used to trace time properties of kernel work
+(such as irq, softirq, and workqueue), including runtime, latency,
+and timehist, using the infrastructure in the perf tools to allow
+tracing extra targets.
 
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+This is the first commit to reuse perf_record framework code to
+implement a simple record function, kwork is not supported currently.
+
+Test cases:
+
+  # perf
+
+   usage: perf [--version] [--help] [OPTIONS] COMMAND [ARGS]
+
+   The most commonly used perf commands are:
+  <SNIP>
+     iostat          Show I/O performance metrics
+     kallsyms        Searches running kernel for symbols
+     kmem            Tool to trace/measure kernel memory properties
+     kvm             Tool to trace/measure kvm guest os
+     kwork           Tool to trace/measure kernel work properties (latencies)
+     list            List all symbolic event types
+     lock            Analyze lock events
+     mem             Profile memory accesses
+     record          Run a command and record its profile into perf.data
+  <SNIP>
+   See 'perf help COMMAND' for more information on a specific command.
+
+  # perf kwork
+
+   Usage: perf kwork [<options>] {record}
+
+      -D, --dump-raw-trace  dump raw trace in ASCII
+      -f, --force           don't complain, do it
+      -k, --kwork <kwork>   list of kwork to profile
+      -v, --verbose         be more verbose (show symbol address, etc)
+
+  # perf kwork record -- sleep 1
+  [ perf record: Woken up 0 times to write data ]
+  [ perf record: Captured and wrote 1.787 MB perf.data ]
+
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
 ---
- drivers/misc/habanalabs/gaudi/gaudi.c | 31 ++++++++-------------------
- 1 file changed, 9 insertions(+), 22 deletions(-)
+ tools/perf/Build                        |   1 +
+ tools/perf/Documentation/perf-kwork.txt |  43 +++++++
+ tools/perf/builtin-kwork.c              | 162 ++++++++++++++++++++++++
+ tools/perf/builtin.h                    |   1 +
+ tools/perf/command-list.txt             |   1 +
+ tools/perf/perf.c                       |   1 +
+ tools/perf/util/kwork.h                 |  41 ++++++
+ 7 files changed, 250 insertions(+)
+ create mode 100644 tools/perf/Documentation/perf-kwork.txt
+ create mode 100644 tools/perf/builtin-kwork.c
+ create mode 100644 tools/perf/util/kwork.h
 
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 7d65260e46d7..478374418b90 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -241,12 +241,6 @@ gaudi_qman_arb_error_cause[GAUDI_NUM_OF_QM_ARB_ERR_CAUSE] = {
- 	"MSG AXI LBW returned with error"
+diff --git a/tools/perf/Build b/tools/perf/Build
+index db61dbe2b543..496b096153bb 100644
+--- a/tools/perf/Build
++++ b/tools/perf/Build
+@@ -25,6 +25,7 @@ perf-y += builtin-data.o
+ perf-y += builtin-version.o
+ perf-y += builtin-c2c.o
+ perf-y += builtin-daemon.o
++perf-y += builtin-kwork.o
+ 
+ perf-$(CONFIG_TRACE) += builtin-trace.o
+ perf-$(CONFIG_LIBELF) += builtin-probe.o
+diff --git a/tools/perf/Documentation/perf-kwork.txt b/tools/perf/Documentation/perf-kwork.txt
+new file mode 100644
+index 000000000000..dc1e36da57bb
+--- /dev/null
++++ b/tools/perf/Documentation/perf-kwork.txt
+@@ -0,0 +1,43 @@
++perf-kowrk(1)
++=============
++
++NAME
++----
++perf-kwork - Tool to trace/measure kernel work properties (latencies)
++
++SYNOPSIS
++--------
++[verse]
++'perf kwork' {record}
++
++DESCRIPTION
++-----------
++There are several variants of 'perf kwork':
++
++  'perf kwork record <command>' to record the kernel work
++  of an arbitrary workload.
++
++    Example usage:
++        perf kwork record -- sleep 1
++
++OPTIONS
++-------
++-D::
++--dump-raw-trace=::
++	Display verbose dump of the sched data.
++
++-f::
++--force::
++	Don't complain, do it.
++
++-k::
++--kwork::
++	List of kwork to profile
++
++-v::
++--verbose::
++	Be more verbose. (show symbol address, etc)
++
++SEE ALSO
++--------
++linkperf:perf-record[1]
+diff --git a/tools/perf/builtin-kwork.c b/tools/perf/builtin-kwork.c
+new file mode 100644
+index 000000000000..f3552c56ede3
+--- /dev/null
++++ b/tools/perf/builtin-kwork.c
+@@ -0,0 +1,162 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * builtin-kwork.c
++ *
++ * Copyright (c) 2022  Huawei Inc,  Yang Jihong <yangjihong1@huawei.com>
++ */
++
++#include "builtin.h"
++
++#include "util/data.h"
++#include "util/kwork.h"
++#include "util/debug.h"
++#include "util/symbol.h"
++#include "util/thread.h"
++#include "util/string2.h"
++#include "util/callchain.h"
++#include "util/evsel_fprintf.h"
++
++#include <subcmd/pager.h>
++#include <subcmd/parse-options.h>
++
++#include <errno.h>
++#include <inttypes.h>
++#include <linux/err.h>
++#include <linux/time64.h>
++#include <linux/zalloc.h>
++
++static struct kwork_class *kwork_class_supported_list[KWORK_CLASS_MAX] = {
++};
++
++static void setup_event_list(struct perf_kwork *kwork,
++			     const struct option *options,
++			     const char * const usage_msg[])
++{
++	int i;
++	struct kwork_class *class;
++	char *tmp, *tok, *str;
++
++	if (kwork->event_list_str == NULL)
++		goto null_event_list_str;
++
++	str = strdup(kwork->event_list_str);
++	for (tok = strtok_r(str, ", ", &tmp);
++	     tok; tok = strtok_r(NULL, ", ", &tmp)) {
++		for (i = 0; i < KWORK_CLASS_MAX; i++) {
++			class = kwork_class_supported_list[i];
++			if (strcmp(tok, class->name) == 0) {
++				list_add_tail(&class->list, &kwork->class_list);
++				break;
++			}
++		}
++		if (i == KWORK_CLASS_MAX)
++			usage_with_options_msg(usage_msg, options,
++					       "Unknown --event key: `%s'", tok);
++	}
++	free(str);
++
++null_event_list_str:
++	/*
++	 * config all kwork events if not specified
++	 */
++	if (list_empty(&kwork->class_list))
++		for (i = 0; i < KWORK_CLASS_MAX; i++)
++			list_add_tail(&kwork_class_supported_list[i]->list,
++				      &kwork->class_list);
++
++	pr_debug("Config event list:");
++	list_for_each_entry(class, &kwork->class_list, list)
++		pr_debug(" %s", class->name);
++	pr_debug("\n");
++}
++
++static int perf_kwork__record(struct perf_kwork *kwork,
++			      int argc, const char **argv)
++{
++	const char **rec_argv;
++	unsigned int rec_argc, i, j;
++	struct kwork_class *class;
++
++	const char *const record_args[] = {
++		"record",
++		"-a",
++		"-R",
++		"-m", "1024",
++		"-c", "1",
++	};
++
++	rec_argc = ARRAY_SIZE(record_args) + argc - 1;
++
++	list_for_each_entry(class, &kwork->class_list, list)
++		rec_argc += 2 * class->nr_tracepoints;
++
++	rec_argv = calloc(rec_argc + 1, sizeof(char *));
++	if (rec_argv == NULL)
++		return -ENOMEM;
++
++	for (i = 0; i < ARRAY_SIZE(record_args); i++)
++		rec_argv[i] = strdup(record_args[i]);
++
++	list_for_each_entry(class, &kwork->class_list, list) {
++		for (j = 0; j < class->nr_tracepoints; j++) {
++			rec_argv[i++] = strdup("-e");
++			rec_argv[i++] = strdup(class->tp_handlers[j].name);
++		}
++	}
++
++	for (j = 1; j < (unsigned int)argc; j++, i++)
++		rec_argv[i] = argv[j];
++
++	BUG_ON(i != rec_argc);
++
++	pr_debug("record comm: ");
++	for (j = 0; j < rec_argc; j++)
++		pr_debug("%s ", rec_argv[j]);
++	pr_debug("\n");
++
++	return cmd_record(i, rec_argv);
++}
++
++int cmd_kwork(int argc, const char **argv)
++{
++	static struct perf_kwork kwork = {
++		.class_list          = LIST_HEAD_INIT(kwork.class_list),
++
++		.force               = false,
++		.event_list_str      = NULL,
++	};
++
++	const struct option kwork_options[] = {
++	OPT_INCR('v', "verbose", &verbose,
++		 "be more verbose (show symbol address, etc)"),
++	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
++		    "dump raw trace in ASCII"),
++	OPT_STRING('k', "kwork", &kwork.event_list_str, "kwork",
++		   "list of kwork to profile"),
++	OPT_BOOLEAN('f', "force", &kwork.force, "don't complain, do it"),
++	OPT_END()
++	};
++
++	const char *kwork_usage[] = {
++		NULL,
++		NULL
++	};
++	const char *const kwork_subcommands[] = {
++		"record", NULL
++	};
++
++	argc = parse_options_subcommand(argc, argv, kwork_options,
++					kwork_subcommands, kwork_usage,
++					PARSE_OPT_STOP_AT_NON_OPTION);
++	if (!argc)
++		usage_with_options(kwork_usage, kwork_options);
++
++	setup_event_list(&kwork, kwork_options, kwork_usage);
++
++	if (strlen(argv[0]) > 2 && strstarts("record", argv[0]))
++		return perf_kwork__record(&kwork, argc, argv);
++	else
++		usage_with_options(kwork_usage, kwork_options);
++
++	return 0;
++}
+diff --git a/tools/perf/builtin.h b/tools/perf/builtin.h
+index 7303e80a639c..d03afea86217 100644
+--- a/tools/perf/builtin.h
++++ b/tools/perf/builtin.h
+@@ -38,6 +38,7 @@ int cmd_mem(int argc, const char **argv);
+ int cmd_data(int argc, const char **argv);
+ int cmd_ftrace(int argc, const char **argv);
+ int cmd_daemon(int argc, const char **argv);
++int cmd_kwork(int argc, const char **argv);
+ 
+ int find_scripts(char **scripts_array, char **scripts_path_array, int num,
+ 		 int pathlen);
+diff --git a/tools/perf/command-list.txt b/tools/perf/command-list.txt
+index 4aa034aefa33..8fcab5ad00c5 100644
+--- a/tools/perf/command-list.txt
++++ b/tools/perf/command-list.txt
+@@ -18,6 +18,7 @@ perf-iostat			mainporcelain common
+ perf-kallsyms			mainporcelain common
+ perf-kmem			mainporcelain common
+ perf-kvm			mainporcelain common
++perf-kwork			mainporcelain common
+ perf-list			mainporcelain common
+ perf-lock			mainporcelain common
+ perf-mem			mainporcelain common
+diff --git a/tools/perf/perf.c b/tools/perf/perf.c
+index 0170cb0819d6..c21b3973641a 100644
+--- a/tools/perf/perf.c
++++ b/tools/perf/perf.c
+@@ -91,6 +91,7 @@ static struct cmd_struct commands[] = {
+ 	{ "data",	cmd_data,	0 },
+ 	{ "ftrace",	cmd_ftrace,	0 },
+ 	{ "daemon",	cmd_daemon,	0 },
++	{ "kwork",	cmd_kwork,	0 },
  };
  
--enum gaudi_sm_sei_cause {
--	GAUDI_SM_SEI_SO_OVERFLOW,
--	GAUDI_SM_SEI_LBW_4B_UNALIGNED,
--	GAUDI_SM_SEI_AXI_RESPONSE_ERR
--};
--
- static enum hl_queue_type gaudi_queue_type[GAUDI_QUEUE_ID_SIZE] = {
- 	QUEUE_TYPE_EXT, /* GAUDI_QUEUE_ID_DMA_0_0 */
- 	QUEUE_TYPE_EXT, /* GAUDI_QUEUE_ID_DMA_0_1 */
-@@ -609,16 +603,14 @@ static int gaudi_set_fixed_properties(struct hl_device *hdev)
- 
- 	prop->dram_base_address = DRAM_PHYS_BASE;
- 	prop->dram_size = GAUDI_HBM_SIZE_32GB;
--	prop->dram_end_address = prop->dram_base_address +
--					prop->dram_size;
-+	prop->dram_end_address = prop->dram_base_address + prop->dram_size;
- 	prop->dram_user_base_address = DRAM_BASE_ADDR_USER;
- 
- 	prop->sram_base_address = SRAM_BASE_ADDR;
- 	prop->sram_size = SRAM_SIZE;
--	prop->sram_end_address = prop->sram_base_address +
--					prop->sram_size;
--	prop->sram_user_base_address = prop->sram_base_address +
--					SRAM_USER_BASE_OFFSET;
-+	prop->sram_end_address = prop->sram_base_address + prop->sram_size;
-+	prop->sram_user_base_address =
-+			prop->sram_base_address + SRAM_USER_BASE_OFFSET;
- 
- 	prop->mmu_pgt_addr = MMU_PAGE_TABLES_ADDR;
- 	if (hdev->pldm)
-@@ -7766,8 +7758,7 @@ static int tpc_krn_event_to_tpc_id(u16 tpc_dec_event_type)
- 	return (tpc_dec_event_type - GAUDI_EVENT_TPC0_KRN_ERR) / 6;
- }
- 
--static void gaudi_print_clk_change_info(struct hl_device *hdev,
--					u16 event_type)
-+static void gaudi_print_clk_change_info(struct hl_device *hdev, u16 event_type)
- {
- 	ktime_t zero_time = ktime_set(0, 0);
- 
-@@ -7815,8 +7806,7 @@ static void gaudi_print_clk_change_info(struct hl_device *hdev,
- 	mutex_unlock(&hdev->clk_throttling.lock);
- }
- 
--static void gaudi_handle_eqe(struct hl_device *hdev,
--				struct hl_eq_entry *eq_entry)
-+static void gaudi_handle_eqe(struct hl_device *hdev, struct hl_eq_entry *eq_entry)
- {
- 	struct gaudi_device *gaudi = hdev->asic_specific;
- 	u64 data = le64_to_cpu(eq_entry->data[0]), event_mask = 0;
-@@ -8103,8 +8093,7 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
- 		hl_fw_unmask_irq(hdev, event_type);
- }
- 
--static void *gaudi_get_events_stat(struct hl_device *hdev, bool aggregate,
--					u32 *size)
-+static void *gaudi_get_events_stat(struct hl_device *hdev, bool aggregate, u32 *size)
- {
- 	struct gaudi_device *gaudi = hdev->asic_specific;
- 
-@@ -8117,8 +8106,7 @@ static void *gaudi_get_events_stat(struct hl_device *hdev, bool aggregate,
- 	return gaudi->events_stat;
- }
- 
--static int gaudi_mmu_invalidate_cache(struct hl_device *hdev, bool is_hard,
--					u32 flags)
-+static int gaudi_mmu_invalidate_cache(struct hl_device *hdev, bool is_hard, u32 flags)
- {
- 	struct gaudi_device *gaudi = hdev->asic_specific;
- 	u32 status, timeout_usec;
-@@ -8161,8 +8149,7 @@ static int gaudi_mmu_invalidate_cache_range(struct hl_device *hdev,
- 	return hdev->asic_funcs->mmu_invalidate_cache(hdev, is_hard, flags);
- }
- 
--static int gaudi_mmu_update_asid_hop0_addr(struct hl_device *hdev,
--					u32 asid, u64 phys_addr)
-+static int gaudi_mmu_update_asid_hop0_addr(struct hl_device *hdev, u32 asid, u64 phys_addr)
- {
- 	u32 status, timeout_usec;
- 	int rc;
+ struct pager_config {
+diff --git a/tools/perf/util/kwork.h b/tools/perf/util/kwork.h
+new file mode 100644
+index 000000000000..6950636aab2a
+--- /dev/null
++++ b/tools/perf/util/kwork.h
+@@ -0,0 +1,41 @@
++#ifndef PERF_UTIL_KWORK_H
++#define PERF_UTIL_KWORK_H
++
++#include "perf.h"
++
++#include "util/tool.h"
++#include "util/event.h"
++#include "util/evlist.h"
++#include "util/session.h"
++#include "util/time-utils.h"
++
++#include <linux/list.h>
++#include <linux/bitmap.h>
++
++enum kwork_class_type {
++	KWORK_CLASS_MAX,
++};
++
++struct kwork_class {
++	struct list_head list;
++	const char *name;
++	enum kwork_class_type type;
++
++	unsigned int nr_tracepoints;
++	const struct evsel_str_handler *tp_handlers;
++};
++
++struct perf_kwork {
++	/*
++	 * metadata
++	 */
++	struct list_head class_list;
++
++	/*
++	 * options for command
++	 */
++	bool force;
++	const char *event_list_str;
++};
++
++#endif  /* PERF_UTIL_KWORK_H */
 -- 
-2.25.1
+2.30.GIT
 
