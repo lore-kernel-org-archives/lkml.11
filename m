@@ -2,58 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A119C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C346C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 08:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231488AbiFXISr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 04:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39678 "EHLO
+        id S231529AbiFXIUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 04:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231452AbiFXISh (ORCPT
+        with ESMTP id S231514AbiFXIUf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 04:18:37 -0400
-Received: from mail.greatagencyonline.pl (mail.greatagencyonline.pl [89.40.125.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215C46E7A1
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:18:36 -0700 (PDT)
-Received: by mail.greatagencyonline.pl (Postfix, from userid 1001)
-        id 753A2A6321; Fri, 24 Jun 2022 09:06:13 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=greatagencyonline.pl;
-        s=mail; t=1656058048;
-        bh=ksvwLPFdjL017OLwir5xHXy3Vmrj/5fhZ5DwBI62qzc=;
-        h=Date:From:To:Subject:From;
-        b=ll1mTG+h29gh3apszQZruTXwKEond2gwQ7z5x1/f2r1wMUHfxboJd+3KsDTGacqqy
-         COx7+etKjNQrY9CXRG5VjyLmAIV5pBHs2qPSVC1VpRE7yul38VuYwT3/cJPR4tqa4n
-         JFf6k2oDbKKExDgvfa1hmfpB5bLQCU3jBHIBx0DoksC4TN1bAzYxeaqhscGghIzjxY
-         ykAf52YsdBUtcihr+YJJf5VhkdLc9Kxs9GywKIn0U3Gwg4mNrG8qEz7W2Q2DKSwAzl
-         /driWRPPDkmJavLyPsGgiali69SIDuiEziaJIJtbR86NVRB12u70A7cpvgouYox4zE
-         5oYQnJOtc/04g==
-Received: by mail.greatagencyonline.pl for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 08:05:17 GMT
-Message-ID: <20220624074502-0.1.4o.1flib.0.5hpnfh2xdw@greatagencyonline.pl>
-Date:   Fri, 24 Jun 2022 08:05:17 GMT
-From:   =?UTF-8?Q? "Miko=C5=82aj_Rudzik" ?= 
-        <mikolaj.rudzik@greatagencyonline.pl>
-To:     <linux-kernel@vger.kernel.org>
-Subject: =?UTF-8?Q?Nap=C5=82yw_Klient=C3=B3w_ze_strony?=
-X-Mailer: mail.greatagencyonline.pl
-MIME-Version: 1.0
+        Fri, 24 Jun 2022 04:20:35 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C3A6F492
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 01:20:27 -0700 (PDT)
+X-UUID: 753c42cefd3c4672b525df6e5332f283-20220624
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:bc71351e-462f-4ee6-be3e-29355e27aa92,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:51
+X-CID-INFO: VERSION:1.1.6,REQID:bc71351e-462f-4ee6-be3e-29355e27aa92,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:51
+X-CID-META: VersionHash:b14ad71,CLOUDID:562678d8-850a-491d-a127-60d9309b2b3e,C
+        OID:810ffcbf3856,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 753c42cefd3c4672b525df6e5332f283-20220624
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <yee.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 709302985; Fri, 24 Jun 2022 16:20:21 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 24 Jun 2022 16:20:20 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 24 Jun 2022 16:20:20 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Fri, 24 Jun 2022 16:20:20 +0800
+Message-ID: <bdfd039fbde06113071f773ae6d5635ff4664e2c.camel@mediatek.com>
+Subject: Re: [PATCH 1/1] mm: kfence: skip kmemleak alloc in kfence_pool
+From:   Yee Lee <yee.lee@mediatek.com>
+To:     Marco Elver <elver@google.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:KFENCE" <kasan-dev@googlegroups.com>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Date:   Fri, 24 Jun 2022 16:20:20 +0800
+In-Reply-To: <CANpmjNN-jsZoVmJWD2Dz6O3_YVjy0av6e0iD-+OYXpik1LbLvg@mail.gmail.com>
+References: <20220623111937.6491-1-yee.lee@mediatek.com>
+         <20220623111937.6491-2-yee.lee@mediatek.com>
+         <CANpmjNN-jsZoVmJWD2Dz6O3_YVjy0av6e0iD-+OYXpik1LbLvg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dzie=C5=84 dobry,
+On Thu, 2022-06-23 at 13:59 +0200, Marco Elver wrote:
+> On Thu, 23 Jun 2022 at 13:20, yee.lee via kasan-dev
+> <kasan-dev@googlegroups.com> wrote:
+> > 
+> > From: Yee Lee <yee.lee@mediatek.com>
+> > 
+> > Use MEMBLOCK_ALLOC_NOLEAKTRACE to skip kmemleak registration when
+> > the kfence pool is allocated from memblock. And the kmemleak_free
+> > later can be removed too.
+> 
+> Is this purely meant to be a cleanup and non-functional change?
+> 
+> > Signed-off-by: Yee Lee <yee.lee@mediatek.com>
+> > 
+> > ---
+> >  mm/kfence/core.c | 18 ++++++++----------
+> >  1 file changed, 8 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+> > index 4e7cd4c8e687..0d33d83f5244 100644
+> > --- a/mm/kfence/core.c
+> > +++ b/mm/kfence/core.c
+> > @@ -600,14 +600,6 @@ static unsigned long kfence_init_pool(void)
+> >                 addr += 2 * PAGE_SIZE;
+> >         }
+> > 
+> > -       /*
+> > -        * The pool is live and will never be deallocated from this
+> > point on.
+> > -        * Remove the pool object from the kmemleak object tree, as
+> > it would
+> > -        * otherwise overlap with allocations returned by
+> > kfence_alloc(), which
+> > -        * are registered with kmemleak through the slab post-alloc 
+> > hook.
+> > -        */
+> > -       kmemleak_free(__kfence_pool);
+> 
+> This appears to only be a non-functional change if the pool is
+> allocated early. If the pool is allocated late using page-alloc, then
+> there'll not be a kmemleak_free() on that memory and we'll have the
+> same problem.
 
-chcia=C5=82bym poinformowa=C4=87 Pa=C5=84stwa o mo=C5=BCliwo=C5=9Bci pozy=
-skania nowych zlece=C5=84 ze strony www.
+Do you mean the kzalloc(slab_is_available) in memblock_allc()? That
+implies that MEMBLOCK_ALLOC_NOLEAKTRACE has no guarantee skipping
+kmemleak_alloc from this. (Maybe add it?)
 
-Widzimy zainteresowanie potencjalnych Klient=C3=B3w Pa=C5=84stwa firm=C4=85=
-, dlatego ch=C4=99tnie pomo=C5=BCemy Pa=C5=84stwu dotrze=C4=87 z ofert=C4=
-=85 do wi=C4=99kszego grona odbiorc=C3=B3w poprzez efektywne metody pozyc=
-jonowania strony w Google.
-
-Czy m=C3=B3g=C5=82bym liczy=C4=87 na kontakt zwrotny?
+If so, we cannot identify later the block is stored in the phys
+tree(memblock) or the virt tree(page_alloc).
 
 
-Pozdrawiam,
-Miko=C5=82aj Rudzik
