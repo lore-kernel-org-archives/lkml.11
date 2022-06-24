@@ -2,100 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE8DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:05:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F68C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231472AbiFXVFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 17:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
+        id S231545AbiFXVHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 17:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230474AbiFXVFm (ORCPT
+        with ESMTP id S231707AbiFXVG5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 17:05:42 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57B27FD04
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:05:40 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id g39-20020a05600c4ca700b003a03ac7d540so1268131wmp.3
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:05:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4FBq55ALNoB8I9/Jp2eahFZ3TVuZO8zAHamAFfwJTA4=;
-        b=jtNLzbazAZ3Ty+PCe4NJUDW5r9cbkHlRd8h2mbV7+waX1Tx9erQtwlu2e8BUxesIDH
-         SpaHCfUHUYE9Gcjqbo0B/IDMs/JrP3lo3//ZjLcKnRD7/2NuKlxlUOPrugPQ8PeHKwme
-         wzVoLofv+/w69KJivy77K+FdWGQ9xTFTuR8C0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=4FBq55ALNoB8I9/Jp2eahFZ3TVuZO8zAHamAFfwJTA4=;
-        b=abfeze31CuMyQoiVur6Djj4cJ1QdkVHQ5t7DOeX6nVrXThIBY7b5QA5DoM5WQWEDZV
-         eloz0jMnKqh6RESLXlBtPPw6GaN0mUf0Y0uzSkLj1hVOJiukj9xiUQcqjWjmotVmj+Ja
-         EgiXrySzhN++MvPODiLlyfHmVRInLGvWivbK971a9lLdXAR3wVCpMseB+uEdR29IKo2K
-         toS+8jH668Pw84WEMlKXA9s3+DQpU2RTUJWVgH1J480j4a5mgekvRtYSFCyA5UGJeAlC
-         mon5f/PA0Yx6rd5/buza7jcOyJIJZrxHpZWy+XqdMhW8VyT6GKfbhC8ZprSW/+fpNm2z
-         Xl3A==
-X-Gm-Message-State: AJIora/zapPR4NcLzaFdV7IMBmMJsCBazJ1pgjMWPtbeA5NQGAmdZRPM
-        lbcOmo2E6UYdHU8ntOIvmkYNQQ==
-X-Google-Smtp-Source: AGRyM1s3Pl4EVQvFKsoBwid6w18frt80sinR1W0DhYBmiX4lMtmHCpKONBuPPCGUsGyEmAfWWb+3qw==
-X-Received: by 2002:a05:600c:3553:b0:39c:63a3:f54a with SMTP id i19-20020a05600c355300b0039c63a3f54amr989149wmq.61.1656104739492;
-        Fri, 24 Jun 2022 14:05:39 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id i6-20020a05600c354600b003974a00697esm8995188wmq.38.2022.06.24.14.05.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 14:05:39 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 23:05:37 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-next@vger.kernel.org,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-kernel@vger.kernel.org,
-        dri-devel <dri-devel@lists.freedesktop.org>
-Subject: Re: Please add another drm/msm tree to the linux-next
-Message-ID: <YrYnIY2s2Nj5C66N@phenom.ffwll.local>
-Mail-Followup-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-kernel@vger.kernel.org,
-        dri-devel <dri-devel@lists.freedesktop.org>
-References: <5dbc0159-cb33-db5b-20cc-05f3027af15e@linaro.org>
+        Fri, 24 Jun 2022 17:06:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7076985D1F;
+        Fri, 24 Jun 2022 14:06:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E2DDB82C3A;
+        Fri, 24 Jun 2022 21:06:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C542AC34114;
+        Fri, 24 Jun 2022 21:06:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656104802;
+        bh=T7qFMP9F8OdEyOzO8L7hDgPUIHk20/SjsuNA7mm3H3E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=E8B7zaWej1LCg91sVtYDKamZbZDXTEnlN720Dpd6TyUxeBPHAlH1wA7hyBairLfQG
+         qvRwC1x/bxNgGThZllbdTgybsz5oEIxjUF+XdNknAn/elRzrhIRaHGU9HqU0vPbH7f
+         0CcAu55atHrf5Gr3iUeNb5E2NzP//Zt8VYmHueCXig6RkSWSOxNl3nXlS+YahpeFTQ
+         rDrLWMvI1HKOdlDiRhYZ/EWk/Jd2vpzHB5CYtWebM6MUYogZIzf3YsASsY1bsN0Oa4
+         AzfCg+Ofatftv2M1qbx83buLIc4b1QJjiAx3Y9364MfcC10xKOv+n1M9eP6peGkQf1
+         f/z30lW78Bzrw==
+Date:   Fri, 24 Jun 2022 16:06:40 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Krishna chaitanya chundru <quic_krichai@quicinc.com>
+Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_vbadigan@quicinc.com,
+        quic_hemantk@quicinc.com, quic_nitegupt@quicinc.com,
+        quic_skananth@quicinc.com, quic_ramkri@quicinc.com,
+        manivannan.sadhasivam@linaro.org, swboyd@chromium.org,
+        dmitry.baryshkov@linaro.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Prasad Malisetty <pmaliset@qti.qualcomm.com>
+Subject: Re: [PATCH v1 1/3] PCI: qcom: Add missing sc7280 clocks in PCIe
+ driver
+Message-ID: <20220624210640.GA1558213@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5dbc0159-cb33-db5b-20cc-05f3027af15e@linaro.org>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+In-Reply-To: <20220624170501.GA1541553@bhelgaas>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 05:19:42PM +0300, Dmitry Baryshkov wrote:
-> Hi Stephen,
-> 
-> I would appreciate if you could add
-> 
-> https://gitlab.freedesktop.org/lumag/msm.git msm-next-lumag
-> 
-> to the linux-next tree.
-> 
-> This tree is a part of drm/msm maintenance structure. As a co-maintainer I
-> collect and test display patches, while Rob concenctrates on GPU part of the
-> driver. Later during the release cycle these patchesare pulled by Rob Clark
-> directly into msm-next.
-> 
-> During last cycle Rob suggested adding this tree to the linux-next effort,
-> so that the patches receive better integration testing during the Linux
-> development cycle.
+[update Prasad's email address since pmaliset@codeaurora.org bounced]
 
-Have you guys thought of group maintainering? Single point of failure
-trees freak me out a bit, it tends to build silos pretty hard. Simplest
-path is to just toss it all into drm-misc, but at least have one tree for
-your driver. Building new single maintainer silos after I've run around
-for years collecting them all is rather meh.
--Daniel
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+On Fri, Jun 24, 2022 at 12:05:03PM -0500, Bjorn Helgaas wrote:
+> [+cc Prasad, who added sc7280]
+> 
+> On Fri, Jun 24, 2022 at 02:49:49PM +0530, Krishna chaitanya chundru wrote:
+> > Add missing clocks in the pcie driver.
+> 
+> s/pcie/PCIe/ as in subject.  Also, please mention the names of the
+> clocks here, too.
+> 
+> Does this add new functionality, or did sc7280 just never work in the
+> first place?
+> 
+> If this fixes a problem, it's nice to mention the user-visible symptom
+> in the commit log to make it easier to connect this fix with the
+> problem.
+> 
+> Looks like sc7280 was added by Prasad with b89ff410253d ("PCI: qcom:
+> Replace ops with struct pcie_cfg in pcie match data"), and I assume it
+> was tested at that time.
+> 
+> If I had noticed, I would have asked that b89ff410253d be a strict
+> conversion to struct qcom_pcie_cfg with no functional changes, with
+> sc7280 support being added in a separate patch by itself.
+> 
+> > Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
+> > ---
+> >  drivers/pci/controller/dwc/pcie-qcom.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> > index 2ea1375..a7202f0 100644
+> > --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> > +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> > @@ -1548,7 +1548,10 @@ static const struct qcom_pcie_cfg sm8450_pcie1_cfg = {
+> >  static const struct qcom_pcie_cfg sc7280_cfg = {
+> >  	.ops = &ops_1_9_0,
+> >  	.has_tbu_clk = true,
+> > +	.has_ddrss_sf_tbu_clk = true,
+> >  	.pipe_clk_need_muxing = true,
+> > +	.has_aggre0_clk = true,
+> > +	.has_aggre1_clk = true,
+> >  };
+> >  
+> >  static const struct qcom_pcie_cfg sc8180x_cfg = {
+> > -- 
+> > 2.7.4
+> > 
