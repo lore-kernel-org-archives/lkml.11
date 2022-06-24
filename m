@@ -2,107 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D72C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32F0CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231139AbiFXRg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        id S231859AbiFXRha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiFXRg2 (ORCPT
+        with ESMTP id S231757AbiFXRh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:36:28 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60ECC5DF25
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:36:27 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id p3-20020a17090a428300b001ec865eb4a2so6427010pjg.3
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:36:27 -0700 (PDT)
+        Fri, 24 Jun 2022 13:37:26 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01AA9609CA
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:37:26 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2eb7d137101so26909517b3.12
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:37:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3tejim6nzB75lm4NOJYENLppeUpH5ct1kCbXERXFHSQ=;
-        b=i4v9ObAH9p9emQBJy5npqaKQc4gDNMt8SM/Df3WI7fBbJk1TsUGTGhGvaMSJA7hptg
-         snfRS46NbjgqbzVCI8qHYKCGUHe8qgRiM25sLSfDn/44eC1RTK4jK0JZ+nV575KojMXR
-         1kkFJ3NOPVtwZhY3PA58/oUN7YCpBvCje5CYCRHmpI/3/7xV4yiBgyUcKXs2ADboiJV8
-         +UEc4wk7HuauX4FsVb6IsaRpPxUNoslti+1qOAsW68vnYSfc4xhVnvjTfGTjX5KliYGM
-         2gJRoMDU48sLFk7qSDF3yzyDEs90TbJjlnTvEVnBru9y1GaKcBXZ6RQjPwNTzoWY6DbH
-         i6JQ==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=5N1QqSZZ3sAe7uqZbPvcX1MwgZtWBTxE3Z4UbaM2Ubk=;
+        b=q+mTw9aXiewEEPn69Lo/c9WP/AOoUrPORPuTtAp49sBVoij1KAB/iU1Xsmfcz2RONi
+         97ZReXD54tQvzGoEYGUk7bqiHAMjMBdSDeN0ZeRlmES9GnpySAERBNIAd4xcYCwSqWB9
+         7rTzJ5T7Icb9PLM1GoXpIL2LTZ8f3PW3xI9Uskzsm3fmgHe4+UJzlKEwXBwzjTskVRhP
+         jO0DeJtpPQFYq6QRquH/FNG3s47JBo454bcpHh+Nv3bPhNDZ/+ST1no2b8ufY9BNObOU
+         06CUcUjjHu4D3yaQIgx4SDUgySvd1FhGM2vQVwgOwraU6Bc5o7byEvf4kBsFdHoToBy1
+         X8+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3tejim6nzB75lm4NOJYENLppeUpH5ct1kCbXERXFHSQ=;
-        b=I66Au8Y2AM+UWSUx7coBbIiH/hvWRj/teVG7Einf0HmoH9l2sRubmxWnjRlxtnJR4Z
-         6a281t9wHe5DDMcxAPBsbKJ4IVc5CsmGqGh+FOpOJ6vM90/iM3xfLbDHJPm3td1R+DGy
-         0LIo1ZsFi/gwXwB96pyoNVerkTmmut6++xIs0gxz6RIpb/e4I1Q9MeHk3oYOLVscoyje
-         AeK8HleRi5eaABwXbHDG22WTw8ufajRfMl7UmASUYfwSAgr03DK8iG0NnDO7a5CTfmSx
-         420U+0Tog4ToMm+3oI5iU6nuo4+lXjurQTkacO5tKyu3n6eJ7w75VCF79sTTR31pxAJG
-         VACQ==
-X-Gm-Message-State: AJIora/LmsP6xd6PXWpVFperSzFnjWEYcPIW1OI6Crrb6eFF75Ri15kJ
-        RA8fvrw2OjLRdXXOl2xPla20tqcxT5jBGA==
-X-Google-Smtp-Source: AGRyM1tYp/RSiDESfqIGLsXMa6eRXkw8298tIe+RDAKrzDSjKy278q9qLFJWk/B394Ptlw7Sa+Lm2Q==
-X-Received: by 2002:a17:902:f64c:b0:156:4349:7e9b with SMTP id m12-20020a170902f64c00b0015643497e9bmr153949plg.139.1656092186820;
-        Fri, 24 Jun 2022 10:36:26 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id i68-20020a636d47000000b003fd1deccd4dsm1844360pgc.59.2022.06.24.10.36.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 10:36:25 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 11:36:21 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     bjorn.andersson@linaro.org, gregkh@linuxfoundation.org,
-        krzysztof.kozlowski@linaro.org, linux-remoteproc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] rpmsg: fix possible refcount leak in
- rpmsg_register_device_override()
-Message-ID: <20220624173621.GC1736477@p14s>
-References: <20220624024120.11576-1-hbh25y@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220624024120.11576-1-hbh25y@gmail.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=5N1QqSZZ3sAe7uqZbPvcX1MwgZtWBTxE3Z4UbaM2Ubk=;
+        b=wc5JqplZlU/TJBrqEk3YmSJVsRKykt62LmmjI1Hru0SuTvVjGLoRJSxJ5cPkHNN36h
+         pC56PjoHv52BRoyfnHH8pSJqDmMgHJHYoOSjFC8U5WvzpWSwtAPpy6u2ZAKiQ+FD9end
+         teNarHp6lirbGsOVgBKXOcNSsSkX5XHLSSh4ZIqH/Q0YVjCJr2H78p8oHXAyuwaCtdRC
+         C8k3/FcIgOn0oMub1Mk7xV6HJHk4gmRoeVXlkvjoP2ktPsgWlOHKycMYwoVVibgBVSHF
+         yREz+ImbeEbSluPoklWwjlJlwiiyfrhaTr0JludJp9OGcx5cobL93uHljWkrnIZxlI6i
+         WSBg==
+X-Gm-Message-State: AJIora+ZWdejjUnZ8F5FPvtPj3mQ6pUVr0cZLgKczNbWO1zoGR11/Q/V
+        FDGacpgOTINULISu4PoqYdwV4DB1aVT5WQAA
+X-Google-Smtp-Source: AGRyM1s7zrxwUtB89vtQHWN8oyQ64yZ//LRbGigtUbZGCP3Sqfb2xmvuSoQ6VmyGFOOMey8Bgk7vqBsKoi9rXZ66
+X-Received: from jthoughton.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:2a4f])
+ (user=jthoughton job=sendgmr) by 2002:a25:9103:0:b0:668:b7f8:b428 with SMTP
+ id v3-20020a259103000000b00668b7f8b428mr309298ybl.270.1656092245324; Fri, 24
+ Jun 2022 10:37:25 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 17:36:41 +0000
+In-Reply-To: <20220624173656.2033256-1-jthoughton@google.com>
+Message-Id: <20220624173656.2033256-12-jthoughton@google.com>
+Mime-Version: 1.0
+References: <20220624173656.2033256-1-jthoughton@google.com>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [RFC PATCH 11/26] hugetlb: add hugetlb_walk_to to do PT walks
+From:   James Houghton <jthoughton@google.com>
+To:     Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Xu <peterx@redhat.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Jue Wang <juew@google.com>,
+        Manish Mishra <manish.mishra@nutanix.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        James Houghton <jthoughton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 10:41:20AM +0800, Hangyu Hua wrote:
-> rpmsg_register_device_override need to call put_device to free vch when
-> driver_set_override fails.
-> 
-> Fix this by adding a put_device() to the error path.
-> 
-> Fixes: bb17d110cbf2 ("rpmsg: Fix calling device_lock() on non-initialized device")
+This adds it for architectures that use GENERAL_HUGETLB, including x86.
 
-This is funny... Neither Bjorn nor I have reviewed this patch...
+Signed-off-by: James Houghton <jthoughton@google.com>
+---
+ include/linux/hugetlb.h |  2 ++
+ mm/hugetlb.c            | 45 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 47 insertions(+)
 
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
-> 
-> v2: change the commit log.
-> 
->  drivers/rpmsg/rpmsg_core.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
-> index 290c1f02da10..5a47cad89fdc 100644
-> --- a/drivers/rpmsg/rpmsg_core.c
-> +++ b/drivers/rpmsg/rpmsg_core.c
-> @@ -618,6 +618,7 @@ int rpmsg_register_device_override(struct rpmsg_device *rpdev,
->  					  strlen(driver_override));
->  		if (ret) {
->  			dev_err(dev, "device_set_override failed: %d\n", ret);
-> +			put_device(dev);
+diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
+index e7a6b944d0cc..605aa19d8572 100644
+--- a/include/linux/hugetlb.h
++++ b/include/linux/hugetlb.h
+@@ -258,6 +258,8 @@ pte_t *huge_pte_alloc(struct mm_struct *mm, struct vm_area_struct *vma,
+ 			unsigned long addr, unsigned long sz);
+ pte_t *huge_pte_offset(struct mm_struct *mm,
+ 		       unsigned long addr, unsigned long sz);
++int hugetlb_walk_to(struct mm_struct *mm, struct hugetlb_pte *hpte,
++		    unsigned long addr, unsigned long sz, bool stop_at_none);
+ int huge_pmd_unshare(struct mm_struct *mm, struct vm_area_struct *vma,
+ 				unsigned long *addr, pte_t *ptep);
+ void adjust_range_if_pmd_sharing_possible(struct vm_area_struct *vma,
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 557b0afdb503..3ec2a921ee6f 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -6981,6 +6981,51 @@ pte_t *huge_pte_offset(struct mm_struct *mm,
+ 	return (pte_t *)pmd;
+ }
+ 
++int hugetlb_walk_to(struct mm_struct *mm, struct hugetlb_pte *hpte,
++		    unsigned long addr, unsigned long sz, bool stop_at_none)
++{
++	pte_t *ptep;
++
++	if (!hpte->ptep) {
++		pgd_t *pgd = pgd_offset(mm, addr);
++
++		if (!pgd)
++			return -ENOMEM;
++		ptep = (pte_t *)p4d_alloc(mm, pgd, addr);
++		if (!ptep)
++			return -ENOMEM;
++		hugetlb_pte_populate(hpte, ptep, P4D_SHIFT);
++	}
++
++	while (hugetlb_pte_size(hpte) > sz &&
++			!hugetlb_pte_present_leaf(hpte) &&
++			!(stop_at_none && hugetlb_pte_none(hpte))) {
++		if (hpte->shift == PMD_SHIFT) {
++			ptep = pte_alloc_map(mm, (pmd_t *)hpte->ptep, addr);
++			if (!ptep)
++				return -ENOMEM;
++			hpte->shift = PAGE_SHIFT;
++			hpte->ptep = ptep;
++		} else if (hpte->shift == PUD_SHIFT) {
++			ptep = (pte_t *)pmd_alloc(mm, (pud_t *)hpte->ptep,
++						  addr);
++			if (!ptep)
++				return -ENOMEM;
++			hpte->shift = PMD_SHIFT;
++			hpte->ptep = ptep;
++		} else if (hpte->shift == P4D_SHIFT) {
++			ptep = (pte_t *)pud_alloc(mm, (p4d_t *)hpte->ptep,
++						  addr);
++			if (!ptep)
++				return -ENOMEM;
++			hpte->shift = PUD_SHIFT;
++			hpte->ptep = ptep;
++		} else
++			BUG();
++	}
++	return 0;
++}
++
+ #endif /* CONFIG_ARCH_WANT_GENERAL_HUGETLB */
+ 
+ #ifdef CONFIG_HUGETLB_HIGH_GRANULARITY_MAPPING
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
 
-Applied.
-
-Thanks,
-Mathieu
-
->  			return ret;
->  		}
->  	}
-> -- 
-> 2.25.1
-> 
