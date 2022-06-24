@@ -2,94 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 219C9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DABC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 15:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232105AbiFXPBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 11:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
+        id S232463AbiFXPBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 11:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233109AbiFXPAz (ORCPT
+        with ESMTP id S232852AbiFXPBg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 11:00:55 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21668C23E
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:57:15 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id 73-20020a17090a0fcf00b001eaee69f600so3078239pjz.1
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 07:57:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B9+Xw3AgWFPb9gceKYuL3mWDfeTAT5uMLzXq4cAey3o=;
-        b=jC+7oE29NkwkDTiv2sg5tyMbaUK+6JxfQ3DjYs4EzOmT7MtdHWe1aI4qyisAIaUVq9
-         /SONkAn8+h+LjDEBqrXaNNefRLfm5GH4uDzZu7B+t1oC3XezcWnu4BUoSMww8vVJjMtS
-         I0sLvxFJKmgC45wYmAoYmMyWsUDn2zLi25Hc11p1bJxCksWmzEMZWc/i7WKsw1qbW+JI
-         QmE+zmLPCZE5IJGgQLOYV4XhmBSGgJb3cx+g5aJHINDusu9Gc4MOA5SYo2rS/IsJAX4B
-         y1DIG/Eh9pMQ5RM2rClALsYWreh5zIBKwMTiVA/l3kC1zdruYQRXMS9aQ6RAV5/lQLjk
-         D06Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B9+Xw3AgWFPb9gceKYuL3mWDfeTAT5uMLzXq4cAey3o=;
-        b=kdILn7GVaXkG3d48GqPL4/ybOFyqXZUkgMpCild3UPTVMEVMOEuSPM5Z/oX8gpPZrJ
-         lA582zg9ski8H3yCID9vKFUpA9+/QVPpyfydbF7E0fxECZMlj/l3mhr5iiwiv/iWKBp2
-         W2YudxnrpAdnaFejPVDJlyFjUw98BUzml1lqzLN+6Zod1BRxW0npbtrnCKf0cjKyB4nd
-         sYwdrdLN1tLZyHUuXdsBpqo1/SS9CwWU/Q17Ja3Ct9fA7dw7fXn1/i+eNBo4jzka5FP2
-         uD49g/XVqjegl0PdIC9YSuR6T4fSGTAyf3QRa/N//bse6oJACjryaP4sTO7JJVoYgXtg
-         O/hg==
-X-Gm-Message-State: AJIora9gF/8/3VP65tWu5T3iDtEBJGUuAuWvvViIx+U7NKL6Qb5KkOLA
-        juwmV8VysFrNHSdsPzqfwmRm8TtfMgztZkb3ZN5XDW80D2A=
-X-Google-Smtp-Source: AGRyM1ss7nIP21Ejb0LMt/Kt1S+VHFVqLZHccryP7/8ZyXFSmcq2oI7fvQZMrmcY/DET/wU+hCAOoxVEwu16TXxwXE8=
-X-Received: by 2002:a17:902:dac1:b0:16a:3ebe:c722 with SMTP id
- q1-20020a170902dac100b0016a3ebec722mr16770844plx.169.1656082635427; Fri, 24
- Jun 2022 07:57:15 -0700 (PDT)
+        Fri, 24 Jun 2022 11:01:36 -0400
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734EA7E037
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 08:00:58 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 074A720000F;
+        Fri, 24 Jun 2022 15:00:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1656082855;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2qXzzJoUbs4d2QN18DeeUOD79uKu2pCH/VKOYe0ryJU=;
+        b=AdugIn5IrOuegRe1MgJXvlpSkfmQeoFzYPsWm/Es3Pas0v/xU3CPJ6FNRpYajhiCbnbNrc
+        jBAYXShmAT94eI3n0JnS9nUCidQbFzj9MpmasgvEoZENyVkJmdP/Ruqwf9BYzy2A3TWAzc
+        c8gEzP6wGu9vTzov5/vxd3R0yf6l6eYNUdvI2iB9eX4ehz3JI87eSavJY/I+Kta1n6yisO
+        Y1/jovWvDOJuGY1lpPVBZkaAni/6rOUpknlQiTBEfZNI+fjmVM+Xnp9E/29TsPRdRaUxli
+        aQGB5L5HL5HCH58CziTaZ63MeTIaekGkqX9g4pJvjJ0LqZBi0Og8sm/ugpD58A==
+Date:   Fri, 24 Jun 2022 17:00:54 +0200
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] drm: Remove unnecessary print function dev_err()
+Message-ID: <YrXRplhnlUZ2KV3V@aptenodytes>
+References: <20220613012658.85814-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220619231837.1150499-1-jcmvbkbc@gmail.com> <20220624140139.GA2050137@lothringen>
-In-Reply-To: <20220624140139.GA2050137@lothringen>
-From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Fri, 24 Jun 2022 07:57:09 -0700
-Message-ID: <CAMo8BfLY333gAdztZJa6nm2=mpNyFsBds+d2nRzx6KQ7iWuxsQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] xtensa: context tracking updates
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>, Chris Zankel <chris@zankel.net>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="veaIlB3NsqQJBjp+"
+Content-Disposition: inline
+In-Reply-To: <20220613012658.85814-1-yang.lee@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 7:01 AM Frederic Weisbecker <frederic@kernel.org> wrote:
->
-> On Sun, Jun 19, 2022 at 04:18:35PM -0700, Max Filippov wrote:
-> > Hi Frederic,
-> >
-> > your recent conversion of CONTEXT_TRACKING to CONTEXT_TRACKING_USER
-> > missed the xtensa architexture. These two patches hopefully fix it.
-> > Please take them to the tree that holds the rest of the conversion.
-> > (Even better if they could be folded into the corresponding conversion
-> >  patches).
-> >
-> > Max Filippov (2):
-> >   xtensa: rename context_tracking_user_{enter,exit}
-> >   xtensa: rename CONTEXT_TRACKING to CONTEXT_TRACKING_USER
-> >
-> >  arch/xtensa/Kconfig        | 2 +-
-> >  arch/xtensa/kernel/entry.S | 8 ++++----
-> >  2 files changed, 5 insertions(+), 5 deletions(-)
-> >
-> > --
-> > Thanks.
-> > -- Max
->
-> Thanks a lot for these fixes. I'm likely going to reissue this
-> patchset so I'm going to fold your changes inside if you don't mind
-> (with your Signed-off-by).
 
-Sure, by all means.
+--veaIlB3NsqQJBjp+
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Thanks.
--- Max
+Hi Yang,
+
+On Mon 13 Jun 22, 09:26, Yang Li wrote:
+> The print function dev_err() is redundant because platform_get_irq()
+> already prints an error.
+>=20
+> Eliminate the follow coccicheck warning:
+> ./drivers/gpu/drm/logicvc/logicvc_drm.c:352:2-9: line 352 is redundant
+> because platform_get_irq() already prints an error
+>=20
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+
+Thanks for the patch!
+
+Acked-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+
+Paul
+
+> ---
+>  drivers/gpu/drm/logicvc/logicvc_drm.c | 1 -
+>  1 file changed, 1 deletion(-)
+>=20
+> diff --git a/drivers/gpu/drm/logicvc/logicvc_drm.c b/drivers/gpu/drm/logi=
+cvc/logicvc_drm.c
+> index df1805cf0f95..437b3011ae1e 100644
+> --- a/drivers/gpu/drm/logicvc/logicvc_drm.c
+> +++ b/drivers/gpu/drm/logicvc/logicvc_drm.c
+> @@ -349,7 +349,6 @@ static int logicvc_drm_probe(struct platform_device *=
+pdev)
+> =20
+>  	irq =3D platform_get_irq(pdev, 0);
+>  	if (irq < 0) {
+> -		dev_err(dev, "Failed to get IRQ\n");
+>  		ret =3D -ENODEV;
+>  		goto error_reserved_mem;
+>  	}
+> --=20
+> 2.20.1.7.g153144c
+>=20
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--veaIlB3NsqQJBjp+
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmK10aYACgkQ3cLmz3+f
+v9EGeQf/Q01Lx/F9D+C2pQeGKz3ffuzTDhSn3Tm7+EUUsYblieed+d8NDOXdDSWF
+dkkdvlubJP2VOLFRioFp6JbCmPW5ul7CdTE8sYtefj8Kdt/ghau8j5KI6kN4CM+L
+SvCfuS8dc7Av3mfSWW/7vURJO3oLs1MnAEKZAdK+yYhBRoih8200mo8AC0leuVz/
+5f/zmyQ5C2COwQ/vkG8YMoGpDJIk65jvxlBqbRv80bfLCoNY4gLEG4m/3TpSZNk9
+FtXolEz03RckdXsuT3tqXUmHQ7WTWgjfk7v+xuKJ83nj10Xgw9ImGoyVjBVkef3O
+lyYYhtTL4IkrQ86COfhQijTeByJe3A==
+=7pE3
+-----END PGP SIGNATURE-----
+
+--veaIlB3NsqQJBjp+--
