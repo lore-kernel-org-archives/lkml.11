@@ -2,264 +2,273 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F005C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E245C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 14:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233127AbiFXOlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 10:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40776 "EHLO
+        id S233134AbiFXOld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 10:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233048AbiFXOkP (ORCPT
+        with ESMTP id S231916AbiFXOl3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 10:40:15 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E433F67E6D;
-        Fri, 24 Jun 2022 07:40:09 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 4CD395BC8;
-        Fri, 24 Jun 2022 17:41:24 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 4CD395BC8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1656081684;
-        bh=JVcgoEPgpyE0TQbuJnHYD50yVoHbE9gPDnqnypQoVIs=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=WLM7gGTkLnK/1M0h33YJDmbEY866XeTpngHYvoQ5SpVoYjQfHjriHrw3kAoWB68wL
-         8t/dk55DVnHMVajXE5WmcaY18XXcii61SLxpFeC5bZZNY2VCYD0fqixuGSakLsiBVx
-         SGivJEBQOYWpi5wF20mzmbbluiHx/x2mLT7iobCo=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jun 2022 17:40:04 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, <linux-pci@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v4 15/15] PCI: dwc: Introduce dma-ranges property support for RC-host
-Date:   Fri, 24 Jun 2022 17:39:47 +0300
-Message-ID: <20220624143947.8991-16-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru>
+        Fri, 24 Jun 2022 10:41:29 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B241E64796;
+        Fri, 24 Jun 2022 07:41:27 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1A703E0002;
+        Fri, 24 Jun 2022 14:41:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1656081686;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=m9VUnPmey1EW3PlxwufpVuRcBXj7WqcXOePoquITgbY=;
+        b=f26t62yJa4myIehQUKbczIFXeSlDXNWR2044wOkaZ5x052xBkOsk5bVQOV32z8wUtW6w3b
+        qO9T5Cfr6Guk2Ys5SRmtx1ntQVZAxZ/TPYfiepiSTTADI0I1Y3nGWEamZ+EDUUDPu8vCOS
+        F3uWGrgY1rBHCcj0J0nW2+OuFoCvC34JasW+S8ItICVnOIRu2UiWeZq7fzKYGBITWc3uK1
+        uirbGQqG1XwyGQjs+XUbHsr8r9Pd516W0gu7XSibucitviboHbdWdYfsVjw3liYA3R8n/B
+        Paw56iw/XXt4STtKtjweblWhu2u86NJbwYMgA8e6GRlxtumqeYwu3+TMvjuPkQ==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v9 00/16] add support for Renesas RZ/N1 ethernet subsystem devices
+Date:   Fri, 24 Jun 2022 16:39:45 +0200
+Message-Id: <20220624144001.95518-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In accordance with the generic PCIe Root Port DT-bindings the "dma-ranges"
-property has the same format as the "ranges" property. The only difference
-is in their semantics. The "dma-ranges" property describes the PCIe-to-CPU
-memory mapping in opposite to the CPU-to-PCIe mapping of the "ranges"
-property. Even though the DW PCIe controllers are normally equipped with
-the internal Address Translation Unit which inbound and outbound tables
-can be used to implement both properties semantics, it was surprising for
-me to discover that the host-related part of the DW PCIe driver currently
-supports the "ranges" property only while the "dma-ranges" windows are
-just ignored. Having the "dma-ranges" supported in the driver would be
-very handy for the platforms, that don't tolerate the 1:1 CPU-PCIe memory
-mapping and require a customized PCIe memory layout. So let's fix that by
-introducing the "dma-ranges" property support.
+The Renesas RZ/N1 SoCs features an ethernet subsystem which contains
+(most notably) a switch, two GMACs, and a MII converter [1]. This
+series adds support for the switch and the MII converter.
 
-First of all we suggest to rename the dw_pcie_prog_inbound_atu() method to
-dw_pcie_prog_ep_inbound_atu() and create a new version of the
-dw_pcie_prog_inbound_atu() function. Thus we'll have two methods for the
-RC and EP controllers respectively in the same way as it has been
-developed for the outbound ATU setup methods.
+The MII converter present on this SoC has been represented as a PCS
+which sit between the MACs and the PHY. This PCS driver is probed from
+the device-tree since it requires to be configured. Indeed the MII
+converter also contains the registers that are handling the muxing of
+ports (Switch, MAC, HSR, RTOS, etc) internally to the SoC.
 
-Secondly aside with the memory window index and type the new
-dw_pcie_prog_inbound_atu() function will accept CPU address, PCIe address
-and size as its arguments. These parameters define the PCIe and CPU memory
-ranges which will be used to setup the respective inbound ATU mapping. The
-passed parameters need to be verified against the ATU ranges constraints
-in the same way as it is done for the outbound ranges.
+The switch driver is based on DSA and exposes 4 ports + 1 CPU
+management port. It include basic bridging support as well as FDB and
+statistics support.
 
-Finally the DMA-ranges detected for the PCIe controller need to be
-converted to the inbound ATU entries during the host controller
-initialization procedure. It will be done in the framework of the
-dw_pcie_iatu_setup() method. Note before setting the inbound ranges up we
-need to disable all the inbound ATU entries in order to prevent unexpected
-PCIe TLPs translations defined by some third party software like
-bootloaders.
+Link: [1] https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1l-group-users-manual-r-engine-and-ethernet-peripherals
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Rob Herring <robh@kernel.org>
+-----
+Changes in V9:
+- Cover letter:
+  - Remove comment about RZN1 patches that are now in the master branch.
+- Commits:
+  - Add Vladimir Oltean Reviewed-by
+- PCS:
+  - Add "Depends on OF" for PCS_RZN1_MIIC due to error found by intel
+    kernel test robot <lkp@intel.com>.
+  - Check return value of of_property_read_u32() for
+    "renesas,miic-switch-portin" property before setting conf.
+  - Return miic_parse_dt() return value in miic_probe() on error
+- Switch:
+  - Add "Depends on OF" for NET_DSA_RZN1_A5PSW due to errors found by
+    intel kernel test robot <lkp@intel.com>.
+- DT:
+  - Add spaces between switch port and '{'
 
----
+Changes in V8:
+- Commits:
+  - Reorder Acked-By and Rewieved-by chronologically and add Florian
+    Fainelli Reviewed-By.
+- PCS:
+  - Fix of node leaks
+- MAINTAINERS:
+  - Reorder L: before S:
 
-Changelog v3:
-- Drop inbound iATU window size alignment constraint. (@Manivannan)
----
- .../pci/controller/dwc/pcie-designware-ep.c   |  4 +-
- .../pci/controller/dwc/pcie-designware-host.c | 32 ++++++++++-
- drivers/pci/controller/dwc/pcie-designware.c  | 56 ++++++++++++++++++-
- drivers/pci/controller/dwc/pcie-designware.h  |  6 +-
- 4 files changed, 89 insertions(+), 9 deletions(-)
+Resent V7 due to messed up cover letter.
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
-index 627c4b69878c..441feff1917a 100644
---- a/drivers/pci/controller/dwc/pcie-designware-ep.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
-@@ -167,8 +167,8 @@ static int dw_pcie_ep_inbound_atu(struct dw_pcie_ep *ep, u8 func_no, int type,
- 		return -EINVAL;
- 	}
- 
--	ret = dw_pcie_prog_inbound_atu(pci, func_no, free_win, type,
--				       cpu_addr, bar);
-+	ret = dw_pcie_prog_ep_inbound_atu(pci, func_no, free_win, type,
-+					  cpu_addr, bar);
- 	if (ret < 0) {
- 		dev_err(pci->dev, "Failed to program IB window\n");
- 		return ret;
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 6993ce9e856d..2fbe9dc11634 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -581,12 +581,15 @@ static int dw_pcie_iatu_setup(struct dw_pcie_rp *pp)
- 	}
- 
- 	/*
--	 * Ensure all outbound windows are disabled before proceeding with
--	 * the MEM/IO ranges setups.
-+	 * Ensure all out/inbound windows are disabled before proceeding with
-+	 * the MEM/IO (dma-)ranges setups.
- 	 */
- 	for (i = 0; i < pci->num_ob_windows; i++)
- 		dw_pcie_disable_atu(pci, PCIE_ATU_REGION_DIR_OB, i);
- 
-+	for (i = 0; i < pci->num_ib_windows; i++)
-+		dw_pcie_disable_atu(pci, PCIE_ATU_REGION_DIR_IB, i);
-+
- 	i = 0;
- 	resource_list_for_each_entry(entry, &pp->bridge->windows) {
- 		if (resource_type(entry->res) != IORESOURCE_MEM)
-@@ -623,9 +626,32 @@ static int dw_pcie_iatu_setup(struct dw_pcie_rp *pp)
- 	}
- 
- 	if (pci->num_ob_windows <= i)
--		dev_warn(pci->dev, "Resources exceed number of ATU entries (%d)\n",
-+		dev_warn(pci->dev, "Ranges exceed outbound iATU size (%d)\n",
- 			 pci->num_ob_windows);
- 
-+	i = 0;
-+	resource_list_for_each_entry(entry, &pp->bridge->dma_ranges) {
-+		if (resource_type(entry->res) != IORESOURCE_MEM)
-+			continue;
-+
-+		if (pci->num_ib_windows <= i)
-+			break;
-+
-+		ret = dw_pcie_prog_inbound_atu(pci, i++, PCIE_ATU_TYPE_MEM,
-+					       entry->res->start,
-+					       entry->res->start - entry->offset,
-+					       resource_size(entry->res));
-+		if (ret) {
-+			dev_err(pci->dev, "Failed to set DMA range %pr\n",
-+				entry->res);
-+			return ret;
-+		}
-+	}
-+
-+	if (pci->num_ib_windows <= i)
-+		dev_warn(pci->dev, "Dma-ranges exceed inbound iATU size (%u)\n",
-+			 pci->num_ib_windows);
-+
- 	return 0;
- }
- 
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index 9c622b635fdd..7a5be3c4f8e0 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -396,8 +396,60 @@ static inline void dw_pcie_writel_atu_ib(struct dw_pcie *pci, u32 index, u32 reg
- 	dw_pcie_writel_atu(pci, PCIE_ATU_REGION_DIR_IB, index, reg, val);
- }
- 
--int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
--			     int type, u64 cpu_addr, u8 bar)
-+int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, int index, int type,
-+			     u64 cpu_addr, u64 pci_addr, u64 size)
-+{
-+	u64 limit_addr = pci_addr + size - 1;
-+	u32 retries, val;
-+
-+	if ((limit_addr & ~pci->region_limit) != (pci_addr & ~pci->region_limit) ||
-+	    !IS_ALIGNED(cpu_addr, pci->region_align) ||
-+	    !IS_ALIGNED(pci_addr, pci->region_align) || !size) {
-+		return -EINVAL;
-+	}
-+
-+	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_LOWER_BASE,
-+			      lower_32_bits(pci_addr));
-+	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_UPPER_BASE,
-+			      upper_32_bits(pci_addr));
-+
-+	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_LIMIT,
-+			      lower_32_bits(limit_addr));
-+	if (dw_pcie_ver_is_ge(pci, 460A))
-+		dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_UPPER_LIMIT,
-+				      upper_32_bits(limit_addr));
-+
-+	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_LOWER_TARGET,
-+			      lower_32_bits(cpu_addr));
-+	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_UPPER_TARGET,
-+			      upper_32_bits(cpu_addr));
-+
-+	val = type;
-+	if (upper_32_bits(limit_addr) > upper_32_bits(pci_addr) &&
-+	    dw_pcie_ver_is_ge(pci, 460A))
-+		val |= PCIE_ATU_INCREASE_REGION_SIZE;
-+	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_REGION_CTRL1, val);
-+	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_REGION_CTRL2, PCIE_ATU_ENABLE);
-+
-+	/*
-+	 * Make sure ATU enable takes effect before any subsequent config
-+	 * and I/O accesses.
-+	 */
-+	for (retries = 0; retries < LINK_WAIT_MAX_IATU_RETRIES; retries++) {
-+		val = dw_pcie_readl_atu_ib(pci, index, PCIE_ATU_REGION_CTRL2);
-+		if (val & PCIE_ATU_ENABLE)
-+			return 0;
-+
-+		mdelay(LINK_WAIT_IATU);
-+	}
-+
-+	dev_err(pci->dev, "Inbound iATU is not being enabled\n");
-+
-+	return -ETIMEDOUT;
-+}
-+
-+int dw_pcie_prog_ep_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
-+				int type, u64 cpu_addr, u8 bar)
- {
- 	u32 retries, val;
- 
-diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
-index c3e73ed9aff5..5954e8cf9eec 100644
---- a/drivers/pci/controller/dwc/pcie-designware.h
-+++ b/drivers/pci/controller/dwc/pcie-designware.h
-@@ -308,8 +308,10 @@ int dw_pcie_prog_outbound_atu(struct dw_pcie *pci, int index, int type,
- 			      u64 cpu_addr, u64 pci_addr, u64 size);
- int dw_pcie_prog_ep_outbound_atu(struct dw_pcie *pci, u8 func_no, int index,
- 				 int type, u64 cpu_addr, u64 pci_addr, u64 size);
--int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
--			     int type, u64 cpu_addr, u8 bar);
-+int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, int index, int type,
-+			     u64 cpu_addr, u64 pci_addr, u64 size);
-+int dw_pcie_prog_ep_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
-+				int type, u64 cpu_addr, u8 bar);
- void dw_pcie_disable_atu(struct dw_pcie *pci, u32 dir, int index);
- void dw_pcie_setup(struct dw_pcie *pci);
- void dw_pcie_iatu_detect(struct dw_pcie *pci);
+Changes in V7:
+- Commits:
+  - Add Rob Herring Acked-by for commit "dt-bindings: net: snps,dwmac: add
+    "power-domains" property"
+  - Rebased on net-next/master
+- MAINTAINERS:
+  - Add renesas-soc and netdev mailing lists
+
+Changes in V6:
+- Commits:
+  - Add commit which enable ethernet switch on RZ/N1D-DB board
+  - Add commit which adds "renesas,rzn1-gmac" compatible t
+    "snps,dwmac" bindings
+  - Fix mutex change being done in FDB feature commit
+  - Add commit which  adds"power-domains" to "snps,dwmac" bindings
+- Bindings and DT
+  - Add clock-names to MII converter and make it required
+  - Added Reviewed-by Geert on MII converter binding
+  - Added "power-domains" to switch bindings and to switch description
+  - Use new compatible "renesas,rzn1-gmac" for GMAC2
+  - Describe all switch ports in ethernet switch node
+  - Add phy-mode = "internal" to cpu port
+- PCS:
+  - use phy_interface_mode_is_rgmii() instead of open coded check
+  - Add device_link_add() call in miic_create()
+- Switch:
+  - Fix missing of_node_put(port) in case of loop break.
+  - Fix comment alignment for statistics defines
+  - Move lk_lock mutex locking outside of the fdb_dump loop
+
+Changes in V5:
+- MAINTAINERS:
+  - Add Florian Fainelli Reviewed-by
+- Switch:
+  - Switch Lookup table lock to a mutex instead of a spinlock
+  - Only handle "ethernet-ports" property for switch ports
+  - Handle RGMII_ID/RXID/TXID
+  - Add check for pdata to be non null in remove
+  - Add missing of_node_put() for mdio and ports
+  - Applied Florian Fainelli patch which makes stats description
+    shorter
+  - Add Kconfig dependency on ARCH_RZN1 to avoid Kconfig "unmet direct
+    dependency"
+- PCS:
+  - Handle RGMII_ID/RXID/TXID
+  - Use value instead of BIT() for speed/mode
+- Tag driver:
+  - Add Florian Fainelli Reviewed-by
+
+Changes in V4:
+- Add ETH_P_DSA_A5PSW in uapi/linux/if_ether.h
+- PCS:
+  - Use devm_pm_runtime_enable() instead of pm_runtime_enable()
+- Switch:
+  - Return -EOPNOTSUPP and set extack when multiple bridges are created
+  - Remove error messages in fdb_del if entry does not exists
+  - Add compatibility with "ethernet-ports" device-tree property
+- Tag driver:
+  - Use ETH_ZLEN as padding len
+
+Changes in V3:
+- PCS:
+  - Fixed reverse christmas tree declaration
+  - Remove spurious pr_err
+  - Use pm_runtime functions
+- Tag driver:
+  - Remove packed attribute from the tag struct
+- Switch:
+  - Fix missing spin_unlock in fdb_dump in case of error
+  - Add static qualifier to dsa_switch_ops
+  - Add missing documentation for hclk and clk members of struct a5psw
+  - Changed types of fdb_entry to u16 to discard GCC note on char
+    packed bitfields and add reserved field
+- Added Reviewed-by tag from Florian Fainelli
+
+Changes in V2:
+- PCS:
+  - Fix Reverse Christmas tree declaration
+  - Removed stray newline
+  - Add PCS remove function and disable clocks in them
+  - Fix miic_validate function to return correct values
+  - Split PCS CONV_MODE definition
+  - Reordered phylink_pcs_ops in definition order
+  - Remove interface setting in miic_link_up
+  - Remove useless checks for invalid interface/speed and error prints
+  - Replace phylink_pcs_to_miic_port macro by a static function
+  - Add comment in miic_probe about platform_set_drvdata
+- Bindings:
+ - Fix wrong path for mdio.yaml $ref
+ - Fix yamllint errors
+- Tag driver:
+  - Squashed commit that added tag value with tag driver
+  - Add BUILD_BUG_ON for tag size
+  - Split control_data2 in 2 16bits values
+- Switch:
+  - Use .phylink_get_caps instead of .phylink_validate and fill
+    supported_interface correctly
+  - Use fixed size (ETH_GSTRING_LEN) string for stats and use memcpy
+  - Remove stats access locking since RTNL lock is used in upper layers
+  - Check for non C45 addresses in mdio_read/write and return
+    -EOPNOTSUPP
+  - Add get_eth_mac_stats, get_eth_mac_ctrl_stat, get_rmon_stats
+  - Fix a few indentation problems
+  - Remove reset callback from MDIO bus operation
+  - Add phy/mac/rmon stats
+- Add get_rmon_stat to dsa_ops
+
+Clément Léger (16):
+  net: dsa: allow port_bridge_join() to override extack message
+  net: dsa: add support for ethtool get_rmon_stats()
+  net: dsa: add Renesas RZ/N1 switch tag driver
+  dt-bindings: net: pcs: add bindings for Renesas RZ/N1 MII converter
+  net: pcs: add Renesas MII converter driver
+  dt-bindings: net: dsa: add bindings for Renesas RZ/N1 Advanced 5 port
+    switch
+  net: dsa: rzn1-a5psw: add Renesas RZ/N1 advanced 5 port switch driver
+  net: dsa: rzn1-a5psw: add statistics support
+  net: dsa: rzn1-a5psw: add FDB support
+  dt-bindings: net: snps,dwmac: add "power-domains" property
+  dt-bindings: net: snps,dwmac: add "renesas,rzn1" compatible
+  ARM: dts: r9a06g032: describe MII converter
+  ARM: dts: r9a06g032: describe GMAC2
+  ARM: dts: r9a06g032: describe switch
+  ARM: dts: r9a06g032-rzn1d400-db: add switch description
+  MAINTAINERS: add Renesas RZ/N1 switch related driver entry
+
+ .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  134 +++
+ .../bindings/net/pcs/renesas,rzn1-miic.yaml   |  171 +++
+ .../devicetree/bindings/net/snps,dwmac.yaml   |    5 +
+ MAINTAINERS                                   |   13 +
+ arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts   |  117 ++
+ arch/arm/boot/dts/r9a06g032.dtsi              |  108 ++
+ drivers/net/dsa/Kconfig                       |    9 +
+ drivers/net/dsa/Makefile                      |    1 +
+ drivers/net/dsa/rzn1_a5psw.c                  | 1062 +++++++++++++++++
+ drivers/net/dsa/rzn1_a5psw.h                  |  259 ++++
+ drivers/net/pcs/Kconfig                       |    8 +
+ drivers/net/pcs/Makefile                      |    1 +
+ drivers/net/pcs/pcs-rzn1-miic.c               |  520 ++++++++
+ include/dt-bindings/net/pcs-rzn1-miic.h       |   33 +
+ include/linux/pcs-rzn1-miic.h                 |   18 +
+ include/net/dsa.h                             |    5 +
+ include/uapi/linux/if_ether.h                 |    1 +
+ net/dsa/Kconfig                               |    7 +
+ net/dsa/Makefile                              |    1 +
+ net/dsa/slave.c                               |   18 +-
+ net/dsa/tag_rzn1_a5psw.c                      |  113 ++
+ 21 files changed, 2602 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
+ create mode 100644 drivers/net/dsa/rzn1_a5psw.c
+ create mode 100644 drivers/net/dsa/rzn1_a5psw.h
+ create mode 100644 drivers/net/pcs/pcs-rzn1-miic.c
+ create mode 100644 include/dt-bindings/net/pcs-rzn1-miic.h
+ create mode 100644 include/linux/pcs-rzn1-miic.h
+ create mode 100644 net/dsa/tag_rzn1_a5psw.c
+
 -- 
-2.35.1
+2.36.1
 
