@@ -2,92 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 066B6CCA48F
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B21CCA48C
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 17:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232478AbiFXR1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
+        id S232457AbiFXR1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 13:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231821AbiFXR0y (ORCPT
+        with ESMTP id S232494AbiFXR0d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:26:54 -0400
-Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2012A725;
-        Fri, 24 Jun 2022 10:26:48 -0700 (PDT)
-Received: by mail-io1-f45.google.com with SMTP id r133so3399192iod.3;
-        Fri, 24 Jun 2022 10:26:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=vaHHEauVvqkMWfLMfHxzFvsc9NwJ8Elmx8AaWGts9VE=;
-        b=Bj9LRq4L8uB1RVMnmz5fw/iPvuxMrvnCr6xKyB29bNmdoDq5VRDtIxsie77Ob4O9GW
-         FiiZVc+UHlo8uFoJRWJ8kqVUR441HZMQ3lZSPTRR5kNBvcI3HySOyTl5Bj5kzAUFQKQ2
-         PgCHuN7ilQkj41KZwW6FZbp3xfLjL6ZUoeLDsYvWdLRhmZA4dApSgekidTrYd+27rR56
-         oPjL4b+YHVwHCRc7RtXCkqUV46WZ8Zeos98bJ56haPEk9YedfAOdtXgw1imfI0syjVwu
-         T9d5ZYNd6+Zz7ONpAGRZdEv24358Ki9HY/UCKFzX1FEsR3xYXdStHEgeGnH8OghZxZ5f
-         +46A==
-X-Gm-Message-State: AJIora8tx/NdbkoI/kzOAiaSEE/POnuj31CcVDG9ebyEOL8hZudkw5pi
-        LqJUXAe8HAT3ZZ2mSqppevHU5p6QCw==
-X-Google-Smtp-Source: AGRyM1vRutqEr41mUsHKGNxNx022yDHkG7fL3mpUC1VA5ARhOw6PzXDJLvpfjiu0/6t7pZQ6SdELnw==
-X-Received: by 2002:a02:c942:0:b0:339:ec11:d04e with SMTP id u2-20020a02c942000000b00339ec11d04emr154237jao.174.1656091607954;
-        Fri, 24 Jun 2022 10:26:47 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id b1-20020a5d8041000000b00674f9fb1531sm1433314ior.30.2022.06.24.10.26.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 10:26:47 -0700 (PDT)
-Received: (nullmailer pid 146346 invoked by uid 1000);
-        Fri, 24 Jun 2022 17:26:34 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Dan Murphy <dmurphy@ti.com>, linux-leds@vger.kernel.org,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-In-Reply-To: <20220624111325.96478-1-krzysztof.kozlowski@linaro.org>
-References: <20220624111325.96478-1-krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH] dt-bindings: leds: lp50xx: fix LED children names
-Date:   Fri, 24 Jun 2022 11:26:34 -0600
-Message-Id: <1656091594.405509.146345.nullmailer@robh.at.kernel.org>
+        Fri, 24 Jun 2022 13:26:33 -0400
+Received: from mailrelay3-1.pub.mailoutpod1-cph3.one.com (mailrelay3-1.pub.mailoutpod1-cph3.one.com [46.30.210.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C73B3E5C3
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 10:26:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=rsa1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=kKMlyigldhqIKPtpc/HTqH04jpVCEZ2Uj0a4oEjScvQ=;
+        b=dIA3UtO+bXXsFoKsMM0zNGq/QbMHWhMKuOUXmdH/rpWNjFyzQ1vjr2mVb5N4luMF5COD6CTVfL4ns
+         XGIBNrsFu/MMsa4mT8ZA4r3qDWOphUd/pohvpRRqf4e04OEqMQI7SHeLwQ8XALQiZbEAl7xUMJSs66
+         w5zFIwoMAonePdbtTee1VWU1YIkgHnQy5H79bw6+gBKPApudhvfaM9wIplEAu0BGXD+oVwDJHlV1lj
+         FzHWi6ahSNz+XXvWUHP9jw/UCEhRtUFgp2Qi3/RPrOqTfRElYgnPqLF4aLqppmilZCYXtpUKweuysA
+         YXhcgzSbpjGFbTwPCcfyQfO1yg+aUUw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=ed1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=kKMlyigldhqIKPtpc/HTqH04jpVCEZ2Uj0a4oEjScvQ=;
+        b=pLODzhr0ICxTTRSGGUxLlQi1uSu5F7stxjTe16GEavcTvW1IQRWBpn+FmDm9BS24Wy30B/Vui9P6a
+         ZziOKxODw==
+X-HalOne-Cookie: ac4d69d102f6ad701fef4aaa0f761458036f703e
+X-HalOne-ID: bd268857-f3e2-11ec-be7c-d0431ea8bb03
+Received: from mailproxy3.cst.dirpod4-cph3.one.com (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        by mailrelay3.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
+        id bd268857-f3e2-11ec-be7c-d0431ea8bb03;
+        Fri, 24 Jun 2022 17:26:10 +0000 (UTC)
+Date:   Fri, 24 Jun 2022 19:26:08 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Philip Oberfichtner <pro@denx.de>
+Cc:     devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        matthias.winker@de.bosch.com, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        dri-devel@lists.freedesktop.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Subject: Re: [RESEND v5 1/2] dt-bindings: display: simple: Add DataImage
+ FG1001L0DSSWMG01 compatible string
+Message-ID: <YrXzsK9JE8At8WL/@ravnborg.org>
+References: <20220623112257.4178461-1-pro@denx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623112257.4178461-1-pro@denx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 24 Jun 2022 13:13:25 +0200, Krzysztof Kozlowski wrote:
-> The lp50xx LEDs expects to have single-color LED children with unit
-> addresses.  This is required by the driver and provided by existing
-> DTSes.  Fix the binding to match actual usage.
+Hi Philip,
+
+On Thu, Jun 23, 2022 at 01:22:56PM +0200, Philip Oberfichtner wrote:
+> Add DataImage FG1001L0DSSWMG01 10.1" 1280x800 TFT LCD panel compatible
+> string.
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Fixes: dce1452301e7 ("dt: bindings: lp50xx: Introduce the lp50xx family of RGB drivers")
-> ---
->  Documentation/devicetree/bindings/leds/leds-lp50xx.yaml | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
+> Signed-off-by: Philip Oberfichtner <pro@denx.de>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Both patches applied to drm-misc (drm-misc-next)
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-lp50xx.example.dtb: led-controller@14: multi-led@2:#size-cells:0:0: 0 was expected
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+	Sam
