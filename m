@@ -2,93 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B230C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 07:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 07:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbiFXHam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 03:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56586 "EHLO
+        id S229840AbiFXHbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 03:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiFXHaj (ORCPT
+        with ESMTP id S229464AbiFXHbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 03:30:39 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Jun 2022 00:30:38 PDT
-Received: from esa10.hc1455-7.c3s2.iphmx.com (esa10.hc1455-7.c3s2.iphmx.com [139.138.36.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEAE35DD7
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 00:30:37 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="65526012"
-X-IronPort-AV: E=Sophos;i="5.92,218,1650898800"; 
-   d="scan'208";a="65526012"
-Received: from unknown (HELO yto-r4.gw.nic.fujitsu.com) ([218.44.52.220])
-  by esa10.hc1455-7.c3s2.iphmx.com with ESMTP; 24 Jun 2022 16:29:33 +0900
-Received: from yto-m4.gw.nic.fujitsu.com (yto-nat-yto-m4.gw.nic.fujitsu.com [192.168.83.67])
-        by yto-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id CAEB9A9010
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 16:29:32 +0900 (JST)
-Received: from m3004.s.css.fujitsu.com (m3004.s.css.fujitsu.com [10.128.233.124])
-        by yto-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 2AEC7F7D3
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 16:29:32 +0900 (JST)
-Received: from localhost.localdomain (unknown [10.125.5.220])
-        by m3004.s.css.fujitsu.com (Postfix) with ESMTP id 04842200B2A7;
-        Fri, 24 Jun 2022 16:29:32 +0900 (JST)
-From:   Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-To:     tglx@linutronix.de
-Cc:     geert+renesas@glider.be, linux-kernel@vger.kernel.org,
-        yamamoto.rei@jp.fujitsu.com
-Subject: Re: [PATCH] hrtimer: CPU and entry_time is added to a warning message in hrtimer_interrupt()
-Date:   Fri, 24 Jun 2022 16:09:17 +0900
-Message-Id: <20220624070917.128409-1-yamamoto.rei@jp.fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220624070011.128234-1-yamamoto.rei@jp.fujitsu.com>
-References: <20220624070011.128234-1-yamamoto.rei@jp.fujitsu.com>
+        Fri, 24 Jun 2022 03:31:34 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243D869F9B
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 00:31:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=YUOFk9b/9Pi1CdCvUNVXTceplFA6AUnlxbx60+B9dcw=; b=RJTk89S0PROMbL6UJk2GB9VH3Y
+        boeJy6Fj/P3iLWMgCWFlNP3yc/NKsj45HMoRB6NW4brd62BOJZ4x83+r70cNzXE8C5z51MD8iOFTe
+        Ul5fyyepJRjpetwqojKickySBiGksoqGJlzowtIzK2zR/rBThomoSBT5GQCtRmYuZzTkbMj1oC/kt
+        u1Kb9cke5RT3KWTV7TpFnCmmEAQdPdrGlKGltV3CimQXtsUgfl5gJL+mVr0cAwsW3fqhS3OXtz9jH
+        4PgH8xTBUqKAgqmgXYl9JOgYKEaUdJomU/8dUP4crr70QUcZdsS23aqMej5/pYesXrwoCwZfT4h8A
+        NFe9nn0Q==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o4dlQ-00C6VQ-E8; Fri, 24 Jun 2022 07:30:15 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6445C3002C1;
+        Fri, 24 Jun 2022 09:29:58 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 4C88D29B3A655; Fri, 24 Jun 2022 09:29:58 +0200 (CEST)
+Date:   Fri, 24 Jun 2022 09:29:58 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     K Prateek Nayak <kprateek.nayak@amd.com>
+Cc:     Chen Yu <yu.c.chen@intel.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Mel Gorman <mgorman@suse.de>, Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Barry Song <21cnbao@gmail.com>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Len Brown <len.brown@intel.com>,
+        Ben Segall <bsegall@google.com>,
+        Aubrey Li <aubrey.li@intel.com>,
+        Abel Wu <wuyun.abel@bytedance.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Tim Chen <tim.c.chen@intel.com>, linux-kernel@vger.kernel.org,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        Mohini Narkhede <mohini.narkhede@intel.com>
+Subject: Re: [PATCH v4] sched/fair: Introduce SIS_UTIL to search idle CPU
+ based on sum of util_avg
+Message-ID: <YrVn9t2kLHB21uG1@hirez.programming.kicks-ass.net>
+References: <20220612163428.849378-1-yu.c.chen@intel.com>
+ <76c94a3b-6ca2-e0e2-c618-42b147d2737d@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <76c94a3b-6ca2-e0e2-c618-42b147d2737d@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 24 Jun 2022 16:00:11, Rei Yamamoto wrote:
-> dmesg
-> :
-> [ 1462.836971] start repro_hrtimer_interrupt
-> [ 1462.836976] test_handler = test_handler [repro] 0xffff9788f7bb3048
-> :
-> [ 1462.879117] hrtimer: CPU 7, entry_time = 1462807264840, interrupt took
-> 60048886 ns             ^^^^^               ^^^^^^^^^^^^^
+On Wed, Jun 22, 2022 at 12:06:55PM +0530, K Prateek Nayak wrote:
+> Hello Chenyu,
 > 
-> cat /sys/kernel/debug/tracing/trace
-> :
->           <idle>-0       [007] d.h1.  1462.838075: hrtimer_expire_entry:
->                          ^^^^^
-> hrtimer=0000000041fcee42 function=test_handler [repro] now=1462807264840
->                                                            ^^^^^^^^^^^^^
+> I'm sorry for the delay. The testing took a while but below are
+> the results from testing on our system.
+> 
+> tl;dr
+> 
+> o We ran all the tests with with SIS_PROP disabled.
+> o tbench reaches close to saturation early with 256 clients.
+> o schbench shows improvements for low worker counts.
+> o All other benchmark results seem comparable to tip.
+>   We don't see any serious regressions with v4.
+> 
+> > @@ -61,6 +61,7 @@ SCHED_FEAT(TTWU_QUEUE, true)
+> >   * When doing wakeups, attempt to limit superfluous scans of the LLC domain.
+> >   */
+> >  SCHED_FEAT(SIS_PROP, true)
+> 
+> SIS_PROP was disabled in our testing as follows:
+> 
+> --
+> -SCHED_FEAT(SIS_PROP, true)
+> +SCHED_FEAT(SIS_PROP, false)
 
-test_handler() keeps running for 20 milliseconds due to a loop,
-and it leads to exceed next_expire.
+So how about I make this change.
 
-# grep -A 21 "hrtimer_restart test_handler" repro.c
-static enum hrtimer_restart test_handler(struct hrtimer *hrtimer)
-{
-        ktime_t start, end;
-        printk(KERN_INFO "start test_handler %d times\n", count);
+> With v4 on the current tip, I don't see any need for
+> a special case for systems with smaller LLCs with
+> SIS_PROP disabled and SIS_UITL enable. Even SIS Efficiency
+> seems to be better with SIS_UTIL for hackbench.
+> 
+> Tested-by: K Prateek Nayak <kprateek.nayak@amd.com> 
 
-        hrtimer_forward_now(hrtimer, ns_to_ktime(TICK_NSEC));
-
-        start = ktime_get();
-
-        for(;;){
-                end = ktime_get();
-                if((ktime_sub(end, start)) > 20000000)
-                        break;
-        }
-
-        if(count < 20){
-                count++;
-                return HRTIMER_RESTART;
-        }else{
-                return HRTIMER_NORESTART;
-        }
-}
-
-Thanks,
-Rei
+And apply this thing, lets see how it fares..
