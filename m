@@ -2,107 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 583DCC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E72C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 21:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbiFXVMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 17:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
+        id S230313AbiFXVR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 17:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229818AbiFXVMw (ORCPT
+        with ESMTP id S229758AbiFXVR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 17:12:52 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F60A85D33
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 14:12:51 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 3DB9B16CF;
-        Sat, 25 Jun 2022 00:14:10 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 3DB9B16CF
+        Fri, 24 Jun 2022 17:17:56 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4712FBFE;
+        Fri, 24 Jun 2022 14:17:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1656105250;
-        bh=EVjSlxO14l8e2kikyRC3XsnI7trVHKvpd6yQROJjrNI=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=OqoNP7o33DjMdg1MucEEQUwgO9V3dACdAmJyRQbS+NuVHdtSDOuq13cZEWPkYVlH/
-         igxFCz/JO/zZmRkmIv+nmS8aGWmoC8CsfuLqQa7qutxYhe9T9LEjzEvX956FVbyX1p
-         yfUdmUj5hT/lbK92Pgb3njIYOPJzP56Xbb5YCW64=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Sat, 25 Jun 2022 00:12:49 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        <soc@kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v3 2/2] bus: bt1-axi: Don't print error on -EPROBE_DEFER
-Date:   Sat, 25 Jun 2022 00:12:33 +0300
-Message-ID: <20220624211233.7529-2-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220624211233.7529-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220624211233.7529-1-Sergey.Semin@baikalelectronics.ru>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656105474; x=1687641474;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=oXy5HhC7O8BQutw+O6SMcz5I+YvGlUPqUb8wDFujtUU=;
+  b=yZ9CVgOf5yGlP3bXckFz7een8A8t4w3eH3t1EoxYjR2UVkKdbVeMDHSF
+   qaWBkL6QdMiQosdCFomy5RIbw3RqXMNAKSjbwXx4RXnJk/IEW2d0FoeJg
+   BXv7QAQVj8SzhowmDQ+yUT8fVxUeWqFeCt3M1P9xZFl5+0l6L9/dsLN8z
+   g=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 24 Jun 2022 14:17:54 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 14:17:53 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 24 Jun 2022 14:17:52 -0700
+Received: from [10.110.58.84] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 24 Jun
+ 2022 14:17:51 -0700
+Message-ID: <007ea4c9-9701-f4ab-3278-5d36bf2018c4@quicinc.com>
+Date:   Fri, 24 Jun 2022 14:17:50 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v1 2/3] drm/msm/dp: decoupling dp->id out of dp
+ controller_id at scxxxx_dp_cfg table
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
+        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
+        <daniel@ffwll.ch>, <dianders@chromium.org>,
+        <dmitry.baryshkov@linaro.org>, <dri-devel@lists.freedesktop.org>,
+        <robdclark@gmail.com>, <sean@poorly.run>, <vkoul@kernel.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1656090912-18074-1-git-send-email-quic_khsieh@quicinc.com>
+ <1656090912-18074-3-git-send-email-quic_khsieh@quicinc.com>
+ <CAE-0n52RW+UFJ=hqMWjwR8qvEbww7QjzPW1nhL3Atd97QXAnYw@mail.gmail.com>
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+In-Reply-To: <CAE-0n52RW+UFJ=hqMWjwR8qvEbww7QjzPW1nhL3Atd97QXAnYw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Baikal-T1 AXI bus driver correctly handles the deferred probe
-situation, but still pollutes the system log with a misleading error
-message. Let's fix that by using the dev_err_probe() method to print the
-log message in case of the clocks/resets request errors.
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+On 6/24/2022 1:00 PM, Stephen Boyd wrote:
+> Quoting Kuogee Hsieh (2022-06-24 10:15:11)
+>> Current the index (dp->id) of DP descriptor table (scxxxx_dp_cfg[]) are tightly
+>> coupled with DP controller_id. This means DP use controller id 0 must be placed
+>> at first entry of DP descriptor table (scxxxx_dp_cfg[]). Otherwise the internal
+>> INTF will mismatch controller_id. This will cause controller kickoff wrong
+>> interface timing engine and cause dpu_encoder_phys_vid_wait_for_commit_done
+>> vblank timeout error.
+>>
+>> This patch add controller_id field into struct msm_dp_desc to break the tightly
+>> coupled relationship between index (dp->id) of DP descriptor table with DP
+>> controller_id.
+> Please no. This reverts the intention of commit bb3de286d992
+> ("drm/msm/dp: Support up to 3 DP controllers")
+>
+>      A new enum is introduced to document the connection between the
+>      instances referenced in the dpu_intf_cfg array and the controllers in
+>      the DP driver and sc7180 is updated.
+>
+> It sounds like the intent of that commit failed to make a strong enough
+> connection. Now it needs to match the INTF number as well? I can't
+> really figure out what is actually wrong, because this patch undoes that
+> intentional tight coupling. Is the next patch the important part that
+> flips the order of the two interfaces?
 
----
+The commit bb3de286d992have two problems,
 
-Link: https://lore.kernel.org/lkml/20220610080103.10689-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v2:
-- Use the dev_err_probe() return value as the return status of the
-  corresponding method. (@Philipp)
+1)  The below sc7280_dp_cfg will not work, if eDP use 
+MSM_DP_CONTROLLER_2 instead of  MSM_DP_CONTROLLER_1
 
-Link: https://lore.kernel.org/lkml/20220610104030.28399-2-Sergey.Semin@baikalelectronics.ru/
-Changelog v3:
-- Just resend.
-- Rebase onto the kernel v5.19-rcX.
----
- drivers/bus/bt1-axi.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+since it have num_descs =2 but eDP is at index 2 (CONTROLLER_2) which 
+never be reached.
 
-diff --git a/drivers/bus/bt1-axi.c b/drivers/bus/bt1-axi.c
-index e7a6744acc7b..70e49a6e5374 100644
---- a/drivers/bus/bt1-axi.c
-+++ b/drivers/bus/bt1-axi.c
-@@ -135,10 +135,9 @@ static int bt1_axi_request_rst(struct bt1_axi *axi)
- 	int ret;
- 
- 	axi->arst = devm_reset_control_get_optional_exclusive(axi->dev, "arst");
--	if (IS_ERR(axi->arst)) {
--		dev_warn(axi->dev, "Couldn't get reset control line\n");
--		return PTR_ERR(axi->arst);
--	}
-+	if (IS_ERR(axi->arst))
-+		return dev_err_probe(axi->dev, PTR_ERR(axi->arst),
-+				     "Couldn't get reset control line\n");
- 
- 	ret = reset_control_deassert(axi->arst);
- 	if (ret)
-@@ -159,10 +158,9 @@ static int bt1_axi_request_clk(struct bt1_axi *axi)
- 	int ret;
- 
- 	axi->aclk = devm_clk_get(axi->dev, "aclk");
--	if (IS_ERR(axi->aclk)) {
--		dev_err(axi->dev, "Couldn't get AXI Interconnect clock\n");
--		return PTR_ERR(axi->aclk);
--	}
-+	if (IS_ERR(axi->aclk))
-+		return dev_err_probe(axi->dev, PTR_ERR(axi->aclk),
-+				     "Couldn't get AXI Interconnect clock\n");
- 
- 	ret = clk_prepare_enable(axi->aclk);
- 	if (ret) {
--- 
-2.35.1
+static const struct msm_dp_config sc7280_dp_cfg = {
+         .descs = (const struct msm_dp_desc[]) {
+                 [MSM_DP_CONTROLLER_2] = { .io_start = 0x0aea0000, 
+.connector_type = DRM_MODE_CONNECTOR_eDP, .wide_bus_en = true },
+                 [MSM_DP_CONTROLLER_0] = { .io_start = 0x0ae90000, 
+.connector_type = DRM_MODE_CONNECTOR_DisplayPort, .wide_bus_en = true },
+         },
+         .num_descs = 2,
+};
+
+2)  DP always has index of 0 (dp->id = 0) and the first one to call 
+msm_dp_modeset_init(). This make DP always place at head of bridge chain.
+
+At next patch eDP must be placed at head of bridge chain to fix eDP 
+corruption issue. This is the purpose of this patch. I will revise the 
+commit text.
+
 
