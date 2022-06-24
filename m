@@ -2,275 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93CC4CCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 662DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 16:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbiFXQqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 12:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41966 "EHLO
+        id S230333AbiFXQsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 12:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiFXQp7 (ORCPT
+        with ESMTP id S229876AbiFXQsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 12:45:59 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4138B50032;
-        Fri, 24 Jun 2022 09:45:58 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OFYD4L023009;
-        Fri, 24 Jun 2022 16:45:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : content-type :
- mime-version; s=corp-2021-07-09;
- bh=0H2EswXejg6sqJQb4PJ8L6Nk0KnaVB7h/56TX6J++lU=;
- b=VdjyxT5kqifUhaS8MEQIZ3ejZxOSnKhja353oCwqF2yEnV8k52MvF80AA30Dj22DfFnP
- s3kY8SDZwnUQJ33ChY6Div4GGDn7O1LWSfbp6PLnV6XHO/mTsi4AF3fVeNyiT9JZd/w8
- wTZLEDsHqjWyFH74NxpQMSp1NbMqA8/GFCpRwahRHaDcxxEShlkDV1JuYop7zyJoJ09n
- wTPANmDEfvJeB6hqXE+2Z3+AFjWi3GWGSbl8Pn9ngyoCAE6lfCohMndqI7jdQMJgERIl
- cjK7z/PGsdQR+wjClupldNySB8Xre/w9GuYL34SwUdFRgOb0lDKM+Ygp3RW+mlyRMfbe nQ== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gs5a0pbx6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 Jun 2022 16:45:30 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25OGUf5V034023;
-        Fri, 24 Jun 2022 16:45:28 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gtd9xc0t1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 Jun 2022 16:45:28 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MuciVzvmypkKQwqjyV2cuiQMPHtuCjNKcO6mR85gObpnc0k8T+8Di3UqO5hlBvU4dyLBkjmSxSIKRm+ay2FvQMYad3WYPAFrUkc4AIIvc9eNX6Gg3yLIyVyQIMzoqiqwl45aTVQLpwlMjTDG7+mtIPauZW0Ob2zuLAlpQJFK+6pLWNALkW0FA2OxVyl0ooQaYEL6//pnEtdC7OXdalHckzRq6DZEkVIF6nBcG4nUVNrzQeC7Apy69+GZcOoAlypia5GN7jJuqGgADhMlkwiZVhMmupjL8IOQn95khUGyciqKoKiOTX4VqUI9tdkFAE6NMuo8go29/nJ6SOF3JNt94A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0H2EswXejg6sqJQb4PJ8L6Nk0KnaVB7h/56TX6J++lU=;
- b=LrX422UTCjYOhGu7Iu17TiU42TUMk1X0j+mqudtbuyaMb4WVtZ/fPAhjH1fFt6QgiuwjiX55bf4it+fo75oha4RimhGjjMq3RC1mVycQdQShrEgADrxeKTTlB2+yfmiQTdFcpr/tFTbquOouBcxbYLSQGAquMvLMbvkVgsQeYuydHZ6KLEgogmh0BHT30obOXrf19GcwiLFbh1XpjvbOX+u5OhgmlvRwCJg0g2MIXhQCGSBVbCmlw3JOk8PVJXi+lq3mwq+ojlfV0sKwYXMCXUzucSTqhhUVcybFo39e1F41o+G1e/C1usVqxLRuHZuaDcCdAJA7VUZYgeaYHWGB8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Fri, 24 Jun 2022 12:48:40 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5A449918
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:48:38 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id r1so2574501plo.10
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 09:48:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0H2EswXejg6sqJQb4PJ8L6Nk0KnaVB7h/56TX6J++lU=;
- b=JKIdxdIzZEugHuiYKMx3rlTYajq5GhedNhLZrOKPjsvX7h4tpoKvFIdOlo59l4ntbwGI8Bpq74HX+24+sTHulMFMFOQLRxLk4NFhk+PCAvdG06qqse00NXwgpaV3rilxdKfr9Kq3rOWeen5JwmXPMX2ZYO/vNatCh5bjOdROGJk=
-Received: from BLAPR10MB5267.namprd10.prod.outlook.com (2603:10b6:208:30e::22)
- by CH0PR10MB5115.namprd10.prod.outlook.com (2603:10b6:610:c4::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Fri, 24 Jun
- 2022 16:45:27 +0000
-Received: from BLAPR10MB5267.namprd10.prod.outlook.com
- ([fe80::a080:c357:962c:eb5]) by BLAPR10MB5267.namprd10.prod.outlook.com
- ([fe80::a080:c357:962c:eb5%5]) with mapi id 15.20.5373.017; Fri, 24 Jun 2022
- 16:45:27 +0000
-From:   Alan Maguire <alan.maguire@oracle.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        jolsa@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, mhiramat@kernel.org,
-        akpm@linux-foundation.org, void@manifault.com, swboyd@chromium.org,
-        ndesaulniers@google.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Alan Maguire <alan.maguire@oracle.com>
-Subject: [RFC bpf-next 1/2] bpf: add a kallsyms BPF iterator
-Date:   Fri, 24 Jun 2022 17:45:17 +0100
-Message-Id: <1656089118-577-2-git-send-email-alan.maguire@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1656089118-577-1-git-send-email-alan.maguire@oracle.com>
-References: <1656089118-577-1-git-send-email-alan.maguire@oracle.com>
-Content-Type: text/plain
-X-ClientProxiedBy: LO4P123CA0396.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:18f::23) To BLAPR10MB5267.namprd10.prod.outlook.com
- (2603:10b6:208:30e::22)
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7vaOGSSaS2BSeF0eCGOBdnJBKLvorCKIGcPWI6JfN0M=;
+        b=y/IbSUpXpt2dGe1jDFLOsSSUkh1YBHRUnJmUb8sFZZm5NLih02wnUPXYt5zjjKeypb
+         5Ffpu8piazgJRDNC42kW6T6j1S8K0mebrE7N0RwQPnfu+w8dFmATyybUe8Li6Ax2Pbsq
+         6i0tJIm6mnulrZuaP8LlD+bk0IDIh7ztPilxJLZ2r82xW5PSaATQjSK6ypPckDxrjzPQ
+         1bJK58MfXrbD6UbHeCtj6QwHeNzd3TOhfuFAniLjlYZ5xRUrZA93EYYGbms/FfDtCwRZ
+         fD3/L6ZsvUORcp5roVkzX0bDUqQJrvcXD+t6BkwOR2kijU8lP3ghEMss2dpRQ7RGgeA7
+         3xtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7vaOGSSaS2BSeF0eCGOBdnJBKLvorCKIGcPWI6JfN0M=;
+        b=EjhB4xFFS0ayV3nJhx0Ct08hefIjCHQhB2vetHXOgjCSTGfm5RMIG4xlPsEAqSDObE
+         1txj8AgcuPljJGmENszB4FIjHSj1TtTAlG6ob3MRjWsQvnMDe0LAWAl7rCvv4H5kPnE7
+         7AKtihu8yCZ8QoolcroCrrxm4zIIaQjl8O5qlgCNSh9c7sGsTYdhuDSXbPZ/05PEnZp8
+         kAVZSg6EWajGXdqACkmVURIuT6cXK1e2FoE94+yrPyaNVEHZwK1belaSorTcKChDPVuY
+         8Zd96ipXXc/QC4lsKlTMBNpd+QqDga98qY1PdJhezS2HqN851L3VpJpHcQGTcenChVA4
+         4Fqg==
+X-Gm-Message-State: AJIora/6a1SE3lx6FclVHRCo92a8Naa1vB8YYjqbZbMeH0nNHGnCRCGj
+        qLvGbARtLUzxu6wc8cMI1TXl9A==
+X-Google-Smtp-Source: AGRyM1sMTKHk1czlE8w1vn1du6WoyJEAfH19Gy+e0hnTwhXskgrBEnEhnbwsZHR1W2asFkceOKtghg==
+X-Received: by 2002:a17:902:e8d7:b0:168:e2da:893c with SMTP id v23-20020a170902e8d700b00168e2da893cmr45709631plg.152.1656089318365;
+        Fri, 24 Jun 2022 09:48:38 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id h9-20020a170902f70900b001663cf001besm2033477plo.174.2022.06.24.09.48.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 09:48:36 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 10:48:34 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Cc:     bjorn.andersson@linaro.org, robin.murphy@arm.com, hch@lst.de,
+        m.szyprowski@samsung.com, matthias.bgg@gmail.com,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, yj.chiang@mediatek.com
+Subject: Re: [PATCH 0/2] dma-mapping, remoteproc: Fix dma_mem leak after
+ rproc_shutdown
+Message-ID: <20220624164834.GA1736477@p14s>
+References: <20220422062436.14384-1-mark-pk.tsai@mediatek.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8680f5c7-5ef9-413a-cb96-08da5600f10b
-X-MS-TrafficTypeDiagnostic: CH0PR10MB5115:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zLLDK1MD/7MzieVo7mkJizNZ0LZNxYTpe4O0kjnXd3gVCK6cv2o9zAW6tleXGuIhVRiZh9vdRhKBlHVeTSLA2MfOCOl/xDB4JisoeHFO2UEE1ajslmPcYRZtuu2H54MtyQNnDqbXHX5KrkoFH1n2H8PhPFfqsRApGsxXF9xfDCmBPPYNmG9dl/H6NUWtPrhd6uJVqC31b3tHZZtNPxgQSjfjqWDdu0ccCunA8oibT1B4mN+/FyIONPQgbB9lkekRasa72DhvOCwjNZ9bJKdMz+rFF7K8w7R+4Z+x9rvClauVms4oqw7pjrlFud7949iF7Z0qoObsuUvrFhAELEpdxB715fFLQMP9pbnwqjmqr8b50qsrjGng++2UDOgpM/HK9VDexthQn+nj0NNO+fKhgfIGHuV3uSZ9QcV6QEjbyQNKM41Mx42hU5tBtF4XnChO1PROgBKWO/wszlKUzNZgAC8o16Rk9tDl/wnuhxU91Tm4ux01l6WiV0AfqjZ4Qw7qKnLh3BCr50WnROCAEzLLex1niudkE6Ph0rOg6XGS5Zg8yJYVckJXiTePg6o4Q38vtT5ohUhFbxSk12uv+B1idCk9RDl6XcCvEK7eQj1pTI9CtKxi0FxiIwOgA6j0BDLfbiesj1w7eBfmdFlrSv7kEAw3AatELSXuhPsMriW+WUX+JKegPFL9cNawT6aoZrq19LjQNqbFWwbu/NatLyECaSSnnl75Guz3XXH8sHZVkLzDl27V/hG7R8dd7VEJUPyifxNVqXVe33xmP1Wfxnmh7C7UvA2h+BYYy9E7JFqd5Z3koMD4XAFSTmTmMGuCdLq+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5267.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(366004)(396003)(376002)(346002)(136003)(4326008)(8676002)(186003)(83380400001)(44832011)(478600001)(66476007)(5660300002)(2906002)(66556008)(38100700002)(7416002)(66946007)(8936002)(6506007)(107886003)(52116002)(2616005)(41300700001)(6512007)(26005)(6666004)(966005)(316002)(36756003)(38350700002)(86362001)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?27kQTbdONJA7tALuCVPckhYOlMF8S0UTjX9u3+qQ1OU9ppmUxhcOJyAETuAG?=
- =?us-ascii?Q?a7bJDipPJdA4e8QMyE4dUpyW7oqKC+W1nilpGuA0sYUQCsPtbpz0GsGSwNvd?=
- =?us-ascii?Q?GW95ERUi7j9y0jgqyzLoIdltBFMhef4q0P2stkQgy4lVECmyj/PnrGOZti8x?=
- =?us-ascii?Q?Mye5g0xWDbl0G63/SBk9xTV95ATPh6nyKdK1F6BqDwHZ/82IpivDeXsm91Eg?=
- =?us-ascii?Q?pAsEHkOvo5lFT+GAIhJcgdVKYyIJjiHjPxDB583shD+lddFywe5KeFMho1yh?=
- =?us-ascii?Q?ItBurCSocgtw5m4449tH79lnmFM/DhTPUaxSyrkIMhN7yczT16V+TnMpsdgq?=
- =?us-ascii?Q?bbS8yOMqhfblULis4p2lUdIPUb0uNjR7RhUxTBEZdN0kcy/KCsOJfIoJ/7L0?=
- =?us-ascii?Q?mdZagrxi2bJ9cFyEUEr9g8Td3WQuN9qRF/R2BE7LopbgrJtLRIoAeia7Pc+Y?=
- =?us-ascii?Q?P0Li5W1/PkMRYw6iHt8QOFZm7XOg2ZLSYc3a8WWCZy3gU+yY0qShBlkSbqsC?=
- =?us-ascii?Q?tvdv9bVMTIsH797iCh7qidFqLHLklEI0oe1DOhKwBd0gXFqCgA93YkJAFR3M?=
- =?us-ascii?Q?P3b4ohPRa08tq4R+wmgX/VS6k+tktNbwXqrq8ZDhwSW5O2XeVlsfNkyG2WtY?=
- =?us-ascii?Q?c+An/0ZzymqNwHvwknB+ee80KBY8MbKz9o4sIQox92pgeDWgGzrmGRsjBTIK?=
- =?us-ascii?Q?wC25WPhGfPd7P3WeMovX7A8Ht9mMOuYDMg41QIG8u6/V/50raBllYCk1gpJV?=
- =?us-ascii?Q?lE51c1UkH30iyRhJ/GeFa8fpAptunPhbrMxTaNZ9B978DEkl2ZNBwngqisLR?=
- =?us-ascii?Q?UHmXEzFHykyIADWsq+Dbb65S2YisERDKtihOijP54s7s12720fMJ7eYYSNBp?=
- =?us-ascii?Q?g6wQyF+W0xw+qZI3aw32rV+x14FutRDJx2lzseJI74qXx1fKb4GZXu//qIeI?=
- =?us-ascii?Q?kXfbVtcI6+oS258U3uDON58k24vHkrmY1+GCWSevp6FYAB/mtEk6fLIPaCG8?=
- =?us-ascii?Q?TtiSLS4Ds7Mv+ZKtTNX9k761l9MWohNw/Ajs0AEmLMmI7ilzLw4jcWusruy6?=
- =?us-ascii?Q?NzK4qza/RgtmLuVPlzbiNOZdz4FL0wEw1nZ0yLsFZiBLF+nrvZK6jG4F2rgM?=
- =?us-ascii?Q?noMKhZWL5TcMNdDGzNgfOV/UWnBENduQ0hkDmLMoYNheOBEMlxtSNmC/hh+p?=
- =?us-ascii?Q?Nk60CKsSYp/JlUAoa7mmtnwdQ0BK+xLCpRIuqq7hOcN23OH4pOGxBcxjoYxX?=
- =?us-ascii?Q?mKjsihM+5/YaACTm/nBdwyCdgZxbXzSXjduREA5WNeAEsz6KFzqguUbmr43K?=
- =?us-ascii?Q?JFPPpRnqqpapJjp+ASh6n/w+69Aql8GA3Tp6P+mTBELquS7ODPZQc+cbdOwZ?=
- =?us-ascii?Q?2qeCM2vbxkDvrR0WhUUJEtbRIE4zLG/WrTG0TtC0Y99eo86pJPSG9BTsLjEh?=
- =?us-ascii?Q?Fgh6H4W3b3+hWLGkxgWWbCPcpstg3A9k3iRZB+Hx5ImBF0ajJfKQCzNxr458?=
- =?us-ascii?Q?KUJ88kni+0ncSEEl/5CGn4NZUJeyD3dfRJq6rDBbVR/EurIh7DCudO1II8/S?=
- =?us-ascii?Q?g45ZL9owI+tO1GmxVUiKhYdDFmLANuCsEIv5NL7T?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8680f5c7-5ef9-413a-cb96-08da5600f10b
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5267.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 16:45:27.2448
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cA9HxmkkKdU/ddLXvL4T5ef4gMTzRKz6PACK9yqw/xAeE2eh3KaHNCJyUhsqO3tfKriRiPdkMg8x1K1SWnbVsA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5115
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-06-24_08:2022-06-23,2022-06-24 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
- phishscore=0 malwarescore=0 mlxscore=0 spamscore=0 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206240064
-X-Proofpoint-ORIG-GUID: bRfEBvaPNkMv5tAnxtyNGs2tLHOf5Ivw
-X-Proofpoint-GUID: bRfEBvaPNkMv5tAnxtyNGs2tLHOf5Ivw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422062436.14384-1-mark-pk.tsai@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-add a "kallsyms" iterator which provides access to a "struct kallsym_iter"
-for each symbol.  Intent is to support more flexible symbol parsing
-as discussed in [1].
+On Fri, Apr 22, 2022 at 02:24:34PM +0800, Mark-PK Tsai wrote:
+> Release dma coherent memory before rvdev is free in
+> rproc_rvdev_release().
+> 
+> Below is the kmemleak report:
+> unreferenced object 0xffffff8051c1a980 (size 128):
+>   comm "sh", pid 4895, jiffies 4295026604 (age 15481.896s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<000000003a0f3ec0>] dma_declare_coherent_memory+0x44/0x11c
+>     [<00000000ad243164>] rproc_add_virtio_dev+0xb8/0x20c
+>     [<00000000d219c8e9>] rproc_vdev_do_start+0x18/0x24
+>     [<00000000e694b468>] rproc_start+0x22c/0x3e0
+>     [<000000000b938941>] rproc_boot+0x4a4/0x860
+>     [<000000003c4dc532>] state_store.52856+0x10c/0x1b8
+>     [<00000000df2297ac>] dev_attr_store+0x34/0x84
+>     [<0000000083a53bdb>] sysfs_kf_write+0x60/0xbc
+>     [<000000008ed830df>] kernfs_fop_write+0x198/0x458
+>     [<0000000072b9ad06>] __vfs_write+0x50/0x210
+>     [<00000000377d7469>] vfs_write+0xe4/0x1a8
+>     [<00000000c3fc594e>] ksys_write+0x78/0x144
+>     [<000000009aef6f4b>] __arm64_sys_write+0x1c/0x28
+>     [<0000000003496a98>] el0_svc_common+0xc8/0x22c
+>     [<00000000ea3fe7a3>] el0_svc_compat_handler+0x1c/0x28
+>     [<00000000d1a85a4e>] el0_svc_compat+0x8/0x24
+> 
+> Mark-PK Tsai (2):
+>   dma-mapping: Add dma_release_coherent_memory to DMA API
+>   remoteproc: Fix dma_mem leak after rproc_shutdown
+> 
+>  drivers/remoteproc/remoteproc_core.c |  1 +
+>  include/linux/dma-map-ops.h          |  3 +++
+>  kernel/dma/coherent.c                | 10 ++++++++--
+>  3 files changed, 12 insertions(+), 2 deletions(-)
 
-[1] https://lore.kernel.org/all/YjRPZj6Z8vuLeEZo@krava/
+Applied.
 
-Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
----
- kernel/kallsyms.c | 93 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 93 insertions(+)
+Thanks,
+Mathieu
 
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index fbdf8d3..ffaf464 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -30,6 +30,7 @@
- #include <linux/module.h>
- #include <linux/kernel.h>
- #include <linux/bsearch.h>
-+#include <linux/btf_ids.h>
- 
- /*
-  * These will be re-linked against their real values
-@@ -799,6 +800,95 @@ static int s_show(struct seq_file *m, void *p)
- 	.show = s_show
- };
- 
-+#ifdef CONFIG_BPF_SYSCALL
-+
-+struct bpf_iter__kallsyms {
-+	__bpf_md_ptr(struct bpf_iter_meta *, meta);
-+	__bpf_md_ptr(struct kallsym_iter *, kallsym_iter);
-+};
-+
-+static int s_prog_seq_show(struct seq_file *m, bool in_stop)
-+{
-+	struct bpf_iter__kallsyms ctx;
-+	struct bpf_iter_meta meta;
-+	struct bpf_prog *prog;
-+
-+	meta.seq = m;
-+	prog = bpf_iter_get_info(&meta, in_stop);
-+	if (!prog)
-+		return 0;
-+
-+	ctx.meta = &meta;
-+	ctx.kallsym_iter = m ? m->private : NULL;
-+	return bpf_iter_run_prog(prog, &ctx);
-+}
-+
-+static int bpf_iter_s_seq_show(struct seq_file *m, void *p)
-+{
-+	return s_prog_seq_show(m, false);
-+}
-+
-+static void bpf_iter_s_seq_stop(struct seq_file *m, void *p)
-+{
-+	if (!p)
-+		(void) s_prog_seq_show(m, true);
-+	else
-+		s_stop(m, p);
-+}
-+
-+static const struct seq_operations bpf_iter_kallsyms_ops = {
-+	.start = s_start,
-+	.next = s_next,
-+	.stop = bpf_iter_s_seq_stop,
-+	.show = bpf_iter_s_seq_show,
-+};
-+
-+#if defined(CONFIG_PROC_FS)
-+
-+static int bpf_iter_s_init(void *priv_data, struct bpf_iter_aux_info *aux)
-+{
-+	struct kallsym_iter *iter = priv_data;
-+
-+	reset_iter(iter, 0);
-+
-+	iter->show_value = true;
-+
-+	return 0;
-+}
-+
-+DEFINE_BPF_ITER_FUNC(kallsyms, struct bpf_iter_meta *meta, struct kallsym_iter *kallsym_iter)
-+
-+static const struct bpf_iter_seq_info kallsyms_iter_seq_info = {
-+	.seq_ops		= &bpf_iter_kallsyms_ops,
-+	.init_seq_private	= bpf_iter_s_init,
-+	.fini_seq_private	= NULL,
-+	.seq_priv_size		= sizeof(struct kallsym_iter),
-+};
-+
-+static struct bpf_iter_reg kallsyms_iter_reg_info = {
-+	.target                 = "kallsyms",
-+	.ctx_arg_info_size	= 1,
-+	.ctx_arg_info		= {
-+		{ offsetof(struct bpf_iter__kallsyms, kallsym_iter),
-+		  PTR_TO_BTF_ID_OR_NULL },
-+	},
-+	.seq_info		= &kallsyms_iter_seq_info,
-+};
-+
-+BTF_ID_LIST(btf_kallsym_iter_id)
-+BTF_ID(struct, kallsym_iter)
-+
-+static void __init bpf_kallsyms_iter_register(void)
-+{
-+	kallsyms_iter_reg_info.ctx_arg_info[0].btf_id = *btf_kallsym_iter_id;
-+	if (bpf_iter_reg_target(&kallsyms_iter_reg_info))
-+		pr_warn("Warning: could not register bpf kallsyms iterator\n");
-+}
-+
-+#endif /* CONFIG_PROC_FS */
-+
-+#endif /* CONFIG_BPF_SYSCALL */
-+
- static inline int kallsyms_for_perf(void)
- {
- #ifdef CONFIG_PERF_EVENTS
-@@ -885,6 +975,9 @@ const char *kdb_walk_kallsyms(loff_t *pos)
- static int __init kallsyms_init(void)
- {
- 	proc_create("kallsyms", 0444, NULL, &kallsyms_proc_ops);
-+#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
-+	bpf_kallsyms_iter_register();
-+#endif
- 	return 0;
- }
- device_initcall(kallsyms_init);
--- 
-1.8.3.1
-
+> 
+> -- 
+> 2.18.0
+> 
