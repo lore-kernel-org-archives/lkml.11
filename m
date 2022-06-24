@@ -2,130 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5FAACCA473
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7597C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230253AbiFXTvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 15:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
+        id S231160AbiFXTwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 15:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbiFXTvS (ORCPT
+        with ESMTP id S230415AbiFXTwP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 15:51:18 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36CC07FD24;
-        Fri, 24 Jun 2022 12:51:16 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id ej4so4873753edb.7;
-        Fri, 24 Jun 2022 12:51:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IlyhdFMImGeb91lejRrs7vQ8r+23EDsm+NrRwbaFfRE=;
-        b=enHeReQVjJ/UJTqaKyFAhtCBoqIf4KF5UPWDs6zNR4rPduhPJrYpKY1MwhZV4RXVOK
-         vKyBgy8GeEju7Jv6VV67X+bNvMQOxX6V7idVurYMSaGWHnrAgobi1e1XXJWPkqFKirIj
-         2gz0IDsUJWHJt2ZNg67fZY+7FRNOM3VtG+42JJj5DAwrqo9fzTwRRpyinlB8N4oTIbNq
-         Z9B8tl0htTaROmO6eo2pTduVeOHQy3Sqa/VlIGvLv+HRP2A20pTEFggtwNKXKVZqw7Zb
-         AwYpkS74KAXhX2x35AJFPxgD/mFnkmN0TRilXOKqyTjzm3QEUwgB2zSYm+Ai7JUJgFBT
-         D19Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IlyhdFMImGeb91lejRrs7vQ8r+23EDsm+NrRwbaFfRE=;
-        b=NoXtdAJ+5BISl2RR7r25pCQoHoAaQbvCck0Zo+0cbptduaZb7vawxUArBLrwOcb7Ny
-         aNRR7lT6A3hJh1z3MiBjjrwac3yBq8e132fVh+bKbiMScnhr1DU6T0dCNelXTWZLgf1V
-         oTrN9jGr/XlJZmLQ2AgD6hB+xS5C0uCQAI2pB8KJ4MJzvlCamIry+aLYWjyu44r9ycgz
-         pYAy1lCSTeAUCjF1XrSeqpvThH2sfxlVfeiB7+IDEl47fcww3v+M25r/WFELysLmFw/Z
-         WmOYIIrqlOK49NaMVf2q71rBM8/pp4Hqj3pr2kehhkRn1oL5Gl1v53DAtF1BCHTtgyWu
-         4WGA==
-X-Gm-Message-State: AJIora8i3arYmZXF9HRFA9OqtQxuZIvNMguIk8usJkyALuZEk8L7MiiG
-        Xn6pPzPJqOfbZ15jD3lUsfg=
-X-Google-Smtp-Source: AGRyM1tqs6Ke+BiFNzHottRZZOBZEqN8+W2JhAZk/a1fKvA9kbXP2z0IsZAy0X5EFEu3cOHTZ2UVvA==
-X-Received: by 2002:aa7:dad6:0:b0:435:7a44:7480 with SMTP id x22-20020aa7dad6000000b004357a447480mr981415eds.138.1656100274625;
-        Fri, 24 Jun 2022 12:51:14 -0700 (PDT)
-Received: from fedora.robimarko.hr (dh207-98-60.xnet.hr. [88.207.98.60])
-        by smtp.googlemail.com with ESMTPSA id jz27-20020a17090775fb00b007246492658asm1586316ejc.117.2022.06.24.12.51.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 12:51:14 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     bjorn.andersson@linaro.org, agross@kernel.org,
-        linus.walleij@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH] pinctrl: qcom: spmi-gpio: make the irqchip immutable
-Date:   Fri, 24 Jun 2022 21:51:12 +0200
-Message-Id: <20220624195112.894916-1-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 24 Jun 2022 15:52:15 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65463826AC;
+        Fri, 24 Jun 2022 12:52:14 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OJgSEs024142;
+        Fri, 24 Jun 2022 15:51:49 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3gvemnmxjf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 24 Jun 2022 15:51:49 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 25OJpmUr023676
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 24 Jun 2022 15:51:48 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 24 Jun 2022 15:51:47 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 24 Jun 2022 15:51:47 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 24 Jun 2022 15:51:47 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 25OJpKRE017522;
+        Fri, 24 Jun 2022 15:51:43 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <devicetree@vger.kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <gerhard@engleder-embedded.com>, <geert+renesas@glider.be>,
+        <joel@jms.id.au>, <stefan.wahren@i2se.com>, <wellslutw@gmail.com>,
+        <geert@linux-m68k.org>, <robh+dt@kernel.org>,
+        <d.michailidis@fungible.com>, <stephen@networkplumber.org>,
+        <l.stelmach@samsung.com>, <linux-kernel@vger.kernel.org>
+Subject: [net-next 2/2] dt-bindings: net: adin1110: Add docs
+Date:   Fri, 24 Jun 2022 23:06:28 +0300
+Message-ID: <20220624200628.77047-3-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220624200628.77047-1-alexandru.tachici@analog.com>
+References: <20220624200628.77047-1-alexandru.tachici@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: 7wOzDBTk15SybEUdADzfZCrnyubKJe9I
+X-Proofpoint-GUID: 7wOzDBTk15SybEUdADzfZCrnyubKJe9I
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-24_09,2022-06-23_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ mlxlogscore=999 malwarescore=0 impostorscore=0 lowpriorityscore=0
+ bulkscore=0 phishscore=0 adultscore=0 suspectscore=0 mlxscore=0
+ spamscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206240076
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 6c846d026d49 ("gpio: Don't fiddle with irqchips marked as
-immutable") added a warning to indicate if the gpiolib is altering the
-internals of irqchips.
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Following this change the following warning is now observed for the SPMI
-PMIC pinctrl driver:
-gpio gpiochip1: (200f000.spmi:pmic@0:gpio@c000): not an immutable chip, please consider fixing it!
+Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
 
-Fix this by making the irqchip in the SPMI PMIC pinctrl driver immutable.
-
-Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
 ---
- drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ .../devicetree/bindings/net/adi,adin1110.yaml | 127 ++++++++++++++++++
+ 1 file changed, 127 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-index c3255b0bece4..406ee0933d0b 100644
---- a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-+++ b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-@@ -171,7 +171,6 @@ struct pmic_gpio_state {
- 	struct regmap	*map;
- 	struct pinctrl_dev *ctrl;
- 	struct gpio_chip chip;
--	struct irq_chip irq;
- 	u8 usid;
- 	u8 pid_base;
- };
-@@ -988,6 +987,17 @@ static void *pmic_gpio_populate_parent_fwspec(struct gpio_chip *chip,
- 	return fwspec;
- }
- 
-+static const struct irq_chip spmi_gpio_irq_chip = {
-+	.name		= "spmi-gpio",
-+	.irq_ack	= irq_chip_ack_parent,
-+	.irq_mask	= irq_chip_mask_parent,
-+	.irq_unmask	= irq_chip_unmask_parent,
-+	.irq_set_type	= irq_chip_set_type_parent,
-+	.irq_set_wake	= irq_chip_set_wake_parent,
-+	.flags		= IRQCHIP_IMMUTABLE | IRQCHIP_MASK_ON_SUSPEND,
-+	GPIOCHIP_IRQ_RESOURCE_HELPERS,
-+};
+diff --git a/Documentation/devicetree/bindings/net/adi,adin1110.yaml b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
+new file mode 100644
+index 000000000000..0ac18dd62e5a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
+@@ -0,0 +1,127 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/net/adi,adin1110.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 +
- static int pmic_gpio_probe(struct platform_device *pdev)
- {
- 	struct irq_domain *parent_domain;
-@@ -1081,16 +1091,8 @@ static int pmic_gpio_probe(struct platform_device *pdev)
- 	if (!parent_domain)
- 		return -ENXIO;
- 
--	state->irq.name = "spmi-gpio",
--	state->irq.irq_ack = irq_chip_ack_parent,
--	state->irq.irq_mask = irq_chip_mask_parent,
--	state->irq.irq_unmask = irq_chip_unmask_parent,
--	state->irq.irq_set_type = irq_chip_set_type_parent,
--	state->irq.irq_set_wake = irq_chip_set_wake_parent,
--	state->irq.flags = IRQCHIP_MASK_ON_SUSPEND,
--
- 	girq = &state->chip.irq;
--	girq->chip = &state->irq;
-+	gpio_irq_chip_set_chip(girq, &spmi_gpio_irq_chip);
- 	girq->default_type = IRQ_TYPE_NONE;
- 	girq->handler = handle_level_irq;
- 	girq->fwnode = of_node_to_fwnode(state->dev->of_node);
++title: ADI ADIN1110 MAC-PHY
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++  - $ref: spi-controller.yaml#
++
++maintainers:
++  - Alexandru Tachici <alexandru.tachici@analog.com>
++
++description: |
++  The ADIN1110 is a low power single port 10BASE-T1L MAC-
++  PHY designed for industrial Ethernet applications. It integrates
++  an Ethernet PHY core with a MAC and all the associated analog
++  circuitry, input and output clock buffering.
++
++  The ADIN2111 is a low power, low complexity, two-Ethernet ports
++  switch with integrated 10BASE-T1L PHYs and one serial peripheral
++  interface (SPI) port. The device is designed for industrial Ethernet
++  applications using low power constrained nodes and is compliant
++  with the IEEE 802.3cg-2019 Ethernet standard for long reach
++  10 Mbps single pair Ethernet (SPE).
++
++  The device has a 4-wire SPI interface for communication
++  between the MAC and host processor.
++
++properties:
++  compatible:
++    enum:
++      - adi,adin1110
++      - adi,adin2111
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  reg:
++    maxItems: 1
++
++  adi,spi-crc:
++    description: |
++      Enable CRC8 checks on SPI read/writes.
++    type: boolean
++
++  interrupts:
++    maxItems: 1
++
++patternProperties:
++  "^phy@[0-1]$":
++    description: |
++      ADIN1100 PHY that is present on the same chip as the MAC.
++    type: object
++
++    properties:
++      reg:
++        items:
++          maximum: 1
++
++    allOf:
++      - if:
++          properties:
++            compatible:
++              contains:
++                const: adi,adin1110
++        then:
++          properties:
++            compatible:
++              const: ethernet-phy-id0283.bc91
++        else:
++          properties:
++            compatible:
++              const: ethernet-phy-id0283.bca1
++
++    required:
++      - compatible
++      - reg
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - phy@0
++
++unevaluatedProperties: false
++
++examples:
++  - |
++        spi0 {
++                #address-cells = <1>;
++                #size-cells = <0>;
++                status = "okay";
++
++                ethernet@0 {
++                        compatible = "adi,adin2111";
++                        reg = <0>;
++                        spi-max-frequency = <24500000>;
++
++                        adi,spi-crc;
++
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++
++                        interrupt-parent = <&gpio>;
++                        interrupts = <25 2>;
++
++                        mac-address = [ ca 2f b7 10 23 63 ];
++
++                        phy@0 {
++                                #phy-cells = <0>;
++                                compatible = "ethernet-phy-id0283.bca1";
++                                reg = <0>;
++                        };
++
++                        phy@1 {
++                                #phy-cells = <0>;
++                                compatible = "ethernet-phy-id0283.bca1";
++                                reg = <1>;
++                        };
++                };
++        };
 -- 
-2.36.1
+2.25.1
 
