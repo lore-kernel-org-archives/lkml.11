@@ -2,68 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9E4CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBCFEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 18:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230392AbiFXSzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 14:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
+        id S230520AbiFXS4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 14:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiFXSzt (ORCPT
+        with ESMTP id S229441AbiFXS43 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 14:55:49 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB91981A19;
-        Fri, 24 Jun 2022 11:55:48 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 54F5831A;
-        Fri, 24 Jun 2022 18:55:48 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 54F5831A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1656096948; bh=iMM6E9TOMBSB4mE/oc18Rn0KNys0P8Y37p9/4Pd3Sm0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=Ic5apTY/sloGCyUxOokNtgo/A6ABwNnOHl5ZfOm6M7Jh4FqKl1y0I3L1RP8WCCfWK
-         RyU8UeUEC9Ec/1H7WecBNjKoZTSepszFT1HKNlGEWLZ0/5l9kHequsoqosnu49qVYz
-         yRucFkWMh4KY+2G722QkWcUxzDJ2BFx2iEUmyIwPAuBkoCRcJL1L5OAl2nHQgQciH0
-         YeXy3LefngGmkHf/WhKzhpczfjHEK9uWdkzW85u54kWB9qkfoShIvrFUhoB7t0Gfxs
-         cCHZ14xbZvnPyUP/rSdq+csCi9ukeZ7HXL6iS3fQum69aW20aHOX+K84m211+WS5Pg
-         KZsryzvni/5Mw==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        linux-doc@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH] docs: rename Documentation/vm to Documentation/mm
-In-Reply-To: <20220622132258.457734-1-rppt@kernel.org>
-References: <20220622132258.457734-1-rppt@kernel.org>
-Date:   Fri, 24 Jun 2022 12:55:47 -0600
-Message-ID: <877d556gcs.fsf@meer.lwn.net>
+        Fri, 24 Jun 2022 14:56:29 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CAF781A17
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 11:56:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=IJWx2O/gmqaXm/KHDxJAx7Pdl9sf3SuElrBNoQy/NqY=; b=viKKZmozvsXsG1laaCednKCV4+
+        +hPw4Kmns2e6bQxXJCk6bJbWgiB3FEs9IeQfsLbJ9s9DYubApl6+GYn080MugUicleTzyKx4Ya5Uk
+        llAqpbMiSNWErYRpFmg7d/OYy/elbElBmlwqu7iJDxaWlHe/pkMTofnnlpxaU6HhNhgdTzkRbR5v/
+        y3pYu0kX+Nh0jPwnxp3uNGyXmKqilsdBwIkecKYmNaqCaHYsc+I2XE9oIl+9BAO21Nc8MpGk186f3
+        c5MPlYgy/x3CEtUB/2SIrbyj9XSf7srJvdaXQU5rzXyJigDkMGmVybJPm/NCGYhWzqT3s2QsxoPJJ
+        t8qWP47A==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o4oTc-009AGp-TB; Fri, 24 Jun 2022 18:56:21 +0000
+Date:   Fri, 24 Jun 2022 19:56:20 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, shy828301@gmail.com, zokeefe@google.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/16] mm/huge_memory: fix comment of
+ __pud_trans_huge_lock
+Message-ID: <YrYI1Dxk7lhZqEVp@casper.infradead.org>
+References: <20220622170627.19786-1-linmiaohe@huawei.com>
+ <20220622170627.19786-4-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622170627.19786-4-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mike Rapoport <rppt@kernel.org> writes:
+On Thu, Jun 23, 2022 at 01:06:14AM +0800, Miaohe Lin wrote:
+> __pud_trans_huge_lock returns page table lock pointer if a given pud maps
+> a thp instead of 'true' since introduced. Fix corresponding comments.
 
-> From: Mike Rapoport <rppt@linux.ibm.com>
->
-> so it will be consistent with code mm directory and with
-> Documentation/admin-guide/mm and won't be confused with virtual
-> machines.
->
-> Suggested-by: Matthew Wilcox <willy@infradead.org>
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+I think the comments here are rather wasted.  I think this comment
+should be moved to pud_trans_huge_lock() and turned into kernel-doc
+format.
 
-So this seems like a good idea to me.  I'm guessing it should probably
-go through -mm, otherwise I see myself explaining lots of conflicts to
-Linus when the time comes...anybody disagree?
-
-Acked-by: Jonathan Corbet <corbet@lwn.net>
-
-THanks,
-
-jon
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/huge_memory.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index 83fb6c3442ff..a26580da8011 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -1903,10 +1903,10 @@ spinlock_t *__pmd_trans_huge_lock(pmd_t *pmd, struct vm_area_struct *vma)
+>  }
+>  
+>  /*
+> - * Returns true if a given pud maps a thp, false otherwise.
+> + * Returns page table lock pointer if a given pud maps a thp, NULL otherwise.
+>   *
+> - * Note that if it returns true, this routine returns without unlocking page
+> - * table lock. So callers must unlock it.
+> + * Note that if it returns page table lock pointe, this routine returns without
+> + * unlocking page table lock. So callers must unlock it.
+>   */
+>  spinlock_t *__pud_trans_huge_lock(pud_t *pud, struct vm_area_struct *vma)
+>  {
+> -- 
+> 2.23.0
+> 
