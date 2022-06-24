@@ -2,147 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5617C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C69C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 09:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbiFXJI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 05:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
+        id S231328AbiFXJKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 05:10:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiFXJIw (ORCPT
+        with ESMTP id S229598AbiFXJKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 05:08:52 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37C54EDE5;
-        Fri, 24 Jun 2022 02:08:51 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id A8EE61F8BD;
-        Fri, 24 Jun 2022 09:08:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1656061730; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I5prPDPC8v4mNhBzFP1CfowAl0viEFJUJ5FoXsjM9BA=;
-        b=yTl/KsvEIdiCfPa5MlcbvyamImobSrJXHFeYtXM6SloqHe1WatHKcELimNody9rd/1KegL
-        4mNxE/TLV7SaJmmKTCzzHYutq8j61VUIxzYbpKLcfoub447+QNKyLkKwDGvDsXY2K/pVqZ
-        7mqXFmLAWQ1ffl0FTgwGfkZaQHQhznA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1656061730;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I5prPDPC8v4mNhBzFP1CfowAl0viEFJUJ5FoXsjM9BA=;
-        b=iP7wo0m0m496x+PhW0gpMvQc98uRKgYSu92Ai1GteOO/7gjJCevmBprXHgMKR5kFoKE8wF
-        ZS3ORVE7q/44ShCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 718DF13480;
-        Fri, 24 Jun 2022 09:08:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id hvoIGyJ/tWJGfgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 24 Jun 2022 09:08:50 +0000
-Message-ID: <73c277f2-7189-81ee-8d6c-624cbd145d4c@suse.cz>
-Date:   Fri, 24 Jun 2022 11:08:50 +0200
+        Fri, 24 Jun 2022 05:10:04 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4536B4F1DD;
+        Fri, 24 Jun 2022 02:10:02 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 25O8qk0k088206;
+        Fri, 24 Jun 2022 16:52:46 +0800 (GMT-8)
+        (envelope-from neal_liu@aspeedtech.com)
+Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Jun
+ 2022 17:08:31 +0800
+From:   Neal Liu <neal_liu@aspeedtech.com>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        "Andrew Jeffery" <andrew@aj.id.au>,
+        Dhananjay Phadke <dhphadke@microsoft.com>,
+        "Johnny Huang" <johnny_huang@aspeedtech.com>
+CC:     <linux-aspeed@lists.ozlabs.org>, <linux-crypto@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <BMC-SW@aspeedtech.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 2/5] dt-bindings: clock: Add AST2600 HACE reset definition
+Date:   Fri, 24 Jun 2022 17:08:24 +0800
+Message-ID: <20220624090827.3909179-3-neal_liu@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220624090827.3909179-1-neal_liu@aspeedtech.com>
+References: <20220624090827.3909179-1-neal_liu@aspeedtech.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH RESEND] tools/vm/slabinfo: Handle files in debugfs
-Content-Language: en-US
-To:     =?UTF-8?Q?St=c3=a9phane_Graber?= <stgraber@ubuntu.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Faiyaz Mohammed <faiyazm@codeaurora.org>,
-        stable@vger.kernel.org, Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-References: <YrTfEHvpysJAVWWr@castiana>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <YrTfEHvpysJAVWWr@castiana>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.10.10]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 25O8qk0k088206
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/23/22 23:45, Stéphane Graber wrote:
-> Commit 64dd68497be76 relocated and renamed the alloc_calls and
-> free_calls files from /sys/kernel/slab/NAME/*_calls over to
-> /sys/kernel/debug/slab/NAME/*_calls but didn't update the slabinfo tool
-> with the new location.
-> 
-> This change will now have slabinfo look at the new location (and filenames)
-> with a fallback to the prior files.
-> 
-> Fixes: 64dd68497be76 ("mm: slub: move sysfs slab alloc/free interfaces to debugfs")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Stéphane Graber <stgraber@ubuntu.com>
-> Tested-by: Stéphane Graber <stgraber@ubuntu.com>
+Add HACE reset bit definition for ast2600.
 
-Thanks, added to slab/for-5.20/debug
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ include/dt-bindings/clock/ast2600-clock.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-> ---
->  tools/vm/slabinfo.c | 26 ++++++++++++++++++++++++--
->  1 file changed, 24 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/vm/slabinfo.c b/tools/vm/slabinfo.c
-> index 9b68658b6bb8..5b98f3ee58a5 100644
-> --- a/tools/vm/slabinfo.c
-> +++ b/tools/vm/slabinfo.c
-> @@ -233,6 +233,24 @@ static unsigned long read_slab_obj(struct slabinfo *s, const char *name)
->  	return l;
->  }
->  
-> +static unsigned long read_debug_slab_obj(struct slabinfo *s, const char *name)
-> +{
-> +	char x[128];
-> +	FILE *f;
-> +	size_t l;
-> +
-> +	snprintf(x, 128, "/sys/kernel/debug/slab/%s/%s", s->name, name);
-> +	f = fopen(x, "r");
-> +	if (!f) {
-> +		buffer[0] = 0;
-> +		l = 0;
-> +	} else {
-> +		l = fread(buffer, 1, sizeof(buffer), f);
-> +		buffer[l] = 0;
-> +		fclose(f);
-> +	}
-> +	return l;
-> +}
->  
->  /*
->   * Put a size string together
-> @@ -409,14 +427,18 @@ static void show_tracking(struct slabinfo *s)
->  {
->  	printf("\n%s: Kernel object allocation\n", s->name);
->  	printf("-----------------------------------------------------------------------\n");
-> -	if (read_slab_obj(s, "alloc_calls"))
-> +	if (read_debug_slab_obj(s, "alloc_traces"))
-> +		printf("%s", buffer);
-> +	else if (read_slab_obj(s, "alloc_calls"))
->  		printf("%s", buffer);
->  	else
->  		printf("No Data\n");
->  
->  	printf("\n%s: Kernel object freeing\n", s->name);
->  	printf("------------------------------------------------------------------------\n");
-> -	if (read_slab_obj(s, "free_calls"))
-> +	if (read_debug_slab_obj(s, "free_traces"))
-> +		printf("%s", buffer);
-> +	else if (read_slab_obj(s, "free_calls"))
->  		printf("%s", buffer);
->  	else
->  		printf("No Data\n");
+diff --git a/include/dt-bindings/clock/ast2600-clock.h b/include/dt-bindings/clock/ast2600-clock.h
+index 62b9520a00fd..d8b0db2f7a7d 100644
+--- a/include/dt-bindings/clock/ast2600-clock.h
++++ b/include/dt-bindings/clock/ast2600-clock.h
+@@ -111,6 +111,7 @@
+ #define ASPEED_RESET_PCIE_RC_O		19
+ #define ASPEED_RESET_PCIE_RC_OEN	18
+ #define ASPEED_RESET_PCI_DP		5
++#define ASPEED_RESET_HACE		4
+ #define ASPEED_RESET_AHB		1
+ #define ASPEED_RESET_SDRAM		0
+ 
+-- 
+2.25.1
 
