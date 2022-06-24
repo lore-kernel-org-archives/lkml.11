@@ -2,86 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CFDC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06357CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri, 24 Jun 2022 19:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231160AbiFXThH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 15:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
+        id S230465AbiFXThR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 15:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230448AbiFXThG (ORCPT
+        with ESMTP id S231190AbiFXThN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 15:37:06 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2134E81D9C;
-        Fri, 24 Jun 2022 12:37:06 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        Fri, 24 Jun 2022 15:37:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521EC81D94;
+        Fri, 24 Jun 2022 12:37:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id A9A002A0;
-        Fri, 24 Jun 2022 19:37:05 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net A9A002A0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1656099425; bh=x4wbdnxAg9IQfvLXt0JnRMgyxywI8bO2mXS6K1R4n6A=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=Mnneccn9+DDS2JB+u6+j5T5Ltk2U/SKqUehWNDuJuvUSwpuW8dSPLiDjIo9Tb951p
-         gRIJLOG734+W+QpKDiUNih9bg4x4merQ8WGtjYOlM3DIhMVkJF22hLXmFW7s+Vy78i
-         QaWDsGuffwM3qLDVNFuyGEqe4t4XV0ZyUuhJ3uiPE3N21EqsQVGlyMG2XPpzPJN2G1
-         l7JttZXrSrnFsRWYQJ/LOoXBSse6lI3aZY+KfgGTRHue8i6iprhQgegp8y6tGFONOJ
-         kTVwf+408frXWkrmxsJSgigm90Up1GrdoVLyv2vvjzRqSeLiYGYhYXkvnHLrJAvubA
-         tK0t2vZhMWj8A==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        Julia Lawall <julia.lawall@inria.fr>
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Nicolas Palix <nicolas.palix@imag.fr>, cocci@inria.fr,
-        linux-doc@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dev-tools: fix one invalid url
-In-Reply-To: <CAD-N9QUOk938-+1CtGfWNKUvWowknKScLuFXXkFAv59M=-F84g@mail.gmail.com>
-References: <20220613071243.12961-1-dzm91@hust.edu.cn>
- <Yqbu8TwmaXdBiIBs@debian.me>
- <alpine.DEB.2.22.394.2206131212160.2812@hadrien>
- <CAD-N9QUOk938-+1CtGfWNKUvWowknKScLuFXXkFAv59M=-F84g@mail.gmail.com>
-Date:   Fri, 24 Jun 2022 13:37:04 -0600
-Message-ID: <877d554zvj.fsf@meer.lwn.net>
-MIME-Version: 1.0
-Content-Type: text/plain
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B869B82B70;
+        Fri, 24 Jun 2022 19:37:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D2B90C34114;
+        Fri, 24 Jun 2022 19:37:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656099430;
+        bh=IVnpHG0UpG3x2KRRifv5c2CFbi8tuxeEhqNmP5UYlMY=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=HTCwtcsKN+SNdJDpy91D58PZjVXJSxktqQmCiCPzzcc72hR9bxoGOVp/1/RctAc2R
+         Pe9U9bwSlsJMQUJahEw6qjGr0KLiZOX47kpA6Q84IeBcCGWulQyWaOcUUt73QITfbT
+         r2/Av9s2+b0C1RssEfiaEG4xmlcD0cCytc75g8dzYpOOb47yS1WOWsEhRVeVIzDWHH
+         BO3I/n9oY88GAavKaONjVNYQIc5HCc4xlieyV5BbjzlyCEPiLNrw/wPJs3YhKiL87P
+         l1+Cn6i3M2oEtw8tKBgbeNZAesuRRGGeoH3+w1UJ4W+m/+X8vz2b3ZOV+DHwF7M/Rn
+         UfaIR6MuKBDHA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BF2A6E574DA;
+        Fri, 24 Jun 2022 19:37:10 +0000 (UTC)
+Subject: Re: [GIT PULL] KVM fixes for Linux 5.19-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220624083216.2723369-1-pbonzini@redhat.com>
+References: <20220624083216.2723369-1-pbonzini@redhat.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220624083216.2723369-1-pbonzini@redhat.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
+X-PR-Tracked-Commit-Id: 6defa24d3b12bbd418bc8526dea1cbc605265c06
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: e946554905c1d04da2a094ce4fdf47708f570bef
+Message-Id: <165609943077.3020.11909383964706846172.pr-tracker-bot@kernel.org>
+Date:   Fri, 24 Jun 2022 19:37:10 +0000
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dongliang Mu <mudongliangabcd@gmail.com> writes:
+The pull request you sent on Fri, 24 Jun 2022 04:32:16 -0400:
 
-> On Mon, Jun 13, 2022 at 6:12 PM Julia Lawall <julia.lawall@inria.fr> wrote:
->>
->>
->>
->> On Mon, 13 Jun 2022, Bagas Sanjaya wrote:
->>
->> > On Mon, Jun 13, 2022 at 03:12:42PM +0800, Dongliang Mu wrote:
->> > > From: Dongliang Mu <mudongliangabcd@gmail.com>
->> > >
->> > > Fix the invalid url about Semantic Patch Language
->> > >
->> >
->> > I think what this patch doing is to point SPL reference URL from old
->> > Coccinelle documentation (doc root) to actual SPL doc entry on new
->> > Coccinelle page, right? If so, "fix invalid URL" may not be right patch
->> > description and title.
->>
->> Agreed, thanks for the suggestion.
->
-> Okay. Let's modify the title to "modify SPL reference URL to actual
-> SPL doc entry".
+> https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
 
-Normally, the way to effect such a modification is to submit a new
-version of the patch reflecting the change.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/e946554905c1d04da2a094ce4fdf47708f570bef
 
-I've applied the original patch and made the change, but it's better not
-to ask maintainers to do that.
+Thank you!
 
-Thanks,
-
-jon
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
