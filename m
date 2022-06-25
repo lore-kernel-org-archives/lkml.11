@@ -2,370 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEE5C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 20:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC0E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 20:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233498AbiFYUHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 16:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40580 "EHLO
+        id S233495AbiFYUHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 16:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233461AbiFYUHE (ORCPT
+        with ESMTP id S233398AbiFYUHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 16:07:04 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C02C140C6;
-        Sat, 25 Jun 2022 13:07:02 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.92,222,1650898800"; 
-   d="scan'208";a="125645686"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 26 Jun 2022 05:07:01 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8D2C3400DB74;
-        Sun, 26 Jun 2022 05:06:57 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        Sat, 25 Jun 2022 16:07:52 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99310140EE
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 13:07:50 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ge10so11231214ejb.7
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 13:07:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=X+Lr3CyLHg8l+WoesZRIR4QxL5Y/Rc1xXhYNDNvStyI=;
+        b=IBoAZmceQvdZPXV/2l6M1n8oicyx4EqEU2jxFqPzYHocRD2KVno+pbt6uizvvb+2bJ
+         72Xz6eMz/tCB7CFgF9niLi3bSrXZ1Sp4FuT8ykA8Xd+fJml2AjZlS7lZ8Mv1A2E4idji
+         f+AJnHZI3YDuCUGlLAnkmxxG+h0i6aAp9rFQFdpXGg5BIG4d/2bPMTlzGW3fEkI3fQAZ
+         +bP6sw7KwEz6WImvC3TqD5fdAgcL1pcFqEsE3ET6huztcZH44kgWo57tki9xgXPfyyVW
+         kOrZuLf3Jwk0/0TKdUz84J16zWox7bpuyUsgSiMhgDPy1fdfytZwSkTdgQziILSw2/Mm
+         QdTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=X+Lr3CyLHg8l+WoesZRIR4QxL5Y/Rc1xXhYNDNvStyI=;
+        b=S8kKg+fJKMX7yCQotjV7vP8HwUmkC144CK0NOJ+b0TmHBSXl3leXSYoXeGs46EclWg
+         qIE8iGHuSvq/uCQg6KteNg5mT7kKreUM8tfI3XfDDEhsVXcDMfNamRig+3md6/d62jv5
+         mxSMfwUdN9Ws9UlaMK7zPsbTKXZVTlxnngZxsdeEPUS1XZtDaBcM1+g82vChkxlXIqsh
+         r38VAvOEuBFBpKxjhjJGk+evlCY9Sywo0ZKzFds5DzN9i6aGRAK3KX2OTF3uuH8UdyEc
+         cWetXaD25iYtPpNIlT2iNwfKSnmoFytLT6XZf5FE0j8ZTEfob61vrRjnc8nXpdLv3hd5
+         gyFg==
+X-Gm-Message-State: AJIora+nfU1CfospklN8a/lvqHW/RGTyHBEk/Ak+y+DF795o8yLnCbYJ
+        5zayX7yDo0k2xFHGHBSv8jcMIQ==
+X-Google-Smtp-Source: AGRyM1uFK1aCJI0IKu+IECshTEhUPm544i46IeQzI6rca2B7aLaB2Qq1VQJblNRj3bbgkXG+E+r3mQ==
+X-Received: by 2002:a17:907:9816:b0:726:2b90:4bab with SMTP id ji22-20020a170907981600b007262b904babmr5331885ejc.544.1656187669249;
+        Sat, 25 Jun 2022 13:07:49 -0700 (PDT)
+Received: from [192.168.0.239] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id v10-20020a50f08a000000b004357f88fcdcsm4642069edl.11.2022.06.25.13.07.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Jun 2022 13:07:48 -0700 (PDT)
+Message-ID: <f542defa-3c87-a138-8bf1-4986c6bde832@linaro.org>
+Date:   Sat, 25 Jun 2022 22:07:47 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] dt-bindings: firmware: qcom-scm: convert to dtschema
+Content-Language: en-US
+To:     Guru Das Srinagesh <quic_gurus@quicinc.com>,
+        Robert Marko <robimarko@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v6 5/5] pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain to handle GPIO interrupt
-Date:   Sat, 25 Jun 2022 21:06:00 +0100
-Message-Id: <20220625200600.7582-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220625200600.7582-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220625200600.7582-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220623182542.1116677-1-robimarko@gmail.com>
+ <20220624010103.GA23758@quicinc.com>
+ <CAOX2RU7yKuV4i_9YRs9fx2DTTvAndWFFw3cYtQ3qFk9m1zZJVg@mail.gmail.com>
+ <20220625015714.GA6675@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220625015714.GA6675@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add IRQ domain to RZ/G2L pinctrl driver to handle GPIO interrupt.
+On 25/06/2022 03:57, Guru Das Srinagesh wrote:
+> On Jun 24 2022 10:50, Robert Marko wrote:
+>> On Fri, 24 Jun 2022 at 03:01, Guru Das Srinagesh <quic_gurus@quicinc.com> wrote:
+>>>
+>>> On Thu, Jun 23, 2022 at 08:25:42PM +0200, Robert Marko wrote:
+>>>
+>>>> +
+>>>> +description: |
+>>> ...
+>>>> +
+>>>> +  '#reset-cells':
+>>>> +    const: 1
+>>>
+>>> This isn't part of the original file - could you please explain why this is
+>>> being added?
+>>
+>> Yes, its not part of the original file, however I noticed that a lot of SCM
+>> nodes were adding #reset-cells, and upon looking at the SCM code its
+>> clear that it is being registered as a reset controller so #reset-cells are
+>> appropriate.
+>>
+>> However, since its not really being used via phandles #reset-cells did
+>> not really matter, hence why I did not add them to be required,
+>> this is something that DT guys can probably clarify.
+> 
+> Makes sense, ACK.
 
-GPIO0-GPIO122 pins can be used as IRQ lines but only 32 pins can be
-used as IRQ lines at a given time. Selection of pins as IRQ lines
-is handled by IA55 (which is the IRQC block) which sits in between the
-GPIO and GIC.
+Please mention deviations from conversion in the commit msg.
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- drivers/pinctrl/renesas/pinctrl-rzg2l.c | 236 ++++++++++++++++++++++++
- 1 file changed, 236 insertions(+)
 
-diff --git a/drivers/pinctrl/renesas/pinctrl-rzg2l.c b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
-index c3cdf52b7294..ea78f992a09f 100644
---- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
-+++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
-@@ -9,8 +9,10 @@
- #include <linux/clk.h>
- #include <linux/gpio/driver.h>
- #include <linux/io.h>
-+#include <linux/interrupt.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
- #include <linux/pinctrl/pinconf-generic.h>
- #include <linux/pinctrl/pinconf.h>
- #include <linux/pinctrl/pinctrl.h>
-@@ -89,6 +91,7 @@
- #define PIN(n)			(0x0800 + 0x10 + (n))
- #define IOLH(n)			(0x1000 + (n) * 8)
- #define IEN(n)			(0x1800 + (n) * 8)
-+#define ISEL(n)			(0x2c80 + (n) * 8)
- #define PWPR			(0x3014)
- #define SD_CH(n)		(0x3000 + (n) * 4)
- #define QSPI			(0x3008)
-@@ -112,6 +115,10 @@
- #define RZG2L_PIN_ID_TO_PORT_OFFSET(id)	(RZG2L_PIN_ID_TO_PORT(id) + 0x10)
- #define RZG2L_PIN_ID_TO_PIN(id)		((id) % RZG2L_PINS_PER_PORT)
- 
-+#define RZG2L_TINT_MAX_INTERRUPT	32
-+#define RZG2L_TINT_IRQ_START_INDEX	9
-+#define RZG2L_PACK_HWIRQ(t, i)		(((t) << 16) | (i))
-+
- struct rzg2l_dedicated_configs {
- 	const char *name;
- 	u32 config;
-@@ -137,6 +144,9 @@ struct rzg2l_pinctrl {
- 
- 	struct gpio_chip		gpio_chip;
- 	struct pinctrl_gpio_range	gpio_range;
-+	DECLARE_BITMAP(tint_slot, RZG2L_TINT_MAX_INTERRUPT);
-+	spinlock_t			bitmap_lock;
-+	unsigned int			hwirq[RZG2L_TINT_MAX_INTERRUPT];
- 
- 	spinlock_t			lock;
- };
-@@ -885,8 +895,14 @@ static int rzg2l_gpio_get(struct gpio_chip *chip, unsigned int offset)
- 
- static void rzg2l_gpio_free(struct gpio_chip *chip, unsigned int offset)
- {
-+	unsigned int virq;
-+
- 	pinctrl_gpio_free(chip->base + offset);
- 
-+	virq = irq_find_mapping(chip->irq.domain, offset);
-+	if (virq)
-+		irq_dispose_mapping(virq);
-+
- 	/*
- 	 * Set the GPIO as an input to ensure that the next GPIO request won't
- 	 * drive the GPIO pin as an output.
-@@ -1106,14 +1122,224 @@ static struct {
- 	}
- };
- 
-+static int rzg2l_gpio_get_gpioint(unsigned int virq)
-+{
-+	unsigned int gpioint;
-+	unsigned int i;
-+	u32 port, bit;
-+
-+	port = virq / 8;
-+	bit = virq % 8;
-+
-+	if (port >= ARRAY_SIZE(rzg2l_gpio_configs) ||
-+	    bit >= RZG2L_GPIO_PORT_GET_PINCNT(rzg2l_gpio_configs[port]))
-+		return -EINVAL;
-+
-+	gpioint = bit;
-+	for (i = 0; i < port; i++)
-+		gpioint += RZG2L_GPIO_PORT_GET_PINCNT(rzg2l_gpio_configs[i]);
-+
-+	return gpioint;
-+}
-+
-+static void rzg2l_gpio_irq_disable(struct irq_data *d)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+	struct rzg2l_pinctrl *pctrl = container_of(gc, struct rzg2l_pinctrl, gpio_chip);
-+	unsigned int hwirq = irqd_to_hwirq(d);
-+	unsigned long flags;
-+	void __iomem *addr;
-+	u32 port;
-+	u8 bit;
-+
-+	port = RZG2L_PIN_ID_TO_PORT(hwirq);
-+	bit = RZG2L_PIN_ID_TO_PIN(hwirq);
-+
-+	addr = pctrl->base + ISEL(port);
-+	if (bit >= 4) {
-+		bit -= 4;
-+		addr += 4;
-+	}
-+
-+	spin_lock_irqsave(&pctrl->lock, flags);
-+	writel(readl(addr) & ~BIT(bit * 8), addr);
-+	spin_unlock_irqrestore(&pctrl->lock, flags);
-+
-+	gpiochip_disable_irq(gc, hwirq);
-+	irq_chip_disable_parent(d);
-+}
-+
-+static void rzg2l_gpio_irq_enable(struct irq_data *d)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+	struct rzg2l_pinctrl *pctrl = container_of(gc, struct rzg2l_pinctrl, gpio_chip);
-+	unsigned int hwirq = irqd_to_hwirq(d);
-+	unsigned long flags;
-+	void __iomem *addr;
-+	u32 port;
-+	u8 bit;
-+
-+	gpiochip_enable_irq(gc, hwirq);
-+
-+	port = RZG2L_PIN_ID_TO_PORT(hwirq);
-+	bit = RZG2L_PIN_ID_TO_PIN(hwirq);
-+
-+	addr = pctrl->base + ISEL(port);
-+	if (bit >= 4) {
-+		bit -= 4;
-+		addr += 4;
-+	}
-+
-+	spin_lock_irqsave(&pctrl->lock, flags);
-+	writel(readl(addr) | BIT(bit * 8), addr);
-+	spin_unlock_irqrestore(&pctrl->lock, flags);
-+
-+	irq_chip_enable_parent(d);
-+}
-+
-+static int rzg2l_gpio_irq_set_type(struct irq_data *d, unsigned int type)
-+{
-+	return irq_chip_set_type_parent(d, type);
-+}
-+
-+static void rzg2l_gpio_irqc_eoi(struct irq_data *d)
-+{
-+	irq_chip_eoi_parent(d);
-+}
-+
-+static void rzg2l_gpio_irq_print_chip(struct irq_data *data, struct seq_file *p)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+
-+	seq_printf(p, dev_name(gc->parent));
-+}
-+
-+static const struct irq_chip rzg2l_gpio_irqchip = {
-+	.name = "rzg2l-gpio",
-+	.irq_disable = rzg2l_gpio_irq_disable,
-+	.irq_enable = rzg2l_gpio_irq_enable,
-+	.irq_mask = irq_chip_mask_parent,
-+	.irq_unmask = irq_chip_unmask_parent,
-+	.irq_set_type = rzg2l_gpio_irq_set_type,
-+	.irq_eoi = rzg2l_gpio_irqc_eoi,
-+	.irq_print_chip = rzg2l_gpio_irq_print_chip,
-+	.flags = IRQCHIP_IMMUTABLE,
-+	GPIOCHIP_IRQ_RESOURCE_HELPERS,
-+};
-+
-+static int rzg2l_gpio_child_to_parent_hwirq(struct gpio_chip *gc,
-+					    unsigned int child,
-+					    unsigned int child_type,
-+					    unsigned int *parent,
-+					    unsigned int *parent_type)
-+{
-+	struct rzg2l_pinctrl *pctrl = gpiochip_get_data(gc);
-+	unsigned long flags;
-+	int gpioint, irq;
-+
-+	gpioint = rzg2l_gpio_get_gpioint(child);
-+	if (gpioint < 0)
-+		return gpioint;
-+
-+	spin_lock_irqsave(&pctrl->bitmap_lock, flags);
-+	irq = bitmap_find_free_region(pctrl->tint_slot, RZG2L_TINT_MAX_INTERRUPT, get_order(1));
-+	spin_unlock_irqrestore(&pctrl->bitmap_lock, flags);
-+	if (irq < 0)
-+		return -ENOSPC;
-+	pctrl->hwirq[irq] = child;
-+	irq += RZG2L_TINT_IRQ_START_INDEX;
-+
-+	/* All these interrupts are level high in the CPU */
-+	*parent_type = IRQ_TYPE_LEVEL_HIGH;
-+	*parent = RZG2L_PACK_HWIRQ(gpioint, irq);
-+	return 0;
-+}
-+
-+static void *rzg2l_gpio_populate_parent_fwspec(struct gpio_chip *chip,
-+					       unsigned int parent_hwirq,
-+					       unsigned int parent_type)
-+{
-+	struct irq_fwspec *fwspec;
-+
-+	fwspec = kzalloc(sizeof(*fwspec), GFP_KERNEL);
-+	if (!fwspec)
-+		return NULL;
-+
-+	fwspec->fwnode = chip->irq.parent_domain->fwnode;
-+	fwspec->param_count = 2;
-+	fwspec->param[0] = parent_hwirq;
-+	fwspec->param[1] = parent_type;
-+
-+	return fwspec;
-+}
-+
-+static void rzg2l_gpio_irq_domain_free(struct irq_domain *domain, unsigned int virq,
-+				       unsigned int nr_irqs)
-+{
-+	struct irq_data *d;
-+
-+	d = irq_domain_get_irq_data(domain, virq);
-+	if (d) {
-+		struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+		struct rzg2l_pinctrl *pctrl = container_of(gc, struct rzg2l_pinctrl, gpio_chip);
-+		irq_hw_number_t hwirq = irqd_to_hwirq(d);
-+		unsigned long flags;
-+		unsigned int i;
-+
-+		for (i = 0; i < RZG2L_TINT_MAX_INTERRUPT; i++) {
-+			if (pctrl->hwirq[i] == hwirq) {
-+				spin_lock_irqsave(&pctrl->bitmap_lock, flags);
-+				bitmap_release_region(pctrl->tint_slot, i, get_order(1));
-+				spin_unlock_irqrestore(&pctrl->bitmap_lock, flags);
-+				pctrl->hwirq[i] = 0;
-+				break;
-+			}
-+		}
-+	}
-+	irq_domain_free_irqs_common(domain, virq, nr_irqs);
-+}
-+
-+static void rzg2l_init_irq_valid_mask(struct gpio_chip *gc,
-+				      unsigned long *valid_mask,
-+				      unsigned int ngpios)
-+{
-+	struct rzg2l_pinctrl *pctrl = gpiochip_get_data(gc);
-+	struct gpio_chip *chip = &pctrl->gpio_chip;
-+	unsigned int offset;
-+
-+	/* Forbid unused lines to be mapped as IRQs */
-+	for (offset = 0; offset < chip->ngpio; offset++) {
-+		u32 port, bit;
-+
-+		port = offset / 8;
-+		bit = offset % 8;
-+
-+		if (port >= ARRAY_SIZE(rzg2l_gpio_configs) ||
-+		    bit >= RZG2L_GPIO_PORT_GET_PINCNT(rzg2l_gpio_configs[port]))
-+			clear_bit(offset, valid_mask);
-+	}
-+}
-+
- static int rzg2l_gpio_register(struct rzg2l_pinctrl *pctrl)
- {
- 	struct device_node *np = pctrl->dev->of_node;
- 	struct gpio_chip *chip = &pctrl->gpio_chip;
- 	const char *name = dev_name(pctrl->dev);
-+	struct irq_domain *parent_domain;
- 	struct of_phandle_args of_args;
-+	struct device_node *parent_np;
-+	struct gpio_irq_chip *girq;
- 	int ret;
- 
-+	parent_np = of_irq_find_parent(np);
-+	if (!parent_np)
-+		return -ENXIO;
-+
-+	parent_domain = irq_find_host(parent_np);
-+	of_node_put(parent_np);
-+	if (!parent_domain)
-+		return -EPROBE_DEFER;
-+
- 	ret = of_parse_phandle_with_fixed_args(np, "gpio-ranges", 3, 0, &of_args);
- 	if (ret) {
- 		dev_err(pctrl->dev, "Unable to parse gpio-ranges\n");
-@@ -1140,6 +1366,15 @@ static int rzg2l_gpio_register(struct rzg2l_pinctrl *pctrl)
- 	chip->base = -1;
- 	chip->ngpio = of_args.args[2];
- 
-+	girq = &chip->irq;
-+	gpio_irq_chip_set_chip(girq, &rzg2l_gpio_irqchip);
-+	girq->fwnode = of_node_to_fwnode(np);
-+	girq->parent_domain = parent_domain;
-+	girq->child_to_parent_hwirq = rzg2l_gpio_child_to_parent_hwirq;
-+	girq->populate_parent_alloc_arg = rzg2l_gpio_populate_parent_fwspec;
-+	girq->child_irq_domain_ops.free = rzg2l_gpio_irq_domain_free;
-+	girq->init_valid_mask = rzg2l_init_irq_valid_mask;
-+
- 	pctrl->gpio_range.id = 0;
- 	pctrl->gpio_range.pin_base = 0;
- 	pctrl->gpio_range.base = 0;
-@@ -1255,6 +1490,7 @@ static int rzg2l_pinctrl_probe(struct platform_device *pdev)
- 	}
- 
- 	spin_lock_init(&pctrl->lock);
-+	spin_lock_init(&pctrl->bitmap_lock);
- 
- 	platform_set_drvdata(pdev, pctrl);
- 
--- 
-2.25.1
-
+Best regards,
+Krzysztof
