@@ -2,71 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 151FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E28FCCCA479
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233010AbiFYNKN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 09:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        id S233013AbiFYNNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 09:13:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231982AbiFYNKM (ORCPT
+        with ESMTP id S231982AbiFYNNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 09:10:12 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D771C5F55;
-        Sat, 25 Jun 2022 06:10:10 -0700 (PDT)
-Received: from zn.tnic (p200300ea97465768329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:5768:329c:23ff:fea6:a903])
+        Sat, 25 Jun 2022 09:13:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144692622;
+        Sat, 25 Jun 2022 06:13:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EEC151EC04DF;
-        Sat, 25 Jun 2022 15:10:04 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1656162605;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=370Qrppx8dskofbXGy4yS6jqi4CEYDJ1COeJ2ndjgf0=;
-        b=Yra84RmFjzXKqL6LqAmF4LFDULEf7dL2ikZ4PO/9h9Q2HoVLv8N5EMkC0zWpmBGgQmcb+T
-        RAp4aovPH2cNLOyIHVKPDd/yEu45QzfDc+hAtoJGodnTHfGYECQfBV/MCNk2aBoIUOKMkE
-        B6lzLdv4BrKUPbxcwh83YeTpUzNSr+A=
-Date:   Sat, 25 Jun 2022 15:10:00 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-Cc:     x86@kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Yazen Ghannam <yazen.ghannam@amd.com>
-Subject: Re: [PATCH v5] x86/mce: Check for writes ignored in MCA_STATUS
- register
-Message-ID: <YrcJKOUSJsmodo70@zn.tnic>
-References: <20220610192515.98540-1-Smita.KoralahalliChannabasappa@amd.com>
- <YrNRYJx0CNDNj3oX@zn.tnic>
- <d3f554b8-4fc5-efe8-1ca2-aa95c7e76eb8@amd.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0B34612B4;
+        Sat, 25 Jun 2022 13:13:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99B1FC3411C;
+        Sat, 25 Jun 2022 13:13:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656162787;
+        bh=6PYmcT6tZFnN80dEHugRgJOLCEYpA5+gGU6FfiYeZIo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ttx9MosP+bLFHAtIczywCko67Q/MxBrHrXwCcXlwjfYMoHIX6+f5BGGZo1CCC4nc7
+         GYfQuylOZPEo3H5Z4i19R8CBHb5HvhgHGLpHdchc1FSr7lzGzbMeF5CLHWAmcW1Ll9
+         4SEHXQ1u64fECzn/+Zd6iz24ntMVApKQzfqCxFlhBxPclYMUNkg1U8geJjgKfR5CDK
+         GFeHJYZwxjBB29/7A8wxSh/U5CnbmxnNoLKV1KhyoJNVNgVVFcmPcPH6aJGIxBd+Nq
+         B8QIFoVRfyOvEhPpo1RXgnZQLCe0kvzRk8/W27d+aiu9QAxkOQvcgQ82uhdSJL0oFR
+         3q8fo0p5OM3gg==
+Date:   Sat, 25 Jun 2022 14:22:34 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] iio: adc: qcom-spmi-rradc: Fix spelling mistake
+ "coherrency" -> "coherency"
+Message-ID: <20220625142234.3f4a6ee1@jic23-huawei>
+In-Reply-To: <20220621094736.90436-1-colin.i.king@gmail.com>
+References: <20220621094736.90436-1-colin.i.king@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <d3f554b8-4fc5-efe8-1ca2-aa95c7e76eb8@amd.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 03:34:42PM -0700, Smita Koralahalli wrote:
-> The wrmsrl_safe() doesn't throw an error here.
-> I think we need to read back the written value and check for it whatsoever.
-> What do you think?
+On Tue, 21 Jun 2022 10:47:36 +0100
+Colin Ian King <colin.i.king@gmail.com> wrote:
 
-Ah, that's the write-ignored thing. Not the #GP-generating thing when
-McStatusWrEn=0.
+> There is a spelling mistake in a dev_err message. Fix it.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Applied. Thanks,
 
-Sorry, I got confused.
+> ---
+>  drivers/iio/adc/qcom-spmi-rradc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/qcom-spmi-rradc.c b/drivers/iio/adc/qcom-spmi-rradc.c
+> index 87f349782108..56a713766954 100644
+> --- a/drivers/iio/adc/qcom-spmi-rradc.c
+> +++ b/drivers/iio/adc/qcom-spmi-rradc.c
+> @@ -295,7 +295,7 @@ static int rradc_read(struct rradc_chip *chip, u16 addr, __le16 *buf, int len)
+>  	}
+>  
+>  	if (retry_cnt == RR_ADC_COHERENT_CHECK_RETRY)
+> -		dev_err(chip->dev, "Retry exceeded for coherrency check\n");
+> +		dev_err(chip->dev, "Retry exceeded for coherency check\n");
+>  
+>  	return ret;
+>  }
 
-Can you pls change that part back to reading the previously written
-value and send me a tested version?
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
