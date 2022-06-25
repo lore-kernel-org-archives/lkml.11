@@ -2,262 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0023CCA480
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 20:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A29DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 21:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233472AbiFYU7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 16:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41048 "EHLO
+        id S233403AbiFYVQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 17:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233267AbiFYU7h (ORCPT
+        with ESMTP id S230116AbiFYVQB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 16:59:37 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF5212AC6
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 13:59:36 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id o9so7896777edt.12
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 13:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8DfPB+6+v8MPZjnhRqnPJ95rq7IbN6JaoTlReGsTtZw=;
-        b=J1Y9airSGKm4W7Ntehp1NBPUtCHFAsGVCmPiLsw4GI8HIpoML+FgByP9iG2S0A9b85
-         dvac41Ml0vNUDWuyyje4WZ/buNkqUi7buep79Rv5+UMFwHoKlrHl6otkBjf2bhnjfPhQ
-         iZiwzxC9IkBC+mhJ+ef7vpBe2zQaQTkqLVApmDYudVZVcxlvcZCI2dE+fGtfJicQAt+0
-         GXWFSEclRoyQhImU3H4mY1VtsqoQ8W1JbU7qefb1Jznc+vLRA436+2qJ4xQlVzam8WSM
-         eCXATZxTwl5LLJlXW+l4xcNBRjEo1pbmMl2pUoUpFlKDZZfxb0yVjefS9BIGOpwqjenv
-         OrHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8DfPB+6+v8MPZjnhRqnPJ95rq7IbN6JaoTlReGsTtZw=;
-        b=hVS/cyyxDFH6iR63/Cv+2rT5UG/E+paASziS72iff8MJqn97LrCiidT7Evv8Ofwrod
-         ERh3fMUirwh0YSLMgOu0rFBoSR7a+V0V0HAB0n829SrA1CdENmYNUwYB0/DhQ/TU5PeH
-         J7x8x58oNuDHBjjz6k2yzkx80Vq/kEQdb8fS90PrEVQAVDBgAYvG2hKZjjQTQq5VL1Dr
-         dffLMmvUsSnQjCTGEzN+2BWqQKG1puGbDiaT9xNqjr+/MEDO6tyYcB1pDMGVCJk0ZRam
-         60dmUQXtdqpUxU0EUkHEy+At2KPW47qkcEeVt5cPlL+Y0HgKqYgH6j6xG67QliTxrgHK
-         IZvw==
-X-Gm-Message-State: AJIora95W/roqVZkTIrLlbTvpRpN4KOyyIqqsAGCeFGWSToz20M0zeIy
-        OHfq0i5S3VV8Fa4iIw/H/umTNw==
-X-Google-Smtp-Source: AGRyM1tRJB/iLbCtlrDGd9h3fOaIgHK7o7Kfgt52jMoZJEqIJ0+P5rwgbJa9NFoitReQKaqnlDEzow==
-X-Received: by 2002:a05:6402:4244:b0:437:726c:e1a with SMTP id g4-20020a056402424400b00437726c0e1amr4502166edb.107.1656190775076;
-        Sat, 25 Jun 2022 13:59:35 -0700 (PDT)
-Received: from [192.168.0.239] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id g3-20020a1709061c8300b0070759e37183sm3007655ejh.59.2022.06.25.13.59.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Jun 2022 13:59:34 -0700 (PDT)
-Message-ID: <f14c4deb-6430-5f9e-1607-81e661b6d5e2@linaro.org>
-Date:   Sat, 25 Jun 2022 22:59:33 +0200
+        Sat, 25 Jun 2022 17:16:01 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D3E13E03
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 14:16:00 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id E4AAD32001AB;
+        Sat, 25 Jun 2022 17:15:57 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Sat, 25 Jun 2022 17:15:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=davidreaver.com;
+         h=cc:cc:content-transfer-encoding:date:date:from:from
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1656191757; x=1656278157; bh=yU6PtcQq7u
+        0n+cPB1KiGbXPCKjXCKL2anlAUYGXIPgs=; b=U3epBhHTCvLRnjMXrll6ITkFFS
+        bEh0WldNQhj8JDd+XYvhNLAT9oVDUbedBTqFq4Yqh158dP/w8zhwv1f+1WiDkdME
+        AmlK+Sj2jmQjBtVt2XgXSvSm9bL1fK07Wb1OjO8ZM8MqkGAbW0hx4FqVi4Zwudmc
+        mW+LOq5vXeToXqiugQHrYvnw7yhJjsYnMEQ8pBxSUF9Q2IfB5n65hfbGsEXVs22w
+        XFbsKCnXtTIhDSneSUWWikKKbzqPQGW7PRqdScD0acEY25vV2MzHnfkY0w3E39mH
+        vlzBny1S6XnlmKgYL46/DM92uuovoxCedvBR8k4F4JU3KzwtTPjyG4aZyR2A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1656191757; x=1656278157; bh=yU6PtcQq7u0n+cPB1KiGbXPCKjXCKL2anlA
+        UYGXIPgs=; b=Y03Wk+wFkfpqlaYa2KsZpxdsmYUtrN4h9E0QgCC6Y0Pk4iT7A9O
+        HPa1BlzkVa/6so0bxyyRWTXI/LRsfgGnktl7bRNjQFW+ZzFDS2XNHb0k2INFIwZ5
+        zmtYun8n43vy7UmlfxZWth0SK7YFDdHK45TMavf9yQvbzP98OupJVTJP/FlG2MXe
+        So7ht5j4NDmho4nbeeT0zVvOSG2G8hBMpVwIL9ckH8RBHdFWa1R6pF2MwTYg8/2/
+        QE1JQgUHsqeN9Wk4UY7K7BUi2XL3ojt8yrgLDE3vMk7eq9JL19HFKpBpyfaolZiY
+        99yIB4ZDG5jVRIW9sXAUgK6XesUnNLdu92Q==
+X-ME-Sender: <xms:DXu3YhoZoXUgt-FU79zyWIq08PjMRuiFKHhePyMNCzdJS5Azf9n2wg>
+    <xme:DXu3YjooE8oGiKXEyfqVj8l-tOt1aBNOfxZ7pLV5gf_xIagfZgxetQjQmaxmeWtAX
+    dyrwGQVq28-ulepg3A>
+X-ME-Received: <xmr:DXu3YuOUJJm_updR_a9y6LuRyD6qb2KZu47tlygJ_Ptni4pxznOm4zIEllkaqs_K176dV1Tl3gbrJmsjfQrcqUVGbxM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeguddgudeiudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enmhhishhsihhnghcuvffquchfihgvlhguucdlfedtmdenucfjughrpefhvfevufffkffo
+    ggfgsedtkeertdertddtnecuhfhrohhmpeffrghvihguucftvggrvhgvrhcuoehmvgesug
+    grvhhiughrvggrvhgvrhdrtghomheqnecuggftrfgrthhtvghrnhepvddvieefleeggfef
+    tdejtdffheeuieffheejgefgffejveduueeugeetkeehjedvnecuvehluhhsthgvrhfuih
+    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgvsegurghvihgurhgvrghvvghr
+    rdgtohhm
+X-ME-Proxy: <xmx:DXu3Ys7CfnI8Ap3PtlxHf9oNRDVuvzCR1VI8lubayQ-IwFwRum0QzA>
+    <xmx:DXu3Yg7KKRmj5c9x4glreVWFHlL9WC9ZVJQgKq_xob55DQ3vZyfUUg>
+    <xmx:DXu3Ykg4IiweK2UAUWEx1Jg6wqatyfJjJdAbnp9MNhiz-IT9JVwaBA>
+    <xmx:DXu3YgHLstUs6ALkNMSwRTpWnUTF4udVcOAkUzF_gcgl6svycYafFQ>
+Feedback-ID: i67e946c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 25 Jun 2022 17:15:55 -0400 (EDT)
+From:   David Reaver <me@davidreaver.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Reaver <me@davidreaver.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] scripts: get_feat.pl: use /usr/bin/env to find perl
+Date:   Sat, 25 Jun 2022 14:15:48 -0700
+Message-Id: <20220625211548.1200198-1-me@davidreaver.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [net-next 2/2] dt-bindings: net: adin1110: Add docs
-Content-Language: en-US
-To:     alexandru.tachici@analog.com, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        gerhard@engleder-embedded.com, geert+renesas@glider.be,
-        joel@jms.id.au, stefan.wahren@i2se.com, wellslutw@gmail.com,
-        geert@linux-m68k.org, robh+dt@kernel.org,
-        d.michailidis@fungible.com, stephen@networkplumber.org,
-        l.stelmach@samsung.com, linux-kernel@vger.kernel.org
-References: <20220624200628.77047-1-alexandru.tachici@analog.com>
- <20220624200628.77047-3-alexandru.tachici@analog.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220624200628.77047-3-alexandru.tachici@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/06/2022 22:06, alexandru.tachici@analog.com wrote:
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
-> 
-> Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
-> 
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
-> ---
->  .../devicetree/bindings/net/adi,adin1110.yaml | 127 ++++++++++++++++++
->  1 file changed, 127 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/adi,adin1110.yaml b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-> new file mode 100644
-> index 000000000000..0ac18dd62e5a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-> @@ -0,0 +1,127 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/net/adi,adin1110.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+I tried running `make pdfdocs` on NixOS, but it failed because
+get_feat.pl uses a shebang line with /usr/bin/perl, and that file path
+doesn't exist on NixOS. Using the more portable /usr/bin/env perl fixes
+the problem.
 
-No quotes in both of above.
+Signed-off-by: David Reaver <me@davidreaver.com>
+---
+ scripts/get_feat.pl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +
-> +title: ADI ADIN1110 MAC-PHY
-> +
-> +allOf:
-
-allOf goes after description.
-
-> +  - $ref: ethernet-controller.yaml#
-> +  - $ref: spi-controller.yaml#
-
-From the description it looks it is SPI device, not a controller.
-
-> +
-> +maintainers:
-> +  - Alexandru Tachici <alexandru.tachici@analog.com>
-> +
-> +description: |
-> +  The ADIN1110 is a low power single port 10BASE-T1L MAC-
-> +  PHY designed for industrial Ethernet applications. It integrates
-> +  an Ethernet PHY core with a MAC and all the associated analog
-> +  circuitry, input and output clock buffering.
-> +
-> +  The ADIN2111 is a low power, low complexity, two-Ethernet ports
-> +  switch with integrated 10BASE-T1L PHYs and one serial peripheral
-> +  interface (SPI) port. The device is designed for industrial Ethernet
-> +  applications using low power constrained nodes and is compliant
-> +  with the IEEE 802.3cg-2019 Ethernet standard for long reach
-> +  10 Mbps single pair Ethernet (SPE).
-> +
-> +  The device has a 4-wire SPI interface for communication
-> +  between the MAC and host processor.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,adin1110
-> +      - adi,adin2111
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  adi,spi-crc:
-> +    description: |
-> +      Enable CRC8 checks on SPI read/writes.
-> +    type: boolean
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +patternProperties:
-> +  "^phy@[0-1]$":
-
-[01] is shorter
-
-"phy" child node is deprecated, so phy@0 and phy@1, I think, as well.
-Look how other ethernet controllers are doing it.
-
-> +    description: |
-> +      ADIN1100 PHY that is present on the same chip as the MAC.
-> +    type: object
-> +
-> +    properties:
-> +      reg:
-
-maxItems:1
-
-> +        items:
-> +          maximum: 1
-> +
-> +    allOf:
-> +      - if:
-> +          properties:
-> +            compatible:
-
-I am not sure this works correctly... You reference here parent
-properties but then change them to some other compatible?
-
-Did you actually test that this works as it should?
-
-> +              contains:
-> +                const: adi,adin1110
-> +        then:
-> +          properties:
-> +            compatible:
-> +              const: ethernet-phy-id0283.bc91
-> +        else:
-> +          properties:
-> +            compatible:
-> +              const: ethernet-phy-id0283.bca1
-> +
-> +    required:
-> +      - compatible
-> +      - reg
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - phy@0
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +        spi0 {
-
-1. spi, not spi0
-2. Wrong indentation. Use 4 spaces for DTS example.
-
-
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                status = "okay";
-
-This is not needed.
-
-> +
-> +                ethernet@0 {
-> +                        compatible = "adi,adin2111";
-> +                        reg = <0>;
-> +                        spi-max-frequency = <24500000>;
-> +
-> +                        adi,spi-crc;
-> +
-> +                        #address-cells = <1>;
-> +                        #size-cells = <0>;
-> +
-> +                        interrupt-parent = <&gpio>;
-> +                        interrupts = <25 2>;
-
-"2" looks like interrupt flag, so use it.
-
-> +
-> +                        mac-address = [ ca 2f b7 10 23 63 ];
-
-This should be rather some 00 11 22 type of MAC, or you expect to encode
-same MAC in several devices?
-
-> +
-> +                        phy@0 {
-> +                                #phy-cells = <0>;
-> +                                compatible = "ethernet-phy-id0283.bca1";
-> +                                reg = <0>;
-> +                        };
-> +
-> +                        phy@1 {
-> +                                #phy-cells = <0>;
-> +                                compatible = "ethernet-phy-id0283.bca1";
-> +                                reg = <1>;
-> +                        };
-> +                };
-> +        };
-
-
-Best regards,
-Krzysztof
+diff --git a/scripts/get_feat.pl b/scripts/get_feat.pl
+index 76cfb96b59b6..5c5397eeb237 100755
+--- a/scripts/get_feat.pl
++++ b/scripts/get_feat.pl
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # SPDX-License-Identifier: GPL-2.0
+ 
+ use strict;
