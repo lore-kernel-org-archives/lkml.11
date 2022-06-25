@@ -2,83 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B13CCA480
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 19:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1FABC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 20:00:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233290AbiFYT6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 15:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35358 "EHLO
+        id S233319AbiFYUAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 16:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231474AbiFYT6r (ORCPT
+        with ESMTP id S233329AbiFYUAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 15:58:47 -0400
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8BBA187;
-        Sat, 25 Jun 2022 12:58:46 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id B874A10045BFD;
-        Sat, 25 Jun 2022 21:58:44 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 936301191F2; Sat, 25 Jun 2022 21:58:44 +0200 (CEST)
-Date:   Sat, 25 Jun 2022 21:58:44 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        andriy.shevchenko@linux.intel.com, vz@mleia.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
- serial core
-Message-ID: <20220625195844.GB2879@wunner.de>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
- <20220622154659.8710-3-LinoSanfilippo@gmx.de>
+        Sat, 25 Jun 2022 16:00:43 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8064B7EF
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 13:00:39 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-101ab23ff3fso8194431fac.1
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 13:00:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GoHTL5pc7929tKgNPXg2nW2kzENqcme0/+lvG0VCiB8=;
+        b=P9/d2vqi0S4nDX0/Q7iwQJQXtcSWzOF+75qBFEQXnxYG012L7l7Y6rZtrqpnV8sn/H
+         g6rkxGsOBdw13y9r9b2vdilnR5zuwrJOXtyxuvDPJzKEf0Lbq+ZBVoAyKOKdkC/cB4XA
+         62sQOQ5g6gDJMRDKtabVKkCKdTOvHdHeGBsPV9KIPRaS27ikp7AkPtt0Iup0UrRyTAx4
+         Sm+rnL8iYjCrhJmFosCSClpgwoO51DrA9dEU3vmnEzFAZpUGk2Usoy/yg9y1Pe0Sf3qH
+         wpM6zJpivs+tmMMYDJ1iK2sapz3k1ejoqNaNhp9r3IcEcRy66Hq93qfnhpX+EDBbrlS3
+         XqHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GoHTL5pc7929tKgNPXg2nW2kzENqcme0/+lvG0VCiB8=;
+        b=1+XjYQu8wTz1WNMVCSt544zgJih4w0mokkN4mT7Ku5xe1rsSvg7oUT4UzBm3mIyblc
+         1owvHJiqUUZT0hyQ3T1uW2O8HfiNJo7TBynXM5EJ6zlTzewbYp29I/RQXSVfDn70BApU
+         xR5HOLqGH3XviYet3ld4cUx8aO2/eySO/VvH9lyX+V+jD1OwapGoxlwhJnXAbWQ3BDgt
+         5srEBrLH0ilJS2wVEW8w4yP3LxLJz7SKDx9DJZ54crUfrNnYnenzUcet9QShu9ZfXxsZ
+         NJXWLZtRjJfmjeFGBuaBJe5P86KwZoi+XyhrxQSqYk7689nTKOCo24Zg/9jS8Qohf5gr
+         CTTQ==
+X-Gm-Message-State: AJIora8Ei6/sQbLSG/dIVSeJfDGxozOdtDlG3PJ9czQ4P4KhwjPn5Prx
+        XiG1f3DVy7N+e+dgiRmn0vUvV3zyVG08iQ==
+X-Google-Smtp-Source: AGRyM1uS2g0J6WOPaAL2iqi0XdzNdGYJ9SATCQGmKDYOVVcrz9/DIH+EaNp3mGkr0Upk6fjqJEr4MQ==
+X-Received: by 2002:a05:6870:3920:b0:101:d628:b053 with SMTP id b32-20020a056870392000b00101d628b053mr6084774oap.111.1656187239166;
+        Sat, 25 Jun 2022 13:00:39 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id y21-20020a056870419500b000f3321caa73sm4160632oac.16.2022.06.25.13.00.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jun 2022 13:00:38 -0700 (PDT)
+Date:   Sat, 25 Jun 2022 15:00:36 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, patches@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        Taniya Das <quic_tdas@quicinc.com>
+Subject: Re: [PATCH] clk: qcom: rpmh: Add note about sleep/wake state for BCMs
+Message-ID: <YrdpZHbsJ+2m/fI+@builder.lan>
+References: <20220517190949.2922197-1-swboyd@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220622154659.8710-3-LinoSanfilippo@gmx.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220517190949.2922197-1-swboyd@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 05:46:53PM +0200, Lino Sanfilippo wrote:
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+On Tue 17 May 14:09 CDT 2022, Stephen Boyd wrote:
+
+> The sleep/wake state doesn't need to be set here because of specific
+> RPMh behavior that carries over the active state when sleep/wake state
+> hasn't been modified. Add a note to the code so we aren't tempted to set
+> the sleep/wake states.
 > 
-> In serial8250_em485_config() the termination GPIO is set with the uart_port
-> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
-> since the concerning GPIO expander is connected via SPI or I2C).
+> Cc: Alex Elder <elder@linaro.org>
+> Cc: Taniya Das <quic_tdas@quicinc.com>
+
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
 > 
-> Fix this by setting the termination line outside of the uart_port spinlock
-> in the serial core.
-[...]
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1400,6 +1411,7 @@ static int uart_set_rs485_config(struct uart_port *port,
->  	if (ret)
->  		return ret;
->  	uart_sanitize_serial_rs485(port, &rs485);
-> +	uart_set_rs485_termination(port, &rs485);
+> This superseedes a previous patch[1] I sent that tried to fix this.
+> 
+>  drivers/clk/qcom/clk-rpmh.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/clk/qcom/clk-rpmh.c b/drivers/clk/qcom/clk-rpmh.c
+> index aed907982344..c07cab6905cb 100644
+> --- a/drivers/clk/qcom/clk-rpmh.c
+> +++ b/drivers/clk/qcom/clk-rpmh.c
+> @@ -274,6 +274,11 @@ static int clk_rpmh_bcm_send_cmd(struct clk_rpmh *c, bool enable)
+>  		cmd.addr = c->res_addr;
+>  		cmd.data = BCM_TCS_CMD(1, enable, 0, cmd_state);
 >  
->  	spin_lock_irqsave(&port->lock, flags);
->  	ret = port->rs485_config(port, &rs485);
-
-That's one way to solve the issue.  Another would be to push
-acquisition of the port spinlock down into drivers.
-
-I think in most drivers we don't need to take the port spinlock at all
-or only for a few specific register accesses.  So taking the lock here
-in the midlayer is likely unwarranted.  However, changing that requires
-going through every single driver's ->rs485_config() callback and
-checking whether it needs the lock or not.  That's painful, but
-unavoidable in the long run.  This patch just kicks the can down the road...
-
-Thanks,
-
-Lukas
+> +		/*
+> +		 * Send only an active only state request. RPMh continues to
+> +		 * use the active state when we're in sleep/wake state as long
+> +		 * as the sleep/wake state has never been set.
+> +		 */
+>  		ret = clk_rpmh_send(c, RPMH_ACTIVE_ONLY_STATE, &cmd, enable);
+>  		if (ret) {
+>  			dev_err(c->dev, "set active state of %s failed: (%d)\n",
+> 
+> base-commit: 42226c989789d8da4af1de0c31070c96726d990c
+> -- 
+> https://chromeos.dev
+> [1] https://lore.kernel.org/r/20220412194505.614002-1-swboyd@chromium.org
