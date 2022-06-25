@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A912EC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 07:45:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3407CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 07:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232240AbiFYHpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 03:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54638 "EHLO
+        id S232287AbiFYHpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 03:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232115AbiFYHo5 (ORCPT
+        with ESMTP id S232119AbiFYHo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 25 Jun 2022 03:44:57 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF57B4739F;
-        Sat, 25 Jun 2022 00:44:53 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LVQw850QXzkWmy;
-        Sat, 25 Jun 2022 15:43:36 +0800 (CST)
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C19473B0;
+        Sat, 25 Jun 2022 00:44:54 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LVQwv4Yt1zDsSB;
+        Sat, 25 Jun 2022 15:44:15 +0800 (CST)
 Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 25 Jun 2022 15:44:52 +0800
+ 15.1.2375.24; Sat, 25 Jun 2022 15:44:51 +0800
 Received: from localhost.localdomain (10.67.165.2) by
  kwepemm600007.china.huawei.com (7.193.23.208) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -29,9 +29,9 @@ Received: from localhost.localdomain (10.67.165.2) by
 From:   Jie Hai <haijie1@huawei.com>
 To:     <vkoul@kernel.org>, <wangzhou1@hisilicon.com>
 CC:     <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 8/8] MAINTAINERS: Add debugfs files and maintainer for hisi_dma
-Date:   Sat, 25 Jun 2022 15:44:22 +0800
-Message-ID: <20220625074422.3479591-9-haijie1@huawei.com>
+Subject: [PATCH 7/8] Documentation: Add debugfs doc for hisi_dma
+Date:   Sat, 25 Jun 2022 15:44:21 +0800
+Message-ID: <20220625074422.3479591-8-haijie1@huawei.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20220625074422.3479591-1-haijie1@huawei.com>
 References: <20220625074422.3479591-1-haijie1@huawei.com>
@@ -46,30 +46,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch does followed things:
-1. Add debugfs-hisi-dma path to MAINTAINERS.
-2. Add myself as a maintainer for hisi_dma.
+Add debugfs descriptions for HiSilicon DMA driver.
 
 Signed-off-by: Jie Hai <haijie1@huawei.com>
 ---
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/ABI/testing/debugfs-hisi-dma | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+ create mode 100644 Documentation/ABI/testing/debugfs-hisi-dma
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3cf9842d9233..e30d8256a39e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8879,8 +8879,10 @@ F:	net/dsa/tag_hellcreek.c
- 
- HISILICON DMA DRIVER
- M:	Zhou Wang <wangzhou1@hisilicon.com>
-+M:	Jie Hai <haijie1@hisilicon.com>
- L:	dmaengine@vger.kernel.org
- S:	Maintained
-+F:	Documentation/ABI/testing/debugfs-hisi-dma
- F:	drivers/dma/hisi_dma.c
- 
- HISILICON GPIO DRIVER
+diff --git a/Documentation/ABI/testing/debugfs-hisi-dma b/Documentation/ABI/testing/debugfs-hisi-dma
+new file mode 100644
+index 000000000000..162c97945748
+--- /dev/null
++++ b/Documentation/ABI/testing/debugfs-hisi-dma
+@@ -0,0 +1,9 @@
++What:           /sys/kernel/debug/hisi_dma/<bdf>/regs
++Date:           Mar 2022
++Contact:        dmaengine@vger.kernel.org
++Description:    Dump the debug registers from the hisi dma.
++
++What:           /sys/kernel/debug/hisi_dma/<bdf>/channel[id]/regs
++Date:           Mar 2022
++Contact:        dmaengine@vger.kernel.org
++Description:    Dump the channel related debug registers from the hisi dma.
 -- 
 2.33.0
 
