@@ -2,126 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6812C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E0BC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232575AbiFYLRa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 07:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
+        id S232634AbiFYLRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 07:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbiFYLRZ (ORCPT
+        with ESMTP id S232582AbiFYLR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 07:17:25 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CCD31DDD
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 04:17:23 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-31772f8495fso46344557b3.4
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 04:17:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uiCn1wFahqAtSkOl35HmuzXqqUxjUEsg3PyPjnfHW9E=;
-        b=3iCOnxC63zzWpEYXppJeaYfZNRtna889N688tU51Fz05zWDXd5qsW086aNb9+MwdJv
-         O9EyqixJTnJa8+XS33NPHFlTPra87Yh3ffe2oDLnQiJLBi2R3Vd38kWvw9iGVRTv92+3
-         LCEa3bFWRvLtfE/G8Hwknjj9IHh3hswmvsfFnbDG296N5regN/oIcPmqNRjlFXUARSIe
-         kj9Q7PaPTaG5bVoYZbf8DHg0J/oRGOwIXWfNGVQmoFx98yuwo48VgRe3N2GRGx4KedLq
-         ZcsbEmXYQaQF4cRtK7tpUvGlk1uXjKwda6GoKRmyLyoHRGI0fHKUsy2xipFdKbzqWmfa
-         /QrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uiCn1wFahqAtSkOl35HmuzXqqUxjUEsg3PyPjnfHW9E=;
-        b=7Zz8Firftd+bQ3wPKvnPiH5T+WldFA29KwBeDqf6ga0PHyuWjBXfLFn9ur4C188U/n
-         NjpZSp7vbEuO4hze0u4KEnT+G615axGSoG8YIt8VujXLjTnx+ZARNRY7SYofidkFpbvE
-         mHqkO4v4bdZcXyxDfGdpMce4CV6T9nfAqS/G8bgHZKDmU0SfSzEZwYoV7BaBlR8XCc4H
-         jRRZ8MgT4TPgMXBFcU8o5ttvJLlJ8iKrEbDsjhWLX7chZWgIJ7Liat45WgLWb5swQqZn
-         QCY4a7YnVbGhyw3cV50q6DsZSVijovhMxqLhTzzvMha7R/R2FN7pVDLmGnGiar2p/RF1
-         aOEQ==
-X-Gm-Message-State: AJIora82FUvxMYLs8xz+bmCKjqrzg3DCMDoIx5NULXvXrlWBx5dnyn8S
-        TU6tQimSXrDGnL4jwy4LGnOsKN3p6EIs6y24uyX2KQ==
-X-Google-Smtp-Source: AGRyM1uoUJNV+pWkUKZPyqoYjVU92W2AXcs0+oJA8ZTI80Wfq+v4vJ2sRUr54xc0spYE3wbFPeNslZTmLW60JMAY1vM=
-X-Received: by 2002:a81:830b:0:b0:317:b41e:9e49 with SMTP id
- t11-20020a81830b000000b00317b41e9e49mr3977250ywf.458.1656155843079; Sat, 25
- Jun 2022 04:17:23 -0700 (PDT)
+        Sat, 25 Jun 2022 07:17:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1527431DDA;
+        Sat, 25 Jun 2022 04:17:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA908B80819;
+        Sat, 25 Jun 2022 11:17:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F47CC3411C;
+        Sat, 25 Jun 2022 11:17:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656155843;
+        bh=GF6if4jUJ+aAJLP7XEcfUSKNX9PxvOUmXSZ+E+xD8Hs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lczjRbs5+wi5/JjTDP2VbccjDnAMlU4wDQENHHvk/WJ7SIIg+rFRYpjy+93ff6DPh
+         QRUTIrqOkV6yKLW2mFgwoxwdeaSi3iklgSNcJL/tFtzW7fwndv6LmtMcl+T0/0VAxj
+         dMWVZX7wO8d4rXgLvBMMvh4UkT0gjdMgko+USK4iZrUmaNgTMbCbTst0eAE8jUyLph
+         9ASToC4GGdnarbanj3F6czR2nLSaJVQWu4q7I/D70k39QcST+vxiSsgVN2iYHHVHqt
+         me8If28e7lBLLn9MYsTe2f1M/rgqjO8CKvRGRiJOkgpM/My2ZjMiGGAlX2Gt+Hvp9J
+         Q7tzYhxQySxZg==
+Date:   Sat, 25 Jun 2022 12:26:50 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 01/10] iio: adc: mcp3911: correct
+ "microchip,device-addr" property
+Message-ID: <20220625122650.099fbba1@jic23-huawei>
+In-Reply-To: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
+References: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220625080423.2797-1-chenfeiyang@loongson.cn>
- <CAMZfGtWT7oPq6bD_fRn2gVNX8Lj3=ev21EAoaCCPeq-P_NYF0g@mail.gmail.com> <CAAhV-H5K9LG5P6WYJ+64-fi+s=TZbbJQG9E0vHJwOf9Pai5z4w@mail.gmail.com>
-In-Reply-To: <CAAhV-H5K9LG5P6WYJ+64-fi+s=TZbbJQG9E0vHJwOf9Pai5z4w@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Sat, 25 Jun 2022 19:16:46 +0800
-Message-ID: <CAMZfGtVq0VwMETGdzAXLkjes8W0gVBw=r0Xk5rpPnhe7x6tRiw@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] page-flags.h: Fix a missing header include
- of static_keys.h
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     Feiyang Chen <chris.chenfeiyang@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 25, 2022 at 5:04 PM Huacai Chen <chenhuacai@kernel.org> wrote:
->
-> Hi, Muchun,
->
-> On Sat, Jun 25, 2022 at 4:50 PM Muchun Song <songmuchun@bytedance.com> wrote:
-> >
-> > On Sat, Jun 25, 2022 at 4:04 PM Feiyang Chen
-> > <chris.chenfeiyang@gmail.com> wrote:
-> > >
-> > > The page-flags.h header relies on static keys since commit
-> > > a6b40850c442bf ("mm: hugetlb: replace hugetlb_free_vmemmap_enabled
-> > > with a static_key"), so make sure to include the header to avoid
-> > > compilation errors.
-> > >
-> > > Fixes: a6b40850c442bf ("mm: hugetlb: replace hugetlb_free_vmemmap_enabled with a static_key")
-> > > Cc: stable@vger.kernel.org
-> > > Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-> > > ---
-> > >  include/linux/page-flags.h | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-> > > index e66f7aa3191d..147b336c7a35 100644
-> > > --- a/include/linux/page-flags.h
-> > > +++ b/include/linux/page-flags.h
-> > > @@ -11,6 +11,7 @@
-> > >  #include <linux/mmdebug.h>
-> > >  #ifndef __GENERATING_BOUNDS_H
-> > >  #include <linux/mm_types.h>
-> > > +#include <linux/static_key.h>
-> >
-> > I did not include this. The change makes sense to me. But I am
-> > curious what configs cause the compiling error. Would you mind
-> > sharing the config with us?
-> We found this problem when we add
-> ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP to LoongArch. Since this isn't
+On Sat, 25 Jun 2022 12:38:44 +0200
+Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
 
-Good news to me. I would love to hear more archs support for HVO (HugeTLB
-Vmemmap Optimization).
+> Go for the right property name that is documented in the bindings.
+> 
+> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 
-> upstream yet, we cannot give such a config now (the default config of
-> X86 and ARM64 is just OK).
+Need a fixes tag so we know how far to back port this.
 
-All right. In this case, the "Cc: stable@vger.kernel.org" is unnecessary.
+> ---
+> 
+> Notes:
+>     v2:
+>         - Fallback to "device-addr" due to compatibility (Andy Shevchenko)
+> 
+>  drivers/iio/adc/mcp3911.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+> index 1cb4590fe412..c5a0f19d7834 100644
+> --- a/drivers/iio/adc/mcp3911.c
+> +++ b/drivers/iio/adc/mcp3911.c
+> @@ -208,7 +208,13 @@ static int mcp3911_config(struct mcp3911 *adc)
+>  	u32 configreg;
+>  	int ret;
+>  
+> -	device_property_read_u32(dev, "device-addr", &adc->dev_addr);
+> +	ret = device_property_read_u32(dev, "microchip,device-addr", &adc->dev_addr);
+> +
+> +	/* Fallback to "device-addr" due to historical mismatch between
+Multiline comment syntax should be
 
-Thanks.
->
-> Huacai
-> >
-> > Thanks.
-> >
-> > >  #include <generated/bounds.h>
-> > >  #endif /* !__GENERATING_BOUNDS_H */
-> > >
-> > > --
-> > > 2.27.0
-> > >
-> >
+	/*
+	 * Fallabck to "...
+	 * dt-...
+`	 */
+
+> +	 * dt-bindings and implementation
+> +	 */
+> +	if (ret)
+> +		device_property_read_u32(dev, "device-addr", &adc->dev_addr);
+>  	if (adc->dev_addr > 3) {
+>  		dev_err(&adc->spi->dev,
+>  			"invalid device address (%i). Must be in range 0-3.\n",
+
