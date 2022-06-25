@@ -2,90 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA04C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 15:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 15:08:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233043AbiFYPAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 11:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
+        id S232853AbiFYPI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 11:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbiFYPAT (ORCPT
+        with ESMTP id S229593AbiFYPIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 11:00:19 -0400
-X-Greylist: delayed 1826 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 25 Jun 2022 08:00:17 PDT
-Received: from m1548.mail.126.com (m1548.mail.126.com [220.181.15.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8F7412D1B
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 08:00:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=ypGs7
-        lpxxQx6BOfxMJzF+1MxsCsKZeK+VXcMIsiX7Pk=; b=WJy48bo8MhKICciRJViaQ
-        zb6n+kEhfGkKu0scV35OL8dPH9uM48Ja4pzhjMXmVCKuV7+MZETAc5+75OMw6oC/
-        JL35zggaw+6PbHsE9Wvhw3ghRd9jaCErmjvfl3Ott1nVntK8EM6l3ThpqD8XzpPX
-        r2zEuBByFvAdx1EihTCK5M=
-Received: from cheny_wen$126.com ( [120.231.117.174] ) by
- ajax-webmail-wmsvr48 (Coremail) ; Sat, 25 Jun 2022 22:29:02 +0800 (CST)
-X-Originating-IP: [120.231.117.174]
-Date:   Sat, 25 Jun 2022 22:29:02 +0800 (CST)
-From:   cheny_wen@126.com
-To:     "Gao Xiang" <hsiangkao@linux.alibaba.com>
-Cc:     xiang@kernel.org, chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Even <chenyuwen1@meizu.com>
-Subject: Re:Re: [PATCH] erofs: Wake up all waiters after z_erofs_lzma_head
- ready.
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <YrbZEIxC62XjVBwL@B-P7TQMD6M-0146.local>
-References: <20220625085738.12834-1-cheny_wen@126.com>
- <YrbZEIxC62XjVBwL@B-P7TQMD6M-0146.local>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=utf-8
+        Sat, 25 Jun 2022 11:08:54 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710B51260E;
+        Sat, 25 Jun 2022 08:08:52 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id z9so2810629wmf.3;
+        Sat, 25 Jun 2022 08:08:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ew49skD5ZdIyGwg0/jTXLSgKgIqRxhQSBsZllVavisc=;
+        b=E6UBqmaLkgezVesa+rPuXLzn/YidAqtOlWFDKmZpDsoNLrnKskJJpUG1mt+c5/Bg1/
+         Y6HJLP1Nidv2UBhpahzA/WpVUlo+e3EEO/XotHWlMOuGSaf3QTKjTg6T4PWT4Ygm5CpG
+         G5NXTRGWvK9zvUkPCib+dno3BeYRzfZ8KJXya/pu5+LObPRcPSshAihVsX5mDZyEB3I2
+         K/deKlIYZP+If3BrXdigCVhlnP935IcF060wVGEklxCPF3veWM/s/Z59LNQ2u7YYWzLV
+         AJ+Ei+JjnnwRgiv2ZbC6JY82YFdfXVDE2Tm/hjzs3F9c5Rhcb1t9XVjtddo303YlFC0/
+         cXDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ew49skD5ZdIyGwg0/jTXLSgKgIqRxhQSBsZllVavisc=;
+        b=zwZ+lyCHyF3AnYpoARMXrdcMuC4iTRTZrnIiDbTpwK16vdQaGZ1M/S/CYXXSipdX/R
+         qvdxMkkm5Wtfj2QBq2A12FNtgYPVxxWZDRQedxNOT0fIkW1Y+GvkFoUB8aIWs7d/ehqq
+         Mt2u2d/ITZGyvjJMCBP+/FUWgvbzzoKF+QPi6t6Zckiomc5/z5qioS9TqTQu/YLbzGj7
+         cweWAk5d+fGyc4pVJw4wwx9QxFweowf/IRKPCvWMECvZC/HQB+YJlKuJB5LClTCeyBdJ
+         LxAJm4Yg9XZBaiLaCAJTcIPQDSgS0JQhylDHgIRN3hIzBqGeYgDfAEgQ6F1uMW/z5jyM
+         KNcA==
+X-Gm-Message-State: AJIora8ResGbfF+pnmUuL44SUPIw1v4wNTfvHammw+q5lZ0ItNVCtf0f
+        auCZpy1PwNmM+HPl0XgM+qIrZjsGf5g=
+X-Google-Smtp-Source: AGRyM1vaJdUc8+hFBFdGPMKizMHQjT2bA+uBtAFGxLXullQcBteWP97tNYSiDJreaHAWojUnAWigiw==
+X-Received: by 2002:a05:600c:4f95:b0:39c:9897:5290 with SMTP id n21-20020a05600c4f9500b0039c98975290mr9487508wmq.149.1656169730998;
+        Sat, 25 Jun 2022 08:08:50 -0700 (PDT)
+Received: from localhost.localdomain (214.red-83-37-4.dynamicip.rima-tde.net. [83.37.4.214])
+        by smtp.gmail.com with ESMTPSA id c1-20020a05600c100100b003a03d34b85fsm5017942wmc.25.2022.06.25.08.08.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jun 2022 08:08:50 -0700 (PDT)
+From:   Angel Iglesias <ang.iglesiasg@gmail.com>
+Cc:     Angel Iglesias <ang.iglesiasg@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andreas Klinger <ak@it-klinger.de>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] dt-bindings: iio: pressure: bmp085: Add BMP380 compatible string
+Date:   Sat, 25 Jun 2022 17:08:09 +0200
+Message-Id: <20220625150811.47292-1-ang.iglesiasg@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Message-ID: <68c6768b.6289.1819b4421df.Coremail.cheny_wen@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: MMqowADH3navG7dihL0yAA--.33177W
-X-CM-SenderInfo: xfkh05hbzh0qqrswhudrp/1tbimxQrhlx5hG+kegABsz
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkKJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7SSZuYnNwO2hhdmUmbmJzcDtzZW50Jm5i
-c3A7YSZuYnNwO25ldyZuYnNwO2VtYWlsJm5ic3A7ZnJvbSZuYnNwO21laXp1Jm5ic3A7ZW1haWwm
-bmJzcDt3aGljaCZuYnNwO3NpZ25lZCZuYnNwO3RoZSZuYnNwO3BhdGNoLgoKdGhpbmtzJm5ic3A7
-Zm9yJm5ic3A7eW91ciZuYnNwO2hlbHAuCuWcqCAyMDIyLTA2LTI1IDE3OjQ0OjQ477yMIkdhbyBY
-aWFuZyIgPGhzaWFuZ2thb0BsaW51eC5hbGliYWJhLmNvbT4g5YaZ6YGT77yaCkhpLA0KDQpPbiBT
-YXQsIEp1biAyNSwgMjAyMiBhdCAwNDo1NzozOFBNICswODAwLCBFdmVuIHdyb3RlOg0KPiBGcm9t
-OiBFdmVuIDxjaGVueXV3ZW4xQG1laXp1LmNvbT4NCj4gDQo+IFdoZW4gdGhlIHVzZXIgbW91bnRz
-IHRoZSBlcm9mcyBzZWNvbmQgdGltZXMsIHRoZSBkZWNvbXByZXNzaW9uIHRocmVhZA0KPiBtYXkg
-aHVuZy4gVGhlIHByb2JsZW0gaGFwcGVucyBkdWUgdG8gYSBzZXF1ZW5jZSBvZiBzdGVwcyBsaWtl
-IHRoZQ0KPiBmb2xsb3dpbmc6DQo+IA0KPiAxKSBUYXNrIEEgY2FsbGVkIHpfZXJvZnNfbG9hZF9s
-em1hX2NvbmZpZyB3aGljaCBvYnRhaW4gYWxsIG9mIHRoZSBub2RlDQo+ICAgIGZyb20gdGhlIHpf
-ZXJvZnNfbHptYV9oZWFkLg0KPiANCj4gMikgQXQgdGhpcyB0aW1lLCB0YXNrIEIgY2FsbGVkIHRo
-ZSB6X2Vyb2ZzX2x6bWFfZGVjb21wcmVzcyBhbmQgd2FudGVkIHRvDQo+ICAgIGdldCBhIG5vZGUu
-IEJ1dCB0aGUgel9lcm9mc19sem1hX2hlYWQgd2FzIGVtcHR5LCB0aGUgVGFzayBCIGhhZCB0bw0K
-PiAgICBzbGVlcC4NCj4gDQo+IDMpIFRhc2sgQSByZWxlYXNlIG5vZGVzIGFuZCBwdXNoIG5vZGVz
-IGludG8gdGhlIHpfZXJvZnNfbHptYV9oZWFkLiBCdXQNCj4gICAgdGFzayBCIHdhcyBzdGlsbCBz
-bGVlcGluZy4NCj4gDQo+IE9uZSBleGFtcGxlIHJlcG9ydCB3aGVuIHRoZSBodW5nIGhhcHBlbnM6
-DQo+IHRhc2s6a3dvcmtlci91MzoxIHN0YXRlOkQgc3RhY2s6MTQzODQgcGlkOiA4NiBwcGlkOiAy
-IGZsYWdzOjB4MDAwMDQwMDANCj4gV29ya3F1ZXVlOiBlcm9mc191bnppcGQgel9lcm9mc19kZWNv
-bXByZXNzcXVldWVfd29yaw0KPiBDYWxsIFRyYWNlOg0KPiAgPFRBU0s+DQo+ICBfX3NjaGVkdWxl
-KzB4MjgxLzB4NzYwDQo+ICBzY2hlZHVsZSsweDQ5LzB4YjANCj4gIHpfZXJvZnNfbHptYV9kZWNv
-bXByZXNzKzB4NGJjLzB4NTgwDQo+ICA/IGNwdV9jb3JlX2ZsYWdzKzB4MTAvMHgxMA0KPiAgel9l
-cm9mc19kZWNvbXByZXNzX3BjbHVzdGVyKzB4NDliLzB4YmEwDQo+ICA/IF9fdXBkYXRlX2xvYWRf
-YXZnX3NlKzB4MmIwLzB4MzMwDQo+ICA/IF9fdXBkYXRlX2xvYWRfYXZnX3NlKzB4MmIwLzB4MzMw
-DQo+ICA/IHVwZGF0ZV9sb2FkX2F2ZysweDVmLzB4NjkwDQo+ICA/IHVwZGF0ZV9sb2FkX2F2Zysw
-eDVmLzB4NjkwDQo+ICA/IHNldF9uZXh0X2VudGl0eSsweGJkLzB4MTEwDQo+ICA/IF9yYXdfc3Bp
-bl91bmxvY2srMHhkLzB4MjANCj4gIHpfZXJvZnNfZGVjb21wcmVzc19xdWV1ZS5pc3JhLjArMHgy
-ZS8weDUwDQo+ICB6X2Vyb2ZzX2RlY29tcHJlc3NxdWV1ZV93b3JrKzB4MzAvMHg2MA0KPiAgcHJv
-Y2Vzc19vbmVfd29yaysweDFkMy8weDNhMA0KPiAgd29ya2VyX3RocmVhZCsweDQ1LzB4M2EwDQo+
-ICA/IHByb2Nlc3Nfb25lX3dvcmsrMHgzYTAvMHgzYTANCj4gIGt0aHJlYWQrMHhlMi8weDExMA0K
-PiAgPyBrdGhyZWFkX2NvbXBsZXRlX2FuZF9leGl0KzB4MjAvMHgyMA0KPiAgcmV0X2Zyb21fZm9y
-aysweDIyLzB4MzANCj4gIDwvVEFTSz4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEV2ZW4gPGNoZW55
-dXdlbjFAbWVpenUuY29tPg0KDQpUaGFua3MgYSBsb3QgZm9yIGNhdGNoaW5nIHRoaXMhDQoNClRo
-ZSBwYXRjaCBpdHNlbGYgbG9va3MgZ29vZCwgYnV0IGNvdWxkIHlvdSB1c2UgeW91ciByZWFsIG5h
-bWUgdG8gc2lnbg0Kb2ZmIHRoZSBwYXRjaCBhbmQgcmVzZW5kIGEgdmVyc2lvbj8gc2VlLA0KaHR0
-cHM6Ly93d3cua2VybmVsLm9yZy9kb2MvaHRtbC92NC4xNy9wcm9jZXNzL3N1Ym1pdHRpbmctcGF0
-Y2hlcy5odG1sI2RldmVsb3Blci1zLWNlcnRpZmljYXRlLW9mLW9yaWdpbi0xLTENCg0KT3RoZXJ3
-aXNlIGl0IGxvb2tzIGdvb2QgdG8gbWUsDQpSZXZpZXdlZC1ieTogR2FvIFhpYW5nIDxoc2lhbmdr
-YW9AbGludXguYWxpYmFiYS5jb20+DQoNClRoYW5rcywNCkdhbyBYaWFuZw0K
+Add bosch,bmp380 compatible string for the new family of sensors.
+This family includes the BMP380, BMP384 and BMP388. The register map
+in this family changes substantially and introduces new features
+but core concepts and operations carryover from the previous iterations
+
+Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
+---
+ Documentation/devicetree/bindings/iio/pressure/bmp085.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml b/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
+index 49257f9251e8..72cd2c2d3f17 100644
+--- a/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
++++ b/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/iio/pressure/bmp085.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: BMP085/BMP180/BMP280/BME280 pressure iio sensors
++title: BMP085/BMP180/BMP280/BME280/BMP380 pressure iio sensors
+ 
+ maintainers:
+   - Andreas Klinger <ak@it-klinger.de>
+@@ -16,6 +16,7 @@ description: |
+     https://www.bosch-sensortec.com/bst/products/all_products/bmp180
+     https://www.bosch-sensortec.com/bst/products/all_products/bmp280
+     https://www.bosch-sensortec.com/bst/products/all_products/bme280
++    https://www.bosch-sensortec.com/bst/products/all_products/bmp380
+ 
+ properties:
+   compatible:
+@@ -24,6 +25,7 @@ properties:
+       - bosch,bmp180
+       - bosch,bmp280
+       - bosch,bme280
++      - bosch,bmp380
+ 
+   reg:
+     maxItems: 1
+-- 
+2.25.1
+
