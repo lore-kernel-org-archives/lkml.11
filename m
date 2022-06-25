@@ -2,129 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC555C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6812C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232572AbiFYLPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 07:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
+        id S232575AbiFYLRa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 07:17:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232141AbiFYLPG (ORCPT
+        with ESMTP id S232490AbiFYLRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 07:15:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E801E31396;
-        Sat, 25 Jun 2022 04:15:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5972DCE09F9;
-        Sat, 25 Jun 2022 11:15:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 672ADC3411C;
-        Sat, 25 Jun 2022 11:15:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656155702;
-        bh=BwsbxnbNM5PkdhDastKNPu200JUqaXIgWWRTtFwzuWw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VxeM7/t/m2Dkt3jRetXDo9gfqSh5vIs0Tu4somfmonxhmEIUJ6R5ztCOZpYcXFo72
-         3BLlewzQcOoGPTp4mfq7Yd9yPzckXkR2yfSAPs4TQFgHiSHIwdj8X2/kCYZgu33jFE
-         c+CxiYF25nfybPwVoRxc9JNbRHRrmVZAvBwov3pYKTf8Nr4hfWO5+/FZEPKcpberYB
-         2bUlsI38osBT3Z12MDixWFNCBkCo8+z6TDpgqdTR1jReWIDKV2+Oz/EMvUnaUOguQk
-         sSbenumiXt83hA8GLz1eeY0xTRz8hbh+nYqURs1gvINd6f0QFjbDXA5LNa1m5qFeNB
-         /YcWhxPqjInEQ==
-Date:   Sat, 25 Jun 2022 12:24:29 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 02/10] iio: adc: mcp3911: use resource-managed version
- of iio_device_register
-Message-ID: <20220625122429.14e98106@jic23-huawei>
-In-Reply-To: <YrVZwAqmE0QmibQY@gmail.com>
-References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
-        <20220623170844.2189814-2-marcus.folkesson@gmail.com>
-        <CAHp75VcYk9PjQ=3ZPB1f=uQ-1GYKnvV-wsu+-z1z81W_ZHCqrw@mail.gmail.com>
-        <YrVZwAqmE0QmibQY@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 25 Jun 2022 07:17:25 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CCD31DDD
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 04:17:23 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-31772f8495fso46344557b3.4
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 04:17:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uiCn1wFahqAtSkOl35HmuzXqqUxjUEsg3PyPjnfHW9E=;
+        b=3iCOnxC63zzWpEYXppJeaYfZNRtna889N688tU51Fz05zWDXd5qsW086aNb9+MwdJv
+         O9EyqixJTnJa8+XS33NPHFlTPra87Yh3ffe2oDLnQiJLBi2R3Vd38kWvw9iGVRTv92+3
+         LCEa3bFWRvLtfE/G8Hwknjj9IHh3hswmvsfFnbDG296N5regN/oIcPmqNRjlFXUARSIe
+         kj9Q7PaPTaG5bVoYZbf8DHg0J/oRGOwIXWfNGVQmoFx98yuwo48VgRe3N2GRGx4KedLq
+         ZcsbEmXYQaQF4cRtK7tpUvGlk1uXjKwda6GoKRmyLyoHRGI0fHKUsy2xipFdKbzqWmfa
+         /QrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uiCn1wFahqAtSkOl35HmuzXqqUxjUEsg3PyPjnfHW9E=;
+        b=7Zz8Firftd+bQ3wPKvnPiH5T+WldFA29KwBeDqf6ga0PHyuWjBXfLFn9ur4C188U/n
+         NjpZSp7vbEuO4hze0u4KEnT+G615axGSoG8YIt8VujXLjTnx+ZARNRY7SYofidkFpbvE
+         mHqkO4v4bdZcXyxDfGdpMce4CV6T9nfAqS/G8bgHZKDmU0SfSzEZwYoV7BaBlR8XCc4H
+         jRRZ8MgT4TPgMXBFcU8o5ttvJLlJ8iKrEbDsjhWLX7chZWgIJ7Liat45WgLWb5swQqZn
+         QCY4a7YnVbGhyw3cV50q6DsZSVijovhMxqLhTzzvMha7R/R2FN7pVDLmGnGiar2p/RF1
+         aOEQ==
+X-Gm-Message-State: AJIora82FUvxMYLs8xz+bmCKjqrzg3DCMDoIx5NULXvXrlWBx5dnyn8S
+        TU6tQimSXrDGnL4jwy4LGnOsKN3p6EIs6y24uyX2KQ==
+X-Google-Smtp-Source: AGRyM1uoUJNV+pWkUKZPyqoYjVU92W2AXcs0+oJA8ZTI80Wfq+v4vJ2sRUr54xc0spYE3wbFPeNslZTmLW60JMAY1vM=
+X-Received: by 2002:a81:830b:0:b0:317:b41e:9e49 with SMTP id
+ t11-20020a81830b000000b00317b41e9e49mr3977250ywf.458.1656155843079; Sat, 25
+ Jun 2022 04:17:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220625080423.2797-1-chenfeiyang@loongson.cn>
+ <CAMZfGtWT7oPq6bD_fRn2gVNX8Lj3=ev21EAoaCCPeq-P_NYF0g@mail.gmail.com> <CAAhV-H5K9LG5P6WYJ+64-fi+s=TZbbJQG9E0vHJwOf9Pai5z4w@mail.gmail.com>
+In-Reply-To: <CAAhV-H5K9LG5P6WYJ+64-fi+s=TZbbJQG9E0vHJwOf9Pai5z4w@mail.gmail.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Sat, 25 Jun 2022 19:16:46 +0800
+Message-ID: <CAMZfGtVq0VwMETGdzAXLkjes8W0gVBw=r0Xk5rpPnhe7x6tRiw@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH] page-flags.h: Fix a missing header include
+ of static_keys.h
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     Feiyang Chen <chris.chenfeiyang@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Feiyang Chen <chenfeiyang@loongson.cn>,
+        loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
+        linux- stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 24 Jun 2022 08:29:20 +0200
-Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
-
-> Thank you for your comments (all of them) Andy!
-> 
-> On Thu, Jun 23, 2022 at 09:01:59PM +0200, Andy Shevchenko wrote:
-> > On Thu, Jun 23, 2022 at 7:40 PM Marcus Folkesson
-> > <marcus.folkesson@gmail.com> wrote:  
+On Sat, Jun 25, 2022 at 5:04 PM Huacai Chen <chenhuacai@kernel.org> wrote:
+>
+> Hi, Muchun,
+>
+> On Sat, Jun 25, 2022 at 4:50 PM Muchun Song <songmuchun@bytedance.com> wrote:
+> >
+> > On Sat, Jun 25, 2022 at 4:04 PM Feiyang Chen
+> > <chris.chenfeiyang@gmail.com> wrote:
 > > >
-> > > Keep using managed resources as much as possible.  
-> > 
-> > You may not mix devm_ and non-devm_ API calls like this.
-> > So, you rule of thumb that goto is most of the time wrong after devm_ call.  
-> 
-> Can you please confirm that clocks and regulators are disabled when the
-> resources are handed back?
-> I cannot see where when I'm trying to follow the code.
-Andy isn't arguing that the goto is wrong but rather that you cannot
-in general safely use devm_* calls if their failure leads to having to
-do any cleanup.  The reason is the ordering is hard to reason about. Sometimes
-it's safe, but often enough causes problems that we basically refuse to think
-hard enough to figure out if it is.  Hence basic rule is don't do it.
+> > > The page-flags.h header relies on static keys since commit
+> > > a6b40850c442bf ("mm: hugetlb: replace hugetlb_free_vmemmap_enabled
+> > > with a static_key"), so make sure to include the header to avoid
+> > > compilation errors.
+> > >
+> > > Fixes: a6b40850c442bf ("mm: hugetlb: replace hugetlb_free_vmemmap_enabled with a static_key")
+> > > Cc: stable@vger.kernel.org
+> > > Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
+> > > ---
+> > >  include/linux/page-flags.h | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+> > > index e66f7aa3191d..147b336c7a35 100644
+> > > --- a/include/linux/page-flags.h
+> > > +++ b/include/linux/page-flags.h
+> > > @@ -11,6 +11,7 @@
+> > >  #include <linux/mmdebug.h>
+> > >  #ifndef __GENERATING_BOUNDS_H
+> > >  #include <linux/mm_types.h>
+> > > +#include <linux/static_key.h>
+> >
+> > I did not include this. The change makes sense to me. But I am
+> > curious what configs cause the compiling error. Would you mind
+> > sharing the config with us?
+> We found this problem when we add
+> ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP to LoongArch. Since this isn't
 
-The issue is this.
-probe() {
+Good news to me. I would love to hear more archs support for HVO (HugeTLB
+Vmemmap Optimization).
 
-	non_devm_call_1();
-	ret = devm_call_2()
-	if (ret)
-		goto err;
+> upstream yet, we cannot give such a config now (the default config of
+> X86 and ARM64 is just OK).
 
-	return 0;
-err:
-	unwind_non_devm_call_1()
-}
+All right. In this case, the "Cc: stable@vger.kernel.org" is unnecessary.
 
-remove() {
-	unwind_non_devm_call_1()
-}
-
-remove or error path should unwind in opposite order of what happens in probe.
-On the rare occasion where that isn't the right choice, there should be very
-clear comments to say why.
-
-Order is
-
-remove() -> unwind_non_devm_call_1()
-devm_managed_cleanup() -> unwind_devm_call_2()
-
-Whereas should be
-
-remove()-> unwind_call_2() then unwind_call_1()
-
-
-There are two ways to solve this.  Either only use devm for those
-elements in probe() that happen before the first thing you need to
-unwind manually or make everything devm managed (it unwinds in reverse
-order of setup) devm_add_action_or_reset() allows you to use your
-own devm_ managed callbacks if there isn't a standard one available.
-
-Jonathan
-
-
-
-
-> 
-> Best regards
-> Marcus Folkesson
-
+Thanks.
+>
+> Huacai
+> >
+> > Thanks.
+> >
+> > >  #include <generated/bounds.h>
+> > >  #endif /* !__GENERATING_BOUNDS_H */
+> > >
+> > > --
+> > > 2.27.0
+> > >
+> >
