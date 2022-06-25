@@ -2,78 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9FE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233176AbiFYNmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 09:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48906 "EHLO
+        id S233185AbiFYNm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 09:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232594AbiFYNmu (ORCPT
+        with ESMTP id S233173AbiFYNmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 09:42:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A2318E05;
-        Sat, 25 Jun 2022 06:42:48 -0700 (PDT)
+        Sat, 25 Jun 2022 09:42:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAD618B27;
+        Sat, 25 Jun 2022 06:42:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8569CB802BE;
-        Sat, 25 Jun 2022 13:42:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9F6DC3411C;
-        Sat, 25 Jun 2022 13:42:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 373BF61350;
+        Sat, 25 Jun 2022 13:42:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD145C3411C;
+        Sat, 25 Jun 2022 13:42:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656164566;
-        bh=FyBbFh5vUzU9fiDyrWF4et6b1ucyN49GctpwWAyaiso=;
+        s=korg; t=1656164569;
+        bh=hqr3rRKitW3lvlqYfUgCWr30FvyB3h49Ag9tlRd7ioY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n0THU1cNrSyaYaALj1AzX1/CcpxT1lOzFS0cS2g1QWtrOX5InIic7JagJemEg5zYt
-         ACBw2uuoi2CdJewWqeA6OlHnfUJy/YS/Amu9LEsRSUamyRlnoAvfxDjZkYH/uNvw3O
-         RMUNa4KXalP85Wtd8mU61zeYm/KMF6PEQol2YVOU=
+        b=qKYxAI8ydxZt112GNOKe8fzvZQQiQG9l2Rbq0uMgipqybatADQxQJq7KLLBAvzEWe
+         Lc+AlplFRVJJl8zkwbEDJ2uN+mXL2GrIlK3Pj20UUu9aZtnyqPVpgIp1tBNOUqUeeD
+         MB2Y/u1ZXKqAKp50YzBVBYKws7DvpDUHrgDv+0Rc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 5.15.50
-Date:   Sat, 25 Jun 2022 15:42:34 +0200
-Message-Id: <1656164554185236@kroah.com>
+Subject: Re: Linux 5.18.7
+Date:   Sat, 25 Jun 2022 15:42:42 +0200
+Message-Id: <165616456111352@kroah.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <1656164554204142@kroah.com>
-References: <1656164554204142@kroah.com>
+In-Reply-To: <16561645612100@kroah.com>
+References: <16561645612100@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+diff --git a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
+index 80914b93638e..24c5e3858452 100644
+--- a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
++++ b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
+@@ -24,15 +24,29 @@ properties:
+   reg:
+     maxItems: 1
+ 
++  clocks:
++    maxItems: 1
++    description:
++      The SFP clock. Typically, this is the platform clock divided by 4.
++
++  clock-names:
++    const: sfp
++
+ required:
+   - compatible
+   - reg
++  - clock-names
++  - clocks
+ 
+ unevaluatedProperties: false
+ 
+ examples:
+   - |
++    #include <dt-bindings/clock/fsl,qoriq-clockgen.h>
+     efuse@1e80000 {
+         compatible = "fsl,ls1028a-sfp";
+         reg = <0x1e80000 0x8000>;
++        clocks = <&clockgen QORIQ_CLK_PLATFORM_PLL
++                            QORIQ_CLK_PLL_DIV(4)>;
++        clock-names = "sfp";
+     };
 diff --git a/Makefile b/Makefile
-index 3e9782979b7c..03b3a493fcca 100644
+index 27850d452d65..61d63068553c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 5
- PATCHLEVEL = 15
--SUBLEVEL = 49
-+SUBLEVEL = 50
+ PATCHLEVEL = 18
+-SUBLEVEL = 6
++SUBLEVEL = 7
  EXTRAVERSION =
- NAME = Trick or Treat
- 
-diff --git a/arch/arm64/mm/cache.S b/arch/arm64/mm/cache.S
-index 5051b3c1a4f1..79164e439036 100644
---- a/arch/arm64/mm/cache.S
-+++ b/arch/arm64/mm/cache.S
-@@ -231,8 +231,6 @@ SYM_FUNC_END_PI(__dma_flush_area)
-  */
- SYM_FUNC_START_PI(__dma_map_area)
- 	add	x1, x0, x1
--	cmp	w2, #DMA_FROM_DEVICE
--	b.eq	__dma_inv_area
- 	b	__dma_clean_area
- SYM_FUNC_END_PI(__dma_map_area)
+ NAME = Superb Owl
  
 diff --git a/arch/s390/mm/pgtable.c b/arch/s390/mm/pgtable.c
-index 6ad634a27d5b..df0adb7e2fe8 100644
+index 697df02362af..4909dcd762e8 100644
 --- a/arch/s390/mm/pgtable.c
 +++ b/arch/s390/mm/pgtable.c
 @@ -748,7 +748,7 @@ void ptep_zap_key(struct mm_struct *mm, unsigned long addr, pte_t *ptep)
@@ -85,226 +106,395 @@ index 6ad634a27d5b..df0adb7e2fe8 100644
  	pgste_set_unlock(ptep, pgste);
  	preempt_enable();
  }
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index dff6238ca9ad..d2aecf7bf66b 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -989,6 +989,32 @@ static int dm_dmub_hw_init(struct amdgpu_device *adev)
- 	return 0;
+diff --git a/arch/x86/boot/boot.h b/arch/x86/boot/boot.h
+index 34c9dbb6a47d..686a9d75a0e4 100644
+--- a/arch/x86/boot/boot.h
++++ b/arch/x86/boot/boot.h
+@@ -110,66 +110,78 @@ typedef unsigned int addr_t;
+ 
+ static inline u8 rdfs8(addr_t addr)
+ {
++	u8 *ptr = (u8 *)absolute_pointer(addr);
+ 	u8 v;
+-	asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
++	asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*ptr));
+ 	return v;
+ }
+ static inline u16 rdfs16(addr_t addr)
+ {
++	u16 *ptr = (u16 *)absolute_pointer(addr);
+ 	u16 v;
+-	asm volatile("movw %%fs:%1,%0" : "=r" (v) : "m" (*(u16 *)addr));
++	asm volatile("movw %%fs:%1,%0" : "=r" (v) : "m" (*ptr));
+ 	return v;
+ }
+ static inline u32 rdfs32(addr_t addr)
+ {
++	u32 *ptr = (u32 *)absolute_pointer(addr);
+ 	u32 v;
+-	asm volatile("movl %%fs:%1,%0" : "=r" (v) : "m" (*(u32 *)addr));
++	asm volatile("movl %%fs:%1,%0" : "=r" (v) : "m" (*ptr));
+ 	return v;
  }
  
-+static void dm_dmub_hw_resume(struct amdgpu_device *adev)
-+{
-+	struct dmub_srv *dmub_srv = adev->dm.dmub_srv;
-+	enum dmub_status status;
-+	bool init;
-+
-+	if (!dmub_srv) {
-+		/* DMUB isn't supported on the ASIC. */
-+		return;
-+	}
-+
-+	status = dmub_srv_is_hw_init(dmub_srv, &init);
-+	if (status != DMUB_STATUS_OK)
-+		DRM_WARN("DMUB hardware init check failed: %d\n", status);
-+
-+	if (status == DMUB_STATUS_OK && init) {
-+		/* Wait for firmware load to finish. */
-+		status = dmub_srv_wait_for_auto_load(dmub_srv, 100000);
-+		if (status != DMUB_STATUS_OK)
-+			DRM_WARN("Wait for DMUB auto-load failed: %d\n", status);
-+	} else {
-+		/* Perform the full hardware initialization. */
-+		dm_dmub_hw_init(adev);
-+	}
-+}
-+
- #if defined(CONFIG_DRM_AMD_DC_DCN)
- static void mmhub_read_system_context(struct amdgpu_device *adev, struct dc_phy_addr_space_config *pa_config)
+ static inline void wrfs8(u8 v, addr_t addr)
  {
-@@ -2268,9 +2294,7 @@ static int dm_resume(void *handle)
- 		amdgpu_dm_outbox_init(adev);
+-	asm volatile("movb %1,%%fs:%0" : "+m" (*(u8 *)addr) : "qi" (v));
++	u8 *ptr = (u8 *)absolute_pointer(addr);
++	asm volatile("movb %1,%%fs:%0" : "+m" (*ptr) : "qi" (v));
+ }
+ static inline void wrfs16(u16 v, addr_t addr)
+ {
+-	asm volatile("movw %1,%%fs:%0" : "+m" (*(u16 *)addr) : "ri" (v));
++	u16 *ptr = (u16 *)absolute_pointer(addr);
++	asm volatile("movw %1,%%fs:%0" : "+m" (*ptr) : "ri" (v));
+ }
+ static inline void wrfs32(u32 v, addr_t addr)
+ {
+-	asm volatile("movl %1,%%fs:%0" : "+m" (*(u32 *)addr) : "ri" (v));
++	u32 *ptr = (u32 *)absolute_pointer(addr);
++	asm volatile("movl %1,%%fs:%0" : "+m" (*ptr) : "ri" (v));
+ }
  
- 	/* Before powering on DC we need to re-initialize DMUB. */
--	r = dm_dmub_hw_init(adev);
--	if (r)
--		DRM_ERROR("DMUB interface failed to initialize: status=%d\n", r);
-+	dm_dmub_hw_resume(adev);
+ static inline u8 rdgs8(addr_t addr)
+ {
++	u8 *ptr = (u8 *)absolute_pointer(addr);
+ 	u8 v;
+-	asm volatile("movb %%gs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
++	asm volatile("movb %%gs:%1,%0" : "=q" (v) : "m" (*ptr));
+ 	return v;
+ }
+ static inline u16 rdgs16(addr_t addr)
+ {
++	u16 *ptr = (u16 *)absolute_pointer(addr);
+ 	u16 v;
+-	asm volatile("movw %%gs:%1,%0" : "=r" (v) : "m" (*(u16 *)addr));
++	asm volatile("movw %%gs:%1,%0" : "=r" (v) : "m" (*ptr));
+ 	return v;
+ }
+ static inline u32 rdgs32(addr_t addr)
+ {
++	u32 *ptr = (u32 *)absolute_pointer(addr);
+ 	u32 v;
+-	asm volatile("movl %%gs:%1,%0" : "=r" (v) : "m" (*(u32 *)addr));
++	asm volatile("movl %%gs:%1,%0" : "=r" (v) : "m" (*ptr));
+ 	return v;
+ }
  
- 	/* power on hardware */
- 	dc_set_power_state(dm->dc, DC_ACPI_CM_POWER_STATE_D0);
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index 030ae89f3a33..18dc64d7f412 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -980,8 +980,10 @@ static void mana_process_rx_cqe(struct mana_rxq *rxq, struct mana_cq *cq,
- 		break;
+ static inline void wrgs8(u8 v, addr_t addr)
+ {
+-	asm volatile("movb %1,%%gs:%0" : "+m" (*(u8 *)addr) : "qi" (v));
++	u8 *ptr = (u8 *)absolute_pointer(addr);
++	asm volatile("movb %1,%%gs:%0" : "+m" (*ptr) : "qi" (v));
+ }
+ static inline void wrgs16(u16 v, addr_t addr)
+ {
+-	asm volatile("movw %1,%%gs:%0" : "+m" (*(u16 *)addr) : "ri" (v));
++	u16 *ptr = (u16 *)absolute_pointer(addr);
++	asm volatile("movw %1,%%gs:%0" : "+m" (*ptr) : "ri" (v));
+ }
+ static inline void wrgs32(u32 v, addr_t addr)
+ {
+-	asm volatile("movl %1,%%gs:%0" : "+m" (*(u32 *)addr) : "ri" (v));
++	u32 *ptr = (u32 *)absolute_pointer(addr);
++	asm volatile("movl %1,%%gs:%0" : "+m" (*ptr) : "ri" (v));
+ }
  
- 	case CQE_RX_TRUNCATED:
--		netdev_err(ndev, "Dropped a truncated packet\n");
--		return;
-+		++ndev->stats.rx_dropped;
-+		rxbuf_oob = &rxq->rx_oobs[rxq->buf_index];
-+		netdev_warn_once(ndev, "Dropped a truncated packet\n");
-+		goto drop;
+ /* Note: these only return true/false, not a signed return value! */
+diff --git a/arch/x86/boot/main.c b/arch/x86/boot/main.c
+index e3add857c2c9..c421af5a3cdc 100644
+--- a/arch/x86/boot/main.c
++++ b/arch/x86/boot/main.c
+@@ -33,7 +33,7 @@ static void copy_boot_params(void)
+ 		u16 cl_offset;
+ 	};
+ 	const struct old_cmdline * const oldcmd =
+-		(const struct old_cmdline *)OLD_CL_ADDRESS;
++		absolute_pointer(OLD_CL_ADDRESS);
  
- 	case CQE_RX_COALESCED_4:
- 		netdev_err(ndev, "RX coalescing is unsupported\n");
-@@ -1043,6 +1045,7 @@ static void mana_process_rx_cqe(struct mana_rxq *rxq, struct mana_cq *cq,
+ 	BUILD_BUG_ON(sizeof(boot_params) != 4096);
+ 	memcpy(&boot_params.hdr, &hdr, sizeof(hdr));
+diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
+index b04a6a7bf566..435dc00d04e5 100644
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -1313,7 +1313,7 @@ static void cas_init_rx_dma(struct cas *cp)
+ 	writel(val, cp->regs + REG_RX_PAGE_SIZE);
  
- 	mana_rx_skb(old_buf, oob, rxq);
+ 	/* enable the header parser if desired */
+-	if (CAS_HP_FIRMWARE == cas_prog_null)
++	if (&CAS_HP_FIRMWARE[0] == &cas_prog_null[0])
+ 		return;
  
-+drop:
- 	mana_move_wq_tail(rxq->gdma_rq, rxbuf_oob->wqe_inf.wqe_size_in_bu);
+ 	val = CAS_BASE(HP_CFG_NUM_CPU, CAS_NCPUS > 63 ? 0 : CAS_NCPUS);
+@@ -3780,7 +3780,7 @@ static void cas_reset(struct cas *cp, int blkflag)
  
- 	mana_post_pkt_rxq(rxq);
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 3d40306971b8..0e908061b5d7 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1620,13 +1620,6 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	    container_of(port, struct uart_amba_port, port);
- 	unsigned int cr;
+ 	/* program header parser */
+ 	if ((cp->cas_flags & CAS_FLAG_TARGET_ABORT) ||
+-	    (CAS_HP_ALT_FIRMWARE == cas_prog_null)) {
++	    (&CAS_HP_ALT_FIRMWARE[0] == &cas_prog_null[0])) {
+ 		cas_load_firmware(cp, CAS_HP_FIRMWARE);
+ 	} else {
+ 		cas_load_firmware(cp, CAS_HP_ALT_FIRMWARE);
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
+index 51fe51bb0504..15e6a6aded31 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
+@@ -2386,10 +2386,7 @@ void rtl92d_phy_reload_iqk_setting(struct ieee80211_hw *hw, u8 channel)
+ 			rtl_dbg(rtlpriv, COMP_SCAN, DBG_LOUD,
+ 				"Just Read IQK Matrix reg for channel:%d....\n",
+ 				channel);
+-			if ((rtlphy->iqk_matrix[indexforchannel].
+-			     value[0] != NULL)
+-				/*&&(regea4 != 0) */)
+-				_rtl92d_phy_patha_fill_iqk_matrix(hw, true,
++			_rtl92d_phy_patha_fill_iqk_matrix(hw, true,
+ 					rtlphy->iqk_matrix[
+ 					indexforchannel].value,	0,
+ 					(rtlphy->iqk_matrix[
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
+index c6b032f95d2e..4627847c6daa 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
+@@ -372,8 +372,6 @@ bool ipc_protocol_dl_td_prepare(struct iosm_protocol *ipc_protocol,
+ struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
+ 					   struct ipc_pipe *pipe)
+ {
+-	u32 tail =
+-		le32_to_cpu(ipc_protocol->p_ap_shm->tail_array[pipe->pipe_nr]);
+ 	struct ipc_protocol_td *p_td;
+ 	struct sk_buff *skb;
  
--	if (port->rs485.flags & SER_RS485_ENABLED) {
--		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
--			mctrl &= ~TIOCM_RTS;
--		else
--			mctrl |= TIOCM_RTS;
+@@ -403,14 +401,6 @@ struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
+ 		goto ret;
+ 	}
+ 
+-	if (!IPC_CB(skb)) {
+-		dev_err(ipc_protocol->dev, "pipe# %d, tail: %d skb_cb is NULL",
+-			pipe->pipe_nr, tail);
+-		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
+-		skb = NULL;
+-		goto ret;
 -	}
 -
- 	cr = pl011_read(uap, REG_CR);
- 
- #define	TIOCMBIT(tiocmbit, uartbit)		\
-@@ -1850,14 +1843,8 @@ static int pl011_startup(struct uart_port *port)
- 	cr = uap->old_cr & (UART011_CR_RTS | UART011_CR_DTR);
- 	cr |= UART01x_CR_UARTEN | UART011_CR_RXE;
- 
--	if (port->rs485.flags & SER_RS485_ENABLED) {
--		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
--			cr &= ~UART011_CR_RTS;
--		else
--			cr |= UART011_CR_RTS;
--	} else {
-+	if (!(port->rs485.flags & SER_RS485_ENABLED))
- 		cr |= UART011_CR_TXE;
--	}
- 
- 	pl011_write(cr, uap, REG_CR);
- 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index eb15423f935a..4d3ad4c6c60f 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -144,6 +144,11 @@ uart_update_mctrl(struct uart_port *port, unsigned int set, unsigned int clear)
- 	unsigned long flags;
- 	unsigned int old;
- 
-+	if (port->rs485.flags & SER_RS485_ENABLED) {
-+		set &= ~TIOCM_RTS;
-+		clear &= ~TIOCM_RTS;
-+	}
-+
- 	spin_lock_irqsave(&port->lock, flags);
- 	old = port->mctrl;
- 	port->mctrl = (old & ~clear) | set;
-@@ -157,23 +162,10 @@ uart_update_mctrl(struct uart_port *port, unsigned int set, unsigned int clear)
- 
- static void uart_port_dtr_rts(struct uart_port *uport, int raise)
+ 	if (p_td->buffer.address != IPC_CB(skb)->mapping) {
+ 		dev_err(ipc_protocol->dev, "invalid buf=%llx or skb=%p",
+ 			(unsigned long long)p_td->buffer.address, skb->data);
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 3d123ca028c9..68aab48838e4 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -1647,7 +1647,7 @@ static inline void io_req_track_inflight(struct io_kiocb *req)
  {
--	int rs485_on = uport->rs485_config &&
--		(uport->rs485.flags & SER_RS485_ENABLED);
--	int RTS_after_send = !!(uport->rs485.flags & SER_RS485_RTS_AFTER_SEND);
+ 	if (!(req->flags & REQ_F_INFLIGHT)) {
+ 		req->flags |= REQ_F_INFLIGHT;
+-		atomic_inc(&current->io_uring->inflight_tracked);
++		atomic_inc(&req->task->io_uring->inflight_tracked);
+ 	}
+ }
+ 
+diff --git a/fs/notify/fanotify/fanotify.c b/fs/notify/fanotify/fanotify.c
+index 985e995d2a39..4f897e109547 100644
+--- a/fs/notify/fanotify/fanotify.c
++++ b/fs/notify/fanotify/fanotify.c
+@@ -319,12 +319,8 @@ static u32 fanotify_group_event_mask(struct fsnotify_group *group,
+ 			return 0;
+ 	}
+ 
+-	fsnotify_foreach_iter_type(type) {
+-		if (!fsnotify_iter_should_report_type(iter_info, type))
+-			continue;
+-		mark = iter_info->marks[type];
 -
--	if (raise) {
--		if (rs485_on && RTS_after_send) {
--			uart_set_mctrl(uport, TIOCM_DTR);
--			uart_clear_mctrl(uport, TIOCM_RTS);
--		} else {
--			uart_set_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
+-		/* Apply ignore mask regardless of ISDIR and ON_CHILD flags */
++	fsnotify_foreach_iter_mark_type(iter_info, mark, type) {
++		/* Apply ignore mask regardless of mark's ISDIR flag */
+ 		marks_ignored_mask |= mark->ignored_mask;
+ 
+ 		/*
+@@ -334,14 +330,6 @@ static u32 fanotify_group_event_mask(struct fsnotify_group *group,
+ 		if (event_mask & FS_ISDIR && !(mark->mask & FS_ISDIR))
+ 			continue;
+ 
+-		/*
+-		 * If the event is on a child and this mark is on a parent not
+-		 * watching children, don't send it!
+-		 */
+-		if (type == FSNOTIFY_ITER_TYPE_PARENT &&
+-		    !(mark->mask & FS_EVENT_ON_CHILD))
+-			continue;
+-
+ 		marks_mask |= mark->mask;
+ 
+ 		/* Record the mark types of this group that matched the event */
+@@ -849,16 +837,14 @@ static struct fanotify_event *fanotify_alloc_event(
+  */
+ static __kernel_fsid_t fanotify_get_fsid(struct fsnotify_iter_info *iter_info)
+ {
++	struct fsnotify_mark *mark;
+ 	int type;
+ 	__kernel_fsid_t fsid = {};
+ 
+-	fsnotify_foreach_iter_type(type) {
++	fsnotify_foreach_iter_mark_type(iter_info, mark, type) {
+ 		struct fsnotify_mark_connector *conn;
+ 
+-		if (!fsnotify_iter_should_report_type(iter_info, type))
+-			continue;
+-
+-		conn = READ_ONCE(iter_info->marks[type]->connector);
++		conn = READ_ONCE(mark->connector);
+ 		/* Mark is just getting destroyed or created? */
+ 		if (!conn)
+ 			continue;
+diff --git a/fs/notify/fsnotify.c b/fs/notify/fsnotify.c
+index 70a8516b78bc..6d63423cd492 100644
+--- a/fs/notify/fsnotify.c
++++ b/fs/notify/fsnotify.c
+@@ -290,22 +290,15 @@ static int fsnotify_handle_event(struct fsnotify_group *group, __u32 mask,
+ 	}
+ 
+ 	if (parent_mark) {
+-		/*
+-		 * parent_mark indicates that the parent inode is watching
+-		 * children and interested in this event, which is an event
+-		 * possible on child. But is *this mark* watching children and
+-		 * interested in this event?
+-		 */
+-		if (parent_mark->mask & FS_EVENT_ON_CHILD) {
+-			ret = fsnotify_handle_inode_event(group, parent_mark, mask,
+-							  data, data_type, dir, name, 0);
+-			if (ret)
+-				return ret;
 -		}
--	} else {
--		unsigned int clear = TIOCM_DTR;
--
--		clear |= (!rs485_on || RTS_after_send) ? TIOCM_RTS : 0;
--		uart_clear_mctrl(uport, clear);
--	}
-+	if (raise)
-+		uart_set_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
-+	else
-+		uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
+-		if (!inode_mark)
+-			return 0;
++		ret = fsnotify_handle_inode_event(group, parent_mark, mask,
++						  data, data_type, dir, name, 0);
++		if (ret)
++			return ret;
+ 	}
+ 
++	if (!inode_mark)
++		return 0;
++
+ 	if (mask & FS_EVENT_ON_CHILD) {
+ 		/*
+ 		 * Some events can be sent on both parent dir and child marks
+@@ -335,31 +328,23 @@ static int send_to_group(__u32 mask, const void *data, int data_type,
+ 	struct fsnotify_mark *mark;
+ 	int type;
+ 
+-	if (WARN_ON(!iter_info->report_mask))
++	if (!iter_info->report_mask)
+ 		return 0;
+ 
+ 	/* clear ignored on inode modification */
+ 	if (mask & FS_MODIFY) {
+-		fsnotify_foreach_iter_type(type) {
+-			if (!fsnotify_iter_should_report_type(iter_info, type))
+-				continue;
+-			mark = iter_info->marks[type];
+-			if (mark &&
+-			    !(mark->flags & FSNOTIFY_MARK_FLAG_IGNORED_SURV_MODIFY))
++		fsnotify_foreach_iter_mark_type(iter_info, mark, type) {
++			if (!(mark->flags &
++			      FSNOTIFY_MARK_FLAG_IGNORED_SURV_MODIFY))
+ 				mark->ignored_mask = 0;
+ 		}
+ 	}
+ 
+-	fsnotify_foreach_iter_type(type) {
+-		if (!fsnotify_iter_should_report_type(iter_info, type))
+-			continue;
+-		mark = iter_info->marks[type];
+-		/* does the object mark tell us to do something? */
+-		if (mark) {
+-			group = mark->group;
+-			marks_mask |= mark->mask;
+-			marks_ignored_mask |= mark->ignored_mask;
+-		}
++	/* Are any of the group marks interested in this event? */
++	fsnotify_foreach_iter_mark_type(iter_info, mark, type) {
++		group = mark->group;
++		marks_mask |= mark->mask;
++		marks_ignored_mask |= mark->ignored_mask;
+ 	}
+ 
+ 	pr_debug("%s: group=%p mask=%x marks_mask=%x marks_ignored_mask=%x data=%p data_type=%d dir=%p cookie=%d\n",
+@@ -403,11 +388,11 @@ static struct fsnotify_mark *fsnotify_next_mark(struct fsnotify_mark *mark)
+ 
+ /*
+  * iter_info is a multi head priority queue of marks.
+- * Pick a subset of marks from queue heads, all with the
+- * same group and set the report_mask for selected subset.
+- * Returns the report_mask of the selected subset.
++ * Pick a subset of marks from queue heads, all with the same group
++ * and set the report_mask to a subset of the selected marks.
++ * Returns false if there are no more groups to iterate.
+  */
+-static unsigned int fsnotify_iter_select_report_types(
++static bool fsnotify_iter_select_report_types(
+ 		struct fsnotify_iter_info *iter_info)
+ {
+ 	struct fsnotify_group *max_prio_group = NULL;
+@@ -423,30 +408,48 @@ static unsigned int fsnotify_iter_select_report_types(
+ 	}
+ 
+ 	if (!max_prio_group)
+-		return 0;
++		return false;
+ 
+ 	/* Set the report mask for marks from same group as max prio group */
++	iter_info->current_group = max_prio_group;
+ 	iter_info->report_mask = 0;
+ 	fsnotify_foreach_iter_type(type) {
+ 		mark = iter_info->marks[type];
+-		if (mark &&
+-		    fsnotify_compare_groups(max_prio_group, mark->group) == 0)
++		if (mark && mark->group == iter_info->current_group) {
++			/*
++			 * FSNOTIFY_ITER_TYPE_PARENT indicates that this inode
++			 * is watching children and interested in this event,
++			 * which is an event possible on child.
++			 * But is *this mark* watching children?
++			 */
++			if (type == FSNOTIFY_ITER_TYPE_PARENT &&
++			    !(mark->mask & FS_EVENT_ON_CHILD))
++				continue;
++
+ 			fsnotify_iter_set_report_type(iter_info, type);
++		}
+ 	}
+ 
+-	return iter_info->report_mask;
++	return true;
  }
  
  /*
-@@ -1089,11 +1081,6 @@ uart_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
- 		goto out;
+- * Pop from iter_info multi head queue, the marks that were iterated in the
++ * Pop from iter_info multi head queue, the marks that belong to the group of
+  * current iteration step.
+  */
+ static void fsnotify_iter_next(struct fsnotify_iter_info *iter_info)
+ {
++	struct fsnotify_mark *mark;
+ 	int type;
  
- 	if (!tty_io_error(tty)) {
--		if (uport->rs485.flags & SER_RS485_ENABLED) {
--			set &= ~TIOCM_RTS;
--			clear &= ~TIOCM_RTS;
--		}
--
- 		uart_update_mctrl(uport, set, clear);
- 		ret = 0;
++	/*
++	 * We cannot use fsnotify_foreach_iter_mark_type() here because we
++	 * may need to advance a mark of type X that belongs to current_group
++	 * but was not selected for reporting.
++	 */
+ 	fsnotify_foreach_iter_type(type) {
+-		if (fsnotify_iter_should_report_type(iter_info, type))
++		mark = iter_info->marks[type];
++		if (mark && mark->group == iter_info->current_group)
+ 			iter_info->marks[type] =
+ 				fsnotify_next_mark(iter_info->marks[type]);
  	}
-@@ -2408,6 +2395,9 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 */
- 		spin_lock_irqsave(&port->lock, flags);
- 		port->mctrl &= TIOCM_DTR;
-+		if (port->rs485.flags & SER_RS485_ENABLED &&
-+		    !(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
-+			port->mctrl |= TIOCM_RTS;
- 		port->ops->set_mctrl(port, port->mctrl);
- 		spin_unlock_irqrestore(&port->lock, flags);
- 
-diff --git a/drivers/usb/gadget/function/u_ether.c b/drivers/usb/gadget/function/u_ether.c
-index d15a54f6c24b..ef253599dcf9 100644
---- a/drivers/usb/gadget/function/u_ether.c
-+++ b/drivers/usb/gadget/function/u_ether.c
-@@ -774,9 +774,13 @@ struct eth_dev *gether_setup_name(struct usb_gadget *g,
- 	dev->qmult = qmult;
- 	snprintf(net->name, sizeof(net->name), "%s%%d", netname);
- 
--	if (get_ether_addr(dev_addr, net->dev_addr))
-+	if (get_ether_addr(dev_addr, net->dev_addr)) {
-+		net->addr_assign_type = NET_ADDR_RANDOM;
- 		dev_warn(&g->dev,
- 			"using random %s ethernet address\n", "self");
-+	} else {
-+		net->addr_assign_type = NET_ADDR_SET;
-+	}
- 	if (get_ether_addr(host_addr, dev->host_mac))
- 		dev_warn(&g->dev,
- 			"using random %s ethernet address\n", "host");
-@@ -833,6 +837,9 @@ struct net_device *gether_setup_name_default(const char *netname)
- 	INIT_LIST_HEAD(&dev->tx_reqs);
- 	INIT_LIST_HEAD(&dev->rx_reqs);
- 
-+	/* by default we always have a random MAC address */
-+	net->addr_assign_type = NET_ADDR_RANDOM;
-+
- 	skb_queue_head_init(&dev->rx_frames);
- 
- 	/* network device setup */
-@@ -869,7 +876,6 @@ int gether_register_netdev(struct net_device *net)
- 	dev = netdev_priv(net);
- 	g = dev->gadget;
- 
--	net->addr_assign_type = NET_ADDR_RANDOM;
- 	eth_hw_addr_set(net, dev->dev_mac);
- 
- 	status = register_netdev(net);
-@@ -910,6 +916,7 @@ int gether_set_dev_addr(struct net_device *net, const char *dev_addr)
- 	if (get_ether_addr(dev_addr, new_addr))
- 		return -EINVAL;
- 	memcpy(dev->dev_mac, new_addr, ETH_ALEN);
-+	net->addr_assign_type = NET_ADDR_SET;
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(gether_set_dev_addr);
 diff --git a/fs/zonefs/super.c b/fs/zonefs/super.c
-index efea20a4b0e9..ecf564d150b3 100644
+index 1c2ece961128..15a4c7c07a3b 100644
 --- a/fs/zonefs/super.c
 +++ b/fs/zonefs/super.c
 @@ -72,15 +72,51 @@ static inline void zonefs_i_size_write(struct inode *inode, loff_t isize)
@@ -469,7 +659,7 @@ index efea20a4b0e9..ecf564d150b3 100644
  	filemap_invalidate_unlock_shared(inode->i_mapping);
  
  	sb_end_pagefault(inode->i_sb);
-@@ -862,7 +896,7 @@ static ssize_t zonefs_file_dio_write(struct kiocb *iocb, struct iov_iter *from)
+@@ -860,7 +894,7 @@ static ssize_t zonefs_file_dio_write(struct kiocb *iocb, struct iov_iter *from)
  	if (append)
  		ret = zonefs_file_dio_append(iocb, from);
  	else
@@ -478,7 +668,7 @@ index efea20a4b0e9..ecf564d150b3 100644
  				   &zonefs_write_dio_ops, 0, 0);
  	if (zi->i_ztype == ZONEFS_ZTYPE_SEQ &&
  	    (ret > 0 || ret == -EIOCBQUEUED)) {
-@@ -904,7 +938,7 @@ static ssize_t zonefs_file_buffered_write(struct kiocb *iocb,
+@@ -902,7 +936,7 @@ static ssize_t zonefs_file_buffered_write(struct kiocb *iocb,
  	if (ret <= 0)
  		goto inode_unlock;
  
@@ -487,7 +677,7 @@ index efea20a4b0e9..ecf564d150b3 100644
  	if (ret > 0)
  		iocb->ki_pos += ret;
  	else if (ret == -EIO)
-@@ -997,7 +1031,7 @@ static ssize_t zonefs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+@@ -995,7 +1029,7 @@ static ssize_t zonefs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
  			goto inode_unlock;
  		}
  		file_accessed(iocb->ki_filp);
@@ -496,34 +686,96 @@ index efea20a4b0e9..ecf564d150b3 100644
  				   &zonefs_read_dio_ops, 0, 0);
  	} else {
  		ret = generic_file_read_iter(iocb, to);
+diff --git a/include/linux/fsnotify_backend.h b/include/linux/fsnotify_backend.h
+index 0805b74cae44..beb9c99fea07 100644
+--- a/include/linux/fsnotify_backend.h
++++ b/include/linux/fsnotify_backend.h
+@@ -370,6 +370,7 @@ static inline bool fsnotify_valid_obj_type(unsigned int obj_type)
+ 
+ struct fsnotify_iter_info {
+ 	struct fsnotify_mark *marks[FSNOTIFY_ITER_TYPE_COUNT];
++	struct fsnotify_group *current_group;
+ 	unsigned int report_mask;
+ 	int srcu_idx;
+ };
+@@ -386,20 +387,31 @@ static inline void fsnotify_iter_set_report_type(
+ 	iter_info->report_mask |= (1U << iter_type);
+ }
+ 
+-static inline void fsnotify_iter_set_report_type_mark(
+-		struct fsnotify_iter_info *iter_info, int iter_type,
+-		struct fsnotify_mark *mark)
++static inline struct fsnotify_mark *fsnotify_iter_mark(
++		struct fsnotify_iter_info *iter_info, int iter_type)
+ {
+-	iter_info->marks[iter_type] = mark;
+-	iter_info->report_mask |= (1U << iter_type);
++	if (fsnotify_iter_should_report_type(iter_info, iter_type))
++		return iter_info->marks[iter_type];
++	return NULL;
++}
++
++static inline int fsnotify_iter_step(struct fsnotify_iter_info *iter, int type,
++				     struct fsnotify_mark **markp)
++{
++	while (type < FSNOTIFY_ITER_TYPE_COUNT) {
++		*markp = fsnotify_iter_mark(iter, type);
++		if (*markp)
++			break;
++		type++;
++	}
++	return type;
+ }
+ 
+ #define FSNOTIFY_ITER_FUNCS(name, NAME) \
+ static inline struct fsnotify_mark *fsnotify_iter_##name##_mark( \
+ 		struct fsnotify_iter_info *iter_info) \
+ { \
+-	return (iter_info->report_mask & (1U << FSNOTIFY_ITER_TYPE_##NAME)) ? \
+-		iter_info->marks[FSNOTIFY_ITER_TYPE_##NAME] : NULL; \
++	return fsnotify_iter_mark(iter_info, FSNOTIFY_ITER_TYPE_##NAME); \
+ }
+ 
+ FSNOTIFY_ITER_FUNCS(inode, INODE)
+@@ -409,6 +421,11 @@ FSNOTIFY_ITER_FUNCS(sb, SB)
+ 
+ #define fsnotify_foreach_iter_type(type) \
+ 	for (type = 0; type < FSNOTIFY_ITER_TYPE_COUNT; type++)
++#define fsnotify_foreach_iter_mark_type(iter, mark, type) \
++	for (type = 0; \
++	     type = fsnotify_iter_step(iter, type, &mark), \
++	     type < FSNOTIFY_ITER_TYPE_COUNT; \
++	     type++)
+ 
+ /*
+  * fsnotify_connp_t is what we embed in objects which connector can be attached
 diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 40df35088cdb..3cfba41a0829 100644
+index 0918a39279f6..feef799884d1 100644
 --- a/kernel/bpf/btf.c
 +++ b/kernel/bpf/btf.c
-@@ -5441,6 +5441,8 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+@@ -5769,6 +5769,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
  				    struct bpf_reg_state *regs,
  				    bool ptr_to_mem_ok)
  {
-+	enum bpf_prog_type prog_type = env->prog->type == BPF_PROG_TYPE_EXT ?
-+		env->prog->aux->dst_prog->type : env->prog->type;
++	enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
  	struct bpf_verifier_log *log = &env->log;
- 	const char *func_name, *ref_tname;
- 	const struct btf_type *t, *ref_t;
-@@ -5533,8 +5535,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 					reg_ref_tname);
- 				return -EINVAL;
- 			}
--		} else if (btf_get_prog_ctx_type(log, btf, t,
--						 env->prog->type, i)) {
-+		} else if (btf_get_prog_ctx_type(log, btf, t, prog_type, i)) {
+ 	u32 i, nargs, ref_id, ref_obj_id = 0;
+ 	bool is_kfunc = btf_is_kernel(btf);
+@@ -5834,8 +5835,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		if (btf_get_prog_ctx_type(log, btf, t,
+-					  env->prog->type, i)) {
++		if (btf_get_prog_ctx_type(log, btf, t, prog_type, i)) {
  			/* If function expects ctx type in BTF check that caller
  			 * is passing PTR_TO_CTX.
  			 */
 diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-index 73b4c76e6b86..52f1426ae06e 100644
+index d9aad15e0d24..02bb8cbf9194 100644
 --- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
 +++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-@@ -371,6 +371,18 @@ static void test_func_map_prog_compatibility(void)
+@@ -395,6 +395,18 @@ static void test_func_map_prog_compatibility(void)
  				     "./test_attach_probe.o");
  }
  
@@ -539,10 +791,10 @@ index 73b4c76e6b86..52f1426ae06e 100644
 +				  prog_name, false, NULL);
 +}
 +
- void test_fexit_bpf2bpf(void)
+ /* NOTE: affect other tests, must run in serial mode */
+ void serial_test_fexit_bpf2bpf(void)
  {
- 	if (test__start_subtest("target_no_callees"))
-@@ -391,4 +403,6 @@ void test_fexit_bpf2bpf(void)
+@@ -416,4 +428,6 @@ void serial_test_fexit_bpf2bpf(void)
  		test_func_replace_multi();
  	if (test__start_subtest("fmod_ret_freplace"))
  		test_fmod_ret_freplace();
