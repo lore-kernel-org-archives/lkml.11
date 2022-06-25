@@ -2,151 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73178C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 12:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 12:38:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232936AbiFYMXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 08:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
+        id S232591AbiFYMiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 08:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232929AbiFYMXR (ORCPT
+        with ESMTP id S232433AbiFYMiK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 08:23:17 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FD31116D
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 05:23:16 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id n185so2661325wmn.4
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 05:23:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=k6h1lNryS/PdYHAGF2+cQQNJ1h/8DZV/mIxN1ynumxA=;
-        b=pxequgWiSrF9utkbcYStNV/psctItI/TT2ldOQLHCimWwQ2vjFLyU7CWAWBWPoZ/X8
-         AixoHhTwZz3K2xJwXtmhgzIfx54BYtOGzz0T9KkGR7UGPE7yhSTnuvtTDKsFUQYUS3oG
-         2wBH2XfqLBeCRsc54EX0HS7pBfwFJv6VROO8xguckeAOA5r+ZSbmlPb6RA6TsgHplY+K
-         rWZuFSpPe2uUUe7v+mV2MDOHkeMMVQ+/HQvNnurE+uqdQ7bq1J+wezGE4utoRxVMh8SV
-         aJfW30abWARmVdqTmN6/7pFwZAWikO/X9HtSeTr04F7Yk7Jw1nM1vMQHGKKsblnZKiZf
-         t4Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k6h1lNryS/PdYHAGF2+cQQNJ1h/8DZV/mIxN1ynumxA=;
-        b=7qCoQxHibtCwZ8/mMpHOnOD0XjjIjq0baB4FCOmRQzpRVG8LkeXzgwDzhzSbIR6aIg
-         Dpc9HQZOSGJYnSab9UDFfIo3TEB40NrZaAcj2k/mCMrsCjZS9SRPvw0vZYJuumY0opoV
-         F3Yp7WW5jmAxC4VensbhGxAXvsHUr4IrEdRz/3OVYevz8/KyWqb79aRkFhohH5BSDTqM
-         ya5XNiBqhCvJFzcURNeTg1CDAqNAKLS4EOp6ueGj5GH2P7sQ5aBSdK5UJvvdO883jEle
-         9dQjJKGjr+Kwp16fqQjZ/oNEsYfZjaP4vxoUOvdLCSvseZOo7G2grEtkrqUi4IG+6iBh
-         osoQ==
-X-Gm-Message-State: AJIora9GvUDaiv1M/gDL/wPMsN1vNGuGUaY6a2nXuGucM2P0uSPmw3Ow
-        r8M8g+yHDplECSpSz+8IRZQ1IXrtXp14wEnSSFw=
-X-Google-Smtp-Source: AGRyM1tBBfAFrm6m8IU/5Hvop5IdUpK37mp1BonaXfw2JXtLzqcNALdWAZzSeM514PSRI9BTFCzSdMnuwG7HZlPs+T4=
-X-Received: by 2002:a7b:c188:0:b0:3a0:391d:45f4 with SMTP id
- y8-20020a7bc188000000b003a0391d45f4mr8836258wmi.11.1656159794971; Sat, 25 Jun
- 2022 05:23:14 -0700 (PDT)
+        Sat, 25 Jun 2022 08:38:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3594015FC6;
+        Sat, 25 Jun 2022 05:38:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB37861203;
+        Sat, 25 Jun 2022 12:38:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5EBAC3411C;
+        Sat, 25 Jun 2022 12:38:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656160687;
+        bh=BI0iF/XEbEx3iB4dR5ueuZ7PpNJ4Qxsj8axGKnWS2hc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=g9IZZU8/xwty1eYersDGG7MGq15JwH1SfVqgKH7oU3EFQI6lY1rPlwoHR7x7KVCMU
+         Yhw64blJw1YsDflzBs4sV8NeiklZVizhxTZoehyauK3+VUJWtKvPlYcNBDMQ42jMdD
+         7OZ0p2u+s13m+6o4F/BXcbNgootSg73RkG9aUpPhUgu1yrCtLheF+7cVZaygL9KTmU
+         /PX5zTpuMVRly5UZ0/TFZa1jF8H7aMR75+5bnw03LDgTBIb4mrqKQLDxhv1VUrxqwr
+         6vakD1hmZI4/i2KlKUInsHldtHiDT/nGk+lb7YFySONGGZtAN4S+Vy69/DY5HPzzPS
+         uXmpJrV5NqgiA==
+Date:   Sat, 25 Jun 2022 13:47:35 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 08/10] iio: adc: mcp3911: add support for phase
+Message-ID: <20220625134735.6726544a@jic23-huawei>
+In-Reply-To: <20220625103853.2470346-8-marcus.folkesson@gmail.com>
+References: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
+        <20220625103853.2470346-8-marcus.folkesson@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220623182932.58589-1-schspa@gmail.com> <xhsmhv8sq5nyx.mognet@vschneid.remote.csb>
-In-Reply-To: <xhsmhv8sq5nyx.mognet@vschneid.remote.csb>
-From:   Schspa Shi <schspa@gmail.com>
-Date:   Sat, 25 Jun 2022 20:23:03 +0800
-Message-ID: <CAMA88TpRbXAEWdJVgG8Bpd3Mn4PEigDJV+hOR19FR+Rh1YevaA@mail.gmail.com>
-Subject: Re: [PATCH] sched: fix bad task migration for rt tasks
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, Benjamin Segall <bsegall@google.com>,
-        mgorman@suse.de, bristot@redhat.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Valentin Schneider <vschneid@redhat.com> writes:
+On Sat, 25 Jun 2022 12:38:51 +0200
+Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
 
-> On 24/06/22 02:29, Schspa Shi wrote:
->> @@ -1998,12 +1998,15 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
->>                       * the mean time, task could have
->>                       * migrated already or had its affinity changed.
->>                       * Also make sure that it wasn't scheduled on its rq.
->> +                     * It is possible the task has running for a while,
->> +                     * And we check task migration disable flag again.
->>                       */
->>                      if (unlikely(task_rq(task) != rq ||
->>                                   !cpumask_test_cpu(lowest_rq->cpu, &task->cpus_mask) ||
->
-> cf. 95158a89dd50 ("sched,rt: Use the full cpumask for balancing"), this
-> made sense to me back then but not so much anymore... Shouldn't this have
-> remained a ->cpus_ptr check?
->
+> The MCP3911 incorporates a phase delay generator,
+> which ensures that the two ADCs are converting the
+> inputs with a fixed delay between them.
+> Expose it to userspace.
+> 
+> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 
-It seems it is for the following scenarios:
-It allows the higher priority non migratable task to be sched quickly
-by migrating the current task to
-another CPU with lower priority.
+Until now I think we've only had the phase modifier for output channels.
+So at minimum need to add documentation for it in
+Documentation/ABI/testing/sysfs-bus-iio
 
-Considering this, we should retry for this. rather than return with no
-lower priority rq.
+However, the snag is that it's defined in terms of radians.
+The usecase here assumes that the sensor is measuring some sort of
+wave form, but unfortunately we don't know what that is - hence
+the setting is in terms of clock delay.
 
-I can upload a new patchset for this handing.
+As such, though the datasheet calls if phase, I think that is
+stretching the meaning too far in the IIO ABI. We probably need
+something new.  
 
-Please refers to the fellowing code:
-        if (is_migration_disabled(next_task)) {
-                struct task_struct *push_task = NULL;
-                int cpu;
+Years ago, for devices that are actually a single ADC and a MUX
+where we pretend in IIO that the channels are sampled synchronously
+we talked about provided the timing delay information to userspace.
+Nothing ever came of it, but that is effectively the same concept
+as you have here.
 
-                if (!pull || rq->push_busy)
-                        return 0;
+So, it's a time measurement so units will need to be seconds -
+userspace has no idea of the clk speed of a device. For two channels
+the relationship is straight forward, but I wonder for 3 channel devices
+how we would handle it.  The two different sources of this delay might
+lead to different controls being optimal.
 
-                /*
-                 * Invoking find_lowest_rq() on anything but an RT task doesn't
-                 * make sense. Per the above priority check, curr has to
-                 * be of higher priority than next_task, so no need to
-                 * reschedule when bailing out.
-                 *
-                 * Note that the stoppers are masqueraded as SCHED_FIFO
-                 * (cf. sched_set_stop_task()), so we can't rely on rt_task().
-                 */
-                if (rq->curr->sched_class != &rt_sched_class)
-                        return 0;
+Naming wise, perhaps samplingdelay?
 
-                cpu = find_lowest_rq(rq->curr);
-                if (cpu == -1 || cpu == rq->cpu)
-                        return 0;
+If you have actual ADCs that operate independently then relationship to
+a base reference point will be independent. 
+So for a 3 channel device you'd have
 
-                /*
-                 * Given we found a CPU with lower priority than @next_task,
-                 * therefore it should be running. However we cannot migrate it
-                 * to this other CPU, instead attempt to push the current
-                 * running task on this CPU away.
-                 */
-                push_task = get_push_task(rq);
-                if (push_task) {
-                        raw_spin_rq_unlock(rq);
-                        stop_one_cpu_nowait(rq->cpu, push_cpu_stop,
-                                            push_task, &rq->push_work);
-                        raw_spin_rq_lock(rq);
-                }
+in_voltage0_samplingdelay  0
+in_voltage1_samplingdelay  Phase register 1 code / DMCLK
+in_voltage2_samplingdelay  Phase register 2 code / DMCLK
 
-                return 0;
+But for a device that is a mux in front of one actual ADC
+then the timing is likely to be relative to previous channel
+Hence if all turned on...
 
-        }
+in_voltage0_samplingdelay  0
+in_voltage1_samplingdelay  Phase register 1 code / DMCLK
+in_voltage2_samplingdelay  Phase register 2 code + Phase register 1 code / DMCLK
 
-> I'm going to revisit that commit, I evicted too much of it.
->
->>                                   task_running(rq, task) ||
->>                                   !rt_task(task) ||
->> -                                 !task_on_rq_queued(task))) {
->> +                                 !task_on_rq_queued(task) ||
->> +                                 is_migration_disabled(task))) {
->>
->>                              double_unlock_balance(rq, lowest_rq);
->>                              lowest_rq = NULL;
->> --
->> 2.24.3 (Apple Git-128)
+If only 0 and 2 enabled.
 
--- 
+in_voltage0_samplingdelay  0
+in_voltage2_samplingdelay  Phase register X code
 
-BRs
-Schspa Shi
+However we can probably just make that problem for the driver. Sometimes
+we'll have to reject or approximate particular combinations of enabled channels
+and requested delays. 
+One corner case that is nasty will be if there is just one controllable delay.
+In that case it would seem natural to have just one attribute, but the delay
+would be cumulative across multiple enabled channels.  For that I think
+we'd just need different ABI.
+
+in_voltage_intersampledelay  maybe?  With two channels the various options
+would all work but we should think ahead...
+
+There is another complexity. These values apply to the buffered data, not
+otherwise. Moving them into bufferX/ would nicely associate them with the
+enabled channels and make it more obvious that there is a coupling there
+
+However, it is more complex to add attributes to the buffers..
+If we think that is the right way to go for ABI it wouldn't be too hard to
+add to the core - but will need a new callback.
+
+So my gut feeling is that this should be
+
+bufferX/in_voltage0_samplingdelay 0
+bufferX/in_voltage1_samplingdelay Phase register 1 code / DMCLK seconds
+but it is a rather nasty layering violation.
+
+That will require us adding a new callback read_scan_el_raw() and appropriate
+enum etc.
+
+Things will get more complex for 3 channel deviceson multibuffer devices or when there are in
+kernel consumers (as those may effect the enabled channels but aren't visible in
+bufferX).  However, I don't see it being that likely we'll get that combination
+of features any time soon (famous last words!)
+
+Gut feeling is that adding this feature (and discussion of ABI) will
+take a while, but it shouldn't block picking up the rest of the series
+in the meantime.
+
+Jonathan
+
+
+> ---
+> 
+> Notes:
+>     v2:
+>         - Fix formatting (Andy Schevchenko)
+> 
+>  drivers/iio/adc/mcp3911.c | 24 +++++++++++++++++++++++-
+>  1 file changed, 23 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+> index ede1ad97ed4d..a0609d7663e1 100644
+> --- a/drivers/iio/adc/mcp3911.c
+> +++ b/drivers/iio/adc/mcp3911.c
+> @@ -155,6 +155,17 @@ static int mcp3911_read_raw(struct iio_dev *indio_dev,
+>  
+>  		ret = IIO_VAL_INT;
+>  		break;
+> +
+> +	case IIO_CHAN_INFO_PHASE:
+> +		ret = mcp3911_read(adc,
+> +				   MCP3911_REG_PHASE, val, 2);
+> +		if (ret)
+> +			goto out;
+> +
+> +		*val = sign_extend32(*val, 12);
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		ret = mcp3911_read(adc,
+>  				MCP3911_REG_CONFIG, val, 2);
+> @@ -225,6 +236,15 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+>  				MCP3911_STATUSCOM_EN_OFFCAL, 2);
+>  		break;
+>  
+> +	case IIO_CHAN_INFO_PHASE:
+> +		if (val2 != 0 || val > 0xfff) {
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+> +
+> +		/* Write phase */
+> +		ret = mcp3911_write(adc, MCP3911_REG_PHASE, val, 2);
+> +		break;
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		for (int i = 0; i < sizeof(mcp3911_osr_table); i++) {
+>  			if (val == mcp3911_osr_table[i]) {
+> @@ -248,7 +268,9 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+>  		.channel = idx,					\
+>  		.scan_index = idx,				\
+>  		.scan_index = idx,				\
+> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
+> +		.info_mask_shared_by_type =			\
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO)|	\
+> +			BIT(IIO_CHAN_INFO_PHASE),		\
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+>  			BIT(IIO_CHAN_INFO_OFFSET) |		\
+>  			BIT(IIO_CHAN_INFO_SCALE),		\
+
