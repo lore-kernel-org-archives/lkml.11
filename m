@@ -2,305 +2,564 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B75DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7092AC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232619AbiFYKhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 06:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44490 "EHLO
+        id S232633AbiFYKiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 06:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232537AbiFYKhd (ORCPT
+        with ESMTP id S232369AbiFYKiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 06:37:33 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2512A709;
-        Sat, 25 Jun 2022 03:37:32 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id i18so8545361lfu.8;
-        Sat, 25 Jun 2022 03:37:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5oKTuqkNAMcSE9m/aA7zeta4JWfDKTgCumXtoFm2uzk=;
-        b=KJDBq6yW8PCQhMfGSov0ZPGR4Wk5yPhnBbktUIrgYaKu1/IQRsi4di63b160zNeYxB
-         ERCpAa2yrI4L65wYikYrlVIdWf+vee8h0pBEU+FZQMdHEatJiRokxgXuDuldQeh/wccE
-         F25KECVpEUf4HqUpodGsn79cntAqM7ynAPGKfccBC5w1kg93nvqR40CUnzocfoSmBVo0
-         5Cfv2EN7JA2NdQ1XRLVEj/57m6JO/bIYden2QlhI+30hj7sXJJEI9eOUI8D38g6fHAGg
-         3p5TXn+qmqV9Yh6pZLa1CX/1Glm8n4zFN6Jz0/ee6U0pQQp7SXVW67H+CDl8x5K7hcZF
-         hltA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5oKTuqkNAMcSE9m/aA7zeta4JWfDKTgCumXtoFm2uzk=;
-        b=r/mj/xTNqe/WRGUcM1SC48LAWBrPKE6Zwg0owC4KdyoHAu8IoAdSTmBFFr7xy+OuTg
-         UEWT2VeYthzD62MKnsb0M1WHW/Ll4NtWhN22bcSVFXmG30pwtp7uyJlpcww3lj9lt63Y
-         WvZCyrPw2Aq+vUbMClXQobK0dsZ3TRvN99rsuvRiYrPOQ+EWg6VT4kKQKpmS4zbn1aBA
-         NjqQjY2zrogGMOG2+4lEoBF74j8dpgEEXFjjcB/kFAy/DqdPqboH3emLwQNTwvvh94dm
-         USD2lhLUoFlV7yHzK6aWlC155lM4Z8BjbLAA4gmq4yq7yBYsSz84Yow3ORtGLTvPJZHh
-         UgRA==
-X-Gm-Message-State: AJIora/LAClhj7XFWmGgGp9hd9v81TdhTIBJuZkZluOWhFvSj23/8WaL
-        f4OoLOqVzB1H2sVCebv7fI8=
-X-Google-Smtp-Source: AGRyM1tjDyzTbaCUZguZZ7tYArQsytO/cRDImRTNJminAWr3VyrM1JyNrUAnnvnMUEkQnxNfIgVQaw==
-X-Received: by 2002:a05:6512:234e:b0:47f:8c9c:dfd with SMTP id p14-20020a056512234e00b0047f8c9c0dfdmr2105854lfu.438.1656153450337;
-        Sat, 25 Jun 2022 03:37:30 -0700 (PDT)
-Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id z8-20020ac25de8000000b0047ac01fc644sm809115lfq.44.2022.06.25.03.37.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jun 2022 03:37:29 -0700 (PDT)
-From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 10/10] iio: adc: mcp3911: add support to set PGA
-Date:   Sat, 25 Jun 2022 12:38:53 +0200
-Message-Id: <20220625103853.2470346-10-marcus.folkesson@gmail.com>
+        Sat, 25 Jun 2022 06:38:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8095111466;
+        Sat, 25 Jun 2022 03:38:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0857D6104E;
+        Sat, 25 Jun 2022 10:38:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F34BEC3411C;
+        Sat, 25 Jun 2022 10:38:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656153498;
+        bh=DaNwxvCQ5Lz6jJ2G+8ZGjUreVc6hH4LZXbQLNd+3cyw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=f9PzZUNPy5BEU6CXheBLc8QgnxIZLZB3pwnVfIMO9NbR26GUREb0F3BXsdMuLgyWI
+         eRCVAWHb2+C+09NfiptZ4Fok6ujbb0NuTca/GX8aUzxflPTHkJxjNhtqew+aw9pdET
+         VxvWL4fAtphSTgvO7kpNJv2KmX8mC4qJgrp2cK2I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 4.9.320
+Date:   Sat, 25 Jun 2022 12:38:14 +0200
+Message-Id: <1656153494248238@kroah.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
-References: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for setting the Programmable Gain Amplifiers by adjust the
-scale value.
+I'm announcing the release of the 4.9.320 kernel.
 
-Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
----
+All users of the 4.9 kernel series must upgrade.
 
-Notes:
-    v2:
-        - add missing comma
-        - Address comments from Andy Shevchenko
+The updated 4.9.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.9.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
- drivers/iio/adc/mcp3911.c | 134 +++++++++++++++++++++++++++++++-------
- 1 file changed, 110 insertions(+), 24 deletions(-)
+thanks,
 
-diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
-index a019264e73e3..f0179385485f 100644
---- a/drivers/iio/adc/mcp3911.c
-+++ b/drivers/iio/adc/mcp3911.c
-@@ -26,6 +26,8 @@
- #define MCP3911_REG_MOD			0x06
- #define MCP3911_REG_PHASE		0x07
- #define MCP3911_REG_GAIN		0x09
-+#define MCP3911_GAIN_MASK(ch)          (0x7 << 3*ch)
-+#define MCP3911_GAIN_VAL(ch, val)      ((val << 3*ch) & MCP3911_GAIN_MASK(ch))
- 
- #define MCP3911_REG_STATUSCOM		0x0a
- #define MCP3911_STATUSCOM_DRHIZ         BIT(12)
-@@ -55,8 +57,10 @@
- #define MCP3911_REG_WRITE(reg, id)	((((reg) << 1) | ((id) << 5) | (0 << 0)) & 0xff)
- 
- #define MCP3911_NUM_CHANNELS		2
-+#define MCP3911_NUM_SCALES		6
- 
- static const int mcp3911_osr_table[] = {32, 64, 128, 256, 512, 1024, 2048, 4096};
-+static u32 mcp3911_scale_table[MCP3911_NUM_SCALES][2];
- 
- struct mcp3911 {
- 	struct spi_device *spi;
-@@ -65,6 +69,7 @@ struct mcp3911 {
- 	struct clk *clki;
- 	u32 dev_addr;
- 	struct iio_trigger *trig;
-+	u32 gain[MCP3911_NUM_CHANNELS];
- 	struct {
- 		u32 channels[2];
- 		s64 ts __aligned(8);
-@@ -113,6 +118,37 @@ static int mcp3911_update(struct mcp3911 *adc, u8 reg, u32 mask,
- 	return mcp3911_write(adc, reg, val, len);
- }
- 
-+static int mcp3911_get_gain(struct mcp3911 *adc, u8 channel, u32 *val)
-+{
-+	int ret;
-+
-+	ret = mcp3911_read(adc, MCP3911_REG_GAIN, val, 1);
-+	if (ret)
-+		return ret;
-+
-+	*val >>= channel * 3;
-+	*val &= GENMASK(2, 0);
-+	*val = BIT(*val);
-+
-+	return 0;
-+}
-+
-+static int mcp3911_write_raw_get_fmt(struct iio_dev *indio_dev,
-+					struct iio_chan_spec const *chan,
-+					long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_PHASE:
-+		return IIO_VAL_INT;
-+	default:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	}
-+}
-+
- static int mcp3911_read_avail(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     const int **vals, int *type, int *length,
-@@ -124,6 +160,11 @@ static int mcp3911_read_avail(struct iio_dev *indio_dev,
- 		*vals = mcp3911_osr_table;
- 		*length = ARRAY_SIZE(mcp3911_osr_table);
- 		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_SCALE:
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		*vals = (int *)mcp3911_scale_table;
-+		*length = ARRAY_SIZE(mcp3911_scale_table) * 2;
-+		return IIO_AVAIL_LIST;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -180,29 +221,9 @@ static int mcp3911_read_raw(struct iio_dev *indio_dev,
- 		break;
- 
- 	case IIO_CHAN_INFO_SCALE:
--		if (adc->vref) {
--			ret = regulator_get_voltage(adc->vref);
--			if (ret < 0) {
--				dev_err(indio_dev->dev.parent,
--					"failed to get vref voltage: %d\n",
--				       ret);
--				goto out;
--			}
--
--			*val = ret / 1000;
--		} else {
--			*val = MCP3911_INT_VREF_MV;
--		}
--
--		/*
--		 * For 24bit Conversion
--		 * Raw = ((Voltage)/(Vref) * 2^23 * Gain * 1.5
--		 * Voltage = Raw * (Vref)/(2^23 * Gain * 1.5)
--		 */
--
--		/* val2 = (2^23 * 1.5) */
--		*val2 = 12582912;
--		ret = IIO_VAL_FRACTIONAL;
-+		*val = mcp3911_scale_table[ilog2(adc->gain[channel->channel])][0];
-+		*val2 = mcp3911_scale_table[ilog2(adc->gain[channel->channel])][1];
-+		ret = IIO_VAL_INT_PLUS_NANO;
- 		break;
- 	}
- 
-@@ -220,6 +241,18 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&adc->lock);
- 	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		for (int i = 0; i < MCP3911_NUM_SCALES; i++) {
-+			if (val == mcp3911_scale_table[i][0] &&
-+				val2 == mcp3911_scale_table[i][1]) {
-+
-+				adc->gain[channel->channel] = BIT(i);
-+				ret = mcp3911_update(adc, MCP3911_REG_GAIN,
-+						MCP3911_GAIN_MASK(channel->channel),
-+						MCP3911_GAIN_VAL(channel->channel, i), 1);
-+			}
-+		}
-+		break;
- 	case IIO_CHAN_INFO_OFFSET:
- 		if (val2 != 0) {
- 			ret = -EINVAL;
-@@ -264,6 +297,48 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int mcp3911_calc_scale_table(struct mcp3911 *adc)
-+{
-+	u32 ref = MCP3911_INT_VREF_MV;
-+	u32 div;
-+	int ret;
-+	int tmp0, tmp1;
-+	s64 tmp2;
-+
-+	if (adc->vref) {
-+		ret = regulator_get_voltage(adc->vref);
-+		if (ret < 0) {
-+			dev_err(&adc->spi->dev,
-+				"failed to get vref voltage: %d\n",
-+			       ret);
-+			return ret;
-+		}
-+
-+		ref = ret / 1000;
-+	}
-+
-+	/*
-+	 * For 24bit Conversion
-+	 * Raw = ((Voltage)/(Vref) * 2^23 * Gain * 1.5
-+	 * Voltage = Raw * (Vref)/(2^23 * Gain * 1.5)
-+	 */
-+
-+	/* ref = Reference voltage
-+	 * div = (2^23 * 1.5 * gain) = 12582912 * gain
-+	 */
-+	for (int i = 0; i < MCP3911_NUM_SCALES; i++) {
-+		div = 12582912 * BIT(i);
-+		tmp2 = div_s64((s64)ref * 1000000000LL, div);
-+		tmp1 = div;
-+		tmp0 = (int)div_s64_rem(tmp2, 1000000000, &tmp1);
-+
-+		mcp3911_scale_table[i][0] = 0;
-+		mcp3911_scale_table[i][1] = tmp1;
-+	}
-+
-+	return 0;
-+}
-+
- #define MCP3911_CHAN(idx) {					\
- 		.type = IIO_VOLTAGE,				\
- 		.indexed = 1,					\
-@@ -276,8 +351,10 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
- 			BIT(IIO_CHAN_INFO_OFFSET) |		\
- 			BIT(IIO_CHAN_INFO_SCALE),		\
--		.info_mask_shared_by_type_available =		\
-+		.info_mask_shared_by_type_available =           \
- 			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
-+		.info_mask_separate_available =			\
-+			BIT(IIO_CHAN_INFO_SCALE),		\
- 		.scan_type = {					\
- 			.sign = 's',				\
- 			.realbits = 24,				\
-@@ -330,6 +407,7 @@ static const struct iio_info mcp3911_info = {
- 	.read_raw = mcp3911_read_raw,
- 	.write_raw = mcp3911_write_raw,
- 	.read_avail = mcp3911_read_avail,
-+	.write_raw_get_fmt = mcp3911_write_raw_get_fmt,
- };
- 
- static irqreturn_t mcp3911_interrupt(int irq, void *dev_id)
-@@ -460,6 +538,14 @@ static int mcp3911_probe(struct spi_device *spi)
- 	if (ret)
- 		goto clk_disable;
- 
-+	ret = mcp3911_calc_scale_table(adc);
-+	if (ret)
-+		goto clk_disable;
-+
-+       /* Store gain values to better calculate scale values */
-+	mcp3911_get_gain(adc, 0, &adc->gain[0]);
-+	mcp3911_get_gain(adc, 1, &adc->gain[1]);
-+
- 	if (device_property_read_bool(&adc->spi->dev, "microchip,data-ready-hiz"))
- 		ret = mcp3911_update(adc, MCP3911_REG_STATUSCOM, MCP3911_STATUSCOM_DRHIZ,
- 				0, 2);
--- 
-2.36.1
+greg k-h
+
+------------
+
+ Documentation/kernel-parameters.txt         |   12 
+ Documentation/sysctl/kernel.txt             |   35 
+ MAINTAINERS                                 |    1 
+ Makefile                                    |    2 
+ arch/alpha/include/asm/timex.h              |    1 
+ arch/arm/include/asm/timex.h                |    1 
+ arch/ia64/include/asm/timex.h               |    1 
+ arch/m68k/include/asm/timex.h               |    2 
+ arch/mips/include/asm/timex.h               |   17 
+ arch/nios2/include/asm/timex.h              |    3 
+ arch/parisc/include/asm/timex.h             |    3 
+ arch/powerpc/include/asm/archrandom.h       |   27 
+ arch/powerpc/include/asm/timex.h            |    1 
+ arch/s390/include/asm/timex.h               |    1 
+ arch/s390/mm/pgtable.c                      |    2 
+ arch/sparc/include/asm/timex_32.h           |    4 
+ arch/um/include/asm/timex.h                 |    9 
+ arch/x86/include/asm/archrandom.h           |   12 
+ arch/x86/include/asm/timex.h                |    9 
+ arch/x86/include/asm/tsc.h                  |    7 
+ arch/xtensa/include/asm/timex.h             |    6 
+ crypto/chacha20_generic.c                   |    3 
+ crypto/drbg.c                               |  220 +-
+ crypto/md4.c                                |   17 
+ crypto/md5.c                                |   17 
+ drivers/ata/libata-core.c                   |    4 
+ drivers/char/Kconfig                        |   38 
+ drivers/char/hw_random/core.c               |   93 
+ drivers/char/random.c                       | 2891 ++++++++++------------------
+ drivers/hv/vmbus_drv.c                      |    2 
+ drivers/irqchip/irq-gic-realview.c          |    1 
+ drivers/irqchip/irq-gic-v3.c                |    8 
+ drivers/misc/atmel-ssc.c                    |    4 
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c |   21 
+ drivers/nfc/nfcmrvl/usb.c                   |   16 
+ drivers/of/fdt.c                            |   14 
+ drivers/scsi/lpfc/lpfc_nportdisc.c          |    3 
+ drivers/scsi/vmw_pvscsi.h                   |    4 
+ drivers/staging/comedi/drivers/vmk80xx.c    |    2 
+ drivers/tty/serial/8250/8250_port.c         |    2 
+ drivers/usb/gadget/udc/lpc32xx_udc.c        |    1 
+ drivers/usb/serial/io_ti.c                  |    2 
+ drivers/usb/serial/io_usbvend.h             |    1 
+ drivers/usb/serial/option.c                 |    6 
+ drivers/virtio/virtio_mmio.c                |    1 
+ fs/9p/vfs_inode_dotl.c                      |   10 
+ fs/ext4/mballoc.c                           |    9 
+ fs/ext4/namei.c                             |    3 
+ fs/ext4/resize.c                            |   10 
+ fs/fuse/dev.c                               |   12 
+ fs/fuse/file.c                              |    1 
+ fs/fuse/fuse_i.h                            |    2 
+ fs/nfs/pnfs.c                               |    6 
+ include/crypto/blake2s.h                    |  102 
+ include/crypto/chacha20.h                   |   17 
+ include/crypto/drbg.h                       |   18 
+ include/crypto/internal/blake2s.h           |   19 
+ include/linux/byteorder/generic.h           |   17 
+ include/linux/cpuhotplug.h                  |    2 
+ include/linux/hw_random.h                   |    2 
+ include/linux/miscdevice.h                  |    1 
+ include/linux/mm.h                          |    2 
+ include/linux/net.h                         |    2 
+ include/linux/once.h                        |    2 
+ include/linux/prandom.h                     |   23 
+ include/linux/random.h                      |  133 -
+ include/linux/siphash.h                     |   28 
+ include/linux/swab.h                        |    1 
+ include/linux/timex.h                       |   10 
+ include/linux/uuid.h                        |    1 
+ include/linux/workqueue.h                   |    7 
+ include/net/inet_hashtables.h               |    2 
+ include/net/secure_seq.h                    |    4 
+ include/trace/events/random.h               |  315 ---
+ include/uapi/linux/random.h                 |    4 
+ include/uapi/linux/swab.h                   |   10 
+ init/main.c                                 |   22 
+ kernel/cpu.c                                |   11 
+ kernel/irq/handle.c                         |    2 
+ kernel/time/timekeeping.c                   |   16 
+ kernel/workqueue.c                          |   76 
+ lib/Kconfig.debug                           |   27 
+ lib/Makefile                                |    2 
+ lib/chacha20.c                              |    6 
+ lib/crypto/Makefile                         |    7 
+ lib/crypto/blake2s-generic.c                |  111 +
+ lib/crypto/blake2s-selftest.c               |  591 +++++
+ lib/crypto/blake2s.c                        |   78 
+ lib/find_bit.c                              |   16 
+ lib/random32.c                              |   15 
+ lib/sha1.c                                  |   95 
+ lib/siphash.c                               |   32 
+ lib/swiotlb.c                               |   11 
+ mm/util.c                                   |   33 
+ net/core/secure_seq.c                       |    4 
+ net/ipv4/inet_hashtables.c                  |   46 
+ net/ipv6/inet6_hashtables.c                 |    4 
+ net/l2tp/l2tp_ip6.c                         |    5 
+ net/l2tp/l2tp_ppp.c                         |   60 
+ net/sunrpc/xprtrdma/rpc_rdma.c              |    4 
+ sound/soc/codecs/cs42l52.c                  |    8 
+ sound/soc/codecs/cs42l56.c                  |    4 
+ sound/soc/codecs/cs53l30.c                  |   16 
+ sound/soc/codecs/wm8962.c                   |    1 
+ 104 files changed, 2965 insertions(+), 2640 deletions(-)
+
+Adam Ford (1):
+      ASoC: wm8962: Fix suspend while playing music
+
+Al Viro (1):
+      9p: missing chunk of "fs/9p: Don't update file type when updating file attributes"
+
+Andi Kleen (1):
+      random: optimize add_interrupt_randomness
+
+Andy Lutomirski (8):
+      random: Don't wake crng_init_wait when crng_init == 1
+      random: Add a urandom_read_nowait() for random APIs that don't warn
+      random: add GRND_INSECURE to return best-effort non-cryptographic bytes
+      random: ignore GRND_RANDOM in getentropy(2)
+      random: make /dev/random be almost like /dev/urandom
+      random: remove the blocking pool
+      random: delete code to pull data into pools
+      random: remove kernel.random.read_wakeup_threshold
+
+Andy Shevchenko (1):
+      crypto: Deduplicate le32_to_cpu_array() and cpu_to_le32_array()
+
+Ard Biesheuvel (1):
+      random: avoid arch_get_random_seed_long() when collecting IRQ randomness
+
+Baokun Li (1):
+      ext4: fix bug_on ext4_mb_use_inode_pa
+
+Borislav Petkov (1):
+      char/random: Add a newline at the end of the file
+
+Charles Keepax (4):
+      ASoC: cs42l52: Fix TLV scales for mixer controls
+      ASoC: cs53l30: Correct number of volume levels on SX controls
+      ASoC: cs42l52: Correct TLV for Bypass Volume
+      ASoC: cs42l56: Correct typo in minimum level for SX volume controls
+
+Chen Lin (1):
+      net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
+
+Christian Borntraeger (1):
+      s390/mm: use non-quiescing sske for KVM switch to keyed guest
+
+Colin Ian King (1):
+      xprtrdma: fix incorrect header size calculations
+
+Corentin LABBE (5):
+      hwrng: core - do not use multiple blank lines
+      hwrng: core - rewrite better comparison to NULL
+      hwrng: core - Rewrite the header
+      hwrng: core - Move hwrng miscdev minor number to include/linux/miscdevice.h
+      hwrng: core - remove unused PFX macro
+
+Ding Xiang (1):
+      ext4: make variable "count" signed
+
+Dominik Brodowski (7):
+      random: fix crash on multiple early calls to add_bootloader_randomness()
+      random: harmonize "crng init done" messages
+      random: early initialization of ChaCha constants
+      random: continually use hwgenerator randomness
+      random: access primary_pool directly rather than through pointer
+      random: only call crng_finalize_init() for primary_crng
+      random: fix locking in crng_fast_load()
+
+Eric Biggers (8):
+      random: fix data race on crng_node_pool
+      crypto: chacha20 - Fix keystream alignment for chacha20_block()
+      random: remove dead code left over from blocking pool
+      crypto: blake2s - include <linux/bug.h> instead of <asm/bug.h>
+      crypto: blake2s - adjust include guard naming
+      random: initialize ChaCha20 constants with correct endianness
+      crypto: chacha20 - Fix chacha20_block() keystream alignment (again)
+      random: remove use_input_pool parameter from crng_reseed()
+
+Eric Dumazet (2):
+      tcp: change source port randomizarion at connect() time
+      tcp: add some entropy in __inet_hash_connect()
+
+Fabio Estevam (1):
+      random: move random_min_urandom_seed into CONFIG_SYSCTL ifdef block
+
+George Spelvin (1):
+      random: document get_random_int() family
+
+Greg Kroah-Hartman (2):
+      Revert "char/random: silence a lockdep splat with printk()"
+      Linux 4.9.320
+
+Halil Pasic (1):
+      swiotlb: fix info leak with DMA_FROM_DEVICE
+
+Harald Freudenberger (2):
+      hwrng: use rng source with best quality
+      hwrng: remember rng chosen by user
+
+Helge Deller (1):
+      random: fix warning message on ia64 and parisc
+
+Herbert Xu (1):
+      Revert "hwrng: core - Freeze khwrng thread during suspend"
+
+Hsin-Yi Wang (1):
+      fdt: add support for rng-seed
+
+Ian Abbott (1):
+      comedi: vmk80xx: fix expression for tx buffer size
+
+Ilpo Järvinen (1):
+      serial: 8250: Store to lsr_save_flags after lsr read
+
+Ingo Molnar (1):
+      random: remove preempt disabled region
+
+James Chapman (2):
+      l2tp: don't use inet_shutdown on ppp session destroy
+      l2tp: fix race in pppol2tp_release with session object destroy
+
+James Smart (1):
+      scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
+
+Jan Varho (1):
+      random: do not split fast init input in add_hwgenerator_randomness()
+
+Jann Horn (2):
+      random: don't reset crng_init_cnt on urandom_read()
+      random: check for signal_pending() outside of need_resched() check
+
+Jason A. Donenfeld (124):
+      random: convert get_random_int/long into get_random_u32/u64
+      random: invalidate batched entropy after crng init
+      random: silence compiler warnings and fix race
+      random: add wait_for_random_bytes() API
+      random: add get_random_{bytes,u32,u64,int,long,once}_wait family
+      random: warn when kernel uses unseeded randomness
+      random: always use batched entropy for get_random_u{32,64}
+      random: always fill buffer in get_random_bytes_wait
+      random: Make crng state queryable
+      crypto: blake2s - generic C library implementation and selftest
+      lib/crypto: blake2s: move hmac construction into wireguard
+      lib/crypto: sha1: re-roll loops to reduce code size
+      MAINTAINERS: co-maintain random.c
+      random: use BLAKE2s instead of SHA1 in extraction
+      random: do not sign extend bytes for rotation when mixing
+      random: do not re-init if crng_reseed completes before primary init
+      random: mix bootloader randomness into pool
+      random: use IS_ENABLED(CONFIG_NUMA) instead of ifdefs
+      random: avoid superfluous call to RDRAND in CRNG extraction
+      random: cleanup poolinfo abstraction
+      random: cleanup integer types
+      random: remove incomplete last_data logic
+      random: remove unused extract_entropy() reserved argument
+      random: rather than entropy_store abstraction, use global
+      random: remove unused OUTPUT_POOL constants
+      random: de-duplicate INPUT_POOL constants
+      random: prepend remaining pool constants with POOL_
+      random: cleanup fractional entropy shift constants
+      random: access input_pool_data directly rather than through pointer
+      random: simplify arithmetic function flow in account()
+      random: use computational hash for entropy extraction
+      random: simplify entropy debiting
+      random: use linear min-entropy accumulation crediting
+      random: always wake up entropy writers after extraction
+      random: make credit_entropy_bits() always safe
+      random: remove batched entropy locking
+      random: use RDSEED instead of RDRAND in entropy extraction
+      random: inline leaves of rand_initialize()
+      random: ensure early RDSEED goes through mixer on init
+      random: do not xor RDRAND when writing into /dev/random
+      random: absorb fast pool into input pool after fast load
+      random: use hash function for crng_slow_load()
+      random: remove outdated INT_MAX >> 6 check in urandom_read()
+      random: zero buffer after reading entropy from userspace
+      random: tie batched entropy generation to base_crng generation
+      random: remove ifdef'd out interrupt bench
+      random: remove unused tracepoints
+      random: add proper SPDX header
+      random: deobfuscate irq u32/u64 contributions
+      random: introduce drain_entropy() helper to declutter crng_reseed()
+      random: remove useless header comment
+      random: remove whitespace and reorder includes
+      random: group initialization wait functions
+      random: group entropy extraction functions
+      random: group entropy collection functions
+      random: group userspace read/write functions
+      random: group sysctl functions
+      random: rewrite header introductory comment
+      random: defer fast pool mixing to worker
+      random: do not take pool spinlock at boot
+      random: unify early init crng load accounting
+      random: check for crng_init == 0 in add_device_randomness()
+      random: pull add_hwgenerator_randomness() declaration into random.h
+      random: clear fast pool, crng, and batches in cpuhp bring up
+      random: round-robin registers as ulong, not u32
+      random: only wake up writers after zap if threshold was passed
+      random: cleanup UUID handling
+      random: unify cycles_t and jiffies usage and types
+      random: do crng pre-init loading in worker rather than irq
+      random: give sysctl_random_min_urandom_seed a more sensible value
+      random: don't let 644 read-only sysctls be written to
+      random: replace custom notifier chain with standard one
+      random: use SipHash as interrupt entropy accumulator
+      random: make consistent usage of crng_ready()
+      random: reseed more often immediately after booting
+      random: check for signal and try earlier when generating entropy
+      random: skip fast_init if hwrng provides large chunk of entropy
+      random: treat bootloader trust toggle the same way as cpu trust toggle
+      random: re-add removed comment about get_random_{u32,u64} reseeding
+      random: mix build-time latent entropy into pool at init
+      random: do not allow user to keep crng key around on stack
+      random: check for signals every PAGE_SIZE chunk of /dev/[u]random
+      random: make random_get_entropy() return an unsigned long
+      random: document crng_fast_key_erasure() destination possibility
+      random: fix sysctl documentation nits
+      init: call time_init() before rand_initialize()
+      ia64: define get_cycles macro for arch-override
+      s390: define get_cycles macro for arch-override
+      parisc: define get_cycles macro for arch-override
+      alpha: define get_cycles macro for arch-override
+      powerpc: define get_cycles macro for arch-override
+      timekeeping: Add raw clock fallback for random_get_entropy()
+      m68k: use fallback for random_get_entropy() instead of zero
+      mips: use fallback for random_get_entropy() instead of just c0 random
+      arm: use fallback for random_get_entropy() instead of zero
+      nios2: use fallback for random_get_entropy() instead of zero
+      x86/tsc: Use fallback for random_get_entropy() instead of zero
+      um: use fallback for random_get_entropy() instead of zero
+      sparc: use fallback for random_get_entropy() instead of zero
+      xtensa: use fallback for random_get_entropy() instead of zero
+      random: insist on random_get_entropy() existing in order to simplify
+      random: do not use batches when !crng_ready()
+      random: do not pretend to handle premature next security model
+      random: order timer entropy functions below interrupt functions
+      random: do not use input pool from hard IRQs
+      random: help compiler out with fast_mix() by using simpler arguments
+      siphash: use one source of truth for siphash permutations
+      random: use symbolic constants for crng_init states
+      random: avoid initializing twice in credit race
+      random: remove ratelimiting for in-kernel unseeded randomness
+      random: use proper jiffies comparison macro
+      random: handle latent entropy and command line from random_init()
+      random: credit architectural init the exact amount
+      random: use static branch for crng_ready()
+      random: remove extern from functions in header
+      random: use proper return types on get_random_{int,long}_wait()
+      random: move initialization functions out of hot pages
+      random: move randomize_page() into mm where it belongs
+      random: check for signals after page of pool writes
+      Revert "random: use static branch for crng_ready()"
+      random: avoid checking crng_ready() twice in random_init()
+      random: mark bootloader randomness code as __init
+      random: account for arch randomness in bits
+      random: credit cpu and bootloader seeds by default
+
+Jens Axboe (2):
+      random: convert to using fops->write_iter()
+      random: wire up fops->splice_{read,write}_iter()
+
+Kees Cook (3):
+      random: do not ignore early device randomness
+      random: make CPU trust a boot parameter
+      random: move rand_initialize() earlier
+
+Linus Torvalds (2):
+      random: try to actively add entropy rather than passively wait for it
+      Reinstate some of "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
+
+Mark Brown (1):
+      random: document add_hwgenerator_randomness() with other input functions
+
+Mark Rutland (3):
+      random: split primary/secondary crng init paths
+      random: avoid warnings for !CONFIG_NUMA builds
+      random: add arch_get_random_*long_early()
+
+Miaoqian Lin (3):
+      misc: atmel-ssc: Fix IRQ check in ssc_probe
+      irqchip/gic/realview: Fix refcount leak in realview_gic_of_init
+      usb: gadget: lpc32xx_udc: Fix refcount leak in lpc32xx_udc_probe
+
+Miklos Szeredi (1):
+      fuse: fix pipe buffer lifetime for direct_io
+
+Nicolai Stange (4):
+      crypto: drbg - prepare for more fine-grained tracking of seeding state
+      crypto: drbg - track whether DRBG was seeded with !rng_is_initialized()
+      crypto: drbg - move dynamic ->reseed_threshold adjustments to __drbg_seed()
+      crypto: drbg - make reseeding from get_random_bytes() synchronous
+
+Rasmus Villemoes (4):
+      drivers/char/random.c: remove unused dont_count_entropy
+      drivers/char/random.c: constify poolinfo_table
+      drivers/char/random.c: remove unused stuct poolinfo::poolbits
+      drivers/char/random.c: make primary_crng static
+
+Richard Henderson (6):
+      x86: Remove arch_has_random, arch_has_random_seed
+      powerpc: Remove arch_has_random, arch_has_random_seed
+      linux/random.h: Remove arch_has_random, arch_has_random_seed
+      linux/random.h: Use false with bool
+      linux/random.h: Mark CONFIG_ARCH_RANDOM functions __must_check
+      powerpc: Use bool in archrandom.h
+
+Robert Eckelmann (1):
+      USB: serial: io_ti: add Agilent E5805A support
+
+Schspa Shi (1):
+      random: fix typo in comments
+
+Sebastian Andrzej Siewior (3):
+      random: reorder READ_ONCE() in get_random_uXX
+      random: add a spinlock_t to struct batched_entropy
+      random: remove unused irq_flags argument from add_interrupt_randomness()
+
+Sergey Senozhatsky (1):
+      char/random: silence a lockdep splat with printk()
+
+Sergey Shtylyov (1):
+      ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
+
+Slark Xiao (1):
+      USB: serial: option: add support for Cinterion MV31 with new baseline
+
+Stephan Mueller (2):
+      random: remove stale maybe_reseed_primary_crng
+      crypto: drbg - add FIPS 140-2 CTRNG for noise source
+
+Stephan Müller (5):
+      random: remove stale urandom_init_wait
+      random: remove variable limit
+      random: fix comment for unused random_min_urandom_seed
+      crypto: drbg - always seeded with SP800-90B compliant noise source
+      crypto: drbg - always try to free Jitter RNG instance
+
+Stephen Boyd (2):
+      random: Support freezable kthreads in add_hwgenerator_randomness()
+      random: Use wait_event_freezable() in add_hwgenerator_randomness()
+
+Tejun Heo (1):
+      workqueue: make workqueue available early during boot
+
+Theodore Ts'o (8):
+      random: suppress spammy warnings about unseeded randomness
+      random: use a different mixing algorithm for add_device_randomness()
+      random: set up the NUMA crng instances after the CRNG is fully initialized
+      random: fix possible sleeping allocation from irq context
+      random: rate limit unseeded randomness warnings
+      random: add a config option to trust the CPU's hwrng
+      random: only read from /dev/random after its pool has received 128 bits
+      random: fix soft lockup when trying to read from an uninitialized blocking pool
+
+Tobin C. Harding (2):
+      random: Fix whitespace pre random-bytes work
+      random: Return nbytes filled from hw RNG
+
+Trond Myklebust (1):
+      pNFS: Don't keep retrying if the server replied NFS4ERR_LAYOUTUNAVAILABLE
+
+Vasily Gorbik (1):
+      latent_entropy: avoid build error when plugin cflags are not set
+
+Wang Yufen (1):
+      ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
+
+Wentao Wang (1):
+      scsi: vmw_pvscsi: Expand vcpuHint to 16 bits
+
+Willy Tarreau (6):
+      secure_seq: use the 64 bits of the siphash for port offset calculation
+      tcp: use different parts of the port_offset for index and offset
+      tcp: add small random increments to the source port
+      tcp: dynamically allocate the perturb table used by source ports
+      tcp: increase source port perturb table to 2^16
+      tcp: drop the hash_32() part from the index calculation
+
+Xiaohui Zhang (1):
+      nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
+
+Yangtao Li (5):
+      random: remove unnecessary unlikely()
+      random: convert to ENTROPY_BITS for better code readability
+      random: Add and use pr_fmt()
+      random: fix typo in add_timer_randomness()
+      random: remove some dead code of poolinfo
+
+Yury Norov (1):
+      uapi: rename ext2_swab() to swab() and share globally in swab.h
+
+Zhang Yi (1):
+      ext4: add reserved GDT blocks check
+
+chengkaitao (1):
+      virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
+
+zijun_hu (1):
+      irqchip/gic-v3: Iterate over possible CPUs by for_each_possible_cpu()
 
