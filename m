@@ -2,62 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA84C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 08:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 726A6CCA479
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 08:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbiFYIN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 04:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
+        id S232147AbiFYIP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 04:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiFYINz (ORCPT
+        with ESMTP id S231752AbiFYIPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 04:13:55 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03CFD10FD1;
-        Sat, 25 Jun 2022 01:13:53 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Sat, 25 Jun
- 2022 16:08:28 +0800 (GMT+08:00)
-X-Originating-IP: [125.70.163.206]
-Date:   Sat, 25 Jun 2022 16:08:28 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     jeroendb@google.com, csully@google.com, awogbemila@google.com,
-        arnd@arndb.de, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject:  [PATCH] gve: drop unexpected word 'a' in comments
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Sat, 25 Jun 2022 04:15:55 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200A33136A
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 01:15:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=Pgxk4GfqdEazMAaUU8Vogm2IvjJW
+        if2mBoFjn2TkMjk=; b=Nf+lUCla94gyxk8LVQxRbj9mYLSCbDmDWziQGqiEJWUx
+        Xvi6U2bnZGYMyHW3ugkYNa9KaHaYbDloZj/Ijh4tSbltdUBe7NLEy3fqCiEfe8CD
+        myzROIqI2UYIuJaU2WKPcwWe/YsU4puPWSPtJsSIdhWD2ICCXJBJmMF1EQgr5zM=
+Received: (qmail 1730323 invoked from network); 25 Jun 2022 10:15:48 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 25 Jun 2022 10:15:48 +0200
+X-UD-Smtp-Session: l3s3148p1@9S9VS0HizZgucq2i
+Date:   Sat, 25 Jun 2022 10:15:47 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Pavel Machek <pavel@denx.de>, linux-mmc@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH v3 1/2] mmc: renesas_sdhi: Get the reset handle early in
+ the probe
+Message-ID: <YrbEMwqtpTPWCJte@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Pavel Machek <pavel@denx.de>, linux-mmc@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220624181438.4355-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220624181438.4355-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
-Message-ID: <762564ba.c84.18199e7b56b.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwAHEW98wrZieDREAA--.797W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAICmFEYxsvNQACsG
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uukWhCvGKCjJxTsP"
+Content-Disposition: inline
+In-Reply-To: <20220624181438.4355-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CnRoZXJlIGlzIGFuIHVuZXhwZWN0ZWQgd29yZCAnYScgaW4gdGhlIGNvbW1lbnRzIHRoYXQgbmVl
-ZCB0byBiZSBkcm9wcGVkCgpTaWduZWQtb2ZmLWJ5OiBYdWVCaW5nIENoZW4gPGNoZW54dWViaW5n
-QGphcmkuY24+Ci0tLQogZHJpdmVycy9uZXQvZXRoZXJuZXQvZ29vZ2xlL2d2ZS9ndmVfdHhfZHFv
-LmMgfCAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkK
-CmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9nb29nbGUvZ3ZlL2d2ZV90eF9kcW8u
-YyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2dvb2dsZS9ndmUvZ3ZlX3R4X2Rxby5jCmluZGV4IGVj
-Mzk0ZDk5MTY2OC4uZjdiYTYxNjE5NWYzIDEwMDY0NAotLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9nb29nbGUvZ3ZlL2d2ZV90eF9kcW8uYworKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9nb29n
-bGUvZ3ZlL2d2ZV90eF9kcW8uYwpAQCAtNzk1LDcgKzc5NSw3IEBAIHN0YXRpYyB2b2lkIGd2ZV9o
-YW5kbGVfcGFja2V0X2NvbXBsZXRpb24oc3RydWN0IGd2ZV9wcml2ICpwcml2LAogCQkJICAgICBH
-VkVfUEFDS0VUX1NUQVRFX1BFTkRJTkdfUkVJTkpFQ1RfQ09NUEwpKSB7CiAJCQkvKiBObyBvdXRz
-dGFuZGluZyBtaXNzIGNvbXBsZXRpb24gYnV0IHBhY2tldCBhbGxvY2F0ZWQKIAkJCSAqIGltcGxp
-ZXMgcGFja2V0IHJlY2VpdmVzIGEgcmUtaW5qZWN0aW9uIGNvbXBsZXRpb24KLQkJCSAqIHdpdGhv
-dXQgYSBhIHByaW9yIG1pc3MgY29tcGxldGlvbi4gUmV0dXJuIHdpdGhvdXQKKwkJCSAqIHdpdGhv
-dXQgYSBwcmlvciBtaXNzIGNvbXBsZXRpb24uIFJldHVybiB3aXRob3V0CiAJCQkgKiBjb21wbGV0
-aW5nIHRoZSBwYWNrZXQuCiAJCQkgKi8KIAkJCW5ldF9lcnJfcmF0ZWxpbWl0ZWQoIiVzOiBSZS1p
-bmplY3Rpb24gY29tcGxldGlvbiByZWNlaXZlZCB3aXRob3V0IGNvcnJlc3BvbmRpbmcgbWlzcyBj
-b21wbGV0aW9uOiAlZFxuIiwKLS0gCjIuMTcuMQo=
+
+--uukWhCvGKCjJxTsP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Jun 24, 2022 at 07:14:37PM +0100, Lad Prabhakar wrote:
+> In case of devm_reset_control_get_optional_exclusive() failure we returned
+> directly instead of jumping to the error path to roll back initialization.
+>=20
+> This patch moves devm_reset_control_get_optional_exclusive() early in the
+> probe so that we have the reset handle prior to initialization of the
+> hardware.
+>=20
+> Fixes: b4d86f37eacb7 ("mmc: renesas_sdhi: do hard reset if possible")
+> Reported-by: Pavel Machek <pavel@denx.de>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+
+
+--uukWhCvGKCjJxTsP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmK2xDMACgkQFA3kzBSg
+KbZ6vw//dYXe8UJWJ4MK6BZEyBiOHEgwHi/XvYWgWd7XgvHGqEbxS/zHZfkp7sjH
+CBm7q7lDmwoNpcyNIWxeTYalAnTMMLSjNu7aV112qc58Bj6DmyuvHvP0kN+eD8dP
+wyTGXkW4hEhLvAuHWhocPoS1iQ9IHiOCOqS9vyO7ClKkEKJIflbJqI1RCeUc4BVS
+C3WAmfLFtorwQGt44IQJ7NteAcpxbwF+o4oG59o86DkdscbHlQNxEEJDnAqPz8Cb
+3rVkO7g1NnF3NsO4ko2uFEoyMa5z1lkkvGIztdLHczg6nDUIWtjpqAC1/tzbK8u2
+emgJfmKpULEivIMt1TBSpRAdJHK0gqt5Q4IuZzy4R3VQjOkaODqoEVwPiRYBf5qU
+34QaH31pbHbqqKk8X3b98J5jZXr17KsguZMYUXHb4ivl/kFHH8U1rMhppSdIK0to
+VRNarMDkOkQG31vWyjYhydHRzNlyXTdnqUoQ38MP5eTbJSge3GapAvK02ilA5VJG
+KipMmBmWh3jDoLPYBqEIXfbRbk071HDqsP15CySUDQgS+dTDjSqFLf27qsjMy8xe
+bqifTDsBZGrjsxrw7ztCiJCwbIJ7zQJanHghAMsfje3I42WLGRpc8fgfz8uBijnp
+mnXAInO8quyuOiWRLEq+PqVrJNOMOZZYB+jLj492RttIDQnOPog=
+=TIva
+-----END PGP SIGNATURE-----
+
+--uukWhCvGKCjJxTsP--
