@@ -2,91 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFECCCA480
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 01:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FB6C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 02:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231676AbiFYB5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 21:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34350 "EHLO
+        id S230220AbiFYCF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 22:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiFYB5R (ORCPT
+        with ESMTP id S229450AbiFYCF6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 21:57:17 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5414D51E52;
-        Fri, 24 Jun 2022 18:57:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656122236; x=1687658236;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9SWAe/gPW+o7A+E1CI50enYZzx1mTK47iGojpYjytnY=;
-  b=t+liYEIzwGFFHJzGQxuTNgE4CzrwRN9vMkoftEGrvrGBR96DdhIGs7pf
-   HakHBtg0H0x5KKOOBbnwzwN5D+X5z9J0dMgVkIQ0v7m5iLGOvZ7MNz76K
-   VgIYwEabEZnKXVFHZyp3XvD7FxQ21pMQRc0sp+96hbmThx03CfaDU27LU
-   U=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Jun 2022 18:57:16 -0700
-X-QCInternal: smtphost
-Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 18:57:15 -0700
-Received: from quicinc.com (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 24 Jun
- 2022 18:57:15 -0700
-Date:   Fri, 24 Jun 2022 18:57:14 -0700
-From:   Guru Das Srinagesh <quic_gurus@quicinc.com>
-To:     Robert Marko <robimarko@gmail.com>
-CC:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: firmware: qcom-scm: convert to dtschema
-Message-ID: <20220625015714.GA6675@quicinc.com>
-References: <20220623182542.1116677-1-robimarko@gmail.com>
- <20220624010103.GA23758@quicinc.com>
- <CAOX2RU7yKuV4i_9YRs9fx2DTTvAndWFFw3cYtQ3qFk9m1zZJVg@mail.gmail.com>
+        Fri, 24 Jun 2022 22:05:58 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465C14F444;
+        Fri, 24 Jun 2022 19:05:57 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LVHNc1JYdzkWpR;
+        Sat, 25 Jun 2022 10:04:16 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 25 Jun 2022 10:05:14 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 25 Jun
+ 2022 10:05:14 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>
+CC:     <Frank.Li@nxp.com>, <jdmason@kudzu.us>, <kishon@ti.com>,
+        <lpieralisi@kernel.org>, <kw@linux.com>, <bhelgaas@google.com>
+Subject: [PATCH -next v2] PCI: endpoint: pci-epf-vntb: fix error handle in epf_ntb_mw_bar_init()
+Date:   Sat, 25 Jun 2022 10:15:16 +0800
+Message-ID: <20220625021516.431473-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAOX2RU7yKuV4i_9YRs9fx2DTTvAndWFFw3cYtQ3qFk9m1zZJVg@mail.gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Jun 24 2022 10:50, Robert Marko wrote:
-> On Fri, 24 Jun 2022 at 03:01, Guru Das Srinagesh <quic_gurus@quicinc.com> wrote:
-> >
-> > On Thu, Jun 23, 2022 at 08:25:42PM +0200, Robert Marko wrote:
-> >
-> > > +
-> > > +description: |
-> > ...
-> > > +
-> > > +  '#reset-cells':
-> > > +    const: 1
-> >
-> > This isn't part of the original file - could you please explain why this is
-> > being added?
-> 
-> Yes, its not part of the original file, however I noticed that a lot of SCM
-> nodes were adding #reset-cells, and upon looking at the SCM code its
-> clear that it is being registered as a reset controller so #reset-cells are
-> appropriate.
-> 
-> However, since its not really being used via phandles #reset-cells did
-> not really matter, hence why I did not add them to be required,
-> this is something that DT guys can probably clarify.
+In error case of epf_ntb_mw_bar_init(), memory window BARs should be
+cleared, so add 'num_mws' parameter in epf_ntb_mw_bar_clear() and
+calling it in error path to clear the BARs. Also add missing error
+code when pci_epc_mem_alloc_addr() fails.
 
-Makes sense, ACK.
+Fixes: ff32fac00d97 ("NTB: EPF: support NTB transfer between PCI RC and EP connection")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+v2:
+  add error label err_set_bar and move pci_epc_clear_bar() to it
+---
+ drivers/pci/endpoint/functions/pci-epf-vntb.c | 20 ++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-Thank you.
+diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+index ebf7e243eefa..ee9fee167d48 100644
+--- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
++++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+@@ -567,6 +567,8 @@ static int epf_ntb_db_bar_init(struct epf_ntb *ntb)
+ 	return -1;
+ }
+ 
++static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb, int num_mws);
++
+ /**
+  * epf_ntb_db_bar_clear() - Clear doorbell BAR and free memory
+  *   allocated in peers outbound address space
+@@ -625,13 +627,21 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
+ 							      &ntb->vpci_mw_phy[i],
+ 							      size);
+ 		if (!ntb->vpci_mw_addr[i]) {
++			ret = -ENOMEM;
+ 			dev_err(dev, "Failed to allocate source address\n");
+-			goto err_alloc_mem;
++			goto err_set_bar;
+ 		}
+ 	}
+ 
+ 	return ret;
++
++err_set_bar:
++	pci_epc_clear_bar(ntb->epf->epc,
++			  ntb->epf->func_no,
++			  ntb->epf->vfunc_no,
++			  &ntb->epf->bar[barno]);
+ err_alloc_mem:
++	epf_ntb_mw_bar_clear(ntb, i);
+ 	return ret;
+ }
+ 
+@@ -640,12 +650,12 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
+  * @ntb: NTB device that facilitates communication between HOST and vHOST
+  *
+  */
+-static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb)
++static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb, int num_mws)
+ {
+ 	enum pci_barno barno;
+ 	int i;
+ 
+-	for (i = 0; i < ntb->num_mws; i++) {
++	for (i = 0; i < num_mws; i++) {
+ 		barno = ntb->epf_ntb_bar[BAR_MW0 + i];
+ 		pci_epc_clear_bar(ntb->epf->epc,
+ 				  ntb->epf->func_no,
+@@ -774,7 +784,7 @@ static int epf_ntb_epc_init(struct epf_ntb *ntb)
+ 	return 0;
+ 
+ err_write_header:
+-	epf_ntb_mw_bar_clear(ntb);
++	epf_ntb_mw_bar_clear(ntb, ntb->num_mws);
+ err_mw_bar_init:
+ 	epf_ntb_db_bar_clear(ntb);
+ err_db_bar_init:
+@@ -794,7 +804,7 @@ static int epf_ntb_epc_init(struct epf_ntb *ntb)
+ static void epf_ntb_epc_cleanup(struct epf_ntb *ntb)
+ {
+ 	epf_ntb_db_bar_clear(ntb);
+-	epf_ntb_mw_bar_clear(ntb);
++	epf_ntb_mw_bar_clear(ntb, ntb->num_mws);
+ }
+ 
+ #define EPF_NTB_R(_name)						\
+-- 
+2.25.1
 
-Guru Das.
