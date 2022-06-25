@@ -2,114 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37049C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C36CCA47F
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232294AbiFYKVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 06:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
+        id S232367AbiFYKZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 06:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiFYKVt (ORCPT
+        with ESMTP id S232383AbiFYKZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 06:21:49 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BB831513;
-        Sat, 25 Jun 2022 03:21:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656152508; x=1687688508;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=eTCNWlcNgptSkHWawKJQt1duBUbGSUyCeEj5eGlb+xM=;
-  b=Xmv6M9frizN9FSPAqxwfGU1O57Zx7DuHm4CtBB885CZxy3xLbwpIN0ly
-   rDWQ6wCY8E8ML1pRGrQRH5dizDqRMMr3gReaEL894648ME/juWXEbKSF7
-   X+FrJDTe1KhkNfckonoijyKtVanolA2or6Aulxd9zcJD6LWiUD5kzqhRj
-   OjIaAjixQlR/XVHMiJdIyvDZ2fF4ySCfkrWH01SqzHndHmGpr25niR0Wt
-   BqX0itZDtmbSFUDZMQI1qQEgPW6HTvUKA8LOhGiqzdtNBsGwn5Bd3OJUW
-   vX6gt/ewuIzLMefNTKeRZVXCgDSN8vtGQK4hAU/4enEbBs7RNIeckevet
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="269910741"
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="269910741"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 03:21:47 -0700
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="645650589"
-Received: from selvaku-mobl.ger.corp.intel.com ([10.252.60.244])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 03:21:43 -0700
-Date:   Sat, 25 Jun 2022 13:21:41 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 6/8] serial: 8250_dwlib: remove redundant sanity check
- for RS485 flags
-In-Reply-To: <20220622154659.8710-7-LinoSanfilippo@gmx.de>
-Message-ID: <c0ef766d-198-b257-9291-cee7a6f890fa@linux.intel.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-7-LinoSanfilippo@gmx.de>
+        Sat, 25 Jun 2022 06:25:24 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1CA22501
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 03:25:23 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id x5-20020a923005000000b002d1a91c4d13so3179025ile.4
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 03:25:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=PpTw+0pR7d6KHpWzvUOwmUS7vIoJqaATGHEMY/gsX2A=;
+        b=0xzhvWQuo97vsisIk+cf2SeNXIH7PJ5FUIYfpDgWaGqh2HAVyTQtZHj10m+bS7VRAf
+         QGQPR/oMwDvs59doumDNcUFXzT+mqAGdGw4zNQEfrFILMgANkGzr4XnN9uCE/69CEqD2
+         CkAIyNSLnvNQGu9lB3uT6OCDw2VY1Rjy2UIqG6MzO6ChsH/61OT+Ui6QYshpFLgQ33hE
+         dc0fY37qQbHWkKVMdKxxAVgeBlkvzN6y9JlWZH1kM7+GfRbQXIPow+kp8HB9e9JHI6Pa
+         Gb2MzRz3nJM9y2OSu9ZD9/0NoSaso5ov+P3eGW2Ygh59ofjjZSO5z8Thbo0+imntGeir
+         d1IA==
+X-Gm-Message-State: AJIora8PV/TeXPC7Ef2u185EZX6juhZN8O+NFifPGe+zjltEly11kAZS
+        2xrNkPMIUGyMFfVtkt3bR3eopGGoIV0C364EYqEDCP4gD/AD
+X-Google-Smtp-Source: AGRyM1vyuTnNG1op68acyHfJlLSr34YHYTrvAEpZwGi6Cbef/aP1GrA3CCCBKweTEXTj6eEY5/aDNdEA2+u9dTrnUMthPogUPw/n
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1686025556-1656152507=:1653"
+X-Received: by 2002:a6b:ed15:0:b0:674:f8eb:a373 with SMTP id
+ n21-20020a6bed15000000b00674f8eba373mr1734128iog.37.1656152722465; Sat, 25
+ Jun 2022 03:25:22 -0700 (PDT)
+Date:   Sat, 25 Jun 2022 03:25:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b76c8005e2431a11@google.com>
+Subject: [syzbot] WARNING in cfg80211_ch_switch_notify
+From:   syzbot <syzbot+90d912872157e63589e4@syzkaller.appspotmail.com>
+To:     SHA-cyfmac-dev-list@infineon.com, ajay.kathat@microchip.com,
+        amitkarwar@gmail.com, aspriel@gmail.com,
+        brcm80211-dev-list.pdl@broadcom.com, claudiu.beznea@microchip.com,
+        davem@davemloft.net, edumazet@google.com, fabioaiuto83@gmail.com,
+        franky.lin@broadcom.com, ganapathi017@gmail.com,
+        geomatsi@gmail.com, gregkh@linuxfoundation.org,
+        hante.meuleman@broadcom.com, hdegoede@redhat.com,
+        huxinming820@gmail.com, imitsyanko@quantenna.com,
+        jagathjog1996@gmail.com, johannes.berg@intel.com,
+        johannes@sipsolutions.net, kuba@kernel.org, kvalo@kernel.org,
+        libertas-dev@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-wireless@vger.kernel.org,
+        loic.poulain@linaro.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        prestwoj@gmail.com, sharvari.harisangam@nxp.com, smoch@web.de,
+        syzkaller-bugs@googlegroups.com, ye.guojin@zte.com.cn
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hello,
 
---8323329-1686025556-1656152507=:1653
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+syzbot found the following issue on:
 
-On Wed, 22 Jun 2022, Lino Sanfilippo wrote:
+HEAD commit:    34d1d36073ea Add linux-next specific files for 20220621
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=175aca1ff00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b24b62d1c051cfc8
+dashboard link: https://syzkaller.appspot.com/bug?extid=90d912872157e63589e4
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15a50e1ff00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=104b1cc4080000
 
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> 
-> Before the drivers rs485_config() function is called the serial core
-> already ensures that only one of both options RTS on send or RTS after send
-> is set. So remove the concerning sanity check in the driver function to
-> avoid redundancy.
-> 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> ---
->  drivers/tty/serial/8250/8250_dwlib.c | 10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
-> index c83e7eaf3877..bed2bd6b7a01 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.c
-> +++ b/drivers/tty/serial/8250/8250_dwlib.c
-> @@ -95,16 +95,10 @@ static int dw8250_rs485_config(struct uart_port *p, struct serial_rs485 *rs485)
->  	if (rs485->flags & SER_RS485_ENABLED) {
->  		tcr |= DW_UART_TCR_RS485_EN;
->  
-> -		if (rs485->flags & SER_RS485_RX_DURING_TX) {
-> +		if (rs485->flags & SER_RS485_RX_DURING_TX)
->  			tcr |= DW_UART_TCR_XFER_MODE_DE_DURING_RE;
-> -		} else {
-> -			/* HW does not support same DE level for tx and rx */
-> -			if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-> -			    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
-> -				return -EINVAL;
-> -
-> +		else
->  			tcr |= DW_UART_TCR_XFER_MODE_DE_OR_RE;
-> -		}
->  		dw8250_writel_ext(p, DW_UART_DE_EN, 1);
->  		dw8250_writel_ext(p, DW_UART_RE_EN, 1);
->  	} else {
-> -- 
+The issue was bisected to:
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+commit 7b0a0e3c3a88260b6fcb017e49f198463aa62ed1
+Author: Johannes Berg <johannes.berg@intel.com>
+Date:   Thu Apr 14 14:50:57 2022 +0000
+
+    wifi: cfg80211: do some rework towards MLO link APIs
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=177e008ff00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=14fe008ff00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10fe008ff00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+90d912872157e63589e4@syzkaller.appspotmail.com
+Fixes: 7b0a0e3c3a88 ("wifi: cfg80211: do some rework towards MLO link APIs")
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 1021 at net/wireless/nl80211.c:18562 cfg80211_ch_switch_notify+0x3b7/0x8a0 net/wireless/nl80211.c:18562
+Modules linked in:
+CPU: 1 PID: 1021 Comm: kworker/u4:5 Not tainted 5.19.0-rc3-next-20220621-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: phy4 ieee80211_csa_finalize_work
+
+RIP: 0010:cfg80211_ch_switch_notify+0x3b7/0x8a0 net/wireless/nl80211.c:18562
+Code: fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 d2 04 00 00 49 8b 14 24 44 89 ee 48 89 ef e8 33 fa fb ff e9 44 ff ff ff e8 e9 78 cc f8 <0f> 0b e9 38 ff ff ff e8 dd 78 cc f8 48 8d bd f8 04 00 00 48 ba 00
+RSP: 0018:ffffc90004dcfc60 EFLAGS: 00010293
+
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: ffff88801eea57c0 RSI: ffffffff88ae4467 RDI: 0000000000000005
+RBP: ffff88801f004c90 R08: 0000000000000005 R09: 0000000000000009
+R10: 0000000000000001 R11: 0000000000000010 R12: ffff88801f006458
+R13: 0000000000000000 R14: ffff88801f004000 R15: ffff888021d90000
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000021000000 CR3: 000000000ba8e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __ieee80211_csa_finalize+0x738/0xc90 net/mac80211/cfg.c:3432
+ ieee80211_csa_finalize net/mac80211/cfg.c:3439 [inline]
+ ieee80211_csa_finalize_work+0x131/0x170 net/mac80211/cfg.c:3464
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+ </TASK>
 
 
--- 
- i.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
---8323329-1686025556-1656152507=:1653--
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
