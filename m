@@ -2,111 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 16:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2397C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 16:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233150AbiFYQiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 12:38:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57458 "EHLO
+        id S233173AbiFYQl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 12:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232889AbiFYQiM (ORCPT
+        with ESMTP id S232618AbiFYQl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 12:38:12 -0400
-X-Greylist: delayed 4198 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 25 Jun 2022 09:38:10 PDT
-Received: from 16.mo584.mail-out.ovh.net (16.mo584.mail-out.ovh.net [188.165.55.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55031A444
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 09:38:08 -0700 (PDT)
-Received: from player760.ha.ovh.net (unknown [10.111.172.45])
-        by mo584.mail-out.ovh.net (Postfix) with ESMTP id C414B209A0
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 15:22:56 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player760.ha.ovh.net (Postfix) with ESMTPSA id 114742BF81CAC;
-        Sat, 25 Jun 2022 15:22:52 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-100R003f7620af6-7b52-4906-bc6a-9af872b4aa46,
-                    6AC0142EC25AD3FE2D0BC2776DBD8C4E282FD61D) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-Date:   Sat, 25 Jun 2022 17:22:45 +0200
-From:   Stephen Kitt <steve@sk2.org>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH] docs: admin-guide/sysctl: escape % symbols
-Message-ID: <20220625172245.15d0ae7b@heffalump.sk2.org>
-In-Reply-To: <871qvd6fq2.fsf@meer.lwn.net>
-References: <20220624110230.595740-1-steve@sk2.org>
-        <871qvd6fq2.fsf@meer.lwn.net>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Sat, 25 Jun 2022 12:41:27 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F1E140DE
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 09:41:26 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id 136so90983pfy.10
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 09:41:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=CiiTdw5nwmdQxjSzvtjOG6uYyrass8pWwqawj8avJ5Y=;
+        b=ZdlS1l2K0yddb8XT+8VtvNpjN/CVImDLEORZgY0s7okUSI8qLcWyCyaDjOJJDeX6MR
+         x9/ddt1ZSDs5dOI5/CTqFNN9tdyhRRqsHxq/Adk41okptoPxOTvPCBdEDz4viCdXmOFs
+         O7yPMl00IseDazDTQszNOg232uVglii7zgJPHi9Sp+zWDwvBbCARyNINUZiap/yzOu3o
+         Nv9yBqvGpew70x+p1YWq5qBXreAi1u2qWT642bK3rucMDI5nVjuHZZPSu2F5suQ1i/8N
+         z8n0zlESYixxHA2a/W4PHTkLBiHoyIOk9SL5dBOzGj6InF7BAulw4JAvmCr3kxJELEus
+         iATg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CiiTdw5nwmdQxjSzvtjOG6uYyrass8pWwqawj8avJ5Y=;
+        b=2nsNjvXop0Y5DYIc5sF2siG0P/LRPq5A2qcIGdpQFeq0UFAN37X+uJY+OFk6r2P4fT
+         nAMzGBjPcovdpdsdtbuj2EM/03bZd5J6A1yN/TvIYCLRkDrLmgceuIwcJ3S9lw6F13kJ
+         2dto13yXCbmBNn3Be6MzDSrYxf8GyDVIOaoDpM9Urye2e3BLi85JPgEg++YV0qRLcU7E
+         XhJnptfn9slhjwfQbASpv1U+HUpIEc3NSzjJlWWUETD8DEGoSNpnTCTpY1i3tu034vHd
+         UQAsphP1gK5oW6g2yK0tUY24sPr0o0e/GrAxhr2bKzVSoPrQid2B4VPlLcp9bov+mltP
+         Wcug==
+X-Gm-Message-State: AJIora/vYwtOYtQMspR3lIKJHgpHbNIqrZ+fN2U5d17Nnz/9K6747UlV
+        FTFPbpAUNn3Mpixq912hhNDiJQ==
+X-Google-Smtp-Source: AGRyM1v6j4RljEVxbpJQWTZMu9/slUMnYX4ovCKePTMsCQFjvJ6ScH+OgvZLnPFz5pi6lG06tqjFuQ==
+X-Received: by 2002:a63:6c42:0:b0:3fe:465:7a71 with SMTP id h63-20020a636c42000000b003fe04657a71mr4186781pgc.101.1656175285444;
+        Sat, 25 Jun 2022 09:41:25 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id be19-20020a056a001f1300b005254c71df0esm3803232pfb.86.2022.06.25.09.41.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Jun 2022 09:41:24 -0700 (PDT)
+Message-ID: <7e14a11b-225e-13c4-35ff-762eafd20b70@kernel.dk>
+Date:   Sat, 25 Jun 2022 10:41:23 -0600
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Pe0R7RzTtKL/6ALA3/RL0CV";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Ovh-Tracer-Id: 2904821760775325318
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudeguddgkeelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepfffhvfevuffkjghfofggtgesghdtreerredtvdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepfeffgefhgfeuueeffeejieefieefgfefffethfdtudegvdejueelhffhfeegjeeinecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeeitddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehkeeg
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH -next v5 4/8] blk-throttle: fix io hung due to config
+ updates
+Content-Language: en-US
+To:     Yu Kuai <yukuai3@huawei.com>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>, tj@kernel.org
+Cc:     ming.lei@redhat.com, cgroups@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+References: <20220528064330.3471000-1-yukuai3@huawei.com>
+ <20220528064330.3471000-5-yukuai3@huawei.com>
+ <20220622172621.GA28246@blackbody.suse.cz>
+ <f5165488-2461-8946-593f-14154e404850@huawei.com>
+ <20220623162620.GB16004@blackbody.suse.cz>
+ <75b3cdcc-1aa3-7259-4900-f09a2a081716@huawei.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <75b3cdcc-1aa3-7259-4900-f09a2a081716@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/Pe0R7RzTtKL/6ALA3/RL0CV
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 6/25/22 2:36 AM, Yu Kuai wrote:
+> ? 2022/06/24 0:26, Michal Koutn? ??:
+>> On Thu, Jun 23, 2022 at 08:27:11PM +0800, Yu Kuai <yukuai3@huawei.com> wrote:
+>>>> Here we may allow to dispatch a bio above current slice's
+>>>> calculate_bytes_allowed() if bytes_skipped is already >0.
+>>>
+>>> Hi, I don't expect that to happen. For example, if a bio is still
+>>> throttled, then old slice is keeped with proper 'bytes_skipped',
+>>> then new wait time is caculated based on (bio_size - bytes_skipped).
+>>>
+>>> After the bio is dispatched(I assum that other bios can't preempt),
+>>
+>> With this assumptions it adds up as you write. I believe we're in
+>> agreement.
+>>
+>> It's the same assumption I made below (FIFO everywhere, i.e. no
+>> reordering). So the discussed difference shouldn't really be negative
+>> (and if the assumption didn't hold, so the modular arithmetic yields
+>> corerct bytes_skipped value).
+> Yes, nice that we're in aggreement.
+> 
+> I'll wait to see if Tejun has any suggestions.
 
-On Fri, 24 Jun 2022 13:09:25 -0600, Jonathan Corbet <corbet@lwn.net> wrote:
-> Stephen Kitt <steve@sk2.org> writes:
-> > % symbols need to be escaped to render correctly here, do so.
-> >
-> > Signed-off-by: Stephen Kitt <steve@sk2.org>
-> > ---
-> >  Documentation/admin-guide/sysctl/kernel.rst | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/Documentation/admin-guide/sysctl/kernel.rst
-> > b/Documentation/admin-guide/sysctl/kernel.rst index
-> > ddccd1077462..079a51ed88a9 100644 ---
-> > a/Documentation/admin-guide/sysctl/kernel.rst +++
-> > b/Documentation/admin-guide/sysctl/kernel.rst @@ -38,8 +38,8 @@ acct
-> > =20
-> >  If BSD-style process accounting is enabled these values control
-> >  its behaviour. If free space on filesystem where the log lives
-> > -goes below ``lowwater``% accounting suspends. If free space gets
-> > -above ``highwater``% accounting resumes. ``frequency`` determines
-> > +goes below ``lowwater``\% accounting suspends. If free space gets
-> > +above ``highwater``\% accounting resumes. ``frequency`` determines
-> >  how often do we check the amount of free space (value is in
-> >  seconds). Default: =20
->=20
-> Interesting...I had to go digging into why this is, because "%" isn't
-> really special for RST.  The real problem is that ``literal`` markup
-> needs to have word separators around it, and the recommended solution is
-> to use "\ " instead.
->=20
-> So I'll apply this, but tweak the changelog and add the extra spaces.
+I flushed more emails from spam again. Please stop using the buggy
+huawei address until this gets resolved, your patches are getting lost
+left and right and I don't have time to go hunting for emails.
 
-Ah yes, thanks for looking into this!
+-- 
+Jens Axboe
 
-Regards,
-
-Stephen
-
---Sig_/Pe0R7RzTtKL/6ALA3/RL0CV
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmK3KEUACgkQgNMC9Yht
-g5z18Q/9ERonRuANlr+e7Zjg4opVcYZC+lOypAfauXJvP6DGiXqF4bOOgUezE7ns
-EGtHKyKm2HWIwnrdu1WdkHl5RcLsGLrcBRrTWSEqABXauv0zHSM8cdqNosfBaz/g
-WgZA41bc7VzBL/70gjwPXqV9OYS/03Vq+TLPznQ/mw0PEdFIQTaR+7Y9AL61r1Tw
-NUNkNMb65jPmyeNDdAhLXtvRn3JHibEPAq9kpc4QNejCN/1Yu2Q0OPxeEppEUXZA
-1JRGttDrRjAxMeWYiSJc9iaVc20qLMdcy79mugBbd5vGqVzPBT0Je4sEkHrTJvtn
-8oP+sr77/nCiGp8ZrzqJEszdJUd/SclMz8MiDQvq/ls023feuGwUm5wdX6WY2k2r
-aPIdH2JPG7h6b2Rh2SEtF7um4KB3pbQr+wqj2PlYOSV7x20lSwCpZ5rOWgpn6FhI
-UMdbeYDZKN0ptpd0gOuwvgk5E3G5mFzovRTE0QbNRiI906Xw1ceiR1qlzfHKtgec
-8pygx+p/nftHWg7Zsg/KckA3iS8F/64nsJ+e1Q1Y4dnjZI+jUxiij3IGO8Njqe+t
-963mF+/GdecjtObLsgX2b46Wl1GCMCzXSlTULrzLrSL6wr3d/5pqohI/wJRzsPSd
-qJpWgAYlEWMvRi/dbubIBHJ2hF8xjhEonVthUbrb4UiZYJvdtqs=
-=ADlL
------END PGP SIGNATURE-----
-
---Sig_/Pe0R7RzTtKL/6ALA3/RL0CV--
