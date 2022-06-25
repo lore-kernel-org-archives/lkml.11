@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1130CCA481
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63173C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:39:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232646AbiFYKiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 06:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45918 "EHLO
+        id S232728AbiFYKjI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 06:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232369AbiFYKid (ORCPT
+        with ESMTP id S232657AbiFYKix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 06:38:33 -0400
+        Sat, 25 Jun 2022 06:38:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908CE13F90;
-        Sat, 25 Jun 2022 03:38:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3B52BB0C;
+        Sat, 25 Jun 2022 03:38:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2523B804A4;
-        Sat, 25 Jun 2022 10:38:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23936C3411C;
-        Sat, 25 Jun 2022 10:38:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33A13B8049B;
+        Sat, 25 Jun 2022 10:38:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75332C3411C;
+        Sat, 25 Jun 2022 10:38:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656153508;
-        bh=QOqzyhun7qV9+WA9Tgj5hOuvR53a8Hra3dhOXCwCH4A=;
+        s=korg; t=1656153522;
+        bh=+sTzfv+e/0wY8U4pjNwz1JavmlWzisATYtiMosvah1U=;
         h=From:To:Cc:Subject:Date:From;
-        b=QeNCsXJOBV0N1zag7hBQ/IlcvzMAJL1I6Ddqho/vkLtdDYFHgfOMj0aCArmpKQkZ0
-         OA0LVEwlBabv5prh9Hh1SH+yhk8awTci/25L2hpcos/BW7OeIYTi6EJL0vxdEnWCp3
-         7cHF18jGY2rUR2d9JP8Jbr/aKKkONx5+bXhQ3s+g=
+        b=D8xFXHtGQz+xBwhNg6lJX4aLVLAaMF83171r1YYx7HJYVlipNu4gq8EMXoeCKT2MT
+         xyoRY0Icl8U5V6286u4O7ZzZV9GfS9fa7RRy6iaDFyZ9MMyHAvo5ir+LPTI46Bc/PV
+         /zvDa/iv4UIwA4+5GqFIyKgmBhzKdm9p60zpdj5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.14.285
-Date:   Sat, 25 Jun 2022 12:38:19 +0200
-Message-Id: <1656153499137139@kroah.com>
+Subject: Linux 4.19.249
+Date:   Sat, 25 Jun 2022 12:38:24 +0200
+Message-Id: <16561535049225@kroah.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,12 +45,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.14.285 kernel.
+I'm announcing the release of the 4.19.249 kernel.
 
-All users of the 4.14 kernel series must upgrade.
+All users of the 4.19 kernel series must upgrade.
 
-The updated 4.14.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.14.y
+The updated 4.19.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.19.y
 and can be browsed at the normal kernel.org git web browser:
 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
@@ -60,104 +60,120 @@ greg k-h
 
 ------------
 
- Documentation/admin-guide/kernel-parameters.txt |   12 
- Documentation/sysctl/kernel.txt                 |   35 
- MAINTAINERS                                     |    1 
- Makefile                                        |    2 
- arch/alpha/include/asm/timex.h                  |    1 
- arch/arm/include/asm/timex.h                    |    1 
- arch/arm64/kernel/ftrace.c                      |    4 
- arch/ia64/include/asm/timex.h                   |    1 
- arch/m68k/include/asm/timex.h                   |    2 
- arch/mips/include/asm/timex.h                   |   17 
- arch/nios2/include/asm/timex.h                  |    3 
- arch/parisc/include/asm/timex.h                 |    3 
- arch/powerpc/include/asm/archrandom.h           |   27 
- arch/powerpc/include/asm/timex.h                |    1 
- arch/s390/include/asm/archrandom.h              |   12 
- arch/s390/include/asm/timex.h                   |    1 
- arch/s390/mm/pgtable.c                          |    2 
- arch/sparc/include/asm/timex_32.h               |    4 
- arch/um/include/asm/timex.h                     |    9 
- arch/x86/include/asm/archrandom.h               |   12 
- arch/x86/include/asm/timex.h                    |    9 
- arch/x86/include/asm/tsc.h                      |    7 
- arch/xtensa/include/asm/timex.h                 |    6 
- certs/blacklist_hashes.c                        |    2 
- crypto/chacha20_generic.c                       |    3 
- crypto/drbg.c                                   |  220 +
- crypto/md4.c                                    |   17 
- crypto/md5.c                                    |   17 
- drivers/ata/libata-core.c                       |    4 
- drivers/char/Kconfig                            |   38 
- drivers/char/hw_random/core.c                   |    1 
- drivers/char/random.c                           | 3032 ++++++++----------------
- drivers/hv/vmbus_drv.c                          |    2 
- drivers/irqchip/irq-gic-realview.c              |    1 
- drivers/misc/atmel-ssc.c                        |    4 
- drivers/net/ethernet/broadcom/bgmac-bcma.c      |    1 
- drivers/net/ethernet/intel/i40e/i40e_ethtool.c  |   25 
- drivers/net/ethernet/mediatek/mtk_eth_soc.c     |   21 
- drivers/nfc/nfcmrvl/usb.c                       |   16 
- drivers/of/fdt.c                                |   14 
- drivers/scsi/ipr.c                              |    4 
- drivers/scsi/lpfc/lpfc_nportdisc.c              |    3 
- drivers/scsi/pmcraid.c                          |    2 
- drivers/scsi/vmw_pvscsi.h                       |    4 
- drivers/staging/comedi/drivers/vmk80xx.c        |    2 
- drivers/tty/goldfish.c                          |    2 
- drivers/tty/serial/8250/8250_port.c             |    2 
- drivers/usb/dwc2/hcd.c                          |    2 
- drivers/usb/gadget/function/u_ether.c           |   11 
- drivers/usb/gadget/udc/lpc32xx_udc.c            |    1 
- drivers/usb/serial/io_ti.c                      |    2 
- drivers/usb/serial/io_usbvend.h                 |    1 
- drivers/usb/serial/option.c                     |    6 
- drivers/virtio/virtio_mmio.c                    |    1 
- drivers/virtio/virtio_pci_common.c              |    3 
- fs/9p/vfs_inode_dotl.c                          |   10 
- fs/ext4/mballoc.c                               |    9 
- fs/ext4/namei.c                                 |    3 
- fs/ext4/resize.c                                |   10 
- fs/nfs/pnfs.c                                   |    6 
- include/crypto/blake2s.h                        |  102 
- include/crypto/chacha20.h                       |   17 
- include/crypto/drbg.h                           |   18 
- include/crypto/internal/blake2s.h               |   19 
- include/linux/byteorder/generic.h               |   17 
- include/linux/cpuhotplug.h                      |    2 
- include/linux/hw_random.h                       |    2 
- include/linux/mm.h                              |    2 
- include/linux/prandom.h                         |   23 
- include/linux/random.h                          |  125 
- include/linux/siphash.h                         |   28 
- include/linux/timex.h                           |   10 
- include/trace/events/random.h                   |  316 --
- include/uapi/linux/random.h                     |    4 
- init/main.c                                     |   18 
- kernel/cpu.c                                    |   11 
- kernel/irq/handle.c                             |    2 
- kernel/time/timekeeping.c                       |   16 
- lib/Kconfig.debug                               |    5 
- lib/Makefile                                    |    2 
- lib/chacha20.c                                  |    6 
- lib/crypto/Makefile                             |    7 
- lib/crypto/blake2s-generic.c                    |  111 
- lib/crypto/blake2s-selftest.c                   |  591 ++++
- lib/crypto/blake2s.c                            |   78 
- lib/random32.c                                  |   15 
- lib/sha1.c                                      |   95 
- lib/siphash.c                                   |   32 
- mm/util.c                                       |   33 
- net/ipv4/inet_hashtables.c                      |   34 
- net/l2tp/l2tp_ip6.c                             |    5 
- net/l2tp/l2tp_ppp.c                             |   60 
- net/sunrpc/xprtrdma/rpc_rdma.c                  |    4 
- sound/soc/codecs/cs42l52.c                      |    8 
- sound/soc/codecs/cs42l56.c                      |    4 
- sound/soc/codecs/cs53l30.c                      |   16 
- sound/soc/codecs/wm8962.c                       |    1 
- 97 files changed, 2775 insertions(+), 2738 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt    |    6 
+ Documentation/hwmon/hwmon-kernel-api.txt           |    2 
+ Documentation/sysctl/kernel.txt                    |   35 
+ MAINTAINERS                                        |    1 
+ Makefile                                           |    2 
+ arch/alpha/include/asm/timex.h                     |    1 
+ arch/arm/include/asm/timex.h                       |    1 
+ arch/arm64/kernel/ftrace.c                         |    4 
+ arch/ia64/include/asm/timex.h                      |    1 
+ arch/m68k/include/asm/timex.h                      |    2 
+ arch/mips/include/asm/timex.h                      |   17 
+ arch/nios2/include/asm/timex.h                     |    3 
+ arch/parisc/include/asm/timex.h                    |    3 
+ arch/powerpc/include/asm/archrandom.h              |   27 
+ arch/powerpc/include/asm/ppc-opcode.h              |    2 
+ arch/powerpc/include/asm/timex.h                   |    1 
+ arch/powerpc/kernel/idle_6xx.S                     |    2 
+ arch/powerpc/kernel/l2cr_6xx.S                     |    6 
+ arch/powerpc/kernel/process.c                      |    4 
+ arch/powerpc/kernel/swsusp_32.S                    |    2 
+ arch/powerpc/kernel/swsusp_asm64.S                 |    2 
+ arch/powerpc/mm/mmu_context.c                      |    2 
+ arch/powerpc/platforms/powermac/cache.S            |    4 
+ arch/riscv/include/asm/processor.h                 |    2 
+ arch/s390/include/asm/archrandom.h                 |   12 
+ arch/s390/include/asm/timex.h                      |    1 
+ arch/s390/mm/pgtable.c                             |    2 
+ arch/sparc/include/asm/timex_32.h                  |    4 
+ arch/um/include/asm/timex.h                        |    9 
+ arch/x86/include/asm/archrandom.h                  |   12 
+ arch/x86/include/asm/timex.h                       |    9 
+ arch/x86/include/asm/tsc.h                         |    7 
+ arch/xtensa/include/asm/timex.h                    |    6 
+ certs/blacklist_hashes.c                           |    2 
+ crypto/drbg.c                                      |  220 +
+ drivers/ata/libata-core.c                          |    4 
+ drivers/char/Kconfig                               |   50 
+ drivers/char/hw_random/core.c                      |    1 
+ drivers/char/random.c                              | 3079 +++++++--------------
+ drivers/hv/hv.c                                    |    2 
+ drivers/hv/vmbus_drv.c                             |    2 
+ drivers/hwmon/hwmon.c                              |   16 
+ drivers/irqchip/irq-gic-realview.c                 |    1 
+ drivers/irqchip/irq-gic-v3.c                       |    5 
+ drivers/misc/atmel-ssc.c                           |    4 
+ drivers/net/ethernet/broadcom/bgmac-bcma.c         |    1 
+ drivers/net/ethernet/intel/i40e/i40e_ethtool.c     |   25 
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |    5 
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c        |   21 
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h |    2 
+ drivers/nfc/nfcmrvl/usb.c                          |   16 
+ drivers/of/fdt.c                                   |   14 
+ drivers/scsi/ipr.c                                 |    4 
+ drivers/scsi/lpfc/lpfc_nportdisc.c                 |    3 
+ drivers/scsi/pmcraid.c                             |    2 
+ drivers/scsi/vmw_pvscsi.h                          |    4 
+ drivers/staging/comedi/drivers/vmk80xx.c           |    2 
+ drivers/tty/goldfish.c                             |    2 
+ drivers/tty/serial/8250/8250_port.c                |    2 
+ drivers/usb/dwc2/hcd.c                             |    2 
+ drivers/usb/gadget/function/u_ether.c              |   11 
+ drivers/usb/gadget/udc/lpc32xx_udc.c               |    1 
+ drivers/usb/serial/io_ti.c                         |    2 
+ drivers/usb/serial/io_usbvend.h                    |    1 
+ drivers/usb/serial/option.c                        |    6 
+ drivers/virtio/virtio_mmio.c                       |    1 
+ drivers/virtio/virtio_pci_common.c                 |    3 
+ fs/9p/vfs_inode_dotl.c                             |   10 
+ fs/ext4/mballoc.c                                  |    9 
+ fs/ext4/namei.c                                    |    3 
+ fs/ext4/resize.c                                   |   10 
+ fs/nfs/pnfs.c                                      |    6 
+ include/crypto/blake2s.h                           |  102 
+ include/crypto/chacha20.h                          |   15 
+ include/crypto/drbg.h                              |   18 
+ include/crypto/internal/blake2s.h                  |   19 
+ include/linux/cpuhotplug.h                         |    2 
+ include/linux/hw_random.h                          |    2 
+ include/linux/mm.h                                 |    2 
+ include/linux/prandom.h                            |   23 
+ include/linux/random.h                             |  122 
+ include/linux/siphash.h                            |   28 
+ include/linux/timex.h                              |   10 
+ include/trace/events/random.h                      |  316 --
+ include/uapi/linux/random.h                        |    4 
+ init/main.c                                        |   18 
+ kernel/cpu.c                                       |   11 
+ kernel/irq/handle.c                                |    2 
+ kernel/time/timekeeping.c                          |   15 
+ lib/Kconfig.debug                                  |    3 
+ lib/Makefile                                       |    2 
+ lib/crypto/Makefile                                |    7 
+ lib/crypto/blake2s-generic.c                       |  111 
+ lib/crypto/blake2s-selftest.c                      |  591 ++++
+ lib/crypto/blake2s.c                               |   78 
+ lib/random32.c                                     |   15 
+ lib/sha1.c                                         |   95 
+ lib/siphash.c                                      |   32 
+ lib/vsprintf.c                                     |   10 
+ mm/util.c                                          |   33 
+ net/ipv4/inet_hashtables.c                         |   31 
+ net/l2tp/l2tp_ip6.c                                |    5 
+ net/openvswitch/actions.c                          |    6 
+ net/openvswitch/conntrack.c                        |    3 
+ net/openvswitch/flow_netlink.c                     |   61 
+ net/sunrpc/xprtrdma/rpc_rdma.c                     |    4 
+ scripts/faddr2line                                 |   45 
+ sound/soc/codecs/cs42l52.c                         |    8 
+ sound/soc/codecs/cs42l56.c                         |    4 
+ sound/soc/codecs/cs53l30.c                         |   16 
+ sound/soc/codecs/es8328.c                          |    5 
+ sound/soc/codecs/wm8962.c                          |    1 
+ sound/soc/codecs/wm_adsp.c                         |    2 
+ 113 files changed, 2838 insertions(+), 2787 deletions(-)
 
 Adam Ford (1):
       ASoC: wm8962: Fix suspend while playing music
@@ -168,8 +184,8 @@ Al Viro (1):
 Aleksandr Loktionov (1):
       i40e: Fix call trace in setup_tx_descriptors
 
-Andi Kleen (1):
-      random: optimize add_interrupt_randomness
+Alexey Kardashevskiy (1):
+      powerpc/mm: Switch obsolete dssall to .long
 
 Andy Lutomirski (8):
       random: Don't wake crng_init_wait when crng_init == 1
@@ -180,9 +196,6 @@ Andy Lutomirski (8):
       random: remove the blocking pool
       random: delete code to pull data into pools
       random: remove kernel.random.read_wakeup_threshold
-
-Andy Shevchenko (1):
-      crypto: Deduplicate le32_to_cpu_array() and cpu_to_le32_array()
 
 Ard Biesheuvel (1):
       random: avoid arch_get_random_seed_long() when collecting IRQ randomness
@@ -227,13 +240,11 @@ Dominik Brodowski (7):
       random: only call crng_finalize_init() for primary_crng
       random: fix locking in crng_fast_load()
 
-Eric Biggers (7):
-      crypto: chacha20 - Fix keystream alignment for chacha20_block()
+Eric Biggers (5):
       random: remove dead code left over from blocking pool
       crypto: blake2s - include <linux/bug.h> instead of <asm/bug.h>
       crypto: blake2s - adjust include guard naming
       random: initialize ChaCha20 constants with correct endianness
-      crypto: chacha20 - Fix chacha20_block() keystream alignment (again)
       random: remove use_input_pool parameter from crng_reseed()
 
 Eric Dumazet (1):
@@ -242,8 +253,15 @@ Eric Dumazet (1):
 George Spelvin (1):
       random: document get_random_int() family
 
-Greg Kroah-Hartman (1):
-      Linux 4.14.285
+Greg Kroah-Hartman (2):
+      Revert "hwmon: Make chip parameter for with_info API mandatory"
+      Linux 4.19.249
+
+Grzegorz Szczurek (1):
+      i40e: Fix adding ADQ filter to TC0
+
+He Ying (1):
+      powerpc/kasan: Silence KASAN warnings in __get_wchan()
 
 Herbert Xu (1):
       Revert "hwrng: core - Freeze khwrng thread during suspend"
@@ -257,12 +275,9 @@ Ian Abbott (1):
 Ilpo Järvinen (1):
       serial: 8250: Store to lsr_save_flags after lsr read
 
-Ingo Molnar (1):
-      random: remove preempt disabled region
-
-James Chapman (2):
-      l2tp: don't use inet_shutdown on ppp session destroy
-      l2tp: fix race in pppol2tp_release with session object destroy
+Ilya Maximets (2):
+      net: openvswitch: fix misuse of the cached connection on tuple changes
+      net: openvswitch: fix leak of nested actions
 
 James Smart (1):
       scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
@@ -274,9 +289,7 @@ Jann Horn (2):
       random: don't reset crng_init_cnt on urandom_read()
       random: check for signal_pending() outside of need_resched() check
 
-Jason A. Donenfeld (117):
-      random: always fill buffer in get_random_bytes_wait
-      random: Make crng state queryable
+Jason A. Donenfeld (115):
       crypto: blake2s - generic C library implementation and selftest
       lib/crypto: blake2s: move hmac construction into wireguard
       lib/crypto: sha1: re-roll loops to reduce code size
@@ -397,18 +410,19 @@ Jens Axboe (2):
       random: convert to using fops->write_iter()
       random: wire up fops->splice_{read,write}_iter()
 
-Kees Cook (2):
-      random: make CPU trust a boot parameter
-      random: move rand_initialize() earlier
+Josh Poimboeuf (1):
+      faddr2line: Fix overlapping text section failures, the sequel
 
-Linus Torvalds (1):
-      random: try to actively add entropy rather than passively wait for it
+Kees Cook (1):
+      random: move rand_initialize() earlier
 
 Marian Postevca (1):
       usb: gadget: u_ether: fix regression in setting fixed MAC address
 
-Mark Brown (1):
+Mark Brown (3):
       random: document add_hwgenerator_randomness() with other input functions
+      ASoC: es8328: Fix event generation for deemphasis control
+      ASoC: wm_adsp: Fix event generation for wm_adsp_fw_put()
 
 Mark Rutland (4):
       random: split primary/secondary crng init paths
@@ -419,9 +433,10 @@ Mark Rutland (4):
 Masahiro Yamada (1):
       certs/blacklist_hashes.c: fix const confusion in certs blacklist
 
-Miaoqian Lin (4):
+Miaoqian Lin (5):
       misc: atmel-ssc: Fix IRQ check in ssc_probe
       irqchip/gic/realview: Fix refcount leak in realview_gic_of_init
+      irqchip/gic-v3: Fix refcount leak in gic_populate_ppi_partitions
       usb: dwc2: Fix memory leak in dwc2_hcd_init
       usb: gadget: lpc32xx_udc: Fix refcount leak in lpc32xx_udc_probe
 
@@ -434,8 +449,13 @@ Nicolai Stange (4):
       crypto: drbg - move dynamic ->reseed_threshold adjustments to __drbg_seed()
       crypto: drbg - make reseeding from get_random_bytes() synchronous
 
-Rasmus Villemoes (4):
-      drivers/char/random.c: remove unused dont_count_entropy
+Petr Machata (1):
+      mlxsw: spectrum_cnt: Reorder counter pools
+
+Randy Dunlap (1):
+      RISC-V: fix barrier() use in <vdso/processor.h>
+
+Rasmus Villemoes (3):
       drivers/char/random.c: constify poolinfo_table
       drivers/char/random.c: remove unused stuct poolinfo::poolbits
       drivers/char/random.c: make primary_crng static
@@ -478,14 +498,9 @@ Stephen Boyd (2):
       random: Support freezable kthreads in add_hwgenerator_randomness()
       random: Use wait_event_freezable() in add_hwgenerator_randomness()
 
-Theodore Ts'o (3):
-      random: add a config option to trust the CPU's hwrng
+Theodore Ts'o (2):
       random: only read from /dev/random after its pool has received 128 bits
       random: fix soft lockup when trying to read from an uninitialized blocking pool
-
-Tobin C. Harding (2):
-      random: Fix whitespace pre random-bytes work
-      random: Return nbytes filled from hw RNG
 
 Trond Myklebust (1):
       pNFS: Don't keep retrying if the server replied NFS4ERR_LAYOUTUNAVAILABLE
