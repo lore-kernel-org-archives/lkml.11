@@ -2,52 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FCA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C326CCA480
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232651AbiFYLBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 07:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33820 "EHLO
+        id S232706AbiFYLBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 07:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiFYLBc (ORCPT
+        with ESMTP id S232461AbiFYLBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 07:01:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9B933E85;
-        Sat, 25 Jun 2022 04:01:30 -0700 (PDT)
+        Sat, 25 Jun 2022 07:01:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E9133E9A;
+        Sat, 25 Jun 2022 04:01:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 433C3B80819;
-        Sat, 25 Jun 2022 11:01:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA2AAC3411C;
-        Sat, 25 Jun 2022 11:01:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FE5B61190;
+        Sat, 25 Jun 2022 11:01:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A4FAC341C7;
+        Sat, 25 Jun 2022 11:01:32 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Pxi0sFTP"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="QkfaFeaE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656154885;
+        t=1656154891;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JNNN4Nj1miNoSxQ1yWGxKg9y+sxo5e8P5nh7EInqsQA=;
-        b=Pxi0sFTPbBMbw5Gel7H+iNnKefzSo6WbgpZgRIgvFzgqQNRwhSEvCRKGbNypFbQ3OeRebf
-        i0uOjuF4/SPTrmQWKM2+Y4yXKK8p5fjV9TUfG+s9ugat+TTB1goPzadO46/obxvUIJav+N
-        7Hn7+cDLQ68qkN9FtKA/qIO0h/s5xMw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7be98917 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sat, 25 Jun 2022 11:01:25 +0000 (UTC)
+        bh=9MIW/ue0haCu8c80MW6du7D3lgpZUfr2vnSqgqiQGV0=;
+        b=QkfaFeaEZFm+9BHDvdZUWGAkKZfPhUWf5+gCosEZ391QA+UYwlQ0uRTxjJymVEXk0SRx8I
+        pwc0dMrARH/9dgoW9RwJDMMacw5TES9R4pcBeq5MtzoeRl1vHN50crwjIZnoQw5Po9qxGR
+        jLfo0otSTvjyunkP9se25igWvBXMkaA=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2163d95c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sat, 25 Jun 2022 11:01:31 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk,
         Jens Axboe <axboe@kernel.dk>, linux-fsdevel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, stable@vger.kernel.org,
-        linux-cifs@vger.kernel.org, Steve French <stfrench@microsoft.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>
-Subject: [PATCH v2 1/8] ksmbd: use vfs_llseek instead of dereferencing NULL
-Date:   Sat, 25 Jun 2022 13:01:08 +0200
-Message-Id: <20220625110115.39956-2-Jason@zx2c4.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v2 3/8] fs: clear or set FMODE_LSEEK based on llseek function
+Date:   Sat, 25 Jun 2022 13:01:10 +0200
+Message-Id: <20220625110115.39956-4-Jason@zx2c4.com>
 In-Reply-To: <20220625110115.39956-1-Jason@zx2c4.com>
 References: <20220625110115.39956-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -56,46 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By not checking whether llseek is NULL, this might jump to NULL. Also,
-it doesn't check FMODE_LSEEK. Fix this by using vfs_llseek(), which
-always does the right thing.
+This helps unify a longstanding wart where FMODE_LSEEK hasn't been
+uniformly unset when it should be.
 
-Fixes: f44158485826 ("cifsd: add file operations")
-Cc: stable@vger.kernel.org
-Cc: linux-cifs@vger.kernel.org
-Cc: Steve French <stfrench@microsoft.com>
-Cc: Ronnie Sahlberg <lsahlber@redhat.com>
-Cc: Hyunchul Lee <hyc.lee@gmail.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
-Acked-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- fs/ksmbd/vfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/file_table.c | 2 ++
+ fs/open.c       | 2 ++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/fs/ksmbd/vfs.c b/fs/ksmbd/vfs.c
-index dcdd07c6efff..9cf2e2365832 100644
---- a/fs/ksmbd/vfs.c
-+++ b/fs/ksmbd/vfs.c
-@@ -1046,7 +1046,7 @@ int ksmbd_vfs_fqar_lseek(struct ksmbd_file *fp, loff_t start, loff_t length,
- 	*out_count = 0;
- 	end = start + length;
- 	while (start < end && *out_count < in_count) {
--		extent_start = f->f_op->llseek(f, start, SEEK_DATA);
-+		extent_start = vfs_llseek(f, start, SEEK_DATA);
- 		if (extent_start < 0) {
- 			if (extent_start != -ENXIO)
- 				ret = (int)extent_start;
-@@ -1056,7 +1056,7 @@ int ksmbd_vfs_fqar_lseek(struct ksmbd_file *fp, loff_t start, loff_t length,
- 		if (extent_start >= end)
- 			break;
+diff --git a/fs/file_table.c b/fs/file_table.c
+index 5424e3a8df5f..933686f84bf8 100644
+--- a/fs/file_table.c
++++ b/fs/file_table.c
+@@ -243,6 +243,8 @@ static struct file *alloc_file(const struct path *path, int flags,
+ 		file->f_mode |= FMODE_CAN_WRITE;
+ 	file->f_mode |= FMODE_OPENED;
+ 	file->f_op = fop;
++	if (file->f_op->llseek)
++		file->f_mode |= FMODE_LSEEK;
+ 	if ((file->f_mode & (FMODE_READ | FMODE_WRITE)) == FMODE_READ)
+ 		i_readcount_inc(path->dentry->d_inode);
+ 	return file;
+diff --git a/fs/open.c b/fs/open.c
+index 1d57fbde2feb..07c332753a36 100644
+--- a/fs/open.c
++++ b/fs/open.c
+@@ -858,6 +858,8 @@ static int do_dentry_open(struct file *f,
+ 	if ((f->f_mode & FMODE_WRITE) &&
+ 	     likely(f->f_op->write || f->f_op->write_iter))
+ 		f->f_mode |= FMODE_CAN_WRITE;
++	if ((f->f_mode & FMODE_LSEEK) && !f->f_op->llseek)
++		f->f_mode &= ~FMODE_LSEEK;
+ 	if (f->f_mapping->a_ops && f->f_mapping->a_ops->direct_IO)
+ 		f->f_mode |= FMODE_CAN_ODIRECT;
  
--		extent_end = f->f_op->llseek(f, extent_start, SEEK_HOLE);
-+		extent_end = vfs_llseek(f, extent_start, SEEK_HOLE);
- 		if (extent_end < 0) {
- 			if (extent_end != -ENXIO)
- 				ret = (int)extent_end;
 -- 
 2.35.1
 
