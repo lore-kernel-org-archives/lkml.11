@@ -2,128 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A46BC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 20:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5413AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 20:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233344AbiFYUCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 16:02:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
+        id S233392AbiFYUDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 16:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233374AbiFYUCb (ORCPT
+        with ESMTP id S233374AbiFYUDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 16:02:31 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DD6140A6
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 13:02:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656187350; x=1687723350;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kjDSb+MHDS7UHHDHrCopoQzl0kLxOnHTS/Sxp5Ajj/U=;
-  b=mcp81u4cenH6rf6ZbzXv0y0jGcjQ+gfFW2AoR1iiL68RataVx/5ZJfW0
-   pCq5zU3u1qEp7TwBu2aynqRVWC+ODtv9qaIYGZD+PcRTXzvZXn+p2b/Rb
-   piiF1h7So0qt4siUZYV5OIvD815nLqX9+rjEjBLoD/tirfv2xHF8cUS5j
-   FI9SvytGKfGudaOBeGeDmd4NsQYB0fAnyKbKz6xNAc837+Q+m8bi8vUbv
-   4Y6/YP4a3kKPz2wYI00sr98VIAyoQi2q/tcM7nFwdGv/WB2sX8FsELh/b
-   Pzjb+2aCufHSiGDofFuaR6/8xyt4QOR3r7yqNqApl1F3RwSSJcPV/E44v
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10389"; a="269957030"
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="269957030"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 13:02:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="539641505"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 25 Jun 2022 13:02:28 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o5BzA-0006FH-2j;
-        Sat, 25 Jun 2022 20:02:28 +0000
-Date:   Sun, 26 Jun 2022 04:02:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:master] BUILD SUCCESS
- 7089155b2877a54e33d4ab21eb68c28568aea2fe
-Message-ID: <62b769bb.n1i4MA3w6xyjr0to%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sat, 25 Jun 2022 16:03:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5128914099;
+        Sat, 25 Jun 2022 13:03:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D70B660EF8;
+        Sat, 25 Jun 2022 20:03:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70B63C3411C;
+        Sat, 25 Jun 2022 20:03:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656187417;
+        bh=BWeR0SUqiVtogg11CTKEDR7vQjoaisWfSZKgU4PshMg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aGtXbY+/cvxOUWVl1/9H6NVBmQQy88ag5fLvY7IyuHs5Mh6hNa3I8FnzxrRPNcUoE
+         pF+99qRLy+ZuZLIWEnW++pJ2nayl4ywHcKXTjLVCXWoddXV4PFy0ZpaWnikrZS3ypO
+         InQ6JR6Vl+TKqZRwCFhCp3MLpotakpU1TrkuCgSmE8Zs5miJ526CKeiVMYoXZnyuBx
+         K4jJl18oJ+vCYsE1c1BbtgJovjNraG00X8U1OvIkxhHkb/xdBg3xTKY3mZoZxypgWm
+         P3MaecMfx6zC/MaortF4U/UAvlsi2ZM83GP5q/ULb3qaGV0QpzW4r4WIt8u1hEtNyE
+         En58Hnv1ZBagQ==
+From:   SeongJae Park <sj@kernel.org>
+To:     Gautam <gautammenghani201@gmail.com>
+Cc:     sj@kernel.org, shuah@kernel.org, damon@lists.linux.dev,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] kselftests/damon: add support for cases where debugfs cannot be read
+Date:   Sat, 25 Jun 2022 20:03:34 +0000
+Message-Id: <20220625200334.83818-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220625195245.4368-1-gautammenghani201@gmail.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
-branch HEAD: 7089155b2877a54e33d4ab21eb68c28568aea2fe  Merge branch into tip/master: 'x86/vmware'
+Hi Gautam,
 
-elapsed time: 724m
+On Sun, 26 Jun 2022 01:22:45 +0530 Gautam <gautammenghani201@gmail.com> wrote:
 
-configs tested: 52
-configs skipped: 2
+> The kernel is in lockdown mode when secureboot is enabled and hence
+> debugfs cannot be used. Add support for this and other general cases 
+> where debugfs cannot be read and communicate the same to the user before
+> running tests.
+> 
+> Signed-off-by: Gautam <gautammenghani201@gmail.com>
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Reviewed-by: SeongJae Park <sj@kernel.org>
 
-gcc tested configs:
-arm                                 defconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-ia64                             allmodconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-alpha                            allyesconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-arc                              allyesconfig
-i386                                defconfig
-i386                             allyesconfig
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a015
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a006
-riscv                randconfig-r042-20220625
-s390                 randconfig-r044-20220625
-arc                  randconfig-r043-20220625
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-syz
 
-clang tested configs:
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a016
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-hexagon              randconfig-r041-20220625
-hexagon              randconfig-r045-20220625
+Thanks,
+SJ
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+> Changes in v2:
+> 1. Modify the error message to account for general cases.
+> 2. Change the return code so that the test is skipped.
+> 
+> Changes in v3:
+> 1. Change the name of variable holding the error message.
+> 
+> Changes in v4:
+> 1. Correct the mode of the source file.
+> 
+>  tools/testing/selftests/damon/_chk_dependency.sh | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/damon/_chk_dependency.sh b/tools/testing/selftests/damon/_chk_dependency.sh
+> index 0189db81550b..0328ac0b5a5e 100644
+> --- a/tools/testing/selftests/damon/_chk_dependency.sh
+> +++ b/tools/testing/selftests/damon/_chk_dependency.sh
+> @@ -26,3 +26,13 @@ do
+>  		exit 1
+>  	fi
+>  done
+> +
+> +permission_error="Operation not permitted"
+> +for f in attrs target_ids monitor_on
+> +do
+> +	status=$( cat "$DBGFS/$f" 2>&1 )
+> +	if [ "${status#*$permission_error}" != "$status" ]; then
+> +		echo "Permission for reading $DBGFS/$f denied; maybe secureboot enabled?"
+> +		exit $ksft_skip
+> +	fi
+> +done
+> -- 
+> 2.36.1
