@@ -2,133 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C36CCA47F
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBE5C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:37:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232367AbiFYKZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 06:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39090 "EHLO
+        id S232434AbiFYKhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 06:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232383AbiFYKZY (ORCPT
+        with ESMTP id S231287AbiFYKhU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 06:25:24 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1CA22501
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 03:25:23 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id x5-20020a923005000000b002d1a91c4d13so3179025ile.4
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 03:25:23 -0700 (PDT)
+        Sat, 25 Jun 2022 06:37:20 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287AA2A255;
+        Sat, 25 Jun 2022 03:37:19 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id r9so193514ljp.9;
+        Sat, 25 Jun 2022 03:37:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=p74EiAOrPkTvHsU80Gm6F1ejn2Q2dF5pBSqgM8W6O8g=;
+        b=Kvo0fglBTj0/ELNAGvVtCWnzgWVkDUGRwavsjI+Z1C2J8G1iiPUBQrUDtjDFfnS6DI
+         WXhW3+jl5RGEzCsWPistAArfqXHjaBztUMA75lJoTJS2DThF7aoJltWZGG2swjlG9zUU
+         b6Jx7BjRgfH9BetMqutckV+TLzqQ5qgp30iCctoGnnoYJ3PInwXmG89faMBRCFDkKTqb
+         d+vvXNVUpHMnWPjhae43agN6WjUjMaRt6aRT7Xk5FuK3aH/cNeLJYRPKaSNS6y6GR6Og
+         rlCN26rO4hHoJRMnfM52TCKADZv2xVPWzut6jOwkUKGVv3gebpTrxE9ReABorpyXtzSP
+         RQgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=PpTw+0pR7d6KHpWzvUOwmUS7vIoJqaATGHEMY/gsX2A=;
-        b=0xzhvWQuo97vsisIk+cf2SeNXIH7PJ5FUIYfpDgWaGqh2HAVyTQtZHj10m+bS7VRAf
-         QGQPR/oMwDvs59doumDNcUFXzT+mqAGdGw4zNQEfrFILMgANkGzr4XnN9uCE/69CEqD2
-         CkAIyNSLnvNQGu9lB3uT6OCDw2VY1Rjy2UIqG6MzO6ChsH/61OT+Ui6QYshpFLgQ33hE
-         dc0fY37qQbHWkKVMdKxxAVgeBlkvzN6y9JlWZH1kM7+GfRbQXIPow+kp8HB9e9JHI6Pa
-         Gb2MzRz3nJM9y2OSu9ZD9/0NoSaso5ov+P3eGW2Ygh59ofjjZSO5z8Thbo0+imntGeir
-         d1IA==
-X-Gm-Message-State: AJIora8PV/TeXPC7Ef2u185EZX6juhZN8O+NFifPGe+zjltEly11kAZS
-        2xrNkPMIUGyMFfVtkt3bR3eopGGoIV0C364EYqEDCP4gD/AD
-X-Google-Smtp-Source: AGRyM1vyuTnNG1op68acyHfJlLSr34YHYTrvAEpZwGi6Cbef/aP1GrA3CCCBKweTEXTj6eEY5/aDNdEA2+u9dTrnUMthPogUPw/n
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=p74EiAOrPkTvHsU80Gm6F1ejn2Q2dF5pBSqgM8W6O8g=;
+        b=YJdXVv4swG4Rbm3Ty4D8lLTfKhnir2ksbtlSb1mchWlmaLTlI/SOWNkn3ySf5Wt+pa
+         XLvwiXPFOtGqWbZS6vZNsq4n1vaX8LQUE0CkJ3nayzT8eCQPpgPcberEZzN702pjr3xE
+         rMfJGNjZntRaJ4J+eEsvQjOQXE8YF7V2W1jzDRbEEh1ym43/fC1wQlYoAWKFvnZCczcC
+         JJiCM/1rNjEhlpcr76kcwt2L20j+8FdD8TuAxArqFI+1uXqKHTvEgH8rFqo/BMRU6kMQ
+         EjVd0ioGFQnNtOMWC8qZH+DBEUaCAlTOyCihlWuauAFNTlAKN91uubbKzHhk5RgYmugD
+         xDzQ==
+X-Gm-Message-State: AJIora9y5bedwOZaS4ul+ym1El57bDpXP1iYfb1hl2BydLoQpbJW2FoR
+        NbSCH14m4yod6WWEqEczluYiv9gvACZC5QTU
+X-Google-Smtp-Source: AGRyM1uXChu1I/cl858gf+d6K/L0j/uYWpeDmUCmU93MP0j1pfBCh4E4Y9vvCAk368dg1dxykRCRQg==
+X-Received: by 2002:a05:651c:1202:b0:25a:6096:bd7e with SMTP id i2-20020a05651c120200b0025a6096bd7emr1617796lja.304.1656153437330;
+        Sat, 25 Jun 2022 03:37:17 -0700 (PDT)
+Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id z8-20020ac25de8000000b0047ac01fc644sm809115lfq.44.2022.06.25.03.37.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jun 2022 03:37:16 -0700 (PDT)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 01/10] iio: adc: mcp3911: correct "microchip,device-addr" property
+Date:   Sat, 25 Jun 2022 12:38:44 +0200
+Message-Id: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-Received: by 2002:a6b:ed15:0:b0:674:f8eb:a373 with SMTP id
- n21-20020a6bed15000000b00674f8eba373mr1734128iog.37.1656152722465; Sat, 25
- Jun 2022 03:25:22 -0700 (PDT)
-Date:   Sat, 25 Jun 2022 03:25:22 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b76c8005e2431a11@google.com>
-Subject: [syzbot] WARNING in cfg80211_ch_switch_notify
-From:   syzbot <syzbot+90d912872157e63589e4@syzkaller.appspotmail.com>
-To:     SHA-cyfmac-dev-list@infineon.com, ajay.kathat@microchip.com,
-        amitkarwar@gmail.com, aspriel@gmail.com,
-        brcm80211-dev-list.pdl@broadcom.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, edumazet@google.com, fabioaiuto83@gmail.com,
-        franky.lin@broadcom.com, ganapathi017@gmail.com,
-        geomatsi@gmail.com, gregkh@linuxfoundation.org,
-        hante.meuleman@broadcom.com, hdegoede@redhat.com,
-        huxinming820@gmail.com, imitsyanko@quantenna.com,
-        jagathjog1996@gmail.com, johannes.berg@intel.com,
-        johannes@sipsolutions.net, kuba@kernel.org, kvalo@kernel.org,
-        libertas-dev@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-wireless@vger.kernel.org,
-        loic.poulain@linaro.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        prestwoj@gmail.com, sharvari.harisangam@nxp.com, smoch@web.de,
-        syzkaller-bugs@googlegroups.com, ye.guojin@zte.com.cn
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Go for the right property name that is documented in the bindings.
 
-syzbot found the following issue on:
-
-HEAD commit:    34d1d36073ea Add linux-next specific files for 20220621
-git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=175aca1ff00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b24b62d1c051cfc8
-dashboard link: https://syzkaller.appspot.com/bug?extid=90d912872157e63589e4
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15a50e1ff00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=104b1cc4080000
-
-The issue was bisected to:
-
-commit 7b0a0e3c3a88260b6fcb017e49f198463aa62ed1
-Author: Johannes Berg <johannes.berg@intel.com>
-Date:   Thu Apr 14 14:50:57 2022 +0000
-
-    wifi: cfg80211: do some rework towards MLO link APIs
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=177e008ff00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=14fe008ff00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10fe008ff00000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+90d912872157e63589e4@syzkaller.appspotmail.com
-Fixes: 7b0a0e3c3a88 ("wifi: cfg80211: do some rework towards MLO link APIs")
-
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 1021 at net/wireless/nl80211.c:18562 cfg80211_ch_switch_notify+0x3b7/0x8a0 net/wireless/nl80211.c:18562
-Modules linked in:
-CPU: 1 PID: 1021 Comm: kworker/u4:5 Not tainted 5.19.0-rc3-next-20220621-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy4 ieee80211_csa_finalize_work
-
-RIP: 0010:cfg80211_ch_switch_notify+0x3b7/0x8a0 net/wireless/nl80211.c:18562
-Code: fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 d2 04 00 00 49 8b 14 24 44 89 ee 48 89 ef e8 33 fa fb ff e9 44 ff ff ff e8 e9 78 cc f8 <0f> 0b e9 38 ff ff ff e8 dd 78 cc f8 48 8d bd f8 04 00 00 48 ba 00
-RSP: 0018:ffffc90004dcfc60 EFLAGS: 00010293
-
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: ffff88801eea57c0 RSI: ffffffff88ae4467 RDI: 0000000000000005
-RBP: ffff88801f004c90 R08: 0000000000000005 R09: 0000000000000009
-R10: 0000000000000001 R11: 0000000000000010 R12: ffff88801f006458
-R13: 0000000000000000 R14: ffff88801f004000 R15: ffff888021d90000
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000021000000 CR3: 000000000ba8e000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __ieee80211_csa_finalize+0x738/0xc90 net/mac80211/cfg.c:3432
- ieee80211_csa_finalize net/mac80211/cfg.c:3439 [inline]
- ieee80211_csa_finalize_work+0x131/0x170 net/mac80211/cfg.c:3464
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
- </TASK>
-
-
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Notes:
+    v2:
+        - Fallback to "device-addr" due to compatibility (Andy Shevchenko)
+
+ drivers/iio/adc/mcp3911.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+index 1cb4590fe412..c5a0f19d7834 100644
+--- a/drivers/iio/adc/mcp3911.c
++++ b/drivers/iio/adc/mcp3911.c
+@@ -208,7 +208,13 @@ static int mcp3911_config(struct mcp3911 *adc)
+ 	u32 configreg;
+ 	int ret;
+ 
+-	device_property_read_u32(dev, "device-addr", &adc->dev_addr);
++	ret = device_property_read_u32(dev, "microchip,device-addr", &adc->dev_addr);
++
++	/* Fallback to "device-addr" due to historical mismatch between
++	 * dt-bindings and implementation
++	 */
++	if (ret)
++		device_property_read_u32(dev, "device-addr", &adc->dev_addr);
+ 	if (adc->dev_addr > 3) {
+ 		dev_err(&adc->spi->dev,
+ 			"invalid device address (%i). Must be in range 0-3.\n",
+-- 
+2.36.1
+
