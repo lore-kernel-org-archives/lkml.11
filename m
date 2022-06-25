@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF4CCCA482
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F8FCCA483
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 10:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232658AbiFYKi6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 06:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
+        id S232717AbiFYKjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 06:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232648AbiFYKik (ORCPT
+        with ESMTP id S232672AbiFYKix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 06:38:40 -0400
+        Sat, 25 Jun 2022 06:38:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DE6165AA;
-        Sat, 25 Jun 2022 03:38:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FE42A41D;
+        Sat, 25 Jun 2022 03:38:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 815E86112E;
-        Sat, 25 Jun 2022 10:38:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B43DAC341CC;
-        Sat, 25 Jun 2022 10:38:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97F8961050;
+        Sat, 25 Jun 2022 10:38:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89CACC3411C;
+        Sat, 25 Jun 2022 10:38:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656153515;
-        bh=t1P7QRRT8EKk/V0cs+0siLyjSXu23896sesO/K3vw34=;
+        s=korg; t=1656153519;
+        bh=FPBNwtcEZyDAsgrhwsUvJqaHCJV710EcF8eZqCZ9DMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IWPZXWeF8zK4QQuXmMCYOLEE8zYo8XkEYte/J0dVQUa0TZYUiSPedg7jSQyfKii3T
-         PHpGtWNyT9woaAVRzuVJDUNLBKIttZ/9MATv2+FZyx+BZdShsCi52NtcEPfIQlIxB9
-         QFhAZB6ymQbeeMsVpkUQmBGvywRA2GXPbdN4Jnrw=
+        b=zO+GB9svTdiKfHFubPYhBrFI86KCSZMSagHpj5lQt6ovMf255/UqURL59abMoPnGe
+         2bfjaCep39YhLw+yKcbi9CvymxUr0qNp845ywQ3RNU7NnVq0Qo5qK3mOpA33ZTruE8
+         njFxxhq7CVKlqjoqvc+THj3UYVUKW8mRCTg6h6qI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 4.14.285
-Date:   Sat, 25 Jun 2022 12:38:20 +0200
-Message-Id: <165615349974117@kroah.com>
+Subject: Re: Linux 4.19.249
+Date:   Sat, 25 Jun 2022 12:38:25 +0200
+Message-Id: <165615350410470@kroah.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <1656153499137139@kroah.com>
-References: <1656153499137139@kroah.com>
+In-Reply-To: <16561535049225@kroah.com>
+References: <16561535049225@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -47,19 +47,13 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 0c3c72a0ba97..681d429c6426 100644
+index 1dea3d23fc4c..500032af0192 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3526,6 +3526,18 @@
- 	ramdisk_size=	[RAM] Sizes of RAM disks in kilobytes
- 			See Documentation/blockdev/ramdisk.txt.
+@@ -3697,6 +3697,12 @@
+ 			fully seed the kernel's CRNG. Default is controlled
+ 			by CONFIG_RANDOM_TRUST_CPU.
  
-+	random.trust_cpu={on,off}
-+			[KNL] Enable or disable trusting the use of the
-+			CPU's random number generator (if available) to
-+			fully seed the kernel's CRNG. Default is controlled
-+			by CONFIG_RANDOM_TRUST_CPU.
-+
 +	random.trust_bootloader={on,off}
 +			[KNL] Enable or disable trusting the use of a
 +			seed passed by the bootloader (if available) to
@@ -69,11 +63,24 @@ index 0c3c72a0ba97..681d429c6426 100644
  	ras=option[,option,...]	[KNL] RAS-specific options
  
  		cec_disable	[X86]
+diff --git a/Documentation/hwmon/hwmon-kernel-api.txt b/Documentation/hwmon/hwmon-kernel-api.txt
+index 4981df157b04..eb7a78aebb38 100644
+--- a/Documentation/hwmon/hwmon-kernel-api.txt
++++ b/Documentation/hwmon/hwmon-kernel-api.txt
+@@ -71,7 +71,7 @@ hwmon_device_register_with_info is the most comprehensive and preferred means
+ to register a hardware monitoring device. It creates the standard sysfs
+ attributes in the hardware monitoring core, letting the driver focus on reading
+ from and writing to the chip instead of having to bother with sysfs attributes.
+-The parent device parameter as well as the chip parameter must not be NULL. Its
++The parent device parameter cannot be NULL with non-NULL chip info. Its
+ parameters are described in more detail below.
+ 
+ devm_hwmon_device_register_with_info is similar to
 diff --git a/Documentation/sysctl/kernel.txt b/Documentation/sysctl/kernel.txt
-index 3c8f5bfdf6da..37b612a17c46 100644
+index 8bd3b0153959..db1676525ca3 100644
 --- a/Documentation/sysctl/kernel.txt
 +++ b/Documentation/sysctl/kernel.txt
-@@ -781,9 +781,40 @@ The kernel command line parameter printk.devkmsg= overrides this and is
+@@ -821,9 +821,40 @@ The kernel command line parameter printk.devkmsg= overrides this and is
  a one-time setting until next reboot: once set, it cannot be changed by
  this sysctl interface anymore.
  
@@ -117,10 +124,10 @@ index 3c8f5bfdf6da..37b612a17c46 100644
  This option can be used to select the type of process address
  space randomization that is used in the system, for architectures
 diff --git a/MAINTAINERS b/MAINTAINERS
-index e2dd302345c2..b18207d0c744 100644
+index 1061db6fbc32..af0f322cf2f7 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -11307,6 +11307,7 @@ F:	drivers/block/brd.c
+@@ -12239,6 +12239,7 @@ F:	arch/mips/configs/generic/board-ranchu.config
  
  RANDOM NUMBER DRIVER
  M:	"Theodore Ts'o" <tytso@mit.edu>
@@ -129,17 +136,17 @@ index e2dd302345c2..b18207d0c744 100644
  F:	drivers/char/random.c
  
 diff --git a/Makefile b/Makefile
-index c6bdc627db2c..abdee02ff673 100644
+index afb8b46398da..14ba089d5b01 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
- PATCHLEVEL = 14
--SUBLEVEL = 284
-+SUBLEVEL = 285
+ PATCHLEVEL = 19
+-SUBLEVEL = 248
++SUBLEVEL = 249
  EXTRAVERSION =
- NAME = Petit Gorille
+ NAME = "People's Front"
  
 diff --git a/arch/alpha/include/asm/timex.h b/arch/alpha/include/asm/timex.h
 index b565cc6f408e..f89798da8a14 100644
@@ -164,7 +171,7 @@ index f6fcc67ef06e..c06d38f0df8e 100644
  
  #endif
 diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
-index 6eefd5873aef..cd0b2fc94d3b 100644
+index b6618391be8c..4254d7808def 100644
 --- a/arch/arm64/kernel/ftrace.c
 +++ b/arch/arm64/kernel/ftrace.c
 @@ -72,7 +72,7 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
@@ -335,6 +342,26 @@ index a09595f00cab..f0f16b4fc5ea 100644
  #endif /* CONFIG_ARCH_RANDOM */
  
  #ifdef CONFIG_PPC_POWERNV
+diff --git a/arch/powerpc/include/asm/ppc-opcode.h b/arch/powerpc/include/asm/ppc-opcode.h
+index d9d5391b2af6..d0d3dab56225 100644
+--- a/arch/powerpc/include/asm/ppc-opcode.h
++++ b/arch/powerpc/include/asm/ppc-opcode.h
+@@ -207,6 +207,7 @@
+ #define PPC_INST_ICBT			0x7c00002c
+ #define PPC_INST_ICSWX			0x7c00032d
+ #define PPC_INST_ICSWEPX		0x7c00076d
++#define PPC_INST_DSSALL			0x7e00066c
+ #define PPC_INST_ISEL			0x7c00001e
+ #define PPC_INST_ISEL_MASK		0xfc00003e
+ #define PPC_INST_LDARX			0x7c0000a8
+@@ -424,6 +425,7 @@
+ 					__PPC_RA(a) | __PPC_RB(b))
+ #define	PPC_DCBZL(a, b)		stringify_in_c(.long PPC_INST_DCBZL | \
+ 					__PPC_RA(a) | __PPC_RB(b))
++#define PPC_DSSALL		stringify_in_c(.long PPC_INST_DSSALL)
+ #define PPC_LQARX(t, a, b, eh)	stringify_in_c(.long PPC_INST_LQARX | \
+ 					___PPC_RT(t) | ___PPC_RA(a) | \
+ 					___PPC_RB(b) | __PPC_EH(eh))
 diff --git a/arch/powerpc/include/asm/timex.h b/arch/powerpc/include/asm/timex.h
 index 926b9f91a3ef..7401d6a684c5 100644
 --- a/arch/powerpc/include/asm/timex.h
@@ -347,29 +374,166 @@ index 926b9f91a3ef..7401d6a684c5 100644
  
  #endif	/* __KERNEL__ */
  #endif	/* _ASM_POWERPC_TIMEX_H */
+diff --git a/arch/powerpc/kernel/idle_6xx.S b/arch/powerpc/kernel/idle_6xx.S
+index ff026c9d3cab..75de66acc3d1 100644
+--- a/arch/powerpc/kernel/idle_6xx.S
++++ b/arch/powerpc/kernel/idle_6xx.S
+@@ -133,7 +133,7 @@ BEGIN_FTR_SECTION
+ END_FTR_SECTION_IFCLR(CPU_FTR_NO_DPM)
+ 	mtspr	SPRN_HID0,r4
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 	CURRENT_THREAD_INFO(r9, r1)
+diff --git a/arch/powerpc/kernel/l2cr_6xx.S b/arch/powerpc/kernel/l2cr_6xx.S
+index 6e7dbb7d527c..9d4b42d115cd 100644
+--- a/arch/powerpc/kernel/l2cr_6xx.S
++++ b/arch/powerpc/kernel/l2cr_6xx.S
+@@ -108,7 +108,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L2CR)
+ 
+ 	/* Stop DST streams */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 
+@@ -305,7 +305,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L3CR)
+ 	isync
+ 
+ 	/* Stop DST streams */
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ 
+ 	/* Get the current enable bit of the L3CR into r4 */
+@@ -414,7 +414,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_L3CR)
+ _GLOBAL(__flush_disable_L1)
+ 	/* Stop pending alitvec streams and memory accesses */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+  	sync
+ 
+diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+index 02b69a68139c..56c33285b1df 100644
+--- a/arch/powerpc/kernel/process.c
++++ b/arch/powerpc/kernel/process.c
+@@ -2017,12 +2017,12 @@ unsigned long get_wchan(struct task_struct *p)
+ 		return 0;
+ 
+ 	do {
+-		sp = *(unsigned long *)sp;
++		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
+ 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
+ 		    p->state == TASK_RUNNING)
+ 			return 0;
+ 		if (count > 0) {
+-			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
++			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
+ 			if (!in_sched_functions(ip))
+ 				return ip;
+ 		}
+diff --git a/arch/powerpc/kernel/swsusp_32.S b/arch/powerpc/kernel/swsusp_32.S
+index cbdf86228eaa..54c44aea338c 100644
+--- a/arch/powerpc/kernel/swsusp_32.S
++++ b/arch/powerpc/kernel/swsusp_32.S
+@@ -181,7 +181,7 @@ _GLOBAL(swsusp_arch_resume)
+ #ifdef CONFIG_ALTIVEC
+ 	/* Stop pending alitvec streams and memory accesses */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ #endif
+  	sync
+diff --git a/arch/powerpc/kernel/swsusp_asm64.S b/arch/powerpc/kernel/swsusp_asm64.S
+index f83bf6f72cb0..0af06f3dbb25 100644
+--- a/arch/powerpc/kernel/swsusp_asm64.S
++++ b/arch/powerpc/kernel/swsusp_asm64.S
+@@ -143,7 +143,7 @@ END_FW_FTR_SECTION_IFCLR(FW_FEATURE_LPAR)
+ _GLOBAL(swsusp_arch_resume)
+ 	/* Stop pending alitvec streams and memory accesses */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 	sync
+ 
+diff --git a/arch/powerpc/mm/mmu_context.c b/arch/powerpc/mm/mmu_context.c
+index f84e14f23e50..78a638ccc70f 100644
+--- a/arch/powerpc/mm/mmu_context.c
++++ b/arch/powerpc/mm/mmu_context.c
+@@ -83,7 +83,7 @@ void switch_mm_irqs_off(struct mm_struct *prev, struct mm_struct *next,
+ 	 * context
+ 	 */
+ 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
+-		asm volatile ("dssall");
++		asm volatile (PPC_DSSALL);
+ 
+ 	if (new_on_cpu)
+ 		radix_kvm_prefetch_workaround(next);
+diff --git a/arch/powerpc/platforms/powermac/cache.S b/arch/powerpc/platforms/powermac/cache.S
+index 27862feee4a5..0dde4a7a6016 100644
+--- a/arch/powerpc/platforms/powermac/cache.S
++++ b/arch/powerpc/platforms/powermac/cache.S
+@@ -53,7 +53,7 @@ flush_disable_75x:
+ 
+ 	/* Stop DST streams */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 
+@@ -201,7 +201,7 @@ flush_disable_745x:
+ 	isync
+ 
+ 	/* Stop prefetch streams */
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ 
+ 	/* Disable L2 prefetching */
+diff --git a/arch/riscv/include/asm/processor.h b/arch/riscv/include/asm/processor.h
+index c23578a37b44..fdcc34b4f65b 100644
+--- a/arch/riscv/include/asm/processor.h
++++ b/arch/riscv/include/asm/processor.h
+@@ -30,6 +30,8 @@
+ 
+ #ifndef __ASSEMBLY__
+ 
++#include <asm/barrier.h>
++
+ struct task_struct;
+ struct pt_regs;
+ 
 diff --git a/arch/s390/include/asm/archrandom.h b/arch/s390/include/asm/archrandom.h
-index e9f7d7a57f99..ddf97715ee53 100644
+index c67b82dfa558..9a6835137a16 100644
 --- a/arch/s390/include/asm/archrandom.h
 +++ b/arch/s390/include/asm/archrandom.h
-@@ -26,18 +26,6 @@ static void s390_arch_random_generate(u8 *buf, unsigned int nbytes)
- 	atomic64_add(nbytes, &s390_arch_random_counter);
- }
+@@ -21,18 +21,6 @@ extern atomic64_t s390_arch_random_counter;
+ 
+ bool s390_arch_random_generate(u8 *buf, unsigned int nbytes);
  
 -static inline bool arch_has_random(void)
+-{
+-	return false;
+-}
+-
+-static inline bool arch_has_random_seed(void)
 -{
 -	if (static_branch_likely(&s390_arch_random_available))
 -		return true;
 -	return false;
 -}
 -
--static inline bool arch_has_random_seed(void)
--{
--	return arch_has_random();
--}
--
  static inline bool arch_get_random_long(unsigned long *v)
  {
- 	if (static_branch_likely(&s390_arch_random_available)) {
+ 	return false;
 diff --git a/arch/s390/include/asm/timex.h b/arch/s390/include/asm/timex.h
 index b6a4ce9dafaf..99a7e028232d 100644
 --- a/arch/s390/include/asm/timex.h
@@ -383,10 +547,10 @@ index b6a4ce9dafaf..99a7e028232d 100644
  int get_phys_clock(unsigned long *clock);
  void init_cpu_timer(void);
 diff --git a/arch/s390/mm/pgtable.c b/arch/s390/mm/pgtable.c
-index aa6b9487c8bb..783e07934a3d 100644
+index 4354ac607750..9f3903089869 100644
 --- a/arch/s390/mm/pgtable.c
 +++ b/arch/s390/mm/pgtable.c
-@@ -684,7 +684,7 @@ void ptep_zap_key(struct mm_struct *mm, unsigned long addr, pte_t *ptep)
+@@ -716,7 +716,7 @@ void ptep_zap_key(struct mm_struct *mm, unsigned long addr, pte_t *ptep)
  	pgste_val(pgste) |= PGSTE_GR_BIT | PGSTE_GC_BIT;
  	ptev = pte_val(*ptep);
  	if (!(ptev & _PAGE_INVALID) && (ptev & _PAGE_WRITE))
@@ -492,7 +656,7 @@ index a4a8b1b16c0c..956e4145311b 100644
  #define CLOCK_TICK_RATE		PIT_TICK_RATE
  
 diff --git a/arch/x86/include/asm/tsc.h b/arch/x86/include/asm/tsc.h
-index 8da0efb13544..036feaff46ed 100644
+index eb5bbfeccb66..196cf01f58fd 100644
 --- a/arch/x86/include/asm/tsc.h
 +++ b/arch/x86/include/asm/tsc.h
 @@ -22,13 +22,12 @@ extern void disable_TSC(void);
@@ -511,7 +675,7 @@ index 8da0efb13544..036feaff46ed 100644
 +#define get_cycles get_cycles
  
  extern struct system_counterval_t convert_art_to_tsc(u64 art);
- 
+ extern struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns);
 diff --git a/arch/xtensa/include/asm/timex.h b/arch/xtensa/include/asm/timex.h
 index f9b389d4e973..d866bc847d8d 100644
 --- a/arch/xtensa/include/asm/timex.h
@@ -547,22 +711,8 @@ index 344892337be0..d5961aa3d338 100644
  #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
  	, NULL
  };
-diff --git a/crypto/chacha20_generic.c b/crypto/chacha20_generic.c
-index 4a45fa4890c0..24827d00fb67 100644
---- a/crypto/chacha20_generic.c
-+++ b/crypto/chacha20_generic.c
-@@ -22,7 +22,8 @@ static inline u32 le32_to_cpuvp(const void *p)
- static void chacha20_docrypt(u32 *state, u8 *dst, const u8 *src,
- 			     unsigned int bytes)
- {
--	u8 stream[CHACHA20_BLOCK_SIZE];
-+	/* aligned to potentially speed up crypto_xor() */
-+	u8 stream[CHACHA20_BLOCK_SIZE] __aligned(sizeof(long));
- 
- 	if (dst != src)
- 		memcpy(dst, src, bytes);
 diff --git a/crypto/drbg.c b/crypto/drbg.c
-index 6c3221313753..1a555db4eef0 100644
+index bc52d9562611..c8c56763dfde 100644
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
 @@ -219,6 +219,57 @@ static inline unsigned short drbg_sec_strength(drbg_flag_t flags)
@@ -623,7 +773,7 @@ index 6c3221313753..1a555db4eef0 100644
  /*
   * Convert an integer into a byte representation of this integer.
   * The byte representation is big-endian
-@@ -986,55 +1037,79 @@ static const struct drbg_state_ops drbg_hash_ops = {
+@@ -984,55 +1035,79 @@ static const struct drbg_state_ops drbg_hash_ops = {
   ******************************************************************/
  
  static inline int __drbg_seed(struct drbg_state *drbg, struct list_head *seed,
@@ -725,7 +875,7 @@ index 6c3221313753..1a555db4eef0 100644
  }
  
  /*
-@@ -1056,6 +1131,7 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1054,6 +1129,7 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
  	struct drbg_string data1;
  	LIST_HEAD(seedlist);
@@ -733,7 +883,7 @@ index 6c3221313753..1a555db4eef0 100644
  
  	/* 9.1 / 9.2 / 9.3.1 step 3 */
  	if (pers && pers->len > (drbg_max_addtl(drbg))) {
-@@ -1083,7 +1159,12 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1081,7 +1157,12 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  		BUG_ON((entropylen * 2) > sizeof(entropy));
  
  		/* Get seed from in-kernel /dev/urandom */
@@ -747,7 +897,7 @@ index 6c3221313753..1a555db4eef0 100644
  
  		if (!drbg->jent) {
  			drbg_string_fill(&data1, entropy, entropylen);
-@@ -1096,7 +1177,23 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1094,7 +1175,23 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  						   entropylen);
  			if (ret) {
  				pr_devel("DRBG: jent failed with %d\n", ret);
@@ -772,7 +922,7 @@ index 6c3221313753..1a555db4eef0 100644
  			}
  
  			drbg_string_fill(&data1, entropy, entropylen * 2);
-@@ -1121,8 +1218,9 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1119,8 +1216,9 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  		memset(drbg->C, 0, drbg_statelen(drbg));
  	}
  
@@ -783,7 +933,7 @@ index 6c3221313753..1a555db4eef0 100644
  	memzero_explicit(entropy, entropylen * 2);
  
  	return ret;
-@@ -1144,6 +1242,11 @@ static inline void drbg_dealloc_state(struct drbg_state *drbg)
+@@ -1142,6 +1240,11 @@ static inline void drbg_dealloc_state(struct drbg_state *drbg)
  	drbg->reseed_ctr = 0;
  	drbg->d_ops = NULL;
  	drbg->core = NULL;
@@ -795,7 +945,7 @@ index 6c3221313753..1a555db4eef0 100644
  }
  
  /*
-@@ -1213,6 +1316,14 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
+@@ -1211,6 +1314,14 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
  		drbg->scratchpad = PTR_ALIGN(drbg->scratchpadbuf, ret + 1);
  	}
  
@@ -810,7 +960,7 @@ index 6c3221313753..1a555db4eef0 100644
  	return 0;
  
  fini:
-@@ -1285,19 +1396,25 @@ static int drbg_generate(struct drbg_state *drbg,
+@@ -1283,19 +1394,25 @@ static int drbg_generate(struct drbg_state *drbg,
  	 * here. The spec is a bit convoluted here, we make it simpler.
  	 */
  	if (drbg->reseed_threshold < drbg->reseed_ctr)
@@ -839,7 +989,7 @@ index 6c3221313753..1a555db4eef0 100644
  	}
  
  	if (addtl && 0 < addtl->len)
-@@ -1390,51 +1507,15 @@ static int drbg_generate_long(struct drbg_state *drbg,
+@@ -1388,51 +1505,15 @@ static int drbg_generate_long(struct drbg_state *drbg,
  	return 0;
  }
  
@@ -892,7 +1042,7 @@ index 6c3221313753..1a555db4eef0 100644
  }
  
  /*
-@@ -1477,7 +1558,7 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1475,7 +1556,7 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
  	if (!drbg->core) {
  		drbg->core = &drbg_cores[coreref];
  		drbg->pr = pr;
@@ -901,7 +1051,7 @@ index 6c3221313753..1a555db4eef0 100644
  		drbg->reseed_threshold = drbg_max_requests(drbg);
  
  		ret = drbg_alloc_state(drbg);
-@@ -1528,12 +1609,9 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1526,12 +1607,9 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
   */
  static int drbg_uninstantiate(struct drbg_state *drbg)
  {
@@ -916,67 +1066,11 @@ index 6c3221313753..1a555db4eef0 100644
  
  	if (drbg->d_ops)
  		drbg->d_ops->crypto_fini(drbg);
-diff --git a/crypto/md4.c b/crypto/md4.c
-index 3515af425cc9..810fefb0a007 100644
---- a/crypto/md4.c
-+++ b/crypto/md4.c
-@@ -64,23 +64,6 @@ static inline u32 H(u32 x, u32 y, u32 z)
- #define ROUND2(a,b,c,d,k,s) (a = lshift(a + G(b,c,d) + k + (u32)0x5A827999,s))
- #define ROUND3(a,b,c,d,k,s) (a = lshift(a + H(b,c,d) + k + (u32)0x6ED9EBA1,s))
- 
--/* XXX: this stuff can be optimized */
--static inline void le32_to_cpu_array(u32 *buf, unsigned int words)
--{
--	while (words--) {
--		__le32_to_cpus(buf);
--		buf++;
--	}
--}
--
--static inline void cpu_to_le32_array(u32 *buf, unsigned int words)
--{
--	while (words--) {
--		__cpu_to_le32s(buf);
--		buf++;
--	}
--}
--
- static void md4_transform(u32 *hash, u32 const *in)
- {
- 	u32 a, b, c, d;
-diff --git a/crypto/md5.c b/crypto/md5.c
-index f7ae1a48225b..f776ef43d621 100644
---- a/crypto/md5.c
-+++ b/crypto/md5.c
-@@ -32,23 +32,6 @@ const u8 md5_zero_message_hash[MD5_DIGEST_SIZE] = {
- };
- EXPORT_SYMBOL_GPL(md5_zero_message_hash);
- 
--/* XXX: this stuff can be optimized */
--static inline void le32_to_cpu_array(u32 *buf, unsigned int words)
--{
--	while (words--) {
--		__le32_to_cpus(buf);
--		buf++;
--	}
--}
--
--static inline void cpu_to_le32_array(u32 *buf, unsigned int words)
--{
--	while (words--) {
--		__cpu_to_le32s(buf);
--		buf++;
--	}
--}
--
- #define F1(x, y, z)	(z ^ (x & (y ^ z)))
- #define F2(x, y, z)	F1(z, x, y)
- #define F3(x, y, z)	(x ^ y ^ z)
 diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index d3a7b3bb5043..08dc37a62f5a 100644
+index 0c10d9557754..b0dea0702c74 100644
 --- a/drivers/ata/libata-core.c
 +++ b/drivers/ata/libata-core.c
-@@ -6180,7 +6180,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+@@ -6253,7 +6253,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
  				      const struct ata_port_info * const * ppi,
  				      int n_ports)
  {
@@ -985,7 +1079,7 @@ index d3a7b3bb5043..08dc37a62f5a 100644
  	struct ata_host *host;
  	int i, j;
  
-@@ -6188,7 +6188,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+@@ -6261,7 +6261,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
  	if (!host)
  		return NULL;
  
@@ -995,19 +1089,32 @@ index d3a7b3bb5043..08dc37a62f5a 100644
  
  		if (ppi[j])
 diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index 88316f86cc95..e329d1cc019a 100644
+index 1df9cb8e659e..f55c9bbd58fb 100644
 --- a/drivers/char/Kconfig
 +++ b/drivers/char/Kconfig
-@@ -588,5 +588,41 @@ config TILE_SROM
- 
- source "drivers/char/xillybus/Kconfig"
+@@ -552,19 +552,41 @@ config ADI
+ 	  and SSM (Silicon Secured Memory).  Intended consumers of this
+ 	  driver include crash and makedumpfile.
  
 -endmenu
-+config RANDOM_TRUST_CPU
+-
+ config RANDOM_TRUST_CPU
+-	bool "Trust the CPU manufacturer to initialize Linux's CRNG"
+-	depends on X86 || S390 || PPC
+-	default n
 +	bool "Initialize RNG using CPU RNG instructions"
 +	default y
 +	depends on ARCH_RANDOM
-+	help
+ 	help
+-	Assume that CPU manufacturer (e.g., Intel or AMD for RDSEED or
+-	RDRAND, IBM for the S390 and Power PC architectures) is trustworthy
+-	for the purposes of initializing Linux's CRNG.  Since this is not
+-	something that can be independently audited, this amounts to trusting
+-	that CPU manufacturer (perhaps with the insistence or mandate
+-	of a Nation State's intelligence or law enforcement agencies)
+-	has not installed a hidden back door to compromise the CPU's
+-	random number generation facilities. This can also be configured
+-	at boot with "random.trust_cpu=on/off".
 +	  Initialize the RNG using random numbers supplied by the CPU's
 +	  RNG instructions (e.g. RDRAND), if supported and available. These
 +	  random numbers are never used directly, but are rather hashed into
@@ -1039,10 +1146,10 @@ index 88316f86cc95..e329d1cc019a 100644
 +	  Say Y here unless you have reason to mistrust your bootloader or
 +	  believe its RNG facilities may be faulty. This may also be configured
 +	  at boot time with "random.trust_bootloader=on/off".
- 
++
 +endmenu
 diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
-index 21b98771312f..303fd55f9be0 100644
+index 0ef7cb0448e8..c9757fa2d308 100644
 --- a/drivers/char/hw_random/core.c
 +++ b/drivers/char/hw_random/core.c
 @@ -15,6 +15,7 @@
@@ -1054,7 +1161,7 @@ index 21b98771312f..303fd55f9be0 100644
  #include <linux/kthread.h>
  #include <linux/sched/signal.h>
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 1eb0cdbe8786..1331571e2b12 100644
+index 112734378146..55b23104fe33 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -1,242 +1,29 @@
@@ -1331,7 +1438,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
  #include <linux/ptrace.h>
  #include <linux/workqueue.h>
  #include <linux/irq.h>
-@@ -265,1549 +50,1067 @@
+@@ -265,1636 +50,1067 @@
  #include <linux/syscalls.h>
  #include <linux/completion.h>
  #include <linux/uuid.h>
@@ -1885,14 +1992,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
  }
  
 -static void process_random_ready_list(void)
-+/*
-+ * Return whether the crng seed is considered to be sufficiently old
-+ * that a reseeding is needed. This happens if the last reseeding
-+ * was CRNG_RESEED_INTERVAL ago, or during early boot, at an interval
-+ * proportional to the uptime.
-+ */
-+static bool crng_has_old_seed(void)
- {
+-{
 -	unsigned long flags;
 -	struct random_ready_callback *rdy, *tmp;
 -
@@ -1903,6 +2003,14 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -		list_del_init(&rdy->list);
 -		rdy->func(rdy);
 -		module_put(owner);
++/*
++ * Return whether the crng seed is considered to be sufficiently old
++ * that a reseeding is needed. This happens if the last reseeding
++ * was CRNG_RESEED_INTERVAL ago, or during early boot, at an interval
++ * proportional to the uptime.
++ */
++static bool crng_has_old_seed(void)
++{
 +	static bool early_boot = true;
 +	unsigned long interval = CRNG_RESEED_INTERVAL;
 +
@@ -1940,7 +2048,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +	struct crng *crng;
  
 -retry:
--	entropy_count = orig = ACCESS_ONCE(r->entropy_count);
+-	entropy_count = orig = READ_ONCE(r->entropy_count);
 -	if (nfrac < 0) {
 -		/* Debit */
 -		entropy_count += nfrac;
@@ -2038,7 +2146,8 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +	crng = raw_cpu_ptr(&crngs);
  
 -		/* should we wake readers? */
--		if (entropy_bits >= random_read_wakeup_bits) {
+-		if (entropy_bits >= random_read_wakeup_bits &&
+-		    wq_has_sleeper(&random_read_wait)) {
 -			wake_up_interruptible(&random_read_wait);
 -			kill_fasync(&fasync, SIGIO, POLL_IN);
 -		}
@@ -2085,13 +2194,13 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +static void _get_random_bytes(void *buf, size_t len)
  {
 -	const int nbits_max = r->poolinfo->poolwords * 32;
+-
+-	if (nbits < 0)
+-		return -EINVAL;
 +	u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)];
 +	u8 tmp[CHACHA20_BLOCK_SIZE];
 +	size_t first_block_len;
  
--	if (nbits < 0)
--		return -EINVAL;
--
 -	/* Cap the value to avoid overflows */
 -	nbits = min(nbits,  nbits_max);
 +	if (!len)
@@ -2149,11 +2258,24 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -#endif
 -
 -static void invalidate_batched_entropy(void);
+-static void numa_crng_init(void);
 -
--static void crng_initialize(struct crng_state *crng)
+-static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
+-static int __init parse_trust_cpu(char *arg)
 +void get_random_bytes(void *buf, size_t len)
  {
+-	return kstrtobool(arg, &trust_cpu);
++	warn_unseeded_randomness();
++	_get_random_bytes(buf, len);
+ }
+-early_param("random.trust_cpu", parse_trust_cpu);
++EXPORT_SYMBOL(get_random_bytes);
+ 
+-static void crng_initialize(struct crng_state *crng)
++static ssize_t get_random_bytes_user(struct iov_iter *iter)
+ {
 -	int		i;
+-	int		arch_init = 1;
 -	unsigned long	rv;
 -
 -	memcpy(&crng->state[0], "expand 32-byte k", 16);
@@ -2164,20 +2286,27 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -		_get_random_bytes(&crng->state[4], sizeof(__u32) * 12);
 -	for (i = 4; i < 16; i++) {
 -		if (!arch_get_random_seed_long(&rv) &&
--		    !arch_get_random_long(&rv))
+-		    !arch_get_random_long(&rv)) {
 -			rv = random_get_entropy();
+-			arch_init = 0;
+-		}
 -		crng->state[i] ^= rv;
 -	}
+-	if (trust_cpu && arch_init && crng == &primary_crng) {
+-		invalidate_batched_entropy();
+-		numa_crng_init();
+-		crng_init = 2;
+-		pr_notice("random: crng done (trusting CPU's manufacturer)\n");
+-	}
 -	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
-+	warn_unseeded_randomness();
-+	_get_random_bytes(buf, len);
- }
-+EXPORT_SYMBOL(get_random_bytes);
+-}
++	u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)];
++	u8 block[CHACHA20_BLOCK_SIZE];
++	size_t ret = 0, copied;
  
 -#ifdef CONFIG_NUMA
 -static void do_numa_crng_init(struct work_struct *work)
-+static ssize_t get_random_bytes_user(struct iov_iter *iter)
- {
+-{
 -	int i;
 -	struct crng_state *crng;
 -	struct crng_state **pool;
@@ -2197,18 +2326,10 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -		kfree(pool);
 -	}
 -}
-+	u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)];
-+	u8 block[CHACHA20_BLOCK_SIZE];
-+	size_t ret = 0, copied;
- 
--static DECLARE_WORK(numa_crng_init_work, do_numa_crng_init);
 +	if (unlikely(!iov_iter_count(iter)))
 +		return 0;
  
--static void numa_crng_init(void)
--{
--	schedule_work(&numa_crng_init_work);
--}
+-static DECLARE_WORK(numa_crng_init_work, do_numa_crng_init);
 +	/*
 +	 * Immediately overwrite the ChaCha key at index 4 with random
 +	 * bytes, in case userspace causes copy_to_user() below to sleep
@@ -2225,15 +2346,19 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +		goto out_zero_chacha;
 +	}
  
--static struct crng_state *select_crng(void)
+-static void numa_crng_init(void)
 -{
--	struct crng_state **pool;
--	int nid = numa_node_id();
+-	schedule_work(&numa_crng_init_work);
+-}
 +	for (;;) {
 +		chacha20_block(chacha_state, block);
 +		if (unlikely(chacha_state[12] == 0))
 +			++chacha_state[13];
-+
+ 
+-static struct crng_state *select_crng(void)
+-{
+-	struct crng_state **pool;
+-	int nid = numa_node_id();
 +		copied = copy_to_iter(block, sizeof(block), iter);
 +		ret += copied;
 +		if (!iov_iter_count(iter) || copied != sizeof(block))
@@ -2375,32 +2500,17 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -		crng_init = 1;
 -		wake_up_interruptible(&crng_init_wait);
 -		pr_notice("random: fast init done\n");
-+	while (left) {
-+		unsigned long v;
-+		size_t block_len = min_t(size_t, left, sizeof(unsigned long));
-+
-+		if (!arch_get_random_long(&v))
-+			break;
-+
-+		memcpy(p, &v, block_len);
-+		p += block_len;
-+		left -= block_len;
- 	}
+-	}
 -	return 1;
-+
-+	return len - left;
- }
-+EXPORT_SYMBOL(get_random_bytes_arch);
- 
+-}
+-
 -/*
 - * crng_slow_load() is called by add_device_randomness, which has two
 - * attributes.  (1) We can't trust the buffer passed to it is
 - * guaranteed to be unpredictable (so it might not have any entropy at
 - * all), and (2) it doesn't have the performance constraints of
 - * crng_fast_load().
-+
-+/**********************************************************************
-  *
+- *
 - * So we do something more comprehensive which is guaranteed to touch
 - * all of the primary_crng's state, and which uses a LFSR with a
 - * period of 255 as part of the mixing algorithm.  Finally, we do
@@ -2548,7 +2658,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
 -{
 -	ssize_t ret = 0, i = CHACHA20_BLOCK_SIZE;
--	__u8 tmp[CHACHA20_BLOCK_SIZE];
+-	__u8 tmp[CHACHA20_BLOCK_SIZE] __aligned(4);
 -	int large_request = (nbytes > 256);
 -
 -	while (nbytes) {
@@ -2560,34 +2670,45 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -			}
 -			schedule();
 -		}
--
++	while (left) {
++		unsigned long v;
++		size_t block_len = min_t(size_t, left, sizeof(unsigned long));
+ 
 -		extract_crng(tmp);
 -		i = min_t(int, nbytes, CHACHA20_BLOCK_SIZE);
 -		if (copy_to_user(buf, tmp, i)) {
 -			ret = -EFAULT;
--			break;
++		if (!arch_get_random_long(&v))
+ 			break;
 -		}
--
+ 
 -		nbytes -= i;
 -		buf += i;
 -		ret += i;
--	}
++		memcpy(p, &v, block_len);
++		p += block_len;
++		left -= block_len;
+ 	}
 -	crng_backtrack_protect(tmp, i);
 -
 -	/* Wipe data just written to memory */
 -	memzero_explicit(tmp, sizeof(tmp));
--
+ 
 -	return ret;
--}
--
--
++	return len - left;
+ }
++EXPORT_SYMBOL(get_random_bytes_arch);
+ 
+ 
 -/*********************************************************************
-+ * Entropy accumulation and extraction routines.
++/**********************************************************************
   *
 - * Entropy input management
-+ * Callers may add entropy via:
++ * Entropy accumulation and extraction routines.
   *
 - *********************************************************************/
++ * Callers may add entropy via:
++ *
 + *     static void mix_pool_bytes(const void *buf, size_t len)
 + *
 + * After which, if added entropy should be credited:
@@ -2604,14 +2725,12 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -struct timer_rand_state {
 -	cycles_t last_time;
 -	long last_delta, last_delta2;
--	unsigned dont_count_entropy:1;
 +enum {
 +	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
 +	POOL_READY_BITS = POOL_BITS, /* When crng_init->CRNG_READY */
 +	POOL_EARLY_BITS = POOL_READY_BITS / 2 /* When crng_init->CRNG_EARLY */
- };
- 
--#define INIT_TIMER_RAND_STATE { INITIAL_JIFFIES, };
++};
++
 +static struct {
 +	struct blake2s_state hash;
 +	spinlock_t lock;
@@ -2622,8 +2741,9 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +		    BLAKE2S_IV5, BLAKE2S_IV6, BLAKE2S_IV7 },
 +	.hash.outlen = BLAKE2S_HASH_SIZE,
 +	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
-+};
-+
+ };
+ 
+-#define INIT_TIMER_RAND_STATE { INITIAL_JIFFIES, };
 +static void _mix_pool_bytes(const void *buf, size_t len)
 +{
 +	blake2s_update(&input_pool.hash, buf, len);
@@ -2685,8 +2805,6 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -	} sample;
 -	long delta, delta2, delta3;
 -
--	preempt_disable();
--
 -	sample.jiffies = jiffies;
 -	sample.cycles = random_get_entropy();
 -	sample.num = num;
@@ -2698,34 +2816,42 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -	 * We take into account the first, second and third-order deltas
 -	 * in order to make our estimate.
 -	 */
+-	delta = sample.jiffies - READ_ONCE(state->last_time);
+-	WRITE_ONCE(state->last_time, sample.jiffies);
 -
--	if (!state->dont_count_entropy) {
--		delta = sample.jiffies - state->last_time;
--		state->last_time = sample.jiffies;
+-	delta2 = delta - READ_ONCE(state->last_delta);
+-	WRITE_ONCE(state->last_delta, delta);
 -
--		delta2 = delta - state->last_delta;
--		state->last_delta = delta;
+-	delta3 = delta2 - READ_ONCE(state->last_delta2);
+-	WRITE_ONCE(state->last_delta2, delta2);
 -
--		delta3 = delta2 - state->last_delta2;
--		state->last_delta2 = delta2;
+-	if (delta < 0)
+-		delta = -delta;
+-	if (delta2 < 0)
+-		delta2 = -delta2;
+-	if (delta3 < 0)
+-		delta3 = -delta3;
+-	if (delta > delta2)
+-		delta = delta2;
+-	if (delta > delta3)
+-		delta = delta3;
 -
--		if (delta < 0)
--			delta = -delta;
--		if (delta2 < 0)
--			delta2 = -delta2;
--		if (delta3 < 0)
--			delta3 = -delta3;
--		if (delta > delta2)
--			delta = delta2;
--		if (delta > delta3)
--			delta = delta3;
+-	/*
+-	 * delta is now minimum absolute delta.
+-	 * Round down by 1 bit on general principles,
+-	 * and limit entropy entimate to 12 bits.
+-	 */
+-	credit_entropy_bits(r, min_t(int, fls(delta>>1), 11));
+-}
 -
--		/*
--		 * delta is now minimum absolute delta.
--		 * Round down by 1 bit on general principles,
--		 * and limit entropy entimate to 12 bits.
--		 */
--		credit_entropy_bits(r, min_t(int, fls(delta>>1), 11));
+-void add_input_randomness(unsigned int type, unsigned int code,
+-				 unsigned int value)
+-{
+-	static unsigned char last_value;
+-
+-	/* ignore autorepeat and the like */
+-	if (value == last_value)
+-		return;
 +		unsigned long rdseed[32 / sizeof(long)];
 +		size_t counter;
 +	} block;
@@ -2735,19 +2861,8 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +		if (!arch_get_random_seed_long(&block.rdseed[i]) &&
 +		    !arch_get_random_long(&block.rdseed[i]))
 +			block.rdseed[i] = random_get_entropy();
- 	}
--	preempt_enable();
--}
++	}
  
--void add_input_randomness(unsigned int type, unsigned int code,
--				 unsigned int value)
--{
--	static unsigned char last_value;
--
--	/* ignore autorepeat and the like */
--	if (value == last_value)
--		return;
--
 -	last_value = value;
 -	add_timer_randomness(&input_timer_state,
 -			     (type << 4) ^ code ^ (code >> 4) ^ value);
@@ -2941,25 +3056,6 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -
 -	_xfer_secondary_pool(r, nbytes);
 -}
--
--static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
--{
--	__u32	tmp[OUTPUT_POOL_WORDS];
--
--	int bytes = nbytes;
--
--	/* pull at least as much as a wakeup */
--	bytes = max_t(int, bytes, random_read_wakeup_bits / 8);
--	/* but never more than the buffer size */
--	bytes = min_t(int, bytes, sizeof(tmp));
--
--	trace_xfer_secondary_pool(r->name, bytes * 8, nbytes * 8,
--				  ENTROPY_BITS(r), ENTROPY_BITS(r->pull));
--	bytes = extract_entropy(r->pull, tmp, bytes,
--				random_read_wakeup_bits / 8, 0);
--	mix_pool_bytes(r, tmp, bytes);
--	credit_entropy_bits(r, bytes*8);
--}
 + * The following exported functions are used for pushing entropy into
 + * the above entropy accumulation routines:
 + *
@@ -3006,6 +3102,29 @@ index 1eb0cdbe8786..1331571e2b12 100644
 + *
 + **********************************************************************/
  
+-static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
++static bool trust_cpu __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
++static bool trust_bootloader __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
++static int __init parse_trust_cpu(char *arg)
+ {
+-	__u32	tmp[OUTPUT_POOL_WORDS];
+-
+-	int bytes = nbytes;
+-
+-	/* pull at least as much as a wakeup */
+-	bytes = max_t(int, bytes, random_read_wakeup_bits / 8);
+-	/* but never more than the buffer size */
+-	bytes = min_t(int, bytes, sizeof(tmp));
+-
+-	trace_xfer_secondary_pool(r->name, bytes * 8, nbytes * 8,
+-				  ENTROPY_BITS(r), ENTROPY_BITS(r->pull));
+-	bytes = extract_entropy(r->pull, tmp, bytes,
+-				random_read_wakeup_bits / 8, 0);
+-	mix_pool_bytes(r, tmp, bytes);
+-	credit_entropy_bits(r, bytes*8);
++	return kstrtobool(arg, &trust_cpu);
+ }
+-
 -/*
 - * Used as a workqueue function so that when the input pool is getting
 - * full, we can "spill over" some entropy to the output pools.  That
@@ -3013,9 +3132,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
 - * of letting it go to waste.
 - */
 -static void push_to_pool(struct work_struct *work)
-+static bool trust_cpu __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
-+static bool trust_bootloader __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
-+static int __init parse_trust_cpu(char *arg)
++static int __init parse_trust_bootloader(char *arg)
  {
 -	struct entropy_store *r = container_of(work, struct entropy_store,
 -					      push_work);
@@ -3023,16 +3140,24 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -	_xfer_secondary_pool(r, random_read_wakeup_bits/8);
 -	trace_push_to_pool(r->name, r->entropy_count >> ENTROPY_SHIFT,
 -			   r->pull->entropy_count >> ENTROPY_SHIFT);
-+	return kstrtobool(arg, &trust_cpu);
++	return kstrtobool(arg, &trust_bootloader);
  }
--
--/*
++early_param("random.trust_cpu", parse_trust_cpu);
++early_param("random.trust_bootloader", parse_trust_bootloader);
+ 
+ /*
 - * This function decides how many bytes to actually take from the
 - * given pool, and also debits the entropy count accordingly.
-- */
++ * The first collection of entropy occurs at system boot while interrupts
++ * are still turned off. Here we push in latent entropy, RDSEED, a timestamp,
++ * utsname(), and the command line. Depending on the above configuration knob,
++ * RDSEED may be considered sufficient for initialization. Note that much
++ * earlier setup may already have pushed entropy into the input pool by the
++ * time we get here.
+  */
 -static size_t account(struct entropy_store *r, size_t nbytes, int min,
 -		      int reserved)
-+static int __init parse_trust_bootloader(char *arg)
++int __init random_init(const char *command_line)
  {
 -	int entropy_count, orig, have_bytes;
 -	size_t ibytes, nfrac;
@@ -3041,7 +3166,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -
 -	/* Can we pull enough? */
 -retry:
--	entropy_count = orig = ACCESS_ONCE(r->entropy_count);
+-	entropy_count = orig = READ_ONCE(r->entropy_count);
 -	ibytes = nbytes;
 -	/* never pull more than available */
 -	have_bytes = entropy_count >> (ENTROPY_SHIFT + 3);
@@ -3063,38 +3188,58 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -		entropy_count -= nfrac;
 -	else
 -		entropy_count = 0;
--
++	ktime_t now = ktime_get_real();
++	unsigned int i, arch_bits;
++	unsigned long entropy;
+ 
 -	if (cmpxchg(&r->entropy_count, orig, entropy_count) != orig)
 -		goto retry;
--
++#if defined(LATENT_ENTROPY_PLUGIN)
++	static const u8 compiletime_seed[BLAKE2S_BLOCK_SIZE] __initconst __latent_entropy;
++	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
++#endif
+ 
 -	trace_debit_entropy(r->name, 8 * ibytes);
 -	if (ibytes &&
 -	    (r->entropy_count >> ENTROPY_SHIFT) < random_write_wakeup_bits) {
 -		wake_up_interruptible(&random_write_wait);
 -		kill_fasync(&fasync, SIGIO, POLL_OUT);
--	}
--
++	for (i = 0, arch_bits = BLAKE2S_BLOCK_SIZE * 8;
++	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(entropy)) {
++		if (!arch_get_random_seed_long_early(&entropy) &&
++		    !arch_get_random_long_early(&entropy)) {
++			entropy = random_get_entropy();
++			arch_bits -= sizeof(entropy) * 8;
++		}
++		_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	}
++	_mix_pool_bytes(&now, sizeof(now));
++	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
++	_mix_pool_bytes(command_line, strlen(command_line));
++	add_latent_entropy();
+ 
 -	return ibytes;
-+	return kstrtobool(arg, &trust_bootloader);
++	if (crng_ready())
++		crng_reseed();
++	else if (trust_cpu)
++		_credit_init_bits(arch_bits);
++
++	return 0;
  }
-+early_param("random.trust_cpu", parse_trust_cpu);
-+early_param("random.trust_bootloader", parse_trust_bootloader);
  
  /*
 - * This function does the actual extraction for extract_entropy and
 - * extract_entropy_user.
-- *
++ * Add device- or boot-specific data to the input pool to help
++ * initialize it.
+  *
 - * Note: we assume that .poolwords is a multiple of 16 words.
-+ * The first collection of entropy occurs at system boot while interrupts
-+ * are still turned off. Here we push in latent entropy, RDSEED, a timestamp,
-+ * utsname(), and the command line. Depending on the above configuration knob,
-+ * RDSEED may be considered sufficient for initialization. Note that much
-+ * earlier setup may already have pushed entropy into the input pool by the
-+ * time we get here.
++ * None of this adds any entropy; it is meant to avoid the problem of
++ * the entropy pool having similar initial state across largely
++ * identical devices.
   */
 -static void extract_buf(struct entropy_store *r, __u8 *out)
-+int __init random_init(const char *command_line)
- {
+-{
 -	int i;
 -	union {
 -		__u32 w[5];
@@ -3149,78 +3294,61 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -
 -static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
 -				size_t nbytes, int fips)
--{
++void add_device_randomness(const void *buf, size_t len)
+ {
 -	ssize_t ret = 0, i;
 -	__u8 tmp[EXTRACT_SIZE];
--	unsigned long flags;
-+	ktime_t now = ktime_get_real();
-+	unsigned int i, arch_bits;
-+	unsigned long entropy;
++	unsigned long entropy = random_get_entropy();
+ 	unsigned long flags;
  
 -	while (nbytes) {
 -		extract_buf(r, tmp);
-+#if defined(LATENT_ENTROPY_PLUGIN)
-+	static const u8 compiletime_seed[BLAKE2S_BLOCK_SIZE] __initconst __latent_entropy;
-+	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
-+#endif
- 
+-
 -		if (fips) {
 -			spin_lock_irqsave(&r->lock, flags);
 -			if (!memcmp(tmp, r->last_data, EXTRACT_SIZE))
 -				panic("Hardware RNG duplicated output!\n");
 -			memcpy(r->last_data, tmp, EXTRACT_SIZE);
 -			spin_unlock_irqrestore(&r->lock, flags);
-+	for (i = 0, arch_bits = BLAKE2S_BLOCK_SIZE * 8;
-+	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(entropy)) {
-+		if (!arch_get_random_seed_long_early(&entropy) &&
-+		    !arch_get_random_long_early(&entropy)) {
-+			entropy = random_get_entropy();
-+			arch_bits -= sizeof(entropy) * 8;
- 		}
+-		}
 -		i = min_t(int, nbytes, EXTRACT_SIZE);
 -		memcpy(buf, tmp, i);
 -		nbytes -= i;
 -		buf += i;
 -		ret += i;
-+		_mix_pool_bytes(&entropy, sizeof(entropy));
- 	}
-+	_mix_pool_bytes(&now, sizeof(now));
-+	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
-+	_mix_pool_bytes(command_line, strlen(command_line));
-+	add_latent_entropy();
- 
+-	}
+-
 -	/* Wipe data just returned from memory */
 -	memzero_explicit(tmp, sizeof(tmp));
-+	if (crng_ready())
-+		crng_reseed();
-+	else if (trust_cpu)
-+		_credit_init_bits(arch_bits);
- 
+-
 -	return ret;
-+	return 0;
++	spin_lock_irqsave(&input_pool.lock, flags);
++	_mix_pool_bytes(&entropy, sizeof(entropy));
++	_mix_pool_bytes(buf, len);
++	spin_unlock_irqrestore(&input_pool.lock, flags);
  }
++EXPORT_SYMBOL(add_device_randomness);
  
  /*
 - * This function extracts randomness from the "entropy pool", and
 - * returns it in a buffer.
-+ * Add device- or boot-specific data to the input pool to help
-+ * initialize it.
-  *
+- *
 - * The min parameter specifies the minimum amount we can pull before
 - * failing to avoid races that defeat catastrophic reseeding while the
 - * reserved parameter indicates how much entropy we must leave in the
 - * pool after each pull to avoid starving other readers.
-+ * None of this adds any entropy; it is meant to avoid the problem of
-+ * the entropy pool having similar initial state across largely
-+ * identical devices.
++ * Interface for in-kernel drivers of true hardware RNGs.
++ * Those devices may produce endless random bits and will be throttled
++ * when our pool is full.
   */
 -static ssize_t extract_entropy(struct entropy_store *r, void *buf,
 -				 size_t nbytes, int min, int reserved)
-+void add_device_randomness(const void *buf, size_t len)
++void add_hwgenerator_randomness(const void *buf, size_t len, size_t entropy)
  {
 -	__u8 tmp[EXTRACT_SIZE];
-+	unsigned long entropy = random_get_entropy();
- 	unsigned long flags;
+-	unsigned long flags;
++	mix_pool_bytes(buf, len);
++	credit_init_bits(entropy);
  
 -	/* if last_data isn't primed, we need EXTRACT_SIZE extra bytes */
 -	if (fips_enabled) {
@@ -3243,15 +3371,25 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -	nbytes = account(r, nbytes, min, reserved);
 -
 -	return _extract_entropy(r, buf, nbytes, fips_enabled);
--}
--
--/*
++	/*
++	 * Throttle writing to once every CRNG_RESEED_INTERVAL, unless
++	 * we're not yet initialized.
++	 */
++	if (!kthread_should_stop() && crng_ready())
++		schedule_timeout_interruptible(CRNG_RESEED_INTERVAL);
+ }
++EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
+ 
+ /*
 - * This function extracts randomness from the "entropy pool", and
 - * returns it in a userspace buffer.
-- */
++ * Handle random seed passed by bootloader, and credit it if
++ * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+  */
 -static ssize_t extract_entropy_user(struct entropy_store *r, void __user *buf,
 -				    size_t nbytes)
--{
++void __init add_bootloader_randomness(const void *buf, size_t len)
+ {
 -	ssize_t ret = 0, i;
 -	__u8 tmp[EXTRACT_SIZE];
 -	int large_request = (nbytes > 256);
@@ -3286,17 +3424,30 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -	memzero_explicit(tmp, sizeof(tmp));
 -
 -	return ret;
--}
--
++	mix_pool_bytes(buf, len);
++	if (trust_bootloader)
++		credit_init_bits(len * 8);
+ }
+ 
 -#define warn_unseeded_randomness(previous) \
 -	_warn_unseeded_randomness(__func__, (void *) _RET_IP_, (previous))
--
++struct fast_pool {
++	struct work_struct mix;
++	unsigned long pool[4];
++	unsigned long last;
++	unsigned int count;
++};
+ 
 -static void _warn_unseeded_randomness(const char *func_name, void *caller,
 -				      void **previous)
 -{
 -#ifdef CONFIG_WARN_ALL_UNSEEDED_RANDOM
 -	const bool print_once = false;
--#else
++static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
++#ifdef CONFIG_64BIT
++#define FASTMIX_PERM SIPHASH_PERMUTATION
++	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 }
+ #else
 -	static bool print_once __read_mostly;
 -#endif
 -
@@ -3307,16 +3458,14 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -	WRITE_ONCE(*previous, caller);
 -#ifndef CONFIG_WARN_ALL_UNSEEDED_RANDOM
 -	print_once = true;
--#endif
++#define FASTMIX_PERM HSIPHASH_PERMUTATION
++	.pool = { HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3 }
+ #endif
 -	if (__ratelimit(&unseeded_warning))
 -		pr_notice("random: %s called from %pS with crng_init=%d\n",
 -			  func_name, caller, crng_init);
-+	spin_lock_irqsave(&input_pool.lock, flags);
-+	_mix_pool_bytes(&entropy, sizeof(entropy));
-+	_mix_pool_bytes(buf, len);
-+	spin_unlock_irqrestore(&input_pool.lock, flags);
- }
-+EXPORT_SYMBOL(add_device_randomness);
+-}
++};
  
  /*
 - * This function is the exported kernel interface.  It returns some
@@ -3327,13 +3476,14 @@ index 1eb0cdbe8786..1331571e2b12 100644
 - * that the randomness provided by this function is okay, the function
 - * wait_for_random_bytes() should be called and return 0 at least once
 - * at any point prior.
-+ * Interface for in-kernel drivers of true hardware RNGs.
-+ * Those devices may produce endless random bits and will be throttled
-+ * when our pool is full.
++ * This is [Half]SipHash-1-x, starting from an empty key. Because
++ * the key is fixed, it assumes that its inputs are non-malicious,
++ * and therefore this has no security on its own. s represents the
++ * four-word SipHash state, while v represents a two-word input.
   */
 -static void _get_random_bytes(void *buf, int nbytes)
 -{
--	__u8 tmp[CHACHA20_BLOCK_SIZE];
+-	__u8 tmp[CHACHA20_BLOCK_SIZE] __aligned(4);
 -
 -	trace_get_random_bytes(nbytes, _RET_IP_);
 -
@@ -3353,25 +3503,105 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -}
 -
 -void get_random_bytes(void *buf, int nbytes)
-+void add_hwgenerator_randomness(const void *buf, size_t len, size_t entropy)
++static void fast_mix(unsigned long s[4], unsigned long v1, unsigned long v2)
  {
 -	static void *previous;
-+	mix_pool_bytes(buf, len);
-+	credit_init_bits(entropy);
- 
+-
 -	warn_unseeded_randomness(&previous);
 -	_get_random_bytes(buf, nbytes);
-+	/*
-+	 * Throttle writing to once every CRNG_RESEED_INTERVAL, unless
-+	 * we're not yet initialized.
-+	 */
-+	if (!kthread_should_stop() && crng_ready())
-+		schedule_timeout_interruptible(CRNG_RESEED_INTERVAL);
++	s[3] ^= v1;
++	FASTMIX_PERM(s[0], s[1], s[2], s[3]);
++	s[0] ^= v1;
++	s[3] ^= v2;
++	FASTMIX_PERM(s[0], s[1], s[2], s[3]);
++	s[0] ^= v2;
  }
 -EXPORT_SYMBOL(get_random_bytes);
-+EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
+-
  
++#ifdef CONFIG_SMP
  /*
+- * Each time the timer fires, we expect that we got an unpredictable
+- * jump in the cycle counter. Even if the timer is running on another
+- * CPU, the timer activity will be touching the stack of the CPU that is
+- * generating entropy..
+- *
+- * Note that we don't re-arm the timer in the timer itself - we are
+- * happy to be scheduled away, since that just makes the load more
+- * complex, but we do not want the timer to keep ticking unless the
+- * entropy loop is running.
+- *
+- * So the re-arming always happens in the entropy loop itself.
++ * This function is called when the CPU has just come online, with
++ * entry CPUHP_AP_RANDOM_ONLINE, just after CPUHP_AP_WORKQUEUE_ONLINE.
+  */
+-static void entropy_timer(struct timer_list *t)
++int __cold random_online_cpu(unsigned int cpu)
+ {
+-	credit_entropy_bits(&input_pool, 1);
++	/*
++	 * During CPU shutdown and before CPU onlining, add_interrupt_
++	 * randomness() may schedule mix_interrupt_randomness(), and
++	 * set the MIX_INFLIGHT flag. However, because the worker can
++	 * be scheduled on a different CPU during this period, that
++	 * flag will never be cleared. For that reason, we zero out
++	 * the flag here, which runs just after workqueues are onlined
++	 * for the CPU again. This also has the effect of setting the
++	 * irq randomness count to zero so that new accumulated irqs
++	 * are fresh.
++	 */
++	per_cpu_ptr(&irq_randomness, cpu)->count = 0;
++	return 0;
+ }
++#endif
+ 
+-/*
+- * If we have an actual cycle counter, see if we can
+- * generate enough entropy with timing noise
+- */
+-static void try_to_generate_entropy(void)
++static void mix_interrupt_randomness(struct work_struct *work)
+ {
+-	struct {
+-		unsigned long now;
+-		struct timer_list timer;
+-	} stack;
+-
+-	stack.now = random_get_entropy();
++	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
++	/*
++	 * The size of the copied stack pool is explicitly 2 longs so that we
++	 * only ever ingest half of the siphash output each time, retaining
++	 * the other half as the next "key" that carries over. The entropy is
++	 * supposed to be sufficiently dispersed between bits so on average
++	 * we don't wind up "losing" some.
++	 */
++	unsigned long pool[2];
++	unsigned int count;
+ 
+-	/* Slow counter - or none. Don't even bother */
+-	if (stack.now == random_get_entropy())
++	/* Check to see if we're running on the wrong CPU due to hotplug. */
++	local_irq_disable();
++	if (fast_pool != this_cpu_ptr(&irq_randomness)) {
++		local_irq_enable();
+ 		return;
+-
+-	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
+-	while (!crng_ready()) {
+-		if (!timer_pending(&stack.timer))
+-			mod_timer(&stack.timer, jiffies+1);
+-		mix_pool_bytes(&input_pool, &stack.now, sizeof(stack.now));
+-		schedule();
+-		stack.now = random_get_entropy();
+ 	}
+ 
+-	del_timer_sync(&stack.timer);
+-	destroy_timer_on_stack(&stack.timer);
+-	mix_pool_bytes(&input_pool, &stack.now, sizeof(stack.now));
+-}
+-
+-/*
 - * Wait for the urandom pool to be seeded and thus guaranteed to supply
 - * cryptographically secure random numbers. This applies to: the /dev/urandom
 - * device, the get_random_bytes function, and the get_random_{u32,u64,int,long}
@@ -3380,20 +3610,57 @@ index 1eb0cdbe8786..1331571e2b12 100644
 - *
 - * Returns: 0 if the urandom pool has been seeded.
 - *          -ERESTARTSYS if the function was interrupted by a signal.
-+ * Handle random seed passed by bootloader, and credit it if
-+ * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-  */
+- */
 -int wait_for_random_bytes(void)
-+void __init add_bootloader_randomness(const void *buf, size_t len)
- {
+-{
 -	if (likely(crng_ready()))
 -		return 0;
--	return wait_event_interruptible(crng_init_wait, crng_ready());
-+	mix_pool_bytes(buf, len);
-+	if (trust_bootloader)
-+		credit_init_bits(len * 8);
+-
+-	do {
+-		int ret;
+-		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
+-		if (ret)
+-			return ret > 0 ? 0 : ret;
++	/*
++	 * Copy the pool to the stack so that the mixer always has a
++	 * consistent view, before we reenable irqs again.
++	 */
++	memcpy(pool, fast_pool->pool, sizeof(pool));
++	count = fast_pool->count;
++	fast_pool->count = 0;
++	fast_pool->last = jiffies;
++	local_irq_enable();
+ 
+-		try_to_generate_entropy();
+-	} while (!crng_ready());
++	mix_pool_bytes(pool, sizeof(pool));
++	credit_init_bits(max(1u, (count & U16_MAX) / 64));
+ 
+-	return 0;
++	memzero_explicit(pool, sizeof(pool));
  }
 -EXPORT_SYMBOL(wait_for_random_bytes);
+ 
+-/*
+- * Returns whether or not the urandom pool has been seeded and thus guaranteed
+- * to supply cryptographically secure random numbers. This applies to: the
+- * /dev/urandom device, the get_random_bytes function, and the get_random_{u32,
+- * ,u64,int,long} family of functions.
+- *
+- * Returns: true if the urandom pool has been seeded.
+- *          false if the urandom pool has not been seeded.
+- */
+-bool rng_is_initialized(void)
++void add_interrupt_randomness(int irq)
+ {
+-	return crng_ready();
+-}
+-EXPORT_SYMBOL(rng_is_initialized);
++	enum { MIX_INFLIGHT = 1U << 31 };
++	unsigned long entropy = random_get_entropy();
++	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
++	struct pt_regs *regs = get_irq_regs();
++	unsigned int new_count;
  
 -/*
 - * Add a callback function that will be invoked when the nonblocking
@@ -3424,166 +3691,28 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -
 -	list_add(&rdy->list, &random_ready_list);
 -	err = 0;
--
--out:
--	spin_unlock_irqrestore(&random_ready_list_lock, flags);
-+struct fast_pool {
-+	struct work_struct mix;
-+	unsigned long pool[4];
-+	unsigned long last;
-+	unsigned int count;
-+};
- 
--	module_put(owner);
-+static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
-+#ifdef CONFIG_64BIT
-+#define FASTMIX_PERM SIPHASH_PERMUTATION
-+	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 }
-+#else
-+#define FASTMIX_PERM HSIPHASH_PERMUTATION
-+	.pool = { HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3 }
-+#endif
-+};
- 
--	return err;
-+/*
-+ * This is [Half]SipHash-1-x, starting from an empty key. Because
-+ * the key is fixed, it assumes that its inputs are non-malicious,
-+ * and therefore this has no security on its own. s represents the
-+ * four-word SipHash state, while v represents a two-word input.
-+ */
-+static void fast_mix(unsigned long s[4], unsigned long v1, unsigned long v2)
-+{
-+	s[3] ^= v1;
-+	FASTMIX_PERM(s[0], s[1], s[2], s[3]);
-+	s[0] ^= v1;
-+	s[3] ^= v2;
-+	FASTMIX_PERM(s[0], s[1], s[2], s[3]);
-+	s[0] ^= v2;
- }
--EXPORT_SYMBOL(add_random_ready_callback);
- 
-+#ifdef CONFIG_SMP
- /*
-- * Delete a previously registered readiness callback function.
-+ * This function is called when the CPU has just come online, with
-+ * entry CPUHP_AP_RANDOM_ONLINE, just after CPUHP_AP_WORKQUEUE_ONLINE.
-  */
--void del_random_ready_callback(struct random_ready_callback *rdy)
-+int __cold random_online_cpu(unsigned int cpu)
- {
--	unsigned long flags;
--	struct module *owner = NULL;
-+	/*
-+	 * During CPU shutdown and before CPU onlining, add_interrupt_
-+	 * randomness() may schedule mix_interrupt_randomness(), and
-+	 * set the MIX_INFLIGHT flag. However, because the worker can
-+	 * be scheduled on a different CPU during this period, that
-+	 * flag will never be cleared. For that reason, we zero out
-+	 * the flag here, which runs just after workqueues are onlined
-+	 * for the CPU again. This also has the effect of setting the
-+	 * irq randomness count to zero so that new accumulated irqs
-+	 * are fresh.
-+	 */
-+	per_cpu_ptr(&irq_randomness, cpu)->count = 0;
-+	return 0;
-+}
-+#endif
-+
-+static void mix_interrupt_randomness(struct work_struct *work)
-+{
-+	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
-+	/*
-+	 * The size of the copied stack pool is explicitly 2 longs so that we
-+	 * only ever ingest half of the siphash output each time, retaining
-+	 * the other half as the next "key" that carries over. The entropy is
-+	 * supposed to be sufficiently dispersed between bits so on average
-+	 * we don't wind up "losing" some.
-+	 */
-+	unsigned long pool[2];
-+	unsigned int count;
- 
--	spin_lock_irqsave(&random_ready_list_lock, flags);
--	if (!list_empty(&rdy->list)) {
--		list_del_init(&rdy->list);
--		owner = rdy->owner;
-+	/* Check to see if we're running on the wrong CPU due to hotplug. */
-+	local_irq_disable();
-+	if (fast_pool != this_cpu_ptr(&irq_randomness)) {
-+		local_irq_enable();
-+		return;
- 	}
--	spin_unlock_irqrestore(&random_ready_list_lock, flags);
- 
--	module_put(owner);
-+	/*
-+	 * Copy the pool to the stack so that the mixer always has a
-+	 * consistent view, before we reenable irqs again.
-+	 */
-+	memcpy(pool, fast_pool->pool, sizeof(pool));
-+	count = fast_pool->count;
-+	fast_pool->count = 0;
-+	fast_pool->last = jiffies;
-+	local_irq_enable();
-+
-+	mix_pool_bytes(pool, sizeof(pool));
-+	credit_init_bits(max(1u, (count & U16_MAX) / 64));
-+
-+	memzero_explicit(pool, sizeof(pool));
- }
--EXPORT_SYMBOL(del_random_ready_callback);
- 
--/*
-- * This function will use the architecture-specific hardware random
-- * number generator if it is available.  The arch-specific hw RNG will
-- * almost certainly be faster than what we can do in software, but it
-- * is impossible to verify that it is implemented securely (as
-- * opposed, to, say, the AES encryption of a sequence number using a
-- * key known by the NSA).  So it's useful if we need the speed, but
-- * only if we're willing to trust the hardware manufacturer not to
-- * have put in a back door.
-- */
--void get_random_bytes_arch(void *buf, int nbytes)
-+void add_interrupt_randomness(int irq)
- {
--	char *p = buf;
-+	enum { MIX_INFLIGHT = 1U << 31 };
-+	unsigned long entropy = random_get_entropy();
-+	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
-+	struct pt_regs *regs = get_irq_regs();
-+	unsigned int new_count;
- 
--	trace_get_random_bytes_arch(nbytes, _RET_IP_);
--	while (nbytes) {
--		unsigned long v;
--		int chunk = min(nbytes, (int)sizeof(unsigned long));
 +	fast_mix(fast_pool->pool, entropy,
 +		 (regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq));
 +	new_count = ++fast_pool->count;
  
--		if (!arch_get_random_long(&v))
--			break;
--		
--		memcpy(p, &v, chunk);
--		p += chunk;
--		nbytes -= chunk;
--	}
+-out:
+-	spin_unlock_irqrestore(&random_ready_list_lock, flags);
 +	if (new_count & MIX_INFLIGHT)
 +		return;
-+
+ 
+-	module_put(owner);
 +	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
 +		return;
  
--	if (nbytes)
--		get_random_bytes(p, nbytes);
+-	return err;
 +	if (unlikely(!fast_pool->mix.func))
 +		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
 +	fast_pool->count |= MIX_INFLIGHT;
 +	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
  }
--EXPORT_SYMBOL(get_random_bytes_arch);
+-EXPORT_SYMBOL(add_random_ready_callback);
 +EXPORT_SYMBOL_GPL(add_interrupt_randomness);
- 
++
 +/* There is one of these per entropy source */
 +struct timer_rand_state {
 +	unsigned long last_time;
@@ -3591,37 +3720,26 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +};
  
  /*
-- * init_std_data - initialize pool with system data
-- *
-- * @r: pool to initialize
-- *
-- * This function clears the pool's entropy count and mixes some system
-- * data into the pool to prepare it for use. The pool is not cleared
-- * as that can only decrease the entropy in the pool.
+- * Delete a previously registered readiness callback function.
 + * This function adds entropy to the entropy "pool" by using timing
 + * delays. It uses the timer_rand_state structure to make an estimate
 + * of how many bits of entropy this call has added to the pool. The
 + * value "num" is also added to the pool; it should somehow describe
 + * the type of event that just happened.
   */
--static void init_std_data(struct entropy_store *r)
+-void del_random_ready_callback(struct random_ready_callback *rdy)
 +static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
  {
--	int i;
--	ktime_t now = ktime_get_real();
--	unsigned long rv;
--
--	r->last_pulled = jiffies;
--	mix_pool_bytes(r, &now, sizeof(now));
--	for (i = r->poolinfo->poolbytes; i > 0; i -= sizeof(rv)) {
--		if (!arch_get_random_seed_long(&rv) &&
--		    !arch_get_random_long(&rv))
--			rv = random_get_entropy();
--		mix_pool_bytes(r, &rv, sizeof(rv));
+-	unsigned long flags;
+-	struct module *owner = NULL;
 +	unsigned long entropy = random_get_entropy(), now = jiffies, flags;
 +	long delta, delta2, delta3;
 +	unsigned int bits;
-+
+ 
+-	spin_lock_irqsave(&random_ready_list_lock, flags);
+-	if (!list_empty(&rdy->list)) {
+-		list_del_init(&rdy->list);
+-		owner = rdy->owner;
 +	/*
 +	 * If we're in a hard IRQ, add_interrupt_randomness() will be called
 +	 * sometime after, so mix into the fast pool.
@@ -3634,11 +3752,30 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +		_mix_pool_bytes(&num, sizeof(num));
 +		spin_unlock_irqrestore(&input_pool.lock, flags);
  	}
--	mix_pool_bytes(r, utsname(), sizeof(*(utsname())));
-+
+-	spin_unlock_irqrestore(&random_ready_list_lock, flags);
+ 
+-	module_put(owner);
+-}
+-EXPORT_SYMBOL(del_random_ready_callback);
 +	if (crng_ready())
 +		return;
-+
+ 
+-/*
+- * This function will use the architecture-specific hardware random
+- * number generator if it is available.  The arch-specific hw RNG will
+- * almost certainly be faster than what we can do in software, but it
+- * is impossible to verify that it is implemented securely (as
+- * opposed, to, say, the AES encryption of a sequence number using a
+- * key known by the NSA).  So it's useful if we need the speed, but
+- * only if we're willing to trust the hardware manufacturer not to
+- * have put in a back door.
+- *
+- * Return number of bytes filled in.
+- */
+-int __must_check get_random_bytes_arch(void *buf, int nbytes)
+-{
+-	int left = nbytes;
+-	char *p = buf;
 +	/*
 +	 * Calculate number of bits of randomness we probably added.
 +	 * We take into account the first, second and third-order deltas
@@ -3646,13 +3783,23 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +	 */
 +	delta = now - READ_ONCE(state->last_time);
 +	WRITE_ONCE(state->last_time, now);
-+
+ 
+-	trace_get_random_bytes_arch(left, _RET_IP_);
+-	while (left) {
+-		unsigned long v;
+-		int chunk = min_t(int, left, sizeof(unsigned long));
 +	delta2 = delta - READ_ONCE(state->last_delta);
 +	WRITE_ONCE(state->last_delta, delta);
-+
+ 
+-		if (!arch_get_random_long(&v))
+-			break;
 +	delta3 = delta2 - READ_ONCE(state->last_delta2);
 +	WRITE_ONCE(state->last_delta2, delta2);
-+
+ 
+-		memcpy(p, &v, chunk);
+-		p += chunk;
+-		left -= chunk;
+-	}
 +	if (delta < 0)
 +		delta = -delta;
 +	if (delta2 < 0)
@@ -3663,7 +3810,8 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +		delta = delta2;
 +	if (delta > delta3)
 +		delta = delta3;
-+
+ 
+-	return nbytes - left;
 +	/*
 +	 * delta is now minimum absolute delta. Round down by 1 bit
 +	 * on general principles, and limit entropy estimate to 11 bits.
@@ -3682,6 +3830,45 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +	else
 +		_credit_init_bits(bits);
  }
+-EXPORT_SYMBOL(get_random_bytes_arch);
+ 
+-/*
+- * init_std_data - initialize pool with system data
+- *
+- * @r: pool to initialize
+- *
+- * This function clears the pool's entropy count and mixes some system
+- * data into the pool to prepare it for use. The pool is not cleared
+- * as that can only decrease the entropy in the pool.
+- */
+-static void init_std_data(struct entropy_store *r)
++void add_input_randomness(unsigned int type, unsigned int code, unsigned int value)
+ {
+-	int i;
+-	ktime_t now = ktime_get_real();
+-	unsigned long rv;
+-
+-	r->last_pulled = jiffies;
+-	mix_pool_bytes(r, &now, sizeof(now));
+-	for (i = r->poolinfo->poolbytes; i > 0; i -= sizeof(rv)) {
+-		if (!arch_get_random_seed_long(&rv) &&
+-		    !arch_get_random_long(&rv))
+-			rv = random_get_entropy();
+-		mix_pool_bytes(r, &rv, sizeof(rv));
+-	}
+-	mix_pool_bytes(r, utsname(), sizeof(*(utsname())));
++	static unsigned char last_value;
++	static struct timer_rand_state input_timer_state = { INITIAL_JIFFIES };
++
++	/* Ignore autorepeat and the like. */
++	if (value == last_value)
++		return;
++
++	last_value = value;
++	add_timer_randomness(&input_timer_state,
++			     (type << 4) ^ code ^ (code >> 4) ^ value);
+ }
++EXPORT_SYMBOL_GPL(add_input_randomness);
  
 -/*
 - * Note that setup_arch() may call add_device_randomness()
@@ -3694,7 +3881,8 @@ index 1eb0cdbe8786..1331571e2b12 100644
 - * we were given.
 - */
 -static int rand_initialize(void)
-+void add_input_randomness(unsigned int type, unsigned int code, unsigned int value)
++#ifdef CONFIG_BLOCK
++void add_disk_randomness(struct gendisk *disk)
  {
 -	init_std_data(&input_pool);
 -	init_std_data(&blocking_pool);
@@ -3705,36 +3893,21 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -		unseeded_warning.interval = 0;
 -	}
 -	return 0;
-+	static unsigned char last_value;
-+	static struct timer_rand_state input_timer_state = { INITIAL_JIFFIES };
-+
-+	/* Ignore autorepeat and the like. */
-+	if (value == last_value)
-+		return;
-+
-+	last_value = value;
-+	add_timer_randomness(&input_timer_state,
-+			     (type << 4) ^ code ^ (code >> 4) ^ value);
- }
--early_initcall(rand_initialize);
-+EXPORT_SYMBOL_GPL(add_input_randomness);
- 
- #ifdef CONFIG_BLOCK
--void rand_initialize_disk(struct gendisk *disk)
-+void add_disk_randomness(struct gendisk *disk)
-+{
 +	if (!disk || !disk->random)
 +		return;
 +	/* First major is 1, so we get >= 0x200 here. */
 +	add_timer_randomness(disk->random, 0x100 + disk_devt(disk));
-+}
+ }
+-early_initcall(rand_initialize);
 +EXPORT_SYMBOL_GPL(add_disk_randomness);
-+
+ 
+-#ifdef CONFIG_BLOCK
+-void rand_initialize_disk(struct gendisk *disk)
 +void __cold rand_initialize_disk(struct gendisk *disk)
  {
  	struct timer_rand_state *state;
  
-@@ -1823,134 +1126,189 @@ void rand_initialize_disk(struct gendisk *disk)
+@@ -1910,134 +1126,189 @@ void rand_initialize_disk(struct gendisk *disk)
  }
  #endif
  
@@ -3753,7 +3926,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
 + *
 + * So the re-arming always happens in the entropy loop itself.
 + */
-+static void __cold entropy_timer(unsigned long data)
++static void __cold entropy_timer(struct timer_list *t)
  {
 -	ssize_t n;
 +	credit_init_bits(1);
@@ -3787,17 +3960,17 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -		if (nonblock)
 -			return -EAGAIN;
 +	stack.entropy = random_get_entropy();
++
++	/* Slow counter - or none. Don't even bother */
++	if (stack.entropy == random_get_entropy())
++		return;
  
 -		wait_event_interruptible(random_read_wait,
 -			ENTROPY_BITS(&input_pool) >=
 -			random_read_wakeup_bits);
 -		if (signal_pending(current))
 -			return -ERESTARTSYS;
-+	/* Slow counter - or none. Don't even bother */
-+	if (stack.entropy == random_get_entropy())
-+		return;
-+
-+	__setup_timer_on_stack(&stack.timer, entropy_timer, 0, 0);
++	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
 +	while (!crng_ready() && !signal_pending(current)) {
 +		if (!timer_pending(&stack.timer))
 +			mod_timer(&stack.timer, jiffies + 1);
@@ -3892,22 +4065,22 @@ index 1eb0cdbe8786..1331571e2b12 100644
 +	return get_random_bytes_user(&iter);
  }
  
--static unsigned int
+-static __poll_t
 -random_poll(struct file *file, poll_table * wait)
-+static unsigned int random_poll(struct file *file, poll_table *wait)
++static __poll_t random_poll(struct file *file, poll_table *wait)
  {
--	unsigned int mask;
+-	__poll_t mask;
 -
 -	poll_wait(file, &random_read_wait, wait);
 -	poll_wait(file, &random_write_wait, wait);
 -	mask = 0;
 -	if (ENTROPY_BITS(&input_pool) >= random_read_wakeup_bits)
--		mask |= POLLIN | POLLRDNORM;
+-		mask |= EPOLLIN | EPOLLRDNORM;
 -	if (ENTROPY_BITS(&input_pool) < random_write_wakeup_bits)
--		mask |= POLLOUT | POLLWRNORM;
+-		mask |= EPOLLOUT | EPOLLWRNORM;
 -	return mask;
 +	poll_wait(file, &crng_init_wait, wait);
-+	return crng_ready() ? POLLIN | POLLRDNORM : POLLOUT | POLLWRNORM;
++	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
  }
  
 -static int
@@ -4012,7 +4185,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
  			return -EFAULT;
  		return 0;
  	case RNDADDTOENTCNT:
-@@ -1958,39 +1316,48 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+@@ -2045,39 +1316,48 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
  			return -EPERM;
  		if (get_user(ent_count, p))
  			return -EFAULT;
@@ -4078,7 +4251,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
  		return 0;
  	default:
  		return -EINVAL;
-@@ -2003,49 +1370,54 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -2090,49 +1370,54 @@ static int random_fasync(int fd, struct file *filp, int on)
  }
  
  const struct file_operations random_fops = {
@@ -4162,7 +4335,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
   *
   ********************************************************************/
  
-@@ -2053,26 +1425,28 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
+@@ -2140,26 +1425,28 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
  
  #include <linux/sysctl.h>
  
@@ -4188,11 +4361,12 @@ index 1eb0cdbe8786..1331571e2b12 100644
   */
 -static int proc_do_uuid(struct ctl_table *table, int write,
 -			void __user *buffer, size_t *lenp, loff_t *ppos)
-+static int proc_do_uuid(struct ctl_table *table, int write, void __user *buf,
-+			size_t *lenp, loff_t *ppos)
- {
+-{
 -	struct ctl_table fake_table;
 -	unsigned char buf[64], tmp_uuid[16], *uuid;
++static int proc_do_uuid(struct ctl_table *table, int write, void __user *buf,
++			size_t *lenp, loff_t *ppos)
++{
 +	u8 tmp_uuid[UUID_SIZE], *uuid;
 +	char uuid_string[UUID_STRING_LEN + 1];
 +	struct ctl_table fake_table = {
@@ -4205,7 +4379,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
  
  	uuid = table->data;
  	if (!uuid) {
-@@ -2087,32 +1461,17 @@ static int proc_do_uuid(struct ctl_table *table, int write,
+@@ -2174,32 +1461,17 @@ static int proc_do_uuid(struct ctl_table *table, int write,
  		spin_unlock(&bootid_spinlock);
  	}
  
@@ -4244,7 +4418,7 @@ index 1eb0cdbe8786..1331571e2b12 100644
  extern struct ctl_table random_table[];
  struct ctl_table random_table[] = {
  	{
-@@ -2124,213 +1483,36 @@ struct ctl_table random_table[] = {
+@@ -2211,213 +1483,36 @@ struct ctl_table random_table[] = {
  	},
  	{
  		.procname	= "entropy_avail",
@@ -4465,11 +4639,24 @@ index 1eb0cdbe8786..1331571e2b12 100644
 -}
 -EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
 +#endif	/* CONFIG_SYSCTL */
+diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
+index 12bc9fa21111..08bcefca313d 100644
+--- a/drivers/hv/hv.c
++++ b/drivers/hv/hv.c
+@@ -115,7 +115,7 @@ static void hv_stimer0_isr(void)
+ 
+ 	hv_cpu = this_cpu_ptr(hv_context.cpu_context);
+ 	hv_cpu->clk_evt->event_handler(hv_cpu->clk_evt);
+-	add_interrupt_randomness(stimer0_vector, 0);
++	add_interrupt_randomness(stimer0_vector);
+ }
+ 
+ static int hv_ce_set_next_event(unsigned long delta,
 diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 45b8ccdfb085..cdf7d39362fd 100644
+index 0c17743b4a65..fca092cfe200 100644
 --- a/drivers/hv/vmbus_drv.c
 +++ b/drivers/hv/vmbus_drv.c
-@@ -1064,7 +1064,7 @@ static void vmbus_isr(void)
+@@ -1146,7 +1146,7 @@ static void vmbus_isr(void)
  			tasklet_schedule(&hv_cpu->msg_dpc);
  	}
  
@@ -4477,7 +4664,44 @@ index 45b8ccdfb085..cdf7d39362fd 100644
 +	add_interrupt_randomness(HYPERVISOR_CALLBACK_VECTOR);
  }
  
+ /*
+diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+index fb82d8ee0dd6..c4051a3e63c2 100644
+--- a/drivers/hwmon/hwmon.c
++++ b/drivers/hwmon/hwmon.c
+@@ -695,12 +695,11 @@ EXPORT_SYMBOL_GPL(hwmon_device_register_with_groups);
  
+ /**
+  * hwmon_device_register_with_info - register w/ hwmon
+- * @dev: the parent device (mandatory)
+- * @name: hwmon name attribute (mandatory)
+- * @drvdata: driver data to attach to created device (optional)
+- * @chip: pointer to hwmon chip information (mandatory)
++ * @dev: the parent device
++ * @name: hwmon name attribute
++ * @drvdata: driver data to attach to created device
++ * @chip: pointer to hwmon chip information
+  * @extra_groups: pointer to list of additional non-standard attribute groups
+- *	(optional)
+  *
+  * hwmon_device_unregister() must be called when the device is no
+  * longer needed.
+@@ -713,10 +712,13 @@ hwmon_device_register_with_info(struct device *dev, const char *name,
+ 				const struct hwmon_chip_info *chip,
+ 				const struct attribute_group **extra_groups)
+ {
+-	if (!dev || !name || !chip)
++	if (!name)
++		return ERR_PTR(-EINVAL);
++
++	if (chip && (!chip->ops || !chip->ops->is_visible || !chip->info))
+ 		return ERR_PTR(-EINVAL);
+ 
+-	if (!chip->ops || !chip->ops->is_visible || !chip->info)
++	if (chip && !dev)
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	return __hwmon_device_register(dev, name, drvdata, chip, extra_groups);
 diff --git a/drivers/irqchip/irq-gic-realview.c b/drivers/irqchip/irq-gic-realview.c
 index b4c1924f0255..38fab02ffe9d 100644
 --- a/drivers/irqchip/irq-gic-realview.c
@@ -4490,6 +4714,27 @@ index b4c1924f0255..38fab02ffe9d 100644
  	if (!IS_ERR(map)) {
  		/* new irq mode with no DCC */
  		regmap_write(map, REALVIEW_SYS_LOCK_OFFSET,
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 05b9a4cdc8fd..8d8b8d192e2e 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -1205,12 +1205,15 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
+ 				continue;
+ 
+ 			cpu = of_cpu_node_to_id(cpu_node);
+-			if (WARN_ON(cpu < 0))
++			if (WARN_ON(cpu < 0)) {
++				of_node_put(cpu_node);
+ 				continue;
++			}
+ 
+ 			pr_cont("%pOF[%d] ", cpu_node, cpu);
+ 
+ 			cpumask_set_cpu(cpu, &part->mask);
++			of_node_put(cpu_node);
+ 		}
+ 
+ 		pr_cont("}\n");
 diff --git a/drivers/misc/atmel-ssc.c b/drivers/misc/atmel-ssc.c
 index f9caf233e2cc..48521861beb5 100644
 --- a/drivers/misc/atmel-ssc.c
@@ -4507,10 +4752,10 @@ index f9caf233e2cc..48521861beb5 100644
  
  	mutex_lock(&user_lock);
 diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-index 6322594ab260..98f1057650da 100644
+index 6fe074c1588b..77de92eb08b2 100644
 --- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
 +++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-@@ -317,7 +317,6 @@ static void bgmac_remove(struct bcma_device *core)
+@@ -323,7 +323,6 @@ static void bgmac_remove(struct bcma_device *core)
  	bcma_mdio_mii_unregister(bgmac->mii_bus);
  	bgmac_enet_remove(bgmac);
  	bcma_set_drvdata(core, NULL);
@@ -4519,10 +4764,10 @@ index 6322594ab260..98f1057650da 100644
  
  static struct bcma_driver bgmac_bcma_driver = {
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-index 751ac5616884..21648dab13e0 100644
+index 5242d3dfeb22..6a70e62836f8 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-@@ -1874,15 +1874,16 @@ static void i40e_diag_test(struct net_device *netdev,
+@@ -2195,15 +2195,16 @@ static void i40e_diag_test(struct net_device *netdev,
  
  		set_bit(__I40E_TESTING, pf->state);
  
@@ -4545,7 +4790,7 @@ index 751ac5616884..21648dab13e0 100644
  			goto skip_ol_tests;
  		}
  
-@@ -1929,9 +1930,17 @@ static void i40e_diag_test(struct net_device *netdev,
+@@ -2250,9 +2251,17 @@ static void i40e_diag_test(struct net_device *netdev,
  		data[I40E_ETH_TEST_INTR] = 0;
  	}
  
@@ -4565,11 +4810,27 @@ index 751ac5616884..21648dab13e0 100644
  }
  
  static void i40e_get_wol(struct net_device *netdev,
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 21ea0cdea666..3615c6533cf4 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -7508,6 +7508,11 @@ static int i40e_configure_clsflower(struct i40e_vsi *vsi,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
++	if (!tc) {
++		dev_err(&pf->pdev->dev, "Unable to add filter because of invalid destination");
++		return -EINVAL;
++	}
++
+ 	if (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state) ||
+ 	    test_bit(__I40E_RESET_INTR_RECEIVED, pf->state))
+ 		return -EBUSY;
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index ade72b46e93c..fb48efa70797 100644
+index f2eaf8c13cc2..53cff913abf0 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -596,6 +596,17 @@ static inline void mtk_rx_get_desc(struct mtk_rx_dma *rxd,
+@@ -597,6 +597,17 @@ static inline void mtk_rx_get_desc(struct mtk_rx_dma *rxd,
  	rxd->rxd4 = READ_ONCE(dma_rxd->rxd4);
  }
  
@@ -4599,7 +4860,7 @@ index ade72b46e93c..fb48efa70797 100644
  		if (unlikely(!new_data)) {
  			netdev->stats.rx_dropped++;
  			goto release_desc;
-@@ -1315,7 +1329,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
+@@ -1312,7 +1326,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
  		return -ENOMEM;
  
  	for (i = 0; i < rx_dma_size; i++) {
@@ -4611,11 +4872,25 @@ index ade72b46e93c..fb48efa70797 100644
  		if (!ring->data[i])
  			return -ENOMEM;
  	}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
+index 81465e267b10..b7eb3674e285 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
+@@ -7,8 +7,8 @@
+ #include "spectrum.h"
+ 
+ enum mlxsw_sp_counter_sub_pool_id {
+-	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
+ 	MLXSW_SP_COUNTER_SUB_POOL_RIF,
++	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
+ };
+ 
+ int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
 diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
-index deb953290f8f..e88147c47c17 100644
+index 888e298f610b..f26986eb53f1 100644
 --- a/drivers/nfc/nfcmrvl/usb.c
 +++ b/drivers/nfc/nfcmrvl/usb.c
-@@ -400,13 +400,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
+@@ -401,13 +401,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
  	int err;
  
  	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
@@ -4644,10 +4919,10 @@ index deb953290f8f..e88147c47c17 100644
  
  static int nfcmrvl_resume(struct usb_interface *intf)
 diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index b0bf2cb4f548..1d4090d2b91e 100644
+index 1eb6af6439ad..2e9ea7f1e719 100644
 --- a/drivers/of/fdt.c
 +++ b/drivers/of/fdt.c
-@@ -27,6 +27,7 @@
+@@ -25,6 +25,7 @@
  #include <linux/debugfs.h>
  #include <linux/serial_core.h>
  #include <linux/sysfs.h>
@@ -4655,7 +4930,7 @@ index b0bf2cb4f548..1d4090d2b91e 100644
  
  #include <asm/setup.h>  /* for COMMAND_LINE_SIZE */
  #include <asm/page.h>
-@@ -1117,6 +1118,7 @@ int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
+@@ -1077,6 +1078,7 @@ int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
  {
  	int l;
  	const char *p;
@@ -4663,7 +4938,7 @@ index b0bf2cb4f548..1d4090d2b91e 100644
  
  	pr_debug("search \"chosen\", depth: %d, uname: %s\n", depth, uname);
  
-@@ -1151,6 +1153,14 @@ int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
+@@ -1111,6 +1113,14 @@ int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
  
  	pr_debug("Command line is: %s\n", (char*)data);
  
@@ -4678,7 +4953,7 @@ index b0bf2cb4f548..1d4090d2b91e 100644
  	/* break now */
  	return 1;
  }
-@@ -1262,8 +1272,6 @@ bool __init early_init_dt_verify(void *params)
+@@ -1213,8 +1223,6 @@ bool __init early_init_dt_verify(void *params)
  
  	/* Setup flat device-tree pointer */
  	initial_boot_params = params;
@@ -4687,7 +4962,7 @@ index b0bf2cb4f548..1d4090d2b91e 100644
  	return true;
  }
  
-@@ -1289,6 +1297,8 @@ bool __init early_init_dt_scan(void *params)
+@@ -1240,6 +1248,8 @@ bool __init early_init_dt_scan(void *params)
  		return false;
  
  	early_init_dt_scan_nodes();
@@ -4697,10 +4972,10 @@ index b0bf2cb4f548..1d4090d2b91e 100644
  }
  
 diff --git a/drivers/scsi/ipr.c b/drivers/scsi/ipr.c
-index b172f0a02083..99b37e19feca 100644
+index 1b04a8223eb0..c6cde552b995 100644
 --- a/drivers/scsi/ipr.c
 +++ b/drivers/scsi/ipr.c
-@@ -9788,7 +9788,7 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
+@@ -9783,7 +9783,7 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
  					GFP_KERNEL);
  
  		if (!ioa_cfg->hrrq[i].host_rrq)  {
@@ -4709,7 +4984,7 @@ index b172f0a02083..99b37e19feca 100644
  				dma_free_coherent(&pdev->dev,
  					sizeof(u32) * ioa_cfg->hrrq[i].size,
  					ioa_cfg->hrrq[i].host_rrq,
-@@ -10060,7 +10060,7 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
+@@ -10056,7 +10056,7 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
  			ioa_cfg->vectors_info[i].desc,
  			&ioa_cfg->hrrq[i]);
  		if (rc) {
@@ -4719,7 +4994,7 @@ index b172f0a02083..99b37e19feca 100644
  					&ioa_cfg->hrrq[i]);
  			return rc;
 diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index da6685700b04..70733d751bb8 100644
+index 9442fb30e7cd..f666518d84b0 100644
 --- a/drivers/scsi/lpfc/lpfc_nportdisc.c
 +++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
 @@ -662,7 +662,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
@@ -4733,10 +5008,10 @@ index da6685700b04..70733d751bb8 100644
  		lpfc_linkdown_port(vport);
  		spin_lock_irq(shost->host_lock);
 diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
-index b4d6cd8cd1ad..d27ae937ff68 100644
+index 4e86994e10e8..6e96229c58e0 100644
 --- a/drivers/scsi/pmcraid.c
 +++ b/drivers/scsi/pmcraid.c
-@@ -4601,7 +4601,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
+@@ -4559,7 +4559,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
  	return 0;
  
  out_unwind:
@@ -4761,10 +5036,10 @@ index 75966d3f326e..d87c12324c03 100644
  
  /*
 diff --git a/drivers/staging/comedi/drivers/vmk80xx.c b/drivers/staging/comedi/drivers/vmk80xx.c
-index 36470ee06596..6010c047f4f8 100644
+index 7769eadfaf61..ccc65cfc519f 100644
 --- a/drivers/staging/comedi/drivers/vmk80xx.c
 +++ b/drivers/staging/comedi/drivers/vmk80xx.c
-@@ -694,7 +694,7 @@ static int vmk80xx_alloc_usb_buffers(struct comedi_device *dev)
+@@ -685,7 +685,7 @@ static int vmk80xx_alloc_usb_buffers(struct comedi_device *dev)
  	if (!devpriv->usb_rx_buf)
  		return -ENOMEM;
  
@@ -4774,10 +5049,10 @@ index 36470ee06596..6010c047f4f8 100644
  	if (!devpriv->usb_tx_buf)
  		return -ENOMEM;
 diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index 1b72321f2d0b..9f0b6b185be7 100644
+index abc84d84f638..9180ca5e4dcd 100644
 --- a/drivers/tty/goldfish.c
 +++ b/drivers/tty/goldfish.c
-@@ -435,7 +435,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
+@@ -428,7 +428,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
  	tty_unregister_device(goldfish_tty_driver, qtty->console.index);
  	iounmap(qtty->base);
  	qtty->base = NULL;
@@ -4787,10 +5062,10 @@ index 1b72321f2d0b..9f0b6b185be7 100644
  	goldfish_tty_current_line_count--;
  	if (goldfish_tty_current_line_count == 0)
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index bbfcb220e1eb..1aca30a3f716 100644
+index 34687c354f5e..5a2e67a8ddc7 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1524,6 +1524,8 @@ static inline void __stop_tx(struct uart_8250_port *p)
+@@ -1522,6 +1522,8 @@ static inline void __stop_tx(struct uart_8250_port *p)
  
  	if (em485) {
  		unsigned char lsr = serial_in(p, UART_LSR);
@@ -4800,10 +5075,10 @@ index bbfcb220e1eb..1aca30a3f716 100644
  		 * To provide required timeing and allow FIFO transfer,
  		 * __stop_tx_rs485() must be called only when both FIFO and
 diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
-index ba7528916da4..50ec2cd36db0 100644
+index 22c4d554865e..cfda88318583 100644
 --- a/drivers/usb/dwc2/hcd.c
 +++ b/drivers/usb/dwc2/hcd.c
-@@ -5231,7 +5231,7 @@ int dwc2_hcd_init(struct dwc2_hsotg *hsotg)
+@@ -5236,7 +5236,7 @@ int dwc2_hcd_init(struct dwc2_hsotg *hsotg)
  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
  	if (!res) {
  		retval = -EINVAL;
@@ -4813,10 +5088,10 @@ index ba7528916da4..50ec2cd36db0 100644
  	hcd->rsrc_start = res->start;
  	hcd->rsrc_len = resource_size(res);
 diff --git a/drivers/usb/gadget/function/u_ether.c b/drivers/usb/gadget/function/u_ether.c
-index f59c20457e65..2d45233ba027 100644
+index 1b3e674e6330..2fe91f120bb1 100644
 --- a/drivers/usb/gadget/function/u_ether.c
 +++ b/drivers/usb/gadget/function/u_ether.c
-@@ -776,9 +776,13 @@ struct eth_dev *gether_setup_name(struct usb_gadget *g,
+@@ -772,9 +772,13 @@ struct eth_dev *gether_setup_name(struct usb_gadget *g,
  	dev->qmult = qmult;
  	snprintf(net->name, sizeof(net->name), "%s%%d", netname);
  
@@ -4831,7 +5106,7 @@ index f59c20457e65..2d45233ba027 100644
  	if (get_ether_addr(host_addr, dev->host_mac))
  		dev_warn(&g->dev,
  			"using random %s ethernet address\n", "host");
-@@ -835,6 +839,9 @@ struct net_device *gether_setup_name_default(const char *netname)
+@@ -831,6 +835,9 @@ struct net_device *gether_setup_name_default(const char *netname)
  	INIT_LIST_HEAD(&dev->tx_reqs);
  	INIT_LIST_HEAD(&dev->rx_reqs);
  
@@ -4841,7 +5116,7 @@ index f59c20457e65..2d45233ba027 100644
  	skb_queue_head_init(&dev->rx_frames);
  
  	/* network device setup */
-@@ -872,7 +879,6 @@ int gether_register_netdev(struct net_device *net)
+@@ -868,7 +875,6 @@ int gether_register_netdev(struct net_device *net)
  	g = dev->gadget;
  
  	memcpy(net->dev_addr, dev->dev_mac, ETH_ALEN);
@@ -4849,7 +5124,7 @@ index f59c20457e65..2d45233ba027 100644
  
  	status = register_netdev(net);
  	if (status < 0) {
-@@ -912,6 +918,7 @@ int gether_set_dev_addr(struct net_device *net, const char *dev_addr)
+@@ -908,6 +914,7 @@ int gether_set_dev_addr(struct net_device *net, const char *dev_addr)
  	if (get_ether_addr(dev_addr, new_addr))
  		return -EINVAL;
  	memcpy(dev->dev_mac, new_addr, ETH_ALEN);
@@ -4858,10 +5133,10 @@ index f59c20457e65..2d45233ba027 100644
  }
  EXPORT_SYMBOL_GPL(gether_set_dev_addr);
 diff --git a/drivers/usb/gadget/udc/lpc32xx_udc.c b/drivers/usb/gadget/udc/lpc32xx_udc.c
-index 710793161795..498a44ae2b92 100644
+index cf56819f16e4..f7735d5ac6be 100644
 --- a/drivers/usb/gadget/udc/lpc32xx_udc.c
 +++ b/drivers/usb/gadget/udc/lpc32xx_udc.c
-@@ -3034,6 +3034,7 @@ static int lpc32xx_udc_probe(struct platform_device *pdev)
+@@ -3021,6 +3021,7 @@ static int lpc32xx_udc_probe(struct platform_device *pdev)
  	}
  
  	udc->isp1301_i2c_client = isp1301_get_client(isp1301_node);
@@ -4870,10 +5145,10 @@ index 710793161795..498a44ae2b92 100644
  		retval = -EPROBE_DEFER;
  		goto phy_fail;
 diff --git a/drivers/usb/serial/io_ti.c b/drivers/usb/serial/io_ti.c
-index 6cefb9cb133d..9bd24a7fe9e3 100644
+index 6d1d6efa3055..a4421e1a6c07 100644
 --- a/drivers/usb/serial/io_ti.c
 +++ b/drivers/usb/serial/io_ti.c
-@@ -172,6 +172,7 @@ static const struct usb_device_id edgeport_2port_id_table[] = {
+@@ -168,6 +168,7 @@ static const struct usb_device_id edgeport_2port_id_table[] = {
  	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
  	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
  	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
@@ -4881,7 +5156,7 @@ index 6cefb9cb133d..9bd24a7fe9e3 100644
  	{ }
  };
  
-@@ -210,6 +211,7 @@ static const struct usb_device_id id_table_combined[] = {
+@@ -206,6 +207,7 @@ static const struct usb_device_id id_table_combined[] = {
  	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
  	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
  	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
@@ -4890,10 +5165,10 @@ index 6cefb9cb133d..9bd24a7fe9e3 100644
  };
  
 diff --git a/drivers/usb/serial/io_usbvend.h b/drivers/usb/serial/io_usbvend.h
-index 6f6a856bc37c..a470262dcf48 100644
+index c38e87ac5ea9..7ca5ca49adff 100644
 --- a/drivers/usb/serial/io_usbvend.h
 +++ b/drivers/usb/serial/io_usbvend.h
-@@ -215,6 +215,7 @@
+@@ -212,6 +212,7 @@
  //
  // Definitions for other product IDs
  #define ION_DEVICE_ID_MT4X56USB			0x1403	// OEM device
@@ -4902,10 +5177,10 @@ index 6f6a856bc37c..a470262dcf48 100644
  
  #define	GENERATION_ID_FROM_USB_PRODUCT_ID(ProductId)				\
 diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
-index 6facdd77c138..bbd20defaae6 100644
+index 427a38ab198b..4f99818ca70e 100644
 --- a/drivers/usb/serial/option.c
 +++ b/drivers/usb/serial/option.c
-@@ -435,6 +435,8 @@ static void option_instat_callback(struct urb *urb);
+@@ -432,6 +432,8 @@ static void option_instat_callback(struct urb *urb);
  #define CINTERION_PRODUCT_CLS8			0x00b0
  #define CINTERION_PRODUCT_MV31_MBIM		0x00b3
  #define CINTERION_PRODUCT_MV31_RMNET		0x00b7
@@ -4914,7 +5189,7 @@ index 6facdd77c138..bbd20defaae6 100644
  #define CINTERION_PRODUCT_MV32_WA		0x00f1
  #define CINTERION_PRODUCT_MV32_WB		0x00f2
  
-@@ -1982,6 +1984,10 @@ static const struct usb_device_id option_ids[] = {
+@@ -1979,6 +1981,10 @@ static const struct usb_device_id option_ids[] = {
  	  .driver_info = RSVD(3)},
  	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_RMNET, 0xff),
  	  .driver_info = RSVD(0)},
@@ -4926,10 +5201,10 @@ index 6facdd77c138..bbd20defaae6 100644
  	  .driver_info = RSVD(3)},
  	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WB, 0xff),
 diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 74dc7170fd35..181386e06cb7 100644
+index 4cd9ea5c75be..c69c755bf553 100644
 --- a/drivers/virtio/virtio_mmio.c
 +++ b/drivers/virtio/virtio_mmio.c
-@@ -635,6 +635,7 @@ static int vm_cmdline_set(const char *device,
+@@ -663,6 +663,7 @@ static int vm_cmdline_set(const char *device,
  	if (!vm_cmdline_parent_registered) {
  		err = device_register(&vm_cmdline_parent);
  		if (err) {
@@ -4938,10 +5213,10 @@ index 74dc7170fd35..181386e06cb7 100644
  			return err;
  		}
 diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-index b9c06885de6a..924554b7010d 100644
+index b7cc63f556ee..40618ccffeb8 100644
 --- a/drivers/virtio/virtio_pci_common.c
 +++ b/drivers/virtio/virtio_pci_common.c
-@@ -256,8 +256,7 @@ void vp_del_vqs(struct virtio_device *vdev)
+@@ -257,8 +257,7 @@ void vp_del_vqs(struct virtio_device *vdev)
  
  	if (vp_dev->msix_affinity_masks) {
  		for (i = 0; i < vp_dev->msix_vectors; i++)
@@ -4952,10 +5227,10 @@ index b9c06885de6a..924554b7010d 100644
  
  	if (vp_dev->msix_enabled) {
 diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
-index 3446ab1f44e7..309d69c7ae5c 100644
+index a950a927a626..c94e0748fc32 100644
 --- a/fs/9p/vfs_inode_dotl.c
 +++ b/fs/9p/vfs_inode_dotl.c
-@@ -657,14 +657,10 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode,
+@@ -656,14 +656,10 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode,
  		if (stat->st_result_mask & P9_STATS_NLINK)
  			set_nlink(inode, stat->st_nlink);
  		if (stat->st_result_mask & P9_STATS_MODE) {
@@ -4974,10 +5249,10 @@ index 3446ab1f44e7..309d69c7ae5c 100644
  		    stat->st_result_mask & P9_STATS_SIZE)
  			v9fs_i_size_write(inode, stat->st_size);
 diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 28bee66c5fbf..a93bd342e0ae 100644
+index db8243627b08..4ea4fe92eb8c 100644
 --- a/fs/ext4/mballoc.c
 +++ b/fs/ext4/mballoc.c
-@@ -3197,6 +3197,15 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
+@@ -3170,6 +3170,15 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
  	size = size >> bsbits;
  	start = start_off >> bsbits;
  
@@ -4994,10 +5269,10 @@ index 28bee66c5fbf..a93bd342e0ae 100644
  	if (ar->pleft && start <= ar->lleft) {
  		size -= ar->lleft + 1 - start;
 diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index eb4de706cc9c..c5f289737d0f 100644
+index 621271c2989b..5f8599419150 100644
 --- a/fs/ext4/namei.c
 +++ b/fs/ext4/namei.c
-@@ -1724,7 +1724,8 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
+@@ -1743,7 +1743,8 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
  			struct dx_hash_info *hinfo)
  {
  	unsigned blocksize = dir->i_sb->s_blocksize;
@@ -5008,7 +5283,7 @@ index eb4de706cc9c..c5f289737d0f 100644
  	ext4_lblk_t newblock;
  	u32 hash2;
 diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
-index e0f4a9e3114e..721a00767d0e 100644
+index 5f954620efbf..d37493b39ab9 100644
 --- a/fs/ext4/resize.c
 +++ b/fs/ext4/resize.c
 @@ -52,6 +52,16 @@ int ext4_resize_begin(struct super_block *sb)
@@ -5029,11 +5304,11 @@ index e0f4a9e3114e..721a00767d0e 100644
  	 * If we are not using the primary superblock/GDT copy don't resize,
           * because the user tools have no way of handling this.  Probably a
 diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 18bbdaefd940..962585e00c86 100644
+index a7d638bfb46b..cfb1fe5dfb1e 100644
 --- a/fs/nfs/pnfs.c
 +++ b/fs/nfs/pnfs.c
-@@ -1878,6 +1878,12 @@ pnfs_update_layout(struct inode *ino,
- 			/* Fallthrough */
+@@ -2045,6 +2045,12 @@ pnfs_update_layout(struct inode *ino,
+ 		case -ERECALLCONFLICT:
  		case -EAGAIN:
  			break;
 +		case -ENODATA:
@@ -5154,17 +5429,10 @@ index 000000000000..d439496fa6ba
 +
 +#endif /* _CRYPTO_BLAKE2S_H */
 diff --git a/include/crypto/chacha20.h b/include/crypto/chacha20.h
-index caaa470389e0..3dd5ab189543 100644
+index f76302d99e2b..3dd5ab189543 100644
 --- a/include/crypto/chacha20.h
 +++ b/include/crypto/chacha20.h
-@@ -18,10 +18,25 @@ struct chacha20_ctx {
- 	u32 key[8];
- };
- 
--void chacha20_block(u32 *state, void *stream);
-+void chacha20_block(u32 *state, u8 *stream);
- void crypto_chacha20_init(u32 *state, struct chacha20_ctx *ctx, u8 *iv);
- int crypto_chacha20_setkey(struct crypto_skcipher *tfm, const u8 *key,
+@@ -24,4 +24,19 @@ int crypto_chacha20_setkey(struct crypto_skcipher *tfm, const u8 *key,
  			   unsigned int keysize);
  int crypto_chacha20_crypt(struct skcipher_request *req);
  
@@ -5185,7 +5453,7 @@ index caaa470389e0..3dd5ab189543 100644
 +
  #endif
 diff --git a/include/crypto/drbg.h b/include/crypto/drbg.h
-index 22f884c97387..19b44179bb7c 100644
+index 3fb581bf3b87..a6c3b8e7deb6 100644
 --- a/include/crypto/drbg.h
 +++ b/include/crypto/drbg.h
 @@ -105,6 +105,12 @@ struct drbg_test_data {
@@ -5201,9 +5469,9 @@ index 22f884c97387..19b44179bb7c 100644
  struct drbg_state {
  	struct mutex drbg_mutex;	/* lock around DRBG */
  	unsigned char *V;	/* internal state 10.1.1.1 1a) */
-@@ -129,14 +135,14 @@ struct drbg_state {
- 	struct completion ctr_completion;	/* CTR mode async handler */
- 	int ctr_async_err;			/* CTR mode async error */
+@@ -127,14 +133,14 @@ struct drbg_state {
+ 	struct crypto_wait ctr_wait;		/* CTR mode async wait obj */
+ 	struct scatterlist sg_in, sg_out;	/* CTR mode SGLs */
  
 -	bool seeded;		/* DRBG fully seeded? */
 +	enum drbg_seed_state seeded;		/* DRBG fully seeded? */
@@ -5219,7 +5487,7 @@ index 22f884c97387..19b44179bb7c 100644
  };
  
  static inline __u8 drbg_statelen(struct drbg_state *drbg)
-@@ -184,11 +190,7 @@ static inline size_t drbg_max_addtl(struct drbg_state *drbg)
+@@ -182,11 +188,7 @@ static inline size_t drbg_max_addtl(struct drbg_state *drbg)
  static inline size_t drbg_max_requests(struct drbg_state *drbg)
  {
  	/* SP800-90A requires 2**48 maximum requests before reseeding */
@@ -5257,49 +5525,21 @@ index 000000000000..3ba066845b69
 +}
 +
 +#endif /* _CRYPTO_INTERNAL_BLAKE2S_H */
-diff --git a/include/linux/byteorder/generic.h b/include/linux/byteorder/generic.h
-index 133b76d0d2c0..802f433e5a71 100644
---- a/include/linux/byteorder/generic.h
-+++ b/include/linux/byteorder/generic.h
-@@ -156,6 +156,23 @@ static inline void le64_add_cpu(__le64 *var, u64 val)
- 	*var = cpu_to_le64(le64_to_cpu(*var) + val);
- }
- 
-+/* XXX: this stuff can be optimized */
-+static inline void le32_to_cpu_array(u32 *buf, unsigned int words)
-+{
-+	while (words--) {
-+		__le32_to_cpus(buf);
-+		buf++;
-+	}
-+}
-+
-+static inline void cpu_to_le32_array(u32 *buf, unsigned int words)
-+{
-+	while (words--) {
-+		__cpu_to_le32s(buf);
-+		buf++;
-+	}
-+}
-+
- static inline void be16_add_cpu(__be16 *var, u16 val)
- {
- 	*var = cpu_to_be16(be16_to_cpu(*var) + val);
 diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
-index 0834eb5ea9e6..17a8a65f325f 100644
+index b51da879d7be..60efd9810d53 100644
 --- a/include/linux/cpuhotplug.h
 +++ b/include/linux/cpuhotplug.h
-@@ -59,6 +59,7 @@ enum cpuhp_state {
- 	CPUHP_PCI_XGENE_DEAD,
- 	CPUHP_IOMMU_INTEL_DEAD,
+@@ -60,6 +60,7 @@ enum cpuhp_state {
  	CPUHP_LUSTRE_CFS_DEAD,
+ 	CPUHP_AP_ARM_CACHE_B15_RAC_DEAD,
+ 	CPUHP_PADATA_DEAD,
 +	CPUHP_RANDOM_PREPARE,
  	CPUHP_WORKQUEUE_PREP,
  	CPUHP_POWER_NUMA_PREPARE,
  	CPUHP_HRTIMERS_PREPARE,
-@@ -162,6 +163,7 @@ enum cpuhp_state {
- 	CPUHP_AP_PERF_POWERPC_CORE_IMC_ONLINE,
+@@ -171,6 +172,7 @@ enum cpuhp_state {
  	CPUHP_AP_PERF_POWERPC_THREAD_IMC_ONLINE,
+ 	CPUHP_AP_WATCHDOG_ONLINE,
  	CPUHP_AP_WORKQUEUE_ONLINE,
 +	CPUHP_AP_RANDOM_ONLINE,
  	CPUHP_AP_RCUTREE_ONLINE,
@@ -5318,10 +5558,10 @@ index bee0827766a3..31587f36c06e 100644
  
  #endif /* LINUX_HWRANDOM_H_ */
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 94b138e4c840..794f52e2540e 100644
+index c736c677b876..26a5fba22664 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -2164,6 +2164,8 @@ extern int install_special_mapping(struct mm_struct *mm,
+@@ -2308,6 +2308,8 @@ extern int install_special_mapping(struct mm_struct *mm,
  				   unsigned long addr, unsigned long len,
  				   unsigned long flags, struct page **pages);
  
@@ -5380,10 +5620,10 @@ index e20339c78a84..709e8e69fb39 100644
  #else
  #error Unsupported BITS_PER_LONG
 diff --git a/include/linux/random.h b/include/linux/random.h
-index 8eda8c0cbba7..3feafab498ad 100644
+index 37209b3b22ae..3feafab498ad 100644
 --- a/include/linux/random.h
 +++ b/include/linux/random.h
-@@ -1,49 +1,35 @@
+@@ -1,50 +1,35 @@
  /* SPDX-License-Identifier: GPL-2.0 */
 -/*
 - * include/linux/random.h
@@ -5434,9 +5674,10 @@ index 8eda8c0cbba7..3feafab498ad 100644
 -
 -extern void get_random_bytes(void *buf, int nbytes);
 -extern int wait_for_random_bytes(void);
+-extern bool rng_is_initialized(void);
 -extern int add_random_ready_callback(struct random_ready_callback *rdy);
 -extern void del_random_ready_callback(struct random_ready_callback *rdy);
--extern void get_random_bytes_arch(void *buf, int nbytes);
+-extern int __must_check get_random_bytes_arch(void *buf, int nbytes);
 -
 -#ifndef MODULE
 -extern const struct file_operations random_fops, urandom_fops;
@@ -5448,7 +5689,7 @@ index 8eda8c0cbba7..3feafab498ad 100644
  u32 get_random_u32(void);
  u64 get_random_u64(void);
  static inline unsigned int get_random_int(void)
-@@ -75,38 +61,38 @@ static inline unsigned long get_random_long(void)
+@@ -76,36 +61,38 @@ static inline unsigned long get_random_long(void)
  
  static inline unsigned long get_random_canary(void)
  {
@@ -5470,11 +5711,8 @@ index 8eda8c0cbba7..3feafab498ad 100644
 +static inline int get_random_bytes_wait(void *buf, size_t nbytes)
  {
  	int ret = wait_for_random_bytes();
--	if (unlikely(ret))
--		return ret;
  	get_random_bytes(buf, nbytes);
--	return 0;
-+	return ret;
+ 	return ret;
  }
  
 -#define declare_get_random_var_wait(var) \
@@ -5503,7 +5741,7 @@ index 8eda8c0cbba7..3feafab498ad 100644
  /*
   * This is designed to be standalone for just prandom
   * users, but for now we include it from <linux/random.h>
-@@ -117,30 +103,39 @@ unsigned long randomize_page(unsigned long start, unsigned long range);
+@@ -116,30 +103,39 @@ unsigned long randomize_page(unsigned long start, unsigned long range);
  #ifdef CONFIG_ARCH_RANDOM
  # include <asm/archrandom.h>
  #else
@@ -5969,10 +6207,10 @@ index 26ee91300e3e..dcc1b3e6106f 100644
  
  #endif /* _UAPI_LINUX_RANDOM_H */
 diff --git a/init/main.c b/init/main.c
-index 621cedd9173a..bf27f802d0a1 100644
+index 272ec131211c..489a5aa7ba53 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -531,13 +531,6 @@ asmlinkage __visible void __init start_kernel(void)
+@@ -549,13 +549,6 @@ asmlinkage __visible void __init start_kernel(void)
  	page_address_init();
  	pr_notice("%s", linux_banner);
  	setup_arch(&command_line);
@@ -5986,7 +6224,7 @@ index 621cedd9173a..bf27f802d0a1 100644
  	mm_init_cpumask(&init_mm);
  	setup_command_line(command_line);
  	setup_nr_cpu_ids();
-@@ -615,6 +608,17 @@ asmlinkage __visible void __init start_kernel(void)
+@@ -641,6 +634,17 @@ asmlinkage __visible void __init start_kernel(void)
  	softirq_init();
  	timekeeping_init();
  	time_init();
@@ -6001,14 +6239,14 @@ index 621cedd9173a..bf27f802d0a1 100644
 +	random_init(command_line);
 +	boot_init_stack_canary();
 +
- 	sched_clock_postinit();
- 	printk_safe_init();
  	perf_event_init();
+ 	profile_init();
+ 	call_function_init();
 diff --git a/kernel/cpu.c b/kernel/cpu.c
-index f3b231cb6b65..281efe4b6cb0 100644
+index d6fd362afc81..c9ca190ec034 100644
 --- a/kernel/cpu.c
 +++ b/kernel/cpu.c
-@@ -31,6 +31,7 @@
+@@ -32,6 +32,7 @@
  #include <linux/slab.h>
  #include <linux/percpu-rwsem.h>
  #include <linux/cpuset.h>
@@ -6016,7 +6254,7 @@ index f3b231cb6b65..281efe4b6cb0 100644
  
  #include <trace/events/power.h>
  #define CREATE_TRACE_POINTS
-@@ -1404,6 +1405,11 @@ static struct cpuhp_step cpuhp_bp_states[] = {
+@@ -1404,6 +1405,11 @@ static struct cpuhp_step cpuhp_hp_states[] = {
  		.startup.single		= perf_event_init_cpu,
  		.teardown.single	= perf_event_exit_cpu,
  	},
@@ -6028,7 +6266,7 @@ index f3b231cb6b65..281efe4b6cb0 100644
  	[CPUHP_WORKQUEUE_PREP] = {
  		.name			= "workqueue:prepare",
  		.startup.single		= workqueue_prepare_cpu,
-@@ -1523,6 +1529,11 @@ static struct cpuhp_step cpuhp_ap_states[] = {
+@@ -1520,6 +1526,11 @@ static struct cpuhp_step cpuhp_hp_states[] = {
  		.startup.single		= workqueue_online_cpu,
  		.teardown.single	= workqueue_offline_cpu,
  	},
@@ -6041,10 +6279,10 @@ index f3b231cb6b65..281efe4b6cb0 100644
  		.name			= "RCU/tree:online",
  		.startup.single		= rcutree_online_cpu,
 diff --git a/kernel/irq/handle.c b/kernel/irq/handle.c
-index 79f987b942b8..1bc4dcc489d0 100644
+index 38554bc35375..e2f7afcb1ae6 100644
 --- a/kernel/irq/handle.c
 +++ b/kernel/irq/handle.c
-@@ -186,7 +186,7 @@ irqreturn_t handle_irq_event_percpu(struct irq_desc *desc)
+@@ -188,7 +188,7 @@ irqreturn_t handle_irq_event_percpu(struct irq_desc *desc)
  
  	retval = __handle_irq_event_percpu(desc, &flags);
  
@@ -6054,10 +6292,10 @@ index 79f987b942b8..1bc4dcc489d0 100644
  	if (!noirqdebug)
  		note_interrupt(desc, retval);
 diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index 602b476627dd..1d6a476fdfba 100644
+index f246818e35db..087f71183c3f 100644
 --- a/kernel/time/timekeeping.c
 +++ b/kernel/time/timekeeping.c
-@@ -21,6 +21,7 @@
+@@ -22,6 +22,7 @@
  #include <linux/clocksource.h>
  #include <linux/jiffies.h>
  #include <linux/time.h>
@@ -6065,8 +6303,8 @@ index 602b476627dd..1d6a476fdfba 100644
  #include <linux/tick.h>
  #include <linux/stop_machine.h>
  #include <linux/pvclock_gtod.h>
-@@ -2247,6 +2248,21 @@ ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq, ktime_t *offs_real,
- 	return base;
+@@ -2308,6 +2309,20 @@ static int timekeeping_validate_timex(const struct timex *txc)
+ 	return 0;
  }
  
 +/**
@@ -6083,61 +6321,33 @@ index 602b476627dd..1d6a476fdfba 100644
 +	return clock->read(clock);
 +}
 +EXPORT_SYMBOL_GPL(random_get_entropy_fallback);
-+
+ 
  /**
   * do_adjtimex() - Accessor function to NTP __do_adjtimex function
-  */
 diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index f63a4faf244e..a152e907e813 100644
+index 621859a453f8..9a4277034c64 100644
 --- a/lib/Kconfig.debug
 +++ b/lib/Kconfig.debug
-@@ -1267,9 +1267,8 @@ config WARN_ALL_UNSEEDED_RANDOM
- 	  time.  This is really bad from a security perspective, and
+@@ -1277,8 +1277,7 @@ config WARN_ALL_UNSEEDED_RANDOM
  	  so architecture maintainers really need to do what they can
  	  to get the CRNG seeded sooner after the system is booted.
--	  However, since users can not do anything actionble to
+ 	  However, since users cannot do anything actionable to
 -	  address this, by default the kernel will issue only a single
 -	  warning for the first use of unseeded randomness.
-+	  However, since users cannot do anything actionable to
 +	  address this, by default this option is disabled.
  
  	  Say Y here if you want to receive warnings for all uses of
  	  unseeded randomness.  This will be of use primarily for
 diff --git a/lib/Makefile b/lib/Makefile
-index ae2d261daec9..4b74298a3aec 100644
+index 1d7a705d7207..e08544c509a8 100644
 --- a/lib/Makefile
 +++ b/lib/Makefile
-@@ -262,3 +262,5 @@ CFLAGS_ubsan.o := $(call cc-option, -fno-stack-protector) $(DISABLE_STACKLEAK_PL
- obj-$(CONFIG_SBITMAP) += sbitmap.o
- 
- obj-$(CONFIG_PARMAN) += parman.o
+@@ -283,3 +283,5 @@ obj-$(CONFIG_GENERIC_LIB_LSHRDI3) += lshrdi3.o
+ obj-$(CONFIG_GENERIC_LIB_MULDI3) += muldi3.o
+ obj-$(CONFIG_GENERIC_LIB_CMPDI2) += cmpdi2.o
+ obj-$(CONFIG_GENERIC_LIB_UCMPDI2) += ucmpdi2.o
 +
 +obj-y += crypto/
-diff --git a/lib/chacha20.c b/lib/chacha20.c
-index 250ceed9ec9a..5f6c222e939a 100644
---- a/lib/chacha20.c
-+++ b/lib/chacha20.c
-@@ -21,9 +21,9 @@ static inline u32 rotl32(u32 v, u8 n)
- 	return (v << n) | (v >> (sizeof(v) * 8 - n));
- }
- 
--extern void chacha20_block(u32 *state, void *stream)
-+void chacha20_block(u32 *state, u8 *stream)
- {
--	u32 x[16], *out = stream;
-+	u32 x[16];
- 	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(x); i++)
-@@ -72,7 +72,7 @@ extern void chacha20_block(u32 *state, void *stream)
- 	}
- 
- 	for (i = 0; i < ARRAY_SIZE(x); i++)
--		out[i] = cpu_to_le32(x[i] + state[i]);
-+		put_unaligned_le32(x[i] + state[i], &stream[i * sizeof(u32)]);
- 
- 	state[12]++;
- }
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
 new file mode 100644
 index 000000000000..d0bca68618f0
@@ -6950,7 +7160,7 @@ index 000000000000..536fce87555b
 +MODULE_DESCRIPTION("BLAKE2s hash function");
 +MODULE_AUTHOR("Jason A. Donenfeld <Jason@zx2c4.com>");
 diff --git a/lib/random32.c b/lib/random32.c
-index f5e967f4adfa..357b1ae563ce 100644
+index 9085b1172015..339624191b51 100644
 --- a/lib/random32.c
 +++ b/lib/random32.c
 @@ -38,6 +38,9 @@
@@ -6963,7 +7173,7 @@ index f5e967f4adfa..357b1ae563ce 100644
  #include <asm/unaligned.h>
  
  /**
-@@ -544,9 +547,11 @@ static void prandom_reseed(unsigned long dontcare)
+@@ -544,9 +547,11 @@ static void prandom_reseed(struct timer_list *unused)
   * To avoid worrying about whether it's safe to delay that interrupt
   * long enough to seed all CPUs, just schedule an immediate timer event.
   */
@@ -7183,8 +7393,41 @@ index e632ee40aac1..5b34b5c83988 100644
  	u32 b = ((u32)(len)) << 24; \
  	v3 ^= key->key[1]; \
  	v2 ^= key->key[0]; \
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index c2619510636e..5e672480d3be 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -1700,14 +1700,16 @@ static void enable_ptr_key_workfn(struct work_struct *work)
+ 
+ static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
+ 
+-static void fill_random_ptr_key(struct random_ready_callback *unused)
++static int fill_random_ptr_key(struct notifier_block *nb,
++			       unsigned long action, void *data)
+ {
+ 	/* This may be in an interrupt handler. */
+ 	queue_work(system_unbound_wq, &enable_ptr_key_work);
++	return 0;
+ }
+ 
+-static struct random_ready_callback random_ready = {
+-	.func = fill_random_ptr_key
++static struct notifier_block random_ready = {
++	.notifier_call = fill_random_ptr_key
+ };
+ 
+ static int __init initialize_ptr_random(void)
+@@ -1721,7 +1723,7 @@ static int __init initialize_ptr_random(void)
+ 		return 0;
+ 	}
+ 
+-	ret = add_random_ready_callback(&random_ready);
++	ret = register_random_ready_notifier(&random_ready);
+ 	if (!ret) {
+ 		return 0;
+ 	} else if (ret == -EALREADY) {
 diff --git a/mm/util.c b/mm/util.c
-index f0d773c719a1..84e775f5216f 100644
+index 621afcea2bfa..e63eeb95f0f0 100644
 --- a/mm/util.c
 +++ b/mm/util.c
 @@ -14,6 +14,7 @@
@@ -7195,7 +7438,7 @@ index f0d773c719a1..84e775f5216f 100644
  
  #include <asm/sections.h>
  #include <linux/uaccess.h>
-@@ -264,6 +265,38 @@ int vma_is_stack_for_current(struct vm_area_struct *vma)
+@@ -286,6 +287,38 @@ int vma_is_stack_for_current(struct vm_area_struct *vma)
  	return (vma->vm_start <= KSTK_ESP(t) && vma->vm_end >= KSTK_ESP(t));
  }
  
@@ -7232,13 +7475,13 @@ index f0d773c719a1..84e775f5216f 100644
 +}
 +
  #if defined(CONFIG_MMU) && !defined(HAVE_ARCH_PICK_MMAP_LAYOUT)
- void arch_pick_mmap_layout(struct mm_struct *mm)
+ void arch_pick_mmap_layout(struct mm_struct *mm, struct rlimit *rlim_stack)
  {
 diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 1ebad5a024a7..19369fc9bcda 100644
+index 0a8aec3f37cc..5295a579ec82 100644
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
-@@ -591,12 +591,14 @@ EXPORT_SYMBOL_GPL(inet_unhash);
+@@ -718,12 +718,14 @@ EXPORT_SYMBOL_GPL(inet_unhash);
   * Note that we use 32bit integers (vs RFC 'short integers')
   * because 2^16 is not a multiple of num_ephemeral and this
   * property might be used by clever attacker.
@@ -7258,7 +7501,7 @@ index 1ebad5a024a7..19369fc9bcda 100644
  
  int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  		struct sock *sk, u64 port_offset,
-@@ -636,10 +638,11 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+@@ -763,10 +765,11 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  	if (likely(remaining > 1))
  		remaining &= ~1U;
  
@@ -7273,7 +7516,7 @@ index 1ebad5a024a7..19369fc9bcda 100644
  	offset %= remaining;
  
  	/* In first pass we try ports of @low parity.
-@@ -694,6 +697,12 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+@@ -821,6 +824,12 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  	return -EADDRNOTAVAIL;
  
  ok:
@@ -7286,13 +7529,10 @@ index 1ebad5a024a7..19369fc9bcda 100644
  	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
  
  	/* Head lock still held and bh's disabled */
-@@ -735,6 +744,15 @@ void inet_hashinfo_init(struct inet_hashinfo *h)
- 		INIT_HLIST_NULLS_HEAD(&h->listening_hash[i].nulls_head,
- 				      i + LISTENING_NULLS_BASE);
+@@ -890,6 +899,12 @@ void __init inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
+ 		INIT_HLIST_HEAD(&h->lhash2[i].head);
+ 		h->lhash2[i].count = 0;
  	}
-+
-+	if (h != &tcp_hashinfo)
-+		return;
 +
 +	/* this one is used for source ports of outgoing connections */
 +	table_perturb = kmalloc_array(INET_TABLE_PERTURB_SIZE,
@@ -7300,13 +7540,13 @@ index 1ebad5a024a7..19369fc9bcda 100644
 +	if (!table_perturb)
 +		panic("TCP: failed to alloc table_perturb");
  }
- EXPORT_SYMBOL_GPL(inet_hashinfo_init);
  
+ int inet_ehash_locks_alloc(struct inet_hashinfo *hashinfo)
 diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 9c4670fb29d7..7b0963712c22 100644
+index 2ff25c445b82..9dae10d8880c 100644
 --- a/net/l2tp/l2tp_ip6.c
 +++ b/net/l2tp/l2tp_ip6.c
-@@ -526,14 +526,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+@@ -519,14 +519,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
  	struct ipcm6_cookie ipc6;
  	int addr_len = msg->msg_namelen;
  	int transhdrlen = 4; /* zero session-id */
@@ -7324,130 +7564,288 @@ index 9c4670fb29d7..7b0963712c22 100644
  
  	/* Mirror BSD error message compatibility */
  	if (msg->msg_flags & MSG_OOB)
-diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
-index ad07b7cb6558..332fa7ec8a3d 100644
---- a/net/l2tp/l2tp_ppp.c
-+++ b/net/l2tp/l2tp_ppp.c
-@@ -435,20 +435,28 @@ static int pppol2tp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
-  * Session (and tunnel control) socket create/destroy.
-  *****************************************************************************/
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 8b75afe41284..091202b84b6e 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -443,6 +443,7 @@ static void set_ip_addr(struct sk_buff *skb, struct iphdr *nh,
+ 	update_ip_l4_checksum(skb, nh, *addr, new_addr);
+ 	csum_replace4(&nh->check, *addr, new_addr);
+ 	skb_clear_hash(skb);
++	ovs_ct_clear(skb, NULL);
+ 	*addr = new_addr;
+ }
  
-+static void pppol2tp_put_sk(struct rcu_head *head)
-+{
-+	struct pppol2tp_session *ps;
+@@ -490,6 +491,7 @@ static void set_ipv6_addr(struct sk_buff *skb, u8 l4_proto,
+ 		update_ipv6_checksum(skb, l4_proto, addr, new_addr);
+ 
+ 	skb_clear_hash(skb);
++	ovs_ct_clear(skb, NULL);
+ 	memcpy(addr, new_addr, sizeof(__be32[4]));
+ }
+ 
+@@ -730,6 +732,7 @@ static int set_nsh(struct sk_buff *skb, struct sw_flow_key *flow_key,
+ static void set_tp_port(struct sk_buff *skb, __be16 *port,
+ 			__be16 new_port, __sum16 *check)
+ {
++	ovs_ct_clear(skb, NULL);
+ 	inet_proto_csum_replace2(check, skb, *port, new_port, false);
+ 	*port = new_port;
+ }
+@@ -769,6 +772,7 @@ static int set_udp(struct sk_buff *skb, struct sw_flow_key *flow_key,
+ 		uh->dest = dst;
+ 		flow_key->tp.src = src;
+ 		flow_key->tp.dst = dst;
++		ovs_ct_clear(skb, NULL);
+ 	}
+ 
+ 	skb_clear_hash(skb);
+@@ -831,6 +835,8 @@ static int set_sctp(struct sk_buff *skb, struct sw_flow_key *flow_key,
+ 	sh->checksum = old_csum ^ old_correct_csum ^ new_csum;
+ 
+ 	skb_clear_hash(skb);
++	ovs_ct_clear(skb, NULL);
 +
-+	ps = container_of(head, typeof(*ps), rcu);
-+	sock_put(ps->__sk);
+ 	flow_key->tp.src = sh->source;
+ 	flow_key->tp.dst = sh->dest;
+ 
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index fb13fcfedaf4..0777c8d416f1 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -1303,7 +1303,8 @@ int ovs_ct_clear(struct sk_buff *skb, struct sw_flow_key *key)
+ 	if (skb_nfct(skb)) {
+ 		nf_conntrack_put(skb_nfct(skb));
+ 		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
+-		ovs_ct_fill_key(skb, key);
++		if (key)
++			ovs_ct_fill_key(skb, key);
+ 	}
+ 
+ 	return 0;
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 180f5feb7717..eba94cf3d2d0 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -2253,6 +2253,36 @@ static struct sw_flow_actions *nla_alloc_flow_actions(int size)
+ 	return sfa;
+ }
+ 
++static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len);
++
++static void ovs_nla_free_clone_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++	int rem = nla_len(action);
++
++	switch (nla_type(a)) {
++	case OVS_CLONE_ATTR_EXEC:
++		/* The real list of actions follows this attribute. */
++		a = nla_next(a, &rem);
++		ovs_nla_free_nested_actions(a, rem);
++		break;
++	}
 +}
 +
- /* Called by l2tp_core when a session socket is being closed.
-  */
- static void pppol2tp_session_close(struct l2tp_session *session)
- {
--	struct sock *sk;
--
--	BUG_ON(session->magic != L2TP_SESSION_MAGIC);
-+	struct pppol2tp_session *ps;
- 
--	sk = pppol2tp_session_get_sock(session);
--	if (sk) {
--		if (sk->sk_socket)
--			inet_shutdown(sk->sk_socket, SEND_SHUTDOWN);
--		sock_put(sk);
--	}
-+	ps = l2tp_session_priv(session);
-+	mutex_lock(&ps->sk_lock);
-+	ps->__sk = rcu_dereference_protected(ps->sk,
-+					     lockdep_is_held(&ps->sk_lock));
-+	RCU_INIT_POINTER(ps->sk, NULL);
-+	if (ps->__sk)
-+		call_rcu(&ps->rcu, pppol2tp_put_sk);
-+	mutex_unlock(&ps->sk_lock);
- }
- 
- /* Really kill the session socket. (Called from sock_put() if
-@@ -468,14 +476,6 @@ static void pppol2tp_session_destruct(struct sock *sk)
- 	}
- }
- 
--static void pppol2tp_put_sk(struct rcu_head *head)
--{
--	struct pppol2tp_session *ps;
--
--	ps = container_of(head, typeof(*ps), rcu);
--	sock_put(ps->__sk);
--}
--
- /* Called when the PPPoX socket (session) is closed.
-  */
- static int pppol2tp_release(struct socket *sock)
-@@ -499,26 +499,17 @@ static int pppol2tp_release(struct socket *sock)
- 	sock_orphan(sk);
- 	sock->sk = NULL;
- 
-+	/* If the socket is associated with a session,
-+	 * l2tp_session_delete will call pppol2tp_session_close which
-+	 * will drop the session's ref on the socket.
-+	 */
- 	session = pppol2tp_sock_to_session(sk);
--
--	if (session != NULL) {
--		struct pppol2tp_session *ps;
--
-+	if (session) {
- 		l2tp_session_delete(session);
--
--		ps = l2tp_session_priv(session);
--		mutex_lock(&ps->sk_lock);
--		ps->__sk = rcu_dereference_protected(ps->sk,
--						     lockdep_is_held(&ps->sk_lock));
--		RCU_INIT_POINTER(ps->sk, NULL);
--		mutex_unlock(&ps->sk_lock);
--		call_rcu(&ps->rcu, pppol2tp_put_sk);
--
--		/* Rely on the sock_put() call at the end of the function for
--		 * dropping the reference held by pppol2tp_sock_to_session().
--		 * The last reference will be dropped by pppol2tp_put_sk().
--		 */
-+		/* drop the ref obtained by pppol2tp_sock_to_session */
-+		sock_put(sk);
- 	}
++static void ovs_nla_free_sample_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++	int rem = nla_len(action);
 +
- 	release_sock(sk);
++	switch (nla_type(a)) {
++	case OVS_SAMPLE_ATTR_ARG:
++		/* The real list of actions follows this attribute. */
++		a = nla_next(a, &rem);
++		ovs_nla_free_nested_actions(a, rem);
++		break;
++	}
++}
++
+ static void ovs_nla_free_set_action(const struct nlattr *a)
+ {
+ 	const struct nlattr *ovs_key = nla_data(a);
+@@ -2266,25 +2296,46 @@ static void ovs_nla_free_set_action(const struct nlattr *a)
+ 	}
+ }
  
- 	/* This will delete the session context via
-@@ -830,6 +821,7 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
+-void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
++static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len)
+ {
+ 	const struct nlattr *a;
+ 	int rem;
  
- out_no_ppp:
- 	/* This is how we get the session context from the socket. */
-+	sock_hold(sk);
- 	sk->sk_user_data = session;
- 	rcu_assign_pointer(ps->sk, sk);
- 	mutex_unlock(&ps->sk_lock);
+-	if (!sf_acts)
++	/* Whenever new actions are added, the need to update this
++	 * function should be considered.
++	 */
++	BUILD_BUG_ON(OVS_ACTION_ATTR_MAX != 20);
++
++	if (!actions)
+ 		return;
+ 
+-	nla_for_each_attr(a, sf_acts->actions, sf_acts->actions_len, rem) {
++	nla_for_each_attr(a, actions, len, rem) {
+ 		switch (nla_type(a)) {
+-		case OVS_ACTION_ATTR_SET:
+-			ovs_nla_free_set_action(a);
++		case OVS_ACTION_ATTR_CLONE:
++			ovs_nla_free_clone_action(a);
+ 			break;
++
+ 		case OVS_ACTION_ATTR_CT:
+ 			ovs_ct_free_action(a);
+ 			break;
++
++		case OVS_ACTION_ATTR_SAMPLE:
++			ovs_nla_free_sample_action(a);
++			break;
++
++		case OVS_ACTION_ATTR_SET:
++			ovs_nla_free_set_action(a);
++			break;
+ 		}
+ 	}
++}
++
++void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
++{
++	if (!sf_acts)
++		return;
+ 
++	ovs_nla_free_nested_actions(sf_acts->actions, sf_acts->actions_len);
+ 	kfree(sf_acts);
+ }
+ 
 diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
-index 030bf17a20b6..0dae9260ba3c 100644
+index 3d65a2bccfc7..7f9d8365c932 100644
 --- a/net/sunrpc/xprtrdma/rpc_rdma.c
 +++ b/net/sunrpc/xprtrdma/rpc_rdma.c
-@@ -75,7 +75,7 @@ static unsigned int rpcrdma_max_call_header_size(unsigned int maxsegs)
+@@ -72,7 +72,7 @@ static unsigned int rpcrdma_max_call_header_size(unsigned int maxsegs)
  
  	/* Maximum Read list size */
  	maxsegs += 2;	/* segment for head and tail buffers */
--	size = maxsegs * sizeof(struct rpcrdma_read_chunk);
-+	size += maxsegs * sizeof(struct rpcrdma_read_chunk);
+-	size = maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
++	size += maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
  
  	/* Minimal Read chunk size */
  	size += sizeof(__be32);	/* segment count */
-@@ -101,7 +101,7 @@ static unsigned int rpcrdma_max_reply_header_size(unsigned int maxsegs)
+@@ -98,7 +98,7 @@ static unsigned int rpcrdma_max_reply_header_size(unsigned int maxsegs)
  
  	/* Maximum Write list size */
  	maxsegs += 2;	/* segment for head and tail buffers */
 -	size = sizeof(__be32);		/* segment count */
 +	size += sizeof(__be32);		/* segment count */
- 	size += maxsegs * sizeof(struct rpcrdma_segment);
+ 	size += maxsegs * rpcrdma_segment_maxsz * sizeof(__be32);
  	size += sizeof(__be32);	/* list discriminator */
  
+diff --git a/scripts/faddr2line b/scripts/faddr2line
+index 226c3f559dc5..2571caac3156 100755
+--- a/scripts/faddr2line
++++ b/scripts/faddr2line
+@@ -95,17 +95,25 @@ __faddr2line() {
+ 	local print_warnings=$4
+ 
+ 	local sym_name=${func_addr%+*}
+-	local offset=${func_addr#*+}
+-	offset=${offset%/*}
++	local func_offset=${func_addr#*+}
++	func_offset=${func_offset%/*}
+ 	local user_size=
++	local file_type
++	local is_vmlinux=0
+ 	[[ $func_addr =~ "/" ]] && user_size=${func_addr#*/}
+ 
+-	if [[ -z $sym_name ]] || [[ -z $offset ]] || [[ $sym_name = $func_addr ]]; then
++	if [[ -z $sym_name ]] || [[ -z $func_offset ]] || [[ $sym_name = $func_addr ]]; then
+ 		warn "bad func+offset $func_addr"
+ 		DONE=1
+ 		return
+ 	fi
+ 
++	# vmlinux uses absolute addresses in the section table rather than
++	# section offsets.
++	local file_type=$(${READELF} --file-header $objfile |
++		${AWK} '$1 == "Type:" { print $2; exit }')
++	[[ $file_type = "EXEC" ]] && is_vmlinux=1
++
+ 	# Go through each of the object's symbols which match the func name.
+ 	# In rare cases there might be duplicates, in which case we print all
+ 	# matches.
+@@ -114,9 +122,11 @@ __faddr2line() {
+ 		local sym_addr=0x${fields[1]}
+ 		local sym_elf_size=${fields[2]}
+ 		local sym_sec=${fields[6]}
++		local sec_size
++		local sec_name
+ 
+ 		# Get the section size:
+-		local sec_size=$(${READELF} --section-headers --wide $objfile |
++		sec_size=$(${READELF} --section-headers --wide $objfile |
+ 			sed 's/\[ /\[/' |
+ 			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print "0x" $6; exit }')
+ 
+@@ -126,6 +136,17 @@ __faddr2line() {
+ 			return
+ 		fi
+ 
++		# Get the section name:
++		sec_name=$(${READELF} --section-headers --wide $objfile |
++			sed 's/\[ /\[/' |
++			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print $2; exit }')
++
++		if [[ -z $sec_name ]]; then
++			warn "bad section name: section: $sym_sec"
++			DONE=1
++			return
++		fi
++
+ 		# Calculate the symbol size.
+ 		#
+ 		# Unfortunately we can't use the ELF size, because kallsyms
+@@ -174,10 +195,10 @@ __faddr2line() {
+ 
+ 		sym_size=0x$(printf %x $sym_size)
+ 
+-		# Calculate the section address from user-supplied offset:
+-		local addr=$(($sym_addr + $offset))
++		# Calculate the address from user-supplied offset:
++		local addr=$(($sym_addr + $func_offset))
+ 		if [[ -z $addr ]] || [[ $addr = 0 ]]; then
+-			warn "bad address: $sym_addr + $offset"
++			warn "bad address: $sym_addr + $func_offset"
+ 			DONE=1
+ 			return
+ 		fi
+@@ -191,9 +212,9 @@ __faddr2line() {
+ 		fi
+ 
+ 		# Make sure the provided offset is within the symbol's range:
+-		if [[ $offset -gt $sym_size ]]; then
++		if [[ $func_offset -gt $sym_size ]]; then
+ 			[[ $print_warnings = 1 ]] &&
+-				echo "skipping $sym_name address at $addr due to size mismatch ($offset > $sym_size)"
++				echo "skipping $sym_name address at $addr due to size mismatch ($func_offset > $sym_size)"
+ 			continue
+ 		fi
+ 
+@@ -202,11 +223,13 @@ __faddr2line() {
+ 		[[ $FIRST = 0 ]] && echo
+ 		FIRST=0
+ 
+-		echo "$sym_name+$offset/$sym_size:"
++		echo "$sym_name+$func_offset/$sym_size:"
+ 
+ 		# Pass section address to addr2line and strip absolute paths
+ 		# from the output:
+-		local output=$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(\./\)*; ;")
++		local args="--functions --pretty-print --inlines --exe=$objfile"
++		[[ $is_vmlinux = 0 ]] && args="$args --section=$sec_name"
++		local output=$(${ADDR2LINE} $args $addr | sed "s; $dir_prefix\(\./\)*; ;")
+ 		[[ -z $output ]] && continue
+ 
+ 		# Default output (non --list):
 diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
-index 0d9c4a57301b..47f2439fd7b0 100644
+index 3d83c1be1292..de311299432b 100644
 --- a/sound/soc/codecs/cs42l52.c
 +++ b/sound/soc/codecs/cs42l52.c
 @@ -141,7 +141,9 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
@@ -7480,7 +7878,7 @@ index 0d9c4a57301b..47f2439fd7b0 100644
  	SOC_DOUBLE("ADC Switch", CS42L52_ADC_MISC_CTL, 0, 1, 1, 0),
  
 diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
-index 52858b6c95a6..9274b52edc44 100644
+index 04f89b751304..deaad703a7db 100644
 --- a/sound/soc/codecs/cs42l56.c
 +++ b/sound/soc/codecs/cs42l56.c
 @@ -403,9 +403,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
@@ -7496,7 +7894,7 @@ index 52858b6c95a6..9274b52edc44 100644
  	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
  			0, 0x00, 1, tone_tlv),
 diff --git a/sound/soc/codecs/cs53l30.c b/sound/soc/codecs/cs53l30.c
-index c7edf2df5e36..f30807b3705d 100644
+index 8995ea45b4ca..86e93904b001 100644
 --- a/sound/soc/codecs/cs53l30.c
 +++ b/sound/soc/codecs/cs53l30.c
 @@ -351,22 +351,22 @@ static const struct snd_kcontrol_new cs53l30_snd_controls[] = {
@@ -7530,8 +7928,30 @@ index c7edf2df5e36..f30807b3705d 100644
  };
  
  static const struct snd_soc_dapm_widget cs53l30_dapm_widgets[] = {
+diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
+index 3afa163f7652..dcb01889e177 100644
+--- a/sound/soc/codecs/es8328.c
++++ b/sound/soc/codecs/es8328.c
+@@ -165,13 +165,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
+ 	if (deemph > 1)
+ 		return -EINVAL;
+ 
++	if (es8328->deemph == deemph)
++		return 0;
++
+ 	ret = es8328_set_deemph(component);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	es8328->deemph = deemph;
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ 
 diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
-index 0e8008d38161..d46881f96c16 100644
+index dde015fd70a4..3f75cb3209ff 100644
 --- a/sound/soc/codecs/wm8962.c
 +++ b/sound/soc/codecs/wm8962.c
 @@ -3861,6 +3861,7 @@ static int wm8962_runtime_suspend(struct device *dev)
@@ -7542,3 +7962,16 @@ index 0e8008d38161..d46881f96c16 100644
  	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
  };
  
+diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
+index 02c557e1f779..c5b0b56d9c94 100644
+--- a/sound/soc/codecs/wm_adsp.c
++++ b/sound/soc/codecs/wm_adsp.c
+@@ -697,7 +697,7 @@ int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+ 	struct wm_adsp *dsp = snd_soc_component_get_drvdata(component);
+-	int ret = 0;
++	int ret = 1;
+ 
+ 	if (ucontrol->value.enumerated.item[0] == dsp[e->shift_l].fw)
+ 		return 0;
