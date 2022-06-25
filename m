@@ -2,128 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB14ECCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A4ACCA479
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233037AbiFYNWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 09:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
+        id S233075AbiFYNY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 09:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiFYNWW (ORCPT
+        with ESMTP id S233066AbiFYNYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 09:22:22 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E1020F4B
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:22:21 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id j1-20020a056e02154100b002d906f7e0b1so3315645ilu.17
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:22:20 -0700 (PDT)
+        Sat, 25 Jun 2022 09:24:24 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57681AD9B
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:24:22 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id eo8so7075732edb.0
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:24:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vT/L0pA679HijlQXBMu/RBXfDaFIMh01ndT9CE/1vWg=;
+        b=BsqaxnRGZQNL1mwfkFmme+Bv7eLP8mS4Va4r8tZQmYRA0LiefjRLt9MqB+e5/MxEIc
+         v1VnEKRc//DL+l/CaUQN+uWPxawYI6jtSCOcJR5oB+6Z8lnTCjxRkIu2IdeGKzNmvlRA
+         gFsHBdWZtNKQgul6HR1/ZHH9tdTQBqmUis8kczrGBqXobluBNAtYkWB3Bo1uI4qGjD+H
+         z8I7gJL4tpb/EfSFfy27sNSn50RPqb4+lwafe9jUM6Pwks3MLjSL+/han5fdP6EbYhU5
+         9GmAvQIOkdafav01deIsCTJrN/10k7xQ2T/idRWo/ulDpRiCIK5eGa2A5ixrN6i0XE40
+         2QSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=BjZQvvA6i1wTN10u+QILwySJyfFf9Ak+YFbYOo2VvfA=;
-        b=Jxof461rRbPuGMSV+QLyV7LdddC5+udcjrDLTJCVF2sACbeAKf4r4shR9eqV7Y03HH
-         jtHCr+Ghdk+8f384sVZaFHknHePYxtgVCRkBMHfi0khN/NHveKfU4AziV5151carPQRg
-         qqVyQ0nu1wvsivcwPc22WxgN3IXMEqZvsagBaa1RJU4TVYfQTGpUahdFXO1SZ+fWrEw/
-         o7u4yJGEw2/r9OCkb8lFDWSKdWnJ/5Xun2o3zDSt3BiFE5ZBNmudwyi4SWe3BhzPpkME
-         tA/yRAduqSqe1+O5+Y+pb2LVequp5qkHXOOecGLzm4hf1Ewp+wDOHn87y/d+GBurgmHG
-         ADIg==
-X-Gm-Message-State: AJIora8rKlQ3H7eGE3ubcpF0XEVJrwyeI5Go5vhKCO0We0cfQsdRkaW1
-        mrL8At8/GXCKCHrTGbB+EsQaj1VJlLcX248YISbQ0eQN6L7v
-X-Google-Smtp-Source: AGRyM1vPCvxsW13MJIXmV3zpoPlQErTa0y92lXPI5yANXTUncWMJ9kKYo8OM+6Tt72LN9h7CB8anzywiKTd16jlw0rCTPnDfsO7Q
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vT/L0pA679HijlQXBMu/RBXfDaFIMh01ndT9CE/1vWg=;
+        b=QErB6oSlZb4Li4oPSHNzG+VXF9JussQQjdU5g28Q3K8Yg1oYksZK/Yklnt2glNcT3Z
+         xPLTVxg48oJipDxP0liy8XbogYFL+foHzBv3Mwqbt4Fi2hAdE2hDHEfvpcGOb6MVC64+
+         Tt1UtP2tICMdFCV4V0BDboiDMThapPNwRz0sVKDtiBpsDjddnv2KLZwJn1N5Uq0SDyLC
+         HiIBF7S2CguGE2hvBZxpsOWIEzHHtQSEQfTR4aaUt3xOTeunpX+Vq4HpX7eBH9pMwC0G
+         e3bcNnIdN/GK+tmBQbHUeCgyv4gMAG/xIy+mDDLwkz9+tQms/9hYMLFtlZMTQi1UW/rA
+         HAMA==
+X-Gm-Message-State: AJIora9kOOpchkOdz6p8SOynbMxT8jKjIzeNmXsxifvGqRFurtCcLa+i
+        eyleyB0jXuNR4+WxrbzR9cHS7jayAxoNBsz87j3wNw==
+X-Google-Smtp-Source: AGRyM1tf4SQ5mEohds//tzA/laPmBOqr1TQEZNctQk0k7INW1cHHEDYfZFx3wIDA4ZqF+MP3yedQ4L+HzS06jz6JhIA=
+X-Received: by 2002:a50:eb45:0:b0:437:7686:6048 with SMTP id
+ z5-20020a50eb45000000b0043776866048mr1538258edp.264.1656163461049; Sat, 25
+ Jun 2022 06:24:21 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:371e:b0:331:bc34:c3b1 with SMTP id
- k30-20020a056638371e00b00331bc34c3b1mr2534999jav.68.1656163340337; Sat, 25
- Jun 2022 06:22:20 -0700 (PDT)
-Date:   Sat, 25 Jun 2022 06:22:20 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000097473905e2459315@google.com>
-Subject: [syzbot] WARNING in wdev_chandef
-From:   syzbot <syzbot+b4e9aa0f32ffd9902442@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
+References: <20220623164322.315085512@linuxfoundation.org>
+In-Reply-To: <20220623164322.315085512@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 25 Jun 2022 18:54:09 +0530
+Message-ID: <CA+G9fYu6T+OYoo6OgA0ndu2wLg8NwSck08FqJGx7Lm39UMZGyA@mail.gmail.com>
+Subject: Re: [PATCH 5.18 00/11] 5.18.7-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Thu, 23 Jun 2022 at 22:55, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.18.7 release.
+> There are 11 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.18.7-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-syzbot found the following issue on:
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-HEAD commit:    34d1d36073ea Add linux-next specific files for 20220621
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=15062b7ff00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b24b62d1c051cfc8
-dashboard link: https://syzkaller.appspot.com/bug?extid=b4e9aa0f32ffd9902442
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-Unfortunately, I don't have any reproducer for this issue yet.
+## Build
+* kernel: 5.18.7-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.18.y
+* git commit: 1fbbb68b1ca97c9e8393fe69df86b23e79f81d05
+* git describe: v5.18.5-154-g1fbbb68b1ca9
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18=
+.5-154-g1fbbb68b1ca9
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b4e9aa0f32ffd9902442@syzkaller.appspotmail.com
+## Test Regressions (compared to v5.18.5-142-g1cf3647a86ad)
+No test regressions found.
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 9272 at net/wireless/chan.c:1436 wdev_chandef+0x164/0x1a0 net/wireless/chan.c:1436
-Modules linked in:
-CPU: 1 PID: 9272 Comm: syz-executor.1 Not tainted 5.19.0-rc3-next-20220621-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:wdev_chandef+0x164/0x1a0 net/wireless/chan.c:1436
-Code: f8 48 8d bb b0 00 00 00 be ff ff ff ff e8 c4 66 c5 00 31 ff 89 c5 89 c6 e8 c9 1b c5 f8 85 ed 0f 85 f7 fe ff ff e8 6c 1f c5 f8 <0f> 0b e9 eb fe ff ff 48 c7 c7 4c 70 bd 8d e8 69 39 11 f9 e9 c3 fe
-RSP: 0018:ffffc9000302f2f0 EFLAGS: 00010216
-RAX: 0000000000000515 RBX: ffff888074ac0c90 RCX: ffffc9000c92a000
-RDX: 0000000000040000 RSI: ffffffff88b59de4 RDI: 0000000000000005
-RBP: 0000000000000000 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000001 R14: 0000000000000004 R15: 0000000000000004
-FS:  00007f71b11d9700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000002022a000 CR3: 000000002a96d000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- he_get_txmcsmap net/wireless/nl80211.c:4894 [inline]
- nl80211_parse_tx_bitrate_mask.isra.0+0x3e8/0x2460 net/wireless/nl80211.c:4994
- parse_tid_conf net/wireless/nl80211.c:15379 [inline]
- nl80211_set_tid_config+0x147e/0x18f0 net/wireless/nl80211.c:15444
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
- genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- ____sys_sendmsg+0x6eb/0x810 net/socket.c:2489
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2543
- __sys_sendmsg net/socket.c:2572 [inline]
- __do_sys_sendmsg net/socket.c:2581 [inline]
- __se_sys_sendmsg net/socket.c:2579 [inline]
- __x64_sys_sendmsg+0x132/0x220 net/socket.c:2579
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f71b0089109
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f71b11d9168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f71b019bf60 RCX: 00007f71b0089109
-RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
-RBP: 00007f71b00e305d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffe9a7e5d8f R14: 00007f71b11d9300 R15: 0000000000022000
- </TASK>
+## Metric Regressions (compared to v5.18.5-142-g1cf3647a86ad)
+No metric regressions found.
 
+## Test Fixes (compared to v5.18.5-142-g1cf3647a86ad)
+No test fixes found.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+## Metric Fixes (compared to v5.18.5-142-g1cf3647a86ad)
+No metric fixes found.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+## Test result summary
+total: 128467, pass: 116814, fail: 682, skip: 10271, xfail: 700
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 314 total, 314 passed, 0 failed
+* arm64: 58 total, 58 passed, 0 failed
+* i386: 52 total, 49 passed, 3 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 54 passed, 6 failed
+* riscv: 27 total, 22 passed, 5 failed
+* s390: 18 total, 18 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 56 total, 54 passed, 2 failed
+
+## Test suites summary
+* fwts
+* kselftest-android
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers-dma-buf
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-filesystems-binderfs
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-gpio
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-lib
+* kselftest-membarrier
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-zram
+* kunit
+* kunit/15
+* kunit/261
+* kunit/3
+* kunit/427
+* kunit/90
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* lt[
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
