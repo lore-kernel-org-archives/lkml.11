@@ -2,69 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00DF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 06:34:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C22C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 06:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232072AbiFYGeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 02:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
+        id S232105AbiFYGiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 02:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiFYGeT (ORCPT
+        with ESMTP id S229529AbiFYGh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 02:34:19 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605874AE17;
-        Fri, 24 Jun 2022 23:34:13 -0700 (PDT)
-X-QQ-mid: bizesmtp65t1656138771t2lklo41
-Received: from localhost.localdomain ( [125.70.163.206])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sat, 25 Jun 2022 14:32:46 +0800 (CST)
-X-QQ-SSF: 0100000000200060C000B00A0000000
-X-QQ-FEAT: 1al0Ay5k4U33JnV8rDMg3BQWJQWbjLIB8QGOwWLbU8NxsKzwo+DU+81Bh00Z7
-        4D2RLZMt8/HCc+ofeYwuYGOE9MwGCsqKBAwOlfoEaZ2dYvUrPytFPnHZ+RwNObeEcK2xEgj
-        OdowCqUh8WugBM3fjuHlyMkYVQcXf3AmbR1GrseHsLGbZodl96NjSLvXqSZh3SptwUCQa7i
-        PVu1EZb1OhzuBCUoMEU59g0p2Vd88qEsedGIzn7zMhk4wiawhmmxWCQuBjSGK8yJFs5MD9T
-        bYYqSBXEj3aOHfaNBgIkIWSIxruemGjTQVeClkSjo0lRO5CVkQ5nxd1JsL0/ub4UU0f+NTd
-        kxwxLdpVDbFXqH26hk=
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] sfc:falcon: fix repeated words in comments
-Date:   Sat, 25 Jun 2022 14:32:40 +0800
-Message-Id: <20220625063240.55133-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Sat, 25 Jun 2022 02:37:58 -0400
+Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BA6CCE
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 23:37:56 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id 4zQToScCo6rrE4zQTo0f6d; Sat, 25 Jun 2022 08:37:53 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 25 Jun 2022 08:37:53 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <f2e89d3a-f6ad-6fdc-1bd1-eb38f5a8f569@wanadoo.fr>
+Date:   Sat, 25 Jun 2022 08:37:49 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 2/4] usb: typec: ucsi: stm32g0: add support for stm32g0
+ i2c controller
+Content-Language: en-US
+To:     fabrice.gasnier@foss.st.com
+Cc:     alexandre.torgue@foss.st.com, amelie.delaunay@foss.st.com,
+        devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
+        heikki.krogerus@linux.intel.com, krzysztof.kozlowski+dt@linaro.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, robh+dt@kernel.org
+References: <20220624155413.399190-1-fabrice.gasnier@foss.st.com>
+ <20220624155413.399190-3-fabrice.gasnier@foss.st.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220624155413.399190-3-fabrice.gasnier@foss.st.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'in'.
+Le 24/06/2022 à 17:54, Fabrice Gasnier a écrit :
+> STM32G0 provides an integrated USB Type-C and power delivery interface.
+> It can be programmed with a firmware to handle UCSI protocol over I2C
+> interface. A GPIO is used as an interrupt line.
+> 
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier-rj0Iel/JR4NBDgjK7y7TUQ@public.gmane.org>
+> ---
+>   drivers/usb/typec/ucsi/Kconfig        |  10 ++
+>   drivers/usb/typec/ucsi/Makefile       |   1 +
+>   drivers/usb/typec/ucsi/ucsi_stm32g0.c | 218 ++++++++++++++++++++++++++
+>   3 files changed, 229 insertions(+)
+>   create mode 100644 drivers/usb/typec/ucsi/ucsi_stm32g0.c
+> 
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/net/ethernet/sfc/falcon/bitfield.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+[...]
 
-diff --git a/drivers/net/ethernet/sfc/falcon/bitfield.h b/drivers/net/ethernet/sfc/falcon/bitfield.h
-index 5eb178d0c149..78537a53009e 100644
---- a/drivers/net/ethernet/sfc/falcon/bitfield.h
-+++ b/drivers/net/ethernet/sfc/falcon/bitfield.h
-@@ -117,7 +117,7 @@ typedef union ef4_oword {
-  *
-  *   ( element ) << 4
-  *
-- * The result will contain the relevant bits filled in in the range
-+ * The result will contain the relevant bits filled in the range
-  * [0,high-low), with garbage in bits [high-low+1,...).
-  */
- #define EF4_EXTRACT_NATIVE(native_element, min, max, low, high)		\
--- 
-2.36.1
+> +static int ucsi_stm32g0_async_write(struct ucsi *ucsi, unsigned int offset, const void *val,
+> +				    size_t len)
+> +{
+> +	struct ucsi_stm32g0 *g0 = ucsi_get_drvdata(ucsi);
+> +	struct i2c_client *client = g0->client;
+> +	struct i2c_msg msg[] = {
+> +		{
+> +			.addr	= client->addr,
+> +			.flags  = 0,
+> +		}
+> +	};
+> +	unsigned char *buf;
+> +	int ret;
+> +
+> +	buf = kzalloc(len + 1, GFP_KERNEL);
 
+Hi,
+
+Nit: kmalloc() would be enough here, the whole buffer is written just a 
+few lines after.
+
+> +	if (!buf)
+> +		return -ENOMEM;
+> +
+> +	buf[0] = offset;
+> +	memcpy(&buf[1], val, len);
+> +	msg[0].len = len + 1;
+> +	msg[0].buf = buf;
+> +
+> +	ret = i2c_transfer(client->adapter, msg, ARRAY_SIZE(msg));
+> +	kfree(buf);
+> +	if (ret != ARRAY_SIZE(msg)) {
+> +		dev_err(g0->dev, "i2c write %02x, %02x error: %d\n", client->addr, buf[0], ret);
+
+Use-after-free of buf.
+
+> +
+> +		return ret < 0 ? ret : -EIO;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+
+Just my 2c,
+CJ
+
+[...]
