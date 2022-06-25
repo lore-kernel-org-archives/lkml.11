@@ -2,78 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBBCEC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 08:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2CDEC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 09:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232291AbiFYI6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 04:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39810 "EHLO
+        id S232319AbiFYJAD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 05:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232277AbiFYI6q (ORCPT
+        with ESMTP id S230268AbiFYJAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 04:58:46 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACFD2CE1A
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 01:58:45 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id d14so4811871pjs.3
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 01:58:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yBLfi92gAlfWDayXHgzw4YwyIEMK5sbZZcp3v3R4WvY=;
-        b=vWECR4lLdOmckfTvOtrYhFODIrM4aq0XBkbDVkccpRjJ3+cMeUvXRYavTTP+yfUnbX
-         w6+J8m/kcwHkSZzmeu90jyJ4IHHBP0StpdY3RIXtbqNihYBxZAT27XARGx07UqgXeU3y
-         01EYfl9HNI/lphnYRGJjUaO46ig2ViHWHtRFePaayXwsyi8aoJCj72pwSANRc1WThHL1
-         tmtUkNuzPsKLzhrXfUX7uXSPKmb3opDWoWCq8GFZe3XYLVPj4P86uCXjA1fiZoOMC3kA
-         g8mg9T5IRuUlgBoPJ7tT/uIOH458e1rOQLqTqaGGZ9RSmZ07ahQTQbgL0xbfqf4bvYR8
-         FB5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yBLfi92gAlfWDayXHgzw4YwyIEMK5sbZZcp3v3R4WvY=;
-        b=iuHSSLw1Nqj9kEZKLl6ka3A7n6c7OeJXoIVCo0eYewryuRHViv50Qc26TFfKnVjuqQ
-         /QWn/S5y4MPDWZH226WXjCpZsApFvLAn/QkMqFgeZwk9jkYe9OCZ4MwBF1HL++9ilu/5
-         poyyZuUVxad/Sc3KtStrDU3Il7WtP3Mjvu0cE9bcl+GS9wtyKv4BexcKd3qMQpm5Y8BH
-         GSm5vXigV87YEc/ixgKfl7QeKi6MfbldLSLHKIS4qhsh7v0IBnNriJbHJoOe7xO0wwbS
-         73LNNu/D1DbHVTR6iF5vkde9M4CSmuG3eNT2WUlUr1QMg1UUn1ERzhIu3QM7Z36d2YQn
-         YvMQ==
-X-Gm-Message-State: AJIora+2GhpLsBSWIFiUGQxEPrDla5sWm8MJ3tGi4ERkOacYhabp7hW8
-        YD3i2Armksp+T+FROnN+Yr+vsQ==
-X-Google-Smtp-Source: AGRyM1sYJQcyA2mxkXzZ9zdfOKE7155NN545ntISrtYfLfZWk2r2d66rK3coFs1+Gxw1q5DvzPxpBQ==
-X-Received: by 2002:a17:90a:bf86:b0:1ec:cc6d:c0f with SMTP id d6-20020a17090abf8600b001eccc6d0c0fmr3451167pjs.202.1656147524621;
-        Sat, 25 Jun 2022 01:58:44 -0700 (PDT)
-Received: from localhost ([2408:8207:18da:2310:c80d:fa4f:de4d:bed5])
-        by smtp.gmail.com with ESMTPSA id e14-20020a170902ef4e00b0016a275623c1sm3157808plx.219.2022.06.25.01.58.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jun 2022 01:58:44 -0700 (PDT)
-Date:   Sat, 25 Jun 2022 16:58:38 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Xiang Yang <xiangyang3@huawei.com>
-Cc:     hannes@cmpxchg.org, mhocko@kernel.org, roman.gushchin@linux.dev,
-        shakeelb@google.com, akpm@linux-foundation.org,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] mm/memcontrol.c: replace cgroup_memory_nokmem with
- mem_cgroup_kmem_disabled()
-Message-ID: <YrbOPktTSb00DvYw@FVFYT0MHHV2J.usts.net>
-References: <20220625061844.226764-1-xiangyang3@huawei.com>
+        Sat, 25 Jun 2022 05:00:01 -0400
+Received: from jari.cn (unknown [218.92.28.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABDE72CE1A;
+        Sat, 25 Jun 2022 02:00:00 -0700 (PDT)
+Received: by ajax-webmail-localhost.localdomain (Coremail) ; Sat, 25 Jun
+ 2022 16:54:33 +0800 (GMT+08:00)
+X-Originating-IP: [125.70.163.206]
+Date:   Sat, 25 Jun 2022 16:54:33 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "XueBing Chen" <chenxuebing@jari.cn>
+To:     mlindner@marvell.com, stephen@networkplumber.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] sky2: drop unexpected word 'a' in comments
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220625061844.226764-1-xiangyang3@huawei.com>
+Message-ID: <1c4ec5e8.c87.1819a11e892.Coremail.chenxuebing@jari.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AQAAfwD3AG9JzbZi5jVEAA--.828W
+X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAICmFEYxsvOAABsI
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 25, 2022 at 02:18:44PM +0800, Xiang Yang wrote:
-> mem_cgroup_kmem_disabled() checks whether the kmem accounting is off.
-> Therefore, replace cgroup_memory_nokmem with mem_cgroup_kmem_disabled(),
-> which is the same work in percpu.c and slab_common.c.
-> 
-> Signed-off-by: Xiang Yang <xiangyang3@huawei.com>
-
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-
-Thanks.
+CnRoZXJlIGlzIGFuIHVuZXhwZWN0ZWQgd29yZCAnYScgaW4gdGhlIGNvbW1lbnRzIHRoYXQgbmVl
+ZCB0byBiZSBkcm9wcGVkCgpmaWxlIC0gZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9za3ky
+LmMKbGluZSAtIDQ3MTQKCi8qIFRlc3QgaW50ZXJydXB0IHBhdGggYnkgZm9yY2luZyBhIGEgc29m
+dHdhcmUgSVJRICovCgp0bwoKLyogVGVzdCBpbnRlcnJ1cHQgcGF0aCBieSBmb3JjaW5nIGEgc29m
+dHdhcmUgSVJRICovCgpTaWduZWQtb2ZmLWJ5OiBYdWVCaW5nIENoZW4gPGNoZW54dWViaW5nQGph
+cmkuY24+Ci0tLQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9za3kyLmMgfCAyICstCiAx
+IGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQg
+YS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL3NreTIuYyBiL2RyaXZlcnMvbmV0L2V0aGVy
+bmV0L21hcnZlbGwvc2t5Mi5jCmluZGV4IGExZTkwN2M4NTIxNy4uOWYxYTdlYzA0OTFhIDEwMDY0
+NAotLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL3NreTIuYworKysgYi9kcml2ZXJz
+L25ldC9ldGhlcm5ldC9tYXJ2ZWxsL3NreTIuYwpAQCAtNDcxMSw3ICs0NzExLDcgQEAgc3RhdGlj
+IGlycXJldHVybl90IHNreTJfdGVzdF9pbnRyKGludCBpcnEsIHZvaWQgKmRldl9pZCkKIAlyZXR1
+cm4gSVJRX0hBTkRMRUQ7CiB9CiAKLS8qIFRlc3QgaW50ZXJydXB0IHBhdGggYnkgZm9yY2luZyBh
+IGEgc29mdHdhcmUgSVJRICovCisvKiBUZXN0IGludGVycnVwdCBwYXRoIGJ5IGZvcmNpbmcgYSBz
+b2Z0d2FyZSBJUlEgKi8KIHN0YXRpYyBpbnQgc2t5Ml90ZXN0X21zaShzdHJ1Y3Qgc2t5Ml9odyAq
+aHcpCiB7CiAJc3RydWN0IHBjaV9kZXYgKnBkZXYgPSBody0+cGRldjsKLS0gCjIuMTcuMQo=
