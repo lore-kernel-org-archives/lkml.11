@@ -2,82 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C09C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55210C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233041AbiFYNSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 09:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34828 "EHLO
+        id S233052AbiFYNSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 09:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233032AbiFYNSk (ORCPT
+        with ESMTP id S233046AbiFYNSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 09:18:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304451A81F;
-        Sat, 25 Jun 2022 06:18:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADDC2B80959;
-        Sat, 25 Jun 2022 13:18:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C288C341CA;
-        Sat, 25 Jun 2022 13:18:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656163116;
-        bh=DrvYsHNixQGAFxZ5B9o45TBNbqBktYaLq5jvaKUH8Tc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=usAhrIS5wLWHr9hU7Do3gZcWvMC4Oeze1rkLQlqxian1RZ4QQIXbBhzWt2vE6roOv
-         h5Sb+F/3L6++RBecYlOK+/fKWRJ9ym5nf86uqhRmfj1hA/GX7s/AZvZAJEWx7MK+G1
-         WjtrYmqtpIaSuUNZ+7hjjnUNTSqE6HPkDiSXlsFudVcD3DDc7qBHhyLXGU4kjd2zSp
-         hvJ4CuVgysdhorhnAngH26w2Avw3ksAbGOVHB5gl9/Gd+zfnFyIbFEQVEQF0kG4Net
-         Qxs1BfQbAQQAuYWK2N4RMk0X61Dq6Ts87F1diYTYuaJz30o7bp9PW5Q58zMRjtuvlu
-         QwEmR6sMofWDg==
-Date:   Sat, 25 Jun 2022 14:28:02 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Olivier Moysan <olivier.moysan@foss.st.com>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-Subject: Re: [PATCH 0/2] iio: adc: stm32-adc: add checks on adc state
-Message-ID: <20220625142802.51ee9637@jic23-huawei>
-In-Reply-To: <20220620154738.801706-1-olivier.moysan@foss.st.com>
-References: <20220620154738.801706-1-olivier.moysan@foss.st.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 25 Jun 2022 09:18:48 -0400
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF9E1D0D3
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:18:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zfMoZm1P48Ok/Dw2HiECELc4ab0O14bkabo5nJoBFjI=;
+  b=QRMNwBs21f1UYLGz4+3xhllkZjd38oQZ7CUR2hGJuECSUwQ6+9lHkBy7
+   1tkwErgoX3eL0mYGOdQcpCE2cEE8MV7MQVm/tms7p01mGngUaB7j8SiNJ
+   LoyGy72jmNd8aopNy6BGw4/UKUHP1NqbscM8Fh+IkTscUZNcLeEtfbGC2
+   4=;
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.92,222,1650924000"; 
+   d="scan'208";a="42840035"
+Received: from 71-219-63-58.chvl.qwest.net (HELO hadrien) ([71.219.63.58])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 15:18:44 +0200
+Date:   Sat, 25 Jun 2022 09:18:41 -0400 (EDT)
+From:   Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: julia@hadrien
+To:     kbuild-all@lists.01.org, Dan Williams <dan.j.williams@intel.com>
+cc:     Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [cxl:preview 37/49] kernel/resource.c:1823:22-23: WARNING this kind
+ of initialization is deprecated (fwd)
+Message-ID: <alpine.DEB.2.22.394.2206250917320.7300@hadrien>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 20 Jun 2022 17:47:36 +0200
-Olivier Moysan <olivier.moysan@foss.st.com> wrote:
+See line 1823.
 
-> On ADC startup a calibration is launched.
-> A prerequisite for ADC calibration is to have ADC in disabled state.
-> After kernel boot, the ADC state may be unknown as the ADC may have been left enabled by boot stage.
-> 
-> Call ADC disable routine systematically before launching calibration.
-> Adapt ADC disable routine to perform disabling sequence according to current ADC state.
-> 
-> Olivier Moysan (2):
->   iio: adc: stm32-adc: make safe adc disable
->   iio: adc: stm32-adc: disable adc before calibration
-> 
->  drivers/iio/adc/stm32-adc.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
+julia
 
-Series applied to the togreg branch and pushed out as testing
-for all the normal reasons.
+---------- Forwarded message ----------
+Date: Thu, 23 Jun 2022 18:17:12 +0800
+From: kernel test robot <lkp@intel.com>
+To: kbuild@lists.01.org
+Cc: lkp@intel.com, Julia Lawall <julia.lawall@lip6.fr>
+Subject: [cxl:preview 37/49] kernel/resource.c:1823:22-23: WARNING this kind of
+    initialization is deprecated
 
-Thanks,
+CC: kbuild-all@lists.01.org
+BCC: lkp@intel.com
+CC: Alison Schofield <alison.schofield@intel.com>
+CC: Vishal Verma <vishal.l.verma@intel.com>
+CC: Ira Weiny <ira.weiny@intel.com>
+CC: Ben Widawsky <ben.widawsky@intel.com>
+CC: Dan Williams <dan.j.williams@intel.com>
+CC: linux-kernel@vger.kernel.org
+TO: Dan Williams <dan.j.williams@intel.com>
 
-Jonathan
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
+head:   b2d4fd5c97b59f622e6c45ac51020cdcd66bb022
+commit: 6f2443c3ffee6675ef14a4b1256400a9c8a652ca [37/49] resource: Introduce alloc_free_mem_region()
+:::::: branch date: 9 hours ago
+:::::: commit date: 9 hours ago
+config: arm-randconfig-c003-20220622 (https://download.01.org/0day-ci/archive/20220623/202206231855.rDlKL41m-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Julia Lawall <julia.lawall@lip6.fr>
+
+
+cocci warnings: (new ones prefixed by >>)
+>> kernel/resource.c:1823:22-23: WARNING this kind of initialization is deprecated
+
+vim +1823 kernel/resource.c
+
+6f2443c3ffee66 Dan Williams 2022-05-20  1820
+6f2443c3ffee66 Dan Williams 2022-05-20  1821  static void remove_free_mem_region(void *_res)
+6f2443c3ffee66 Dan Williams 2022-05-20  1822  {
+6f2443c3ffee66 Dan Williams 2022-05-20 @1823  	struct resource *res = res;
+6f2443c3ffee66 Dan Williams 2022-05-20  1824
+6f2443c3ffee66 Dan Williams 2022-05-20  1825  	if (res->parent)
+6f2443c3ffee66 Dan Williams 2022-05-20  1826  		remove_resource(res);
+6f2443c3ffee66 Dan Williams 2022-05-20  1827  	free_resource(res);
+6f2443c3ffee66 Dan Williams 2022-05-20  1828  }
+6f2443c3ffee66 Dan Williams 2022-05-20  1829
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
