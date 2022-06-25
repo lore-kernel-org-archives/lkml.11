@@ -2,216 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD51C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 22:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D422C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 22:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233718AbiFYWz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 18:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
+        id S233712AbiFYW7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 18:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233688AbiFYWzm (ORCPT
+        with ESMTP id S233295AbiFYW72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 18:55:42 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71ECB13F78;
-        Sat, 25 Jun 2022 15:55:39 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id i64so5654865pfc.8;
-        Sat, 25 Jun 2022 15:55:39 -0700 (PDT)
+        Sat, 25 Jun 2022 18:59:28 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95C713FA9
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 15:59:26 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-3176d94c236so55014277b3.3
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 15:59:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HjlEl5/qplLjRvIbiPqkIivzE1Th3OTP/5G9Lv59zyE=;
-        b=E72ZEUw2YWzfnLk/27KVEoTDLtge0CRcNEoC/mqAONxPi0JsNZ9fiBOe0IY5kajcqH
-         g6FKr24mvvmRaE4vOTYx0IioJJV9qhGmbxjgSFu4ERDCpHUIMLoviOT1269r6jNHkKVa
-         ESbrTtC4Uh9t1QvGXKl7tZmIv2VKBNlg17fsS9drKz4J2nc8c9KZIueB50wz9KFLEXo1
-         gXFEiHWWvdXmAQ9nOjKG2Cq3WHO/VMmr5HvQxJLnemyqDsA7KNigLXrf9zqWw8ovAF5v
-         DPp+AeWSifVAyylX5Vs7XVxF36vWDJePqPIe6csHg8E4istzhhrxWncSQUZ6vvXIxs5v
-         r+hQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kz4CQpOKhPTyDsa60xKPIiVM3jnSyd80mVmcmJIhuHQ=;
+        b=f0R0dNNfG+cy3gFp7wt9apjvTZnUDWzypyV4qpxTt0EYhTusE7dczqOjHtdnJ6vezN
+         zHCYjY76OuU7+5Kurfz9oaZcDHK4a3uwUh3eDulaNbh8hB6891r6dpwGNRRrYLaL0rGI
+         lXHEoGEl0PVXK+UANPXZuirl60K+W2t2Kir2E6bca3VxQvvETRSmzmqghmbYWZRf2c+O
+         qQ7Uwvryau8aALkvZtL19zhwrXOxRQuMK4ocOgSBgDpdEydMdiCLF+mETnI5hsInX+0a
+         9Jd7mhj/C6OsaaKO0Au+5T+hKmp/3hxrDjcU/5FKa/Ui/MGI9jYcSPGrFadHuCt/y8Bb
+         VoKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HjlEl5/qplLjRvIbiPqkIivzE1Th3OTP/5G9Lv59zyE=;
-        b=Qir/qNhGotdXaRdOrUuIa6NdZw0iaP3bvfZzZTsApd7VK+yrOtPUvIfqOp5WV4aOa3
-         EDZPnd05+lplXo2AoGnGz3Sc3TbOyLu/pFCbRPy1yzgD6c8pX24tbgLb6j5zUrBrv7DS
-         JyVaqrM0oCGqiDPFNSXvdsQJ+0yZAXrIctzLSB5JX/x0HszMsHlTb8prepV8m5o8xKbr
-         9v5qSKQ6d0iHtJc1W6DHm5AxgXAbTUx7BVtt0MAMXqcbhxDm7E/7EzRum3hQ5OVUazwc
-         A1ucjfQd7OQvKuo9dwwYbF5nifhcoa4Lp41onKxVlHMmBXDgIe1uh59Qd0W7gQb9flYh
-         GJHA==
-X-Gm-Message-State: AJIora9oKLhqZErEY8+a3CqQPg8GPwOX/tM/u7tZggt52bwQtyT/7mVV
-        xdpQA3bC86wg/1hv2H5M1kU=
-X-Google-Smtp-Source: AGRyM1vCt6HT5LWm6qTqal3dUZABGCG9BONuwExyWOu7jF0JXgiSJ8MGot8F0KRFX0PO9YNBj6xmiw==
-X-Received: by 2002:a63:1d04:0:b0:40d:a3e5:aa3a with SMTP id d4-20020a631d04000000b0040da3e5aa3amr5320398pgd.248.1656197738487;
-        Sat, 25 Jun 2022 15:55:38 -0700 (PDT)
-Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
-        by smtp.gmail.com with ESMTPSA id c19-20020a62e813000000b005252adb89b3sm4137123pfi.32.2022.06.25.15.55.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jun 2022 15:55:37 -0700 (PDT)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@chromium.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 15/15] drm/msm/gem: Evict active GEM objects when necessary
-Date:   Sat, 25 Jun 2022 15:54:50 -0700
-Message-Id: <20220625225454.81039-16-robdclark@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220625225454.81039-1-robdclark@gmail.com>
-References: <20220625225454.81039-1-robdclark@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kz4CQpOKhPTyDsa60xKPIiVM3jnSyd80mVmcmJIhuHQ=;
+        b=qXo7sh5WXZ+qa1J5rv+qj8Do2lhj2JC80C91klER6+BYM1+dULuQKHyfECD22iw+So
+         JwXpFNf/z6VVAZ0jIdqhD7F50sHkdWmeY9TkkEiFx9aXG7OOZ5xIuKVfDVYl7Z9WE2Or
+         LqM4axnGf3IJwuzaDzrMdxq5Oe/rjWyWw8fS661js3/3UwRspfzk4t23WZ6qQ7quNlH6
+         hQR/rUtAiVpF67YPcKsat1reb239o+5EcHYlJPafgZu+gB49cqVV0HRVcjuHXrYXpJbk
+         XDvXtPQen9So6hmMLNTpcV1Pif+QLdC3p5IrfSoARqtjxmL5vgqdWGoyOGvL3+4QLVdH
+         +qSg==
+X-Gm-Message-State: AJIora9MnLGxDuS277CNpHzh/v2HB+If+Md3gdFdz5QZxA6RAhTzUyl/
+        hJmLNrgjceVoDTXiYiLGG95buJOuwk96JWox/pAebw==
+X-Google-Smtp-Source: AGRyM1uosYwxlq64LUlIuBLDzEOZIVCn/f27F5vp117PBBS+sA4ZCR/UdMd9wStyWymJXop43cXKJFCZnY1Vqnm0CGM=
+X-Received: by 2002:a0d:eace:0:b0:317:87ac:b3a8 with SMTP id
+ t197-20020a0deace000000b0031787acb3a8mr6860068ywe.126.1656197966000; Sat, 25
+ Jun 2022 15:59:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220427144620.9105-1-pmalgujar@marvell.com> <20220427144620.9105-3-pmalgujar@marvell.com>
+ <CACRpkdaqeTs-jHPBmtdiz+LdMM0pz0zqt4diX=e+YpgaGr0Jbw@mail.gmail.com>
+ <20220603090618.GA27121@Dell2s-9> <CACRpkdaOd0-k_mt0ZrKT-DbVc3f0b5uXXmXpBNH=hq3BGCB+vQ@mail.gmail.com>
+ <20220613080452.GA1884@Dell2s-9>
+In-Reply-To: <20220613080452.GA1884@Dell2s-9>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sun, 26 Jun 2022 00:59:14 +0200
+Message-ID: <CACRpkdY-+D1tkNJoWLpQH9-2AcE1xb546eJx5Nuq+Tw3WKj6mw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] dt-bindings: gpio: gpio-thunderx: Describe pin-cfg option
+To:     Piyush Malgujar <pmalgujar@marvell.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, rric@kernel.org,
+        cchavva@marvell.com, wsadowski@marvell.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+On Mon, Jun 13, 2022 at 10:04 AM Piyush Malgujar <pmalgujar@marvell.com> wrote:
 
-If we are under enough memory pressure, we should stall waiting for
-active buffers to become idle in order to evict.
+> Thanks for the reply.
+> But as in this case, we expect a 32 bit reg value via DTS for this driver
+> only from user with internal understanding of marvell soc and this reg bit
+> value can have many different combinations as the register fields can vary
+> for different marvell SoCs.
+> This patch just reads the reg value from DTS and writes it to the register.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/msm_gem_shrinker.c | 68 +++++++++++++++++++++-----
- drivers/gpu/drm/msm/msm_gpu_trace.h    | 16 +++---
- 2 files changed, 66 insertions(+), 18 deletions(-)
+I understand that this is convenient but it does not use the right kernel
+abstractions and it does not use device tree bindings the right way
+either.
 
-diff --git a/drivers/gpu/drm/msm/msm_gem_shrinker.c b/drivers/gpu/drm/msm/msm_gem_shrinker.c
-index 5cc05d669a08..b0bee040432a 100644
---- a/drivers/gpu/drm/msm/msm_gem_shrinker.c
-+++ b/drivers/gpu/drm/msm/msm_gem_shrinker.c
-@@ -24,6 +24,11 @@ static bool can_swap(void)
- 	return enable_eviction && get_nr_swap_pages() > 0;
- }
- 
-+static bool can_block(struct shrink_control *sc)
-+{
-+	return current_is_kswapd() || (sc->gfp_mask & __GFP_RECLAIM);
-+}
-+
- static unsigned long
- msm_gem_shrinker_count(struct shrinker *shrinker, struct shrink_control *sc)
- {
-@@ -65,26 +70,65 @@ evict(struct drm_gem_object *obj)
- 	return true;
- }
- 
-+static bool
-+wait_for_idle(struct drm_gem_object *obj)
-+{
-+	enum dma_resv_usage usage = dma_resv_usage_rw(true);
-+	return dma_resv_wait_timeout(obj->resv, usage, false, 1000) > 0;
-+}
-+
-+static bool
-+active_purge(struct drm_gem_object *obj)
-+{
-+	if (!wait_for_idle(obj))
-+		return false;
-+
-+	return purge(obj);
-+}
-+
-+static bool
-+active_evict(struct drm_gem_object *obj)
-+{
-+	if (!wait_for_idle(obj))
-+		return false;
-+
-+	return evict(obj);
-+}
-+
- static unsigned long
- msm_gem_shrinker_scan(struct shrinker *shrinker, struct shrink_control *sc)
- {
- 	struct msm_drm_private *priv =
- 		container_of(shrinker, struct msm_drm_private, shrinker);
-+	struct {
-+		struct drm_gem_lru *lru;
-+		bool (*shrink)(struct drm_gem_object *obj);
-+		bool cond;
-+		unsigned long freed;
-+	} stages[] = {
-+		/* Stages of progressively more aggressive/expensive reclaim: */
-+		{ &priv->lru.dontneed, purge,        true },
-+		{ &priv->lru.willneed, evict,        can_swap() },
-+		{ &priv->lru.dontneed, active_purge, can_block(sc) },
-+		{ &priv->lru.willneed, active_evict, can_swap() && can_block(sc) },
-+	};
- 	long nr = sc->nr_to_scan;
--	unsigned long freed, purged, evicted = 0;
--
--	purged = drm_gem_lru_scan(&priv->lru.dontneed, nr, purge);
--	nr -= purged;
--
--	if (can_swap() && nr > 0) {
--		evicted = drm_gem_lru_scan(&priv->lru.willneed, nr, evict);
--		nr -= evicted;
-+	unsigned long freed = 0;
-+
-+	for (unsigned i = 0; (nr > 0) && (i < ARRAY_SIZE(stages)); i++) {
-+		if (!stages[i].cond)
-+			continue;
-+		stages[i].freed =
-+			drm_gem_lru_scan(stages[i].lru, nr, stages[i].shrink);
-+		nr -= stages[i].freed;
-+		freed += stages[i].freed;
- 	}
- 
--	freed = purged + evicted;
--
--	if (freed)
--		trace_msm_gem_shrink(sc->nr_to_scan, purged, evicted);
-+	if (freed) {
-+		trace_msm_gem_shrink(sc->nr_to_scan, stages[0].freed,
-+				     stages[1].freed, stages[2].freed,
-+				     stages[3].freed);
-+	}
- 
- 	return (freed > 0) ? freed : SHRINK_STOP;
- }
-diff --git a/drivers/gpu/drm/msm/msm_gpu_trace.h b/drivers/gpu/drm/msm/msm_gpu_trace.h
-index 8867fa0a0306..ac40d857bc45 100644
---- a/drivers/gpu/drm/msm/msm_gpu_trace.h
-+++ b/drivers/gpu/drm/msm/msm_gpu_trace.h
-@@ -116,22 +116,26 @@ TRACE_EVENT(msm_gmu_freq_change,
- 
- 
- TRACE_EVENT(msm_gem_shrink,
--		TP_PROTO(u32 nr_to_scan, u32 purged, u32 evicted),
--		TP_ARGS(nr_to_scan, purged, evicted),
-+		TP_PROTO(u32 nr_to_scan, u32 purged, u32 evicted,
-+			 u32 active_purged, u32 active_evicted),
-+		TP_ARGS(nr_to_scan, purged, evicted, active_purged, active_evicted),
- 		TP_STRUCT__entry(
- 			__field(u32, nr_to_scan)
- 			__field(u32, purged)
- 			__field(u32, evicted)
-+			__field(u32, active_purged)
-+			__field(u32, active_evicted)
- 			),
- 		TP_fast_assign(
- 			__entry->nr_to_scan = nr_to_scan;
- 			__entry->purged = purged;
- 			__entry->evicted = evicted;
-+			__entry->active_purged = active_purged;
-+			__entry->active_evicted = active_evicted;
- 			),
--		TP_printk("nr_to_scan=%u pages, purged=%u pages, evicted=%u pages",
--			  __entry->nr_to_scan,
--			  __entry->purged,
--			  __entry->evicted)
-+		TP_printk("nr_to_scan=%u pg, purged=%u pg, evicted=%u pg, active_purged=%u pg, active_evicted=%u pg",
-+			  __entry->nr_to_scan, __entry->purged, __entry->evicted,
-+			  __entry->active_purged, __entry->active_evicted)
- );
- 
- 
--- 
-2.36.1
+Rewrite the patches using definitions and fine control and move away
+from magic numbers to be poked into registers.
 
+Yours,
+Linus Walleij
