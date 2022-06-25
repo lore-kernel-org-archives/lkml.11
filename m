@@ -2,82 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C20CCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 22:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 22:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233629AbiFYWzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 18:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60438 "EHLO
+        id S233642AbiFYWzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 18:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233592AbiFYWzL (ORCPT
+        with ESMTP id S233615AbiFYWzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 18:55:11 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E14B13F46
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 15:55:10 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-3178ea840easo54412067b3.13
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 15:55:10 -0700 (PDT)
+        Sat, 25 Jun 2022 18:55:15 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3380313F46;
+        Sat, 25 Jun 2022 15:55:14 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id n12so5725656pfq.0;
+        Sat, 25 Jun 2022 15:55:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kza4iCK5n/6nRyHCyuCBCP2aYiHxgKwrMFt8Ta+E1+Q=;
-        b=Hfao2+W8P5pwO/BzpJtGXjHcwCjNIc7/ZNWwt11izHKVG9C6jwO3AoW8jTr4tTHzli
-         tn9Qe5yWYvUYNxY34ERCSWFvx9n43A8RF0zd20ldJFRHMBaBiRCekMfk3UzVz5US3UOw
-         kQsqkWbypY1R6qiMC0SVHAT9W7iweTYYdO8s0SPv0gIBMX+DnQUteIPOZ+t9mJkiWXEt
-         HqBD6corLFas0HIKxAal7EeL2jmxp+vFkLstQr4yJkUzimjqPNhRGWKyesmczvvZqNUs
-         ukqBHDQKM6pEPezXQIsTv/jLuElgDfKMe/tiz/2b4QwQgmWLBAqkAFvhxsjXB08zVcex
-         BMYg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6E5wGlWgwtmRN55cq/vUaSJZuL1NyuRgvoYtJGWwhUY=;
+        b=Vi1AWtZj2gQvnTbnEJ+vVz5/R/MK06u0uvth2ceIgEa93LvE/ABorwvCFnu/9zR5/G
+         ragQZtAioBCYwD0Htu0BanyAtxI5RM64PnvK9Gnmxnl7yyW+jrQoNzcdTyJuba2zmBU3
+         5ggpKYh6Dio5vMdjCSAy2dXZOuVptw2SVV8gfE/3lxDXs3MVFtxjrHKpfKAeVEjYyEjq
+         EhlacTwggw8+3WROuuvYpyiCXOKgq7LqPARhEzIYGOKVjKcFLxVdo6O8ZZCVaR1ndydi
+         ZmewtV0lsqmgyfHzKO2yrFwIybeJa4ZSSICD8sItcCZ3L3RJl8o4of0fmApV6w1zmDz8
+         7iHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Kza4iCK5n/6nRyHCyuCBCP2aYiHxgKwrMFt8Ta+E1+Q=;
-        b=qUqSc6XjKnyKPrSX4lGg06tk0Frlqqnhz99kT4MsHPtYOKUOkXUFB+QH1GhMo8llX+
-         NHiW68w/q+OR3Yx0JVs+O7I/7GG9779G5RjuYzefVnWovGGkzzjPHDq39w0EGHb3NAqT
-         Xp/o2W37VB4uSpFlFkBT7EMr3uYt7Hkz4OGDqLjaEPDRHqS3o5SdvfRU9aczBM6r4WYa
-         AXccMwaqhzCb0yLFJ2vjL5IRTiXBgH7RSU+xcn25Y7q7PpAdR8XvY/lc6uTDFEN2ljgl
-         Tvk1meGAmfX3NMzRwCvTiE+pQe45n9SvinW28V7vyjZfqdiw0ds8kj9aZXPs3aGpUmg7
-         UEsQ==
-X-Gm-Message-State: AJIora9RuLvn3V3G0MYEJBSP87t7uirj5X09/Vqe+r//V+4ssJNvTPM4
-        uo6NpvwB5lw93Z1xL93/ETN/Os8Va2vnp+Y0sYVcMA==
-X-Google-Smtp-Source: AGRyM1tE0n1MLKqKamVo/6nJvSZ22T0wylCIz0/meNPRZjScyYQitzswvzWUOSVM62tJu43fYwWWH90cXtEEGEhMg6w=
-X-Received: by 2002:a81:71c6:0:b0:318:38d5:37f3 with SMTP id
- m189-20020a8171c6000000b0031838d537f3mr6907650ywc.268.1656197709368; Sat, 25
- Jun 2022 15:55:09 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6E5wGlWgwtmRN55cq/vUaSJZuL1NyuRgvoYtJGWwhUY=;
+        b=6e8FDxVRXMFX3Ll9Lnm7N0VP2yKz9Lh1gRs1BjLKQomPbC9dAkQVE3050blNKvZKzA
+         69NrW82BbMC0Kea7BKv2qe1XJxC6C53gpPP6oIXuPbiU3OIlu7R5a5OduflVq7/rBMHz
+         CoIyZYrgN2EgiYgeJpkQmM9fHGqTbvigWCgBN4w1a2QdoTyrnPCff4GwG5V33qZ1dBVp
+         USIm98lycq6jS3qFr/tOCeFbcrkelwpGLcHJgNuRJSbJwAR/BAYVEQ5pxvwNKxh1U7Re
+         u2ZEwhW6CTbCbrLX1O9q1Hzau+CozzDkGh/zWrrkqZo+9oIMOWdJCzIBe0HCOPDnVsMG
+         KQgw==
+X-Gm-Message-State: AJIora9vLjDm43/kLWYxGcpvsKuH8fd/XK1T5sI71M74ywBIwy9RyjID
+        N2/G2E5DbTghVZCrnvQknhM=
+X-Google-Smtp-Source: AGRyM1s50GgXiP1DWIFVT3ZSJuCzVwhR3YhNnJ39jN/ViCb4hpbjhliofqEDG3fK14VkLleR2Axk2Q==
+X-Received: by 2002:a05:6a00:2d4:b0:525:3e52:b056 with SMTP id b20-20020a056a0002d400b005253e52b056mr6616038pft.50.1656197713656;
+        Sat, 25 Jun 2022 15:55:13 -0700 (PDT)
+Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
+        by smtp.gmail.com with ESMTPSA id p31-20020a056a000a1f00b0051bdb735647sm4141094pfh.159.2022.06.25.15.55.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jun 2022 15:55:12 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 06/15] drm/msm/gem: Check for active in shrinker path
+Date:   Sat, 25 Jun 2022 15:54:41 -0700
+Message-Id: <20220625225454.81039-7-robdclark@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220625225454.81039-1-robdclark@gmail.com>
+References: <20220625225454.81039-1-robdclark@gmail.com>
 MIME-Version: 1.0
-References: <20220612145955.385787-1-nikita@trvn.ru> <20220612145955.385787-4-nikita@trvn.ru>
-In-Reply-To: <20220612145955.385787-4-nikita@trvn.ru>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 26 Jun 2022 00:54:58 +0200
-Message-ID: <CACRpkdZN14UMM+CJszPXr4x72ngN2cHjTXnqwu3pbjNfOMz5BQ@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] pinctrl: qcom: msm8916: Allow CAMSS GP clocks to
- be muxed
-To:     Nikita Travkin <nikita@trvn.ru>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org,
-        bjorn.andersson@linaro.org, agross@kernel.org, tdas@codeaurora.org,
-        joonwoop@codeaurora.org, svarbanov@mm-sol.com,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 5:00 PM Nikita Travkin <nikita@trvn.ru> wrote:
+From: Rob Clark <robdclark@chromium.org>
 
-> GPIO 31, 32 can be muxed to GCC_CAMSS_GP(1,2)_CLK respectively but the
-> function was never assigned to the pingroup (even though the function
-> exists already).
->
-> Add this mode to the related pins.
->
-> Fixes: 5373a2c5abb6 ("pinctrl: qcom: Add msm8916 pinctrl driver")
-> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Currently in our shrinker path we shouldn't be encountering anything
+that is active, but this will change in subsequent patches.  So check
+if there are unsignaled fences.
 
-This patch 3/4 applied to the pinctrl tree so you have one less thing
-to iterate (and one less person to involve).
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/msm/msm_gem.c          | 10 ++++++++++
+ drivers/gpu/drm/msm/msm_gem.h          |  1 +
+ drivers/gpu/drm/msm/msm_gem_shrinker.c |  6 ++++++
+ 3 files changed, 17 insertions(+)
 
-Yours,
-Linus Walleij
+diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+index 8ddbd2e001d4..b55d252aef17 100644
+--- a/drivers/gpu/drm/msm/msm_gem.c
++++ b/drivers/gpu/drm/msm/msm_gem.c
+@@ -870,6 +870,16 @@ static void update_inactive(struct msm_gem_object *msm_obj)
+ 	mutex_unlock(&priv->mm_lock);
+ }
+ 
++bool msm_gem_active(struct drm_gem_object *obj)
++{
++	GEM_WARN_ON(!msm_gem_is_locked(obj));
++
++	if (to_msm_bo(obj)->pin_count)
++		return true;
++
++	return !dma_resv_test_signaled(obj->resv, dma_resv_usage_rw(true));
++}
++
+ int msm_gem_cpu_prep(struct drm_gem_object *obj, uint32_t op, ktime_t *timeout)
+ {
+ 	bool write = !!(op & MSM_PREP_WRITE);
+diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
+index 432032ad4aed..0ab0dc4f8c25 100644
+--- a/drivers/gpu/drm/msm/msm_gem.h
++++ b/drivers/gpu/drm/msm/msm_gem.h
+@@ -173,6 +173,7 @@ void msm_gem_put_vaddr(struct drm_gem_object *obj);
+ int msm_gem_madvise(struct drm_gem_object *obj, unsigned madv);
+ void msm_gem_active_get(struct drm_gem_object *obj, struct msm_gpu *gpu);
+ void msm_gem_active_put(struct drm_gem_object *obj);
++bool msm_gem_active(struct drm_gem_object *obj);
+ int msm_gem_cpu_prep(struct drm_gem_object *obj, uint32_t op, ktime_t *timeout);
+ int msm_gem_cpu_fini(struct drm_gem_object *obj);
+ int msm_gem_new_handle(struct drm_device *dev, struct drm_file *file,
+diff --git a/drivers/gpu/drm/msm/msm_gem_shrinker.c b/drivers/gpu/drm/msm/msm_gem_shrinker.c
+index 6e39d959b9f0..ea8ed74982c1 100644
+--- a/drivers/gpu/drm/msm/msm_gem_shrinker.c
++++ b/drivers/gpu/drm/msm/msm_gem_shrinker.c
+@@ -43,6 +43,9 @@ purge(struct msm_gem_object *msm_obj)
+ 	if (!is_purgeable(msm_obj))
+ 		return false;
+ 
++	if (msm_gem_active(&msm_obj->base))
++		return false;
++
+ 	/*
+ 	 * This will move the obj out of still_in_list to
+ 	 * the purged list
+@@ -58,6 +61,9 @@ evict(struct msm_gem_object *msm_obj)
+ 	if (is_unevictable(msm_obj))
+ 		return false;
+ 
++	if (msm_gem_active(&msm_obj->base))
++		return false;
++
+ 	msm_gem_evict(&msm_obj->base);
+ 
+ 	return true;
+-- 
+2.36.1
+
