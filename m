@@ -2,114 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C4C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 14:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89763C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 14:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232825AbiFYOHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 10:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37636 "EHLO
+        id S232873AbiFYOLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 10:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232429AbiFYOHf (ORCPT
+        with ESMTP id S229524AbiFYOLo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 10:07:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F9910565;
-        Sat, 25 Jun 2022 07:07:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C21F66133D;
-        Sat, 25 Jun 2022 14:07:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B02C0C3411C;
-        Sat, 25 Jun 2022 14:07:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656166053;
-        bh=ja0u1OIeu4O2af+Vh1JG5/d1M617COx7gkeZFBwpNik=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zZIYrZCuWeVFMtOIAtoIJYj+7J/VzA3petQE2K02iLnSZC8u5zPFhm4x96sCwI1Af
-         eB+tm54QsvuK/ltku0ahaDwwqId/yIoLkCf+zXTNMyrP6DyQwrkjf1MAHgbliuRyZD
-         08FX5ODxBPmRNI+qu0Bqf7ou9xNYFx38T30bgGI4=
-Date:   Sat, 25 Jun 2022 16:07:30 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     Muchun Song <songmuchun@bytedance.com>,
-        Feiyang Chen <chris.chenfeiyang@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>
-Subject: Re: [External] Re: [PATCH] page-flags.h: Fix a missing header
- include of static_keys.h
-Message-ID: <YrcWosmEcADSWax+@kroah.com>
-References: <20220625080423.2797-1-chenfeiyang@loongson.cn>
- <CAMZfGtWT7oPq6bD_fRn2gVNX8Lj3=ev21EAoaCCPeq-P_NYF0g@mail.gmail.com>
- <CAAhV-H5K9LG5P6WYJ+64-fi+s=TZbbJQG9E0vHJwOf9Pai5z4w@mail.gmail.com>
- <CAMZfGtVq0VwMETGdzAXLkjes8W0gVBw=r0Xk5rpPnhe7x6tRiw@mail.gmail.com>
- <CAAhV-H4T3ixOWB67XOij3P1xvM+_BUu+THLGtx-VvrCYUgjZyw@mail.gmail.com>
+        Sat, 25 Jun 2022 10:11:44 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B4713F68;
+        Sat, 25 Jun 2022 07:11:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=TlSV5NUlez2H7IMIJSqo9tL3DTMkccXj2o6QuxiCsWY=; b=nq3bfnOieThPFgraHvRTGoUJLc
+        q7a0ydHGGwa9+zd3Dx4KhDIrkiWab2nRmnZ0oQgHwYxA0CZslePmguvgMhHMMPqERQ8zFzmuhynrd
+        W8cuHe+W6TOM/EwfbRlMPl4OZ/O49vDbbmeA6oQnlC4uTRuiyUVMWhcIQ1DZTz6y2KMlphAK/8jf9
+        goXDIop6n8qEOoYKOWnhZGJHCk82/Xd0DGgaQfpRHGCPvgVm08H6VrG7FZrcAuh130ttMQVUCHn8f
+        0NGPI5RdgnW0TV9HN6n/Bxq29O0fBK5DC7CKkmZzvvLTLAh+c1sagW1m/gRIvG4fNMks6EP3kOKjZ
+        Q5uNrJSw==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1o56Vg-004LT3-18;
+        Sat, 25 Jun 2022 14:11:40 +0000
+Date:   Sat, 25 Jun 2022 15:11:39 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v2 3/8] fs: clear or set FMODE_LSEEK based on llseek
+ function
+Message-ID: <YrcXmwjPeJ77xsY2@ZenIV>
+References: <20220625110115.39956-1-Jason@zx2c4.com>
+ <20220625110115.39956-4-Jason@zx2c4.com>
+ <YrcIoaluGx+2TzfM@infradead.org>
+ <YrcNpdJmyFU+Up1n@ZenIV>
+ <YrcQKIruM3w2gGho@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAAhV-H4T3ixOWB67XOij3P1xvM+_BUu+THLGtx-VvrCYUgjZyw@mail.gmail.com>
+In-Reply-To: <YrcQKIruM3w2gGho@infradead.org>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 25, 2022 at 10:00:43PM +0800, Huacai Chen wrote:
-> Hi, Muchun,
+On Sat, Jun 25, 2022 at 06:39:52AM -0700, Christoph Hellwig wrote:
+> On Sat, Jun 25, 2022 at 02:29:09PM +0100, Al Viro wrote:
+> > I wouldn't bet on that - as it is, an ->open() instance can decide
+> > in some cases to clear FMODE_LSEEK, despite having file_operations
+> > with non-NULL ->llseek.
 > 
-> On Sat, Jun 25, 2022 at 7:17 PM Muchun Song <songmuchun@bytedance.com> wrote:
-> >
-> > On Sat, Jun 25, 2022 at 5:04 PM Huacai Chen <chenhuacai@kernel.org> wrote:
-> > >
-> > > Hi, Muchun,
-> > >
-> > > On Sat, Jun 25, 2022 at 4:50 PM Muchun Song <songmuchun@bytedance.com> wrote:
-> > > >
-> > > > On Sat, Jun 25, 2022 at 4:04 PM Feiyang Chen
-> > > > <chris.chenfeiyang@gmail.com> wrote:
-> > > > >
-> > > > > The page-flags.h header relies on static keys since commit
-> > > > > a6b40850c442bf ("mm: hugetlb: replace hugetlb_free_vmemmap_enabled
-> > > > > with a static_key"), so make sure to include the header to avoid
-> > > > > compilation errors.
-> > > > >
-> > > > > Fixes: a6b40850c442bf ("mm: hugetlb: replace hugetlb_free_vmemmap_enabled with a static_key")
-> > > > > Cc: stable@vger.kernel.org
-> > > > > Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-> > > > > ---
-> > > > >  include/linux/page-flags.h | 1 +
-> > > > >  1 file changed, 1 insertion(+)
-> > > > >
-> > > > > diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-> > > > > index e66f7aa3191d..147b336c7a35 100644
-> > > > > --- a/include/linux/page-flags.h
-> > > > > +++ b/include/linux/page-flags.h
-> > > > > @@ -11,6 +11,7 @@
-> > > > >  #include <linux/mmdebug.h>
-> > > > >  #ifndef __GENERATING_BOUNDS_H
-> > > > >  #include <linux/mm_types.h>
-> > > > > +#include <linux/static_key.h>
-> > > >
-> > > > I did not include this. The change makes sense to me. But I am
-> > > > curious what configs cause the compiling error. Would you mind
-> > > > sharing the config with us?
-> > > We found this problem when we add
-> > > ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP to LoongArch. Since this isn't
-> >
-> > Good news to me. I would love to hear more archs support for HVO (HugeTLB
-> > Vmemmap Optimization).
-> >
-> > > upstream yet, we cannot give such a config now (the default config of
-> > > X86 and ARM64 is just OK).
-> >
-> > All right. In this case, the "Cc: stable@vger.kernel.org" is unnecessary.
-> Maybe make randconfig will have problems on X86/ARM64, so backporting
-> to 5.18 seems reasonable.
+> The interesting cases here are nonseekable_open and stream_open,
+> and I don't see why we could not fix this up in the file_operations.
 
-Unless it is proven to be needed, there is no need to backport it.
+What's the point, really?  We can easily enforce "no FMODE_LSEEK ever
+observed on files with NULL ->llseek" (this series does that), so we
+can use that check alone in e.g. vfs_llseek() or dump_skip().
 
-thanks,
+Sure, we are tight on bits in ->f_mode, but there's a better way to
+relieve that problem - split the field into "stuff that needs to
+be preserved all the way until __fput()" and the rest; the latter
+could sit next to ->f_iocb_flags, with no increase of struct file
+size.
 
-greg k-h
+So if you are worried about FMODE_... space getting exhausted, that's
+better dealt with in a different way, IMO.
