@@ -2,95 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74025C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83785C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233193AbiFYNzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 09:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
+        id S233048AbiFYN7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 09:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232822AbiFYNzN (ORCPT
+        with ESMTP id S232972AbiFYN7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 09:55:13 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAE912ACB;
-        Sat, 25 Jun 2022 06:55:12 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so8207440pjl.5;
-        Sat, 25 Jun 2022 06:55:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rq85kfN+kIsKSpiVIlYRgY/oRH6pyH6elOkY0pr17X8=;
-        b=hgfxS3V4J1iXv9Nrh0fcvKWIa/amBW6X3fvUiBLLphkpMJt9wcgDSWULqm7GP/0GaP
-         6aSfy+jSCZ9j4WZexZhFObM3rwxX5lPJsFFZN076vmGQmL5F6VIzmzoUAY8rY6KRMSjv
-         R6ZhugXIa6LdfrPlfK9JaOa2U5bXh812sAwaUmgup8SDolYUTYEo+70VZvtcrFnSuFxi
-         04ypGDWM//+TRLLtFoEyutvFarER9RIv67xr7XYhJR1OgU+hLOJ0DxkN7EHu9Um5lj4r
-         KISANjryYyHsprldO94mdBahgWp9ATn+ceH0x3vcFmnINanU50nMhQKDvWs4Phh9vN1z
-         vACA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rq85kfN+kIsKSpiVIlYRgY/oRH6pyH6elOkY0pr17X8=;
-        b=c3BqLgFuxZZMw9oiFdXnxOq94AIpSgYY+Uq/0Q9+iyQu48R73HEQw0SdauQLRE2uPp
-         l8t9xoBerbSeeFwWeAgtVYRxaUx/RPuTIwduZ/fcMIfSSiTNI7u4hDTTG3VBSkSsZv/t
-         u3tVNNeo04X+wOcA3bEOCC36Oo37sCpsHhCm4NUOyY/MQoX+Kn9JonAa1+fzwVcq5E/b
-         43pHqipRCzes0+ufSjx9m5G/UKvTtqdesGerN3vaOXaa/pknTTNY+xY4SD19MwZ5kD2i
-         f31EAAuD8fBAVeEgc4/3IQ8CRFmSMqLApfV15c0MkCCbiOtUUDXauctbNaTcJUJQnbxF
-         5GuQ==
-X-Gm-Message-State: AJIora+pbcv8zYS//Ob9o9VRZFPxb2ZpETPkGAoJmMXmQ80q/w0v9w3M
-        ffP4dUwDG8bUUVBILO0yVwM56TA2k2nj588P
-X-Google-Smtp-Source: AGRyM1tHN1gbZ2yVQGHra6qT4FiOfTNe6GbslEsaiCOvnvsi/mWa+4LCop/8sCB+fYivYjFqNJC8HQ==
-X-Received: by 2002:a17:90b:3a8f:b0:1ec:93d4:f955 with SMTP id om15-20020a17090b3a8f00b001ec93d4f955mr9909343pjb.23.1656165311419;
-        Sat, 25 Jun 2022 06:55:11 -0700 (PDT)
-Received: from fedora.. ([2409:4042:261d:8029:35f0:415b:b9b4:3fcb])
-        by smtp.gmail.com with ESMTPSA id a4-20020a170902710400b00162037fbb68sm3708733pll.215.2022.06.25.06.55.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jun 2022 06:55:10 -0700 (PDT)
-From:   Gautam <gautammenghani201@gmail.com>
-To:     shuah@kernel.org, brauner@kernel.org, keescook@chromium.org
-Cc:     Gautam <gautammenghani201@gmail.com>, kafai@fb.com,
-        songliubraving@fb.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH] kselftests: Enable the echo command to print newlines in Makefile
-Date:   Sat, 25 Jun 2022 19:24:55 +0530
-Message-Id: <20220625135455.167939-1-gautammenghani201@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Sat, 25 Jun 2022 09:59:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D453B140CB;
+        Sat, 25 Jun 2022 06:59:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CBF46133D;
+        Sat, 25 Jun 2022 13:59:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C55C3411C;
+        Sat, 25 Jun 2022 13:59:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656165560;
+        bh=NIUoySN+9uhjtO7bZji2ZxlL80qaYG7QqoukiQq6aoE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mu5KUgDM61c5Qb2xp5OHBy8OYLZOiRwFHZ4sSjM/J7iXhRAOETESlBtgP/VkiJxMn
+         HSlXn6U/quxhyHvDo64CmaEF+XNZNaxSDe8mz+IpcAyajH0+YK8u5eHHDIXq85hueS
+         up0pEwiqhZOFjwDyqLPk06IyyL8q+u9X1q05IQxVJD/RNeD5OBYjVScGUdpIzvASWg
+         auUPWJWi6Tj4So0hATdSzvwxk8988oCafyggD9ns581ose1CQbXNeoe+KgT4lmmpFB
+         a9m821d+qg8hXkFs0oKTCsRxc7FOTUi39D579dsSeIqyq9tshE08ncqQ2QBvF4OyOA
+         m8DqDvXJKNZ8Q==
+Date:   Sat, 25 Jun 2022 15:08:47 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Cosmin Tanislav <demonsingur@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Subject: Re: [PATCH v5 2/2] iio: adc: ad4130: add AD4130 driver
+Message-ID: <20220625150847.44c8bc2d@jic23-huawei>
+In-Reply-To: <CAHp75VeRgnCLP0YqiOe8OkW3hQ178ia+Y3PjFtCMW4Sh7JfCZQ@mail.gmail.com>
+References: <20220620162059.1097264-1-cosmin.tanislav@analog.com>
+        <20220620162059.1097264-3-cosmin.tanislav@analog.com>
+        <CAHp75VcBJkQ+CwyoDaTJ_AD+mv9d0tEd_txqHwkPRy4-xvnyKg@mail.gmail.com>
+        <2aa93eab-de6d-866b-a829-36b47ff00982@gmail.com>
+        <CAHp75Vc_fcAP6gGwMkYZUoMM6jKeUoQr8J+zYCUz8inSHnTF_w@mail.gmail.com>
+        <54bfff70-938f-16e1-198d-47ed9ba95db4@gmail.com>
+        <CAHp75VeRgnCLP0YqiOe8OkW3hQ178ia+Y3PjFtCMW4Sh7JfCZQ@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the install section of the main Makefile of kselftests, the echo
-command is used with -n flag, which disables the printing of new line
-due to which the output contains "\n" chars as follows:
+On Thu, 23 Jun 2022 19:33:45 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-  Emit Tests for alsa\nSkipping non-existent dir: arm64
-  Emit Tests for breakpoints\nEmit Tests for capabilities\n
+> On Thu, Jun 23, 2022 at 6:14 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
+> > On 6/23/22 18:39, Andy Shevchenko wrote:  
+> > > On Thu, Jun 23, 2022 at 5:27 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:  
+> > >> On 6/20/22 21:29, Andy Shevchenko wrote:  
+> > >>> On Mon, Jun 20, 2022 at 6:27 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:  
+> 
+> ...
+> 
+> > >>>> +       /*
+> > >>>> +        * DMA (thus cache coherency maintenance) requires the
+> > >>>> +        * transfer buffers to live in their own cache lines.
+> > >>>> +        */  
+> > >>>
+> > >>> This is a good comment, but what fields does it apply to?  
+> > >>
+> > >> Whatever is below it, grouped together. This is not hard to
+> > >> understand.  
+> > >
+> > > It's hard to understand what exactly is DMA-aware here. I see only one
+> > > buffer that is aligned properly for DMA, the rest are not, except the
+> > > case if all of them are going in one DMA transaction. Is this the case
+> > > here?
+> > >  
+> > >>>> +       u8                      reset_buf[AD4130_RESET_BUF_SIZE] __aligned(IIO_DMA_MINALIGN);  
+> > >
+> > > This is aligned.
+> > >  
+> > >>>> +       u8                      reg_write_tx_buf[4];  
+> > >
+> > > This one is aligned + offset (== AD4130_RESET_BUF_SIZE + 0).
+> > >  
+> > >>>> +       u8                      reg_read_tx_buf[1];  
+> > >
+> > > This one is aligned + offset (== AD4130_RESET_BUF_SIZE + 0 + 4).
+> > >  
+> > >>>> +       u8                      reg_read_rx_buf[3];  
+> > >
+> > > This one is aligned + offset (== AD4130_RESET_BUF_SIZE + 0 + 4 + 1).
+> > > And this is Rx.
+> > >  
+> > >>>> +       u8                      fifo_tx_buf[2];  
+> > >
+> > > Here is Tx again which is most likely is not aligned...
+> > >  
+> > >>>> +       u8                      fifo_rx_buf[AD4130_FIFO_SIZE *
+> > >>>> +                                           AD4130_FIFO_MAX_SAMPLE_SIZE];
+> > >>>> +};  
+> > >  
+> >
+> > This has been mentioned before by Jonathan as a reply to V6 of my
+> > AD74413R driver.
+> >  
+> >  > I'm surprised I didn't mention this before but you only need to  
+> > ensure  > that any memory used for DMA is not in a cacheline with memory
+> > used  
+> >  > for other things that might change concurrently.  
+> >
+> > To my understanding, as long as the DMA buffers will all be accessed by
+> > the same DMA-compatible SPI controller, you only need to align them so
+> > they're not in the same cacheline with memory that will not be accessed
+> > by the SPI controller.  
+> 
+> SPI is synchronous by nature, what will happen if the Tx and Rx
+> buffers are sharing the same cache line? Anybody to shed a light here?
+> 
+> (I.o.w. I'm not sure that we don't need to split the Rx and Tx buffers
+> of the same transfer.)
+> 
+Oddly I thought I replied to this before lunch, but not seeing my own message.
+My understanding is that any device that trashes it's own buffers during
+DMA is broken and needs to implement bounce buffers within the SPI master
+driver.  That shouldn't happen anyway because the race conditions around
+this are about caching and stale data write back. During a transfer, only
+the device should touch the cacheline with the DMA buffers in it, so any
+write back that might return stale data should be pushing back the correct
+data (unchanged) or data the device wants to update..
 
-This patch fixes the above bug by using the -e flag.
+My suggestion is an expanded comment (I'm fine adding this whilst applying
+and fixing the docs version numbering highlighted above). The key here
+is that we don't have one bit of the code changing the buffers whilst
+DMA is in progress via a different path.  They all need to be covered
+by the same lock.
 
-Signed-off-by: Gautam <gautammenghani201@gmail.com>
----
- tools/testing/selftests/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+	 * DMA (thus cache coherency maintenance) requires any
+	 * transfer buffers to live in their own cache lines.
+	 * As the use of these buffers is synchronous, all of the
+	 * buffers used for DMA in this driver may share a cache
+	 * line.
 
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index de11992dc577..52e31437f1a3 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -253,7 +253,7 @@ ifdef INSTALL_PATH
- 	for TARGET in $(TARGETS); do \
- 		BUILD_TARGET=$$BUILD/$$TARGET;	\
- 		[ ! -d $(INSTALL_PATH)/$$TARGET ] && echo "Skipping non-existent dir: $$TARGET" && continue; \
--		echo -n "Emit Tests for $$TARGET\n"; \
-+		echo -ne "Emit Tests for $$TARGET\n"; \
- 		$(MAKE) -s --no-print-directory OUTPUT=$$BUILD_TARGET COLLECTION=$$TARGET \
- 			-C $$TARGET emit_tests >> $(TEST_LIST); \
- 	done;
--- 
-2.36.1
+Note I'm waiting on a DT review though before taking this. Complex
+binding but I see it's in their patchwork as needs review so hopefully
+they'll get to it soon. 
+
+https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20220620162059.1097264-2-cosmin.tanislav@analog.com/
+
+
+Jonathan
 
