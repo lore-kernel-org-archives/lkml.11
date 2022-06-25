@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 09:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6658C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 09:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232554AbiFYJ2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 05:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59724 "EHLO
+        id S232555AbiFYJ2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 05:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232515AbiFYJ2Y (ORCPT
+        with ESMTP id S232524AbiFYJ2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 05:28:24 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17B9DEBF
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 02:28:23 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LVTCY3TJdzkWZJ;
-        Sat, 25 Jun 2022 17:27:05 +0800 (CST)
+        Sat, 25 Jun 2022 05:28:25 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89E8DEBF
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 02:28:24 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LVTBW55QRz1KC5n;
+        Sat, 25 Jun 2022 17:26:11 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 25 Jun
- 2022 17:28:20 +0800
+ 2022 17:28:22 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <shy828301@gmail.com>, <zokeefe@google.com>, <aarcange@redhat.com>,
@@ -29,9 +29,9 @@ CC:     <shy828301@gmail.com>, <zokeefe@google.com>, <aarcange@redhat.com>,
         <neilb@suse.de>, <apopple@nvidia.com>, <david@redhat.com>,
         <surenb@google.com>, <peterx@redhat.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 4/7] mm/khugepaged: minor cleanup for collapse_file
-Date:   Sat, 25 Jun 2022 17:28:13 +0800
-Message-ID: <20220625092816.4856-5-linmiaohe@huawei.com>
+Subject: [PATCH v2 6/7] mm/khugepaged: remove unneeded return value of khugepaged_add_pte_mapped_thp()
+Date:   Sat, 25 Jun 2022 17:28:15 +0800
+Message-ID: <20220625092816.4856-7-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220625092816.4856-1-linmiaohe@huawei.com>
 References: <20220625092816.4856-1-linmiaohe@huawei.com>
@@ -46,46 +46,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-nr_none is always 0 for non-shmem case because the page can be read from
-the backend store. So when nr_none ! = 0, it must be in is_shmem case.
-Also only adjust the nrpages and uncharge shmem when nr_none != 0 to save
-cpu cycles.
+The return value of khugepaged_add_pte_mapped_thp() is always 0 and also
+ignored. Remove it to clean up the code.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 Reviewed-by: Zach O'Keefe <zokeefe@google.com>
+Reviewed-by: Yang Shi <shy828301@gmail.com>
 ---
- mm/khugepaged.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ mm/khugepaged.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-index a36d9746c321..47514f2fabb9 100644
+index aecd33ab2bbe..6cb82a299eb2 100644
 --- a/mm/khugepaged.c
 +++ b/mm/khugepaged.c
-@@ -1852,8 +1852,8 @@ static void collapse_file(struct mm_struct *mm,
+@@ -1339,8 +1339,8 @@ static void collect_mm_slot(struct mm_slot *mm_slot)
+  * Notify khugepaged that given addr of the mm is pte-mapped THP. Then
+  * khugepaged should try to collapse the page table.
+  */
+-static int khugepaged_add_pte_mapped_thp(struct mm_struct *mm,
+-					 unsigned long addr)
++static void khugepaged_add_pte_mapped_thp(struct mm_struct *mm,
++					  unsigned long addr)
+ {
+ 	struct mm_slot *mm_slot;
  
- 	if (nr_none) {
- 		__mod_lruvec_page_state(new_page, NR_FILE_PAGES, nr_none);
--		if (is_shmem)
--			__mod_lruvec_page_state(new_page, NR_SHMEM, nr_none);
-+		/* nr_none is always 0 for non-shmem. */
-+		__mod_lruvec_page_state(new_page, NR_SHMEM, nr_none);
- 	}
+@@ -1351,7 +1351,6 @@ static int khugepaged_add_pte_mapped_thp(struct mm_struct *mm,
+ 	if (likely(mm_slot && mm_slot->nr_pte_mapped_thp < MAX_PTE_MAPPED_THP))
+ 		mm_slot->pte_mapped_thp[mm_slot->nr_pte_mapped_thp++] = addr;
+ 	spin_unlock(&khugepaged_mm_lock);
+-	return 0;
+ }
  
- 	/* Join all the small entries into a single multi-index entry */
-@@ -1917,10 +1917,10 @@ static void collapse_file(struct mm_struct *mm,
- 
- 		/* Something went wrong: roll back page cache changes */
- 		xas_lock_irq(&xas);
--		mapping->nrpages -= nr_none;
--
--		if (is_shmem)
-+		if (nr_none) {
-+			mapping->nrpages -= nr_none;
- 			shmem_uncharge(mapping->host, nr_none);
-+		}
- 
- 		xas_set(&xas, start);
- 		xas_for_each(&xas, page, end - 1) {
+ static void collapse_and_free_pmd(struct mm_struct *mm, struct vm_area_struct *vma,
 -- 
 2.23.0
 
