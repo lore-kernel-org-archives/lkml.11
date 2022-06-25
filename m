@@ -2,172 +2,822 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A180DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 15:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22EA6C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 15:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbiFYP7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 11:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
+        id S233120AbiFYP7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 11:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiFYP7A (ORCPT
+        with ESMTP id S229516AbiFYP7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 11:59:00 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9D514D2E;
-        Sat, 25 Jun 2022 08:58:58 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LVdtv6Gt7zDsK4;
-        Sat, 25 Jun 2022 23:58:15 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 25 Jun
- 2022 23:58:51 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        James Morse <james.morse@arm.com>,
-        Hou Tao <houtao1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH bpf-next v6 0/5] bpf trampoline for arm64
-Date:   Sat, 25 Jun 2022 12:08:30 -0400
-Message-ID: <20220625160834.547456-1-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+        Sat, 25 Jun 2022 11:59:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D79C15726
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 08:59:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA1CAB80BEB
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 15:59:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5E6EC3411C;
+        Sat, 25 Jun 2022 15:59:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656172769;
+        bh=3ggd1ZR8t5WjClGkRciH9GFIb+hHs7TPiaHDWXIkJZ4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IpsmgiHpSHUpvt/gdAoBmKA2Q59SvIAQab1w9tchin/j4z0646NCgwx1+kNm6GxIt
+         eWb9eVYP41+jqeRwJLRZfiIMDKKpqWfGd4nbmVQq19YBggEvUoqsz06mtLth/L0pjx
+         DQ8mU0c3u7LI+oXlhvEjn/ZgvP48m6AtGOKrVvk4vxQVwNHRLfu5ZUVeh8AstKLYvg
+         FU5rHxPOz4KzxQqbopt4aXgLAriuBUuOXYBN6X9RZqVab+D4QkU+nEk6rcuElGsOt6
+         pPOxSGoJOhyNBFWvN02MsOTprtk0USQSh2ouYCVJhjJqJo7uIIxkkzzH47glqOq+xA
+         nluDRtUVjaCqg==
+Date:   Sun, 26 Jun 2022 00:59:24 +0900
+From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
+To:     Jeff Xie <xiehuan09@gmail.com>
+Cc:     rostedt@goodmis.org, mingo@redhat.com, mhiramat@kernel.org,
+        zanussi@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 1/4] trace: Add trace any kernel object
+Message-Id: <20220626005924.dbb3cc2aa88fa052a3fea143@kernel.org>
+In-Reply-To: <20220606160943.663180-2-xiehuan09@gmail.com>
+References: <20220606160943.663180-1-xiehuan09@gmail.com>
+        <20220606160943.663180-2-xiehuan09@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset introduces bpf trampoline on arm64. A bpf trampoline converts
-native calling convention to bpf calling convention and is used to implement
-various bpf features, such as fentry, fexit, fmod_ret and struct_ops.
+On Tue,  7 Jun 2022 00:09:40 +0800
+Jeff Xie <xiehuan09@gmail.com> wrote:
 
-The trampoline introduced does essentially the same thing as the bpf
-trampoline does on x86.
+> Introduce objtrace trigger to get the call flow by tracing any kernel
+> object in the function parameter.
+> 
+> The objtrace trigger makes a list of the target object address from
+> the given event parameter, and records all kernel function calls
+> which has the object address in its parameter.
+> 
+> Syntax:
+> 	objtrace:add:obj[:count][if <filter>]
+> 
+> Usage:
+> 	# echo 'p bio_add_page arg1=$arg1' > kprobe_events
+> 	# cd events/kprobes/p_bio_add_page_0
+> 	# echo 'objtrace:add:arg1:1 if comm == "cat"' > ./trigger
+> 	# cat /test.txt
+> 
 
-Tested on raspberry pi 4b and qemu:
+This looks good to me.
 
- #18 /1     bpf_tcp_ca/dctcp:OK
- #18 /2     bpf_tcp_ca/cubic:OK
- #18 /3     bpf_tcp_ca/invalid_license:OK
- #18 /4     bpf_tcp_ca/dctcp_fallback:OK
- #18 /5     bpf_tcp_ca/rel_setsockopt:OK
- #18        bpf_tcp_ca:OK
- #51 /1     dummy_st_ops/dummy_st_ops_attach:OK
- #51 /2     dummy_st_ops/dummy_init_ret_value:OK
- #51 /3     dummy_st_ops/dummy_init_ptr_arg:OK
- #51 /4     dummy_st_ops/dummy_multiple_args:OK
- #51        dummy_st_ops:OK
- #57 /1     fexit_bpf2bpf/target_no_callees:OK
- #57 /2     fexit_bpf2bpf/target_yes_callees:OK
- #57 /3     fexit_bpf2bpf/func_replace:OK
- #57 /4     fexit_bpf2bpf/func_replace_verify:OK
- #57 /5     fexit_bpf2bpf/func_sockmap_update:OK
- #57 /6     fexit_bpf2bpf/func_replace_return_code:OK
- #57 /7     fexit_bpf2bpf/func_map_prog_compatibility:OK
- #57 /8     fexit_bpf2bpf/func_replace_multi:OK
- #57 /9     fexit_bpf2bpf/fmod_ret_freplace:OK
- #57        fexit_bpf2bpf:OK
- #237       xdp_bpf2bpf:OK
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-v6:
-- Since Mark is refactoring arm64 ftrace to support long jump and reduce the
-  ftrace trampoline overhead, it's not clear how we'll attach bpf trampoline
-  to regular kernel functions, so remove ftrace related patches for now.
-- Add long jump support for attaching bpf trampoline to bpf prog, since bpf
-  trampoline and bpf prog are allocated via vmalloc, there is chance the
-  distance exceeds the max branch range.
-- Collect ACK/Review-by, not sure if the ACK and Review-bys for bpf_arch_text_poke()
-  should be kept, since the changes to it is not trivial
-- Update some commit messages and comments
+Thank you,
 
-v5: https://lore.kernel.org/bpf/20220518131638.3401509-1-xukuohai@huawei.com/
-- As Alexei suggested, remove is_valid_bpf_tramp_flags()
+> Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
+> ---
+>  include/linux/trace_events.h        |   1 +
+>  kernel/trace/Kconfig                |  10 +
+>  kernel/trace/Makefile               |   1 +
+>  kernel/trace/trace.c                |  11 +
+>  kernel/trace/trace.h                |  21 ++
+>  kernel/trace/trace_entries.h        |  17 ++
+>  kernel/trace/trace_events_trigger.c |   5 +-
+>  kernel/trace/trace_object.c         | 450 ++++++++++++++++++++++++++++
+>  kernel/trace/trace_output.c         |  40 +++
+>  9 files changed, 554 insertions(+), 2 deletions(-)
+>  create mode 100644 kernel/trace/trace_object.c
+> 
+> diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
+> index e6e95a9f07a5..f3645166b724 100644
+> --- a/include/linux/trace_events.h
+> +++ b/include/linux/trace_events.h
+> @@ -693,6 +693,7 @@ enum event_trigger_type {
+>  	ETT_EVENT_HIST		= (1 << 4),
+>  	ETT_HIST_ENABLE		= (1 << 5),
+>  	ETT_EVENT_EPROBE	= (1 << 6),
+> +	ETT_TRACE_OBJECT	= (1 << 7),
+>  };
+>  
+>  extern int filter_match_preds(struct event_filter *filter, void *rec);
+> diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+> index 2c43e327a619..30c34d43dc3f 100644
+> --- a/kernel/trace/Kconfig
+> +++ b/kernel/trace/Kconfig
+> @@ -276,6 +276,16 @@ config FUNCTION_PROFILER
+>  
+>  	  If in doubt, say N.
+>  
+> +config TRACE_OBJECT
+> +	bool "Trace kernel object in function parameter"
+> +	depends on FUNCTION_TRACER
+> +	depends on HAVE_FUNCTION_ARG_ACCESS_API
+> +	select TRACING
+> +	default y
+> +	help
+> +	 You can trace the kernel object in the kernel function parameter.
+> +	 The kernel object is dynamically specified via event trigger.
+> +
+>  config STACK_TRACER
+>  	bool "Trace max stack"
+>  	depends on HAVE_FUNCTION_TRACER
+> diff --git a/kernel/trace/Makefile b/kernel/trace/Makefile
+> index 0d261774d6f3..90ecc3c6c9d5 100644
+> --- a/kernel/trace/Makefile
+> +++ b/kernel/trace/Makefile
+> @@ -71,6 +71,7 @@ obj-$(CONFIG_FUNCTION_GRAPH_TRACER) += trace_functions_graph.o
+>  obj-$(CONFIG_TRACE_BRANCH_PROFILING) += trace_branch.o
+>  obj-$(CONFIG_BLK_DEV_IO_TRACE) += blktrace.o
+>  obj-$(CONFIG_FUNCTION_GRAPH_TRACER) += fgraph.o
+> +obj-$(CONFIG_TRACE_OBJECT) += trace_object.o
+>  ifeq ($(CONFIG_BLOCK),y)
+>  obj-$(CONFIG_EVENT_TRACING) += blktrace.o
+>  endif
+> diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+> index f400800bc910..7074ad8bc1a0 100644
+> --- a/kernel/trace/trace.c
+> +++ b/kernel/trace/trace.c
+> @@ -5627,6 +5627,9 @@ static const char readme_msg[] =
+>  	"\t            enable_hist:<system>:<event>\n"
+>  	"\t            disable_hist:<system>:<event>\n"
+>  #endif
+> +#ifdef CONFIG_TRACE_OBJECT
+> +	"\t            objtrace:add:obj[:count][if <filter>]\n"
+> +#endif
+>  #ifdef CONFIG_STACKTRACE
+>  	"\t\t    stacktrace\n"
+>  #endif
+> @@ -9272,6 +9275,9 @@ static struct trace_array *trace_array_create(const char *name)
+>  	if (ftrace_allocate_ftrace_ops(tr) < 0)
+>  		goto out_free_tr;
+>  
+> +	if (allocate_objtrace_data(tr) < 0)
+> +		goto out_free_tr;
+> +
+>  	ftrace_init_trace_array(tr);
+>  
+>  	init_trace_flags_index(tr);
+> @@ -9291,6 +9297,7 @@ static struct trace_array *trace_array_create(const char *name)
+>  
+>   out_free_tr:
+>  	ftrace_free_ftrace_ops(tr);
+> +	free_objtrace_data(tr);
+>  	free_trace_buffers(tr);
+>  	free_cpumask_var(tr->tracing_cpumask);
+>  	kfree(tr->name);
+> @@ -9384,6 +9391,7 @@ static int __remove_instance(struct trace_array *tr)
+>  	event_trace_del_tracer(tr);
+>  	ftrace_clear_pids(tr);
+>  	ftrace_destroy_function_files(tr);
+> +	free_objtrace_data(tr);
+>  	tracefs_remove(tr->dir);
+>  	free_percpu(tr->last_func_repeats);
+>  	free_trace_buffers(tr);
+> @@ -10118,6 +10126,9 @@ __init static int tracer_alloc_buffers(void)
+>  		goto out_free_savedcmd;
+>  	}
+>  
+> +	if (allocate_objtrace_data(&global_trace))
+> +		goto out_free_savedcmd;
+> +
+>  	if (global_trace.buffer_disabled)
+>  		tracing_off();
+>  
+> diff --git a/kernel/trace/trace.h b/kernel/trace/trace.h
+> index ff816fb41e48..18220b659555 100644
+> --- a/kernel/trace/trace.h
+> +++ b/kernel/trace/trace.h
+> @@ -54,6 +54,7 @@ enum trace_type {
+>  	TRACE_TIMERLAT,
+>  	TRACE_RAW_DATA,
+>  	TRACE_FUNC_REPEATS,
+> +	TRACE_OBJECT,
+>  
+>  	__TRACE_LAST_TYPE,
+>  };
+> @@ -363,6 +364,9 @@ struct trace_array {
+>  	cpumask_var_t		tracing_cpumask; /* only trace on set CPUs */
+>  	int			ref;
+>  	int			trace_ref;
+> +#ifdef CONFIG_TRACE_OBJECT
+> +	struct objtrace_data	*obj_data;
+> +#endif
+>  #ifdef CONFIG_FUNCTION_TRACER
+>  	struct ftrace_ops	*ops;
+>  	struct trace_pid_list	__rcu *function_pids;
+> @@ -471,6 +475,7 @@ extern void __ftrace_bad_type(void);
+>  			  TRACE_GRAPH_RET);		\
+>  		IF_ASSIGN(var, ent, struct func_repeats_entry,		\
+>  			  TRACE_FUNC_REPEATS);				\
+> +		IF_ASSIGN(var, ent, struct trace_object_entry, TRACE_OBJECT);\
+>  		__ftrace_bad_type();					\
+>  	} while (0)
+>  
+> @@ -1536,6 +1541,16 @@ static inline int register_trigger_hist_cmd(void) { return 0; }
+>  static inline int register_trigger_hist_enable_disable_cmds(void) { return 0; }
+>  #endif
+>  
+> +#ifdef CONFIG_TRACE_OBJECT
+> +extern int register_trigger_object_cmd(void);
+> +extern int allocate_objtrace_data(struct trace_array *tr);
+> +extern void free_objtrace_data(struct trace_array *tr);
+> +#else
+> +static inline int register_trigger_object_cmd(void) { return 0; }
+> +static inline int allocate_objtrace_data(struct trace_array *tr) { return 0; }
+> +static inline void free_objtrace_data(struct trace_array *tr) { };
+> +#endif
+> +
+>  extern int register_trigger_cmds(void);
+>  extern void clear_event_triggers(struct trace_array *tr);
+>  
+> @@ -1611,6 +1626,12 @@ extern bool event_trigger_check_remove(const char *glob);
+>  extern bool event_trigger_empty_param(const char *param);
+>  extern int event_trigger_separate_filter(char *param_and_filter, char **param,
+>  					 char **filter, bool param_required);
+> +extern int register_trigger(char *glob,
+> +			struct event_trigger_data *data,
+> +			struct trace_event_file *file);
+> +extern void unregister_trigger(char *glob,
+> +			struct event_trigger_data *test,
+> +			struct trace_event_file *file);
+>  extern struct event_trigger_data *
+>  event_trigger_alloc(struct event_command *cmd_ops,
+>  		    char *cmd,
+> diff --git a/kernel/trace/trace_entries.h b/kernel/trace/trace_entries.h
+> index cd41e863b51c..bb120d9498a9 100644
+> --- a/kernel/trace/trace_entries.h
+> +++ b/kernel/trace/trace_entries.h
+> @@ -401,3 +401,20 @@ FTRACE_ENTRY(timerlat, timerlat_entry,
+>  		 __entry->context,
+>  		 __entry->timer_latency)
+>  );
+> +
+> +/*
+> + * trace object entry:
+> + */
+> +FTRACE_ENTRY(object, trace_object_entry,
+> +
+> +	TRACE_OBJECT,
+> +
+> +	F_STRUCT(
+> +		__field(	unsigned long,		ip		)
+> +		__field(	unsigned long,		parent_ip	)
+> +		__field(	unsigned long,		object		)
+> +	),
+> +
+> +	F_printk(" %ps <-- %ps object:%lx\n",
+> +		 (void *)__entry->ip, (void *)__entry->parent_ip, __entry->object)
+> +);
+> diff --git a/kernel/trace/trace_events_trigger.c b/kernel/trace/trace_events_trigger.c
+> index cb866c3141af..8bad4eb3b997 100644
+> --- a/kernel/trace/trace_events_trigger.c
+> +++ b/kernel/trace/trace_events_trigger.c
+> @@ -560,7 +560,7 @@ void update_cond_flag(struct trace_event_file *file)
+>   *
+>   * Return: 0 on success, errno otherwise
+>   */
+> -static int register_trigger(char *glob,
+> +int register_trigger(char *glob,
+>  			    struct event_trigger_data *data,
+>  			    struct trace_event_file *file)
+>  {
+> @@ -605,7 +605,7 @@ static int register_trigger(char *glob,
+>   * Usually used directly as the @unreg method in event command
+>   * implementations.
+>   */
+> -static void unregister_trigger(char *glob,
+> +void unregister_trigger(char *glob,
+>  			       struct event_trigger_data *test,
+>  			       struct trace_event_file *file)
+>  {
+> @@ -1976,6 +1976,7 @@ __init int register_trigger_cmds(void)
+>  	register_trigger_enable_disable_cmds();
+>  	register_trigger_hist_enable_disable_cmds();
+>  	register_trigger_hist_cmd();
+> +	register_trigger_object_cmd();
+>  
+>  	return 0;
+>  }
+> diff --git a/kernel/trace/trace_object.c b/kernel/trace/trace_object.c
+> new file mode 100644
+> index 000000000000..19ec4b1c0186
+> --- /dev/null
+> +++ b/kernel/trace/trace_object.c
+> @@ -0,0 +1,450 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * trace the kernel object in the kernel function parameter
+> + * Copyright (C) 2021 Jeff Xie <xiehuan09@gmail.com>
+> + */
+> +
+> +#define pr_fmt(fmt) "trace_object: " fmt
+> +
+> +#include "trace_output.h"
+> +
+> +#define MAX_TRACED_OBJECT 5
+> +#define OBJTRACE_CMD_LEN  16
+> +#define OBJTRACE_CMD_ADD "add"
+> +static LIST_HEAD(obj_data_head);
+> +static const int max_args_num = 6;
+> +static void exit_trace_object(struct trace_array *tr);
+> +static int init_trace_object(struct trace_array *tr);
+> +
+> +struct object_instance {
+> +	void *obj;
+> +	struct trace_array *tr;
+> +};
+> +
+> +/* objtrace private data */
+> +struct objtrace_trigger_data {
+> +	struct ftrace_event_field *field;
+> +	char objtrace_cmd[OBJTRACE_CMD_LEN];
+> +	struct trace_array *tr;
+> +};
+> +
+> +/* objtrace data with fops and objtrace_instances */
+> +struct objtrace_data {
+> +	struct list_head head;
+> +	struct trace_array *tr;
+> +	struct ftrace_ops fops;
+> +	int num_traced_obj;
+> +	struct object_instance traced_obj[MAX_TRACED_OBJECT];
+> +	raw_spinlock_t obj_data_lock;
+> +};
+> +
+> +static struct objtrace_data *get_obj_data(struct trace_array *tr)
+> +{
+> +	struct objtrace_data *obj_data = NULL;
+> +
+> +	list_for_each_entry(obj_data, &obj_data_head, head) {
+> +		if (obj_data->tr == tr)
+> +			break;
+> +	}
+> +	return obj_data;
+> +}
+> +
+> +static bool object_exist(void *obj, struct trace_array *tr)
+> +{
+> +	int i, max;
+> +	struct objtrace_data *obj_data;
+> +
+> +	obj_data = get_obj_data(tr);
+> +	if (!obj_data)
+> +		return false;
+> +
+> +	max = READ_ONCE(obj_data->num_traced_obj);
+> +	smp_rmb();
+> +	for (i = 0; i < max; i++) {
+> +		if (obj_data->traced_obj[i].obj == obj)
+> +			return true;
+> +	}
+> +	return false;
+> +}
+> +
+> +static bool object_empty(struct trace_array *tr)
+> +{
+> +	struct objtrace_data *obj_data;
+> +
+> +	obj_data = get_obj_data(tr);
+> +	if (!obj_data)
+> +		return false;
+> +
+> +	return !READ_ONCE(obj_data->num_traced_obj);
+> +}
+> +
+> +static void set_trace_object(void *obj, struct trace_array *tr)
+> +{
+> +	unsigned long flags;
+> +	struct object_instance *obj_ins;
+> +	struct objtrace_data *obj_data;
+> +
+> +	if (in_nmi())
+> +		return;
+> +
+> +	if (!obj && object_exist(obj, tr))
+> +		return;
+> +
+> +	obj_data = get_obj_data(tr);
+> +	if (!obj_data)
+> +		return;
+> +
+> +	/* only this place has write operations */
+> +	raw_spin_lock_irqsave(&obj_data->obj_data_lock, flags);
+> +	if (READ_ONCE(obj_data->num_traced_obj) == MAX_TRACED_OBJECT) {
+> +		trace_array_printk_buf(tr->array_buffer.buffer, _THIS_IP_,
+> +				"object_pool is full, can't trace object:0x%px\n", obj);
+> +		goto out;
+> +	}
+> +	obj_ins = &obj_data->traced_obj[READ_ONCE(obj_data->num_traced_obj)];
+> +	obj_ins->obj = obj;
+> +	obj_ins->tr = tr;
+> +	/* make sure the num_traced_obj update always appears after traced_obj update */
+> +	smp_wmb();
+> +	obj_data->num_traced_obj++;
+> +out:
+> +	raw_spin_unlock_irqrestore(&obj_data->obj_data_lock, flags);
+> +}
+> +
+> +static void submit_trace_object(unsigned long ip, unsigned long parent_ip,
+> +				 unsigned long object, struct trace_array *tr)
+> +{
+> +
+> +	struct trace_buffer *buffer = tr->array_buffer.buffer;
+> +	struct ring_buffer_event *event;
+> +	struct trace_object_entry *entry;
+> +	unsigned int trace_ctx = 0;
+> +
+> +	trace_ctx = tracing_gen_ctx();
+> +	event = trace_buffer_lock_reserve(buffer, TRACE_OBJECT,
+> +			sizeof(*entry), trace_ctx);
+> +	if (!event)
+> +		return;
+> +	entry   = ring_buffer_event_data(event);
+> +	entry->ip                       = ip;
+> +	entry->parent_ip                = parent_ip;
+> +	entry->object			= object;
+> +
+> +	trace_buffer_unlock_commit(tr, buffer, event, trace_ctx);
+> +}
+> +
+> +static void
+> +trace_object_events_call(unsigned long ip, unsigned long parent_ip,
+> +		struct ftrace_ops *op, struct ftrace_regs *fregs)
+> +{
+> +	struct pt_regs *pt_regs = ftrace_get_regs(fregs);
+> +	struct trace_array *tr = op->private;
+> +	struct trace_array_cpu *data;
+> +	unsigned long obj;
+> +	long disabled;
+> +	int cpu, n;
+> +
+> +	preempt_disable_notrace();
+> +
+> +	cpu = raw_smp_processor_id();
+> +	data = per_cpu_ptr(tr->array_buffer.data, cpu);
+> +	disabled = atomic_inc_return(&data->disabled);
+> +	if (likely(disabled == 1)) {
+> +		if (object_empty(tr))
+> +			goto out;
+> +		for (n = 0; n < max_args_num; n++) {
+> +			obj = regs_get_kernel_argument(pt_regs, n);
+> +			if (object_exist((void *)obj, tr))
+> +				submit_trace_object(ip, parent_ip, obj, tr);
+> +		/* The parameters of a function may match multiple objects */
+> +		}
+> +	}
+> +out:
+> +	atomic_dec(&data->disabled);
+> +	preempt_enable_notrace();
+> +}
+> +
+> +static void
+> +trace_object_trigger(struct event_trigger_data *data,
+> +		   struct trace_buffer *buffer,  void *rec,
+> +		   struct ring_buffer_event *event)
+> +{
+> +	struct objtrace_trigger_data *obj_data = data->private_data;
+> +	struct trace_array *tr = obj_data->tr;
+> +	struct ftrace_event_field *field;
+> +	void *obj = NULL;
+> +
+> +	field = obj_data->field;
+> +	memcpy(&obj, rec + field->offset, sizeof(obj));
+> +	set_trace_object(obj, tr);
+> +}
+> +
+> +static void
+> +trace_object_trigger_free(struct event_trigger_data *data)
+> +{
+> +	struct objtrace_trigger_data *obj_data = data->private_data;
+> +
+> +	if (WARN_ON_ONCE(data->ref <= 0))
+> +		return;
+> +
+> +	data->ref--;
+> +	if (!data->ref) {
+> +		exit_trace_object(obj_data->tr);
+> +		kfree(data->private_data);
+> +		trigger_data_free(data);
+> +	}
+> +}
+> +
+> +static void
+> +trace_object_count_trigger(struct event_trigger_data *data,
+> +			 struct trace_buffer *buffer, void *rec,
+> +			 struct ring_buffer_event *event)
+> +{
+> +	if (!data->count)
+> +		return;
+> +
+> +	if (data->count != -1)
+> +		(data->count)--;
+> +
+> +	trace_object_trigger(data, buffer, rec, event);
+> +}
+> +
+> +static int
+> +event_trigger_print(const char *name, struct seq_file *m,
+> +		void *data, char *filter_str, void *objtrace_data)
+> +{
+> +	long count = (long)data;
+> +	struct objtrace_trigger_data *obj_data = objtrace_data;
+> +
+> +	seq_puts(m, name);
+> +
+> +	seq_printf(m, ":%s", obj_data->objtrace_cmd);
+> +	seq_printf(m, ":%s", obj_data->field->name);
+> +
+> +	if (count == -1)
+> +		seq_puts(m, ":unlimited");
+> +	else
+> +		seq_printf(m, ":count=%ld", count);
+> +
+> +	if (filter_str)
+> +		seq_printf(m, " if %s\n", filter_str);
+> +	else
+> +		seq_putc(m, '\n');
+> +
+> +	return 0;
+> +}
+> +
+> +static int event_object_trigger_init(struct event_trigger_data *data)
+> +{
+> +	struct objtrace_trigger_data *obj_data = data->private_data;
+> +	int ret;
+> +
+> +	if (!data->ref) {
+> +		ret = init_trace_object(obj_data->tr);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +	data->ref++;
+> +	return 0;
+> +}
+> +
+> +static int
+> +trace_object_trigger_print(struct seq_file *m, struct event_trigger_data *data)
+> +{
+> +	return event_trigger_print("objtrace", m, (void *)data->count,
+> +				   data->filter_str, data->private_data);
+> +}
+> +
+> +static struct event_trigger_ops objecttrace_trigger_ops = {
+> +	.trigger		= trace_object_trigger,
+> +	.print			= trace_object_trigger_print,
+> +	.init			= event_object_trigger_init,
+> +	.free			= trace_object_trigger_free,
+> +};
+> +
+> +static struct event_trigger_ops objecttrace_count_trigger_ops = {
+> +	.trigger		= trace_object_count_trigger,
+> +	.print			= trace_object_trigger_print,
+> +	.init			= event_object_trigger_init,
+> +	.free			= trace_object_trigger_free,
+> +};
+> +
+> +static struct event_trigger_ops *
+> +objecttrace_get_trigger_ops(char *cmd, char *param)
+> +{
+> +	return param ? &objecttrace_count_trigger_ops : &objecttrace_trigger_ops;
+> +}
+> +
+> +static bool field_exist(struct trace_event_file *file,
+> +			struct event_command *cmd_ops,
+> +			const char *field_name)
+> +{
+> +	struct event_trigger_data *data;
+> +	struct objtrace_trigger_data *obj_data;
+> +
+> +	lockdep_assert_held(&event_mutex);
+> +
+> +	list_for_each_entry(data, &file->triggers, list) {
+> +		if (data->cmd_ops->trigger_type == cmd_ops->trigger_type) {
+> +			obj_data = data->private_data;
+> +			if (!strcmp(obj_data->field->name, field_name))
+> +				return true;
+> +		}
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static int
+> +event_object_trigger_parse(struct event_command *cmd_ops,
+> +		       struct trace_event_file *file,
+> +		       char *glob, char *cmd, char *param_and_filter)
+> +{
+> +	struct event_trigger_data *trigger_data;
+> +	struct objtrace_trigger_data *obj_data;
+> +	struct ftrace_event_field *field;
+> +	char *objtrace_cmd, *arg;
+> +	char *param, *filter;
+> +	int ret;
+> +	bool remove;
+> +
+> +	remove = event_trigger_check_remove(glob);
+> +
+> +	/*
+> +	 * separate the param and the filter:
+> +	 * objtrace:add:OBJ[:COUNT] [if filter]
+> +	 */
+> +	ret = event_trigger_separate_filter(param_and_filter, &param, &filter, true);
+> +	if (ret)
+> +		return ret;
+> +
+> +	objtrace_cmd = strsep(&param, ":");
+> +	if (!objtrace_cmd || strcmp(objtrace_cmd, OBJTRACE_CMD_ADD)) {
+> +		pr_err("error objtrace command\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	arg = strsep(&param, ":");
+> +	if (!arg)
+> +		return -EINVAL;
+> +
+> +	field = trace_find_event_field(file->event_call, arg);
+> +	if (!field)
+> +		return -EINVAL;
+> +
+> +	if (field->size != sizeof(void *)) {
+> +		pr_err("the size of the %s should be:%zu\n", field->name, sizeof(void *));
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (remove && !field_exist(file, cmd_ops, field->name))
+> +		return -ENOENT;
+> +
+> +	obj_data = kzalloc(sizeof(*obj_data), GFP_KERNEL);
+> +	if (!obj_data)
+> +		return -ENOMEM;
+> +
+> +	obj_data->field = field;
+> +	obj_data->tr = file->tr;
+> +	snprintf(obj_data->objtrace_cmd, OBJTRACE_CMD_LEN, objtrace_cmd);
+> +
+> +	trigger_data = event_trigger_alloc(cmd_ops, cmd, param, obj_data);
+> +	if (!trigger_data) {
+> +		kfree(obj_data);
+> +		return -ENOMEM;
+> +	}
+> +	if (remove) {
+> +		event_trigger_unregister(cmd_ops, file, glob+1, trigger_data);
+> +		kfree(obj_data);
+> +		kfree(trigger_data);
+> +		return 0;
+> +	}
+> +
+> +	ret = event_trigger_parse_num(param, trigger_data);
+> +	if (ret)
+> +		goto out_free;
+> +
+> +	ret = event_trigger_set_filter(cmd_ops, file, filter, trigger_data);
+> +	if (ret < 0)
+> +		goto out_free;
+> +
+> +	ret = event_trigger_register(cmd_ops, file, glob, trigger_data);
+> +	if (ret)
+> +		goto out_free;
+> +
+> +	return ret;
+> +
+> + out_free:
+> +	event_trigger_reset_filter(cmd_ops, trigger_data);
+> +	kfree(obj_data);
+> +	kfree(trigger_data);
+> +	return ret;
+> +}
+> +
+> +static struct event_command trigger_object_cmd = {
+> +	.name			= "objtrace",
+> +	.trigger_type		= ETT_TRACE_OBJECT,
+> +	.flags			= EVENT_CMD_FL_NEEDS_REC,
+> +	.parse			= event_object_trigger_parse,
+> +	.reg			= register_trigger,
+> +	.unreg			= unregister_trigger,
+> +	.get_trigger_ops	= objecttrace_get_trigger_ops,
+> +	.set_filter		= set_trigger_filter,
+> +};
+> +
+> +__init int register_trigger_object_cmd(void)
+> +{
+> +	int ret;
+> +
+> +	ret = register_event_command(&trigger_object_cmd);
+> +	WARN_ON(ret < 0);
+> +
+> +	return ret;
+> +}
+> +
+> +int allocate_objtrace_data(struct trace_array *tr)
+> +{
+> +	struct objtrace_data *obj_data;
+> +	struct ftrace_ops *fops;
+> +
+> +	obj_data = kzalloc(sizeof(*obj_data), GFP_KERNEL);
+> +	if (!obj_data)
+> +		return -ENOMEM;
+> +
+> +	raw_spin_lock_init(&obj_data->obj_data_lock);
+> +	obj_data->tr = tr;
+> +	fops = &obj_data->fops;
+> +	fops->func = trace_object_events_call;
+> +	fops->flags = FTRACE_OPS_FL_SAVE_REGS;
+> +	fops->private = tr;
+> +	list_add(&obj_data->head, &obj_data_head);
+> +
+> +	tr->obj_data = obj_data;
+> +
+> +	return 0;
+> +}
+> +
+> +static int init_trace_object(struct trace_array *tr)
+> +{
+> +	int ret;
+> +
+> +	ret = register_ftrace_function(&tr->obj_data->fops);
+> +	WARN_ON(ret < 0);
+> +
+> +	return ret;
+> +}
+> +
+> +void free_objtrace_data(struct trace_array *tr)
+> +{
+> +	kfree(tr->obj_data);
+> +	tr->obj_data = NULL;
+> +}
+> +
+> +static void exit_trace_object(struct trace_array *tr)
+> +{
+> +	struct objtrace_data *obj_data = tr->obj_data;
+> +
+> +	obj_data->num_traced_obj = 0;
+> +	WARN_ONCE(unregister_ftrace_function(&obj_data->fops),
+> +			"can't unregister ftrace for trace object\n");
+> +}
+> diff --git a/kernel/trace/trace_output.c b/kernel/trace/trace_output.c
+> index 67f47ea27921..34ff7b4dc521 100644
+> --- a/kernel/trace/trace_output.c
+> +++ b/kernel/trace/trace_output.c
+> @@ -1551,6 +1551,45 @@ static struct trace_event trace_func_repeats_event = {
+>  	.funcs		= &trace_func_repeats_funcs,
+>  };
+>  
+> +/* TRACE_OBJECT */
+> +static enum print_line_t trace_object_print(struct trace_iterator *iter, int flags,
+> +					struct trace_event *event)
+> +{
+> +	struct trace_object_entry *field;
+> +	struct trace_seq *s = &iter->seq;
+> +
+> +	trace_assign_type(field, iter->ent);
+> +	print_fn_trace(s, field->ip, field->parent_ip, flags);
+> +	trace_seq_printf(s, " object:0x%lx", field->object);
+> +	trace_seq_putc(s, '\n');
+> +
+> +	return trace_handle_return(s);
+> +}
+> +
+> +static enum print_line_t trace_object_raw(struct trace_iterator *iter, int flags,
+> +				      struct trace_event *event)
+> +{
+> +	struct trace_object_entry *field;
+> +
+> +	trace_assign_type(field, iter->ent);
+> +
+> +	trace_seq_printf(&iter->seq, "%lx %lx\n",
+> +			 field->ip,
+> +			 field->parent_ip);
+> +
+> +	return trace_handle_return(&iter->seq);
+> +}
+> +
+> +static struct trace_event_functions trace_object_funcs = {
+> +	.trace		= trace_object_print,
+> +	.raw		= trace_object_raw,
+> +};
+> +
+> +static struct trace_event trace_object_event = {
+> +	.type		= TRACE_OBJECT,
+> +	.funcs		= &trace_object_funcs,
+> +};
+> +
+>  static struct trace_event *events[] __initdata = {
+>  	&trace_fn_event,
+>  	&trace_ctx_event,
+> @@ -1565,6 +1604,7 @@ static struct trace_event *events[] __initdata = {
+>  	&trace_timerlat_event,
+>  	&trace_raw_data_event,
+>  	&trace_func_repeats_event,
+> +	&trace_object_event,
+>  	NULL
+>  };
+>  
+> -- 
+> 2.25.1
+> 
 
-v4: https://lore.kernel.org/bpf/20220517071838.3366093-1-xukuohai@huawei.com/
-- Run the test cases on raspberry pi 4b
-- Rebase and add cookie to trampoline
-- As Steve suggested, move trace_direct_tramp() back to entry-ftrace.S to
-  avoid messing up generic code with architecture specific code
-- As Jakub suggested, merge patch 4 and patch 5 of v3 to provide full function
-  in one patch
-- As Mark suggested, add a comment for the use of aarch64_insn_patch_text_nosync()
-- Do not generate trampoline for long jump to avoid triggering ftrace_bug
-- Round stack size to multiples of 16B to avoid SPAlignmentFault
-- Use callee saved register x20 to reduce the use of mov_i64
-- Add missing BTI J instructions
-- Trivial spelling and code style fixes
-
-v3: https://lore.kernel.org/bpf/20220424154028.1698685-1-xukuohai@huawei.com/
-- Append test results for bpf_tcp_ca, dummy_st_ops, fexit_bpf2bpf,
-  xdp_bpf2bpf
-- Support to poke bpf progs
-- Fix return value of arch_prepare_bpf_trampoline() to the total number
-  of bytes instead of number of instructions 
-- Do not check whether CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled in
-  arch_prepare_bpf_trampoline, since the trampoline may be hooked to a bpf
-  prog
-- Restrict bpf_arch_text_poke() to poke bpf text only, as kernel functions
-  are poked by ftrace
-- Rewrite trace_direct_tramp() in inline assembly in trace_selftest.c
-  to avoid messing entry-ftrace.S
-- isolate arch_ftrace_set_direct_caller() with macro
-  CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS to avoid compile error
-  when this macro is disabled
-- Some trivial code sytle fixes
-
-v2: https://lore.kernel.org/bpf/20220414162220.1985095-1-xukuohai@huawei.com/
-- Add Song's ACK
-- Change the multi-line comment in is_valid_bpf_tramp_flags() into net
-  style (patch 3)
-- Fix a deadloop issue in ftrace selftest (patch 2)
-- Replace pt_regs->x0 with pt_regs->orig_x0 in patch 1 commit message 
-- Replace "bpf trampoline" with "custom trampoline" in patch 1, as
-  ftrace direct call is not only used by bpf trampoline.
-
-v1: https://lore.kernel.org/bpf/20220413054959.1053668-1-xukuohai@huawei.com/
-
-Xu Kuohai (4):
-  bpf: Remove is_valid_bpf_tramp_flags()
-  arm64: Add LDR (literal) instruction
-  bpf, arm64: Impelment bpf_arch_text_poke() for arm64
-  bpf, arm64: bpf trampoline for arm64
-
- arch/arm64/include/asm/insn.h |   3 +
- arch/arm64/lib/insn.c         |  30 +-
- arch/arm64/net/bpf_jit.h      |   7 +
- arch/arm64/net/bpf_jit_comp.c | 717 +++++++++++++++++++++++++++++++++-
- arch/x86/net/bpf_jit_comp.c   |  20 -
- kernel/bpf/bpf_struct_ops.c   |   3 +
- kernel/bpf/trampoline.c       |   3 +
- 7 files changed, 742 insertions(+), 41 deletions(-)
 
 -- 
-2.30.2
-
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
