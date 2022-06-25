@@ -2,162 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3DF5C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 02:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA2E6C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 02:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231428AbiFYCLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 22:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41780 "EHLO
+        id S231128AbiFYCXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 22:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbiFYCLP (ORCPT
+        with ESMTP id S229912AbiFYCXc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 22:11:15 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378FB522C8
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 19:11:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656123074; x=1687659074;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=PA+NlwtwluPHOiMrJMO876oPMfHwLC1uX43agZsOREk=;
-  b=YOg2bZb9MHfF68nxam2iJlONpfVk7b1HNzXAw2v4mRCt5NhJee+0hXzW
-   IltNsD6pC1zBXt1c9bMPiCSZ9q+a+RxyOInwIoW1MJzg884KOmePJZu2i
-   fYVYl8CEvvy541Dx+Q5qMMJ83Ow71OA0Z8+XpoBled676QhL6xKsTQyLo
-   Y=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Jun 2022 19:11:14 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 19:11:13 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 24 Jun 2022 19:11:12 -0700
-Received: from [10.111.168.196] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 24 Jun
- 2022 19:11:10 -0700
-Message-ID: <dbc47ebe-ee03-8e3e-ed0d-b7ab299582d1@quicinc.com>
-Date:   Fri, 24 Jun 2022 19:11:08 -0700
+        Fri, 24 Jun 2022 22:23:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 098D92ED61
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 19:23:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656123809;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gCWKjmH3S606alzAuT30BfDYuE+xUjQ3Ss4cIJMJC04=;
+        b=DKQA2fU+bl8hiiFCY6LH6z7O/ACKkKfvLNsgKvDxqY3ZGuhdgUZGfiMU7qg4LSo0PKjpLf
+        2TeKeKgnCoScWXGO7AgO8k5ar43cuEA4jf0E7XbPIJ2itCOCDiLQbTAJFUC+ExkNMHGG2U
+        QBRV1rcSMYvyrG2Mq9/OCbIUL83KD8E=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-410-5-KqqrD0O9OjxJXyysP5UQ-1; Fri, 24 Jun 2022 22:23:25 -0400
+X-MC-Unique: 5-KqqrD0O9OjxJXyysP5UQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0F1048F40C5;
+        Sat, 25 Jun 2022 02:23:25 +0000 (UTC)
+Received: from [10.22.8.37] (unknown [10.22.8.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 663E81121314;
+        Sat, 25 Jun 2022 02:23:24 +0000 (UTC)
+Message-ID: <f2cbe809-4337-bf9b-d003-7e47ff893248@redhat.com>
+Date:   Fri, 24 Jun 2022 22:23:23 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] drm/msm/dp: Remove encoder pointer from struct msm_dp
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2] locking/rtmutex: Limit # of lock stealing for non-RT
+ waiters
 Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-CC:     <linux-kernel@vger.kernel.org>, <patches@lists.linux.dev>,
-        Sean Paul <sean@poorly.run>, <dri-devel@lists.freedesktop.org>,
-        <freedreno@lists.freedesktop.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>
-References: <20220625002811.3225344-1-swboyd@chromium.org>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <20220625002811.3225344-1-swboyd@chromium.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mike Stowell <mstowell@redhat.com>
+References: <20220621193641.609712-1-longman@redhat.com>
+ <YrRriHsAdxPwEnWW@linutronix.de>
+ <be4db8af-7855-1f54-c2f2-947577b71f94@redhat.com>
+ <YrVczgIdWoOpVX1D@linutronix.de>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YrVczgIdWoOpVX1D@linutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 6/24/22 02:42, Sebastian Andrzej Siewior wrote:
+> On 2022-06-23 10:41:17 [-0400], Waiman Long wrote:
+>> On 6/23/22 09:32, Sebastian Andrzej Siewior wrote:
+>>> Do you have more insight on how this was tested/ created? Based on that,
+>>> systemd and a random kworker waited on a lock for more than 10 minutes.
+>> The hang happens when our QE team run thier kernel tier 1 test which, I
+>> think, lasts several hours. The hang happens in some runs but not all of
+>> them. So it is kind of opportunistic. Mike should be able to provide a
+>> better idea about frequency and so on.
+> So we talk here about 64+ CPU or more than that?
+
+The bug report that I saw showed 2 hangs in two different one-socket 
+4-core 8-thread systems. So they are not 64+ cpus. Of course, the more 
+cpus that we have, the more chance we will get into trouble.
 
 
-On 6/24/2022 5:28 PM, Stephen Boyd wrote:
-> We don't need to stash the encoder here. Instead we can simply pass it
-> around as an argument.
-> 
-> Cc: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-> ---
->   drivers/gpu/drm/msm/dp/dp_display.c | 4 +---
->   drivers/gpu/drm/msm/dp/dp_display.h | 1 -
->   drivers/gpu/drm/msm/dp/dp_drm.c     | 8 ++++----
->   drivers/gpu/drm/msm/dp/dp_drm.h     | 2 +-
->   4 files changed, 6 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-> index da5c03a8cc4c..798fd5398b48 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-> @@ -1621,8 +1621,6 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
->   		return ret;
->   	}
->   
-> -	dp_display->encoder = encoder;
-> -
->   	ret = dp_display_get_next_bridge(dp_display);
->   	if (ret)
->   		return ret;
-> @@ -1638,7 +1636,7 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
->   
->   	priv->bridges[priv->num_bridges++] = dp_display->bridge;
->   
-> -	dp_display->connector = dp_drm_connector_init(dp_display);
-> +	dp_display->connector = dp_drm_connector_init(dp_display, encoder);
->   	if (IS_ERR(dp_display->connector)) {
->   		ret = PTR_ERR(dp_display->connector);
->   		DRM_DEV_ERROR(dev->dev,
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.h b/drivers/gpu/drm/msm/dp/dp_display.h
-> index 4f9fe4d7610b..dcedf021f7fe 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.h
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.h
-> @@ -15,7 +15,6 @@ struct msm_dp {
->   	struct device *codec_dev;
->   	struct drm_bridge *bridge;
->   	struct drm_connector *connector;
-> -	struct drm_encoder *encoder;
->   	struct drm_bridge *next_bridge;
->   	bool is_connected;
->   	bool audio_enabled;
-> diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c b/drivers/gpu/drm/msm/dp/dp_drm.c
-> index 62d58b9c4647..6df25f7662e7 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_drm.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_drm.c
-> @@ -116,7 +116,7 @@ struct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, struct drm_device *
->   	}
->   
->   	if (dp_display->next_bridge) {
-> -		rc = drm_bridge_attach(dp_display->encoder,
-> +		rc = drm_bridge_attach(encoder,
->   					dp_display->next_bridge, bridge,
->   					DRM_BRIDGE_ATTACH_NO_CONNECTOR);
->   		if (rc < 0) {
-> @@ -130,15 +130,15 @@ struct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, struct drm_device *
->   }
->   
->   /* connector initialization */
-> -struct drm_connector *dp_drm_connector_init(struct msm_dp *dp_display)
-> +struct drm_connector *dp_drm_connector_init(struct msm_dp *dp_display, struct drm_encoder *encoder)
->   {
->   	struct drm_connector *connector = NULL;
->   
-> -	connector = drm_bridge_connector_init(dp_display->drm_dev, dp_display->encoder);
-> +	connector = drm_bridge_connector_init(dp_display->drm_dev, encoder);
->   	if (IS_ERR(connector))
->   		return connector;
->   
-> -	drm_connector_attach_encoder(connector, dp_display->encoder);
-> +	drm_connector_attach_encoder(connector, encoder);
->   
->   	return connector;
->   }
-> diff --git a/drivers/gpu/drm/msm/dp/dp_drm.h b/drivers/gpu/drm/msm/dp/dp_drm.h
-> index f4b1ed1e24f7..82035dbb0578 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_drm.h
-> +++ b/drivers/gpu/drm/msm/dp/dp_drm.h
-> @@ -19,7 +19,7 @@ struct msm_dp_bridge {
->   
->   #define to_dp_bridge(x)     container_of((x), struct msm_dp_bridge, bridge)
->   
-> -struct drm_connector *dp_drm_connector_init(struct msm_dp *dp_display);
-> +struct drm_connector *dp_drm_connector_init(struct msm_dp *dp_display, struct drm_encoder *encoder);
->   struct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, struct drm_device *dev,
->   			struct drm_encoder *encoder);
->   
-> 
-> base-commit: 24df12013853ac59c52cc726e9cbe51e38d09eda
+>
+>>> I added a trace-printk each time a non-RT waiter got the lock stolen,
+>>> kicked a kernel build and a package upgrade and took a look at the stats
+>>> an hour later:
+>>> - sh got its lock stolen 3416 times. I didn't lock the pid so I can't
+>>>     look back and check how long it waited since the first time.
+>>> - the median average of stolen locks is 173.
+>> Maybe we should also more lock stealing per waiter than the 10 that I used
+>> in the patch. I am open to suggestion to what is a good value to use.
+> I have no idea either. I just looked at a run to see what the number
+> actually are. I have no numbers in terms of performance. So what most
+> likely happens is that on an unlock operation the waiter gets a wake-up
+> but before he gets a chance to acquire the lock, it is already taken and
+> he goes back to sleep again. While this looks painful it might be better
+> performance wise because the other task was able to acquire the lock
+> without waiting. But then it is not fair and this happens.
+> One thing that I'm curious about is, what lock is it (one or two global
+> hot spots or many). And how to benchmark this…
+
+The hang can happen in different places. Like
+
+[ 1873.205398] INFO: task pool-restraintd:122206 blocked for more than 
+622 seconds.
+[ 1873.205400]       Tainted: G        W  OE  X --------- --- 
+5.14.0-104.rt21.104.el9.x86_64 #1
+[ 1873.205401] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" 
+disables this message.
+[ 1873.205402] task:pool-restraintd state:D stack:    0 pid:122206 
+ppid:     1 flags:0x00000000
+[ 1873.205405] Call Trace:
+[ 1873.205407]  __schedule+0x21c/0x5b0
+[ 1873.205410]  ? migrate_enable+0xcd/0x140
+[ 1873.205413]  schedule+0x46/0xc0
+[ 1873.205415]  rt_mutex_slowlock_block.constprop.0+0x30/0x150
+[ 1873.205418]  __rt_mutex_slowlock.constprop.0+0x6b/0xe0
+[ 1873.205421]  __rwbase_read_lock+0x9c/0xe0
+[ 1873.205425]  do_madvise+0x109/0x9c0
+[ 1873.205429]  ? syscall_exit_to_user_mode+0x12/0x30
+[ 1873.205432]  ? do_syscall_64+0x69/0x80
+[ 1873.205434]  __x64_sys_madvise+0x28/0x30
+[ 1873.205436]  do_syscall_64+0x5c/0x80
+[ 1873.205438]  ? fpregs_restore_userregs+0x53/0x100
+[ 1873.205442]  ? exit_to_user_mode_prepare+0xda/0xe0
+[ 1873.205445]  ? syscall_exit_to_user_mode+0x12/0x30
+[ 1873.205447]  ? do_syscall_64+0x69/0x80
+[ 1873.205449]  ? do_syscall_64+0x69/0x80
+[ 1873.205452]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[ 1873.205455] RIP: 0033:0x7f35f5a93f5b
+[ 1873.205457] RSP: 002b:00007f35f4a48e18 EFLAGS: 00000206 ORIG_RAX: 
+000000000000001c
+[ 1873.205460] RAX: ffffffffffffffda RBX: 00007f35f4a49640 RCX: 
+00007f35f5a93f5b
+[ 1873.205461] RDX: 0000000000000004 RSI: 00000000007fb000 RDI: 
+00007f35f4249000
+[ 1873.205463] RBP: 00007f35f4249000 R08: 00007f35ec0026c0 R09: 
+0000000000000005
+[ 1873.205464] R10: 0000000000000008 R11: 0000000000000206 R12: 
+00007f35f4a49640
+[ 1873.205466] R13: 0000000000000000 R14: 00007f35f5af4560 R15: 
+0000000000000000
+
+or
+
+[ 1872.559562] INFO: task auditd:926 blocked for more than 622 seconds.
+[ 1872.559563]       Tainted: G        W        --------- --- 
+5.14.0-103.rt21.103.el9.x86_64 #1
+[ 1872.559563] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" 
+disables this message.
+[ 1872.559564] task:auditd          state:D stack:    0 pid:  926 
+ppid:     1 flags:0x00000000
+[ 1872.559565] Call Trace:
+[ 1872.559566]  __schedule+0x21c/0x5b0
+[ 1872.559568]  schedule+0x46/0xc0
+[ 1872.559569]  rt_mutex_slowlock_block.constprop.0+0x30/0x150
+[ 1872.559570]  __rt_mutex_slowlock.constprop.0+0x6b/0xe0
+[ 1872.559572]  __rwbase_read_lock+0x9c/0xe0
+[ 1872.559574]  xlog_cil_commit+0x30/0x190 [xfs]
+[ 1872.559631]  __xfs_trans_commit+0xb0/0x320 [xfs]
+[ 1872.559686]  xfs_vn_update_time+0x12c/0x240 [xfs]
+[ 1872.559741]  file_update_time+0xea/0x140
+[ 1872.559744]  ? rwbase_write_lock+0xde/0x1b0
+[ 1872.559746]  xfs_file_write_checks+0x247/0x310 [xfs]
+[ 1872.559799]  xfs_file_buffered_write+0x76/0x2c0 [xfs]
+[ 1872.559852]  ? update_load_avg+0x80/0x7d0
+[ 1872.559855]  new_sync_write+0x11f/0x1b0
+[ 1872.559858]  vfs_write+0x25a/0x2f0
+[ 1872.559860]  ksys_write+0x65/0xe0
+[ 1872.559862]  do_syscall_64+0x5c/0x80
+[ 1872.559864]  ? fpregs_restore_userregs+0x12/0x100
+[ 1872.559866]  ? exit_to_user_mode_prepare+0xda/0xe0
+[ 1872.559868]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[ 1872.559870] RIP: 0033:0x7f4bf7545d9f
+[ 1872.559872] RSP: 002b:00007ffce95c2920 EFLAGS: 00000293 ORIG_RAX: 
+0000000000000001
+[ 1872.559874] RAX: ffffffffffffffda RBX: 0000000000000111 RCX: 
+00007f4bf7545d9f
+[ 1872.559874] RDX: 0000000000000111 RSI: 0000559015de18f0 RDI: 
+0000000000000005
+[ 1872.559875] RBP: 0000559015de18f0 R08: 0000000000000000 R09: 
+00007f4bf75b74e0
+[ 1872.559876] R10: 00007f4bf75b73e0 R11: 0000000000000293 R12: 
+0000000000000111
+[ 1872.559877] R13: 0000559015dd9310 R14: 0000000000000111 R15: 
+00007f4bf75fb9e0
+
+Since it is causing 25-50% of our test jobs to fail, we really want to 
+get it fixed ASAP.
+
+Regards,
+Longman
+
