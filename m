@@ -2,112 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E47C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 21:38:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65902C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 21:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233469AbiFYVix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 17:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
+        id S233337AbiFYVxM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 17:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230116AbiFYViw (ORCPT
+        with ESMTP id S230116AbiFYVxK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 17:38:52 -0400
-Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C6613DFB;
-        Sat, 25 Jun 2022 14:38:51 -0700 (PDT)
-Received: by mail-vk1-xa2b.google.com with SMTP id b5so2781756vkp.4;
-        Sat, 25 Jun 2022 14:38:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=BbwHVtDC3wfcy6qW4/JHuwflwwFO4Gor8K2bRgHCz+8=;
-        b=S1MmapeV/AyncM6GanNSYWXsaV4c0+KCrMjMK+C2iOhSN9FT0RJEr3FRKge83XEyhu
-         a8qDLOSi3NV6SM3C7vLJKwJSlvXassSK5VDPy6/l+wB1l9Rk1GN3rdCYBdQPVQIX7vR4
-         9ra7p/UEs+0ivkazpQQa3eeJ0+yRVHmx33Kk7rmF5Hd5V8xANCVMGjntJ3Qa9WUdtvGj
-         VlV9i4E90if2tsQozbMB3kk+XD3l8d0NeUnCXnBI+Ttrw+n6oNjl9AS1LKF0UITWzeD8
-         wqvrbS32eihR5CDVXP3ufvalr4Vzz4z303vVdNkmib+J9qTql9k1xt0krkpmSg3feRDv
-         ZcQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=BbwHVtDC3wfcy6qW4/JHuwflwwFO4Gor8K2bRgHCz+8=;
-        b=y7dOvikfkKny4cT8/X8UwpcTqJB78lY7zUu4ufm2kcSLTOerM/wQ1RWLsrc8NDAHlB
-         QO6LeLnDWR/l4+EjTjIeco3IjzfLqUPTBfFYQ550A3PICGBWgaazyMZmvpoFnn6xqPBN
-         I3T1Y6q53B+51iOpTqEPRlxUDIZuMpZATLzNl6ECAT/KFrHBid4bS993R+xcN5vw+8LB
-         SnvGrN/NiMbGt3AS2bxFQo/HlbVfptFZR8XAvrQVspblxry22BHUCCCOykQj0Lg6usqC
-         0urukCz5OtwsQvS7TAX+dIknfJyJQWqjNQBtUvjTfO0Yx6sDivwVLra3DOutvSJFVL0z
-         ZGRg==
-X-Gm-Message-State: AJIora8P/NyVsrGwipMWJFID4ugeiuNYUxI/wZ1FcIqtI6Qc+QKwcXRZ
-        y3p7A702ejZjnT0ChrWJYHZAiMUuDUhWJhXYwvOF8mdTtrg=
-X-Google-Smtp-Source: AGRyM1sMucNe20GAaizEts0fYD+M0OX29pCgrJnJIuZ9Z6eQVW8kfJG/4Sh2mibm9kA1xHjw7+cJDK8jKatyDxP4noE=
-X-Received: by 2002:a1f:45d2:0:b0:36b:fa17:d542 with SMTP id
- s201-20020a1f45d2000000b0036bfa17d542mr2093543vka.4.1656193130687; Sat, 25
- Jun 2022 14:38:50 -0700 (PDT)
+        Sat, 25 Jun 2022 17:53:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621D563F8;
+        Sat, 25 Jun 2022 14:53:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A2C8B80B9C;
+        Sat, 25 Jun 2022 21:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1621FC341C7;
+        Sat, 25 Jun 2022 21:53:04 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DB7tW2U8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656193983;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dKgAtScbcJVejOZiW8xqU/Ld19QPfyfBKgOILBLEhyU=;
+        b=DB7tW2U8wVslyXk4lJaqLKlA8M0CGWuWAQwoC+hvCFQzgcJNnK+LOGLnQnfCOT6j87oNFC
+        LZlYoPTSCRseKwSo4uwCJi2OFEWgzOu1QfTjIq49JZvqpkue64nlF3r1YqDkp8RbBMAm31
+        Bf+Kl5BcisB6cADSCHUDrJiC52MoeD0=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b248e437 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sat, 25 Jun 2022 21:53:03 +0000 (UTC)
+Date:   Sat, 25 Jun 2022 23:53:00 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v2 6/8] fs: remove no_llseek
+Message-ID: <YreDvG7go6e5m1ox@zx2c4.com>
+References: <20220625110115.39956-1-Jason@zx2c4.com>
+ <20220625110115.39956-7-Jason@zx2c4.com>
+ <YrcJKtZQLDvRgX7P@infradead.org>
 MIME-Version: 1.0
-From:   Steve French <smfrench@gmail.com>
-Date:   Sat, 25 Jun 2022 16:38:40 -0500
-Message-ID: <CAH2r5muuxg3iDXMkcasnRoCfi8WeE1i3Y=GTgBB8qMQShFppdQ@mail.gmail.com>
-Subject: [GIT PULL] SMB3 client fixes
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     CIFS <linux-cifs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YrcJKtZQLDvRgX7P@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Please pull the following changes since commit
-a111daf0c53ae91e71fd2bfe7497862d14132e3e:
+Hi Christoph,
 
-  Linux 5.19-rc3 (2022-06-19 15:06:47 -0500)
+On Sat, Jun 25, 2022 at 06:10:02AM -0700, Christoph Hellwig wrote:
+> On Sat, Jun 25, 2022 at 01:01:13PM +0200, Jason A. Donenfeld wrote:
+> > Now that all callers of ->llseek are going through vfs_llseek(), we
+> > don't gain anything by keeping no_llseek around. Nothing compares it or
+> > calls it.
+> 
+> Shouldn't this and the checks for no_llseek simply be merged into patch
+> 2?
 
-are available in the Git repository at:
+I'd done that at first, but Al had suggested it be a separate commit in
+<https://lore.kernel.org/lkml/YrYxOC5dgCKBHwVE@ZenIV/>, when he mentions
+"next commit would", so I did how he asked.
 
-  git://git.samba.org/sfrench/cifs-2.6.git tags/5.19-rc3-smb3-client-fixes
+> 
+> > +	if ((file->f_mode & FMODE_LSEEK) && file->f_op->llseek)
+> > +		return file->f_op->llseek(file, offset, whence);
+> > +	return -ESPIPE;
+> 
+> No function change, but in general checking for the error condition
+> in the branch tends to be more readable.  i.e.:
+> 
+> 	if (!(file->f_mode & FMODE_LSEEK) || !file->f_op->llseek)
+> 		return -ESPIPE;
+> 	return file->f_op->llseek(file, offset, whence);
+> 
 
-for you to fetch changes up to af3a6d1018f02c6dc8388f1f3785a559c7ab5961:
+I thought about this kind of reverse: what is the acceptable condition
+in which one may call ->llseek? Easier to express it that way than in
+the inverse. But if you really want, I can change it around if there's a
+v3 with other changes (which at the moment doesn't seem like there's
+going to be).
 
-  cifs: update cifs_ses::ip_addr after failover (2022-06-24 13:34:28 -0500)
-
-----------------------------------------------------------------
-7 SMB3 fixes, addressing important multichannel, reconnect issues.
-Multichannel mounts when the server network interfaces changed, or
-ip addresses changed, uncovered problems, especially in reconnect, but
-the patches for this were held up until recently due to some lock conflicts
-that are now addressed.   Included in this set of fixes:
-
-- 3 fixes relating to multichannel reconnect, dynamically adjusting the list of
-server interfaces to avoid problems during reconnect
-- a lock conflict fix related to the above
-- 2 important fixes for negotiate on secondary channels (null netname can
-unintentionally cause multichannel to be disabled to some servers)
-- a reconnect fix (reporting incorrect IP address in some cases)
-
-----------------------------------------------------------------
-Paulo Alcantara (1):
-      cifs: update cifs_ses::ip_addr after failover
-
-Shyam Prasad N (5):
-      smb3: use netname when available on secondary channels
-      cifs: change iface_list from array to sorted linked list
-      cifs: during reconnect, update interface if necessary
-      cifs: periodically query network interfaces from server
-      cifs: avoid deadlocks while updating iface
-
-Steve French (1):
-      smb3: fix empty netname context on secondary channels
-
- fs/cifs/cifs_debug.c |  12 ++--
- fs/cifs/cifsglob.h   |  58 ++++++++++++++++-
- fs/cifs/cifsproto.h  |   7 +++
- fs/cifs/connect.c    |  59 ++++++++++++++++--
- fs/cifs/misc.c       |   9 ++-
- fs/cifs/sess.c       | 166 +++++++++++++++++++++++++++++++++++++-----------
- fs/cifs/smb2ops.c    | 173 +++++++++++++++++++++++++++------------------------
- fs/cifs/smb2pdu.c    |  21 +++++--
- 8 files changed, 366 insertions(+), 139 deletions(-)
-
--- 
-Thanks,
-
-Steve
+Jason
