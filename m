@@ -2,69 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0E8C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 12:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D902DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 12:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiFYM4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 08:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45844 "EHLO
+        id S232869AbiFYM4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 08:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232616AbiFYM4L (ORCPT
+        with ESMTP id S232616AbiFYM4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 08:56:11 -0400
-Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A8518362
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 05:56:10 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 55KZoQtCWgoLG55KZolijr; Sat, 25 Jun 2022 14:56:07 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 25 Jun 2022 14:56:07 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Maxim Levitsky <maximlevitsky@gmail.com>,
-        Alex Dubov <oakad@yahoo.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-mmc@vger.kernel.org
-Subject: [PATCH 3/3] memstick/ms_block: Use the bitmap API when applicable
-Date:   Sat, 25 Jun 2022 14:56:05 +0200
-Message-Id: <b216df8798f765ab14bce65739c220643320f376.1656155715.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1656155715.git.christophe.jaillet@wanadoo.fr>
-References: <cover.1656155715.git.christophe.jaillet@wanadoo.fr>
+        Sat, 25 Jun 2022 08:56:31 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7ACB18362
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 05:56:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656161790; x=1687697790;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=S3kTFxDx/UlQ4ttkSgT0OD0LBtEA6KOASNkdzOFb+uw=;
+  b=H6WxCrcYp5INSCdtEI8dHR1v9lOMT6G/X/kin9tduJ9z2DsmMHDRMpY4
+   ckKGYzFJsvV7otDu21F2KCK8zeRGCjQAlzgJcsIt0c8fuDZsJouqUgeS5
+   XEmoV0qHuUnZQNxb4d96HY8I/JYHPGDQfMGqXEFeCxhYBswPWz/PiWlHN
+   qQdayAcbrrFdLOupdpLN6dWm/vE8nsRNilV5OYF7ypJD2Q0VLv/rfsYRq
+   6wPVRR1BsJPC/8kaK0Vv4ulkcPKZwfJ1BBLg+Wr4faLkpOUGqVlp9Q5hc
+   /wQ0EqZIX/UGSGYug3oslhEMdG8khEOulkYvfplnwteXmgbo7PcGTZbyp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="278727935"
+X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
+   d="scan'208";a="278727935"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 05:56:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
+   d="scan'208";a="586890349"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 25 Jun 2022 05:56:27 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Steve Wahl <steve.wahl@hpe.com>,
+        Kevin Tian <kevin.tian@intel.com>
+Cc:     David Woodhouse <dwmw2@infradead.org>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>, iommu@lists.linux.dev,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v1 0/6] iommu/vt-d: Reset DMAR_UNITS_SUPPORTED
+Date:   Sat, 25 Jun 2022 20:51:58 +0800
+Message-Id: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use bitmap_equal() instead of hand writing it. It improves semantic and
-avoids some explicit computation to convert a number of bits to a number of
-bytes.
+Hi folks,
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/memstick/core/ms_block.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This is a follow-up series of changes proposed by this patch:
 
-diff --git a/drivers/memstick/core/ms_block.c b/drivers/memstick/core/ms_block.c
-index f8fdf88fb240..c05edfc1c841 100644
---- a/drivers/memstick/core/ms_block.c
-+++ b/drivers/memstick/core/ms_block.c
-@@ -2245,8 +2245,8 @@ static int msb_resume(struct memstick_dev *card)
- 		goto out;
- 
- 	if (msb->block_count != new_msb->block_count ||
--		memcmp(msb->used_blocks_bitmap, new_msb->used_blocks_bitmap,
--							msb->block_count / 8))
-+	    !bitmap_equal(msb->used_blocks_bitmap, new_msb->used_blocks_bitmap,
-+							msb->block_count))
- 		goto out;
- 
- 	card_dead = false;
+https://lore.kernel.org/linux-iommu/20220615183650.32075-1-steve.wahl@hpe.com/
+
+It removes several static arrays of size DMAR_UNITS_SUPPORTED and sets
+the DMAR_UNITS_SUPPORTED to 1024.
+
+Please help review and suggest.
+
+Best regards,
+baolu
+
+Lu Baolu (6):
+  iommu/vt-d: Remove unused domain_get_iommu()
+  iommu/vt-d: Use IDA interface to manage iommu sequence id
+  iommu/vt-d: Refactor iommu information of each domain
+  iommu/vt-d: Add VTD_FLAG_IOMMU_PROBED flag
+  iommu/vt-d: Remove global g_iommus array
+  iommu/vt-d: Make DMAR_UNITS_SUPPORTED default 1024
+
+ include/linux/dmar.h        |   6 +-
+ drivers/iommu/intel/iommu.h |  29 ++++--
+ drivers/iommu/intel/dmar.c  |  33 ++-----
+ drivers/iommu/intel/iommu.c | 188 ++++++++++++++----------------------
+ drivers/iommu/intel/pasid.c |   2 +-
+ drivers/iommu/intel/svm.c   |   2 +-
+ 6 files changed, 103 insertions(+), 157 deletions(-)
+
 -- 
-2.34.1
+2.25.1
 
