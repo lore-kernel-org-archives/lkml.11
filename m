@@ -2,148 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0474C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 22:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EFCC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 22:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233518AbiFYWm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 18:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
+        id S233559AbiFYWuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 18:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233513AbiFYWmY (ORCPT
+        with ESMTP id S233530AbiFYWuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 18:42:24 -0400
-Received: from conuserg-11.nifty.com (conuserg-11.nifty.com [210.131.2.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33A313F34
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 15:42:23 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-11.nifty.com with ESMTP id 25PMerMh019129;
-        Sun, 26 Jun 2022 07:40:54 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-11.nifty.com 25PMerMh019129
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1656196854;
-        bh=M6XKoxM1fH8dvA/Rs6ZMfRo/Ll+YO4R4MVhOpXPtwPU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WTxsGGx1sCF+o028uCGBfC4EScYONFfoSuazAYENVm1DSIDmGJImrsfEVpcoLPDR6
-         WFruDgFchfgYFbL9wTYzMdxhk6iG2napUlzPwUu0EjcOE9dq93si4SnAiz6+giHlhG
-         HIMeGgcsmlWx9cJn3Tsv23A83lK2T2fqCdGpd9tTbvOD874l7xZ2ETcEkEkvWprBTr
-         tUWZd9HiOvF8NWUJUVC2OZ+Uy8K4vXxRoVB1U5wHMo4UP+mQELeZEdlpO3KRTdpz/s
-         A+AgouwuZUE4it3cnfj9aXZmtve2zsbvTLia5EkGuGQX6kbq7GMopZ+QM5NdF8qb8c
-         u1zR8ifEmVHUA==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] powerpc/purgatory: Omit use of bin2c
-Date:   Sun, 26 Jun 2022 07:40:37 +0900
-Message-Id: <20220625224037.836581-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Sat, 25 Jun 2022 18:50:10 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8215313DF4
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 15:50:08 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Sun, 26 Jun
+ 2022 06:50:08 +0800
+Received: from localhost.localdomain (172.16.255.36) by
+ IT-EXMB-1-125.meizu.com (172.16.1.125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Sun, 26 Jun 2022 06:50:05 +0800
+From:   Yuwen Chen <chenyuwen1@meizu.com>
+To:     <xiang@kernel.org>
+CC:     <chao@kernel.org>, <linux-erofs@lists.ozlabs.org>,
+        <linux-kernel@vger.kernel.org>, Yuwen Chen <chenyuwen1@meizu.com>
+Subject: [PATCH] erofs: Wake up all waiters after z_erofs_lzma_head ready.
+Date:   Sat, 25 Jun 2022 22:50:00 +0800
+Message-ID: <20220625145000.2720-1-chenyuwen1@meizu.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.16.255.36]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The .incbin assembler directive is much faster than bin2c + $(CC).
+When the user mounts the erofs second times, the decompression thread
+may hung. The problem happens due to a sequence of steps like the
+following:
 
-Do similar refactoring as in commit 4c0f032d4963 ("s390/purgatory:
-Omit use of bin2c").
+1) Task A called z_erofs_load_lzma_config which obtain all of the node
+   from the z_erofs_lzma_head.
 
-Please note the .quad directive matches to size_t in C (both 8 byte)
-because the purgatory is compiled only for the 64-bit kernel.
-(KEXEC_FILE depends on PPC64).
+2) At this time, task B called the z_erofs_lzma_decompress and wanted to
+   get a node. But the z_erofs_lzma_head was empty, the Task B had to
+   sleep.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+3) Task A release nodes and push nodes into the z_erofs_lzma_head. But
+   task B was still sleeping.
+
+One example report when the hung happens:
+task:kworker/u3:1 state:D stack:14384 pid: 86 ppid: 2 flags:0x00004000
+Workqueue: erofs_unzipd z_erofs_decompressqueue_work
+Call Trace:
+ <TASK>
+ __schedule+0x281/0x760
+ schedule+0x49/0xb0
+ z_erofs_lzma_decompress+0x4bc/0x580
+ ? cpu_core_flags+0x10/0x10
+ z_erofs_decompress_pcluster+0x49b/0xba0
+ ? __update_load_avg_se+0x2b0/0x330
+ ? __update_load_avg_se+0x2b0/0x330
+ ? update_load_avg+0x5f/0x690
+ ? update_load_avg+0x5f/0x690
+ ? set_next_entity+0xbd/0x110
+ ? _raw_spin_unlock+0xd/0x20
+ z_erofs_decompress_queue.isra.0+0x2e/0x50
+ z_erofs_decompressqueue_work+0x30/0x60
+ process_one_work+0x1d3/0x3a0
+ worker_thread+0x45/0x3a0
+ ? process_one_work+0x3a0/0x3a0
+ kthread+0xe2/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Signed-off-by: Yuwen Chen <chenyuwen1@meizu.com>
 ---
+ fs/erofs/decompressor_lzma.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- arch/powerpc/Kconfig                     |  1 -
- arch/powerpc/purgatory/.gitignore        |  1 -
- arch/powerpc/purgatory/Makefile          |  8 ++------
- arch/powerpc/purgatory/kexec-purgatory.S | 14 ++++++++++++++
- scripts/remove-stale-files               |  2 ++
- 5 files changed, 18 insertions(+), 8 deletions(-)
- create mode 100644 arch/powerpc/purgatory/kexec-purgatory.S
-
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index c2ce2e60c8f0..1cb684ee3519 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -547,7 +547,6 @@ config KEXEC_FILE
- 	bool "kexec file based system call"
- 	select KEXEC_CORE
- 	select HAVE_IMA_KEXEC if IMA
--	select BUILD_BIN2C
- 	select KEXEC_ELF
- 	depends on PPC64
- 	depends on CRYPTO=y
-diff --git a/arch/powerpc/purgatory/.gitignore b/arch/powerpc/purgatory/.gitignore
-index b8dc6ff34254..5e40575c1f2b 100644
---- a/arch/powerpc/purgatory/.gitignore
-+++ b/arch/powerpc/purgatory/.gitignore
-@@ -1,3 +1,2 @@
- # SPDX-License-Identifier: GPL-2.0-only
--kexec-purgatory.c
- purgatory.ro
-diff --git a/arch/powerpc/purgatory/Makefile b/arch/powerpc/purgatory/Makefile
-index 348f59581052..a81d155b89ae 100644
---- a/arch/powerpc/purgatory/Makefile
-+++ b/arch/powerpc/purgatory/Makefile
-@@ -2,17 +2,13 @@
+diff --git a/fs/erofs/decompressor_lzma.c b/fs/erofs/decompressor_lzma.c
+index 05a3063cf2bc..5e59b3f523eb 100644
+--- a/fs/erofs/decompressor_lzma.c
++++ b/fs/erofs/decompressor_lzma.c
+@@ -143,6 +143,7 @@ int z_erofs_load_lzma_config(struct super_block *sb,
+ 	DBG_BUGON(z_erofs_lzma_head);
+ 	z_erofs_lzma_head = head;
+ 	spin_unlock(&z_erofs_lzma_lock);
++	wake_up_all(&z_erofs_lzma_wq);
  
- KASAN_SANITIZE := n
- 
--targets += trampoline_$(BITS).o purgatory.ro kexec-purgatory.c
-+targets += trampoline_$(BITS).o purgatory.ro
- 
- LDFLAGS_purgatory.ro := -e purgatory_start -r --no-undefined
- 
- $(obj)/purgatory.ro: $(obj)/trampoline_$(BITS).o FORCE
- 		$(call if_changed,ld)
- 
--quiet_cmd_bin2c = BIN2C   $@
--      cmd_bin2c = $(objtree)/scripts/bin2c kexec_purgatory < $< > $@
--
--$(obj)/kexec-purgatory.c: $(obj)/purgatory.ro FORCE
--	$(call if_changed,bin2c)
-+$(obj)/kexec-purgatory.o: $(obj)/purgatory.ro
- 
- obj-y	+= kexec-purgatory.o
-diff --git a/arch/powerpc/purgatory/kexec-purgatory.S b/arch/powerpc/purgatory/kexec-purgatory.S
-new file mode 100644
-index 000000000000..4e5f64a0bf4a
---- /dev/null
-+++ b/arch/powerpc/purgatory/kexec-purgatory.S
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+	.section .rodata, "a"
-+
-+	.align	8
-+kexec_purgatory:
-+	.globl	kexec_purgatory
-+	.incbin	"arch/powerpc/purgatory/purgatory.ro"
-+.Lkexec_purgatroy_end:
-+
-+	.align	8
-+kexec_purgatory_size:
-+	.globl	kexec_purgatory_size
-+	.quad	.Lkexec_purgatroy_end - kexec_purgatory
-diff --git a/scripts/remove-stale-files b/scripts/remove-stale-files
-index 7adab4618035..5a7543469698 100755
---- a/scripts/remove-stale-files
-+++ b/scripts/remove-stale-files
-@@ -20,6 +20,8 @@ set -e
- # yard. Stale files stay in this file for a while (for some release cycles?),
- # then will be really dead and removed from the code base entirely.
- 
-+rm -f arch/powerpc/purgatory/kexec-purgatory.c
-+
- # These were previously generated source files. When you are building the kernel
- # with O=, make sure to remove the stale files in the output tree. Otherwise,
- # the build system wrongly compiles the stale ones.
+ 	z_erofs_lzma_max_dictsize = dict_size;
+ 	mutex_unlock(&lzma_resize_mutex);
 -- 
-2.32.0
+2.25.1
 
