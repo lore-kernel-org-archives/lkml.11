@@ -2,110 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B98AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 09:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B81C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 09:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232372AbiFYJEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 05:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44218 "EHLO
+        id S232387AbiFYJFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 05:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231934AbiFYJEp (ORCPT
+        with ESMTP id S231934AbiFYJFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 05:04:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC66E33E06;
-        Sat, 25 Jun 2022 02:04:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D39DB8123D;
-        Sat, 25 Jun 2022 09:04:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2934CC36AEA;
-        Sat, 25 Jun 2022 09:04:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656147882;
-        bh=d1m4ViZsUEwStF52CXPdQ9iCbz67N/mVOzUvE7P5wcw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tWDHnfEZx3QkxTH3f5U99sMoIvQNLix0IJC3qrVIHPB3LtrfqVkeLo536RMlO1nX2
-         +Zabn6PkNK2NitORIlQENHi7oVs169Ukh+JWLU+KUspJyrPdVMDh55KEsKzoNMwo19
-         II3+rohbnpBr34zHgbJElz449MY5eHORDiw89iwKvfC1LTP32yZAMV60SnKbFV1ZSL
-         S1tJWHQ4Wk/xcmGgcHuIiuwxbmiTMdzqUlFhblv3jxSnHArza6Ga46gNXqboW1fRnd
-         X1qWUuhF2YW95iBfWvQP2T+51fUdhFBFJBtt6wjONoPRTXDGLoMgCwtzfqEfF9XJZF
-         HA17ncpGUVN0A==
-Received: by mail-vk1-f178.google.com with SMTP id b4so2248343vkh.6;
-        Sat, 25 Jun 2022 02:04:42 -0700 (PDT)
-X-Gm-Message-State: AJIora/tzVJWrE++TIUSOkGpiwyJw3j2Gvd81aWmCiHgg/bS7bdKSMXb
-        /9693EHj40y0UJQUQ9GFWgqT4Yd0whOuRpwZot4=
-X-Google-Smtp-Source: AGRyM1uJK+hFV1788av5WDmrYXC8l5SBL9TOTOr7dxCRSj9z5BhWbOhQj1/NWCoCyOaSvuBXPif8Z3VMPiFIkHM61ZI=
-X-Received: by 2002:a05:6122:13ab:b0:36c:65f:ea30 with SMTP id
- n11-20020a05612213ab00b0036c065fea30mr943426vkp.37.1656147881167; Sat, 25 Jun
- 2022 02:04:41 -0700 (PDT)
+        Sat, 25 Jun 2022 05:05:03 -0400
+Received: from sender4-op-o11.zoho.com (sender4-op-o11.zoho.com [136.143.188.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0D233E06
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 02:05:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1656146995; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=eQ8vlQ/mEa0BTElFAADKoVMx03yLeGW9BpCjUAPi5WA/5sTo10Eh3ch2cp/Fh1nj8LRYwAItf/BUK6f2c9WUiwKpIpKN3jgSWzG5QPQY32/NoyZLZmZP+VQ4+id0UIyayLzKbbyDgB6yzcS92DvcaTZBYvpKQxB1ikQRJ1Tttdo=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1656146995; h=Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=73B7q5ose/xpDy9xdiy7dsAKG7gzYSYBRfHb0ImXIXY=; 
+        b=hWOIinsJoGtVAHhY6hFjC60zeMiQtgzoM1vrqxjOYoUFWVTDfSpd98X2EfthJhk1RQBtY0b374u61Rw4eUI8wq+zWcJfdQ58SkEdpBNeSAvzQV6HDj4+IPEVLOBoe4HQwjdys//XGmBrw23Sia9xGp43QkVKvHp7syYyC8+JUGQ=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=gvisoc.com;
+        spf=pass  smtp.mailfrom=gabriel@gvisoc.com;
+        dmarc=pass header.from=<gabriel@gvisoc.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656146995;
+        s=zoho; d=gvisoc.com; i=gabriel@gvisoc.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Reply-To;
+        bh=73B7q5ose/xpDy9xdiy7dsAKG7gzYSYBRfHb0ImXIXY=;
+        b=AGLir0qMfZ+8+9RBF74CrrNnsDKka432+iidZEZtUxp0FnmjE5gjOpAsqOLg/Qdv
+        7Ec8zqQzuidgW2c6D5ouxI3A8ubOnmB5b/60tRzPF52CVajdBaoSGc61vPAggQ1teox
+        lwTH7KyqKtP7bKiC542a/b40mtH1Ghtrj81sYNLE=
+Received: from localhost (124-171-144-237.tpgi.com.au [124.171.144.237]) by mx.zohomail.com
+        with SMTPS id 1656146993489390.95142231892817; Sat, 25 Jun 2022 01:49:53 -0700 (PDT)
+From:   Gabriel Viso Carrera <gabriel@gvisoc.com>
+To:     andreas.noever@gmail.com
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gabriel Viso Carrera <gabriel@gvisoc.com>
+Subject: [PATCH 1/3] staging: Thunderbolt: ctl.c: Fixed 2 literal style coding issues
+Date:   Sat, 25 Jun 2022 18:49:11 +1000
+Message-Id: <20220625084913.603556-2-gabriel@gvisoc.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220625084913.603556-1-gabriel@gvisoc.com>
+References: <20220625084913.603556-1-gabriel@gvisoc.com>
 MIME-Version: 1.0
-References: <20220625080423.2797-1-chenfeiyang@loongson.cn> <CAMZfGtWT7oPq6bD_fRn2gVNX8Lj3=ev21EAoaCCPeq-P_NYF0g@mail.gmail.com>
-In-Reply-To: <CAMZfGtWT7oPq6bD_fRn2gVNX8Lj3=ev21EAoaCCPeq-P_NYF0g@mail.gmail.com>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Sat, 25 Jun 2022 17:04:28 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H5K9LG5P6WYJ+64-fi+s=TZbbJQG9E0vHJwOf9Pai5z4w@mail.gmail.com>
-Message-ID: <CAAhV-H5K9LG5P6WYJ+64-fi+s=TZbbJQG9E0vHJwOf9Pai5z4w@mail.gmail.com>
-Subject: Re: [PATCH] page-flags.h: Fix a missing header include of static_keys.h
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Feiyang Chen <chris.chenfeiyang@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Muchun,
+In lines 1028 and 1054, there were WARN calls with hardcoded literal
+function name. Replaced with the recommended %s and __func__.
 
-On Sat, Jun 25, 2022 at 4:50 PM Muchun Song <songmuchun@bytedance.com> wrote:
->
-> On Sat, Jun 25, 2022 at 4:04 PM Feiyang Chen
-> <chris.chenfeiyang@gmail.com> wrote:
-> >
-> > The page-flags.h header relies on static keys since commit
-> > a6b40850c442bf ("mm: hugetlb: replace hugetlb_free_vmemmap_enabled
-> > with a static_key"), so make sure to include the header to avoid
-> > compilation errors.
-> >
-> > Fixes: a6b40850c442bf ("mm: hugetlb: replace hugetlb_free_vmemmap_enabled with a static_key")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-> > ---
-> >  include/linux/page-flags.h | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-> > index e66f7aa3191d..147b336c7a35 100644
-> > --- a/include/linux/page-flags.h
-> > +++ b/include/linux/page-flags.h
-> > @@ -11,6 +11,7 @@
-> >  #include <linux/mmdebug.h>
-> >  #ifndef __GENERATING_BOUNDS_H
-> >  #include <linux/mm_types.h>
-> > +#include <linux/static_key.h>
->
-> I did not include this. The change makes sense to me. But I am
-> curious what configs cause the compiling error. Would you mind
-> sharing the config with us?
-We found this problem when we add
-ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP to LoongArch. Since this isn't
-upstream yet, we cannot give such a config now (the default config of
-X86 and ARM64 is just OK).
+Signed-off-by: Gabriel Viso Carrera <gabriel@gvisoc.com>
+---
+ drivers/thunderbolt/ctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Huacai
->
-> Thanks.
->
-> >  #include <generated/bounds.h>
-> >  #endif /* !__GENERATING_BOUNDS_H */
-> >
-> > --
-> > 2.27.0
-> >
->
+diff --git a/drivers/thunderbolt/ctl.c b/drivers/thunderbolt/ctl.c
+index e92c658dba1c..4b841fbb3628 100644
+--- a/drivers/thunderbolt/ctl.c
++++ b/drivers/thunderbolt/ctl.c
+@@ -1025,7 +1025,7 @@ int tb_cfg_read(struct tb_ctl *ctl, void *buffer, u64 route, u32 port,
+ 		break;
+ 
+ 	default:
+-		WARN(1, "tb_cfg_read: %d\n", res.err);
++		WARN(1, "%s: %d\n", __func__, res.err);
+ 		break;
+ 	}
+ 	return res.err;
+@@ -1051,7 +1051,7 @@ int tb_cfg_write(struct tb_ctl *ctl, const void *buffer, u64 route, u32 port,
+ 		break;
+ 
+ 	default:
+-		WARN(1, "tb_cfg_write: %d\n", res.err);
++		WARN(1, "%s: %d\n", __func__, res.err);
+ 		break;
+ 	}
+ 	return res.err;
+-- 
+2.36.1
+
