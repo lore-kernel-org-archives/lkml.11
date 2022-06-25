@@ -2,101 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1386C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:18:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C09C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233035AbiFYNSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 09:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34770 "EHLO
+        id S233041AbiFYNSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 09:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233032AbiFYNSi (ORCPT
+        with ESMTP id S233032AbiFYNSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 09:18:38 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5881EAD8
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:18:34 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Sat, 25 Jun
- 2022 21:18:34 +0800
-Received: from localhost.localdomain (172.16.255.36) by
- IT-EXMB-1-125.meizu.com (172.16.1.125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Sat, 25 Jun 2022 21:18:31 +0800
-From:   Even <chenyuwen1@meizu.com>
-To:     <xiang@kernel.org>
-CC:     <chao@kernel.org>, <linux-erofs@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>, Even <chenyuwen1@meizu.com>
-Subject: [PATCH] erofs: Wake up all waiters after z_erofs_lzma_head ready.
-Date:   Sat, 25 Jun 2022 21:18:09 +0800
-Message-ID: <20220625131809.6081-1-chenyuwen1@meizu.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 25 Jun 2022 09:18:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304451A81F;
+        Sat, 25 Jun 2022 06:18:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADDC2B80959;
+        Sat, 25 Jun 2022 13:18:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C288C341CA;
+        Sat, 25 Jun 2022 13:18:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656163116;
+        bh=DrvYsHNixQGAFxZ5B9o45TBNbqBktYaLq5jvaKUH8Tc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=usAhrIS5wLWHr9hU7Do3gZcWvMC4Oeze1rkLQlqxian1RZ4QQIXbBhzWt2vE6roOv
+         h5Sb+F/3L6++RBecYlOK+/fKWRJ9ym5nf86uqhRmfj1hA/GX7s/AZvZAJEWx7MK+G1
+         WjtrYmqtpIaSuUNZ+7hjjnUNTSqE6HPkDiSXlsFudVcD3DDc7qBHhyLXGU4kjd2zSp
+         hvJ4CuVgysdhorhnAngH26w2Avw3ksAbGOVHB5gl9/Gd+zfnFyIbFEQVEQF0kG4Net
+         Qxs1BfQbAQQAuYWK2N4RMk0X61Dq6Ts87F1diYTYuaJz30o7bp9PW5Q58zMRjtuvlu
+         QwEmR6sMofWDg==
+Date:   Sat, 25 Jun 2022 14:28:02 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Olivier Moysan <olivier.moysan@foss.st.com>
+Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: Re: [PATCH 0/2] iio: adc: stm32-adc: add checks on adc state
+Message-ID: <20220625142802.51ee9637@jic23-huawei>
+In-Reply-To: <20220620154738.801706-1-olivier.moysan@foss.st.com>
+References: <20220620154738.801706-1-olivier.moysan@foss.st.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.16.255.36]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the user mounts the erofs second times, the decompression thread
-may hung. The problem happens due to a sequence of steps like the
-following:
+On Mon, 20 Jun 2022 17:47:36 +0200
+Olivier Moysan <olivier.moysan@foss.st.com> wrote:
 
-1) Task A called z_erofs_load_lzma_config which obtain all of the node
-   from the z_erofs_lzma_head.
+> On ADC startup a calibration is launched.
+> A prerequisite for ADC calibration is to have ADC in disabled state.
+> After kernel boot, the ADC state may be unknown as the ADC may have been left enabled by boot stage.
+> 
+> Call ADC disable routine systematically before launching calibration.
+> Adapt ADC disable routine to perform disabling sequence according to current ADC state.
+> 
+> Olivier Moysan (2):
+>   iio: adc: stm32-adc: make safe adc disable
+>   iio: adc: stm32-adc: disable adc before calibration
+> 
+>  drivers/iio/adc/stm32-adc.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
 
-2) At this time, task B called the z_erofs_lzma_decompress and wanted to
-   get a node. But the z_erofs_lzma_head was empty, the Task B had to
-   sleep.
+Series applied to the togreg branch and pushed out as testing
+for all the normal reasons.
 
-3) Task A release nodes and push nodes into the z_erofs_lzma_head. But
-   task B was still sleeping.
+Thanks,
 
-One example report when the hung happens:
-task:kworker/u3:1 state:D stack:14384 pid: 86 ppid: 2 flags:0x00004000
-Workqueue: erofs_unzipd z_erofs_decompressqueue_work
-Call Trace:
- <TASK>
- __schedule+0x281/0x760
- schedule+0x49/0xb0
- z_erofs_lzma_decompress+0x4bc/0x580
- ? cpu_core_flags+0x10/0x10
- z_erofs_decompress_pcluster+0x49b/0xba0
- ? __update_load_avg_se+0x2b0/0x330
- ? __update_load_avg_se+0x2b0/0x330
- ? update_load_avg+0x5f/0x690
- ? update_load_avg+0x5f/0x690
- ? set_next_entity+0xbd/0x110
- ? _raw_spin_unlock+0xd/0x20
- z_erofs_decompress_queue.isra.0+0x2e/0x50
- z_erofs_decompressqueue_work+0x30/0x60
- process_one_work+0x1d3/0x3a0
- worker_thread+0x45/0x3a0
- ? process_one_work+0x3a0/0x3a0
- kthread+0xe2/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
- </TASK>
-
-Signed-off-by: Even <chenyuwen1@meizu.com>
----
- fs/erofs/decompressor_lzma.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/fs/erofs/decompressor_lzma.c b/fs/erofs/decompressor_lzma.c
-index 05a3063cf2bc..5e59b3f523eb 100644
---- a/fs/erofs/decompressor_lzma.c
-+++ b/fs/erofs/decompressor_lzma.c
-@@ -143,6 +143,7 @@ int z_erofs_load_lzma_config(struct super_block *sb,
- 	DBG_BUGON(z_erofs_lzma_head);
- 	z_erofs_lzma_head = head;
- 	spin_unlock(&z_erofs_lzma_lock);
-+	wake_up_all(&z_erofs_lzma_wq);
- 
- 	z_erofs_lzma_max_dictsize = dict_size;
- 	mutex_unlock(&lzma_resize_mutex);
--- 
-2.25.1
+Jonathan
 
