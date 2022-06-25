@@ -2,194 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED81AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:53:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74025C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbiFYNxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 09:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
+        id S233193AbiFYNzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 09:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233194AbiFYNxd (ORCPT
+        with ESMTP id S232822AbiFYNzN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 09:53:33 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629BA101E1
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:53:32 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id c65so7070737edf.4
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:53:32 -0700 (PDT)
+        Sat, 25 Jun 2022 09:55:13 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAE912ACB;
+        Sat, 25 Jun 2022 06:55:12 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so8207440pjl.5;
+        Sat, 25 Jun 2022 06:55:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=PlnmS3frLfts4lN6mux0s5tjQ529vDFTw9G/utyKOLc=;
-        b=QoEbCPuiaybxD9vKnJxJ/OJcico0ecxhqrFPj8xcBa73OLiOAszuAu983vNRjesdoi
-         mhuqvdgj4tcKrctX6u8Kc+6SYX8dfMsMriQc3zW+gRANolixXnj2H22fqHfzhn6wbb02
-         HNMUe09HsIGGS8COFHRaJR9KRHCCL+gfSB38BrQ7a4YbejZd694v1jpslFQf1Ln2cAGB
-         0YZNfNsMUQs2Nvx21sYNhRHVLatnmIVsbelwc0lRR4Vvtf10H96m0dJ83VMKlwKbqRl3
-         gQMbyBate3ax2U4z0bzXqrOOh6xCT0bONVPs2u3/qIjjFwjuLzTYAfgf/e8l9J8Nobv0
-         xVlA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rq85kfN+kIsKSpiVIlYRgY/oRH6pyH6elOkY0pr17X8=;
+        b=hgfxS3V4J1iXv9Nrh0fcvKWIa/amBW6X3fvUiBLLphkpMJt9wcgDSWULqm7GP/0GaP
+         6aSfy+jSCZ9j4WZexZhFObM3rwxX5lPJsFFZN076vmGQmL5F6VIzmzoUAY8rY6KRMSjv
+         R6ZhugXIa6LdfrPlfK9JaOa2U5bXh812sAwaUmgup8SDolYUTYEo+70VZvtcrFnSuFxi
+         04ypGDWM//+TRLLtFoEyutvFarER9RIv67xr7XYhJR1OgU+hLOJ0DxkN7EHu9Um5lj4r
+         KISANjryYyHsprldO94mdBahgWp9ATn+ceH0x3vcFmnINanU50nMhQKDvWs4Phh9vN1z
+         vACA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=PlnmS3frLfts4lN6mux0s5tjQ529vDFTw9G/utyKOLc=;
-        b=Wm7SCB6ltV9GDDrL2X7opWYztZ5AJ1Z0vrTTSt225MGxVPecUndYfDtvNPzHlFLuK6
-         PqcCGqI65+RIfqxijTezqwwZtMa+olx9msZSaUHmL2s5CnBTWHw8gK+txgzLHsmkIYTq
-         lIfj3y+MACVAlJ32PTVmEnazZhQeDrNRSigaP6a2XO/A2SyRaN7TlUwH8PTzEXmhbDif
-         AHuseCKuYeGXD/Fub+CGRVMl74g3Ub9NKGBQbK+GCjrgVgTwjBgZL5aqzlVWSm3kYrkt
-         A8Z9gfM32xtYjai0BtdUPekjBT6+8CHeZrA12uMrI7+q9H1/0si1sGMXQ6ylNEl1K3Fj
-         USRQ==
-X-Gm-Message-State: AJIora/3Iw6/GI9lW+B+MoxxGqpAeeyQ2qYfDh/q+QtjsgQF2CsF85fW
-        B2VaJ4ItBBlZh6ie4Ag/Ck91aIxO5b8WN23t5qBx1g==
-X-Google-Smtp-Source: AGRyM1tk7lYHdyaf5uKBTwTbZaP8Ldp9jV7HNokyMHx7y3dvVaHlZvkzUQlTKkZlNEYBDyHOFarjG/rSaIKsisECPJI=
-X-Received: by 2002:a05:6402:50f:b0:435:7996:e90f with SMTP id
- m15-20020a056402050f00b004357996e90fmr5160813edv.110.1656165210770; Sat, 25
- Jun 2022 06:53:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rq85kfN+kIsKSpiVIlYRgY/oRH6pyH6elOkY0pr17X8=;
+        b=c3BqLgFuxZZMw9oiFdXnxOq94AIpSgYY+Uq/0Q9+iyQu48R73HEQw0SdauQLRE2uPp
+         l8t9xoBerbSeeFwWeAgtVYRxaUx/RPuTIwduZ/fcMIfSSiTNI7u4hDTTG3VBSkSsZv/t
+         u3tVNNeo04X+wOcA3bEOCC36Oo37sCpsHhCm4NUOyY/MQoX+Kn9JonAa1+fzwVcq5E/b
+         43pHqipRCzes0+ufSjx9m5G/UKvTtqdesGerN3vaOXaa/pknTTNY+xY4SD19MwZ5kD2i
+         f31EAAuD8fBAVeEgc4/3IQ8CRFmSMqLApfV15c0MkCCbiOtUUDXauctbNaTcJUJQnbxF
+         5GuQ==
+X-Gm-Message-State: AJIora+pbcv8zYS//Ob9o9VRZFPxb2ZpETPkGAoJmMXmQ80q/w0v9w3M
+        ffP4dUwDG8bUUVBILO0yVwM56TA2k2nj588P
+X-Google-Smtp-Source: AGRyM1tHN1gbZ2yVQGHra6qT4FiOfTNe6GbslEsaiCOvnvsi/mWa+4LCop/8sCB+fYivYjFqNJC8HQ==
+X-Received: by 2002:a17:90b:3a8f:b0:1ec:93d4:f955 with SMTP id om15-20020a17090b3a8f00b001ec93d4f955mr9909343pjb.23.1656165311419;
+        Sat, 25 Jun 2022 06:55:11 -0700 (PDT)
+Received: from fedora.. ([2409:4042:261d:8029:35f0:415b:b9b4:3fcb])
+        by smtp.gmail.com with ESMTPSA id a4-20020a170902710400b00162037fbb68sm3708733pll.215.2022.06.25.06.55.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jun 2022 06:55:10 -0700 (PDT)
+From:   Gautam <gautammenghani201@gmail.com>
+To:     shuah@kernel.org, brauner@kernel.org, keescook@chromium.org
+Cc:     Gautam <gautammenghani201@gmail.com>, kafai@fb.com,
+        songliubraving@fb.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: [PATCH] kselftests: Enable the echo command to print newlines in Makefile
+Date:   Sat, 25 Jun 2022 19:24:55 +0530
+Message-Id: <20220625135455.167939-1-gautammenghani201@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220623164344.053938039@linuxfoundation.org>
-In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Sat, 25 Jun 2022 19:23:19 +0530
-Message-ID: <CA+G9fYuGmGKz0y8LV=LEfs00L98FDDOgRrvm-jS_5+JzgS-yOQ@mail.gmail.com>
-Subject: Re: [PATCH 4.9 000/264] 4.9.320-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 at 22:17, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 4.9.320 release.
-> There are 264 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
-4.9.320-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-4.9.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+In the install section of the main Makefile of kselftests, the echo
+command is used with -n flag, which disables the printing of new line
+due to which the output contains "\n" chars as follows:
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+  Emit Tests for alsa\nSkipping non-existent dir: arm64
+  Emit Tests for breakpoints\nEmit Tests for capabilities\n
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+This patch fixes the above bug by using the -e flag.
 
-## Build
-* kernel: 4.9.320-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-4.9.y
-* git commit: 00d9858d20e4c4b5988b85df09c79010e037e456
-* git describe: v4.9.319-265-g00d9858d20e4
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.9.y/build/v4.9.3=
-19-265-g00d9858d20e4
+Signed-off-by: Gautam <gautammenghani201@gmail.com>
+---
+ tools/testing/selftests/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-## Test Regressions (compared to v4.9.319-251-g5de156af25f6)
-No test regressions found.
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index de11992dc577..52e31437f1a3 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -253,7 +253,7 @@ ifdef INSTALL_PATH
+ 	for TARGET in $(TARGETS); do \
+ 		BUILD_TARGET=$$BUILD/$$TARGET;	\
+ 		[ ! -d $(INSTALL_PATH)/$$TARGET ] && echo "Skipping non-existent dir: $$TARGET" && continue; \
+-		echo -n "Emit Tests for $$TARGET\n"; \
++		echo -ne "Emit Tests for $$TARGET\n"; \
+ 		$(MAKE) -s --no-print-directory OUTPUT=$$BUILD_TARGET COLLECTION=$$TARGET \
+ 			-C $$TARGET emit_tests >> $(TEST_LIST); \
+ 	done;
+-- 
+2.36.1
 
-## Metric Regressions (compared to v4.9.319-251-g5de156af25f6)
-No metric regressions found.
-
-## Test Fixes (compared to v4.9.319-251-g5de156af25f6)
-No test fixes found.
-
-## Metric Fixes (compared to v4.9.319-251-g5de156af25f6)
-No metric fixes found.
-
-## Test result summary
-total: 104551, pass: 91428, fail: 204, skip: 11519, xfail: 1400
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 261 total, 255 passed, 6 failed
-* arm64: 50 total, 39 passed, 11 failed
-* i386: 27 total, 23 passed, 4 failed
-* mips: 22 total, 22 passed, 0 failed
-* parisc: 12 total, 0 passed, 12 failed
-* powerpc: 36 total, 16 passed, 20 failed
-* s390: 12 total, 9 passed, 3 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 46 total, 44 passed, 2 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-cap_bounds-tests
-* ltp-commands
-* ltp-commands-tests
-* ltp-containers
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps
-* ltp-filecaps-tests
-* ltp-fs
-* ltp-fs-tests
-* ltp-fs_bind
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple
-* ltp-fs_perms_simple-tests
-* ltp-fsx
-* ltp-fsx-tests
-* ltp-hugetlb
-* ltp-hugetlb-tests
-* ltp-io
-* ltp-io-tests
-* ltp-ipc
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-pty-tests
-* ltp-sched
-* ltp-sched-tests
-* ltp-securebits
-* ltp-securebits-tests
-* ltp-smoke
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
