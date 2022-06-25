@@ -2,96 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E1BC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 00:13:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04114CCA473
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 00:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231892AbiFYANH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 20:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
+        id S232006AbiFYANY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 20:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230289AbiFYANG (ORCPT
+        with ESMTP id S230180AbiFYANW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 20:13:06 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219E9B866
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 17:13:06 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id o43so6900147qvo.4
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 17:13:06 -0700 (PDT)
+        Fri, 24 Jun 2022 20:13:22 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4705C20F61
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 17:13:20 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso4274157pjk.0
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 17:13:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+zgAHdqbW6KkxfirWh5m0boNH0Y6RXgaT47LaNHIE6s=;
-        b=DVIjgeM5e5IxUFbVXZ7bgClbz5kfHXGvHXEg2J3j1BQd6oPPHRoewezWMdHbNFicJ2
-         e88e2BFNzXDV37YHXmXCkVZ8MSZynmhSNdYhhX27BUG5Sv0V13MLWDtWVjaDI7tP4ZIV
-         wUUpA7Nqf5AVDpycjUx5jjljv7kK0PZZj+WblkbWltwp9EJJGdAFrdXwS8EbEqhL7IcE
-         GG4nTIuwZPLNIA3MQxPKlazpGmrlhY26HgvE07OM0dSC/zWljIjNtEQVaWF8pWhBjRMw
-         d8jR8emTGFIO8TphCmMEppdJirurBjsHWFxc61kaA8Ox6IwpINQXlr7sqntF23mHQ99z
-         2w+g==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0TjCZxNeURxvfJlBGLiL6m2P8w/St+OKVS0jmgudiNY=;
+        b=WH2pfcsnmA0g9dVGchBGxzu0ZB/E/YZ500twZrFG8iTbtS77b/TGQkrG7deqcHCdFP
+         krc/+62q47vIuR/uTVOGZnA6M4UxrcIo7SY5raTlqRQS3RCMAX6R/p+miZfjam/R1167
+         zZa5V1U9WE2Vb9g05QSXvaHkhKLUgBJFFPtII=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+zgAHdqbW6KkxfirWh5m0boNH0Y6RXgaT47LaNHIE6s=;
-        b=Txqg40dHIfr5yRyWBSV90s8H3+8SDmtezmY5F+5rNUTWEIeKnFf9w6Ib90rE784RLC
-         QdhTjiWcCX+rR9sKUZpy+EFXRW6AOGJpxxv+GLujljsQSnx0ipp1zvkZIOK/TdVqqppI
-         bCVDk999qiqiwO+bHfmyUuT/VfY723K0iw7uGFlsZYXCwGuV/ONMLQ9Y8s6iJWG0tnZ9
-         PvoHDuY1dP6dFh36LEv6v9hhflDAd/rH368gDjrBl4oLVIuknON4+M0ZfGq8yOh/FNKQ
-         KOabdv370B9eM8GuGGDjWx2NAjwl6jhqwwNUCAF1Q9lQtZZhp/OzXuN+p9WGxDVkO+JV
-         IfBA==
-X-Gm-Message-State: AJIora/aNfJoo683PZAKFGlEWZLuNFiHr8DIPS6B1hT0iarnHpBX3fRi
-        FFbP24JQggUxb2STilKz8UQhHQ==
-X-Google-Smtp-Source: AGRyM1tKAa61VnKF0qvWQse8/IPmP8YMv7v4wf/kj3KckZaMtp7TSh1O9Io45lQMqyoNxO2rydvc7Q==
-X-Received: by 2002:a05:622a:1884:b0:304:f534:cfe5 with SMTP id v4-20020a05622a188400b00304f534cfe5mr1433458qtc.544.1656115985828;
-        Fri, 24 Jun 2022 17:13:05 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id u3-20020a05620a454300b006aef6a244a4sm3108346qkp.129.2022.06.24.17.13.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0TjCZxNeURxvfJlBGLiL6m2P8w/St+OKVS0jmgudiNY=;
+        b=k2ECRxSFOx81f3XpAV198Y0TF0BRXolp+AfAQPqXvcQ46S+QxuNJszy+gOf++pWo5S
+         UZvw14p9H1CQPJL3P+Tv1ay7iaDYF8WdDKftLguUGkauHlDCGtZfrUZTdipVrO/LFKBn
+         HMLmX6Q4mBmGP906KtW7nLbymRz6c9EflDBmoM0SN7MdoT8Lmu7l2dOtAeYPn48fNZYT
+         14FHuil9tmHkHDD7PfF23H+GwubAtq1UAF7TAO/mcvqWZ38ZDUznQzInI7XYwHMQaWVq
+         Iy8B56CAJ1D4q9f22KGxmnR7Y7xZotFtTo1yVuNHXudkzakTNJA0BfBhu4TpArJUQ5Es
+         kKYA==
+X-Gm-Message-State: AJIora8AU4utE2Jko7HgKR+bS2NX2MZ2i/7Nu01HOu1XMDdG7ZFVT/A/
+        cVUdgJUl6QNLx+LqOObeqIp7U7cnDUfD0w==
+X-Google-Smtp-Source: AGRyM1u5gNBZSz9VALVIyN+xtr9yQR6lttni1iE0wVlXyu1GQcCM/x6X7eefyM4ILpQb5tEGaoE4SQ==
+X-Received: by 2002:a17:903:110c:b0:168:fa61:1440 with SMTP id n12-20020a170903110c00b00168fa611440mr1553981plh.149.1656116000090;
+        Fri, 24 Jun 2022 17:13:20 -0700 (PDT)
+Received: from joebar-glaptop.lan (c-71-202-34-56.hsd1.ca.comcast.net. [71.202.34.56])
+        by smtp.gmail.com with ESMTPSA id e14-20020a170902ef4e00b0016a275623c1sm2372303plx.219.2022.06.24.17.13.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 17:13:05 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1o4tQ8-001Idy-Qd; Fri, 24 Jun 2022 21:13:04 -0300
-Date:   Fri, 24 Jun 2022 21:13:04 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     lizhe.67@bytedance.com
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lizefan.x@bytedance.com
-Subject: Re: [RFC] vfio: remove useless judgement
-Message-ID: <20220625001304.GI23621@ziepe.ca>
-References: <20220623115603.22288-1-lizhe.67@bytedance.com>
+        Fri, 24 Jun 2022 17:13:19 -0700 (PDT)
+From:   "Joseph S. Barrera III" <joebar@chromium.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Alexandru M Stan <amstan@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH v12 0/5] arm64: dts: qcom: sc7180: Add five new trogdor-based boards
+Date:   Fri, 24 Jun 2022 17:10:04 -0700
+Message-Id: <20220625001009.417452-1-joebar@chromium.org>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220623115603.22288-1-lizhe.67@bytedance.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 07:56:03PM +0800, lizhe.67@bytedance.com wrote:
-> From: Li Zhe <lizhe.67@bytedance.com>
-> 
-> In function vfio_dma_do_unmap(), we currently prevent process to unmap
-> vfio dma region whose mm_struct is different from the vfio_dma->task.
-> In our virtual machine scenario which is using kvm and qemu, this
-> judgement stops us from liveupgrading our qemu, which uses fork() &&
-> exec() to load the new binary but the new process cannot do the
-> VFIO_IOMMU_UNMAP_DMA action during vm exit because of this judgement.
-> 
-> This judgement is added in commit 8f0d5bb95f76 ("vfio iommu type1: Add
-> task structure to vfio_dma") for the security reason. But it seems that
-> no other task who has no family relationship with old and new process
-> can get the same vfio_dma struct here for the reason of resource
-> isolation. So this patch delete it.
-> 
-> Signed-off-by: Li Zhe <lizhe.67@bytedance.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 6 ------
->  1 file changed, 6 deletions(-)
+This series adds five new trogdor-based boards to upstream.
+The patches should be applied *after* applying
+https://lore.kernel.org/all/20220602190621.1646679-1-swboyd@chromium.org/
+(arm64: dts: qcom: Remove duplicate sc7180-trogdor include on lazor/homestar)
 
-I'm inclined to agree with this reasoning and deliberately did not
-include a similar check in iommufd. Any process with access to the
-container FD should be able to manipulate the IOVA space.
+The patches do *not* expect
+https://lore.kernel.org/all/20220518172525.3319993-1-swboyd@chromium.org/
+(sc7180-trogdor: Split out keyboard node and describe detachables)
+to be applied.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+The compatibles in this series are documented by Doug's series
+https://lore.kernel.org/r/20220520143502.v4.5.Ie8713bc0377672ed8dd71189e66fc0b77226fb85@changeid
 
-Jason
+Version 9 included many corrections to the series change descriptions,
+based on fetching earlier versions of the series and diffing each patch.
+
+Changes in v12:
+- Replace 'include sc7180.dtsi' with 'include sc7180-trogdor.dtsi'
+  in sc7180-trogdor-ti-sn65dsi86.dtsi.
+
+Changes in v11:
+- Add 'include sc7180-trogdor.dtsi' to sc7180-trogdor-pazquel-* files.
+- Add 'include sc7180-trogdor.dtsi' to sc7180-trogdor-kingoftown-* files.
+- Restore 'include sc7180.dtsi' to sc7180-trogdor-ti-sn65dsi86.dtsi.
+
+Changes in v10:
+- Move "okay" for ap_tp_i2c to proper location.
+- Remove 'include sc7180.dtsi' from *all* sc7180-trogdor-pazquel* files.
+- Remove 'include sc7180.dtsi' from *all* sc7180-trogdor-kingoftown* files.
+
+Changes in v9:
+- Restore two lines accidentally removed from ap_sar_sensor.
+- Simplify trackpad enabling (51d30402be75).
+- Correct errors in series change history.
+
+Changes in v8:
+- Incorporate the deletion of the usb_c1 node from 9f9fb70a7294.
+
+Changes in v7:
+- Accidentally removed two lines from ap_sar_sensor.
+- Only include sc7180.dtsi in sc7180-trogdor.dtsi (19794489fa24).
+- Remove #include of <arm/cros-ec-keyboard.dtsi>.
+- Restore changes requested by Doug.
+- Restore mrbland patch.
+- Simplify spi0/spi6 labeling (d277cab7afc7).
+- Simplify trackpad enabling (51d30402be75).
+
+Changes in v6:
+- Accidentally deleted changes requested by Doug.
+- Add #include of <arm/cros-ec-keyboard.dtsi>.
+- Copy changes to ap_sar_sensor from v5.4.
+- Remove mrbland patch.
+- Only include sc7180.dtsi in sc7180-trogdor.dtsi (19794489fa24).
+- Simplify spi0/spi6 labeling (d277cab7afc7).
+- Simplify trackpad enabling (51d30402be75).
+
+Changes in v5:
+- Add comment that compatible will be filled in per-board.
+- Order nodes by name.
+- Remove extra newline
+- Replace _ in node name with -
+
+Changes in v4:
+- Cleaned up rt5682s files
+- Restored camcc definition
+- Fix description (no downstream bits removed).
+- Add missing version history.
+
+Changes in v3:
+- Removed camcc definition
+- First inclusion in series.
+
+Changes in v2:
+- Add word wrapping to patch description.
+- First inclusion in series.
+- Fix whitespace around "en_pp3300_dx_edp".
+- Remove "Author" from patch description.
+- Word wrap patch description.
+
+Joseph S. Barrera III (5):
+  arm64: dts: qcom: sc7180: Add wormdingler dts files
+  arm64: dts: qcom: sc7180: Add quackingstick dts files
+  arm64: dts: qcom: sc7180: Add mrbland dts files
+  arm64: dts: qcom: sc7180: Add pazquel dts files
+  arm64: dts: qcom: sc7180: Add kingoftown dts files
+
+ arch/arm64/boot/dts/qcom/Makefile             |  18 +
+ .../dts/qcom/sc7180-trogdor-kingoftown-r0.dts |  44 ++
+ .../dts/qcom/sc7180-trogdor-kingoftown-r1.dts |  17 +
+ .../dts/qcom/sc7180-trogdor-kingoftown.dtsi   | 225 ++++++++++
+ .../qcom/sc7180-trogdor-mrbland-rev0-auo.dts  |  22 +
+ .../qcom/sc7180-trogdor-mrbland-rev0-boe.dts  |  22 +
+ .../dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi |  53 +++
+ .../qcom/sc7180-trogdor-mrbland-rev1-auo.dts  |  22 +
+ .../qcom/sc7180-trogdor-mrbland-rev1-boe.dts  |  24 ++
+ .../boot/dts/qcom/sc7180-trogdor-mrbland.dtsi | 344 +++++++++++++++
+ .../sc7180-trogdor-pazquel-lte-parade.dts     |  22 +
+ .../qcom/sc7180-trogdor-pazquel-lte-ti.dts    |  22 +
+ .../qcom/sc7180-trogdor-pazquel-parade.dts    |  17 +
+ .../dts/qcom/sc7180-trogdor-pazquel-ti.dts    |  17 +
+ .../boot/dts/qcom/sc7180-trogdor-pazquel.dtsi | 221 ++++++++++
+ .../sc7180-trogdor-quackingstick-r0-lte.dts   |  38 ++
+ .../qcom/sc7180-trogdor-quackingstick-r0.dts  |  26 ++
+ .../qcom/sc7180-trogdor-quackingstick.dtsi    | 318 ++++++++++++++
+ .../dts/qcom/sc7180-trogdor-ti-sn65dsi86.dtsi |   1 +
+ .../sc7180-trogdor-wormdingler-rev0-boe.dts   |  22 +
+ .../sc7180-trogdor-wormdingler-rev0-inx.dts   |  22 +
+ .../qcom/sc7180-trogdor-wormdingler-rev0.dtsi |  53 +++
+ ...0-trogdor-wormdingler-rev1-boe-rt5682s.dts |  29 ++
+ .../sc7180-trogdor-wormdingler-rev1-boe.dts   |  28 ++
+ ...0-trogdor-wormdingler-rev1-inx-rt5682s.dts |  29 ++
+ .../sc7180-trogdor-wormdingler-rev1-inx.dts   |  22 +
+ .../dts/qcom/sc7180-trogdor-wormdingler.dtsi  | 408 ++++++++++++++++++
+ 27 files changed, 2086 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r0.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r1.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-auo.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-auo.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-ti.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-parade.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-ti.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0-lte.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-inx.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi
+
+-- 
+2.31.0
+
