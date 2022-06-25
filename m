@@ -2,78 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F8DCCA473
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 03:00:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 03:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232301AbiFYDAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 23:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
+        id S232382AbiFYDAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 23:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232258AbiFYDAE (ORCPT
+        with ESMTP id S232204AbiFYDAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 24 Jun 2022 23:00:04 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B72D69255
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 19:59:51 -0700 (PDT)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0C668C7D
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 19:59:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656125991; x=1687661991;
+  t=1656125990; x=1687661990;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QJJhRg4NGFA7ha9Lp0wIz/OcnlUso8S9aVK2Z4ayOQc=;
-  b=lRUJiuaBLWo3c44oF3fHAi1gcO2jl/aC+CGINTgTfOt/wFiyqyHk5Jr4
-   Uh09+CzCvZSgUU+a/Qh//lYsHnOjR9tbCtC2qLfmuH70nscS+yiEtjTV+
-   S21aVJQVUGwDyP0b7FVbEyvfsb3FuVz4Kl7lyJEs3MB0HG/D5GJgWdner
-   dhDshsa2uvBw8S2iLjpahGLTc+0MdtrN15qAhzSqAzG51bcBa58YBSRGk
-   i8Ay6+AnDFLfIXynWhpPXMvvYzCIggGUICLawMs9nKpvWDCv7HIS+QrzD
-   fXnxuOmjBN9rlM+WTgySM/22mKOfD9TjbmXAALlWVJMKPtnFtUA6JkMhE
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="261558566"
+  bh=UiIUBlPhNEwgLW6/sK9yg0+nt1686tPaZdlpfAaiYuU=;
+  b=LiQykHHePQLkMhH/GVdsorZJB+KjD+ErP4lplL5MXx/54DZcx2ZxJ1h8
+   uHzRpVf9zQGZxD4SHPk49mb8lf0dLe/z34DwZw9f7+YmVWwCviSEWxwaA
+   1iaR7XzfSYj+IM/SCc8lAQmEhzUwJgq2geykz8b9Tv+DcqIMyUX67bsRW
+   637m+lFegDNHtfT1iFSjmGRg40OrWsa1IHLITgIAWlNV9mBhHvJyEwlhA
+   BJu3ddIZrwwSa574iqBzYlnZJ6LARgagFoTkxpGsHUIXlDCYxlBb5sv6L
+   oAEWupsyzf8ndYUGUoy2qvWD0mqnXTMSDSZKf33gFpsfyDhs2A4gSWLDA
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="345141570"
 X-IronPort-AV: E=Sophos;i="5.92,221,1650956400"; 
-   d="scan'208";a="261558566"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 19:59:50 -0700
+   d="scan'208";a="345141570"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 19:59:49 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,221,1650956400"; 
-   d="scan'208";a="564042994"
+   d="scan'208";a="586796577"
 Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 24 Jun 2022 19:59:47 -0700
+  by orsmga007.jf.intel.com with ESMTP; 24 Jun 2022 19:59:47 -0700
 Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1o4w1S-0005Fg-JN;
+        id 1o4w1S-0005Fx-Of;
         Sat, 25 Jun 2022 02:59:46 +0000
-Date:   Sat, 25 Jun 2022 10:59:45 +0800
+Date:   Sat, 25 Jun 2022 10:59:16 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Oded Gabbay <ogabbay@kernel.org>
 Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-Subject: [ogabbay:gaudi2_full 48/48]
- drivers/misc/habanalabs/gaudi/gaudi.c:1524:6: error: no member named
- 'jobs_cnt' in 'struct hl_cs'
-Message-ID: <202206250739.WCcF6IKJ-lkp@intel.com>
+Subject: [ogabbay:gaudi2_full 46/48]
+ drivers/misc/habanalabs/goya/goya.c:392:8: error: no member named
+ 'cfg_base_address' in 'struct asic_fixed_properties'
+Message-ID: <202206250434.xnBtY3UR-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="QYIQYs09b8vZ/33S"
+Content-Type: multipart/mixed; boundary="EemAuLOX8mWcyTBl"
 Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---QYIQYs09b8vZ/33S
+--EemAuLOX8mWcyTBl
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
 tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git gaudi2_full
 head:   91e0cd8151cd8592199b21f047a3915fe06ba098
-commit: 91e0cd8151cd8592199b21f047a3915fe06ba098 [48/48] add increment of jobs_cnt
+commit: 0145cf802f6578c51c76ff60867cb00342ab8a47 [46/48] habanalabs: initialize new asic properties
 config: x86_64-randconfig-a005
 compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6fa9120080c35a5ff851c3fc3358692c4ef7ce0d)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=91e0cd8151cd8592199b21f047a3915fe06ba098
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=0145cf802f6578c51c76ff60867cb00342ab8a47
         git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
         git fetch --no-tags ogabbay gaudi2_full
-        git checkout 91e0cd8151cd8592199b21f047a3915fe06ba098
+        git checkout 0145cf802f6578c51c76ff60867cb00342ab8a47
         # save the config file
         mkdir build_dir && cp config build_dir/.config
         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/misc/
@@ -83,173 +83,229 @@ Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   drivers/misc/habanalabs/gaudi/gaudi.c:585:8: error: no member named 'cache_line_size' in 'struct asic_fixed_properties'
-           prop->cache_line_size = DEVICE_CACHE_LINE_SIZE;
-           ~~~~  ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:586:8: error: no member named 'cfg_base_address' in 'struct asic_fixed_properties'
+>> drivers/misc/habanalabs/goya/goya.c:392:8: error: no member named 'cfg_base_address' in 'struct asic_fixed_properties'
            prop->cfg_base_address = CFG_BASE;
            ~~~~  ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:591:8: error: no member named 'completion_mode' in 'struct asic_fixed_properties'
+>> drivers/misc/habanalabs/goya/goya.c:397:8: error: no member named 'completion_mode' in 'struct asic_fixed_properties'
            prop->completion_mode = HL_COMPLETION_MODE_JOB;
            ~~~~  ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:591:26: error: use of undeclared identifier 'HL_COMPLETION_MODE_JOB'
+>> drivers/misc/habanalabs/goya/goya.c:397:26: error: use of undeclared identifier 'HL_COMPLETION_MODE_JOB'
            prop->completion_mode = HL_COMPLETION_MODE_JOB;
                                    ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:618:8: error: no member named 'mmu_cache_mng_addr' in 'struct asic_fixed_properties'
+   drivers/misc/habanalabs/goya/goya.c:5260:5: warning: no previous prototype for function 'goya_pre_schedule_cs' [-Wmissing-prototypes]
+   int goya_pre_schedule_cs(struct hl_cs *cs)
+       ^
+   drivers/misc/habanalabs/goya/goya.c:5260:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int goya_pre_schedule_cs(struct hl_cs *cs)
+   ^
+   static 
+   drivers/misc/habanalabs/goya/goya.c:5344:5: warning: no previous prototype for function 'goya_ack_mmu_page_fault_or_access_error' [-Wmissing-prototypes]
+   int goya_ack_mmu_page_fault_or_access_error(struct hl_device *hdev,
+       ^
+   drivers/misc/habanalabs/goya/goya.c:5344:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int goya_ack_mmu_page_fault_or_access_error(struct hl_device *hdev,
+   ^
+   static 
+   2 warnings and 3 errors generated.
+--
+>> drivers/misc/habanalabs/gaudi/gaudi.c:585:8: error: no member named 'cache_line_size' in 'struct asic_fixed_properties'
+           prop->cache_line_size = DEVICE_CACHE_LINE_SIZE;
+           ~~~~  ^
+>> drivers/misc/habanalabs/gaudi/gaudi.c:586:8: error: no member named 'cfg_base_address' in 'struct asic_fixed_properties'
+           prop->cfg_base_address = CFG_BASE;
+           ~~~~  ^
+>> drivers/misc/habanalabs/gaudi/gaudi.c:591:8: error: no member named 'completion_mode' in 'struct asic_fixed_properties'
+           prop->completion_mode = HL_COMPLETION_MODE_JOB;
+           ~~~~  ^
+>> drivers/misc/habanalabs/gaudi/gaudi.c:591:26: error: use of undeclared identifier 'HL_COMPLETION_MODE_JOB'
+           prop->completion_mode = HL_COMPLETION_MODE_JOB;
+                                   ^
+>> drivers/misc/habanalabs/gaudi/gaudi.c:618:8: error: no member named 'mmu_cache_mng_addr' in 'struct asic_fixed_properties'
            prop->mmu_cache_mng_addr = MMU_CACHE_MNG_ADDR;
            ~~~~  ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:619:8: error: no member named 'mmu_cache_mng_size' in 'struct asic_fixed_properties'
+>> drivers/misc/habanalabs/gaudi/gaudi.c:619:8: error: no member named 'mmu_cache_mng_size' in 'struct asic_fixed_properties'
            prop->mmu_cache_mng_size = MMU_CACHE_MNG_SIZE;
            ~~~~  ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:688:8: error: no member named 'first_available_user_interrupt' in 'struct asic_fixed_properties'; did you mean 'first_available_user_msix_interrupt'?
-           prop->first_available_user_interrupt = USHRT_MAX;
-                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                 first_available_user_msix_interrupt
-   drivers/misc/habanalabs/gaudi/../common/habanalabs.h:628:9: note: 'first_available_user_msix_interrupt' declared here
-           u16                             first_available_user_msix_interrupt;
-                                           ^
->> drivers/misc/habanalabs/gaudi/gaudi.c:1524:6: error: no member named 'jobs_cnt' in 'struct hl_cs'
-           cs->jobs_cnt++;
-           ~~  ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:3884:43: error: no member named 'mmu_cache_mng_addr' in 'struct asic_fixed_properties'
+   drivers/misc/habanalabs/gaudi/gaudi.c:3883:43: error: no member named 'mmu_cache_mng_addr' in 'struct asic_fixed_properties'
            WREG32(mmSTLB_CACHE_INV_BASE_39_8, prop->mmu_cache_mng_addr >> 8);
                                               ~~~~  ^
    drivers/misc/habanalabs/gaudi/../common/habanalabs.h:2272:61: note: expanded from macro 'WREG32'
    #define WREG32(reg, v) hdev->asic_funcs->wreg(hdev, (reg), (v))
                                                                ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:3885:44: error: no member named 'mmu_cache_mng_addr' in 'struct asic_fixed_properties'
+   drivers/misc/habanalabs/gaudi/gaudi.c:3884:44: error: no member named 'mmu_cache_mng_addr' in 'struct asic_fixed_properties'
            WREG32(mmSTLB_CACHE_INV_BASE_49_40, prop->mmu_cache_mng_addr >> 40);
                                                ~~~~  ^
    drivers/misc/habanalabs/gaudi/../common/habanalabs.h:2272:61: note: expanded from macro 'WREG32'
    #define WREG32(reg, v) hdev->asic_funcs->wreg(hdev, (reg), (v))
                                                                ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:6083:20: error: no member named 'mmu_cache_mng_size' in 'struct asic_fixed_properties'
+   drivers/misc/habanalabs/gaudi/gaudi.c:6082:20: error: no member named 'mmu_cache_mng_size' in 'struct asic_fixed_properties'
                            hdev->asic_prop.mmu_cache_mng_size;
                            ~~~~~~~~~~~~~~~ ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:8602:5: warning: no previous prototype for function 'gaudi_pre_schedule_cs' [-Wmissing-prototypes]
+   drivers/misc/habanalabs/gaudi/gaudi.c:8601:5: warning: no previous prototype for function 'gaudi_pre_schedule_cs' [-Wmissing-prototypes]
    int gaudi_pre_schedule_cs(struct hl_cs *cs)
        ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:8602:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   drivers/misc/habanalabs/gaudi/gaudi.c:8601:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
    int gaudi_pre_schedule_cs(struct hl_cs *cs)
    ^
    static 
-   drivers/misc/habanalabs/gaudi/gaudi.c:8978:5: warning: no previous prototype for function 'gaudi_ack_mmu_page_fault_or_access_error' [-Wmissing-prototypes]
+   drivers/misc/habanalabs/gaudi/gaudi.c:8977:5: warning: no previous prototype for function 'gaudi_ack_mmu_page_fault_or_access_error' [-Wmissing-prototypes]
    int gaudi_ack_mmu_page_fault_or_access_error(struct hl_device *hdev,
        ^
-   drivers/misc/habanalabs/gaudi/gaudi.c:8978:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   drivers/misc/habanalabs/gaudi/gaudi.c:8977:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
    int gaudi_ack_mmu_page_fault_or_access_error(struct hl_device *hdev,
    ^
    static 
-   2 warnings and 11 errors generated.
+   2 warnings and 9 errors generated.
 
 
-vim +1524 drivers/misc/habanalabs/gaudi/gaudi.c
+vim +392 drivers/misc/habanalabs/goya/goya.c
 
-  1434	
-  1435	static int gaudi_collective_wait_create_job(struct hl_device *hdev,
-  1436			struct hl_ctx *ctx, struct hl_cs *cs,
-  1437			enum hl_collective_mode mode, u32 queue_id, u32 wait_queue_id,
-  1438			u32 encaps_signal_offset)
-  1439	{
-  1440		struct hw_queue_properties *hw_queue_prop;
-  1441		struct hl_cs_counters_atomic *cntr;
-  1442		struct hl_cs_job *job;
-  1443		struct hl_cb *cb;
-  1444		u32 cb_size;
-  1445		bool patched_cb;
-  1446	
-  1447		cntr = &hdev->aggregated_cs_counters;
-  1448	
-  1449		if (mode == HL_COLLECTIVE_MASTER) {
-  1450			/* CB size of collective master queue contains
-  1451			 * 4 msg short packets for monitor 1 configuration
-  1452			 * 1 fence packet
-  1453			 * 4 msg short packets for monitor 2 configuration
-  1454			 * 1 fence packet
-  1455			 * 2 msg prot packets for completion and MSI
-  1456			 */
-  1457			cb_size = sizeof(struct packet_msg_short) * 8 +
-  1458					sizeof(struct packet_fence) * 2 +
-  1459					sizeof(struct packet_msg_prot) * 2;
-  1460			patched_cb = true;
-  1461		} else {
-  1462			/* CB size of collective slave queues contains
-  1463			 * 4 msg short packets for monitor configuration
-  1464			 * 1 fence packet
-  1465			 * 1 additional msg short packet for sob signal
-  1466			 */
-  1467			cb_size = sizeof(struct packet_msg_short) * 5 +
-  1468					sizeof(struct packet_fence);
-  1469			patched_cb = false;
-  1470		}
-  1471	
-  1472		hw_queue_prop = &hdev->asic_prop.hw_queues_props[queue_id];
-  1473		job = hl_cs_allocate_job(hdev, hw_queue_prop->type, true);
-  1474		if (!job) {
-  1475			atomic64_inc(&ctx->cs_counters.out_of_mem_drop_cnt);
-  1476			atomic64_inc(&cntr->out_of_mem_drop_cnt);
-  1477			dev_err(hdev->dev, "Failed to allocate a new job\n");
-  1478			return -ENOMEM;
-  1479		}
-  1480	
-  1481		/* Allocate internal mapped CB for non patched CBs */
-  1482		cb = hl_cb_kernel_create(hdev, cb_size,
-  1483				hdev->mmu_enable && !patched_cb);
-  1484		if (!cb) {
-  1485			atomic64_inc(&ctx->cs_counters.out_of_mem_drop_cnt);
-  1486			atomic64_inc(&cntr->out_of_mem_drop_cnt);
-  1487			kfree(job);
-  1488			return -EFAULT;
-  1489		}
-  1490	
-  1491		job->id = 0;
-  1492		job->cs = cs;
-  1493		job->user_cb = cb;
-  1494		atomic_inc(&job->user_cb->cs_cnt);
-  1495		job->user_cb_size = cb_size;
-  1496		job->hw_queue_id = queue_id;
-  1497	
-  1498		/* since its guaranteed to have only one chunk in the collective wait
-  1499		 * cs, we can use this chunk to set the encapsulated signal offset
-  1500		 * in the jobs.
-  1501		 */
-  1502		if (cs->encaps_signals)
-  1503			job->encaps_sig_wait_offset = encaps_signal_offset;
-  1504	
-  1505		/*
-  1506		 * No need in parsing, user CB is the patched CB.
-  1507		 * We call hl_cb_destroy() out of two reasons - we don't need
-  1508		 * the CB in the CB idr anymore and to decrement its refcount as
-  1509		 * it was incremented inside hl_cb_kernel_create().
-  1510		 */
-  1511		if (patched_cb)
-  1512			job->patched_cb = job->user_cb;
-  1513		else
-  1514			job->patched_cb = NULL;
-  1515	
-  1516		job->job_cb_size = job->user_cb_size;
-  1517		hl_cb_destroy(&hdev->kernel_mem_mgr, cb->buf->handle);
-  1518	
-  1519		/* increment refcount as for external queues we get completion */
-  1520		if (hw_queue_prop->type == QUEUE_TYPE_EXT)
-  1521			cs_get(cs);
-  1522	
-  1523		cs->jobs_in_queue_cnt[job->hw_queue_id]++;
-> 1524		cs->jobs_cnt++;
-  1525	
-  1526		list_add_tail(&job->cs_node, &cs->job_list);
-  1527	
-  1528		hl_debugfs_add_job(hdev, job);
-  1529	
-  1530		return 0;
-  1531	}
-  1532	
+   359	
+   360	int goya_set_fixed_properties(struct hl_device *hdev)
+   361	{
+   362		struct asic_fixed_properties *prop = &hdev->asic_prop;
+   363		int i;
+   364	
+   365		prop->max_queues = GOYA_QUEUE_ID_SIZE;
+   366		prop->hw_queues_props = kcalloc(prop->max_queues,
+   367				sizeof(struct hw_queue_properties),
+   368				GFP_KERNEL);
+   369	
+   370		if (!prop->hw_queues_props)
+   371			return -ENOMEM;
+   372	
+   373		for (i = 0 ; i < NUMBER_OF_EXT_HW_QUEUES ; i++) {
+   374			prop->hw_queues_props[i].type = QUEUE_TYPE_EXT;
+   375			prop->hw_queues_props[i].driver_only = 0;
+   376			prop->hw_queues_props[i].cb_alloc_flags = CB_ALLOC_KERNEL;
+   377		}
+   378	
+   379		for (; i < NUMBER_OF_EXT_HW_QUEUES + NUMBER_OF_CPU_HW_QUEUES ; i++) {
+   380			prop->hw_queues_props[i].type = QUEUE_TYPE_CPU;
+   381			prop->hw_queues_props[i].driver_only = 1;
+   382			prop->hw_queues_props[i].cb_alloc_flags = CB_ALLOC_KERNEL;
+   383		}
+   384	
+   385		for (; i < NUMBER_OF_EXT_HW_QUEUES + NUMBER_OF_CPU_HW_QUEUES +
+   386				NUMBER_OF_INT_HW_QUEUES; i++) {
+   387			prop->hw_queues_props[i].type = QUEUE_TYPE_INT;
+   388			prop->hw_queues_props[i].driver_only = 0;
+   389			prop->hw_queues_props[i].cb_alloc_flags = CB_ALLOC_USER;
+   390		}
+   391	
+ > 392		prop->cfg_base_address = CFG_BASE;
+   393		prop->device_dma_offset_for_host_access = HOST_PHYS_BASE;
+   394		prop->host_base_address = HOST_PHYS_BASE;
+   395		prop->host_end_address = prop->host_base_address + HOST_PHYS_SIZE;
+   396		prop->completion_queues_count = NUMBER_OF_CMPLT_QUEUES;
+ > 397		prop->completion_mode = HL_COMPLETION_MODE_JOB;
+   398		prop->dram_base_address = DRAM_PHYS_BASE;
+   399		prop->dram_size = DRAM_PHYS_DEFAULT_SIZE;
+   400		prop->dram_end_address = prop->dram_base_address + prop->dram_size;
+   401		prop->dram_user_base_address = DRAM_BASE_ADDR_USER;
+   402	
+   403		prop->sram_base_address = SRAM_BASE_ADDR;
+   404		prop->sram_size = SRAM_SIZE;
+   405		prop->sram_end_address = prop->sram_base_address + prop->sram_size;
+   406		prop->sram_user_base_address = prop->sram_base_address +
+   407							SRAM_USER_BASE_OFFSET;
+   408	
+   409		prop->mmu_pgt_addr = MMU_PAGE_TABLES_ADDR;
+   410		prop->mmu_dram_default_page_addr = MMU_DRAM_DEFAULT_PAGE_ADDR;
+   411		if (hdev->pldm)
+   412			prop->mmu_pgt_size = 0x800000; /* 8MB */
+   413		else
+   414			prop->mmu_pgt_size = MMU_PAGE_TABLES_SIZE;
+   415		prop->mmu_pte_size = HL_PTE_SIZE;
+   416		prop->mmu_hop_table_size = HOP_TABLE_SIZE_512_PTE;
+   417		prop->mmu_hop0_tables_total_size = HOP0_512_PTE_TABLES_TOTAL_SIZE;
+   418		prop->dram_page_size = PAGE_SIZE_2MB;
+   419		prop->device_mem_alloc_default_page_size = prop->dram_page_size;
+   420		prop->dram_supports_virtual_memory = true;
+   421	
+   422		prop->dmmu.hop_shifts[MMU_HOP0] = MMU_V1_0_HOP0_SHIFT;
+   423		prop->dmmu.hop_shifts[MMU_HOP1] = MMU_V1_0_HOP1_SHIFT;
+   424		prop->dmmu.hop_shifts[MMU_HOP2] = MMU_V1_0_HOP2_SHIFT;
+   425		prop->dmmu.hop_shifts[MMU_HOP3] = MMU_V1_0_HOP3_SHIFT;
+   426		prop->dmmu.hop_shifts[MMU_HOP4] = MMU_V1_0_HOP4_SHIFT;
+   427		prop->dmmu.hop_masks[MMU_HOP0] = MMU_V1_0_HOP0_MASK;
+   428		prop->dmmu.hop_masks[MMU_HOP1] = MMU_V1_0_HOP1_MASK;
+   429		prop->dmmu.hop_masks[MMU_HOP2] = MMU_V1_0_HOP2_MASK;
+   430		prop->dmmu.hop_masks[MMU_HOP3] = MMU_V1_0_HOP3_MASK;
+   431		prop->dmmu.hop_masks[MMU_HOP4] = MMU_V1_0_HOP4_MASK;
+   432		prop->dmmu.start_addr = VA_DDR_SPACE_START;
+   433		prop->dmmu.end_addr = VA_DDR_SPACE_END;
+   434		prop->dmmu.page_size = PAGE_SIZE_2MB;
+   435		prop->dmmu.num_hops = MMU_ARCH_5_HOPS;
+   436		prop->dmmu.last_mask = LAST_MASK;
+   437		/* TODO: will be duplicated until implementing per-MMU props */
+   438		prop->dmmu.hop_table_size = prop->mmu_hop_table_size;
+   439		prop->dmmu.hop0_tables_total_size = prop->mmu_hop0_tables_total_size;
+   440	
+   441		/* shifts and masks are the same in PMMU and DMMU */
+   442		memcpy(&prop->pmmu, &prop->dmmu, sizeof(prop->dmmu));
+   443		prop->pmmu.start_addr = VA_HOST_SPACE_START;
+   444		prop->pmmu.end_addr = VA_HOST_SPACE_END;
+   445		prop->pmmu.page_size = PAGE_SIZE_4KB;
+   446		prop->pmmu.num_hops = MMU_ARCH_5_HOPS;
+   447		prop->pmmu.last_mask = LAST_MASK;
+   448		/* TODO: will be duplicated until implementing per-MMU props */
+   449		prop->pmmu.hop_table_size = prop->mmu_hop_table_size;
+   450		prop->pmmu.hop0_tables_total_size = prop->mmu_hop0_tables_total_size;
+   451	
+   452		/* PMMU and HPMMU are the same except of page size */
+   453		memcpy(&prop->pmmu_huge, &prop->pmmu, sizeof(prop->pmmu));
+   454		prop->pmmu_huge.page_size = PAGE_SIZE_2MB;
+   455	
+   456		prop->dram_size_for_default_page_mapping = VA_DDR_SPACE_END;
+   457		prop->cfg_size = CFG_SIZE;
+   458		prop->max_asid = MAX_ASID;
+   459		prop->num_of_events = GOYA_ASYNC_EVENT_ID_SIZE;
+   460		prop->high_pll = PLL_HIGH_DEFAULT;
+   461		prop->cb_pool_cb_cnt = GOYA_CB_POOL_CB_CNT;
+   462		prop->cb_pool_cb_size = GOYA_CB_POOL_CB_SIZE;
+   463		prop->max_power_default = MAX_POWER_DEFAULT;
+   464		prop->dc_power_default = DC_POWER_DEFAULT;
+   465		prop->tpc_enabled_mask = TPC_ENABLED_MASK;
+   466		prop->pcie_dbi_base_address = mmPCIE_DBI_BASE;
+   467		prop->pcie_aux_dbi_reg_addr = CFG_BASE + mmPCIE_AUX_DBI;
+   468	
+   469		strncpy(prop->cpucp_info.card_name, GOYA_DEFAULT_CARD_NAME,
+   470			CARD_NAME_MAX_LEN);
+   471	
+   472		prop->max_pending_cs = GOYA_MAX_PENDING_CS;
+   473	
+   474		prop->first_available_user_msix_interrupt = USHRT_MAX;
+   475	
+   476		for (i = 0 ; i < HL_MAX_DCORES ; i++)
+   477			prop->first_available_cq[i] = USHRT_MAX;
+   478	
+   479		prop->fw_cpu_boot_dev_sts0_valid = false;
+   480		prop->fw_cpu_boot_dev_sts1_valid = false;
+   481		prop->hard_reset_done_by_fw = false;
+   482		prop->gic_interrupts_enable = true;
+   483	
+   484		prop->server_type = HL_SERVER_TYPE_UNKNOWN;
+   485	
+   486		prop->clk_pll_index = HL_GOYA_MME_PLL;
+   487	
+   488		prop->use_get_power_for_reset_history = true;
+   489	
+   490		prop->configurable_stop_on_err = true;
+   491	
+   492		prop->set_max_power_on_device_init = true;
+   493	
+   494		prop->dma_mask = 48;
+   495	
+   496		return 0;
+   497	}
+   498	
 
 -- 
 0-DAY CI Kernel Test Service
 https://01.org/lkp
 
---QYIQYs09b8vZ/33S
+--EemAuLOX8mWcyTBl
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: attachment; filename=config
 
@@ -5903,4 +5959,4 @@ CONFIG_MEMTEST=y
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
 
---QYIQYs09b8vZ/33S--
+--EemAuLOX8mWcyTBl--
