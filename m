@@ -2,161 +2,315 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE466C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 12:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0F7CCA479
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 12:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232870AbiFYMlf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 08:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37102 "EHLO
+        id S232909AbiFYMpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 08:45:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232029AbiFYMld (ORCPT
+        with ESMTP id S232897AbiFYMpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 08:41:33 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2055.outbound.protection.outlook.com [40.107.21.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A3720BD0;
-        Sat, 25 Jun 2022 05:41:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GAaBU0vgV78rzMl4JssLK4CpKMKISElW1ynqCxUj+ZzCGlEJc6gMTEWaRk2OI36e9iKtOKAszAsGsBYVOdxoX1qnwnpVQrcf4PePuJgHrsHyYgnRYAQ7BWw4UilwHaryNIuOpB6ABoZ8bsz/gIAUC4i2DoCWaAKkZtkoNRmjboiq8gikndQ+aiSM0Fvo4LzxJwh3WYHwJrO+kwdeoomyodQPdeGgCAxgd0zshPKSEv9RkwKWw1zoQMuNqhRbby1/0+Q33aT8Rd1A5b/bVtLKWxC39GetfxrhqdGTfu/Cydt+4J7FUdrk7o5kDNHw8bqxB9iq89usuxxjZRJ2/IaeBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kfaWWvpSUiwGGL2kJXz2N1bmxEbLoQ716Nwl4LPyvNI=;
- b=dS9ANdKpUT7jsF4Hsn/JPmsVS/ByTPC+EJTyvvwFBK35LKyi7kaa0ldNBcs3vo29V0dThiW4p7JiR2Qqa3EEauS9Di2DiFs+atynOC3iBou5nRzdS3M9cRyOhQYwWK+AKTZ2uhbZ3mFCw79jBhS5X9CqTVAOKztTmOfMAwZ+rEaSZArgvF7CR8R5nXr7ZzfBCiEOlQLn8J/bM2ESSMPFWyZOBQPoJv26LHtY6iuixVTPZkGGVM50tQswvVIfAHeqEu+p/SQSYCdB9jxJWtDGFRUqtzH96JCng5v2GhYWAAyeYqpYuidRowAFkAnaRSVsgYcHTGCvmp8woKDqonfL5Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kfaWWvpSUiwGGL2kJXz2N1bmxEbLoQ716Nwl4LPyvNI=;
- b=VC1VKiBCF700kGCqcpfl7blyvHWT9HlPIXaH+w2eYu+KUWx4xKuf7pRaThKkTo0oIBQrRR4yxi1s3j8J6L0wsCKxtr6WpDtKmhkwSGz04kXfJlXrmZ2t6wE0wBUoxsFxLnVzF1zHQWrkHaAOem+YU1tPQ00Ix1T9WFLfjY7QM7Y=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB7PR04MB4201.eurprd04.prod.outlook.com (2603:10a6:5:21::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.22; Sat, 25 Jun
- 2022 12:41:29 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::fdd4:8557:334b:180d]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::fdd4:8557:334b:180d%5]) with mapi id 15.20.5373.017; Sat, 25 Jun 2022
- 12:41:28 +0000
-Message-ID: <ac9b9231-4bbd-bfae-c551-39123914a610@oss.nxp.com>
-Date:   Sat, 25 Jun 2022 20:41:13 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 00/14] arm64: dts: imx8mp: correct pad settings
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     festevam@gmail.com, linux-imx@nxp.com, hvilleneuve@dimonoff.com,
-        l.stach@pengutronix.de, abbaraju.manojsai@amarulasolutions.com,
-        jagan@amarulasolutions.com, matteo.lisi@engicam.com,
-        tharvey@gateworks.com, t.remmet@phytec.de,
-        u.kleine-koenig@pengutronix.de, t.remmet@phytec.deh,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-References: <20220622061410.853301-1-peng.fan@oss.nxp.com>
- <42f2ba58-acd9-a214-83f2-037f669d8d59@prevas.dk>
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-In-Reply-To: <42f2ba58-acd9-a214-83f2-037f669d8d59@prevas.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SG2P153CA0051.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::20)
- To DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+        Sat, 25 Jun 2022 08:45:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACAE3EE3B;
+        Sat, 25 Jun 2022 05:45:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 452B061203;
+        Sat, 25 Jun 2022 12:45:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D29FC3411C;
+        Sat, 25 Jun 2022 12:45:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656161103;
+        bh=jtBOB+fEQAt8XVOj1YNbq/Dy66rjLUV3m39esLC9KpM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Lh1W4tH+kxjI+Tw/faCkYC40dOFtswR21Dr9YpHd9I5Z7AY0n+239LZ0xM7XNGciG
+         /YPSQuMCuJFVqWMnnfzik6SFywa0c/HbU8mLQOmywALNDFOeyR6UPM07b/MwQCVDJT
+         nKCnCCQCVD1TbQ2FdlteYVQME/v2LHwFZ8qJcyb/BKyfDcf/ug5P595rf+2yEvNKK6
+         gpN/bKzJAnD/c5f+7Xu0S8y3x9ejS7XqwOKUTG4RAEJV/+2EeYU3KuE6fKMl4BK8mv
+         QMldjqu7RGlpBOqgedNXXUdpABrgy0+PSz4F1bjW1gPBz6FpkFErF/WuPyBgEbC7rF
+         ADpiQzXq2XMMg==
+Date:   Sat, 25 Jun 2022 13:54:31 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 10/10] iio: adc: mcp3911: add support to set PGA
+Message-ID: <20220625135431.3f82148a@jic23-huawei>
+In-Reply-To: <20220625103853.2470346-10-marcus.folkesson@gmail.com>
+References: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
+        <20220625103853.2470346-10-marcus.folkesson@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5ad483c7-da83-4889-7efd-08da56a80628
-X-MS-TrafficTypeDiagnostic: DB7PR04MB4201:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pOU4XEeKmsVSAnpXHKRVR7P6CR9E12GyZTM5CRMgCfXuWYIwMdCLfQJp2yHFlEolDKXaI+TlbHnRr7EkIE4vqIQVENFRYb8a7YPSBbWirHi7XqwgKQzg2eR2nA7jk+0zOi0yJYauAqff1KPVIoc3MyDR8NkdaUvgDQjR8GwmMQKqH/85lv4caz+szjoVotB6gvSqxPK84R3wOXsBw0vgUXQud9QGIiBQ6nBxobMI29HTSYhiHKLFXQpvEUHck7aOW1vxg953AhY3pPZhz8RaB2OgSRdJbdCEC+kM570VHXx0omL2wTSyt/fbzZpNrInx5HkcLX1E0lXmU5wuH7/LNRKyGxW5L5RgPunrcoaiCR6dkx98iOce+EJTd2+uj1emBOvX0xXofbkcZLcGqk7YtAhThk9SDqCnjzBsjLZGgngK8u9erl5/ickGcbJJ5gB4l6TZaLTqwR7zacM7w7iHy7FrSiGWC1Us9THGM9DAPrHXf7NGlGoB+Jh5zw0+rKMmPD+ommfI1JSnTAxiCphUQ3ILwhvXrJB7r52kQOt/2J3B6ydNxS+R3V57YF1xssh7foss+ctmstwHSKak3HluW8r0fY+M9AU8jGotr84oaO3qf2jRH7MH29EJRJW1j98eQqzFQh4N3kbVK9mUq6dUCgVZqGwhqwg/3XaeHlzWIRov92BA3Iwooh/+RasdlJboTQpII2jSiINCPEsQeDr6BeBtt/cZ1LQuGQApR5pzYJK9pV+iBX9+Burq4ck3oFDKO7S23Xo6f0aoENd+KUo5n8pGeUPxRUv7XwpyAjT18QafiRM746T1286AVc5WZv/6u5ODn36+l1XVUO+CnI1xGl8ggQraooZ7MgalTQU25VHxrxhhNROVzmBH/0Je0JMB
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(376002)(396003)(136003)(39860400002)(478600001)(26005)(6512007)(6506007)(7416002)(66476007)(2616005)(6486002)(41300700001)(31696002)(5660300002)(8936002)(86362001)(38350700002)(6666004)(31686004)(186003)(52116002)(4326008)(66946007)(2906002)(316002)(38100700002)(66556008)(8676002)(32563001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TGZYbnE1YXhrRmhiSlRkcE1ZcVVwS1ZVQnlFTDY1YTlYM2YrUEN1U0RkL3ND?=
- =?utf-8?B?ZXR4dmgxRjd4NjI2NXJwZTdDZk1qZUkwMWlMMzJ2VkRwclV4ejNVakZia0VK?=
- =?utf-8?B?bVJ5RTZwcW5IU2dQNGVmSHRtMWNSYlRXQlVhR1crYThUTUY0MFNmc0hkSkpo?=
- =?utf-8?B?VWpoRGhyMnl1MElTT0pxazJZeDJvS2pIQzI3S1AveWhlK0hTVVZFYjFTQkpn?=
- =?utf-8?B?elRpR05QOTBUMCswUytWVklNOXVZd2R1Rll0UlduaUJEUkVDck80NEZycGQ1?=
- =?utf-8?B?ZGxodXhUWUttVzhvMWx6RUJzSkMvVUVudC9aakdEQ05FY0g0QXFFbkxuNDQ3?=
- =?utf-8?B?UnVJc0tCbjlweVZ3cGh2VXNNdFZSdXkxakpUdkxDOXVpT2RMakYrQlVZeXlV?=
- =?utf-8?B?bVJCbTV3VFlReHA5SlBIR1pOZ0Q4ZUhSU2ZvNWVpcGZrbmxvWGZEelIxdGVy?=
- =?utf-8?B?SjNjY1RtTEE5SFNKOWNMUnlyemNKckJQRFF2N1pRU1NaUjZLSVRWUUpTZDE1?=
- =?utf-8?B?NmVidkRIcGNWYUNBUnNiamdrN0hZRDVBWWh2ZlNPWVlrRmd5aHNCNERYMUc2?=
- =?utf-8?B?QzgvRHkvYkRnakVTR01OMDRkdXVZMGJ0bGF6ais5c3FvZm5HakFKU2h1aGJJ?=
- =?utf-8?B?dGlDY0pldlVTVUc2S0xTM212OFRKUzlnNUNZZWhWQm8vRUM4RU9JNjhJRVBC?=
- =?utf-8?B?RnpHMmpsQ0pnb0daT3ptWVBvSHBQOER2dXptVUtIWlFPWjhKRDhFQVI3QnZX?=
- =?utf-8?B?bnIwRVEyWFdYL3dHQVIxV2JTbFF2YVV6RW5od2FySkpNUi9MTDZrcXpsU2Jl?=
- =?utf-8?B?ZmVpTUQvNEJQWkVKcUR6UEZRTzBIK3RKeDBOcCtZMVRyN2JSdHdBeTJGTmhi?=
- =?utf-8?B?OHZ5akxRVUZ3TW5vOHExL0ZBbHRSdTdobXVBMG1QeGhOM2JhRkZjZHU0T0dL?=
- =?utf-8?B?VHk5QmZkMTdYbmczbGR1WTZkV3VpZ3NTUTZCeFd6WVVQc3l6bUIxNmxCSWVr?=
- =?utf-8?B?NzB0bkRPdk5mU0JuWWNBUzBHZlFhV0ZIYVZrdVRZQlc4N1R6THVoUmlVbjQ1?=
- =?utf-8?B?UjRBcmF1eGlYWGx6WlArQ2oxRXUzU2xNNGthczU4NUpWbFlPY2oxRkgwUG02?=
- =?utf-8?B?YWZNc2FaNHgvTjcwUGVMZnN1S28yc1MyaU94bFFsUExvSk1CK2F6R1F2bm85?=
- =?utf-8?B?OTVVdUxVTGhvWDEwYXBya2xnemdxUVpBSmpIMFE2eHc3ZkxvTThaMWg5SW5B?=
- =?utf-8?B?UjFCVDNJNzhOQ1FsZElqRUMzRnFYM2F6NGxtd0s1RG5pUm1laUcxSmVzRHpZ?=
- =?utf-8?B?SWZPS1hhaHh3SWxDVGI0bEtPbllWTEpkYmw4ZzdGSzlnNlduaUp4MCtDQm5S?=
- =?utf-8?B?R01BcW1XQndWNUc5TVVTL1Q4Nm8rQlMreWswL2FYd3Jwenl4RVlkYjFScS9G?=
- =?utf-8?B?QitkcGt6VytEaHRQQzk4QzZlTTg0ckpJamxlMWFoVU1ybkQ2RUdZbEtyZGxl?=
- =?utf-8?B?YTMwVDNRUkRMemVPKzZxWGJLWkxqbnRnTXlab09IbDFkdVRRWHlYaTQvU1g3?=
- =?utf-8?B?V0hvVnNpak1VQXprZVNaNFlkcFRkVW9RaEUzQkhxRVc5UTlhNmpCbmN3T1FP?=
- =?utf-8?B?eFRuQ2EwbUl3TGN4UlhHVmx4WTVuZGxzVVdxeEI1aytkNjI1SURNeHJadWlO?=
- =?utf-8?B?djFpa0l1TG9kQ24wMzdhT2FpejdGTFVDbzBkQkZDN3hITTBLajdmNERHRTN2?=
- =?utf-8?B?LzNRMSszQjJTSTJFbko1SWJGNXNQQ2dYRS9FaGxhZmNTRzMvMXhxVzJnYmpT?=
- =?utf-8?B?bm4yYWt0dWIwK2VkakFlYlltTDE3a2xPSXRGb3dzdDk5RWplbjROb2lodGNC?=
- =?utf-8?B?Q01FUHVTU0xzcXNMVzRSQVQ5Q0NKenJiM3UxcmNsOTRWRE00RzgzMFROVDcw?=
- =?utf-8?B?YUJ2dzM3M3o4U0N5K3BTTWtXRTJyT0VhUEQ1TlJWZlUrK08zUnpEWnR6am1u?=
- =?utf-8?B?ZVdsS3dDR2VNR3A2ckJUbnJjeVZiYlFTWDRKS1lGYUl6d0FrOHNWUEgyeVpy?=
- =?utf-8?B?T25uQ3Bha3hTUUFTVnYvUnB3UTVqRjFrVlBOcDR3Z2J0NXZ1VlhrZEdLMGpC?=
- =?utf-8?Q?3/mgEMzilbxeLCOGHAht7EPTR?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5ad483c7-da83-4889-7efd-08da56a80628
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2022 12:41:28.9156
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: D1kUvZfA+kf49+x5p4094JZTarW8Qm+WeAF32fp2ZdnK6N4cU/4JQwnxZlqbslurIh/HBwKoUHXr8nmWMjfWwQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4201
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sat, 25 Jun 2022 12:38:53 +0200
+Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
+
+> Add support for setting the Programmable Gain Amplifiers by adjust the
+> scale value.
+> 
+> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+A few minor things inline.
+
+Thanks,
+
+Jonathan
+
+> ---
+> 
+> Notes:
+>     v2:
+>         - add missing comma
+>         - Address comments from Andy Shevchenko
+> 
+>  drivers/iio/adc/mcp3911.c | 134 +++++++++++++++++++++++++++++++-------
+>  1 file changed, 110 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+> index a019264e73e3..f0179385485f 100644
+> --- a/drivers/iio/adc/mcp3911.c
+> +++ b/drivers/iio/adc/mcp3911.c
+> @@ -26,6 +26,8 @@
+>  #define MCP3911_REG_MOD			0x06
+>  #define MCP3911_REG_PHASE		0x07
+>  #define MCP3911_REG_GAIN		0x09
+> +#define MCP3911_GAIN_MASK(ch)          (0x7 << 3*ch)
+> +#define MCP3911_GAIN_VAL(ch, val)      ((val << 3*ch) & MCP3911_GAIN_MASK(ch))
+>  
+>  #define MCP3911_REG_STATUSCOM		0x0a
+>  #define MCP3911_STATUSCOM_DRHIZ         BIT(12)
+> @@ -55,8 +57,10 @@
+>  #define MCP3911_REG_WRITE(reg, id)	((((reg) << 1) | ((id) << 5) | (0 << 0)) & 0xff)
+>  
+>  #define MCP3911_NUM_CHANNELS		2
+> +#define MCP3911_NUM_SCALES		6
+>  
+>  static const int mcp3911_osr_table[] = {32, 64, 128, 256, 512, 1024, 2048, 4096};
+> +static u32 mcp3911_scale_table[MCP3911_NUM_SCALES][2];
+>  
+>  struct mcp3911 {
+>  	struct spi_device *spi;
+> @@ -65,6 +69,7 @@ struct mcp3911 {
+>  	struct clk *clki;
+>  	u32 dev_addr;
+>  	struct iio_trigger *trig;
+> +	u32 gain[MCP3911_NUM_CHANNELS];
+>  	struct {
+>  		u32 channels[2];
+>  		s64 ts __aligned(8);
+> @@ -113,6 +118,37 @@ static int mcp3911_update(struct mcp3911 *adc, u8 reg, u32 mask,
+>  	return mcp3911_write(adc, reg, val, len);
+>  }
+>  
+> +static int mcp3911_get_gain(struct mcp3911 *adc, u8 channel, u32 *val)
+> +{
+> +	int ret;
+> +
+> +	ret = mcp3911_read(adc, MCP3911_REG_GAIN, val, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val >>= channel * 3;
+> +	*val &= GENMASK(2, 0);
+> +	*val = BIT(*val);
+> +
+> +	return 0;
+> +}
+> +
+> +static int mcp3911_write_raw_get_fmt(struct iio_dev *indio_dev,
+> +					struct iio_chan_spec const *chan,
+> +					long mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_PHASE:
+> +		return IIO_VAL_INT;
+
+Ah. here is what I asked for earlier. Please move it back to the
+patches that introduced the other features.
+
+> +	default:
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	}
+> +}
+> +
+>  static int mcp3911_read_avail(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     const int **vals, int *type, int *length,
+> @@ -124,6 +160,11 @@ static int mcp3911_read_avail(struct iio_dev *indio_dev,
+>  		*vals = mcp3911_osr_table;
+>  		*length = ARRAY_SIZE(mcp3911_osr_table);
+>  		return IIO_AVAIL_LIST;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*type = IIO_VAL_INT_PLUS_NANO;
+> +		*vals = (int *)mcp3911_scale_table;
+> +		*length = ARRAY_SIZE(mcp3911_scale_table) * 2;
+> +		return IIO_AVAIL_LIST;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -180,29 +221,9 @@ static int mcp3911_read_raw(struct iio_dev *indio_dev,
+>  		break;
+>  
+>  	case IIO_CHAN_INFO_SCALE:
+> -		if (adc->vref) {
+> -			ret = regulator_get_voltage(adc->vref);
+> -			if (ret < 0) {
+> -				dev_err(indio_dev->dev.parent,
+> -					"failed to get vref voltage: %d\n",
+> -				       ret);
+> -				goto out;
+> -			}
+> -
+> -			*val = ret / 1000;
+> -		} else {
+> -			*val = MCP3911_INT_VREF_MV;
+> -		}
+> -
+> -		/*
+> -		 * For 24bit Conversion
+> -		 * Raw = ((Voltage)/(Vref) * 2^23 * Gain * 1.5
+> -		 * Voltage = Raw * (Vref)/(2^23 * Gain * 1.5)
+> -		 */
+> -
+> -		/* val2 = (2^23 * 1.5) */
+> -		*val2 = 12582912;
+> -		ret = IIO_VAL_FRACTIONAL;
+> +		*val = mcp3911_scale_table[ilog2(adc->gain[channel->channel])][0];
+> +		*val2 = mcp3911_scale_table[ilog2(adc->gain[channel->channel])][1];
+> +		ret = IIO_VAL_INT_PLUS_NANO;
+>  		break;
+>  	}
+>  
+> @@ -220,6 +241,18 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+>  
+>  	mutex_lock(&adc->lock);
+>  	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		for (int i = 0; i < MCP3911_NUM_SCALES; i++) {
+> +			if (val == mcp3911_scale_table[i][0] &&
+> +				val2 == mcp3911_scale_table[i][1]) {
+> +
+> +				adc->gain[channel->channel] = BIT(i);
+> +				ret = mcp3911_update(adc, MCP3911_REG_GAIN,
+> +						MCP3911_GAIN_MASK(channel->channel),
+> +						MCP3911_GAIN_VAL(channel->channel, i), 1);
+> +			}
+> +		}
+> +		break;
+>  	case IIO_CHAN_INFO_OFFSET:
+>  		if (val2 != 0) {
+>  			ret = -EINVAL;
+> @@ -264,6 +297,48 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+>  	return ret;
+>  }
+>  
+> +static int mcp3911_calc_scale_table(struct mcp3911 *adc)
+> +{
+> +	u32 ref = MCP3911_INT_VREF_MV;
+> +	u32 div;
+> +	int ret;
+> +	int tmp0, tmp1;
+> +	s64 tmp2;
+> +
+> +	if (adc->vref) {
+> +		ret = regulator_get_voltage(adc->vref);
+> +		if (ret < 0) {
+> +			dev_err(&adc->spi->dev,
+> +				"failed to get vref voltage: %d\n",
+> +			       ret);
+> +			return ret;
+> +		}
+> +
+> +		ref = ret / 1000;
+> +	}
+> +
+> +	/*
+> +	 * For 24bit Conversion
+> +	 * Raw = ((Voltage)/(Vref) * 2^23 * Gain * 1.5
+> +	 * Voltage = Raw * (Vref)/(2^23 * Gain * 1.5)
+> +	 */
+> +
+> +	/* ref = Reference voltage
+
+comment syntax is wrong.  Also a bit odd to have two comment
+blocks next to each other. Please combine them.
+
+> +	 * div = (2^23 * 1.5 * gain) = 12582912 * gain
+> +	 */
+> +	for (int i = 0; i < MCP3911_NUM_SCALES; i++) {
+> +		div = 12582912 * BIT(i);
+> +		tmp2 = div_s64((s64)ref * 1000000000LL, div);
+> +		tmp1 = div;
+> +		tmp0 = (int)div_s64_rem(tmp2, 1000000000, &tmp1);
+> +
+> +		mcp3911_scale_table[i][0] = 0;
+> +		mcp3911_scale_table[i][1] = tmp1;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  #define MCP3911_CHAN(idx) {					\
+>  		.type = IIO_VOLTAGE,				\
+>  		.indexed = 1,					\
+> @@ -276,8 +351,10 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+>  			BIT(IIO_CHAN_INFO_OFFSET) |		\
+>  			BIT(IIO_CHAN_INFO_SCALE),		\
+> -		.info_mask_shared_by_type_available =		\
+> +		.info_mask_shared_by_type_available =           \
+>  			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+> +		.info_mask_separate_available =			\
+> +			BIT(IIO_CHAN_INFO_SCALE),		\
+>  		.scan_type = {					\
+>  			.sign = 's',				\
+>  			.realbits = 24,				\
+> @@ -330,6 +407,7 @@ static const struct iio_info mcp3911_info = {
+>  	.read_raw = mcp3911_read_raw,
+>  	.write_raw = mcp3911_write_raw,
+>  	.read_avail = mcp3911_read_avail,
+> +	.write_raw_get_fmt = mcp3911_write_raw_get_fmt,
+>  };
+>  
+>  static irqreturn_t mcp3911_interrupt(int irq, void *dev_id)
+> @@ -460,6 +538,14 @@ static int mcp3911_probe(struct spi_device *spi)
+>  	if (ret)
+>  		goto clk_disable;
+>  
+> +	ret = mcp3911_calc_scale_table(adc);
+> +	if (ret)
+> +		goto clk_disable;
+> +
+> +       /* Store gain values to better calculate scale values */
+
+Run checkpatch.pl You have spaces here which should be a tab.
+
+> +	mcp3911_get_gain(adc, 0, &adc->gain[0]);
+> +	mcp3911_get_gain(adc, 1, &adc->gain[1]);
+
+We'd normally set something like this to default value rather than
+rely on sane state from a previous startup.  Either that or rely on reset
+(which device has, but I don't think driver supports yet).
 
 
-在 2022/6/22 14:31, Rasmus Villemoes 写道:
-> On 22/06/2022 08.13, Peng Fan (OSS) wrote:
->> From: Peng Fan <peng.fan@nxp.com>
->>
->> i.MX8MP iomux pad BIT3 and BIT0 are reserved bits. Writing 1 to the
->> reserved bit will be ignored and reading will still return 0. Although
->> function not broken with reserved bits set, we should not set reserved
->> bits.
-> Thank you, these have really been bugging my while trying to bring up an
-> imx8mp-based board and adding the right pinmux settings - not knowing
-> whether there was some undocumented effect from including one of those
-> bits has led me astray more than once.
->
-> One question: E.g. in patch 11, you change the setting from 0x49 to
-> 0x40, which is of course exactly what the patch description says. But
-> when bit 8 (PE) is not set, is there any effect from either setting of
-> bit 6 (PUE)? Not that I suggest changing to 0x00, but I'm just curious.
 
-Set PE/PUE, it depends on board design or whether need it. Because the 
-previous settings not set them, I not set them also, just
-not touch the reserved bits.
-
-THanks,
-Peng.
-
->
-> For the series:
->
-> Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+> +
+>  	if (device_property_read_bool(&adc->spi->dev, "microchip,data-ready-hiz"))
+>  		ret = mcp3911_update(adc, MCP3911_REG_STATUSCOM, MCP3911_STATUSCOM_DRHIZ,
+>  				0, 2);
 
