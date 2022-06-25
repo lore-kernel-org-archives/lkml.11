@@ -2,99 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AD1C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 08:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87738C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 08:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232137AbiFYIzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 04:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
+        id S232221AbiFYI46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 04:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbiFYIzJ (ORCPT
+        with ESMTP id S229959AbiFYI45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 04:55:09 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839FD3CA7C;
-        Sat, 25 Jun 2022 01:55:08 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id pk21so9229909ejb.2;
-        Sat, 25 Jun 2022 01:55:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jaUOMA46tSqgmaqzzLhut0J/UsQ1nhHZ/vUSRQo5a1o=;
-        b=LNdtdAaP1nkJ8tXLFpBAW+vWVcHY1vhPqM6t2dyYMz3YpcBzlJMTKGKlYDEaSt2nTO
-         7SjcTYb6tK59rwE6XKxpNDuwihUWDIAwxR/kmChhxhqDPuTuxvTwa2kikbJCDQLGeiof
-         Mexn6b6P2fMGaLglt+GB5rCh/zGkMDfjeNqTGAs6HYu2g9Km+/364OdkPC3/35mufffF
-         0K++RcTDSYp31VGE4Iadxis8wPDCkY0Rrg2TdsbJzjghP1CAcecNcB8y+CCzVTvv0PDI
-         v5XKy2IgpWPjRcKYqjf60IhgbCGErhzvmrnSTs92rao/KgxRa6vtejvwM7EWs/9WOddz
-         hJ3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jaUOMA46tSqgmaqzzLhut0J/UsQ1nhHZ/vUSRQo5a1o=;
-        b=k9d6W+dBeuAbeuEYJVkf0Le9VvvwwOiNXBiK1hTgtjREqRz71i4URHvN56JDaxzFoS
-         DQyRfUVPjDGG6T+fsE8l6V/OhF0ey4YejtoIJEwYd9ltV3InLEzHpH4VV1C9RbYFqzis
-         o8mO0JW+5mLXgBm5JQNBH43qCf66FzgBgYdcveh49PPZraBjVFu8RuZGjSin2CU80Ktk
-         iXaaTLUDgk9AuvI/5eWw8xcKScoRfiNug8FTe6ktPO+VRqhILO68d10igV5ZObM/zbLf
-         EBz3KntO1N5vfrdNkf23jfYd1/6NFo2Xgej2YeOFnmIp0MkhFt0AmsEnO2bBzLsn1eCK
-         cgtg==
-X-Gm-Message-State: AJIora9zAk6Ko/Gpp3geERuzw9JBjLin7lbcdVT4P7S1xdnO+gKJYkAL
-        dJ4vnZOZau1v4Zx0o85VElDUR7YFvcg=
-X-Google-Smtp-Source: AGRyM1u2+hP4PXZIfCHZyNpeXg0OuVQvCS/EE38+MmPOmtdACxl8YxiL2LU6RGp+hAdGvuEHT1ww1A==
-X-Received: by 2002:a17:907:c0f:b0:726:3172:5eea with SMTP id ga15-20020a1709070c0f00b0072631725eeamr2984951ejc.110.1656147306869;
-        Sat, 25 Jun 2022 01:55:06 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
-        by smtp.googlemail.com with ESMTPSA id e5-20020a056402088500b0043566884333sm3678708edy.63.2022.06.25.01.55.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Jun 2022 01:55:06 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <f0a0ab85-d6de-8f7e-d0be-6c6abffebb33@redhat.com>
-Date:   Sat, 25 Jun 2022 10:55:04 +0200
+        Sat, 25 Jun 2022 04:56:57 -0400
+Received: from jari.cn (unknown [218.92.28.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A757C3F8A2
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 01:56:56 -0700 (PDT)
+Received: by ajax-webmail-localhost.localdomain (Coremail) ; Sat, 25 Jun
+ 2022 16:51:35 +0800 (GMT+08:00)
+X-Originating-IP: [125.70.163.206]
+Date:   Sat, 25 Jun 2022 16:51:35 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "XueBing Chen" <chenxuebing@jari.cn>
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject:  [PATCH] mm: sparsemem: drop unexpected word 'a' in comments
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 0/3] KVM: x86/mmu: Cleanups for eager page splitting
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>
-References: <20220624171808.2845941-1-seanjc@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220624171808.2845941-1-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <24fbdae3.c86.1819a0f31b9.Coremail.chenxuebing@jari.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AQAAfwA3QW+YzLZi2TVEAA--.778W
+X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAICmFEYxsvNQAIsM
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/24/22 19:18, Sean Christopherson wrote:
-> Eager page splitting cleanups for a few minor things that were noted in
-> code review but didn't make it into the committed code.
-> 
-> The last patch in particular is a bit more urgent than I first realized.
-> I had forgotten that pte_list_desc is now 128 bytes, and I also had a
-> brain fart and thought it was just allocating pointers, i.e. 8 bytes.
-> In other words, I was thinking the 513 object buffer was "only" wasting
-> ~8kb per VM, whereas it actually costs ~64kb per VM.
-> 
-> Sean Christopherson (3):
->    KVM: x86/mmu: Avoid subtle pointer arithmetic in kvm_mmu_child_role()
->    KVM: x86/mmu: Use "unsigned int", not "u32", for SPTEs' @access info
->    KVM: x86/mmu: Buffer nested MMU split_desc_cache only by default
->      capacity
-> 
->   arch/x86/kvm/mmu/mmu.c | 53 ++++++++++++++++++++++++++++--------------
->   1 file changed, 35 insertions(+), 18 deletions(-)
-> 
-> 
-> base-commit: 4b88b1a518b337de1252b8180519ca4c00015c9e
-
-Queued 2+3.
-
-Paolo
+CnRoZXJlIGlzIGFuIHVuZXhwZWN0ZWQgd29yZCAnYScgaW4gdGhlIGNvbW1lbnRzIHRoYXQgbmVl
+ZCB0byBiZSBkcm9wcGVkCgpTaWduZWQtb2ZmLWJ5OiBYdWVCaW5nIENoZW4gPGNoZW54dWViaW5n
+QGphcmkuY24+Ci0tLQogbW0vc3BhcnNlLXZtZW1tYXAuYyB8IDIgKy0KIDEgZmlsZSBjaGFuZ2Vk
+LCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL21tL3NwYXJzZS12
+bWVtbWFwLmMgYi9tbS9zcGFyc2Utdm1lbW1hcC5jCmluZGV4IDhlZDE5MzI0OWU4NC4uMzNjNTA4
+ZWM1ODQ2IDEwMDY0NAotLS0gYS9tbS9zcGFyc2Utdm1lbW1hcC5jCisrKyBiL21tL3NwYXJzZS12
+bWVtbWFwLmMKQEAgLTU0OCw3ICs1NDgsNyBAQCBwdGVfdCAqIF9fbWVtaW5pdCB2bWVtbWFwX3B0
+ZV9wb3B1bGF0ZShwbWRfdCAqcG1kLCB1bnNpZ25lZCBsb25nIGFkZHIsIGludCBub2RlLAogCQl9
+IGVsc2UgewogCQkJLyoKIAkJCSAqIFdoZW4gYSBQVEUvUE1EIGVudHJ5IGlzIGZyZWVkIGZyb20g
+dGhlIGluaXRfbW0KLQkJCSAqIHRoZXJlJ3MgYSBhIGZyZWVfcGFnZXMoKSBjYWxsIHRvIHRoaXMg
+cGFnZSBhbGxvY2F0ZWQKKwkJCSAqIHRoZXJlJ3MgYSBmcmVlX3BhZ2VzKCkgY2FsbCB0byB0aGlz
+IHBhZ2UgYWxsb2NhdGVkCiAJCQkgKiBhYm92ZS4gVGh1cyB0aGlzIGdldF9wYWdlKCkgaXMgcGFp
+cmVkIHdpdGggdGhlCiAJCQkgKiBwdXRfcGFnZV90ZXN0emVybygpIG9uIHRoZSBmcmVlaW5nIHBh
+dGguCiAJCQkgKiBUaGlzIGNhbiBvbmx5IGNhbGxlZCBieSBjZXJ0YWluIFpPTkVfREVWSUNFIHBh
+dGgsCi0tIAoyLjE3LjEK
