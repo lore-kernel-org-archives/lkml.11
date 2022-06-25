@@ -2,97 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EB8CCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 08:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AD1C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 08:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232207AbiFYIvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 04:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
+        id S232137AbiFYIzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 04:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbiFYIvB (ORCPT
+        with ESMTP id S229959AbiFYIzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 04:51:01 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFA9419A4;
-        Sat, 25 Jun 2022 01:51:00 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id c137so3512338qkg.5;
-        Sat, 25 Jun 2022 01:51:00 -0700 (PDT)
+        Sat, 25 Jun 2022 04:55:09 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839FD3CA7C;
+        Sat, 25 Jun 2022 01:55:08 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id pk21so9229909ejb.2;
+        Sat, 25 Jun 2022 01:55:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gr7rHwj4uZV2BrO1OagJPPNTulCd6lAi4kIBjcgZsYk=;
-        b=RF3hzoPNG9vTghwo8Zhz+k+WmE8fn0+6kzxobSF7lZMuwexuhuRa4uU2HdfatbuaO3
-         2X6IGckFsgx2jz4VSCheJLkCw9P1qKxdC/cHZAUSVJ+L2ENfSr0LMqSdRFXYW3Cb7Rq7
-         7/KSMpCA4pNOoG+om3o1xSWkRXQKhx0MqNLR5K+907lHBFWDA5QkYOC4SooA7vlv3/hw
-         tx0DDk3CLG7zxrA/zKdfcrMthH8tksK1ywdTBr/Vp/FaTlxDTz6/IY2qHGR3Idim7q4A
-         ULUywPAFVUvF8zqlgYg6Amewifo6H6ugiwbYB3U/oWahF/yrU0nZdqekEDa/irM82vhz
-         eL3A==
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jaUOMA46tSqgmaqzzLhut0J/UsQ1nhHZ/vUSRQo5a1o=;
+        b=LNdtdAaP1nkJ8tXLFpBAW+vWVcHY1vhPqM6t2dyYMz3YpcBzlJMTKGKlYDEaSt2nTO
+         7SjcTYb6tK59rwE6XKxpNDuwihUWDIAwxR/kmChhxhqDPuTuxvTwa2kikbJCDQLGeiof
+         Mexn6b6P2fMGaLglt+GB5rCh/zGkMDfjeNqTGAs6HYu2g9Km+/364OdkPC3/35mufffF
+         0K++RcTDSYp31VGE4Iadxis8wPDCkY0Rrg2TdsbJzjghP1CAcecNcB8y+CCzVTvv0PDI
+         v5XKy2IgpWPjRcKYqjf60IhgbCGErhzvmrnSTs92rao/KgxRa6vtejvwM7EWs/9WOddz
+         hJ3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gr7rHwj4uZV2BrO1OagJPPNTulCd6lAi4kIBjcgZsYk=;
-        b=Q+4gf93dDVMOz0Mlgpy5P/b1WdtsQRl0mqoN79N5bn0rlnKP1nv/OP/7aoGaKHZjkH
-         LuSnuyIbnWXX7utqyStNj/c9/PGVCYf/yn18Javb3uiB6DWw5wpYSfsAhn2Ln5kZ1SHe
-         /9ukUZEXaaqo6A6N5uVAdBiTyRJ6UN4k+AojJ+lxN58YirLBcXkZtJxc0HkerwmV1bwn
-         kyqqCOEB9wpZDDpH1YSOlu5r+LFn//TeBg5xgQdKNbGQsLWtAwMbPiG61/GdNlqqc0RY
-         bR7yEX9r/g89WLvC2NOYs9L60JSaPVUMVCXOYH/eW51EZ70D/wWaCVH8hCEHtbAjXkmu
-         9bbQ==
-X-Gm-Message-State: AJIora9DqJ34dlYEVdx9tY17Bn0wXbZsD4VxSwcPHKtbm2kiafGVx0VK
-        OAXNgzGDCX61W6631smyTDIR3BYb1UQK1pMIxMQ=
-X-Google-Smtp-Source: AGRyM1vnMR2wmyHZ82Hm11vMWcd0aHa0cK911PF15+gzrd3hKdZXPTKZj8n6Rj+ksDElGT+sDKNwTHx7h462FXBGNoU=
-X-Received: by 2002:a05:620a:2450:b0:6a6:d264:2b88 with SMTP id
- h16-20020a05620a245000b006a6d2642b88mr2100874qkn.25.1656147060016; Sat, 25
- Jun 2022 01:51:00 -0700 (PDT)
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jaUOMA46tSqgmaqzzLhut0J/UsQ1nhHZ/vUSRQo5a1o=;
+        b=k9d6W+dBeuAbeuEYJVkf0Le9VvvwwOiNXBiK1hTgtjREqRz71i4URHvN56JDaxzFoS
+         DQyRfUVPjDGG6T+fsE8l6V/OhF0ey4YejtoIJEwYd9ltV3InLEzHpH4VV1C9RbYFqzis
+         o8mO0JW+5mLXgBm5JQNBH43qCf66FzgBgYdcveh49PPZraBjVFu8RuZGjSin2CU80Ktk
+         iXaaTLUDgk9AuvI/5eWw8xcKScoRfiNug8FTe6ktPO+VRqhILO68d10igV5ZObM/zbLf
+         EBz3KntO1N5vfrdNkf23jfYd1/6NFo2Xgej2YeOFnmIp0MkhFt0AmsEnO2bBzLsn1eCK
+         cgtg==
+X-Gm-Message-State: AJIora9zAk6Ko/Gpp3geERuzw9JBjLin7lbcdVT4P7S1xdnO+gKJYkAL
+        dJ4vnZOZau1v4Zx0o85VElDUR7YFvcg=
+X-Google-Smtp-Source: AGRyM1u2+hP4PXZIfCHZyNpeXg0OuVQvCS/EE38+MmPOmtdACxl8YxiL2LU6RGp+hAdGvuEHT1ww1A==
+X-Received: by 2002:a17:907:c0f:b0:726:3172:5eea with SMTP id ga15-20020a1709070c0f00b0072631725eeamr2984951ejc.110.1656147306869;
+        Sat, 25 Jun 2022 01:55:06 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id e5-20020a056402088500b0043566884333sm3678708edy.63.2022.06.25.01.55.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Jun 2022 01:55:06 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <f0a0ab85-d6de-8f7e-d0be-6c6abffebb33@redhat.com>
+Date:   Sat, 25 Jun 2022 10:55:04 +0200
 MIME-Version: 1.0
-References: <20220623182542.1116677-1-robimarko@gmail.com> <26cdc24c-e0e8-1059-f6ca-11c08615eeca@linaro.org>
-In-Reply-To: <26cdc24c-e0e8-1059-f6ca-11c08615eeca@linaro.org>
-From:   Robert Marko <robimarko@gmail.com>
-Date:   Sat, 25 Jun 2022 10:50:49 +0200
-Message-ID: <CAOX2RU7aEaBt_PYS2UA6BES+dJgx4n2QPHJ6yWYWZuTt2SLXoA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: firmware: qcom-scm: convert to dtschema
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        David Heidelberg <david@ixit.cz>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 0/3] KVM: x86/mmu: Cleanups for eager page splitting
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>
+References: <20220624171808.2845941-1-seanjc@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220624171808.2845941-1-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 24 Jun 2022 at 11:52, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 23/06/2022 20:25, Robert Marko wrote:
-> > Convert bindings for Qualcomm SCM to dtschema.
-> >
-> > SoC compatibles that were used, but not documented were added.
-> >
-> > Signed-off-by: Robert Marko <robimarko@gmail.com>
->
-> This was already submitted:
-> https://lore.kernel.org/all/20211218194038.26913-1-david@ixit.cz/
+On 6/24/22 19:18, Sean Christopherson wrote:
+> Eager page splitting cleanups for a few minor things that were noted in
+> code review but didn't make it into the committed code.
+> 
+> The last patch in particular is a bit more urgent than I first realized.
+> I had forgotten that pte_list_desc is now 128 bytes, and I also had a
+> brain fart and thought it was just allocating pointers, i.e. 8 bytes.
+> In other words, I was thinking the 513 object buffer was "only" wasting
+> ~8kb per VM, whereas it actually costs ~64kb per VM.
+> 
+> Sean Christopherson (3):
+>    KVM: x86/mmu: Avoid subtle pointer arithmetic in kvm_mmu_child_role()
+>    KVM: x86/mmu: Use "unsigned int", not "u32", for SPTEs' @access info
+>    KVM: x86/mmu: Buffer nested MMU split_desc_cache only by default
+>      capacity
+> 
+>   arch/x86/kvm/mmu/mmu.c | 53 ++++++++++++++++++++++++++++--------------
+>   1 file changed, 35 insertions(+), 18 deletions(-)
+> 
+> 
+> base-commit: 4b88b1a518b337de1252b8180519ca4c00015c9e
 
-Hi Krzysztof,
-I was not aware there was already a version sent, just used linux-next
-as the base
-and it wasn't there so I assumed, will search through the archives next time.
+Queued 2+3.
 
-Anyway, that attempt looks abandoned.
-
-Regards,
-Robert
->
-> David,
-> Do you intend to work on the bindings you submitted before? There are
-> several pending on your side (things to be fixed), so I am not sure if
-> work is abandoned or just waiting.
->
-> Best regards,
-> Krzysztof
+Paolo
