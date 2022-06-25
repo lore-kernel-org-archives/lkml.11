@@ -2,108 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106C3C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 14:27:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 14:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232965AbiFYO06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 10:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
+        id S232974AbiFYOlN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 10:41:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiFYO05 (ORCPT
+        with ESMTP id S232509AbiFYOlL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 10:26:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F0DE0E2;
-        Sat, 25 Jun 2022 07:26:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97D1DB80B6F;
-        Sat, 25 Jun 2022 14:26:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94445C3411C;
-        Sat, 25 Jun 2022 14:26:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656167214;
-        bh=56xO8nsdt8HDZ8eKJcZsZturnOZobYXhKpYstAWes3s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pG8GyiDGNAmyfE5bJp19nE/3gAbZiimS5JkXS4qiRMz6YA2p5dHVU1ea3dRfq5T3N
-         9hI3kysESnWOCH0VvOMouKG6J1L2azUZVnNXxwE5cdoehY8QvQQp3WbhvKA1kQW4Mi
-         Ek9zPtDEIRRdWk5l/j/L2hIPvxgnSwkmD89osI5U=
-Date:   Sat, 25 Jun 2022 16:26:51 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
-Cc:     patchwork-bot+netdevbpf@kernel.org, stable@vger.kernel.org,
-        Riccardo Paolo Bestetti <pbl@bestov.io>,
-        Carlos Llamas <cmllamas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
-        Kernel hackers <linux-kernel@vger.kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>
-Subject: Re: [PATCH v2] ipv4: ping: fix bind address validity check
-Message-ID: <YrcbKzTuUssl+x0G@kroah.com>
-References: <20220617085435.193319-1-pbl@bestov.io>
- <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
- <CANP3RGcMqXH2+g1=40zwpzbpDORjDpyo4cVYZWS_tfVR8A_6CQ@mail.gmail.com>
- <YrBH1MXZq2/3Z94T@kroah.com>
- <CANP3RGc8tjqk+c=+rAHNON8u=21Uu+kWveuMWZxGCNMjvqRHYg@mail.gmail.com>
+        Sat, 25 Jun 2022 10:41:11 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C553A1A3;
+        Sat, 25 Jun 2022 07:41:09 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id cw10so10304645ejb.3;
+        Sat, 25 Jun 2022 07:41:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1HzW1IrxtxLnfOkRiTY/Z3Afa6/8aaGWZ9dIAJbG2Nk=;
+        b=R3+UDhDCGX4rc58cacrJwlaS7YBXY12lSKcE40nLJhiTgo2O2pWvKnmBBVnAeHaHB+
+         mrO8Tu9kGNcKiO05FclIWt1NPKIdqgZ+m+CU/fWj+3WGIogre1ZFn/fsrGyc//2f2bKs
+         U7YbsxS+p+punYMSmrZkq4Cq02FxbKah6YuARjfTx0fn95Sd3hd+/+PWssrstaZmYE+M
+         hylGJV5UufUDg7h2w4/QKQtgbX7AIcjUV62GkPyb3MJxfh0uPnLdVMeMaGyYnp0RdTyU
+         MsbJBhVLNNsrUokQ/K6Tp2rQufqBIDZJcHczB2wqxE88L7St/zc2ZjzV4F1H63UU5NkT
+         YzwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1HzW1IrxtxLnfOkRiTY/Z3Afa6/8aaGWZ9dIAJbG2Nk=;
+        b=NBvACxsDp62GH/uuo6BrhgtZMKi2QHRF+QPg8gQria7Ikc6Dl+qaNg8qWGmbi0SOd5
+         QKwhnyo8lPS7XshAB3ZAI4HwjXQJHRBBNYcih8AdvGRQ3YtkrmmDIAWdXGcOSCiCq3Jy
+         BVvcOP0qOo1dzUvUV4PzS1KVRWn2DvH007IV8wzOz9UoRYZnS1YTXU8jMWoSpW1GaxuN
+         EHS0d7JiJ0/ANf2TXHvtb/XyvIDv9zTOZJxk8z2GFSTbHOQqDMRJE4998lgQTuvnicLa
+         QOMSRXk/R3mxqLuGavR5U9xWtZUVjTUYzDtStHhV38BIvXhqqZA9th09N9w20fhzknFU
+         Ae5w==
+X-Gm-Message-State: AJIora8oMmTSsdtp75xVkpNgU5/9IQ3lmJ/O4X++uqe4PEZigWKt+tlD
+        KBvWZeBc/3Bs0c1ZaDPw9Yc=
+X-Google-Smtp-Source: AGRyM1vCGcLpPTTUrdXyFGNwK+QTNn9TSbEcT1j8rWJnoLHXAOTR9tld7lqxnxZ7Bm/8j9D7VzWafA==
+X-Received: by 2002:a17:906:2bda:b0:726:3b59:3ea9 with SMTP id n26-20020a1709062bda00b007263b593ea9mr4094197ejg.43.1656168068221;
+        Sat, 25 Jun 2022 07:41:08 -0700 (PDT)
+Received: from opensuse.localnet (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
+        by smtp.gmail.com with ESMTPSA id g4-20020a17090669c400b006fe9f9d0938sm2731821ejs.175.2022.06.25.07.41.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jun 2022 07:41:06 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Chris Down <chris@chrisdown.name>,
+        Filipe Manana <fdmanana@suse.com>, Qu Wenruo <wqu@suse.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        Gabriel Niebler <gniebler@suse.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ira Weiny <ira.weiny@intel.com>
+Subject: Re: [PATCH] btrfs: Convert zlib_compress_pages() to use kmap_local_page()
+Date:   Sat, 25 Jun 2022 16:41:04 +0200
+Message-ID: <3110135.5fSG56mABF@opensuse>
+In-Reply-To: <20220618092752.25153-1-fmdefrancesco@gmail.com>
+References: <20220618092752.25153-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANP3RGc8tjqk+c=+rAHNON8u=21Uu+kWveuMWZxGCNMjvqRHYg@mail.gmail.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:18:21AM -0700, Maciej Żenczykowski wrote:
-> On Mon, Jun 20, 2022 at 3:11 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > On Fri, Jun 17, 2022 at 04:45:52PM -0700, Maciej Żenczykowski wrote:
-> > > On Fri, Jun 17, 2022 at 4:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
-> > > >
-> > > > Hello:
-> > > >
-> > > > This patch was applied to netdev/net.git (master)
-> > > > by David S. Miller <davem@davemloft.net>:
-> > > >
-> > > > On Fri, 17 Jun 2022 10:54:35 +0200 you wrote:
-> > > > > Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-> > > > > introduced a helper function to fold duplicated validity checks of bind
-> > > > > addresses into inet_addr_valid_or_nonlocal(). However, this caused an
-> > > > > unintended regression in ping_check_bind_addr(), which previously would
-> > > > > reject binding to multicast and broadcast addresses, but now these are
-> > > > > both incorrectly allowed as reported in [1].
-> > > > >
-> > > > > [...]
-> > > >
-> > > > Here is the summary with links:
-> > > >   - [v2] ipv4: ping: fix bind address validity check
-> > > >     https://git.kernel.org/netdev/net/c/b4a028c4d031
-> > > >
-> > > > You are awesome, thank you!
-> > > > --
-> > > > Deet-doot-dot, I am a bot.
-> > > > https://korg.docs.kernel.org/patchwork/pwbot.html
-> > >
-> > > I believe this [
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=b4a028c4d031
-> > > ] needs to end up in 5.17+ LTS (though I guess 5.17 is eol, so
-> > > probably just 5.18)
-> >
-> > 5.17 is end-of-life, sorry.
-> >
-> > And this needs to hit Linus's tree first.
+On sabato 18 giugno 2022 11:27:52 CEST Fabio M. De Francesco wrote:
+> The use of kmap() is being deprecated in favor of kmap_local_page(). With
+> kmap_local_page(), the mapping is per thread, CPU local and not globally
+> visible.
 > 
-> It now has:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/net/ipv4/ping.c
+> Therefore, use kmap_local_page() / kunmap_local() in 
+zlib_compress_pages()
+> because in this function the mappings are per thread and are not visible
+> in other contexts.
 > 
-> ipv4: ping: fix bind address validity check
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/net/ipv4/ping.c?id=b4a028c4d031c27704ad73b1195ca69a1206941e
+> Tested with xfstests on QEMU + KVM 32-bit VM with 4GB of RAM and
+> HIGHMEM64G enabled. This patch passes 26/26 tests of group "compress".
+> 
+> Cc: Qu Wenruo <wqu@suse.com>
+> Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> ---
+> 
+> This patch builds only on top of
+> "[PATCH] btrfs: zlib: refactor how we prepare the input buffer" by Qu 
+Wenruo".
+> https://lore.kernel.org/linux-btrfs/
+d0bfc791b5509df7b9ad44e41ada197d1b3149b3.1655519730.git.wqu@suse.com/
+> 
 
-Great, now queued up, thanks.
+I've seen that Qu sent a v2 of the above patch. However David thinks that 
+it is better not to map pages allocated in zlib.c for output (out_page) 
+since they cannot come from highmem because of "alloc_page(GFP_NOFS);".
 
-greg k-h
+@David:
+
+I suppose that, since it builds _only_ on top of the refactor submitted by 
+Qu, I'll have to wait and see what you decide. 
+
+If you don't want kmap_local_page() and prefer using page_address() on 
+"out_page", please drop this patch and let me know, so that I can send a 
+new patch which will be in accordance to your preference.
+
+Thanks,
+
+Fabio
+
+
