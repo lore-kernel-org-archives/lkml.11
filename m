@@ -2,76 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D21DEC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 03:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F8ECCA473
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 03:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232278AbiFYDAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 23:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42886 "EHLO
+        id S232289AbiFYDAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 23:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232214AbiFYC7x (ORCPT
+        with ESMTP id S232245AbiFYDAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 22:59:53 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F328968097
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 19:59:48 -0700 (PDT)
+        Fri, 24 Jun 2022 23:00:03 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832D068C41
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 19:59:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656125988; x=1687661988;
+  t=1656125989; x=1687661989;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=R2rj8/95TBW8dI9blU7vxe9YaAKo96iqhjTJmyDcWv4=;
-  b=GJYG11iCcia3JNizPy6ABfC/AxiNpH4AnauvyFSLjC2dXRNGcN8bQr17
-   Qnpb5f0pnA0RDeZ8IOn1FonMoraCRnDMCfIu153NYSmRtw+zdRnBMgkGx
-   lPs4wJ2E3SF0JiLg+f+2eYo6MG/kReign79XQR9DBmRzLqRp/0yCq77nU
-   QCuF7y2vDGidJv7QBoFyAW/m14vTQsz9AZ68vpilPtYaCSWEaNL3oXhW+
-   xkgeAFNOYeTg54uzOPXFBFGJobqe4omgOdfkOqTjFqKvsFylGchkZjWst
-   5KlWxmt3LqZh1AMnbC3gyX1YhvP3Bos5sun4ieiW6sLZKMyOZNUVwjRcf
+  bh=VnzTGFJzOoM+VT8mHloDK2Y+IZ/BxuN2/mVv5xPnw6E=;
+  b=hJGDe/ynFQJwbC+LcDiU2JlxyP7yuLqZtLTYzy6Nbx/DbgFMZ5YxZaDe
+   b6khiUycynI5bWM0ew2DX8lbu/s0J5mgUBxE+IokuJ2S33zwbFWk+kqod
+   6m/4jH7krUQPe4P3ZhxH+RzDC8b/EEnf/klAoIyo5/y4xJ4fIMoLgesL4
+   J6IwmoXzV2vNhcUE/cSPrqYeIkdw/oPz2FiqsRlbKxWY1yG2uwk6jnb66
+   HT74CxpRDtp529VY8V6NBe1ih65g7kGl4w0zD0Nn1jlVDR1kIjiyyVUbT
+   7hWcQOFUuE7T9UOWrTDru14vYWZRp+Jk3RD4Cp7S3VDhjzrNwvm7NUJdF
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="261558564"
+X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="278685473"
 X-IronPort-AV: E=Sophos;i="5.92,221,1650956400"; 
-   d="scan'208";a="261558564"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 19:59:48 -0700
+   d="scan'208";a="278685473"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 19:59:49 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,221,1650956400"; 
-   d="scan'208";a="835371419"
+   d="scan'208";a="691779879"
 Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Jun 2022 19:59:46 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 24 Jun 2022 19:59:47 -0700
 Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1o4w1S-0005FO-BP;
+        id 1o4w1S-0005Fo-MI;
         Sat, 25 Jun 2022 02:59:46 +0000
-Date:   Sat, 25 Jun 2022 10:59:23 +0800
+Date:   Sat, 25 Jun 2022 10:59:11 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Oded Gabbay <ogabbay@kernel.org>
 Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [ogabbay:gaudi2_full 47/48]
- drivers/misc/habanalabs/goya/goya.c:474:15: error: 'struct
- asic_fixed_properties' has no member named 'first_available_user_interrupt';
- did you mean 'first_available_user_msix_interrupt'?
-Message-ID: <202206250554.HB7ustHf-lkp@intel.com>
+Subject: [ogabbay:gaudi2_full 46/48]
+ drivers/misc/habanalabs/goya/goya.c:392:15: error: 'struct
+ asic_fixed_properties' has no member named 'cfg_base_address'; did you mean
+ 'sram_base_address'?
+Message-ID: <202206250304.GNw1UoUZ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="skLj5ty4jT8Z8NwM"
+Content-Type: multipart/mixed; boundary="7bWLIAE/usYCVeBt"
 Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---skLj5ty4jT8Z8NwM
+--7bWLIAE/usYCVeBt
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
 tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git gaudi2_full
 head:   91e0cd8151cd8592199b21f047a3915fe06ba098
-commit: c71a92a79a0fb20468e485f706d7eade2c65c299 [47/48] rename first_available_user_msix_interrupt to first_available_user_interrupt
+commit: 0145cf802f6578c51c76ff60867cb00342ab8a47 [46/48] habanalabs: initialize new asic properties
 config: x86_64-randconfig-a004
 compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
 reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=c71a92a79a0fb20468e485f706d7eade2c65c299
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=0145cf802f6578c51c76ff60867cb00342ab8a47
         git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
         git fetch --no-tags ogabbay gaudi2_full
-        git checkout c71a92a79a0fb20468e485f706d7eade2c65c299
+        git checkout 0145cf802f6578c51c76ff60867cb00342ab8a47
         # save the config file
         mkdir build_dir && cp config build_dir/.config
         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
@@ -82,21 +82,17 @@ Reported-by: kernel test robot <lkp@intel.com>
 All errors (new ones prefixed by >>):
 
    drivers/misc/habanalabs/goya/goya.c: In function 'goya_set_fixed_properties':
-   drivers/misc/habanalabs/goya/goya.c:392:15: error: 'struct asic_fixed_properties' has no member named 'cfg_base_address'; did you mean 'sram_base_address'?
+>> drivers/misc/habanalabs/goya/goya.c:392:15: error: 'struct asic_fixed_properties' has no member named 'cfg_base_address'; did you mean 'sram_base_address'?
      392 |         prop->cfg_base_address = CFG_BASE;
          |               ^~~~~~~~~~~~~~~~
          |               sram_base_address
-   drivers/misc/habanalabs/goya/goya.c:397:13: error: 'struct asic_fixed_properties' has no member named 'completion_mode'
+>> drivers/misc/habanalabs/goya/goya.c:397:13: error: 'struct asic_fixed_properties' has no member named 'completion_mode'
      397 |         prop->completion_mode = HL_COMPLETION_MODE_JOB;
          |             ^~
-   drivers/misc/habanalabs/goya/goya.c:397:33: error: 'HL_COMPLETION_MODE_JOB' undeclared (first use in this function)
+>> drivers/misc/habanalabs/goya/goya.c:397:33: error: 'HL_COMPLETION_MODE_JOB' undeclared (first use in this function)
      397 |         prop->completion_mode = HL_COMPLETION_MODE_JOB;
          |                                 ^~~~~~~~~~~~~~~~~~~~~~
    drivers/misc/habanalabs/goya/goya.c:397:33: note: each undeclared identifier is reported only once for each function it appears in
->> drivers/misc/habanalabs/goya/goya.c:474:15: error: 'struct asic_fixed_properties' has no member named 'first_available_user_interrupt'; did you mean 'first_available_user_msix_interrupt'?
-     474 |         prop->first_available_user_interrupt = USHRT_MAX;
-         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |               first_available_user_msix_interrupt
    drivers/misc/habanalabs/goya/goya.c: At top level:
    drivers/misc/habanalabs/goya/goya.c:5260:5: warning: no previous prototype for 'goya_pre_schedule_cs' [-Wmissing-prototypes]
     5260 | int goya_pre_schedule_cs(struct hl_cs *cs)
@@ -106,30 +102,26 @@ All errors (new ones prefixed by >>):
          |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 --
    drivers/misc/habanalabs/gaudi/gaudi.c: In function 'gaudi_set_fixed_properties':
-   drivers/misc/habanalabs/gaudi/gaudi.c:585:13: error: 'struct asic_fixed_properties' has no member named 'cache_line_size'
+>> drivers/misc/habanalabs/gaudi/gaudi.c:585:13: error: 'struct asic_fixed_properties' has no member named 'cache_line_size'
      585 |         prop->cache_line_size = DEVICE_CACHE_LINE_SIZE;
          |             ^~
-   drivers/misc/habanalabs/gaudi/gaudi.c:586:15: error: 'struct asic_fixed_properties' has no member named 'cfg_base_address'; did you mean 'sram_base_address'?
+>> drivers/misc/habanalabs/gaudi/gaudi.c:586:15: error: 'struct asic_fixed_properties' has no member named 'cfg_base_address'; did you mean 'sram_base_address'?
      586 |         prop->cfg_base_address = CFG_BASE;
          |               ^~~~~~~~~~~~~~~~
          |               sram_base_address
-   drivers/misc/habanalabs/gaudi/gaudi.c:591:13: error: 'struct asic_fixed_properties' has no member named 'completion_mode'
+>> drivers/misc/habanalabs/gaudi/gaudi.c:591:13: error: 'struct asic_fixed_properties' has no member named 'completion_mode'
      591 |         prop->completion_mode = HL_COMPLETION_MODE_JOB;
          |             ^~
-   drivers/misc/habanalabs/gaudi/gaudi.c:591:33: error: 'HL_COMPLETION_MODE_JOB' undeclared (first use in this function)
+>> drivers/misc/habanalabs/gaudi/gaudi.c:591:33: error: 'HL_COMPLETION_MODE_JOB' undeclared (first use in this function)
      591 |         prop->completion_mode = HL_COMPLETION_MODE_JOB;
          |                                 ^~~~~~~~~~~~~~~~~~~~~~
    drivers/misc/habanalabs/gaudi/gaudi.c:591:33: note: each undeclared identifier is reported only once for each function it appears in
-   drivers/misc/habanalabs/gaudi/gaudi.c:618:13: error: 'struct asic_fixed_properties' has no member named 'mmu_cache_mng_addr'
+>> drivers/misc/habanalabs/gaudi/gaudi.c:618:13: error: 'struct asic_fixed_properties' has no member named 'mmu_cache_mng_addr'
      618 |         prop->mmu_cache_mng_addr = MMU_CACHE_MNG_ADDR;
          |             ^~
-   drivers/misc/habanalabs/gaudi/gaudi.c:619:13: error: 'struct asic_fixed_properties' has no member named 'mmu_cache_mng_size'
+>> drivers/misc/habanalabs/gaudi/gaudi.c:619:13: error: 'struct asic_fixed_properties' has no member named 'mmu_cache_mng_size'
      619 |         prop->mmu_cache_mng_size = MMU_CACHE_MNG_SIZE;
          |             ^~
->> drivers/misc/habanalabs/gaudi/gaudi.c:688:15: error: 'struct asic_fixed_properties' has no member named 'first_available_user_interrupt'; did you mean 'first_available_user_msix_interrupt'?
-     688 |         prop->first_available_user_interrupt = USHRT_MAX;
-         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |               first_available_user_msix_interrupt
    In file included from drivers/misc/habanalabs/gaudi/gaudiP.h:12,
                     from drivers/misc/habanalabs/gaudi/gaudi.c:8:
    drivers/misc/habanalabs/gaudi/gaudi.c: In function 'gaudi_mmu_init':
@@ -162,7 +154,7 @@ All errors (new ones prefixed by >>):
          |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +474 drivers/misc/habanalabs/goya/goya.c
+vim +392 drivers/misc/habanalabs/goya/goya.c
 
    359	
    360	int goya_set_fixed_properties(struct hl_device *hdev)
@@ -197,12 +189,12 @@ vim +474 drivers/misc/habanalabs/goya/goya.c
    389			prop->hw_queues_props[i].cb_alloc_flags = CB_ALLOC_USER;
    390		}
    391	
-   392		prop->cfg_base_address = CFG_BASE;
+ > 392		prop->cfg_base_address = CFG_BASE;
    393		prop->device_dma_offset_for_host_access = HOST_PHYS_BASE;
    394		prop->host_base_address = HOST_PHYS_BASE;
    395		prop->host_end_address = prop->host_base_address + HOST_PHYS_SIZE;
    396		prop->completion_queues_count = NUMBER_OF_CMPLT_QUEUES;
-   397		prop->completion_mode = HL_COMPLETION_MODE_JOB;
+ > 397		prop->completion_mode = HL_COMPLETION_MODE_JOB;
    398		prop->dram_base_address = DRAM_PHYS_BASE;
    399		prop->dram_size = DRAM_PHYS_DEFAULT_SIZE;
    400		prop->dram_end_address = prop->dram_base_address + prop->dram_size;
@@ -279,7 +271,7 @@ vim +474 drivers/misc/habanalabs/goya/goya.c
    471	
    472		prop->max_pending_cs = GOYA_MAX_PENDING_CS;
    473	
- > 474		prop->first_available_user_interrupt = USHRT_MAX;
+   474		prop->first_available_user_msix_interrupt = USHRT_MAX;
    475	
    476		for (i = 0 ; i < HL_MAX_DCORES ; i++)
    477			prop->first_available_cq[i] = USHRT_MAX;
@@ -309,7 +301,7 @@ vim +474 drivers/misc/habanalabs/goya/goya.c
 0-DAY CI Kernel Test Service
 https://01.org/lkp
 
---skLj5ty4jT8Z8NwM
+--7bWLIAE/usYCVeBt
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: attachment; filename=config
 
@@ -5799,4 +5791,4 @@ CONFIG_MEMTEST=y
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
 
---skLj5ty4jT8Z8NwM--
+--7bWLIAE/usYCVeBt--
