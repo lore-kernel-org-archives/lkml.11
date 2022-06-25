@@ -2,230 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A4ACCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C97B5C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233075AbiFYNY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 09:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
+        id S233086AbiFYN1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 09:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233066AbiFYNYY (ORCPT
+        with ESMTP id S232836AbiFYN1a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 09:24:24 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57681AD9B
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:24:22 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id eo8so7075732edb.0
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:24:22 -0700 (PDT)
+        Sat, 25 Jun 2022 09:27:30 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64761AD90;
+        Sat, 25 Jun 2022 06:27:29 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id cu16so8480086qvb.7;
+        Sat, 25 Jun 2022 06:27:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=vT/L0pA679HijlQXBMu/RBXfDaFIMh01ndT9CE/1vWg=;
-        b=BsqaxnRGZQNL1mwfkFmme+Bv7eLP8mS4Va4r8tZQmYRA0LiefjRLt9MqB+e5/MxEIc
-         v1VnEKRc//DL+l/CaUQN+uWPxawYI6jtSCOcJR5oB+6Z8lnTCjxRkIu2IdeGKzNmvlRA
-         gFsHBdWZtNKQgul6HR1/ZHH9tdTQBqmUis8kczrGBqXobluBNAtYkWB3Bo1uI4qGjD+H
-         z8I7gJL4tpb/EfSFfy27sNSn50RPqb4+lwafe9jUM6Pwks3MLjSL+/han5fdP6EbYhU5
-         9GmAvQIOkdafav01deIsCTJrN/10k7xQ2T/idRWo/ulDpRiCIK5eGa2A5ixrN6i0XE40
-         2QSA==
+        bh=xRdSP7QQn9LxuyU8uv6iNySp3ZKuXkCcCH1GRGHjMhA=;
+        b=QLaZ8jRqnmn+9YHJWbj270cALwkgOZZr6BIgy7cd33D71vTwiC1VdOdBZZQzViLLAh
+         M8ZgtPmC1H5wHXvkjaitqL9tQYwTmzB+tPsNFNGDwjQK3evna4OlxXCIL+Y+JIxLLCIm
+         WeP0mUi1VOCacm+AJVACduooRHEIUG4S1gVSr4BQUrulDatp7EDv7KCY2FIW4DoZO2l7
+         yrZwcBogbb+KpYV3ya1HDk7PJV0OpQok9C3dTSLO5hvzMNKQ28AYWw8bcm0PDQpZFoXd
+         XWh+c4FjMHQJm602b3vVqOCQ2qKSRmElJkMdXqjFJEnV5DIfHCoOt2rWkKxEQAzKio2Z
+         HMgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vT/L0pA679HijlQXBMu/RBXfDaFIMh01ndT9CE/1vWg=;
-        b=QErB6oSlZb4Li4oPSHNzG+VXF9JussQQjdU5g28Q3K8Yg1oYksZK/Yklnt2glNcT3Z
-         xPLTVxg48oJipDxP0liy8XbogYFL+foHzBv3Mwqbt4Fi2hAdE2hDHEfvpcGOb6MVC64+
-         Tt1UtP2tICMdFCV4V0BDboiDMThapPNwRz0sVKDtiBpsDjddnv2KLZwJn1N5Uq0SDyLC
-         HiIBF7S2CguGE2hvBZxpsOWIEzHHtQSEQfTR4aaUt3xOTeunpX+Vq4HpX7eBH9pMwC0G
-         e3bcNnIdN/GK+tmBQbHUeCgyv4gMAG/xIy+mDDLwkz9+tQms/9hYMLFtlZMTQi1UW/rA
-         HAMA==
-X-Gm-Message-State: AJIora9kOOpchkOdz6p8SOynbMxT8jKjIzeNmXsxifvGqRFurtCcLa+i
-        eyleyB0jXuNR4+WxrbzR9cHS7jayAxoNBsz87j3wNw==
-X-Google-Smtp-Source: AGRyM1tf4SQ5mEohds//tzA/laPmBOqr1TQEZNctQk0k7INW1cHHEDYfZFx3wIDA4ZqF+MP3yedQ4L+HzS06jz6JhIA=
-X-Received: by 2002:a50:eb45:0:b0:437:7686:6048 with SMTP id
- z5-20020a50eb45000000b0043776866048mr1538258edp.264.1656163461049; Sat, 25
- Jun 2022 06:24:21 -0700 (PDT)
+        bh=xRdSP7QQn9LxuyU8uv6iNySp3ZKuXkCcCH1GRGHjMhA=;
+        b=pVppNEz6saPyn3a/TIKuBqz91H+3Wp9ERQory/xsOde4f5cIHidIqGDUfvL3MMUH2o
+         Y7Oje5Jcw1jFKDiNGqjqqeJ/DRHO2H0ixZeB5faZzWEgq3uSaoA6llHiHOep1A/vP5tN
+         DCO1b9FepPZY9bRbxmcC0ilEddUaaHLDX1H+VM4YzS8qU78/nJNEehd5cJSOifLMTkKf
+         PQ4GIF4Bd5LhlXFbhlB07KMKroE/8/Vobhdq8cijzOX9AuGP0ViGFmwkcs+HoNpU0xZ2
+         q/UPdqivUhfsSDzX08OlEG6MWFb3cHqWfzDu+fqVDJLnLNb2+zjRy27Gu2xOz+R2C97q
+         wWoA==
+X-Gm-Message-State: AJIora95HhiT+atTkLh8/2k5pXEtcbQaKgDDUAyDaqX5QYV6AR1gogvz
+        utwznWifPMZxvStx/dF2DGQGzErL6KZJD9sHw5I=
+X-Google-Smtp-Source: AGRyM1veJ9zCab2JIsHPgJYe6UpnuItqSwEVBCKKsidMdpV+rQCH8l49x5l+t0wLum7a8SbFY4wn3G+LcaNbV+cErt0=
+X-Received: by 2002:a05:622a:2c6:b0:305:2da6:831f with SMTP id
+ a6-20020a05622a02c600b003052da6831fmr3027687qtx.304.1656163648699; Sat, 25
+ Jun 2022 06:27:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220623164322.315085512@linuxfoundation.org>
-In-Reply-To: <20220623164322.315085512@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Sat, 25 Jun 2022 18:54:09 +0530
-Message-ID: <CA+G9fYu6T+OYoo6OgA0ndu2wLg8NwSck08FqJGx7Lm39UMZGyA@mail.gmail.com>
-Subject: Re: [PATCH 5.18 00/11] 5.18.7-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
+References: <20220624165211.4318-1-r.stratiienko@gmail.com> <1779483.VLH7GnMWUR@jernej-laptop>
+In-Reply-To: <1779483.VLH7GnMWUR@jernej-laptop>
+From:   Roman Stratiienko <r.stratiienko@gmail.com>
+Date:   Sat, 25 Jun 2022 16:27:18 +0300
+Message-ID: <CAGphcd=ND93Kek+8=WhXQcU2Z54megQJOetZnwx-EhHwG8ZjDQ@mail.gmail.com>
+Subject: Re: [PATCH] clk: sunxi-ng: sun50i: h6: Modify GPU clock configuration
+ to support DFS
+To:     =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>
+Cc:     =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>, sboyd@kernel.org,
+        mripard@kernel.org, wens@csie.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 at 22:55, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+Hi,
+
+DVFS was tested as DVFS using devfreq driver, not the script.
+
+The following OPP table was used:
+https://github.com/clementperon/linux/commit/add3ef683238095d2721de03601d5b=
+01f2d9ce22
+
+As is already mentioned in the commit message, P causes the issues as well.
+
+Regards,
+Roman
+
+=D1=81=D0=B1, 25 =D0=B8=D1=8E=D0=BD. 2022 =D0=B3. =D0=B2 13:43, Jernej =C5=
+=A0krabec <jernej.skrabec@gmail.com>:
+
 >
-> This is the start of the stable review cycle for the 5.18.7 release.
-> There are 11 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+> Hi Roman,
 >
-> Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
-> Anything received after that time might be too late.
+> Dne petek, 24. junij 2022 ob 18:52:11 CEST je Roman Stratiienko napisal(a=
+):
+> > Using simple bash script it was discovered that not all CCU registers
+> > can be safely used for DFS, e.g.:
+> >
+> >     while true
+> >     do
+> >         devmem 0x3001030 4 0xb0003e02
+> >         devmem 0x3001030 4 0xb0001e02
+> >     done
+> >
+> > Script above changes the GPU_PLL multiplier register value. While the
+> > script is running, the user should interact with the user interface.
+> >
+> > Using this method the following results were obtained:
+> > | Register  | Name           | Bits  | Values | Result |
+> > | --        | --             | --    | --     | --     |
+> > | 0x3001030 | GPU_PLL.MULT   | 15..8 | 20-62  | OK     |
+> > | 0x3001030 | GPU_PLL.INDIV  |     1 | 0-1    | OK     |
+> > | 0x3001030 | GPU_PLL.OUTDIV |     0 | 0-1    | FAIL   |
+> > | 0x3001670 | GPU_CLK.DIV    |  3..0 | ANY    | FAIL   |
+> >
+> > Once bits that caused system failure disabled (kept default 0),
+> > it was discovered that GPU_CLK.MUX was used during DFS for some
+> > reason and was causing the failure too.
+> >
+> > After disabling GPU_PLL.OUTDIV the system started to fail during
+> > booting for some reason until the maximum frequency of GPU_PLL
+> > clock was limited to 756MHz.
+> >
+> > After all the changes made DVFS started to work seamlessly.
 >
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.18.7-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.18.y
-> and the diffstat can be found below.
+> I appreciate testing effort, but I don't think userspace approach is good=
+ way
+> for testing DVFS. I see 2 issues:
+> - As name already suggest, voltage also plays crucial role for stability.=
+ You
+> didn't say on which board you tested this, but I assume it has PMIC. Did =
+you
+> make sure GPU voltage regulator is always at 1.04 V, which is needed for =
+756
+> MHz?
+> - Kernel clock driver always goes through proper procedure for clock rate
+> change, which involves several steps. Bypassing them might also cause som=
+e
+> stability problems.
 >
-> thanks,
+> I agree that GPU PLL should be limited to 756 MHz max. This seems to be
+> maximum operating point specified at vendor DT. But I managed to extract =
+some
+> more information from vendor GPU driver. More specifically, from this sni=
+ppet,
+> located in modules/gpu/mali-midgard/kernel_mode/driver/drivers/gpu/arm/
+> midgard/platform/sunxi/mali_kbase_config_sunxi.c:
 >
-> greg k-h
-
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
-
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-## Build
-* kernel: 5.18.7-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.18.y
-* git commit: 1fbbb68b1ca97c9e8393fe69df86b23e79f81d05
-* git describe: v5.18.5-154-g1fbbb68b1ca9
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18=
-.5-154-g1fbbb68b1ca9
-
-## Test Regressions (compared to v5.18.5-142-g1cf3647a86ad)
-No test regressions found.
-
-## Metric Regressions (compared to v5.18.5-142-g1cf3647a86ad)
-No metric regressions found.
-
-## Test Fixes (compared to v5.18.5-142-g1cf3647a86ad)
-No test fixes found.
-
-## Metric Fixes (compared to v5.18.5-142-g1cf3647a86ad)
-No metric fixes found.
-
-## Test result summary
-total: 128467, pass: 116814, fail: 682, skip: 10271, xfail: 700
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 314 total, 314 passed, 0 failed
-* arm64: 58 total, 58 passed, 0 failed
-* i386: 52 total, 49 passed, 3 failed
-* mips: 37 total, 37 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 60 total, 54 passed, 6 failed
-* riscv: 27 total, 22 passed, 5 failed
-* s390: 18 total, 18 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 56 total, 54 passed, 2 failed
-
-## Test suites summary
-* fwts
-* kselftest-android
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers-dma-buf
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-filesystems-binderfs
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-gpio
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-lib
-* kselftest-membarrier
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-zram
-* kunit
-* kunit/15
-* kunit/261
-* kunit/3
-* kunit/427
-* kunit/90
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* lt[
-* ltp-cap_bounds
-* ltp-commands
-* ltp-containers
-* ltp-controllers
-* ltp-cpuhotplug
-* ltp-crypto
-* ltp-cve
-* ltp-dio
-* ltp-fcntl-locktests
-* ltp-filecaps
-* ltp-fs
-* ltp-fs_bind
-* ltp-fs_perms_simple
-* ltp-fsx
-* ltp-hugetlb
-* ltp-io
-* ltp-ipc
-* ltp-math
-* ltp-mm
-* ltp-nptl
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-sched
-* ltp-securebits
-* ltp-smoke
-* ltp-syscalls
-* ltp-tracing
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+> pll_freq =3D target->freq;
+> while (pll_freq < 288000000)
+>         pll_freq *=3D 2;
+>
+> err =3D clk_set_rate(sunxi_mali->gpu_pll_clk, pll_freq);
+> <...>
+> err =3D clk_set_rate(kbdev->clock, target->freq);
+> <...>
+>
+> Apparently, minimum stable PLL frequency is 288 MHz (this should be added=
+) and
+> divider in peripheral clock can really be used, although preferably not.
+> Vendor GPU operating points specify only 2 lower than 288 MHz points - at=
+ 264
+> MHz and 216 MHz. I'm fully aware that they may not be really stable and g=
+iven
+> that these two and next two all share minimum voltage of 810 mV, power an=
+d
+> thermal savings are probably not that great, so we can skip them and pin
+> peripheral divider to 1, as you already did.
+>
+> Another discrepancy I see is that vendor DT has two operating points, at =
+336
+> MHz and 384 MHz, which also use factor P (also known as d2 in vendor cloc=
+k
+> source). This can be again an oversight or alternatively, it can be that =
+P
+> factor can actually be used, but just with lower frequencies.
+>
+> Can you please make another test with GPU operating points specified in D=
+T and
+> check if it works with P factor left in?
+>
+> For reference, vendor DT has following operating points (kHz, uV):
+> 756000 1040000
+> 624000 950000
+> 576000 930000
+> 540000 910000
+> 504000 890000
+> 456000 870000
+> 432000 860000
+> 420000 850000
+> 408000 840000
+> 384000 830000
+> 360000 820000
+> 336000 810000
+> 312000 810000
+> 264000 810000
+> 216000 810000
+>
+> Best regards,
+> Jernej
+>
+> >
+> > Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+> > ---
+> >  drivers/clk/sunxi-ng/ccu-sun50i-h6.c | 12 +++++-------
+> >  1 file changed, 5 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-h6.c
+> > b/drivers/clk/sunxi-ng/ccu-sun50i-h6.c index 2ddf0a0da526f..d941238cd17=
+8a
+> > 100644
+> > --- a/drivers/clk/sunxi-ng/ccu-sun50i-h6.c
+> > +++ b/drivers/clk/sunxi-ng/ccu-sun50i-h6.c
+> > @@ -95,13 +95,14 @@ static struct ccu_nkmp pll_periph1_clk =3D {
+> >       },
+> >  };
+> >
+> > +/* For GPU PLL, using an output divider for DFS causes system to fail =
+*/
+> >  #define SUN50I_H6_PLL_GPU_REG                0x030
+> >  static struct ccu_nkmp pll_gpu_clk =3D {
+> >       .enable         =3D BIT(31),
+> >       .lock           =3D BIT(28),
+> >       .n              =3D _SUNXI_CCU_MULT_MIN(8, 8, 12),
+> >       .m              =3D _SUNXI_CCU_DIV(1, 1), /* input divider */
+> > -     .p              =3D _SUNXI_CCU_DIV(0, 1), /* output divider
+> */
+> > +     .max_rate       =3D 756000000UL,
+> >       .common         =3D {
+> >               .reg            =3D 0x030,
+> >               .hw.init        =3D CLK_HW_INIT("pll-gpu", "osc24M",
+> > @@ -294,12 +295,9 @@ static SUNXI_CCU_M_WITH_MUX_GATE(deinterlace_clk,
+> > "deinterlace", static SUNXI_CCU_GATE(bus_deinterlace_clk,
+> > "bus-deinterlace", "psi-ahb1-ahb2", 0x62c, BIT(0), 0);
+> >
+> > -static const char * const gpu_parents[] =3D { "pll-gpu" };
+> > -static SUNXI_CCU_M_WITH_MUX_GATE(gpu_clk, "gpu", gpu_parents, 0x670,
+> > -                                    0, 3,    /* M */
+> > -                                    24, 1,   /* mux */
+> > -                                    BIT(31), /* gate */
+> > -                                    CLK_SET_RATE_PARENT);
+> > +/* GPU_CLK divider kept disabled to avoid interferences with DFS */
+> > +static SUNXI_CCU_GATE(gpu_clk, "gpu", "pll-gpu", 0x670,
+> > +                   BIT(31), CLK_SET_RATE_PARENT);
+> >
+> >  static SUNXI_CCU_GATE(bus_gpu_clk, "bus-gpu", "psi-ahb1-ahb2",
+> >                     0x67c, BIT(0), 0);
+>
+>
+>
+>
