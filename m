@@ -2,31 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C84BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 23:41:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75166C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 23:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233634AbiFYXlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 19:41:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58632 "EHLO
+        id S233570AbiFYXoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 19:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233365AbiFYXl3 (ORCPT
+        with ESMTP id S233285AbiFYXn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 19:41:29 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5BFFF5BD
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 16:41:28 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:40444)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o5FP5-00H1OY-Is; Sat, 25 Jun 2022 17:41:27 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:57606 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o5FP4-00AUwT-FE; Sat, 25 Jun 2022 17:41:27 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
+        Sat, 25 Jun 2022 19:43:59 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FEB6BE03
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 16:43:58 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id u15so11755775ejc.10
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 16:43:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fhLEFEWSQRbam1YvxY7yQ4RPKHD6h3bly2df1kg2Kh4=;
+        b=bKom/uo/JqKHAxEbU7+RneFpawB7xt8b5cFXzfj/CCY8owEqYeQ/ZQeb4RXfJUag6E
+         U0/OdE0J4FVP0q28SNowikYNo4Jp6fSRgWDSO7Q3aww2e2GPvXjks8Zf4mp7z2kOw1pJ
+         PqqO2ZJ8PW2qM+Ubf2QCOtsmsVmqDiefwouW4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fhLEFEWSQRbam1YvxY7yQ4RPKHD6h3bly2df1kg2Kh4=;
+        b=pEUFrIY6JGCSiH7eBBI9HsLI24LYAr9RDduTaQD5MI3k7m3J98Xrls0zaPG81O60Bf
+         Ur60TWiRxTz9gkzp2GbCeuNo84kQiptvHJyy4Ra7pzDYkaSM6tQ01GOHyQUOz3QX84z7
+         fJ13DztXbuCp1tzYQSTjDz23vu65qA2qx3hEv1Bfi3KdDq2FrJM5LmLPIxxS10YPPV2j
+         tA1C6DAE7dzn0xu26ZqU4vaC6r+Z5/wz5P5JsMSI6SyVU88cu/ZTzGaM1TubHpM7wLjT
+         h1nuBN9jlAp01TieOPKIdJVfm+LZyRf2kDqZXUBqPKTHak7qRd/8/fXFh00zBYeUF9rW
+         RpGw==
+X-Gm-Message-State: AJIora/rBWWmXXbIbAcZdGNHHSmmsWGKDLTf3JYeDvYT0JvO39tOEWle
+        WiSGFzIs+hab2OEnD3bDKGgeFy2VWAaSMAcH
+X-Google-Smtp-Source: AGRyM1toGUpz1d8vNo5OtHmghlyqhiCCRh1BNoyNPDEtfQEbRgRb5nIap5+B1f+ZTf2/NDA6iUtcBQ==
+X-Received: by 2002:a17:907:6d0a:b0:722:b0b5:be69 with SMTP id sa10-20020a1709076d0a00b00722b0b5be69mr6112303ejc.76.1656200636886;
+        Sat, 25 Jun 2022 16:43:56 -0700 (PDT)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id m14-20020a1709061ece00b007121361d54asm3135739ejj.25.2022.06.25.16.43.55
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Jun 2022 16:43:55 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id w17so7943419wrg.7
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 16:43:55 -0700 (PDT)
+X-Received: by 2002:a05:6000:1f8d:b0:21b:aaec:ebae with SMTP id
+ bw13-20020a0560001f8d00b0021baaecebaemr5931643wrb.274.1656200635134; Sat, 25
+ Jun 2022 16:43:55 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220622140853.31383-1-pmladek@suse.com> <YraWWl+Go17uPOgR@mtj.duckdns.org>
+ <CAHk-=wiC7rj1o7vTnYUPfD7YxAu09MZiZbahHqvLm9+Cgg1dFw@mail.gmail.com>
+ <874k0863x8.fsf@email.froward.int.ebiederm.org> <CAHk-=wgTG2K3erROP19320zBN6BHVf0hRfXGdawkGR4gzrJN6w@mail.gmail.com>
+ <CAHk-=whLsaRKaFKS0UffeCYYCVyP0bbiB4BTYTaXtScgu6R9yA@mail.gmail.com> <87pmiw1fy6.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <87pmiw1fy6.fsf@email.froward.int.ebiederm.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 25 Jun 2022 16:43:39 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiutNT47oNhyk_WvMj2qp4pehYFptXCUzW=u_2STLQiww@mail.gmail.com>
+Message-ID: <CAHk-=wiutNT47oNhyk_WvMj2qp4pehYFptXCUzW=u_2STLQiww@mail.gmail.com>
+Subject: Re: re. Spurious wakeup on a newly created kthread
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
 Cc:     Christian Brauner <brauner@kernel.org>, Tejun Heo <tj@kernel.org>,
         Petr Mladek <pmladek@suse.com>,
         Lai Jiangshan <jiangshanlai@gmail.com>,
@@ -37,100 +73,46 @@ Cc:     Christian Brauner <brauner@kernel.org>, Tejun Heo <tj@kernel.org>,
         Ingo Molnar <mingo@redhat.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Oleg Nesterov <oleg@redhat.com>
-References: <20220622140853.31383-1-pmladek@suse.com>
-        <YraWWl+Go17uPOgR@mtj.duckdns.org>
-        <CAHk-=wiC7rj1o7vTnYUPfD7YxAu09MZiZbahHqvLm9+Cgg1dFw@mail.gmail.com>
-        <874k0863x8.fsf@email.froward.int.ebiederm.org>
-        <CAHk-=wgTG2K3erROP19320zBN6BHVf0hRfXGdawkGR4gzrJN6w@mail.gmail.com>
-        <CAHk-=whLsaRKaFKS0UffeCYYCVyP0bbiB4BTYTaXtScgu6R9yA@mail.gmail.com>
-        <87pmiw1fy6.fsf@email.froward.int.ebiederm.org>
-Date:   Sat, 25 Jun 2022 18:41:19 -0500
-In-Reply-To: <87pmiw1fy6.fsf@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Sat, 25 Jun 2022 18:28:01 -0500")
-Message-ID: <87a6a01fc0.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1o5FP4-00AUwT-FE;;;mid=<87a6a01fc0.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX19+nfYuM5QkUmmMWqKPyESId/ALYZsS/kc=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: re. Spurious wakeup on a newly created kthread
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Eric W. Biederman" <ebiederm@xmission.com> writes:
-
-> Linus Torvalds <torvalds@linux-foundation.org> writes:
->
->> On Sat, Jun 25, 2022 at 11:25 AM Linus Torvalds
->> <torvalds@linux-foundation.org> wrote:
->>>
->>> And that's not at all what the kthread code wants. It wants to set
->>> affinity masks, it wants to create a name for the thread, it wants to
->>> do all those other things.
->>>
->>> That code really wants to just do copy_process().
->>
->> Honestly, I think kernel/kthread.c should be almost rewritten from scratch.
->>
->> I do not understand why it does all those odd keventd games at all,
->> and why kthread_create_info exists in the first place.
+On Sat, Jun 25, 2022 at 4:28 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
 >
 > I presume you mean kthreadd games?
->
->> Why does kthread_create() not just create the thread directly itself,
->> and instead does that odd queue it onto a work function?
->>
->> Some of that goes back to before the git history, and very little of
->> it seems to make any sense. It's as if the code is meant to be able to
->> run from interrupt context, but that can't be it: it's literally doing
->> a GFP_KERNEL kmalloc, it's doing spin-locks without irq safety etc.
->>
->> So why is it calling kthreadd_task() to create the thread? Purely for
->> some crazy odd "make that the parent" reason?
->>
->> I dunno.  The code is odd, unexplained, looks buggy, and most fo the
->> reasons are probably entirely historical.
->
-> I can explain why kthreadd exists and why it creates the threads.
->
-> Very long ago in the context of random userspace processes people would
-> use kernel_thread to create threads and a helper function that I think
-> was called something like kernel_daemonize to scrub the userspace bits
-> off.
->
-> It was an unending sources of problems as the scrub was never complete
-> nor correct.
->
+
+Yeah, sorry.
+
 > So with the introduction of kthreadd the kernel threads were moved
 > out of the userspace process tree, and userspace stopped being able to
 > influence the kernel threads.
->
-> AKA instead of doing the equivalent of a suid exec the code started
-> going the equivalent sshing into the local box.
->
-> We *need* to preserve that kind of separation.
->
+
+Ahh. So essentially it's indeed just basically the parenting issue.
+
 > I want to say that all that is required is that copy_process copies
 > from kthreadd.  Unfortunately that means that it needs to be kthreadd
 > doing the work, as copy_process does always copies from current.  It
 > would take quite a bit of work to untangle that mess.
->
-> It does appear possible to write a parallel function to copy_process
-> that is used only for creating kernel threads, and can streamline itself
-> because it knows it is creating kernel threads.
->
-> Short of that the code needs to keep routing through kthreadd.
->
-> Using create_io_thread or a dedicated wrapper around copy_process
-> certainly looks like it could simplify some of kthread creation.
 
-Hmm.  Looking at kthread() I completely agree that kernel_thread() has
-the wrong set of semantics and we really could benefit from never waking
-the fledgling kernel thread in the first place.
+Hmm. Yeah, it would probably be painful to replace 'current' with
+something else, due to locking etc. Using "current" has some
+fundamental advantages wrt using another thread pointer that may or
+may not be active at the same time.
 
-Eric
+That said, there *is* another thread that has very similar "we don't
+need locking, because it's always around and it doesn't change":
+init_task.
+
+I wonder if we could basically get rid of every use of 'current' in
+kernel/fork.c with just a task pointer that is passed in, and then for
+kernel threads pass in 'init_task'.
+
+I'd hate to duplicate copy_process() entirely, when we probably could
+just consider it just a parenting issue, and say that you can have
+either 'current' or 'init_task' as the parent. And that 'init_task'
+would basically be the 'clean slate for kthreads'.
+
+Christian, comments?
+
+             Linus
