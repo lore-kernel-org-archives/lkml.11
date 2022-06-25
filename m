@@ -2,83 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:02:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E1FCCA479
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232769AbiFYLCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 07:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33982 "EHLO
+        id S232796AbiFYLFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 07:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232696AbiFYLBq (ORCPT
+        with ESMTP id S232745AbiFYLFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 07:01:46 -0400
+        Sat, 25 Jun 2022 07:05:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A84133EAC;
-        Sat, 25 Jun 2022 04:01:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEF433E10;
+        Sat, 25 Jun 2022 04:05:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21B5DB80813;
-        Sat, 25 Jun 2022 11:01:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A07C341C7;
-        Sat, 25 Jun 2022 11:01:42 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Z5s8sz/p"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656154901;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GFAOu58A3CNcB7vX9iXelcbaIfakM6abAR3H03ssYCg=;
-        b=Z5s8sz/p/ZMCBnv7NjJKP3jTX7xvfgGheRSYw83DP2stwaYOr14Yq4ZT8t0BJTYDMtyNq8
-        cysB5ZHuVjv//A7u9Y950NjvugpoycQF1XnqIrAdvlTrrAnt0llU/ngKLNcmSexqAVS3a6
-        DWTtC38X5wYU5tVw7qtOsdi0K6/qu5w=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 80eddd6a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sat, 25 Jun 2022 11:01:41 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, linux-fsdevel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH v2 7/8] dma-buf: remove useless FMODE_LSEEK flag
-Date:   Sat, 25 Jun 2022 13:01:14 +0200
-Message-Id: <20220625110115.39956-8-Jason@zx2c4.com>
-In-Reply-To: <20220625110115.39956-1-Jason@zx2c4.com>
-References: <20220625110115.39956-1-Jason@zx2c4.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96A0AB80818;
+        Sat, 25 Jun 2022 11:05:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73ED9C3411C;
+        Sat, 25 Jun 2022 11:05:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656155134;
+        bh=Nuw7iA5FbucHB8v39wnH93gwIuOj7VzTuulMPNJqA5o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GcSQpLPQ4oGSvFUme/HNaaSM6PxUuxczPISdCPhdNIjRdfZp0Q+hSlC7NE0JGTZ1x
+         KoasdYfUMv/1j15hr1r8FbtVURGZUw9+PwVU1iwxxQmbcUdyUajfRBS//gZe2Vpl4i
+         qvIfLg75CVtp2gzu9EWk6JYjcjcSOmcA2+56OjQ46ntSH+Nkhn6gfuYUnjWRewuA0V
+         o3gOE1GZ1gCrVb8aemjlMGwBWbj2Gibz+KTu3Md3qGptUdVzXAnVflCL6RqvD6uIxP
+         QwmeGhSwbrfBNIUimapylSOBXwMRoiqubJ+VSzjxKuxCUk26GROmnWVf3C4IDDiQGE
+         xSLOU4/wdiQZQ==
+Date:   Sat, 25 Jun 2022 12:15:00 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Kory Maincent <kory.maincent@bootlin.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, Lars-Peter Clausen <lars@metafoo.de>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/2] iio: dac: mcp4922: add support to mcp4921
+Message-ID: <20220625121500.4dc35578@jic23-huawei>
+In-Reply-To: <20220624095619.1415614-1-kory.maincent@bootlin.com>
+References: <20220624095619.1415614-1-kory.maincent@bootlin.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is already set by anon_inode_getfile(), since dma_buf_fops has
-non-NULL ->llseek, so we don't need to set it here too.
+On Fri, 24 Jun 2022 11:56:17 +0200
+Kory Maincent <kory.maincent@bootlin.com> wrote:
 
-Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/dma-buf/dma-buf.c | 1 -
- 1 file changed, 1 deletion(-)
+> Add support to mcp4921 which has only one output channel.
+> 
+> Signed-off-by: Kory Maincent <kory.maincent@bootlin.com>
 
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index 32f55640890c..3f08e0b960ec 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -549,7 +549,6 @@ struct dma_buf *dma_buf_export(const struct dma_buf_export_info *exp_info)
- 		goto err_dmabuf;
- 	}
- 
--	file->f_mode |= FMODE_LSEEK;
- 	dmabuf->file = file;
- 
- 	mutex_init(&dmabuf->lock);
--- 
-2.35.1
+Obviously not been on the list long, but as it 'seems' totally trivial
+and has already gottten some review I'll queue it up now anyway.
+
+Series applied to the togreg branch of iio.git.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/dac/mcp4922.c | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/mcp4922.c b/drivers/iio/dac/mcp4922.c
+> index cb9e60e71b91..0d41c0f25515 100644
+> --- a/drivers/iio/dac/mcp4922.c
+> +++ b/drivers/iio/dac/mcp4922.c
+> @@ -17,10 +17,12 @@
+>  #include <linux/bitops.h>
+>  
+>  #define MCP4922_NUM_CHANNELS	2
+> +#define MCP4921_NUM_CHANNELS	1
+>  
+>  enum mcp4922_supported_device_ids {
+>  	ID_MCP4902,
+>  	ID_MCP4912,
+> +	ID_MCP4921,
+>  	ID_MCP4922,
+>  };
+>  
+> @@ -105,9 +107,10 @@ static int mcp4922_write_raw(struct iio_dev *indio_dev,
+>  	}
+>  }
+>  
+> -static const struct iio_chan_spec mcp4922_channels[3][MCP4922_NUM_CHANNELS] = {
+> +static const struct iio_chan_spec mcp4922_channels[4][MCP4922_NUM_CHANNELS] = {
+>  	[ID_MCP4902] = { MCP4922_CHAN(0, 8),	MCP4922_CHAN(1, 8) },
+>  	[ID_MCP4912] = { MCP4922_CHAN(0, 10),	MCP4922_CHAN(1, 10) },
+> +	[ID_MCP4921] = { MCP4922_CHAN(0, 12),	{} },
+>  	[ID_MCP4922] = { MCP4922_CHAN(0, 12),	MCP4922_CHAN(1, 12) },
+>  };
+>  
+> @@ -154,7 +157,10 @@ static int mcp4922_probe(struct spi_device *spi)
+>  	indio_dev->info = &mcp4922_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->channels = mcp4922_channels[id->driver_data];
+> -	indio_dev->num_channels = MCP4922_NUM_CHANNELS;
+> +	if (id->driver_data == ID_MCP4921)
+> +		indio_dev->num_channels = MCP4921_NUM_CHANNELS;
+> +	else
+> +		indio_dev->num_channels = MCP4922_NUM_CHANNELS;
+>  	indio_dev->name = id->name;
+>  
+>  	ret = iio_device_register(indio_dev);
+> @@ -185,6 +191,7 @@ static void mcp4922_remove(struct spi_device *spi)
+>  static const struct spi_device_id mcp4922_id[] = {
+>  	{"mcp4902", ID_MCP4902},
+>  	{"mcp4912", ID_MCP4912},
+> +	{"mcp4921", ID_MCP4921},
+>  	{"mcp4922", ID_MCP4922},
+>  	{}
+>  };
 
