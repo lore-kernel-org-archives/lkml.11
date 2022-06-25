@@ -2,103 +2,406 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E943C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 09:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B590AC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 09:55:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232562AbiFYJyv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 05:54:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
+        id S232588AbiFYJzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 05:55:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232553AbiFYJyr (ORCPT
+        with ESMTP id S232136AbiFYJzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 05:54:47 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C329932ED8;
-        Sat, 25 Jun 2022 02:54:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656150885; x=1687686885;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=VKuQVwQN3wupa/wWGwfy2HpIYFCAp6PhOr5/aA9piQw=;
-  b=kGJDTSrxVPlGQ7hvsgNNOWBvyj3C3x0r2F2bKbBjaDgomO/n8M7HcmCb
-   qNawYE6+DMIKXg6yh/P9l2bSdfMIhFfdqmMe+iS+A7+bZ6hJD/L1LiLMn
-   O41D8cWBQ+GKPhY/f2v5pacgm0WsK8Q7cml/2W0wcP2JYhDw0C4TB370k
-   11qkvUwAEjjD7Ky+Y3G8J6U5cl6+H5VGM349U1YNfEBeysa49Z+/qyDLI
-   iGSD76xfmKRR3UCVjdyw0un3peDrJCHsHY66qcXs9r59GY/My4cnS/iCC
-   ThHZriFFoBZM87cSGfbi+hOrZ8W6PhTrLZQ9IvN1XzTmNxfO/Nj2OOGVA
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="281214559"
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="281214559"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 02:54:45 -0700
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="645644075"
-Received: from selvaku-mobl.ger.corp.intel.com ([10.252.60.244])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 02:54:42 -0700
-Date:   Sat, 25 Jun 2022 12:54:39 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 5/8] dt_bindings: rs485: Correct delay values
-In-Reply-To: <6c50fdca-aac4-aaf5-ad34-18a60fcc0aa0@gmx.de>
-Message-ID: <c8919968-74e8-fc9d-15b4-daa28b48d8d8@linux.intel.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-6-LinoSanfilippo@gmx.de> <YrSU4eL9hgISg3Y1@smile.fi.intel.com> <6c50fdca-aac4-aaf5-ad34-18a60fcc0aa0@gmx.de>
+        Sat, 25 Jun 2022 05:55:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8879E36315;
+        Sat, 25 Jun 2022 02:55:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB777B807E9;
+        Sat, 25 Jun 2022 09:54:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC409C341C7;
+        Sat, 25 Jun 2022 09:54:52 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Feiyang Chen <chenfeiyang@loongson.cn>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH 3/3] mm/sparse-vmemmap: Generalise vmemmap_populate_hugepages()
+Date:   Sat, 25 Jun 2022 17:54:59 +0800
+Message-Id: <20220625095459.3786827-3-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220625095459.3786827-1-chenhuacai@loongson.cn>
+References: <20220625095459.3786827-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022, Lino Sanfilippo wrote:
+From: Feiyang Chen <chenfeiyang@loongson.cn>
 
-> On 23.06.22 at 18:29, Andy Shevchenko wrote:
-> > On Wed, Jun 22, 2022 at 05:46:56PM +0200, Lino Sanfilippo wrote:
-> >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> >>
-> >> The maximum allowed delay for RTS before and RTS after send is 100 ms.
-> >> Adjust the documentation accordingly.
-> >
-> >
-> > Is it only documentation issue? If the code allows this to be set higher
-> > than 100, we may not change the documentation since this an ABI (from
-> > firmware <--> kernel perspective) we need to support old variants.
-> >
-> 
-> Well currently the documentation claims that a maximum of 1000 msecs is allowed but
-> nothing actually checks the values read from device tree/ACPI and so it is possible
-> to set much higher values (note that the UART drivers dont check the delays read from
-> DT/ACPI either, the only exception I found is max310x which clamps it to 15 ms).
-> 
-> We already have a maximum of 100 ms defined for RTS delays set via TIOCSRS485. To be
-> consistent with TIOCSRS485 the same limit is used for DT/ACPI values in this patch.
-> 
-> I am aware that this changes the firmware/kernel ABI. But we had a similar situation when
-> the sanity checks for TIOCSRS485 were introduced
-> (see https://lore.kernel.org/all/20220410104642.32195-2-LinoSanfilippo@gmx.de/)
-> since before we did not have those limits for all drivers (some drivers clamped the
-> values itself but many did not care).
-> Furthermore 100 ms is already a very high value for RTS delays (which are usually rather
-> in usecs range). So IMHO the risk is very low to break anything when values are clamped
-> that are higher than that.
+Generalise vmemmap_populate_hugepages() so ARM64 & X86 & LoongArch can
+share its implementation.
 
-Did you see this development direction (from Lukas):
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
+---
+ arch/arm64/mm/mmu.c      | 53 ++++++-----------------
+ arch/loongarch/mm/init.c | 63 ++++++++-------------------
+ arch/x86/mm/init_64.c    | 92 ++++++++++++++--------------------------
+ include/linux/mm.h       |  6 +++
+ mm/sparse-vmemmap.c      | 54 +++++++++++++++++++++++
+ 5 files changed, 124 insertions(+), 144 deletions(-)
 
-https://lore.kernel.org/linux-serial/20220309125908.GA9283@wunner.de/
-
-?
-
-Effectively, he wants to making a compat threshold at 1msec and beyond 
-that the input value would be interpreted as nsecs.
-
+diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+index 626ec32873c6..b080a65c719d 100644
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -1158,49 +1158,24 @@ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
+ 	return vmemmap_populate_basepages(start, end, node, altmap);
+ }
+ #else	/* !ARM64_KERNEL_USES_PMD_MAPS */
++void __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
++			       unsigned long addr, unsigned long next)
++{
++	pmd_set_huge(pmd, __pa(p), __pgprot(PROT_SECT_NORMAL));
++}
++
++int __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
++				unsigned long next)
++{
++	vmemmap_verify((pte_t *)pmd, node, addr, next);
++	return 1;
++}
++
+ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
+ 		struct vmem_altmap *altmap)
+ {
+-	unsigned long addr = start;
+-	unsigned long next;
+-	pgd_t *pgdp;
+-	p4d_t *p4dp;
+-	pud_t *pudp;
+-	pmd_t *pmdp;
+-
+ 	WARN_ON((start < VMEMMAP_START) || (end > VMEMMAP_END));
+-	do {
+-		next = pmd_addr_end(addr, end);
+-
+-		pgdp = vmemmap_pgd_populate(addr, node);
+-		if (!pgdp)
+-			return -ENOMEM;
+-
+-		p4dp = vmemmap_p4d_populate(pgdp, addr, node);
+-		if (!p4dp)
+-			return -ENOMEM;
+-
+-		pudp = vmemmap_pud_populate(p4dp, addr, node);
+-		if (!pudp)
+-			return -ENOMEM;
+-
+-		pmdp = pmd_offset(pudp, addr);
+-		if (pmd_none(READ_ONCE(*pmdp))) {
+-			void *p = NULL;
+-
+-			p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
+-			if (!p) {
+-				if (vmemmap_populate_basepages(addr, next, node, altmap))
+-					return -ENOMEM;
+-				continue;
+-			}
+-
+-			pmd_set_huge(pmdp, __pa(p), __pgprot(PROT_SECT_NORMAL));
+-		} else
+-			vmemmap_verify((pte_t *)pmdp, node, addr, next);
+-	} while (addr = next, addr != end);
+-
+-	return 0;
++	return vmemmap_populate_hugepages(start, end, node, altmap);
+ }
+ #endif	/* !ARM64_KERNEL_USES_PMD_MAPS */
+ 
+diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
+index 35128229fe46..3190b3cd52d1 100644
+--- a/arch/loongarch/mm/init.c
++++ b/arch/loongarch/mm/init.c
+@@ -158,52 +158,25 @@ void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
+ #endif
+ 
+ #ifdef CONFIG_SPARSEMEM_VMEMMAP
+-int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
+-					 int node, struct vmem_altmap *altmap)
++void __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
++			       unsigned long addr, unsigned long next)
+ {
+-	unsigned long addr = start;
+-	unsigned long next;
+-	pgd_t *pgd;
+-	p4d_t *p4d;
+-	pud_t *pud;
+-	pmd_t *pmd;
+-
+-	for (addr = start; addr < end; addr = next) {
+-		next = pmd_addr_end(addr, end);
+-
+-		pgd = vmemmap_pgd_populate(addr, node);
+-		if (!pgd)
+-			return -ENOMEM;
+-		p4d = vmemmap_p4d_populate(pgd, addr, node);
+-		if (!p4d)
+-			return -ENOMEM;
+-		pud = vmemmap_pud_populate(p4d, addr, node);
+-		if (!pud)
+-			return -ENOMEM;
+-
+-		pmd = pmd_offset(pud, addr);
+-		if (pmd_none(*pmd)) {
+-			void *p = NULL;
+-
+-			p = vmemmap_alloc_block_buf(PMD_SIZE, node, NULL);
+-			if (p) {
+-				pmd_t entry;
+-
+-				entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
+-				pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
+-				set_pmd_at(&init_mm, addr, pmd, entry);
+-
+-				continue;
+-			}
+-		} else if (pmd_val(*pmd) & _PAGE_HUGE) {
+-			vmemmap_verify((pte_t *)pmd, node, addr, next);
+-			continue;
+-		}
+-		if (vmemmap_populate_basepages(addr, next, node, NULL))
+-			return -ENOMEM;
+-	}
+-
+-	return 0;
++	pmd_t entry;
++
++	entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
++	pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
++	set_pmd_at(&init_mm, addr, pmd, entry);
++}
++
++int __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
++				unsigned long next)
++{
++	int huge = pmd_val(*pmd) & _PAGE_HUGE;
++
++	if (huge)
++		vmemmap_verify((pte_t *)pmd, node, addr, next);
++
++	return huge;
+ }
+ 
+ #if CONFIG_PGTABLE_LEVELS == 2
+diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+index 39c5246964a9..4911093ee2f3 100644
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -1532,72 +1532,44 @@ static long __meminitdata addr_start, addr_end;
+ static void __meminitdata *p_start, *p_end;
+ static int __meminitdata node_start;
+ 
+-static int __meminit vmemmap_populate_hugepages(unsigned long start,
+-		unsigned long end, int node, struct vmem_altmap *altmap)
++void __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
++			       unsigned long addr, unsigned long next)
+ {
+-	unsigned long addr;
+-	unsigned long next;
+-	pgd_t *pgd;
+-	p4d_t *p4d;
+-	pud_t *pud;
+-	pmd_t *pmd;
+-
+-	for (addr = start; addr < end; addr = next) {
+-		next = pmd_addr_end(addr, end);
+-
+-		pgd = vmemmap_pgd_populate(addr, node);
+-		if (!pgd)
+-			return -ENOMEM;
+-
+-		p4d = vmemmap_p4d_populate(pgd, addr, node);
+-		if (!p4d)
+-			return -ENOMEM;
+-
+-		pud = vmemmap_pud_populate(p4d, addr, node);
+-		if (!pud)
+-			return -ENOMEM;
+-
+-		pmd = pmd_offset(pud, addr);
+-		if (pmd_none(*pmd)) {
+-			void *p;
+-
+-			p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
+-			if (p) {
+-				pte_t entry;
+-
+-				entry = pfn_pte(__pa(p) >> PAGE_SHIFT,
+-						PAGE_KERNEL_LARGE);
+-				set_pmd(pmd, __pmd(pte_val(entry)));
++	pte_t entry;
++
++	entry = pfn_pte(__pa(p) >> PAGE_SHIFT,
++			PAGE_KERNEL_LARGE);
++	set_pmd(pmd, __pmd(pte_val(entry)));
++
++	/* check to see if we have contiguous blocks */
++	if (p_end != p || node_start != node) {
++		if (p_start)
++			pr_debug(" [%lx-%lx] PMD -> [%p-%p] on node %d\n",
++				addr_start, addr_end-1, p_start, p_end-1, node_start);
++		addr_start = addr;
++		node_start = node;
++		p_start = p;
++	}
+ 
+-				/* check to see if we have contiguous blocks */
+-				if (p_end != p || node_start != node) {
+-					if (p_start)
+-						pr_debug(" [%lx-%lx] PMD -> [%p-%p] on node %d\n",
+-						       addr_start, addr_end-1, p_start, p_end-1, node_start);
+-					addr_start = addr;
+-					node_start = node;
+-					p_start = p;
+-				}
++	addr_end = addr + PMD_SIZE;
++	p_end = p + PMD_SIZE;
+ 
+-				addr_end = addr + PMD_SIZE;
+-				p_end = p + PMD_SIZE;
++	if (!IS_ALIGNED(addr, PMD_SIZE) ||
++		!IS_ALIGNED(next, PMD_SIZE))
++		vmemmap_use_new_sub_pmd(addr, next);
++}
+ 
+-				if (!IS_ALIGNED(addr, PMD_SIZE) ||
+-				    !IS_ALIGNED(next, PMD_SIZE))
+-					vmemmap_use_new_sub_pmd(addr, next);
++int __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
++				unsigned long next)
++{
++	int large = pmd_large(*pmd);
+ 
+-				continue;
+-			} else if (altmap)
+-				return -ENOMEM; /* no fallback */
+-		} else if (pmd_large(*pmd)) {
+-			vmemmap_verify((pte_t *)pmd, node, addr, next);
+-			vmemmap_use_sub_pmd(addr, next);
+-			continue;
+-		}
+-		if (vmemmap_populate_basepages(addr, next, node, NULL))
+-			return -ENOMEM;
++	if (pmd_large(*pmd)) {
++		vmemmap_verify((pte_t *)pmd, node, addr, next);
++		vmemmap_use_sub_pmd(addr, next);
+ 	}
+-	return 0;
++
++	return large;
+ }
+ 
+ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 3472b924a1ea..45df4b7562bc 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3216,8 +3216,14 @@ struct vmem_altmap;
+ void *vmemmap_alloc_block_buf(unsigned long size, int node,
+ 			      struct vmem_altmap *altmap);
+ void vmemmap_verify(pte_t *, int, unsigned long, unsigned long);
++void vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
++		     unsigned long addr, unsigned long next);
++int vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
++		      unsigned long next);
+ int vmemmap_populate_basepages(unsigned long start, unsigned long end,
+ 			       int node, struct vmem_altmap *altmap);
++int vmemmap_populate_hugepages(unsigned long start, unsigned long end,
++			       int node, struct vmem_altmap *altmap);
+ int vmemmap_populate(unsigned long start, unsigned long end, int node,
+ 		struct vmem_altmap *altmap);
+ void vmemmap_populate_print_last(void);
+diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
+index 33e2a1ceee72..6f2e40bb695d 100644
+--- a/mm/sparse-vmemmap.c
++++ b/mm/sparse-vmemmap.c
+@@ -686,6 +686,60 @@ int __meminit vmemmap_populate_basepages(unsigned long start, unsigned long end,
+ 	return vmemmap_populate_range(start, end, node, altmap, NULL);
+ }
+ 
++void __weak __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
++				      unsigned long addr, unsigned long next)
++{
++}
++
++int __weak __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
++				       unsigned long next)
++{
++	return 0;
++}
++
++int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
++					 int node, struct vmem_altmap *altmap)
++{
++	unsigned long addr;
++	unsigned long next;
++	pgd_t *pgd;
++	p4d_t *p4d;
++	pud_t *pud;
++	pmd_t *pmd;
++
++	for (addr = start; addr < end; addr = next) {
++		next = pmd_addr_end(addr, end);
++
++		pgd = vmemmap_pgd_populate(addr, node);
++		if (!pgd)
++			return -ENOMEM;
++
++		p4d = vmemmap_p4d_populate(pgd, addr, node);
++		if (!p4d)
++			return -ENOMEM;
++
++		pud = vmemmap_pud_populate(p4d, addr, node);
++		if (!pud)
++			return -ENOMEM;
++
++		pmd = pmd_offset(pud, addr);
++		if (pmd_none(READ_ONCE(*pmd))) {
++			void *p;
++
++			p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
++			if (p) {
++				vmemmap_set_pmd(pmd, p, node, addr, next);
++				continue;
++			} else if (altmap)
++				return -ENOMEM; /* no fallback */
++		} else if (vmemmap_check_pmd(pmd, node, addr, next))
++			continue;
++		if (vmemmap_populate_basepages(addr, next, node, altmap))
++			return -ENOMEM;
++	}
++	return 0;
++}
++
+ /*
+  * For compound pages bigger than section size (e.g. x86 1G compound
+  * pages with 2M subsection size) fill the rest of sections as tail
 -- 
- i.
+2.27.0
 
