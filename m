@@ -2,138 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D74A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 07:01:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF0AFC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 07:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232059AbiFYHB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 03:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
+        id S232215AbiFYHJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 03:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232195AbiFYHBy (ORCPT
+        with ESMTP id S232118AbiFYHJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 03:01:54 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD423BF8B
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 00:01:54 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id p6-20020a05600c1d8600b003a035657950so2630369wms.4
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 00:01:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iIzeczDw2HvlDp1in7hfvtjJE68cxyFabNgETqBrjSY=;
-        b=VylczFOBbptMSiVzl7Unj/HgXYpOmX4X+cLiLsNknVs4rLzN/kU7WfuubVyTHUkl2e
-         MCx21RS9GsfbSscOWyR/m0G+IJmSjVEEG8KoYAKyG+BRZ1NNn2O3orxga+MMHre9qtS1
-         d4FTBvw0JD9+nn8ehMJ9gCAKYWhxv2PiYzSl77z4yP89/OCYiwQ/2lhkUHTyOl76muU6
-         5pVJNQnAI+7y3oKVIh/3sgEMkx5qnW61XK9zMs/fWhEblFC6WmMqlu2S3r18ZNG2ynWD
-         BImErw14Adb97J3EhQKMn9FW2m2jCoU8VuDnNeUv0OQqc86ySVr1fVvloepdBG/rUnm2
-         7NfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iIzeczDw2HvlDp1in7hfvtjJE68cxyFabNgETqBrjSY=;
-        b=Z/oBWuUCfdX5UrO38xDJHrgKUi2agHUoCpq8wg74oT9+ZftixU61YNyrqUw0P2GZCw
-         dNBkkzRBU2gVdjfwZoGXY8dcC4p8a9u6wUJ+4g//EVenpiTAXsNvMxJgTMGu3QaaQPHC
-         AfDVgkKbcec9yhaNz2dUKF0AKA5b2eN4l1YGauf6r+s1UMHtOc9u/LaP5hdsp2X6RhoE
-         exG0eS+LIiovVKx9kCYf1Yphw5j/Z60wNuetNU4MLlIs2aoSN0ztbUkBfDVZkWRHZYPp
-         8TXUvt4C3TOUzq3wGYnMO78/7kb9Y6zwPNGoljKtrHeVpiyMzk7nvD7Bphl5h/UINCUh
-         1GnA==
-X-Gm-Message-State: AJIora/EJ/B7ssE8QEQsv1iatO9AevUZFRcNX5rVsrgAss++b4UaesML
-        g/miIqNlSTlvROexgDm3snE/6XmgTi1gU4zVHbCry+ydLwI=
-X-Google-Smtp-Source: AGRyM1sCZ2q61qZAr4YPDz2NLd9Jztv8w7KFU0MBQYhc4ZGZTD8bDlAaUGV+j5Rfp9P89xTWY+F62rLXnINfik05az8=
-X-Received: by 2002:a05:600c:34ce:b0:3a0:3b4b:9022 with SMTP id
- d14-20020a05600c34ce00b003a03b4b9022mr3055176wmq.66.1656140512499; Sat, 25
- Jun 2022 00:01:52 -0700 (PDT)
+        Sat, 25 Jun 2022 03:09:13 -0400
+Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DA1220F6;
+        Sat, 25 Jun 2022 00:09:08 -0700 (PDT)
+X-QQ-mid: bizesmtp73t1656140813t2579wch
+Received: from localhost.localdomain ( [125.70.163.206])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sat, 25 Jun 2022 15:06:39 +0800 (CST)
+X-QQ-SSF: 0100000000200060C000B00A0000000
+X-QQ-FEAT: 3u0oYPVhaeOCQ9MuS67mRqj+E/BEgpxpnesZL5zezAs7/KWq6nXpfPisKurFE
+        DcM1SfSaw7hFtPuz8DPgWOO13RyYpkZsJ5tiI/58LH5wIVYt31VTuBJndxcGG4T/bMZE+iW
+        fFydsH4HvORGxWzbkGgHDdhGbfDKWmk55P7fBjMXc/i86W/qXb7poIvPENPPqOQD+27ko2N
+        MYSsE8ee+rwGrmKNJCGC/3fWzYiCt6bPS1DnVdaFBlXga9jr1G7+eem9BbYrxS1qRMnRm6l
+        IB+AhpYsR23QVW4gU68mCxzYegADrH5kAT6jJPOv9oCidO4qHtg5ecIt41010rv1vylotwC
+        ojmEh8yVPgdjV35jSw=
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     thomas.lendacky@amd.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] amd/xgbe: fix repeated words in comments
+Date:   Sat, 25 Jun 2022 15:06:33 +0800
+Message-Id: <20220625070633.64982-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220520224200.3764027-1-dlatypov@google.com> <CABVgOSkNpaY1HsygqkWC8LVO+XTqGwNxFNgne-ajoTiPqCnrkg@mail.gmail.com>
- <CAGS_qxqQiWDRwOJcU+1X31SgdKGFMLT8tA7EJXN9JUmKOhYfxw@mail.gmail.com>
-In-Reply-To: <CAGS_qxqQiWDRwOJcU+1X31SgdKGFMLT8tA7EJXN9JUmKOhYfxw@mail.gmail.com>
-From:   David Gow <davidgow@google.com>
-Date:   Sat, 25 Jun 2022 15:01:41 +0800
-Message-ID: <CABVgOSnKsto0xrVzgNMcDjL71w_=65EyzszVSsQCNCFTEjy0wA@mail.gmail.com>
-Subject: Re: [PATCH v2] kunit: tool: refactor internal kconfig handling, allow overriding
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 25, 2022 at 4:24 AM Daniel Latypov <dlatypov@google.com> wrote:
->
-> On Fri, Jun 24, 2022 at 12:55 AM David Gow <davidgow@google.com> wrote:
-> > >
-> > > +       def set_diff(self, other: 'Kconfig') -> Set[KconfigEntry]:
-> > > +               return set(self._as_entries()) - set(other._as_entries())
-> > > +
-> >
-> > It took me a couple of goes to realise that this was looking at the
-> > difference between sets, not trying to set the difference. Maybe
-> > different_entries() or something like that'd be clearer, but I can't
-> > say it bothers me enough to be worth a new version.
->
-> Wdyt about `set_difference()`?
-> Or maybe adding a verb: `get_set_diff()`, `compute_set_diff()`?
->
-> But we do want to make it clear it has set (asymmetric) difference
-> semantics, see below.
->
+Delete the redundant word 'use'.
 
-I like adding a verb, personally.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/ethernet/amd/xgbe/xgbe.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> >
-> > Then again (as noted below), the direct set difference isn't exactly
-> > what we want, it's more the equivalent of is_subset_of(). The
-> > follow-up repeated-kunitconfig patch adds differing_options(), which
-> > is closer to what we'd want, I think:
-> > https://lore.kernel.org/linux-kselftest/20220624001247.3255978-1-dlatypov@google.com/
->
-> differing_options() does not have the right semantics.
-> For this, we do explicitly want a set difference.
->
-> Context: This is the func used to print out these warnings:
-> $ .../kunit.py run --kconfig_add=CONFIG_PCI=y
-> ...
-> Missing: CONFIG_PCI=y
->
-> That comes from
->   invalid = self._kconfig.set_diff(validated_kconfig)
-> Using differing_options() to get our version of the configs:
->   invalid = (want for want, got in
-> self._kconfig.differing_options(validated_kconfig))
-> we instead get an empty list.
->
-> The problem is that differing_options() only shows config options that
-> are explicitly to different values.
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe.h b/drivers/net/ethernet/amd/xgbe/xgbe.h
+index d9547552ceef..b875c430222e 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe.h
++++ b/drivers/net/ethernet/amd/xgbe/xgbe.h
+@@ -417,7 +417,7 @@ struct xgbe_rx_ring_data {
+ 
+ /* Structure used to hold information related to the descriptor
+  * and the packet associated with the descriptor (always use
+- * use the XGBE_GET_DESC_DATA macro to access this data from the ring)
++ * the XGBE_GET_DESC_DATA macro to access this data from the ring)
+  */
+ struct xgbe_ring_data {
+ 	struct xgbe_ring_desc *rdesc;	/* Virtual address of descriptor */
+-- 
+2.36.1
 
-Ah, yep: my mistake. I was mixing up the (!b && value=n) check in
-is_subset_of with the (b && value != b) in differing options. Whoops.
-
-But, thinking about it, the special handling of "=n" in set A not
-needing an equivalent in set B should fall out from the set difference
-anyway. So no problem here at all.
-
-> There's probably a way I can name these functions better to make the
-> difference more clear.
-
-How about "conflicting_options" versus "missing_options"?
-
-> Or perhaps we should move set_diff() out of this class and have
-> kunit_kernel.py itself due the computation.
->
-> E.g.
->   // make as_entries() "public", s/invalid/missing
->   missing = set(self._kconfig.as_entries()) - set(validated_config.as_entries())
->
-> Thoughts?
-
-Fair enough point:
-
->
-> Daniel
