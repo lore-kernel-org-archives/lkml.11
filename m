@@ -2,130 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2559C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1386C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 13:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233025AbiFYNRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 09:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
+        id S233035AbiFYNSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 09:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231982AbiFYNRI (ORCPT
+        with ESMTP id S233032AbiFYNSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 09:17:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2020011821;
-        Sat, 25 Jun 2022 06:17:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4AA5612CB;
-        Sat, 25 Jun 2022 13:17:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 641EDC3411C;
-        Sat, 25 Jun 2022 13:17:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656163024;
-        bh=EQ5NzjxPicxRp5lCLKniHD4eu7yQO6P2W6htjFIhPvo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oNKh52OCnc31NiXe1GV1IVpnKRb03djN/vdb0EGtjIegIo1BGnsdA9aMFihL5Ak1d
-         6KBakA5oxES5lSMArs9M+KgHNR84Ty3R2yWpDAYZ+A7rjy8nVsLmu4Qmg8RXng0Km/
-         0VbXRxWOEdiwaWVPRnSfJNhabxbqUEy6WeHWoqrxoN8goScd2aORNwATDP8QVDKXmU
-         R8xDqhPLCTZD597FDJZ8ay+kv3s6s4SA+zPyqNk9RKPGWckLs61i6oOyXax9vZkQe+
-         dTqaJFa5Nmt2EySO13vQzkmn64S01t9xHhXorrW8fi+L5b0G5wm8dglZRncGWz8IZZ
-         uBOihqtn2BaxQ==
-Date:   Sat, 25 Jun 2022 14:26:32 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jiang Jian <jiangjian@cdjrlc.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: dac: ad5380: aligned '*' each line and drop
- unneeded blank line
-Message-ID: <20220625142632.1d0201a1@jic23-huawei>
-In-Reply-To: <CAHp75Veau14x1_8oauUZ=d4TxqJ9wcRyAQF6dR9YrwuTKjP3rQ@mail.gmail.com>
-References: <20220621092319.69598-1-jiangjian@cdjrlc.com>
-        <CAHp75Veau14x1_8oauUZ=d4TxqJ9wcRyAQF6dR9YrwuTKjP3rQ@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 25 Jun 2022 09:18:38 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5881EAD8
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 06:18:34 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Sat, 25 Jun
+ 2022 21:18:34 +0800
+Received: from localhost.localdomain (172.16.255.36) by
+ IT-EXMB-1-125.meizu.com (172.16.1.125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Sat, 25 Jun 2022 21:18:31 +0800
+From:   Even <chenyuwen1@meizu.com>
+To:     <xiang@kernel.org>
+CC:     <chao@kernel.org>, <linux-erofs@lists.ozlabs.org>,
+        <linux-kernel@vger.kernel.org>, Even <chenyuwen1@meizu.com>
+Subject: [PATCH] erofs: Wake up all waiters after z_erofs_lzma_head ready.
+Date:   Sat, 25 Jun 2022 21:18:09 +0800
+Message-ID: <20220625131809.6081-1-chenyuwen1@meizu.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.16.255.36]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 21 Jun 2022 16:08:14 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+When the user mounts the erofs second times, the decompression thread
+may hung. The problem happens due to a sequence of steps like the
+following:
 
-> On Tue, Jun 21, 2022 at 11:26 AM Jiang Jian <jiangjian@cdjrlc.com> wrote:
-> >
-> > Consider '*' alignment in the comments of struct ad5380_chip_info declaration.  
-> 
-> Next time don't forget to bump the version of the patch (use -vX, X =
-> 0,1, ..., with the `git format-patch`) and add a changelog (after
-> cutter '---' line).
-> 
-> > ...  
-> > >   * @channel_template:  channel specification template
-> > >   * @num_channels:      number of channels
-> > >   * @int_vref:          internal vref in uV
-> > > -*/
-> > > + */
-> > >  
-> > While at it, drop the unneeded blank line here.  
-> > >  struct ad5380_chip_info {  
-> > ...
-> > }  
-> 
-> This should be replaced by something simpler, like:
-> While at it, drop the unneeded blank lines.
-> 
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> 
-> I do not think you need to resend this simplest patch and Jonathan
-> will help you this time, but consider the above for future
-> contributions, thanks!
-Tweaked and applied to the togreg branch of iio.git which I'll
-push out initially as testing to let the 0-day bot poke it.
+1) Task A called z_erofs_load_lzma_config which obtain all of the node
+   from the z_erofs_lzma_head.
 
-Thanks,
+2) At this time, task B called the z_erofs_lzma_decompress and wanted to
+   get a node. But the z_erofs_lzma_head was empty, the Task B had to
+   sleep.
 
-Jonathan
+3) Task A release nodes and push nodes into the z_erofs_lzma_head. But
+   task B was still sleeping.
 
-> 
-> > Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
-> > ---
-> >  drivers/iio/dac/ad5380.c | 4 +---
-> >  1 file changed, 1 insertion(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
-> > index a44c83242fb1..81775152aac6 100644
-> > --- a/drivers/iio/dac/ad5380.c
-> > +++ b/drivers/iio/dac/ad5380.c
-> > @@ -36,8 +36,7 @@
-> >   * @channel_template:  channel specification template
-> >   * @num_channels:      number of channels
-> >   * @int_vref:          internal vref in uV
-> > -*/
-> > -
-> > + */
-> >  struct ad5380_chip_info {
-> >         struct iio_chan_spec    channel_template;
-> >         unsigned int            num_channels;
-> > @@ -53,7 +52,6 @@ struct ad5380_chip_info {
-> >   * @pwr_down:          whether the chip is currently in power down mode
-> >   * @lock:              lock to protect the data buffer during regmap ops
-> >   */
-> > -
-> >  struct ad5380_state {
-> >         struct regmap                   *regmap;
-> >         const struct ad5380_chip_info   *chip_info;
-> > --
-> > 2.17.1
-> >  
-> 
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
+One example report when the hung happens:
+task:kworker/u3:1 state:D stack:14384 pid: 86 ppid: 2 flags:0x00004000
+Workqueue: erofs_unzipd z_erofs_decompressqueue_work
+Call Trace:
+ <TASK>
+ __schedule+0x281/0x760
+ schedule+0x49/0xb0
+ z_erofs_lzma_decompress+0x4bc/0x580
+ ? cpu_core_flags+0x10/0x10
+ z_erofs_decompress_pcluster+0x49b/0xba0
+ ? __update_load_avg_se+0x2b0/0x330
+ ? __update_load_avg_se+0x2b0/0x330
+ ? update_load_avg+0x5f/0x690
+ ? update_load_avg+0x5f/0x690
+ ? set_next_entity+0xbd/0x110
+ ? _raw_spin_unlock+0xd/0x20
+ z_erofs_decompress_queue.isra.0+0x2e/0x50
+ z_erofs_decompressqueue_work+0x30/0x60
+ process_one_work+0x1d3/0x3a0
+ worker_thread+0x45/0x3a0
+ ? process_one_work+0x3a0/0x3a0
+ kthread+0xe2/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Signed-off-by: Even <chenyuwen1@meizu.com>
+---
+ fs/erofs/decompressor_lzma.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/fs/erofs/decompressor_lzma.c b/fs/erofs/decompressor_lzma.c
+index 05a3063cf2bc..5e59b3f523eb 100644
+--- a/fs/erofs/decompressor_lzma.c
++++ b/fs/erofs/decompressor_lzma.c
+@@ -143,6 +143,7 @@ int z_erofs_load_lzma_config(struct super_block *sb,
+ 	DBG_BUGON(z_erofs_lzma_head);
+ 	z_erofs_lzma_head = head;
+ 	spin_unlock(&z_erofs_lzma_lock);
++	wake_up_all(&z_erofs_lzma_wq);
+ 
+ 	z_erofs_lzma_max_dictsize = dict_size;
+ 	mutex_unlock(&lzma_resize_mutex);
+-- 
+2.25.1
 
