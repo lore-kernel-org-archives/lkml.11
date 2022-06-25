@@ -2,122 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E8F9C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC555C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 11:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232801AbiFYLIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 25 Jun 2022 07:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
+        id S232572AbiFYLPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 25 Jun 2022 07:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232634AbiFYLIH (ORCPT
+        with ESMTP id S232141AbiFYLPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 25 Jun 2022 07:08:07 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50C42937C
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 04:08:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656155285; x=1687691285;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Hcy8DWwyI6xhh+fL0gNBRQNP/QN1ASLNj0xyXAsEqjM=;
-  b=H4Nbj2jxVDxsz2PgYd1CVSLlakubTTNkwwaNdhMYMn4hkCiyZBLp7IRv
-   nfLGTYim4Anw2TpwBNEb7lbieix0iaWwDUnTdaDw3ZiI/ePdaFAQO8epl
-   Q0+aOYrvcHjjc2i/Z/IWyWmn/t+55xkI/18IzQPa0dWjs6497pO+sSCjI
-   b9cvzIm6McU/dOyB9SYOVNrf8wP9kzGFveMv0kTTEgUOlyMhkCLh0Op9T
-   FmuxHu3kt/n/5NcFidRnbqEf4/cE7w7BWuLQ0tp2VjuHInBvSiVj+o50K
-   qkk+RVYQzp6HG4ucnoeMgzF13tTNNEc5O03K+8PP1nK7TG5JQaZ4HNaqF
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="261592956"
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="261592956"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 04:08:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="656996027"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 25 Jun 2022 04:08:04 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o53dz-0005fv-U4;
-        Sat, 25 Jun 2022 11:08:03 +0000
-Date:   Sat, 25 Jun 2022 19:07:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [alobakin:bitops 8/9] include/asm-generic/percpu.h:21:44: warning:
- array subscript 4 is above array bounds of 'long unsigned int[4]'
-Message-ID: <202206251907.ub7v6PxL-lkp@intel.com>
+        Sat, 25 Jun 2022 07:15:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E801E31396;
+        Sat, 25 Jun 2022 04:15:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5972DCE09F9;
+        Sat, 25 Jun 2022 11:15:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 672ADC3411C;
+        Sat, 25 Jun 2022 11:15:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656155702;
+        bh=BwsbxnbNM5PkdhDastKNPu200JUqaXIgWWRTtFwzuWw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VxeM7/t/m2Dkt3jRetXDo9gfqSh5vIs0Tu4somfmonxhmEIUJ6R5ztCOZpYcXFo72
+         3BLlewzQcOoGPTp4mfq7Yd9yPzckXkR2yfSAPs4TQFgHiSHIwdj8X2/kCYZgu33jFE
+         c+CxiYF25nfybPwVoRxc9JNbRHRrmVZAvBwov3pYKTf8Nr4hfWO5+/FZEPKcpberYB
+         2bUlsI38osBT3Z12MDixWFNCBkCo8+z6TDpgqdTR1jReWIDKV2+Oz/EMvUnaUOguQk
+         sSbenumiXt83hA8GLz1eeY0xTRz8hbh+nYqURs1gvINd6f0QFjbDXA5LNa1m5qFeNB
+         /YcWhxPqjInEQ==
+Date:   Sat, 25 Jun 2022 12:24:29 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 02/10] iio: adc: mcp3911: use resource-managed version
+ of iio_device_register
+Message-ID: <20220625122429.14e98106@jic23-huawei>
+In-Reply-To: <YrVZwAqmE0QmibQY@gmail.com>
+References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
+        <20220623170844.2189814-2-marcus.folkesson@gmail.com>
+        <CAHp75VcYk9PjQ=3ZPB1f=uQ-1GYKnvV-wsu+-z1z81W_ZHCqrw@mail.gmail.com>
+        <YrVZwAqmE0QmibQY@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/alobakin/linux bitops
-head:   3d9705b33014389e95ff8ac2eeadd081934aa571
-commit: 45be1aaa8e3d90c437780823a2824e53fd13a867 [8/9] bitmap: don't assume compiler evaluates small mem*() builtins calls
-config: arc-randconfig-c024-20220625
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/alobakin/linux/commit/45be1aaa8e3d90c437780823a2824e53fd13a867
-        git remote add alobakin https://github.com/alobakin/linux
-        git fetch --no-tags alobakin bitops
-        git checkout 45be1aaa8e3d90c437780823a2824e53fd13a867
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash kernel/sched/ kernel/trace/ mm/
+On Fri, 24 Jun 2022 08:29:20 +0200
+Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> Thank you for your comments (all of them) Andy!
+> 
+> On Thu, Jun 23, 2022 at 09:01:59PM +0200, Andy Shevchenko wrote:
+> > On Thu, Jun 23, 2022 at 7:40 PM Marcus Folkesson
+> > <marcus.folkesson@gmail.com> wrote:  
+> > >
+> > > Keep using managed resources as much as possible.  
+> > 
+> > You may not mix devm_ and non-devm_ API calls like this.
+> > So, you rule of thumb that goto is most of the time wrong after devm_ call.  
+> 
+> Can you please confirm that clocks and regulators are disabled when the
+> resources are handed back?
+> I cannot see where when I'm trying to follow the code.
+Andy isn't arguing that the goto is wrong but rather that you cannot
+in general safely use devm_* calls if their failure leads to having to
+do any cleanup.  The reason is the ordering is hard to reason about. Sometimes
+it's safe, but often enough causes problems that we basically refuse to think
+hard enough to figure out if it is.  Hence basic rule is don't do it.
 
-All warnings (new ones prefixed by >>):
+The issue is this.
+probe() {
 
-   In file included from include/linux/compiler_types.h:93,
-                    from <command-line>:
-   kernel/sched/topology.c: In function 'build_overlap_sched_groups':
->> include/asm-generic/percpu.h:21:44: warning: array subscript 4 is above array bounds of 'long unsigned int[4]' [-Warray-bounds]
-      21 | #define per_cpu_offset(x) (__per_cpu_offset[x])
-   include/linux/compiler-gcc.h:35:33: note: in definition of macro 'RELOC_HIDE'
-      35 |         (typeof(ptr)) (__ptr + (off));                                  \
-         |                                 ^~~
-   include/linux/percpu-defs.h:236:9: note: in expansion of macro 'SHIFT_PERCPU_PTR'
-     236 |         SHIFT_PERCPU_PTR((ptr), per_cpu_offset((cpu)));                 \
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/percpu-defs.h:236:33: note: in expansion of macro 'per_cpu_offset'
-     236 |         SHIFT_PERCPU_PTR((ptr), per_cpu_offset((cpu)));                 \
-         |                                 ^~~~~~~~~~~~~~
-   kernel/sched/topology.c:969:20: note: in expansion of macro 'per_cpu_ptr'
-     969 |         sg->sgc = *per_cpu_ptr(sdd->sgc, cpu);
-         |                    ^~~~~~~~~~~
-   In file included from ./arch/arc/include/generated/asm/percpu.h:1,
-                    from include/linux/irqflags.h:17,
-                    from include/linux/rcupdate.h:26,
-                    from include/linux/rculist.h:11,
-                    from include/linux/sched/signal.h:5,
-                    from include/linux/sched/cputime.h:5,
-                    from kernel/sched/build_utility.c:13:
-   include/asm-generic/percpu.h:19:22: note: while referencing '__per_cpu_offset'
-      19 | extern unsigned long __per_cpu_offset[NR_CPUS];
-         |                      ^~~~~~~~~~~~~~~~
+	non_devm_call_1();
+	ret = devm_call_2()
+	if (ret)
+		goto err;
+
+	return 0;
+err:
+	unwind_non_devm_call_1()
+}
+
+remove() {
+	unwind_non_devm_call_1()
+}
+
+remove or error path should unwind in opposite order of what happens in probe.
+On the rare occasion where that isn't the right choice, there should be very
+clear comments to say why.
+
+Order is
+
+remove() -> unwind_non_devm_call_1()
+devm_managed_cleanup() -> unwind_devm_call_2()
+
+Whereas should be
+
+remove()-> unwind_call_2() then unwind_call_1()
 
 
-vim +21 include/asm-generic/percpu.h
+There are two ways to solve this.  Either only use devm for those
+elements in probe() that happen before the first thing you need to
+unwind manually or make everything devm managed (it unwinds in reverse
+order of setup) devm_add_action_or_reset() allows you to use your
+own devm_ managed callbacks if there isn't a standard one available.
 
-^1da177e4c3f41 Linus Torvalds 2005-04-16  20  
-a875a69f8b00a3 Ingo Molnar    2006-07-03 @21  #define per_cpu_offset(x) (__per_cpu_offset[x])
-acdac87202a408 travis@sgi.com 2008-01-30  22  #endif
-acdac87202a408 travis@sgi.com 2008-01-30  23  
+Jonathan
 
-:::::: The code at line 21 was first introduced by commit
-:::::: a875a69f8b00a38b4f40d9632a4fc71a159f0e0d [PATCH] lockdep: add per_cpu_offset()
 
-:::::: TO: Ingo Molnar <mingo@elte.hu>
-:::::: CC: Linus Torvalds <torvalds@g5.osdl.org>
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+
+> 
+> Best regards
+> Marcus Folkesson
+
