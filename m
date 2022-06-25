@@ -2,113 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC584C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 00:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A167C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 25 Jun 2022 00:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231545AbiFYAf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 24 Jun 2022 20:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48762 "EHLO
+        id S231834AbiFYAjR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 24 Jun 2022 20:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiFYAf5 (ORCPT
+        with ESMTP id S229530AbiFYAjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 24 Jun 2022 20:35:57 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601AD6DB23
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 17:35:56 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id n15so6872761qvh.12
-        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 17:35:56 -0700 (PDT)
+        Fri, 24 Jun 2022 20:39:15 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27505766BE
+        for <linux-kernel@vger.kernel.org>; Fri, 24 Jun 2022 17:39:15 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25ON4xdW004505;
+        Sat, 25 Jun 2022 00:39:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
+ date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=corp-2021-07-09;
+ bh=DDOifp1Io3xbIeHCXuzeVIZ0sTdlkpYQGQ5UMLm3bNI=;
+ b=AkTMafS+nwopQjaurlUcImQSSS3tDB5IFG8Yvzdlr8kSN7Spydkgm+MjxJ3tyv0g7ml5
+ KoY3EoAtwRZ2wD49ZntMTH73v184ArWNeqJb139/jleepaA+PmytETwy1NwfE04XgmET
+ udnyvGzgjJ1Yl5YccQ2pV7Iv/jwK6fG1zeK8KWD2La6BvuSWuevaTfT32N0HglwBXJ0e
+ nO75QoduZLrYjOjMw63yhhPhto9VHCFb1xPpytzJJCWFAxpR0C1Rft61YC/9sVzf4rHq
+ kZs1D0csRSWfPTzgE67f3m1y1PuojqYvRaSYGv93Jfk4I7h3LT5DeLIiCe9DimZsFEM/ +g== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gs5g2743t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 25 Jun 2022 00:39:09 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25P0a8O2008165;
+        Sat, 25 Jun 2022 00:39:08 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2173.outbound.protection.outlook.com [104.47.59.173])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gtkfxy1py-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 25 Jun 2022 00:39:08 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=afmOdmeHeRc9W7yI5ciLH4p8QnglrUZmNYFt6zqbzboAeaNfXRa7jzss+T6ItyeHaM5TacAhivKmY/LL+OlxXcHgNfNvzNY6MHHXbg0vCcmYT+F21NTHCv122Dfi6Dor0bEijJwt5RWKtNEiFIapLNO0ZOELnlLvabLrPbTYiSG08+hAQ+s5sBtUVy/9gID15wcAHwQ8weHV+p35N8nMmJng8Aj4JnCEZANebsLKWIKtkYetYJq0J8zO/O8ngdXm5MiY8R67+49+PnNph57akpPaKzZ+CUNe+cT/PEPuIGd+mKCxElnBe29xvRUAtS9FWreJ7LKQ6AG3mzRfmYo5Vg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DDOifp1Io3xbIeHCXuzeVIZ0sTdlkpYQGQ5UMLm3bNI=;
+ b=igM5UyoLOqJ6OCO5A9bUaHMb27WszRls2hwsXga4ybzySHfu3v74lpN77deFTqWPeHzSuCvdE/H1zNekfBxvWO4LXvv2CJ2d42hQRUav0st7ROsJ2ZL/tPdDk6o19EMoBkF7XQDISVDuufyfPAwkM+UJYxjfDZqyHpeZQKC3Kh0s8btzvdWEJnjHyL3Jd410biXRAa+EyK+yrbiIJ7rsNsEzoP7+2i829o/31mAqMG7DbaMLO/KofvRgrHxioxarqf9KimGUU515NasTLiozzKSqAzfoWAmQhyORMOYhC3zaa7Q5peOoJhLqtNl1iz7idVmbQsqj7x1T1SvvFE4agA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NM0GgLb9K/faELYgxhv94xXavXWp8l4qd5OqY1giIjw=;
-        b=U69OIV7CgPSGtm8OqOm28OWNbN1YRWzwmy/hcEHCQGaZhd1y9dxB1CdsEQfGzSsAin
-         Orp+V/IpbecyMh2Bzikox1ViXds4pJms6PXjq8af4g5e3WIGmYC/OjyQCM+G61m0cDd+
-         QmtmnQR+oO2kccH/K0fLbbyptLFGbbubd4rKz0g62V2faqm19zOb9oCiW4pXEr/vjxQv
-         iCU4Lcbrcv/RgW4CFzF5lA2cSnwDrvRYuINo+95BIStrIK6Vjncvibg/svSQwSW4gskf
-         2jzpzUCrpGkc9CzTQxcBsJDevFN9XC6qciUNraNguv21OfdSduVb8u+bWAuSCWj5/9ob
-         khOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NM0GgLb9K/faELYgxhv94xXavXWp8l4qd5OqY1giIjw=;
-        b=4eZEc0MJh4kR3ZqPMgl8ilsQUTpsntyQesTm2vnb3fD/W3Q1jsY5ze1bp/1xdlwywe
-         SDV86K8oMHMmrS0y62IGVns6dZ6N0D/ocK/XUkKlSbKiM32QLTTDlKkY5TJ3+oOhuoeQ
-         eefAUfS9nCfcBFAj5B5o9cCx3pUisUDlFtf7KeIXa38Lu8uwhcDaOx5cyRo3clUPy+5/
-         ina8Ck5fR46QqkL3iTNRSgKuyoHjXdnh2L54oarS0XXRyyHm5EfmfrrIvSr9m02h9DNN
-         wnWNIKurQVGwHkZOZQ9KtiBuMQBwtNkf5Fm554Zmuwtpekp8BdCK1dX6VnAr0fp+1XSs
-         2NbA==
-X-Gm-Message-State: AJIora8h/meKaWPwKMEx8aftJmaHYxFUD4N0AxtZBKj/mk+keITmE6Vs
-        3+Ef8F1oMMd11FZVsSikFueGbQ==
-X-Google-Smtp-Source: AGRyM1tfYT/2a5qKqWVRQYrtWwn+8o/oCCmUXnhNTKR8+fV1gFV92jB4at1BOe2NSslr9MM375OOIA==
-X-Received: by 2002:ad4:5c68:0:b0:470:52b5:c85c with SMTP id i8-20020ad45c68000000b0047052b5c85cmr1538212qvh.3.1656117355520;
-        Fri, 24 Jun 2022 17:35:55 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id bq11-20020a05620a468b00b006a700aad48bsm2977173qkb.91.2022.06.24.17.35.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 17:35:54 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1o4tmE-001Izr-B3; Fri, 24 Jun 2022 21:35:54 -0300
-Date:   Fri, 24 Jun 2022 21:35:54 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Peter Xu <peterx@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DDOifp1Io3xbIeHCXuzeVIZ0sTdlkpYQGQ5UMLm3bNI=;
+ b=rhkR1kvndDVgLkdnGR7nZy5RXHxAaU9cckaJp4NY13jfdAr/JdrY8ME9TTm0oKz/laziXAgIJggnupNkXiBkSdp6CXAhGz1sXgJCCNoEzLh8BPs5xSK80A1SJ/bbRPCsymaj4IWklfxjnf5HU6Gg6FOXsIyJi13wdYTMF2sbbBU=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by SJ0PR10MB5648.namprd10.prod.outlook.com (2603:10b6:a03:3e0::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Sat, 25 Jun
+ 2022 00:39:06 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::f59a:175d:d24:949c]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::f59a:175d:d24:949c%7]) with mapi id 15.20.5373.016; Sat, 25 Jun 2022
+ 00:39:06 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Linux MM Mailing List <linux-mm@kvack.org>,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [PATCH 1/4] mm/gup: Add FOLL_INTERRUPTIBLE
-Message-ID: <20220625003554.GJ23621@ziepe.ca>
-References: <20220622213656.81546-1-peterx@redhat.com>
- <20220622213656.81546-2-peterx@redhat.com>
+        Yu Zhao <yuzhao@google.com>
+Subject: [PATCH Fix 0/2] Underflow in  mas_spanning_rebalance() and test
+Thread-Topic: [PATCH Fix 0/2] Underflow in  mas_spanning_rebalance() and test
+Thread-Index: AQHYiCv5fO/H86RVQEWXQp93u/so/A==
+Date:   Sat, 25 Jun 2022 00:39:06 +0000
+Message-ID: <20220625003854.1230114-1-Liam.Howlett@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.35.1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c0f3d13e-6290-4052-aadc-08da56431c46
+x-ms-traffictypediagnostic: SJ0PR10MB5648:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WSSgDZcx0BjGYJDOP+Vd3asfZRL5AwGt+OUcZDxaMwQ0IxudtPq3MWrh9G0bmnHaDPmcrGgLdGG0drvt+Ca3JbJjYb01hICEbAcS090I9FINqnJCYLkyBi97efptXn1NuVqbvcyxx8WA21E0QW2f6mf+vRUXR1opmVxDffeOUGaJTZV9rgHQG6RexUEw7h+FNan36LfRRg8nU30U1gLVW0QkagAX4whJ/wmlVISU8BjbLuOfTKmCPP8Cn/SsIR+2HPvkzy6AKPHgZHCx5sSiCsjqhPBUjRu0TACOD++fWDG+jtYoUq2cqZxs0I1xZe2M/6zJLaWg4YqAUUmNAZQGqdWHJK4ykfh9B/TtVKjldh5kQAnuNXeqycllSwz8Rb/a2JAuvi+RU4aMAqRWhIZCkdIJbHRMtJ/vKbYaF2bRwzzL8UEMmBslyHFQUCmbGIQ/2sHBpHwfBKSoHmR5s9PFadEuXDAAP0Li7QZ2kgEvTQ0NwGk4sK4EMbcKwRLDMYZB3IaiU0+2PeWS/S4u67RTB/UhZTz+FDTJ9bt7DP3iVzcrPt0TAn/00GwlH8G45vBMgTwhuFdgQEkvo9wftJOUhL40rkAdEE3nfsN58ZOe3C6R4HbBh0nk3la8Bg+mx2zw1VbEP1In1cM9xX6fJsL0n6eQwefW0YuUM03yW3snPIpmHBGe405wCPyOJpEjZn9q9BKXxMUo1tCs0KTtRKKbzKPkfbmzz/gHhlT7l5QgcjK7YMLqLP7AyT3E524STDjlbTEvtXuhdb7Qxc0o8Eu85TahIah45j/RKtZscp89ROM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(366004)(39860400002)(376002)(346002)(186003)(4744005)(8676002)(6486002)(38070700005)(478600001)(71200400001)(1076003)(6506007)(66476007)(66946007)(5660300002)(91956017)(66556008)(2616005)(26005)(66446008)(6512007)(110136005)(8936002)(44832011)(38100700002)(41300700001)(83380400001)(36756003)(316002)(76116006)(64756008)(2906002)(122000001)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?WG8gi6VUOQfTKW83/fWYn3XQsIDW71iFadgzc+22vDJu6yPwBBzg40T8Gz?=
+ =?iso-8859-1?Q?83x//y87DixqOVzSdbpCKhT1pw+Ot63iD595a03pwaMhk/prBDLL4NC0St?=
+ =?iso-8859-1?Q?D8WW2KaGRnRJr+kaFxYFIBWtaXQ6rR30lAtqYOxq2JzZ+JDjrC6UWatPQI?=
+ =?iso-8859-1?Q?0bLMEiGvlE+qw3qH51g02j4mYNNhCdUWIyIjhc+jeRCBpVc8+D1knuXw9W?=
+ =?iso-8859-1?Q?3vy+a1M8/3Bvv6W/X9vO+EMZhU0+RMOInoV68Xjh3P6ZfFce696Oezmg9u?=
+ =?iso-8859-1?Q?U2i8W73g1JAF0fk+CqH3wJPKD9xGut5hzDnJ9WIdgW1fYU0ibWCCJY0lB2?=
+ =?iso-8859-1?Q?PD8WdF/uFBDgacWSwKSzrMlxc70VaEY51aIJwBAvadFTtcLADDuoOiW0Do?=
+ =?iso-8859-1?Q?nwj+gavfXkZrkm3WeVCkrCELglGCNqr2TXmClOgAVono2idiqpF8OoeWMx?=
+ =?iso-8859-1?Q?iKdFrO4zCpxOyxMTc3eCKPIsKrmLMn7ZM/LpkUDEPG+PdlRFQJrmN8fJJC?=
+ =?iso-8859-1?Q?/UfTectjb8ktp9L4jAccP2yoZuyu/I5E5lmhh9WDtKcT2oSNvDs8K0eHQW?=
+ =?iso-8859-1?Q?4iTqw3SyFCvuDhpBhfGi7VrZ5P+VeznBFukUfWjXpTqXTAKb4spjvDYulA?=
+ =?iso-8859-1?Q?wcFvukd0pgXtg1fU+O+ymjac1H+oOEwRO4nOy+2ZDmcvTdhoIFpo5KreZq?=
+ =?iso-8859-1?Q?QJ5HsUm0fP0I4+9brMHObJ9g27ZMwS/PbNykM1sOhuq1VfZobfLi52V4PT?=
+ =?iso-8859-1?Q?dRBMtNGPHmyMAOIZnevPlnwT4RGsp1HkfrmuOf5Y/OsNUkKXqW1ysUeqwQ?=
+ =?iso-8859-1?Q?CHZrjCMOgW9bYm3oe47esGz+LHB2W6IOeGYa+0ebQ6rfNIjAhLqQSYVzl4?=
+ =?iso-8859-1?Q?txXsj/0y7ECdNVnSLRGZVV4JwwitxPH/nTYptlBQSioGAriM+n1uAZmVyl?=
+ =?iso-8859-1?Q?VAksKPsJRCoa9+H2uLeDDaIk1Su10ydgpksuP//b2xp6wCEu4gjKq4Zhkk?=
+ =?iso-8859-1?Q?+933cRc7vjdTJz1X7EkHmYXBD68y4LyrM6MlJAUvPGeCfZvSXP1j+S3mNA?=
+ =?iso-8859-1?Q?f3b8GCnQ/NJGn3Gur+7oEJ6CVCrxwMlzpppGJhJXmNiuZy7stbgk0c7TVo?=
+ =?iso-8859-1?Q?EdkS8yfkbsWVYTL/SWnCuusLuvikH6avGTOcGS+CLootYuTGs0iQ0KQV2M?=
+ =?iso-8859-1?Q?RAY6fqI39UfIac55cKHBTPxBuA1JhM/EXBy5E7fbbF+g3Qz5zJCoTpGVMv?=
+ =?iso-8859-1?Q?a/dIKGFit7tZd1re2OK1HCGf9uku2L1TnZdKlWMa8+0r6X+P/oDWgFnF65?=
+ =?iso-8859-1?Q?9hqJ5yDgQ6gI8HMx7eZ0KnFa0gtDwKlrkKfu/cl/MhcOYpWXRC043EEHd8?=
+ =?iso-8859-1?Q?XEYEY1JxPRLTl5OkWwrK6DW5GgrdWAqrzkC0Fvbxhx6LRE5Pb4Qam1kuYI?=
+ =?iso-8859-1?Q?t3nezZidJSG/RABuZtAzRL+hqdjxkuKktjkezTboW0XQKFGvVGO0pPxxPP?=
+ =?iso-8859-1?Q?RfYlVYYoyVcwRldUt8RUpluktGS3iiWT8ztdbg4fbKpkWHn/uiZfrmVpPu?=
+ =?iso-8859-1?Q?0C1RcTysS4sGicp4dWMaY5m0NaMPy9QqiFjxo8SV5einQqYE1R8PvNjS77?=
+ =?iso-8859-1?Q?hqbLj0eXkQ4Vd59+wL2iFm4fq66HSn+j8ViEzGOHguyTfwyv39DbJQHw?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622213656.81546-2-peterx@redhat.com>
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c0f3d13e-6290-4052-aadc-08da56431c46
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2022 00:39:06.3381
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wR9vbrDC0Jz0zRnJIB1lJEX5f0yNRSO0refYjwc9mLn3rHPRyKFMvothWbTDNZ+O3PGulaH/8/tb7tUQSc+uAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5648
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
+ definitions=2022-06-24_10:2022-06-24,2022-06-24 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0
+ mlxlogscore=767 suspectscore=0 adultscore=0 phishscore=0 bulkscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206250000
+X-Proofpoint-GUID: ZN1eCgTySa1Zmkvs_I1k1K6ic4nYT_k6
+X-Proofpoint-ORIG-GUID: ZN1eCgTySa1Zmkvs_I1k1K6ic4nYT_k6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 05:36:53PM -0400, Peter Xu wrote:
-> We have had FAULT_FLAG_INTERRUPTIBLE but it was never applied to GUPs.  One
-> issue with it is that not all GUP paths are able to handle signal delivers
-> besides SIGKILL.
-> 
-> That's not ideal for the GUP users who are actually able to handle these
-> cases, like KVM.
-> 
-> KVM uses GUP extensively on faulting guest pages, during which we've got
-> existing infrastructures to retry a page fault at a later time.  Allowing
-> the GUP to be interrupted by generic signals can make KVM related threads
-> to be more responsive.  For examples:
-> 
->   (1) SIGUSR1: which QEMU/KVM uses to deliver an inter-process IPI,
->       e.g. when the admin issues a vm_stop QMP command, SIGUSR1 can be
->       generated to kick the vcpus out of kernel context immediately,
-> 
->   (2) SIGINT: which can be used with interactive hypervisor users to stop a
->       virtual machine with Ctrl-C without any delays/hangs,
-> 
->   (3) SIGTRAP: which grants GDB capability even during page faults that are
->       stuck for a long time.
-> 
-> Normally hypervisor will be able to receive these signals properly, but not
-> if we're stuck in a GUP for a long time for whatever reason.  It happens
-> easily with a stucked postcopy migration when e.g. a network temp failure
-> happens, then some vcpu threads can hang death waiting for the pages.  With
-> the new FOLL_INTERRUPTIBLE, we can allow GUP users like KVM to selectively
-> enable the ability to trap these signals.
+Fixes the bug found by Yu Zhao running stress-ng on a large system
+(512gb of ram).
 
-Can you talk abit about what is required to use this new interface
-correctly?
+Patches against mm-unstable.
 
-Lots of GUP callers are in simple system call contexts (like ioctl),
-can/should they set this flag and if so what else do they need to do?
+Liam R. Howlett (2):
+  maple_tree: Fix underflow in mas_spanning_rebalance()
+  test_maple_tree: Add test for spanning store of entire range.
 
-Thanks,
-Jason
+ lib/maple_tree.c      |  6 ++++--
+ lib/test_maple_tree.c | 13 +++++++++++++
+ 2 files changed, 17 insertions(+), 2 deletions(-)
+
+--=20
+2.35.1
