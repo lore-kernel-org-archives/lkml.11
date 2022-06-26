@@ -2,102 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E85AAC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 14:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87DC2CCA47C
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 14:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230401AbiFZOq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 10:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
+        id S230439AbiFZOwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 10:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbiFZOq0 (ORCPT
+        with ESMTP id S229441AbiFZOwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 10:46:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18B24DFD8
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 07:46:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656254781;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=5EXh2xkTs1zBkhfCl8CTHqf9DxClLVCKfcSwd9L8zzg=;
-        b=FrJpvHXIW1OTGgisNIeazetbem2rm2qB2+C/sXSDLMmDnxDbQdtSry2Ox1SBD3WlexL7ky
-        TAxMasRrSYmdcmnOjaWRU9dNXXKSLikNsHgXuUIT9+pSBqhR+A1/OlVJQU+4KmBLpVF9gE
-        pZWLMgODLEtYv4WyNTWisNF85cTBcHc=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-332-DKJpAloiNqylPxl0ZyhtRg-1; Sun, 26 Jun 2022 10:46:20 -0400
-X-MC-Unique: DKJpAloiNqylPxl0ZyhtRg-1
-Received: by mail-qk1-f199.google.com with SMTP id m15-20020a05620a290f00b006a74cf760b2so7897759qkp.20
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 07:46:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5EXh2xkTs1zBkhfCl8CTHqf9DxClLVCKfcSwd9L8zzg=;
-        b=uO9ev9sryG612iViA2XVCxU3tKPGSjtYG8CDkDtAN3ksiBNhjW+eszR7dfsqVKlshz
-         3lcwaMX1RSv7XGk0vf7R7Sux7Vsk+Itl1Ql/WUSt4rlF7F5RH2qrKHjfpgbWBu5OknjK
-         Es010jf7reN9JuF38TP5C8R2efFox12USTo/U88FQSTitp6KxdSgN1fD0ffffGM1OuNg
-         2OnBXpYSFX5dPis23H/yZ9Jn6X0EUFKFBuGiKcE76DKHeE/gAIfPPwLGHSWk067zckz6
-         LhEN5cRUeQAPegkgsEZquLLbR5rC96lOfeezJJraKV3XrceduRPwf902EaLTNJZsVTfW
-         78Lg==
-X-Gm-Message-State: AJIora+sUL/eGOCeLErFqk+DdRwmyU7qg2CQaX6WTFQqFoHbPZ9Jv7kb
-        Q/U/qSJmwJF+2ToTanDm9R7996GFcfWsymxQk1LQaQ3+I15evixK+Lg8AEZxmXxzyW8pbex74/H
-        KWjhufKNIGWHVMhugM1BtBqat
-X-Received: by 2002:a05:6214:1c49:b0:470:5f70:4ab1 with SMTP id if9-20020a0562141c4900b004705f704ab1mr6041404qvb.13.1656254780312;
-        Sun, 26 Jun 2022 07:46:20 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vwKpbQh1t2Fwl4Ge8LmFUOf/3X70OZcbrAYYkN7/IZ4bcE826TN7H5F8YkD5GlSQNHaim5WA==
-X-Received: by 2002:a05:6214:1c49:b0:470:5f70:4ab1 with SMTP id if9-20020a0562141c4900b004705f704ab1mr6041396qvb.13.1656254780138;
-        Sun, 26 Jun 2022 07:46:20 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id 22-20020ac85916000000b00317bcb6ad2csm5343266qty.17.2022.06.26.07.46.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jun 2022 07:46:19 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, Qingqing.Zhuo@amd.com, mario.limonciello@amd.com,
-        nicholas.kazlauskas@amd.com, aurabindo.pillai@amd.com,
-        maira.canal@usp.br
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] drm/amd/display: change to_dal_irq_source_dnc32() storage class specifier to static
-Date:   Sun, 26 Jun 2022 10:46:15 -0400
-Message-Id: <20220626144615.2227149-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Sun, 26 Jun 2022 10:52:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F2D9DFA4;
+        Sun, 26 Jun 2022 07:52:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB57EB80D25;
+        Sun, 26 Jun 2022 14:52:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81E0EC34114;
+        Sun, 26 Jun 2022 14:52:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656255152;
+        bh=u6dyc6OKriYarTY2U+MkEK+V7woHyhCx5GM205IhfN8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=deskQJ3vFLEQarOrl6jQja54W8ONyt8TOomle7PkO3mwM1i6NB59x4gOwLnnp5SKV
+         BUheZVCvQw/MZcQ7JEDbLnzabfWjvxVCKD1FXLtbi6jo2sLGvVhB7KRbS/Iy1roFpE
+         2nIiSxJlZaPWm7wnXbOEVzFSdS32QVkUSfN4J6PFmfRn473jeJq0UAI2Nq8FUcDZAo
+         Qd3eOxBd3vubKeYS9+0NshpBT/86f1hTg50OAqEL+vFmMJO6Nw791LpKhjFxou0e/t
+         1mQDGlrZLKsH8agAVKPue8tyDk/AAiIK/EnthxUpJUae5Iz1/5mcd89g7acsvB458x
+         +52U3JmbO2I3Q==
+Date:   Sun, 26 Jun 2022 16:02:01 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
+        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        thomas.haemmerle@leica-geosystems.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH V9 5/5] iio: accel: sca3300: Add inclination channels
+Message-ID: <20220626160201.56a705be@jic23-huawei>
+In-Reply-To: <20220529061853.3044893-6-Qing-wu.Li@leica-geosystems.com.cn>
+References: <20220529061853.3044893-1-Qing-wu.Li@leica-geosystems.com.cn>
+        <20220529061853.3044893-6-Qing-wu.Li@leica-geosystems.com.cn>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sparse reports
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn32/irq_service_dcn32.c:39:20: warning: symbol 'to_dal_irq_source_dcn32' was not declared. Should it be static?
+On Sun, 29 May 2022 06:18:53 +0000
+LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
 
-to_dal_irq_source_dnc32() is only referenced in irq_service_dnc32.c, so change its
-storage class specifier to static.
+> Different from SCA3300, SCL3300 can output inclination angles.
+> Angles are formed from acceleration with following equations:
+> ANG_X = atan2(accx , sqrt(pow(accy , 2) + pow(accz , 2)))
+> ANG_Y = atan2(accy , sqrt(pow(accx , 2) + pow(accz , 2)))
+> ANG_Z = atan2(accz , sqrt(pow(accx , 2) + pow(accy , 2)))
+> 
+> The commit adds the output of the raw value, scale
+> and scale_available of angles.
+> 
+> New interfaces:
+>   in_incli_scale
+>   in_incli_scale_available
+>   in_incli_x_raw
+>   in_incli_y_raw
+>   in_incli_z_raw
+> Data converted by application of scale to degrees.
+> 
+> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 
-Fixes: 0efd4374f6b4 ("drm/amd/display: add dcn32 IRQ changes")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I was looking at this driver whilst sanity checking something unrelated to
+this patch and noticed...
 
-diff --git a/drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c b/drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c
-index 3a213ca2f077..b1012fa1977b 100644
---- a/drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c
-+++ b/drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c
-@@ -36,7 +36,7 @@
- 
- #define DCN_BASE__INST0_SEG2                       0x000034C0
- 
--enum dc_irq_source to_dal_irq_source_dcn32(
-+static enum dc_irq_source to_dal_irq_source_dcn32(
- 		struct irq_service *irq_service,
- 		uint32_t src_id,
- 		uint32_t ext_id)
--- 
-2.27.0
+sca3300_trigger_handler directly references sca3300_channels
+rather than through indio_dev->channels. 
+
+I think that means you'll get a buffer overrun if you enable the inclination
+channels with buffered capture.  Please check if we need to modify that code
+slightly.
+
+I'm also fairly sure the timestamp will end up in the wrong place as
+iio_push_to_buffers_with_timestamp() assumes it's at the end. Please confirm
+you've tested with appropriate channels enabled and the test code in tools/iio
+
+I think the changes needed are to put the incli channels before the timestamp
+but you'll need to use separate enum for that.  Also make the trigger handler
+use the channels array for the specific device via indio_dev->channels.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/accel/sca3300.c | 76 +++++++++++++++++++++++++++++++++++--
+>  1 file changed, 73 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
+> index 9683dce21073..861f6906beee 100644
+> --- a/drivers/iio/accel/sca3300.c
+> +++ b/drivers/iio/accel/sca3300.c
+> @@ -44,12 +44,18 @@
+>  #define SCA3300_VALUE_RS_ERROR	0x3
+>  #define SCA3300_MASK_RS_STATUS	GENMASK(1, 0)
+>  
+> +#define SCL3300_REG_ANG_CTRL 0x0C
+> +#define SCL3300_ANG_ENABLE   0x1F
+> +
+>  enum sca3300_scan_indexes {
+>  	SCA3300_ACC_X = 0,
+>  	SCA3300_ACC_Y,
+>  	SCA3300_ACC_Z,
+>  	SCA3300_TEMP,
+>  	SCA3300_TIMESTAMP,
+> +	SCA3300_INCLI_X,
+> +	SCA3300_INCLI_Y,
+> +	SCA3300_INCLI_Z,
+>  };
+>  
+>  #define SCA3300_ACCEL_CHANNEL(index, reg, axis) {			\
+> @@ -73,6 +79,23 @@ enum sca3300_scan_indexes {
+>  	},								\
+>  }
+>  
+> +#define SCA3300_INCLI_CHANNEL(index, reg, axis) {			\
+> +	.type = IIO_INCLI,						\
+> +	.address = reg,							\
+> +	.modified = 1,							\
+> +	.channel2 = IIO_MOD_##axis,					\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+> +	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE), \
+> +	.scan_index = index,						\
+> +	.scan_type = {							\
+> +		.sign = 's',						\
+> +		.realbits = 16,						\
+> +		.storagebits = 16,					\
+> +		.endianness = IIO_CPU,					\
+> +	},								\
+> +}
+> +
+>  #define SCA3300_TEMP_CHANNEL(index, reg) {				\
+>  		.type = IIO_TEMP,					\
+>  		.address = reg,						\
+> @@ -106,15 +129,36 @@ static const int sca3300_accel_scale_map[] = {0, 1, 2, 2};
+>  static const int scl3300_accel_scale[][2] = {{0, 167}, {0, 333}, {0, 83}};
+>  static const int scl3300_accel_scale_map[] = {0, 1, 2};
+>  
+> +static const int scl3300_incli_scale[][2] = {{0, 5495}};
+> +static const int scl3300_incli_scale_map[] = {0, 0, 0};
+> +
+>  static const int sca3300_avail_modes_map[] = {0, 1, 2, 3};
+>  static const int scl3300_avail_modes_map[] = {0, 1, 3};
+>  
+> +static const struct iio_chan_spec scl3300_channels[] = {
+> +	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_X, 0x1, X),
+> +	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
+> +	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
+> +	SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
+> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+> +	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_X, 0x09, X),
+> +	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Y, 0x0A, Y),
+> +	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Z, 0x0B, Z),
+> +};
+> +
+>  static const unsigned long sca3300_scan_masks[] = {
+>  	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
+>  	BIT(SCA3300_TEMP),
+>  	0
+>  };
+>  
+> +static const unsigned long scl3300_scan_masks[] = {
+> +	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
+> +	BIT(SCA3300_TEMP) |
+> +	BIT(SCA3300_INCLI_X) | BIT(SCA3300_INCLI_Y) | BIT(SCA3300_INCLI_Z),
+> +	0
+> +};
+> +
+>  struct sca3300_chip_info {
+>  	const char *name;
+>  	const unsigned long *scan_masks;
+> @@ -123,12 +167,16 @@ struct sca3300_chip_info {
+>  	u8 num_accel_scales;
+>  	const int (*accel_scale)[2];
+>  	const int *accel_scale_map;
+> +	const int (*incli_scale)[2];
+> +	const int *incli_scale_map;
+> +	u8 num_incli_scales;
+>  	u8 num_freqs;
+>  	const int *freq_table;
+>  	const int *freq_map;
+>  	const int *avail_modes_table;
+>  	u8 num_avail_modes;
+>  	u8 chip_id;
+> +	bool angle_supported;
+>  };
+>  
+>  /**
+> @@ -167,21 +215,26 @@ static const struct sca3300_chip_info sca3300_chip_tbl[] = {
+>  		.avail_modes_table = sca3300_avail_modes_map,
+>  		.num_avail_modes = 4,
+>  		.chip_id = SCA3300_WHOAMI_ID,
+> +		.angle_supported = false,
+>  	},
+>  	{
+>  		.name = "scl3300",
+> -		.scan_masks = sca3300_scan_masks,
+> -		.channels = sca3300_channels,
+> -		.num_channels = ARRAY_SIZE(sca3300_channels),
+> +		.scan_masks = scl3300_scan_masks,
+> +		.channels = scl3300_channels,
+> +		.num_channels = ARRAY_SIZE(scl3300_channels),
+>  		.num_accel_scales = ARRAY_SIZE(scl3300_accel_scale)*2,
+>  		.accel_scale = scl3300_accel_scale,
+>  		.accel_scale_map = scl3300_accel_scale_map,
+> +		.incli_scale = scl3300_incli_scale,
+> +		.incli_scale_map = scl3300_incli_scale_map,
+> +		.num_incli_scales =  ARRAY_SIZE(scl3300_incli_scale)*2,
+>  		.num_freqs = ARRAY_SIZE(scl3300_lp_freq),
+>  		.freq_table = scl3300_lp_freq,
+>  		.freq_map = scl3300_lp_freq_map,
+>  		.avail_modes_table = scl3300_avail_modes_map,
+>  		.num_avail_modes = 3,
+>  		.chip_id = SCL3300_WHOAMI_ID,
+> +		.angle_supported = true,
+>  	},
+>  };
+>  
+> @@ -400,6 +453,11 @@ static int sca3300_read_raw(struct iio_dev *indio_dev,
+>  		if (ret)
+>  			return ret;
+>  		switch (chan->type) {
+> +		case IIO_INCLI:
+> +			index = data->chip->incli_scale_map[index];
+> +			*val  = data->chip->incli_scale[index][0];
+> +			*val2 = data->chip->incli_scale[index][1];
+> +			return IIO_VAL_INT_PLUS_MICRO;
+>  		case IIO_ACCEL:
+>  			index = data->chip->accel_scale_map[index];
+>  			*val  = data->chip->accel_scale[index][0];
+> @@ -486,6 +544,13 @@ static int sca3300_init(struct sca3300_data *sca_data,
+>  
+>  	sca_data->chip = &sca3300_chip_tbl[i];
+>  
+> +	if (sca_data->chip->angle_supported) {
+> +		ret = sca3300_write_reg(sca_data, SCL3300_REG_ANG_CTRL,
+> +					SCL3300_ANG_ENABLE);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+> @@ -521,6 +586,11 @@ static int sca3300_read_avail(struct iio_dev *indio_dev,
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_SCALE:
+>  		switch (chan->type) {
+> +		case IIO_INCLI:
+> +			*vals = (const int *)data->chip->incli_scale;
+> +			*length = data->chip->num_incli_scales;
+> +			*type = IIO_VAL_INT_PLUS_MICRO;
+> +			return IIO_AVAIL_LIST;
+>  		case IIO_ACCEL:
+>  			*vals = (const int *)data->chip->accel_scale;
+>  			*length = data->chip->num_accel_scales;
 
