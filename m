@@ -2,50 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C50ECC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4391CCA47C
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234185AbiFZJLV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 05:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
+        id S234204AbiFZJLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 05:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230051AbiFZJLN (ORCPT
+        with ESMTP id S233786AbiFZJLN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 26 Jun 2022 05:11:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0538512A94;
-        Sun, 26 Jun 2022 02:11:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F42512A97;
+        Sun, 26 Jun 2022 02:11:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D63261187;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ECF061189;
         Sun, 26 Jun 2022 09:11:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3E51C341CE;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB272C341CC;
         Sun, 26 Jun 2022 09:11:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656234670;
-        bh=8FZLUqXlt4kX0eBdlVb+sYAB98PK6Yu7ycSI8qBBmeg=;
+        bh=af2SSDCTRDB1nLLjwJFcl/yfjpMMlXOIiMN95A3g9/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ihh4Didv1uMwr3X/E0EFfQ5nIcDRiiCd44NN5clCMtqQqM2T95eOp1oP+BTInBuvS
-         lMfu2VVwxhFJevYuOT1mv+SHvmD786Yy04YFxWLzOQJ346BDy/sC7280gZZSqGP+uM
-         cltz3Qh+vCegNGmfzIDMxvHVTPW5luu9QJQmwQVwbSxOQas4eyBN7khX1QGsr2b+H+
-         pMIJ7bOE/bnFvSoP9ArDY7Oa9CyczyaG9lOGxxxFq6WesoaD6KXRR509/dnf1ZQEdU
-         RRKadWSmx/9n8QxW73uj/ySOiZXbJmn5hD56dfG+FxktNpL5lYeQpJq1sow5Xf5umU
-         PFX/JLZSSv1Bg==
+        b=t9NGGlGXRKcYJ6iguEHa9UrCiHGI3hJZT3hZZsVl6kzLJS4fEMFtLHFN40x6w/EM3
+         FrNOkxunmh5MS8KXpc5p6g3HwUTarxEoHBEZ2HDOjWj9sLhLTHd5wF4ezoBot2Mz1C
+         FyblBAIhlJEjlixsQ8nDYKjetSZkiv+dVzL8+29uVroyvs+mXfZc8lvvGdafoX8fC+
+         ln57WTtLdaiaAmO9HxFosAb0nxb4DDxxtOqMerT2p5bKOE2iJZfpxi34c3p/XgVMyX
+         9sjOXCheC603XRMXTwGTswYERl2JRpEbVBArn0Cx2UEvYpee2+F36nfPZrK1BdvuW2
+         cAbX4To8fklFw==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o5OIO-001cow-3S;
+        id 1o5OIO-001coe-1R;
         Sun, 26 Jun 2022 10:11:08 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Chris Down <chris@chrisdown.name>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        David Howells <dhowells@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Kees Cook <keescook@chromium.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Oliver Glitta <glittao@gmail.com>,
+        Peter Xu <peterx@redhat.com>, Petr Mladek <pmladek@suse.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, keyrings@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 13/20] Documentation: KVM: update msr.rst reference
-Date:   Sun, 26 Jun 2022 10:10:59 +0100
-Message-Id: <5652b7f5caff3b817a660b75f1f319a2f8962380.1656234456.git.mchehab@kernel.org>
+Subject: [PATCH v2 10/20] Documentation: update watch_queue.rst references
+Date:   Sun, 26 Jun 2022 10:10:56 +0100
+Message-Id: <1c220de9c58f35e815a3df9458ac2bea323c8bfb.1656234456.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656234456.git.mchehab@kernel.org>
 References: <cover.1656234456.git.mchehab@kernel.org>
@@ -55,35 +73,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
-renamed: Documentation/virt/kvm/msr.rst
-to: Documentation/virt/kvm/x86/msr.rst.
+Changeset f5461124d59b ("Documentation: move watch_queue to core-api")
+renamed: Documentation/watch_queue.rst
+to: Documentation/core-api/watch_queue.rst.
 
-Update its cross-reference accordingly.
+Update the cross-references accordingly.
 
-Fixes: daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
+Fixes: f5461124d59b ("Documentation: move watch_queue to core-api")
+Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/20] at: https://lore.kernel.org/all/cover.1656234456.git.mchehab@kernel.org/
 
- Documentation/virt/kvm/api.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/security/keys/core.rst | 2 +-
+ include/linux/watch_queue.h          | 2 +-
+ init/Kconfig                         | 2 +-
+ kernel/watch_queue.c                 | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 9260152c37cb..41afd1125cb1 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -7894,7 +7894,7 @@ architecture-specific interfaces.  This capability and the architecture-
- specific interfaces must be consistent, i.e. if one says the feature
- is supported, than the other should as well and vice versa.  For arm64
- see Documentation/virt/kvm/devices/vcpu.rst "KVM_ARM_VCPU_PVTIME_CTRL".
--For x86 see Documentation/virt/kvm/msr.rst "MSR_KVM_STEAL_TIME".
-+For x86 see Documentation/virt/kvm/x86/msr.rst "MSR_KVM_STEAL_TIME".
+diff --git a/Documentation/security/keys/core.rst b/Documentation/security/keys/core.rst
+index b3ed5c581034..811b905b56bf 100644
+--- a/Documentation/security/keys/core.rst
++++ b/Documentation/security/keys/core.rst
+@@ -1046,7 +1046,7 @@ The keyctl syscall functions are:
+      "filter" is either NULL to remove a watch or a filter specification to
+      indicate what events are required from the key.
  
- 8.25 KVM_CAP_S390_DIAG318
- -------------------------
+-     See Documentation/watch_queue.rst for more information.
++     See Documentation/core-api/watch_queue.rst for more information.
+ 
+      Note that only one watch may be emplaced for any particular { key,
+      queue_fd } combination.
+diff --git a/include/linux/watch_queue.h b/include/linux/watch_queue.h
+index 3b9a40ae8bdb..fc6bba20273b 100644
+--- a/include/linux/watch_queue.h
++++ b/include/linux/watch_queue.h
+@@ -4,7 +4,7 @@
+  * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
+  * Written by David Howells (dhowells@redhat.com)
+  *
+- * See Documentation/watch_queue.rst
++ * See Documentation/core-api/watch_queue.rst
+  */
+ 
+ #ifndef _LINUX_WATCH_QUEUE_H
+diff --git a/init/Kconfig b/init/Kconfig
+index ac8088850bdd..4dd1ee7358a3 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -432,7 +432,7 @@ config WATCH_QUEUE
+ 	  with watches for key/keyring change notifications and device
+ 	  notifications.
+ 
+-	  See Documentation/watch_queue.rst
++	  See Documentation/core-api/watch_queue.rst
+ 
+ config CROSS_MEMORY_ATTACH
+ 	bool "Enable process_vm_readv/writev syscalls"
+diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
+index 230038d4f908..869fea4fe26b 100644
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -4,7 +4,7 @@
+  * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
+  * Written by David Howells (dhowells@redhat.com)
+  *
+- * See Documentation/watch_queue.rst
++ * See Documentation/core-api/watch_queue.rst
+  */
+ 
+ #define pr_fmt(fmt) "watchq: " fmt
 -- 
 2.36.1
 
