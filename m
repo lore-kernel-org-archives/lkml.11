@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B59C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB65C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234370AbiFZJMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 05:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
+        id S234330AbiFZJOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 05:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234139AbiFZJLP (ORCPT
+        with ESMTP id S234305AbiFZJOu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 05:11:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D6512A94;
-        Sun, 26 Jun 2022 02:11:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 524AC61193;
-        Sun, 26 Jun 2022 09:11:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F604C36AF2;
-        Sun, 26 Jun 2022 09:11:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656234671;
-        bh=UbhroumrKktLwcM0j168hzEqNjPtue8hUgZS8+1D+3M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GSM1fkYv3tPENI2lq4bo1wzq/N924/jcZqOlvGdvP/BxGN3ww5wxuBbt1B8N1Shqj
-         5YbwLjrfp22oX3sLCqJprUtJA0IhryDwMG4ixgkLqCoaldYlO22rysFgyLdcQHZLRJ
-         wvEx4Y3uPAtMC89FtpNCnI6GCnHRVbsXSR49uQvU1ZXKTtCMkX/2BFU+tYcSfSF8CM
-         lI9YhEngxNRmyJCeA/D7/awBbksYdclX17TIsgqL19eElQaaCRmGpioBqtPVk4xCzl
-         4ulvgJkp9kMVxU64AzlzTVrgShifLoPTi4Fm07NCgFPpAdJI2Xt3DLd7cPMJj9b6pp
-         PA8/I/7BED88w==
-Received: from mchehab by mail.kernel.org with local (Exim 4.95)
-        (envelope-from <mchehab@kernel.org>)
-        id 1o5OIO-001cpA-6C;
-        Sun, 26 Jun 2022 10:11:08 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Dipen Patel <dipenp@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: [PATCH v2 17/20] tegra194-hte.rst: fix reference to its binding
-Date:   Sun, 26 Jun 2022 10:11:03 +0100
-Message-Id: <2e2c86485cb0642455cee01796f9a74de21403e6.1656234456.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1656234456.git.mchehab@kernel.org>
-References: <cover.1656234456.git.mchehab@kernel.org>
+        Sun, 26 Jun 2022 05:14:50 -0400
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D353E56;
+        Sun, 26 Jun 2022 02:14:48 -0700 (PDT)
+Received: by mail-qk1-f173.google.com with SMTP id b125so5005973qkg.11;
+        Sun, 26 Jun 2022 02:14:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jbPraZXafoS9hoTYKTZ34AOWnSsSx8JmOQi+FZJXy5o=;
+        b=7805PzomCq7irGRYCGTH0DbQJ7yVnuoNMTEcvXHbvQcGWoZQbVN7fEKsPhmNnyMZxp
+         JBX2c9pZGuNfZreubKg3tyCOvTMdNEbI+YrEs/wIupOnyvtzsghOgU9m8akp8nx5hoWW
+         RtVf8ylVQgnAM1ntSN/UgnGE3+syYLc//IH/UaBhxMigqvRiC13cPhRIDNcw319NiPk8
+         Zi27fjzItyr/cjLVSWugL9W3wGCc0YE+vrWbZ+1NUTA0znl0azeasXiasf2vakxLqL4Z
+         gKx4wUO0ZL5qHt4MtMfLz1pL5Lsk43LCt0J7hbcobtsxK69w6re2hdrX9FNfjUcwH0p6
+         3MSQ==
+X-Gm-Message-State: AJIora/FgzCs1SPssKC5mivdIXrbUzzBV9/PV9LPBFqKq1/VW3xURnJ8
+        H1n2W02k6DjHsIq/mpz+tSVVnHsvjsUMxA==
+X-Google-Smtp-Source: AGRyM1uD91pSXgG6pa19BRUmEZPCsvKJEdw3NaYit4C9PLiRW6MyvdMCHwpONNxrPkT+Fz7sA1wxsQ==
+X-Received: by 2002:a05:620a:4712:b0:6a7:304f:89c2 with SMTP id bs18-20020a05620a471200b006a7304f89c2mr4950769qkb.46.1656234887485;
+        Sun, 26 Jun 2022 02:14:47 -0700 (PDT)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
+        by smtp.gmail.com with ESMTPSA id g18-20020a37e212000000b006a691904891sm5620392qki.16.2022.06.26.02.14.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jun 2022 02:14:47 -0700 (PDT)
+Received: by mail-yb1-f173.google.com with SMTP id i7so11812211ybe.11;
+        Sun, 26 Jun 2022 02:14:47 -0700 (PDT)
+X-Received: by 2002:a05:6902:120e:b0:634:6f29:6b84 with SMTP id
+ s14-20020a056902120e00b006346f296b84mr7820984ybu.604.1656234886883; Sun, 26
+ Jun 2022 02:14:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1656234456.git.mchehab@kernel.org> <d6e3482ed622b6953db69cddb70f20c55c96e4da.1656234456.git.mchehab@kernel.org>
+In-Reply-To: <d6e3482ed622b6953db69cddb70f20c55c96e4da.1656234456.git.mchehab@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Sun, 26 Jun 2022 11:14:35 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXu_v28veaFva_VSKMKWjCYSosSr6pGpj5W3kj-MXfzsg@mail.gmail.com>
+Message-ID: <CAMuHMdXu_v28veaFva_VSKMKWjCYSosSr6pGpj5W3kj-MXfzsg@mail.gmail.com>
+Subject: Re: [PATCH v2 16/20] arch: m68k: q40: README: drop references to IDE driver
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Finn Thain <fthain@linux-m68k.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The binding directory for hte was renamed. Update references accordingly.
+On Sun, Jun 26, 2022 at 11:11 AM Mauro Carvalho Chehab
+<mchehab@kernel.org> wrote:
+> Since IDE support was deleted by Christoph Hellwig <hch@lst.de>,
+> Jun 16 2021, drop the left-over from README file, updating the
+> documentation to point to ata/pata_falcon.c.
+>
+> Fixes: 44b1fbc0f5f3 ("m68k/q40: Replace q40ide driver with pata_falcon and falconide")
+> Fixes: b7fb14d3ac63 ("ide: remove the legacy ide driver")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-Fixes: af583852d2ef ("dt-bindings: Renamed hte directory to timestamp")
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH v2 00/20] at: https://lore.kernel.org/all/cover.1656234456.git.mchehab@kernel.org/
+Gr{oetje,eeting}s,
 
- Documentation/driver-api/hte/tegra194-hte.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+                        Geert
 
-diff --git a/Documentation/driver-api/hte/tegra194-hte.rst b/Documentation/driver-api/hte/tegra194-hte.rst
-index 41983e04d2a0..d29b7fe86f31 100644
---- a/Documentation/driver-api/hte/tegra194-hte.rst
-+++ b/Documentation/driver-api/hte/tegra194-hte.rst
-@@ -37,7 +37,7 @@ LIC (Legacy Interrupt Controller) IRQ GTE
- 
- This GTE instance timestamps LIC IRQ lines in real time. There are 352 IRQ
- lines which this instance can add timestamps to in real time. The hte
--devicetree binding described at ``Documentation/devicetree/bindings/hte/``
-+devicetree binding described at ``Documentation/devicetree/bindings/timestamp``
- provides an example of how a consumer can request an IRQ line. Since it is a
- one-to-one mapping with IRQ GTE provider, consumers can simply specify the IRQ
- number that they are interested in. There is no userspace consumer support for
--- 
-2.36.1
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
