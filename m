@@ -2,88 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 941B7C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61BF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234273AbiFZJLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 05:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
+        id S234249AbiFZJLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 05:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234148AbiFZJLP (ORCPT
+        with ESMTP id S229985AbiFZJLP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 26 Jun 2022 05:11:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A2812A97;
-        Sun, 26 Jun 2022 02:11:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57D712AB6;
+        Sun, 26 Jun 2022 02:11:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C40A7B80D37;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7070D61196;
         Sun, 26 Jun 2022 09:11:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 157C8C341DC;
-        Sun, 26 Jun 2022 09:11:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C459EC36AFD;
+        Sun, 26 Jun 2022 09:11:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656234671;
-        bh=h+1QeVS8ACjM0/I0V8004v6I8M6+vBcTeWm3TDyLTxI=;
+        bh=GWFfIQwi0KBg8UNa6F/j3qBcQL0kmJb3b/zdkinvsXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=USWBC/8pgaZLj0WIbslgCAxhMNsMTht5DjStVoR5Vy6TrnGpSrJdx8lVh7FVqo8kz
-         IWE9O918sfMAUnmp9BLWjkE7NPcYsKEUuWRrwCYEyPDkeeWRdu9xXqyDZdd76VDCnh
-         z9cZP/Q0skaD5VUW1vAavX6cTmYmV7w41Lf+uKhW6BQEe96yonm29Wdzo8AORZFW4X
-         hn3QPlUiqtC31Z8TZLy3sw5Mc1rRKr03OdVCtFrPB7c641mtqC6P7aosbGQk7W/xZv
-         Eh3U3w7jLIVGt9k3HEHNU+Z6wIeb2evYCiNMPcO1GdknaZO8oLuVngnkjFWgKo3hgS
-         tUMJ+kB6Mtd0g==
+        b=GmXlK/zn9fbFTPdxMlhuYrYyIFtHvn2M9qW/creKJdVTAolqoIRrqCDoD8y+Sl3QL
+         aWR/I6Es7vBmgkypuw7Lt8OSpMClXnXhAbv5G9wO2G9o9UBG7TyaQiPr1kVjlzU2lL
+         LQtRvAdaYELyDE66C3EJZxbikExblCCOtNdfVt0Gek9LuaGI2zDg10Mhr7Kf5NjbaW
+         raApJUjNGXQRerL+NAcn+nDXKnG0xPxGj1ZcaFS+9X/DEvi67xkDKY/0/VnDdY85jK
+         pn6/rE2pIujrQXSnF4ZrDo1Tc5fjconhvkifcSwa8e1QEvL6zvR/CvhTpk58A2hPEC
+         xbOkOfOH8saFQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o5OIO-001coz-45;
-        Sun, 26 Jun 2022 10:11:08 +0100
+        id 1o5OIN-001coS-Uy;
+        Sun, 26 Jun 2022 10:11:07 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 14/20] Documentation: KVM: update s390-diag.rst reference
-Date:   Sun, 26 Jun 2022 10:11:00 +0100
-Message-Id: <85b81e4678bbe23d0e9692616798762a6465f0a3.1656234456.git.mchehab@kernel.org>
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Alex Shi <alexs@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Wu XiangCheng <bobwxc@email.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org
+Subject: [PATCH v2 06/20] docs: zh_CN: fix a broken reference
+Date:   Sun, 26 Jun 2022 10:10:52 +0100
+Message-Id: <94fe771609d32583fee41f47fe29433cbce5b04e.1656234456.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656234456.git.mchehab@kernel.org>
 References: <cover.1656234456.git.mchehab@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
-renamed: Documentation/virt/kvm/s390-diag.rst
-to: Documentation/virt/kvm/s390/s390-diag.rst.
+The location of the rust doc is wrong (probably a typo). Fix it.
 
-Update its cross-reference accordingly.
-
-Fixes: daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
+Fixes: 3a5915156429 ("docs/zh_CN: Add translation zh_CN/doc-guide/kernel-doc.rst")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/20] at: https://lore.kernel.org/all/cover.1656234456.git.mchehab@kernel.org/
 
- Documentation/virt/kvm/x86/hypercalls.rst | 2 +-
+ Documentation/translations/zh_CN/doc-guide/kernel-doc.rst | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/virt/kvm/x86/hypercalls.rst b/Documentation/virt/kvm/x86/hypercalls.rst
-index e56fa8b9cfca..10db7924720f 100644
---- a/Documentation/virt/kvm/x86/hypercalls.rst
-+++ b/Documentation/virt/kvm/x86/hypercalls.rst
-@@ -22,7 +22,7 @@ S390:
-   number in R1.
+diff --git a/Documentation/translations/zh_CN/doc-guide/kernel-doc.rst b/Documentation/translations/zh_CN/doc-guide/kernel-doc.rst
+index 82ec84470c0b..ccfb9b8329c2 100644
+--- a/Documentation/translations/zh_CN/doc-guide/kernel-doc.rst
++++ b/Documentation/translations/zh_CN/doc-guide/kernel-doc.rst
+@@ -14,7 +14,7 @@ Linux内核源文件可以包含kernel-doc格式的结构化文档注释，用
+           实际有着明显的不同。内核源包含成千上万个kernel-doc注释。请坚持遵循
+           此处描述的风格。
  
-   For further information on the S390 diagnose call as supported by KVM,
--  refer to Documentation/virt/kvm/s390-diag.rst.
-+  refer to Documentation/virt/kvm/s390/s390-diag.rst.
+-.. note:: kernel-doc无法包含Rust代码：请参考 Documentation/rust/docs.rst 。
++.. note:: kernel-doc无法包含Rust代码：请参考 Documentation/rust/general-information.rst 。
  
- PowerPC:
-   It uses R3-R10 and hypercall number in R11. R4-R11 are used as output registers.
+ 从注释中提取kernel-doc结构，并从中生成适当的 `Sphinx C 域`_ 函数和带有锚点的
+ 类型描述。这些注释将被过滤以生成特殊kernel-doc高亮和交叉引用。详见下文。
 -- 
 2.36.1
 
