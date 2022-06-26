@@ -2,85 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F10FC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 11:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D97CAC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 11:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234387AbiFZLMj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 07:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
+        id S233675AbiFZLPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 07:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234375AbiFZLMi (ORCPT
+        with ESMTP id S229631AbiFZLPa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 07:12:38 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A03614090;
-        Sun, 26 Jun 2022 04:12:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=o0GW7CA8KUZY6d8aF+3/YcEueAIlMj5T+JesYfgsKuc=; b=zqcujx+80DTsCWXxoP71ZqxRYi
-        uCkXs9GDLZ1MhcvWG0Y8ygzDPxwYNDA+VblI5CwPMk/Dfe6PjWXVIf2zeuDaxgkML320qxcWC2ekB
-        0LKBfFjCt2veWJeiYdqQo8uD10cpk0QhsZXz5h9bAdmMGz2FWhIiP0XrPuG9E6F/lG9E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o5QBp-008Hu5-5d; Sun, 26 Jun 2022 13:12:29 +0200
-Date:   Sun, 26 Jun 2022 13:12:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sebastian Gottschall <s.gottschall@newmedia-net.de>
-Cc:     Praghadeesh T K S <praghadeeshthevendria@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        praghadeeshtks@zohomail.in, skhan@linuxfoundation.org
-Subject: Re: [PATCH] net: wireless/broadcom: fix possible condition with no
- effect
-Message-ID: <Yrg/HTOnVF53WRVV@lunn.ch>
-References: <20220625192902.30050-1-praghadeeshthevendria@gmail.com>
- <458bd8dd-29c2-8029-20f5-f746db57740a@newmedia-net.de>
+        Sun, 26 Jun 2022 07:15:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C77BE2E
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 04:15:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F025E611F9
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 11:15:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D25DAC34114;
+        Sun, 26 Jun 2022 11:15:27 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fny0/IT4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656242125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ztpCLeJiN8x8NtOpZ42f8MSD1Gm0OAEWaX3b+SAs9kA=;
+        b=fny0/IT4ZwXmr6J7YriIEf3MCfCq11FKNasaW4DcI58lhhHAUNvJtLW59OCCqNICTRq13s
+        lSUgR6eU7MNTm0Laq+DYAcVxlKaMZ9eWR7VenLKXpbvGhx3/T0D7B32EsYc2wzJGdWOkYm
+        fRsH+lUBjLdV9RMyIcusngxCiXZ7++U=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c89af2ac (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sun, 26 Jun 2022 11:15:25 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     geert@linux-m68k.org, laurent@vivier.eu,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v2] m68k: virt: use RNG seed from bootinfo block
+Date:   Sun, 26 Jun 2022 13:15:09 +0200
+Message-Id: <20220626111509.330159-1-Jason@zx2c4.com>
+In-Reply-To: <Yrg6BzpKIJBTAVmO@zx2c4.com>
+References: <Yrg6BzpKIJBTAVmO@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <458bd8dd-29c2-8029-20f5-f746db57740a@newmedia-net.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 26, 2022 at 01:03:57PM +0200, Sebastian Gottschall wrote:
-> Am 25.06.2022 um 21:29 schrieb Praghadeesh T K S:
-> > Fix a coccinelle warning by removing condition with no possible effect
-> > 
-> > Signed-off-by: Praghadeesh T K S <praghadeeshthevendria@gmail.com>
-> > ---
-> >   drivers/net/wireless/broadcom/b43/xmit.c | 7 +------
-> >   1 file changed, 1 insertion(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/net/wireless/broadcom/b43/xmit.c b/drivers/net/wireless/broadcom/b43/xmit.c
-> > index 7651b1b..667a74b 100644
-> > --- a/drivers/net/wireless/broadcom/b43/xmit.c
-> > +++ b/drivers/net/wireless/broadcom/b43/xmit.c
-> > @@ -169,12 +169,7 @@ static u16 b43_generate_tx_phy_ctl1(struct b43_wldev *dev, u8 bitrate)
-> >   	const struct b43_phy *phy = &dev->phy;
-> >   	const struct b43_tx_legacy_rate_phy_ctl_entry *e;
-> >   	u16 control = 0;
-> > -	u16 bw;
-> > -
-> > -	if (phy->type == B43_PHYTYPE_LP)
-> > -		bw = B43_TXH_PHY1_BW_20;
-> > -	else /* FIXME */
-> > -		bw = B43_TXH_PHY1_BW_20;
-> > +	u16 bw = B43_TXH_PHY1_BW_20;
+Other virt VMs can pass RNG seeds via the "rng-seed" device tree
+property or via UEFI, but m68k doesn't have either. Instead it has its
+own bootinfo protocol. So this commit adds support for receiving a RNG
+seed from it, which will be used at the earliest possible time in boot,
+just like device tree.
 
-Hi Praghadeesh
+Reviewed-by: Laurent Vivier <laurent@vivier.eu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ arch/m68k/include/uapi/asm/bootinfo-virt.h | 7 +++++++
+ arch/m68k/virt/config.c                    | 9 +++++++++
+ 2 files changed, 16 insertions(+)
 
-I assume you took a deep look at the FIXME, understand why it is
-there, looked at the datasheet etc, and decided it is not in fact
-broken. Hence it is safe to remove the FIXME. Please could you
-summarise your findings in the commit messages.
+diff --git a/arch/m68k/include/uapi/asm/bootinfo-virt.h b/arch/m68k/include/uapi/asm/bootinfo-virt.h
+index e4db7e2213ab..0cb2c2a41610 100644
+--- a/arch/m68k/include/uapi/asm/bootinfo-virt.h
++++ b/arch/m68k/include/uapi/asm/bootinfo-virt.h
+@@ -13,6 +13,13 @@
+ #define BI_VIRT_VIRTIO_BASE	0x8004
+ #define BI_VIRT_CTRL_BASE	0x8005
+ 
++/* A random seed used to initialize the RNG. Record format:
++ *
++ *   - length       [ 2 bytes, 16-bit big endian ]
++ *   - seed data    [ `length` bytes ]
++ */
++#define BI_VIRT_RNG_SEED	0x8006
++
+ #define VIRT_BOOTI_VERSION	MK_BI_VERSION(2, 0)
+ 
+ #endif /* _UAPI_ASM_M68K_BOOTINFO_MAC_H */
+diff --git a/arch/m68k/virt/config.c b/arch/m68k/virt/config.c
+index 632ba200ad42..645acc6918b2 100644
+--- a/arch/m68k/virt/config.c
++++ b/arch/m68k/virt/config.c
+@@ -2,6 +2,7 @@
+ 
+ #include <linux/reboot.h>
+ #include <linux/serial_core.h>
++#include <linux/random.h>
+ #include <clocksource/timer-goldfish.h>
+ 
+ #include <asm/bootinfo.h>
+@@ -92,6 +93,14 @@ int __init virt_parse_bootinfo(const struct bi_record *record)
+ 		data += 4;
+ 		virt_bi_data.virtio.irq = be32_to_cpup(data);
+ 		break;
++	case BI_VIRT_RNG_SEED: {
++		u16 len = be16_to_cpup(data);
++		add_bootloader_randomness(data + 2, len);
++		/* Zero the data to preserve forward secrecy, and zero the
++		 * length to prevent kexec from using it. */
++		memzero_explicit((void *)data, len + 2);
++		break;
++	}
+ 	default:
+ 		unknown = 1;
+ 		break;
+-- 
+2.35.1
 
-	  Andrew
