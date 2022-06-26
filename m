@@ -2,68 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4391CCA47C
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3A1C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234204AbiFZJLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 05:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
+        id S234223AbiFZJL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 05:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233786AbiFZJLN (ORCPT
+        with ESMTP id S232248AbiFZJLN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 26 Jun 2022 05:11:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F42512A97;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8236012A9A;
         Sun, 26 Jun 2022 02:11:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ECF061189;
-        Sun, 26 Jun 2022 09:11:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB272C341CC;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 152F461186;
+        Sun, 26 Jun 2022 09:11:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1872C341CA;
         Sun, 26 Jun 2022 09:11:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656234670;
-        bh=af2SSDCTRDB1nLLjwJFcl/yfjpMMlXOIiMN95A3g9/E=;
+        bh=ApZQkTVnenerWztaVmFVFWCkGX5enE8Jokt4QEoiyq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t9NGGlGXRKcYJ6iguEHa9UrCiHGI3hJZT3hZZsVl6kzLJS4fEMFtLHFN40x6w/EM3
-         FrNOkxunmh5MS8KXpc5p6g3HwUTarxEoHBEZ2HDOjWj9sLhLTHd5wF4ezoBot2Mz1C
-         FyblBAIhlJEjlixsQ8nDYKjetSZkiv+dVzL8+29uVroyvs+mXfZc8lvvGdafoX8fC+
-         ln57WTtLdaiaAmO9HxFosAb0nxb4DDxxtOqMerT2p5bKOE2iJZfpxi34c3p/XgVMyX
-         9sjOXCheC603XRMXTwGTswYERl2JRpEbVBArn0Cx2UEvYpee2+F36nfPZrK1BdvuW2
-         cAbX4To8fklFw==
+        b=CG5qn3kuWwHakJqS7RKOcK9W9tkz/kqcpovCIwIpcUS7fS3T16YFXxsIk1rxPRN3+
+         4D24IyKnmupH1+QnzGjxbH07Z9ySDqhpiU9s+t8tUOz1w60dx14WbOOo322o/WqFFM
+         MCQerz1q2YhcWfBfyP+tGg0123M4NiTooYb6ygW5LetOY4FpHYN1PIHxLo36E9cuyW
+         sZcLIbaF1Mz0FX3Ms9kkxPHD2LTsEV7IQboWaXR0EOsbIUdrfc+9z8fBOb9aV/sSzF
+         J2NzRKaTYBdq+L4lygWJx8tbkG5sJqlSoWbZ2tzF/+5jL6K5Dtwr7Ewf/TKBItq8tT
+         OnMX9v8V7UYiQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o5OIO-001coe-1R;
+        id 1o5OIO-001cp3-4w;
         Sun, 26 Jun 2022 10:11:08 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Chris Down <chris@chrisdown.name>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        David Howells <dhowells@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Miguel Ojeda <ojeda@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
         Nathan Chancellor <nathan@kernel.org>,
-        Oliver Glitta <glittao@gmail.com>,
-        Peter Xu <peterx@redhat.com>, Petr Mladek <pmladek@suse.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, keyrings@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 10/20] Documentation: update watch_queue.rst references
-Date:   Sun, 26 Jun 2022 10:10:56 +0100
-Message-Id: <1c220de9c58f35e815a3df9458ac2bea323c8bfb.1656234456.git.mchehab@kernel.org>
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        x86@kernel.org
+Subject: [PATCH v2 15/20] objtool: update objtool.txt references
+Date:   Sun, 26 Jun 2022 10:11:01 +0100
+Message-Id: <ec285ece6348a5be191aebe45f78d06b3319056b.1656234456.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656234456.git.mchehab@kernel.org>
 References: <cover.1656234456.git.mchehab@kernel.org>
@@ -73,78 +72,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset f5461124d59b ("Documentation: move watch_queue to core-api")
-renamed: Documentation/watch_queue.rst
-to: Documentation/core-api/watch_queue.rst.
+Changeset a8e35fece49b ("objtool: Update documentation")
+renamed: tools/objtool/Documentation/stack-validation.txt
+to: tools/objtool/Documentation/objtool.txt.
 
 Update the cross-references accordingly.
 
-Fixes: f5461124d59b ("Documentation: move watch_queue to core-api")
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+Fixes: a8e35fece49b ("objtool: Update documentation")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/20] at: https://lore.kernel.org/all/cover.1656234456.git.mchehab@kernel.org/
 
- Documentation/security/keys/core.rst | 2 +-
- include/linux/watch_queue.h          | 2 +-
- init/Kconfig                         | 2 +-
- kernel/watch_queue.c                 | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ Documentation/x86/orc-unwinder.rst | 2 +-
+ include/linux/objtool.h            | 2 +-
+ lib/Kconfig.debug                  | 2 +-
+ tools/include/linux/objtool.h      | 2 +-
+ tools/objtool/check.c              | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/security/keys/core.rst b/Documentation/security/keys/core.rst
-index b3ed5c581034..811b905b56bf 100644
---- a/Documentation/security/keys/core.rst
-+++ b/Documentation/security/keys/core.rst
-@@ -1046,7 +1046,7 @@ The keyctl syscall functions are:
-      "filter" is either NULL to remove a watch or a filter specification to
-      indicate what events are required from the key.
+diff --git a/Documentation/x86/orc-unwinder.rst b/Documentation/x86/orc-unwinder.rst
+index 9a66a88be765..cdb257015bd9 100644
+--- a/Documentation/x86/orc-unwinder.rst
++++ b/Documentation/x86/orc-unwinder.rst
+@@ -140,7 +140,7 @@ Unwinder implementation details
  
--     See Documentation/watch_queue.rst for more information.
-+     See Documentation/core-api/watch_queue.rst for more information.
- 
-      Note that only one watch may be emplaced for any particular { key,
-      queue_fd } combination.
-diff --git a/include/linux/watch_queue.h b/include/linux/watch_queue.h
-index 3b9a40ae8bdb..fc6bba20273b 100644
---- a/include/linux/watch_queue.h
-+++ b/include/linux/watch_queue.h
-@@ -4,7 +4,7 @@
-  * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
-  * Written by David Howells (dhowells@redhat.com)
+ Objtool generates the ORC data by integrating with the compile-time
+ stack metadata validation feature, which is described in detail in
+-tools/objtool/Documentation/stack-validation.txt.  After analyzing all
++tools/objtool/Documentation/objtool.txt.  After analyzing all
+ the code paths of a .o file, it creates an array of orc_entry structs,
+ and a parallel array of instruction addresses associated with those
+ structs, and writes them to the .orc_unwind and .orc_unwind_ip sections
+diff --git a/include/linux/objtool.h b/include/linux/objtool.h
+index 15b940ec1eac..1c769cddb42a 100644
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -62,7 +62,7 @@ struct unwind_hint {
+  * It should only be used in special cases where you're 100% sure it won't
+  * affect the reliability of frame pointers and kernel stack traces.
   *
-- * See Documentation/watch_queue.rst
-+ * See Documentation/core-api/watch_queue.rst
+- * For more information, see tools/objtool/Documentation/stack-validation.txt.
++ * For more information, see tools/objtool/Documentation/objtool.txt.
   */
+ #define STACK_FRAME_NON_STANDARD(func) \
+ 	static void __used __section(".discard.func_stack_frame_non_standard") \
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 3da5f9acb966..3025347bb433 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -498,7 +498,7 @@ config STACK_VALIDATION
+ 	  runtime stack traces are more reliable.
  
- #ifndef _LINUX_WATCH_QUEUE_H
-diff --git a/init/Kconfig b/init/Kconfig
-index ac8088850bdd..4dd1ee7358a3 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -432,7 +432,7 @@ config WATCH_QUEUE
- 	  with watches for key/keyring change notifications and device
- 	  notifications.
+ 	  For more information, see
+-	  tools/objtool/Documentation/stack-validation.txt.
++	  tools/objtool/Documentation/objtool.txt.
  
--	  See Documentation/watch_queue.rst
-+	  See Documentation/core-api/watch_queue.rst
- 
- config CROSS_MEMORY_ATTACH
- 	bool "Enable process_vm_readv/writev syscalls"
-diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-index 230038d4f908..869fea4fe26b 100644
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -4,7 +4,7 @@
-  * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
-  * Written by David Howells (dhowells@redhat.com)
+ config NOINSTR_VALIDATION
+ 	bool
+diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
+index 15b940ec1eac..1c769cddb42a 100644
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -62,7 +62,7 @@ struct unwind_hint {
+  * It should only be used in special cases where you're 100% sure it won't
+  * affect the reliability of frame pointers and kernel stack traces.
   *
-- * See Documentation/watch_queue.rst
-+ * See Documentation/core-api/watch_queue.rst
+- * For more information, see tools/objtool/Documentation/stack-validation.txt.
++ * For more information, see tools/objtool/Documentation/objtool.txt.
   */
- 
- #define pr_fmt(fmt) "watchq: " fmt
+ #define STACK_FRAME_NON_STANDARD(func) \
+ 	static void __used __section(".discard.func_stack_frame_non_standard") \
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 864bb9dd3584..970844ceecdc 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -3190,7 +3190,7 @@ static struct instruction *next_insn_to_validate(struct objtool_file *file,
+  * Follow the branch starting at the given instruction, and recursively follow
+  * any other branches (jumps).  Meanwhile, track the frame pointer state at
+  * each instruction and validate all the rules described in
+- * tools/objtool/Documentation/stack-validation.txt.
++ * tools/objtool/Documentation/objtool.txt.
+  */
+ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 			   struct instruction *insn, struct insn_state state)
 -- 
 2.36.1
 
