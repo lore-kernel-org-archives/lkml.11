@@ -2,143 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D05C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 13:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4DFC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 13:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234551AbiFZNCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 09:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42938 "EHLO
+        id S234477AbiFZNDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 09:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234520AbiFZNBz (ORCPT
+        with ESMTP id S234553AbiFZND1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 09:01:55 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0F811A02;
-        Sun, 26 Jun 2022 06:01:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656248514; x=1687784514;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QJx/KSDQuzLjOJSNYWiOeeuqt+7awbeyjleOCYK2Tic=;
-  b=Lv4go0qSK4ybWZzmRMLYnGq/ETnCYZLVutyf1u2Lhk2pKDDQqjgcdrVL
-   OeuBwndYAb12iI1TtmEqlw8vGetf8rFUDgGmEsHpKSj2mQ199B3AjfFBi
-   n5eQMJSKcvxWaV3/VctQVVRxRKftaWCNsDCHtzy1+a7fqtEXUm0i3kjK/
-   u813UaycfaENtESWsj/fs4bTzTmE2oTHxs6OwJXs/Df/VyliOud4hxYUV
-   Rl3AG19NagYs3NG6761jkPJkgV3cX7NxuhSNmE/i/m1XDVMhxGd2v9Z2B
-   vzAbkNLpwq2oMxOLebR7nAZxUk2WC95h57ovkTjcNSTiG8xSgMQZYIJP/
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,224,1650956400"; 
-   d="scan'208";a="165122628"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Jun 2022 06:01:53 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 26 Jun 2022 06:01:51 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sun, 26 Jun 2022 06:01:49 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 8/8] net: lan966x: Update PGID when lag ports are changing link status
-Date:   Sun, 26 Jun 2022 15:04:51 +0200
-Message-ID: <20220626130451.1079933-9-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220626130451.1079933-1-horatiu.vultur@microchip.com>
-References: <20220626130451.1079933-1-horatiu.vultur@microchip.com>
+        Sun, 26 Jun 2022 09:03:27 -0400
+Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com [209.85.217.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA8E11A1D;
+        Sun, 26 Jun 2022 06:03:25 -0700 (PDT)
+Received: by mail-vs1-f42.google.com with SMTP id e7so6568923vsp.13;
+        Sun, 26 Jun 2022 06:03:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=wgB3yUfs+v8g1TK2ZKMTbiAV4yHoQXrOoYl0KZd3ozw=;
+        b=gv1z+h+lb+BPXB5dtpuaCPm7IHDPOMHHu38I+CqG7GWyjUE2jHcZt7K3GW2JlI5wmN
+         /NNRxIpTXAhlABzIRHLbiIFIqAswboQq15NKWfdd/UFZoF29eLab9eYfAs/CIpT3WGS4
+         hrM5XHMU9SpcsMPo0EIstpmZG3iFhyti53z9lprzLdk0gLfz1f9GQxUvuhVDuDVX9/6w
+         L9W3QbIX9ChdCNaRlcAiJTYDYbuoOdANkfcxajoc4XUHayQWcpPfkwuVmp3+m5QUvqT+
+         yWCLLMa5ALK/ceFeIAgvoCv73S8ZCIm0Mm69zuY/tspnG4WfHBVVOYsUHyA5O2uVjhH+
+         9HxQ==
+X-Gm-Message-State: AJIora9i2RTGfIYSdFY0dIH/fzvUcNl5ACjliVFtKdfB5wTL+v6avgJ8
+        KwDgaN8aJEODcB5ipR9OYgnCFj4AYuYpjg==
+X-Google-Smtp-Source: AGRyM1uSCtYwflAqUfI+mjEcLwjsAAkaPthSJxyWVYfO88aTrNWZLZDLaLvoeiAxSuNmoTtmhyu4kA==
+X-Received: by 2002:a67:15c7:0:b0:354:5037:dbf5 with SMTP id 190-20020a6715c7000000b003545037dbf5mr2639185vsv.28.1656248604282;
+        Sun, 26 Jun 2022 06:03:24 -0700 (PDT)
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com. [209.85.221.180])
+        by smtp.gmail.com with ESMTPSA id r1-20020a1fa801000000b0036ca2afd7c9sm1356068vke.0.2022.06.26.06.03.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jun 2022 06:03:24 -0700 (PDT)
+Received: by mail-vk1-f180.google.com with SMTP id m188so3344285vkm.3;
+        Sun, 26 Jun 2022 06:03:23 -0700 (PDT)
+X-Received: by 2002:a1f:5f8f:0:b0:36b:fdd7:7788 with SMTP id
+ t137-20020a1f5f8f000000b0036bfdd77788mr3044394vkb.22.1656248603691; Sun, 26
+ Jun 2022 06:03:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220621034224.38995-1-samuel@sholland.org> <20220621034224.38995-5-samuel@sholland.org>
+In-Reply-To: <20220621034224.38995-5-samuel@sholland.org>
+Reply-To: wens@csie.org
+From:   Chen-Yu Tsai <wens@csie.org>
+Date:   Sun, 26 Jun 2022 21:03:12 +0800
+X-Gmail-Original-Message-ID: <CAGb2v64Mrn88+w5kCbMn7Z23-UdyrTG-Q2cboPswMj=9z4HgrQ@mail.gmail.com>
+Message-ID: <CAGb2v64Mrn88+w5kCbMn7Z23-UdyrTG-Q2cboPswMj=9z4HgrQ@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] ARM: dts: axp22x/axp809: Add GPIO controller nodes
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a port under a bond device is changing it's link status it is
-required to recalculate the PGID entries. Otherwise the HW will still
-try to transmit frames on the port that is down.
+On Tue, Jun 21, 2022 at 11:42 AM Samuel Holland <samuel@sholland.org> wrote:
+>
+> These PMICs all contain a GPIO controller. Now that the binding is
+> documented, wire up the controller in the device tree.
+>
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> ---
+>
+> (no changes since v1)
+>
+>  arch/arm/boot/dts/axp22x.dtsi | 18 ++++++++++++++++++
+>  arch/arm/boot/dts/axp809.dtsi | 19 +++++++++++++++++++
+>  2 files changed, 37 insertions(+)
+>
+> diff --git a/arch/arm/boot/dts/axp22x.dtsi b/arch/arm/boot/dts/axp22x.dtsi
+> index a020c12b2884..5c233c84be92 100644
+> --- a/arch/arm/boot/dts/axp22x.dtsi
+> +++ b/arch/arm/boot/dts/axp22x.dtsi
+> @@ -67,6 +67,24 @@ battery_power_supply: battery-power {
+>                 status = "disabled";
+>         };
+>
+> +       axp_gpio: gpio {
+> +               compatible = "x-powers,axp221-gpio";
+> +               gpio-controller;
+> +               #gpio-cells = <2>;
+> +
+> +               /omit-if-no-ref/
+> +               gpio0_ldo: gpio0-ldo-pin {
+> +                       pins = "GPIO0";
+> +                       function = "ldo";
+> +               };
+> +
+> +               /omit-if-no-ref/
+> +               gpio1_ldo: gpio1-ldo-pin {
+> +                       pins = "GPIO1";
+> +                       function = "ldo";
+> +               };
+> +       };
+> +
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../net/ethernet/microchip/lan966x/lan966x_lag.c | 16 ++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_main.h    |  3 +++
- .../ethernet/microchip/lan966x/lan966x_port.c    |  6 ++++++
- 3 files changed, 25 insertions(+)
+We have
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-index 4ce41a55737c..eec5d6912757 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-@@ -151,6 +151,22 @@ void lan966x_lag_port_leave(struct lan966x_port *port, struct net_device *bond)
- 	lan966x_lag_set_aggr_pgids(lan966x);
- }
- 
-+void lan966x_lag_port_down(struct lan966x_port *port)
-+{
-+	port->bond_fix = port->bond;
-+	lan966x_lag_port_leave(port, port->bond);
-+}
-+
-+void lan966x_lag_port_up(struct lan966x_port *port)
-+{
-+	struct lan966x *lan966x = port->lan966x;
-+
-+	port->bond = port->bond_fix;
-+	lan966x_lag_set_port_ids(lan966x);
-+	lan966x_update_fwd_mask(lan966x);
-+	lan966x_lag_set_aggr_pgids(lan966x);
-+}
-+
- int lan966x_lag_port_prechangeupper(struct net_device *dev,
- 				    struct netdev_notifier_changeupper_info *info)
- {
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index c1f5ca5d91a4..23264e70fb8a 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -293,6 +293,7 @@ struct lan966x_port {
- 	struct sk_buff_head tx_skbs;
- 
- 	struct net_device *bond;
-+	struct net_device *bond_fix;
- 	bool lag_tx_active;
- };
- 
-@@ -420,6 +421,8 @@ int lan966x_lag_port_join(struct lan966x_port *port,
- 			  struct net_device *bond,
- 			  struct netlink_ext_ack *extack);
- void lan966x_lag_port_leave(struct lan966x_port *port, struct net_device *bond);
-+void lan966x_lag_port_down(struct lan966x_port *port);
-+void lan966x_lag_port_up(struct lan966x_port *port);
- int lan966x_lag_port_prechangeupper(struct net_device *dev,
- 				    struct netdev_notifier_changeupper_info *info);
- int lan966x_lag_port_changelowerstate(struct net_device *dev,
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-index f141644e4372..e99478a443cb 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-@@ -274,11 +274,17 @@ static void lan966x_port_link_up(struct lan966x_port *port)
- void lan966x_port_config_down(struct lan966x_port *port)
- {
- 	lan966x_port_link_down(port);
-+
-+	if (port->bond)
-+		lan966x_lag_port_down(port);
- }
- 
- void lan966x_port_config_up(struct lan966x_port *port)
- {
- 	lan966x_port_link_up(port);
-+
-+	if (port->bond_fix)
-+		lan966x_lag_port_up(port);
- }
- 
- void lan966x_port_status_get(struct lan966x_port *port,
--- 
-2.33.0
+    reg_ldo_io0: ldo-io0 {
+            pinctrl-names = "default";
+            pinctrl-0 = <&gpio0_ldo>;
+            /* Disable by default to avoid conflicts with GPIO */
+            ...
+    }
 
+in axp81x.dtsi . Should we add it here and for axp803.dtsi as well?
+
+Otherwise,
+
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
