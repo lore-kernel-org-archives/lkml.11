@@ -2,97 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B90C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAFBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234302AbiFZJL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 05:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46324 "EHLO
+        id S234310AbiFZJL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 05:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234144AbiFZJLP (ORCPT
+        with ESMTP id S234155AbiFZJLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 05:11:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECA912AB5;
-        Sun, 26 Jun 2022 02:11:13 -0700 (PDT)
+        Sun, 26 Jun 2022 05:11:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471FD12A93;
+        Sun, 26 Jun 2022 02:11:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7535A61197;
-        Sun, 26 Jun 2022 09:11:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56F4C36AFE;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6540BCE0F90;
+        Sun, 26 Jun 2022 09:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0BB0C341D2;
         Sun, 26 Jun 2022 09:11:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656234671;
-        bh=kSmvldrnBKLAUF+/2e4vcVlSti8QpYvHvcfOW+vjwCw=;
+        bh=NCpiqd/D1JiRGRI6GFPpPviNDEw1WQaXUZZDjx551mU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F7bCsCNMI3sPLiq81Njm9urEkODF3YSSK/radH8r9Htrr1iuLGtoxuMeekUtOAsQf
-         FpLMDdO16rmyTsLEY6g0S7ubKPaEy3s7pCjnFTfSpoS+AQtkJ3pgjq2BVl4wyK3O+o
-         SEDAM8F5hTN/Bygh+PLnahqc1OYKMuYotMsc7mmb87RBcUH3/hg62R+sCjNvuWKArU
-         bWAECAQrbkskMCLddfyex9YkhUi2/+1uczpBX8PcuqpwcG1rQXllYt+BK6JLzRDC6f
-         rxU72NIA9Y2+3lh/hPNQ2VoltSCrirOZtyEmT5IieyXoGOp8dwwFvNvfofqCsU/YWR
-         c+yew2lmI7U0A==
+        b=fHa/6D2/6MlyBB7kFaoPvwT7M37Z6+np2e4+K3s/u9VjR/vdduDG6/7u14eWpSQGh
+         SYC6yxhxTc7fYwdUuNyYBSQMAYb+v+DkqP6qO3LwozKn3ALp8kEJP+XPCZMDrp8fPo
+         50Q+XK5ZxnyjIwBpf/klBX8zsatXyUuy3R9Fn3qGZrpReBrOFhfMdI/SMCJ8Iahelj
+         jNu3X+CIjQ5NznInR4r2eaCJ9oYAwuBdhXhKqB1URmLXYIu3Hb/NRQGgic0Z7bSEXb
+         VAe8+TY2XgZ5MvNFm98kg79L3NmUuNIYPqJ+jE7vDYEm1USumqH1LxlUIXrqxvbPd3
+         quB1Tf3lBhb/Q==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o5OIN-001coV-VX;
-        Sun, 26 Jun 2022 10:11:07 +0100
+        id 1o5OIO-001cpF-6v;
+        Sun, 26 Jun 2022 10:11:08 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        devicetree@vger.kernel.org, linux-input@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 07/20] docs: zh_CN/vm: fix a typo for page reporting ReST file
-Date:   Sun, 26 Jun 2022 10:10:53 +0100
-Message-Id: <c7db8f975f461eaebd7ea7489ff9666d89e121c6.1656234456.git.mchehab@kernel.org>
+Subject: [PATCH v2 18/20] dt-bindings: mfd: update dlg,da9063.yaml reference
+Date:   Sun, 26 Jun 2022 10:11:04 +0100
+Message-Id: <da459164d166d994b06f9ce8bf3a2108ccd0abd5.1656234456.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656234456.git.mchehab@kernel.org>
 References: <cover.1656234456.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-typo:
-	_free_page_reporting.rst -> free_page_reporting.rst
+Changeset 441613662db7 ("dt-bindings: mfd: Convert da9063 to yaml")
+renamed: Documentation/devicetree/bindings/mfd/da9063.txt
+to: Documentation/devicetree/bindings/mfd/dlg,da9063.yaml.
 
-Fixes: 9859b277bffe ("docs/zh_CN: add vm frontswap translation")
-Fixes: adeacecbd36c ("docs/zh_CN: add free_page_reporting translation")
+Update its cross-reference accordingly.
+
+Fixes: 441613662db7 ("dt-bindings: mfd: Convert da9063 to yaml")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/20] at: https://lore.kernel.org/all/cover.1656234456.git.mchehab@kernel.org/
 
- Documentation/translations/zh_CN/vm/free_page_reporting.rst | 2 +-
- Documentation/translations/zh_CN/vm/frontswap.rst           | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/input/da9062-onkey.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/translations/zh_CN/vm/free_page_reporting.rst b/Documentation/translations/zh_CN/vm/free_page_reporting.rst
-index 31d6c34b956b..14336a3aa5f4 100644
---- a/Documentation/translations/zh_CN/vm/free_page_reporting.rst
-+++ b/Documentation/translations/zh_CN/vm/free_page_reporting.rst
-@@ -1,6 +1,6 @@
- .. include:: ../disclaimer-zh_CN.rst
+diff --git a/Documentation/devicetree/bindings/input/da9062-onkey.txt b/Documentation/devicetree/bindings/input/da9062-onkey.txt
+index 5f9fbc68e58a..e5eef59a93dc 100644
+--- a/Documentation/devicetree/bindings/input/da9062-onkey.txt
++++ b/Documentation/devicetree/bindings/input/da9062-onkey.txt
+@@ -2,7 +2,7 @@
  
--:Original: Documentation/vm/_free_page_reporting.rst
-+:Original: Documentation/vm/free_page_reporting.rst
+ This module is part of the DA9061/DA9062/DA9063. For more details about entire
+ DA9062 and DA9061 chips see Documentation/devicetree/bindings/mfd/da9062.txt
+-For DA9063 see Documentation/devicetree/bindings/mfd/da9063.txt
++For DA9063 see Documentation/devicetree/bindings/mfd/dlg,da9063.yaml
  
- :翻译:
- 
-diff --git a/Documentation/translations/zh_CN/vm/frontswap.rst b/Documentation/translations/zh_CN/vm/frontswap.rst
-index 3eb07870e2ef..98aa6f581ea7 100644
---- a/Documentation/translations/zh_CN/vm/frontswap.rst
-+++ b/Documentation/translations/zh_CN/vm/frontswap.rst
-@@ -1,4 +1,4 @@
--:Original: Documentation/vm/_free_page_reporting.rst
-+:Original: Documentation/vm/free_page_reporting.rst
- 
- :翻译:
+ This module provides the KEY_POWER event.
  
 -- 
 2.36.1
