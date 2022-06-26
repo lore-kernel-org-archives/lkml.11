@@ -2,67 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3A1C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD62C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234223AbiFZJL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 05:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46244 "EHLO
+        id S234219AbiFZJLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 05:11:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232248AbiFZJLN (ORCPT
+        with ESMTP id S233937AbiFZJLN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 26 Jun 2022 05:11:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8236012A9A;
-        Sun, 26 Jun 2022 02:11:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C5B12AA6;
+        Sun, 26 Jun 2022 02:11:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 152F461186;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2096C6118C;
         Sun, 26 Jun 2022 09:11:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1872C341CA;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE3FFC341CF;
         Sun, 26 Jun 2022 09:11:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656234670;
-        bh=ApZQkTVnenerWztaVmFVFWCkGX5enE8Jokt4QEoiyq8=;
+        s=k20201202; t=1656234671;
+        bh=0VMbEb33dQlbgLBtppNYobb6lfqI/ghU3eQrEoLrjC4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CG5qn3kuWwHakJqS7RKOcK9W9tkz/kqcpovCIwIpcUS7fS3T16YFXxsIk1rxPRN3+
-         4D24IyKnmupH1+QnzGjxbH07Z9ySDqhpiU9s+t8tUOz1w60dx14WbOOo322o/WqFFM
-         MCQerz1q2YhcWfBfyP+tGg0123M4NiTooYb6ygW5LetOY4FpHYN1PIHxLo36E9cuyW
-         sZcLIbaF1Mz0FX3Ms9kkxPHD2LTsEV7IQboWaXR0EOsbIUdrfc+9z8fBOb9aV/sSzF
-         J2NzRKaTYBdq+L4lygWJx8tbkG5sJqlSoWbZ2tzF/+5jL6K5Dtwr7Ewf/TKBItq8tT
-         OnMX9v8V7UYiQ==
+        b=PWjf1lPUfPb24TU7SlF7Xw5H9uH1ACzAiNBT7gtrGrPhW4OTKOiYY2RyKdSf6XGVn
+         rNy0glkCrKLBecvgZhFUc0NBbb1CG55XPzbWO57W+X6Gwp/b/kJn254EJCZt1f2d7q
+         yQL/W73smXoQOlIOfnM8pV0JO3Domqrn/xIyZzWYzwxC+lDCJFIJ0t6NMvrrNut8yV
+         ybf1xy3GmRIzDcX8ZWFGoMj9fgmFkApxKedmL7di59t8CI64Mlxuw6pPKZUx+LJg7F
+         1RBje5RM580JpWuEv2fh1hBMnaIZA9tn4QtC9GqCQoulCpbGEk/cr//wtNuC1DWRki
+         tXqQA1fS1J9Qg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o5OIO-001cp3-4w;
+        id 1o5OIO-001col-27;
         Sun, 26 Jun 2022 10:11:08 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Isabella Basso <isabbasso@riseup.net>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        x86@kernel.org
-Subject: [PATCH v2 15/20] objtool: update objtool.txt references
-Date:   Sun, 26 Jun 2022 10:11:01 +0100
-Message-Id: <ec285ece6348a5be191aebe45f78d06b3319056b.1656234456.git.mchehab@kernel.org>
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 11/20] Documentation: KVM: update s390-pv.rst reference
+Date:   Sun, 26 Jun 2022 10:10:57 +0100
+Message-Id: <e2676f087d287db0bc31ae7c05c80ce5adf93333.1656234456.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656234456.git.mchehab@kernel.org>
 References: <cover.1656234456.git.mchehab@kernel.org>
@@ -72,91 +55,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset a8e35fece49b ("objtool: Update documentation")
-renamed: tools/objtool/Documentation/stack-validation.txt
-to: tools/objtool/Documentation/objtool.txt.
+Changesets: daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
+and: daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
+renamed: Documentation/virt/kvm/s390-pv.rst
+to: Documentation/virt/kvm/s390/s390-pv.rst.
 
-Update the cross-references accordingly.
+Update its cross-reference accordingly.
 
-Fixes: a8e35fece49b ("objtool: Update documentation")
+Fixes: daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/20] at: https://lore.kernel.org/all/cover.1656234456.git.mchehab@kernel.org/
 
- Documentation/x86/orc-unwinder.rst | 2 +-
- include/linux/objtool.h            | 2 +-
- lib/Kconfig.debug                  | 2 +-
- tools/include/linux/objtool.h      | 2 +-
- tools/objtool/check.c              | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+ Documentation/virt/kvm/s390/s390-pv-boot.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/x86/orc-unwinder.rst b/Documentation/x86/orc-unwinder.rst
-index 9a66a88be765..cdb257015bd9 100644
---- a/Documentation/x86/orc-unwinder.rst
-+++ b/Documentation/x86/orc-unwinder.rst
-@@ -140,7 +140,7 @@ Unwinder implementation details
+diff --git a/Documentation/virt/kvm/s390/s390-pv-boot.rst b/Documentation/virt/kvm/s390/s390-pv-boot.rst
+index 73a6083cb5e7..96c48480a360 100644
+--- a/Documentation/virt/kvm/s390/s390-pv-boot.rst
++++ b/Documentation/virt/kvm/s390/s390-pv-boot.rst
+@@ -10,7 +10,7 @@ The memory of Protected Virtual Machines (PVMs) is not accessible to
+ I/O or the hypervisor. In those cases where the hypervisor needs to
+ access the memory of a PVM, that memory must be made accessible.
+ Memory made accessible to the hypervisor will be encrypted. See
+-Documentation/virt/kvm/s390-pv.rst for details."
++Documentation/virt/kvm/s390/s390-pv.rst for details."
  
- Objtool generates the ORC data by integrating with the compile-time
- stack metadata validation feature, which is described in detail in
--tools/objtool/Documentation/stack-validation.txt.  After analyzing all
-+tools/objtool/Documentation/objtool.txt.  After analyzing all
- the code paths of a .o file, it creates an array of orc_entry structs,
- and a parallel array of instruction addresses associated with those
- structs, and writes them to the .orc_unwind and .orc_unwind_ip sections
-diff --git a/include/linux/objtool.h b/include/linux/objtool.h
-index 15b940ec1eac..1c769cddb42a 100644
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -62,7 +62,7 @@ struct unwind_hint {
-  * It should only be used in special cases where you're 100% sure it won't
-  * affect the reliability of frame pointers and kernel stack traces.
-  *
-- * For more information, see tools/objtool/Documentation/stack-validation.txt.
-+ * For more information, see tools/objtool/Documentation/objtool.txt.
-  */
- #define STACK_FRAME_NON_STANDARD(func) \
- 	static void __used __section(".discard.func_stack_frame_non_standard") \
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 3da5f9acb966..3025347bb433 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -498,7 +498,7 @@ config STACK_VALIDATION
- 	  runtime stack traces are more reliable.
- 
- 	  For more information, see
--	  tools/objtool/Documentation/stack-validation.txt.
-+	  tools/objtool/Documentation/objtool.txt.
- 
- config NOINSTR_VALIDATION
- 	bool
-diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
-index 15b940ec1eac..1c769cddb42a 100644
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -62,7 +62,7 @@ struct unwind_hint {
-  * It should only be used in special cases where you're 100% sure it won't
-  * affect the reliability of frame pointers and kernel stack traces.
-  *
-- * For more information, see tools/objtool/Documentation/stack-validation.txt.
-+ * For more information, see tools/objtool/Documentation/objtool.txt.
-  */
- #define STACK_FRAME_NON_STANDARD(func) \
- 	static void __used __section(".discard.func_stack_frame_non_standard") \
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 864bb9dd3584..970844ceecdc 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -3190,7 +3190,7 @@ static struct instruction *next_insn_to_validate(struct objtool_file *file,
-  * Follow the branch starting at the given instruction, and recursively follow
-  * any other branches (jumps).  Meanwhile, track the frame pointer state at
-  * each instruction and validate all the rules described in
-- * tools/objtool/Documentation/stack-validation.txt.
-+ * tools/objtool/Documentation/objtool.txt.
-  */
- static int validate_branch(struct objtool_file *file, struct symbol *func,
- 			   struct instruction *insn, struct insn_state state)
+ On IPL (boot) a small plaintext bootloader is started, which provides
+ information about the encrypted components and necessary metadata to
 -- 
 2.36.1
 
