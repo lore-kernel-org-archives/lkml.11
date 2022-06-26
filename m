@@ -2,126 +2,399 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6190FC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 14:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59369CCA47C
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 14:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231875AbiFZOZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 10:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
+        id S231383AbiFZO3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 10:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiFZOZ2 (ORCPT
+        with ESMTP id S231797AbiFZO3l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 10:25:28 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE18DFE2;
-        Sun, 26 Jun 2022 07:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656253505;
-        bh=V2zLP+Q6I1/UFW3ZsVkjipSTGPK6qygTlMrwpvwc3qs=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=iDpI0X4c4EvjZ8K4GQRqgIdqOp/HEbZhDDbDSXNyk5rgbHJNgHI337HQOKD9sJ1Cx
-         thZ6DBVg63qnXqKrKyQCpUggIIEThbzsD/2YrlcafB78FOnUVJfsNkIXkpQWsnFd0X
-         81sHAwsAOHozynaJVDbEWzKWn9RT1Z/8FJwcnG8c=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.33] ([46.223.2.248]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MacOQ-1nUknr1To2-00cDcr; Sun, 26
- Jun 2022 16:25:05 +0200
-Subject: Re: [PATCH 4/8] serial: core: sanitize RS485 delays read from device
- tree
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
- <20220622154659.8710-5-LinoSanfilippo@gmx.de>
- <5d406271-3290-f321-5984-bbc1f9a3bd96@linux.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <5f4f4750-95c1-fb39-fefc-dbd2cd51e4a7@gmx.de>
-Date:   Sun, 26 Jun 2022 16:25:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Sun, 26 Jun 2022 10:29:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5C5DF4A;
+        Sun, 26 Jun 2022 07:29:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBF2861255;
+        Sun, 26 Jun 2022 14:29:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 889A7C34114;
+        Sun, 26 Jun 2022 14:29:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656253779;
+        bh=bH3usP7pZbcRTm6go50AOVwKzM+HofK+c3akIXH9cGQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=afYOZjNnlFt/mOedeOf6EEWpxaBTMgjGKLrDgRVKf0m5GOA4sReNkqhronkCkshiq
+         LqCBsmQaTh8O6AShooWUWJwpNEwBIR8+2HkTqZ+rZuU+nGy7HCVar9SUAJ1BPYcy19
+         M4vA+dfomeT5iTqMhYLefelwIoyA4GTYj/KGAlosHAIIXlAihx0axwQLfHzIfNvd6j
+         4YK50mB9tRgJITx7pAAMknp0ju94PXnqMhcTTYPo04cTyS43nI7ac6kt9gLuhFEHrc
+         TP/X6diUMqXE3DZroTOi9e4G/VxG9rFsM7xzlNAZgEEEpgXqEtCnlWSaBIC+FieNNb
+         RjBxN/+fvVVGg==
+Date:   Sun, 26 Jun 2022 15:39:08 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] iio: pressure: bmp280: Adds more tunable config
+ parameters for BMP380
+Message-ID: <20220626153908.5b71d2ac@jic23-huawei>
+In-Reply-To: <20220625151039.48148-1-ang.iglesiasg@gmail.com>
+References: <20220625151039.48148-1-ang.iglesiasg@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <5d406271-3290-f321-5984-bbc1f9a3bd96@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Yktu9u31aqAs7jhThOJR32JZKvmscc7SXjC6uQl83fXmjNX5LCa
- +KujvR9Yq4KmSO6XN356rP2y89A8P/5QmKIWhR0/s/iEK4Itgsp/jPKcmHMKeSklzckq5I8
- 63QtTKqOf/SAsaI4EM6TT70hq1kUg5W8UwybyBOSoF0mvQYE2Bu5g2VOJptWtGnvuGc0cln
- v7LGYeDTn0sRPMwLm7U/w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:sUCrIRbOmUU=:5U5Fg4XJWkc97wRA6PNARj
- 43tXT3PdoRp/nlr1ltlHtbVOKqRkOtGu6LCPk5SyWHZQksZMAgm4g4lBfliipjE+xDO9nQJQX
- /viu8lqNzzvMu1O7A3ChaNZl889/ZnhKGjy/qOLaAg9X0smd8tdGTEnPMm3+c2QkqhJ6TJWjV
- TlS4RUx/QAGRL4L/Ve1Mz4/u/LvWU6wbzM/V3MYIH7bSIK9wH2MSNo6/BzZxjv3wJH4YoTUZP
- ITNoIE8IklxT4r+WTiwmGCc6Y/HNR3YLI0JEY7/kLbMl2qRv/jQbIqQiceXWO+MXTu+a3WQ5w
- tZCR8NiMrKPHkpuyivJN0gGI8mk/gx3Dsm8ts+iUjh2emDiHamvvm5G+MnKukFVLOGgWAQ4OR
- BMLzBrzHU1TOEN1lXVng3uBXDnuUteCRcGG3r/gtqpL5dQEAwUNSkPHaBQkJlLRW0lfK4yK5Q
- W8G9kTxuQ/II9Vm7ccIzSK9HrlpsStuSu792oFRXfSX+DnrSU9a36ptzd0cv3EaNdkLs3F1nU
- RQNb6dha+CT5HyRjUwBwUE48DmnKiGjVSXT9sdW2TSqOhm3gkXRBEK0ISnAHS30cHnEJMJGZc
- /mou3PYhKnNg2x6g3XPyY/0Ul8zC3K70vbQ8vnS+6oWPQlE2b/YQgvUde1PBm4Ur+diOLDo6s
- YFwoT1Q21fag/xUWhRD0BFa267LUM6uOuTWh8ZdbkxzQmWV9RbVjZZAdCSC0lVXibAI0yQX5w
- 436xTsyu3FjNwUsvj+c/XpJ4uqwUjJKAJRNkQS82DjmCIOem4fUS2Df+t9bXu5/IgbrImeqAB
- Xeg7SGH/9nM8X0RKLjW/Y2fHbu/Udhq5k6UPrfmot/RvYs0imOe7JBgSxTt2eJ5Hik+aO9uPi
- NQmqDyGuFFN4qB8sBy3KLBoflRgfZQeCSndiAg1L/AAy8ss6z8saRhU3jxeQK29l90yUSFh1R
- hv+D45VhabFJfOQTO/ek6LTIfrQ8m/xq9lU7ceWIV4lOjlIXuHoIrkjTwGu1Kkz08QNG5kYXC
- 7HXk6ewfowZeB9f5fnSWlPGWasI+my6ZadFmEK4BqbXVQQ7ICUYJPkcHXBTwHVIJNl/jy0PEa
- h9ss6mjMXq6oQ+R7spVx0iWQz4LsNHwkKEUTNBVqsoa+4ZiOaLc24kaJg==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.06.22 at 12:05, Ilpo J=C3=A4rvinen wrote:
-> On Wed, 22 Jun 2022, Lino Sanfilippo wrote:
->
->> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>
->> When setting the RS485 configuration from userspace via TIOCSRS485 the
->> delays are clamped to 100ms. Make this consistent with the values passe=
-d
->> in by means of device tree parameters.
->>
->> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->> ---
->>  drivers/tty/serial/serial_core.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
-al_core.c
->> index fa6acadd7d0c..2e9f90e73e62 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -3382,6 +3382,8 @@ int uart_get_rs485_mode(struct uart_port *port)
->>  		rs485conf->delay_rts_after_send =3D 0;
->>  	}
->>
->> +	uart_sanitize_serial_rs485_delays(port, rs485conf);
->> +
->>  	/*
->>  	 * Clear full-duplex and enabled flags, set RTS polarity to active hi=
-gh
->>  	 * to get to a defined state with the following properties:
->> --
->> 2.36.1
->
-> While above works, if we go to this change user-visible behavior route,
-> uart_get_rs485_mode() could just call full uart_sanitize_serial_rs485()?
+On Sat, 25 Jun 2022 17:10:36 +0200
+Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
 
-As it is now uart_sanitize_serial_rs485() will clear the entire serial_rs4=
-85 struct and
-return immediately if rs485-enabled-at-boot-time (and thus SER_RS485_ENABL=
-ED)
-is not set. That was one of the reasons I moved the delay checks into an o=
-wn fucntion. The other
-reason is that the remaining sanity check for RTS on send/after send in ua=
-rt_sanitize_serial_rs485() is not
-required in uart_get_rs485_mode() since here we already ensure a sane sett=
-ing.
+> Allows to configure the IIR filter coefficient and the sampling frequency
+> The IIR filter coefficient is exposed using the sysfs attribute
+> "filter_low_pass_3db_frequency"
+> 
+> Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
+Hi Angel
 
-Regards,
-Lino
+A few comments inline,
+> ---
+>  drivers/iio/pressure/bmp280-core.c | 168 ++++++++++++++++++++++++++++-
+>  drivers/iio/pressure/bmp280.h      |  18 ----
+>  2 files changed, 166 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+> index 3887475a9059..3d22fc844e87 100644
+> --- a/drivers/iio/pressure/bmp280-core.c
+> +++ b/drivers/iio/pressure/bmp280-core.c
+> @@ -96,6 +96,27 @@ static const char *const bmp280_supply_names[] = {
+>  	"vddd", "vdda"
+>  };
+>  
+> +enum bmp380_odr {
+> +	BMP380_ODR_200HZ,
+> +	BMP380_ODR_100HZ,
+> +	BMP380_ODR_50HZ,
+> +	BMP380_ODR_25HZ,
+> +	BMP380_ODR_12_5HZ,
+> +	BMP380_ODR_6_25HZ,
+> +	BMP380_ODR_3_125HZ,
+> +	BMP380_ODR_1_5625HZ,
+> +	BMP380_ODR_0_78HZ,
+> +	BMP380_ODR_0_39HZ,
+> +	BMP380_ODR_0_2HZ,
+> +	BMP380_ODR_0_1HZ,
+> +	BMP380_ODR_0_05HZ,
+> +	BMP380_ODR_0_02HZ,
+> +	BMP380_ODR_0_01HZ,
+> +	BMP380_ODR_0_006HZ,
+> +	BMP380_ODR_0_003HZ,
+> +	BMP380_ODR_0_0015HZ
+> +};
+> +
+>  #define BMP280_NUM_SUPPLIES ARRAY_SIZE(bmp280_supply_names)
+>  
+>  struct bmp280_data {
+> @@ -117,6 +138,16 @@ struct bmp280_data {
+>  	u8 oversampling_press;
+>  	u8 oversampling_temp;
+>  	u8 oversampling_humid;
+> +	u8 iir_filter_coeff;
+> +
+> +	/* BMP380 devices introduce sampling frequecy configuration. See
+> +	 * datasheet sections 3.3.3. and 4.3.19.
+> +	 *
+> +	 * BMx280 devices allowed indirect configuration of sampling frequency
+> +	 * changing the t_standby duration between measurements. See datasheet
+> +	 * section 3.6.3
+> +	 */
+> +	int sampling_freq;
+>  
+>  	/*
+>  	 * Carryover value from temperature conversion, used in pressure
+> @@ -135,6 +166,12 @@ struct bmp280_chip_info {
+>  	const int *oversampling_humid_avail;
+>  	int num_oversampling_humid_avail;
+>  
+> +	const int *iir_filter_coeffs_avail;
+> +	int num_iir_filter_coeffs_avail;
+> +
+> +	const int (*sampling_freq_avail)[2];
+> +	int num_sampling_freq_avail;
+> +
+>  	int (*chip_config)(struct bmp280_data *);
+>  	int (*read_temp)(struct bmp280_data *, int *);
+>  	int (*read_press)(struct bmp280_data *, int *, int *);
+> @@ -185,6 +222,30 @@ static const struct iio_chan_spec bmp280_channels[] = {
+>  	},
+>  };
+>  
+> +static const struct iio_chan_spec bmp380_channels[] = {
+> +	{
+> +		.type = IIO_PRESSURE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+> +					   BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
+> +	},
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+> +					   BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
+> +	},
+> +	{
+> +		.type = IIO_HUMIDITYRELATIVE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+> +					   BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
+> +	},
+> +};
+> +
+>  static int bmp280_read_calib(struct bmp280_data *data,
+>  			     struct bmp280_calib *calib,
+>  			     unsigned int chip)
+> @@ -514,6 +575,15 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+>  			break;
+>  		}
+>  		break;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*val = data->chip_info->sampling_freq_avail[data->sampling_freq][0];
+This is currently safe, but given sampling_freq_avail is only present for one device type,
+I'd prefer a sanity check that it is not NULL.
+
+> +		*val2 = data->chip_info->sampling_freq_avail[data->sampling_freq][1];
+> +		ret = IIO_VAL_INT_PLUS_MICRO;
+> +		break;
+> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> +		*val = data->chip_info->iir_filter_coeffs_avail[data->iir_filter_coeff];
+> +		ret = IIO_VAL_INT;
+> +		break;
+>  	default:
+>  		ret = -EINVAL;
+>  		break;
+> @@ -577,6 +647,39 @@ static int bmp280_write_oversampling_ratio_press(struct bmp280_data *data,
+>  	return -EINVAL;
+>  }
+>  
+> +static int bmp280_write_sampling_frequency(struct bmp280_data *data,
+> +					   int val, int val2)
+> +{
+> +	int i;
+> +	const int (*avail)[2] = data->chip_info->sampling_freq_avail;
+> +	const int n = data->chip_info->num_sampling_freq_avail;
+> +
+> +	for (i = 0; i < n; i++) {
+> +		if (avail[i][0] == val && avail[i][1] == val2) {
+> +			data->sampling_freq = i;
+better to only set the cached value if the write succeeds.
+
+e.g.
+			ret = data->chip_info->chip_config(data);
+			if (ret)
+				return ret;
+
+			data->sampling_freq = i;
+
+			return 0;
+> +
+> +			return data->chip_info->chip_config(data);
+> +		}
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int bmp280_write_iir_filter_coeffs(struct bmp280_data *data, int val)
+> +{
+> +	int i;
+> +	const int *avail = data->chip_info->iir_filter_coeffs_avail;
+> +	const int n = data->chip_info->num_iir_filter_coeffs_avail;
+> +
+> +	for (i = 0; i < n; i++) {
+> +		if (avail[i] == val) {
+> +			data->iir_filter_coeff = i;
+> +
+As for previous function, set the cached value only after you know the write
+succeeded.
+
+> +			return data->chip_info->chip_config(data);
+> +		}
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+>  static int bmp280_write_raw(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *chan,
+>  			    int val, int val2, long mask)
+> @@ -606,6 +709,22 @@ static int bmp280_write_raw(struct iio_dev *indio_dev,
+>  		pm_runtime_mark_last_busy(data->dev);
+>  		pm_runtime_put_autosuspend(data->dev);
+>  		break;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		pm_runtime_get_sync(data->dev);
+> +		mutex_lock(&data->lock);
+> +		ret = bmp280_write_sampling_frequency(data, val, val2);
+> +		mutex_unlock(&data->lock);
+> +		pm_runtime_mark_last_busy(data->dev);
+> +		pm_runtime_put_autosuspend(data->dev);
+> +		break;
+> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> +		pm_runtime_get_sync(data->dev);
+> +		mutex_lock(&data->lock);
+> +		ret = bmp280_write_iir_filter_coeffs(data, val);
+> +		mutex_unlock(&data->lock);
+> +		pm_runtime_mark_last_busy(data->dev);
+> +		pm_runtime_put_autosuspend(data->dev);
+> +		break;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -636,6 +755,17 @@ static int bmp280_read_avail(struct iio_dev *indio_dev,
+>  		}
+>  		*type = IIO_VAL_INT;
+>  		return IIO_AVAIL_LIST;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*vals = (const int *)data->chip_info->sampling_freq_avail;
+> +		*type = IIO_VAL_INT_PLUS_MICRO;
+> +		/* Values are stored in a 2D matrix */
+> +		*length = data->chip_info->num_sampling_freq_avail;
+> +		return IIO_AVAIL_LIST;
+> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> +		*vals = data->chip_info->iir_filter_coeffs_avail;
+> +		*type = IIO_VAL_INT;
+> +		*length = data->chip_info->num_iir_filter_coeffs_avail;
+> +		return IIO_AVAIL_LIST;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -749,7 +879,7 @@ static int bmp380_cmd(struct bmp280_data *data, u8 cmd)
+>  		goto failure;
+>  	}
+>  	/* wait for 2ms for command to be proccessed */
+> -	usleep_range(2000, 2500);
+> +	usleep_range(data->start_up_time, data->start_up_time + 100);
+>  	/* check for command processing error */
+>  	ret = regmap_read(data->regmap, BMP380_REG_ERROR, &reg);
+>  	if (ret) {
+> @@ -943,6 +1073,27 @@ static int bmp380_read_calib(struct bmp280_data *data,
+>  	return 0;
+>  }
+>  
+> +static const int bmp380_odr_table[][2] = {
+> +	[BMP380_ODR_200HZ]	= {200, 0},
+> +	[BMP380_ODR_100HZ]	= {100, 0},
+> +	[BMP380_ODR_50HZ]	= {50, 0},
+> +	[BMP380_ODR_25HZ]	= {25, 0},
+> +	[BMP380_ODR_12_5HZ]	= {12, 500000},
+> +	[BMP380_ODR_6_25HZ]	= {6, 250000},
+> +	[BMP380_ODR_3_125HZ]	= {3, 125000},
+> +	[BMP380_ODR_1_5625HZ]	= {1, 562500},
+> +	[BMP380_ODR_0_78HZ]	= {0, 781250},
+> +	[BMP380_ODR_0_39HZ]	= {0, 390625},
+> +	[BMP380_ODR_0_2HZ]	= {0, 195313},
+> +	[BMP380_ODR_0_1HZ]	= {0, 97656},
+> +	[BMP380_ODR_0_05HZ]	= {0, 48828},
+> +	[BMP380_ODR_0_02HZ]	= {0, 24414},
+> +	[BMP380_ODR_0_01HZ]	= {0, 12207},
+> +	[BMP380_ODR_0_006HZ]	= {0, 6104},
+> +	[BMP380_ODR_0_003HZ]	= {0, 3052},
+> +	[BMP380_ODR_0_0015HZ]	= {0, 1526},
+> +};
+> +
+>  static int bmp380_chip_config(struct bmp280_data *data)
+>  {
+>  	u8 osrs;
+> @@ -976,7 +1127,7 @@ static int bmp380_chip_config(struct bmp280_data *data)
+>  
+>  	/* configure output data rate */
+>  	ret = regmap_write_bits(data->regmap, BMP380_REG_ODR,
+> -				BMP380_ODRS_MASK, BMP380_ODRS_50HZ);
+> +				BMP380_ODRS_MASK, data->sampling_freq);
+>  	if (ret < 0) {
+>  		dev_err(data->dev, "failed to write ODR selection register\n");
+>  		return ret;
+> @@ -990,6 +1141,9 @@ static int bmp380_chip_config(struct bmp280_data *data)
+>  		return ret;
+>  	}
+>  
+> +	/* startup time wait to verify config */
+> +	usleep_range(data->start_up_time, data->start_up_time + 100);
+> +
+
+Only necessary now?  Or is this a fix for what was here before?
+
+>  	/* check config error flag */
+>  	ret = regmap_read(data->regmap, BMP380_REG_ERROR, &tmp);
+>  	if (ret < 0) {
+> @@ -1007,6 +1161,7 @@ static int bmp380_chip_config(struct bmp280_data *data)
+>  }
+>  
+>  static const int bmp380_oversampling_avail[] = { 1, 2, 4, 8, 16, 32 };
+> +static const int bmp380_iir_filter_coeffs_avail[] = { 0, 1, 3, 7, 15, 31, 63, 127 };
+>  
+>  static const struct bmp280_chip_info bmp380_chip_info = {
+>  	.oversampling_temp_avail = bmp380_oversampling_avail,
+> @@ -1015,6 +1170,12 @@ static const struct bmp280_chip_info bmp380_chip_info = {
+>  	.oversampling_press_avail = bmp380_oversampling_avail,
+>  	.num_oversampling_press_avail = ARRAY_SIZE(bmp380_oversampling_avail),
+>  
+> +	.sampling_freq_avail = bmp380_odr_table,
+> +	.num_sampling_freq_avail = ARRAY_SIZE(bmp380_odr_table) * 2,
+> +
+> +	.iir_filter_coeffs_avail = bmp380_iir_filter_coeffs_avail,
+> +	.num_iir_filter_coeffs_avail = ARRAY_SIZE(bmp380_iir_filter_coeffs_avail),
+> +
+>  	.chip_config = bmp380_chip_config,
+>  	.read_temp = bmp380_read_temp,
+>  	.read_press = bmp380_read_press,
+> @@ -1369,9 +1530,12 @@ int bmp280_common_probe(struct device *dev,
+>  		break;
+>  	case BMP380_CHIP_ID:
+>  		indio_dev->num_channels = 2;
+> +		indio_dev->channels = bmp380_channels;
+>  		data->chip_info = &bmp380_chip_info;
+>  		data->oversampling_press = ilog2(4);
+>  		data->oversampling_temp = ilog2(1);
+> +		data->iir_filter_coeff = 2;
+> +		data->sampling_freq = BMP380_ODR_50HZ;
+>  		data->start_up_time = 2000;
+>  		break;
+>  	default:
+> diff --git a/drivers/iio/pressure/bmp280.h b/drivers/iio/pressure/bmp280.h
+> index b4c122525ffe..f9e21546957e 100644
+> --- a/drivers/iio/pressure/bmp280.h
+> +++ b/drivers/iio/pressure/bmp280.h
+> @@ -71,24 +71,6 @@
+>  #define BMP380_OSRS_PRESS_32X		BMP380_OSRS_PRESS_X(5)
+>  
+>  #define BMP380_ODRS_MASK		GENMASK(4, 0)
+> -#define BMP380_ODRS_200HZ		0x00
+> -#define BMP380_ODRS_100HZ		0x01
+> -#define BMP380_ODRS_50HZ		0x02
+> -#define BMP380_ODRS_25HZ		0x03
+> -#define BMP380_ODRS_12_5HZ		0x04
+> -#define BMP380_ODRS_6_25HZ		0x05
+> -#define BMP380_ODRS_3_1HZ		0x06
+> -#define BMP380_ODRS_1_5HZ		0x07
+> -#define BMP380_ODRS_0_78HZ		0x08
+> -#define BMP380_ODRS_0_39HZ		0x09
+> -#define BMP380_ODRS_0_2HZ		0x0A
+> -#define BMP380_ODRS_0_1HZ		0x0B
+> -#define BMP380_ODRS_0_05HZ		0x0C
+> -#define BMP380_ODRS_0_02HZ		0x0D
+> -#define BMP380_ODRS_0_01HZ		0x0E
+> -#define BMP380_ODRS_0_006HZ		0x0F
+> -#define BMP380_ODRS_0_003HZ		0x10
+> -#define BMP380_ODRS_0_0015HZ		0x11
+>  
+>  #define BMP380_CTRL_SENSORS_MASK	GENMASK(1, 0)
+>  #define BMP380_CTRL_SENSORS_PRESS_EN	BIT(0)
+
