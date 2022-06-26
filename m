@@ -2,117 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3891C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 21:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C95F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 22:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232072AbiFZVv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 17:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45460 "EHLO
+        id S231929AbiFZWFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 18:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbiFZVv1 (ORCPT
+        with ESMTP id S229986AbiFZWFA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 17:51:27 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50CFB270C;
-        Sun, 26 Jun 2022 14:51:25 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id cb12-20020a056830618c00b00616b871cef3so3836323otb.5;
-        Sun, 26 Jun 2022 14:51:25 -0700 (PDT)
+        Sun, 26 Jun 2022 18:05:00 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DB72DC6
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 15:04:59 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id lw20so15351753ejb.4
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 15:04:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rV511u1JDXv42Io5ma1kqHonKwVW2qB5lSv0jWDN0E4=;
-        b=cbDKdIsMpUYg7o4ag6Hb2/DcUX804wCHBmck3WuiLtsoRSm57huKMZtPSOayCtpItB
-         tyVp+/fwz/qSf8dnPIqfG/NMYBBv2GaBPY4C9Wdhoc4OCoKqc7SwmDz2av5IsKKqVHHE
-         Rx9njzdziAdTKl9QzqYOSjMFtWRCMkmIp+LJm6UbN+26322hYDs4F+MGXPj2bDmAjw0l
-         bzVEEC70vh15L+PiDleeHtSjfdi8peHH/7t0iXgp9C+cy/Cm3R/a5qQglH2HfPh58iV+
-         CIHL0HaBblcnC9OclO8vIdJLjsBEaDDbAdpSNj9/IBsf4ZJettnMcdwTsgroOv8HnSRY
-         dP+Q==
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=//8qIPvD9fx4vnZ4OSbBjfyuVaCRmOPsAXW5FiUJReQ=;
+        b=jEraMw5PgXBCR7yp4ZGMgltpgL1elV+jITZQson/py3EPfMsd2X5TrA2QPgnJPv0rY
+         f7IquTtHCzIXMebOMKGuiKQj6yVaycJgQf2drQ/kH5WKXm9J/a+pka+SF2oACxKQmRUs
+         at+93CqKlgK+x2AYa2S/rEz+qkcK4CNRHCTcmRMbigk+VCQ3rBMvZYcRmON5DC8XYfEz
+         7PoM+82USCDfRFaKPii1BdKHS+PYtlSFI3ta6fPvIViMpMQ4100hT6qoKVHBp3gHQKnE
+         PAbmufiBBhuXvMCx0PZtSYKNFZ4o6ZEyI1kdu9p8k9PIzFLztZV/Upz0w6TbZKygjYq/
+         31mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rV511u1JDXv42Io5ma1kqHonKwVW2qB5lSv0jWDN0E4=;
-        b=ZTwooqAV0hkq6cb10p9v7a8aVOZZi1u1b+FCRDqe1z7n5Nc4RIMKkcJZjxrqsuFuGr
-         PCjUrhSzxvF16SeEu9xcIAOvdO+6vvl1psHJWguWxSdvqUwtX6tuYm7l/LnYBcsXsjDj
-         98o1cb0nNT+MAdMdUPCy1BdwCqdlhqe3bJuvWh0y1d8TQZcrB+iU5ifNXVD4TMySPjz5
-         dc/NU1qE/6RAkdSAUxnjcU3ToioppBpsLgJ0jevx1TLwrZobFlBIGB+bToZ3VJSoUynk
-         wIaFvjWCvSxIrlwHnQCLFyu/5w0JDKq1zhd0cvsromWtmrknKrMjjQwhwnkYzXuIObAS
-         q4Pw==
-X-Gm-Message-State: AJIora+AFM2TPGviI/ldQD2BpauElI32EvBttf/vqL9fCw1ZBPrag5w7
-        AGlmPsf/zaCH8m40kO3jJWwEpHUtav4=
-X-Google-Smtp-Source: AGRyM1ukFILd+2AsFlJ7rdXak/OfVSi5PcFWY+/VnOTtFujAEJDOliBo/ndAe0c158gHoqsgYfOWsw==
-X-Received: by 2002:a9d:1b08:0:b0:616:b1c8:14ae with SMTP id l8-20020a9d1b08000000b00616b1c814aemr4476184otl.127.1656280284128;
-        Sun, 26 Jun 2022 14:51:24 -0700 (PDT)
-Received: from ?IPV6:2603:8081:140c:1a00:7f25:2769:1033:f8c1? (2603-8081-140c-1a00-7f25-2769-1033-f8c1.res6.spectrum.com. [2603:8081:140c:1a00:7f25:2769:1033:f8c1])
-        by smtp.gmail.com with ESMTPSA id r23-20020a056870179700b000f2455e26acsm5895119oae.48.2022.06.26.14.51.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Jun 2022 14:51:23 -0700 (PDT)
-Message-ID: <1e9a8c0f-b4c3-3edf-33f1-33a2b7ca245a@gmail.com>
-Date:   Sun, 26 Jun 2022 16:51:22 -0500
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=//8qIPvD9fx4vnZ4OSbBjfyuVaCRmOPsAXW5FiUJReQ=;
+        b=XJMb6tjxCzr6m2IZRnlx46ynqyrmXUC9CdUBONHWJqjB1TKyOLRPYH0zuzTOTNzGo6
+         aWYh3eJA450RBshdejSbY+4ijG72aPUkQOoESsKJCX5Dp9c281i94YHq5sa+1NRURS+a
+         Txh5f4ldTuu0WjjSE8rZ0lUyM65T6PBc+gjbz7PUvyHM/NjP1MF341bUpzVWP4ENwtj5
+         EKLK3fRTSP3GLG5LaGl1a7JFP99r3UEb7LWEpy01JSptRagihg1I1zWmqFzLA1zfMeWi
+         2svuCe+PIbgLISWnJS2ZQzFS846MzzQDzJCiOMR3RnFHEB+CuH6dWKv/mTnxWc2cxG5b
+         4EMw==
+X-Gm-Message-State: AJIora+hua2DnKVUHSdtWEc1uANr7AD7TTa6PVFubw3sggi+gUnuXn3r
+        eVpNtmBR33ZB/+HXWIZOH6aaJ1rCnvpmybiDHJQ=
+X-Google-Smtp-Source: AGRyM1sDEv/jauZf3Ot7PeMro4bmWPVUVrYNZA8AJKG4J8ZwjfHGooE37UqV9ZbFkwGQtylIuyjnSjTtF1XAsiOnc9I=
+X-Received: by 2002:a17:906:3f51:b0:712:3945:8c0d with SMTP id
+ f17-20020a1709063f5100b0071239458c0dmr9649843ejj.302.1656281098352; Sun, 26
+ Jun 2022 15:04:58 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3 1/2] RDMA/rxe: Update wqe_index for each wqe error
- completion
-Content-Language: en-US
-To:     Li Zhijian <lizhijian@fujitsu.com>,
-        Yanjun Zhu <yanjun.zhu@linux.dev>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Haakon Bugge <haakon.bugge@oracle.com>,
-        Cheng Xu <chengyou@linux.alibaba.com>,
-        linux-rdma@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20220516015329.445474-1-lizhijian@fujitsu.com>
- <20220516015329.445474-2-lizhijian@fujitsu.com>
-From:   Bob Pearson <rpearsonhpe@gmail.com>
-In-Reply-To: <20220516015329.445474-2-lizhijian@fujitsu.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220621120015.113682-1-jiangjian@cdjrlc.com>
+In-Reply-To: <20220621120015.113682-1-jiangjian@cdjrlc.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 27 Jun 2022 00:04:47 +0200
+Message-ID: <CAFBinCANyt6+_wJ6dwr2xY53vn=hSU7ZQE_y79+MwYbTiUOzHA@mail.gmail.com>
+Subject: Re: [PATCH] phy: dphy: drop unexpected word "the" in the comments
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>, khilman@baylibre.com,
+        kishon@ti.com, vkoul@kernel.org, jbrunet@baylibre.com,
+        victor.liu@nxp.com, andrzej.hajda@intel.com,
+        linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/15/22 20:53, Li Zhijian wrote:
-> Previously, if user space keeps sending abnormal wqe, queue.prod will
-> keep increasing while queue.index doesn't. Once
-> queue.index==queue.prod in next round, req_next_wqe() will treat queue
-> as empty. In such case, no new completion would be generated.
-> 
-> Update wqe_index for each wqe completion so that req_next_wqe() can get
-> next wqe properly.
-> 
-> Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
-> ---
->  drivers/infiniband/sw/rxe/rxe_req.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
-> index a0d5e57f73c1..8bdd0b6b578f 100644
-> --- a/drivers/infiniband/sw/rxe/rxe_req.c
-> +++ b/drivers/infiniband/sw/rxe/rxe_req.c
-> @@ -773,6 +773,8 @@ int rxe_requester(void *arg)
->  	if (ah)
->  		rxe_put(ah);
->  err:
-> +	/* update wqe_index for each wqe completion */
-> +	qp->req.wqe_index = queue_next_index(qp->sq.queue, qp->req.wqe_index);
->  	wqe->state = wqe_state_err
->  	__rxe_do_task(&qp->comp.task);
->  
-
-This change looks plausible, but I am not sure if it will make a difference since the qp
-will get transitioned to the error state very shortly.
-
-In order for it to matter the requester must be a ways ahead of the completer in the send queue
-and someone be actively posting new wqes which will reschedule the requester. Currently it
-will fail on the same wqe again unless the error described above occurs but if we post a new valid
-wqe it will get executed even though we have detected an error that should have stopped the qp.
-
-It looks like the intent was to keep the qp in the non error state until all the old
-wqes get completed before making the transition. But we should disable the requester
-from processing new wqes in this case. That seems like a safer solution to the problem.
-
-Bob
-
+On Tue, Jun 21, 2022 at 2:01 PM Jiang Jian <jiangjian@cdjrlc.com> wrote:
+>
+> there is an unexpected word "the" in the comments that need to be dropped
+>
+> file: ./drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
+> line: 139
+> * when in RxULPS check state, after the the logic enable the analog,
+> changed to
+> * when in RxULPS check state, after the logic enable the analog,
+>
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
