@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38654C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B90C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 09:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234295AbiFZJLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 05:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
+        id S234302AbiFZJL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 05:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234153AbiFZJLQ (ORCPT
+        with ESMTP id S234144AbiFZJLP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 05:11:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E1412A92;
-        Sun, 26 Jun 2022 02:11:14 -0700 (PDT)
+        Sun, 26 Jun 2022 05:11:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECA912AB5;
+        Sun, 26 Jun 2022 02:11:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49311B80D39;
-        Sun, 26 Jun 2022 09:11:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F0A5C341E7;
-        Sun, 26 Jun 2022 09:11:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7535A61197;
+        Sun, 26 Jun 2022 09:11:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56F4C36AFE;
+        Sun, 26 Jun 2022 09:11:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656234671;
-        bh=oe4XGUteu+bS5KGF6YR5qXiChD2hr0+u8pCP0xqfxhk=;
+        bh=kSmvldrnBKLAUF+/2e4vcVlSti8QpYvHvcfOW+vjwCw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EyjooB1G2w1byargxJNcLDK2S37LvjDE592jLB2kyLxw6RUEeQA/kd3ObnGOMDmxq
-         2CoC/L+XJMdjzDWuEEdRYGwFdTVaZcOqgT3cBjVF7f+49ntSKd14czSJKFtQDAhjH9
-         ulwi5QXfZ8lVPn7pjM17i2vung+QvLE4T1ghwphYsmIIufa9pomgxxSJM52vU6v2tX
-         9BFb2lAOWEXa137t1p9DRDMy+nEiLMF5wEt8qOtzeREf5Cj59SELHyyLz/WHj43re9
-         e2k0UNAlZXSPVx7g/2z85jgpcOLKy24FApDfI+6jwNasDVuwQ/e6UuE7Ob0WJTZLcY
-         T0Rvppssee13w==
+        b=F7bCsCNMI3sPLiq81Njm9urEkODF3YSSK/radH8r9Htrr1iuLGtoxuMeekUtOAsQf
+         FpLMDdO16rmyTsLEY6g0S7ubKPaEy3s7pCjnFTfSpoS+AQtkJ3pgjq2BVl4wyK3O+o
+         SEDAM8F5hTN/Bygh+PLnahqc1OYKMuYotMsc7mmb87RBcUH3/hg62R+sCjNvuWKArU
+         bWAECAQrbkskMCLddfyex9YkhUi2/+1uczpBX8PcuqpwcG1rQXllYt+BK6JLzRDC6f
+         rxU72NIA9Y2+3lh/hPNQ2VoltSCrirOZtyEmT5IieyXoGOp8dwwFvNvfofqCsU/YWR
+         c+yew2lmI7U0A==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o5OIO-001cob-0a;
-        Sun, 26 Jun 2022 10:11:08 +0100
+        id 1o5OIN-001coV-VX;
+        Sun, 26 Jun 2022 10:11:07 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
         Alex Shi <alexs@kernel.org>,
-        Tang Yizhou <tangyizhou@huawei.com>,
         Yanteng Si <siyanteng@loongson.cn>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 09/20] docs: zh_CN/vm/index.rst: fix a broken reference
-Date:   Sun, 26 Jun 2022 10:10:55 +0100
-Message-Id: <ee45d72ff3e3b2ba8245fa01a35a46fed72664c3.1656234456.git.mchehab@kernel.org>
+Subject: [PATCH v2 07/20] docs: zh_CN/vm: fix a typo for page reporting ReST file
+Date:   Sun, 26 Jun 2022 10:10:53 +0100
+Message-Id: <c7db8f975f461eaebd7ea7489ff9666d89e121c6.1656234456.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656234456.git.mchehab@kernel.org>
 References: <cover.1656234456.git.mchehab@kernel.org>
@@ -58,32 +57,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reference is missing a .rst on it, causing its cross-reference
-to not work.
+typo:
+	_free_page_reporting.rst -> free_page_reporting.rst
 
-Fixes: 9c3519d2b509 ("docs/zh_CN: add vm/index translation")
+Fixes: 9859b277bffe ("docs/zh_CN: add vm frontswap translation")
+Fixes: adeacecbd36c ("docs/zh_CN: add free_page_reporting translation")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/20] at: https://lore.kernel.org/all/cover.1656234456.git.mchehab@kernel.org/
 
- Documentation/translations/zh_CN/vm/index.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/translations/zh_CN/vm/free_page_reporting.rst | 2 +-
+ Documentation/translations/zh_CN/vm/frontswap.rst           | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/translations/zh_CN/vm/index.rst b/Documentation/translations/zh_CN/vm/index.rst
-index a1c6d529b6ff..81a9b782a427 100644
---- a/Documentation/translations/zh_CN/vm/index.rst
-+++ b/Documentation/translations/zh_CN/vm/index.rst
-@@ -15,7 +15,7 @@ Linux内存管理文档
- 这是一个关于Linux内存管理（mm）子系统内部的文档集，其中有不同层次的细节，包括注释
- 和邮件列表的回复，用于阐述数据结构和算法的基本情况。如果你正在寻找关于简单分配内存的建
- 议，请参阅(Documentation/translations/zh_CN/core-api/memory-allocation.rst)。
--对于控制和调整指南，请参阅(Documentation/admin-guide/mm/index)。
-+对于控制和调整指南，请参阅(Documentation/admin-guide/mm/index.rst)。
- TODO:待引用文档集被翻译完毕后请及时修改此处）
+diff --git a/Documentation/translations/zh_CN/vm/free_page_reporting.rst b/Documentation/translations/zh_CN/vm/free_page_reporting.rst
+index 31d6c34b956b..14336a3aa5f4 100644
+--- a/Documentation/translations/zh_CN/vm/free_page_reporting.rst
++++ b/Documentation/translations/zh_CN/vm/free_page_reporting.rst
+@@ -1,6 +1,6 @@
+ .. include:: ../disclaimer-zh_CN.rst
  
- .. toctree::
+-:Original: Documentation/vm/_free_page_reporting.rst
++:Original: Documentation/vm/free_page_reporting.rst
+ 
+ :翻译:
+ 
+diff --git a/Documentation/translations/zh_CN/vm/frontswap.rst b/Documentation/translations/zh_CN/vm/frontswap.rst
+index 3eb07870e2ef..98aa6f581ea7 100644
+--- a/Documentation/translations/zh_CN/vm/frontswap.rst
++++ b/Documentation/translations/zh_CN/vm/frontswap.rst
+@@ -1,4 +1,4 @@
+-:Original: Documentation/vm/_free_page_reporting.rst
++:Original: Documentation/vm/free_page_reporting.rst
+ 
+ :翻译:
+ 
 -- 
 2.36.1
 
