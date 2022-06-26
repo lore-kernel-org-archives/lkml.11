@@ -2,293 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39901C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 18:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B7FC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 18:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232043AbiFZSdI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 14:33:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41782 "EHLO
+        id S231817AbiFZSmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 14:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231970AbiFZSc7 (ORCPT
+        with ESMTP id S230287AbiFZSme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 14:32:59 -0400
-Received: from ixit.cz (ip-94-112-206-30.net.upcbroadband.cz [94.112.206.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4765AE1;
-        Sun, 26 Jun 2022 11:32:57 -0700 (PDT)
-Received: from newone.lan (_gateway [10.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ixit.cz (Postfix) with ESMTPSA id 5749D24CE0;
-        Sun, 26 Jun 2022 20:32:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
-        t=1656268375;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LkSGM18oFwet5iuYbgsyg36K4pVupJ/QhQ1eZLcLsG4=;
-        b=FTVJGdOszLJFNnCzsV8YPPN9sDYklkB5kDKotUkEHq9ti6uJLl2iMXnY0CLSHAzPC58u2b
-        S9QMmbDfquN8eBR6UpSMC9YN5iELMw7wzmTpeKs41/6L2ec0koSF10YDrn/VeeAl65s4N5
-        B3gCNMhrA6dLTKNWRElVOEMK74UNn7M=
-From:   David Heidelberg <david@ixit.cz>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Robert Marko <robimarko@gmail.com>,
-        Das Srinagesh <quic_gurus@quicinc.com>
-Cc:     ~okias/devicetree@lists.sr.ht, David Heidelberg <david@ixit.cz>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 3/3] dt-bindings: firmware: convert Qualcomm SCM binding to the yaml
-Date:   Sun, 26 Jun 2022 20:32:47 +0200
-Message-Id: <20220626183247.142776-3-david@ixit.cz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220626183247.142776-1-david@ixit.cz>
-References: <20220626183247.142776-1-david@ixit.cz>
+        Sun, 26 Jun 2022 14:42:34 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F60DF79
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 11:42:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656268953; x=1687804953;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qKVLkatOLdxjF5CtUvwHyxvGQyf3WivTT79tQydsles=;
+  b=HD0Iol8bwYKL6LH03dOLWT59113VJzpyhPC6db9CiZO9rUcdMhR5f4b1
+   tI0F+lDBmUQFDJOnNw026S6Mn2hBPlgt1Z4wgID7RvgBwW7iaHniryQ7W
+   S6QlRjG5ol6r+jrNkOyYgtyLzBo5gr7Z7LcWAt6m2A8u0T7XiJnvmRomc
+   LDrn9n1CJji1sWwau5gL86vX0hHBmdeMbVbTH2hiS7f2znk/FMg92tR8I
+   3ehoS8/kvvMELL5H38PQPXMDaKbelPwg8wAarbmCSTITnXx83hYu6T2G0
+   JwUokW9E0F8vEB0eXOK8wZF0eV2iDHEEH1oDlIN19gguCr1d+RTg5+q4m
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="280062934"
+X-IronPort-AV: E=Sophos;i="5.92,224,1650956400"; 
+   d="scan'208";a="280062934"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2022 11:42:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,224,1650956400"; 
+   d="scan'208";a="616525052"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 26 Jun 2022 11:42:31 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o5XDL-0007ip-56;
+        Sun, 26 Jun 2022 18:42:31 +0000
+Date:   Mon, 27 Jun 2022 02:41:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [ogabbay:gaudi2 49/51] gaudi2.c:undefined reference to `__udivdi3'
+Message-ID: <202206270234.HAFoxLu9-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert Qualcomm SCM firmware binding to the yaml format.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git gaudi2
+head:   07630ebc57c01dece654dea4d238f18a96851cec
+commit: e86cc96aba150c067b57bfb623e093086d372403 [49/51] habanalabs: add gaudi2 asic-specific code
+config: i386-randconfig-a001
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=e86cc96aba150c067b57bfb623e093086d372403
+        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
+        git fetch --no-tags ogabbay gaudi2
+        git checkout e86cc96aba150c067b57bfb623e093086d372403
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-This commit also:
- - adds qcom,scm-mdm9607 into list which has only core clock
- - adds qcom,scm-sm6125, qcom,scm-ipq6018
- - #reset-cells, because the property is already used
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: David Heidelberg <david@ixit.cz>
+All error/warnings (new ones prefixed by >>):
+
+   ld: drivers/misc/habanalabs/gaudi2/gaudi2.o: in function `gaudi2_cpucp_info_get':
+>> gaudi2.c:(.text+0x12857): undefined reference to `__udivdi3'
+>> ld: gaudi2.c:(.text+0x12898): undefined reference to `__udivdi3'
 --
-v4:
- - added clocks minItems and maxItems
- - removed quotes from $id and $schema
- - adjusted description of TCSR HW block
-v3:
- - add preceding patches for ARM and arm64 adding missing compatible strings
- - extended with missing compatible strings
- - added two additional maintainers, see https://lkml.org/lkml/2022/6/23/1969
-v2:
- - changed maintainer to Bjorn
- - document #reset-cells
----
- .../devicetree/bindings/firmware/qcom,scm.txt |  57 -------
- .../bindings/firmware/qcom,scm.yaml           | 140 ++++++++++++++++++
- 2 files changed, 140 insertions(+), 57 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/firmware/qcom,scm.txt
- create mode 100644 Documentation/devicetree/bindings/firmware/qcom,scm.yaml
+         |     ^~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:6346:5: warning: no previous prototype for 'gaudi2_get_eeprom_data' [-Wmissing-prototypes]
+    6346 | int gaudi2_get_eeprom_data(struct hl_device *hdev, void *data, size_t max_size)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:6356:6: warning: no previous prototype for 'gaudi2_update_eq_ci' [-Wmissing-prototypes]
+    6356 | void gaudi2_update_eq_ci(struct hl_device *hdev, u32 val)
+         |      ^~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:6361:7: warning: no previous prototype for 'gaudi2_get_events_stat' [-Wmissing-prototypes]
+    6361 | void *gaudi2_get_events_stat(struct hl_device *hdev, bool aggregate, u32 *size)
+         |       ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:8246:6: warning: no previous prototype for 'gaudi2_handle_eqe' [-Wmissing-prototypes]
+    8246 | void gaudi2_handle_eqe(struct hl_device *hdev, struct hl_eq_entry *eq_entry)
+         |      ^~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:8719:5: warning: no previous prototype for 'gaudi2_scrub_device_dram' [-Wmissing-prototypes]
+    8719 | int gaudi2_scrub_device_dram(struct hl_device *hdev, u64 val)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:8892:5: warning: no previous prototype for 'gaudi2_context_switch' [-Wmissing-prototypes]
+    8892 | int gaudi2_context_switch(struct hl_device *hdev, u32 asid)
+         |     ^~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:8897:6: warning: no previous prototype for 'gaudi2_restore_phase_topology' [-Wmissing-prototypes]
+    8897 | void gaudi2_restore_phase_topology(struct hl_device *hdev)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:8920:6: warning: no previous prototype for 'gaudi2_init_blocks_with_mask' [-Wmissing-prototypes]
+    8920 | void gaudi2_init_blocks_with_mask(struct hl_device *hdev, struct dup_block_ctx *cfg_ctx, u64 mask)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:8935:5: warning: no previous prototype for 'gaudi2_debugfs_read_dma' [-Wmissing-prototypes]
+    8935 | int gaudi2_debugfs_read_dma(struct hl_device *hdev, u64 addr, u32 size, void *blob_addr)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9115:5: warning: no previous prototype for 'gaudi2_ctx_init' [-Wmissing-prototypes]
+    9115 | int gaudi2_ctx_init(struct hl_ctx *ctx)
+         |     ^~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9134:6: warning: no previous prototype for 'gaudi2_ctx_fini' [-Wmissing-prototypes]
+    9134 | void gaudi2_ctx_fini(struct hl_ctx *ctx)
+         |      ^~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9142:5: warning: no previous prototype for 'gaudi2_pre_schedule_cs' [-Wmissing-prototypes]
+    9142 | int gaudi2_pre_schedule_cs(struct hl_cs *cs)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9168:5: warning: no previous prototype for 'gaudi2_get_queue_id_for_cq' [-Wmissing-prototypes]
+    9168 | u32 gaudi2_get_queue_id_for_cq(struct hl_device *hdev, u32 cq_idx)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9173:5: warning: no previous prototype for 'gaudi2_gen_signal_cb' [-Wmissing-prototypes]
+    9173 | u32 gaudi2_gen_signal_cb(struct hl_device *hdev, void *data, u16 sob_id, u32 size, bool eb)
+         |     ^~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9266:5: warning: no previous prototype for 'gaudi2_gen_wait_cb' [-Wmissing-prototypes]
+    9266 | u32 gaudi2_gen_wait_cb(struct hl_device *hdev, struct hl_gen_wait_properties *prop)
+         |     ^~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9318:6: warning: no previous prototype for 'gaudi2_reset_sob' [-Wmissing-prototypes]
+    9318 | void gaudi2_reset_sob(struct hl_device *hdev, void *data)
+         |      ^~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9329:6: warning: no previous prototype for 'gaudi2_reset_sob_group' [-Wmissing-prototypes]
+    9329 | void gaudi2_reset_sob_group(struct hl_device *hdev, u16 sob_group)
+         |      ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9333:5: warning: no previous prototype for 'gaudi2_get_device_time' [-Wmissing-prototypes]
+    9333 | u64 gaudi2_get_device_time(struct hl_device *hdev)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9340:5: warning: no previous prototype for 'gaudi2_collective_wait_init_cs' [-Wmissing-prototypes]
+    9340 | int gaudi2_collective_wait_init_cs(struct hl_cs *cs)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9345:5: warning: no previous prototype for 'gaudi2_collective_wait_create_jobs' [-Wmissing-prototypes]
+    9345 | int gaudi2_collective_wait_create_jobs(struct hl_device *hdev, struct hl_ctx *ctx,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9390:5: warning: no previous prototype for 'gaudi2_mmu_descramble_addr' [-Wmissing-prototypes]
+    9390 | u64 gaudi2_mmu_descramble_addr(struct hl_device *hdev, u64 scrambled_addr)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9411:5: warning: no previous prototype for 'gaudi2_get_dec_base_addr' [-Wmissing-prototypes]
+    9411 | u32 gaudi2_get_dec_base_addr(struct hl_device *hdev, u32 core_id)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9434:5: warning: no previous prototype for 'gaudi2_get_hw_block_id' [-Wmissing-prototypes]
+    9434 | int gaudi2_get_hw_block_id(struct hl_device *hdev, u64 block_addr,
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9454:5: warning: no previous prototype for 'gaudi2_block_mmap' [-Wmissing-prototypes]
+    9454 | int gaudi2_block_mmap(struct hl_device *hdev, struct vm_area_struct *vma,
+         |     ^~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9488:6: warning: no previous prototype for 'gaudi2_enable_events_from_fw' [-Wmissing-prototypes]
+    9488 | void gaudi2_enable_events_from_fw(struct hl_device *hdev)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9577:5: warning: no previous prototype for 'gaudi2_ack_mmu_page_fault_or_access_error' [-Wmissing-prototypes]
+    9577 | int gaudi2_ack_mmu_page_fault_or_access_error(struct hl_device *hdev, u64 mmu_cap_mask)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9601:5: warning: no previous prototype for 'gaudi2_map_pll_idx_to_fw_idx' [-Wmissing-prototypes]
+    9601 | int gaudi2_map_pll_idx_to_fw_idx(u32 pll_idx)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9656:6: warning: no previous prototype for 'gaudi2_state_dump_init' [-Wmissing-prototypes]
+    9656 | void gaudi2_state_dump_init(struct hl_device *hdev)
+         |      ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9663:5: warning: no previous prototype for 'gaudi2_get_sob_addr' [-Wmissing-prototypes]
+    9663 | u32 gaudi2_get_sob_addr(struct hl_device *hdev, u32 sob_id)
+         |     ^~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9668:6: warning: no previous prototype for 'gaudi2_get_stream_master_qid_arr' [-Wmissing-prototypes]
+    9668 | u32 *gaudi2_get_stream_master_qid_arr(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9673:6: warning: no previous prototype for 'gaudi2_add_device_attr' [-Wmissing-prototypes]
+    9673 | void gaudi2_add_device_attr(struct hl_device *hdev, struct attribute_group *dev_clk_attr_grp,
+         |      ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9680:5: warning: no previous prototype for 'gaudi2_mmu_get_real_page_size' [-Wmissing-prototypes]
+    9680 | int gaudi2_mmu_get_real_page_size(struct hl_device *hdev, struct hl_mmu_properties *mmu_prop,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9817:6: warning: no previous prototype for 'gaudi2_set_asic_funcs' [-Wmissing-prototypes]
+    9817 | void gaudi2_set_asic_funcs(struct hl_device *hdev)
+         |      ^~~~~~~~~~~~~~~~~~~~~
+>> drivers/misc/habanalabs/gaudi2/gaudi2.c:694:27: warning: 'gaudi2_nic_rxe_spi_interrupts_cause' defined but not used [-Wunused-const-variable=]
+     694 | static const char * const gaudi2_nic_rxe_spi_interrupts_cause[GAUDI2_NUM_OF_NIC_RXE_SPI_CAUSE] = {
+         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/misc/habanalabs/gaudi2/gaudi2.c:687:27: warning: 'gaudi2_nic_rxe_sei_interrupts_cause' defined but not used [-Wunused-const-variable=]
+     687 | static const char * const gaudi2_nic_rxe_sei_interrupts_cause[GAUDI2_NUM_OF_NIC_RXE_SEI_CAUSE] = {
+         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/misc/habanalabs/gaudi2/gaudi2.c:678:1: warning: 'gaudi2_nic_rxb_core_spi_interrupts_cause' defined but not used [-Wunused-const-variable=]
+     678 | gaudi2_nic_rxb_core_spi_interrupts_cause[GAUDI2_NUM_OF_NIC_RXB_CORE_SPI_CAUSE] = {
+         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/misc/habanalabs/gaudi2/gaudi2.c:672:1: warning: 'gaudi2_nic_rxb_core_sei_interrupts_cause' defined but not used [-Wunused-const-variable=]
+     672 | gaudi2_nic_rxb_core_sei_interrupts_cause[GAUDI2_NUM_OF_NIC_RXB_CORE_SEI_CAUSE] = {
+         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-diff --git a/Documentation/devicetree/bindings/firmware/qcom,scm.txt b/Documentation/devicetree/bindings/firmware/qcom,scm.txt
-deleted file mode 100644
-index 0f4e5ab26477..000000000000
---- a/Documentation/devicetree/bindings/firmware/qcom,scm.txt
-+++ /dev/null
-@@ -1,57 +0,0 @@
--QCOM Secure Channel Manager (SCM)
--
--Qualcomm processors include an interface to communicate to the secure firmware.
--This interface allows for clients to request different types of actions.  These
--can include CPU power up/down, HDCP requests, loading of firmware, and other
--assorted actions.
--
--Required properties:
--- compatible: must contain one of the following:
-- * "qcom,scm-apq8064"
-- * "qcom,scm-apq8084"
-- * "qcom,scm-ipq4019"
-- * "qcom,scm-ipq806x"
-- * "qcom,scm-ipq8074"
-- * "qcom,scm-mdm9607"
-- * "qcom,scm-msm8226"
-- * "qcom,scm-msm8660"
-- * "qcom,scm-msm8916"
-- * "qcom,scm-msm8953"
-- * "qcom,scm-msm8960"
-- * "qcom,scm-msm8974"
-- * "qcom,scm-msm8976"
-- * "qcom,scm-msm8994"
-- * "qcom,scm-msm8996"
-- * "qcom,scm-msm8998"
-- * "qcom,scm-sc7180"
-- * "qcom,scm-sc7280"
-- * "qcom,scm-sdm845"
-- * "qcom,scm-sdx55"
-- * "qcom,scm-sm6350"
-- * "qcom,scm-sm8150"
-- * "qcom,scm-sm8250"
-- * "qcom,scm-sm8350"
-- * "qcom,scm-sm8450"
-- and:
-- * "qcom,scm"
--- clocks: Specifies clocks needed by the SCM interface, if any:
-- * core clock required for "qcom,scm-apq8064", "qcom,scm-msm8660" and
--   "qcom,scm-msm8960"
-- * core, iface and bus clocks required for "qcom,scm-apq8084",
--   "qcom,scm-msm8916", "qcom,scm-msm8953", "qcom,scm-msm8974" and "qcom,scm-msm8976"
--- clock-names: Must contain "core" for the core clock, "iface" for the interface
--  clock and "bus" for the bus clock per the requirements of the compatible.
--- qcom,dload-mode: phandle to the TCSR hardware block and offset of the
--		   download mode control register (optional)
--
--Example for MSM8916:
--
--	firmware {
--		scm {
--			compatible = "qcom,msm8916", "qcom,scm";
--			clocks = <&gcc GCC_CRYPTO_CLK> ,
--				 <&gcc GCC_CRYPTO_AXI_CLK>,
--				 <&gcc GCC_CRYPTO_AHB_CLK>;
--			clock-names = "core", "bus", "iface";
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/firmware/qcom,scm.yaml b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-new file mode 100644
-index 000000000000..b01acbd1e408
---- /dev/null
-+++ b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-@@ -0,0 +1,140 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/firmware/qcom,scm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: QCOM Secure Channel Manager (SCM)
-+
-+description: |
-+  Qualcomm processors include an interface to communicate to the secure firmware.
-+  This interface allows for clients to request different types of actions.
-+  These can include CPU power up/down, HDCP requests, loading of firmware,
-+  and other assorted actions.
-+
-+maintainers:
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
-+  - Robert Marko <robimarko@gmail.com>
-+  - Guru Das Srinagesh <quic_gurus@quicinc.com>
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - qcom,scm-apq8064
-+          - qcom,scm-apq8084
-+          - qcom,scm-ipq4019
-+          - qcom,scm-ipq6018
-+          - qcom,scm-ipq806x
-+          - qcom,scm-ipq8074
-+          - qcom,scm-mdm9607
-+          - qcom,scm-msm8226
-+          - qcom,scm-msm8660
-+          - qcom,scm-msm8916
-+          - qcom,scm-msm8953
-+          - qcom,scm-msm8960
-+          - qcom,scm-msm8974
-+          - qcom,scm-msm8976
-+          - qcom,scm-msm8994
-+          - qcom,scm-msm8996
-+          - qcom,scm-msm8998
-+          - qcom,scm-sc7180
-+          - qcom,scm-sc7280
-+          - qcom,scm-sdm845
-+          - qcom,scm-sdx55
-+          - qcom,scm-sm6125
-+          - qcom,scm-sm6350
-+          - qcom,scm-sm8150
-+          - qcom,scm-sm8250
-+          - qcom,scm-sm8350
-+          - qcom,scm-sm8450
-+          - qcom,scm-qcs404
-+      - const: qcom,scm
-+
-+  clocks:
-+    minItems: 1
-+    maxItems: 3
-+
-+  clock-names:
-+    minItems: 1
-+    maxItems: 3
-+
-+  '#reset-cells':
-+    const: 1
-+
-+  qcom,dload-mode:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    items:
-+      - items:
-+          - description: phandle to TCSR hardware block
-+          - description: offset of the download mode control register
-+    description: TCSR hardware block
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,scm-apq8064
-+              - qcom,scm-mdm9607
-+              - qcom,scm-msm8660
-+              - qcom,scm-msm8960
-+    then:
-+      properties:
-+        clock-names:
-+          items:
-+            - const: core
-+
-+        clocks:
-+          maxItems: 1
-+
-+      required:
-+        - clocks
-+        - clock-names
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,scm-apq8084
-+              - qcom,scm-msm8916
-+              - qcom,scm-msm8953
-+              - qcom,scm-msm8974
-+              - qcom,scm-msm8976
-+    then:
-+      properties:
-+        clock-names:
-+          items:
-+            - const: core
-+            - const: bus
-+            - const: iface
-+
-+        clocks:
-+          minItems: 3
-+          maxItems: 3
-+
-+
-+      required:
-+        - clocks
-+        - clock-names
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    include <dt-bindings/clock/qcom,gcc-msm8916.h>
-+
-+    firmware {
-+        scm {
-+            compatible = "qcom,msm8916", "qcom,scm";
-+            clocks = <&gcc GCC_CRYPTO_CLK>,
-+                     <&gcc GCC_CRYPTO_AXI_CLK>,
-+                     <&gcc GCC_CRYPTO_AHB_CLK>;
-+            clock-names = "core", "bus", "iface";
-+        };
-+    };
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
