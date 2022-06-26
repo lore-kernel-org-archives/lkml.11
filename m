@@ -2,71 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A73C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 22:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA79AC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 22:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231593AbiFZWdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 18:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
+        id S229746AbiFZWer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 18:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiFZWdp (ORCPT
+        with ESMTP id S229468AbiFZWeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 18:33:45 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C682DDD
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 15:33:44 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id mf9so15536669ejb.0
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 15:33:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O51AM3Qzm9rWVB6oLrltcYSc31aaLTopfeRLV80m1Yk=;
-        b=gDLni17NhALEi/hNiPzVgFRh7cP8zgvivg+f5FfBrWXKmrg1ZfqlR/dpgGsuvU8xyA
-         s2gLamxDUBAvE4VWjcmMmB6LdzW0OqpGmPC6HF54CN/3jMjGSzbnB8bjcgNAQc/kNn6F
-         uCqte+fPbMKqCp1KcHL13Kcclk3RWtO+ua/WreTkTN8rE8KiD8eb+Oqxb+1oWpWQ3xhx
-         IHvYoKz6GnK3Wg8Lbq3T3noIe+fwmQ/glEBh58trPhABAv7X8On2N2Jgvvh5FqZsnAyO
-         o1SMsqUi0da/Z3AJjmJImlmNXX5SkTkmUldE9MKCLp0a4EfXklkri1+Xg5EoFXL8unoI
-         SxBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O51AM3Qzm9rWVB6oLrltcYSc31aaLTopfeRLV80m1Yk=;
-        b=33egtUuN3eVB0S6oNgmEQOjEZA7sPIwF6BEPBO/erwusM1QaKXmPNzn+bMOPsXPwxO
-         2vsvox6BilgyvGR5IAAoDEvdzirCb2cLZdHHpQP3vTQZilYhNO2S5qjfW1AHWUgYcpF8
-         unobX+P4x9lV0jnq/OUG9dMYJkJDNfmz5AUC1xCOT+TmPtkBYLofPdmbrmPoyBiEN27j
-         y8rYu/Qb5UB7l9ijxHUemgMy+Ao/cP5CUrARlf193Ou0djXHGRiuj5eF4gRkQvH6yx0L
-         SlvV5wk73B70l98lte+VF64i/XxlhrHXfBs5QyQGNz4VQ3TBuLKaVmsnUZx186su9NP/
-         UDCQ==
-X-Gm-Message-State: AJIora+YFfvwlQ43GcHuwTElU6cvcR1nCY8u5OI2LgtAbrMMD3bp2MMG
-        yHFMz1FROfmmsQNmAivsNz7ygJPpASapd0zHNcA=
-X-Google-Smtp-Source: AGRyM1uXR6Lm+Uqx2z3Aq3NI7bcB199Bsml3RGNzAeBEZ0KTVBjoaNUwUSrUDkKtwStl3kTYGYR3Bb5P7Was8WuQxGQ=
-X-Received: by 2002:a17:906:3f51:b0:712:3945:8c0d with SMTP id
- f17-20020a1709063f5100b0071239458c0dmr9736344ejj.302.1656282822640; Sun, 26
- Jun 2022 15:33:42 -0700 (PDT)
+        Sun, 26 Jun 2022 18:34:44 -0400
+Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DED2DDE;
+        Sun, 26 Jun 2022 15:34:42 -0700 (PDT)
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id 2E4BF186C; Sun, 26 Jun 2022 17:34:41 -0500 (CDT)
+Date:   Sun, 26 Jun 2022 17:34:41 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org, Serge Hallyn <serge@hallyn.com>,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/8] capability: add any wrapper to test for multiple
+ caps with exactly one audit message
+Message-ID: <20220626223441.GA30137@mail.hallyn.com>
+References: <20220502160030.131168-8-cgzones@googlemail.com>
+ <20220615152623.311223-1-cgzones@googlemail.com>
+ <20220615152623.311223-8-cgzones@googlemail.com>
 MIME-Version: 1.0
-References: <20220617072723.1742668-1-narmstrong@baylibre.com> <20220617072723.1742668-6-narmstrong@baylibre.com>
-In-Reply-To: <20220617072723.1742668-6-narmstrong@baylibre.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Mon, 27 Jun 2022 00:33:31 +0200
-Message-ID: <CAFBinCDJmjpix6Y4yN8PbNUvJddEhwFjiLJe+zBLo9vN2oNbng@mail.gmail.com>
-Subject: Re: [PATCH v3 5/6] drm/meson: add DSI encoder
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jagan Teki <jagan@amarulasolutions.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220615152623.311223-8-cgzones@googlemail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 9:27 AM Neil Armstrong <narmstrong@baylibre.com> wrote:
->
-> This adds an encoder bridge designed to drive a MIPI-DSI display
-> by using the ENCL encoder through the internal MIPI DSI transceiver
-> connected to the output of the ENCL pixel encoder.
->
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-> Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
-Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+On Wed, Jun 15, 2022 at 05:26:23PM +0200, Christian Göttsche wrote:
+> Add the interfaces `capable_any()` and `ns_capable_any()` as an
+> alternative to multiple `capable()`/`ns_capable()` calls, like
+> `capable_any(CAP_SYS_NICE, CAP_SYS_ADMIN)` instead of
+> `capable(CAP_SYS_NICE) || capable(CAP_SYS_ADMIN)`.
+> 
+> `capable_any()`/`ns_capable_any()` will in particular generate exactly
+> one audit message, either for the left most capability in effect or, if
+> the task has none, the first one.
+> 
+> This is especially helpful with regard to SELinux, where each audit
+> message about a not allowed capability will create an AVC denial.
+> Using this function with the least invasive capability as left most
+> argument (e.g. CAP_SYS_NICE before CAP_SYS_ADMIN) enables policy writers
+> to only allow the least invasive one and SELinux domains pass this check
+> with only capability:sys_nice or capability:sys_admin allowed without
+> any AVC denial message.
+> 
+> Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+
+Reviewed-by: Serge Hallyn <serge@hallyn.com>
+
+> 
+> ---
+> v3:
+>    - rename to capable_any()
+>    - fix typo in function documentation
+>    - add ns_capable_any()
+> v2:
+>    avoid varargs and fix to two capabilities; capable_or3() can be added
+>    later if needed
+> ---
+>  include/linux/capability.h | 10 +++++++
+>  kernel/capability.c        | 53 ++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 63 insertions(+)
+> 
+> diff --git a/include/linux/capability.h b/include/linux/capability.h
+> index 65efb74c3585..7316d5339a6e 100644
+> --- a/include/linux/capability.h
+> +++ b/include/linux/capability.h
+> @@ -208,7 +208,9 @@ extern bool has_capability_noaudit(struct task_struct *t, int cap);
+>  extern bool has_ns_capability_noaudit(struct task_struct *t,
+>  				      struct user_namespace *ns, int cap);
+>  extern bool capable(int cap);
+> +extern bool capable_any(int cap1, int cap2);
+>  extern bool ns_capable(struct user_namespace *ns, int cap);
+> +extern bool ns_capable_any(struct user_namespace *ns, int cap1, int cap2);
+>  extern bool ns_capable_noaudit(struct user_namespace *ns, int cap);
+>  extern bool ns_capable_setid(struct user_namespace *ns, int cap);
+>  #else
+> @@ -234,10 +236,18 @@ static inline bool capable(int cap)
+>  {
+>  	return true;
+>  }
+> +static inline bool capable_any(int cap1, int cap2)
+> +{
+> +	return true;
+> +}
+>  static inline bool ns_capable(struct user_namespace *ns, int cap)
+>  {
+>  	return true;
+>  }
+> +static inline bool ns_capable_any(struct user_namespace *ns, int cap1, int cap2)
+> +{
+> +	return true;
+> +}
+>  static inline bool ns_capable_noaudit(struct user_namespace *ns, int cap)
+>  {
+>  	return true;
+> diff --git a/kernel/capability.c b/kernel/capability.c
+> index 765194f5d678..ab9b889c3f4d 100644
+> --- a/kernel/capability.c
+> +++ b/kernel/capability.c
+> @@ -435,6 +435,59 @@ bool ns_capable_setid(struct user_namespace *ns, int cap)
+>  }
+>  EXPORT_SYMBOL(ns_capable_setid);
+>  
+> +/**
+> + * ns_capable_any - Determine if the current task has one of two superior capabilities in effect
+> + * @ns:  The usernamespace we want the capability in
+> + * @cap1: The capabilities to be tested for first
+> + * @cap2: The capabilities to be tested for secondly
+> + *
+> + * Return true if the current task has at least one of the two given superior
+> + * capabilities currently available for use, false if not.
+> + *
+> + * In contrast to or'ing capable() this call will create exactly one audit
+> + * message, either for @cap1, if it is granted or both are not permitted,
+> + * or @cap2, if it is granted while the other one is not.
+> + *
+> + * The capabilities should be ordered from least to most invasive, i.e. CAP_SYS_ADMIN last.
+> + *
+> + * This sets PF_SUPERPRIV on the task if the capability is available on the
+> + * assumption that it's about to be used.
+> + */
+> +bool ns_capable_any(struct user_namespace *ns, int cap1, int cap2)
+> +{
+> +	if (ns_capable_noaudit(ns, cap1))
+> +		return ns_capable(ns, cap1);
+> +
+> +	if (ns_capable_noaudit(ns, cap2))
+> +		return ns_capable(ns, cap2);
+> +
+> +	return ns_capable(ns, cap1);
+> +}
+> +EXPORT_SYMBOL(ns_capable_any);
+> +
+> +/**
+> + * capable_any - Determine if the current task has one of two superior capabilities in effect
+> + * @cap1: The capabilities to be tested for first
+> + * @cap2: The capabilities to be tested for secondly
+> + *
+> + * Return true if the current task has at least one of the two given superior
+> + * capabilities currently available for use, false if not.
+> + *
+> + * In contrast to or'ing capable() this call will create exactly one audit
+> + * message, either for @cap1, if it is granted or both are not permitted,
+> + * or @cap2, if it is granted while the other one is not.
+> + *
+> + * The capabilities should be ordered from least to most invasive, i.e. CAP_SYS_ADMIN last.
+> + *
+> + * This sets PF_SUPERPRIV on the task if the capability is available on the
+> + * assumption that it's about to be used.
+> + */
+> +bool capable_any(int cap1, int cap2)
+> +{
+> +	return ns_capable_any(&init_user_ns, cap1, cap2);
+> +}
+> +EXPORT_SYMBOL(capable_any);
+> +
+>  /**
+>   * capable - Determine if the current task has a superior capability in effect
+>   * @cap: The capability to be tested for
+> -- 
+> 2.36.1
