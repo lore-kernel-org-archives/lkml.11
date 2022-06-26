@@ -2,66 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8411C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22065C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231767AbiFZRge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 13:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
+        id S231830AbiFZRgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 13:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232011AbiFZRgT (ORCPT
+        with ESMTP id S232021AbiFZRgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 26 Jun 2022 13:36:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A38BE0A4;
-        Sun, 26 Jun 2022 10:36:15 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D38DE0B8
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 10:36:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F169CB80DF4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FA83B80DF5
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 17:36:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EEAD5C385A9;
         Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AB3E5C341CB;
-        Sun, 26 Jun 2022 17:36:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656264972;
-        bh=S/p+uHopoJlNaQZMjUi/yJtD1lLoTo6HlzPDOlPvvRw=;
+        s=k20201202; t=1656264974;
+        bh=lyXZjtWAlKHiJLpvUlWbhF7kjfOTcgkGQmRZXI7v3PM=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ReF+K77CGVoccto7Bwq5pcOAaJLCZqq6hexcTnENDvT8+PpHuVefv4xSyIgveNdF7
-         +S284dwuLv5Sfy7GhetMW4g9oGpuoaHBjtn6xf6k/pXwMsUXzxX4ypft12anJHCuiW
-         3va8vRpnZSBLLL4nVpnQmvhyaarS0ualbgf54FkuTZS2afDfEQ5Yae7XtVJ6p632K7
-         vcGkrpRtvfzPCcPg+0NlmYnLHOaH/Cv2d+REf5fZilXc1Xmc0rWuQ8IoXRgrStAnsM
-         LWu5sElY09Xoere3NhV33Xfx2+I4TCsxYa7Fq1DRX8N9LrRPZJYdzhtFRgNL1C/j62
-         GLA0ez8PPRCgQ==
+        b=IbkBwBkJl31Gaf/O3tnQOsKS0Sx/34Add4e43haRxBoQa3usaIUCXxgQFmgapLzYa
+         6wAsYKtbfpfI/7Y4vjkfVjTsCnD4gaGZ5ZII5wczy40jMyJrev0eyaJqJWrWeXAQ7j
+         aTZWlOVlzUAhYqduZNZaLHXZbAkns4h8a4LnSgt/oADkoaHnpaNXXLTeoX5Y6Lx1q5
+         b1ZLdGj/8KQAyob9E5SJ8vok6ebPrT+iTdwidSk7N5i34UaCU/DGlGAwpUD/yqFZbX
+         aeajvllVWJC4Jqqrr4QfeluaEtP86V6ljuYTzSdSERJTn/h06M35IMqJVg5wuoFOnO
+         Y7T+INjFo8IVw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9A0C4E8DBCB;
-        Sun, 26 Jun 2022 17:36:12 +0000 (UTC)
-Subject: Re: [GIT PULL] SMB3 client fixes
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DD2DBE8DBCB;
+        Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
+Subject: Re: [PULL 0/3] xtensa fixes for v5.19
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAH2r5muuxg3iDXMkcasnRoCfi8WeE1i3Y=GTgBB8qMQShFppdQ@mail.gmail.com>
-References: <CAH2r5muuxg3iDXMkcasnRoCfi8WeE1i3Y=GTgBB8qMQShFppdQ@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-cifs.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAH2r5muuxg3iDXMkcasnRoCfi8WeE1i3Y=GTgBB8qMQShFppdQ@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.samba.org/sfrench/cifs-2.6.git tags/5.19-rc3-smb3-client-fixes
-X-PR-Tracked-Commit-Id: af3a6d1018f02c6dc8388f1f3785a559c7ab5961
+In-Reply-To: <20220626104711.2024291-1-jcmvbkbc@gmail.com>
+References: <20220626104711.2024291-1-jcmvbkbc@gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220626104711.2024291-1-jcmvbkbc@gmail.com>
+X-PR-Tracked-Remote: https://github.com/jcmvbkbc/linux-xtensa.git tags/xtensa-20220626
+X-PR-Tracked-Commit-Id: a2d9b75b19dc8863f0845ffb401d33b2286d0aa1
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 918c30dffd14cd3f4af1e67cb40db91a008fc4fe
-Message-Id: <165626497262.22456.3866543276672314634.pr-tracker-bot@kernel.org>
-Date:   Sun, 26 Jun 2022 17:36:12 +0000
-To:     Steve French <smfrench@gmail.com>
+X-PR-Merge-Commit-Id: e963d685dda05b978cf6bcab74b3a0ad6199327a
+Message-Id: <165626497390.22456.17943933827611085942.pr-tracker-bot@kernel.org>
+Date:   Sun, 26 Jun 2022 17:36:13 +0000
+To:     Max Filippov <jcmvbkbc@gmail.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org,
+        Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 25 Jun 2022 16:38:40 -0500:
+The pull request you sent on Sun, 26 Jun 2022 03:47:11 -0700:
 
-> git://git.samba.org/sfrench/cifs-2.6.git tags/5.19-rc3-smb3-client-fixes
+> https://github.com/jcmvbkbc/linux-xtensa.git tags/xtensa-20220626
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/918c30dffd14cd3f4af1e67cb40db91a008fc4fe
+https://git.kernel.org/torvalds/c/e963d685dda05b978cf6bcab74b3a0ad6199327a
 
 Thank you!
 
