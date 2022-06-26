@@ -2,114 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E608CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 04:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C11C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 04:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233903AbiFZEcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 00:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
+        id S233910AbiFZEdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 00:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiFZEcU (ORCPT
+        with ESMTP id S229481AbiFZEdX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 00:32:20 -0400
-Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D29F120B4
-        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 21:32:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1656217902; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=mhbi1uu6vVxUi2jFtaaqGSWBzfGI4Fybg1G8k+5J1cx6Yi8/54IB9tCWG9SN/Wz5RJDjdGZrYANuA/JsSWhe7G3aaCdLAUnsNnRkufCA/f1A+mWhpqgkPniAFnymPXuYDGgWx3TlPAIL28XmRMXhh318G+qHA+4iPPVxR54y7gU=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1656217902; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=m0GJoA8N1D+ADr9TilMdmNJP85FBo9fAO2AjMIO46oY=; 
-        b=IHCyZ0TKvEuYpLwe0rTBu1oJzjbmQ9qCGmtyVbbntRVMEW2cBV/QbTWCGt9xyvxzNSk4EZ3UPqLnRbfUgSX/9UxWnpD26GypNUOLGVPaNIw8i0Id3Px0J2umrwwpNHi1cPFly9Wqp8NZ57VW155Jc7TMR1/qhBJWZZvy5xHm02A=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=icenowy.me;
-        spf=pass  smtp.mailfrom=uwu@icenowy.me;
-        dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656217902;
-        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
-        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:MIME-Version:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=m0GJoA8N1D+ADr9TilMdmNJP85FBo9fAO2AjMIO46oY=;
-        b=gW/0BML9giZH5pku8fw9KPRcLzhseBMfCOPqUzllrEtIy+GKArLZPlMxIiXnsUYr
-        bImaqdTGV4ry8dVyDVSOlS+XeBL8Q9jHp5fmo5TeqO6EXRmB/46D6Puct7y0RMQ3j3a
-        fycPrt3X4DBkv2hS6k6ERvfFDxUmohj5Wa26vdYw=
-Received: from edelgard.icenowy.me (59.41.163.103 [59.41.163.103]) by mx.zohomail.com
-        with SMTPS id 1656217900652289.35212594776544; Sat, 25 Jun 2022 21:31:40 -0700 (PDT)
-Message-ID: <b3a6ca6a4af7773f68f29b443fa5a4e106727e83.camel@icenowy.me>
-Subject: Re: [RESEND PATCH] rtc: sun6i: add support for R329 RTC
-From:   Icenowy Zheng <uwu@icenowy.me>
-To:     Samuel Holland <samuel@sholland.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-sunxi@lists.linux.dev
-Date:   Sun, 26 Jun 2022 12:31:33 +0800
-In-Reply-To: <20220626042756.58961-1-samuel@sholland.org>
-References: <20220626042756.58961-1-samuel@sholland.org>
-Organization: Anthon Open-Source Community
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 
+        Sun, 26 Jun 2022 00:33:23 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E5EE009
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 21:33:21 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id l126-20020a1c2584000000b0039c1a10507fso3670176wml.1
+        for <linux-kernel@vger.kernel.org>; Sat, 25 Jun 2022 21:33:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2kWtI1K8FBljQi8An/wyVTdiQqFYwSP32gsF9BQJ03c=;
+        b=FrZZoDyueMWB46rAlqAH1OYPceblyGuoIYSuiJh9AP7soufPKW1Jm2zZlInD7vPgfI
+         NdGX3xp4zNoqaACVAwsX+sYkPJm2kTFMCDSR2Ble7RTZVx4h5yM9Jw3Ne9acSpNBuH9a
+         pOpSHXejHqY/PixidKUtyNYZ2wsP77du0gW5ht7HC/sE3XMHwI5ks7yjJVy8tNZRRnxp
+         nuAYvLzeZTEeBv/e9XwsTzNXD+GY5Svw2Gqe0rRRmur2BeMr1Y6eEKv/zqvBj0HQta4H
+         djnLpYv0J0I1qlh3c4tQJKQuPXbyVejuRk9BzjOClEUAiH/eUHlQ342iTEhIRspr6YYU
+         0mEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2kWtI1K8FBljQi8An/wyVTdiQqFYwSP32gsF9BQJ03c=;
+        b=hcoCPF+6ySbBsqj1q0DEFonyw/YoDyJS5+7DjPn00XLEUtPxha4jG3CbiMdfrkI9YU
+         xHObsWcSKCJmh67gqiI3VXZLK5IYZo9me7SP6Rh1aQbyppoBharZZcKhqQ56KGThcS8X
+         4rd3KVlKX+95XuA6D7qdgBb51zdGFxYxA5X79H0+hvajf7+/9wYZBZn8f+KX91jbAkAW
+         R/DK+yx29cYqCg6aZjLQFU/OCaPvpjwnyiqv9Cm6gN24MwOS9Dd9hif1sYsoto+XKCQD
+         0HYsdXCiK1k/NhVNubU6ouvOvfMHmZ+j6rM2fHyeKPgfeaZFcrIphHVRWKPF35wQYcKe
+         XJQQ==
+X-Gm-Message-State: AJIora+C02LoxajKzvHyBs47wSqlgr7Wt4hDqwJRRWjYzxT8V+G3MzXE
+        K6s4pVPW7IGoyy+VBsXxhG9PSddSd7o8spkGfVlO4Q==
+X-Google-Smtp-Source: AGRyM1vAT0OOLfOI5Wn7s+3waQl1AufOpwQ7c6bUsnwcB4orgjTFZbOh+qBgJ1TE3EXFDt05Nh9wdwF8DhrwnXuYvd0=
+X-Received: by 2002:a05:600c:1d0b:b0:3a0:3ab8:924 with SMTP id
+ l11-20020a05600c1d0b00b003a03ab80924mr7671319wms.137.1656217999456; Sat, 25
+ Jun 2022 21:33:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
+References: <20220521143456.2759-1-jszhang@kernel.org>
+In-Reply-To: <20220521143456.2759-1-jszhang@kernel.org>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Sun, 26 Jun 2022 10:03:07 +0530
+Message-ID: <CAAhSdy0mkwacNMVa_jFZmZ+NRPBa1TpKUQGpzr6Z9_wfoq1R4g@mail.gmail.com>
+Subject: Re: [PATCH v4 0/2] use static key to optimize pgtable_l4_enabled
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Atish Patra <atishp@rivosinc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        kasan-dev@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-=E5=9C=A8 2022-06-25=E6=98=9F=E6=9C=9F=E5=85=AD=E7=9A=84 23:27 -0500=EF=BC=
-=8CSamuel Holland=E5=86=99=E9=81=93=EF=BC=9A
-> From: Icenowy Zheng <icenowy@aosc.io>
->=20
-> Allwinner R329 has a RTC with a similar time storage with H616 but a
-> slightly different clock part.
->=20
-> As we have already handled the R329 RTC clocks in the CCU driver, add
-> a
-> compatible string to RTC driver to allow probing of the RTC.
->=20
-> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
-> Resending this patch separately from Icenowy's R329 series[1] because
-> it
-> is also needed for D1 (which has R329 as its fallback compatible[2]),
-> so
-> I would like to get it in to 5.20.
+On Sat, May 21, 2022 at 8:13 PM Jisheng Zhang <jszhang@kernel.org> wrote:
+>
+> The pgtable_l4|[l5]_enabled check sits at hot code path, performance
+> is impacted a lot. Since pgtable_l4|[l5]_enabled isn't changed after
+> boot, so static key can be used to solve the performance issue[1].
+>
+> An unified way static key was introduced in [2], but it only targets
+> riscv isa extension. We dunno whether SV48 and SV57 will be considered
+> as isa extension, so the unified solution isn't used for
+> pgtable_l4[l5]_enabled now.
+>
+> patch1 fixes a NULL pointer deference if static key is used a bit earlier.
+> patch2 uses the static key to optimize pgtable_l4|[l5]_enabled.
+>
+> [1] http://lists.infradead.org/pipermail/linux-riscv/2021-December/011164.html
+> [2] https://lore.kernel.org/linux-riscv/20220517184453.3558-1-jszhang@kernel.org/T/#t
+>
+> Since v3:
+>  - fix W=1 call to undeclared function 'static_branch_likely' error
+>
+> Since v2:
+>  - move the W=1 warning fix to a separate patch
+>  - move the unified way to use static key to a new patch series.
+>
+> Since v1:
+>  - Add a W=1 warning fix
+>  - Fix W=1 error
+>  - Based on v5.18-rcN, since SV57 support is added, so convert
+>    pgtable_l5_enabled as well.
+>
+>
+>
+> Jisheng Zhang (2):
+>   riscv: move sbi_init() earlier before jump_label_init()
+>   riscv: turn pgtable_l4|[l5]_enabled to static key for RV64
 
-Thanks!
+I have tested both these patches on QEMU RV64 and RV32.
 
-BTW when will you put D1 DTs into kernel?
+Tested-by: Anup Patel <anup@brainfault.org>
 
->=20
-> [1]:
-> https://lore.kernel.org/lkml/BYAPR20MB2472C608678F3FAEDA7B7541BCF79@BYAPR=
-20MB2472.namprd20.prod.outlook.com/
-> [2]:
-> https://lore.kernel.org/lkml/20220203021736.13434-3-samuel@sholland.org/
->=20
-> =C2=A0drivers/rtc/rtc-sun6i.c | 2 ++
-> =C2=A01 file changed, 2 insertions(+)
->=20
-> diff --git a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
-> index 57540727ce1c..ed5516089e9a 100644
-> --- a/drivers/rtc/rtc-sun6i.c
-> +++ b/drivers/rtc/rtc-sun6i.c
-> @@ -875,6 +875,8 @@ static const struct of_device_id
-> sun6i_rtc_dt_ids[] =3D {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0{ .compatible =3D "allwin=
-ner,sun50i-h6-rtc" },
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0{ .compatible =3D "allwin=
-ner,sun50i-h616-rtc",
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0.data =3D (void *)RTC_LINEAR_DAY },
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0{ .compatible =3D "allwinner,s=
-un50i-r329-rtc",
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0.data =3D (void *)RTC_LINEAR_DAY },
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0{ /* sentinel */ },
-> =C2=A0};
-> =C2=A0MODULE_DEVICE_TABLE(of, sun6i_rtc_dt_ids);
+Thanks,
+Anup
 
-
+>
+>  arch/riscv/include/asm/pgalloc.h    | 16 ++++----
+>  arch/riscv/include/asm/pgtable-32.h |  3 ++
+>  arch/riscv/include/asm/pgtable-64.h | 60 ++++++++++++++++++---------
+>  arch/riscv/include/asm/pgtable.h    |  5 +--
+>  arch/riscv/kernel/cpu.c             |  4 +-
+>  arch/riscv/kernel/setup.c           |  2 +-
+>  arch/riscv/mm/init.c                | 64 ++++++++++++++++++-----------
+>  arch/riscv/mm/kasan_init.c          | 16 ++++----
+>  8 files changed, 104 insertions(+), 66 deletions(-)
+>
+> --
+> 2.34.1
+>
