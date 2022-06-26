@@ -2,170 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4B6C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 07:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13863C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 07:44:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233932AbiFZHj7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 03:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
+        id S233972AbiFZHo3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 03:44:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233905AbiFZHj6 (ORCPT
+        with ESMTP id S232160AbiFZHoZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 03:39:58 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A754FFD2C;
-        Sun, 26 Jun 2022 00:39:56 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A8D9DD6E;
-        Sun, 26 Jun 2022 00:39:56 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.71.61])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A78A03F792;
-        Sun, 26 Jun 2022 00:39:54 -0700 (PDT)
-Date:   Sun, 26 Jun 2022 08:39:52 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     madvenka@linux.microsoft.com
-Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v15 2/6] arm64: Copy the task argument to unwind_state
-Message-ID: <YrgNSMnBzAF6rtYz@FVFF77S0Q05N>
-References: <ff68fb850d42e1adaa6a0a6c9c258acabb898b24>
- <20220617210717.27126-1-madvenka@linux.microsoft.com>
- <20220617210717.27126-3-madvenka@linux.microsoft.com>
+        Sun, 26 Jun 2022 03:44:25 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACE311A2D;
+        Sun, 26 Jun 2022 00:44:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ZYf9S+9v8SssB2f7SI0aLipRvyLjpdyjZAR4xNwIlyA=; b=ku+r4DqZkB95/Xfmh9ue6cm+09
+        CyOJKQrOsW5u38sU/yT0ordtzA+/36HzICae4wQDfFz2S+Hbn5laa+W58cHSq5nsw9ipLZBhM3hNJ
+        mXF+/5KDpW3EpisCVvR/XT04v0kdwEIr/NbG8Gznzxnrgcre+KeUy/4U2wO3EW4cPCpzcGr7sZHu4
+        G5qwtDrH1THEWNH3Y/cvkvBxQihfsVriRfNB5vflSLMXblFCTZcFF8+Yvxqhcd26i6lzK4QaFpaDi
+        Bn+3NT5N/eBtb5v+o6f9b2xcqVfF+oWNL2sc+ddYWmhqUodeV8wXtxU1nuUXbY0dI+3z1TddPdJIk
+        AQTuUgeQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o5MwN-00ARUE-Bk; Sun, 26 Jun 2022 07:44:19 +0000
+Date:   Sun, 26 Jun 2022 00:44:19 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Avi Kivity <avi@scylladb.com>
+Cc:     Eric Biggers <ebiggers@kernel.org>, linux-fsdevel@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-xfs@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
+Subject: Re: [PATCH v3 1/8] statx: add direct I/O alignment information
+Message-ID: <YrgOUw6YM2c6k59U@infradead.org>
+References: <20220616201506.124209-1-ebiggers@kernel.org>
+ <20220616201506.124209-2-ebiggers@kernel.org>
+ <6c06b2d4-2d96-c4a6-7aca-5147a91e7cf2@scylladb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220617210717.27126-3-madvenka@linux.microsoft.com>
+In-Reply-To: <6c06b2d4-2d96-c4a6-7aca-5147a91e7cf2@scylladb.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 04:07:13PM -0500, madvenka@linux.microsoft.com wrote:
-> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+On Sun, Jun 19, 2022 at 02:30:47PM +0300, Avi Kivity wrote:
+> > * stx_dio_offset_align: the alignment (in bytes) required for file
+> >    offsets and I/O segment lengths for DIO, or 0 if DIO is not supported
+> >    on the file.  This will only be nonzero if stx_dio_mem_align is
+> >    nonzero, and vice versa.
 > 
-> Copy the task argument passed to arch_stack_walk() to unwind_state so that
-> it can be passed to unwind functions via unwind_state rather than as a
-> separate argument. The task is a fundamental part of the unwind state.
 > 
-> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
-> Reviewed-by: Mark Brown <broonie@kernel.org>
+> If you consider AIO, this is actually three alignments:
+> 
+> 1. offset alignment for reads (sector size in XFS)
+> 
+> 2. offset alignment for overwrites (sector size in XFS since ed1128c2d0c87e,
+> block size earlier)
+> 
+> 3. offset alignment for appending writes (block size)
+> 
+> 
+> This is critical for linux-aio since violation of these alignments will
+> stall the io_submit system call. Perhaps io_uring handles it better by
+> bouncing to a workqueue, but there is a significant performance and latency
+> penalty for that.
 
-Acked-by: Mark Rutland <mark.rutland@arm.com>
+I think you are mixing things up here.  We actually have two limits that
+matter:
 
-Mark.
+ a) the hard limit, which if violated will return an error.
+    This has been sector size for all common file systems for years,
+    but can be bigger than that with fscrypt in the game (which
+    triggered this series)
+ b) an optimal write size, which can be done asynchronous and
+    without exclusive locking.
+    This is what your cases 2) and 3) above refer to.
 
-> ---
->  arch/arm64/kernel/stacktrace.c | 33 ++++++++++++++++++++-------------
->  1 file changed, 20 insertions(+), 13 deletions(-)
-> 
-> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-> index e44f93ff25f0..8e43444d50e2 100644
-> --- a/arch/arm64/kernel/stacktrace.c
-> +++ b/arch/arm64/kernel/stacktrace.c
-> @@ -38,6 +38,8 @@
->   * @kr_cur:      When KRETPROBES is selected, holds the kretprobe instance
->   *               associated with the most recently encountered replacement lr
->   *               value.
-> + *
-> + * @task:        The task being unwound.
->   */
->  struct unwind_state {
->  	unsigned long fp;
-> @@ -48,10 +50,13 @@ struct unwind_state {
->  #ifdef CONFIG_KRETPROBES
->  	struct llist_node *kr_cur;
->  #endif
-> +	struct task_struct *task;
->  };
->  
-> -static void unwind_init_common(struct unwind_state *state)
-> +static void unwind_init_common(struct unwind_state *state,
-> +			       struct task_struct *task)
->  {
-> +	state->task = task;
->  #ifdef CONFIG_KRETPROBES
->  	state->kr_cur = NULL;
->  #endif
-> @@ -80,7 +85,7 @@ static void unwind_init_common(struct unwind_state *state)
->  static inline void unwind_init_from_regs(struct unwind_state *state,
->  					 struct pt_regs *regs)
->  {
-> -	unwind_init_common(state);
-> +	unwind_init_common(state, current);
->  
->  	state->fp = regs->regs[29];
->  	state->pc = regs->pc;
-> @@ -96,7 +101,7 @@ static inline void unwind_init_from_regs(struct unwind_state *state,
->   */
->  static __always_inline void unwind_init_from_caller(struct unwind_state *state)
->  {
-> -	unwind_init_common(state);
-> +	unwind_init_common(state, current);
->  
->  	state->fp = (unsigned long)__builtin_frame_address(1);
->  	state->pc = (unsigned long)__builtin_return_address(0);
-> @@ -115,7 +120,7 @@ static __always_inline void unwind_init_from_caller(struct unwind_state *state)
->  static inline void unwind_init_from_task(struct unwind_state *state,
->  					 struct task_struct *task)
->  {
-> -	unwind_init_common(state);
-> +	unwind_init_common(state, task);
->  
->  	state->fp = thread_saved_fp(task);
->  	state->pc = thread_saved_pc(task);
-> @@ -128,9 +133,9 @@ static inline void unwind_init_from_task(struct unwind_state *state,
->   * records (e.g. a cycle), determined based on the location and fp value of A
->   * and the location (but not the fp value) of B.
->   */
-> -static int notrace unwind_next(struct task_struct *tsk,
-> -			       struct unwind_state *state)
-> +static int notrace unwind_next(struct unwind_state *state)
->  {
-> +	struct task_struct *tsk = state->task;
->  	unsigned long fp = state->fp;
->  	struct stack_info info;
->  
-> @@ -204,8 +209,7 @@ static int notrace unwind_next(struct task_struct *tsk,
->  }
->  NOKPROBE_SYMBOL(unwind_next);
->  
-> -static void notrace unwind(struct task_struct *tsk,
-> -			   struct unwind_state *state,
-> +static void notrace unwind(struct unwind_state *state,
->  			   stack_trace_consume_fn consume_entry, void *cookie)
->  {
->  	while (1) {
-> @@ -213,7 +217,7 @@ static void notrace unwind(struct task_struct *tsk,
->  
->  		if (!consume_entry(cookie, state->pc))
->  			break;
-> -		ret = unwind_next(tsk, state);
-> +		ret = unwind_next(state);
->  		if (ret < 0)
->  			break;
->  	}
-> @@ -259,12 +263,15 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
->  {
->  	struct unwind_state state;
->  
-> -	if (regs)
-> +	if (regs) {
-> +		if (task != current)
-> +			return;
->  		unwind_init_from_regs(&state, regs);
-> -	else if (task == current)
-> +	} else if (task == current) {
->  		unwind_init_from_caller(&state);
-> -	else
-> +	} else {
->  		unwind_init_from_task(&state, task);
-> +	}
->  
-> -	unwind(task, &state, consume_entry, cookie);
-> +	unwind(&state, consume_entry, cookie);
->  }
-> -- 
-> 2.25.1
-> 
+Exposting this additional optimal performance size might be a good idea
+in addition to what is proposed here, even if matters a little less
+with io_uring.  But I'm not sure I'd additional split it into append
+vs overwrite vs hole filling but just round up to the maximum of those.
