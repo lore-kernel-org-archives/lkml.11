@@ -2,86 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C318C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbiFZRPo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 13:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
+        id S229468AbiFZRdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 13:33:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231867AbiFZRPh (ORCPT
+        with ESMTP id S231314AbiFZRdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 13:15:37 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7570AE093;
-        Sun, 26 Jun 2022 10:15:35 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id k12-20020a17090a404c00b001eaabc1fe5dso10223488pjg.1;
-        Sun, 26 Jun 2022 10:15:35 -0700 (PDT)
+        Sun, 26 Jun 2022 13:33:14 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E271D765D
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 10:33:11 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id o16so9971216wra.4
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 10:33:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=dPKELELgFlCVowNQzSbwUOPIVqSefa774VaFs/5xX9g=;
-        b=TTTicy3ewL1Zk/RYe5zjLoofl+7vqoioHrHCGakdXAQJjtpZw1TVvrTZC+x62Cn5U9
-         smedmNDM6j6HiUeRdceXl/LpjrziuO44JkHEZh2f9sqjIGh0udxl7Dc5u92gW4owZqgG
-         ePbV+O101344ucPTugz+R+L+P1sL+ip7YTOX1IwWa1kspveMN4oUSwEIOUONmen19ZfS
-         8r9vXdrZLUK54um6JoYFq/8dThjgt7UzscsJkChWx21aeeeVgLuTcDmq8L6NuGrvLH5s
-         aIc+oV40D/N0XhH+v6VWfCy9TzVt9z7mBH1JqNM9syMbMtz3TdP2t5rB9nNpequuKllf
-         I8cw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LVyzL8mphbtENNv7Ak5Yb4fzhkW9NpbRag7uI4Hacxc=;
+        b=CixvAORRF/ukN2FEZzF3AXwjYn0QSsLkd38tK+4yJetZJEOD2q8BWdl+K7blkYG7QX
+         PEpxd9kqTN2VWUXcz4YD/IK4r7df6FMK1XmJ0tM6GJBIgNOaTzoUXLdb0Hle84111G9o
+         PEcdOK/tcVBUK/beyvIgVjBuqREmne+JuyFWCO/FfnY/agQm+R8Qf8mdpKl+YSiiVc6D
+         warzD6uHfDCskO3OxQ41n/NxKpV0jX6Lm3HwMpdQWZangXskbf0W6LW/iOMuDxXv5+n9
+         tur8NsPqRiFwF1WgpEzx5KFrcp5JtHOeGJzYbiubnZrrT7cSPNOvq+v99yOHeGHnva84
+         muQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=dPKELELgFlCVowNQzSbwUOPIVqSefa774VaFs/5xX9g=;
-        b=t51g9vL2/+MsooHojtC+ymNmjFXEOrpGeVZep+D891v6QQ4WYcKX8j2LQuWDTiIQ7c
-         66GIkGD+Pa3Lm0JFCS4VWmcpsAoNfneNTuxN/p9HV/msrwvjIVumaMQ75iI0zsZbTdOX
-         +cCASNtlKYHNNPwhL1J8r9lk1hRu6VTTMvIgiAG1vNLe3bRILbhrTr11Y4jKBD65jqcZ
-         6e4zv8Ax07imnAaD5Q5mhLnEeLIlgRJ6roafWNc3y8MX3K8WFmzm3InAPDhdgkK1G0mC
-         myeOzByThdpo1+WMEGP6ge3BAlB9SLplGCBTmMtwl6S6onwfTXo1yykog+a6a+EqUbfB
-         NM/g==
-X-Gm-Message-State: AJIora+7sGsjujUPEligtV/PdVD2QDY43yzD1erBNDkVjxOreChFhg9F
-        gZ2YbBAkyFFMqei+kF59CbY=
-X-Google-Smtp-Source: AGRyM1txc6slEOYWYXWXLdsMQVfV6ZRoR58qxTkTnBp7RWuDTTrRkkLN5l/nMwi6Z1d+mgiTgakCwA==
-X-Received: by 2002:a17:90b:4b48:b0:1ec:fc87:691c with SMTP id mi8-20020a17090b4b4800b001ecfc87691cmr16122588pjb.120.1656263734820;
-        Sun, 26 Jun 2022 10:15:34 -0700 (PDT)
-Received: from Sauravs-MacBook-Air.local ([2401:4900:1c0f:ec3f:8053:b39e:a633:cf03])
-        by smtp.gmail.com with ESMTPSA id v11-20020a1709028d8b00b0016a4f3ca2b5sm5411427plo.277.2022.06.26.10.15.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jun 2022 10:15:34 -0700 (PDT)
-Date:   Sun, 26 Jun 2022 22:45:28 +0530
-From:   Saurav Girepunje <saurav.girepunje@gmail.com>
-To:     santoshkumar.yadav@barco.com, peter.korsgaard@barco.com,
-        hdegoede@redhat.com, markgross@kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     saurav.girepunje@hotmail.com
-Subject: [PATCH] platform: x86: Remove duplicated include in barco-p50-gpio.c
-Message-ID: <YriUMDJoip0Mknh3@Sauravs-MacBook-Air.local>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LVyzL8mphbtENNv7Ak5Yb4fzhkW9NpbRag7uI4Hacxc=;
+        b=sRLkYmtpv9rHoIbci52uJemo4udVGAjUXZ5mOjdVqRI+Yh/YsvHC+0pgpYuB/+Vp2N
+         gD4mI6f8ZAvFy/BDOANZHb1AB4pk8Vlxvc+X8lDR1SA7dj2C+s43DJFq6Z0PhE0VMtS1
+         2QiHPb2EOW4Sv+bdKY/DNEumIfWi7ufgaB82eXFTyApnIeBhl2ImWD5BMFjFkDF7myzv
+         UI21FJSwgm23CRaq/5MbWByccF0E+GCivpO6RBQWEsgqhNktEW8X86CqnKsWP/I7Ut3f
+         vS6CMpokB1r1TXkN3bu7mwqTA7Iho/RQqDV4H27FJN+uOI5CPiHZ+0Po+TI+TDPQ1FAp
+         JbDg==
+X-Gm-Message-State: AJIora9tJTqhrSuCNzGh9iNykENtdle62FtRRJ77yDETS9liDq9nc6vk
+        jFGDjGvn8Qkcnq8yboTb71loki6Lm44rRg==
+X-Google-Smtp-Source: AGRyM1sT+QzEds/eFmu00keheN6WbaWKP57czuiPSPRTt3/jN3GsXQ0byLphmAqRpiPIai9t45cykg==
+X-Received: by 2002:a5d:6ac4:0:b0:21b:a724:1711 with SMTP id u4-20020a5d6ac4000000b0021ba7241711mr8495754wrw.80.1656264790204;
+        Sun, 26 Jun 2022 10:33:10 -0700 (PDT)
+Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.googlemail.com with ESMTPSA id c11-20020a05600c0acb00b00397342e3830sm11310979wmr.0.2022.06.26.10.33.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jun 2022 10:33:09 -0700 (PDT)
+Message-ID: <43b1c2fd-b746-84eb-c82b-23f1bd39242e@linaro.org>
+Date:   Sun, 26 Jun 2022 19:33:06 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 01/14] thermal/core: Change thermal_zone_ops to
+ thermal_sensor_ops
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linexp.org>
+Cc:     Kevin Hilman <khilman@baylibre.com>,
+        Alexandre Bailon <abailon@baylibre.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>, Len Brown <lenb@kernel.org>,
+        Raju Rangoju <rajur@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Peter Kaestle <peter@piie.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuansheng Liu <chuansheng.liu@intel.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Antoine Tenart <atenart@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list:ACPI THERMAL DRIVER" <linux-acpi@vger.kernel.org>,
+        "open list:CXGB4 ETHERNET DRIVER (CXGB4)" <netdev@vger.kernel.org>,
+        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:ACER ASPIRE ONE TEMPERATURE AND FAN DRIVER" 
+        <platform-driver-x86@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:RENESAS R-CAR THERMAL DRIVERS" 
+        <linux-renesas-soc@vger.kernel.org>
+References: <20220507125443.2766939-1-daniel.lezcano@linexp.org>
+ <20220507125443.2766939-2-daniel.lezcano@linexp.org>
+ <CAJZ5v0ik_JQ4Awtw7iR68W4-9ZL8FRDsDd-kWmL-n09fgg3reg@mail.gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <CAJZ5v0ik_JQ4Awtw7iR68W4-9ZL8FRDsDd-kWmL-n09fgg3reg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the duplicate include of linux/io.h in barco-p50-gpio.c
-file.
 
-Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
----
- drivers/platform/x86/barco-p50-gpio.c | 1 -
- 1 file changed, 1 deletion(-)
+Hi Rafael,
 
-diff --git a/drivers/platform/x86/barco-p50-gpio.c b/drivers/platform/x86/barco-p50-gpio.c
-index f5c72e33f9ae..bb8ed8e95225 100644
---- a/drivers/platform/x86/barco-p50-gpio.c
-+++ b/drivers/platform/x86/barco-p50-gpio.c
-@@ -14,7 +14,6 @@
- #include <linux/delay.h>
- #include <linux/dmi.h>
- #include <linux/err.h>
--#include <linux/io.h>
- #include <linux/kernel.h>
- #include <linux/leds.h>
- #include <linux/module.h>
---
-2.33.0
+sorry for the delay, I was OoO.
 
+On 17/05/2022 17:42, Rafael J. Wysocki wrote:
+> On Sat, May 7, 2022 at 2:55 PM Daniel Lezcano <daniel.lezcano@linexp.org> wrote:
+>>
+>> A thermal zone is software abstraction of a sensor associated with
+>> properties and cooling devices if any.
+>>
+>> The fact that we have thermal_zone and thermal_zone_ops mixed is
+>> confusing and does not clearly identify the different components
+>> entering in the thermal management process. A thermal zone appears to
+>> be a sensor while it is not.
+> 
+> Well, the majority of the operations in thermal_zone_ops don't apply
+> to thermal sensors.  For example, ->set_trips(), ->get_trip_type(),
+> ->get_trip_temp().
+
+The set_trips is necessary to set the sensor interrupt to fire when the 
+trip temperature is crossed the way up or down.
+
+>> In order to set the scene for multiple thermal sensors aggregated into
+>> a single thermal zone. Rename the thermal_zone_ops to
+>> thermal_sensor_ops, that will appear clearyl the thermal zone is not a
+>> sensor but an abstraction of one [or multiple] sensor(s).
+> 
+> So I'm not convinced that the renaming mentioned above is particularly
+> clean either.
+> 
+> IMV the way to go would be to split the thermal sensor operations,
+> like ->get_temp(), out of thermal_zone_ops.
+
+Probably, we should first replace all the calls to ops->get_temp with a 
+function. Then create the ops for the sensor:
+
+  - get_trend
+  - get_temp
+  - set_trips
+  - bind / unbind
+
+> But then it is not clear what a thermal zone with multiple sensors in
+> it really means.  I guess it would require an aggregation function to
+> combine the thermal sensors in it that would produce an effective
+> temperature to check against the trip points.
+
+Yes, that is why the above ops->get_temp should be wrapped into a 
+function which can evolve to an aggregation function.
+
+> Honestly, I don't think that setting a separate set of trips for each
+> sensor in a thermal zone would make a lot of sense.
+
+I agree the set_trips is for the interrupt mode only.
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
