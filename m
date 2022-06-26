@@ -2,66 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10595C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:36:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB950C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:36:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbiFZRgj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 13:36:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46762 "EHLO
+        id S231889AbiFZRgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 13:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232014AbiFZRgT (ORCPT
+        with ESMTP id S231998AbiFZRgS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 13:36:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F23E0AE;
-        Sun, 26 Jun 2022 10:36:15 -0700 (PDT)
+        Sun, 26 Jun 2022 13:36:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B803FE08A
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 10:36:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FFEBB80DF7;
-        Sun, 26 Jun 2022 17:36:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 11008C341CC;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52AB760B2C
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 17:36:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BAE58C385A5;
         Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656264973;
-        bh=ieXD1kQhGxRYJgHXHobMXM0t1RkB4M49pmPO8Yk4F6E=;
+        bh=4eVfnsUZoSyF5LXwFiqWxJLLxFU06Qjwb2aa/9fyguM=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=UF6Dx05iyTTxFzyYfDE1erUZlX85evU7VZOd76Jo4ik5djYWq7GBrVgvKfGU2Gjvv
-         9DJwCjVDfPKN+2JVybni5LoWhYz1rLSK3E9l8y+o3KJ2+/02GVX3io5l9qvKN7tbcc
-         yMJb3GXmYfOTVXYKIVc50/adO3o65X2E2BD1zzRVmRqdCJtaJRV2G4xSk9qSOvxs7i
-         OVB00b196gGOf8yIzgJYum3UTMhNGRNRWYzhVdcB89Z7BClaEyGwtOFXzweBCYGZJ2
-         vwNAIhBOHZFPzGYh5lIjzRHlhVc3o4K2ECh9fKnsLZHF0gG7w3NVIIS3+7rsvDSjS8
-         FPgm5o20L2VSQ==
+        b=axSGuYa/qav1ieIlkLofyIWzFym95pOaNc+fyys6lZH9oHR2n6xOlc/LuEcyjh5j9
+         Ld/5h4qnLR3dLa3/YmkT5nrCditHh6dnaKDFvsXXDX7w2j5z17/O+d3zKx2X/IlKs/
+         LIQ/WWDrPKUNYzt4YlguF2VxxPbchoHUyncgMaVm3PFocg79CAlJmd4ABAyW6OA8iS
+         XKck6be5FNUINBeAexg2PcwfbQwzuOplERVBNqF4KH9Yhoehh+vhZ6Ch1O/LhCptRa
+         UzEV87F6Nz+A4rTr1CpJ95IwTN/5NkEp7rxhUxbtsykD5bkx7Y3DZiROr9ZT/sVfvt
+         Uf/1r5hQv354A==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E8646E73875;
-        Sun, 26 Jun 2022 17:36:12 +0000 (UTC)
-Subject: Re: [GIT PULL] Kbuild fixes for v5.19-rc4
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A9873FD99FF;
+        Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
+Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-5.19-3 tag
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAK7LNARjq-x+8rdXfkVt2YEoJsjnZNntxurYTwOqEaAX71m04w@mail.gmail.com>
-References: <CAK7LNARjq-x+8rdXfkVt2YEoJsjnZNntxurYTwOqEaAX71m04w@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-kbuild.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAK7LNARjq-x+8rdXfkVt2YEoJsjnZNntxurYTwOqEaAX71m04w@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git tags/kbuild-fixes-v5.19-2
-X-PR-Tracked-Commit-Id: ff139766764675b9df12bcbc8928a02149b7ba95
+In-Reply-To: <87pmiw4592.fsf@mpe.ellerman.id.au>
+References: <87pmiw4592.fsf@mpe.ellerman.id.au>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <87pmiw4592.fsf@mpe.ellerman.id.au>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-5.19-3
+X-PR-Tracked-Commit-Id: f3eac426657d985b97c92fa5f7ae1d43f04721f3
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 393ed5d85e8e07021d8db07d7c8348dd928349d7
-Message-Id: <165626497294.22456.4474691021180489498.pr-tracker-bot@kernel.org>
-Date:   Sun, 26 Jun 2022 17:36:12 +0000
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+X-PR-Merge-Commit-Id: 8100775d59a6789c3c6c309de26fac52f129cba8
+Message-Id: <165626497369.22456.13163681330452248984.pr-tracker-bot@kernel.org>
+Date:   Sun, 26 Jun 2022 17:36:13 +0000
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>, Jason@zx2c4.com,
+        ajd@linux.ibm.com, christophe.leroy@csgroup.eu,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        naveen.n.rao@linux.vnet.ibm.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 26 Jun 2022 07:15:35 +0900:
+The pull request you sent on Sun, 26 Jun 2022 10:50:49 +1000:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git tags/kbuild-fixes-v5.19-2
+> https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-5.19-3
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/393ed5d85e8e07021d8db07d7c8348dd928349d7
+https://git.kernel.org/torvalds/c/8100775d59a6789c3c6c309de26fac52f129cba8
 
 Thank you!
 
