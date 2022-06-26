@@ -2,117 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92617C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 22:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 22:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbiFZWfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 18:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
+        id S229973AbiFZWfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 18:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiFZWe4 (ORCPT
+        with ESMTP id S229580AbiFZWff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 18:34:56 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613F82DDE
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 15:34:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656282895; x=1687818895;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VuQ8SAN2v4p+N7GX5Ni+shsp+WCkuv4B5DPGkSSD/jY=;
-  b=WjjHX/7QRv+MbYfXmgt0kBENO6xRW91iBAK2gZENkC3Iw/msjnlpF7G0
-   CBfGpvp1MW3sNohL2zwxLL+qjh8dRzS02xhBkTvNm70UCZFuq2gpZjpcN
-   gO/3asWrW5stjbDpZlrY6GPDm+6bnXXjWe3X2xjtDAvz1Z828vVCnpeFZ
-   0VWe7cXWbeHbGQTr9HO0ZOdHvWanHQPnH0QNFE5IYaDTh4va+WHZsUOj5
-   okcWlJK4z7TkZiQ4yYo3oGCsRNNCWhKKypX9Vaq45YgeXnArKlH3uxB5D
-   qjQ8u531foeR3oIPFrN1Oiq1GPfAAVx4b1qHtNbomYhi8UWVYNzFuZbWT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="367631479"
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="367631479"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2022 15:34:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="732060615"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 26 Jun 2022 15:34:51 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o5aqA-0007u6-UB;
-        Sun, 26 Jun 2022 22:34:50 +0000
-Date:   Mon, 27 Jun 2022 06:34:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Tejun Heo <tj@kernel.org>, Petr Mladek <pmladek@suse.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Oleg Nesterov <oleg@redhat.com>
-Subject: Re: [PATCH 3/3] kthread: Stop abusing TASK_UNINTERRUPTIBLE
- (INCOMPLETE)
-Message-ID: <202206270617.4pI23V1L-lkp@intel.com>
-References: <871qvbutex.fsf_-_@email.froward.int.ebiederm.org>
+        Sun, 26 Jun 2022 18:35:35 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECCC2DDF;
+        Sun, 26 Jun 2022 15:35:34 -0700 (PDT)
+Received: from [192.168.2.145] (unknown [109.252.118.164])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 68E1A66016B4;
+        Sun, 26 Jun 2022 23:35:31 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656282932;
+        bh=8rXxTlcstkFQNootjbn8QCtpfVmztVI0c8pZei6dYig=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HnSsbwGcG6ht6Oy6ED05gqtbxf+0uxcp+BlKnAnY6X92UXaHhlp5D+WFj7oS1omfW
+         XPzwyc8giZ4MR2G2QGGxNOCgP3o+ZvYAc8jb3oW5xB+xbbuYPUZb3hdEb9FswAg9nJ
+         hrrPvwSkSi5zi3zxYsLPs0wT8Z5J9JXvJD4tlto0lO9kABRM7RcA/iZMTLDgeBwcyF
+         UD3k25W8bZteJs+aPq1pHzC1gGQZzEGzISYKENM458W5x0VK8mXXAjLGipla6r3GdJ
+         Vo/gb9JUrz1oZet2hKhj88s2nJQHBR3j9s32avttlqrdESPJN4t3M3FBVUK1asaq8u
+         +JwWCTbmsGGZw==
+Message-ID: <b6e28520-01cc-f163-7ed2-a7f99ad6be26@collabora.com>
+Date:   Mon, 27 Jun 2022 01:35:28 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <871qvbutex.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH RESEND v5 1/8] reset: Fix devm bulk optional exclusive
+ control getter
+Content-Language: en-US
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-clk@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220624141853.7417-1-Sergey.Semin@baikalelectronics.ru>
+ <20220624141853.7417-2-Sergey.Semin@baikalelectronics.ru>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <20220624141853.7417-2-Sergey.Semin@baikalelectronics.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Eric,
+On 6/24/22 17:18, Serge Semin wrote:
+> Most likely due to copy-paste mistake the device managed version of the
+> denoted reset control getter has been implemented with invalid semantic,
+> which can be immediately spotted by having "WARN_ON(shared && acquired)"
+> warning in the system log as soon as the method is called. Anyway let's
+> fix it by altering the boolean arguments passed to the
+> __devm_reset_control_bulk_get() method from
+> - shared = true, optional = false, acquired = true
+> to
+> + shared = false, optional = true, acquired = true
+> That's what they were supposed to be in the first place (see the non-devm
+> version of the same method: reset_control_bulk_get_optional_exclusive()).
+> 
+> Fixes: 48d71395896d ("reset: Add reset_control_bulk API")
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
+> ---
+> 
+> Changelog v4:
+> - This is a new patch added on v4 lap of the series.
+> ---
+>  include/linux/reset.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/reset.h b/include/linux/reset.h
+> index 8a21b5756c3e..514ddf003efc 100644
+> --- a/include/linux/reset.h
+> +++ b/include/linux/reset.h
+> @@ -731,7 +731,7 @@ static inline int __must_check
+>  devm_reset_control_bulk_get_optional_exclusive(struct device *dev, int num_rstcs,
+>  					       struct reset_control_bulk_data *rstcs)
+>  {
+> -	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, true, false, true);
+> +	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, false, true, true);
+>  }
+>  
+>  /**
 
-Thank you for the patch! Yet something to improve:
+Good catch,
 
-[auto build test ERROR on mkp-scsi/for-next]
-[also build test ERROR on jejb-scsi/for-next linus/master v5.19-rc3]
-[cannot apply to linux/master next-20220624]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Reviewed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Eric-W-Biederman/kthread-Remove-the-flags-argument-from-kernel_thread/20220627-041557
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
-config: x86_64-randconfig-a012
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b0d6dd3905db145853c7c744ac92d49b00b1fa20)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/950f4922fa2aef3d2e68b4b2ab728c6945830991
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eric-W-Biederman/kthread-Remove-the-flags-argument-from-kernel_thread/20220627-041557
-        git checkout 950f4922fa2aef3d2e68b4b2ab728c6945830991
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
-ERROR: modpost: "wake_up_new_task" [kernel/rcu/rcutorture.ko] undefined!
-ERROR: modpost: "wake_up_new_task" [fs/nfs/nfsv4.ko] undefined!
->> ERROR: modpost: "wake_up_new_task" [fs/ext4/ext4.ko] undefined!
->> ERROR: modpost: "wake_up_new_task" [fs/jbd2/jbd2.ko] undefined!
->> ERROR: modpost: "wake_up_new_task" [fs/ecryptfs/ecryptfs.ko] undefined!
-ERROR: modpost: "wake_up_new_task" [fs/cifs/cifs.ko] undefined!
->> ERROR: modpost: "wake_up_new_task" [fs/nilfs2/nilfs2.ko] undefined!
->> ERROR: modpost: "wake_up_new_task" [fs/gfs2/gfs2.ko] undefined!
->> ERROR: modpost: "wake_up_new_task" [fs/f2fs/f2fs.ko] undefined!
->> ERROR: modpost: "wake_up_new_task" [drivers/char/ipmi/ipmi_si.ko] undefined!
-WARNING: modpost: suppressed 30 unresolved symbol warnings because there were too many)
+Although, this patch should be sent as standalone since it's unrelated
+to the rest of the clk patches.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Dmitry
