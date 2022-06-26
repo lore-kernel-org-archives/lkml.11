@@ -2,125 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 15:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C150CCA480
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 15:42:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231545AbiFZPeu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 11:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51396 "EHLO
+        id S231569AbiFZPmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 11:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiFZPes (ORCPT
+        with ESMTP id S229468AbiFZPmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 11:34:48 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF3CBC89;
-        Sun, 26 Jun 2022 08:34:47 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id CC4EA21D38;
-        Sun, 26 Jun 2022 15:34:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1656257685; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=YBRdcRQGkGl7F8QD6nmHrqIMpqfMTq1AWLLsJs1w/ks=;
-        b=kiiPHyfexzBf03MopxZNtsv2OA0OSML5Jz48jtnINyLK1IexmRrYhz/Ezx+OvfjPwDAKvR
-        Z8srK1XFof5ErYlayP8thM65nBXB9BN7nRVNhX/ZZq87jrklHbj+RIuE5Wf1S6ppKEZewc
-        GVhuwiHKERrriH/6y7vCk7yeSnm9wMY=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A2AF513AF9;
-        Sun, 26 Jun 2022 15:34:45 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id oZy3JpV8uGLtXQAAMHmgww
-        (envelope-from <dsterba@suse.com>); Sun, 26 Jun 2022 15:34:45 +0000
-Date:   Sun, 26 Jun 2022 17:30:05 +0200
-From:   David Sterba <dsterba@suse.com>
-To:     torvalds@linux-foundation.org
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Btrfs fixes for 5.19-rc4, part 2
-Message-ID: <cover.1656256131.git.dsterba@suse.com>
-Mail-Followup-To: David Sterba <dsterba@suse.com>,
-        torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Sun, 26 Jun 2022 11:42:00 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F39EDFDB;
+        Sun, 26 Jun 2022 08:41:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1656258099;
+        bh=9wnn2viNtYo2HS4a6b8V2lbF+SSHfd4WFAFaclgRsso=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=SHlhQLJT8dgGcqR+X5nHvn7Yjw4el0brNLtT897XUkjePIvV7HSm8fOECnfOBmutl
+         x6KPuUYG554QgIvtaUVlD7FQ+d0+i/+9+eK0kxF/jy2xDFddJR5rmueyp6NRelRDzk
+         wCOCGuqjgcXIdlJrmnUVtAgIv3A+7RhI+qgSCuuA=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.33] ([46.223.2.248]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M7b6b-1o0Ef93eAf-0085OH; Sun, 26
+ Jun 2022 17:41:38 +0200
+Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
+ serial core
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
+        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
+ <20220622154659.8710-3-LinoSanfilippo@gmx.de>
+ <83762813-70ec-93c3-4015-5676ce9534fd@linux.intel.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <aa851698-ff26-a319-500a-575a9c669d95@gmx.de>
+Date:   Sun, 26 Jun 2022 17:41:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <83762813-70ec-93c3-4015-5676ce9534fd@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:cyIQlMtZ+G8jaNtEoKMkpMf21pMZu7+zmG4ZsrBrWfjfJ8shTgY
+ pupK7k4b3RxBSSU6r9jfqTCB/AphGTAU8V3S3pjE2iwtUCvrYjHGrkDi+IPTZtbaekmMP+j
+ XLGfEG2lV+c8+nuB09tRdgrxUIbTeEoRaX28TCdEgdjkjYfN9fyuas6tcj1o9kLXhp5/HUn
+ m8SricM+TNI9EiH/EpPHg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:fIJ5qj6lHQc=:8S6VSR7PdExKw8bJkX+MlF
+ H3suE7c7Pe31QjpiBufX07LOqmrqcIPg9Fb74x6UYoHX0oIemab+QCZnQBoipJ+ZRU2MrHS5x
+ YbZZsMXFkSyd/jraIb1QkxALtwaYRC2TVItcrFAP2khOCzjkahUGtg7Xo1vQzri/EgV1fureK
+ ZnJ8BWp32B9RgiCm1+6YaDmTDvNwEC3AH64mKc7RWIGcOuJG+v96COjpg6GFgMmakS4TDCUiA
+ qePKp9BlPyrft6XyxHuFMXGe9lPiwzUHBNljEGGDaLLLiHr5DpWOQ55YRFZz95yDMhFddqdLP
+ w/It7/0N/09QO+MWw2n+/CZfkxqxFyW9+WLEkz8pZ78Yg41AsXS6TFvKfwy7HfhbBNkfs7kGG
+ M65SooRgYaOFRySABeQHafEaPv3vn6eo9Aizb7ntyPC3sYHoDpBMQbIyFgDixyd0atKw1rXhj
+ IxmzzuSac633dPs8pwy537nD1TGox6uBlR2ibk5Lmf1RvI2TnTyL9en4iPXiyHvhnDIdvYr2p
+ WURTyDybVg/jtC445+TLuZtbGkdxV7M3f+dYrJV7AQozPjQMJ7NqNkOHCBd5tgxsQhNKp9ZKh
+ DHnukgvivd57KVUuh/Btq3PbkAWd9s2fkNWRZICTJDaytt2dlBBBOZXGzhrDTJPhJgaakrcqa
+ 43vh758Dkg1bf8ZKqb++q0PLM+0QWAAWwqkaHD9Dlh3cXOmg0x22nwN/wqW7onSPqbLMB+Rm5
+ ZbXnuqPM9JBXQQZvLtiwphigpARm/8JWzI6syf/EH4VF9oU2KrVtU3b6oFDbAbZVXQqBhY0PL
+ 2xfoyQR7UUYsYt8hyKBG9cCwLrcNwjxeUjOVFTyUuOoegcCADElKZMxE63J6UU6MaBCRVlkNp
+ LYkOPRUGYyrFZpctUonaYlx4cWvaMifyDxhe7g2aXBjPtjkuYPHWmy7YLxxuAhiugVFmkKaQW
+ eRtw+y89NGeDycpISmXxIdc2u4mt12L3+LMCMwc8cGaaHYbekAAvdjIiVBL+aJJswjPSnc8c5
+ FCwh/4nmH8Ruo8qTnNeSjZqJKOXWJ+/i9ftc7HxCGup0W2J/vsr64f1jZwObNz6n4/i7UdFNN
+ eepTFF5kuDkJc12KYI927EsBzYxv0oAaKKj7n9hqdRjENbw/9nZfNcuPg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+
 Hi,
 
-a few more fixes, they have been in testing branches for last weeks.
-Please pull, thanks.
+On 25.06.22 at 12:40, Ilpo J=C3=A4rvinen wrote:
+>> +
+>>  int uart_rs485_config(struct uart_port *port)
+>>  {
+>>  	struct serial_rs485 *rs485 =3D &port->rs485;
+>>  	int ret;
+>>
+>>  	uart_sanitize_serial_rs485(port, rs485);
+>> +	uart_set_rs485_termination(port, rs485);
+>>
+>>  	ret =3D port->rs485_config(port, rs485);
+>>  	if (ret)
+>> @@ -1400,6 +1411,7 @@ static int uart_set_rs485_config(struct uart_port=
+ *port,
+>>  	if (ret)
+>>  		return ret;
+>>  	uart_sanitize_serial_rs485(port, &rs485);
+>> +	uart_set_rs485_termination(port, &rs485);
+>>
+>>  	spin_lock_irqsave(&port->lock, flags);
+>>  	ret =3D port->rs485_config(port, &rs485);
+>
+> When port->rs485_config(port, &rs485) returns non-zero, the input got
+> partially applied?
+>
+>
+The thing is we dont know what the state of the termination GPIO (asserted=
+ or deasserted)
+was before we set it and port->rs485_config() failed, so we cannot restore=
+ it.
+We could read the GPIO before we change it but AFAIK this is unsafe since =
+it is an output
+pin. Maybe add a boolean variable "rs485_termination_gpio_asserted" to uar=
+t_port to track the
+current state?
 
-- zoned relocation fixes
-  - fix critical section end for extent writeback, this could lead to
-    out of order write
-  - prevent writing to previous data relocation block group if space
-    gets low
 
-- reflink fixes
-  - fix race between reflinking and ordered extent completion
-  - proper error handling when block reserve migration fails
-  - add missing inode iversion/mtime/ctime updates on each iteration
-    when replacing extents
+Regards,
+Lino
 
-- fix deadlock when running fsync/fiemap/commit at the same time
 
-- fix KCSAN report regarding pid tracking for read locks and data race,
-  but that's a false alert
-
-- minor documentation update and link to new site
-
-----------------------------------------------------------------
-The following changes since commit e3a4167c880cf889f66887a152799df4d609dd21:
-
-  btrfs: add error messages to all unrecognized mount options (2022-06-07 17:29:50 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.19-rc3-tag
-
-for you to fetch changes up to 037e127452b973f45b34c1e88a1af183e652e657:
-
-  Documentation: update btrfs list of features and link to readthedocs.io (2022-06-21 14:47:19 +0200)
-
-----------------------------------------------------------------
-David Sterba (1):
-      Documentation: update btrfs list of features and link to readthedocs.io
-
-Filipe Manana (3):
-      btrfs: fix race between reflinking and ordered extent completion
-      btrfs: add missing inode updates on each iteration when replacing extents
-      btrfs: do not BUG_ON() on failure to migrate space when replacing extents
-
-Josef Bacik (1):
-      btrfs: fix deadlock with fsync+fiemap+transaction commit
-
-Naohiro Aota (2):
-      btrfs: zoned: prevent allocation from previous data relocation BG
-      btrfs: zoned: fix critical section of relocation inode writeback
-
-Zygo Blaxell (1):
-      btrfs: don't set lock_owner when locking extent buffer for reading
-
- Documentation/filesystems/btrfs.rst | 16 +++++--
- fs/btrfs/block-group.h              |  1 +
- fs/btrfs/ctree.h                    |  2 +
- fs/btrfs/extent-tree.c              | 20 +++++++-
- fs/btrfs/extent_io.c                |  3 +-
- fs/btrfs/file.c                     | 92 ++++++++++++++++++++++++++++++-------
- fs/btrfs/inode.c                    |  3 ++
- fs/btrfs/locking.c                  |  3 --
- fs/btrfs/reflink.c                  | 16 +++++--
- fs/btrfs/zoned.c                    | 27 +++++++++++
- fs/btrfs/zoned.h                    |  5 ++
- 11 files changed, 158 insertions(+), 30 deletions(-)
 
