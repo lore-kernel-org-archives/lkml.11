@@ -2,65 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2146C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:36:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1566EC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbiFZRg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 13:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46758 "EHLO
+        id S231773AbiFZRg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 13:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232020AbiFZRgT (ORCPT
+        with ESMTP id S232019AbiFZRgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 26 Jun 2022 13:36:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6694DE0B6
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D26CE0B7
         for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 10:36:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2663BB80DFB
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1CC90B80DFA
         for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 17:36:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DEC49C341CF;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D257CC341CE;
         Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656264973;
-        bh=c8nuLbyJ32noHL1fCGnmIXKIF1eDIKhRoZCQAUDC63M=;
+        bh=fhBOhWpiQpH///1EZe/AwoeDP2EewiZn8Y5K3QPvkes=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=RZSX9NqXyQ0uVqxCfiYbg6Apj2LxTWsLn5RsFZc/RqX8E85iRgCv2S6i8erMAhUD/
-         fDdyqVY9RQw3/I0RMmib+Bqq0MNWgBzNh9OcbwW5pz1Q6AdzPkMGd0NRjFWJpbC7Jz
-         FZUBVyQOHS5N5KEu4d/Esl425ryABdJA3g9ZKN4PYb48qtWVtbqfsLI8hGEgXCJbw1
-         YO8wD8ftLsKGimbtmCUV5ZozV141VdnoAijJrh8pSqoFtTyRCgWXCpAhhmwkB4eXiu
-         e/isl3b4xZMgeSKCDXYzsHGS8j8fd6fTROIwbEU9/d5uDZEXW5caQZPg7SfmeiQeXp
-         pGg2N1WFjg5xA==
+        b=LgLBa14cR4HYXqZEQl0j1b5mSHrhEQlh8jqEuc+ZuXl6m0ppO99/29S+DFcNRMDTq
+         xeOHyoL+Fb3COxwkGmQajKZsvyCgutUr36lo/T5UswWVk4KbQT6/7NosliFpW7+6K2
+         e3ULdB+bSSTpPRbPmy6t0NYfbfjjz0koPJK9CL65hMY/QwvhIHagvlbd1I2PnwJSCp
+         LP/TFCaXdkNdYIYcUaEJ7CkqJt5u2EIJhoApbzh40G08DET3DoevCMdXTs30GadE7S
+         1d/2zEDpCOu291KA0Kb/W5J1NQ4oOIX9LqHahzUp3PCfhH9AHu57tyzQUIn2kKSyJz
+         GZCn3vKOhTeuA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CC835E8DBEE;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BBED1E73875;
         Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fix for Linux 5.19
+Subject: Re: [GIT PULL] exfat fixes for 5.19-rc4
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Yrf0ItiAJ4cVfdPf@infradead.org>
-References: <Yrf0ItiAJ4cVfdPf@infradead.org>
+In-Reply-To: <CAKYAXd9C+9RAF=M2h-gVXpnUDq-JQSF857agrE5c=eZQjEZaVg@mail.gmail.com>
+References: <CAKYAXd9C+9RAF=M2h-gVXpnUDq-JQSF857agrE5c=eZQjEZaVg@mail.gmail.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yrf0ItiAJ4cVfdPf@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.19-2022-06-26
-X-PR-Tracked-Commit-Id: 3be4562584bba603f33863a00c1c32eecf772ee6
+X-PR-Tracked-Message-Id: <CAKYAXd9C+9RAF=M2h-gVXpnUDq-JQSF857agrE5c=eZQjEZaVg@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/linkinjeon/exfat.git tags/exfat-for-5.19-rc4
+X-PR-Tracked-Commit-Id: 204e6ceaa1035cb7b92b156517e88842ebb4c7ff
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c898c67db6d7de1b1e7970cd16c45eaa46bd231b
-Message-Id: <165626497383.22456.6991533634522697276.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 97d4d0269706c468ec57cbb95a79f1a5c8fd1892
+Message-Id: <165626497376.22456.3775805673952551561.pr-tracker-bot@kernel.org>
 Date:   Sun, 26 Jun 2022 17:36:13 +0000
-To:     Christoph Hellwig <hch@infradead.org>
+To:     Namjae Jeon <linkinjeon@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 26 Jun 2022 07:52:34 +0200:
+The pull request you sent on Sun, 26 Jun 2022 14:04:41 +0900:
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.19-2022-06-26
+> git://git.kernel.org/pub/scm/linux/kernel/git/linkinjeon/exfat.git tags/exfat-for-5.19-rc4
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c898c67db6d7de1b1e7970cd16c45eaa46bd231b
+https://git.kernel.org/torvalds/c/97d4d0269706c468ec57cbb95a79f1a5c8fd1892
 
 Thank you!
 
