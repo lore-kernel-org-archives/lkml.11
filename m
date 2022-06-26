@@ -2,73 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 19:15:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3801C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 19:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231969AbiFZTPs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 15:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
+        id S232014AbiFZTP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 15:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231843AbiFZTPq (ORCPT
+        with ESMTP id S231843AbiFZTP5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 15:15:46 -0400
-Received: from ixit.cz (ip-94-112-206-30.net.upcbroadband.cz [94.112.206.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F81B7C2;
-        Sun, 26 Jun 2022 12:15:45 -0700 (PDT)
-Received: from newone.lan (_gateway [10.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ixit.cz (Postfix) with ESMTPSA id 6780E2007F;
-        Sun, 26 Jun 2022 21:15:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
-        t=1656270943;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oiSdtipuF7avckNwRyOmxo7gG8XRjIVtSeP2AN33dFU=;
-        b=vAZOM/3ss7UHZHD4lk4K+IPyVUqgLszbc8EU0idPnTwyrFffyfDvIaZ7+uJZyK2BAgEl0l
-        zEe0oGn+1a7OtO7TJKKF4galorZGz20UlJto3PeRpnz8zTfrknGOr5pSXqNFF1qvllEshB
-        HH0cfAVsQLVm5GSoKyRiqxPk1JFt0KM=
-From:   David Heidelberg <david@ixit.cz>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     ~okias/devicetree@lists.sr.ht, David Heidelberg <david@ixit.cz>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: dts: add missing compatible for pm8916
-Date:   Sun, 26 Jun 2022 21:15:40 +0200
-Message-Id: <20220626191540.176574-1-david@ixit.cz>
-X-Mailer: git-send-email 2.35.1
+        Sun, 26 Jun 2022 15:15:57 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18126DF35
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 12:15:57 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:46222)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o5Xjg-000is3-3J; Sun, 26 Jun 2022 13:15:56 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:57740 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o5Xje-008aeQ-UP; Sun, 26 Jun 2022 13:15:55 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Christian Brauner <brauner@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Oleg Nesterov <oleg@redhat.com>
+References: <20220622140853.31383-1-pmladek@suse.com>
+        <YraWWl+Go17uPOgR@mtj.duckdns.org>
+        <CAHk-=wiC7rj1o7vTnYUPfD7YxAu09MZiZbahHqvLm9+Cgg1dFw@mail.gmail.com>
+        <874k0863x8.fsf@email.froward.int.ebiederm.org>
+        <CAHk-=wgTG2K3erROP19320zBN6BHVf0hRfXGdawkGR4gzrJN6w@mail.gmail.com>
+        <CAHk-=whLsaRKaFKS0UffeCYYCVyP0bbiB4BTYTaXtScgu6R9yA@mail.gmail.com>
+        <87pmiw1fy6.fsf@email.froward.int.ebiederm.org>
+        <CAHk-=wiutNT47oNhyk_WvMj2qp4pehYFptXCUzW=u_2STLQiww@mail.gmail.com>
+        <CAHk-=whX_=BNZ4kVEAu2NV3CMnhwsuYTyE65FQXUMx8VPNOAOA@mail.gmail.com>
+        <87ilonuti2.fsf_-_@email.froward.int.ebiederm.org>
+Date:   Sun, 26 Jun 2022 14:15:48 -0500
+In-Reply-To: <87ilonuti2.fsf_-_@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Sun, 26 Jun 2022 14:14:45 -0500")
+Message-ID: <87czevutgb.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+Content-Type: text/plain
+X-XM-SPF: eid=1o5Xje-008aeQ-UP;;;mid=<87czevutgb.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX19g9L/lkXLANuRQ/Dfu1tqYwAH8IrGXz6Q=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 1/3] kthread: Remove the flags argument from kernel_thread
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Format should be: device specific, generic compatible.
 
-Signed-off-by: David Heidelberg <david@ixit.cz>
+There are only two callers of kernel_thread remaining.  The calling in
+init/main.c that creates kthreadd, and the caller in kernel/kthread.c
+
+Both callers pass CLONE_FS|CLONE_FILES.  The argument SIGCHLD causes
+terminate to exit with the oridnary process SIGCHLD semantics.
+
+As kthreadd never exists it simply does not matter what kind of exit
+it has.  So for simplicity make it look like everything else and use
+SIGCHLD.
+
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 ---
- arch/arm64/boot/dts/qcom/pm8916.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/sched/task.h | 2 +-
+ init/main.c                | 2 +-
+ kernel/fork.c              | 3 ++-
+ kernel/kthread.c           | 2 +-
+ 4 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/pm8916.dtsi b/arch/arm64/boot/dts/qcom/pm8916.dtsi
-index d58902432812..aedc0aa5602f 100644
---- a/arch/arm64/boot/dts/qcom/pm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8916.dtsi
-@@ -108,7 +108,7 @@ pm8916_mpps: mpps@a000 {
- 		};
+diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
+index 505aaf9fe477..d95930e220da 100644
+--- a/include/linux/sched/task.h
++++ b/include/linux/sched/task.h
+@@ -91,7 +91,7 @@ extern pid_t kernel_clone(struct kernel_clone_args *kargs);
+ struct task_struct *create_io_thread(int (*fn)(void *), void *arg, int node);
+ struct task_struct *fork_idle(int);
+ struct mm_struct *copy_init_mm(void);
+-extern pid_t kernel_thread(int (*fn)(void *), void *arg, unsigned long flags);
++extern pid_t kernel_thread(int (*fn)(void *), void *arg);
+ extern pid_t user_mode_thread(int (*fn)(void *), void *arg, unsigned long flags);
+ extern long kernel_wait4(pid_t, int __user *, int, struct rusage *);
+ int kernel_wait(pid_t pid, int *stat);
+diff --git a/init/main.c b/init/main.c
+index 0ee39cdcfcac..211d38db0d16 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -701,7 +701,7 @@ noinline void __ref rest_init(void)
+ 	rcu_read_unlock();
  
- 		pm8916_gpios: gpios@c000 {
--			compatible = "qcom,pm8916-gpio";
-+			compatible = "qcom,pm8916-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
+ 	numa_default_policy();
+-	pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
++	pid = kernel_thread(kthreadd, NULL);
+ 	rcu_read_lock();
+ 	kthreadd_task = find_task_by_pid_ns(pid, &init_pid_ns);
+ 	rcu_read_unlock();
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 9d44f2d46c69..65909ded0ea7 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -2694,8 +2694,9 @@ pid_t kernel_clone(struct kernel_clone_args *args)
+ /*
+  * Create a kernel thread.
+  */
+-pid_t kernel_thread(int (*fn)(void *), void *arg, unsigned long flags)
++pid_t kernel_thread(int (*fn)(void *), void *arg)
+ {
++	unsigned long flags = CLONE_FS | CLONE_FILES | SIGCHLD;
+ 	struct kernel_clone_args args = {
+ 		.flags		= ((lower_32_bits(flags) | CLONE_VM |
+ 				    CLONE_UNTRACED) & ~CSIGNAL),
+diff --git a/kernel/kthread.c b/kernel/kthread.c
+index 544fd4097406..c0505e6b7142 100644
+--- a/kernel/kthread.c
++++ b/kernel/kthread.c
+@@ -396,7 +396,7 @@ static void create_kthread(struct kthread_create_info *create)
+ 	current->pref_node_fork = create->node;
+ #endif
+ 	/* We want our own signal handler (we take no signals by default). */
+-	pid = kernel_thread(kthread, create, CLONE_FS | CLONE_FILES | SIGCHLD);
++	pid = kernel_thread(kthread, create);
+ 	if (pid < 0) {
+ 		/* If user was SIGKILLed, I release the structure. */
+ 		struct completion *done = xchg(&create->done, NULL);
 -- 
-2.35.1
+2.35.3
 
