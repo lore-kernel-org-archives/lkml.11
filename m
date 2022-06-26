@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1566EC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8411C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 17:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231773AbiFZRg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 13:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46764 "EHLO
+        id S231767AbiFZRge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 13:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232019AbiFZRgT (ORCPT
+        with ESMTP id S232011AbiFZRgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 26 Jun 2022 13:36:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D26CE0B7
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 10:36:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A38BE0A4;
+        Sun, 26 Jun 2022 10:36:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CC90B80DFA
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 17:36:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D257CC341CE;
+        by ams.source.kernel.org (Postfix) with ESMTPS id F169CB80DF4;
         Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AB3E5C341CB;
+        Sun, 26 Jun 2022 17:36:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656264973;
-        bh=fhBOhWpiQpH///1EZe/AwoeDP2EewiZn8Y5K3QPvkes=;
+        s=k20201202; t=1656264972;
+        bh=S/p+uHopoJlNaQZMjUi/yJtD1lLoTo6HlzPDOlPvvRw=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=LgLBa14cR4HYXqZEQl0j1b5mSHrhEQlh8jqEuc+ZuXl6m0ppO99/29S+DFcNRMDTq
-         xeOHyoL+Fb3COxwkGmQajKZsvyCgutUr36lo/T5UswWVk4KbQT6/7NosliFpW7+6K2
-         e3ULdB+bSSTpPRbPmy6t0NYfbfjjz0koPJK9CL65hMY/QwvhIHagvlbd1I2PnwJSCp
-         LP/TFCaXdkNdYIYcUaEJ7CkqJt5u2EIJhoApbzh40G08DET3DoevCMdXTs30GadE7S
-         1d/2zEDpCOu291KA0Kb/W5J1NQ4oOIX9LqHahzUp3PCfhH9AHu57tyzQUIn2kKSyJz
-         GZCn3vKOhTeuA==
+        b=ReF+K77CGVoccto7Bwq5pcOAaJLCZqq6hexcTnENDvT8+PpHuVefv4xSyIgveNdF7
+         +S284dwuLv5Sfy7GhetMW4g9oGpuoaHBjtn6xf6k/pXwMsUXzxX4ypft12anJHCuiW
+         3va8vRpnZSBLLL4nVpnQmvhyaarS0ualbgf54FkuTZS2afDfEQ5Yae7XtVJ6p632K7
+         vcGkrpRtvfzPCcPg+0NlmYnLHOaH/Cv2d+REf5fZilXc1Xmc0rWuQ8IoXRgrStAnsM
+         LWu5sElY09Xoere3NhV33Xfx2+I4TCsxYa7Fq1DRX8N9LrRPZJYdzhtFRgNL1C/j62
+         GLA0ez8PPRCgQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BBED1E73875;
-        Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
-Subject: Re: [GIT PULL] exfat fixes for 5.19-rc4
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9A0C4E8DBCB;
+        Sun, 26 Jun 2022 17:36:12 +0000 (UTC)
+Subject: Re: [GIT PULL] SMB3 client fixes
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAKYAXd9C+9RAF=M2h-gVXpnUDq-JQSF857agrE5c=eZQjEZaVg@mail.gmail.com>
-References: <CAKYAXd9C+9RAF=M2h-gVXpnUDq-JQSF857agrE5c=eZQjEZaVg@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAKYAXd9C+9RAF=M2h-gVXpnUDq-JQSF857agrE5c=eZQjEZaVg@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/linkinjeon/exfat.git tags/exfat-for-5.19-rc4
-X-PR-Tracked-Commit-Id: 204e6ceaa1035cb7b92b156517e88842ebb4c7ff
+In-Reply-To: <CAH2r5muuxg3iDXMkcasnRoCfi8WeE1i3Y=GTgBB8qMQShFppdQ@mail.gmail.com>
+References: <CAH2r5muuxg3iDXMkcasnRoCfi8WeE1i3Y=GTgBB8qMQShFppdQ@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-cifs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAH2r5muuxg3iDXMkcasnRoCfi8WeE1i3Y=GTgBB8qMQShFppdQ@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.samba.org/sfrench/cifs-2.6.git tags/5.19-rc3-smb3-client-fixes
+X-PR-Tracked-Commit-Id: af3a6d1018f02c6dc8388f1f3785a559c7ab5961
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 97d4d0269706c468ec57cbb95a79f1a5c8fd1892
-Message-Id: <165626497376.22456.3775805673952551561.pr-tracker-bot@kernel.org>
-Date:   Sun, 26 Jun 2022 17:36:13 +0000
-To:     Namjae Jeon <linkinjeon@kernel.org>
+X-PR-Merge-Commit-Id: 918c30dffd14cd3f4af1e67cb40db91a008fc4fe
+Message-Id: <165626497262.22456.3866543276672314634.pr-tracker-bot@kernel.org>
+Date:   Sun, 26 Jun 2022 17:36:12 +0000
+To:     Steve French <smfrench@gmail.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sungjong Seo <sj1557.seo@samsung.com>
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 26 Jun 2022 14:04:41 +0900:
+The pull request you sent on Sat, 25 Jun 2022 16:38:40 -0500:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/linkinjeon/exfat.git tags/exfat-for-5.19-rc4
+> git://git.samba.org/sfrench/cifs-2.6.git tags/5.19-rc3-smb3-client-fixes
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/97d4d0269706c468ec57cbb95a79f1a5c8fd1892
+https://git.kernel.org/torvalds/c/918c30dffd14cd3f4af1e67cb40db91a008fc4fe
 
 Thank you!
 
