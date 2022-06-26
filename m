@@ -2,73 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B68CCA47C
-	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 12:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E469CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 26 Jun 2022 13:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234455AbiFZM7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 08:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
+        id S234468AbiFZNBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 09:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiFZM7f (ORCPT
+        with ESMTP id S230153AbiFZNBg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 08:59:35 -0400
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DE7BE38;
-        Sun, 26 Jun 2022 05:59:34 -0700 (PDT)
-Received: by mail-vs1-f52.google.com with SMTP id i186so6582511vsc.9;
-        Sun, 26 Jun 2022 05:59:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=37nZCE11jdK8Rc36vFIBOelXQW1kiUiyXAdrdtitw3s=;
-        b=a9zdDz4sd5oa7DTYKhWGOmR8TyE2Fc/ckEVdYjndAqfwkjBMUeSbjyTCODCfUkK+7Y
-         BsR/FqQzmRBUTnN9rISx3iUUbGOY8bSqrS/V5qzZL+6j1EfzN6XvKnxqjKsfOSyqK5kD
-         /zOxL2p1MkpanJKr2O+qzv8cPyiUHKnjAtaYDrIv1VoUGWdLgZBZ/BfjLIJr60mkppmV
-         uIpKnWihsnBapwHlfRWdxbD4hnhIhIhRm0pGlODwDH0PoegvFmMx8De3Hdku3tMYWcmB
-         ntIck53ET4QL8UspIKYgmC/c8kVCZ3dSKcJQhOrcAek1+SCR8g1oazYeEB5tAxQ/NReK
-         VQvw==
-X-Gm-Message-State: AJIora+xXHskzvyn49TpBAbeEG6ODaXU2ESP9rQfSHGRl+uSXcZhdm87
-        YDGcJo++0Cm3jz9bDLPShpzBaRa0SzgvMw==
-X-Google-Smtp-Source: AGRyM1sGDcYIvncDsLAkB7wfozTBvslTXqS0cToxoMnoy+eYuoLjrz2h7hEW24YVRpaXP5DIRRmCPw==
-X-Received: by 2002:a67:d787:0:b0:354:6074:f63f with SMTP id q7-20020a67d787000000b003546074f63fmr3017103vsj.1.1656248373472;
-        Sun, 26 Jun 2022 05:59:33 -0700 (PDT)
-Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com. [209.85.217.45])
-        by smtp.gmail.com with ESMTPSA id m62-20020a1f5841000000b0036cf5adf823sm639832vkb.21.2022.06.26.05.59.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Jun 2022 05:59:33 -0700 (PDT)
-Received: by mail-vs1-f45.google.com with SMTP id e7so6562616vsp.13;
-        Sun, 26 Jun 2022 05:59:33 -0700 (PDT)
-X-Received: by 2002:a67:e095:0:b0:354:50f1:b708 with SMTP id
- f21-20020a67e095000000b0035450f1b708mr3015443vsl.58.1656248373070; Sun, 26
- Jun 2022 05:59:33 -0700 (PDT)
+        Sun, 26 Jun 2022 09:01:36 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE4611800;
+        Sun, 26 Jun 2022 06:01:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656248494; x=1687784494;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nOZclKukcdLDBDm4CjNMxtNVSLfCiaIovRVkWGK4I3o=;
+  b=fkM1DiokHqB7C07fjMmhjCaKysaTzUc3uiMXJvsp2axTr2tmC9+fipcj
+   JZ4fH/27G6jWUs4adYXi0WSkZ7/XVuRHWJd3LFfU1EcT1Mvzq2EWeh1c0
+   NG7iNus47IEIuvGXSZT2EbJPGMBgo3OST6gq33P/h/mHlo5DeLgxh70Zw
+   k5M/alc1Ei3sCzF03pUSHbXdj9/++iVB3Lf902pxoT1DaCMoSlUPX022L
+   6goqUJMUL5ajx7I1SNnkQSbuYQrUoqRHYPht64i2e4bSFeSDifjzbfJ+y
+   6fiU+hRDavqxOjbysItVqNc0KExmTwXelEALhpvbRskKhfBqp+wYXyNuV
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,224,1650956400"; 
+   d="scan'208";a="101779742"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Jun 2022 06:01:33 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Sun, 26 Jun 2022 06:01:33 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Sun, 26 Jun 2022 06:01:31 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 0/8] net: lan966x: Add lag support
+Date:   Sun, 26 Jun 2022 15:04:43 +0200
+Message-ID: <20220626130451.1079933-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20220621034224.38995-1-samuel@sholland.org> <20220621034224.38995-3-samuel@sholland.org>
-In-Reply-To: <20220621034224.38995-3-samuel@sholland.org>
-Reply-To: wens@csie.org
-From:   Chen-Yu Tsai <wens@csie.org>
-Date:   Sun, 26 Jun 2022 20:59:21 +0800
-X-Gmail-Original-Message-ID: <CAGb2v66eaFsb+JaXpd4rZQbsgMkOHGhdmA8ZKYRe6FH9TQwWfw@mail.gmail.com>
-Message-ID: <CAGb2v66eaFsb+JaXpd4rZQbsgMkOHGhdmA8ZKYRe6FH9TQwWfw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/4] mfd: axp20x: Add AXP221/AXP223/AXP809 GPIO cells
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 11:42 AM Samuel Holland <samuel@sholland.org> wrote:
->
-> These PMICs all contain a compatible GPIO controller.
->
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+Add lag support for lan966x.
+First 4 patches don't do any changes to the current behaviour, they
+just prepare for lag support. While the rest is to add the lag support.
 
-Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Horatiu Vultur (8):
+  net: lan966x: Add reqisters used to configure lag interfaces
+  net: lan966x: Split lan966x_fdb_event_work
+  net: lan966x: Expose lan966x_switchdev_nb and
+    lan966x_switchdev_blocking_nb
+  net: lan966x: Extend lan966x_foreign_bridging_check
+  net: lan966x: Add lag support for lan966x.
+  net: lan966x: Extend FDB to support also lag
+  net: lan966x: Extend MAC to support also lag interfaces.
+  net: lan966x: Update PGID when lag ports are changing link status
+
+ .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+ .../ethernet/microchip/lan966x/lan966x_fdb.c  | 153 +++++---
+ .../ethernet/microchip/lan966x/lan966x_lag.c  | 342 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_mac.c  |  66 +++-
+ .../ethernet/microchip/lan966x/lan966x_main.h |  45 +++
+ .../ethernet/microchip/lan966x/lan966x_port.c |   6 +
+ .../ethernet/microchip/lan966x/lan966x_regs.h |  45 +++
+ .../microchip/lan966x/lan966x_switchdev.c     | 116 ++++--
+ 8 files changed, 685 insertions(+), 90 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+
+-- 
+2.33.0
+
