@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83072C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242050AbiF0V7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59878 "EHLO
+        id S242177AbiF0V7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241445AbiF0VzL (ORCPT
+        with ESMTP id S241502AbiF0Vz3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:55:11 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B475B65AF;
-        Mon, 27 Jun 2022 14:54:59 -0700 (PDT)
+        Mon, 27 Jun 2022 17:55:29 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A81465EF;
+        Mon, 27 Jun 2022 14:55:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366899; x=1687902899;
+  t=1656366900; x=1687902900;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Fb3dBDV4drTH1Irv7AqwIGDFRaog5goehiwWHDo/z9Q=;
-  b=VYcPPg/riBdf7lfc7cq8EuXZw0kuXFIMicg3g1UiARfGZPn7cvZYaktH
-   j586yA1mUysQ3Hp34N+JksEanovNhz5xbxl7tvftFvtaPfhuWXfhFCxey
-   IXs8ik5LDw+bBjWmv4e8JejumW6ZWmZXsYvO9O4UaiD+r4GQP65t90pm0
-   /26CGyXtL4vU6ZtsendRy2+H22KJgG+Q0/WjpHrvG5eAhbhEg5iOPwtMI
-   5LejyjzLzA7qiQmF1Vbmo8ckZ5mLUjazVnK4o/W97I52LkpNqK9TKG8aE
-   uTl8keI+WPnLCX0hNFjTmCOeo8iOZaSspxDn2SQ+wbAgsljmWsNH6qjZK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609568"
+  bh=G7EXlDzr2ljfAEeiNwOeqlNNdVlNm0vOm9CJJETpzpY=;
+  b=BBCeFTtfSWQTpzYl8gF1XVzQGSsqpyYhUMAJXAc5s9kvUocFroGOCcEl
+   0By+uEEdQstnn0E88SbOVkJfG2aAcE0lR67VsWTtj6A1CMGs/xnrc7rrI
+   sPYrlcpNJcdXNIPQVjm/YVcGuT3LBaema8MBVuYFHJOd2SDqkmkTXTGAb
+   ZUM+R6umdbI6bmeLEQRShrQAHdeFYtasxpxpLlMnXUq9WxFnxvlm8kM8o
+   hpILlraDoct+x9UZjd23VVlIV7iPK1sjz22BXdj8puHWSEHcYIoucMJgC
+   Xc41Kv+GIXpnPEw2itIugohtXxfI6Iggkjgaambc8sCz1zUebtFIxAnb/
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116106"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281609568"
+   d="scan'208";a="279116106"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:54 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:57 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863588"
+   d="scan'208";a="657863650"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:54 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:57 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 047/102] [MARKER] The start of TDX KVM patch series: TDX EPT violation
-Date:   Mon, 27 Jun 2022 14:53:39 -0700
-Message-Id: <9d0cbb05beb68b6503282b7cf367e8d88cae0e70.1656366338.git.isaku.yamahata@intel.com>
+Subject: [PATCH v7 066/102] KVM: TDX: restore host xsave state when exit from the guest TD
+Date:   Mon, 27 Jun 2022 14:53:58 -0700
+Message-Id: <edb3a09a81254392910fd43aca54bf4ed3466738.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -55,33 +55,57 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-This empty commit is to mark the start of patch series of TDX EPT
-violation.
+On exiting from the guest TD, xsave state is clobbered.  Restore xsave
+state on TD exit.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- Documentation/virt/kvm/intel-tdx-layer-status.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/tdx.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-index d5cace00c433..c3e675bea802 100644
---- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
-+++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-@@ -19,12 +19,12 @@ Patch Layer status
- * TDX architectural definitions:        Applied
- * TD VM creation/destruction:           Applied
- * TD vcpu creation/destruction:         Applied
--* TDX EPT violation:                    Not yet
-+* TDX EPT violation:                    Applying
- * TD finalization:                      Not yet
- * TD vcpu enter/exit:                   Not yet
- * TD vcpu interrupts/exit/hypercall:    Not yet
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index d9e0dd30c150..277525b6ca51 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -2,6 +2,7 @@
+ #include <linux/cpu.h>
+ #include <linux/mmu_context.h>
  
- * KVM MMU GPA shared bits:              Applied
- * KVM TDP refactoring for TDX:          Applied
--* KVM TDP MMU hooks:                    Applying
-+* KVM TDP MMU hooks:                    Applied
- * KVM TDP MMU MapGPA:                   Not yet
++#include <asm/fpu/xcr.h>
+ #include <asm/tdx.h>
+ 
+ #include "capabilities.h"
+@@ -592,6 +593,22 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	vcpu->kvm->vm_bugged = true;
+ }
+ 
++static void tdx_restore_host_xsave_state(struct kvm_vcpu *vcpu)
++{
++	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
++
++	if (static_cpu_has(X86_FEATURE_XSAVE) &&
++	    host_xcr0 != (kvm_tdx->xfam & kvm_caps.supported_xcr0))
++		xsetbv(XCR_XFEATURE_ENABLED_MASK, host_xcr0);
++	if (static_cpu_has(X86_FEATURE_XSAVES) &&
++	    /* PT can be exposed to TD guest regardless of KVM's XSS support */
++	    host_xss != (kvm_tdx->xfam & (kvm_caps.supported_xss | XFEATURE_MASK_PT)))
++		wrmsrl(MSR_IA32_XSS, host_xss);
++	if (static_cpu_has(X86_FEATURE_PKU) &&
++	    (kvm_tdx->xfam & XFEATURE_MASK_PKRU))
++		write_pkru(vcpu->arch.host_pkru);
++}
++
+ u64 __tdx_vcpu_run(hpa_t tdvpr, void *regs, u32 regs_mask);
+ 
+ static noinstr void tdx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
+@@ -615,6 +632,7 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
+ 
+ 	tdx_vcpu_enter_exit(vcpu, tdx);
+ 
++	tdx_restore_host_xsave_state(vcpu);
+ 	tdx->host_state_need_restore = true;
+ 
+ 	vcpu->arch.regs_avail &= ~VMX_REGS_LAZY_LOAD_SET;
 -- 
 2.25.1
 
