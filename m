@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A27C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A26BFCCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237373AbiF0OWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 10:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
+        id S237434AbiF0OW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 10:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236999AbiF0OUo (ORCPT
+        with ESMTP id S236880AbiF0OUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 10:20:44 -0400
+        Mon, 27 Jun 2022 10:20:42 -0400
 Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AC1A1116C;
-        Mon, 27 Jun 2022 07:20:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4728F10FE9;
+        Mon, 27 Jun 2022 07:20:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
         s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=3RZNhqSXaBemYpK95C/QUsbwl34QNC+TMEjvvF8sTFQ=; b=DG8RvTVbNQcnMUAyCqF+aVOPx6
-        F3wv4yK9cVXcGePIRg+bKrS19pX5GwQQ1G5j2gkwZ5qciTdz59vRhWTs8M8UBmjh1UZfMANLQ1qLJ
-        gvsyZYgT9jC0C18C+sBG+YjXqOQxyOoNZhQUUGHzCQ7ZC1F94LHU2/tAe6Wga9onTqW8iI2OSLl2G
-        GVG0hfLV9RjyOK5NMV9IACDuZ10j8tVyk7QWpfGBUkWxKcT89uj0YVHB+9Nus4sz9N1Setv2eEcmf
-        MW36ZJzySM4SO88o7EqPH1xdT56UCrQqKnt/ZYtBoV7an8klfxgXYs+a8MV96wLTMYklXZzILG1EC
-        MF03XVVQ==;
+        bh=ahW4iZmMaeHR2imkET+ZUEfD0C88QvD2NHELBTx02Vw=; b=xi5fpx3qYTev2mqbXFkxzG5YXV
+        N0CfzNRaeWNAXIkz28A6LXzkbR7xjpXGvI8pWCrz9zWp5/NgytqKQKVxVSG3im6UL66P+Hhkmi8u5
+        EyFYgMIU97NNoUugy0lEradt6Z/FtUWzchF4tagJq5Zffk6pexN1y2ZaFWO6PhRLEf2wImIUTZd2m
+        0OcJcS+1YCGPqef5kx3HCPGIQreTfouxAb44O5j7pTcPyiyjD28KHJ3hCF/dIuyMrw+2BGRlc8N26
+        1z3bNLfVPPHAh7faoF5couQo3d01u0cBRQ1f7+S7LFooKmjoXCEjkupjzXmuliEwX921YCKdwSqVn
+        uLShdarg==;
 Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
         by mail.kapsi.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <cyndis@kapsi.fi>)
-        id 1o5pbM-003N2J-RE; Mon, 27 Jun 2022 17:20:31 +0300
+        id 1o5pbL-003N2J-Eu; Mon, 27 Jun 2022 17:20:30 +0300
 From:   Mikko Perttunen <cyndis@kapsi.fi>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -42,9 +42,9 @@ Cc:     Mikko Perttunen <mperttunen@nvidia.com>,
         Robin Murphy <robin.murphy@arm.com>,
         dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7/v3 10/22] dt-bindings: host1x: Fix bracketing in example
-Date:   Mon, 27 Jun 2022 17:19:56 +0300
-Message-Id: <20220627142008.2072474-11-cyndis@kapsi.fi>
+Subject: [PATCH v7/v3 04/22] arm64: tegra: Add Host1x context stream IDs on Tegra186+
+Date:   Mon, 27 Jun 2022 17:19:50 +0300
+Message-Id: <20220627142008.2072474-5-cyndis@kapsi.fi>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627142008.2072474-1-cyndis@kapsi.fi>
 References: <20220627142008.2072474-1-cyndis@kapsi.fi>
@@ -59,29 +59,69 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mikko Perttunen <mperttunen@nvidia.com>
 
-The bracketing for the interrupts property in the device tree
-example is incorrect. Fix it.
+Add Host1x context stream IDs on systems that support Host1x context
+isolation. Host1x and attached engines can use these stream IDs to
+allow isolation between memory used by different processes.
+
+The specified stream IDs must match those configured by the hypervisor,
+if one is present.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
- .../bindings/display/tegra/nvidia,tegra20-host1x.yaml         | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v2:
+* Added context devices on T194.
+* Use iommu-map instead of custom property.
+v4:
+* Remove memory-contexts subnode.
+---
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi | 11 +++++++++++
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi | 11 +++++++++++
+ 2 files changed, 22 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
-index e6056e9445a7..5fe25e0a8d48 100644
---- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
-+++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
-@@ -238,8 +238,8 @@ examples:
-     host1x@50000000 {
-         compatible = "nvidia,tegra20-host1x";
-         reg = <0x50000000 0x00024000>;
--        interrupts = <0 65 0x04   /* mpcore syncpt */
--                      0 67 0x04>; /* mpcore general */
-+        interrupts = <0 65 0x04>, /* mpcore syncpt */
-+                     <0 67 0x04>; /* mpcore general */
-         interrupt-names = "syncpt", "host1x";
-         clocks = <&tegra_car TEGRA20_CLK_HOST1X>;
-         clock-names = "host1x";
+diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+index 0e9afc3e2f26..5f560f13ed93 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+@@ -1461,6 +1461,17 @@ host1x@13e00000 {
+ 
+ 		iommus = <&smmu TEGRA186_SID_HOST1X>;
+ 
++		/* Context isolation domains */
++		iommu-map = <
++			0 &smmu TEGRA186_SID_HOST1X_CTX0 1
++			1 &smmu TEGRA186_SID_HOST1X_CTX1 1
++			2 &smmu TEGRA186_SID_HOST1X_CTX2 1
++			3 &smmu TEGRA186_SID_HOST1X_CTX3 1
++			4 &smmu TEGRA186_SID_HOST1X_CTX4 1
++			5 &smmu TEGRA186_SID_HOST1X_CTX5 1
++			6 &smmu TEGRA186_SID_HOST1X_CTX6 1
++			7 &smmu TEGRA186_SID_HOST1X_CTX7 1>;
++
+ 		dpaux1: dpaux@15040000 {
+ 			compatible = "nvidia,tegra186-dpaux";
+ 			reg = <0x15040000 0x10000>;
+diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+index d1f8248c00f4..613fd71dec25 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+@@ -1769,6 +1769,17 @@ host1x@13e00000 {
+ 			interconnect-names = "dma-mem";
+ 			iommus = <&smmu TEGRA194_SID_HOST1X>;
+ 
++			/* Context isolation domains */
++			iommu-map = <
++				0 &smmu TEGRA194_SID_HOST1X_CTX0 1
++				1 &smmu TEGRA194_SID_HOST1X_CTX1 1
++				2 &smmu TEGRA194_SID_HOST1X_CTX2 1
++				3 &smmu TEGRA194_SID_HOST1X_CTX3 1
++				4 &smmu TEGRA194_SID_HOST1X_CTX4 1
++				5 &smmu TEGRA194_SID_HOST1X_CTX5 1
++				6 &smmu TEGRA194_SID_HOST1X_CTX6 1
++				7 &smmu TEGRA194_SID_HOST1X_CTX7 1>;
++
+ 			nvdec@15140000 {
+ 				compatible = "nvidia,tegra194-nvdec";
+ 				reg = <0x15140000 0x00040000>;
 -- 
 2.36.1
 
