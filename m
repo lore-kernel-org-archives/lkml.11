@@ -2,126 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 268CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 17:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B0DEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 17:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239015AbiF0RAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 13:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51970 "EHLO
+        id S239765AbiF0RCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 13:02:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235496AbiF0RAV (ORCPT
+        with ESMTP id S239161AbiF0RCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 13:00:21 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5FBDEC6
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 10:00:20 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id i194so10152671ioa.12
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 10:00:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1n5+tTXfxvB7wLEdpHqCm9+HbbRZEAGOiM6JchYLEEA=;
-        b=TuIDyDjh+Fh8IvzIgcxLkECsvGgepX8QCxNW5muxgMj4AuxdvJykORfH+B33q2pSUz
-         aCPMMkkphNHOGRuWbIWhyQThYGYG0oAT8QKG8Ii+lgnwRaCSFyvSV15xWdJalgo72ieJ
-         BaaPgTXTMUgSePlhvCeaA9m9fgtz63Wslx2qY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1n5+tTXfxvB7wLEdpHqCm9+HbbRZEAGOiM6JchYLEEA=;
-        b=hBi5Nwo18KZHwDzxk5PMPYgeDItWQBQxg0LJrpFPBDZeRYSYMi8T9aM8M0EuKHdLoU
-         n/bX0tudQP/nUFlnT2TsjBd/4RRPlyJx0fcjmEWgfrJZWajmF7UbzCf9L6P0PiX+NXkx
-         E2PFSKPz33+llKgzUytZ2zLuok61VaGPyHs1lMISWv3Zkf6LkoD4lfKJOXbhaNnP1kJJ
-         EvQFtWxW3QZK05Ot6R0iroVAS/n9XJZn49mvxFnWeQxVzdKid3rLnjy7/XAqdcy3J0Cg
-         H3jLVidGuOnMlVDNs6HpYckL2Y8fjPulqOyqvHLcIJYDx/hcZAkMYTqzLKieyEzE+3H3
-         u5bA==
-X-Gm-Message-State: AJIora+cZFG++oZNCOAuExGSR5NPfVCnB83reiBAvPkg4fJvGI7bE9B2
-        /tOWay7+fLdV+As+UPGL6MMoaA==
-X-Google-Smtp-Source: AGRyM1vka6RjReMyIAyXcFVuxqCEEEXnk7tcE9JyWX3Aza/OqWoGpuS3GK/cWr9ft69qR0A9bFPljQ==
-X-Received: by 2002:a02:c48e:0:b0:33c:25bb:a1b2 with SMTP id t14-20020a02c48e000000b0033c25bba1b2mr6820280jam.180.1656349219772;
-        Mon, 27 Jun 2022 10:00:19 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id f11-20020a02a80b000000b0033c14d2386bsm3090948jaj.75.2022.06.27.10.00.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 10:00:19 -0700 (PDT)
-Subject: Re: [PATCH v4] kselftests/damon: add support for cases where debugfs
- cannot be read
-To:     SeongJae Park <sj@kernel.org>, Gautam <gautammenghani201@gmail.com>
-Cc:     shuah@kernel.org, damon@lists.linux.dev, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220625200334.83818-1-sj@kernel.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <7d6b7de6-4609-e6ca-0a88-1f9799c70769@linuxfoundation.org>
-Date:   Mon, 27 Jun 2022 11:00:18 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Mon, 27 Jun 2022 13:02:16 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8818012090;
+        Mon, 27 Jun 2022 10:02:15 -0700 (PDT)
+Received: from localhost (dynamic-089-204-138-228.89.204.138.pool.telefonica.de [89.204.138.228])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sebastianfricke)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id AB3C2660183A;
+        Mon, 27 Jun 2022 18:02:13 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656349334;
+        bh=lmMRYe9MYXA/f4BfougC9rcemP8crZR1k5ozH3BKTsQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PrIv0Of54xYP/F6Lmdygevr0DNJxqqdMGjuOoycrAVM4p2vji5LX0+iwWr7j1my6P
+         HXgRzlDBkQrO4YV4KLIoHAUvRcC6sFJIGw+xi40idr69trcjlJ/gNClS+mfl0XYUvj
+         EY8gmOtO2zf8L8XjlHgne6qeQNHEY0CXAJItMQnc6mNaKysudGgHsI223nsu6Sn8zu
+         FLXghAHJ2xekiRNxlO8DRreHyipNsA8eU1iedH/OLKXAdB7949gBd6Eo2gx5fy/f93
+         0y+j7o8iI8gu5fqgyH4uDClc5QvQjCItbEpSgE0NDhljQiNgLoqQRChbxIonqS5lbX
+         Qd1WG1Q5e+KoQ==
+Date:   Mon, 27 Jun 2022 19:02:09 +0200
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     linux-media@vger.kernel.org, kernel@collabora.com,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] media: Fix incorrect P010 chroma order description
+Message-ID: <20220627170209.hzf3ezujtrm2ahau@basti-XPS-13-9310>
+References: <20220627071224.16787-1-sebastian.fricke@collabora.com>
+ <YrltXpTYqMZK/AZV@pendragon.ideasonboard.com>
 MIME-Version: 1.0
-In-Reply-To: <20220625200334.83818-1-sj@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <YrltXpTYqMZK/AZV@pendragon.ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/25/22 2:03 PM, SeongJae Park wrote:
-> Hi Gautam,
-> 
-> On Sun, 26 Jun 2022 01:22:45 +0530 Gautam <gautammenghani201@gmail.com> wrote:
-> 
->> The kernel is in lockdown mode when secureboot is enabled and hence
->> debugfs cannot be used. Add support for this and other general cases
->> where debugfs cannot be read and communicate the same to the user before
->> running tests.
->>
->> Signed-off-by: Gautam <gautammenghani201@gmail.com>
-> 
-> Reviewed-by: SeongJae Park <sj@kernel.org>
-> 
-> 
-> Thanks,
-> SJ
-> 
->> ---
->> Changes in v2:
->> 1. Modify the error message to account for general cases.
->> 2. Change the return code so that the test is skipped.
->>
->> Changes in v3:
->> 1. Change the name of variable holding the error message.
->>
->> Changes in v4:
->> 1. Correct the mode of the source file.
->>
->>   tools/testing/selftests/damon/_chk_dependency.sh | 10 ++++++++++
->>   1 file changed, 10 insertions(+)
->>
->> diff --git a/tools/testing/selftests/damon/_chk_dependency.sh b/tools/testing/selftests/damon/_chk_dependency.sh
->> index 0189db81550b..0328ac0b5a5e 100644
->> --- a/tools/testing/selftests/damon/_chk_dependency.sh
->> +++ b/tools/testing/selftests/damon/_chk_dependency.sh
->> @@ -26,3 +26,13 @@ do
->>   		exit 1
->>   	fi
->>   done
->> +
->> +permission_error="Operation not permitted"
->> +for f in attrs target_ids monitor_on
->> +do
->> +	status=$( cat "$DBGFS/$f" 2>&1 )
->> +	if [ "${status#*$permission_error}" != "$status" ]; then
->> +		echo "Permission for reading $DBGFS/$f denied; maybe secureboot enabled?"
+Hey Laurent,
 
-btw - does this run as a regular user or does it need root privilege?
-If so add a test for that and skip with a message.
->> +		exit $ksft_skip
->> +	fi
->> +done
->> -- 
->> 2.36.1
+On 27.06.2022 11:42, Laurent Pinchart wrote:
+>Hi Sebastian,
 >
-thanks,
--- Shuah
+>Thank you for the patch.
+>
+>On Mon, Jun 27, 2022 at 09:12:23AM +0200, Sebastian Fricke wrote:
+>> The chroma order of P010 is `CbCr`,
+>> match with the descriptions in `include/uapi/linux/videodev2.h` and the
+>> documentation.
+>>
+>> Fixes: 5374d8fb75f31 Add P010 video format
+>
+>This should be
+>
+>Fixes: 5374d8fb75f3 ("media: Add P010 video format")
+
+I assume this can probably be fixed while merging it right? So, I don't
+have to resend it.
+
+>
+>I recommend adding the following to your ~/.gitconfig:
+>
+>[pretty]
+>	fixes = Fixes: %h (\"%s\")
+>
+>You can then use `git show --pretty=fixes -s` to generate the right
+>Fixes: tag. If you fix lots of bugs, an alias in your ~/.bashrc is also
+>useful:
+>
+>gpf() {
+>	git show --pretty=fixes -s ${1:-HEAD} | xclip -selection clipboard
+>}
+
+Thanks a lot for the advice :).
+
+>
+>> Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+>
+>Reviewed-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+
+Greetings,
+Sebastian
+
+>
+>> ---
+>>  drivers/media/v4l2-core/v4l2-ioctl.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+>> index e2526701294e..e03362c8aef9 100644
+>> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+>> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+>> @@ -1306,7 +1306,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+>>  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
+>>  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
+>>  	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
+>> -	case V4L2_PIX_FMT_P010:		descr = "10-bit Y/CrCb 4:2:0"; break;
+>> +	case V4L2_PIX_FMT_P010:		descr = "10-bit Y/CbCr 4:2:0"; break;
+>>  	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/CbCr 4:2:0 (4x4 Linear)"; break;
+>>  	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
+>>  	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
+>
+>-- 
+>Regards,
+>
+>Laurent Pinchart
