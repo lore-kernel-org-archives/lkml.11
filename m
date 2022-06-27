@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35BB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97371C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239152AbiF0LzA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49954 "EHLO
+        id S238400AbiF0LzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238542AbiF0Lso (ORCPT
+        with ESMTP id S238554AbiF0Lsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:44 -0400
+        Mon, 27 Jun 2022 07:48:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C7E101FB;
-        Mon, 27 Jun 2022 04:42:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC90C101E2;
+        Mon, 27 Jun 2022 04:42:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F22D61214;
-        Mon, 27 Jun 2022 11:42:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9C04C3411D;
-        Mon, 27 Jun 2022 11:42:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F7856120F;
+        Mon, 27 Jun 2022 11:42:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B652C3411D;
+        Mon, 27 Jun 2022 11:42:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330130;
-        bh=JxkVXlS23oqK2KsdzJD6U26Oq7j6NUtrTCWBhLTB8A0=;
+        s=korg; t=1656330132;
+        bh=FYaoYojNg2Ks/W0fzjugy1DmD1KBhOnAMSpztY8eezo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e0adhCRg0L3daaCoi8Kpy5WkT9rogYIWy/ieq57VRiFSL/pnc9fetAQygtCE/vM89
-         2I9HV6wUWNd7P7JQPTQuViDGLsZRovJQZ0/hXoWzVWJVs8mPJrx49CFAS8/qa4TcXr
-         t5iwhU4Arl5CnwKlt5JNLu79GOemtkoYo8Ad6PL0=
+        b=YiCE8S+QeLGa+Apj7UT7vzvpOCZWz1xocCu9hy/lUg2S1OQtyW8V+rzkzViaTVbbF
+         toXm68chkyZla3DQGggaA1bI2LL57OO22rFFIgBdxBarYqawAwNb1mkzkvlLf84BZT
+         dZDpyDa2Fa7clMr7KdbskxkDZ31sCDeLnIIXcPJI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Saurabh Sengar <ssengar@linux.microsoft.com>,
+        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
+        Douglas Gilbert <dgilbert@interlog.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 054/181] scsi: storvsc: Correct reporting of Hyper-V I/O size limits
-Date:   Mon, 27 Jun 2022 13:20:27 +0200
-Message-Id: <20220627111946.134166779@linuxfoundation.org>
+Subject: [PATCH 5.18 045/181] scsi: scsi_debug: Fix zone transition to full condition
+Date:   Mon, 27 Jun 2022 13:20:18 +0200
+Message-Id: <20220627111945.868643663@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,97 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurabh Sengar <ssengar@linux.microsoft.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 1d3e0980782fbafaf93285779fd3905e4f866802 ]
+[ Upstream commit 566d3c57eb526f32951af15866086e236ce1fc8a ]
 
-Current code is based on the idea that the max number of SGL entries
-also determines the max size of an I/O request.  While this idea was
-true in older versions of the storvsc driver when SGL entry length
-was limited to 4 Kbytes, commit 3d9c3dcc58e9 ("scsi: storvsc: Enable
-scatterlist entry lengths > 4Kbytes") removed that limitation. It's
-now theoretically possible for the block layer to send requests that
-exceed the maximum size supported by Hyper-V. This problem doesn't
-currently happen in practice because the block layer defaults to a
-512 Kbyte maximum, while Hyper-V in Azure supports 2 Mbyte I/O sizes.
-But some future configuration of Hyper-V could have a smaller max I/O
-size, and the block layer could exceed that max.
+When a write command to a sequential write required or sequential write
+preferred zone result in the zone write pointer reaching the end of the
+zone, the zone condition must be set to full AND the number of implicitly
+or explicitly open zones updated to have a correct accounting for zone
+resources. However, the function zbc_inc_wp() only sets the zone condition
+to full without updating the open zone counters, resulting in a zone state
+machine breakage.
 
-Fix this by correctly setting max_sectors as well as sg_tablesize to
-reflect the maximum I/O size that Hyper-V reports. While allowing
-I/O sizes larger than the block layer default of 512 Kbytes doesn’t
-provide any noticeable performance benefit in the tests we ran, it's
-still appropriate to report the correct underlying Hyper-V capabilities
-to the Linux block layer.
+Introduce the helper function zbc_set_zone_full() and use it in
+zbc_inc_wp() to correctly transition zones to the full condition.
 
-Also tweak the virt_boundary_mask to reflect that the required
-alignment derives from Hyper-V communication using a 4 Kbyte page size,
-and not on the guest page size, which might be bigger (eg. ARM64).
-
-Link: https://lore.kernel.org/r/1655190355-28722-1-git-send-email-ssengar@linux.microsoft.com
-Fixes: 3d9c3dcc58e9 ("scsi: storvsc: Enable scatter list entry lengths > 4Kbytes")
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Link: https://lore.kernel.org/r/20220608011302.92061-1-damien.lemoal@opensource.wdc.com
+Fixes: f0d1cf9378bd ("scsi: scsi_debug: Add ZBC zone commands")
+Reviewed-by: Niklas Cassel <niklas.cassel@wdc.com>
+Acked-by: Douglas Gilbert <dgilbert@interlog.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/storvsc_drv.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
+ drivers/scsi/scsi_debug.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 9a0bba5a51a7..4b1f1d73eee8 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -1916,7 +1916,7 @@ static struct scsi_host_template scsi_driver = {
- 	.cmd_per_lun =		2048,
- 	.this_id =		-1,
- 	/* Ensure there are no gaps in presented sgls */
--	.virt_boundary_mask =	PAGE_SIZE-1,
-+	.virt_boundary_mask =	HV_HYP_PAGE_SIZE - 1,
- 	.no_write_same =	1,
- 	.track_queue_depth =	1,
- 	.change_queue_depth =	storvsc_change_queue_depth,
-@@ -1970,6 +1970,7 @@ static int storvsc_probe(struct hv_device *device,
- 	int max_targets;
- 	int max_channels;
- 	int max_sub_channels = 0;
-+	u32 max_xfer_bytes;
- 
- 	/*
- 	 * Based on the windows host we are running on,
-@@ -2059,12 +2060,28 @@ static int storvsc_probe(struct hv_device *device,
+diff --git a/drivers/scsi/scsi_debug.c b/drivers/scsi/scsi_debug.c
+index 592a290e6cfa..6cdd67f2a08e 100644
+--- a/drivers/scsi/scsi_debug.c
++++ b/drivers/scsi/scsi_debug.c
+@@ -2788,6 +2788,24 @@ static void zbc_open_zone(struct sdebug_dev_info *devip,
  	}
- 	/* max cmd length */
- 	host->max_cmd_len = STORVSC_MAX_CMD_LEN;
--
- 	/*
--	 * set the table size based on the info we got
--	 * from the host.
-+	 * Any reasonable Hyper-V configuration should provide
-+	 * max_transfer_bytes value aligning to HV_HYP_PAGE_SIZE,
-+	 * protecting it from any weird value.
-+	 */
-+	max_xfer_bytes = round_down(stor_device->max_transfer_bytes, HV_HYP_PAGE_SIZE);
-+	/* max_hw_sectors_kb */
-+	host->max_sectors = max_xfer_bytes >> 9;
-+	/*
-+	 * There are 2 requirements for Hyper-V storvsc sgl segments,
-+	 * based on which the below calculation for max segments is
-+	 * done:
-+	 *
-+	 * 1. Except for the first and last sgl segment, all sgl segments
-+	 *    should be align to HV_HYP_PAGE_SIZE, that also means the
-+	 *    maximum number of segments in a sgl can be calculated by
-+	 *    dividing the total max transfer length by HV_HYP_PAGE_SIZE.
-+	 *
-+	 * 2. Except for the first and last, each entry in the SGL must
-+	 *    have an offset that is a multiple of HV_HYP_PAGE_SIZE.
- 	 */
--	host->sg_tablesize = (stor_device->max_transfer_bytes >> PAGE_SHIFT);
-+	host->sg_tablesize = (max_xfer_bytes >> HV_HYP_PAGE_SHIFT) + 1;
- 	/*
- 	 * For non-IDE disks, the host supports multiple channels.
- 	 * Set the number of HW queues we are supporting.
+ }
+ 
++static inline void zbc_set_zone_full(struct sdebug_dev_info *devip,
++				     struct sdeb_zone_state *zsp)
++{
++	switch (zsp->z_cond) {
++	case ZC2_IMPLICIT_OPEN:
++		devip->nr_imp_open--;
++		break;
++	case ZC3_EXPLICIT_OPEN:
++		devip->nr_exp_open--;
++		break;
++	default:
++		WARN_ONCE(true, "Invalid zone %llu condition %x\n",
++			  zsp->z_start, zsp->z_cond);
++		break;
++	}
++	zsp->z_cond = ZC5_FULL;
++}
++
+ static void zbc_inc_wp(struct sdebug_dev_info *devip,
+ 		       unsigned long long lba, unsigned int num)
+ {
+@@ -2800,7 +2818,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
+ 	if (zsp->z_type == ZBC_ZONE_TYPE_SWR) {
+ 		zsp->z_wp += num;
+ 		if (zsp->z_wp >= zend)
+-			zsp->z_cond = ZC5_FULL;
++			zbc_set_zone_full(devip, zsp);
+ 		return;
+ 	}
+ 
+@@ -2819,7 +2837,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
+ 			n = num;
+ 		}
+ 		if (zsp->z_wp >= zend)
+-			zsp->z_cond = ZC5_FULL;
++			zbc_set_zone_full(devip, zsp);
+ 
+ 		num -= n;
+ 		lba += n;
 -- 
 2.35.1
 
