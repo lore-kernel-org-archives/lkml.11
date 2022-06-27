@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19153CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4021FCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238189AbiF0Ly2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47394 "EHLO
+        id S238807AbiF0Lyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238481AbiF0Lsb (ORCPT
+        with ESMTP id S238479AbiF0Lsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5705F101CF;
-        Mon, 27 Jun 2022 04:41:48 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35E5101CC;
+        Mon, 27 Jun 2022 04:41:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7F8E611BC;
-        Mon, 27 Jun 2022 11:41:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E019CC3411D;
-        Mon, 27 Jun 2022 11:41:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D82CB81144;
+        Mon, 27 Jun 2022 11:41:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00658C3411D;
+        Mon, 27 Jun 2022 11:41:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330107;
-        bh=+MTcTGLmL1ls4vYJq1txutHe5T3fDX/u5MDCemtlDP0=;
+        s=korg; t=1656330104;
+        bh=kCwdNzqMem6ihDmySz6U2kWUQrGOpG+87jgLRiwTaSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WexEQ5OFso0i6fm0kWpjca0Y3gqY6BNc3WHqEisWaTZI2WnjowbtHPCDvJhaCo0s8
-         +Lu59JC8HTua6sdopy6SRiB00voe7O8+4jFVLz50kHtGp5zbaPWfjMbgHlnuY+5Hhc
-         ktjhQl31O8dqAv9ypAk+e9FKsW/UZ0hzSp2wgdg0=
+        b=Bn94/jzRm2jBhbEGf4eAAORjvJOssJ3MnWqOQqEOnUMzxRZwX1n8XLW+TRiHHYSrJ
+         TPvJ4fwCQGsFCPUrFb7fzPSvYOI/cT4DUW/YzibAe9tM/GfjXeIhMQ6bfkRN3pMD6m
+         JoMjx2/HYT297asB53+ncrcJzJZa9e8HFDb7vE8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 049/181] drm/msm: use for_each_sgtable_sg to iterate over scatterlist
-Date:   Mon, 27 Jun 2022 13:20:22 +0200
-Message-Id: <20220627111945.988598001@linuxfoundation.org>
+        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 084/181] block: pop cached rq before potentially blocking rq_qos_throttle()
+Date:   Mon, 27 Jun 2022 13:20:57 +0200
+Message-Id: <20220627111946.996652252@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,37 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Marek <jonathan@marek.ca>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit 62b5e322fb6cc5a5a91fdeba0e4e57e75d9f4387 ]
+[ Upstream commit 2645672ffe21f0a1c139bfbc05ad30fd4e4f2583 ]
 
-The dma_map_sgtable() call (used to invalidate cache) overwrites sgt->nents
-with 1, so msm_iommu_pagetable_map maps only the first physical segment.
+If rq_qos_throttle() ends up blocking, then we will have invalidated and
+flushed our current plug. Since blk_mq_get_cached_request() hasn't
+popped the cached request off the plug list just yet, we end holding a
+pointer to a request that is no longer valid. This insta-crashes with
+rq->mq_hctx being NULL in the validity checks just after.
 
-To fix this problem use for_each_sgtable_sg(), which uses orig_nents.
+Pop the request off the cached list before doing rq_qos_throttle() to
+avoid using a potentially stale request.
 
-Fixes: b145c6e65eb0 ("drm/msm: Add support to create a local pagetable")
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-Link: https://lore.kernel.org/r/20220613221019.11399-1-jonathan@marek.ca
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: 0a5aa8d161d1 ("block: fix blk_mq_attempt_bio_merge and rq_qos_throttle protection")
+Reported-by: Dylan Yudaken <dylany@fb.com>
+Tested-by: Dylan Yudaken <dylany@fb.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/blk-mq.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-index bcaddbba564d..a54ed354578b 100644
---- a/drivers/gpu/drm/msm/msm_iommu.c
-+++ b/drivers/gpu/drm/msm/msm_iommu.c
-@@ -58,7 +58,7 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
- 	u64 addr = iova;
- 	unsigned int i;
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 631fb87b4976..37caa73bff89 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -2777,15 +2777,20 @@ static inline struct request *blk_mq_get_cached_request(struct request_queue *q,
+ 		return NULL;
+ 	}
  
--	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
-+	for_each_sgtable_sg(sgt, sg, i) {
- 		size_t size = sg->length;
- 		phys_addr_t phys = sg_phys(sg);
+-	rq_qos_throttle(q, *bio);
+-
+ 	if (blk_mq_get_hctx_type((*bio)->bi_opf) != rq->mq_hctx->type)
+ 		return NULL;
+ 	if (op_is_flush(rq->cmd_flags) != op_is_flush((*bio)->bi_opf))
+ 		return NULL;
  
+-	rq->cmd_flags = (*bio)->bi_opf;
++	/*
++	 * If any qos ->throttle() end up blocking, we will have flushed the
++	 * plug and hence killed the cached_rq list as well. Pop this entry
++	 * before we throttle.
++	 */
+ 	plug->cached_rq = rq_list_next(rq);
++	rq_qos_throttle(q, *bio);
++
++	rq->cmd_flags = (*bio)->bi_opf;
+ 	INIT_LIST_HEAD(&rq->queuelist);
+ 	return rq;
+ }
 -- 
 2.35.1
 
