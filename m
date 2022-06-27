@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C048CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E23C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239667AbiF0MAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
+        id S239680AbiF0MAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238917AbiF0Lwt (ORCPT
+        with ESMTP id S238946AbiF0Lwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:49 -0400
+        Mon, 27 Jun 2022 07:52:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B30DF1D;
-        Mon, 27 Jun 2022 04:46:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D2DDF64;
+        Mon, 27 Jun 2022 04:46:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F17461187;
-        Mon, 27 Jun 2022 11:46:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6764EC3411D;
-        Mon, 27 Jun 2022 11:46:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4CBC61192;
+        Mon, 27 Jun 2022 11:46:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E267BC3411D;
+        Mon, 27 Jun 2022 11:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330384;
-        bh=/OV4TQT7m05Fi0VZVfG2VTpYR5hu8IQh+pTF8a8E0mw=;
+        s=korg; t=1656330399;
+        bh=XmVCpr/zKDWe90GV3W/5jn0rsMtY3ZHvfNsSb643UE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hHuydioKCse2QR7eMMQiz8HO1WK4Y1c/mqsIDHNjw/jwqEodPbCzTMG0Y+OKr9chZ
-         NdnP2LztawpauRDoTdpPT8tVDWuSjqi9mugfW3JXabS431U/dmZbvN2tWVJtT3W2uN
-         2bN077MMGp0u4NTLhO28FvEWnl+0dPzWNkP0Q/5o=
+        b=NH+/09EsACx1D4t2BDBDAgsI97xBWDSORUA8qfvdjp/4j7yzq9v6Gy+k6to/ESsLy
+         Js503+LRa0Sxmm96NgIrj4EmMxGLTuy/W1gklculFxUKK4qgm/B6YxiIfm3qPNtLV9
+         comcTdJr2SebNa4jWEoqOGTSGT2FSE9Wwhz6Ygj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 140/181] iio: imu: inv_icm42600: Fix broken icm42600 (chip id 0 value)
-Date:   Mon, 27 Jun 2022 13:21:53 +0200
-Message-Id: <20220627111948.747069861@linuxfoundation.org>
+        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.18 178/181] smb3: use netname when available on secondary channels
+Date:   Mon, 27 Jun 2022 13:22:31 +0200
+Message-Id: <20220627111949.843791924@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,47 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+From: Shyam Prasad N <sprasad@microsoft.com>
 
-commit 106b391e1b859100a3f38f0ad874236e9be06bde upstream.
+commit 9de74996a739bf0b7b5d8c260bd207ad6007442b upstream.
 
-The 0 value used for INV_CHIP_ICM42600 was not working since the
-match in i2c/spi was checking against NULL value.
+Some servers do not allow null netname contexts, which would cause
+multichannel to revert to single channel when mounting to some
+servers (e.g. Azure xSMB). The previous patch fixed that by avoiding
+incorrectly sending the netname context when there would be a null
+hostname sent in the netname context, while this patch fixes the null
+hostname for the secondary channel by using the hostname of the
+primary channel for the secondary channel.
 
-To keep this check, add a first INV_CHIP_INVALID 0 value as safe
-guard.
-
-Fixes: 31c24c1e93c3 ("iio: imu: inv_icm42600: add core of new inv_icm42600 driver")
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Link: https://lore.kernel.org/r/20220609102301.4794-1-jmaneyrol@invensense.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 4c14d7043fede ("cifs: populate empty hostnames for extra channels")
+Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
+Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/imu/inv_icm42600/inv_icm42600.h      |    1 +
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c |    2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ fs/cifs/smb2pdu.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-@@ -17,6 +17,7 @@
- #include "inv_icm42600_buffer.h"
+diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
+index 5e8c4737b183..12b4dddaedb0 100644
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -543,6 +543,7 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
+ 		      struct TCP_Server_Info *server, unsigned int *total_len)
+ {
+ 	char *pneg_ctxt;
++	char *hostname = NULL;
+ 	unsigned int ctxt_len, neg_context_count;
  
- enum inv_icm42600_chip {
-+	INV_CHIP_INVALID,
- 	INV_CHIP_ICM42600,
- 	INV_CHIP_ICM42602,
- 	INV_CHIP_ICM42605,
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -565,7 +565,7 @@ int inv_icm42600_core_probe(struct regma
- 	bool open_drain;
- 	int ret;
+ 	if (*total_len > 200) {
+@@ -574,9 +575,15 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
+ 	*total_len += sizeof(struct smb2_posix_neg_context);
+ 	pneg_ctxt += sizeof(struct smb2_posix_neg_context);
  
--	if (chip < 0 || chip >= INV_CHIP_NB) {
-+	if (chip <= INV_CHIP_INVALID || chip >= INV_CHIP_NB) {
- 		dev_err(dev, "invalid chip = %d\n", chip);
- 		return -ENODEV;
- 	}
+-	if (server->hostname && (server->hostname[0] != 0)) {
++	/*
++	 * secondary channels don't have the hostname field populated
++	 * use the hostname field in the primary channel instead
++	 */
++	hostname = CIFS_SERVER_IS_CHAN(server) ?
++		server->primary_server->hostname : server->hostname;
++	if (hostname && (hostname[0] != 0)) {
+ 		ctxt_len = build_netname_ctxt((struct smb2_netname_neg_context *)pneg_ctxt,
+-					server->hostname);
++					      hostname);
+ 		*total_len += ctxt_len;
+ 		pneg_ctxt += ctxt_len;
+ 		neg_context_count = 4;
+-- 
+2.36.1
+
 
 
