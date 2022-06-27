@@ -2,245 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65110C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 971E9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240026AbiF0TGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
+        id S240243AbiF0TG2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235718AbiF0TGL (ORCPT
+        with ESMTP id S235718AbiF0TGZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 15:06:11 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9CD2605
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:06:10 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id c13so14393353eds.10
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:06:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UixlsQbwpD0Az/ygfXPQfJv1CTgXdRlCeH87+E1Jpkk=;
-        b=K9NSlK0aHko1CpZqZfpLelydiDN9Ve5ju5wzE+N1P+HUekCx5TA0dm7SU0OF/5vah2
-         NpkVlL6dl12ieqisAAfa6D7pZKQGnVDbb5ztjC5h3FXE6To/dtRfI6U74U9VVRGR1eqV
-         a+09CgKVDC6LSmjpvcNkWmfzr9bfdqbj/l0zY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UixlsQbwpD0Az/ygfXPQfJv1CTgXdRlCeH87+E1Jpkk=;
-        b=zE5C8Yrl4dl8P04/vQFAgYJ+PavjQvFP3Yb72+Y+uK/ljgTenfktdVzQQ9iO/84SmR
-         YxvC+6/zNVkAfHuLcwiaf8c/Xp+re1OU9aYui6JWXZ6ET9KKYWDCCntKGEPb7jeEDXRA
-         gG/L4DM7DifrADgRLP2KBIAQN///e3USifrTO4a2eqPeVzy7OUrD9GmwVjCGCuqKk/2H
-         7kG48CM54bHIaWYebBdXu83fMIdAkb+Au8bMIrg/rxonIOVo+/5+e404mGyjvGqb339Y
-         1ACMv/XeNWy/+E2b9wkn7bZqoncV+q6h0r5/WmrZr44QIQ2Lq/Ad6h+LGmrEqUPGa28j
-         kmFw==
-X-Gm-Message-State: AJIora8P/UxLK37PPanrJYjdgDMwnJ7CsbMhpJb/Ik9rkQOBGaZBUd3M
-        SPkeNeAc9GOX6sN4hrxsaFhCrU9d5B1TmZckcF/Vpw==
-X-Google-Smtp-Source: AGRyM1um1ZYcWlDKxvzcvqbC+EIM7ta9IkhmQUjooME2Xtwl0vZcHyEad+fbI/EsNs/C/PJeKFHSgUTcZ1w0WGR+rRM=
-X-Received: by 2002:a05:6402:27cf:b0:435:dae6:26aa with SMTP id
- c15-20020a05640227cf00b00435dae626aamr18292121ede.323.1656356768617; Mon, 27
- Jun 2022 12:06:08 -0700 (PDT)
+        Mon, 27 Jun 2022 15:06:25 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C552627;
+        Mon, 27 Jun 2022 12:06:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1656356778;
+        bh=byy4E4EiJd0hCnXHmLJQZVe2F93ir294u7Rcd5JqdM4=;
+        h=X-UI-Sender-Class:From:To:Subject:Date;
+        b=aE2wIFFVNNeiqP/wqCcKS3AnWp5JhwkIakaAqwFWDARR/s2WnhnlqNGrFHU4uW/3v
+         ZLHyYPS1c22i06V0nNUK4rL7J36cKyuN8CgRHbsx5rXSXxdOXbROYxI0ivuTpW2OW5
+         TBfU/I7ON20RJTFlJ1duVFHlRvng5hvYSXONStvg=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from ls3530.fritz.box ([92.116.176.39]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1M2wGs-1o4n4A2hUi-003JuJ; Mon, 27
+ Jun 2022 21:06:18 +0200
+From:   Helge Deller <deller@gmx.de>
+To:     mcgrof@kernel.org, jeyu@kernel.org, linux-modules@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org
+Subject: [PATCH 1/2] modules: Ensure natural alignment for .altinstructions and __bug_table sections
+Date:   Mon, 27 Jun 2022 21:05:50 +0200
+Message-Id: <20220627190551.517561-1-deller@gmx.de>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220623145533.2882688-1-cristian.marussi@arm.com>
-In-Reply-To: <20220623145533.2882688-1-cristian.marussi@arm.com>
-From:   Jim Quinlan <james.quinlan@broadcom.com>
-Date:   Mon, 27 Jun 2022 15:05:57 -0400
-Message-ID: <CA+-6iNx_EW_L5Ffn-L+xyg8VVGVPyBonvBFVV6dq69HpTHdqrQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Add SCMI full message tracing
-To:     Cristian Marussi <cristian.marussi@arm.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Lukasz Luba <lukasz.luba@arm.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000d3c91405e2729c36"
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:tDjHc/AtG5ryQJBeAYXVlyFl2ik7Oe2mNxsz3suMzz3oXSq4X4w
+ 9Hiat9N9u70hSW0Md276tcPPTDkDDYMlh/pnQjDVi5WwCtlCFn4aWAiPirAbHTS2A/PwVU3
+ 7mrRWmNol0ejPz49RXvG9a5OOMrgeoPMIEoiN12QQx36PTUcS/mmbfq2/U0c6fINzND9/x9
+ Rl3xhBT3vvwzQb44fZcnA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:HP79HB2Hc9M=:eq+bDKebwImE9OIBQW47+y
+ B6TS59ZEpB20QkT673aoRAgaosNayuALbVUcc02xsm/ojIpRW/kYwVabY30qDfcQSKuEIewSn
+ aCOwNGYmwr12V6Es3y348Kf80KOoCQAS+0aeze6fIuW1Rwlzz6hOnIAzi9Fq2QVAmcOam0SGm
+ CdkZ4TyxJLt7lflRggXKcW//UCmOxmAANDagSMuWIfgj+/zeqcB+s1kiEzGXCrbR4kZQNJHKv
+ 0zsdoFJTsq/BvNkXS9BitIrURHGZjA6x2Lh3mafLs+YwD3pQx/tMVN6vkK7ST3TDfZtzdpx9A
+ o3VDpeFsKWO4waSc+1WbOXKEyIgYXuMXzBaqK2fth4xoiGbDVvmeUmdhxkC9wzZrSzpUs4iMm
+ Pm3M01vXXdjkO744HASC3x8glQZhIvsLVfZMzoz6HHn1D4dEcCIGR/hFYQLC0uboEuzmwe1oG
+ kyAE2+RVHCzgtPecwLA6yb2AegwJlmDqHVKjgRnWRhyRbL8tdxSPA2qdFmQlvza5CGOwc3jWP
+ kaWyMqi01V1WKNMsS4aVscdcu2SKTO54dxLI/iYT8LzeSi+rbjS18YPt7K0w4FhtZmc66nLNs
+ udMm3Dd1JbEw+PVcWlc44ZPYpefnC7f2GkbF2YiY4AkhJEKWSI+huGtvY4kYAphX3xgg++GT7
+ t3VgVU5HOvsU1terHFYeRR7YU8rDN1tj7zDOBidf7PL+t5dk9jlMUwrCYIsXIOKMSY0WhxDaY
+ GeuzXUnGMtoaDm4atwPIb3RyfuRu+hkVSI9fkzsEJY4bDvPUQ0kbnc/q6hFSCaWxwG32U1PZt
+ pGzFWoT+4lvQ/DcdkhbU85fNL0FiCXUITLONbEsxJozno/AWmZmqDjcI6W4OCLfK8lD8jrfRv
+ sPra+ETeD8D+LgPosdaGeDfgnDjm7JPEwma9t07tHArhiJyNfpx6LFk/Iu88RhLGcy6zQWL5I
+ 0YOilTQacuwR9sW6nwkfU50y3X0yq1ntLnwPTFRspF6rH5bAmBzpToZFSMb82HjFiPHFiFpfV
+ HOntSAx23rQdE+jpjUqt44GcBB+iy0uJRBfbMxV+KGxG20WdktJ4GpOsYl187Dt32uWE0Hbty
+ mKbxQLj6XPIGJh2rzIunhysP3O4QeKPguVuyKBJk38951QjN24IwxwgtA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000d3c91405e2729c36
-Content-Type: text/plain; charset="UTF-8"
+In the kernel image vmlinux.lds.S linker scripts the .altinstructions
+and __bug_table sections are 32- or 64-bit aligned because they hold 32-
+and/or 64-bit values.
 
-On Thu, Jun 23, 2022 at 10:55 AM Cristian Marussi
-<cristian.marussi@arm.com> wrote:
->
-> Hi,
->
-> after a few recent troubles handling too strictly out-of-spec replies from
-> SCMI servers deployed in the wild, I though it could have been useful to
-> have a basic way to dump at will the effective full payloads of successfuly
-> transmitted/received SCMI messages.
->
-> The existing SCMI traces already collect a bunch of information about SCMI
-> message exchanges but they do NOT keep any payload information: this is
-> certainly preferable most of the time since dumping full SCMI messages to
-> the trace buffer involves a full copy of the payload.
->
-> For this reason I added a new distinct trace_scmi_msg_dump with this series
-> in order to be able to selectively enable at will message dumping only when
-> required.
->
-> Only successfully transmitted and received (valid) xfers are dumped.
->
-> At first I was thinking about just dumping raw header and payload, but in
-> order to make the log a bit more human readable (without the need of
-> tooling to parse the log), I added some parsing/interpretation of the
-> header, so that the final result is something like:
->
-> root@deb-guest:~# echo 1 > /sys/kernel/debug/tracing/events/scmi/scmi_msg_dump/enable
-> root@deb-guest:~# cat /sys/kernel/debug/tracing/trace_pipe
->
-> (my annotations non on traces =>>)                       proto  type  cmd   seq  status    payload
->                                                           |      |    |      |     |        |
->  ++ cmd/reply                                             |      |    |      |     |        |
->    cat-224     [002] .....   147.755847: scmi_msg_dump: [0x15]:CMND:[0x06]:[0021]:[0]: 0000000000000000
-> <idle>-0       [000] d.h2.   147.758311: scmi_msg_dump: [0x15]:RESP:[0x06]:[0021]:[0]: 25000000000000000000000000000000
->I'll probably still use a script, but
-as you are keep
->
->  ++ cmd/reply/delayed
->    cat-223     [001] .....   122.384192: scmi_msg_dump: [0x15]:CMND:[0x06]:[0020]:[0]: 0100000001000000
-> <idle>-0       [000] d.h2.   122.405548: scmi_msg_dump: [0x15]:RESP:[0x06]:[0020]:[0]:
-> <idle>-0       [000] d.h2.   122.425839: scmi_msg_dump: [0x15]:DLYD:[0x06]:[0020]:[0]: 01000000a05a320000000000efbeaddefecafeca
->
->
->  ++ enable notif/notif
-> iio_generic_buf-233     [003] .....   522.399690: scmi_msg_dump: [0x15]:CMND:[0x0A]:[0024]:[0]: 0800000003000000
->          <idle>-0       [000] dNh2.   522.417778: scmi_msg_dump: [0x15]:RESP:[0x0A]:[0024]:[0]: 00000000
->          <idle>-0       [000] d.h2.   522.500945: scmi_msg_dump: [0x15]:NOTI:[0x01]:[0000]:[0]: 000000000800000008daffffffffffff0040d3a45d46fb1610daffffffffffff0040d3a45d46fb1618daffffffffffff0040d3a45d46fb16
->
-> Payload is dumped as it comes through byte-by-byte without any endianity
-> conversion to avoid further load on the system.
->
-> Any thoughs ?
+But for modules the module.lds.S linker script doesn't define a default
+alignment yet, so the linker chooses the default byte-alignment, which
+then leads to unnecessary unaligned memory accesses at runtime.
 
-Hi Christian,
-I haven't tested this but the format looks good to me.  I have a
-couple of minor suggestions
-below.
+This patch adds the missing alignments.
 
-As all numbers are hex, consider dropping the '0x'.  BTW,  the seq
-value (eg [0020]) is hex but does not have '0x'.
+Signed-off-by: Helge Deller <deller@gmx.de>
+=2D--
+ scripts/module.lds.S | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Some TP_printk()s use this  style:
+diff --git a/scripts/module.lds.S b/scripts/module.lds.S
+index 1d0e1e4dc3d2..3a3aa2354ed8 100644
+=2D-- a/scripts/module.lds.S
++++ b/scripts/module.lds.S
+@@ -27,6 +27,8 @@ SECTIONS {
+ 	.ctors			0 : ALIGN(8) { *(SORT(.ctors.*)) *(.ctors) }
+ 	.init_array		0 : ALIGN(8) { *(SORT(.init_array.*)) *(.init_array) }
 
-        scmi_msg_dump: pt=15 t=CMND cmd=06 seq=0021 s=0 pyld=12345678abcdef
++	.altinstructions	0 : ALIGN(8) { KEEP(*(.altinstructions)) }
++	__bug_table		0 : ALIGN(8) { KEEP(*(__bug_table)) }
+ 	__jump_table		0 : ALIGN(8) { KEEP(*(__jump_table)) }
 
-which allows one to easily grep, for example, for all non-zero returns
+ 	__patchable_function_entries : { *(__patchable_function_entries) }
+=2D-
+2.35.3
 
-        grep 's=[^0]'
-
-This format is also easy to parse with a script:  strip the preamble,
-split on whitespace, and then split on '=' to get the  [key, value]
-pairs.
-
-Thanks,
-Jim Quinlan
-Broadcom STB
-
-
-
-
-
->
-> Thanks,
-> Cristian
->
-> Cristian Marussi (2):
->   include: trace: Add SCMI full message tracing
->   firmware: arm_scmi: Use new SCMI full message tracing
->
->  drivers/firmware/arm_scmi/driver.c | 21 ++++++++++++++++++++
->  include/trace/events/scmi.h        | 31 ++++++++++++++++++++++++++++++
->  2 files changed, 52 insertions(+)
->
-> --
-> 2.32.0
->
-
---000000000000d3c91405e2729c36
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-LeylbuEJGL9I80yqq8e6Z+Q6ulLxa6SopzpoysJe/vEVHgp9jPNppZzwKngVd2iDBRqpKlCngIAM
-DXgVGyEojXnuEbRs3NlB7wq1kJGlYysrnDug55ncJM8CAwEAAaOCAdswggHXMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJQYDVR0R
-BB4wHIEaamFtZXMucXVpbmxhbkBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYBBQUHAwQwHwYD
-VR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFCeTeUYv84Mo3T1V+OyDdxib
-DDLvMA0GCSqGSIb3DQEBCwUAA4IBAQCCqR1PBVtHPvQHuG8bjMFQ94ZB7jmFEGhgfAsFJMaSMLov
-qyt8DKr8suCYF4dKGzqalbxo5QU9mmZXdLifqceHdt/Satxb+iGJjBhZg4E0cDds24ofYq+Lbww2
-YlIKC2HHxIN+JX2mFpavSXkshR5GT29B9EIJ8hgSjbs61XXeAcrmVIDfYbXQEmGbsnwqxdq+DJpQ
-S2kM2wvSlgSWDb6pL7myuKR5lCkQhj7piGSgrVLJRDRrMPw1L4MvnV9DjUFMlGCB40Hm6xqn/jm0
-8FCLlWhxve5mj+hgUOPETiKbjhCxJhhAPDdCvDRkZtJlQ8oxUVvXHugG8jm1YqB5AWx7MYICbTCC
-AmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UE
-AxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMI+Aj9XRk/wFexb9/
-MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCcOv0Wvl6UV2j5O7Q6WXDCcO6G6GAa
-gwomODY6l7ysuzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMjA2
-MjcxOTA2MDhaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjALBglg
-hkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzALBglghkgBZQME
-AgEwDQYJKoZIhvcNAQEBBQAEggEAkcEQR3WFR4Q18JvQTGBiwvn2jt102xwvyRuz1t6Us/5xeRCU
-b5pAvfxsNLebYzGkO4LsobPXE0snmREhJzl7JfsPqEJQzdDAJ7AjDHre72FSVzvWViYAra6n2alZ
-0vr05ahJprw8VV0AUEsFTPTsL6LLeT1xUdltFFHSy2ZDT6rDClEqr1muunEm+LFQLqXvYm7skFmA
-5b3Vx9VQUmkxQEMsFJjQRDHBApfq1vlGtHuCJ6JBMXflrDs7tPInq80D5/tu58n88D18XAv7wSWJ
-L3uOGNUJHTxql8lulsiPUvyutgt1X1lq6Sl46msw6tzxTndqookJRCsNaqeTyfPh8Q==
---000000000000d3c91405e2729c36--
