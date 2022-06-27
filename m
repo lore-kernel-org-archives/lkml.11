@@ -2,132 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A883C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 630D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231311AbiF0Ix4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 04:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
+        id S233646AbiF0IyT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 04:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233180AbiF0Ixy (ORCPT
+        with ESMTP id S232636AbiF0IyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 04:53:54 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786666350;
-        Mon, 27 Jun 2022 01:53:52 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 463B15C01EE;
-        Mon, 27 Jun 2022 04:53:49 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 27 Jun 2022 04:53:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1656320029; x=
-        1656406429; bh=YbjaBfcwxsEJTLjjrwiaw6MoYuL/h+89W5hA8G79W4Q=; b=K
-        rnsdYJ7Gtd1gaPgHQgJ7CYrrdpgLodOOteQgjDXDuR/Gy4bWi31+C2S1zlWj/RsW
-        TPXPsN1BeYYYDs3GhntWmb8QnICNDcawD1BpWyuv+IYjxoniipRC9bAyiZIkfugl
-        4FKtvLzSArJvoZx3617q5dc0k7ea6qUaIWyLa1yhjq+4VqDr8GPNv4PXSZhv56fC
-        9JryqKy4CcZhKMUwPbQqFh2c+UO/0p8sX2hxRLS1mMly4v6Q/bD9JXywKrmHgSw9
-        GVClFImLMg2rs1g8TA68/HYBo8A8NldyABiUTVmgwLqvOefe+MGo/7gK8kfaFx95
-        oIwAXin58tJl7Bkj7HKkQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1656320029; x=
-        1656406429; bh=YbjaBfcwxsEJTLjjrwiaw6MoYuL/h+89W5hA8G79W4Q=; b=x
-        job176r5evUQOCs+fa4Qn0RiRtHHSnr7r8qv2q54xaYcSJ34sEuCQXMGQl2oWNSn
-        3o6BWPUEMB3EebOdcDWhfambt8Q8IxMiMkHuPkRvMO4GDgeHcRH7v7QCjt2L8zYa
-        6gCGOOKF2zBILFeOe9tZvFIQa/dJznMaepmNM875oFuy9vhJHVVIDjvgYpoFL0pg
-        B1qDVNoaNnosvfRdu1hibqXmrQ2AcxwVyCID6f+3NDuTo4+Y8XYczHV48IYYp+gq
-        //IhV+GT6/Ip42Ir6REwezI4yibDxiD1AYjE1AkX90FAqCiF63uaOIV1gvL8kb88
-        158iYLkKKw9P2cJbH3S+g==
-X-ME-Sender: <xms:HHC5Yr6A370a_bV83zQbm-AC2gHCt23tCoeey9NSFmU78bRuD3wj7w>
-    <xme:HHC5Yg6h8mB-zjZ5HjkTPKZZHH74PHh8JBMAsgl_jBAsFTdcmwJzSD1UirHPGyWSs
-    t_U2f9IZaCUGpxB310>
-X-ME-Received: <xmr:HHC5Yid_Sdj0a5X99v9sRtgh3coU4JXi_a6GErhqJIMm0lUYErxs1dluFgRIYIo-b8Bm5YKA3t9EHL4vA2SMNgnckDdNCUDZ4r5Y5VY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeghedgtdekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggugfgjsehtqhertddttddvnecuhfhrohhmpeforgig
-    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
-    grthhtvghrnheptefgleeggfegkeekgffgleduieduffejffegveevkeejudektdduueet
-    feetfefgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:HHC5YsKZX24XRkV0TM-u-WX4Yj5_Clj2e1hYiUvyLyM25rSrPGFt6A>
-    <xmx:HHC5YvKH9BnYDaaAUNfMyooMbY_PneaCqLGSTrkSf0tUeW7dlZLT7w>
-    <xmx:HHC5YlzqP2-zgZj2zGU5hkuOLbD50XZwDnOBjC7KkFL6vv0Vel--1g>
-    <xmx:HXC5Ylh_QdmJd7Cm39OxlS8TFFPoTZlsgHZ4JKc6VEELSPYchLFWZQ>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 27 Jun 2022 04:53:48 -0400 (EDT)
-Date:   Mon, 27 Jun 2022 10:53:46 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] drm: logicvc: Fix uninitialized variable in probe
-Message-ID: <20220627085346.6fnzgygajdu7wncc@houat>
-References: <Yqh6OfSiPFuVrGo4@kili>
- <YrXLrVUIavGWC4sx@aptenodytes>
- <20220624143717.tykkcznvzq5e5qz2@houat>
- <YrXOTAR6koA1b8XJ@aptenodytes>
+        Mon, 27 Jun 2022 04:54:17 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1F4632E;
+        Mon, 27 Jun 2022 01:54:14 -0700 (PDT)
+X-UUID: ac0d9349dee64e149fcea46f3f750b57-20220627
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:5af8707a-0d31-44bd-930f-502e87a972db,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:50
+X-CID-INFO: VERSION:1.1.6,REQID:5af8707a-0d31-44bd-930f-502e87a972db,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:50
+X-CID-META: VersionHash:b14ad71,CLOUDID:c8e69aea-f7af-4e69-92ee-0fd74a0c286c,C
+        OID:57f70d199596,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: ac0d9349dee64e149fcea46f3f750b57-20220627
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 544908856; Mon, 27 Jun 2022 16:54:10 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 27 Jun 2022 16:54:09 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 27 Jun 2022 16:54:09 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 27 Jun 2022 16:54:09 +0800
+Message-ID: <fa4618ebd369664edd823f3883f5183152b34097.camel@mediatek.com>
+Subject: Re: [PATCH v14 03/15] drm/mediatek: dpi: Add kernel document for
+ struct mtk_dpi_conf
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Mon, 27 Jun 2022 16:54:09 +0800
+In-Reply-To: <20220624030946.14961-4-rex-bc.chen@mediatek.com>
+References: <20220624030946.14961-1-rex-bc.chen@mediatek.com>
+         <20220624030946.14961-4-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <YrXOTAR6koA1b8XJ@aptenodytes>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 04:46:36PM +0200, Paul Kocialkowski wrote:
-> Hi,
->=20
-> On Fri 24 Jun 22, 16:37, Maxime Ripard wrote:
-> > Hi,
-> >=20
-> > On Fri, Jun 24, 2022 at 04:35:25PM +0200, Paul Kocialkowski wrote:
-> > > On Tue 14 Jun 22, 15:08, Dan Carpenter wrote:
-> > > > The "regmap" is supposed to be initialized to NULL but it's used
-> > > > without being initialized.
-> > > >=20
-> > > > Fixes: efeeaefe9be5 ("drm: Add support for the LogiCVC display cont=
-roller")
-> > > > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > >=20
-> > > Nice catch, thanks a lot!
-> > >=20
-> > > Acked-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> >=20
-> > Since you have the commit rights to drm-misc, you should apply it
->=20
-> Absolutely, I'm on my way to doing that.
->=20
-> Do I need to reply to the emails with a message indicating that I merged =
-them
-> or is using the tool sufficient?
+Hi, Bo-Chen:
 
-Going back on this, but it's fairly easy with b4 to generate the
-messages that you applied them.
+On Fri, 2022-06-24 at 11:09 +0800, Bo-Chen Chen wrote:
+> This driver will support dp_intf and there are many configs between
+> dpi
+> and dp_intf. Therefore, we will add many configs in "struct
+> mtk_dpi_conf".
+> To let this structure more readable, we add this kernel doc.
+> 
 
-For example, I'm using:
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
 
-cat mail | b4 am -t --no-cover -o - -P _ | dim apply-branch drm-misc-fixes
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index e61cd67b978f..f66a121ba0c9 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -118,6 +118,15 @@ struct mtk_dpi_yc_limit {
+>  	u16 c_bottom;
+>  };
+>  
+> +/**
+> + * struct mtk_dpi_conf - Configuration of mediatek dpi.
+> + * @cal_factor: Callback function to calculate factor value.
+> + * @reg_h_fre_con: Register address of frequency control.
+> + * @max_clock_khz: Max clock frequency supported for this SoCs in
+> khz units.
+> + * @edge_sel_en: Enable of edge selection.
+> + * @output_fmts: Array of supported output formats.
+> + * @num_output_fmts: Quantity of supported output formats.
+> + */
+>  struct mtk_dpi_conf {
+>  	unsigned int (*cal_factor)(int clock);
+>  	u32 reg_h_fre_con;
 
-b4 am will retrieve the last version of the patch from lore (and only
-the current patch with --no-cover -P _), add the tags (-t) and output it
-on stdout (-o -) and pass it to dim apply-branch
-
-Then, you can do
-
-b4 ty -a && git send-email *.thanks && rm *.thanks
-
-And it will send a mail for every patch you applied in the current branch
-
-Maxime
