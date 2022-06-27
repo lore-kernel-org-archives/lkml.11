@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E998BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 636F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239812AbiF0MB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49964 "EHLO
+        id S239821AbiF0MB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238144AbiF0LvM (ORCPT
+        with ESMTP id S238139AbiF0LvL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:51:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E16765B7;
-        Mon, 27 Jun 2022 04:44:29 -0700 (PDT)
+        Mon, 27 Jun 2022 07:51:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A939659D;
+        Mon, 27 Jun 2022 04:44:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E2D1612B1;
-        Mon, 27 Jun 2022 11:44:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FD2AC341C7;
-        Mon, 27 Jun 2022 11:44:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33506612B1;
+        Mon, 27 Jun 2022 11:44:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38667C341CD;
+        Mon, 27 Jun 2022 11:44:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330268;
-        bh=6yZKZELZe/orphxEssy+HMvU+6chTugi8Gymd3CHgc8=;
+        s=korg; t=1656330265;
+        bh=VLQyzPYvXcOhroRTJOIwWKIJLr+kYg5ugNy72uYPY+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OtUmW1IyBzxJhe7qjkk6Zzq5JXnsd2FJGXMJ7cJo/SatktSxVIbAuoTdlmvv/Dxza
-         fuYY/kk7VLtpd5/6YSBQOqRTuVRIzIiA1W7I7VKtEnl7vTOJY9ZItFDrba+jO1LBeU
-         kdZMxYEtwtBxJ0/lN9R7wIHXgUQDXwNQRMUt1Nag=
+        b=cb282QUTV84x8dd7IUORV6SHLAIyXbknlGxp0HtLVH3HIUeAbh8Hix6cm6SZgwizN
+         O1AvdT0s9IdXvKUVdjsRGy5U8Ooagax8dNLdR57JBHNRqTbYshlUSTRk0MTFHyZ8wE
+         LbjrmD22Q7s0JwncPN7ixVCzCLOF7HD1mg9RSbwc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Peter Rosin <peda@axentia.se>,
+        stable@vger.kernel.org, Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 141/181] iio: afe: rescale: Fix boolean logic bug
-Date:   Mon, 27 Jun 2022 13:21:54 +0200
-Message-Id: <20220627111948.775622609@linuxfoundation.org>
+Subject: [PATCH 5.18 132/181] iio:chemical:ccs811: rearrange iio trigger get and register
+Date:   Mon, 27 Jun 2022 13:21:45 +0200
+Message-Id: <20220627111948.517998122@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,55 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Dmitry Rokosov <DDRokosov@sberdevices.ru>
 
-commit 9decacd8b3a432316d61c4366f302e63384cb08d upstream.
+commit d710359c0b445e8c03e24f19ae2fb79ce7282260 upstream.
 
-When introducing support for processed channels I needed
-to invert the expression:
+IIO trigger interface function iio_trigger_get() should be called after
+iio_trigger_register() (or its devm analogue) strictly, because of
+iio_trigger_get() acquires module refcnt based on the trigger->owner
+pointer, which is initialized inside iio_trigger_register() to
+THIS_MODULE.
+If this call order is wrong, the next iio_trigger_put() (from sysfs
+callback or "delete module" path) will dereference "default" module
+refcnt, which is incorrect behaviour.
 
-  if (!iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
-      !iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
-        dev_err(dev, "source channel does not support raw/scale\n");
-
-To the inverse, meaning detect when we can usse raw+scale
-rather than when we can not. This was the result:
-
-  if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
-      iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
-       dev_info(dev, "using raw+scale source channel\n");
-
-Ooops. Spot the error. Yep old George Boole came up and bit me.
-That should be an &&.
-
-The current code "mostly works" because we have not run into
-systems supporting only raw but not scale or only scale but not
-raw, and I doubt there are few using the rescaler on anything
-such, but let's fix the logic.
-
-Cc: Liam Beguin <liambeguin@gmail.com>
-Cc: stable@vger.kernel.org
-Fixes: 53ebee949980 ("iio: afe: iio-rescale: Support processed channels")
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Liam Beguin <liambeguin@gmail.com>
-Acked-by: Peter Rosin <peda@axentia.se>
-Link: https://lore.kernel.org/r/20220524075448.140238-1-linus.walleij@linaro.org
+Fixes: f1f065d7ac30 ("iio: chemical: ccs811: Add support for data ready trigger")
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220524181150.9240-5-ddrokosov@sberdevices.ru
+Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/afe/iio-rescale.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/chemical/ccs811.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -278,7 +278,7 @@ static int rescale_configure_channel(str
- 	chan->ext_info = rescale->ext_info;
- 	chan->type = rescale->cfg->type;
+--- a/drivers/iio/chemical/ccs811.c
++++ b/drivers/iio/chemical/ccs811.c
+@@ -499,11 +499,11 @@ static int ccs811_probe(struct i2c_clien
  
--	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
-+	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) &&
- 	    iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE)) {
- 		dev_info(dev, "using raw+scale source channel\n");
- 	} else if (iio_channel_has_info(schan, IIO_CHAN_INFO_PROCESSED)) {
+ 		data->drdy_trig->ops = &ccs811_trigger_ops;
+ 		iio_trigger_set_drvdata(data->drdy_trig, indio_dev);
+-		indio_dev->trig = data->drdy_trig;
+-		iio_trigger_get(indio_dev->trig);
+ 		ret = iio_trigger_register(data->drdy_trig);
+ 		if (ret)
+ 			goto err_poweroff;
++
++		indio_dev->trig = iio_trigger_get(data->drdy_trig);
+ 	}
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
 
 
