@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2273EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C25C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236135AbiF0Lfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
+        id S235665AbiF0Lfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236132AbiF0LdR (ORCPT
+        with ESMTP id S236179AbiF0LdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:33:17 -0400
+        Mon, 27 Jun 2022 07:33:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E325BF6C;
-        Mon, 27 Jun 2022 04:30:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE8FCE15;
+        Mon, 27 Jun 2022 04:30:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50B9661494;
-        Mon, 27 Jun 2022 11:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F3F0C3411D;
-        Mon, 27 Jun 2022 11:30:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05F1D612D8;
+        Mon, 27 Jun 2022 11:30:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 070A0C3411D;
+        Mon, 27 Jun 2022 11:30:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329420;
-        bh=AnMJAmMUcYuIuEwfnCA8fZf9H/5ZJ1+zFyeoIm3LNko=;
+        s=korg; t=1656329429;
+        bh=ShsZi12gGKcQZTw4TBWnl6cqCYb50NfFZL+L+POtwTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m2/767sKJoSYaqU2o6PYoWwgTDTs/8gz6NxnIUZsM0objfqYxCpsxnpT1DOg7KMaq
-         fBrQ8K+DmAyfv337QGNVwoBqjt+q6sl2edtcFJSFkWESV2TzkoJiBwGRDzZG/7CR1b
-         Ny/1n0HzPddAzSWqRF8wGU2XmRx5tDKS3DaNvXXE=
+        b=tkq82g0Gfl32HnwCKpJ8oX2gkJDdeEUMiEm2oEZSRUKLssW/4/b+8sl1bfhxeZNT9
+         YAdZZm+xosWpzPl8okpA3kprP/Dz5qPpa5sKZthSAhHi8MaEukK97Py8s0vBgDv5VP
+         XYLxB60cOj4N2jthdkb9KsZe6NoeD8gdTRHkpUvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.4 46/60] xtensa: xtfpga: Fix refcount leak bug in setup
-Date:   Mon, 27 Jun 2022 13:21:57 +0200
-Message-Id: <20220627111929.043731752@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 5.4 57/60] modpost: fix section mismatch check for exported init/exit sections
+Date:   Mon, 27 Jun 2022 13:22:08 +0200
+Message-Id: <20220627111929.368555413@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -48,32 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-commit 173940b3ae40114d4179c251a98ee039dc9cd5b3 upstream.
+commit 28438794aba47a27e922857d27b31b74e8559143 upstream.
 
-In machine_setup(), of_find_compatible_node() will return a node
-pointer with refcount incremented. We should use of_node_put() when
-it is not used anymore.
+Since commit f02e8a6596b7 ("module: Sort exported symbols"),
+EXPORT_SYMBOL* is placed in the individual section ___ksymtab(_gpl)+<sym>
+(3 leading underscores instead of 2).
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Liang He <windhl@126.com>
-Message-Id: <20220617115323.4046905-1-windhl@126.com>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Since then, modpost cannot detect the bad combination of EXPORT_SYMBOL
+and __init/__exit.
+
+Fix the .fromsec field.
+
+Fixes: f02e8a6596b7 ("module: Sort exported symbols")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/platforms/xtfpga/setup.c |    1 +
- 1 file changed, 1 insertion(+)
+ scripts/mod/modpost.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/xtensa/platforms/xtfpga/setup.c
-+++ b/arch/xtensa/platforms/xtfpga/setup.c
-@@ -148,6 +148,7 @@ static int __init machine_setup(void)
- 
- 	if ((eth = of_find_compatible_node(eth, NULL, "opencores,ethoc")))
- 		update_local_mac(eth);
-+	of_node_put(eth);
- 	return 0;
- }
- arch_initcall(machine_setup);
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1131,7 +1131,7 @@ static const struct sectioncheck section
+ },
+ /* Do not export init/exit functions or data */
+ {
+-	.fromsec = { "__ksymtab*", NULL },
++	.fromsec = { "___ksymtab*", NULL },
+ 	.bad_tosec = { INIT_SECTIONS, EXIT_SECTIONS, NULL },
+ 	.mismatch = EXPORT_TO_INIT_EXIT,
+ 	.symbol_white_list = { DEFAULT_SYMBOL_WHITE_LIST, NULL },
 
 
