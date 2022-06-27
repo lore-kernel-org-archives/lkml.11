@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F722C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:29:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A66B1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235484AbiF0L3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
+        id S235406AbiF0L3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235389AbiF0L26 (ORCPT
+        with ESMTP id S235393AbiF0L26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:28:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14ECFA199;
-        Mon, 27 Jun 2022 04:27:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210379FC2;
+        Mon, 27 Jun 2022 04:27:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5822614A2;
-        Mon, 27 Jun 2022 11:27:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93C05C341C7;
-        Mon, 27 Jun 2022 11:27:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2B78612D8;
+        Mon, 27 Jun 2022 11:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8B8FC3411D;
+        Mon, 27 Jun 2022 11:27:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329264;
-        bh=4w0rb8WM7fGTNmflEmNCvYh4biFDvlmKXvwa62Cg0+s=;
+        s=korg; t=1656329267;
+        bh=Y8/7DRUh+lZjPlYwIbH/DiRIh4q8KDZY8gKG2Qs2WwE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZYvy5j8MswRoXls0Q8yPT+FhqpKk87EkkqUa53/fb9I1nGFS3t1ScBUem01pqOjfA
-         y+J6JQ7pL0unWai+gxwRk69OkM8nLc8gbn4iFZEQllxBdzsHNzR3jzlUqC2DrgIsez
-         EYtS3jF6IEEXzjEwXpp01wwDTRAym6meFq0Vk50U=
+        b=IYFvC56QmaCMLR83nNlH7Q45VfEg3xJriO48rfzp1jYjlYoOnN32JF044unVnsGJv
+         XLgAeYq+GT+ysAY1rOvN3anR+MDEJ9BHbITpw1TKhZ/OfsHnyQ4eq1570uMDoley20
+         eM03fwRZsX2DKuThv6yYJU3qGMtzK2yWVRAQ10ZY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH 5.10 087/102] parisc/stifb: Fix fb_is_primary_device() only available with CONFIG_FB_STI
-Date:   Mon, 27 Jun 2022 13:21:38 +0200
-Message-Id: <20220627111936.046180187@linuxfoundation.org>
+        John David Anglin <dave.anglin@bell.net>
+Subject: [PATCH 5.10 088/102] parisc: Enable ARCH_HAS_STRICT_MODULE_RWX
+Date:   Mon, 27 Jun 2022 13:21:39 +0200
+Message-Id: <20220627111936.075691997@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -50,50 +50,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Helge Deller <deller@gmx.de>
 
-commit 1d0811b03eb30b2f0793acaa96c6ce90b8b9c87a upstream.
+commit 0a1355db36718178becd2bfe728a023933d73123 upstream.
 
-Fix this build error noticed by the kernel test robot:
-
-drivers/video/console/sticore.c:1132:5: error: redefinition of 'fb_is_primary_device'
- arch/parisc/include/asm/fb.h:18:19: note: previous definition of 'fb_is_primary_device'
+Fix a boot crash on a c8000 machine as reported by Dave.  Basically it changes
+patch_map() to return an alias mapping to the to-be-patched code in order to
+prevent writing to write-protected memory.
 
 Signed-off-by: Helge Deller <deller@gmx.de>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: stable@vger.kernel.org   # v5.10+
+Suggested-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org   # v5.2+
+Link: https://lore.kernel.org/all/e8ec39e8-25f8-e6b4-b7ed-4cb23efc756e@bell.net/
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/include/asm/fb.h    |    2 +-
- drivers/video/console/sticore.c |    2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ arch/parisc/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/parisc/include/asm/fb.h
-+++ b/arch/parisc/include/asm/fb.h
-@@ -12,7 +12,7 @@ static inline void fb_pgprotect(struct f
- 	pgprot_val(vma->vm_page_prot) |= _PAGE_NO_CACHE;
- }
- 
--#if defined(CONFIG_STI_CONSOLE) || defined(CONFIG_FB_STI)
-+#if defined(CONFIG_FB_STI)
- int fb_is_primary_device(struct fb_info *info);
- #else
- static inline int fb_is_primary_device(struct fb_info *info)
---- a/drivers/video/console/sticore.c
-+++ b/drivers/video/console/sticore.c
-@@ -1127,6 +1127,7 @@ int sti_call(const struct sti_struct *st
- 	return ret;
- }
- 
-+#if defined(CONFIG_FB_STI)
- /* check if given fb_info is the primary device */
- int fb_is_primary_device(struct fb_info *info)
- {
-@@ -1142,6 +1143,7 @@ int fb_is_primary_device(struct fb_info
- 	return (sti->info == info);
- }
- EXPORT_SYMBOL(fb_is_primary_device);
-+#endif
- 
- MODULE_AUTHOR("Philipp Rumpf, Helge Deller, Thomas Bogendoerfer");
- MODULE_DESCRIPTION("Core STI driver for HP's NGLE series graphics cards in HP PARISC machines");
+--- a/arch/parisc/Kconfig
++++ b/arch/parisc/Kconfig
+@@ -11,6 +11,7 @@ config PARISC
+ 	select ARCH_WANT_FRAME_POINTERS
+ 	select ARCH_HAS_ELF_RANDOMIZE
+ 	select ARCH_HAS_STRICT_KERNEL_RWX
++	select ARCH_HAS_STRICT_MODULE_RWX
+ 	select ARCH_HAS_UBSAN_SANITIZE_ALL
+ 	select ARCH_NO_SG_CHAIN
+ 	select ARCH_SUPPORTS_MEMORY_FAILURE
 
 
