@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B44FEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A005CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236836AbiF0Pbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 11:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51080 "EHLO
+        id S238251AbiF0Pbj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 11:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238137AbiF0Pb1 (ORCPT
+        with ESMTP id S238159AbiF0Pb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 11:31:27 -0400
+        Mon, 27 Jun 2022 11:31:28 -0400
 Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430F819C36
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6C819C38
         for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:31:24 -0700 (PDT)
 Received: from ramsan.of.borg ([84.195.186.194])
         by xavier.telenet-ops.be with bizsmtp
-        id oFXH2700W4C55Sk01FXHal; Mon, 27 Jun 2022 17:31:23 +0200
+        id oFXH2700P4C55Sk01FXHah; Mon, 27 Jun 2022 17:31:23 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1o5qhp-0014yY-2P; Mon, 27 Jun 2022 17:31:17 +0200
+        id 1o5qho-0014yc-VJ; Mon, 27 Jun 2022 17:31:16 +0200
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1o5qho-004jEM-El; Mon, 27 Jun 2022 17:31:16 +0200
+        id 1o5qho-004jEn-HZ; Mon, 27 Jun 2022 17:31:16 +0200
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Vignesh Raghavendra <vigneshr@ti.com>,
         Sergey Shtylyov <s.shtylyov@omp.ru>,
@@ -38,9 +38,9 @@ Cc:     Mark Brown <broonie@kernel.org>, linux-mtd@lists.infradead.org,
         linux-renesas-soc@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 1/7] memory: renesas-rpc-if: Always use dev in rpcif_sw_init()
-Date:   Mon, 27 Jun 2022 17:31:08 +0200
-Message-Id: <98924121e59ab3f389ddd413b6d252a8deb889cf.1656341824.git.geert+renesas@glider.be>
+Subject: [PATCH 5/7] memory: renesas-rpc-if: Move resource acquisition to .probe()
+Date:   Mon, 27 Jun 2022 17:31:12 +0200
+Message-Id: <2fd9b9e3f60fe555d9dcad499c90e3ec869aa96e.1656341824.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656341824.git.geert+renesas@glider.be>
 References: <cover.1656341824.git.geert+renesas@glider.be>
@@ -50,46 +50,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rpcif_sw_init() already has the "dev" parameter pointing to the right
-device structure, so there is no need to take a detour through the
-platform device.
+While the acquired resources are tied to the lifetime of the RPC-IF core
+device (through the use of managed resource functions), the actual
+resource acquisition is triggered from the HyperBus and SPI child
+drivers.  Due to this mismatch, unbinding and rebinding the child
+drivers manually fails with -EBUSY:
+
+    # echo rpc-if-hyperflash > /sys/bus/platform/drivers/rpc-if-hyperflash/unbind
+    # echo rpc-if-hyperflash > /sys/bus/platform/drivers/rpc-if-hyperflash/bind
+    rpc-if ee200000.spi: can't request region for resource [mem 0xee200000-0xee2001ff]
+    rpc-if-hyperflash: probe of rpc-if-hyperflash failed with error -16
+
+Fix this by moving all resource acquisition to the core driver's probe
+routine.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/memory/renesas-rpc-if.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/memory/renesas-rpc-if.c | 47 ++++++++++++++++-----------------
+ 1 file changed, 23 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/memory/renesas-rpc-if.c b/drivers/memory/renesas-rpc-if.c
-index 4316988d791a527f..829b962e8f034bdd 100644
+index 78e10a7300411191..ef0336cbb4c196fb 100644
 --- a/drivers/memory/renesas-rpc-if.c
 +++ b/drivers/memory/renesas-rpc-if.c
-@@ -263,22 +263,21 @@ int rpcif_sw_init(struct rpcif *rpc, struct device *dev)
- 	if (IS_ERR(rpc->base))
- 		return PTR_ERR(rpc->base);
+@@ -276,31 +276,7 @@ static const struct regmap_config rpcif_regmap_config = {
  
--	rpc->regmap = devm_regmap_init(&pdev->dev, NULL, rpc, &rpcif_regmap_config);
+ int rpcif_sw_init(struct rpcif *rpcif, struct device *dev)
+ {
+-	struct platform_device *pdev = to_platform_device(dev);
+ 	struct rpcif_priv *rpc = dev_get_drvdata(dev);
+-	struct resource *res;
+-
+-	rpc->base = devm_platform_ioremap_resource_byname(pdev, "regs");
+-	if (IS_ERR(rpc->base))
+-		return PTR_ERR(rpc->base);
+-
+-	rpc->regmap = devm_regmap_init(dev, NULL, rpc, &rpcif_regmap_config);
+-	if (IS_ERR(rpc->regmap)) {
+-		dev_err(dev, "failed to init regmap for rpcif, error %ld\n",
+-			PTR_ERR(rpc->regmap));
+-		return	PTR_ERR(rpc->regmap);
+-	}
+-
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dirmap");
+-	rpc->dirmap = devm_ioremap_resource(dev, res);
+-	if (IS_ERR(rpc->dirmap))
+-		return PTR_ERR(rpc->dirmap);
+-	rpc->size = resource_size(res);
+-
+-	rpc->type = (uintptr_t)of_device_get_match_data(dev);
+-	rpc->rstc = devm_reset_control_get_exclusive(dev, NULL);
+-	if (IS_ERR(rpc->rstc))
+-		return PTR_ERR(rpc->rstc);
+ 
+ 	rpcif->dev = dev;
+ 	rpcif->dirmap = rpc->dirmap;
+@@ -707,6 +683,7 @@ static int rpcif_probe(struct platform_device *pdev)
+ 	struct platform_device *vdev;
+ 	struct device_node *flash;
+ 	struct rpcif_priv *rpc;
++	struct resource *res;
+ 	const char *name;
+ 	int ret;
+ 
+@@ -731,6 +708,28 @@ static int rpcif_probe(struct platform_device *pdev)
+ 	if (!rpc)
+ 		return -ENOMEM;
+ 
++	rpc->base = devm_platform_ioremap_resource_byname(pdev, "regs");
++	if (IS_ERR(rpc->base))
++		return PTR_ERR(rpc->base);
++
 +	rpc->regmap = devm_regmap_init(dev, NULL, rpc, &rpcif_regmap_config);
- 	if (IS_ERR(rpc->regmap)) {
--		dev_err(&pdev->dev,
--			"failed to init regmap for rpcif, error %ld\n",
++	if (IS_ERR(rpc->regmap)) {
 +		dev_err(dev, "failed to init regmap for rpcif, error %ld\n",
- 			PTR_ERR(rpc->regmap));
- 		return	PTR_ERR(rpc->regmap);
- 	}
- 
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dirmap");
--	rpc->dirmap = devm_ioremap_resource(&pdev->dev, res);
++			PTR_ERR(rpc->regmap));
++		return	PTR_ERR(rpc->regmap);
++	}
++
++	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dirmap");
 +	rpc->dirmap = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(rpc->dirmap))
- 		return PTR_ERR(rpc->dirmap);
- 	rpc->size = resource_size(res);
- 
- 	rpc->type = (uintptr_t)of_device_get_match_data(dev);
--	rpc->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
++	if (IS_ERR(rpc->dirmap))
++		return PTR_ERR(rpc->dirmap);
++	rpc->size = resource_size(res);
++
++	rpc->type = (uintptr_t)of_device_get_match_data(dev);
 +	rpc->rstc = devm_reset_control_get_exclusive(dev, NULL);
- 
- 	return PTR_ERR_OR_ZERO(rpc->rstc);
- }
++	if (IS_ERR(rpc->rstc))
++		return PTR_ERR(rpc->rstc);
++
+ 	vdev = platform_device_alloc(name, pdev->id);
+ 	if (!vdev)
+ 		return -ENOMEM;
 -- 
 2.25.1
 
