@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C7EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC422C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235265AbiF0MA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52346 "EHLO
+        id S239742AbiF0MBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238954AbiF0Lwv (ORCPT
+        with ESMTP id S238973AbiF0Lwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F28DF71;
-        Mon, 27 Jun 2022 04:46:44 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2B9DF77;
+        Mon, 27 Jun 2022 04:46:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2857B80D32;
-        Mon, 27 Jun 2022 11:46:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07931C3411D;
-        Mon, 27 Jun 2022 11:46:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 359766130A;
+        Mon, 27 Jun 2022 11:46:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D465C3411D;
+        Mon, 27 Jun 2022 11:46:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330402;
-        bh=ClnVnHUDsNRaiXpt18gIWfNbgXLwUhIhOHGgV7pmpQM=;
+        s=korg; t=1656330408;
+        bh=Be+DyQ926OIAEU/MJvu9N0bh+BAig/+8qehWjTeo39w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=phJumXaJY/S3GfusdAQ8CGS4FtkhjACLm9kDlIIssDushiCiNnpCuN9MY1r3Is9xh
-         +3Fk10nP5x1NnFSGREQou3IAQavfeRY7s5JmGxjyZ1YyHZWdyhpDXQ3rE6UC3xfP4g
-         gzHO32b7w2e5Pr2hH8Se4Wgg446Rtd76/SBLG2KQ=
+        b=bCSgGpZvvYDJ0m/aU1nw2VhgY+eTG9qwAnIZmI2A0ZRSZwVh23hf6DfDR1FCcTqY4
+         ySOXlFQC6JaPuueCsoW8w5HFB1rEq4F2BjFIzH9rWREI5us7LIjUq99RW3AYy/ohZt
+         cY7XoTv+yY/XyHqiqgk6V2VgkZBh8LoTsBephcio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5.18 179/181] dma-direct: use the correct size for dma_set_encrypted()
-Date:   Mon, 27 Jun 2022 13:22:32 +0200
-Message-Id: <20220627111949.872507151@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.18 181/181] powerpc/pseries: wire up rng during setup_arch()
+Date:   Mon, 27 Jun 2022 13:22:34 +0200
+Message-Id: <20220627111949.929558427@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,49 +49,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dexuan Cui <decui@microsoft.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 3be4562584bba603f33863a00c1c32eecf772ee6 upstream.
+commit e561e472a3d441753bd012333b057f48fef1045b upstream.
 
-The third parameter of dma_set_encrypted() is a size in bytes rather than
-the number of pages.
+The platform's RNG must be available before random_init() in order to be
+useful for initial seeding, which in turn means that it needs to be
+called from setup_arch(), rather than from an init call. Fortunately,
+each platform already has a setup_arch function pointer, which means
+it's easy to wire this up. This commit also removes some noisy log
+messages that don't add much.
 
-Fixes: 4d0564785bb0 ("dma-direct: factor out dma_set_{de,en}crypted helpers")
-Signed-off-by: Dexuan Cui <decui@microsoft.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Fixes: a489043f4626 ("powerpc/pseries: Implement arch_get_random_long() based on H_RANDOM")
+Cc: stable@vger.kernel.org # v3.13+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220611151015.548325-4-Jason@zx2c4.com
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/dma/direct.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/powerpc/platforms/pseries/pseries.h |    2 ++
+ arch/powerpc/platforms/pseries/rng.c     |   11 +++--------
+ arch/powerpc/platforms/pseries/setup.c   |    2 ++
+ 3 files changed, 7 insertions(+), 8 deletions(-)
 
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -357,7 +357,7 @@ void dma_direct_free(struct device *dev,
- 	} else {
- 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
- 			arch_dma_clear_uncached(cpu_addr, size);
--		if (dma_set_encrypted(dev, cpu_addr, 1 << page_order))
-+		if (dma_set_encrypted(dev, cpu_addr, size))
- 			return;
- 	}
+--- a/arch/powerpc/platforms/pseries/pseries.h
++++ b/arch/powerpc/platforms/pseries/pseries.h
+@@ -121,4 +121,6 @@ void pseries_lpar_read_hblkrm_characteri
+ static inline void pseries_lpar_read_hblkrm_characteristics(void) { }
+ #endif
  
-@@ -392,7 +392,6 @@ void dma_direct_free_pages(struct device
- 		struct page *page, dma_addr_t dma_addr,
- 		enum dma_data_direction dir)
- {
--	unsigned int page_order = get_order(size);
- 	void *vaddr = page_address(page);
++void pseries_rng_init(void);
++
+ #endif /* _PSERIES_PSERIES_H */
+--- a/arch/powerpc/platforms/pseries/rng.c
++++ b/arch/powerpc/platforms/pseries/rng.c
+@@ -10,6 +10,7 @@
+ #include <asm/archrandom.h>
+ #include <asm/machdep.h>
+ #include <asm/plpar_wrappers.h>
++#include "pseries.h"
  
- 	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
-@@ -400,7 +399,7 @@ void dma_direct_free_pages(struct device
- 	    dma_free_from_pool(dev, vaddr, size))
- 		return;
  
--	if (dma_set_encrypted(dev, vaddr, 1 << page_order))
-+	if (dma_set_encrypted(dev, vaddr, size))
- 		return;
- 	__dma_direct_free_pages(dev, page, size);
+ static int pseries_get_random_long(unsigned long *v)
+@@ -24,19 +25,13 @@ static int pseries_get_random_long(unsig
+ 	return 0;
  }
+ 
+-static __init int rng_init(void)
++void __init pseries_rng_init(void)
+ {
+ 	struct device_node *dn;
+ 
+ 	dn = of_find_compatible_node(NULL, NULL, "ibm,random");
+ 	if (!dn)
+-		return -ENODEV;
+-
+-	pr_info("Registering arch random hook.\n");
+-
++		return;
+ 	ppc_md.get_random_seed = pseries_get_random_long;
+-
+ 	of_node_put(dn);
+-	return 0;
+ }
+-machine_subsys_initcall(pseries, rng_init);
+--- a/arch/powerpc/platforms/pseries/setup.c
++++ b/arch/powerpc/platforms/pseries/setup.c
+@@ -852,6 +852,8 @@ static void __init pSeries_setup_arch(vo
+ 
+ 	if (swiotlb_force == SWIOTLB_FORCE)
+ 		ppc_swiotlb_enable = 1;
++
++	pseries_rng_init();
+ }
+ 
+ static void pseries_panic(char *str)
 
 
