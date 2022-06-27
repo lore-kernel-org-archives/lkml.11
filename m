@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02923CCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB331CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239052AbiF0LxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:53:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
+        id S238281AbiF0Lxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238462AbiF0Lsa (ORCPT
+        with ESMTP id S238149AbiF0Lrw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FAF3BE31;
-        Mon, 27 Jun 2022 04:41:39 -0700 (PDT)
+        Mon, 27 Jun 2022 07:47:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFE1E0F7;
+        Mon, 27 Jun 2022 04:39:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33C5561192;
-        Mon, 27 Jun 2022 11:41:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45229C341C7;
-        Mon, 27 Jun 2022 11:41:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF828B81123;
+        Mon, 27 Jun 2022 11:39:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CCD8C3411D;
+        Mon, 27 Jun 2022 11:39:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330098;
-        bh=mQxZLlG1fnMhdpl5nNqIAaOfKrFy36I2HEN0sikocns=;
+        s=korg; t=1656329983;
+        bh=nCi3D9xJWiY54ZyWgf/1NdYgSfUsPsg66ZmrbrXnbMI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CUU/t+E7+Xot+fUkAVFQRWp1v7+3nLX82hk9GklgOSAmox3UALTukZ3oS2za57nxw
-         sD19UZ2lwtP2bcgpHC/SHFZhlsV6hI472VJA3R3LhskPNeOIL06tHMi/C2DTYEz+ae
-         aJasC6mbU/LYvr8+0aCuGB9NRLCggo2NLtuPoKWU=
+        b=XYKMahnoYmJ3QJ8QK7E/7/MPQs4vayFkE2cq1i1m/owqTJVeh510SlXsM5LwY+ECF
+         jbswAVrf1HD6PP0WDwNZ6frmyuYRReSK4aV4QQ1az9+6hhPiVSAO1p9kKXGxnUcn85
+         Ds/nly8Sg3Er4T3W80HgA+hq9XLh/OAKWBjJyUNQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, k2ci <kernel-bot@kylinos.cn>,
-        huhai <huhai@kylinos.cn>,
-        Genjian Zhang <zhanggenjian@kylinos.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 082/181] MIPS: Remove repetitive increase irq_err_count
-Date:   Mon, 27 Jun 2022 13:20:55 +0200
-Message-Id: <20220627111946.938512475@linuxfoundation.org>
+Subject: [PATCH 5.18 042/181] drm/msm: Ensure mmap offset is initialized
+Date:   Mon, 27 Jun 2022 13:20:15 +0200
+Message-Id: <20220627111945.782965610@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,59 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit c81aba8fde2aee4f5778ebab3a1d51bd2ef48e4c ]
+[ Upstream commit 036d20726c30267724416e966c9f92db07de8081 ]
 
-commit 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx") added
-a function irq_dispatch, and it'll increase irq_err_count when the get_irq
-callback returns a negative value, but increase irq_err_count in get_irq
-was not removed.
+If a GEM object is allocated, and then exported as a dma-buf fd which is
+mmap'd before or without the GEM buffer being directly mmap'd, the
+vma_node could be unitialized.  This leads to a situation where the CPU
+mapping is not correctly torn down in drm_vma_node_unmap().
 
-And also, modpost complains once gpio-vr41xx drivers become modules.
-  ERROR: modpost: "irq_err_count" [drivers/gpio/gpio-vr41xx.ko] undefined!
-
-So it would be a good idea to remove repetitive increase irq_err_count in
-get_irq callback.
-
-Fixes: 27fdd325dace ("MIPS: Update VR41xx GPIO driver to use gpiolib")
-Fixes: 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx")
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: huhai <huhai@kylinos.cn>
-Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: e5516553999f ("drm: call drm_gem_object_funcs.mmap with fake offset")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220531200857.136547-1-robdclark@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/vr41xx/common/icu.c | 2 --
- drivers/gpio/gpio-vr41xx.c    | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/gpu/drm/msm/msm_drv.c       |  2 +-
+ drivers/gpu/drm/msm/msm_drv.h       |  1 +
+ drivers/gpu/drm/msm/msm_gem_prime.c | 15 +++++++++++++++
+ 3 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/vr41xx/common/icu.c b/arch/mips/vr41xx/common/icu.c
-index 7b7f25b4b057..9240bcdbe74e 100644
---- a/arch/mips/vr41xx/common/icu.c
-+++ b/arch/mips/vr41xx/common/icu.c
-@@ -640,8 +640,6 @@ static int icu_get_irq(unsigned int irq)
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index f2c46116df55..b5f6acfe7c6e 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -967,7 +967,7 @@ static const struct drm_driver msm_driver = {
+ 	.prime_handle_to_fd = drm_gem_prime_handle_to_fd,
+ 	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
+ 	.gem_prime_import_sg_table = msm_gem_prime_import_sg_table,
+-	.gem_prime_mmap     = drm_gem_prime_mmap,
++	.gem_prime_mmap     = msm_gem_prime_mmap,
+ #ifdef CONFIG_DEBUG_FS
+ 	.debugfs_init       = msm_debugfs_init,
+ #endif
+diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
+index d661debb50f1..9b985b641319 100644
+--- a/drivers/gpu/drm/msm/msm_drv.h
++++ b/drivers/gpu/drm/msm/msm_drv.h
+@@ -288,6 +288,7 @@ unsigned long msm_gem_shrinker_shrink(struct drm_device *dev, unsigned long nr_t
+ void msm_gem_shrinker_init(struct drm_device *dev);
+ void msm_gem_shrinker_cleanup(struct drm_device *dev);
  
- 	printk(KERN_ERR "spurious ICU interrupt: %04x,%04x\n", pend1, pend2);
++int msm_gem_prime_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma);
+ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj);
+ int msm_gem_prime_vmap(struct drm_gem_object *obj, struct iosys_map *map);
+ void msm_gem_prime_vunmap(struct drm_gem_object *obj, struct iosys_map *map);
+diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index 94ab705e9b8a..dcc8a573bc76 100644
+--- a/drivers/gpu/drm/msm/msm_gem_prime.c
++++ b/drivers/gpu/drm/msm/msm_gem_prime.c
+@@ -11,6 +11,21 @@
+ #include "msm_drv.h"
+ #include "msm_gem.h"
  
--	atomic_inc(&irq_err_count);
--
- 	return -1;
- }
- 
-diff --git a/drivers/gpio/gpio-vr41xx.c b/drivers/gpio/gpio-vr41xx.c
-index 98cd715ccc33..8d09b619c166 100644
---- a/drivers/gpio/gpio-vr41xx.c
-+++ b/drivers/gpio/gpio-vr41xx.c
-@@ -217,8 +217,6 @@ static int giu_get_irq(unsigned int irq)
- 	printk(KERN_ERR "spurious GIU interrupt: %04x(%04x),%04x(%04x)\n",
- 	       maskl, pendl, maskh, pendh);
- 
--	atomic_inc(&irq_err_count);
--
- 	return -EINVAL;
- }
- 
++int msm_gem_prime_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma)
++{
++	int ret;
++
++	/* Ensure the mmap offset is initialized.  We lazily initialize it,
++	 * so if it has not been first mmap'd directly as a GEM object, the
++	 * mmap offset will not be already initialized.
++	 */
++	ret = drm_gem_create_mmap_offset(obj);
++	if (ret)
++		return ret;
++
++	return drm_gem_prime_mmap(obj, vma);
++}
++
+ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
+ {
+ 	struct msm_gem_object *msm_obj = to_msm_bo(obj);
 -- 
 2.35.1
 
