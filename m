@@ -2,170 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4E0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCF0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:35:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236371AbiF0TfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51650 "EHLO
+        id S240390AbiF0Tfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236184AbiF0TfT (ORCPT
+        with ESMTP id S236184AbiF0Tfm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 15:35:19 -0400
-X-Greylist: delayed 924 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 12:35:15 PDT
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A5262EC
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:35:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=MIME-Version:Message-Id:Date:Subject:From:
-        Content-Type; bh=Ol0SPNpsS9P0kf07HAfEJVmhOsLRiK3rFdfeYzBfhaA=; b=lB4IA/XjC2Fa
-        8i9vrW68byUGnjfp64OYzn4o/5gA2dFxptGa/Kzf+ZsRuuZTd7ftJTHDEt8M+36ztl1Cyo8/C211b
-        dC/7A8R8gEiHmLXK+pPj1DNbAOk84UcUqbd1Vj4SXx2rG7fHoS9alPvX5LJA8b+c6NijZl5LNVnpV
-        4w2jg=;
-Received: from [192.168.16.236] (helo=vzdev.sw.ru)
-        by relay.virtuozzo.com with esmtp (Exim 4.94.2)
-        (envelope-from <alexander.atanasov@virtuozzo.com>)
-        id 1o5uFz-007PBk-RA; Mon, 27 Jun 2022 21:18:47 +0200
-From:   Alexander Atanasov <alexander.atanasov@virtuozzo.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     kernel@openvz.org,
-        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] Create debugfs file with virtio balloon usage information
-Date:   Mon, 27 Jun 2022 19:19:09 +0000
-Message-Id: <20220627191910.22734-1-alexander.atanasov@virtuozzo.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220627085838-mutt-send-email-mst@kernel.org>
-References: <20220627085838-mutt-send-email-mst@kernel.org>
+        Mon, 27 Jun 2022 15:35:42 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5766A62EC;
+        Mon, 27 Jun 2022 12:35:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656358541; x=1687894541;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PZ6plud3Rf5fEMbZRuJvL10vqzgxzYsgamogPc/ulSs=;
+  b=zi+neXZS5Tfo8fYmWYaZOlttgNGauVp6rk2ICfxqGMGlQse7BKBO7maI
+   eN5wZGHT8LvaOr6ITx1HFWxxGYmFMckpxD0oewFFbcRNNQfEBHQ2M5Lua
+   GqUZfBFVk/15lH2LNTw1JuzUqSUBPQVIqubt+ixvOSNDPq/3LahM1Xvqf
+   0=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 27 Jun 2022 12:35:41 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 12:35:40 -0700
+Received: from nalasex01c.na.qualcomm.com (10.47.97.35) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 27 Jun 2022 12:35:40 -0700
+Received: from [10.216.11.205] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 27 Jun
+ 2022 12:35:35 -0700
+Message-ID: <1a58e260-773e-754c-6f85-b4b2cbd19d2a@quicinc.com>
+Date:   Tue, 28 Jun 2022 01:05:31 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH V2 5/8] pinctrl: qcom: Add IPQ5018 pinctrl driver
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     <agross@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <linus.walleij@linaro.org>,
+        <catalin.marinas@arm.com>, <p.zabel@pengutronix.de>,
+        <quic_varada@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220621161126.15883-1-quic_srichara@quicinc.com>
+ <20220621161126.15883-6-quic_srichara@quicinc.com>
+ <YrU1b+37DeZqIMTh@builder.lan>
+From:   Sricharan Ramabadhran <quic_srichara@quicinc.com>
+In-Reply-To: <YrU1b+37DeZqIMTh@builder.lan>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow the guest to know how much it is ballooned by the host.
-It is useful when debugging out of memory conditions.
+Thanks Bjorn for your review
 
-When host gets back memory from the guest it is accounted
-as used memory in the guest but the guest have no way to know
-how much it is actually ballooned.
+On 6/24/2022 9:24 AM, Bjorn Andersson wrote:
+> On Tue 21 Jun 11:11 CDT 2022, Sricharan R wrote:
+> [..]
+>> +
+>> +static const struct of_device_id ipq5018_pinctrl_of_match[] = {
+>> +	{ .compatible = "qcom,ipq5018-pinctrl", },
+> Please make this qcom,ipq5018-tlmm, as requested in the binding.
 
-No pretty printing and fixed as per coding style.
 
-Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
----
- drivers/virtio/virtio_balloon.c | 71 +++++++++++++++++++++++++++++++++
- 1 file changed, 71 insertions(+)
+  Sure will do.
 
-- Leave pretty print to userspace
-- Fixed coding style
+>
+> With that:
+>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index b9737da6c4dd..1bb6a6d0e37b 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -10,6 +10,7 @@
- #include <linux/virtio_balloon.h>
- #include <linux/swap.h>
- #include <linux/workqueue.h>
-+#include <linux/debugfs.h>
- #include <linux/delay.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-@@ -731,6 +732,71 @@ static void report_free_page_func(struct work_struct *work)
- 	}
- }
- 
-+/*
-+ * DEBUGFS Interface
-+ */
-+#ifdef CONFIG_DEBUG_FS
-+
-+/**
-+ * virtio_balloon_debug_show - shows statistics of balloon operations.
-+ * @f: pointer to the &struct seq_file.
-+ * @offset: ignored.
-+ *
-+ * Provides the statistics that can be accessed in virtio-balloon in the debugfs.
-+ *
-+ * Return: zero on success or an error code.
-+ */
-+static int virtio_balloon_debug_show(struct seq_file *f, void *offset)
-+{
-+	struct virtio_balloon *b = f->private;
-+	u32 num_pages;
-+	struct sysinfo i;
-+
-+	si_meminfo(&i);
-+
-+	seq_printf(f, "%-22s: %llx\n", "capabilities", b->vdev->features);
-+
-+	seq_printf(f, "%-22s: %d\n", "page_size", 4096);
-+
-+	virtio_cread_le(b->vdev, struct virtio_balloon_config, actual,
-+			&num_pages);
-+	/* Memory returned to host or amount we can inflate if possible */
-+	seq_printf(f, "%-22s: %u\n", "ballooned_pages", num_pages);
-+
-+	/* Total Memory for the guest from host */
-+	seq_printf(f, "%-22s: %lu\n", "total_pages", i.totalram);
-+
-+	/* Current memory for the guest */
-+	seq_printf(f, "%-22s: %lu\n", "current_pages", i.totalram - num_pages);
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(virtio_balloon_debug);
-+
-+static void  virtio_balloon_debugfs_init(struct virtio_balloon *b)
-+{
-+	debugfs_create_file("virtio-balloon", 0444, NULL, b,
-+			    &virtio_balloon_debug_fops);
-+}
-+
-+static void  virtio_balloon_debugfs_exit(struct virtio_balloon *b)
-+{
-+	debugfs_remove(debugfs_lookup("virtio-balloon", NULL));
-+}
-+
-+#else
-+
-+static inline void virtio_balloon_debugfs_init(struct virtio_balloon *b)
-+{
-+}
-+
-+static inline void virtio_balloon_debugfs_exit(struct virtio_balloon *b)
-+{
-+}
-+
-+#endif	/* CONFIG_DEBUG_FS */
-+
- #ifdef CONFIG_BALLOON_COMPACTION
- /*
-  * virtballoon_migratepage - perform the balloon page migration on behalf of
-@@ -1019,6 +1085,9 @@ static int virtballoon_probe(struct virtio_device *vdev)
- 
- 	if (towards_target(vb))
- 		virtballoon_changed(vdev);
-+
-+	virtio_balloon_debugfs_init(vb);
-+
- 	return 0;
- 
- out_unregister_oom:
-@@ -1065,6 +1134,8 @@ static void virtballoon_remove(struct virtio_device *vdev)
- {
- 	struct virtio_balloon *vb = vdev->priv;
- 
-+	virtio_balloon_debugfs_exit(vb);
-+
- 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
- 		page_reporting_unregister(&vb->pr_dev_info);
- 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
--- 
-2.25.1
+
+   Thanks for that.
+
+Regards,
+   Sricharan
 
