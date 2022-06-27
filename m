@@ -2,323 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 096ADC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 17:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E849C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 17:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239985AbiF0Rgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 13:36:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
+        id S239988AbiF0Ri3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 13:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239945AbiF0Rgd (ORCPT
+        with ESMTP id S234295AbiF0Ri1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 13:36:33 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D6CB7E8;
-        Mon, 27 Jun 2022 10:36:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656351392; x=1687887392;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TncpZtq+agDq/jm35/vtT+NeRvYHNeO9BO7ZjRMPXig=;
-  b=hmaXArTfrtjX0U27AKdBnu3iecp9ySRhE+veiSgOS1ym9XvellNV6P8V
-   F75DFd4ogoWpFGV/5RK7eQCRPle6Uhuk3zHaHN45Vdyu3sSlR5zdJZlgr
-   Fv7DC6LBMLhCt563z5mDAFPrgDKJiekPR8jD64PTer8a/mS5uK5FNdBlI
-   ltWsRaUrTjWiYuEgYrcG8x8si5FZCiBLjPnxIxg17bPIMxQJWPdL4QahN
-   s5qL8qj+p/1q614558luafos9rfFK4Ye1iA33gai9I6za8pxXxcFSVNe8
-   J34xrAmyhrv+9DzN3Xzkfm1+dOOzy2j51F9+uCCv3CP9h0wCLsW3FQUMO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270262456"
-X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
-   d="scan'208";a="270262456"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 10:36:12 -0700
-X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
-   d="scan'208";a="594399457"
-Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 10:36:11 -0700
-From:   Tony Luck <tony.luck@intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Smita.KoralahalliChannabasappa@amd.com,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        x86@kernel.org, yazen.ghannam@amd.com, patches@lists.linux.dev,
-        Tony Luck <tony.luck@intel.com>
-Subject: [PATCH v2 4/5] x86/mce: Move storm handling to core.
-Date:   Mon, 27 Jun 2022 10:36:04 -0700
-Message-Id: <20220627173605.514504-5-tony.luck@intel.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220627173605.514504-1-tony.luck@intel.com>
-References: <YrFSSZqjtWlm9rUr@agluck-desk3.sc.intel.com>
- <20220627173605.514504-1-tony.luck@intel.com>
+        Mon, 27 Jun 2022 13:38:27 -0400
+Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283E6BC11;
+        Mon, 27 Jun 2022 10:38:27 -0700 (PDT)
+Received: by mail-io1-f47.google.com with SMTP id h85so10318007iof.4;
+        Mon, 27 Jun 2022 10:38:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MXpG8a54i73DxyJ8pjX+3sdV3EJr4mPuRN2vogX5Pjs=;
+        b=PNzQtMWrS4L5c9G70xKfj/tH+hnZ3LSczeprtQ1ydtrSu5pJhnCxp95l2ccEyDlYrs
+         rVQgnvvF0ikS3AJbQ5OWj+L0s3V8TiZITsH5xbNtCniBrqkOh7egvp9Ii85reXxLJeVB
+         MjS+i13Tc9RR9j9vs+VkdxYdNhaDUKGn1Fol7j6S+tVrjMUgn46777QyBgEodXrxK53v
+         VWrNu+Ky/GSoLBE1os0UvoxN8TrzZqB1p97m3gDrYgmfGim+gsGmctc3v/2rdPSu8xwW
+         wOlknquK8CXbHsLTpY/c+ex00acjTKVOjUond3KLVNROKhZBoi6NuDeWYa3vRdQb7qG+
+         hGZg==
+X-Gm-Message-State: AJIora8LFCaBiSKP7o6Gd0bgnOxNLwU/oT2azzNl46RwGQlhyDU4mLST
+        61rYmJ3dY0ZlpNQN7oZJ+Q==
+X-Google-Smtp-Source: AGRyM1vaLHPxfl47WVkP1GJtHbKyi/rnOH1ihcmiGZYS1xOjmUYwkTbg4KMWTFWVfPlmPj7BSMj60Q==
+X-Received: by 2002:a05:6638:1690:b0:331:950f:8ea9 with SMTP id f16-20020a056638169000b00331950f8ea9mr8507145jat.67.1656351506390;
+        Mon, 27 Jun 2022 10:38:26 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id z3-20020a6b5c03000000b00672714b81e0sm5614956ioh.26.2022.06.27.10.38.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 10:38:25 -0700 (PDT)
+Received: (nullmailer pid 2643194 invoked by uid 1000);
+        Mon, 27 Jun 2022 17:38:25 -0000
+Date:   Mon, 27 Jun 2022 11:38:25 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     frowand.list@gmail.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] of: device - Remove duplicate 'of' in two places.
+Message-ID: <20220627173825.GA2637590-robh@kernel.org>
+References: <20220621154222.13714-1-jiangjian@cdjrlc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220621154222.13714-1-jiangjian@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+On Tue, Jun 21, 2022 at 11:42:22PM +0800, Jiang Jian wrote:
+> file: ./drivers/of/device.c
+> line: 22
+>  * @matches: array of of device match structures to search in
+> changed to
+>  * @matches: array of device match structures to search in
+> 
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+> ---
+>  drivers/of/device.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index 874f031442dc..1582388156a9 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -19,7 +19,7 @@
+>  
+>  /**
+>   * of_match_device - Tell if a struct device matches an of_device_id list
+> - * @matches: array of of device match structures to search in
+> + * @matches: array of device match structures to search in
 
-AMD's storm handling for threshold interrupts is similar to Intel's CMCI
-storm handling. Hence, make the storm handling code common by moving to
-core and removing the vendor exclusivity.
+Maybe that was supposed to be 'of OF device match'? 
 
-On the contrary, setting different thresholds to reduce rate of interrupts
-in IA32_MCi_CTL2 register is kept Intel intact as the storm handling for
-AMD slightly differs where in it handles the storms by turning off the
-interrupts.
+But really, something like 'NULL terminated array of struct of_device_id 
+entries to search' would be better.
 
-No functional changes.
+>   * @dev: the of device structure to match against
 
-[Tony: Same as Smita's original, plus changes rolled in from prior patches]
+Like 'of' here.
 
-Signed-off-by: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
----
- arch/x86/kernel/cpu/mce/core.c     | 81 ++++++++++++++++++++++++++
- arch/x86/kernel/cpu/mce/intel.c    | 93 +-----------------------------
- arch/x86/kernel/cpu/mce/internal.h | 18 ++++++
- 3 files changed, 100 insertions(+), 92 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index f4d2a7ba29f7..d27daa199523 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -613,6 +613,87 @@ static struct notifier_block mce_default_nb = {
- 	.priority	= MCE_PRIO_LOWEST,
- };
- 
-+/*
-+ * CMCI storm tracking state
-+ *	stormy_bank_count: per-cpu count of MC banks in storm state
-+ *	bank_history: bitmask tracking of corrected errors seen in each bank
-+ *	bank_time_stamp: last time (in jiffies) that each bank was polled
-+ */
-+DEFINE_PER_CPU(int, stormy_bank_count);
-+DEFINE_PER_CPU(u64 [MAX_NR_BANKS], bank_history);
-+DEFINE_PER_CPU(bool [MAX_NR_BANKS], bank_storm);
-+DEFINE_PER_CPU(unsigned long [MAX_NR_BANKS], bank_time_stamp);
-+
-+void cmci_storm_begin(int bank)
-+{
-+	__set_bit(bank, this_cpu_ptr(mce_poll_banks));
-+	this_cpu_write(bank_storm[bank], true);
-+
-+	/*
-+	 * If this is the first bank on this CPU to enter storm mode
-+	 * start polling
-+	 */
-+	if (this_cpu_inc_return(stormy_bank_count) == 1)
-+		mce_timer_kick(true);
-+}
-+
-+void cmci_storm_end(int bank)
-+{
-+	__clear_bit(bank, this_cpu_ptr(mce_poll_banks));
-+	this_cpu_write(bank_history[bank], 0ull);
-+	this_cpu_write(bank_storm[bank], false);
-+
-+	/* If no banks left in storm mode, stop polling */
-+	if (!this_cpu_dec_return(stormy_bank_count))
-+		mce_timer_kick(false);
-+}
-+
-+void track_cmci_storm(int bank, u64 status)
-+{
-+	unsigned long now = jiffies, delta;
-+	unsigned int shift = 1;
-+	u64 history;
-+
-+	/*
-+	 * When a bank is in storm mode it is polled once per second and
-+	 * the history mask will record about the last minute of poll results.
-+	 * If it is not in storm mode, then the bank is only checked when
-+	 * there is a CMCI interrupt. Check how long it has been since
-+	 * this bank was last checked, and adjust the amount of "shift"
-+	 * to apply to history.
-+	 */
-+	if (!this_cpu_read(bank_storm[bank])) {
-+		delta = now - this_cpu_read(bank_time_stamp[bank]);
-+		shift = (delta + HZ) / HZ;
-+	}
-+
-+	/* If has been a long time since the last poll, clear history */
-+	if (shift >= 64)
-+		history = 0;
-+	else
-+		history = this_cpu_read(bank_history[bank]) << shift;
-+	this_cpu_write(bank_time_stamp[bank], now);
-+
-+	/* History keeps track of corrected errors. VAL=1 && UC=0 */
-+	if ((status & (MCI_STATUS_VAL | MCI_STATUS_UC)) == MCI_STATUS_VAL)
-+		history |= 1;
-+	this_cpu_write(bank_history[bank], history);
-+
-+	if (this_cpu_read(bank_storm[bank])) {
-+		if (history & GENMASK_ULL(STORM_END_POLL_THRESHOLD - 1, 0))
-+			return;
-+		pr_notice("CPU%d BANK%d CMCI storm subsided\n", smp_processor_id(), bank);
-+		mce_handle_storm(bank, true);
-+		cmci_storm_end(bank);
-+	} else {
-+		if (hweight64(history) < STORM_BEGIN_THRESHOLD)
-+			return;
-+		pr_notice("CPU%d BANK%d CMCI storm detected\n", smp_processor_id(), bank);
-+		mce_handle_storm(bank, false);
-+		cmci_storm_begin(bank);
-+	}
-+}
-+
- /*
-  * Read ADDR and MISC registers.
-  */
-diff --git a/arch/x86/kernel/cpu/mce/intel.c b/arch/x86/kernel/cpu/mce/intel.c
-index 4238b73c2143..6cc9aa97c092 100644
---- a/arch/x86/kernel/cpu/mce/intel.c
-+++ b/arch/x86/kernel/cpu/mce/intel.c
-@@ -47,17 +47,7 @@ static DEFINE_PER_CPU(mce_banks_t, mce_banks_owned);
-  */
- static DEFINE_RAW_SPINLOCK(cmci_discover_lock);
- 
--/*
-- * CMCI storm tracking state
-- *	stormy_bank_count: per-cpu count of MC banks in storm state
-- *	bank_history: bitmask tracking of corrected errors seen in each bank
-- *	bank_time_stamp: last time (in jiffies) that each bank was polled
-- *	cmci_threshold: MCi_CTL2 threshold for each bank when there is no storm
-- */
--static DEFINE_PER_CPU(int, stormy_bank_count);
--static DEFINE_PER_CPU(u64 [MAX_NR_BANKS], bank_history);
--static DEFINE_PER_CPU(bool [MAX_NR_BANKS], bank_storm);
--static DEFINE_PER_CPU(unsigned long [MAX_NR_BANKS], bank_time_stamp);
-+/* MCi_CTL2 threshold for each bank when there is no storm */
- static int cmci_threshold[MAX_NR_BANKS];
- 
- /* Linux non-storm CMCI threshold (may be overridden by BIOS */
-@@ -70,17 +60,6 @@ static int cmci_threshold[MAX_NR_BANKS];
-  */
- #define CMCI_STORM_THRESHOLD	32749
- 
--/*
-- * How many errors within the history buffer mark the start of a storm
-- */
--#define STORM_BEGIN_THRESHOLD	5
--
--/*
-- * How many polls of machine check bank without an error before declaring
-- * the storm is over
-- */
--#define STORM_END_POLL_THRESHOLD	30
--
- static int cmci_supported(int *banks)
- {
- 	u64 cap;
-@@ -160,76 +139,6 @@ void mce_intel_handle_storm(int bank, bool on)
- 		cmci_set_threshold(bank, CMCI_STORM_THRESHOLD);
- }
- 
--static void cmci_storm_begin(int bank)
--{
--	__set_bit(bank, this_cpu_ptr(mce_poll_banks));
--	this_cpu_write(bank_storm[bank], true);
--
--	/*
--	 * If this is the first bank on this CPU to enter storm mode
--	 * start polling
--	 */
--	if (this_cpu_inc_return(stormy_bank_count) == 1)
--		mce_timer_kick(true);
--}
--
--static void cmci_storm_end(int bank)
--{
--	__clear_bit(bank, this_cpu_ptr(mce_poll_banks));
--	this_cpu_write(bank_history[bank], 0ull);
--	this_cpu_write(bank_storm[bank], false);
--
--	/* If no banks left in storm mode, stop polling */
--	if (!this_cpu_dec_return(stormy_bank_count))
--		mce_timer_kick(false);
--}
--
--void track_cmci_storm(int bank, u64 status)
--{
--	unsigned long now = jiffies, delta;
--	unsigned int shift = 1;
--	u64 history;
--
--	/*
--	 * When a bank is in storm mode it is polled once per second and
--	 * the history mask will record about the last minute of poll results.
--	 * If it is not in storm mode, then the bank is only checked when
--	 * there is a CMCI interrupt. Check how long it has been since
--	 * this bank was last checked, and adjust the amount of "shift"
--	 * to apply to history.
--	 */
--	if (!this_cpu_read(bank_storm[bank])) {
--		delta = now - this_cpu_read(bank_time_stamp[bank]);
--		shift = (delta + HZ) / HZ;
--	}
--
--	/* If has been a long time since the last poll, clear history */
--	if (shift >= 64)
--		history = 0;
--	else
--		history = this_cpu_read(bank_history[bank]) << shift;
--	this_cpu_write(bank_time_stamp[bank], now);
--
--	/* History keeps track of corrected errors. VAL=1 && UC=0 */
--	if ((status & (MCI_STATUS_VAL | MCI_STATUS_UC)) == MCI_STATUS_VAL)
--		history |= 1;
--	this_cpu_write(bank_history[bank], history);
--
--	if (this_cpu_read(bank_storm[bank])) {
--		if (history & GENMASK_ULL(STORM_END_POLL_THRESHOLD - 1, 0))
--			return;
--		pr_notice("CPU%d BANK%d CMCI storm subsided\n", smp_processor_id(), bank);
--		mce_handle_storm(bank, true);
--		cmci_storm_end(bank);
--	} else {
--		if (hweight64(history) < STORM_BEGIN_THRESHOLD)
--			return;
--		pr_notice("CPU%d BANK%d CMCI storm detected\n", smp_processor_id(), bank);
--		mce_handle_storm(bank, false);
--		cmci_storm_begin(bank);
--	}
--}
--
- /*
-  * The interrupt handler. This is called on every event.
-  * Just call the poller directly to log any events.
-diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
-index 78467f6cdd04..d7cad839a6a9 100644
---- a/arch/x86/kernel/cpu/mce/internal.h
-+++ b/arch/x86/kernel/cpu/mce/internal.h
-@@ -60,6 +60,24 @@ static inline bool intel_filter_mce(struct mce *m) { return false; }
- 
- void mce_timer_kick(bool storm);
- void mce_handle_storm(int bank, bool on);
-+void cmci_storm_begin(int bank);
-+void cmci_storm_end(int bank);
-+
-+DECLARE_PER_CPU(int, stormy_bank_count);
-+DECLARE_PER_CPU(u64 [MAX_NR_BANKS], bank_history);
-+DECLARE_PER_CPU(bool [MAX_NR_BANKS], bank_storm);
-+DECLARE_PER_CPU(unsigned long [MAX_NR_BANKS], bank_time_stamp);
-+
-+/*
-+ * How many errors within the history buffer mark the start of a storm
-+ */
-+#define STORM_BEGIN_THRESHOLD	5
-+
-+/*
-+ * How many polls of machine check bank without an error before declaring
-+ * the storm is over
-+ */
-+#define STORM_END_POLL_THRESHOLD	30
- 
- #ifdef CONFIG_ACPI_APEI
- int apei_write_mce(struct mce *m);
--- 
-2.35.3
-
+>   *
+>   * Used by a driver to check whether an platform_device present in the
+> -- 
+> 2.17.1
+> 
+> 
