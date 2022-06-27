@@ -2,79 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 190A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C80C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233221AbiF0H6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
+        id S233251AbiF0H7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233212AbiF0H6a (ORCPT
+        with ESMTP id S233233AbiF0H6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:58:30 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C21B2B3;
-        Mon, 27 Jun 2022 00:58:27 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LWg6q4d1BzkWfM;
-        Mon, 27 Jun 2022 15:57:07 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 15:58:25 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 27 Jun
- 2022 15:58:24 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-rtc@vger.kernel.org>
-CC:     <alexandre.belloni@bootlin.com>, <a.zummo@towertech.it>,
-        <s.hauer@pengutronix.de>, <a.fatoum@pengutronix.de>
-Subject: [PATCH -next v2] rtc: rv8803: fix missing unlock on error in rv8803_set_time()
-Date:   Mon, 27 Jun 2022 16:08:22 +0800
-Message-ID: <20220627080822.3881072-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 27 Jun 2022 03:58:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7F1BF0;
+        Mon, 27 Jun 2022 00:58:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 160CEB80FAF;
+        Mon, 27 Jun 2022 07:58:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DC32C3411D;
+        Mon, 27 Jun 2022 07:58:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656316728;
+        bh=3QBOQ+63McWkZaoy6zDZtIM0PJkpeSnpFCaypOnEoLw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mzW42jmv0L939DFAbC+czjVbMGYQZIl0GHwsivZG3Z4FnRghjcHqZsRAMbitEEvbc
+         7Ls1Ou3jTj8RMWFudyihoQM6VAA8QK/5HY3srvA8zAfR6jszVo6IEI+x7AyYfGgJI/
+         +vLuTluPDSQhSqYmnpXcVIfv2b+wc2yzQAhir/no=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 5.10.126
+Date:   Mon, 27 Jun 2022 09:58:45 +0200
+Message-Id: <16563167256229@kroah.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing unlock before return from function rv8803_set_time()
-in the error handling case.
+I'm announcing the release of the 5.10.126 kernel.
 
-Fixes: f8176e0bb83f ("rtc: rv8803: initialize registers on post-probe voltage loss")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
----
-v2:
-  correct fix tag.
----
- drivers/rtc/rtc-rv8803.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+All users of the 5.10 kernel series must upgrade.
 
-diff --git a/drivers/rtc/rtc-rv8803.c b/drivers/rtc/rtc-rv8803.c
-index fe1247e771b9..3527a0521e9b 100644
---- a/drivers/rtc/rtc-rv8803.c
-+++ b/drivers/rtc/rtc-rv8803.c
-@@ -315,8 +315,10 @@ static int rv8803_set_time(struct device *dev, struct rtc_time *tm)
- 
- 	if (flags & RV8803_FLAG_V2F) {
- 		ret = rv8803_regs_reset(rv8803);
--		if (ret)
-+		if (ret) {
-+			mutex_unlock(&rv8803->flags_lock);
- 			return ret;
-+		}
- 	}
- 
- 	ret = rv8803_write_reg(rv8803->client, RV8803_FLAG,
--- 
-2.25.1
+The updated 5.10.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.10.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+
+thanks,
+
+greg k-h
+
+------------
+
+ Makefile      |    2 +-
+ fs/io_uring.c |   24 +++++++++++++-----------
+ 2 files changed, 14 insertions(+), 12 deletions(-)
+
+Greg Kroah-Hartman (1):
+      Linux 5.10.126
+
+Jens Axboe (1):
+      io_uring: use separate list entry for iopoll requests
 
