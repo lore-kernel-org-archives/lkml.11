@@ -2,134 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0C2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF5D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233620AbiF0IpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 04:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39354 "EHLO
+        id S233638AbiF0Ipo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 04:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233604AbiF0IpI (ORCPT
+        with ESMTP id S233019AbiF0Ipj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 04:45:08 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430806320
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:45:07 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id ge10so17584733ejb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:45:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=NGASEu1UuSCF/KBZiD+Xxr1++0cQqP/bZ9atPVdxcAE=;
-        b=zwOiD2QKTBHyIkb8zfy5wq7S5Mww4LyKRvCXX8L0AZh2gXCJhELBJ8f0A/XkDSVso8
-         L7FBqCQ1oH/jJ7cFNnDxOLM/sxfKCUrrkCofLhaw/momIYZMHhEHZpJOHEGUvzLRPMh4
-         rqABqqzgmYQTAm8yw7R/n9Gp1l3nYBMiMTmNfrZEKRXHZTTnQcnweoEk611FTXs1sScD
-         bvalF3SeBbnDxo1XZ1qikeONNl6gzZMDT5bG46uL+RNIiPovs1XXqW+jtfcH05Uy5ReG
-         T8MCvFHPt4EpHEJr1g0CDlWrQK1ioh748xirTzj8Kbs2i655NcUaO0jeW/cPQxhpyMJi
-         brBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=NGASEu1UuSCF/KBZiD+Xxr1++0cQqP/bZ9atPVdxcAE=;
-        b=bZFeB3VVZSSYECaTxtT1xwInr8MscI+UQgiD/dg8DPp57s/hdjAUICIo0MPxP0g0OQ
-         ZMb/1q17YYTeO0P82QQX9o3ABQNtbs4DJmpvfDvE2w8iqW4ellVx5Z+0UJzanN2WoHtL
-         i85cJ9e1F67QFGwQFu0OOKt4YkJLhJJt8+4oNXuoHo4rQGkzCeq2gSckPnQqAiJfT1My
-         dSElONJ1Ko+8sllL56V4JS0IrACvn24d44FGW4yB9B22rLzV1iOq724Qz8FE7ry+LmVq
-         VPBAffG3W5XsBDkhrNWFDyStlg9m5USazhMiKfLVomFNN334VFvwpizXHyOeEm/o8dsX
-         o7YA==
-X-Gm-Message-State: AJIora9/tQfR0yVg14krYCeE/nSLzD+KSJScpxfQpWfR/a+CqNFZErj/
-        qMQW5sUbdU8JU58RzvUmJ4x4BQ==
-X-Google-Smtp-Source: AGRyM1v5eWfRK0YQoqHluU652Yu0VL9rjqD1R4mOxvp/6i3wbLE6ekpCxsFI+Ofij4URWX6raZwyEA==
-X-Received: by 2002:a17:906:8315:b0:726:38da:f0f with SMTP id j21-20020a170906831500b0072638da0f0fmr11685646ejx.462.1656319505768;
-        Mon, 27 Jun 2022 01:45:05 -0700 (PDT)
-Received: from [192.168.0.247] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id g18-20020a170906595200b006f3ef214e20sm4685683ejr.134.2022.06.27.01.45.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 01:45:05 -0700 (PDT)
-Message-ID: <724bca0f-2474-0aba-35df-6733bb5597d3@linaro.org>
-Date:   Mon, 27 Jun 2022 10:45:04 +0200
+        Mon, 27 Jun 2022 04:45:39 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906B1631E
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:45:38 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LWh9H1MqMzkWnN;
+        Mon, 27 Jun 2022 16:44:19 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 27 Jun 2022 16:45:36 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 27 Jun
+ 2022 16:45:36 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <iommu@lists.linux-foundation.org>
+CC:     <joro@8bytes.org>, <will@kernel.org>, <yf.wang@mediatek.com>
+Subject: [PATCH -next] iommu/dma: Fix missing mutex_init() in iommu_get_msi_cookie()
+Date:   Mon, 27 Jun 2022 16:55:33 +0800
+Message-ID: <20220627085533.1469141-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 19/40] arm64: dts: tegra: align gpio-key node names
- with dtschema
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     arm@kernel.org, soc@kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
- <20220616005333.18491-19-krzysztof.kozlowski@linaro.org>
- <YrXhb5izGPNXEmMK@orome> <dcd4be85-21ab-beb9-e6dc-bd7f570459fd@linaro.org>
-In-Reply-To: <dcd4be85-21ab-beb9-e6dc-bd7f570459fd@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/06/2022 18:09, Krzysztof Kozlowski wrote:
-> On 24/06/2022 18:08, Thierry Reding wrote:
->> On Wed, Jun 15, 2022 at 05:53:12PM -0700, Krzysztof Kozlowski wrote:
->> [...]
->>> diff --git a/arch/arm64/boot/dts/nvidia/tegra132-norrin.dts b/arch/arm64/boot/dts/nvidia/tegra132-norrin.dts
->>> index f16acb4cabaa..62d58221ad3c 100644
->>> --- a/arch/arm64/boot/dts/nvidia/tegra132-norrin.dts
->>> +++ b/arch/arm64/boot/dts/nvidia/tegra132-norrin.dts
->>> @@ -1030,7 +1030,7 @@ clk32k_in: clock-32k {
->>>  	gpio-keys {
->>>  		compatible = "gpio-keys";
->>>  
->>> -		lid {
->>> +		switch-lid {
->>>  			label = "Lid";
->>>  			gpios = <&gpio TEGRA_GPIO(R, 4) GPIO_ACTIVE_LOW>;
->>>  			linux,input-type = <5>;
->>> @@ -1039,7 +1039,7 @@ lid {
->>>  			wakeup-source;
->>>  		};
->>>  
->>> -		power {
->>> +		switch-power {
->>
->> This one is actually a key.
->>
->> [...]
->>> diff --git a/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts b/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts
->>> index a263d51882ee..8494c7b2961b 100644
->>> --- a/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts
->>> +++ b/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts
->> [...]
->>> @@ -1772,7 +1772,7 @@ lid {
->>>  			wakeup-source;
->>>  		};
->>>  
->>> -		tablet_mode {
->>> +		key-tablet-mode {
->>>  			label = "Tablet Mode";
->>>  			gpios = <&gpio TEGRA_GPIO(Z, 2) GPIO_ACTIVE_HIGH>;
->>>  			linux,input-type = <EV_SW>;
->>
->> And this one more like a switch since it's triggered by a magnet, as far
->> as I understand.
->>
->> No need to resend, I can fix these up when I apply. Just let me know if
->> you have any objections to me making those changes.
-> 
-> Sounds good, thanks for catching these.
+cookie_alloc() is called by iommu_get_dma_cookie() and iommu_get_msi_cookie(),
+but the mutex is only initialized in iommu_get_dma_cookie(), move mutex_init()
+into cookie_alloc() to make sure the mutex will be initialized.
 
+Fixes: ac9a5d522bb8 ("iommu/dma: Fix race condition during iova_domain initialization")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/iommu/dma-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hi Thierry,
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 1910f4f1612b..e29157380c48 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -294,6 +294,7 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
+ 	if (cookie) {
+ 		INIT_LIST_HEAD(&cookie->msi_page_list);
+ 		cookie->type = type;
++		mutex_init(&cookie->mutex);
+ 	}
+ 	return cookie;
+ }
+@@ -311,7 +312,6 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
+ 	if (!domain->iova_cookie)
+ 		return -ENOMEM;
+ 
+-	mutex_init(&domain->iova_cookie->mutex);
+ 	return 0;
+ }
+ 
+-- 
+2.25.1
 
-To be more explicit - no objects for taking these, please apply.
-
-Best regards,
-Krzysztof
