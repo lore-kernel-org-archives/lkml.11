@@ -2,101 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 556AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B059C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236081AbiF0NYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
+        id S234032AbiF0NYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234032AbiF0NX7 (ORCPT
+        with ESMTP id S236055AbiF0NYF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:23:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B75C3630D
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:23:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D0CFB801BF
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:23:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54CD8C3411D;
-        Mon, 27 Jun 2022 13:23:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656336236;
-        bh=JZtRNbKRSnXdu8246O2Zh/waviRpngCjFGfB/SCDurY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bbqUrPAEaRX4jCY/G58o+pwL3e/9rYcVhyI1P3ILSMZ3/CkdKwmnzm3h+WEPALZUx
-         Eu3bC72hxJQriy5R+dhxh8IWfypvQD0Q1ZKOEBAPrxHn73DOjizUlpWTPla1zCVBGA
-         JHW3YQeb5OBdlGUmdnwIchPuT/J99TYqVtSPopAJhtM3N5ukAV84RTfsFN7bqlP4qD
-         LQLCqYMxTyD+NhXcAuFtgN9N4tdjECsm0hp1zfJUMLiPzDW8hJYBtqY84Yf1YVUJ+d
-         9atYA3I5GeC3bHg33kVUz55fIPm6CSbeW7CZdwfUQNF63sS0bsepSmF9qdA/vRIcgg
-         PVJr3eZSMxpsA==
-Date:   Mon, 27 Jun 2022 14:23:50 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        s.nawrocki@samsung.com, jrdr.linux@gmail.com, lgirdwood@gmail.com,
-        alsa-devel@alsa-project.org, patches@opensource.cirrus.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: samsung: s3c24xx-i2s: Fix typo in DAIFMT handling
-Message-ID: <YrmvZonpB5GhLGbG@sirena.org.uk>
-References: <20220627094335.3051210-1-ckeepax@opensource.cirrus.com>
- <803785ef-42b7-647c-9653-702067439ae9@linaro.org>
- <YrmYbZV4mj9d9++t@sirena.org.uk>
- <a25126ed-ef39-8316-6ae5-9551aa8120b0@linaro.org>
+        Mon, 27 Jun 2022 09:24:05 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BFC6325;
+        Mon, 27 Jun 2022 06:24:02 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25RCi4Ri025322;
+        Mon, 27 Jun 2022 13:24:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=lufC5tvpbEMIZwaMg3c+B9iUjLptd2pJU2Q7eJyQgyE=;
+ b=Bn9edlDVW8P9RRM7/Ri2mMZOzUN2G3mav5G3P3GYaMhLXHqcKPawUwlpUk7eg9McApFC
+ JiAV45rkiZL6MvModJ5wYx/vS30Em9/tkMNZXMwtnplZqs75r3ie1790Vz4tP2yWanKA
+ szvqlHJsBZ1bRNZJDxZlbifYtbpYr3t7duM4fWaCOneRU6f9ID6TlnwyPMuXvbJXqAgg
+ Ut5gtdlTdmMX5OaLXRjlB/LBU588OiWjvGr6t16EP5AiCJhEL8I2+SP2xbbLZ9Fflo2i
+ Jpy5hdTjSaXoSZy5yUyHzQBSb/iWLtjB7NIeohKC+dObtDoK8Jnnvgz9olh+Rijv5Ox1 dQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyctg99qf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 13:24:01 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25RCixbf028286;
+        Mon, 27 Jun 2022 13:24:01 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyctg99ps-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 13:24:00 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25RDK2Ps027811;
+        Mon, 27 Jun 2022 13:23:58 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04fra.de.ibm.com with ESMTP id 3gwt0929gj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 13:23:58 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25RDO2DV30605680
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 27 Jun 2022 13:24:02 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C462E11C04A;
+        Mon, 27 Jun 2022 13:23:55 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 19CDE11C052;
+        Mon, 27 Jun 2022 13:23:55 +0000 (GMT)
+Received: from [9.171.84.214] (unknown [9.171.84.214])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 27 Jun 2022 13:23:55 +0000 (GMT)
+Message-ID: <57573020-7702-2090-d947-4d1d72548b4f@linux.ibm.com>
+Date:   Mon, 27 Jun 2022 15:28:23 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="apPYr//3R46wZGJT"
-Content-Disposition: inline
-In-Reply-To: <a25126ed-ef39-8316-6ae5-9551aa8120b0@linaro.org>
-X-Cookie: Your supervisor is thinking about you.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v10 1/3] KVM: s390: ipte lock for SCA access should be
+ contained in KVM
+Content-Language: en-US
+To:     Nico Boehr <nrb@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
+        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
+        seiden@linux.ibm.com
+References: <20220620125437.37122-1-pmorel@linux.ibm.com>
+ <20220620125437.37122-2-pmorel@linux.ibm.com>
+ <165605386635.8840.16705488876454527148@localhost.localdomain>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <165605386635.8840.16705488876454527148@localhost.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: TqmcZkwRd983YEfdaFFl-QHhrsNzMsnd
+X-Proofpoint-GUID: NArhPbz41rHMlHnRkW5qDwh6npE7mM1f
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-27_06,2022-06-24_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1015
+ impostorscore=0 lowpriorityscore=0 spamscore=0 suspectscore=0
+ mlxlogscore=999 malwarescore=0 adultscore=0 bulkscore=0 priorityscore=1501
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206270058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---apPYr//3R46wZGJT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Mon, Jun 27, 2022 at 02:11:13PM +0200, Krzysztof Kozlowski wrote:
-> On 27/06/2022 13:45, Mark Brown wrote:
-> > On Mon, Jun 27, 2022 at 11:49:46AM +0200, Krzysztof Kozlowski wrote:
+On 6/24/22 08:57, Nico Boehr wrote:
+> Quoting Pierre Morel (2022-06-20 14:54:35)
+>> We can check if SIIF is enabled by testing the sclp_info struct
+>> instead of testing the sie control block eca variable.
+>> sclp.has_ssif is the only requirement to set ECA_SII anyway
+>> so we can go straight to the source for that.
+>>
+>> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+>> Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+>> Reviewed-by: David Hildenbrand <david@redhat.com>
+> 
+> Reviewed-by: Nico Boehr <nrb@linux.ibm.com>
+> 
 
-> > 0b491c7c1b2555ef08285fd49a8567f2f9f34ff8 - if you can't find something
-> > search for the subject, people often get things wrong.
+Thanks,
+Pierre
 
-> Finding it by subject does not solve problem with Fixes tag, that it
-> might be pointing to incorrect commit (e.g. rebased).
-
-Sure, but that's an incorrect SHA rather than not being able to find the
-commit which is what you said.
-
-> >> This way you would get build coverage... because it seems the build was
-> >> missing in your case.
-
-> > That coverage has apparently also been missing in -next for several
-> > weeks.
-
-> Eh, it seems defconfigs for this old platform do not select sound, so we
-> rely on randconfig. :(
-
-It's not even turning up in an allmodconfig?
-
---apPYr//3R46wZGJT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmK5r2YACgkQJNaLcl1U
-h9AIiQf+J4cKSrpie5fzCfZatw/Ms70JQ8wIwrUTA2mYCajSa1hWQYOaJjUniiwU
-syfJFKnG1f4/rEmA7jppNanOYh2kfp8XlkZMsoIENwVV6gYeGbA8kLMKgMOxJJ5o
-FUEnOYWyFMkkinvcLtcCY99r9R/DKcp+ixgSLsgMFKrgUNPARfTD5pXL/DFnr4mw
-1YTLGIGvTCuxspMXzqkNDWBMH3XmdBan+akJ0tZoqvOIKB9XDvXmmKoPeV1r7I8D
-TwGsPvsCSpmVuNeFuPYKiBK638ylmFMzojREXfKM96ha4K9QBa+Eo+euEGJX+n/4
-GxD/EvRCuId+N5NjJCf6TVfLHoUNQA==
-=W0Bl
------END PGP SIGNATURE-----
-
---apPYr//3R46wZGJT--
+-- 
+Pierre Morel
+IBM Lab Boeblingen
