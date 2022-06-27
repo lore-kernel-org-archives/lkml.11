@@ -2,151 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19476C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233161AbiF0HvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
+        id S232990AbiF0HwN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233159AbiF0HvH (ORCPT
+        with ESMTP id S232663AbiF0HwD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:51:07 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065AD6168;
-        Mon, 27 Jun 2022 00:51:01 -0700 (PDT)
-X-UUID: b3e4799511524f0ca443ae7925150390-20220627
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:c2756198-7b65-4fe0-b6ba-48ddbafd8c76,OB:0,LO
-        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:25
-X-CID-META: VersionHash:b14ad71,CLOUDID:4252212e-1756-4fa3-be7f-474a6e4be921,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: b3e4799511524f0ca443ae7925150390-20220627
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 827043868; Mon, 27 Jun 2022 15:50:54 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Mon, 27 Jun 2022 15:50:53 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Mon, 27 Jun 2022 15:50:53 +0800
-Message-ID: <a2612c2628eefbbf909d4847b3d0067746813f33.camel@mediatek.com>
-Subject: Re: [PATCH v14 01/15] dt-bindings: mediatek,dpi: Add DP_INTF
- compatible
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Mon, 27 Jun 2022 15:50:52 +0800
-In-Reply-To: <20220624030946.14961-2-rex-bc.chen@mediatek.com>
-References: <20220624030946.14961-1-rex-bc.chen@mediatek.com>
-         <20220624030946.14961-2-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 27 Jun 2022 03:52:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9CC76174
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:51:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656316309;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=xZRxk45blbbVKouBNkJa4r6LzelZm251Oyfsi7Y/n3g=;
+        b=U+9Xtuar5jpg1NiJ/d/M//KPzzMfb924bFaaOdXVSfovuM9gBhH+baI2F0S1yQwfce52cN
+        pF2azUy+2H8NhAkW83nAPLgslbQkloUXrtz3Uinjy2UVbWHDlUy9UzfDvR/Wp6L/fjJjdv
+        7dQMpgG2cwUC9HEl6nisnUSviDhZw7Y=
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
+ [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-59-GVZDCNw-OxyYp1Mg5P2hcA-1; Mon, 27 Jun 2022 03:51:48 -0400
+X-MC-Unique: GVZDCNw-OxyYp1Mg5P2hcA-1
+Received: by mail-pj1-f69.google.com with SMTP id h11-20020a17090a130b00b001eca05382e7so3228768pja.9
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:51:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xZRxk45blbbVKouBNkJa4r6LzelZm251Oyfsi7Y/n3g=;
+        b=S3YDQVTW1e8XBeVcEOfd8HNnXU2qdzrMTBGDr5OCEJiDygl3j6l149xOolT+Tqk8Q7
+         +hJEfA7grZogudQADy535Z8bCkSQxUVmhsVG9FZfVSJhT087q8hj6cfoLSmGDCU2KWke
+         AQdPmqHVWaZFLouOJ/9fvvcWXOcvx76a/L8cUg2JRFANnSwgT7qcPrspLnDhcxSqVkOS
+         w+25qz/cwdNcdRWEHBQokBp4BHbSEG/sMoZ9F0ROlthiMnWpKjyYyj3SkgUrQjK/smfP
+         0RYWjRx2iwZxDMuWu26N+Jt6Bci/RFMprztFex7wuvtnw4B6yA8LAHhlkFIcS8Y2HowL
+         396A==
+X-Gm-Message-State: AJIora9f0CJnmkYrOnQTsa/ksrrgnfDoI1bRAuMiuAxBDzCfAUV7KXAV
+        YIN1CX87y5UddGa3RmxTLLRhMtSLd6987Pv1vHGuRDcT69FT2uiP5jvO/bqfkv4zSQgZJM4N7HN
+        LSCfOpFNk41PEUJHRQI2sHWc4
+X-Received: by 2002:a17:903:230d:b0:16a:73ce:9068 with SMTP id d13-20020a170903230d00b0016a73ce9068mr13186034plh.57.1656316307234;
+        Mon, 27 Jun 2022 00:51:47 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vA7kWLyjSTH2Ul73cyviWapNDDOK80s/6Tz5T94ix0V5MyOp52lL87RqwN812fFM4e7ARtjQ==
+X-Received: by 2002:a17:903:230d:b0:16a:73ce:9068 with SMTP id d13-20020a170903230d00b0016a73ce9068mr13186019plh.57.1656316306908;
+        Mon, 27 Jun 2022 00:51:46 -0700 (PDT)
+Received: from localhost.localdomain.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id em20-20020a17090b015400b001eae86cf683sm6520169pjb.42.2022.06.27.00.51.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 00:51:46 -0700 (PDT)
+From:   Tao Liu <ltao@redhat.com>
+To:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     akpm@linux-foundation.org, Tao Liu <ltao@redhat.com>
+Subject: [PATCH v2] kdump: round up the total memory size to 128M for crashkernel reservation
+Date:   Mon, 27 Jun 2022 15:44:41 +0800
+Message-Id: <20220627074440.187222-1-ltao@redhat.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
+The total memory size we get in kernel is usually slightly less than
+the actual memory size because BIOS/firmware will reserve some memory
+region. So it won't export all memory as usable.
 
-On Fri, 2022-06-24 at 11:09 +0800, Bo-Chen Chen wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> DP_INTF is similar to DPI but does not have the exact same feature
-> set
-> or register layouts.
-> 
-> DP_INTF is the sink of the display pipeline that is connected to the
-> DisplayPort controller and encoder unit. It takes the same clocks as
-> DPI.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> [Bo-Chen: Modify reviewers' comments.]
+E.g, on my x86_64 kvm guest with 1G memory, the total_mem value shows:
+UEFI boot with ovmf:   0x3faef000
+Legacy boot kvm guest: 0x3ff7ec00
 
-Except this line,
+When specifying crashkernel=1G-2G:128M, if we have a 1G memory machine,
+we get total size 1023M from firmware. Then it will not fall into
+1G-2G, thus no memory reserved. User will never know this, it is hard
+to let user know the exact total value in kernel.
 
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
+One way is to use dmi/smbios to get physical memory size, but it's not
+reliable as well. According to Prarit hardware vendors sometimes screw
+this up. Thus round up total size to 128M to work around this problem.
 
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> ---
->  .../bindings/display/mediatek/mediatek,dpi.yaml       | 11 ++++++---
-> --
->  1 file changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git
-> a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
-> l
-> b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
-> l
-> index 77ee1b923991..8e526a4b134e 100644
-> ---
-> a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
-> l
-> +++
-> b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
-> l
-> @@ -4,16 +4,16 @@
->  $id: 
-> http://devicetree.org/schemas/display/mediatek/mediatek,dpi.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: mediatek DPI Controller Device Tree Bindings
-> +title: mediatek DPI and DP_INTF Controller
->  
->  maintainers:
->    - CK Hu <ck.hu@mediatek.com>
->    - Jitao shi <jitao.shi@mediatek.com>
->  
->  description: |
-> -  The Mediatek DPI function block is a sink of the display subsystem
-> and
-> -  provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422 pixel data on a
-> parallel
-> -  output bus.
-> +  The Mediatek DPI and DP_INTF function blocks are a sink of the
-> display
-> +  subsystem and provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422
-> pixel data on a
-> +  parallel output bus.
->  
->  properties:
->    compatible:
-> @@ -24,6 +24,7 @@ properties:
->        - mediatek,mt8183-dpi
->        - mediatek,mt8186-dpi
->        - mediatek,mt8192-dpi
-> +      - mediatek,mt8195-dp-intf
->  
->    reg:
->      maxItems: 1
-> @@ -55,7 +56,7 @@ properties:
->      $ref: /schemas/graph.yaml#/properties/port
->      description:
->        Output port node. This port should be connected to the input
-> port of an
-> -      attached HDMI or LVDS encoder chip.
-> +      attached HDMI, LVDS or DisplayPort encoder chip.
->  
->  required:
->    - compatible
+This patch is a resend of [1] and rebased onto v5.19-rc2, and the
+original credit goes to Dave Young <dyoung@redhat.com>.
+
+[1]: http://lists.infradead.org/pipermail/kexec/2018-April/020568.html
+
+Signed-off-by: Tao Liu <ltao@redhat.com>
+---
+v1 -> v2:
+Modified commit log based on Baoquan's advice.
+---
+ kernel/crash_core.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+index 71122e01623c..b58b27cbdb61 100644
+--- a/kernel/crash_core.c
++++ b/kernel/crash_core.c
+@@ -9,6 +9,7 @@
+ #include <linux/init.h>
+ #include <linux/utsname.h>
+ #include <linux/vmalloc.h>
++#include <linux/sizes.h>
+ 
+ #include <asm/page.h>
+ #include <asm/sections.h>
+@@ -43,6 +44,15 @@ static int __init parse_crashkernel_mem(char *cmdline,
+ 					unsigned long long *crash_base)
+ {
+ 	char *cur = cmdline, *tmp;
++	unsigned long long total_mem = system_ram;
++
++	/*
++	 * Firmware sometimes reserves some memory regions for its own use,
++	 * so the system memory size is less than the actual physical memory
++	 * size. Work around this by rounding up the total size to 128M,
++	 * which is enough for most test cases.
++	 */
++	total_mem = roundup(total_mem, SZ_128M);
+ 
+ 	/* for each entry of the comma-separated list */
+ 	do {
+@@ -87,13 +97,13 @@ static int __init parse_crashkernel_mem(char *cmdline,
+ 			return -EINVAL;
+ 		}
+ 		cur = tmp;
+-		if (size >= system_ram) {
++		if (size >= total_mem) {
+ 			pr_warn("crashkernel: invalid size\n");
+ 			return -EINVAL;
+ 		}
+ 
+ 		/* match ? */
+-		if (system_ram >= start && system_ram < end) {
++		if (total_mem >= start && total_mem < end) {
+ 			*crash_size = size;
+ 			break;
+ 		}
+-- 
+2.33.1
 
