@@ -2,92 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3853AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:54:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D85CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234857AbiF0NyN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
+        id S236416AbiF0Nyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236376AbiF0NyK (ORCPT
+        with ESMTP id S235121AbiF0Ny2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:54:10 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7075B3E
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:54:08 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 58A315C012B;
-        Mon, 27 Jun 2022 09:54:08 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Mon, 27 Jun 2022 09:54:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1656338048; x=
-        1656424448; bh=q+1sB2EjKcE1D8Tt+wDoAsTfPMB0jI+HIrgtAgz1Z1g=; b=u
-        AU0K7dyq3nxoLFHI3xDzu49j1PDXSwgSsjbljTcWvmYNuyYRNeR8CGqMMNT7s0Xv
-        I4b1dzobXDJjgfF1Z0L3TMxJnZd8lQiGgkGlQJEJ3HfE88P8WQfB3296N/9Qm20o
-        ck6WNphZlECVXYGr8iXxAEPHCOrbEqBP57wkBgoKzPTOUZE2I/xdVAdh2CIOJviA
-        ggpcXdAcW8iTykevTd49ok2w331wvac/XYALg9Pd4VlfM78KtYOPCPRzpl8ZnKyf
-        yPHZB6N4vcZO3+FL22x6Jmt3j6Zi713ZJt7fd9riqkRIJ2vcvPhsuSIQWKqeyo/+
-        scgfTjG05n8a7MCXZb30w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1656338048; x=
-        1656424448; bh=q+1sB2EjKcE1D8Tt+wDoAsTfPMB0jI+HIrgtAgz1Z1g=; b=x
-        kgDm3Amu09zG7ZzoMOs7HaZ3HgMl7Xx2I8Q9sXfp09vhbPnmm5gP+tggPZRJ1dLm
-        9D7Z/FLNEylOpCqIqjC1TMs4tWakCC35zqbh1zKN96LJFEgJjVx5JP0/Piklj92P
-        Hx3TFn8N4HJQSR19D2nN9T/tSE91COqcF+VS78jULbKATSfegboASYehkpMJXUsd
-        kbeQIYxxv2kYOofhlbUPRZ/+KUbUTxzxj/NmHjgVLpU+Y3o3Uk0pmpAvtTRghwZl
-        0fCZKKCwPs8aGA/8ZWHmcxHZ4sOqti/z3bgUZogjQVS7KwhPitJ7IBg3ZoxzJVGi
-        sqDqKKHyBFdarLpViyxsg==
-X-ME-Sender: <xms:f7a5Yl__QZ45XXNciEE-EHfpSbjqICr2xeUosPjLWdW06k-EIpDB0w>
-    <xme:f7a5YpsxE8OTwNij8ipVjJdUpPJhXqMo0sIHkotay8jen_AlYSBkdOD5TF26EAIcp
-    -FjopIg4NuwuMjdm5E>
-X-ME-Received: <xmr:f7a5YjC5AWpevjipQ-5CmeAF3W1ERBBRh87CbwbBqsCaMlf4X6zI_oc6ct9dLZ_V3-Tvr8ms2wm1SWaBGIBGut235s-GhV1uIc2FvfU>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeghedgjeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfgggtgfesth
-    ekredtredtjeenucfhrhhomhepofgrgihimhgvucftihhprghrugcuoehmrgigihhmvges
-    tggvrhhnohdrthgvtghhqeenucggtffrrghtthgvrhhnpeeuieeggffhffffieefheduie
-    euvdetgeeufeffvefgtedvffehheekffevudefieenucevlhhushhtvghrufhiiigvpedt
-    necurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:f7a5YpdlQExR2mTP8LWISu9VymKMOYA7FMAVC82nw8cD4zUD7PK2Xw>
-    <xmx:f7a5YqOvKChoRShS060Qm7AS9cOs_M0wxivCV2_TAEsR_z6bNsEsmg>
-    <xmx:f7a5YrnWSWx07H9HeJoC7MC6e79r06WTcLLgJJr4dvetKfjpGhFD1A>
-    <xmx:gLa5YpdY6Dq9v5Q2MIchgn7_BEjVKqe4ejKt_krUnQe87MAv0hSMMA>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 27 Jun 2022 09:54:07 -0400 (EDT)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     farooqui_saud@hotmail.com
-Cc:     Maxime Ripard <maxime@cerno.tech>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, wens@csie.org,
-        linux-sunxi@lists.linux.dev, jernej.skrabec@gmail.com,
-        samuel@sholland.org, daniel@ffwll.ch
-Subject: Re: [PATCH v2] drm/sun4i: Return if frontend is not present
-Date:   Mon, 27 Jun 2022 15:54:03 +0200
-Message-Id: <165633801993.372965.3420512862905584546.b4-ty@cerno.tech>
+        Mon, 27 Jun 2022 09:54:28 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5156631F;
+        Mon, 27 Jun 2022 06:54:27 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25RDN1Uh003946;
+        Mon, 27 Jun 2022 13:53:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=GAWoFxCNJhIvlMoWt/ylWRzzaBWADkUmC7Q0ZaAXQKw=;
+ b=C0ydIsLJo8x0/XnILLmB+DUZEBR5KX89h2JbxUzVNC6/KgG1neIl2vXdYCVInE2Li/c8
+ nuiA2CuFmQzyvXOxgYSSZnxlPvWVr6pr2LGCrp1g2SQgwew1o7KKGlCP54NS692fwiGh
+ o+Kf4WPsKd9moa4t6SCvS8V7bvScgy0N4319jWM0y2XuyczOSQyqfwssbSLHhZ11Pgms
+ xZyyiaIv4pRZTvM/RN5WLB7UhuLG0M/TCOH4d3qa6bripbGyddUftQhirwg7YKsw8FZX
+ Dk1q8o9yzRyQ4x8eNhyV0VAg/tJeaM2LPzNXTqxr/RWOyckxyg/ddpti8mKle1fPF+25 iQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gydcv8vq7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 13:53:56 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25RDaoDs024237;
+        Mon, 27 Jun 2022 13:53:56 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gydcv8vn1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 13:53:55 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25RDq9Bo028366;
+        Mon, 27 Jun 2022 13:53:51 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04fra.de.ibm.com with ESMTP id 3gwt092age-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 13:53:51 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25RDrmtT23003544
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 27 Jun 2022 13:53:48 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 581B4AE051;
+        Mon, 27 Jun 2022 13:53:48 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D0F45AE045;
+        Mon, 27 Jun 2022 13:53:47 +0000 (GMT)
+Received: from pomme.tlslab.ibm.com (unknown [9.101.4.33])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 27 Jun 2022 13:53:47 +0000 (GMT)
+From:   Laurent Dufour <ldufour@linux.ibm.com>
+To:     wim@linux-watchdog.org, linux@roeck-us.net, mpe@ellerman.id.au,
+        benh@kernel.crashing.org, paulus@samba.org, nathanl@linux.ibm.com,
+        haren@linux.vnet.ibm.com, npiggin@gmail.com
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-watchdog@vger.kernel.org
+Subject: [PATCH v3 0/4] Extending NMI watchdog during LPM
+Date:   Mon, 27 Jun 2022 15:53:43 +0200
+Message-Id: <20220627135347.32624-1-ldufour@linux.ibm.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <PA4P189MB1421E93EF5F8E8E00E71B7878BB29@PA4P189MB1421.EURP189.PROD.OUTLOOK.COM>
-References: <20220622075725.y6ws22ielpc4pmxw@houat> <PA4P189MB1421E93EF5F8E8E00E71B7878BB29@PA4P189MB1421.EURP189.PROD.OUTLOOK.COM>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 356kCkZtDT4EdcQIcQ430xVDqLe2qI9o
+X-Proofpoint-GUID: kkjhEORm_2eMvJi08KpG6Xk7BV_E4iDG
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-27_06,2022-06-24_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 adultscore=0 spamscore=0 mlxscore=0 clxscore=1015 phishscore=0
+ mlxlogscore=972 suspectscore=0 malwarescore=0 impostorscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206270059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 22 Jun 2022 13:59:17 +0500, Saud Farooqui wrote:
-> Added return statement in sun4i_layer_format_mod_supported()
-> in case frontend is not present.
-> 
-> 
+When a partition is transferred, once it arrives at the destination node,
+the partition is active but much of its memory must be transferred from the
+start node.
 
-Applied to drm/drm-misc (drm-misc-fixes).
+It depends on the activity in the partition, but the more CPU the partition
+has, the more memory to be transferred is likely to be. This causes latency
+when accessing pages that need to be transferred, and often, for large
+partitions, it triggers the NMI watchdog.
 
-Thanks!
-Maxime
+The NMI watchdog causes the CPU stack to dump where it appears to be
+stuck. In this case, it does not bring much information since it can happen
+during any memory access of the kernel.
+
+In addition, the NMI interrupt mechanism is not secure and can generate a
+dump system in the event that the interruption is taken while MSR[RI]=0.
+
+Depending on the LPAR size and load, it may be interesting to extend the
+NMI watchdog timer during the LPM.
+
+That's configurable through sysctl with the new introduced variable
+(specific to powerpc) nmi_watchdog_factor. This value represents the
+percentage added to watchdog_tresh to set the NMI watchdog timeout during a
+LPM.
+
+Changes in v3:
+ - don't export watchdog_mutex
+ - fix a comment in mobilty.c, wait_for_vasi_session_completed()
+ - fix a build issue when !CONFIG_PPC_WATCHDOG
+ - rework some printk and rename the sysctl variable.
+
+v2:
+https://lore.kernel.org/all/20220614135414.37746-1-ldufour@linux.ibm.com/
+
+Laurent Dufour (4):
+  powerpc/mobility: wait for memory transfer to complete
+  watchdog: export lockup_detector_reconfigure
+  powerpc/watchdog: introduce a NMI watchdog's factor
+  pseries/mobility: set NMI watchdog factor during LPM
+
+ Documentation/admin-guide/sysctl/kernel.rst | 12 +++
+ arch/powerpc/include/asm/nmi.h              |  2 +
+ arch/powerpc/kernel/watchdog.c              | 21 ++++-
+ arch/powerpc/platforms/pseries/mobility.c   | 85 ++++++++++++++++++++-
+ include/linux/nmi.h                         |  2 +
+ kernel/watchdog.c                           | 21 +++--
+ 6 files changed, 135 insertions(+), 8 deletions(-)
+
+-- 
+2.36.1
+
