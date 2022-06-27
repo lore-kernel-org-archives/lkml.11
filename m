@@ -2,538 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 690E0CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF508C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234066AbiF0JqA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 05:46:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
+        id S233654AbiF0Jr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 05:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233930AbiF0Jp5 (ORCPT
+        with ESMTP id S231927AbiF0Jrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 05:45:57 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C5D6390
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:45:55 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id o9so12116971edt.12
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:45:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aIP+1dZIiVOhC8HwHgj9eZ41EIvs9BjKGc4gdg2Yxtw=;
-        b=ZobDi1HTr1/FJ2bHX3cCm9OJoobcBDD9EtWkv16ThN7lMvsX3cEDiKfNQitQJ1uHQr
-         qIReIFQla6j2IiYPnjvBHeTiUzoDi/XZIMVp6FBKSXldn9luf1TaxrAE3bgozTpjBT2g
-         1pWt7muLGjkmg6bkKZxa2Ua/lysVxLrl7+XNMYIuqrJuqYDs1zMqhcRQs90K36VwIcJ3
-         7sBIbUb1A7n3Ikk9RjFIy+bhCdNHEct2ucvFpm0sDayFDjw9lt8l4CHO4Z22EpnZoKPZ
-         hq1a7yVLLOQHuSdJE4ybGazEo0TSi+lyZP47Ldo5s/y7RIBLj3N6RVdz/lK6NnMRvHlg
-         aHYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aIP+1dZIiVOhC8HwHgj9eZ41EIvs9BjKGc4gdg2Yxtw=;
-        b=Mbmsq7GZr/GPwzlJVCPaPmHzaGuPM8qkxIeID5VerqByRKmC/KBILLeNYIRMHduH60
-         XqCrA+V26cWkTBYa4Qg2M2FePUPjNnOvEnc9NjJ1bqSO0BzceBGZchFJs7WqKJxw5tHP
-         GoEJlXBBdeFdCXegsz+FBlX4zjJM6FKFAoq3CJ2HXkwjirSGuoHOTdBzwFNSfrDDTVhm
-         Oe/K+0eKmOvN9DAgHQNRJB9XZCC5p6WSSZYzlAjJSTwR1fIZUU3jBy7mBpCB8Kik/JVt
-         WV279Amm+Bl9iW2AKR95kFOrKV1qU5mLtUVZ5gTxZ/Nfn4swyrbNkoY3aJjLRWLbIGso
-         gKNQ==
-X-Gm-Message-State: AJIora/qgtNXYKNx3v+Kuh2hGi+rgYPZ2O2x57zzU7Rz30qgtEWolEP4
-        25vQb1oyexjOvy7PCi6jRziK8Q==
-X-Google-Smtp-Source: AGRyM1sSt2vWToLdyw975gx1SFJjCITh1OxEp4WePLXPlvyPLatSbRoN5L5V1Vw4/qWrZ1LLFPrTzA==
-X-Received: by 2002:a05:6402:354d:b0:435:93f9:fc0b with SMTP id f13-20020a056402354d00b0043593f9fc0bmr15108363edd.288.1656323154134;
-        Mon, 27 Jun 2022 02:45:54 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id lu4-20020a170906fac400b006fec69696a0sm4749907ejb.220.2022.06.27.02.45.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 02:45:53 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2] arm64: dts: qcom: align OPP table names with DT schema
-Date:   Mon, 27 Jun 2022 11:32:50 +0200
-Message-Id: <20220627093250.84391-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 27 Jun 2022 05:47:55 -0400
+Received: from mailout2.rbg.tum.de (mailout2.rbg.tum.de [IPv6:2a09:80c0::202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26F363E5;
+        Mon, 27 Jun 2022 02:47:52 -0700 (PDT)
+Received: from mailrelay1.rbg.tum.de (mailrelay1.in.tum.de [131.159.254.14])
+        by mailout2.rbg.tum.de (Postfix) with ESMTPS id E30454C0264;
+        Mon, 27 Jun 2022 11:47:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=in.tum.de;
+        s=20220209; t=1656323269;
+        bh=L7qEC585hEwBxV8TKjave0aeMkYAgmHI5p0Vbtge8QA=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
+        b=sRtvA5EtU1Ty8eIw7cJ9R4f3SBWwGup6tHqeVh8hyDnP2EsE0TBu3Vx5lAdZwTR7m
+         8+vlI3ypNmw4K8qQnRW0zMKdRYd6sc3CD2b333U8WRbhLqQ/WDTQ08QD9gFlpFqUPu
+         pRH0Qg0dT1HevStbFhCwj6/lm69r4bp5UFKV2D43sEB08u3WYBnnglXcinUew9l5lY
+         0uxL6oZJBtlqIx/7CFdLWo0ZkyxaXAG47DyObnuqKKeTQL5fDp+P27Y3N7f8TPLZtY
+         iFUc49TWZn8Ge9rw8knPZfVsKM1OkqMisH2qpYfK72ZGgBwYiSDvalaOLD17cBY4PU
+         jBG/7ELBotZgA==
+Received: by mailrelay1.rbg.tum.de (Postfix, from userid 112)
+        id 67D853F8; Mon, 27 Jun 2022 11:47:44 +0200 (CEST)
+Received: from mailrelay1.rbg.tum.de (localhost [127.0.0.1])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTP id 3A2493F7;
+        Mon, 27 Jun 2022 11:47:44 +0200 (CEST)
+Received: from mail.in.tum.de (vmrbg426.in.tum.de [131.159.0.73])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTPS id 34C693F5;
+        Mon, 27 Jun 2022 11:47:44 +0200 (CEST)
+Received: by mail.in.tum.de (Postfix, from userid 112)
+        id 3079D4A03A9; Mon, 27 Jun 2022 11:47:44 +0200 (CEST)
+Received: (Authenticated sender: heidekrp)
+        by mail.in.tum.de (Postfix) with ESMTPSA id 98ED34A0067;
+        Mon, 27 Jun 2022 11:47:43 +0200 (CEST)
+        (Extended-Queue-bit xtech_jh@fff.in.tum.de)
+Content-Type: multipart/signed;
+        boundary="Apple-Mail=_D532E39D-CD94-4301-B85C-8B71FDAE15EB";
+        protocol="application/pkcs7-signature";
+        micalg=sha-256
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH RFC] tools/memory-model: Adjust ctrl dependency definition
+From:   =?utf-8?Q?Paul_Heidekr=C3=BCger?= <Paul.Heidekrueger@in.tum.de>
+In-Reply-To: <YrHUkfDWsexHRUKj@rowland.harvard.edu>
+Date:   Mon, 27 Jun 2022 11:47:43 +0200
+Cc:     clang-built-linux <llvm@lists.linux.dev>,
+        linux-toolchains@vger.kernel.org,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Marco Elver <elver@google.com>,
+        Charalampos Mainas <charalampos.mainas@gmail.com>,
+        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
+        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
+        Martin Fink <martin.fink@in.tum.de>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <04B4DBD6-1262-4905-9E85-9466FC104895@in.tum.de>
+References: <20220615114330.2573952-1-paul.heidekrueger@in.tum.de>
+ <YqnpshlsAHg7Uf9G@rowland.harvard.edu>
+ <50B9D7C1-B11D-4583-9814-BFFF2C80D8CA@in.tum.de>
+ <YrHUkfDWsexHRUKj@rowland.harvard.edu>
+To:     Alan Stern <stern@rowland.harvard.edu>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DT schema expects names of operating points tables to start with
-"opp-table":
 
-  ipq6018-cp01-c1.dtb: cpu_opp_table: $nodename:0: 'cpu_opp_table' does not match '^opp-table(-[a-z0-9]+)?$'
+--Apple-Mail=_D532E39D-CD94-4301-B85C-8B71FDAE15EB
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
 
-Use hyphens instead of underscores, fix the names to match DT schema or
-remove the prefix entirely when it is not needed.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> On 21. Jun 2022, at 16:24, Alan Stern <stern@rowland.harvard.edu> =
+wrote:
+>=20
+> On Tue, Jun 21, 2022 at 01:59:27PM +0200, Paul Heidekr=C3=BCger wrote:
+>> OK. So, LKMM limits the scope of control dependencies to its arm(s), =
+hence
+>> there is a control dependency from the last READ_ONCE() before the =
+loop
+>> exists to the WRITE_ONCE().
+>>=20
+>> But then what about the following:
+>>=20
+>>> int *x, *y;
+>>>=20
+>>> int foo()
+>>> {
+>>> 	/* More code */
+>>>=20
+>>> 	if(READ_ONCE(x))
+>>> 		return 42;
+>>>=20
+>>> 	/* More code */
+>>>=20
+>>> 	WRITE_ONCE(y, 42);
+>>>=20
+>>> 	/* More code */
+>>>=20
+>>> 	return 0;
+>>> }
+>>=20
+>> The READ_ONCE() determines whether the WRITE_ONCE() will be executed =
+at all,
+>> but the WRITE_ONCE() doesn't lie in the if condition's arm.
+>=20
+> So in this case the LKMM would not recognize that there's a control=20
+> dependency, even though it clearly exists.
 
----
+Oh, that's unfortunate.
 
-Changes since v1:
-1. Extend commit msg.
----
- arch/arm64/boot/dts/qcom/ipq6018.dtsi |  2 +-
- arch/arm64/boot/dts/qcom/msm8916.dtsi |  2 +-
- arch/arm64/boot/dts/qcom/sc7180.dtsi  | 18 +++++++++---------
- arch/arm64/boot/dts/qcom/sc7280.dtsi  | 12 ++++++------
- arch/arm64/boot/dts/qcom/sdm630.dtsi  |  4 ++--
- arch/arm64/boot/dts/qcom/sdm845.dtsi  | 16 ++++++++--------
- arch/arm64/boot/dts/qcom/sm6350.dtsi  |  4 ++--
- arch/arm64/boot/dts/qcom/sm8150.dtsi  |  8 ++++----
- arch/arm64/boot/dts/qcom/sm8250.dtsi  | 16 ++++++++--------
- arch/arm64/boot/dts/qcom/sm8350.dtsi  |  4 ++--
- arch/arm64/boot/dts/qcom/sm8450.dtsi  |  2 +-
- 11 files changed, 44 insertions(+), 44 deletions(-)
+Then I would still argue that the "at all" definition is misleading. =
+This
+time in the other direction as I had initially proposed though, as the =
+above
+example is a case where "at all" holds true, but LKMM doesn't cover it. =
+Or
+do you think that caveating this in litmus-tests.txt, e.g. via the patch =
+we
+had recently worked out [1], is enough?
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-index 0034a20a9705..8f528b8a5fec 100644
---- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-@@ -87,7 +87,7 @@ L2_0: l2-cache {
- 		};
- 	};
- 
--	cpu_opp_table: cpu_opp_table {
-+	cpu_opp_table: opp-table-cpu {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index 05472510e29d..ec22668e641b 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -216,7 +216,7 @@ CLUSTER_PWRDN: cluster-gdhs {
- 		};
- 	};
- 
--	cpu_opp_table: cpu-opp-table {
-+	cpu_opp_table: opp-table-cpu {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index 0abc765c615e..3a222ac71cca 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -398,7 +398,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
- 		};
- 	};
- 
--	cpu0_opp_table: cpu0_opp_table {
-+	cpu0_opp_table: opp-table-cpu0 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -453,7 +453,7 @@ cpu0_opp10: opp-1804800000 {
- 		};
- 	};
- 
--	cpu6_opp_table: cpu6_opp_table {
-+	cpu6_opp_table: opp-table-cpu6 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -725,7 +725,7 @@ sdhc_1: sdhci@7c4000 {
- 
- 			status = "disabled";
- 
--			sdhc1_opp_table: sdhc1-opp-table {
-+			sdhc1_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-100000000 {
-@@ -744,7 +744,7 @@ opp-384000000 {
- 			};
- 		};
- 
--		qup_opp_table: qup-opp-table {
-+		qup_opp_table: opp-table-qup {
- 			compatible = "operating-points-v2";
- 
- 			opp-75000000 {
-@@ -2602,7 +2602,7 @@ sdhc_2: sdhci@8804000 {
- 
- 			status = "disabled";
- 
--			sdhc2_opp_table: sdhc2-opp-table {
-+			sdhc2_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-100000000 {
-@@ -2621,7 +2621,7 @@ opp-202000000 {
- 			};
- 		};
- 
--		qspi_opp_table: qspi-opp-table {
-+		qspi_opp_table: opp-table-qspi {
- 			compatible = "operating-points-v2";
- 
- 			opp-75000000 {
-@@ -2825,7 +2825,7 @@ video-encoder {
- 				compatible = "venus-encoder";
- 			};
- 
--			venus_opp_table: venus-opp-table {
-+			venus_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-150000000 {
-@@ -2963,7 +2963,7 @@ dpu_intf0_out: endpoint {
- 					};
- 				};
- 
--				mdp_opp_table: mdp-opp-table {
-+				mdp_opp_table: opp-table {
- 					compatible = "operating-points-v2";
- 
- 					opp-200000000 {
-@@ -3042,7 +3042,7 @@ dsi0_out: endpoint {
- 					};
- 				};
- 
--				dsi_opp_table: dsi-opp-table {
-+				dsi_opp_table: opp-table {
- 					compatible = "operating-points-v2";
- 
- 					opp-187500000 {
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index fbe0633a0841..b387fab78bd8 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -417,7 +417,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
- 		};
- 	};
- 
--	cpu0_opp_table: cpu0-opp-table {
-+	cpu0_opp_table: opp-table-cpu0 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -477,7 +477,7 @@ cpu0_opp_2016mhz: opp-2016000000 {
- 		};
- 	};
- 
--	cpu4_opp_table: cpu4-opp-table {
-+	cpu4_opp_table: opp-table-cpu4 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -547,7 +547,7 @@ cpu4_opp_2611mhz: opp-2611200000 {
- 		};
- 	};
- 
--	cpu7_opp_table: cpu7-opp-table {
-+	cpu7_opp_table: opp-table-cpu7 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -763,7 +763,7 @@ psci {
- 		method = "smc";
- 	};
- 
--	qspi_opp_table: qspi-opp-table {
-+	qspi_opp_table: opp-table-qspi {
- 		compatible = "operating-points-v2";
- 
- 		opp-75000000 {
-@@ -787,7 +787,7 @@ opp-300000000 {
- 		};
- 	};
- 
--	qup_opp_table: qup-opp-table {
-+	qup_opp_table: opp-table-qup {
- 		compatible = "operating-points-v2";
- 
- 		opp-75000000 {
-@@ -3334,7 +3334,7 @@ video-firmware {
- 				iommus = <&apps_smmu 0x21a2 0x0>;
- 			};
- 
--			venus_opp_table: venus-opp-table {
-+			venus_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-133330000 {
-diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-index 2a2944e16945..b4367339d8b9 100644
---- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-@@ -1405,7 +1405,7 @@ mmcc: clock-controller@c8c0000 {
- 					<0>;
- 		};
- 
--		dsi_opp_table: dsi-opp-table {
-+		dsi_opp_table: opp-table-dsi {
- 			compatible = "operating-points-v2";
- 
- 			opp-131250000 {
-@@ -1494,7 +1494,7 @@ mdp5_intf1_out: endpoint {
- 					};
- 				};
- 
--				mdp_opp_table: mdp-opp {
-+				mdp_opp_table: opp-table {
- 					compatible = "operating-points-v2";
- 
- 					opp-150000000 {
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index b96d0aa9f10b..2e9d93d6b28a 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -462,7 +462,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
- 		};
- 	};
- 
--	cpu0_opp_table: cpu0_opp_table {
-+	cpu0_opp_table: opp-table-cpu0 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -557,7 +557,7 @@ cpu0_opp18: opp-1766400000 {
- 		};
- 	};
- 
--	cpu4_opp_table: cpu4_opp_table {
-+	cpu4_opp_table: opp-table-cpu4 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -1104,7 +1104,7 @@ rng: rng@793000 {
- 			clock-names = "core";
- 		};
- 
--		qup_opp_table: qup-opp-table {
-+		qup_opp_table: opp-table-qup {
- 			compatible = "operating-points-v2";
- 
- 			opp-50000000 {
-@@ -3569,7 +3569,7 @@ sdhc_2: sdhci@8804000 {
- 
- 			status = "disabled";
- 
--			sdhc2_opp_table: sdhc2-opp-table {
-+			sdhc2_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-9600000 {
-@@ -3594,7 +3594,7 @@ opp-201500000 {
- 			};
- 		};
- 
--		qspi_opp_table: qspi-opp-table {
-+		qspi_opp_table: opp-table-qspi {
- 			compatible = "operating-points-v2";
- 
- 			opp-19200000 {
-@@ -3971,7 +3971,7 @@ video-core1 {
- 				compatible = "venus-encoder";
- 			};
- 
--			venus_opp_table: venus-opp-table {
-+			venus_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-100000000 {
-@@ -4208,7 +4208,7 @@ clock_camcc: clock-controller@ad00000 {
- 			clock-names = "bi_tcxo";
- 		};
- 
--		dsi_opp_table: dsi-opp-table {
-+		dsi_opp_table: opp-table-dsi {
- 			compatible = "operating-points-v2";
- 
- 			opp-19200000 {
-@@ -4310,7 +4310,7 @@ dpu_intf2_out: endpoint {
- 					};
- 				};
- 
--				mdp_opp_table: mdp-opp-table {
-+				mdp_opp_table: opp-table {
- 					compatible = "operating-points-v2";
- 
- 					opp-19200000 {
-diff --git a/arch/arm64/boot/dts/qcom/sm6350.dtsi b/arch/arm64/boot/dts/qcom/sm6350.dtsi
-index d4f8f33f3f0c..9297aa53d860 100644
---- a/arch/arm64/boot/dts/qcom/sm6350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm6350.dtsi
-@@ -497,7 +497,7 @@ sdhc_1: sdhci@7c4000 {
- 
- 			status = "disabled";
- 
--			sdhc1_opp_table: sdhc1-opp-table {
-+			sdhc1_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-19200000 {
-@@ -941,7 +941,7 @@ sdhc_2: sdhci@8804000 {
- 
- 			status = "disabled";
- 
--			sdhc2_opp_table: sdhc2-opp-table {
-+			sdhc2_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-100000000 {
-diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-index d3fd0af61766..c0c96c557bb0 100644
---- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-@@ -288,7 +288,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
- 		};
- 	};
- 
--	cpu0_opp_table: cpu0_opp_table {
-+	cpu0_opp_table: opp-table-cpu0 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -383,7 +383,7 @@ cpu0_opp18: opp-1785600000 {
- 		};
- 	};
- 
--	cpu4_opp_table: cpu4_opp_table {
-+	cpu4_opp_table: opp-table-cpu4 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -473,7 +473,7 @@ cpu4_opp17: opp-2419200000 {
- 		};
- 	};
- 
--	cpu7_opp_table: cpu7_opp_table {
-+	cpu7_opp_table: opp-table-cpu7 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -3563,7 +3563,7 @@ sdhc_2: sdhci@8804000 {
- 
- 			status = "disabled";
- 
--			sdhc2_opp_table: sdhc2-opp-table {
-+			sdhc2_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-19200000 {
-diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-index 8098330aeb4f..e13e0e8a786b 100644
---- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-@@ -336,7 +336,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
- 		};
- 	};
- 
--	cpu0_opp_table: cpu0_opp_table {
-+	cpu0_opp_table: opp-table-cpu0 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -426,7 +426,7 @@ cpu0_opp17: opp-1804800000 {
- 		};
- 	};
- 
--	cpu4_opp_table: cpu4_opp_table {
-+	cpu4_opp_table: opp-table-cpu4 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -521,7 +521,7 @@ cpu4_opp18: opp-2419200000 {
- 		};
- 	};
- 
--	cpu7_opp_table: cpu7_opp_table {
-+	cpu7_opp_table: opp-table-cpu7 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
-@@ -914,7 +914,7 @@ rng: rng@793000 {
- 			clock-names = "core";
- 		};
- 
--		qup_opp_table: qup-opp-table {
-+		qup_opp_table: opp-table-qup {
- 			compatible = "operating-points-v2";
- 
- 			opp-50000000 {
-@@ -2937,7 +2937,7 @@ sdhc_2: sdhci@8804000 {
- 
- 			status = "disabled";
- 
--			sdhc2_opp_table: sdhc2-opp-table {
-+			sdhc2_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-19200000 {
-@@ -3123,7 +3123,7 @@ video-encoder {
- 				compatible = "venus-encoder";
- 			};
- 
--			venus_opp_table: venus-opp-table {
-+			venus_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
- 				opp-720000000 {
-@@ -3486,7 +3486,7 @@ dpu_intf2_out: endpoint {
- 					};
- 				};
- 
--				mdp_opp_table: mdp-opp-table {
-+				mdp_opp_table: opp-table {
- 					compatible = "operating-points-v2";
- 
- 					opp-200000000 {
-@@ -3656,7 +3656,7 @@ dsi1_phy: dsi-phy@ae96400 {
- 
- 				status = "disabled";
- 
--				dsi_opp_table: dsi-opp-table {
-+				dsi_opp_table: opp-table {
- 					compatible = "operating-points-v2";
- 
- 					opp-187500000 {
-diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-index 743cba9b683c..db497b954f4c 100644
---- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-@@ -638,7 +638,7 @@ ipcc: mailbox@408000 {
- 			#mbox-cells = <2>;
- 		};
- 
--		qup_opp_table_100mhz: qup-100mhz-opp-table {
-+		qup_opp_table_100mhz: opp-table-qup100mhz {
- 			compatible = "operating-points-v2";
- 
- 			opp-50000000 {
-@@ -657,7 +657,7 @@ opp-100000000 {
- 			};
- 		};
- 
--		qup_opp_table_120mhz: qup-120mhz-opp-table {
-+		qup_opp_table_120mhz: opp-table-qup120mhz {
- 			compatible = "operating-points-v2";
- 
- 			opp-50000000 {
-diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-index 7d08fad76371..ab4ea6672b48 100644
---- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-@@ -343,7 +343,7 @@ CLUSTER_PD: cpu-cluster0 {
- 		};
- 	};
- 
--	qup_opp_table_100mhz: qup-100mhz-opp-table {
-+	qup_opp_table_100mhz: opp-table-qup {
- 		compatible = "operating-points-v2";
- 
- 		opp-50000000 {
--- 
-2.34.1
+>>  However, by
+>> "inverting" the if, we get the following equivalent code:
+>>=20
+>>> if(!READ_ONCE(x)) {
+>>> 	/* More code */
+>>>=20
+>>> 	WRITE_ONCE(y, 42);
+>>>=20
+>>> 	/* More code */
+>>>=20
+>>> 	return 0;
+>>> }
+>>>=20
+>>> return 42;
+>>=20
+>> Now, the WRITE_ONCE() is in the if's arm, and there is clearly a =
+control
+>> dependency.
+>=20
+> Correct.
+>=20
+>> Similar cases:
+>>=20
+>>> if(READ_ONCE())
+>>> 	foo(); /* WRITE_ONCE() in foo() */
+>>> return 42;
+>>=20
+>> or
+>>=20
+>>> if(READ_ONCE())
+>>>    goto foo; /* WRITE_ONCE() after foo */
+>>> return 42;
+>>=20
+>> In both cases, the WRITE_ONCE() again isn't in the if's arm =
+syntactically
+>> speaking, but again, with rewriting, you can end up with a control
+>> dependency; in the first case via inlining, in the second case by =
+simply
+>> copying the code after the "foo" marker.
+>=20
+> Again, correct.  The LKMM isn't always consistent, and it behaves this=20=
 
+> way to try to avoid presuming too much about the optimizations that=20
+> compilers may apply.
+
+Many thanks,
+Paul
+
+--
+[1]: =
+https://lore.kernel.org/all/20220614154812.1870099-1-paul.heidekrueger@in.=
+tum.de/=
+
+--Apple-Mail=_D532E39D-CD94-4301-B85C-8B71FDAE15EB
+Content-Disposition: attachment;
+	filename=smime.p7s
+Content-Type: application/pkcs7-signature;
+	name=smime.p7s
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEWow
+ggUSMIID+qADAgECAgkA4wvV+K8l2YEwDQYJKoZIhvcNAQELBQAwgYIxCzAJBgNVBAYTAkRFMSsw
+KQYDVQQKDCJULVN5c3RlbXMgRW50ZXJwcmlzZSBTZXJ2aWNlcyBHbWJIMR8wHQYDVQQLDBZULVN5
+c3RlbXMgVHJ1c3QgQ2VudGVyMSUwIwYDVQQDDBxULVRlbGVTZWMgR2xvYmFsUm9vdCBDbGFzcyAy
+MB4XDTE2MDIyMjEzMzgyMloXDTMxMDIyMjIzNTk1OVowgZUxCzAJBgNVBAYTAkRFMUUwQwYDVQQK
+EzxWZXJlaW4genVyIEZvZXJkZXJ1bmcgZWluZXMgRGV1dHNjaGVuIEZvcnNjaHVuZ3NuZXR6ZXMg
+ZS4gVi4xEDAOBgNVBAsTB0RGTi1QS0kxLTArBgNVBAMTJERGTi1WZXJlaW4gQ2VydGlmaWNhdGlv
+biBBdXRob3JpdHkgMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMtg1/9moUHN0vqH
+l4pzq5lN6mc5WqFggEcVToyVsuXPztNXS43O+FZsFVV2B+pG/cgDRWM+cNSrVICxI5y+NyipCf8F
+XRgPxJiZN7Mg9mZ4F4fCnQ7MSjLnFp2uDo0peQcAIFTcFV9Kltd4tjTTwXS1nem/wHdN6r1ZB+Ba
+L2w8pQDcNb1lDY9/Mm3yWmpLYgHurDg0WUU2SQXaeMpqbVvAgWsRzNI8qIv4cRrKO+KA3Ra0Z3qL
+NupOkSk9s1FcragMvp0049ENF4N1xDkesJQLEvHVaY4l9Lg9K7/AjsMeO6W/VRCrKq4Xl14zzsjz
+9AkH4wKGMUZrAcUQDBHHWekCAwEAAaOCAXQwggFwMA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQU
+k+PYMiba1fFKpZFK4OpL4qIMz+EwHwYDVR0jBBgwFoAUv1kgNgB5oKAia4zV8mHSuCzLgkowEgYD
+VR0TAQH/BAgwBgEB/wIBAjAzBgNVHSAELDAqMA8GDSsGAQQBga0hgiwBAQQwDQYLKwYBBAGBrSGC
+LB4wCAYGZ4EMAQICMEwGA1UdHwRFMEMwQaA/oD2GO2h0dHA6Ly9wa2kwMzM2LnRlbGVzZWMuZGUv
+cmwvVGVsZVNlY19HbG9iYWxSb290X0NsYXNzXzIuY3JsMIGGBggrBgEFBQcBAQR6MHgwLAYIKwYB
+BQUHMAGGIGh0dHA6Ly9vY3NwMDMzNi50ZWxlc2VjLmRlL29jc3ByMEgGCCsGAQUFBzAChjxodHRw
+Oi8vcGtpMDMzNi50ZWxlc2VjLmRlL2NydC9UZWxlU2VjX0dsb2JhbFJvb3RfQ2xhc3NfMi5jZXIw
+DQYJKoZIhvcNAQELBQADggEBAIcL/z4Cm2XIVi3WO5qYi3FP2ropqiH5Ri71sqQPrhE4eTizDnS6
+dl2e6BiClmLbTDPo3flq3zK9LExHYFV/53RrtCyD2HlrtrdNUAtmB7Xts5et6u5/MOaZ/SLick0+
+hFvu+c+Z6n/XUjkurJgARH5pO7917tALOxrN5fcPImxHhPalR6D90Bo0fa3SPXez7vTXTf/D6OWS
+T1k+kEcQSrCFWMBvf/iu7QhCnh7U3xQuTY+8npTD5+32GPg8SecmqKc22CzeIs2LgtjZeOJVEqM7
+h0S2EQvVDFKvaYwPBt/QolOLV5h7z/0HJPT8vcP9SpIClxvyt7bPZYoaorVyGTkwggWsMIIElKAD
+AgECAgcbY7rQHiw9MA0GCSqGSIb3DQEBCwUAMIGVMQswCQYDVQQGEwJERTFFMEMGA1UEChM8VmVy
+ZWluIHp1ciBGb2VyZGVydW5nIGVpbmVzIERldXRzY2hlbiBGb3JzY2h1bmdzbmV0emVzIGUuIFYu
+MRAwDgYDVQQLEwdERk4tUEtJMS0wKwYDVQQDEyRERk4tVmVyZWluIENlcnRpZmljYXRpb24gQXV0
+aG9yaXR5IDIwHhcNMTYwNTI0MTEzODQwWhcNMzEwMjIyMjM1OTU5WjCBjTELMAkGA1UEBhMCREUx
+RTBDBgNVBAoMPFZlcmVpbiB6dXIgRm9lcmRlcnVuZyBlaW5lcyBEZXV0c2NoZW4gRm9yc2NodW5n
+c25ldHplcyBlLiBWLjEQMA4GA1UECwwHREZOLVBLSTElMCMGA1UEAwwcREZOLVZlcmVpbiBHbG9i
+YWwgSXNzdWluZyBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJ07eRxH3h+Gy8Zp
+1xCeOdfZojDbchwFfylfS2jxrRnWTOFrG7ELf6Gr4HuLi9gtzm6IOhDuV+UefwRRNuu6cG1joL6W
+LkDh0YNMZj0cZGnlm6Stcq5oOVGHecwX064vXWNxSzl660Knl5BpBb+Q/6RAcL0D57+eGIgfn5mI
+TQ5HjUhfZZkQ0tkqSe3BuS0dnxLLFdM/fx5ULzquk1enfnjK1UriGuXtQX1TX8izKvWKMKztFwUk
+P7agCwf9TRqaA1KgNpzeJIdl5Of6x5ZzJBTN0OgbaJ4YWa52fvfRCng8h0uwN89Tyjo4EPPLR22M
+ZD08WkVKusqAfLjz56dMTM0CAwEAAaOCAgUwggIBMBIGA1UdEwEB/wQIMAYBAf8CAQEwDgYDVR0P
+AQH/BAQDAgEGMCkGA1UdIAQiMCAwDQYLKwYBBAGBrSGCLB4wDwYNKwYBBAGBrSGCLAEBBDAdBgNV
+HQ4EFgQUazqYi/nyU4na4K2yMh4JH+iqO3QwHwYDVR0jBBgwFoAUk+PYMiba1fFKpZFK4OpL4qIM
+z+EwgY8GA1UdHwSBhzCBhDBAoD6gPIY6aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9v
+dC1nMi1jYS9wdWIvY3JsL2NhY3JsLmNybDBAoD6gPIY6aHR0cDovL2NkcDIucGNhLmRmbi5kZS9n
+bG9iYWwtcm9vdC1nMi1jYS9wdWIvY3JsL2NhY3JsLmNybDCB3QYIKwYBBQUHAQEEgdAwgc0wMwYI
+KwYBBQUHMAGGJ2h0dHA6Ly9vY3NwLnBjYS5kZm4uZGUvT0NTUC1TZXJ2ZXIvT0NTUDBKBggrBgEF
+BQcwAoY+aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1nMi1jYS9wdWIvY2FjZXJ0
+L2NhY2VydC5jcnQwSgYIKwYBBQUHMAKGPmh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ2xvYmFsLXJv
+b3QtZzItY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBCwUAA4IBAQCBeEWkTqR/
+DlXwCbFqPnjMaDWpHPOVnj/z+N9rOHeJLI21rT7H8pTNoAauusyosa0zCLYkhmI2THhuUPDVbmCN
+T1IxQ5dGdfBi5G5mUcFCMWdQ5UnnOR7Ln8qGSN4IFP8VSytmm6A4nwDO/afr0X9XLchMX9wQEZc+
+lgQCXISoKTlslPwQkgZ7nu7YRrQbtQMMONncsKk/cQYLsgMHM8KNSGMlJTx6e1du94oFOO+4oK4v
+9NsH1VuEGMGpuEvObJAaguS5Pfp38dIfMwK/U+d2+dwmJUFvL6Yb+qQTkPp8ftkLYF3sv8pBoGH7
+EUkp2KgtdRXYShjqFu9VNCIaE40GMIIGoDCCBYigAwIBAgIMJsvrSvlWNPKp0vJrMA0GCSqGSIb3
+DQEBCwUAMIGNMQswCQYDVQQGEwJERTFFMEMGA1UECgw8VmVyZWluIHp1ciBGb2VyZGVydW5nIGVp
+bmVzIERldXRzY2hlbiBGb3JzY2h1bmdzbmV0emVzIGUuIFYuMRAwDgYDVQQLDAdERk4tUEtJMSUw
+IwYDVQQDDBxERk4tVmVyZWluIEdsb2JhbCBJc3N1aW5nIENBMB4XDTIyMDYxNzEyMDQxM1oXDTIz
+MDgxMTE0MDM0OVowge4xCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCYXllcm4xETAPBgNVBAcMCE11
+ZW5jaGVuMSkwJwYDVQQKDCBUZWNobmlzY2hlIFVuaXZlcnNpdGFldCBNdWVuY2hlbjEiMCAGA1UE
+CwwZRmFrdWx0YWV0IGZ1ZXIgSW5mb3JtYXRpazEVMBMGA1UEBAwMSGVpZGVrcnVlZ2VyMQ0wCwYD
+VQQqDARQYXVsMRowGAYDVQQDDBFQYXVsIEhlaWRla3J1ZWdlcjEqMCgGCSqGSIb3DQEJARYbUGF1
+bC5IZWlkZWtydWVnZXJAaW4udHVtLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+s8gdDu7n1qQK6/QRJemihL7fh5yVIaGugo3Hn8qvlKzDwHfM9fHhXzrjBp8VHYSFRi6fPoHjV3OL
+UM7ZLqFEmNEcaoioH5prXfx+N686Vu4w3FsZyQd5/lQO5qD7AJ1zu0N78uJyBLMfnlv7mmMKupkz
+FmnLbKzurYdbpdiYxBHF0ej/h2oMJeOKI26sZ0ItW11cFxqBe4gD+DYQ4PIXzMXkqNbK4n7tIu5s
+uzZt3B3dW/52kNi1vjI+Fi373AhIseAE3mZ/zixFyI9Ib/tqtA2iXLZaINhPEm05+H/IdKYqdwAW
+NO/SiL6nXxnoHmOJzToqfiN9ERDaN7K3lzb3ewIDAQABo4ICmzCCApcwPgYDVR0gBDcwNTAPBg0r
+BgEEAYGtIYIsAQEEMBAGDisGAQQBga0hgiwBAQQKMBAGDisGAQQBga0hgiwCAQQKMAkGA1UdEwQC
+MAAwDgYDVR0PAQH/BAQDAgXgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4E
+FgQUA2y9lnfs17UBHlCWzGGaJ5gDAhMwHwYDVR0jBBgwFoAUazqYi/nyU4na4K2yMh4JH+iqO3Qw
+bQYDVR0RBGYwZIESaGVpZGVrcnBAaW4udHVtLmRlgRtQYXVsLkhlaWRla3J1ZWdlckBpbi50dW0u
+ZGWBE2hlaWRla3JwQGNzLnR1bS5lZHWBHFBhdWwuSGVpZGVrcnVlZ2VyQGNzLnR1bS5lZHUwgY0G
+A1UdHwSBhTCBgjA/oD2gO4Y5aHR0cDovL2NkcDEucGNhLmRmbi5kZS9kZm4tY2EtZ2xvYmFsLWcy
+L3B1Yi9jcmwvY2FjcmwuY3JsMD+gPaA7hjlodHRwOi8vY2RwMi5wY2EuZGZuLmRlL2Rmbi1jYS1n
+bG9iYWwtZzIvcHViL2NybC9jYWNybC5jcmwwgdsGCCsGAQUFBwEBBIHOMIHLMDMGCCsGAQUFBzAB
+hidodHRwOi8vb2NzcC5wY2EuZGZuLmRlL09DU1AtU2VydmVyL09DU1AwSQYIKwYBBQUHMAKGPWh0
+dHA6Ly9jZHAxLnBjYS5kZm4uZGUvZGZuLWNhLWdsb2JhbC1nMi9wdWIvY2FjZXJ0L2NhY2VydC5j
+cnQwSQYIKwYBBQUHMAKGPWh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZGZuLWNhLWdsb2JhbC1nMi9w
+dWIvY2FjZXJ0L2NhY2VydC5jcnQwDQYJKoZIhvcNAQELBQADggEBAC1bKIVMA6w7eSFfxv+1vQXR
+YQ6WQujz3MVSfYeplJXWKgKkUzpSzI7juw5sT3OkqStl+CGjIKaJiyYhZ/uP6/YMEpifBncsygjw
++K+2K+L8lov4wokWMVaLSoaaPeGrP20rzkumyUSvsI1ILZzplggsDmdS8D4H/Vc66cMWkrUkeurt
+Diorn6fG0gfy18YCq9XGQV+NxozwRkAfxkmvF0fzviQnSJ/lkzs4AadJ8sH5AzZXHPzydIK/Lcle
+dc6wi287tsRDpDMh+UOR4xe73+72oZabULSwhuM3iD50vr8o+Tm8Sg+mWIPNFivjY/FkNKPleiTW
+y3z7OxbaF19HnEgxggOdMIIDmQIBATCBnjCBjTELMAkGA1UEBhMCREUxRTBDBgNVBAoMPFZlcmVp
+biB6dXIgRm9lcmRlcnVuZyBlaW5lcyBEZXV0c2NoZW4gRm9yc2NodW5nc25ldHplcyBlLiBWLjEQ
+MA4GA1UECwwHREZOLVBLSTElMCMGA1UEAwwcREZOLVZlcmVpbiBHbG9iYWwgSXNzdWluZyBDQQIM
+JsvrSvlWNPKp0vJrMA0GCWCGSAFlAwQCAQUAoIIBzzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0yMjA2MjcwOTQ3NDNaMC8GCSqGSIb3DQEJBDEiBCBTUeuk+CSZ8e9C
+wRWp0FlP/jWsxidAxLqKNyIOTbNAhzCBrwYJKwYBBAGCNxAEMYGhMIGeMIGNMQswCQYDVQQGEwJE
+RTFFMEMGA1UECgw8VmVyZWluIHp1ciBGb2VyZGVydW5nIGVpbmVzIERldXRzY2hlbiBGb3JzY2h1
+bmdzbmV0emVzIGUuIFYuMRAwDgYDVQQLDAdERk4tUEtJMSUwIwYDVQQDDBxERk4tVmVyZWluIEds
+b2JhbCBJc3N1aW5nIENBAgwmy+tK+VY08qnS8mswgbEGCyqGSIb3DQEJEAILMYGhoIGeMIGNMQsw
+CQYDVQQGEwJERTFFMEMGA1UECgw8VmVyZWluIHp1ciBGb2VyZGVydW5nIGVpbmVzIERldXRzY2hl
+biBGb3JzY2h1bmdzbmV0emVzIGUuIFYuMRAwDgYDVQQLDAdERk4tUEtJMSUwIwYDVQQDDBxERk4t
+VmVyZWluIEdsb2JhbCBJc3N1aW5nIENBAgwmy+tK+VY08qnS8mswDQYJKoZIhvcNAQELBQAEggEA
+MEWwTlY8/brO2xHmirwxs3D8rVq4Rgzdmcfq+bHGakc5cVBZe3Zt4LUTZkEDqZeXNNLL7/lNPbxE
+hCQQs2+2CgzTSC/NUIov7RQugFqVyueWBMX4sscKiM4lJjATdfEbdBQYSb1sesZlB2Dz1qRJbvV2
+hcvh5Q6o6hlzCOehpt/ZVRDc357sSkbca0MWxo3Jp7gwSUeRSmG8FIYMjswrWjzxVnIL20wWJN5W
+3M8AyXYdqy67fV4kTc12iy0ll1QG0X04/pKzsPYiiksRvYGd4/E7sf6xr0wIOuuhIJ0qW/EXLLE+
+Oic04pT/hNtcxoORg4ZZt2lzB3w96ac+0Tt3RgAAAAAAAA==
+--Apple-Mail=_D532E39D-CD94-4301-B85C-8B71FDAE15EB--
