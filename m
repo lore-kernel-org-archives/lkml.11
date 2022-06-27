@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD4E1CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0906CCA486
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239793AbiF0L6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49980 "EHLO
+        id S239827AbiF0L6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238465AbiF0LvO (ORCPT
+        with ESMTP id S238540AbiF0Lv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:51:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7915D65C1;
-        Mon, 27 Jun 2022 04:44:32 -0700 (PDT)
+        Mon, 27 Jun 2022 07:51:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9109465E0;
+        Mon, 27 Jun 2022 04:44:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB44261150;
-        Mon, 27 Jun 2022 11:44:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01B82C3411D;
-        Mon, 27 Jun 2022 11:44:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50084B80DFB;
+        Mon, 27 Jun 2022 11:44:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC9C9C36AE2;
+        Mon, 27 Jun 2022 11:44:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330271;
-        bh=s2PJ6AvPvEed3uDSlF+Egx5Za1Gv+BMJQwt6EC4A4NY=;
+        s=korg; t=1656330277;
+        bh=AmtimkXW1zZoMpzONjmmCEudpt2McBVrXWdT5ntrzZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AAP9AnoPc4g9HsXgu9UEuEgXcjy3CdIHnZ0AhIXBP3TMlRZ1ygqbuPkDVSm2pzlBx
-         uXQT1qsicTtc3hiauEeKI562X96l6oST6wg/aBraQyPsjRtu1F/XyVITN6a1ZhH65M
-         nyiMl+ddYOqXWAtukj53gtgtIgQtHFyDYv5Ctxk4=
+        b=zedCHxWEz5D79J0IGh/cjI5Io86CuLWHaBYAMOBj+6e5Jq3AtXUMl9+QcVPGg0CtE
+         heOfWDwgwvOjSQPk3lMiKPcGj6mBcdFKYlPlhe7Qw5yHqIRRiL6jsAcySoumWTRWpD
+         kYCis5/aCdSZXbHLJO+BDMKh6InhiPJg7s2boLC4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Liam Beguin <liambeguin@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>, Stable@vger.kernel.org,
+        stable@vger.kernel.org,
+        Yannick Brosseau <yannick.brosseau@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 142/181] iio: test: fix missing MODULE_LICENSE for IIO_RESCALE=m
-Date:   Mon, 27 Jun 2022 13:21:55 +0200
-Message-Id: <20220627111948.803931529@linuxfoundation.org>
+Subject: [PATCH 5.18 144/181] iio: adc: stm32: Fix ADCs iteration in irq handler
+Date:   Mon, 27 Jun 2022 13:21:57 +0200
+Message-Id: <20220627111948.860681478@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,61 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam Beguin <liambeguin@gmail.com>
+From: Yannick Brosseau <yannick.brosseau@gmail.com>
 
-commit 7a2f6f61e8ee016b75e1b1dd62fbd03e6d6db37d upstream.
+commit d2214cca4d3eadc74eac9e30301ec7cad5355f00 upstream.
 
-When IIO_RESCALE_KUNIT_TEST=y and IIO_RESCALE=m,
-drivers/iio/afe/iio-rescale.o is built twice causing the
-MODULE_LICENSE() to be lost, as shown by:
+The irq handler was only checking the mask for the first ADCs in the case of the
+F4 and H7 generation, since it was iterating up to the num_irq value. This patch add
+the maximum number of ADC in the common register, which map to the number of entries of
+eoc_msk and ovr_msk in stm32_adc_common_regs. This allow the handler to check all ADCs in
+that module.
 
-  ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
+Tested on a STM32F429NIH6.
 
-Rework the build configuration to have the dependency specified in the
-Kconfig.
-
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Fixes: 8e74a48d17d5 ("iio: test: add basic tests for the iio-rescale driver")
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
-Link: https://lore.kernel.org/r/20220601142138.3331278-1-liambeguin@gmail.com
+Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
+Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220516203939.3498673-2-yannick.brosseau@gmail.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/test/Kconfig  | 2 +-
- drivers/iio/test/Makefile | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/stm32-adc-core.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
-index 56ca0ad7e77a..4c66c3f18c34 100644
---- a/drivers/iio/test/Kconfig
-+++ b/drivers/iio/test/Kconfig
-@@ -6,7 +6,7 @@
- # Keep in alphabetical order
- config IIO_RESCALE_KUNIT_TEST
- 	bool "Test IIO rescale conversion functions"
--	depends on KUNIT=y && !IIO_RESCALE
-+	depends on KUNIT=y && IIO_RESCALE=y
- 	default KUNIT_ALL_TESTS
- 	help
- 	  If you want to run tests on the iio-rescale code say Y here.
-diff --git a/drivers/iio/test/Makefile b/drivers/iio/test/Makefile
-index f15ae0a6394f..880360f8d02c 100644
---- a/drivers/iio/test/Makefile
-+++ b/drivers/iio/test/Makefile
-@@ -4,6 +4,6 @@
- #
+--- a/drivers/iio/adc/stm32-adc-core.c
++++ b/drivers/iio/adc/stm32-adc-core.c
+@@ -64,6 +64,7 @@ struct stm32_adc_priv;
+  * @max_clk_rate_hz: maximum analog clock rate (Hz, from datasheet)
+  * @has_syscfg: SYSCFG capability flags
+  * @num_irqs:	number of interrupt lines
++ * @num_adcs:   maximum number of ADC instances in the common registers
+  */
+ struct stm32_adc_priv_cfg {
+ 	const struct stm32_adc_common_regs *regs;
+@@ -71,6 +72,7 @@ struct stm32_adc_priv_cfg {
+ 	u32 max_clk_rate_hz;
+ 	unsigned int has_syscfg;
+ 	unsigned int num_irqs;
++	unsigned int num_adcs;
+ };
  
- # Keep in alphabetical order
--obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o ../afe/iio-rescale.o
-+obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o
- obj-$(CONFIG_IIO_TEST_FORMAT) += iio-test-format.o
- CFLAGS_iio-test-format.o += $(DISABLE_STRUCTLEAK_PLUGIN)
--- 
-2.36.1
-
+ /**
+@@ -352,7 +354,7 @@ static void stm32_adc_irq_handler(struct
+ 	 * before invoking the interrupt handler (e.g. call ISR only for
+ 	 * IRQ-enabled ADCs).
+ 	 */
+-	for (i = 0; i < priv->cfg->num_irqs; i++) {
++	for (i = 0; i < priv->cfg->num_adcs; i++) {
+ 		if ((status & priv->cfg->regs->eoc_msk[i] &&
+ 		     stm32_adc_eoc_enabled(priv, i)) ||
+ 		     (status & priv->cfg->regs->ovr_msk[i]))
+@@ -792,6 +794,7 @@ static const struct stm32_adc_priv_cfg s
+ 	.clk_sel = stm32f4_adc_clk_sel,
+ 	.max_clk_rate_hz = 36000000,
+ 	.num_irqs = 1,
++	.num_adcs = 3,
+ };
+ 
+ static const struct stm32_adc_priv_cfg stm32h7_adc_priv_cfg = {
+@@ -800,6 +803,7 @@ static const struct stm32_adc_priv_cfg s
+ 	.max_clk_rate_hz = 36000000,
+ 	.has_syscfg = HAS_VBOOSTER,
+ 	.num_irqs = 1,
++	.num_adcs = 2,
+ };
+ 
+ static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
+@@ -808,6 +812,7 @@ static const struct stm32_adc_priv_cfg s
+ 	.max_clk_rate_hz = 36000000,
+ 	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
+ 	.num_irqs = 2,
++	.num_adcs = 2,
+ };
+ 
+ static const struct of_device_id stm32_adc_of_match[] = {
 
 
