@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6CACCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BB9CCA485
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234747AbiF0LYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44288 "EHLO
+        id S234787AbiF0LYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234703AbiF0LYW (ORCPT
+        with ESMTP id S234741AbiF0LYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:24:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAC56573;
-        Mon, 27 Jun 2022 04:24:21 -0700 (PDT)
+        Mon, 27 Jun 2022 07:24:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1726579;
+        Mon, 27 Jun 2022 04:24:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9D82B81122;
-        Mon, 27 Jun 2022 11:24:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3090FC3411D;
-        Mon, 27 Jun 2022 11:24:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 685A261366;
+        Mon, 27 Jun 2022 11:24:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60DD3C3411D;
+        Mon, 27 Jun 2022 11:24:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329058;
-        bh=jCMUa1qxy25zcTSppi5OnwFRN6ISO/vpezVuczdRk88=;
+        s=korg; t=1656329061;
+        bh=fNCokIlPXv3LxEl/Ny3/4Y5p9HvmwaTsoXsf4L9t5Is=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YGgZ8sR54dPQCH/aVm4HTgdY2D+ZrxM2ayakwGReEckQP50svK0sOplbiGhX+xcSp
-         2TcV9wtZ56lQYppRNXXSsp49Qnwc99ektyqIa35Aciwi80cYGtJLOCF8eWr0b/n4TX
-         hBwFcXcjYaXSfcB0Dl7llJScoElkD1lnniJEdEjU=
+        b=M9Szu7tcYjnvk1UouvUTal9jYadGaSTcerZOgXvBhom+CHECGVQtc3VUs8z1imx6x
+         OhPZj9d80mlCVXy/RQVikZHgzcUZppC2VvvncE9zRlvXt5PdaQMGaZy5PsCSac8wuj
+         nUYitUVY35H2lFGTVRcWDLHstZs/ROLsQ/+jyzTQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Yuming Chen <chenyuming.junnan@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 035/102] net/sched: sch_netem: Fix arithmetic in netem_dump() for 32-bit platforms
-Date:   Mon, 27 Jun 2022 13:20:46 +0200
-Message-Id: <20220627111934.506359210@linuxfoundation.org>
+Subject: [PATCH 5.10 036/102] drm/msm/mdp4: Fix refcount leak in mdp4_modeset_init_intf
+Date:   Mon, 27 Jun 2022 13:20:47 +0200
+Message-Id: <20220627111934.535322164@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -53,70 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit a2b1a5d40bd12b44322c2ccd40bb0ec1699708b6 ]
+[ Upstream commit b9cc4598607cb7f7eae5c75fc1e3209cd52ff5e0 ]
 
-As reported by Yuming, currently tc always show a latency of UINT_MAX
-for netem Qdisc's on 32-bit platforms:
+of_graph_get_remote_node() returns remote device node pointer with
+refcount incremented, we should use of_node_put() on it
+when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-    $ tc qdisc add dev dummy0 root netem latency 100ms
-    $ tc qdisc show dev dummy0
-    qdisc netem 8001: root refcnt 2 limit 1000 delay 275s  275s
-                                               ^^^^^^^^^^^^^^^^
-
-Let us take a closer look at netem_dump():
-
-        qopt.latency = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->latency,
-                             UINT_MAX);
-
-qopt.latency is __u32, psched_tdiff_t is signed long,
-(psched_tdiff_t)(UINT_MAX) is negative for 32-bit platforms, so
-qopt.latency is always UINT_MAX.
-
-Fix it by using psched_time_t (u64) instead.
-
-Note: confusingly, users have two ways to specify 'latency':
-
-  1. normally, via '__u32 latency' in struct tc_netem_qopt;
-  2. via the TCA_NETEM_LATENCY64 attribute, which is s64.
-
-For the second case, theoretically 'latency' could be negative.  This
-patch ignores that corner case, since it is broken (i.e. assigning a
-negative s64 to __u32) anyways, and should be handled separately.
-
-Thanks Ted Lin for the analysis [1] .
-
-[1] https://github.com/raspberrypi/linux/issues/3512
-
-Reported-by: Yuming Chen <chenyuming.junnan@bytedance.com>
-Fixes: 112f9cb65643 ("netem: convert to qdisc_watchdog_schedule_ns")
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
-Link: https://lore.kernel.org/r/20220616234336.2443-1-yepeilin.cs@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 86418f90a4c1 ("drm: convert drivers to use of_graph_get_remote_node")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Patchwork: https://patchwork.freedesktop.org/patch/488473/
+Link: https://lore.kernel.org/r/20220607110841.53889-1-linmq006@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_netem.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-index 0c345e43a09a..adc5407fd5d5 100644
---- a/net/sched/sch_netem.c
-+++ b/net/sched/sch_netem.c
-@@ -1146,9 +1146,9 @@ static int netem_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	struct tc_netem_rate rate;
- 	struct tc_netem_slot slot;
+diff --git a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
+index 913de5938782..b4d0bfc83d70 100644
+--- a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
++++ b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
+@@ -221,6 +221,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
+ 		encoder = mdp4_lcdc_encoder_init(dev, panel_node);
+ 		if (IS_ERR(encoder)) {
+ 			DRM_DEV_ERROR(dev->dev, "failed to construct LCDC encoder\n");
++			of_node_put(panel_node);
+ 			return PTR_ERR(encoder);
+ 		}
  
--	qopt.latency = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->latency),
-+	qopt.latency = min_t(psched_time_t, PSCHED_NS2TICKS(q->latency),
- 			     UINT_MAX);
--	qopt.jitter = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->jitter),
-+	qopt.jitter = min_t(psched_time_t, PSCHED_NS2TICKS(q->jitter),
- 			    UINT_MAX);
- 	qopt.limit = q->limit;
- 	qopt.loss = q->loss;
+@@ -230,6 +231,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
+ 		connector = mdp4_lvds_connector_init(dev, panel_node, encoder);
+ 		if (IS_ERR(connector)) {
+ 			DRM_DEV_ERROR(dev->dev, "failed to initialize LVDS connector\n");
++			of_node_put(panel_node);
+ 			return PTR_ERR(connector);
+ 		}
+ 
 -- 
 2.35.1
 
