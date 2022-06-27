@@ -2,130 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2016C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 783CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240336AbiF0TGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
+        id S240349AbiF0TGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240035AbiF0TG0 (ORCPT
+        with ESMTP id S240126AbiF0TG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 15:06:26 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5402639
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:06:24 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 23so9939659pgc.8
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:06:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OwptFnOeVufNyWYVaUbNezAsNgxBLnSp5YRWWMPGeU4=;
-        b=Nep8adCrywMhk8ZutjZQ3tfryiXOviRDQw/MQJ/JqaCRwLAZt0pJQkuJPU5dUZf0T8
-         mzkjbRZ2Ht+PdUAcSPscDpb9zx/DbqWcULKOOejsjs9DKG/rTHE+7L/G+JDzAmlu5xbC
-         cXz3xW2lTdrodfN1MJJZBsb4eykNpRuRhXsMI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OwptFnOeVufNyWYVaUbNezAsNgxBLnSp5YRWWMPGeU4=;
-        b=Pj79NCCFlRTH1vhE8VWv6FNmgBzj7tQf77pchMIWRq08Odli5ldm+VqyccZGmOlZxz
-         vlqDGU7bkuFWBN/O3E7QA1Din8NdotlEgPCYITVWx+doghi+KBYRpWA0lYIdWRx1lULp
-         gs4HJq2Zkl5VYLxDsHF69eLSREXunXfNlBVVkuR9Q3MHsK6/TEZXJtsWJlBFlLrhfj7u
-         iTvm7uv9ZKjhNWACQ5A4vv8AZ+RsX3/3jMmByifiui774NkUwDzxpEA1UTiCxvsxK465
-         JMOXOpct5tQNZY7yrksgK1oQMLKQOLZ9wOG8YY7xYUl9hycCQkPgjNrd/JejawCNyWyB
-         kjKA==
-X-Gm-Message-State: AJIora/FtP0P/qRLbMcUm7EQbRB4Plnu6hBw7MxtUb1CzFL/7lVurh1Z
-        RlZrveQBK61XxmXqDK3yemUrcQ==
-X-Google-Smtp-Source: AGRyM1uzKMX8lc3yOB65UK4bfLsFrTm5HeZk66lgKZ+5KpmhBSQTuno7q2Sp0F6BljBpXtnRsGe1DA==
-X-Received: by 2002:aa7:989a:0:b0:525:252f:3c51 with SMTP id r26-20020aa7989a000000b00525252f3c51mr510250pfl.39.1656356784404;
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1DD52633;
         Mon, 27 Jun 2022 12:06:24 -0700 (PDT)
-Received: from localhost ([2620:15c:11a:202:f31c:687c:3a61:62c5])
-        by smtp.gmail.com with UTF8SMTPSA id f9-20020a170902f38900b0016a51167b75sm7523839ple.286.2022.06.27.12.06.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 12:06:24 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 12:06:21 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Doug Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Bastien Nocera <hadess@hadess.net>,
-        Peter Chen <peter.chen@kernel.org>,
-        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-Subject: Re: [PATCH v22 2/3] usb: misc: Add onboard_usb_hub driver
-Message-ID: <Yrn/rfrzSWod5SCT@google.com>
-References: <Yqub17iT4O7aqFMi@google.com>
- <CAD=FV=VEztPLhsrJecZUdyHCW7ZfFTVvxyqY5CqRVv2mWyrLog@mail.gmail.com>
- <YquoSMiQS+RG8rOM@google.com>
- <CAD=FV=W81pSEUbzw2ZQgs_TJ9MLnHQHiDopZXZ6bHdS7QMzAyA@mail.gmail.com>
- <YqvMffveCPiKQEUk@google.com>
- <CAD=FV=UJOStPfRR3Hq2DmRBSH-HCtZ16hAU9eVH5w6Hm=WSJRQ@mail.gmail.com>
- <YqytDNB2y4+qT8GD@google.com>
- <CAD=FV=UT0XtMjZ9syQPGXeTEaUrwGTb_LgDow+cofgmx4D30VA@mail.gmail.com>
- <Yrnzl8k81f9JTMIQ@google.com>
- <Yrn8y4GGZm+NyXIi@rowland.harvard.edu>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1656356779;
+        bh=R/qipisl2syKO7HuuaFI9NW1bwuOk9k4IT6q8rnJ5lk=;
+        h=X-UI-Sender-Class:From:To:Subject:Date:In-Reply-To:References;
+        b=Q71SYLwhvUoc4KOpTwY6mHTTSQyPMrWJUti8DJKu4PJHYh6ac197bnFKGlDB0S/kK
+         iSBgMY5ZcQr22X9qNE23HSDKTI+i0icxFziOhu6RVBkPDD5if2I4Qp5ADEHJuT4686
+         df2tS1uEsCuwv55r57Qbg+Y3y1p4UaN2aV+Wq4Hs=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from ls3530.fritz.box ([92.116.176.39]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MPXd2-1oJZ4C3b7a-00MdAn; Mon, 27
+ Jun 2022 21:06:18 +0200
+From:   Helge Deller <deller@gmx.de>
+To:     mcgrof@kernel.org, jeyu@kernel.org, linux-modules@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org
+Subject: [PATCH 2/2] MAINTAINERS: Update file list for module maintainers
+Date:   Mon, 27 Jun 2022 21:05:51 +0200
+Message-Id: <20220627190551.517561-2-deller@gmx.de>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220627190551.517561-1-deller@gmx.de>
+References: <20220627190551.517561-1-deller@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yrn8y4GGZm+NyXIi@rowland.harvard.edu>
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:GX33wLBAVhASID2agrbjDjTpqdYIF8ASsWJcP8T7Q0fCa6QHN7S
+ VEk2mh6wNObAhpyPImperMU+qyaY+HhMEPSS0tpUovfPCT/++P28oz9Arm5PrMqHgIvA76q
+ lB9l+TafR0otFi/CJcvBFV+C2NArNJd5hrrYYPpSw8Wz3zWGNiTh1O8h/y2BzA6cw7m27MP
+ jBmK2glRXhbpD2Lsq+9jA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5aw0eG7G8b8=:rDHNEVwKNUkgHyGGqy853X
+ pGJvpL7VVKE0kug0/VobqDB0R48sIVHfVjsZhxYiL9FMRJWWP8HrinmY9TtFihD7xa6K9ax0v
+ eCwJkOj6Q8t15vak/lQSAZfaqq6dDAjfiX8kHyFgVBF97TavhVi3a8vr8JsUU14vrBUtmvbJw
+ fr05nKvFQMRlqwuzrNVX8gR5Sr53MLvvIsqnqvN/Lf9MF4TD3KacxS+ljE01ZhqC0/8v9tp0f
+ AyRhqh8b2HT495aI2UyzNS0Y/jshhW64+gTZj9gH+5m87ISRJ3/V+d07O7gGCR9mjVX09TlUd
+ ZAhWyAwb6ZmbXA+P6i7p8fIiUK6yILUK7ARwy/1hrEcAjkQ+uLYEECqO08CclDOBSnNnM7Hrq
+ bivp3apjYzAGRXhvAgHh+XPiAR6THjsN6KvLrls74TKDrLWeeGmwsi6zsggZ7ByWZj9kMqRE/
+ /fvdWcMh1kO6eqPwRd0bZfx4RKcIzb5d9JZccpHiITKdsT4b8KaMKklfPkPnaEPzGaRFKpQK3
+ eDQLdzkfelJKHoDAS2rRtUOh91JbeFwdBc/3A2zIzRXRVIkAtcLAniiKtF5u/uGxmigA4XPDl
+ UGweKxUmxHb0Ia73Hd4dewDMh3tijwM/uGKPHMhcxapDgT+KU+Pu2L88HqyKU+2gkub50LGhN
+ S+CveWmJkjln7D9h6oq0kNTx6lH3Dl8s+H8iWzrBHb3LffUOGu1X1ojsc2GmPDFvgd1vXVKW2
+ AI+gUFqZrXQiV3/2Xv7YHc3jII47cW0tBQ94LXb6gDnTbJED2D1b1K9q/4gBeT03XcPYva0dY
+ Jo85H5Hduj5veesShItRalwWZW790ojtELZCSqCqY4wMfL+WsedsrnnNc05/j3/CkCBmT7fMA
+ 1gMSfUw/T6Ix3UvCKFllXcwkkmzuZEcRBGdw9/YF0kfesKLKniTQGYzvCLKFipizLb7M5yL/Z
+ f8P3O8/cgLF8DJm4cN8Ts9J9O03G4Bl6KKOW6gK5X9su0aUyn6OOeRq3ofOw77zlkFKA6WAWQ
+ sJlxlmnk68j95b4PXWt9Cx3nvEc40PdKAYbBzFQHhX7Si2NZkbYw/BmpggpCaQH505cH3RDD+
+ jU5EbSe1SugF4L6NrmQIFbqR30o32G5dFxjPzVKzQX/v9+I0DsK1p+p5A==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 02:54:03PM -0400, Alan Stern wrote:
-> On Mon, Jun 27, 2022 at 11:14:47AM -0700, Matthias Kaehlcke wrote:
-> > Maybe a bit more verbose documentation like this could help:
-> > 
-> >   Some background about the logic in this function, which can be a bit hard
-> >   to follow:
-> > 
-> >   Root hubs don't have dedicated device tree nodes, but use the node of their
-> >   HCD. The primary and secondary HCD are usually represented by a single DT
-> >   node. That means the root hubs of the primary and secondary HCD share the
-> >   same device tree node (the HCD node). As a result this function can be
-> >   called twice with the same DT node for root hubs. We only want to create a
-> >   single platform device for each physical onboard hub, hence for root hubs
-> >   the loop is only executed for the primary hub. Since the function scans
-> 
-> By "primary hub", you mean "root hub for the primary HCD", right?  This 
-> should be clarified.
+The scripts/module.lds.S and scripts/modules-check.sh files
+should be maintained by the "MODULE SUPPORT" maintainers.
 
-Ok, thanks for the suggestion!
+Signed-off-by: Helge Deller <deller@gmx.de>
+=2D--
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-> >   through all child nodes it still creates pdevs for onboard hubs connected
-> >   to the secondary hub if needed.
-> 
-> And likewise for "secondary hub".
->
-> > 
-> >   Further there must be only one platform device for onboard hubs with a
-> >   companion hub (the hub is a single physical device). To achieve this two
-> 
-> What do you mean by "companion hub"?  I think you are using the wrong 
-> word here.  If you're talking about the relation between the two logical 
-> hubs (one attached to the SuperSpeed bus and one attached to the 
-> Low/Full/High-speed bus) within a physical USB-3 hub, the correct term 
-> for this is "peer".  See the existing usages in hub.h, hub.c, and 
-> port.c.
-> 
-> "Companion" refers to something completely different (i.e., the UHCI or 
-> OHCI controllers that handle Low/Full-speed connections on behalf of a 
-> High-speed EHCI controller).
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fe5daf141501..6073fc7c0fa4 100644
+=2D-- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13471,6 +13471,7 @@ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git mod=
+ules-next
+ F:	include/linux/module.h
+ F:	kernel/module/
++F:	scripts/module*
 
-Yes it's the relation between the two logical hub. The term 'companion-hub'
-stems from the binding and has been around since v6 of this series. I guess
-we should update the binding if the terminology isn't correct.
+ MONOLITHIC POWER SYSTEM PMIC DRIVER
+ M:	Saravanan Sekar <sravanhome@gmail.com>
+=2D-
+2.35.3
+
