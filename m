@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F722C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235471AbiF0L3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45246 "EHLO
+        id S235484AbiF0L3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235085AbiF0L25 (ORCPT
+        with ESMTP id S235389AbiF0L26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:28:57 -0400
+        Mon, 27 Jun 2022 07:28:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25F69FC7;
-        Mon, 27 Jun 2022 04:27:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14ECFA199;
+        Mon, 27 Jun 2022 04:27:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E81661366;
-        Mon, 27 Jun 2022 11:27:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92029C3411D;
-        Mon, 27 Jun 2022 11:27:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5822614A2;
+        Mon, 27 Jun 2022 11:27:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93C05C341C7;
+        Mon, 27 Jun 2022 11:27:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329260;
-        bh=0u83o4b8jqVxJj96kjDZk5MoeLJqvngsmEsDtEas6KE=;
+        s=korg; t=1656329264;
+        bh=4w0rb8WM7fGTNmflEmNCvYh4biFDvlmKXvwa62Cg0+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cqnuVxpLB5lWpzza5r1IoAwjtAOvOoaKJ9PepWMIOdFUwz3O6qSoaDf9CiK340Zno
-         eSwWonxUL8wbsd0/SXZPL2prZR/Qu6kRpCsdDWuIYfMfbvB3Xg2znzP6yd2rpH30m7
-         nE4bD9Vw8wtdIMb6bzVj9alRILrxHdMoHkv6ODXQ=
+        b=ZYvy5j8MswRoXls0Q8yPT+FhqpKk87EkkqUa53/fb9I1nGFS3t1ScBUem01pqOjfA
+         y+J6JQ7pL0unWai+gxwRk69OkM8nLc8gbn4iFZEQllxBdzsHNzR3jzlUqC2DrgIsez
+         EYtS3jF6IEEXzjEwXpp01wwDTRAym6meFq0Vk50U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.10 086/102] xtensa: Fix refcount leak bug in time.c
-Date:   Mon, 27 Jun 2022 13:21:37 +0200
-Message-Id: <20220627111936.017437780@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 5.10 087/102] parisc/stifb: Fix fb_is_primary_device() only available with CONFIG_FB_STI
+Date:   Mon, 27 Jun 2022 13:21:38 +0200
+Message-Id: <20220627111936.046180187@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -48,32 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Helge Deller <deller@gmx.de>
 
-commit a0117dc956429f2ede17b323046e1968d1849150 upstream.
+commit 1d0811b03eb30b2f0793acaa96c6ce90b8b9c87a upstream.
 
-In calibrate_ccount(), of_find_compatible_node() will return a node
-pointer with refcount incremented. We should use of_node_put() when
-it is not used anymore.
+Fix this build error noticed by the kernel test robot:
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Liang He <windhl@126.com>
-Message-Id: <20220617124432.4049006-1-windhl@126.com>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+drivers/video/console/sticore.c:1132:5: error: redefinition of 'fb_is_primary_device'
+ arch/parisc/include/asm/fb.h:18:19: note: previous definition of 'fb_is_primary_device'
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: stable@vger.kernel.org   # v5.10+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/kernel/time.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/parisc/include/asm/fb.h    |    2 +-
+ drivers/video/console/sticore.c |    2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
---- a/arch/xtensa/kernel/time.c
-+++ b/arch/xtensa/kernel/time.c
-@@ -154,6 +154,7 @@ static void __init calibrate_ccount(void
- 	cpu = of_find_compatible_node(NULL, NULL, "cdns,xtensa-cpu");
- 	if (cpu) {
- 		clk = of_clk_get(cpu, 0);
-+		of_node_put(cpu);
- 		if (!IS_ERR(clk)) {
- 			ccount_freq = clk_get_rate(clk);
- 			return;
+--- a/arch/parisc/include/asm/fb.h
++++ b/arch/parisc/include/asm/fb.h
+@@ -12,7 +12,7 @@ static inline void fb_pgprotect(struct f
+ 	pgprot_val(vma->vm_page_prot) |= _PAGE_NO_CACHE;
+ }
+ 
+-#if defined(CONFIG_STI_CONSOLE) || defined(CONFIG_FB_STI)
++#if defined(CONFIG_FB_STI)
+ int fb_is_primary_device(struct fb_info *info);
+ #else
+ static inline int fb_is_primary_device(struct fb_info *info)
+--- a/drivers/video/console/sticore.c
++++ b/drivers/video/console/sticore.c
+@@ -1127,6 +1127,7 @@ int sti_call(const struct sti_struct *st
+ 	return ret;
+ }
+ 
++#if defined(CONFIG_FB_STI)
+ /* check if given fb_info is the primary device */
+ int fb_is_primary_device(struct fb_info *info)
+ {
+@@ -1142,6 +1143,7 @@ int fb_is_primary_device(struct fb_info
+ 	return (sti->info == info);
+ }
+ EXPORT_SYMBOL(fb_is_primary_device);
++#endif
+ 
+ MODULE_AUTHOR("Philipp Rumpf, Helge Deller, Thomas Bogendoerfer");
+ MODULE_DESCRIPTION("Core STI driver for HP's NGLE series graphics cards in HP PARISC machines");
 
 
