@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C59CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3528BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235060AbiF0L15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46394 "EHLO
+        id S235175AbiF0L2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235115AbiF0L0o (ORCPT
+        with ESMTP id S235121AbiF0L0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:26:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2DF65A8;
-        Mon, 27 Jun 2022 04:26:39 -0700 (PDT)
+        Mon, 27 Jun 2022 07:26:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 013399FC2;
+        Mon, 27 Jun 2022 04:26:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AF78B8111D;
-        Mon, 27 Jun 2022 11:26:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A801C3411D;
-        Mon, 27 Jun 2022 11:26:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D06D61456;
+        Mon, 27 Jun 2022 11:26:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC82C3411D;
+        Mon, 27 Jun 2022 11:26:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329196;
-        bh=/OV4TQT7m05Fi0VZVfG2VTpYR5hu8IQh+pTF8a8E0mw=;
+        s=korg; t=1656329200;
+        bh=aSg6SCDboFrRDptYfGjd8aZCjQ3TtrJ6lY+80tf9SwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZS0VeCB9tqSm9DrOqrKEgbJdtaFh6ufZWoD1CMWG8duXblCRrfA5EKs8pY38zQZWz
-         XdMdW7JNTesKKjqn87/HsNRvim+Hx4NzAFiHGweQE0bISaJiDAlMZJ4VhZ0kLdm0ee
-         /cSXPk4K7qVx7g75rbpcLTegbvKWu+OI0vfcdFM0=
+        b=YNy7gBBlNYOPKkQS4BgZHVphX5l59qsGvcGQh5lcF7eV7FtDTBVuau84kx14biN7P
+         Ysh6576Z0uo7j5RU2I8EM4w2E1baeBSyTYyHZ6/mjB7SyBEF5tRPo3Ky2hk7Zp3wH4
+         PnQipCJGrvgDtVyb44bvcOrrJ7gRfdBRdaJPynIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+        Yannick Brosseau <yannick.brosseau@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 080/102] iio: imu: inv_icm42600: Fix broken icm42600 (chip id 0 value)
-Date:   Mon, 27 Jun 2022 13:21:31 +0200
-Message-Id: <20220627111935.842264654@linuxfoundation.org>
+Subject: [PATCH 5.10 081/102] iio: adc: stm32: Fix ADCs iteration in irq handler
+Date:   Mon, 27 Jun 2022 13:21:32 +0200
+Message-Id: <20220627111935.871020960@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -50,47 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+From: Yannick Brosseau <yannick.brosseau@gmail.com>
 
-commit 106b391e1b859100a3f38f0ad874236e9be06bde upstream.
+commit d2214cca4d3eadc74eac9e30301ec7cad5355f00 upstream.
 
-The 0 value used for INV_CHIP_ICM42600 was not working since the
-match in i2c/spi was checking against NULL value.
+The irq handler was only checking the mask for the first ADCs in the case of the
+F4 and H7 generation, since it was iterating up to the num_irq value. This patch add
+the maximum number of ADC in the common register, which map to the number of entries of
+eoc_msk and ovr_msk in stm32_adc_common_regs. This allow the handler to check all ADCs in
+that module.
 
-To keep this check, add a first INV_CHIP_INVALID 0 value as safe
-guard.
+Tested on a STM32F429NIH6.
 
-Fixes: 31c24c1e93c3 ("iio: imu: inv_icm42600: add core of new inv_icm42600 driver")
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Link: https://lore.kernel.org/r/20220609102301.4794-1-jmaneyrol@invensense.com
+Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
+Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220516203939.3498673-2-yannick.brosseau@gmail.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/imu/inv_icm42600/inv_icm42600.h      |    1 +
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c |    2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/adc/stm32-adc-core.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-@@ -17,6 +17,7 @@
- #include "inv_icm42600_buffer.h"
+--- a/drivers/iio/adc/stm32-adc-core.c
++++ b/drivers/iio/adc/stm32-adc-core.c
+@@ -64,6 +64,7 @@ struct stm32_adc_priv;
+  * @max_clk_rate_hz: maximum analog clock rate (Hz, from datasheet)
+  * @has_syscfg: SYSCFG capability flags
+  * @num_irqs:	number of interrupt lines
++ * @num_adcs:   maximum number of ADC instances in the common registers
+  */
+ struct stm32_adc_priv_cfg {
+ 	const struct stm32_adc_common_regs *regs;
+@@ -71,6 +72,7 @@ struct stm32_adc_priv_cfg {
+ 	u32 max_clk_rate_hz;
+ 	unsigned int has_syscfg;
+ 	unsigned int num_irqs;
++	unsigned int num_adcs;
+ };
  
- enum inv_icm42600_chip {
-+	INV_CHIP_INVALID,
- 	INV_CHIP_ICM42600,
- 	INV_CHIP_ICM42602,
- 	INV_CHIP_ICM42605,
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -565,7 +565,7 @@ int inv_icm42600_core_probe(struct regma
- 	bool open_drain;
- 	int ret;
+ /**
+@@ -333,7 +335,7 @@ static void stm32_adc_irq_handler(struct
+ 	 * before invoking the interrupt handler (e.g. call ISR only for
+ 	 * IRQ-enabled ADCs).
+ 	 */
+-	for (i = 0; i < priv->cfg->num_irqs; i++) {
++	for (i = 0; i < priv->cfg->num_adcs; i++) {
+ 		if ((status & priv->cfg->regs->eoc_msk[i] &&
+ 		     stm32_adc_eoc_enabled(priv, i)) ||
+ 		     (status & priv->cfg->regs->ovr_msk[i]))
+@@ -784,6 +786,7 @@ static const struct stm32_adc_priv_cfg s
+ 	.clk_sel = stm32f4_adc_clk_sel,
+ 	.max_clk_rate_hz = 36000000,
+ 	.num_irqs = 1,
++	.num_adcs = 3,
+ };
  
--	if (chip < 0 || chip >= INV_CHIP_NB) {
-+	if (chip <= INV_CHIP_INVALID || chip >= INV_CHIP_NB) {
- 		dev_err(dev, "invalid chip = %d\n", chip);
- 		return -ENODEV;
- 	}
+ static const struct stm32_adc_priv_cfg stm32h7_adc_priv_cfg = {
+@@ -792,6 +795,7 @@ static const struct stm32_adc_priv_cfg s
+ 	.max_clk_rate_hz = 36000000,
+ 	.has_syscfg = HAS_VBOOSTER,
+ 	.num_irqs = 1,
++	.num_adcs = 2,
+ };
+ 
+ static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
+@@ -800,6 +804,7 @@ static const struct stm32_adc_priv_cfg s
+ 	.max_clk_rate_hz = 36000000,
+ 	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
+ 	.num_irqs = 2,
++	.num_adcs = 2,
+ };
+ 
+ static const struct of_device_id stm32_adc_of_match[] = {
 
 
