@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 290E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A81FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236557AbiF0Lla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34960 "EHLO
+        id S237020AbiF0Lld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236593AbiF0Lhn (ORCPT
+        with ESMTP id S236494AbiF0Lhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC4565D3;
-        Mon, 27 Jun 2022 04:34:09 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1C2283;
+        Mon, 27 Jun 2022 04:33:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FDCB60C16;
-        Mon, 27 Jun 2022 11:34:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50DB4C341C8;
-        Mon, 27 Jun 2022 11:34:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFA6860A10;
+        Mon, 27 Jun 2022 11:33:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C1CC3411D;
+        Mon, 27 Jun 2022 11:33:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329648;
-        bh=mQxZLlG1fnMhdpl5nNqIAaOfKrFy36I2HEN0sikocns=;
+        s=korg; t=1656329609;
+        bh=4d/QsRyDTmGy61tkrt2m4n5m+CpbXi9uRl2S66/x0Mk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O2D/3URiyPXZxzskLYAsadIICc+uEGkpO3IQdFXxvX1Ny2qAJKbIWsnutgr0vB1vE
-         vd4wa6NApvv6OQzOQfVKzp6zYYsVDwOOkLiH0Rr/a/WglKswVZya7yF5npVgM2B2jR
-         NlcjMV3EVjfnL3bWanJi60T/+nrqFmoLSCidG3X4=
+        b=CBO5+gAicKQ+JqEiQ6AuGmiLVun5X8epAEPCA45lrxxwXyQO/61Ait7JKdaXYi2UA
+         qsyStOdbGr8KE9NFZnphxYf/t2vM074dnlZW6+IVb4tiH11umyczENqvySzXF1KMDK
+         Npxyw+/E6sQHiZevClGrr287Iy542U+f3DhRnkcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, k2ci <kernel-bot@kylinos.cn>,
-        huhai <huhai@kylinos.cn>,
-        Genjian Zhang <zhanggenjian@kylinos.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 067/135] MIPS: Remove repetitive increase irq_err_count
-Date:   Mon, 27 Jun 2022 13:21:14 +0200
-Message-Id: <20220627111940.103110990@linuxfoundation.org>
+Subject: [PATCH 5.15 055/135] drm/msm/dp: check core_initialized before disable interrupts at dp_display_unbind()
+Date:   Mon, 27 Jun 2022 13:21:02 +0200
+Message-Id: <20220627111939.755751793@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,58 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit c81aba8fde2aee4f5778ebab3a1d51bd2ef48e4c ]
+[ Upstream commit d80c3ba0ac247791a4ed7a0cd865a64906c8906a ]
 
-commit 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx") added
-a function irq_dispatch, and it'll increase irq_err_count when the get_irq
-callback returns a negative value, but increase irq_err_count in get_irq
-was not removed.
+During msm initialize phase, dp_display_unbind() will be called to undo
+initializations had been done by dp_display_bind() previously if there is
+error happen at msm_drm_bind. In this case, core_initialized flag had to
+be check to make sure clocks is on before update DP controller register
+to disable HPD interrupts. Otherwise system will crash due to below NOC
+fatal error.
 
-And also, modpost complains once gpio-vr41xx drivers become modules.
-  ERROR: modpost: "irq_err_count" [drivers/gpio/gpio-vr41xx.ko] undefined!
+QTISECLIB [01f01a7ad]CNOC2 ERROR: ERRLOG0_LOW = 0x00061007
+QTISECLIB [01f01a7ad]GEM_NOC ERROR: ERRLOG0_LOW = 0x00001007
+QTISECLIB [01f0371a0]CNOC2 ERROR: ERRLOG0_HIGH = 0x00000003
+QTISECLIB [01f055297]GEM_NOC ERROR: ERRLOG0_HIGH = 0x00000003
+QTISECLIB [01f072beb]CNOC2 ERROR: ERRLOG1_LOW = 0x00000024
+QTISECLIB [01f0914b8]GEM_NOC ERROR: ERRLOG1_LOW = 0x00000042
+QTISECLIB [01f0ae639]CNOC2 ERROR: ERRLOG1_HIGH = 0x00004002
+QTISECLIB [01f0cc73f]GEM_NOC ERROR: ERRLOG1_HIGH = 0x00004002
+QTISECLIB [01f0ea092]CNOC2 ERROR: ERRLOG2_LOW = 0x0009020c
+QTISECLIB [01f10895f]GEM_NOC ERROR: ERRLOG2_LOW = 0x0ae9020c
+QTISECLIB [01f125ae1]CNOC2 ERROR: ERRLOG2_HIGH = 0x00000000
+QTISECLIB [01f143be7]GEM_NOC ERROR: ERRLOG2_HIGH = 0x00000000
+QTISECLIB [01f16153a]CNOC2 ERROR: ERRLOG3_LOW = 0x00000000
+QTISECLIB [01f17fe07]GEM_NOC ERROR: ERRLOG3_LOW = 0x00000000
+QTISECLIB [01f19cf89]CNOC2 ERROR: ERRLOG3_HIGH = 0x00000000
+QTISECLIB [01f1bb08e]GEM_NOC ERROR: ERRLOG3_HIGH = 0x00000000
+QTISECLIB [01f1d8a31]CNOC2 ERROR: SBM1 FAULTINSTATUS0_LOW = 0x00000002
+QTISECLIB [01f1f72a4]GEM_NOC ERROR: SBM0 FAULTINSTATUS0_LOW = 0x00000001
+QTISECLIB [01f21a217]CNOC3 ERROR: ERRLOG0_LOW = 0x00000006
+QTISECLIB [01f23dfd3]NOC error fatal
 
-So it would be a good idea to remove repetitive increase irq_err_count in
-get_irq callback.
+changes in v2:
+-- drop the first patch (drm/msm: enable msm irq after all initializations are done successfully at msm_drm_init()) since the problem had been fixed by other patch
 
-Fixes: 27fdd325dace ("MIPS: Update VR41xx GPIO driver to use gpiolib")
-Fixes: 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx")
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: huhai <huhai@kylinos.cn>
-Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/488387/
+Link: https://lore.kernel.org/r/1654538139-7450-1-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/vr41xx/common/icu.c | 2 --
- drivers/gpio/gpio-vr41xx.c    | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/gpu/drm/msm/dp/dp_display.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/vr41xx/common/icu.c b/arch/mips/vr41xx/common/icu.c
-index 7b7f25b4b057..9240bcdbe74e 100644
---- a/arch/mips/vr41xx/common/icu.c
-+++ b/arch/mips/vr41xx/common/icu.c
-@@ -640,8 +640,6 @@ static int icu_get_irq(unsigned int irq)
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 7b624191abf1..8b51a5cc3eb8 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -260,7 +260,8 @@ static void dp_display_unbind(struct device *dev, struct device *master,
+ 			struct dp_display_private, dp_display);
  
- 	printk(KERN_ERR "spurious ICU interrupt: %04x,%04x\n", pend1, pend2);
+ 	/* disable all HPD interrupts */
+-	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
++	if (dp->core_initialized)
++		dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
  
--	atomic_inc(&irq_err_count);
--
- 	return -1;
- }
- 
-diff --git a/drivers/gpio/gpio-vr41xx.c b/drivers/gpio/gpio-vr41xx.c
-index 98cd715ccc33..8d09b619c166 100644
---- a/drivers/gpio/gpio-vr41xx.c
-+++ b/drivers/gpio/gpio-vr41xx.c
-@@ -217,8 +217,6 @@ static int giu_get_irq(unsigned int irq)
- 	printk(KERN_ERR "spurious GIU interrupt: %04x(%04x),%04x(%04x)\n",
- 	       maskl, pendl, maskh, pendh);
- 
--	atomic_inc(&irq_err_count);
--
- 	return -EINVAL;
- }
+ 	kthread_stop(dp->ev_tsk);
  
 -- 
 2.35.1
