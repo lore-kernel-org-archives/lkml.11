@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EED6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E17DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:46:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235138AbiF0LqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
+        id S237787AbiF0Lq2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237542AbiF0LnE (ORCPT
+        with ESMTP id S237601AbiF0LnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:43:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B8725ED;
-        Mon, 27 Jun 2022 04:38:34 -0700 (PDT)
+        Mon, 27 Jun 2022 07:43:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9513FB6F;
+        Mon, 27 Jun 2022 04:38:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C90B6114F;
-        Mon, 27 Jun 2022 11:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B05EC36AE7;
-        Mon, 27 Jun 2022 11:38:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC527B8111B;
+        Mon, 27 Jun 2022 11:38:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD97C3411D;
+        Mon, 27 Jun 2022 11:38:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329913;
-        bh=NqWKPAx54vazXc3qKoDsW40jReYuUC9TIV8zapkZdIQ=;
+        s=korg; t=1656329916;
+        bh=ue+w54U/iHNazrhivO6QRkOHRDLQyJs1yw2XWUUXrrw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X8e5b3+Zh5iDv1F4RX0LQRCTGT5R3nrYHRBPDqCS6oaZvp+AQQc19jcC0LB5Vx1l4
-         9glTF5jGM1ANfGxoZOfp0gVYoc9Bcu+lrSk3RIANx51cGoETyHM3vd+JYFFYRpTqRe
-         dwsSNQPRZgkEyoLsyWmwwl148pIc/iRQTUplqINo=
+        b=QUwWjsM0NT6xWkkkCertHb4aORkIJjR26EtPNxJ+16NwYE6PCBchfEt8LrK9QoG9O
+         VABZu3k3YScK8W7XBSgkeOV5GrnbFFocdrsIUniT+gt3NgzdPvO6JAWtK0Z35xDv+y
+         6MpWXRc1L0/Bamo7CnbxBL6AtA0teVp8PheqIewY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 004/181] ALSA: hda/via: Fix missing beep setup
-Date:   Mon, 27 Jun 2022 13:19:37 +0200
-Message-Id: <20220627111944.687712838@linuxfoundation.org>
+        stable@vger.kernel.org, Brian King <brking@linux.vnet.ibm.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 022/181] scsi: ibmvfc: Allocate/free queue resource only during probe/remove
+Date:   Mon, 27 Jun 2022 13:19:55 +0200
+Message-Id: <20220627111945.208273750@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -47,41 +49,234 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Tyrel Datwyler <tyreld@linux.ibm.com>
 
-commit c7807b27d510e5aa53c8a120cfc02c33c24ebb5f upstream.
+commit 72ea7fe0db73d65c7d977208842d8ade9b823de9 upstream.
 
-Like the previous fix for Conexant codec, the beep_nid has to be set
-up before calling snd_hda_gen_parse_auto_config(); otherwise it'd miss
-the path setup.
+Currently, the sub-queues and event pool resources are allocated/freed for
+every CRQ connection event such as reset and LPM. This exposes the driver
+to a couple issues. First the inefficiency of freeing and reallocating
+memory that can simply be resued after being sanitized. Further, a system
+under memory pressue runs the risk of allocation failures that could result
+in a crippled driver. Finally, there is a race window where command
+submission/compeletion can try to pull/return elements from/to an event
+pool that is being deleted or already has been deleted due to the lack of
+host state around freeing/allocating resources. The following is an example
+of list corruption following a live partition migration (LPM):
 
-Fix the call order for addressing the missing beep setup.
+Oops: Exception in kernel mode, sig: 5 [#1]
+LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
+Modules linked in: vfat fat isofs cdrom ext4 mbcache jbd2 nft_counter nft_compat nf_tables nfnetlink rpadlpar_io rpaphp xsk_diag nfsv3 nfs_acl nfs lockd grace fscache netfs rfkill bonding tls sunrpc pseries_rng drm drm_panel_orientation_quirks xfs libcrc32c dm_service_time sd_mod t10_pi sg ibmvfc scsi_transport_fc ibmveth vmx_crypto dm_multipath dm_mirror dm_region_hash dm_log dm_mod ipmi_devintf ipmi_msghandler fuse
+CPU: 0 PID: 2108 Comm: ibmvfc_0 Kdump: loaded Not tainted 5.14.0-70.9.1.el9_0.ppc64le #1
+NIP: c0000000007c4bb0 LR: c0000000007c4bac CTR: 00000000005b9a10
+REGS: c00000025c10b760 TRAP: 0700  Not tainted (5.14.0-70.9.1.el9_0.ppc64le)
+MSR: 800000000282b033 <SF,VEC,VSX,EE,FP,ME,IR,DR,RI,LE> CR: 2800028f XER: 0000000f
+CFAR: c0000000001f55bc IRQMASK: 0
+        GPR00: c0000000007c4bac c00000025c10ba00 c000000002a47c00 000000000000004e
+        GPR04: c0000031e3006f88 c0000031e308bd00 c00000025c10b768 0000000000000027
+        GPR08: 0000000000000000 c0000031e3009dc0 00000031e0eb0000 0000000000000000
+        GPR12: c0000031e2ffffa8 c000000002dd0000 c000000000187108 c00000020fcee2c0
+        GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+        GPR20: 0000000000000000 0000000000000000 0000000000000000 c008000002f81300
+        GPR24: 5deadbeef0000100 5deadbeef0000122 c000000263ba6910 c00000024cc88000
+        GPR28: 000000000000003c c0000002430a0000 c0000002430ac300 000000000000c300
+NIP [c0000000007c4bb0] __list_del_entry_valid+0x90/0x100
+LR [c0000000007c4bac] __list_del_entry_valid+0x8c/0x100
+Call Trace:
+[c00000025c10ba00] [c0000000007c4bac] __list_del_entry_valid+0x8c/0x100 (unreliable)
+[c00000025c10ba60] [c008000002f42284] ibmvfc_free_queue+0xec/0x210 [ibmvfc]
+[c00000025c10bb10] [c008000002f4246c] ibmvfc_deregister_scsi_channel+0xc4/0x160 [ibmvfc]
+[c00000025c10bba0] [c008000002f42580] ibmvfc_release_sub_crqs+0x78/0x130 [ibmvfc]
+[c00000025c10bc20] [c008000002f4f6cc] ibmvfc_do_work+0x5c4/0xc70 [ibmvfc]
+[c00000025c10bce0] [c008000002f4fdec] ibmvfc_work+0x74/0x1e8 [ibmvfc]
+[c00000025c10bda0] [c0000000001872b8] kthread+0x1b8/0x1c0
+[c00000025c10be10] [c00000000000cd64] ret_from_kernel_thread+0x5c/0x64
+Instruction dump:
+40820034 38600001 38210060 4e800020 7c0802a6 7c641b78 3c62fe7a 7d254b78
+3863b590 f8010070 4ba309cd 60000000 <0fe00000> 7c0802a6 3c62fe7a 3863b640
+---[ end trace 11a2b65a92f8b66c ]---
+ibmvfc 30000003: Send warning. Receive queue closed, will retry.
 
-Fixes: 0e8f9862493a ("ALSA: hda/via - Simplify control management")
-Cc: <stable@vger.kernel.org>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216152
-Link: https://lore.kernel.org/r/20220620104008.1994-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Add registration/deregistration helpers that are called instead during
+connection resets to sanitize and reconfigure the queues.
+
+Link: https://lore.kernel.org/r/20220616191126.1281259-3-tyreld@linux.ibm.com
+Fixes: 3034ebe26389 ("scsi: ibmvfc: Add alloc/dealloc routines for SCSI Sub-CRQ Channels")
+Cc: stable@vger.kernel.org
+Reviewed-by: Brian King <brking@linux.vnet.ibm.com>
+Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_via.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/ibmvscsi/ibmvfc.c |   79 ++++++++++++++++++++++++++++++++---------
+ 1 file changed, 62 insertions(+), 17 deletions(-)
 
---- a/sound/pci/hda/patch_via.c
-+++ b/sound/pci/hda/patch_via.c
-@@ -520,11 +520,11 @@ static int via_parse_auto_config(struct
- 	if (err < 0)
- 		return err;
+--- a/drivers/scsi/ibmvscsi/ibmvfc.c
++++ b/drivers/scsi/ibmvscsi/ibmvfc.c
+@@ -160,8 +160,8 @@ static void ibmvfc_npiv_logout(struct ib
+ static void ibmvfc_tgt_implicit_logout_and_del(struct ibmvfc_target *);
+ static void ibmvfc_tgt_move_login(struct ibmvfc_target *);
  
--	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
-+	err = auto_parse_beep(codec);
- 	if (err < 0)
- 		return err;
+-static void ibmvfc_release_sub_crqs(struct ibmvfc_host *);
+-static void ibmvfc_init_sub_crqs(struct ibmvfc_host *);
++static void ibmvfc_dereg_sub_crqs(struct ibmvfc_host *);
++static void ibmvfc_reg_sub_crqs(struct ibmvfc_host *);
  
--	err = auto_parse_beep(codec);
-+	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
- 	if (err < 0)
- 		return err;
+ static const char *unknown_error = "unknown error";
  
+@@ -917,7 +917,7 @@ static int ibmvfc_reenable_crq_queue(str
+ 	struct vio_dev *vdev = to_vio_dev(vhost->dev);
+ 	unsigned long flags;
+ 
+-	ibmvfc_release_sub_crqs(vhost);
++	ibmvfc_dereg_sub_crqs(vhost);
+ 
+ 	/* Re-enable the CRQ */
+ 	do {
+@@ -936,7 +936,7 @@ static int ibmvfc_reenable_crq_queue(str
+ 	spin_unlock(vhost->crq.q_lock);
+ 	spin_unlock_irqrestore(vhost->host->host_lock, flags);
+ 
+-	ibmvfc_init_sub_crqs(vhost);
++	ibmvfc_reg_sub_crqs(vhost);
+ 
+ 	return rc;
+ }
+@@ -955,7 +955,7 @@ static int ibmvfc_reset_crq(struct ibmvf
+ 	struct vio_dev *vdev = to_vio_dev(vhost->dev);
+ 	struct ibmvfc_queue *crq = &vhost->crq;
+ 
+-	ibmvfc_release_sub_crqs(vhost);
++	ibmvfc_dereg_sub_crqs(vhost);
+ 
+ 	/* Close the CRQ */
+ 	do {
+@@ -988,7 +988,7 @@ static int ibmvfc_reset_crq(struct ibmvf
+ 	spin_unlock(vhost->crq.q_lock);
+ 	spin_unlock_irqrestore(vhost->host->host_lock, flags);
+ 
+-	ibmvfc_init_sub_crqs(vhost);
++	ibmvfc_reg_sub_crqs(vhost);
+ 
+ 	return rc;
+ }
+@@ -5759,9 +5759,6 @@ static int ibmvfc_register_scsi_channel(
+ 
+ 	ENTER;
+ 
+-	if (ibmvfc_alloc_queue(vhost, scrq, IBMVFC_SUB_CRQ_FMT))
+-		return -ENOMEM;
+-
+ 	rc = h_reg_sub_crq(vdev->unit_address, scrq->msg_token, PAGE_SIZE,
+ 			   &scrq->cookie, &scrq->hw_irq);
+ 
+@@ -5801,7 +5798,6 @@ irq_failed:
+ 		rc = plpar_hcall_norets(H_FREE_SUB_CRQ, vdev->unit_address, scrq->cookie);
+ 	} while (rtas_busy_delay(rc));
+ reg_failed:
+-	ibmvfc_free_queue(vhost, scrq);
+ 	LEAVE;
+ 	return rc;
+ }
+@@ -5827,12 +5823,50 @@ static void ibmvfc_deregister_scsi_chann
+ 	if (rc)
+ 		dev_err(dev, "Failed to free sub-crq[%d]: rc=%ld\n", index, rc);
+ 
+-	ibmvfc_free_queue(vhost, scrq);
++	/* Clean out the queue */
++	memset(scrq->msgs.crq, 0, PAGE_SIZE);
++	scrq->cur = 0;
++
++	LEAVE;
++}
++
++static void ibmvfc_reg_sub_crqs(struct ibmvfc_host *vhost)
++{
++	int i, j;
++
++	ENTER;
++	if (!vhost->mq_enabled || !vhost->scsi_scrqs.scrqs)
++		return;
++
++	for (i = 0; i < nr_scsi_hw_queues; i++) {
++		if (ibmvfc_register_scsi_channel(vhost, i)) {
++			for (j = i; j > 0; j--)
++				ibmvfc_deregister_scsi_channel(vhost, j - 1);
++			vhost->do_enquiry = 0;
++			return;
++		}
++	}
++
++	LEAVE;
++}
++
++static void ibmvfc_dereg_sub_crqs(struct ibmvfc_host *vhost)
++{
++	int i;
++
++	ENTER;
++	if (!vhost->mq_enabled || !vhost->scsi_scrqs.scrqs)
++		return;
++
++	for (i = 0; i < nr_scsi_hw_queues; i++)
++		ibmvfc_deregister_scsi_channel(vhost, i);
++
+ 	LEAVE;
+ }
+ 
+ static void ibmvfc_init_sub_crqs(struct ibmvfc_host *vhost)
+ {
++	struct ibmvfc_queue *scrq;
+ 	int i, j;
+ 
+ 	ENTER;
+@@ -5848,30 +5882,41 @@ static void ibmvfc_init_sub_crqs(struct
+ 	}
+ 
+ 	for (i = 0; i < nr_scsi_hw_queues; i++) {
+-		if (ibmvfc_register_scsi_channel(vhost, i)) {
+-			for (j = i; j > 0; j--)
+-				ibmvfc_deregister_scsi_channel(vhost, j - 1);
++		scrq = &vhost->scsi_scrqs.scrqs[i];
++		if (ibmvfc_alloc_queue(vhost, scrq, IBMVFC_SUB_CRQ_FMT)) {
++			for (j = i; j > 0; j--) {
++				scrq = &vhost->scsi_scrqs.scrqs[j - 1];
++				ibmvfc_free_queue(vhost, scrq);
++			}
+ 			kfree(vhost->scsi_scrqs.scrqs);
+ 			vhost->scsi_scrqs.scrqs = NULL;
+ 			vhost->scsi_scrqs.active_queues = 0;
+ 			vhost->do_enquiry = 0;
+-			break;
++			vhost->mq_enabled = 0;
++			return;
+ 		}
+ 	}
+ 
++	ibmvfc_reg_sub_crqs(vhost);
++
+ 	LEAVE;
+ }
+ 
+ static void ibmvfc_release_sub_crqs(struct ibmvfc_host *vhost)
+ {
++	struct ibmvfc_queue *scrq;
+ 	int i;
+ 
+ 	ENTER;
+ 	if (!vhost->scsi_scrqs.scrqs)
+ 		return;
+ 
+-	for (i = 0; i < nr_scsi_hw_queues; i++)
+-		ibmvfc_deregister_scsi_channel(vhost, i);
++	ibmvfc_dereg_sub_crqs(vhost);
++
++	for (i = 0; i < nr_scsi_hw_queues; i++) {
++		scrq = &vhost->scsi_scrqs.scrqs[i];
++		ibmvfc_free_queue(vhost, scrq);
++	}
+ 
+ 	kfree(vhost->scsi_scrqs.scrqs);
+ 	vhost->scsi_scrqs.scrqs = NULL;
 
 
