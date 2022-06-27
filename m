@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D62C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9675ECCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234607AbiF0LX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
+        id S234611AbiF0LXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234583AbiF0LXU (ORCPT
+        with ESMTP id S234583AbiF0LXb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:23:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F966575;
-        Mon, 27 Jun 2022 04:23:18 -0700 (PDT)
+        Mon, 27 Jun 2022 07:23:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B94D656C;
+        Mon, 27 Jun 2022 04:23:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 375626144F;
-        Mon, 27 Jun 2022 11:23:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28268C341C7;
-        Mon, 27 Jun 2022 11:23:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01FE7B8111C;
+        Mon, 27 Jun 2022 11:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53E9AC3411D;
+        Mon, 27 Jun 2022 11:23:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656328997;
-        bh=A2migJAf3lhueRVP05DdDRYtA3dnSY0+3MDuPOjx5+4=;
+        s=korg; t=1656329000;
+        bh=hGuOut/iB47OP+a8fIGR+FF0ZAQpLfuGm7US7TJUxkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mMp4h5yfo//noILpdkD21PkSvza8b+/+tqWEDFSvUNE4LOLr7p8KNW4ZBlVnXd2b8
-         vetYpyRnrCrLGBp1n55DnLfd71K23GabwzarXJ5PuKnvs6BedV+ryr/d47eHwteeTm
-         Q6dZrzD89yNOreg5tsrZnPtqJKLSpbavYH7trIxI=
+        b=w3sQeST/x4gk7bKtBrSRedOm4ztbmFOQpFM+AC3hlXcXmf0FM6qpdysu+l8qsh+Yt
+         LrDxrtVQlzrNZzVfUP80xs3wbq4xktdLqi1AbBdb44CW3WIyif82GaYy/lSV4VKRHl
+         tEwkDpJ4JVJMf2a/ni0z7s+JjcJm4jH87mpX+nik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Benjamin Marzinski <bmarzins@redhat.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.10 017/102] dm mirror log: clear log bits up to BITS_PER_LONG boundary
-Date:   Mon, 27 Jun 2022 13:20:28 +0200
-Message-Id: <20220627111933.977067159@linuxfoundation.org>
+        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
+        Carlo Lobrano <c.lobrano@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.10 018/102] USB: serial: option: add Telit LE910Cx 0x1250 composition
+Date:   Mon, 27 Jun 2022 13:20:29 +0200
+Message-Id: <20220627111934.006180213@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -49,42 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Carlo Lobrano <c.lobrano@gmail.com>
 
-commit 90736eb3232d208ee048493f371075e4272e0944 upstream.
+commit 342fc0c3b345525da21112bd0478a0dc741598ea upstream.
 
-Commit 85e123c27d5c ("dm mirror log: round up region bitmap size to
-BITS_PER_LONG") introduced a regression on 64-bit architectures in the
-lvm testsuite tests: lvcreate-mirror, mirror-names and vgsplit-operation.
+Add support for the following Telit LE910Cx composition:
 
-If the device is shrunk, we need to clear log bits beyond the end of the
-device. The code clears bits up to a 32-bit boundary and then calculates
-lc->sync_count by summing set bits up to a 64-bit boundary (the commit
-changed that; previously, this boundary was 32-bit too). So, it was using
-some non-zeroed bits in the calculation and this caused misbehavior.
+0x1250: rmnet, tty, tty, tty, tty
 
-Fix this regression by clearing bits up to BITS_PER_LONG boundary.
-
-Fixes: 85e123c27d5c ("dm mirror log: round up region bitmap size to BITS_PER_LONG")
+Reviewed-by: Daniele Palmas <dnlplm@gmail.com>
+Signed-off-by: Carlo Lobrano <c.lobrano@gmail.com>
+Link: https://lore.kernel.org/r/20220614075623.2392607-1-c.lobrano@gmail.com
 Cc: stable@vger.kernel.org
-Reported-by: Benjamin Marzinski <bmarzins@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-log.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/serial/option.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/md/dm-log.c
-+++ b/drivers/md/dm-log.c
-@@ -615,7 +615,7 @@ static int disk_resume(struct dm_dirty_l
- 			log_clear_bit(lc, lc->clean_bits, i);
- 
- 	/* clear any old bits -- device has shrunk */
--	for (i = lc->region_count; i % (sizeof(*lc->clean_bits) << BYTE_SHIFT); i++)
-+	for (i = lc->region_count; i % BITS_PER_LONG; i++)
- 		log_clear_bit(lc, lc->clean_bits, i);
- 
- 	/* copy clean across to sync */
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1279,6 +1279,7 @@ static const struct usb_device_id option
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1231, 0xff),	/* Telit LE910Cx (RNDIS) */
+ 	  .driver_info = NCTRL(2) | RSVD(3) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(TELIT_VENDOR_ID, 0x1250, 0xff, 0x00, 0x00) },	/* Telit LE910Cx (rmnet) */
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1260),
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1261),
 
 
