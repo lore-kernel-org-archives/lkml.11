@@ -2,91 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4570CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15432CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238798AbiF0Lwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
+        id S239072AbiF0LxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238424AbiF0Ls0 (ORCPT
+        with ESMTP id S238467AbiF0Lsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64EAABE39;
-        Mon, 27 Jun 2022 04:41:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 138D5B8112E;
-        Mon, 27 Jun 2022 11:41:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 778D4C3411D;
-        Mon, 27 Jun 2022 11:41:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330080;
-        bh=E49iyCRj4QbP3/EbZLXLwZp+fDTLfjOcMQvlo3rHagI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dF/mlcjupZ/G6w3DY4ETisUwlQiH4ULbywI8s0zCETpdtyHKvfDGgya14th23y9yj
-         0VTBYrzKRFhATwYI1uUq7OVWEpjXkHe1A9rF5SAWB00e1BWhBFPwWDnrIgPwRl3J8x
-         NUQ3WxEldyN17M/cZpi8GrU5fMCjSL7NvqGejjzg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, zdi-disclosures@trendmicro.com,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 076/181] udmabuf: add back sanity check
-Date:   Mon, 27 Jun 2022 13:20:49 +0200
-Message-Id: <20220627111946.766827059@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
-References: <20220627111944.553492442@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 27 Jun 2022 07:48:30 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747A8101CD
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:41:42 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id g20-20020a17090a579400b001ed52939d72so3703928pji.4
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:41:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=Te7Bn8Ps7JLUBbyJF7xQc/CqErZW/fxCMAa/7Pn2yJM=;
+        b=qr4/FdoUOLjao3iROoOoGGqQLYxyZk8N4KJeqcyLsA/aLFlDP6ADm5eaypCcTYBSPk
+         GcR+tSWPRyMynemMo89OuGlPYzYpgQIHwbmoyJaRizq6YzIOsAuY+bM2Wpybp9byYCmN
+         +wNEEA5+2h5HYgBSBLlNI94gyV3xriVzK/Nn9y2v5RtzU8sUu02OS1wByd8UypL52h3v
+         dhJ+N+/WL1OqQwhpFa+NOYZjGSWAs5q/5iXcyDb07X8QqV+Vqe83pmqp65flZ7qD0k3L
+         gUZocr93jSt/REJ8P7inp/EIoXZx8zAjRt4RHyT4rRZXyK1SuSaVkqIkuVzYcfn2pT7n
+         Ksow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=Te7Bn8Ps7JLUBbyJF7xQc/CqErZW/fxCMAa/7Pn2yJM=;
+        b=jNFCZ7NwzIfD6wHcDofLteyQgMst59ZeXkctxoVgehWv3TaNJxpq117QLn5CWD9MYh
+         CTJxetPPdh/ilt9JebaeCVK2jf+DrduiPxpQRUjIVJkbJNbjS10OTmEZIDe2Ae08VtPE
+         CCqF27QCtGxNvs694ldTlKlSNqyMHi6gl0uwOT9zJ8o/5Qde9qQ7qSUp1BZv2bJsgaE9
+         nREx99GdKhZENN6YlMKneln78kbxhdZKe5z60g2sl9aUfrdAdwWZlvzwLehE/lG/+w/T
+         kngwoPVkXgrmHmT1JZdTXvB8GRtW+10iBPmaS9tkCUi1Ai4oEq9U/8ttkC2QV7iZAENC
+         u8BQ==
+X-Gm-Message-State: AJIora9m0eARoK3G2PRhOT2CwOF2axb+QA6UFbv8HhtzOSVE7SwJZxHt
+        68FNrIQ1eO3j6091GeRPLk4=
+X-Google-Smtp-Source: AGRyM1tez5E2FyjPLs5PGhg40qU0H0E3SQlD0MFHWrBuezbgs9Ad5uO//+4+CT6fA8NmPaeVeHiALg==
+X-Received: by 2002:a17:90a:6809:b0:1ec:c213:56c8 with SMTP id p9-20020a17090a680900b001ecc21356c8mr20399771pjj.82.1656330101753;
+        Mon, 27 Jun 2022 04:41:41 -0700 (PDT)
+Received: from desktop-hypoxic.kamiya.io ([42.120.103.58])
+        by smtp.gmail.com with ESMTPSA id q2-20020a170902f34200b0016a2a8c7e8fsm6974942ple.143.2022.06.27.04.41.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 04:41:41 -0700 (PDT)
+From:   Yangxi Xiang <xyangxi5@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Igor Matheus Andrade Torrente <igormtorrente@gmail.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        nick black <dankamongmen@gmail.com>
+Subject: Re: [PATCH] vt: fix memory overlapping when deleting chars in the buffer
+Date:   Mon, 27 Jun 2022 19:40:16 +0800
+Message-Id: <20220627114016.11114-1-xyangxi5@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <YrmPi/D4dZAySgll@kroah.com>
+References: <YrmPi/D4dZAySgll@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gerd Hoffmann <kraxel@redhat.com>
+> And what commit id does this fix, or has it always been broken?
 
-[ Upstream commit 05b252cccb2e5c3f56119d25de684b4f810ba40a ]
+It fixes the commit 81732c3 (tty vt: Fix line garbage in virtual
+console on command line edition). The line buffer is not always
+broken, because the memcpy utilized the hardware acceleration, whose
+result is not deterministic. I fix this issue by replacing the
+scr_memcpyw with scr_memmovew used in insert_char, and preserving the
+memcpy optimization when the buffers are not overlapping.
 
-Check vm_fault->pgoff before using it.  When we removed the warning, we
-also removed the check.
-
-Fixes: 7b26e4e2119d ("udmabuf: drop WARN_ON() check.")
-Reported-by: zdi-disclosures@trendmicro.com
-Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/dma-buf/udmabuf.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/dma-buf/udmabuf.c b/drivers/dma-buf/udmabuf.c
-index e7330684d3b8..9631f2fd2faf 100644
---- a/drivers/dma-buf/udmabuf.c
-+++ b/drivers/dma-buf/udmabuf.c
-@@ -32,8 +32,11 @@ static vm_fault_t udmabuf_vm_fault(struct vm_fault *vmf)
- {
- 	struct vm_area_struct *vma = vmf->vma;
- 	struct udmabuf *ubuf = vma->vm_private_data;
-+	pgoff_t pgoff = vmf->pgoff;
- 
--	vmf->page = ubuf->pages[vmf->pgoff];
-+	if (pgoff >= ubuf->pagecount)
-+		return VM_FAULT_SIGBUS;
-+	vmf->page = ubuf->pages[pgoff];
- 	get_page(vmf->page);
- 	return 0;
- }
--- 
-2.35.1
-
-
-
+Yangxi Xiang
