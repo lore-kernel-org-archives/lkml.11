@@ -2,186 +2,374 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9EB5CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 17:36:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35822CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 17:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239635AbiF0RgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 13:36:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
+        id S239729AbiF0Rgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 13:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236554AbiF0RgG (ORCPT
+        with ESMTP id S236554AbiF0Rga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 13:36:06 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E168B7E8;
-        Mon, 27 Jun 2022 10:36:04 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25RHP21I013046;
-        Mon, 27 Jun 2022 17:36:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=nRVbFCYhUMHhsowGXbDWnUYPdU6+yLSTiQDDJzrrjrc=;
- b=hK8hLc0dRv2LBAXKuqr6G/ppq2YDKj9aACE1J95z6t4fbtS36KyWlU0G1yRAo6z+b5w/
- D3wbRdzy67ZYO2BR5v85cYAcaOxxui1rEZ+OSkoYBE+9w0K2hQ3UBCeYTTFNFCSYbdMw
- WlfjrJpli+PfJQKme8S4EhIbRtBwjD8XCukog1w+gtMFWlTSROmwwSzSvQTpCjCL/C6t
- anrYzaf/xn8cHpoY/vX5cseU86ELCexrklY0rQzxSWKTb3kNBsCS3ncNJQEozBQcg/xG
- 7NmdrP+XSGpzUkRJIjUQ+Mg1l42gasqMrkDMYqICpqVV9c1Ow+Yb5TaAU4Axp/F0kctr 6A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gygxa088c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jun 2022 17:36:03 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25RHP3Jc013060;
-        Mon, 27 Jun 2022 17:36:03 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gygxa087e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jun 2022 17:36:02 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25RHa1FJ009965;
-        Mon, 27 Jun 2022 17:36:01 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma01fra.de.ibm.com with ESMTP id 3gwt08tgqh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jun 2022 17:36:01 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25RHZvlo14746070
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 Jun 2022 17:35:58 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DB32511C050;
-        Mon, 27 Jun 2022 17:35:57 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 266D111C04C;
-        Mon, 27 Jun 2022 17:35:57 +0000 (GMT)
-Received: from [9.171.84.214] (unknown [9.171.84.214])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 27 Jun 2022 17:35:57 +0000 (GMT)
-Message-ID: <b1a9af63-7b05-d5d6-af00-849e8b1c9d73@linux.ibm.com>
-Date:   Mon, 27 Jun 2022 19:40:25 +0200
+        Mon, 27 Jun 2022 13:36:30 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994EDB7E8;
+        Mon, 27 Jun 2022 10:36:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656351388; x=1687887388;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=hvbQE0PFfA/LpVXutqm46DzVKVO5gqaknCxGXk/JNtk=;
+  b=N8GB+LWXJNCL6aRM9FW72bJ5XSRfpE4lVofQZqtV6t4Jx84owoacpGlz
+   +Lg63u+nEA6ZV8UpAbsdOj6TXQYXXVJKz9otSEOgYYNBGaSnq7FCuCOCV
+   etRcatn3ZLCHw5Nt+JqAjhS+kzaPxoYF3+gj8uvMDWQnIdfIX0/N+c+6y
+   YPX1GscEqnCOzp+oQxDryXoye9NmAeRp7coiBQrm8AQGrX00Re6/I3hae
+   pb9YPXsJMcDBShQdNciGCAn8OxLI9/eqhHkS2bemhqV7kj17BYqEMS8Bl
+   WK8VSRtsfbtJxJxOP5GlwEh1AxPxf7TaG5zT8kLp3fN/NUpd8BT+AS4PP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270262447"
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="270262447"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 10:36:11 -0700
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="594399449"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 10:36:11 -0700
+From:   Tony Luck <tony.luck@intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Smita.KoralahalliChannabasappa@amd.com,
+        dave.hansen@linux.intel.com, hpa@zytor.com,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        x86@kernel.org, yazen.ghannam@amd.com, patches@lists.linux.dev,
+        Tony Luck <tony.luck@intel.com>
+Subject: [PATCH v2 2/5] x86/mce: Add per-bank CMCI storm mitigation
+Date:   Mon, 27 Jun 2022 10:36:02 -0700
+Message-Id: <20220627173605.514504-3-tony.luck@intel.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220627173605.514504-1-tony.luck@intel.com>
+References: <YrFSSZqjtWlm9rUr@agluck-desk3.sc.intel.com>
+ <20220627173605.514504-1-tony.luck@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v10 2/3] KVM: s390: guest support for topology function
-Content-Language: en-US
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, borntraeger@de.ibm.com,
-        frankja@linux.ibm.com, cohuck@redhat.com, david@redhat.com,
-        thuth@redhat.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        wintera@linux.ibm.com, seiden@linux.ibm.com, nrb@linux.ibm.com
-References: <20220620125437.37122-1-pmorel@linux.ibm.com>
- <20220620125437.37122-3-pmorel@linux.ibm.com>
- <20220624113225.019a9294@p-imbrenda>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20220624113225.019a9294@p-imbrenda>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: bafHGAm5NoMRKBxtZH5ZhcESvphLtSqG
-X-Proofpoint-GUID: XYKGHWWB9KaOcgUYtZJWU6yNqFg-U9us
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-27_06,2022-06-24_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
- clxscore=1015 mlxscore=0 suspectscore=0 mlxlogscore=999 spamscore=0
- priorityscore=1501 lowpriorityscore=0 phishscore=0 malwarescore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206270071
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add a hook into machine_check_poll() to keep track of per-CPU, per-bank
+corrected error logs.
 
+Maintain a bitmap history for each bank showing whether the bank
+logged an corrected error or not each time it is polled.
 
-On 6/24/22 11:32, Claudio Imbrenda wrote:
-> On Mon, 20 Jun 2022 14:54:36 +0200
-> Pierre Morel <pmorel@linux.ibm.com> wrote:
-> 
->> We report a topology change to the guest for any CPU hotplug.
->>
->> The reporting to the guest is done using the Multiprocessor
->> Topology-Change-Report (MTCR) bit of the utility entry in the guest's
->> SCA which will be cleared during the interpretation of PTF.
->>
->> On every vCPU creation we set the MCTR bit to let the guest know the
->> next time he uses the PTF with command 2 instruction that the
->> topology changed and that he should use the STSI(15.1.x) instruction
->> to get the topology details.
->>
->> STSI(15.1.x) gives information on the CPU configuration topology.
->> Let's accept the interception of STSI with the function code 15 and
->> let the userland part of the hypervisor handle it when userland
->> support the CPU Topology facility.
->>
->> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
->> ---
->>   arch/s390/include/asm/kvm_host.h | 11 ++++++++---
->>   arch/s390/kvm/kvm-s390.c         | 27 ++++++++++++++++++++++++++-
->>   arch/s390/kvm/priv.c             | 15 +++++++++++----
->>   arch/s390/kvm/vsie.c             |  3 +++
->>   4 files changed, 48 insertions(+), 8 deletions(-)
->>
->> diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
->> index 766028d54a3e..bb54196d4ed6 100644
->> --- a/arch/s390/include/asm/kvm_host.h
->> +++ b/arch/s390/include/asm/kvm_host.h
->> @@ -97,15 +97,19 @@ struct bsca_block {
->>   	union ipte_control ipte_control;
->>   	__u64	reserved[5];
->>   	__u64	mcn;
->> -	__u64	reserved2;
->> +#define SCA_UTILITY_MTCR	0x8000
->> +	__u16	utility;
->> +	__u8	reserved2[6];
->>   	struct bsca_entry cpu[KVM_S390_BSCA_CPU_SLOTS];
->>   };
->>   
->>   struct esca_block {
->>   	union ipte_control ipte_control;
->> -	__u64   reserved1[7];
->> +	__u64   reserved1[6];
->> +	__u16	utility;
->> +	__u8	reserved2[6];
->>   	__u64   mcn[4];
->> -	__u64   reserved2[20];
->> +	__u64   reserved3[20];
->>   	struct esca_entry cpu[KVM_S390_ESCA_CPU_SLOTS];
->>   };
->>   
->> @@ -249,6 +253,7 @@ struct kvm_s390_sie_block {
->>   #define ECB_SPECI	0x08
->>   #define ECB_SRSI	0x04
->>   #define ECB_HOSTPROTINT	0x02
->> +#define ECB_PTF		0x01
->>   	__u8	ecb;			/* 0x0061 */
->>   #define ECB2_CMMA	0x80
->>   #define ECB2_IEP	0x20
->> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->> index 8fcb56141689..95b96019ca8e 100644
->> --- a/arch/s390/kvm/kvm-s390.c
->> +++ b/arch/s390/kvm/kvm-s390.c
->> @@ -1691,6 +1691,25 @@ static int kvm_s390_get_cpu_model(struct kvm *kvm, struct kvm_device_attr *attr)
->>   	return ret;
->>   }
->>   
->> +/**
->> + * kvm_s390_sca_set_mtcr
-> 
-> the format for kdoc is:
-> 
-> 	function_name - very short description
-> 
-> please add a very short description. something like:
-> 
-> 	kvm_s390_sca_set_mtcr - update mtcr to signal topology change
+In normal operation the interval between polls of this banks
+determines how far to shift the history. The 64 bit width corresponds
+to about one second.
 
+When a storm is observed the Rate of interrupts is reduced by setting
+a large threshold value for this bank in IA32_MCi_CTL2. This bank is
+added to the bitmap of banks for this CPU to poll. The polling rate
+is increased to once per second.
+During a storm each bit in the history indicates the status of the
+bank each time it is polled. Thus the history covers just over a minute.
 
-OK, thanks,
+Declare a storm for that bank if the number of corrected interrupts
+seen in that history is above some threshold (5 in this RFC code for
+ease of testing, likely move to 15 for compatibility with previous
+storm detection).
 
-Pierre
+A storm on a bank ends if enough consecutive polls of the bank show
+no corrected errors (currently 30, may also change). That resets the
+threshold in IA32_MCi_CTL2 back to 1, removes the bank from the bitmap
+for polling, and changes the polling rate back to the default.
 
+If a CPU with banks in storm mode is taken offline, the new CPU
+that inherits ownership of those banks takes over management of
+storm(s) in the inherited bank(s).
+
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+---
+ arch/x86/kernel/cpu/mce/core.c     |  26 ++++--
+ arch/x86/kernel/cpu/mce/intel.c    | 139 ++++++++++++++++++++++++++++-
+ arch/x86/kernel/cpu/mce/internal.h |   4 +-
+ 3 files changed, 158 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 92c2dee4bf43..776d4724b1e0 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -694,6 +694,8 @@ bool machine_check_poll(enum mcp_flags flags, mce_banks_t *b)
+ 		barrier();
+ 		m.status = mce_rdmsrl(mca_msr_reg(i, MCA_STATUS));
+ 
++		track_cmci_storm(i, m.status);
++
+ 		/* If this entry is not valid, ignore it */
+ 		if (!(m.status & MCI_STATUS_VAL))
+ 			continue;
+@@ -1597,6 +1599,7 @@ static unsigned long check_interval = INITIAL_CHECK_INTERVAL;
+ 
+ static DEFINE_PER_CPU(unsigned long, mce_next_interval); /* in jiffies */
+ static DEFINE_PER_CPU(struct timer_list, mce_timer);
++static DEFINE_PER_CPU(bool, storm_poll_mode);
+ 
+ static void __start_timer(struct timer_list *t, unsigned long interval)
+ {
+@@ -1632,22 +1635,29 @@ static void mce_timer_fn(struct timer_list *t)
+ 	else
+ 		iv = min(iv * 2, round_jiffies_relative(check_interval * HZ));
+ 
+-	__this_cpu_write(mce_next_interval, iv);
+-	__start_timer(t, iv);
++	if (__this_cpu_read(storm_poll_mode)) {
++		__start_timer(t, HZ);
++	} else {
++		__this_cpu_write(mce_next_interval, iv);
++		__start_timer(t, iv);
++	}
+ }
+ 
+ /*
+- * Ensure that the timer is firing in @interval from now.
++ * When a storm starts on any bank on this CPU, switch to polling
++ * once per second. When the storm ends, revert to the default
++ * polling interval.
+  */
+-void mce_timer_kick(unsigned long interval)
++void mce_timer_kick(bool storm)
+ {
+ 	struct timer_list *t = this_cpu_ptr(&mce_timer);
+-	unsigned long iv = __this_cpu_read(mce_next_interval);
+ 
+-	__start_timer(t, interval);
++	__this_cpu_write(storm_poll_mode, storm);
+ 
+-	if (interval < iv)
+-		__this_cpu_write(mce_next_interval, interval);
++	if (storm)
++		__start_timer(t, HZ);
++	else
++		__this_cpu_write(mce_next_interval, check_interval * HZ);
+ }
+ 
+ /* Must not be called in IRQ context where del_timer_sync() can deadlock */
+diff --git a/arch/x86/kernel/cpu/mce/intel.c b/arch/x86/kernel/cpu/mce/intel.c
+index 052bf2708391..4106877de028 100644
+--- a/arch/x86/kernel/cpu/mce/intel.c
++++ b/arch/x86/kernel/cpu/mce/intel.c
+@@ -47,8 +47,40 @@ static DEFINE_PER_CPU(mce_banks_t, mce_banks_owned);
+  */
+ static DEFINE_RAW_SPINLOCK(cmci_discover_lock);
+ 
++/*
++ * CMCI storm tracking state
++ *	stormy_bank_count: per-cpu count of MC banks in storm state
++ *	bank_history: bitmask tracking of corrected errors seen in each bank
++ *	bank_time_stamp: last time (in jiffies) that each bank was polled
++ *	cmci_threshold: MCi_CTL2 threshold for each bank when there is no storm
++ */
++static DEFINE_PER_CPU(int, stormy_bank_count);
++static DEFINE_PER_CPU(u64 [MAX_NR_BANKS], bank_history);
++static DEFINE_PER_CPU(bool [MAX_NR_BANKS], bank_storm);
++static DEFINE_PER_CPU(unsigned long [MAX_NR_BANKS], bank_time_stamp);
++static int cmci_threshold[MAX_NR_BANKS];
++
++/* Linux non-storm CMCI threshold (may be overridden by BIOS */
+ #define CMCI_THRESHOLD		1
+ 
++/*
++ * High threshold to limit CMCI rate during storms. Max supported is
++ * 0x7FFF. Use this slightly smaller value so it has a distinctive
++ * signature when some asks "Why am I not seeing all corrected errors?"
++ */
++#define CMCI_STORM_THRESHOLD	32749
++
++/*
++ * How many errors within the history buffer mark the start of a storm
++ */
++#define STORM_BEGIN_THRESHOLD	5
++
++/*
++ * How many polls of machine check bank without an error before declaring
++ * the storm is over
++ */
++#define STORM_END_POLL_THRESHOLD	30
++
+ static int cmci_supported(int *banks)
+ {
+ 	u64 cap;
+@@ -103,6 +135,93 @@ static bool lmce_supported(void)
+ 	return tmp & FEAT_CTL_LMCE_ENABLED;
+ }
+ 
++/*
++ * Set a new CMCI threshold value. Preserve the state of the
++ * MCI_CTL2_CMCI_EN bit in case this happens during a
++ * cmci_rediscover() operation.
++ */
++static void cmci_set_threshold(int bank, int thresh)
++{
++	unsigned long flags;
++	u64 val;
++
++	raw_spin_lock_irqsave(&cmci_discover_lock, flags);
++	rdmsrl(MSR_IA32_MCx_CTL2(bank), val);
++	val &= ~MCI_CTL2_CMCI_THRESHOLD_MASK;
++	wrmsrl(MSR_IA32_MCx_CTL2(bank), val | thresh);
++	raw_spin_unlock_irqrestore(&cmci_discover_lock, flags);
++}
++
++static void cmci_storm_begin(int bank)
++{
++	__set_bit(bank, this_cpu_ptr(mce_poll_banks));
++	this_cpu_write(bank_storm[bank], true);
++
++	/*
++	 * If this is the first bank on this CPU to enter storm mode
++	 * start polling
++	 */
++	if (this_cpu_inc_return(stormy_bank_count) == 1)
++		mce_timer_kick(true);
++}
++
++static void cmci_storm_end(int bank)
++{
++	__clear_bit(bank, this_cpu_ptr(mce_poll_banks));
++	this_cpu_write(bank_history[bank], 0ull);
++	this_cpu_write(bank_storm[bank], false);
++
++	/* If no banks left in storm mode, stop polling */
++	if (!this_cpu_dec_return(stormy_bank_count))
++		mce_timer_kick(false);
++}
++
++void track_cmci_storm(int bank, u64 status)
++{
++	unsigned long now = jiffies, delta;
++	unsigned int shift = 1;
++	u64 history;
++
++	/*
++	 * When a bank is in storm mode it is polled once per second and
++	 * the history mask will record about the last minute of poll results.
++	 * If it is not in storm mode, then the bank is only checked when
++	 * there is a CMCI interrupt. Check how long it has been since
++	 * this bank was last checked, and adjust the amount of "shift"
++	 * to apply to history.
++	 */
++	if (!this_cpu_read(bank_storm[bank])) {
++		delta = now - this_cpu_read(bank_time_stamp[bank]);
++		shift = (delta + HZ) / HZ;
++	}
++
++	/* If has been a long time since the last poll, clear history */
++	if (shift >= 64)
++		history = 0;
++	else
++		history = this_cpu_read(bank_history[bank]) << shift;
++	this_cpu_write(bank_time_stamp[bank], now);
++
++	/* History keeps track of corrected errors. VAL=1 && UC=0 */
++	if ((status & (MCI_STATUS_VAL | MCI_STATUS_UC)) == MCI_STATUS_VAL)
++		history |= 1;
++	this_cpu_write(bank_history[bank], history);
++
++	if (this_cpu_read(bank_storm[bank])) {
++		if (history & GENMASK_ULL(STORM_END_POLL_THRESHOLD - 1, 0))
++			return;
++		pr_notice("CPU%d BANK%d CMCI storm subsided\n", smp_processor_id(), bank);
++		cmci_set_threshold(bank, cmci_threshold[bank]);
++		cmci_storm_end(bank);
++	} else {
++		if (hweight64(history) < STORM_BEGIN_THRESHOLD)
++			return;
++		pr_notice("CPU%d BANK%d CMCI storm detected\n", smp_processor_id(), bank);
++		cmci_set_threshold(bank, CMCI_STORM_THRESHOLD);
++		cmci_storm_begin(bank);
++	}
++}
++
+ /*
+  * The interrupt handler. This is called on every event.
+  * Just call the poller directly to log any events.
+@@ -147,6 +266,9 @@ static void cmci_discover(int banks)
+ 			continue;
+ 		}
+ 
++		if ((val & MCI_CTL2_CMCI_THRESHOLD_MASK) == CMCI_STORM_THRESHOLD)
++			goto storm;
++
+ 		if (!mca_cfg.bios_cmci_threshold) {
+ 			val &= ~MCI_CTL2_CMCI_THRESHOLD_MASK;
+ 			val |= CMCI_THRESHOLD;
+@@ -159,7 +281,7 @@ static void cmci_discover(int banks)
+ 			bios_zero_thresh = 1;
+ 			val |= CMCI_THRESHOLD;
+ 		}
+-
++storm:
+ 		val |= MCI_CTL2_CMCI_EN;
+ 		wrmsrl(MSR_IA32_MCx_CTL2(i), val);
+ 		rdmsrl(MSR_IA32_MCx_CTL2(i), val);
+@@ -167,7 +289,14 @@ static void cmci_discover(int banks)
+ 		/* Did the enable bit stick? -- the bank supports CMCI */
+ 		if (val & MCI_CTL2_CMCI_EN) {
+ 			set_bit(i, owned);
+-			__clear_bit(i, this_cpu_ptr(mce_poll_banks));
++			if ((val & MCI_CTL2_CMCI_THRESHOLD_MASK) == CMCI_STORM_THRESHOLD) {
++				pr_notice("CPU%d BANK%d CMCI inherited storm\n", smp_processor_id(), i);
++				this_cpu_write(bank_history[i], ~0ull);
++				this_cpu_write(bank_time_stamp[i], jiffies);
++				cmci_storm_begin(i);
++			} else {
++				__clear_bit(i, this_cpu_ptr(mce_poll_banks));
++			}
+ 			/*
+ 			 * We are able to set thresholds for some banks that
+ 			 * had a threshold of 0. This means the BIOS has not
+@@ -177,6 +306,10 @@ static void cmci_discover(int banks)
+ 			if (mca_cfg.bios_cmci_threshold && bios_zero_thresh &&
+ 					(val & MCI_CTL2_CMCI_THRESHOLD_MASK))
+ 				bios_wrong_thresh = 1;
++
++			/* Save default threshold for each bank */
++			if (cmci_threshold[i] == 0)
++				cmci_threshold[i] = val & MCI_CTL2_CMCI_THRESHOLD_MASK;
+ 		} else {
+ 			WARN_ON(!test_bit(i, this_cpu_ptr(mce_poll_banks)));
+ 		}
+@@ -218,6 +351,8 @@ static void __cmci_disable_bank(int bank)
+ 	val &= ~MCI_CTL2_CMCI_EN;
+ 	wrmsrl(MSR_IA32_MCx_CTL2(bank), val);
+ 	__clear_bit(bank, this_cpu_ptr(mce_banks_owned));
++	if ((val & MCI_CTL2_CMCI_THRESHOLD_MASK) == CMCI_STORM_THRESHOLD)
++		cmci_storm_end(bank);
+ }
+ 
+ /*
+diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
+index 17d313c9cc60..ab451526f6df 100644
+--- a/arch/x86/kernel/cpu/mce/internal.h
++++ b/arch/x86/kernel/cpu/mce/internal.h
+@@ -40,6 +40,8 @@ struct dentry *mce_get_debugfs_dir(void);
+ 
+ extern mce_banks_t mce_banks_ce_disabled;
+ 
++void track_cmci_storm(int bank, u64 status);
++
+ #ifdef CONFIG_X86_MCE_INTEL
+ void cmci_disable_bank(int bank);
+ void intel_init_cmci(void);
+@@ -54,7 +56,7 @@ static inline void intel_clear_lmce(void) { }
+ static inline bool intel_filter_mce(struct mce *m) { return false; }
+ #endif
+ 
+-void mce_timer_kick(unsigned long interval);
++void mce_timer_kick(bool storm);
+ 
+ #ifdef CONFIG_ACPI_APEI
+ int apei_write_mce(struct mce *m);
 -- 
-Pierre Morel
-IBM Lab Boeblingen
+2.35.3
+
