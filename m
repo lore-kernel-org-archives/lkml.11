@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 354DEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADA4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237410AbiF0Lns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
+        id S237466AbiF0Lnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237099AbiF0LmJ (ORCPT
+        with ESMTP id S237110AbiF0LmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA15DEA2;
-        Mon, 27 Jun 2022 04:36:11 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EAB3DEB4;
+        Mon, 27 Jun 2022 04:36:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74988B81117;
-        Mon, 27 Jun 2022 11:36:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6FBCC3411D;
-        Mon, 27 Jun 2022 11:36:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A74B460F7D;
+        Mon, 27 Jun 2022 11:36:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1AD8C3411D;
+        Mon, 27 Jun 2022 11:36:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329769;
-        bh=vgvNJrHBHS9C46/WmKV1U9Crcq8Uj+IGHmrgSflbAnM=;
+        s=korg; t=1656329772;
+        bh=ScQpEIpxHjSqDrGr76uERJiMqoOSdBON+D/RKrJ4bQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FtOorLKo+nNoIp4oYxob1jmtPzLpCheUB1ZeAJZay5dQiBFGDDTdRUklPspIkw9Qu
-         siOksAJXoLQgErOL8J7vv6YlGZ3peB32uxRFqQPoE+8+KXRysdg0gEd+k4BMcSBvog
-         Wjl37zIbX75CjlfnjCENQIKEPNEYc2ym+FHd1vSI=
+        b=lIHlFMkiT5KbewFbOwx/9jAsnu29D6n3fuykeIDX5lImn5sYVYe5AHVABnYOd1Xbx
+         MouAxuQuecr4+2wmkA+iMJPi6EU0hrg9JPtM0YHr92wrvtM5kNSzsZtIVEVoBeNQEJ
+         iunabFcvT5lUixJzYsVc9bUPQCrT4HXKkLxpeepE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Jialin Zhang <zhangjialin11@huawei.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 108/135] iio: adc: axp288: Override TS pin bias current for some models
-Date:   Mon, 27 Jun 2022 13:21:55 +0200
-Message-Id: <20220627111941.289101244@linuxfoundation.org>
+Subject: [PATCH 5.15 109/135] iio: adc: rzg2l_adc: add missing fwnode_handle_put() in rzg2l_adc_parse_properties()
+Date:   Mon, 27 Jun 2022 13:21:56 +0200
+Message-Id: <20220627111941.317789700@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -49,48 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Jialin Zhang <zhangjialin11@huawei.com>
 
-commit 048058399f19d43cf21de9f5d36cd8144337d004 upstream.
+commit d836715f588ea15f905f607c27bc693587058db4 upstream.
 
-Since commit 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling") we
-preserve the bias current set by the firmware at boot. This fixes issues
-we were seeing on various models.
+fwnode_handle_put() should be used when terminating
+device_for_each_child_node() iteration with break or return to prevent
+stale device node references from being left behind.
 
-Some models like the Nuvision Solo 10 Draw tablet actually need the
-old hardcoded 80ųA bias current for battery temperature monitoring
-to work properly.
-
-Add a quirk entry for the Nuvision Solo 10 Draw to the DMI quirk table
-to restore setting the bias current to 80ųA on this model.
-
-Fixes: 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling")
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215882
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220506095040.21008-1-hdegoede@redhat.com
+Fixes: d484c21bacfa ("iio: adc: Add driver for Renesas RZ/G2L A/D converter")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Jialin Zhang <zhangjialin11@huawei.com>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220517033526.2035735-1-zhangjialin11@huawei.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/axp288_adc.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iio/adc/rzg2l_adc.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/adc/axp288_adc.c
-+++ b/drivers/iio/adc/axp288_adc.c
-@@ -196,6 +196,14 @@ static const struct dmi_system_id axp288
- 		},
- 		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
- 	},
-+	{
-+		/* Nuvision Solo 10 Draw */
-+		.matches = {
-+		  DMI_MATCH(DMI_SYS_VENDOR, "TMAX"),
-+		  DMI_MATCH(DMI_PRODUCT_NAME, "TM101W610L"),
-+		},
-+		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
-+	},
- 	{}
- };
+--- a/drivers/iio/adc/rzg2l_adc.c
++++ b/drivers/iio/adc/rzg2l_adc.c
+@@ -334,11 +334,15 @@ static int rzg2l_adc_parse_properties(st
+ 	i = 0;
+ 	device_for_each_child_node(&pdev->dev, fwnode) {
+ 		ret = fwnode_property_read_u32(fwnode, "reg", &channel);
+-		if (ret)
++		if (ret) {
++			fwnode_handle_put(fwnode);
+ 			return ret;
++		}
  
+-		if (channel >= RZG2L_ADC_MAX_CHANNELS)
++		if (channel >= RZG2L_ADC_MAX_CHANNELS) {
++			fwnode_handle_put(fwnode);
+ 			return -EINVAL;
++		}
+ 
+ 		chan_array[i].type = IIO_VOLTAGE;
+ 		chan_array[i].indexed = 1;
 
 
