@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71DE0CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6825DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235485AbiF0LcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
+        id S235270AbiF0LcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235648AbiF0Lbe (ORCPT
+        with ESMTP id S235509AbiF0Lbd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:31:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6FD6F6A;
+        Mon, 27 Jun 2022 07:31:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E22F68;
         Mon, 27 Jun 2022 04:29:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E763B81116;
-        Mon, 27 Jun 2022 11:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBC1EC385A5;
-        Mon, 27 Jun 2022 11:28:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EED40614F6;
+        Mon, 27 Jun 2022 11:29:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBED3C3411D;
+        Mon, 27 Jun 2022 11:28:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329337;
-        bh=vHphNEGDnvQP6fenj0WdjSl93B5+8QPE+d2p67vjjAI=;
+        s=korg; t=1656329340;
+        bh=mQxZLlG1fnMhdpl5nNqIAaOfKrFy36I2HEN0sikocns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qSUgt0EP5KoJo8sfnkpEr3kobnS6Z+87Nd1A3Nlg6kHObbZ/r2FoEx2BwC4QTDvXo
-         Uf1UHV1/8ZHbhdXHXcQiDYUE3Zs7jVgSTB7Uz4ga6boyHjmR4PuoMHVmWuzhxjVbnS
-         OWOmR+EaorQWqrtAZ3Y1OqupjTA5pr9s7ZVTD4Qk=
+        b=jTi8Znt5M589g3bVbNmhwe7acP1CagXgi8DM2ZSFliJlym9EOaarCbRpLRCfhg+t/
+         hW8DOwbRJKsP7G1YbRgkNYWk9DA+iz7fEZuICds+t6LXwRhELGYZxl0WSLmViWlrII
+         O/BtjZX8Yqb33KmgEPXGetlVox2H6aQGSzmt09t4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julien Grall <jgrall@amazon.com>,
-        Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org, k2ci <kernel-bot@kylinos.cn>,
+        huhai <huhai@kylinos.cn>,
+        Genjian Zhang <zhanggenjian@kylinos.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 25/60] x86/xen: Remove undefined behavior in setup_features()
-Date:   Mon, 27 Jun 2022 13:21:36 +0200
-Message-Id: <20220627111928.406738132@linuxfoundation.org>
+Subject: [PATCH 5.4 26/60] MIPS: Remove repetitive increase irq_err_count
+Date:   Mon, 27 Jun 2022 13:21:37 +0200
+Message-Id: <20220627111928.456280316@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -49,34 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julien Grall <jgrall@amazon.com>
+From: huhai <huhai@kylinos.cn>
 
-[ Upstream commit ecb6237fa397b7b810d798ad19322eca466dbab1 ]
+[ Upstream commit c81aba8fde2aee4f5778ebab3a1d51bd2ef48e4c ]
 
-1 << 31 is undefined. So switch to 1U << 31.
+commit 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx") added
+a function irq_dispatch, and it'll increase irq_err_count when the get_irq
+callback returns a negative value, but increase irq_err_count in get_irq
+was not removed.
 
-Fixes: 5ead97c84fa7 ("xen: Core Xen implementation")
-Signed-off-by: Julien Grall <jgrall@amazon.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220617103037.57828-1-julien@xen.org
-Signed-off-by: Juergen Gross <jgross@suse.com>
+And also, modpost complains once gpio-vr41xx drivers become modules.
+  ERROR: modpost: "irq_err_count" [drivers/gpio/gpio-vr41xx.ko] undefined!
+
+So it would be a good idea to remove repetitive increase irq_err_count in
+get_irq callback.
+
+Fixes: 27fdd325dace ("MIPS: Update VR41xx GPIO driver to use gpiolib")
+Fixes: 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx")
+Reported-by: k2ci <kernel-bot@kylinos.cn>
+Signed-off-by: huhai <huhai@kylinos.cn>
+Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/features.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/vr41xx/common/icu.c | 2 --
+ drivers/gpio/gpio-vr41xx.c    | 2 --
+ 2 files changed, 4 deletions(-)
 
-diff --git a/drivers/xen/features.c b/drivers/xen/features.c
-index 25c053b09605..2c306de228db 100644
---- a/drivers/xen/features.c
-+++ b/drivers/xen/features.c
-@@ -29,6 +29,6 @@ void xen_setup_features(void)
- 		if (HYPERVISOR_xen_version(XENVER_get_features, &fi) < 0)
- 			break;
- 		for (j = 0; j < 32; j++)
--			xen_features[i * 32 + j] = !!(fi.submap & 1<<j);
-+			xen_features[i * 32 + j] = !!(fi.submap & 1U << j);
- 	}
+diff --git a/arch/mips/vr41xx/common/icu.c b/arch/mips/vr41xx/common/icu.c
+index 7b7f25b4b057..9240bcdbe74e 100644
+--- a/arch/mips/vr41xx/common/icu.c
++++ b/arch/mips/vr41xx/common/icu.c
+@@ -640,8 +640,6 @@ static int icu_get_irq(unsigned int irq)
+ 
+ 	printk(KERN_ERR "spurious ICU interrupt: %04x,%04x\n", pend1, pend2);
+ 
+-	atomic_inc(&irq_err_count);
+-
+ 	return -1;
  }
+ 
+diff --git a/drivers/gpio/gpio-vr41xx.c b/drivers/gpio/gpio-vr41xx.c
+index 98cd715ccc33..8d09b619c166 100644
+--- a/drivers/gpio/gpio-vr41xx.c
++++ b/drivers/gpio/gpio-vr41xx.c
+@@ -217,8 +217,6 @@ static int giu_get_irq(unsigned int irq)
+ 	printk(KERN_ERR "spurious GIU interrupt: %04x(%04x),%04x(%04x)\n",
+ 	       maskl, pendl, maskh, pendh);
+ 
+-	atomic_inc(&irq_err_count);
+-
+ 	return -EINVAL;
+ }
+ 
 -- 
 2.35.1
 
