@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB5BCCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7FECCA48F
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240031AbiF0L6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
+        id S239963AbiF0L6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238389AbiF0LwI (ORCPT
+        with ESMTP id S238616AbiF0Lvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF10BCE1A;
-        Mon, 27 Jun 2022 04:44:58 -0700 (PDT)
+        Mon, 27 Jun 2022 07:51:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107DC959A;
+        Mon, 27 Jun 2022 04:44:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7789E61240;
-        Mon, 27 Jun 2022 11:44:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86972C3411D;
-        Mon, 27 Jun 2022 11:44:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A41BB612AC;
+        Mon, 27 Jun 2022 11:44:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB6C3C3411D;
+        Mon, 27 Jun 2022 11:44:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330297;
-        bh=VS8BmZ8909KCcCnoHtJqqExaasepZarkctZPvYDNzPw=;
+        s=korg; t=1656330289;
+        bh=ScQpEIpxHjSqDrGr76uERJiMqoOSdBON+D/RKrJ4bQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yd9aBVy+/kpvVCftgZF+N9FJNe4Hc8tQtjrp8mVt8l6wSsjXV7AlFEzpqIHBbQV6M
-         z1K62vdZEJHI81ALHQidwRV1vUrEgnJ7T8Bv/3l0KRQlVj/bnrGEavp4fh/5Se5gBW
-         H7UEEu30Jq4oQC0hAB01vJ3P7ml5rVptdxnmDw6E=
+        b=1BJw7fyU1OLiNFT+7vPvwWeGDjE4viQFAvQn/GbheRmV5BRAqBpC3zxMnky8dm472
+         2wzgb3bnp7JA5xSMrFVOOmwA8Tqn+s3KUcIOZPKJYVMgzB0mh8SR4jvb2RA8U4a10+
+         g2/jMXIMLVZF0U8r9CrksKD7rQO8gsz2SQwLEUfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Rokosov <ddrokosov@sberdevices.ru>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Jialin Zhang <zhangjialin11@huawei.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 133/181] iio:accel:kxcjk-1013: rearrange iio trigger get and register
-Date:   Mon, 27 Jun 2022 13:21:46 +0200
-Message-Id: <20220627111948.546519661@linuxfoundation.org>
+Subject: [PATCH 5.18 148/181] iio: adc: rzg2l_adc: add missing fwnode_handle_put() in rzg2l_adc_parse_properties()
+Date:   Mon, 27 Jun 2022 13:22:01 +0200
+Message-Id: <20220627111948.976077610@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,46 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Rokosov <DDRokosov@sberdevices.ru>
+From: Jialin Zhang <zhangjialin11@huawei.com>
 
-commit ed302925d708f2f97ae5e9fd6c56c16bb34f6629 upstream.
+commit d836715f588ea15f905f607c27bc693587058db4 upstream.
 
-IIO trigger interface function iio_trigger_get() should be called after
-iio_trigger_register() (or its devm analogue) strictly, because of
-iio_trigger_get() acquires module refcnt based on the trigger->owner
-pointer, which is initialized inside iio_trigger_register() to
-THIS_MODULE.
-If this call order is wrong, the next iio_trigger_put() (from sysfs
-callback or "delete module" path) will dereference "default" module
-refcnt, which is incorrect behaviour.
+fwnode_handle_put() should be used when terminating
+device_for_each_child_node() iteration with break or return to prevent
+stale device node references from being left behind.
 
-Fixes: c1288b833881 ("iio: accel: kxcjk-1013: Increment ref counter for indio_dev->trig")
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220524181150.9240-3-ddrokosov@sberdevices.ru
+Fixes: d484c21bacfa ("iio: adc: Add driver for Renesas RZ/G2L A/D converter")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Jialin Zhang <zhangjialin11@huawei.com>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220517033526.2035735-1-zhangjialin11@huawei.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/accel/kxcjk-1013.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/rzg2l_adc.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -1554,12 +1554,12 @@ static int kxcjk1013_probe(struct i2c_cl
+--- a/drivers/iio/adc/rzg2l_adc.c
++++ b/drivers/iio/adc/rzg2l_adc.c
+@@ -334,11 +334,15 @@ static int rzg2l_adc_parse_properties(st
+ 	i = 0;
+ 	device_for_each_child_node(&pdev->dev, fwnode) {
+ 		ret = fwnode_property_read_u32(fwnode, "reg", &channel);
+-		if (ret)
++		if (ret) {
++			fwnode_handle_put(fwnode);
+ 			return ret;
++		}
  
- 		data->dready_trig->ops = &kxcjk1013_trigger_ops;
- 		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
--		indio_dev->trig = data->dready_trig;
--		iio_trigger_get(indio_dev->trig);
- 		ret = iio_trigger_register(data->dready_trig);
- 		if (ret)
- 			goto err_poweroff;
+-		if (channel >= RZG2L_ADC_MAX_CHANNELS)
++		if (channel >= RZG2L_ADC_MAX_CHANNELS) {
++			fwnode_handle_put(fwnode);
+ 			return -EINVAL;
++		}
  
-+		indio_dev->trig = iio_trigger_get(data->dready_trig);
-+
- 		data->motion_trig->ops = &kxcjk1013_trigger_ops;
- 		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
- 		ret = iio_trigger_register(data->motion_trig);
+ 		chan_array[i].type = IIO_VOLTAGE;
+ 		chan_array[i].indexed = 1;
 
 
