@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0887C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 966A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236195AbiF0LgC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55648 "EHLO
+        id S236051AbiF0LgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236391AbiF0Ldp (ORCPT
+        with ESMTP id S236399AbiF0Ldq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:33:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B2DDEC2;
-        Mon, 27 Jun 2022 04:31:10 -0700 (PDT)
+        Mon, 27 Jun 2022 07:33:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E26DED3;
+        Mon, 27 Jun 2022 04:31:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E54D3B81117;
-        Mon, 27 Jun 2022 11:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C507C3411D;
-        Mon, 27 Jun 2022 11:31:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDFB5B8111B;
+        Mon, 27 Jun 2022 11:31:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25073C3411D;
+        Mon, 27 Jun 2022 11:31:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329467;
-        bh=e/p9Qnzdte42bO//Lf9lGQYdt2m/fhuBqKCHXUO+XQ4=;
+        s=korg; t=1656329470;
+        bh=S9vWGgVqVYCNhr7Z7R7ejfti0oFHgHEFPN3yugt+dbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X7st+W5ULUzGQabBRm7RA4QgiCFPG8FO1DH5gQnF2qnnImTrS2G8eM5PmkhwU8m+O
-         4leuDnMazKaVRHEq8edy3n37tucTuR84OVhwFwT5c/ycYh7qbe+UfWxC22IaNM4qaH
-         chAXTLLfvzgo/Jr+oZvSHOw0B09ZbZnFzHL5+hN8=
+        b=NEdcrc6e0HEpEpAmKbEh4dXS2rJBtp6mgtBFA38nerRd5T5PfeNd12SsaaglUb8NY
+         bJFMVirHygDwjZyFMgQwpXP8tk75KPp4iUDPFiIGMDjXGzt652HtbUu2qzUepi8PDF
+         IadN8YbKVBY+Jn/jKG55uGMDSDnSdWMgQP7U3Dh0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 001/135] random: schedule mix_interrupt_randomness() less often
-Date:   Mon, 27 Jun 2022 13:20:08 +0200
-Message-Id: <20220627111938.197936912@linuxfoundation.org>
+        stable@vger.kernel.org, Rosemarie ORiorden <roriorden@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.15 010/135] net: openvswitch: fix parsing of nw_proto for IPv6 fragments
+Date:   Mon, 27 Jun 2022 13:20:17 +0200
+Message-Id: <20220627111938.457403384@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,56 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Rosemarie O'Riorden <roriorden@redhat.com>
 
-commit 534d2eaf1970274150596fdd2bf552721e65d6b2 upstream.
+commit 12378a5a75e33f34f8586706eb61cca9e6d4690c upstream.
 
-It used to be that mix_interrupt_randomness() would credit 1 bit each
-time it ran, and so add_interrupt_randomness() would schedule mix() to
-run every 64 interrupts, a fairly arbitrary number, but nonetheless
-considered to be a decent enough conservative estimate.
+When a packet enters the OVS datapath and does not match any existing
+flows installed in the kernel flow cache, the packet will be sent to
+userspace to be parsed, and a new flow will be created. The kernel and
+OVS rely on each other to parse packet fields in the same way so that
+packets will be handled properly.
 
-Since e3e33fc2ea7f ("random: do not use input pool from hard IRQs"),
-mix() is now able to credit multiple bits, depending on the number of
-calls to add(). This was done for reasons separate from this commit, but
-it has the nice side effect of enabling this patch to schedule mix()
-less often.
+As per the design document linked below, OVS expects all later IPv6
+fragments to have nw_proto=44 in the flow key, so they can be correctly
+matched on OpenFlow rules. OpenFlow controllers create pipelines based
+on this design.
 
-Currently the rules are:
-a) Credit 1 bit for every 64 calls to add().
-b) Schedule mix() once a second that add() is called.
-c) Schedule mix() once every 64 calls to add().
+This behavior was changed by the commit in the Fixes tag so that
+nw_proto equals the next_header field of the last extension header.
+However, there is no counterpart for this change in OVS userspace,
+meaning that this field is parsed differently between OVS and the
+kernel. This is a problem because OVS creates actions based on what is
+parsed in userspace, but the kernel-provided flow key is used as a match
+criteria, as described in Documentation/networking/openvswitch.rst. This
+leads to issues such as packets incorrectly matching on a flow and thus
+the wrong list of actions being applied to the packet. Such changes in
+packet parsing cannot be implemented without breaking the userspace.
 
-Rules (a) and (c) no longer need to be coupled. It's still important to
-have _some_ value in (c), so that we don't "over-saturate" the fast
-pool, but the once per second we get from rule (b) is a plenty enough
-baseline. So, by increasing the 64 in rule (c) to something larger, we
-avoid calling queue_work_on() as frequently during irq storms.
+The offending commit is partially reverted to restore the expected
+behavior.
 
-This commit changes that 64 in rule (c) to be 1024, which means we
-schedule mix() 16 times less often. And it does *not* need to change the
-64 in rule (a).
+The change technically made sense and there is a good reason that it was
+implemented, but it does not comply with the original design of OVS.
+If in the future someone wants to implement such a change, then it must
+be user-configurable and disabled by default to preserve backwards
+compatibility with existing OVS versions.
 
-Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
 Cc: stable@vger.kernel.org
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Fixes: fa642f08839b ("openvswitch: Derive IP protocol number for IPv6 later frags")
+Link: https://docs.openvswitch.org/en/latest/topics/design/#fragments
+Signed-off-by: Rosemarie O'Riorden <roriorden@redhat.com>
+Acked-by: Eelco Chaudron <echaudro@redhat.com>
+Link: https://lore.kernel.org/r/20220621204845.9721-1-roriorden@redhat.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
+ net/openvswitch/flow.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1000,7 +1000,7 @@ void add_interrupt_randomness(int irq)
- 	if (new_count & MIX_INFLIGHT)
- 		return;
- 
--	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
-+	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
- 
- 	if (unlikely(!fast_pool->mix.func))
+--- a/net/openvswitch/flow.c
++++ b/net/openvswitch/flow.c
+@@ -266,7 +266,7 @@ static int parse_ipv6hdr(struct sk_buff
+ 	if (flags & IP6_FH_F_FRAG) {
+ 		if (frag_off) {
+ 			key->ip.frag = OVS_FRAG_TYPE_LATER;
+-			key->ip.proto = nexthdr;
++			key->ip.proto = NEXTHDR_FRAGMENT;
+ 			return 0;
+ 		}
+ 		key->ip.frag = OVS_FRAG_TYPE_FIRST;
 
 
