@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DF4CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEECAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241765AbiF0V6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
+        id S241870AbiF0V6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241425AbiF0VzK (ORCPT
+        with ESMTP id S241426AbiF0VzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 17:55:10 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF2264E3;
-        Mon, 27 Jun 2022 14:54:58 -0700 (PDT)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5F864DA;
+        Mon, 27 Jun 2022 14:54:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366898; x=1687902898;
+  t=1656366897; x=1687902897;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EC6h1CioZsI+mMSdyjItyFQrWi0GAr2Rq308o2RvncA=;
-  b=QXMIfQv8u/NFtCjsOoyZhUH8bsMRBtVI2YhatXp5kZRPKuJlU7fOz+r5
-   9GYsmsMs9mC47Z+Ays0AR5gptDc/ul8GGXurbQwupVLF1cg37ZWJo39/q
-   ynXMFkAVwsDkKqffnM09EzgbkGQWJ5jNQcCXk+EJDT5UzHbzOLTOvs1O0
-   JiFk/Y1ig13nf3DmotWCnHCqflcSEt21JtoWpegkVpFMZ8AdqR43oXXdE
-   WQSxi4aoh8YcQaFIgssscXWFodexirnyQ5dsstzRALRbUFgsvfunLnKbI
-   C5o1TQ/xZCM4HqLQzhteeJzJzCA/bSoKJCw/jyPAC+UWfpwAHPyfMRofL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116099"
+  bh=GceQwT7f2Dr4epTMxHX2Ah64EI/4O0gxsG+G77DQUAw=;
+  b=Lj55I9PsyRNEPdbuOukjUmIfqw2IpjTzuLqoIpP8q5YQ0wUqW+cGP/UI
+   +Ggs/qrMKPMK9vm+Xstf7RE1VfmF+sUlIybq87Dp24nEWBWwdlJXGly46
+   rW/4iusZ7F7mCSG5hEnn/yQ2r5DBjgf4mmpOzK0czPq15oCHAQc9/6j5+
+   OmFZAFQQb2Bge/sKfUJVcu5Tja5KAPOKuEcaaTMxfDfI2OlCqiQTol4Kr
+   Tmm4dALCWWF6yJ2wfI9vDeSrIiGBGeAVsaY9+KMoQDh6ijQkXcwPcd4QJ
+   p9Y7Ykz4paFpruL4UabAGfTLEymiC/Btc1yP3pxgBcb5b9LqLhYf4cpmf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609553"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="279116099"
+   d="scan'208";a="281609553"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:56 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:53 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863633"
+   d="scan'208";a="657863564"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:56 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:53 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 061/102] KVM: TDX: Finalize VM initialization
-Date:   Mon, 27 Jun 2022 14:53:53 -0700
-Message-Id: <9982a3c968df2a3bba85b4373b0b41203ecfbaa4.1656366338.git.isaku.yamahata@intel.com>
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+Subject: [PATCH v7 040/102] KVM: x86/mmu: Zap only leaf SPTEs for deleted/moved memslot for private mmu
+Date:   Mon, 27 Jun 2022 14:53:32 -0700
+Message-Id: <27acc4b2957e1297640d1d8b2a43f7c08e3885d5.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -53,87 +54,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-To protect the initial contents of the guest TD, the TDX module measures
-the guest TD during the build process as SHA-384 measurement.  The
-measurement of the guest TD contents needs to be completed to make the
-guest TD ready to run.
+For kvm mmu that has shared bit mask, zap only leaf SPTEs when
+deleting/moving a memslot.  The existing kvm_mmu_zap_memslot() depends on
+role.invalid with read lock of mmu_lock so that other vcpu can operate on
+kvm mmu concurrently. Mark the root page table invalid, unlink it from page
+table pointer of CPU, process the page table.  It doesn't work for private
+page table to unlink the root page table because it requires all SPTE entry
+to be non-present.  Instead, with write-lock of mmu_lock and zap only leaf
+SPTEs for kvm mmu with shared bit mask.
 
-Add a new subcommand, KVM_TDX_FINALIZE_VM, for VM-scoped
-KVM_MEMORY_ENCRYPT_OP to finalize the measurement and mark the TDX VM ready
-to run.
-
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/uapi/asm/kvm.h       |  1 +
- arch/x86/kvm/vmx/tdx.c                | 21 +++++++++++++++++++++
- tools/arch/x86/include/uapi/asm/kvm.h |  1 +
- 3 files changed, 23 insertions(+)
+ arch/x86/kvm/mmu/mmu.c | 35 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-index cb2b0701f0d9..2fe4cc497bc2 100644
---- a/arch/x86/include/uapi/asm/kvm.h
-+++ b/arch/x86/include/uapi/asm/kvm.h
-@@ -540,6 +540,7 @@ enum kvm_tdx_cmd_id {
- 	KVM_TDX_INIT_VM,
- 	KVM_TDX_INIT_VCPU,
- 	KVM_TDX_INIT_MEM_REGION,
-+	KVM_TDX_FINALIZE_VM,
- 
- 	KVM_TDX_CMD_NR_MAX,
- };
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 69550a1ea1d0..d2688bb8e5fa 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1230,6 +1230,24 @@ static int tdx_init_mem_region(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
- 	return ret;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 80d7c7709af3..c517c7bca105 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5854,11 +5854,44 @@ static bool kvm_has_zapped_obsolete_pages(struct kvm *kvm)
+ 	return unlikely(!list_empty_careful(&kvm->arch.zapped_obsolete_pages));
  }
  
-+static int tdx_td_finalizemr(struct kvm *kvm)
++static void kvm_mmu_zap_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
 +{
-+	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
-+	u64 err;
++	bool flush = false;
 +
-+	if (!is_td_initialized(kvm) || is_td_finalized(kvm_tdx))
-+		return -EINVAL;
++	write_lock(&kvm->mmu_lock);
 +
-+	err = tdh_mr_finalize(kvm_tdx->tdr.pa);
-+	if (WARN_ON_ONCE(err)) {
-+		pr_tdx_error(TDH_MR_FINALIZE, err, NULL);
-+		return -EIO;
++	/*
++	 * Zapping non-leaf SPTEs, a.k.a. not-last SPTEs, isn't required, worst
++	 * case scenario we'll have unused shadow pages lying around until they
++	 * are recycled due to age or when the VM is destroyed.
++	 */
++	if (is_tdp_mmu_enabled(kvm)) {
++		struct kvm_gfn_range range = {
++		      .slot = slot,
++		      .start = slot->base_gfn,
++		      .end = slot->base_gfn + slot->npages,
++		      .may_block = false,
++		};
++
++		flush = kvm_tdp_mmu_unmap_gfn_range(kvm, &range, flush);
++	} else {
++		flush = slot_handle_level(kvm, slot, kvm_zap_rmapp, PG_LEVEL_4K,
++					  KVM_MAX_HUGEPAGE_LEVEL, true);
 +	}
++	if (flush)
++		kvm_flush_remote_tlbs(kvm);
 +
-+	kvm_tdx->finalized = true;
-+	return 0;
++	write_unlock(&kvm->mmu_lock);
 +}
 +
- int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
+ static void kvm_mmu_invalidate_zap_pages_in_memslot(struct kvm *kvm,
+ 			struct kvm_memory_slot *slot,
+ 			struct kvm_page_track_notifier_node *node)
  {
- 	struct kvm_tdx_cmd tdx_cmd;
-@@ -1249,6 +1267,9 @@ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
- 	case KVM_TDX_INIT_MEM_REGION:
- 		r = tdx_init_mem_region(kvm, &tdx_cmd);
- 		break;
-+	case KVM_TDX_FINALIZE_VM:
-+		r = tdx_td_finalizemr(kvm);
-+		break;
- 	default:
- 		r = -EINVAL;
- 		goto out;
-diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
-index af39f3adc179..7f5eb5536ec5 100644
---- a/tools/arch/x86/include/uapi/asm/kvm.h
-+++ b/tools/arch/x86/include/uapi/asm/kvm.h
-@@ -534,6 +534,7 @@ enum kvm_tdx_cmd_id {
- 	KVM_TDX_INIT_VM,
- 	KVM_TDX_INIT_VCPU,
- 	KVM_TDX_INIT_MEM_REGION,
-+	KVM_TDX_FINALIZE_VM,
+-	kvm_mmu_zap_all_fast(kvm);
++	if (kvm_gfn_shared_mask(kvm))
++		kvm_mmu_zap_memslot(kvm, slot);
++	else
++		kvm_mmu_zap_all_fast(kvm);
+ }
  
- 	KVM_TDX_CMD_NR_MAX,
- };
+ int kvm_mmu_init_vm(struct kvm *kvm)
 -- 
 2.25.1
 
