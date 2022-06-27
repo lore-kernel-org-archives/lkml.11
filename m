@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAAAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57566C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237361AbiF0Lom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42042 "EHLO
+        id S237441AbiF0Lop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237355AbiF0Lmp (ORCPT
+        with ESMTP id S237381AbiF0Lmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:45 -0400
+        Mon, 27 Jun 2022 07:42:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70FDDA6;
-        Mon, 27 Jun 2022 04:37:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9D9E64;
+        Mon, 27 Jun 2022 04:37:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89052B81117;
-        Mon, 27 Jun 2022 11:37:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9B18C3411D;
-        Mon, 27 Jun 2022 11:37:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E213B8112E;
+        Mon, 27 Jun 2022 11:37:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66BF8C3411D;
+        Mon, 27 Jun 2022 11:37:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329823;
-        bh=oSp11SA9Ushwr77sgGQoO8DqC1h3aTB+ykNjjjIV3lc=;
+        s=korg; t=1656329832;
+        bh=txsi3SPGgKkJ/yjLz7OMyx86d9QtjZZbPTZ6H+FrQ6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aqd9qvALgxZqmC9WHoXjwnX3fdPMU5d2lNQKbz1Vzoq257AsOP1V9d8RvYnrzXKDI
-         iJpk9Lo74uzDik6/iUvU8t/bUXD8JzN0/piRb/QhvO5EgcSnaVSWMLq/nHITJmuCUJ
-         wsuzezmnO30lENXlC/gykEvK0kWy+j3Bx53udZ4o=
+        b=0akNtGNBsddnxqoD139nNH0WAcXkWl6sey89x9JI0BtPLWkJhezWCXN8zX+NSn8I8
+         jRMsj6HracD15L9waRPwy0mHsCU/IXvPrrzceKSUOVc7FZ47M+44faPTCH3KDrkuU2
+         zvIge2MZn/vCpMGSV4qSfHV9UhPlaZH8Puq93T1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Pankaj Raghav <p.raghav@samsung.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 077/135] nvme: move the Samsung X5 quirk entry to the core quirks
-Date:   Mon, 27 Jun 2022 13:21:24 +0200
-Message-Id: <20220627111940.395844173@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 131/135] random: update comment from copy_to_user() -> copy_to_iter()
+Date:   Mon, 27 Jun 2022 13:22:18 +0200
+Message-Id: <20220627111941.952350284@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -49,65 +47,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit e6487833182a8a0187f0292aca542fc163ccd03e ]
+commit 63b8ea5e4f1a87dea4d3114293fc8e96a8f193d7 upstream.
 
-This device shares the PCI ID with the Samsung 970 Evo Plus that
-does not need or want the quirks.  Move the the quirk entry to the
-core table based on the model number instead.
+This comment wasn't updated when we moved from read() to read_iter(), so
+this patch makes the trivial fix.
 
-Fixes: bc360b0b1611 ("nvme-pci: add quirks for Samsung X5 SSDs")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Pankaj Raghav <p.raghav@samsung.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1b388e7765f2 ("random: convert to using fops->read_iter()")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/core.c | 14 ++++++++++++++
- drivers/nvme/host/pci.c  |  4 ----
- 2 files changed, 14 insertions(+), 4 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 3ef1f9112ee0..19054b791c67 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -2489,6 +2489,20 @@ static const struct nvme_core_quirk_entry core_quirks[] = {
- 		.vid = 0x1e0f,
- 		.mn = "KCD6XVUL6T40",
- 		.quirks = NVME_QUIRK_NO_APST,
-+	},
-+	{
-+		/*
-+		 * The external Samsung X5 SSD fails initialization without a
-+		 * delay before checking if it is ready and has a whole set of
-+		 * other problems.  To make this even more interesting, it
-+		 * shares the PCI ID with internal Samsung 970 Evo Plus that
-+		 * does not need or want these quirks.
-+		 */
-+		.vid = 0x144d,
-+		.mn = "Samsung Portable SSD X5",
-+		.quirks = NVME_QUIRK_DELAY_BEFORE_CHK_RDY |
-+			  NVME_QUIRK_NO_DEEPEST_PS |
-+			  NVME_QUIRK_IGNORE_DEV_SUBNQN,
- 	}
- };
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -452,7 +452,7 @@ static ssize_t get_random_bytes_user(str
  
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 3ddd24a42043..58b8461b2b0f 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3380,10 +3380,6 @@ static const struct pci_device_id nvme_id_table[] = {
- 				NVME_QUIRK_128_BYTES_SQES |
- 				NVME_QUIRK_SHARED_TAGS |
- 				NVME_QUIRK_SKIP_CID_GEN },
--	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
--		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
--				NVME_QUIRK_NO_DEEPEST_PS |
--				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
- 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
- 	{ 0, }
- };
--- 
-2.35.1
-
+ 	/*
+ 	 * Immediately overwrite the ChaCha key at index 4 with random
+-	 * bytes, in case userspace causes copy_to_user() below to sleep
++	 * bytes, in case userspace causes copy_to_iter() below to sleep
+ 	 * forever, so that we still retain forward secrecy in that case.
+ 	 */
+ 	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
 
 
