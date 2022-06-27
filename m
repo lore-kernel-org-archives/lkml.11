@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED3AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6001FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237105AbiF0LmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
+        id S236987AbiF0LmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236750AbiF0LjY (ORCPT
+        with ESMTP id S236153AbiF0LiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:39:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D7ABE20;
-        Mon, 27 Jun 2022 04:35:12 -0700 (PDT)
+        Mon, 27 Jun 2022 07:38:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90615BC82;
+        Mon, 27 Jun 2022 04:34:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C92660C16;
-        Mon, 27 Jun 2022 11:35:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98883C3411D;
-        Mon, 27 Jun 2022 11:35:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 446B8B81123;
+        Mon, 27 Jun 2022 11:34:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CC77C341C7;
+        Mon, 27 Jun 2022 11:34:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329711;
-        bh=TbJXaK1rbMB8btpOBGJnwp1o3DBVqNZI0GMIlKu8slk=;
+        s=korg; t=1656329696;
+        bh=VrAYm2kBcAIZ7+6uBJjgni4Ig27wJgni7QfE+gvUDQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yy0+3oynILNLcdQTIaAk0mDvt1uXN4CquJfWSnYgsQC05xenXTudZ3Km0VAbHd52c
-         azbPgZKGT/elYP3MlJ7BJe2IdMbr0kkZ9y9FEM9iLxwwCJU7zg+R5NpqAc/nAaICh/
-         Dk+ah//frf7lS01iRNBkee/CEOjXPzuBzpExJMFI=
+        b=B+5Hl7vKeSf0Xgdwnhn/GU5//QLGMlQEcQWge8oz7YuMG8JAioyVPRWKNNTX37G63
+         2mj6QnqxTfZfA6htrqeDGqdj3oxAAtG46x/VVDtQkeMWqC8I8k9gXEBrNsPqW6rbBG
+         ojuUUjL5/iKppWVdLQHYHSXnHJXsyVPGmOcIPGds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 5.15 090/135] dt-bindings: usb: ohci: Increase the number of PHYs
-Date:   Mon, 27 Jun 2022 13:21:37 +0200
-Message-Id: <20220627111940.771563749@linuxfoundation.org>
+        stable@vger.kernel.org, Maximilian Luz <luzmaximilian@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 034/135] drm/msm: Fix double pm_runtime_disable() call
+Date:   Mon, 27 Jun 2022 13:20:41 +0200
+Message-Id: <20220627111939.149995656@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -48,40 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Maximilian Luz <luzmaximilian@gmail.com>
 
-commit 0f074c1c95ea496dc91279b6c4b9845a337517fa upstream.
+[ Upstream commit ce0db505bc0c51ef5e9ba446c660de7e26f78f29 ]
 
-"make dtbs_check":
+Following commit 17e822f7591f ("drm/msm: fix unbalanced
+pm_runtime_enable in adreno_gpu_{init, cleanup}"), any call to
+adreno_unbind() will disable runtime PM twice, as indicated by the call
+trees below:
 
-    arch/arm/boot/dts/r8a77470-iwg23s-sbc.dtb: usb@ee080000: phys: [[17, 0], [31]] is too long
-	    From schema: Documentation/devicetree/bindings/usb/generic-ohci.yaml
-    arch/arm/boot/dts/r8a77470-iwg23s-sbc.dtb: usb@ee0c0000: phys: [[17, 1], [33], [21, 0]] is too long
-	    From schema: Documentation/devicetree/bindings/usb/generic-ohci.yaml
+  adreno_unbind()
+   -> pm_runtime_force_suspend()
+   -> pm_runtime_disable()
 
-Some USB OHCI controllers (e.g. on the Renesas RZ/G1C SoC) have multiple
-PHYs.  Increase the maximum number of PHYs to 3, which is sufficient for
-now.
+  adreno_unbind()
+   -> gpu->funcs->destroy() [= aNxx_destroy()]
+   -> adreno_gpu_cleanup()
+   -> pm_runtime_disable()
 
-Fixes: 0499220d6dadafa5 ("dt-bindings: Add missing array size constraints")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/0112f9c8881513cb33bf7b66bc743dd08b35a2f5.1655301203.git.geert+renesas@glider.be
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Note that pm_runtime_force_suspend() is called right before
+gpu->funcs->destroy() and both functions are called unconditionally.
+
+With recent addition of the eDP AUX bus code, this problem manifests
+itself when the eDP panel cannot be found yet and probing is deferred.
+On the first probe attempt, we disable runtime PM twice as described
+above. This then causes any later probe attempt to fail with
+
+  [drm:adreno_load_gpu [msm]] *ERROR* Couldn't power up the GPU: -13
+
+preventing the driver from loading.
+
+As there seem to be scenarios where the aNxx_destroy() functions are not
+called from adreno_unbind(), simply removing pm_runtime_disable() from
+inside adreno_unbind() does not seem to be the proper fix. This is what
+commit 17e822f7591f ("drm/msm: fix unbalanced pm_runtime_enable in
+adreno_gpu_{init, cleanup}") intended to fix. Therefore, instead check
+whether runtime PM is still enabled, and only disable it in that case.
+
+Fixes: 17e822f7591f ("drm/msm: fix unbalanced pm_runtime_enable in adreno_gpu_{init, cleanup}")
+Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+Tested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Link: https://lore.kernel.org/r/20220606211305.189585-1-luzmaximilian@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/usb/generic-ohci.yaml |    3 ++-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-+++ b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-@@ -102,7 +102,8 @@ properties:
-       Overrides the detected port count
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+index 748665232d29..bba68776cb25 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+@@ -958,7 +958,8 @@ void adreno_gpu_cleanup(struct adreno_gpu *adreno_gpu)
+ 	for (i = 0; i < ARRAY_SIZE(adreno_gpu->info->fw); i++)
+ 		release_firmware(adreno_gpu->fw[i]);
  
-   phys:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 3
+-	pm_runtime_disable(&priv->gpu_pdev->dev);
++	if (pm_runtime_enabled(&priv->gpu_pdev->dev))
++		pm_runtime_disable(&priv->gpu_pdev->dev);
  
-   phy-names:
-     const: usb
+ 	msm_gpu_cleanup(&adreno_gpu->base);
+ }
+-- 
+2.35.1
+
 
 
