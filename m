@@ -2,97 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F59CCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:45:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C70EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:47:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230013AbiF0Gpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 02:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38224 "EHLO
+        id S232255AbiF0GrL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 02:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbiF0Gp3 (ORCPT
+        with ESMTP id S229931AbiF0GrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 02:45:29 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BE73881
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:45:28 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n10so7366789plp.0
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bH3Vt7XX7aybZeFwi1CTdnlCoZZeRmTfAiO/nez5hfo=;
-        b=ykFyF40ED8ltV1C22vrrCu2Ahxrq6lDUEHVRJJMWmLISGsTYVnUmByK/WyYZAoFJEs
-         B77swVbdEz6e+oEZpaCTgE7Hylf9Yb4qjD1AgGIoCJ8RD+MrjKrI5Jzy6D9vBdJplVae
-         7c4aw1Z1c1SkbrHp2rQGTuUna8Soo5ErVHrT5kZo6hpBqOGkEiYtHauCfhmOFHxhV3E+
-         zgN/C30pAgiLj6MF5qA727QeEDMlQ1tRsxevl8fyMpQ981JkaJ8cqYjKcrHG0nMcghWE
-         P9Yz0E5CiyTfhYjTcXLUNV7+9waiX+sM8Fhix46lgrs218sgFUTqtBihxvmnWEXWe4aY
-         xJHg==
+        Mon, 27 Jun 2022 02:47:09 -0400
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BB7559E;
+        Sun, 26 Jun 2022 23:47:08 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id mf9so17130016ejb.0;
+        Sun, 26 Jun 2022 23:47:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bH3Vt7XX7aybZeFwi1CTdnlCoZZeRmTfAiO/nez5hfo=;
-        b=KiWpqH9j7vXp5zcN5IFUp9W9f9hhhr2dnXzwPz0tKecs3PSfKG+kwLnCyh6jisvcxh
-         045F4X8Dy4OZz5lOry5DMFLnW6iac8TqSjiQn+FpH6U8Bw2ATcGEqRzvU48Kai/fnDDc
-         eoHrY18CWjE87lSJ+KyAB+SCBTCI+Hg136HAcZxhzzXYBYrf5wIf6UqBLh4naPoBCqZu
-         1fFImUjNMrEf6/zeqaV/UEA1lGR8yPJCJZTPlj93xUub0dFPHZA+/EVT0jAeVBI4R/hM
-         yxDHbm8hECZ7BM7MBvvEOE1sipYjx1i0x8m3UVyHYjmtLpodtd8IbI1f2SYV2NicvwQM
-         iszQ==
-X-Gm-Message-State: AJIora+MgdoQAaETo9jIBevXePV1ulqIf9DfPFNh1p17QVOIZjCnuhNQ
-        n2UW1wgp3DmU74gtQ7b3ghl5Jw==
-X-Google-Smtp-Source: AGRyM1skjSIr2LG5qz1p7HriNtf5RQBG+zI/jwqerqVBvWNFUvR0glyAewRI0itDcsi27L2Yi8fzKw==
-X-Received: by 2002:a17:902:f20a:b0:16a:22ef:b17f with SMTP id m10-20020a170902f20a00b0016a22efb17fmr13305957plc.168.1656312328184;
-        Sun, 26 Jun 2022 23:45:28 -0700 (PDT)
-Received: from localhost ([122.172.201.58])
-        by smtp.gmail.com with ESMTPSA id jf5-20020a170903268500b0016a1d007637sm6295143plb.110.2022.06.26.23.45.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jun 2022 23:45:27 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 12:15:26 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Rafael Wysocki <rjw@rjwysocki.net>,
-        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 22/31] soc/tegra: Migrate to dev_pm_opp_set_config()
-Message-ID: <20220627064526.2nkezq4nufpkl4y2@vireshk-i7>
-References: <cover.1653564321.git.viresh.kumar@linaro.org>
- <449b344f037c7ef1970bc84d31e0d4c4cb4d2951.1653564321.git.viresh.kumar@linaro.org>
- <20220624004831.po35sowzfo4c47b3@vireshk-i7>
- <20220624005700.oj4etaajbutvsym7@vireshk-i7>
- <73d39022-c6fc-0c21-cb68-9714846f02bf@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8HomK3l6jlBCLsSb7Jf/Zdvy1qIVhQIP50p0E/9QVR4=;
+        b=xri4hn4QwepxsJgBIhMlrfAFME10UlnWrbYjE2wacXkpIchaZ+fFxIqxm5f5Lk7J21
+         gQLVugIMwT7WzjFMFwDBzeEl9LaOZ153hGIay12DYGnxXdFgM3R54gW4lIFZJgqDl/9y
+         kkGbjTm7rsYleXHMTZBzoPCGWU18Ks7qukLAcBeD9cOimxozFJF3CcpphoOvUEZd6aBy
+         liqFLU7gASlCaRn8tXkCii1PsKptQz0inuVWNWlcnNxpHrg16J6JZwkP4oXmQSWzooZa
+         YlijLvv/L696im+qHZ5f6kmwXGV/MP2xeNNTRsv2i0Cj1QE/QuNOJOQBsoNVyLeHhFgG
+         qPaA==
+X-Gm-Message-State: AJIora+z+/ZzrRnZEsvI4n6Ot4FTXfgSdDVV5Kxcjlw6rVAkGH9KewtO
+        FIV8YzBxxDxHqDmYVv4Unz8=
+X-Google-Smtp-Source: AGRyM1u96qvLjAc8rMt3uBD3ubW9adxW2CDbwcX2yO+evsWDo+MMjNDM2rv0uVldDi1BuxZYwlq3mw==
+X-Received: by 2002:a17:906:dc8a:b0:724:d541:d324 with SMTP id cs10-20020a170906dc8a00b00724d541d324mr11096133ejc.377.1656312426841;
+        Sun, 26 Jun 2022 23:47:06 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id d10-20020a17090648ca00b0070b8a467c82sm4648674ejt.22.2022.06.26.23.47.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jun 2022 23:47:06 -0700 (PDT)
+Message-ID: <ede0760a-75e4-4d53-256c-86ca5a19a5f8@kernel.org>
+Date:   Mon, 27 Jun 2022 08:47:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <73d39022-c6fc-0c21-cb68-9714846f02bf@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 5/6] serial: Convert SERIAL_XMIT_SIZE to UART_XMIT_SIZE
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-actions@lists.infradead.org, linux-unisoc@lists.infradead.org
+References: <20220624205424.12686-1-ilpo.jarvinen@linux.intel.com>
+ <20220624205424.12686-6-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220624205424.12686-6-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27-06-22, 01:14, Dmitry Osipenko wrote:
-> Looks okay. If you'll solve the cpufreq problem where OPP config is set
-> by two drivers for the same cpu device
+On 24. 06. 22, 22:54, Ilpo Järvinen wrote:
+> Both UART_XMIT_SIZE and SERIAL_XMIT_SIZE are defined. Make them all
+> UART_XMIT_SIZE.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-This is supported, there is some early freeing of resources on the
-removal path though, the reasoning for which I already gave in another
-email. Though, I am open to sorting that out as well, but nothing
-breaks the code for now AFAICT.
-
-> and will keep the set_opp()
-> helper that is needed by the Tegra 3d driver, then it all should work
-> for Tegra.
-
-I have responded to that as well on another thread.
-
-> Looking forward to the next update of the OPP patches, thank you.
-
-All that I have is already pushed to linux-next, I don't have any more
-changes. Yes I still need to send the updated changes to list.
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
 -- 
-viresh
+js
+suse labs
