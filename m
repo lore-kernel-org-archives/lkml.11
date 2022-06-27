@@ -2,178 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDCDCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234643AbiF0NEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
+        id S234493AbiF0NEg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234707AbiF0NEK (ORCPT
+        with ESMTP id S234331AbiF0NET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:04:10 -0400
-Received: from mx0a-002c1b01.pphosted.com (mx0a-002c1b01.pphosted.com [148.163.151.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1561EB7F7
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:03:12 -0700 (PDT)
-Received: from pps.filterd (m0127839.ppops.net [127.0.0.1])
-        by mx0a-002c1b01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25R69fXu032430;
-        Mon, 27 Jun 2022 06:03:03 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nutanix.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=proofpoint20171006;
- bh=Jcnfzgcuk+FV4ZbhBwAahUjfCmLbt/JUREx0UHn6/GU=;
- b=ilmN6dIJfCQIsKgPLS9l/V067lNJpDkgPfCuEAONEc1KUrKsb099T8NDh70y9F7YrdPG
- 5Csxx2IJDU4MjTvOiyyZWkAi2XREkXDjST7GCJQbcmsqhVcBB5T33Cmi/5dw+QJYEw34
- LGXrEOtPuCUWKxj28erAUz++GEmOlCuiyxdfhkWIHtglqDc/aVjB62EjHkAjGNMsYWUe
- IA26nRdnZpCMmC70RQxgM7NXrUUAv5CpSSDFHEXTNLjd4AhGCuWiZEmWq4MmWQ6jxQ41
- MwtqfUXqhb3AFEPVzkUde/IQIFmtn4ddOb8SyCBaRwY4GjkgHKowxrDmI3LvFx8SCB6V eQ== 
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2168.outbound.protection.outlook.com [104.47.56.168])
-        by mx0a-002c1b01.pphosted.com (PPS) with ESMTPS id 3gx1eguh32-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jun 2022 06:03:03 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SG86e3y1hcbS9VHLks58rp7Ii/rfGLSgRANXvjmjE6eOPIVxSh+Eh0YWXP/WvvRDAot8+s0UQx2sbO5Ezy26muy4BgQTZwu84V5en+1xUXMuUuzoTGOukSc/BaXHcJ72ZUbN1ufPx204mdSlscGX55H060fiBcmxA39PT3x0jisD/c5dckzfXXsHLuPOqjPMTxY8g79aHNwy122r5eDGC8JPcVgLoVqMStfGwV+6N13/P3zYMikChP9VPw/iXNw+TWsbeeICrCDDsBc9CGsQomf3+9AoUMmzY69R1nA5f8rPmB7gAVyGhLGtViZcOFrTeyyCzW8vRjtqG2L9pJ2ZeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Jcnfzgcuk+FV4ZbhBwAahUjfCmLbt/JUREx0UHn6/GU=;
- b=jgIsjF79AbwEE+SFJlst6fuDmVlpKpmkpqMvQuXkW24PWx/5lgE6r8Zk9gM4I54585EIdCswkJuasjedrUjuDymBtj+v61g1iVdO0LWKJdzBE8o/ScC7rCamv8u4K4zuFzxh3TI36nZtqkRvJgT5jC+Mc3WUl1IlUUeVz6F9mTlc8m/llGl0Z6xTpqFgEpgAAnKsdrZWYJvw3d3O5ISlqsqtbCjuHTcH7k9z9v6rmiqnq26wpd0ByC+4lmp6hz1oX+dnNCcos8fiJSrYXTPvV54E1jdNfuW5vYK1rxO4IWDHCsoRGtuXHSJM3JAmYYAtc174a/21zJ3e4TTHcPNekQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nutanix.com; dmarc=pass action=none header.from=nutanix.com;
- dkim=pass header.d=nutanix.com; arc=none
-Received: from PH0PR02MB7384.namprd02.prod.outlook.com (2603:10b6:510:12::12)
- by CO1PR02MB8492.namprd02.prod.outlook.com (2603:10b6:303:15b::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Mon, 27 Jun
- 2022 13:03:01 +0000
-Received: from PH0PR02MB7384.namprd02.prod.outlook.com
- ([fe80::898c:892a:2385:3df6]) by PH0PR02MB7384.namprd02.prod.outlook.com
- ([fe80::898c:892a:2385:3df6%5]) with mapi id 15.20.5373.018; Mon, 27 Jun 2022
- 13:03:01 +0000
-Message-ID: <285ac7f8-20f2-c260-90e2-6271ecddaf73@nutanix.com>
-Date:   Mon, 27 Jun 2022 18:31:39 +0530
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [RFC PATCH 10/26] hugetlb: add for_each_hgm_shift
-To:     James Houghton <jthoughton@google.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Peter Xu <peterx@redhat.com>
-Cc:     David Hildenbrand <david@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Jue Wang <juew@google.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220624173656.2033256-1-jthoughton@google.com>
- <20220624173656.2033256-11-jthoughton@google.com>
-From:   "manish.mishra" <manish.mishra@nutanix.com>
-In-Reply-To: <20220624173656.2033256-11-jthoughton@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA0PR01CA0057.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:ac::15) To PH0PR02MB7384.namprd02.prod.outlook.com
- (2603:10b6:510:12::12)
+        Mon, 27 Jun 2022 09:04:19 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B770D127
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:03:37 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id l68so338583wml.3
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:03:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=L882Qi37qgymZbCBpAO6lxX5xZGhjw0/8e7sf/riPRY=;
+        b=OElTWkNKtpQqellzrB9QTjaZMqFULrJ39h9Zuvrnv7fHYbC3K0Y/+k0chZnnyhITKQ
+         q1Su1dm4C80yP0/DawYBoUfBR7TBBmXa45RHeDIgpMSOE77KVjqmze4UPVzTG+qxNiPM
+         J6CsKfyuMQiawUJTjLzj96gcA//6DI431ZmytVuyp62KBtff1VIVyd9FlpzNRwDGAf5u
+         peruN5j3nDCK9cmfE51P7D8qnU4bCMuU8V+2Nfgod7QNK8R4VtUxm/MJPVr2sRTwTf5s
+         +rSE9TjeI/BlHBUf1irvcf4dIipxvGz2tKJ6xQ7c7Z/foj0NgdV7yRP/ozHTPBaA8ssP
+         blIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=L882Qi37qgymZbCBpAO6lxX5xZGhjw0/8e7sf/riPRY=;
+        b=SZlKh71iAY09rz4te2pZ+pM4DgGQSFIbC3aIvik+QrNgPN0a3DnGRuU89TizyCNBU5
+         HbIZ8WDpu7qssiUTG5b3xsDj485gA2xjAVCPI0GAWgVWh7uxdRrtzG76Kz3FOhaP0NWc
+         VpjfCsgq/u/MYNi1U4r1oqqoW9V8K+4JF4Q7lYUoIb6IjOEG360DvrJO8O4xCCn9Q9Pr
+         mVUMGZqRlebdoflDz0jDWcfnDzQ17W276YinTM3HeZfUPmXoBfGTTLtaEin6u6Bq1omG
+         bl7l2AcsM3OLHPHxRVCirowW2V8M3KKUOr3XrLz9/4KkAZHh6IAqAep7x+qQwjasInPG
+         8bxQ==
+X-Gm-Message-State: AJIora/qa2qQASDZhHj9mbdGUXg1WYeI1Yy/2Aq1u0+3gSxMMFdYPdBB
+        CUVubbzOXoccQTMvje11qwUa6Q==
+X-Google-Smtp-Source: AGRyM1suF2dPiURcmGK9WbFjLgebYglBZizVQFOYmypHt4B+qJRtY4JFvr8wTuDBORu+tW+FRGkDog==
+X-Received: by 2002:a7b:cc94:0:b0:39c:4507:e806 with SMTP id p20-20020a7bcc94000000b0039c4507e806mr19785729wma.91.1656335015949;
+        Mon, 27 Jun 2022 06:03:35 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id c2-20020a1c3502000000b0039c5328ad92sm17737451wma.41.2022.06.27.06.03.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 06:03:35 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 14:03:32 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH v2] mfd: tc6393xb: Make disable callback return void
+Message-ID: <YrmqpN2VnjHSgMRW@google.com>
+References: <20220619082655.53728-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cba5d351-d35c-48e4-e4b2-08da583d5da0
-X-MS-TrafficTypeDiagnostic: CO1PR02MB8492:EE_
-x-proofpoint-crosstenant: true
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lVElD+Kk6gsZfQPH8Tod9QwCYj6EeSlQY0U0JBqAlkty0JluVoa+OfnEOfCHN8Dns8coVFNIrBj92J6snR/JSGWYt/Uv9qV8dAZT0xEF9yjMnG043mkinY9yS/J+ZklPCp9XFFR4wPjig1AABEVPnJuNyeWicZsdfMA7Vs6FOw0l9veGVC/Im/myjjJwoe1aZr3IkxXwhBXiE98tnr8MFwvbZx/endv5CWWe48iZRlPJPdsJC+2o1rVYTm+XlhOxjaI5F1s+PTH4s1KkIdYON8TzP3OpHise392QaoMCc9KN95Kz3+AA3AOget9j/svNXablGRqTsMuHKrbOviGmBU/CB/e0NxKpMea74S6dfsDAIkBYNxj3B6MnQ/g9rIeUO/MWzpbI3ZXBGS76AXWlMk9kGOj4rSbKNeyedPqxNgIphPpi0hFliOHuRe+TYSBQPbUjQGj9Vko9gFGkEWtLsITMWE3jt2i6eZ/3mvP6+F1RthEHT0tmkVHlgIXf6f4PVQkRxk3xHDKpd8AAvDY/+xdk79s5DVMNcow6U1OPIFhbf84N+h9MqmmRPZdEoPn/BwfqxsvPCarQm75Ghg+I5tQgIWIT1ARVzwFvZ34z3j71cQs4pXDB1U0roisSELtduin/j9f1uHoT5lvYmRqlR/kmUqOTq0lMojeziYr+JjhYjbf176lSeORZvFbDpmGwTQr5TJQ30LJdDfAG0GXy1FycPvCyLUe74e8BPv62gWUL29+kVIyxwDWcEovoiyFaU+TatTbey2LnBQ7wEdTkt4mS++bobVDVAPOgRkFtDMj8h9V3okNUrUiEgVjMJdPw
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR02MB7384.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(376002)(396003)(136003)(366004)(39860400002)(7416002)(110136005)(31686004)(8936002)(54906003)(5660300002)(478600001)(6486002)(2616005)(186003)(83380400001)(2906002)(6666004)(6512007)(53546011)(31696002)(26005)(316002)(8676002)(66946007)(4326008)(38100700002)(41300700001)(66476007)(86362001)(6506007)(66556008)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WFk3eHAyQlM4VWQ4SkVkMDNsL3N3Q3ZxblVNa3E3bmZoQm1tQllabHhSMHlk?=
- =?utf-8?B?b21RNDJ5MDUzRzk3d1FLQkpwdjMrZE84MG9CQUJXWjkyU0pnYVpEa0lLUXRL?=
- =?utf-8?B?cWY4TWVIZGdPUDJWV2R0VVM3Y3YyaWlDUW91c1ZMcUpwZU1zK3NIMXZRdHJY?=
- =?utf-8?B?cG5oSTBEMVRvYWRDaUswek5WZU9nYUp1RDJxUTVwYlBJTlFGUGthYStpSzVj?=
- =?utf-8?B?S1lBZFpWZXJUTjAyd1FERThxa2E4UzdmWGsyVzdTNnB6ZEdWQmNkM0QxMHY5?=
- =?utf-8?B?TnlCcnJIdVRlL2pxUkN6YVZBeW14YlFzTHNkK3dCYXJ6UDdVcFdrb0NwS0c1?=
- =?utf-8?B?SUNPR0NRMVI4RTR6RUlKQW0rRmRnV3hHL0IxSE80N0xlQjVzVzd4b3NTY1Jk?=
- =?utf-8?B?VUVUZnhrdWM1bDNRd1Nkdm1KaTAvTEFMaWN0ZkhjUENaU0x2bDZVQ1BoODZ2?=
- =?utf-8?B?MDhmb3VuTGlBZjErNDZNcFVudEtHcTUvSjBHNDlTc3NHVFJMeXpWbVQySDA0?=
- =?utf-8?B?bTQvKzBBTWNRWEN0Yll4SkZwTW5XZ0M0NnM5d0pjWVIzNUcyUmQ2WUxTUVpC?=
- =?utf-8?B?ajFLU2hCWUZWQmdUTUxERkpmaEFSNXR5RlZrbHVvSWdOR2NKTzVzZHJJUDlI?=
- =?utf-8?B?NExoVXZDd3hpa1NBTEZXcTIyNmw4TVh0TWE3emVlVldXdmZwN1kwb000eEw3?=
- =?utf-8?B?SWhZN1FHZCtCMnp2T0hWZWhhVWdrTHJBSVZZQXRVYVJXRmR0WGloNW9sb0I2?=
- =?utf-8?B?YzJPblJBbXorVGlHc3djN0lseXlrM0t5ZllEN1k5bFdoa1RZVjZoSExYYy9h?=
- =?utf-8?B?a1FWTEVTOUxvMFMxVDNuanNmV1A3c1pQUzR0TVBPWlV2cWJuVGJjQTRJT0dX?=
- =?utf-8?B?SDQ1UWZid0hmZjVDSGRrY2c3cjlqQkFmN1E4WGd1U29KaGVBdFdDL002eVBx?=
- =?utf-8?B?TmhlUG1aWlVpY1Y4NVR5Q2g3dmE0ODdTRmlSUUUzaUNoY3VaOFVyQTAvY0lt?=
- =?utf-8?B?QXVVeWptUlBZWWl5VktLZ3RuQVBvZ2ZrZ0h0dmh1Q2hCMVExczlxdUZVWk85?=
- =?utf-8?B?ekRqN2pmOUo3R0wzZG5FNHJKSzFIYWI1RW9ETXJGdlYyQ3lsL3dLTG1KNTJC?=
- =?utf-8?B?cm1kMG9YdEEzVFpQZDZvWkppL25vVTVMSlJwS0xQYUtqWWtobDRMenA5dTVW?=
- =?utf-8?B?dHhoaWI5QVlHL0NHYnFsOGlYVHB4UTRXOE5UVzNzYTAwcFJNNnp1by82YzhH?=
- =?utf-8?B?NG00MlpRL0I4OFZiRGpIaWdtN0VIK2xGTUt4UDQ0akxRbitWTVY5S2w1ZnRi?=
- =?utf-8?B?Vnc2Q3VBeE5Kd0ZxMFdXVnJaelA5VGNUNkVMY21ZNmtBSUQ4eitoM0pSWXBJ?=
- =?utf-8?B?R0lPWVZJN25UQTd0R2d2SHMwZFBSMnNKMFhrelVnNWF0bmtUb2Z0TkVUSDFS?=
- =?utf-8?B?cHM4R1JKa0Nxa205elpNSTNXUWJGRVJrQzV1QkVqY0xYekNTaGdvYk1TWDNF?=
- =?utf-8?B?cVhNSXRXanF6RTBjZHd3WkRFcElNcjhSR2VXWWI2RkEycmFtWit4ZmV6L215?=
- =?utf-8?B?QWdTUmQ3a1hVVnVwUTBwY3lCVlZvTW9VS01CT1BMM1VPZFJuL1VaM3pha3Jo?=
- =?utf-8?B?V3o3QkxMUnEwOVk1dG9sWjN0d0JDdmlNSVJwMGQxUGRLYjV2SXY2ZTlPeDcy?=
- =?utf-8?B?Mk5KZDFyNXBzajE1UnQzZnpFQS81MjlpZGcrVisvZnlka1Y3YVNaTTVnSFB3?=
- =?utf-8?B?K3N0Wmk1SFlTdktMRmY5bVRjQnlmQUN1M0FkZFN0VUxEZDNzbklMbzcxWjVE?=
- =?utf-8?B?MDc2cG84SGZvWWsxWFAwbTMra3lmQkM2NGkwcS9iSHpWOGpscHcwRGJYeEF6?=
- =?utf-8?B?SDFQT1lSUU9iLzRpUk85UE5rK1RXbEErck8wMitDRlU5V0tmaUF3WFk0RlNV?=
- =?utf-8?B?RmFQMXFhbVJBOVZyOENObWJiak0yQlZZVnJjMEpNemZ4eTFEeXo0cFFIalFh?=
- =?utf-8?B?dCtPVjhGdHNWVS9TMFN6bHgvZzNHRUY4L1RZdlhiYlh0WE1TMjVwOEYwYjFC?=
- =?utf-8?B?Nm5GaDI5V2RiSGtjRHZobnJkU244T3R2RnVaMm5BQXBqcjBYSnJJSlRjRFQx?=
- =?utf-8?B?R2oxOVRyWU9WeXVPemJxalYwWkVFV3ZMSllsVXhjeTAwRXZCTThXNnQwaXJo?=
- =?utf-8?B?Ymc9PQ==?=
-X-OriginatorOrg: nutanix.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cba5d351-d35c-48e4-e4b2-08da583d5da0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR02MB7384.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2022 13:03:01.6701
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bb047546-786f-4de1-bd75-24e5b6f79043
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: a/bR321JeAu3DpMVBLZVOf1Za/ZbiPQbxViN/iE0a7MGsb2zrhs/dPAizSWoVKO85FBtP2c7r3q95xB9UZsMvIt/wV1w7k447ahYhcIekA0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR02MB8492
-X-Proofpoint-GUID: tZMajvCN9b104sJG-qnFg5CpJ-uxPViq
-X-Proofpoint-ORIG-GUID: tZMajvCN9b104sJG-qnFg5CpJ-uxPViq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-27_06,2022-06-24_01,2022-06-22_01
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220619082655.53728-1-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, 19 Jun 2022, Uwe Kleine-König wrote:
 
-On 24/06/22 11:06 pm, James Houghton wrote:
-> This is a helper macro to loop through all the usable page sizes for a
-> high-granularity-enabled HugeTLB VMA. Given the VMA's hstate, it will
-> loop, in descending order, through the page sizes that HugeTLB supports
-> for this architecture; it always includes PAGE_SIZE.
-reviewed-by:manish.mishra@nutanix.com
-> Signed-off-by: James Houghton <jthoughton@google.com>
+> All implementations return 0, so simplify accordingly.
+> 
+> This is a preparation for making platform remove callbacks return void.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 > ---
->   mm/hugetlb.c | 10 ++++++++++
->   1 file changed, 10 insertions(+)
->
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index 8b10b941458d..557b0afdb503 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -6989,6 +6989,16 @@ bool hugetlb_hgm_enabled(struct vm_area_struct *vma)
->   	/* All shared VMAs have HGM enabled. */
->   	return vma->vm_flags & VM_SHARED;
->   }
-> +static unsigned int __shift_for_hstate(struct hstate *h)
-> +{
-> +	if (h >= &hstates[hugetlb_max_hstate])
-> +		return PAGE_SHIFT;
-> +	return huge_page_shift(h);
-> +}
-> +#define for_each_hgm_shift(hstate, tmp_h, shift) \
-> +	for ((tmp_h) = hstate; (shift) = __shift_for_hstate(tmp_h), \
-> +			       (tmp_h) <= &hstates[hugetlb_max_hstate]; \
-> +			       (tmp_h)++)
->   #endif /* CONFIG_HUGETLB_HIGH_GRANULARITY_MAPPING */
->   
->   /*
+> Hello,
+> 
+> compared to (implicit) v1
+> (https://lore.kernel.org/r/20220530192430.2108217-5-u.kleine-koenig@pengutronix.de)
+> this is rebased to v5.19-rc1. Up to now there is only a single patch in
+> next (next-20220617) since -rc1 touching one of the files:
+> 
+> 	0fdebc5ec2ca ("treewide: Replace GPLv2 boilerplate/reference with SPDX - gpl-2.0_56.RULE (part 1)")
+> 
+> I don't expect any conflicts that need manual intervention.
+> 
+> Best regards
+> Uwe
+> 
+>  arch/arm/mach-pxa/eseries.c  | 3 +--
+>  arch/arm/mach-pxa/tosa.c     | 4 +---
+>  drivers/mfd/tc6393xb.c       | 5 ++---
+>  include/linux/mfd/tc6393xb.h | 2 +-
+>  4 files changed, 5 insertions(+), 9 deletions(-)
+
+Applied, thanks.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
