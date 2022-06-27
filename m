@@ -2,137 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC60C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:34:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E467C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235918AbiF0Ler (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54604 "EHLO
+        id S235934AbiF0Leu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:34:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236092AbiF0LdK (ORCPT
+        with ESMTP id S236139AbiF0LdS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:33:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B19FBE2B;
-        Mon, 27 Jun 2022 04:30:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5969E61510;
-        Mon, 27 Jun 2022 11:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68236C3411D;
-        Mon, 27 Jun 2022 11:30:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329414;
-        bh=cuO2nTisTqBS0cLwTF9hisxzJeuL2o6+A2Rz7bYaU/4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=msKQhhZZfmwNbaPw/bts5dgyCB2ZJKJ3ljYK5i5cN9kdYHUq5CYtEPpC6oo4O9W1L
-         p3Cn0VIZ44oknn/RmKAW7KPOX6oZqnHAgviot11fcndA/YmO1YxSHic+xXpWDrRrSk
-         GZUZ/SQW/N0G9kBqzUXMkox2o3wTLg2DQs4xBcXo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikos Tsironis <ntsironis@arrikto.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.4 11/60] dm era: commit metadata in postsuspend after worker stops
-Date:   Mon, 27 Jun 2022 13:21:22 +0200
-Message-Id: <20220627111927.985048485@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
-References: <20220627111927.641837068@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 27 Jun 2022 07:33:18 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E13CBF68;
+        Mon, 27 Jun 2022 04:30:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656329422; x=1687865422;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=O/C94ZB/s6G9BRryYo+Qz3Y2uZ2+Yo0+K1mSVtuIqz8=;
+  b=GoQhvd/vnnanULk14E/nPoQuQfmKn2BvtLFPVhVvjQUgraW+S9ZYDILp
+   fTloZ6l8TsVywLZPmSEnmhUR9TK3VLDWKFlXPWUiaBVXVf2wVsKfmkAC7
+   MArFRZoIx/MH4lHt/+dOEbJhcyqCbXRziWTnKd+UdMJ2/mkhSna3iRrVI
+   Ai1KUJ3Qxp6Ld6RRw3Oz8shlhQDL5AGCQwKbagAnAsXCBiZrPhPZjjZN5
+   lq5sCDY+kKPpLAQO12XccJD+5rINYoZDpvoHH8uuYCgrjdcl1U9bz0e5Q
+   TZeaQLdZekXGQpEfeV9yDn5kzWp9LP6dW+1stsoaLZlAd+JTkEkWoGrq7
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="282161563"
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="282161563"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 04:30:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="916678660"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga005.fm.intel.com with ESMTP; 27 Jun 2022 04:30:14 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 1C5F7D9; Mon, 27 Jun 2022 14:30:19 +0300 (EEST)
+Date:   Mon, 27 Jun 2022 14:30:19 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Peter Gonda <pgonda@google.com>
+Cc:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        the arch/x86 maintainers <x86@kernel.org>,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted
+ memory
+Message-ID: <20220627113019.3q62luiay7izhehr@black.fi.intel.com>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <CAMkAt6osbEGBFrgn=y1=x4mDHC1aL40BwaW0NdGHF8qmWd7ktA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMkAt6osbEGBFrgn=y1=x4mDHC1aL40BwaW0NdGHF8qmWd7ktA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikos Tsironis <ntsironis@arrikto.com>
+On Fri, Jun 24, 2022 at 10:37:10AM -0600, Peter Gonda wrote:
+> On Tue, Jun 14, 2022 at 6:03 AM Kirill A. Shutemov
+> <kirill.shutemov@linux.intel.com> wrote:
+> >
+> > UEFI Specification version 2.9 introduces the concept of memory
+> > acceptance: some Virtual Machine platforms, such as Intel TDX or AMD
+> > SEV-SNP, requiring memory to be accepted before it can be used by the
+> > guest. Accepting happens via a protocol specific for the Virtual
+> > Machine platform.
+> >
+> > Accepting memory is costly and it makes VMM allocate memory for the
+> > accepted guest physical address range. It's better to postpone memory
+> > acceptance until memory is needed. It lowers boot time and reduces
+> > memory overhead.
+> >
+> > The kernel needs to know what memory has been accepted. Firmware
+> > communicates this information via memory map: a new memory type --
+> > EFI_UNACCEPTED_MEMORY -- indicates such memory.
+> >
+> > Range-based tracking works fine for firmware, but it gets bulky for
+> > the kernel: e820 has to be modified on every page acceptance. It leads
+> > to table fragmentation, but there's a limited number of entries in the
+> > e820 table
+> >
+> > Another option is to mark such memory as usable in e820 and track if the
+> > range has been accepted in a bitmap. One bit in the bitmap represents
+> > 2MiB in the address space: one 4k page is enough to track 64GiB or
+> > physical address space.
+> >
+> > In the worst-case scenario -- a huge hole in the middle of the
+> > address space -- It needs 256MiB to handle 4PiB of the address
+> > space.
+> >
+> > Any unaccepted memory that is not aligned to 2M gets accepted upfront.
+> >
+> > The approach lowers boot time substantially. Boot to shell is ~2.5x
+> > faster for 4G TDX VM and ~4x faster for 64G.
+> >
+> > TDX-specific code isolated from the core of unaccepted memory support. It
+> > supposed to help to plug-in different implementation of unaccepted memory
+> > such as SEV-SNP.
+> >
+> > The tree can be found here:
+> >
+> > https://github.com/intel/tdx.git guest-unaccepted-memory
+> 
+> Hi Kirill,
+> 
+> I have a couple questions about this feature mainly about how cloud
+> customers can use this, I assume since this is a confidential compute
+> feature a large number of the users of these patches will be cloud
+> customers using TDX and SNP. One issue I see with these patches is how
+> do we as a cloud provider know whether a customer's linux image
+> supports this feature, if the image doesn't have these patches UEFI
+> needs to fully validate the memory, if the image does we can use this
+> new protocol. In GCE we supply our VMs with a version of the EDK2 FW
+> and the customer doesn't input into which UEFI we run, as far as I can
+> tell from the Azure SNP VM documentation it seems very similar. We
+> need to somehow tell our UEFI in the VM what to do based on the image.
+> The current way I can see to solve this issue would be to have our
+> customers give us metadata about their VM's image but this seems kinda
+> burdensome on our customers (I assume we'll have more features which
+> both UEFI and kernel need to both support inorder to be turned on like
+> this one) and error-prone, if a customer incorrectly labels their
+> image it may fail to boot.. Has there been any discussion about how to
+> solve this? My naive thoughts were what if UEFI and Kernel had some
+> sort of feature negotiation. Maybe that could happen via an extension
+> to exit boot services or a UEFI runtime driver, I'm not sure what's
+> best here just some ideas.
 
-commit 9ae6e8b1c9bbf6874163d1243e393137313762b7 upstream.
+Just as an idea, we can put info into UTS_VERSION which can be read from
+the built bzImage. We have info on SMP and preeption there already.
 
-During postsuspend dm-era does the following:
+Patch below does this:
 
-1. Archives the current era
-2. Commits the metadata, as part of the RPC call for archiving the
-   current era
-3. Stops the worker
+$ file arch/x86/boot/bzImage
+arch/x86/boot/bzImage: Linux kernel x86 boot executable bzImage, version 5.19.0-rc3-00016-g2f6aa48e28d9-dirty (kas@box) #2300 SMP PREEMPT_DYNAMIC UNACCEPTED_MEMORY Mon Jun 27 14:23:04 , RO-rootFS, swap_dev 0XC, Normal VGA
 
-Until the worker stops, it might write to the metadata again. Moreover,
-these writes are not flushed to disk immediately, but are cached by the
-dm-bufio client, which writes them back asynchronously.
+Note UNACCEPTED_MEMORY in the output.
 
-As a result, the committed metadata of a suspended dm-era device might
-not be consistent with the in-core metadata.
+Probably we want to have there info on which flavour of unaccepted memory
+is supported (TDX/SNP/whatever). It is a bit more tricky.
 
-In some cases, this can result in the corruption of the on-disk
-metadata. Suppose the following sequence of events:
+Any opinion?
 
-1. Load a new table, e.g. a snapshot-origin table, to a device with a
-   dm-era table
-2. Suspend the device
-3. dm-era commits its metadata, but the worker does a few more metadata
-   writes until it stops, as part of digesting an archived writeset
-4. These writes are cached by the dm-bufio client
-5. Load the dm-era table to another device.
-6. The new instance of the dm-era target loads the committed, on-disk
-   metadata, which don't include the extra writes done by the worker
-   after the metadata commit.
-7. Resume the new device
-8. The new dm-era target instance starts using the metadata
-9. Resume the original device
-10. The destructor of the old dm-era target instance is called and
-    destroys the dm-bufio client, which results in flushing the cached
-    writes to disk
-11. These writes might overwrite the writes done by the new dm-era
-    instance, hence corrupting its metadata.
+diff --git a/init/Makefile b/init/Makefile
+index d82623d7fc8e..6688ea43e6bf 100644
+--- a/init/Makefile
++++ b/init/Makefile
+@@ -32,7 +32,7 @@ quiet_cmd_compile.h = CHK     $@
+ 	$(CONFIG_SHELL) $(srctree)/scripts/mkcompile_h $@	\
+ 	"$(UTS_MACHINE)" "$(CONFIG_SMP)" "$(CONFIG_PREEMPT_BUILD)"	\
+ 	"$(CONFIG_PREEMPT_DYNAMIC)" "$(CONFIG_PREEMPT_RT)" \
+-	"$(CONFIG_CC_VERSION_TEXT)" "$(LD)"
++	"$(CONFIG_UNACCEPTED_MEMORY)" "$(CONFIG_CC_VERSION_TEXT)" "$(LD)"
 
-Fix this by committing the metadata after the worker stops running.
+ include/generated/compile.h: FORCE
+ 	$(call cmd,compile.h)
+diff --git a/scripts/mkcompile_h b/scripts/mkcompile_h
+index ca40a5258c87..efacfecad699 100755
+--- a/scripts/mkcompile_h
++++ b/scripts/mkcompile_h
+@@ -7,8 +7,9 @@ SMP=$3
+ PREEMPT=$4
+ PREEMPT_DYNAMIC=$5
+ PREEMPT_RT=$6
+-CC_VERSION="$7"
+-LD=$8
++UNACCEPTED_MEMORY=$7
++CC_VERSION="$8"
++LD=$9
 
-stop_worker uses flush_workqueue to flush the current work. However, the
-work item may re-queue itself and flush_workqueue doesn't wait for
-re-queued works to finish.
+ # Do not expand names
+ set -f
+@@ -51,6 +52,10 @@ elif [ -n "$PREEMPT" ] ; then
+ 	CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT"
+ fi
 
-This could result in the worker changing the metadata after they have
-been committed, or writing to the metadata concurrently with the commit
-in the postsuspend thread.
-
-Use drain_workqueue instead, which waits until the work and all
-re-queued works finish.
-
-Fixes: eec40579d8487 ("dm: add era target")
-Cc: stable@vger.kernel.org # v3.15+
-Signed-off-by: Nikos Tsironis <ntsironis@arrikto.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/md/dm-era-target.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
---- a/drivers/md/dm-era-target.c
-+++ b/drivers/md/dm-era-target.c
-@@ -1397,7 +1397,7 @@ static void start_worker(struct era *era
- static void stop_worker(struct era *era)
- {
- 	atomic_set(&era->suspended, 1);
--	flush_workqueue(era->wq);
-+	drain_workqueue(era->wq);
- }
- 
- /*----------------------------------------------------------------
-@@ -1581,6 +1581,12 @@ static void era_postsuspend(struct dm_ta
- 	}
- 
- 	stop_worker(era);
++if [ -n "$UNACCEPTED_MEMORY" ] ; then
++	CONFIG_FLAGS="$CONFIG_FLAGS UNACCEPTED_MEMORY"
++fi
 +
-+	r = metadata_commit(era->md);
-+	if (r) {
-+		DMERR("%s: metadata_commit failed", __func__);
-+		/* FIXME: fail mode */
-+	}
- }
- 
- static int era_preresume(struct dm_target *ti)
-
-
+ # Truncate to maximum length
+ UTS_LEN=64
+ UTS_VERSION="$(echo $UTS_VERSION $CONFIG_FLAGS $TIMESTAMP | cut -b -$UTS_LEN)"
+-- 
+ Kirill A. Shutemov
