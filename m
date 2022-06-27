@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE83CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 354DEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237340AbiF0Lno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42442 "EHLO
+        id S237410AbiF0Lns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237055AbiF0Llx (ORCPT
+        with ESMTP id S237099AbiF0LmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:41:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03580D12F;
-        Mon, 27 Jun 2022 04:36:06 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA15DEA2;
+        Mon, 27 Jun 2022 04:36:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2C4EB81122;
-        Mon, 27 Jun 2022 11:36:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E05AFC3411D;
-        Mon, 27 Jun 2022 11:36:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74988B81117;
+        Mon, 27 Jun 2022 11:36:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6FBCC3411D;
+        Mon, 27 Jun 2022 11:36:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329763;
-        bh=Qn4E7U58e6by5qc0Mt0UQ4m6Ji0r7WUBtJf/l9mKkUw=;
+        s=korg; t=1656329769;
+        bh=vgvNJrHBHS9C46/WmKV1U9Crcq8Uj+IGHmrgSflbAnM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RXfcwmDDHDE+tX4AiWumxtIziHHrydGOBPqIhdwimwowMOEGNh+TXIJ8Ns7G3OBQI
-         KybEV9K2J7QgSchPty6qBsNjRT2s8zWj0c+i6yF0lqaQxDc9aAX9O4rkYgqP8BW1w5
-         8W67N474yWoc7kU2z6aBILEXKGLMFE+EnGfTY4/I=
+        b=FtOorLKo+nNoIp4oYxob1jmtPzLpCheUB1ZeAJZay5dQiBFGDDTdRUklPspIkw9Qu
+         siOksAJXoLQgErOL8J7vv6YlGZ3peB32uxRFqQPoE+8+KXRysdg0gEd+k4BMcSBvog
+         Wjl37zIbX75CjlfnjCENQIKEPNEYc2ym+FHd1vSI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 080/135] iio: mma8452: fix probe fail when device tree compatible is used.
-Date:   Mon, 27 Jun 2022 13:21:27 +0200
-Message-Id: <20220627111940.481938303@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.15 108/135] iio: adc: axp288: Override TS pin bias current for some models
+Date:   Mon, 27 Jun 2022 13:21:55 +0200
+Message-Id: <20220627111941.289101244@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -49,48 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit fe18894930a025617114aa8ca0adbf94d5bffe89 ]
+commit 048058399f19d43cf21de9f5d36cd8144337d004 upstream.
 
-Correct the logic for the probe. First check of_match_table, if
-not meet, then check i2c_driver.id_table. If both not meet, then
-return fail.
+Since commit 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling") we
+preserve the bias current set by the firmware at boot. This fixes issues
+we were seeing on various models.
 
-Fixes: a47ac019e7e8 ("iio: mma8452: Fix probe failing when an i2c_device_id is used")
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Link: https://lore.kernel.org/r/1650876060-17577-1-git-send-email-haibo.chen@nxp.com
+Some models like the Nuvision Solo 10 Draw tablet actually need the
+old hardcoded 80ųA bias current for battery temperature monitoring
+to work properly.
+
+Add a quirk entry for the Nuvision Solo 10 Draw to the DMI quirk table
+to restore setting the bias current to 80ųA on this model.
+
+Fixes: 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling")
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215882
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220506095040.21008-1-hdegoede@redhat.com
+Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/accel/mma8452.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/iio/adc/axp288_adc.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 21a99467f364..40faf09f5d87 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1539,11 +1539,13 @@ static int mma8452_probe(struct i2c_client *client,
- 	mutex_init(&data->lock);
+--- a/drivers/iio/adc/axp288_adc.c
++++ b/drivers/iio/adc/axp288_adc.c
+@@ -196,6 +196,14 @@ static const struct dmi_system_id axp288
+ 		},
+ 		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
+ 	},
++	{
++		/* Nuvision Solo 10 Draw */
++		.matches = {
++		  DMI_MATCH(DMI_SYS_VENDOR, "TMAX"),
++		  DMI_MATCH(DMI_PRODUCT_NAME, "TM101W610L"),
++		},
++		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
++	},
+ 	{}
+ };
  
- 	data->chip_info = device_get_match_data(&client->dev);
--	if (!data->chip_info && id) {
--		data->chip_info = &mma_chip_info_table[id->driver_data];
--	} else {
--		dev_err(&client->dev, "unknown device model\n");
--		return -ENODEV;
-+	if (!data->chip_info) {
-+		if (id) {
-+			data->chip_info = &mma_chip_info_table[id->driver_data];
-+		} else {
-+			dev_err(&client->dev, "unknown device model\n");
-+			return -ENODEV;
-+		}
- 	}
- 
- 	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
--- 
-2.35.1
-
 
 
