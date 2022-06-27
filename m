@@ -2,101 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 699B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A3AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:44:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233081AbiF0Hmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:42:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50350 "EHLO
+        id S233033AbiF0Hoc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232630AbiF0Hmf (ORCPT
+        with ESMTP id S232193AbiF0Ho3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:42:35 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B85A060D7
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:42:34 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id j21so15152378lfe.1
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:42:34 -0700 (PDT)
+        Mon, 27 Jun 2022 03:44:29 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D26F60D1;
+        Mon, 27 Jun 2022 00:44:28 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id h9-20020a17090a648900b001ecb8596e43so8582300pjj.5;
+        Mon, 27 Jun 2022 00:44:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j5aCEp0ikpHdasUm3ZOwjExx0rx7L4GFT03C4LhIeUo=;
-        b=g4k9FP05mCAeGlUQ0znUQnEHeKdOhlileDmpMNoNHjwTQG6z17dva3vLD2GDHUrl7R
-         DQx+QoNLEUgIfj0voDfvym0DoLlvvpWHscJ96SdNe4AzFoWogdbCQ15zcTgjqgWMZ22b
-         foyg4jhu1EtqNLSpMDPgz/MC1gOC5fsn6MkPllhel8AfWE6anqxlIHxBdjn/hEip5XOe
-         XlpNp4IlsHzW8IU9afihMM7mjBnRP2tUvq41q0zZUrJqGUT0+ncVMYw6E+yEVQyjR00I
-         nslInUjfsuZ/avh/xiSew70ioVSbetsYT5zOatzPBQTwfAgTKRpISC2v2kG+5cIVgf4D
-         /mmw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tM23DjKii0UyrfYxqToXR++sx6Bv3c907PpEkNZJ2IA=;
+        b=dI02UiK+96GyCjAy/y23ssTkiBgfOaHaN3IBGsga9xGkd+AyiW/G8NLimlhP7mDzid
+         HF1FGWMcSKfmkcswYGRXowRE6oJqMTSYGc8tSfW9IZ+UK65cSlNRu7oZhimZFxjYcWgN
+         YEITqrDuNYsxnkPCwk/dSJfr7zLztlakSD0jgnE4YdCBDqYcQkGb9Gqj8FVyCaIfaI34
+         ARMWU7YQJtMVugDoK1W6lq+EfQCr553ew2IPWHC5lh6tOUr/fDMGIuLN4S9no0DfXbDq
+         Ux4PvOcm6MKynLK7o5UzgKmMKCuj/7qhwxaLReQNzTEy3DJv+CsSK1FgOoTyph5IWfOp
+         rF2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j5aCEp0ikpHdasUm3ZOwjExx0rx7L4GFT03C4LhIeUo=;
-        b=KjHBCCSZo6ZKqbkogwRvQLGgooDQ3NlHEvJ/iJLz6buD7jXk0zQk2h2eTE0g5rlMHp
-         JznqUc2ry+8imIgoU6gEMD6N9pLjSRrUb5HQf5+ZsGg7sKlz+8H47bsmIAmbBHSwspKE
-         47fQqMf+zCnC1dRc3noAZ3i/qxSZbExaVcCIkZmJe+aeuA8jiuK8BIwcmVLtONb8thNr
-         /cCYKCZcv+8KztSDIUzppdXgQgLzXmPu+8OlnQMW+nTbLOVx7mobMpj/G33/NwcHN9kP
-         Oh9CaVKytcKO1bfHOhjwXiUCpKYu+lfnOmcHhdfHy998jqNyu8h2XSecyBd7R+gUgmNs
-         Bn9w==
-X-Gm-Message-State: AJIora+nhqklj41fhatediDL+pp2y36GONeSo0hL72Zld2Lap8WUgc18
-        ZpjSDWAGzQ+PnrRcn7UJ7IcXVHgouXF72a/DFhczFQ==
-X-Google-Smtp-Source: AGRyM1uOBNKtt+ZduX7vM0bhh209MPU7VZsCZRicPbUVUzQMj9TBCgPs4E28F98J48K1Qbz0wCNrRPntGkZz6P0t110=
-X-Received: by 2002:a05:6512:1056:b0:47f:6f00:66c2 with SMTP id
- c22-20020a056512105600b0047f6f0066c2mr7335308lfb.410.1656315752909; Mon, 27
- Jun 2022 00:42:32 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tM23DjKii0UyrfYxqToXR++sx6Bv3c907PpEkNZJ2IA=;
+        b=tXmj/jE/RqPM+mGdn9aVWbsw8fzV+pyriWZhphhe0zGv+/Y5dbsFVZngxDds2AIyEp
+         j5k2jVLdDapeIMusmJ2wooLvKNDhHqxm2H0nMxEZAodIISGNcuZBFKc3kPoASZluqoSc
+         GEmMP2nlzV5cOfRbDXvqDh6tgUDED6KLpkbNAILQmSfaFILX/b7hf/3yuSdQUFpvTrXL
+         4lGc/UxEHcF/1U0JftTqjfvzWW/SUMvuAaZflA+FYJSyz1/aSAOjeJtC6qe0fvl7DIo2
+         VySdEm3MC/EYNkIGVt7xhAegzVCCSbLEhMj0X3qg2uSXf3gkWRp8rTuHhKgN/4BBkPoq
+         7TAQ==
+X-Gm-Message-State: AJIora9c57TF4QCBm620gkEvH68rvPSGdm+2bhjTI5IFAOo0x0io8is4
+        IiSuH3RS28mwWTRjQOAht5g=
+X-Google-Smtp-Source: AGRyM1vpMa1Rx5ZotLVNR2KoNDFDjw+ICFL3zsLdYS5iFxlXhBb8hY4Utdd2KR9rEdRfYiOTahd6vA==
+X-Received: by 2002:a17:902:e5c4:b0:16a:33e4:417b with SMTP id u4-20020a170902e5c400b0016a33e4417bmr13334640plf.133.1656315867831;
+        Mon, 27 Jun 2022 00:44:27 -0700 (PDT)
+Received: from [192.168.43.80] (subs02-180-214-232-68.three.co.id. [180.214.232.68])
+        by smtp.gmail.com with ESMTPSA id bw11-20020a056a00408b00b00525184bad54sm6435642pfb.126.2022.06.27.00.44.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 00:44:27 -0700 (PDT)
+Message-ID: <a87da917-29b7-3689-9130-bae042a4bccb@gmail.com>
+Date:   Mon, 27 Jun 2022 14:44:23 +0700
 MIME-Version: 1.0
-References: <000000000000dab76c05d0bc284c@google.com> <00000000000095e3d105e2553f0a@google.com>
- <CACT4Y+Yf4ckOJjGkkFh_HYEKDjQo34wN=q18ADbP3=vhd5eQJQ@mail.gmail.com> <YrlelmgGpTtBva/0@google.com>
-In-Reply-To: <YrlelmgGpTtBva/0@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 27 Jun 2022 09:42:21 +0200
-Message-ID: <CACT4Y+Zt1tc_wGak6T=ydnQp2-Bn+a+zqRhaoHV1Or79-OA=FQ@mail.gmail.com>
-Subject: Re: [syzbot] possible deadlock in console_unlock (2)
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc:     syzbot <syzbot+0b7c8bfd17c00d016fb4@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, elver@google.com, glider@google.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        john.ogness@linutronix.de, linux-kernel@vger.kernel.org,
-        npiggin@gmail.com, pmladek@suse.com, rdunlap@infradead.org,
-        rostedt@goodmis.org, swboyd@chromium.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] Documentation: samsung-s3c24xx: Add blank line after SPDX
+ directive
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-doc@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Allison Randal <allison@lohutok.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+References: <20220614164506.6afd65a6@canb.auug.org.au>
+ <20220614084658.509389-1-bagasdotme@gmail.com>
+ <9811d0e3-6c0d-6854-e654-4546fbe23860@gmail.com> <YrldGaQFoNLcNgak@kroah.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <YrldGaQFoNLcNgak@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 27 Jun 2022 at 09:39, Sergey Senozhatsky
-<senozhatsky@chromium.org> wrote:
->
-> On (22/06/27 09:11), Dmitry Vyukov wrote:
-> > > syzbot suspects this issue was fixed by commit:
-> > >
-> > > commit faebd693c59387b7b765fab64b543855e15a91b4
-> > > Author: John Ogness <john.ogness@linutronix.de>
-> > > Date:   Thu Apr 21 21:22:36 2022 +0000
-> > >
-> > >     printk: rename cpulock functions
-> > >
-> > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17ed359bf00000
-> > > start commit:   aa051d36ce4a Merge tag 'for-linus-2022052401' of git://git..
-> > > git tree:       upstream
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=6c31e1555a4c59f3
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=0b7c8bfd17c00d016fb4
-> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16a5aad6f00000
-> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d697c3f00000
-> > >
-> > > If the result looks correct, please mark the issue as fixed by replying with:
-> > >
-> > > #syz fix: printk: rename cpulock functions
-> > >
-> > > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> >
-> >
-> > I guess this is also:
-> >
-> > #syz fix: printk: add kthread console printers
->
-> Dmirty, we have reverted console kthreads for the time being.
+On 6/27/22 14:32, Greg Kroah-Hartman wrote:
+> On Mon, Jun 27, 2022 at 09:43:35AM +0700, Bagas Sanjaya wrote:
+>> ping
+> 
+> I see no context here :(
 
-Will keep in mind that if these reports re-appear, it's fine.
+OK, will resend the patch.
+
+-- 
+An old man doll... just what I always wanted! - Clara
