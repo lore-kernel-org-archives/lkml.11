@@ -2,150 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B1C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 035F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:59:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232364AbiF0H7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34858 "EHLO
+        id S233235AbiF0H7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233250AbiF0H67 (ORCPT
+        with ESMTP id S233010AbiF0H7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:58:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40DEBF9;
-        Mon, 27 Jun 2022 00:58:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70DFD60F4F;
-        Mon, 27 Jun 2022 07:58:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85709C3411D;
-        Mon, 27 Jun 2022 07:58:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656316736;
-        bh=yGdNDgKFWodN9KAeqqkUzNf4L1DRoZorIcIf1HtYqJc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JPL/KQ4L/jxvkzw3Z+dll+WAeK7RDlFSCexzwSb2A5Qik4BBI+Gnw9gHQQSKKAy4P
-         swf8pXZW/r15oId0+RuYZkawoRnGyoInphTXrpGnlRGDT58zNfG5JnMAa/4tiiwVE5
-         +0pi/GBYGfTxmAFiOg4NTC9nX2lBO/5za1Z1RLbc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 5.10.126
-Date:   Mon, 27 Jun 2022 09:58:46 +0200
-Message-Id: <165631672557197@kroah.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <16563167256229@kroah.com>
-References: <16563167256229@kroah.com>
+        Mon, 27 Jun 2022 03:59:46 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADB0BEE
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:59:45 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-3178acf2a92so77314367b3.6
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:59:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PLbnVfK5qQEeQYnfPgPZcOxuISU/J4AuEIo4n5DoLMs=;
+        b=UZfIAOqSuYd4sEobLjGHaElE4Xp1N278qe1VP25+60RNjCFwyV6+9siBVa31jpTz6u
+         3bqcwIGrfmsd/CgbWBvC1xjZyARRnRC11XTHEnGjPUgTt8uKLyHSF1OfzRXbXKiLzau+
+         vXbJNsDzN2YkspD12MS0ZXCbqPenc+xEmGcgyRlIAS8S+RCtfxnMDrfK7i6nKNGR8c0e
+         tvb6MFfa8h4RmTM5VWRI6oc6FLcGELBL6Tj7hgPLlGU1KOiziNyxSm4gzkli/cojKUZm
+         ILo8Dz9fXbYpguE/yTBMA3EkL2k7QygqEA2SJEJNZuiC0SP8IQD/PAGpI5JiZ0GpXYeg
+         lTVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PLbnVfK5qQEeQYnfPgPZcOxuISU/J4AuEIo4n5DoLMs=;
+        b=3DRW55VQQGsqAuaT5q3J0SLDQ2Io5EQY0YFT8+LopuE+wgs5W0lmJU0FkKOpnJoOfn
+         eC0rYZOjgJyyNX4ukl49UwZdMu0Zt0oqAtX1bme1g8J7BqagcSkp7s0/Dw1cuZyrnl8t
+         qCD2AXqBW273pb0N+gRXK4MC0r5nXr2HT2SfKpfxpHnEAa5TETl7j5ajtJBG2IrgcL2Y
+         CJjHSl7ati4qOG6JgayLy4W3gAI4a4ba+3VR6zwpzw7PYMlxudZGFjSgiJ3e+2RNX49h
+         kHK2fnEYJtddrcGWzX/5ufTYio6nyMM81FGTztZY+q47snKnEU7rNQrJ3OrIQuqsFKEa
+         PuDA==
+X-Gm-Message-State: AJIora+SueOl7wUXY+sYUa8Ngde8jR9skm7dEuZXxoqcuFgUFeOrDtFr
+        zlN/Wc+9t1/oVwzWwbB0TyTWEq9E+2pLxaA5oIfXxg==
+X-Google-Smtp-Source: AGRyM1s8ANsng0ns1eq80nIWyEjCbn1cuhBkyhhVoT4XDy7EcNhK9EPjms3Z1YNrJJlZ8AIuZJaJHReEf3JvhDiAuh0=
+X-Received: by 2002:a0d:eace:0:b0:317:87ac:b3a8 with SMTP id
+ t197-20020a0deace000000b0031787acb3a8mr13750237ywe.126.1656316784367; Mon, 27
+ Jun 2022 00:59:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220525115411.65455-1-linmq006@gmail.com>
+In-Reply-To: <20220525115411.65455-1-linmq006@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 27 Jun 2022 09:59:33 +0200
+Message-ID: <CACRpkdbS2Ksdo1kP-LZ5Dva-ZY_R9k5Nai2nAji+OGouYCAZHA@mail.gmail.com>
+Subject: Re: [PATCH] drm/mcde: Fix refcount leak in mcde_dsi_bind
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-diff --git a/Makefile b/Makefile
-index da5b28931e5c..57434487c2b4 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- VERSION = 5
- PATCHLEVEL = 10
--SUBLEVEL = 125
-+SUBLEVEL = 126
- EXTRAVERSION =
- NAME = Dare mighty things
- 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 40ac37beca47..2e12dcbc7b0f 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -696,6 +696,8 @@ struct io_kiocb {
- 	 */
- 	struct list_head		inflight_entry;
- 
-+	struct list_head		iopoll_entry;
-+
- 	struct percpu_ref		*fixed_file_refs;
- 	struct callback_head		task_work;
- 	/* for polled requests, i.e. IORING_OP_POLL_ADD and async armed poll */
-@@ -2350,8 +2352,8 @@ static void io_iopoll_queue(struct list_head *again)
- 	struct io_kiocb *req;
- 
- 	do {
--		req = list_first_entry(again, struct io_kiocb, inflight_entry);
--		list_del(&req->inflight_entry);
-+		req = list_first_entry(again, struct io_kiocb, iopoll_entry);
-+		list_del(&req->iopoll_entry);
- 		__io_complete_rw(req, -EAGAIN, 0, NULL);
- 	} while (!list_empty(again));
- }
-@@ -2373,14 +2375,14 @@ static void io_iopoll_complete(struct io_ring_ctx *ctx, unsigned int *nr_events,
- 	while (!list_empty(done)) {
- 		int cflags = 0;
- 
--		req = list_first_entry(done, struct io_kiocb, inflight_entry);
-+		req = list_first_entry(done, struct io_kiocb, iopoll_entry);
- 		if (READ_ONCE(req->result) == -EAGAIN) {
- 			req->result = 0;
- 			req->iopoll_completed = 0;
--			list_move_tail(&req->inflight_entry, &again);
-+			list_move_tail(&req->iopoll_entry, &again);
- 			continue;
- 		}
--		list_del(&req->inflight_entry);
-+		list_del(&req->iopoll_entry);
- 
- 		if (req->flags & REQ_F_BUFFER_SELECTED)
- 			cflags = io_put_rw_kbuf(req);
-@@ -2416,7 +2418,7 @@ static int io_do_iopoll(struct io_ring_ctx *ctx, unsigned int *nr_events,
- 	spin = !ctx->poll_multi_file && *nr_events < min;
- 
- 	ret = 0;
--	list_for_each_entry_safe(req, tmp, &ctx->iopoll_list, inflight_entry) {
-+	list_for_each_entry_safe(req, tmp, &ctx->iopoll_list, iopoll_entry) {
- 		struct kiocb *kiocb = &req->rw.kiocb;
- 
- 		/*
-@@ -2425,7 +2427,7 @@ static int io_do_iopoll(struct io_ring_ctx *ctx, unsigned int *nr_events,
- 		 * and complete those lists first, if we have entries there.
- 		 */
- 		if (READ_ONCE(req->iopoll_completed)) {
--			list_move_tail(&req->inflight_entry, &done);
-+			list_move_tail(&req->iopoll_entry, &done);
- 			continue;
- 		}
- 		if (!list_empty(&done))
-@@ -2437,7 +2439,7 @@ static int io_do_iopoll(struct io_ring_ctx *ctx, unsigned int *nr_events,
- 
- 		/* iopoll may have completed current req */
- 		if (READ_ONCE(req->iopoll_completed))
--			list_move_tail(&req->inflight_entry, &done);
-+			list_move_tail(&req->iopoll_entry, &done);
- 
- 		if (ret && spin)
- 			spin = false;
-@@ -2670,7 +2672,7 @@ static void io_iopoll_req_issued(struct io_kiocb *req)
- 		struct io_kiocb *list_req;
- 
- 		list_req = list_first_entry(&ctx->iopoll_list, struct io_kiocb,
--						inflight_entry);
-+						iopoll_entry);
- 		if (list_req->file != req->file)
- 			ctx->poll_multi_file = true;
- 	}
-@@ -2680,9 +2682,9 @@ static void io_iopoll_req_issued(struct io_kiocb *req)
- 	 * it to the front so we find it first.
- 	 */
- 	if (READ_ONCE(req->iopoll_completed))
--		list_add(&req->inflight_entry, &ctx->iopoll_list);
-+		list_add(&req->iopoll_entry, &ctx->iopoll_list);
- 	else
--		list_add_tail(&req->inflight_entry, &ctx->iopoll_list);
-+		list_add_tail(&req->iopoll_entry, &ctx->iopoll_list);
- 
- 	if ((ctx->flags & IORING_SETUP_SQPOLL) &&
- 	    wq_has_sleeper(&ctx->sq_data->wait))
+On Wed, May 25, 2022 at 1:54 PM Miaoqian Lin <linmq006@gmail.com> wrote:
+
+> Every iteration of for_each_available_child_of_node() decrements
+> the reference counter of the previous node. There is no decrement
+> when break out from the loop and results in refcount leak.
+> Add missing of_node_put() to fix this.
+>
+> Fixes: 5fc537bfd000 ("drm/mcde: Add new driver for ST-Ericsson MCDE")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+
+Patch applied for next as nonurgent fix.
+
+Yours,
+Linus Walleij
