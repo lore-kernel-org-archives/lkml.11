@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C015C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE929C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236958AbiF0Lk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34922 "EHLO
+        id S236964AbiF0LlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236340AbiF0Lg5 (ORCPT
+        with ESMTP id S236247AbiF0LhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:36:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01DC101E;
-        Mon, 27 Jun 2022 04:32:11 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34873115A;
+        Mon, 27 Jun 2022 04:32:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3792E60920;
-        Mon, 27 Jun 2022 11:32:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AA38C341C7;
-        Mon, 27 Jun 2022 11:32:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D39E6B8111C;
+        Mon, 27 Jun 2022 11:32:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1850EC3411D;
+        Mon, 27 Jun 2022 11:32:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329530;
-        bh=9bAV0+306x5lteaFMiWqSZkBkr8FcYIqevBwLdY+pKo=;
+        s=korg; t=1656329536;
+        bh=hGuOut/iB47OP+a8fIGR+FF0ZAQpLfuGm7US7TJUxkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y3L449+yfM0z3LEm1KONAjQkGC3QqteminuNX+qNGUzaTwfsqS0ODRL07dAKHarD8
-         o1z2JFWCZe8OvBej0CjCKjai3vySoKh7ZSHddBHC4xz6kUBe42i397oSEATeUQnVup
-         EupasvdKhSSHjkecSJMizhc6fV0T3RbZ2hSOrvGE=
+        b=tC97zqfzY9p8dScToQ7DpSHP45FrERofrgQ4I6bW7frQIbN6DyYNNNMExFZDXpwKQ
+         JvJ9dvbIjTL9EqXZQuXp2h1H0y/erT6NnlahE1IblqzEw5UazZRl6xh4hDoNl2Vrmd
+         NZahsoBHIIajCi7/ofJHDTrYlchXzrenCPl2KRro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Charles Yeh <charlesyeh522@gmail.com>,
+        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
+        Carlo Lobrano <c.lobrano@gmail.com>,
         Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 029/135] USB: serial: pl2303: add support for more HXN (G) types
-Date:   Mon, 27 Jun 2022 13:20:36 +0200
-Message-Id: <20220627111939.005772297@linuxfoundation.org>
+Subject: [PATCH 5.15 030/135] USB: serial: option: add Telit LE910Cx 0x1250 composition
+Date:   Mon, 27 Jun 2022 13:20:37 +0200
+Message-Id: <20220627111939.035190279@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -48,72 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Carlo Lobrano <c.lobrano@gmail.com>
 
-commit ae60aac59a9ad8ab64a4b07de509a534a75b6bac upstream.
+commit 342fc0c3b345525da21112bd0478a0dc741598ea upstream.
 
-Add support for further HXN (G) type devices (GT variant, GL variant, GS
-variant and GR) and document the bcdDevice mapping.
+Add support for the following Telit LE910Cx composition:
 
-Note that the TA and TB types use the same bcdDevice as some GT and GE
-variants, respectively, but that the HX status request can be used to
-determine which is which.
+0x1250: rmnet, tty, tty, tty, tty
 
-Also note that we currently do not distinguish between the various HXN
-(G) types in the driver but that this may change eventually (e.g. when
-adding GPIO support).
-
-Reported-by: Charles Yeh <charlesyeh522@gmail.com>
-Link: https://lore.kernel.org/r/YrF77b9DdeumUAee@hovoldconsulting.com
-Cc: stable@vger.kernel.org	# 5.13
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Daniele Palmas <dnlplm@gmail.com>
+Signed-off-by: Carlo Lobrano <c.lobrano@gmail.com>
+Link: https://lore.kernel.org/r/20220614075623.2392607-1-c.lobrano@gmail.com
+Cc: stable@vger.kernel.org
 Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/pl2303.c |   29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ drivers/usb/serial/option.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/serial/pl2303.c
-+++ b/drivers/usb/serial/pl2303.c
-@@ -436,22 +436,27 @@ static int pl2303_detect_type(struct usb
- 		break;
- 	case 0x200:
- 		switch (bcdDevice) {
--		case 0x100:
-+		case 0x100:	/* GC */
- 		case 0x105:
-+			return TYPE_HXN;
-+		case 0x300:	/* GT / TA */
-+			if (pl2303_supports_hx_status(serial))
-+				return TYPE_TA;
-+			fallthrough;
- 		case 0x305:
-+		case 0x400:	/* GL */
- 		case 0x405:
-+			return TYPE_HXN;
-+		case 0x500:	/* GE / TB */
-+			if (pl2303_supports_hx_status(serial))
-+				return TYPE_TB;
-+			fallthrough;
-+		case 0x505:
-+		case 0x600:	/* GS */
- 		case 0x605:
--			/*
--			 * Assume it's an HXN-type if the device doesn't
--			 * support the old read request value.
--			 */
--			if (!pl2303_supports_hx_status(serial))
--				return TYPE_HXN;
--			break;
--		case 0x300:
--			return TYPE_TA;
--		case 0x500:
--			return TYPE_TB;
-+		case 0x700:	/* GR */
-+		case 0x705:
-+			return TYPE_HXN;
- 		}
- 		break;
- 	}
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1279,6 +1279,7 @@ static const struct usb_device_id option
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1231, 0xff),	/* Telit LE910Cx (RNDIS) */
+ 	  .driver_info = NCTRL(2) | RSVD(3) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(TELIT_VENDOR_ID, 0x1250, 0xff, 0x00, 0x00) },	/* Telit LE910Cx (rmnet) */
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1260),
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1261),
 
 
