@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:42:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4C9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240634AbiF0TmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54634 "EHLO
+        id S240643AbiF0TmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240569AbiF0Tlq (ORCPT
+        with ESMTP id S240580AbiF0Tlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 15:41:46 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F005A17E3E
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:41:38 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id l2-20020a05600c4f0200b0039c55c50482so8149832wmq.0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:41:38 -0700 (PDT)
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E7E18361
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:41:43 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id e28so9326261wra.0
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:41:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1RrlYN7xRo44UoZQ9vXu2CHD6ouZYfkPgpPQl3XW2/Q=;
-        b=JSlI1sImVuIOJXOTiME+vQ4iJzMZIGLs79AVGgFi/4PGzp9uNq+ij4fgaq4v635z96
-         iqu+qlmc2CiECMm4cbe0xKFYr+G0bJ9m5w/qt06RqK6+DYgKNGKu64YA1Ggyrg3bTcDj
-         h9fgtLqXO7l+D1Ptq7BJ+bfj9GpPhEpyz0OtKZP2fdfMBXf439DK7uOf1R3SGH6PnWaN
-         s/MNpEYNLa1akQZc/7jwyPlPi0BCuioZyE578J82CZOAhvUksEUtg9kPuoYFd7foZxqa
-         Wz2VVt6ePjVl2/A5ZdagCh18QXlj6Gb36JemsKRegKW5rGQi0MPTcSTuEnFkg8i48gi+
-         dWeg==
+        bh=AQ9wIHwlRmT7tO1Hd8om5LpzXV8vNgzmPbgMU2oiknY=;
+        b=B5C/Gw1koJ2gCfNSuN+oniQsxKz/C0BbgCMWl8rQMBYqrHqfXovlJGRG6EhbKDmSUI
+         YMrDLvEKPR9I0xmZ6/f2UkBdvxHfzIFOCu/+tXXA400uNFasRF2Y5Rw3V4t8exfluRsl
+         pDrVCx2/y3GyUEYGpK1TCxM/gQf1o4TtNjiohPthJ+tyggDe+vxCZqFMZp1iemAhJKUy
+         KSoBOo6zKZnIFSTr/b+WCGZwNY/WRUWR4JU5U/op5XzoBDI7nlRb87RvgWMkI41Uf2mC
+         De6OwVU/r5tClMepVijT6V+kPZ/riqI+R5m1lGoFaN+/TWN3PGYd3lIy7cYtXlUQ7b2n
+         ouTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1RrlYN7xRo44UoZQ9vXu2CHD6ouZYfkPgpPQl3XW2/Q=;
-        b=djB3DqH8MJPM6DcOjSYIn/n0e24/WlBc8Zxyc83q5uAYRUU+4PYKzKNAcOPdkZKnLu
-         Uo5g2EHIn4t1C4J7Y3eD3Q3jfIsys6PLC7cF5oIEJsQ2kMs+8b5FWFn0C9aRRd09mfYg
-         xOGZKZuNyQaC1gEMbfJtVblnvgzC01AieHKZoGtrAB0ldi9H7QL+MhP0/+yNDKpMzz6s
-         zs9AH0FTg1nwlqVhGvVFWdhuKH7CWVrs0p+OWFPVWjeRVPs3YvX1zUB+m/0QBF46UGBh
-         AdKaFUz1E+qYHRlN792j9vK8f2BdqYSE1sYTEX9Nk7r3lAKv/hr8IPEAGg/5fg3pCVpF
-         r9YA==
-X-Gm-Message-State: AJIora9aZzW0e6VTvoWpaxzxqJa267CUk3ENPVlr0NIBZW/JCszU45k3
-        Jx9/yOAfMikK68NYJrQUOrjP8g==
-X-Google-Smtp-Source: AGRyM1sG2h/mawEtIGYv6YucN+AC/fcU+GXYsZ0RG4tU7euqny2eYvUYl3sfYU/deBMVuNdMP0smIQ==
-X-Received: by 2002:a1c:790c:0:b0:3a0:3e42:9c7c with SMTP id l12-20020a1c790c000000b003a03e429c7cmr17586763wme.171.1656358897396;
-        Mon, 27 Jun 2022 12:41:37 -0700 (PDT)
+        bh=AQ9wIHwlRmT7tO1Hd8om5LpzXV8vNgzmPbgMU2oiknY=;
+        b=4/TuL5qMBA9rKj1FgKV1G4fr3OyBE2iUZYPwl3RFiKQPD2id5ezGYi99bsQ0P3NRXe
+         IMwyi3OGJciDH82aFcRVyv/G1T5K07Rjho99dTXTx+N30TB5m2SP68dRSuvW1khqJ3bP
+         AAmyRj0RGN8zTKI6YuCBny4CsoUX+TGLuHxMvby+PSp2xxcSEr9kzFYhovRmYRv0Oiyb
+         YjMicPS6FQBqWjj85VVauF7N6T+T3VP+o1B2cK0HuXO3NJgl1ia4EI9ucdnatQLRKR2g
+         R4A5pkA4gP8tEqzCe+YxWxXp2t4ZCIbERux2FEjV3GYvie/PwoE17kBYFZ7I97+Cnwxq
+         zTYw==
+X-Gm-Message-State: AJIora8Td+dGHWYRRGbS0c1k+Jl/YCMX7IrAN2lr1bY55gVzuaobwNk9
+        8WHtVbvMp7gYnzLAaF7UJAfaSQ==
+X-Google-Smtp-Source: AGRyM1v27GhUxgqPtyg8Cu4ponuVEz4YhpnLDi4l6+vjZ86LHo5Wws49r6JewDbqir0IgLXBgCXSdg==
+X-Received: by 2002:a5d:6883:0:b0:21b:9408:8ba0 with SMTP id h3-20020a5d6883000000b0021b94088ba0mr14086640wru.419.1656358903073;
+        Mon, 27 Jun 2022 12:41:43 -0700 (PDT)
 Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id e9-20020a5d4e89000000b0021a3a87fda9sm11428047wru.47.2022.06.27.12.41.35
+        by smtp.gmail.com with ESMTPSA id e9-20020a5d4e89000000b0021a3a87fda9sm11428047wru.47.2022.06.27.12.41.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 12:41:36 -0700 (PDT)
+        Mon, 27 Jun 2022 12:41:42 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         Rob Herring <robh+dt@kernel.org>,
@@ -77,9 +77,9 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
         linux-riscv@lists.infradead.org
-Subject: [PATCH v2 12/16] riscv: dts: canaan: fix kd233 display spi frequency
-Date:   Mon, 27 Jun 2022 20:40:00 +0100
-Message-Id: <20220627194003.2395484-13-mail@conchuod.ie>
+Subject: [PATCH v2 15/16] riscv: dts: canaan: fix bus {ranges,reg} warnings
+Date:   Mon, 27 Jun 2022 20:40:03 +0100
+Message-Id: <20220627194003.2395484-16-mail@conchuod.ie>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627194003.2395484-1-mail@conchuod.ie>
 References: <20220627194003.2395484-1-mail@conchuod.ie>
@@ -91,28 +91,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-The binding for the ili9341 specifies a const spi-max-frequency of 10
-MHz but the kd233 devicetree entry has it listed at 15 Mhz.
-Align the devicetree with the value in the binding.
+The k210 devicetrees warn about missing/empty reg and/or ranges
+properties:
+arch/riscv/boot/dts/canaan/k210.dtsi:408.22-460.5: Warning (unit_address_vs_reg): /soc/bus@52000000: node has a unit name, but no reg or ranges property
+arch/riscv/boot/dts/canaan/k210.dtsi:352.22-406.5: Warning (simple_bus_reg): /soc/bus@50400000: missing or empty reg/ranges property
+
+Add reg and ranges properties that naively cap the buses after the
+allocation of their last devices.
 
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- arch/riscv/boot/dts/canaan/canaan_kd233.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/boot/dts/canaan/k210.dtsi | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/arch/riscv/boot/dts/canaan/canaan_kd233.dts b/arch/riscv/boot/dts/canaan/canaan_kd233.dts
-index 40992d495aa8..4a540158f287 100644
---- a/arch/riscv/boot/dts/canaan/canaan_kd233.dts
-+++ b/arch/riscv/boot/dts/canaan/canaan_kd233.dts
-@@ -130,7 +130,7 @@ panel@0 {
- 		compatible = "ilitek,ili9341";
- 		reg = <0>;
- 		dc-gpios = <&gpio0 21 GPIO_ACTIVE_HIGH>;
--		spi-max-frequency = <15000000>;
-+		spi-max-frequency = <10000000>;
- 		status = "disabled";
- 	};
- };
+diff --git a/arch/riscv/boot/dts/canaan/k210.dtsi b/arch/riscv/boot/dts/canaan/k210.dtsi
+index 84a7ab363d72..337ce2b879e7 100644
+--- a/arch/riscv/boot/dts/canaan/k210.dtsi
++++ b/arch/riscv/boot/dts/canaan/k210.dtsi
+@@ -163,7 +163,8 @@ apb0: bus@50200000 {
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+ 			compatible = "simple-pm-bus";
+-			ranges;
++			regs = <0x50200000 0x200000>;
++			ranges = <0x50200000 0x50200000 0x200000>;
+ 			clocks = <&sysclk K210_CLK_APB0>;
+ 
+ 			gpio1: gpio@50200000 {
+@@ -352,7 +353,8 @@ apb1: bus@50400000 {
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+ 			compatible = "simple-pm-bus";
+-			ranges;
++			regs = <0x50400000 0x40100>;
++			ranges = <0x50400000 0x50400000 0x40100>;
+ 			clocks = <&sysclk K210_CLK_APB1>;
+ 
+ 			wdt0: watchdog@50400000 {
+@@ -407,7 +409,8 @@ apb2: bus@52000000 {
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+ 			compatible = "simple-pm-bus";
+-			ranges;
++			regs = <0x52000000 0x2000200>;
++			ranges = <0x52000000 0x52000000 0x2000200>;
+ 			clocks = <&sysclk K210_CLK_APB2>;
+ 
+ 			spi0: spi@52000000 {
 -- 
 2.36.1
 
