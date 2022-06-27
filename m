@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B228CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EFE6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238314AbiF0Lvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
+        id S238609AbiF0Lvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238294AbiF0LsN (ORCPT
+        with ESMTP id S238315AbiF0LsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB41BE11;
-        Mon, 27 Jun 2022 04:40:16 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878C5BE27;
+        Mon, 27 Jun 2022 04:40:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 722DB6116D;
-        Mon, 27 Jun 2022 11:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 840AAC3411D;
-        Mon, 27 Jun 2022 11:40:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46545B81135;
+        Mon, 27 Jun 2022 11:40:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC00DC3411D;
+        Mon, 27 Jun 2022 11:40:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330015;
-        bh=Xor3HCIQgPPTgGQZTK87IPF4nyQEx5tohD35dHjWbPw=;
+        s=korg; t=1656330031;
+        bh=UXg+caDZViLDCGGqSC1Tlk6iVf12vqfpXnYzX9ccsA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LtQDA3Nc9kqFVRGH+DNyKIMgyoTN91re+cGw5TFxlCP5ds5HcXYv4nVeVvtzsKtf9
-         J8yiaRt4VWaOrD1n2+IiigDC5RRm8KwAnN5gRNCUU5wZG4K6SvDUIurT2ZKeqdOkGK
-         7hPkCYaiSmlnsXC7DSWLPCEOAYpwDsUiB+iJv/rY=
+        b=PV+GrP+gPHl+MWNlXrjZgy0hAUtQXVefLNZIMc51YCV8WkzqRKe0EMW/EKzotDNt8
+         XsmLMjkhBxhtYEouAmyB0+vlhmA4YNiqVbaBvK9cpJhA2cGYjFmkIv8oZhH5/NAPY9
+         L8mIJq1ZxApl2iyftHf4GlWv89UuuMFf2/5JWbAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 056/181] KVM: arm64: Prevent kmemleak from accessing pKVM memory
-Date:   Mon, 27 Jun 2022 13:20:29 +0200
-Message-Id: <20220627111946.191359304@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Jiri Olsa <jolsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 061/181] rethook: Reject getting a rethook if RCU is not watching
+Date:   Mon, 27 Jun 2022 13:20:34 +0200
+Message-Id: <20220627111946.335180096@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,90 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Perret <qperret@google.com>
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-[ Upstream commit 56961c6331463cce2d84d0f973177a517fb33a82 ]
+[ Upstream commit c0f3bb4054ef036e5f67e27f2e3cad9e6512cf00 ]
 
-Commit a7259df76702 ("memblock: make memblock_find_in_range method
-private") changed the API using which memory is reserved for the pKVM
-hypervisor. However, memblock_phys_alloc() differs from the original API in
-terms of kmemleak semantics -- the old one didn't report the reserved
-regions to kmemleak while the new one does. Unfortunately, when protected
-KVM is enabled, all kernel accesses to pKVM-private memory result in a
-fatal exception, which can now happen because of kmemleak scans:
+Since the rethook_recycle() will involve the call_rcu() for reclaiming
+the rethook_instance, the rethook must be set up at the RCU available
+context (non idle). This rethook_recycle() in the rethook trampoline
+handler is inevitable, thus the RCU available check must be done before
+setting the rethook trampoline.
 
-$ echo scan > /sys/kernel/debug/kmemleak
-[   34.991354] kvm [304]: nVHE hyp BUG at: [<ffff800008fa3750>] __kvm_nvhe_handle_host_mem_abort+0x270/0x290!
-[   34.991580] kvm [304]: Hyp Offset: 0xfffe8be807e00000
-[   34.991813] Kernel panic - not syncing: HYP panic:
-[   34.991813] PS:600003c9 PC:0000f418011a3750 ESR:00000000f2000800
-[   34.991813] FAR:ffff000439200000 HPFAR:0000000004792000 PAR:0000000000000000
-[   34.991813] VCPU:0000000000000000
-[   34.993660] CPU: 0 PID: 304 Comm: bash Not tainted 5.19.0-rc2 #102
-[   34.994059] Hardware name: linux,dummy-virt (DT)
-[   34.994452] Call trace:
-[   34.994641]  dump_backtrace.part.0+0xcc/0xe0
-[   34.994932]  show_stack+0x18/0x6c
-[   34.995094]  dump_stack_lvl+0x68/0x84
-[   34.995276]  dump_stack+0x18/0x34
-[   34.995484]  panic+0x16c/0x354
-[   34.995673]  __hyp_pgtable_total_pages+0x0/0x60
-[   34.995933]  scan_block+0x74/0x12c
-[   34.996129]  scan_gray_list+0xd8/0x19c
-[   34.996332]  kmemleak_scan+0x2c8/0x580
-[   34.996535]  kmemleak_write+0x340/0x4a0
-[   34.996744]  full_proxy_write+0x60/0xbc
-[   34.996967]  vfs_write+0xc4/0x2b0
-[   34.997136]  ksys_write+0x68/0xf4
-[   34.997311]  __arm64_sys_write+0x20/0x2c
-[   34.997532]  invoke_syscall+0x48/0x114
-[   34.997779]  el0_svc_common.constprop.0+0x44/0xec
-[   34.998029]  do_el0_svc+0x2c/0xc0
-[   34.998205]  el0_svc+0x2c/0x84
-[   34.998421]  el0t_64_sync_handler+0xf4/0x100
-[   34.998653]  el0t_64_sync+0x18c/0x190
-[   34.999252] SMP: stopping secondary CPUs
-[   35.000034] Kernel Offset: disabled
-[   35.000261] CPU features: 0x800,00007831,00001086
-[   35.000642] Memory Limit: none
-[   35.001329] ---[ end Kernel panic - not syncing: HYP panic:
-[   35.001329] PS:600003c9 PC:0000f418011a3750 ESR:00000000f2000800
-[   35.001329] FAR:ffff000439200000 HPFAR:0000000004792000 PAR:0000000000000000
-[   35.001329] VCPU:0000000000000000 ]---
+This adds a rcu_is_watching() check in the rethook_try_get() so that
+it will return NULL if it is called when !rcu_is_watching().
 
-Fix this by explicitly excluding the hypervisor's memory pool from
-kmemleak like we already do for the hyp BSS.
-
-Cc: Mike Rapoport <rppt@kernel.org>
-Fixes: a7259df76702 ("memblock: make memblock_find_in_range method private")
-Signed-off-by: Quentin Perret <qperret@google.com>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220616161135.3997786-1-qperret@google.com
+Fixes: 54ecbe6f1ed5 ("rethook: Add a generic return hook")
+Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Link: https://lore.kernel.org/bpf/165461827269.280167.7379263615545598958.stgit@devnote2
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kvm/arm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ kernel/trace/rethook.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-index a66d83540c15..f88919a793ad 100644
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -2011,11 +2011,11 @@ static int finalize_hyp_mode(void)
- 		return 0;
+diff --git a/kernel/trace/rethook.c b/kernel/trace/rethook.c
+index b56833700d23..c69d82273ce7 100644
+--- a/kernel/trace/rethook.c
++++ b/kernel/trace/rethook.c
+@@ -154,6 +154,15 @@ struct rethook_node *rethook_try_get(struct rethook *rh)
+ 	if (unlikely(!handler))
+ 		return NULL;
  
- 	/*
--	 * Exclude HYP BSS from kmemleak so that it doesn't get peeked
--	 * at, which would end badly once the section is inaccessible.
--	 * None of other sections should ever be introspected.
-+	 * Exclude HYP sections from kmemleak so that they don't get peeked
-+	 * at, which would end badly once inaccessible.
- 	 */
- 	kmemleak_free_part(__hyp_bss_start, __hyp_bss_end - __hyp_bss_start);
-+	kmemleak_free_part(__va(hyp_mem_base), hyp_mem_size);
- 	return pkvm_drop_host_privileges();
- }
- 
++	/*
++	 * This expects the caller will set up a rethook on a function entry.
++	 * When the function returns, the rethook will eventually be reclaimed
++	 * or released in the rethook_recycle() with call_rcu().
++	 * This means the caller must be run in the RCU-availabe context.
++	 */
++	if (unlikely(!rcu_is_watching()))
++		return NULL;
++
+ 	fn = freelist_try_get(&rh->pool);
+ 	if (!fn)
+ 		return NULL;
 -- 
 2.35.1
 
