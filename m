@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF81C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EECBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239111AbiF0Lyw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
+        id S239127AbiF0Ly4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238526AbiF0Lsn (ORCPT
+        with ESMTP id S238534AbiF0Lsn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:48:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB0DCE01;
-        Mon, 27 Jun 2022 04:42:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C35101E6;
+        Mon, 27 Jun 2022 04:42:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53B91B80D32;
-        Mon, 27 Jun 2022 11:42:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADCB3C341C7;
-        Mon, 27 Jun 2022 11:42:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66224B8112E;
+        Mon, 27 Jun 2022 11:42:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82ACC3411D;
+        Mon, 27 Jun 2022 11:42:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330124;
-        bh=Q5L49TpOIeo3P/N2thDwkriqVymsydDLChQXHGGL/vc=;
+        s=korg; t=1656330127;
+        bh=14Cc3lgi1m160+6Jz2NgFBsl2TTrDobQb+bvHimA6DQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UNtIBjLM9An+tdvUBitAode+pZk85LbCR9kU42n8n6ZJUxMwnEfA6JWYddolsDQVD
-         98C3QvHAgPrab6IkiIcM9ErXtI8Te4wQYXREOAQvzPUAKePufh+nkQd2XGQk6cQEWm
-         bSsLVb74GoPrA0NYHl3L9/myAUbE/prEGDo3aYSw=
+        b=GxFbibsEec1Pv0+OvC5u0YItlh7oNHQChsTJE+cTPwuHDzVtPD+WM3WPV2ZxrpuHn
+         Lf5JFoR5nhroEcHrCZIPAH1WyIWpPGhJHg71SSFJD5XJxLisXOSWqnArM4NMHvHf6y
+         KoezjJdadCn8/4ut8IZDbyLEnAUs0COnKQLkSsww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        stable@vger.kernel.org, Yu Liao <liaoyu15@huawei.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 052/181] bpf, x86: Fix tail call count offset calculation on bpf2bpf call
-Date:   Mon, 27 Jun 2022 13:20:25 +0200
-Message-Id: <20220627111946.075705044@linuxfoundation.org>
+Subject: [PATCH 5.18 053/181] selftests dma: fix compile error for dma_map_benchmark
+Date:   Mon, 27 Jun 2022 13:20:26 +0200
+Message-Id: <20220627111946.104494390@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,84 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Yu Liao <liaoyu15@huawei.com>
 
-[ Upstream commit ff672c67ee7635ca1e28fb13729e8ef0d1f08ce5 ]
+[ Upstream commit 12a29115be72dfc72372af9ded4bc4ae7113a729 ]
 
-On x86-64 the tail call count is passed from one BPF function to another
-through %rax. Additionally, on function entry, the tail call count value
-is stored on stack right after the BPF program stack, due to register
-shortage.
+When building selftests/dma:
+$ make -C tools/testing/selftests TARGETS=dma
+I hit the following compilation error:
 
-The stored count is later loaded from stack either when performing a tail
-call - to check if we have not reached the tail call limit - or before
-calling another BPF function call in order to pass it via %rax.
+dma_map_benchmark.c:13:10: fatal error: linux/map_benchmark.h: No such file or directory
+ #include <linux/map_benchmark.h>
+          ^~~~~~~~~~~~~~~~~~~~~~~
 
-In the latter case, we miscalculate the offset at which the tail call count
-was stored on function entry. The JIT does not take into account that the
-allocated BPF program stack is always a multiple of 8 on x86, while the
-actual stack depth does not have to be.
+dma/Makefile does not include the map_benchmark.h path, so add
+more including path, and fix include order in dma_map_benchmark.c
 
-This leads to a load from an offset that belongs to the BPF stack, as shown
-in the example below:
-
-SEC("tc")
-int entry(struct __sk_buff *skb)
-{
-	/* Have data on stack which size is not a multiple of 8 */
-	volatile char arr[1] = {};
-	return subprog_tail(skb);
-}
-
-int entry(struct __sk_buff * skb):
-   0: (b4) w2 = 0
-   1: (73) *(u8 *)(r10 -1) = r2
-   2: (85) call pc+1#bpf_prog_ce2f79bb5f3e06dd_F
-   3: (95) exit
-
-int entry(struct __sk_buff * skb):
-   0xffffffffa0201788:  nop    DWORD PTR [rax+rax*1+0x0]
-   0xffffffffa020178d:  xor    eax,eax
-   0xffffffffa020178f:  push   rbp
-   0xffffffffa0201790:  mov    rbp,rsp
-   0xffffffffa0201793:  sub    rsp,0x8
-   0xffffffffa020179a:  push   rax
-   0xffffffffa020179b:  xor    esi,esi
-   0xffffffffa020179d:  mov    BYTE PTR [rbp-0x1],sil
-   0xffffffffa02017a1:  mov    rax,QWORD PTR [rbp-0x9]	!!! tail call count
-   0xffffffffa02017a8:  call   0xffffffffa02017d8       !!! is at rbp-0x10
-   0xffffffffa02017ad:  leave
-   0xffffffffa02017ae:  ret
-
-Fix it by rounding up the BPF stack depth to a multiple of 8, when
-calculating the tail call count offset on stack.
-
-Fixes: ebf7d1f508a7 ("bpf, x64: rework pro/epilogue and tailcall handling in JIT")
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220616162037.535469-2-jakub@cloudflare.com
+Fixes: 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header file for map_benchmark definition")
+Signed-off-by: Yu Liao <liaoyu15@huawei.com>
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/dma/Makefile            | 1 +
+ tools/testing/selftests/dma/dma_map_benchmark.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 16b6efacf7c6..4c71fa04e784 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1415,8 +1415,9 @@ st:			if (is_imm8(insn->off))
- 		case BPF_JMP | BPF_CALL:
- 			func = (u8 *) __bpf_call_base + imm32;
- 			if (tail_call_reachable) {
-+				/* mov rax, qword ptr [rbp - rounded_stack_depth - 8] */
- 				EMIT3_off32(0x48, 0x8B, 0x85,
--					    -(bpf_prog->aux->stack_depth + 8));
-+					    -round_up(bpf_prog->aux->stack_depth, 8) - 8);
- 				if (!imm32 || emit_call(&prog, func, image + addrs[i - 1] + 7))
- 					return -EINVAL;
- 			} else {
+diff --git a/tools/testing/selftests/dma/Makefile b/tools/testing/selftests/dma/Makefile
+index aa8e8b5b3864..cd8c5ece1cba 100644
+--- a/tools/testing/selftests/dma/Makefile
++++ b/tools/testing/selftests/dma/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ CFLAGS += -I../../../../usr/include/
++CFLAGS += -I../../../../include/
+ 
+ TEST_GEN_PROGS := dma_map_benchmark
+ 
+diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+index c3b3c09e995e..5c997f17fcbd 100644
+--- a/tools/testing/selftests/dma/dma_map_benchmark.c
++++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+@@ -10,8 +10,8 @@
+ #include <unistd.h>
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+-#include <linux/map_benchmark.h>
+ #include <linux/types.h>
++#include <linux/map_benchmark.h>
+ 
+ #define NSEC_PER_MSEC	1000000L
+ 
 -- 
 2.35.1
 
