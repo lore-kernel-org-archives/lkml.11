@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76522C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237588AbiF0LoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237235AbiF0Lmh (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
+        id S237246AbiF0Lmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
         Mon, 27 Jun 2022 07:42:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FAEDF1F;
-        Mon, 27 Jun 2022 04:36:36 -0700 (PDT)
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34936 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236900AbiF0LkW (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 27 Jun 2022 07:40:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23C6BF69;
+        Mon, 27 Jun 2022 04:35:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DF68610A1;
-        Mon, 27 Jun 2022 11:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2266FC3411D;
-        Mon, 27 Jun 2022 11:36:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E7B060CA5;
+        Mon, 27 Jun 2022 11:35:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 676F7C3411D;
+        Mon, 27 Jun 2022 11:35:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329795;
-        bh=UKbEqA3Zv9VXTEGzuMe35zysRCOL+NKUWHwYEp7etj0=;
+        s=korg; t=1656329730;
+        bh=hukwWuigzV21quC7Sf4EGCOyizLdoQuLY9l8pf4YG5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W5pZDCtBPCdPFWba4wu298zZkGtz1Hn6bHx6P+L2PRzNIBuLo/U4ThMdVw0l1fykK
-         fsB/fHUs763vnLQ2O6U1GUAtqgo33WUn5UU3DhMEBVZPOOr6mJ1wSMkA9WsT1aCX3p
-         8k6ZJsPwNWCtCzVXJWHQ6hlNdr3Blw2HOnx8kli4=
+        b=Zw62WMlLUT6eTt2fQgG7WIL/IEsY768l7kq5s/Q/80l4isZuS5HgiH7yppAYm+6L3
+         2ky7vI1+1cfQEEpxG9FGX/5uRLRhf+92v1ydIsWA/XOsmvEugdkoFERZ6wgJy0YSkE
+         sg/iYb7e9fcSkjV+BiH1YBvchlgMl2wsjyRfICeg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Hauser <jahau@rocketmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 081/135] iio: magnetometer: yas530: Fix memchr_inv() misuse
-Date:   Mon, 27 Jun 2022 13:21:28 +0200
-Message-Id: <20220627111940.512125939@linuxfoundation.org>
+Subject: [PATCH 5.15 079/135] s390/cpumf: Handle events cycles and instructions identical
+Date:   Mon, 27 Jun 2022 13:21:26 +0200
+Message-Id: <20220627111940.452928409@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,41 +50,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Thomas Richter <tmricht@linux.ibm.com>
 
-[ Upstream commit bb52d3691db8cf24cea049235223f3599778f264 ]
+[ Upstream commit be857b7f77d130dbbd47c91fc35198b040f35865 ]
 
-The call to check if the calibration is all zeroes is doing
-it wrong: memchr_inv() returns NULL if the the calibration
-contains all zeroes, but the check is for != NULL.
+Events CPU_CYCLES and INSTRUCTIONS can be submitted with two different
+perf_event attribute::type values:
+ - PERF_TYPE_HARDWARE: when invoked via perf tool predefined events name
+   cycles or cpu-cycles or instructions.
+ - pmu->type: when invoked via perf tool event name cpu_cf/CPU_CYLCES/ or
+   cpu_cf/INSTRUCTIONS/. This invocation also selects the PMU to which
+   the event belongs.
+Handle both type of invocations identical for events CPU_CYLCES and
+INSTRUCTIONS. They address the same hardware.
+The result is different when event modifier exclude_kernel is also set.
+Invocation with event modifier for user space event counting fails.
 
-Fix it up. It's probably not an urgent fix because the inner
-check for BIT(7) in data[13] will save us. But fix it.
+Output before:
 
-Fixes: de8860b1ed47 ("iio: magnetometer: Add driver for Yamaha YAS530")
-Reported-by: Jakob Hauser <jahau@rocketmail.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220501195029.151852-1-linus.walleij@linaro.org
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+ # perf stat -e cpum_cf/cpu_cycles/u -- true
+
+ Performance counter stats for 'true':
+
+   <not supported>      cpum_cf/cpu_cycles/u
+
+       0.000761033 seconds time elapsed
+
+       0.000076000 seconds user
+       0.000725000 seconds sys
+
+ #
+
+Output after:
+ # perf stat -e cpum_cf/cpu_cycles/u -- true
+
+ Performance counter stats for 'true':
+
+           349,613      cpum_cf/cpu_cycles/u
+
+       0.000844143 seconds time elapsed
+
+       0.000079000 seconds user
+       0.000800000 seconds sys
+ #
+
+Fixes: 6a82e23f45fe ("s390/cpumf: Adjust registration of s390 PMU device drivers")
+Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
+Acked-by: Sumanth Korikkar <sumanthk@linux.ibm.com>
+[agordeev@linux.ibm.com corrected commit ID of Fixes commit]
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/magnetometer/yamaha-yas530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/kernel/perf_cpum_cf.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-index 9ff7b0e56cf6..b2bc637150bf 100644
---- a/drivers/iio/magnetometer/yamaha-yas530.c
-+++ b/drivers/iio/magnetometer/yamaha-yas530.c
-@@ -639,7 +639,7 @@ static int yas532_get_calibration_data(struct yas5xx *yas5xx)
- 	dev_dbg(yas5xx->dev, "calibration data: %*ph\n", 14, data);
+diff --git a/arch/s390/kernel/perf_cpum_cf.c b/arch/s390/kernel/perf_cpum_cf.c
+index cceb8ec707e4..d2a2a18b5580 100644
+--- a/arch/s390/kernel/perf_cpum_cf.c
++++ b/arch/s390/kernel/perf_cpum_cf.c
+@@ -516,6 +516,26 @@ static int __hw_perf_event_init(struct perf_event *event, unsigned int type)
+ 	return err;
+ }
  
- 	/* Sanity check, is this all zeroes? */
--	if (memchr_inv(data, 0x00, 13)) {
-+	if (memchr_inv(data, 0x00, 13) == NULL) {
- 		if (!(data[13] & BIT(7)))
- 			dev_warn(yas5xx->dev, "calibration is blank!\n");
- 	}
++/* Events CPU_CYLCES and INSTRUCTIONS can be submitted with two different
++ * attribute::type values:
++ * - PERF_TYPE_HARDWARE:
++ * - pmu->type:
++ * Handle both type of invocations identical. They address the same hardware.
++ * The result is different when event modifiers exclude_kernel and/or
++ * exclude_user are also set.
++ */
++static int cpumf_pmu_event_type(struct perf_event *event)
++{
++	u64 ev = event->attr.config;
++
++	if (cpumf_generic_events_basic[PERF_COUNT_HW_CPU_CYCLES] == ev ||
++	    cpumf_generic_events_basic[PERF_COUNT_HW_INSTRUCTIONS] == ev ||
++	    cpumf_generic_events_user[PERF_COUNT_HW_CPU_CYCLES] == ev ||
++	    cpumf_generic_events_user[PERF_COUNT_HW_INSTRUCTIONS] == ev)
++		return PERF_TYPE_HARDWARE;
++	return PERF_TYPE_RAW;
++}
++
+ static int cpumf_pmu_event_init(struct perf_event *event)
+ {
+ 	unsigned int type = event->attr.type;
+@@ -525,7 +545,7 @@ static int cpumf_pmu_event_init(struct perf_event *event)
+ 		err = __hw_perf_event_init(event, type);
+ 	else if (event->pmu->type == type)
+ 		/* Registered as unknown PMU */
+-		err = __hw_perf_event_init(event, PERF_TYPE_RAW);
++		err = __hw_perf_event_init(event, cpumf_pmu_event_type(event));
+ 	else
+ 		return -ENOENT;
+ 
 -- 
 2.35.1
 
