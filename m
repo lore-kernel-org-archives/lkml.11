@@ -2,175 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA47C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C97FCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235607AbiF0Mah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
+        id S235808AbiF0Ma5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232906AbiF0Mae (ORCPT
+        with ESMTP id S232906AbiF0May (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 08:30:34 -0400
-X-Greylist: delayed 515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 05:30:31 PDT
-Received: from mail.itpri.com (mx1.itpri.com [185.125.111.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DAC8766F
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 05:30:31 -0700 (PDT)
-X-Virus-Scanned: Yes
-From:   alexander.atanasov@virtuozzo.com
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     kernel@openvz.org,
-        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] Create debugfs file with virtio balloon usage information
-Date:   Mon, 27 Jun 2022 12:20:38 +0000
-Message-Id: <20220627122038.1921522-1-alexander.atanasov@virtuozzo.com>
-Mime-Version: 1.0
+        Mon, 27 Jun 2022 08:30:54 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF5DE766F
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 05:30:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AB42C1758;
+        Mon, 27 Jun 2022 05:30:52 -0700 (PDT)
+Received: from e120937-lin.home (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8D5C53F792;
+        Mon, 27 Jun 2022 05:30:50 -0700 (PDT)
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
+        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
+        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
+        daniel.lezcano@linaro.org, tarek.el-sherbiny@arm.com,
+        adrian.slatineanu@arm.com, souvik.chakravarty@arm.com,
+        wleavitt@marvell.com, wbartczak@marvell.com,
+        Cristian Marussi <cristian.marussi@arm.com>
+Subject: [PATCH v3 0/9] SCMIv3.1 Powercap protocol and driver
+Date:   Mon, 27 Jun 2022 13:30:29 +0100
+Message-Id: <20220627123038.1427067-1-cristian.marussi@arm.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
+Hi all,
 
-Allow the guest to know how much it is ballooned by the host.
-It is useful when debugging out of memory conditions.
+this short series introduces the last missing bit of SCMIv3.1, Powercap
+protocol. Along the series, there is a small refactoring around the SCMI
+FastChannels handling routines so as to reuse as much as possible the
+pre-existent (and tested) FastChannel code from the Perf protocol.
 
-When host gets back memory from the guest it is accounted
-as used memory in the guest but the guest have no way to know
-how much it is actually ballooned.
+New SCMI FC tracing support is added too along the way.
 
-Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
----
- drivers/virtio/virtio_balloon.c | 91 +++++++++++++++++++++++++++++++++
- 1 file changed, 91 insertions(+)
+As a last step in the series an ARM SCMI based powercap driver is added,
+which takes care to expose via the Powercap framework all the SCMI Powercap
+zones that have been discovered asking the SCMI platform firmware.
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index b9737da6c4dd..a32a52c28a1f 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -10,6 +10,7 @@
- #include <linux/virtio_balloon.h>
- #include <linux/swap.h>
- #include <linux/workqueue.h>
-+#include <linux/debugfs.h>
- #include <linux/delay.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-@@ -731,6 +732,91 @@ static void report_free_page_func(struct work_struct *work)
- 	}
- }
- 
-+/*
-+ * DEBUGFS Interface
-+ */
-+#ifdef CONFIG_DEBUG_FS
-+
-+/**
-+ * virtio_balloon_debug_show - shows statistics of balloon operations.
-+ * @f: pointer to the &struct seq_file.
-+ * @offset: ignored.
-+ *
-+ * Provides the statistics that can be accessed in virtio-balloon in the debugfs.
-+ *
-+ * Return: zero on success or an error code.
-+ */
-+static int virtio_balloon_debug_show(struct seq_file *f, void *offset)
-+{
-+	struct virtio_balloon *b = f->private;
-+	u32 num_pages;
-+	struct sysinfo i;
-+
-+	si_meminfo(&i);
-+
-+	seq_printf(f, "%-22s:", "capabilities");
-+
-+	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_MUST_TELL_HOST))
-+		seq_puts(f, " tell_host");
-+
-+	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_STATS_VQ))
-+		seq_puts(f, " stats");
-+
-+	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
-+		seq_puts(f, " deflate_on_oom");
-+
-+	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_FREE_PAGE_HINT))
-+		seq_puts(f, " free_page_hint");
-+
-+	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_PAGE_POISON))
-+		seq_puts(f, " page_poison");
-+
-+	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_REPORTING))
-+		seq_puts(f, " reporting");
-+
-+	seq_puts(f, "\n");
-+
-+	seq_printf(f, "%-22s: %d\n", "page_size", 4096);
-+
-+	virtio_cread_le(b->vdev, struct virtio_balloon_config, actual,
-+			&num_pages);
-+	/* Memory returned to host or amount we can inflate if possible */
-+	seq_printf(f, "%-22s: %u\n", "ballooned_pages", num_pages);
-+
-+	/* Total Memory for the guest from host */
-+	seq_printf(f, "%-22s: %lu\n", "total_pages", i.totalram);
-+
-+	/* Current memory for the guest */
-+	seq_printf(f, "%-22s: %lu\n", "current_pages", i.totalram-num_pages);
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(virtio_balloon_debug);
-+
-+static void  virtio_balloon_debugfs_init(struct virtio_balloon *b)
-+{
-+	debugfs_create_file("virtio-balloon", 0444, NULL, b,
-+			    &virtio_balloon_debug_fops);
-+}
-+
-+static void  virtio_balloon_debugfs_exit(struct virtio_balloon *b)
-+{
-+	debugfs_remove(debugfs_lookup("virtio-balloon", NULL));
-+}
-+
-+#else
-+
-+static inline void virtio_balloon_debugfs_init(struct virtio_balloon *b)
-+{
-+}
-+
-+static inline void virtio_balloon_debugfs_exit(struct virtio_balloon *b)
-+{
-+}
-+
-+#endif	/* CONFIG_DEBUG_FS */
-+
- #ifdef CONFIG_BALLOON_COMPACTION
- /*
-  * virtballoon_migratepage - perform the balloon page migration on behalf of
-@@ -1019,6 +1105,9 @@ static int virtballoon_probe(struct virtio_device *vdev)
- 
- 	if (towards_target(vb))
- 		virtballoon_changed(vdev);
-+
-+	virtio_balloon_debugfs_init(vb);
-+
- 	return 0;
- 
- out_unregister_oom:
-@@ -1065,6 +1154,8 @@ static void virtballoon_remove(struct virtio_device *vdev)
- {
- 	struct virtio_balloon *vb = vdev->priv;
- 
-+	virtio_balloon_debugfs_exit(vb);
-+
- 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
- 		page_reporting_unregister(&vb->pr_dev_info);
- 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
+Basic testing has been performed against an emulated SCMI platform
+supporting SCMIv3.1 Powercap protocol using powercap-utils, with the
+exclusion of the FCs bits whose generalization has been only tested for
+regression on a JUNO platform sporting a regular SCP/SCMI v2.10 fw.
+
+The series is based on sudeep/for-next/scmi [1] on top of:
+
+commit 754f04cac362 ("firmware: arm_scmi: Relax CLOCK_DESCRIBE_RATES out-of-spec checks")
+
+Thanks,
+Cristian
+
+v2 --> v3:
+- added and used some SCMI Fastchannel tracing support
+- reverted logic of Kconfig to configure usage of SCMI FC
+- using strscpy with new SHORT_NAME_SZ in Powercap protocol
+- added devm_protocol_acquire helper
+
+v1 --> v2:
+- fixed measurements thresholds updates to trigger notification
+  enable update commands
+- added a bit more comments
+- usig bitfield.h macros
+- fixed sparse complaint about missing static on global
+
+[1]: https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/log/?h=for-next/scmi
+----
+
+
+
+Cristian Marussi (9):
+  dt-bindings: firmware: arm,scmi: Add powercap protocol
+  firmware: arm_scmi: Add SCMIv3.1 Powercap protocol basic support
+  firmware: arm_scmi: Generalize FastChannel support
+  firmware: arm_scmi: Add SCMIv3.1 Powercap FastChannels support
+  firmware: arm_scmi: Make use of FastChannels configurable
+  include: trace: Add SCMI FastChannel tracing
+  firmware: arm_scmi: Use FastChannel tracing
+  firmware: arm_scmi: Add scmi_driver optional setup/teardown callbacks
+  powercap: arm_scmi: Add SCMI Powercap based driver
+
+ .../bindings/firmware/arm,scmi.yaml           |  10 +
+ drivers/firmware/arm_scmi/Kconfig             |  13 +
+ drivers/firmware/arm_scmi/Makefile            |   2 +-
+ drivers/firmware/arm_scmi/bus.c               |  15 +-
+ drivers/firmware/arm_scmi/driver.c            | 173 ++++
+ drivers/firmware/arm_scmi/perf.c              | 225 ++---
+ drivers/firmware/arm_scmi/powercap.c          | 866 ++++++++++++++++++
+ drivers/firmware/arm_scmi/protocols.h         |  23 +
+ drivers/powercap/Kconfig                      |  13 +
+ drivers/powercap/Makefile                     |   1 +
+ drivers/powercap/arm_scmi_powercap.c          | 537 +++++++++++
+ include/linux/scmi_protocol.h                 | 129 +++
+ include/trace/events/scmi.h                   |  25 +
+ 13 files changed, 1858 insertions(+), 174 deletions(-)
+ create mode 100644 drivers/firmware/arm_scmi/powercap.c
+ create mode 100644 drivers/powercap/arm_scmi_powercap.c
+
 -- 
-2.25.1
+2.32.0
 
