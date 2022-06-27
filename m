@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE929C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 117EEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236964AbiF0LlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58506 "EHLO
+        id S236502AbiF0LlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236247AbiF0LhK (ORCPT
+        with ESMTP id S236267AbiF0LhO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34873115A;
-        Mon, 27 Jun 2022 04:32:19 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91504DF57;
+        Mon, 27 Jun 2022 04:32:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D39E6B8111C;
-        Mon, 27 Jun 2022 11:32:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1850EC3411D;
-        Mon, 27 Jun 2022 11:32:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3002060C24;
+        Mon, 27 Jun 2022 11:32:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27B0DC3411D;
+        Mon, 27 Jun 2022 11:32:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329536;
-        bh=hGuOut/iB47OP+a8fIGR+FF0ZAQpLfuGm7US7TJUxkg=;
+        s=korg; t=1656329542;
+        bh=6AxkFONhHzmOfd4oMiIArsoJYhYr/Fsf+dMwrYnOOFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tC97zqfzY9p8dScToQ7DpSHP45FrERofrgQ4I6bW7frQIbN6DyYNNNMExFZDXpwKQ
-         JvJ9dvbIjTL9EqXZQuXp2h1H0y/erT6NnlahE1IblqzEw5UazZRl6xh4hDoNl2Vrmd
-         NZahsoBHIIajCi7/ofJHDTrYlchXzrenCPl2KRro=
+        b=N5ejIWqnsfydkgJtIpotPoAATBke2682129ZFqnJPS6H2e7ll80RaGjTk0IM4xoyo
+         mQI/TbL3ykFuYG53+KSZAeCL1/CR+h2gtnIsSciy5Z077xJ9uPSmUn8uC189w9sIHT
+         EAggsixsVrRyy+/9knP5eIs0PyN5SDb46uuzolus=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        Carlo Lobrano <c.lobrano@gmail.com>,
+        stable@vger.kernel.org, Ballon Shi <ballon.shi@quectel.com>,
+        Macpaul Lin <macpaul.lin@mediatek.com>,
         Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 030/135] USB: serial: option: add Telit LE910Cx 0x1250 composition
-Date:   Mon, 27 Jun 2022 13:20:37 +0200
-Message-Id: <20220627111939.035190279@linuxfoundation.org>
+Subject: [PATCH 5.15 032/135] USB: serial: option: add Quectel RM500K module support
+Date:   Mon, 27 Jun 2022 13:20:39 +0200
+Message-Id: <20220627111939.092756211@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -49,33 +49,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Carlo Lobrano <c.lobrano@gmail.com>
+From: Macpaul Lin <macpaul.lin@mediatek.com>
 
-commit 342fc0c3b345525da21112bd0478a0dc741598ea upstream.
+commit 15b694e96c31807d8515aacfa687a1e8a4fbbadc upstream.
 
-Add support for the following Telit LE910Cx composition:
+Add usb product id of the Quectel RM500K module.
 
-0x1250: rmnet, tty, tty, tty, tty
+RM500K provides 2 mandatory interfaces to Linux host after enumeration.
+ - /dev/ttyUSB5: this is a serial interface for control path. User needs
+   to write AT commands to this device node to query status, set APN,
+   set PIN code, and enable/disable the data connection to 5G network.
+ - ethX: this is the data path provided as a RNDIS devices. After the
+   data connection has been established, Linux host can access 5G data
+   network via this interface.
 
-Reviewed-by: Daniele Palmas <dnlplm@gmail.com>
-Signed-off-by: Carlo Lobrano <c.lobrano@gmail.com>
-Link: https://lore.kernel.org/r/20220614075623.2392607-1-c.lobrano@gmail.com
+"RNDIS": RNDIS + ADB + AT (/dev/ttyUSB5) + MODEM COMs
+
+usb-devices output for 0x7001:
+T:  Bus=05 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  3 Spd=480 MxCh= 0
+D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=7001 Rev=00.01
+S:  Manufacturer=MediaTek Inc.
+S:  Product=USB DATA CARD
+S:  SerialNumber=869206050009672
+C:  #Ifs=10 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:  If#= 0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=02 Prot=ff Driver=rndis_host
+E:  Ad=82(I) Atr=03(Int.) MxPS=  64 Ivl=125us
+I:  If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:  If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:  If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:  If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:  If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=(none)
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:  If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:  If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:  If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:  If#= 9 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=09(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=8a(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
+Co-developed-by: Ballon Shi <ballon.shi@quectel.com>
+Signed-off-by: Ballon Shi <ballon.shi@quectel.com>
+Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
 Cc: stable@vger.kernel.org
 Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/serial/option.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
 --- a/drivers/usb/serial/option.c
 +++ b/drivers/usb/serial/option.c
-@@ -1279,6 +1279,7 @@ static const struct usb_device_id option
- 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
- 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1231, 0xff),	/* Telit LE910Cx (RNDIS) */
- 	  .driver_info = NCTRL(2) | RSVD(3) },
-+	{ USB_DEVICE_AND_INTERFACE_INFO(TELIT_VENDOR_ID, 0x1250, 0xff, 0x00, 0x00) },	/* Telit LE910Cx (rmnet) */
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1260),
- 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1261),
+@@ -257,6 +257,7 @@ static void option_instat_callback(struc
+ #define QUECTEL_PRODUCT_RM500Q			0x0800
+ #define QUECTEL_PRODUCT_EC200S_CN		0x6002
+ #define QUECTEL_PRODUCT_EC200T			0x6026
++#define QUECTEL_PRODUCT_RM500K			0x7001
+ 
+ #define CMOTECH_VENDOR_ID			0x16d8
+ #define CMOTECH_PRODUCT_6001			0x6001
+@@ -1150,6 +1151,7 @@ static const struct usb_device_id option
+ 	  .driver_info = ZLP },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200S_CN, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200T, 0xff, 0, 0) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500K, 0xff, 0x00, 0x00) },
+ 
+ 	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_6001) },
+ 	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_CMU_300) },
 
 
