@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B543C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7522C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239376AbiF0L5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
+        id S239383AbiF0L5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238167AbiF0Lu2 (ORCPT
+        with ESMTP id S238197AbiF0Lu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:50:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADEE1106;
-        Mon, 27 Jun 2022 04:43:36 -0700 (PDT)
+        Mon, 27 Jun 2022 07:50:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CFE2196;
+        Mon, 27 Jun 2022 04:43:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDC1061241;
-        Mon, 27 Jun 2022 11:43:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B719AC3411D;
-        Mon, 27 Jun 2022 11:43:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 644CDB80E32;
+        Mon, 27 Jun 2022 11:43:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA463C3411D;
+        Mon, 27 Jun 2022 11:43:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330215;
-        bh=MI0bsniUwDkWSt13JruOm4ZUqJHUFJtapMTmtz/L4J8=;
+        s=korg; t=1656330218;
+        bh=TbJXaK1rbMB8btpOBGJnwp1o3DBVqNZI0GMIlKu8slk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K6Rohf26nWFU1gudn4ypUpNukFl7nHzF4fwN06yeWdOf0IUN/FY19xf8X8IMFxtCQ
-         +xBbV71PJYqi5suNE4Nda3uC675qfXHzOECvVVqatqIxvO19ouKBPlo8D0uGHuF4kP
-         Mh3U/0TrSytWKV21yX8eRWFQmiFfpRgWtcCXB/RY=
+        b=gYEy+fWlxWfPFEBmHzAgkaQEx5t8PwqxyzjTObZsoJ1zoclJPKkuf17u0EhmYbnjm
+         uoWpAowC927pm9IPW9TWsoSUAbrWk9YjKi6vbDgTO5/cz9CbujQjb7G4XySWtta3Lk
+         4jc1DVL61oe1+uGnnyNlnpo2LhnsTtabFearM0Xk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Yang <xu.yang_2@nxp.com>
-Subject: [PATCH 5.18 121/181] usb: chipidea: udc: check request status before setting device address
-Date:   Mon, 27 Jun 2022 13:21:34 +0200
-Message-Id: <20220627111948.203330169@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 5.18 122/181] dt-bindings: usb: ohci: Increase the number of PHYs
+Date:   Mon, 27 Jun 2022 13:21:35 +0200
+Message-Id: <20220627111948.231950197@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -47,34 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Yang <xu.yang_2@nxp.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-commit b24346a240b36cfc4df194d145463874985aa29b upstream.
+commit 0f074c1c95ea496dc91279b6c4b9845a337517fa upstream.
 
-The complete() function may be called even though request is not
-completed. In this case, it's necessary to check request status so
-as not to set device address wrongly.
+"make dtbs_check":
 
-Fixes: 10775eb17bee ("usb: chipidea: udc: update gadget states according to ch9")
-cc: <stable@vger.kernel.org>
-Signed-off-by: Xu Yang <xu.yang_2@nxp.com>
-Link: https://lore.kernel.org/r/20220623030242.41796-1-xu.yang_2@nxp.com
+    arch/arm/boot/dts/r8a77470-iwg23s-sbc.dtb: usb@ee080000: phys: [[17, 0], [31]] is too long
+	    From schema: Documentation/devicetree/bindings/usb/generic-ohci.yaml
+    arch/arm/boot/dts/r8a77470-iwg23s-sbc.dtb: usb@ee0c0000: phys: [[17, 1], [33], [21, 0]] is too long
+	    From schema: Documentation/devicetree/bindings/usb/generic-ohci.yaml
+
+Some USB OHCI controllers (e.g. on the Renesas RZ/G1C SoC) have multiple
+PHYs.  Increase the maximum number of PHYs to 3, which is sufficient for
+now.
+
+Fixes: 0499220d6dadafa5 ("dt-bindings: Add missing array size constraints")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/0112f9c8881513cb33bf7b66bc743dd08b35a2f5.1655301203.git.geert+renesas@glider.be
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/chipidea/udc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/usb/generic-ohci.yaml |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/chipidea/udc.c
-+++ b/drivers/usb/chipidea/udc.c
-@@ -1048,6 +1048,9 @@ isr_setup_status_complete(struct usb_ep
- 	struct ci_hdrc *ci = req->context;
- 	unsigned long flags;
+--- a/Documentation/devicetree/bindings/usb/generic-ohci.yaml
++++ b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
+@@ -102,7 +102,8 @@ properties:
+       Overrides the detected port count
  
-+	if (req->status < 0)
-+		return;
-+
- 	if (ci->setaddr) {
- 		hw_usb_set_address(ci, ci->address);
- 		ci->setaddr = false;
+   phys:
+-    maxItems: 1
++    minItems: 1
++    maxItems: 3
+ 
+   phy-names:
+     const: usb
 
 
