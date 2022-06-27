@@ -2,106 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30675C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ADB7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242187AbiF0WEV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 18:04:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37380 "EHLO
+        id S242298AbiF0WEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 18:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242741AbiF0WDG (ORCPT
+        with ESMTP id S242899AbiF0WDb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 18:03:06 -0400
-Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DEA1E3F4;
-        Mon, 27 Jun 2022 15:01:01 -0700 (PDT)
-Received: by mail-il1-f177.google.com with SMTP id a16so6954104ilr.6;
-        Mon, 27 Jun 2022 15:01:01 -0700 (PDT)
+        Mon, 27 Jun 2022 18:03:31 -0400
+Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67694274;
+        Mon, 27 Jun 2022 15:02:56 -0700 (PDT)
+Received: by mail-io1-f48.google.com with SMTP id l24so11034099ion.13;
+        Mon, 27 Jun 2022 15:02:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=TZkUYB3BYeJsEsDSI6PmO4Ag8GHC0FQvV7iN+YB5Q0Q=;
-        b=zCp96mdzfFQ20ZZJPRmAEPFKrfLyyMs7EZ6is7dWfXsrtHO7OtKrjNg0wxaPeuz9ju
-         Z9yaEMaNFcFm7Cayu8tTQeKZFtgxQs5j/r+rzr1FGSec1/enyqQMRJoEY/3mOijncGXE
-         rpHKRK3/x2p6J8Z8zXi706446KG9/WEJjnSh9q7UMwwDp9YQBc4ZJpE4AIWE9OqHxi6L
-         qjU/zLR5rVIH/6wYzlXshsv2F65jfnRUT/OPDS8e5SIaj5oo55ZhApWuF/8i3CVa4HZw
-         VXasQ7qWsaH3YtSdRi//P+7fEzecaXW0FsdopgFl5oVf2UG+nfg7xgPjHQwCTOu2w3aj
-         K6zg==
-X-Gm-Message-State: AJIora/6z3SsFJ4Q4YYpArAv+GoMFZEQFfNrBf3bRE9WE1IOQMK+Ldw5
-        H4suWLQ2xww/0QPoDSc7Kg==
-X-Google-Smtp-Source: AGRyM1ssOJCADmXqWwlgb8kDzOGggbdItlatIWFU04SmaYPNYTJ0Nxv2RE7Xu59Xf0OzqmtEW0/lww==
-X-Received: by 2002:a05:6e02:188a:b0:2d4:7fd:dbf with SMTP id o10-20020a056e02188a00b002d407fd0dbfmr8113049ilu.217.1656367260514;
-        Mon, 27 Jun 2022 15:01:00 -0700 (PDT)
+        bh=Jdv65aYoH3wngx7Fdw7tsT2p4p1oistmuOoKV/y1rZU=;
+        b=quXFNqQuw6O5NGHUgtByqF0r7wBU69Wq8LXLTGrX4a93cWBfloFq78gjVs6LhiZyt6
+         eXULEi22mnb8SpFXFYaZcfvl4LuwNIQAZwBgypCrSqFC7BZSxK55PXBNTlNCjBnoUML0
+         dDwqQd65iSp7dIdwxCq0pMtp1dgQynqlmSTJodLVz/PZQhidh2X3e56moJuQ/kspI6eg
+         MzQ4sU64cundYlHTwFQ16TBZj2SmsxRkD9uerzsLkGYvgX3rpo6fppw+DC/mp21pDu3U
+         LD73hMZYvlA/GkpjN/kXiNhCRnIWphiM9LAC71TR+5qYDnfK+EcbsHwFHsP4sWjkWzBe
+         AgjA==
+X-Gm-Message-State: AJIora8hB+vmZVzxwg25ruMPhVaRXaTBjx1GZgC2cqNYvuFD0ioydQOf
+        NPkBhN8vlmv2Z/HsvoMrYw==
+X-Google-Smtp-Source: AGRyM1sSDQYqJH4dsXWvmX5/Ry1DdbydVr5ZtoGq5S6BuADCTCcLi5R+m9kGUrb7nupJ9XoLcmy2kQ==
+X-Received: by 2002:a05:6638:2110:b0:33b:b100:551e with SMTP id n16-20020a056638211000b0033bb100551emr9607569jaj.116.1656367375677;
+        Mon, 27 Jun 2022 15:02:55 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id bo22-20020a056638439600b0033c8edf022bsm2409410jab.144.2022.06.27.15.00.59
+        by smtp.gmail.com with ESMTPSA id z22-20020a027a56000000b00339ead526e5sm5290440jad.19.2022.06.27.15.02.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 15:01:00 -0700 (PDT)
-Received: (nullmailer pid 3041223 invoked by uid 1000);
-        Mon, 27 Jun 2022 22:00:58 -0000
-Date:   Mon, 27 Jun 2022 16:00:58 -0600
+        Mon, 27 Jun 2022 15:02:55 -0700 (PDT)
+Received: (nullmailer pid 3044113 invoked by uid 1000);
+        Mon, 27 Jun 2022 22:02:53 -0000
+Date:   Mon, 27 Jun 2022 16:02:53 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Quan Nguyen <quan@os.amperecomputing.com>
-Cc:     Corey Minyard <minyard@acm.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Wolfram Sang <wsa@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org,
+To:     Suniel Mahesh <sunil@amarulasolutions.com>
+Cc:     Michael Trimarchi <michael@amarulasolutions.com>,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        dri-devel@lists.freedesktop.org, Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        linux-amarula@amarulasolutions.com, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org,
-        Open Source Submission <patches@amperecomputing.com>,
-        Phong Vo <phong@os.amperecomputing.com>,
-        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
-Subject: Re: [PATCH v8 2/3] bindings: ipmi: Add binding for SSIF BMC driver
-Message-ID: <20220627220058.GA3036977-robh@kernel.org>
-References: <20220615090259.1121405-1-quan@os.amperecomputing.com>
- <20220615090259.1121405-3-quan@os.amperecomputing.com>
+        Mark Brown <broonie@kernel.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Christopher Vollo <chris@renewoutreach.org>
+Subject: Re: [PATCH v2 1/2] dt-bindings: arm: sunxi: Add binding for
+ RenewWorldOutReach R16-Vista-E board
+Message-ID: <20220627220253.GA3044042-robh@kernel.org>
+References: <20220615093900.344726-1-sunil@amarulasolutions.com>
+ <20220615093900.344726-2-sunil@amarulasolutions.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220615090259.1121405-3-quan@os.amperecomputing.com>
+In-Reply-To: <20220615093900.344726-2-sunil@amarulasolutions.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 04:02:58PM +0700, Quan Nguyen wrote:
-> Add device tree binding document for the SSIF BMC driver.
+On Wed, 15 Jun 2022 15:08:59 +0530, Suniel Mahesh wrote:
+> Add a binding for the RenewWorldOutReach R16-Vista-E board based on
+> allwinner R16.
 > 
-> Signed-off-by: Quan Nguyen <quan@os.amperecomputing.com>
+> Signed-off-by: Christopher Vollo <chris@renewoutreach.org>
+> Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
+> Signed-off-by: Suniel Mahesh <sunil@amarulasolutions.com>
 > ---
-> v8:
->   + None
+> Changes for v2:
+> - Add missing compatible string
+> - insert missing signatures of contributors
+> ---
+>  Documentation/devicetree/bindings/arm/sunxi.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> v7:
->   + Change compatible string from "ampere,ssif-bmc" to "ssif-bmc"  [Jae]
-> 
-> v6:
->   + None
-> 
-> v5:
->   + None
-> 
-> v4:
->   + Fix warning with dt_binding_check [Rob]
->   + Change aspeed-ssif-bmc.yaml to ssif-bmc.yaml [Quan]
-> 
-> v3:
->   + Switched to use DT schema format [Rob]
-> 
-> v2:
->   + None
-> 
->  .../devicetree/bindings/ipmi/ssif-bmc.yaml    | 38 +++++++++++++++++++
->  1 file changed, 38 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/ipmi/ssif-bmc.yaml
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
-
-If a tag was not added on purpose, please state why and what changed.
+Acked-by: Rob Herring <robh@kernel.org>
