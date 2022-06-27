@@ -2,163 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D34AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 05:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16617C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 05:56:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232133AbiF0Fyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 01:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
+        id S232089AbiF0F4z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 01:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbiF0Fya (ORCPT
+        with ESMTP id S229753AbiF0F4x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 01:54:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762C4273E;
-        Sun, 26 Jun 2022 22:54:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 239C1B80DF9;
-        Mon, 27 Jun 2022 05:54:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82E45C341C8;
-        Mon, 27 Jun 2022 05:54:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656309266;
-        bh=yxC1mNqWAaZOUyt2kc8qXbxHKEMGITvMCWYj3u08vfE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EY9AKcGnkijNeOEKntrhb8p867u0c30nfJu1RzFqePrzPfwX3vdXYxN5gEM//5dtU
-         pj2E3zdlEuROLmu/PdU1YQa4XJ9wThxm2G/8pS7J/D8/YAR7Wp44RBDMkpuuiYJ+D5
-         cRkw++xn7c5VsqqXRCFfkYGphtHXZ/R1jgFuOgic=
-Date:   Mon, 27 Jun 2022 07:54:23 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Greg Thelen <gthelen@google.com>
-Cc:     Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, torvalds@linux-foundation.org,
-        stable@vger.kernel.org, lwn@lwn.net, jslaby@suse.cz
-Subject: Re: Linux 5.10.125
-Message-ID: <YrlGDylVhmjFZpZf@kroah.com>
-References: <1656164548242121@kroah.com>
- <xr93fsjr5901.fsf@gthelen-ubiquity2.mtv.corp.google.com>
- <ea9b3819-418a-5b79-8bcd-0b28ead70a61@kernel.dk>
- <6bc6ae48-b569-2002-118a-d3468b0278cd@kernel.dk>
- <xr93czeu64sx.fsf@gthelen-ubiquity2.mtv.corp.google.com>
+        Mon, 27 Jun 2022 01:56:53 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701392DE3
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 22:56:52 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id m14-20020a17090a668e00b001ee6ece8368so2010055pjj.3
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 22:56:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=bgGjIZMQi9zPseLwcTQISWkTzjFMEgBUdyAykEEFOv4=;
+        b=Oe5p1iABnBF6/fGExyGi30NSTjr0bFRYVqoTFnPu8qX2eqlenGsnAn0GVMY7RoiFCc
+         TCHYmxJL9UTUONyirC5ImxBG0EY+OtKWQ9aTVou4alzG0aMUkw/y2wPw37iu4wf1yiFb
+         zB4i5Z/bZ2dBXyX6eqbDo6kRDhlL/DAzAKZmr/jI8rtJqilhfNuOUUmy5YjWTcKKxNBi
+         kI7vexDUTEuWWNDgwe2VBFI0qaJ89i9OlgPndoDRyuQCStteqQixg/k+9DExmwwddfZv
+         BULKUBRq5dE1E1HyEbU/UFLm5BKD68T0ecMggiTU/YQ1FxrjvIEvmOt0kx8P+iLjmbm8
+         nXSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bgGjIZMQi9zPseLwcTQISWkTzjFMEgBUdyAykEEFOv4=;
+        b=JdYl2O08W2Qno0F3/F+aVApFT71YmWebHqUFMYv1qdZUfJKEEmuimXnQ0PoBEGhc/I
+         yd5zToY/12yuqobMLm95C25al5og0Ihgopim+xvEgUD7XwyFMSvjHX2o6YG31SVVBsaQ
+         PHPHn/UCJZM/bCGOz0qqyQcAyETVvllQW3GBt9378uZ1rlJIajduZSrDXJJYCnDRSgYu
+         QBGCDkxIt0SFDUrLL6f7XpPpxYPSqNLqmZAKaR1AVu+/O9Tk58GKEEdgT1Ry42/t7EAq
+         YYaqCXuVD+H5haCDYjlL51cQ5vrUUDViFH/1rrmNRAPvCCSCqkU02YRNZ+0qYufMOQH0
+         GkPQ==
+X-Gm-Message-State: AJIora8KsGGQQDWKUjHAR31LzrM1yxJ8H/9MmoAcUgG3DVdIG1Idl8Xp
+        Q/8exUKrCKTUeMMSVGYmlvU=
+X-Google-Smtp-Source: AGRyM1t1CnaacjaxbLUAI3PrusjR5hzrugJjX/H7Hvul4kfHgGqFr8fI3YMelLlcYjowRPox0/UqlQ==
+X-Received: by 2002:a17:902:c401:b0:16a:1873:5ca3 with SMTP id k1-20020a170902c40100b0016a18735ca3mr12713755plk.157.1656309411898;
+        Sun, 26 Jun 2022 22:56:51 -0700 (PDT)
+Received: from localhost ([156.236.96.165])
+        by smtp.gmail.com with ESMTPSA id a8-20020a1709027e4800b0016a100c9a2esm6167713pln.112.2022.06.26.22.56.50
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 26 Jun 2022 22:56:51 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 13:57:54 +0800
+From:   Yue Hu <zbestahu@gmail.com>
+To:     Yuwen Chen <chenyuwen1@meizu.com>
+Cc:     <xiang@kernel.org>, linux-erofs@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] erofs: Wake up all waiters after z_erofs_lzma_head
+ ready.
+Message-ID: <20220627135754.00000999.zbestahu@gmail.com>
+In-Reply-To: <20220625145000.2720-1-chenyuwen1@meizu.com>
+References: <20220625145000.2720-1-chenyuwen1@meizu.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <xr93czeu64sx.fsf@gthelen-ubiquity2.mtv.corp.google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 26, 2022 at 10:42:06PM -0700, Greg Thelen wrote:
-> Jens Axboe <axboe@kernel.dk> wrote:
+On Sat, 25 Jun 2022 22:50:00 +0800
+Yuwen Chen <chenyuwen1@meizu.com> wrote:
+
+> When the user mounts the erofs second times, the decompression thread
+> may hung. The problem happens due to a sequence of steps like the
+> following:
 > 
-> > On 6/26/22 6:04 PM, Jens Axboe wrote:
-> >> On 6/26/22 4:56 PM, Greg Thelen wrote:
-> >>> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> >>>
-> >>>> I'm announcing the release of the 5.10.125 kernel.
-> >>>>
-> >>>> All users of the 5.10 kernel series must upgrade.
-> >>>>
-> >>>> The updated 5.10.y git tree can be found at:
-> >>>> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.10.y
-> >>>> and can be browsed at the normal kernel.org git web browser:
-> >>>> 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
-> >>>>
-> >>>> thanks,
-> >>>>
-> >>>> greg k-h
-> >>>>
-> >>>> ------------
-> >>>>
-> >>>>  Makefile                              |    2 
-> >>>>  arch/arm64/mm/cache.S                 |    2 
-> >>>>  arch/s390/mm/pgtable.c                |    2 
-> >>>>  drivers/tty/serial/serial_core.c      |   34 ++++--------
-> >>>>  drivers/usb/gadget/function/u_ether.c |   11 +++-
-> >>>>  fs/io_uring.c                         |   23 +++++---
-> >>>>  fs/zonefs/super.c                     |   92 ++++++++++++++++++++++------------
-> >>>>  net/ipv4/inet_hashtables.c            |   31 ++++++++---
-> >>>>  8 files changed, 122 insertions(+), 75 deletions(-)
-> >>>>
-> >>>> Christian Borntraeger (1):
-> >>>>       s390/mm: use non-quiescing sske for KVM switch to keyed guest
-> >>>>
-> >>>> Damien Le Moal (1):
-> >>>>       zonefs: fix zonefs_iomap_begin() for reads
-> >>>>
-> >>>> Eric Dumazet (1):
-> >>>>       tcp: add some entropy in __inet_hash_connect()
-> >>>>
-> >>>> Greg Kroah-Hartman (1):
-> >>>>       Linux 5.10.125
-> >>>>
-> >>>> Jens Axboe (1):
-> >>>>       io_uring: add missing item types for various requests
-> >>>>
-> >>>> Lukas Wunner (1):
-> >>>>       serial: core: Initialize rs485 RTS polarity already on probe
-> >>>>
-> >>>> Marian Postevca (1):
-> >>>>       usb: gadget: u_ether: fix regression in setting fixed MAC address
-> >>>>
-> >>>> Will Deacon (1):
-> >>>>       arm64: mm: Don't invalidate FROM_DEVICE buffers at start of DMA transfer
-> >>>>
-> >>>> Willy Tarreau (5):
-> >>>>       tcp: use different parts of the port_offset for index and offset
-> >>>>       tcp: add small random increments to the source port
-> >>>>       tcp: dynamically allocate the perturb table used by source ports
-> >>>>       tcp: increase source port perturb table to 2^16
-> >>>>       tcp: drop the hash_32() part from the index calculation
-> >>>
-> >>> 5.10.125 commit df3f3bb5059d20ef094d6b2f0256c4bf4127a859 ("io_uring: add
-> >>> missing item types for various requests") causes panic when running
-> >>> test/iopoll.t from https://github.com/axboe/liburing commit
-> >>> dda4848a9911120a903bef6284fb88286f4464c9 (liburing-2.2).
-> >>>
-> >>> Here's a manually annotated panic message:
-> >>> [  359.047161] list_del corruption, ffffa42098824f80->next is LIST_POISON1 (dead000000000100)
-> >>> [  359.055393] kernel BUG at lib/list_debug.c:47!
-> >>> [  359.059786] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC PTI
-> >>> [  359.065463] CPU: 11 PID: 15862 Comm: iopoll.t Tainted: G S        I       5.10.124 #1
-> >>> [  359.081804] RIP: 0010:__list_del_entry_valid+0x49/0x80
-> >>> [  359.086880] Code: c2 22 48 39 d1 74 25 48 8b 11 48 39 f2 75 2d 48 8b 50 08 48 39 f2 75 34 b0 01 5d c3 48 c7 c7 68 15 79 b1 31 c0 e8 c5 a2 5a 00 <0f> 0b 48 c7 c7 d8 8e 76 b1 31 c0 e8 b5 a2 5a 00 0f 0b 48 c7 c7 69
-> >>> [  359.105431] RSP: 0018:ffffb6b66785bd58 EFLAGS: 00010046
-> >>> [  359.110592] RAX: 000000000000004e RBX: ffffa42098824f00 RCX: d07284ea1fbba400
-> >>> [  359.117642] RDX: ffffa43f7f4f05b8 RSI: ffffa43f7f4dff48 RDI: ffffa43f7f4dff48
-> >>> [  359.124691] RBP: ffffb6b66785bd58 R08: 0000000000000000 R09: ffffffffb1f38540
-> >>> [  359.131740] R10: 00000000ffff7fff R11: 0000000000000000 R12: 0000000000000282
-> >>> [  359.138789] R13: ffffb6b66785beb8 R14: ffffa42095d33e00 R15: ffffa420937e3d20
-> >>> [  359.145836] FS:  00000000004f8380(0000) GS:ffffa43f7f4c0000(0000) knlGS:0000000000000000
-> >>> [  359.153830] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >>> [  359.159506] CR2: 0000000000539388 CR3: 000000027b57c006 CR4: 00000000003706e0
-> >>> [  359.166552] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> >>> [  359.173600] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> >>> [  359.180647] Call Trace:
-> >>> [  359.183064]  io_dismantle_req+0x1da/0x2b0
-> >>>                     __list_del_entry [include/linux/list.h:132]
-> >>>                     list_del [include/linux/list.h:146]
-> >>>                     io_req_drop_files [fs/io_uring.c:5934]
-> >>>                     io_req_clean_work [fs/io_uring.c:1315]
-> >>>                     io_dismantle_req [fs/io_uring.c:1911]
-> >>> [  359.187023]  io_do_iopoll+0x4e5/0x790
-> >>> [  359.194602]  __se_sys_io_uring_enter+0x39b/0x6f0
-> >>> [  359.208318]  __x64_sys_io_uring_enter+0x29/0x30
-> >>> [  359.212793]  do_syscall_64+0x31/0x40
-> >>> [  359.216324]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> >> 
-> >> Well that sucks, I wonder why mine didn't fail like that. I'll see if I
-> >> can hit this and send a fix. Thanks for reporting!
-> >
-> > Below should do it, I apologize for that. I think my test box booted the
-> > previous kernel which is why it didn't hit it in my regression tests :-(
-> >
-> > Greg, can you add this to 5.10-stable? Verified it ran tests with the
-> > right kernel now...
+> 1) Task A called z_erofs_load_lzma_config which obtain all of the node
+>    from the z_erofs_lzma_head.
+> 
+> 2) At this time, task B called the z_erofs_lzma_decompress and wanted to
+>    get a node. But the z_erofs_lzma_head was empty, the Task B had to
+>    sleep.
+> 
+> 3) Task A release nodes and push nodes into the z_erofs_lzma_head. But
+>    task B was still sleeping.
+> 
+> One example report when the hung happens:
+> task:kworker/u3:1 state:D stack:14384 pid: 86 ppid: 2 flags:0x00004000
+> Workqueue: erofs_unzipd z_erofs_decompressqueue_work
+> Call Trace:
+>  <TASK>
+>  __schedule+0x281/0x760
+>  schedule+0x49/0xb0
+>  z_erofs_lzma_decompress+0x4bc/0x580
+>  ? cpu_core_flags+0x10/0x10
+>  z_erofs_decompress_pcluster+0x49b/0xba0
+>  ? __update_load_avg_se+0x2b0/0x330
+>  ? __update_load_avg_se+0x2b0/0x330
+>  ? update_load_avg+0x5f/0x690
+>  ? update_load_avg+0x5f/0x690
+>  ? set_next_entity+0xbd/0x110
+>  ? _raw_spin_unlock+0xd/0x20
+>  z_erofs_decompress_queue.isra.0+0x2e/0x50
+>  z_erofs_decompressqueue_work+0x30/0x60
+>  process_one_work+0x1d3/0x3a0
+>  worker_thread+0x45/0x3a0
+>  ? process_one_work+0x3a0/0x3a0
+>  kthread+0xe2/0x110
+>  ? kthread_complete_and_exit+0x20/0x20
+>  ret_from_fork+0x22/0x30
+>  </TASK>
+> 
+> Signed-off-by: Yuwen Chen <chenyuwen1@meizu.com>
+> ---
+>  fs/erofs/decompressor_lzma.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/fs/erofs/decompressor_lzma.c b/fs/erofs/decompressor_lzma.c
+> index 05a3063cf2bc..5e59b3f523eb 100644
+> --- a/fs/erofs/decompressor_lzma.c
+> +++ b/fs/erofs/decompressor_lzma.c
+> @@ -143,6 +143,7 @@ int z_erofs_load_lzma_config(struct super_block *sb,
+>  	DBG_BUGON(z_erofs_lzma_head);
+>  	z_erofs_lzma_head = head;
+>  	spin_unlock(&z_erofs_lzma_lock);
+> +	wake_up_all(&z_erofs_lzma_wq);
+>  
+>  	z_erofs_lzma_max_dictsize = dict_size;
+>  	mutex_unlock(&lzma_resize_mutex);
 
-Great, I'll go just do a release with this in it right now to help
-others out.
-
-greg k-h
+Please do not end the summary line(title) with a period.
