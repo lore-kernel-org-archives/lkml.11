@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57566C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A01F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237441AbiF0Lop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
+        id S237496AbiF0Lou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237381AbiF0Lmr (ORCPT
+        with ESMTP id S237398AbiF0Lms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9D9E64;
-        Mon, 27 Jun 2022 04:37:15 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E104EE9B;
+        Mon, 27 Jun 2022 04:37:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E213B8112E;
-        Mon, 27 Jun 2022 11:37:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66BF8C3411D;
-        Mon, 27 Jun 2022 11:37:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3965560DB4;
+        Mon, 27 Jun 2022 11:37:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DF06C3411D;
+        Mon, 27 Jun 2022 11:37:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329832;
-        bh=txsi3SPGgKkJ/yjLz7OMyx86d9QtjZZbPTZ6H+FrQ6Y=;
+        s=korg; t=1656329838;
+        bh=2kPESxM7/z/ODGEhG1yA++h21i8VizkI66wmG+3NAxI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0akNtGNBsddnxqoD139nNH0WAcXkWl6sey89x9JI0BtPLWkJhezWCXN8zX+NSn8I8
-         jRMsj6HracD15L9waRPwy0mHsCU/IXvPrrzceKSUOVc7FZ47M+44faPTCH3KDrkuU2
-         zvIge2MZn/vCpMGSV4qSfHV9UhPlaZH8Puq93T1o=
+        b=iiUp1SugpLmiKnygab8fsgBdo3OdhbNGfl6Tl9GOnAyRIgdifgoVCQbL0fHsQTxcU
+         N/ewJHqHZ1gBKXhITCLOk5Ud7gkJsFBpF1mu2ARhHIPBokFIwSvoa9MfzHcAHxtPq/
+         Sbuk45w/tO0G2Su7fvNHwtXJLgrhCnp1SrcSLyKE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 131/135] random: update comment from copy_to_user() -> copy_to_iter()
-Date:   Mon, 27 Jun 2022 13:22:18 +0200
-Message-Id: <20220627111941.952350284@linuxfoundation.org>
+        stable@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5.15 133/135] dma-direct: use the correct size for dma_set_encrypted()
+Date:   Mon, 27 Jun 2022 13:22:20 +0200
+Message-Id: <20220627111942.009795197@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -47,30 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Dexuan Cui <decui@microsoft.com>
 
-commit 63b8ea5e4f1a87dea4d3114293fc8e96a8f193d7 upstream.
+commit 3be4562584bba603f33863a00c1c32eecf772ee6 upstream.
 
-This comment wasn't updated when we moved from read() to read_iter(), so
-this patch makes the trivial fix.
+The third parameter of dma_set_encrypted() is a size in bytes rather than
+the number of pages.
 
-Fixes: 1b388e7765f2 ("random: convert to using fops->read_iter()")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Fixes: 4d0564785bb0 ("dma-direct: factor out dma_set_{de,en}crypted helpers")
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/dma/direct.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -452,7 +452,7 @@ static ssize_t get_random_bytes_user(str
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -323,7 +323,7 @@ void dma_direct_free(struct device *dev,
+ 	} else {
+ 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
+ 			arch_dma_clear_uncached(cpu_addr, size);
+-		if (dma_set_encrypted(dev, cpu_addr, 1 << page_order))
++		if (dma_set_encrypted(dev, cpu_addr, size))
+ 			return;
+ 	}
  
- 	/*
- 	 * Immediately overwrite the ChaCha key at index 4 with random
--	 * bytes, in case userspace causes copy_to_user() below to sleep
-+	 * bytes, in case userspace causes copy_to_iter() below to sleep
- 	 * forever, so that we still retain forward secrecy in that case.
- 	 */
- 	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
+@@ -360,7 +360,6 @@ void dma_direct_free_pages(struct device
+ 		struct page *page, dma_addr_t dma_addr,
+ 		enum dma_data_direction dir)
+ {
+-	unsigned int page_order = get_order(size);
+ 	void *vaddr = page_address(page);
+ 
+ 	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
+@@ -368,7 +367,7 @@ void dma_direct_free_pages(struct device
+ 	    dma_free_from_pool(dev, vaddr, size))
+ 		return;
+ 
+-	if (dma_set_encrypted(dev, vaddr, 1 << page_order))
++	if (dma_set_encrypted(dev, vaddr, size))
+ 		return;
+ 	__dma_direct_free_pages(dev, page, size);
+ }
 
 
