@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D43C0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A20FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242397AbiF0WBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 18:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
+        id S242251AbiF0WBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 18:01:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241584AbiF0Vzv (ORCPT
+        with ESMTP id S241242AbiF0Vzv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 17:55:51 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FED217E12;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD68817E24;
         Mon, 27 Jun 2022 14:55:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1656366908; x=1687902908;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/PYwWPGHO/1+qPoFaj/W0MK8YqX25A5UyWr9XEuPVxU=;
-  b=eSKXUb6dyhFxLKmRdM86KAVnoYpOXg2SgsLJ2NMqMw5XxH4vfJ+v8gJY
-   g1Tz2aaHaUaaynUbRcwWAfQS6p43QLtKxOH1SXUyQzeoYbMVMRykkSnDW
-   55ApuBJ2siKFohc4z6XQspxKGAeIaCq5AFm4qV7vW/GTIZUMddp+X07BW
-   os4oKymRmUs1oAv6Vb6Ond0pEs17eqgcxQgeQws1JFdsNVweDcWMd+ELW
-   dT8mPIk1n7/X52uq7noNBYiLcf7K59SoLajZ3at9sZ4m7+TovQs1sNdU2
-   hwTJM1N7sir6ONrSu9/2raYkmL3ToZXUeMDjNon6kBSSlkU+UndVO9oKC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116142"
+  bh=jSrS5oiO5IBfcWPeUPov/rhPiMcio5Bnjv4uVfJnZGA=;
+  b=VcSf/qjU4gyyQMbNfemE1cBHr9L8fIQCwowxsAbXEzQiAdAoOylDJgiv
+   VduJLCVBEg3FEjoJ2mY+gT9+5yEUCFrUgLJ0DKUG7EKpHdEc7k0UIuGSG
+   LFjKVnuT2ByW7yWQGZsAaWX6L+ln81aEsdVfGsV84XsLHTzOXfzhqJWwd
+   Tn+8AFTfgSYk2kPOsV0DRyHd3GuxrTYojkeXDKXvDABSCC+iBClq7iFUo
+   2/WWuf2AnRNt01XvHXXugCWiUz9p9U4oVgn1zh4kDWLGQ4lk4eXpr2wGu
+   6AJlINB9ziBaGVSIc/w9AeoeRXApY9KrWWg8TMjSROcm/aIoEjHmBzSyh
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116146"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="279116142"
+   d="scan'208";a="279116146"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:01 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:02 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863739"
+   d="scan'208";a="657863750"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:01 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:02 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 091/102] KVM: TDX: Handle TDX PV port io hypercall
-Date:   Mon, 27 Jun 2022 14:54:23 -0700
-Message-Id: <39fb8acbd90c1b5e91eb92710cb7eb992d168e39.1656366338.git.isaku.yamahata@intel.com>
+Subject: [PATCH v7 094/102] KVM: TDX: Handle TDX PV rdmsr/wrmsr hypercall
+Date:   Mon, 27 Jun 2022 14:54:26 -0700
+Message-Id: <fa2437be2ea260507e348083df5e0f05088d745b.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -55,86 +55,66 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Wire up TDX PV port IO hypercall to the KVM backend function.
+Wire up TDX PV rdmsr/wrmsr hypercall to the KVM backend function.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/vmx/tdx.c | 57 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 57 insertions(+)
+ arch/x86/kvm/vmx/tdx.c | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 15dc0ae61e0f..a62586a83b80 100644
+index 162cab67d1ef..dc66c799cae8 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1003,6 +1003,61 @@ static int tdx_emulate_hlt(struct kvm_vcpu *vcpu)
- 	return kvm_emulate_halt_noskip(vcpu);
+@@ -1170,6 +1170,39 @@ static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
+ 	return 1;
  }
  
-+static int tdx_complete_pio_in(struct kvm_vcpu *vcpu)
++static int tdx_emulate_rdmsr(struct kvm_vcpu *vcpu)
 +{
-+	struct x86_emulate_ctxt *ctxt = vcpu->arch.emulate_ctxt;
-+	unsigned long val = 0;
-+	int ret;
++	u32 index = tdvmcall_a0_read(vcpu);
++	u64 data;
 +
-+	WARN_ON(vcpu->arch.pio.count != 1);
-+
-+	ret = ctxt->ops->pio_in_emulated(ctxt, vcpu->arch.pio.size,
-+					 vcpu->arch.pio.port, &val, 1);
-+	WARN_ON(!ret);
++	if (kvm_get_msr(vcpu, index, &data)) {
++		trace_kvm_msr_read_ex(index);
++		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
++		return 1;
++	}
++	trace_kvm_msr_read(index, data);
 +
 +	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
-+	tdvmcall_set_return_val(vcpu, val);
-+
++	tdvmcall_set_return_val(vcpu, data);
 +	return 1;
 +}
 +
-+static int tdx_emulate_io(struct kvm_vcpu *vcpu)
++static int tdx_emulate_wrmsr(struct kvm_vcpu *vcpu)
 +{
-+	struct x86_emulate_ctxt *ctxt = vcpu->arch.emulate_ctxt;
-+	unsigned long val = 0;
-+	unsigned int port;
-+	int size, ret;
-+	bool write;
++	u32 index = tdvmcall_a0_read(vcpu);
++	u64 data = tdvmcall_a1_read(vcpu);
 +
-+	++vcpu->stat.io_exits;
-+
-+	size = tdvmcall_a0_read(vcpu);
-+	write = tdvmcall_a1_read(vcpu);
-+	port = tdvmcall_a2_read(vcpu);
-+
-+	if (size != 1 && size != 2 && size != 4) {
++	if (kvm_set_msr(vcpu, index, data)) {
++		trace_kvm_msr_write_ex(index, data);
 +		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
 +		return 1;
 +	}
 +
-+	if (write) {
-+		val = tdvmcall_a3_read(vcpu);
-+		ret = ctxt->ops->pio_out_emulated(ctxt, size, port, &val, 1);
-+
-+		/* No need for a complete_userspace_io callback. */
-+		vcpu->arch.pio.count = 0;
-+	} else {
-+		ret = ctxt->ops->pio_in_emulated(ctxt, size, port, &val, 1);
-+		if (!ret)
-+			vcpu->arch.complete_userspace_io = tdx_complete_pio_in;
-+		else
-+			tdvmcall_set_return_val(vcpu, val);
-+	}
-+	if (ret)
-+		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
-+	return ret;
++	trace_kvm_msr_write(index, data);
++	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
++	return 1;
 +}
 +
  static int handle_tdvmcall(struct kvm_vcpu *vcpu)
  {
  	if (tdvmcall_exit_type(vcpu))
-@@ -1013,6 +1068,8 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
- 		return tdx_emulate_cpuid(vcpu);
- 	case EXIT_REASON_HLT:
- 		return tdx_emulate_hlt(vcpu);
-+	case EXIT_REASON_IO_INSTRUCTION:
-+		return tdx_emulate_io(vcpu);
+@@ -1184,6 +1217,10 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+ 		return tdx_emulate_io(vcpu);
+ 	case EXIT_REASON_EPT_VIOLATION:
+ 		return tdx_emulate_mmio(vcpu);
++	case EXIT_REASON_MSR_READ:
++		return tdx_emulate_rdmsr(vcpu);
++	case EXIT_REASON_MSR_WRITE:
++		return tdx_emulate_wrmsr(vcpu);
  	default:
  		break;
  	}
