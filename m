@@ -2,250 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B624C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:05:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41EE9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233452AbiF0IFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 04:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39886 "EHLO
+        id S233339AbiF0IFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 04:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233358AbiF0IEx (ORCPT
+        with ESMTP id S233397AbiF0IFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 04:04:53 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 275166304
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:04:26 -0700 (PDT)
-Received: from [10.20.42.19] (unknown [10.20.42.19])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxSeSDZLli5MRfAA--.6131S3;
-        Mon, 27 Jun 2022 16:04:20 +0800 (CST)
-Subject: Re: [PATCH V12 04/10] irqchip: create library file for LoongArch
- irqchip driver
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-References: <1655273250-23495-1-git-send-email-lvjianmin@loongson.cn>
- <1655273250-23495-5-git-send-email-lvjianmin@loongson.cn>
- <877d5dga4k.wl-maz@kernel.org>
- <7fa780d5-406d-6112-e4b4-b56ad291353f@loongson.cn>
- <87bkue36h5.wl-maz@kernel.org>
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-Message-ID: <9da795c8-b70b-7bb5-b414-c9f171217717@loongson.cn>
-Date:   Mon, 27 Jun 2022 16:04:19 +0800
-User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Mon, 27 Jun 2022 04:05:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39731624F;
+        Mon, 27 Jun 2022 01:05:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E591AB80FD3;
+        Mon, 27 Jun 2022 08:05:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308AFC3411D;
+        Mon, 27 Jun 2022 08:05:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656317119;
+        bh=2HW9yR/0VubG534RAXV16tNcuZ+X/ERcbsnB9QlkIzs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SwBqT0N1NMSrlUtAN/CfFJoosZ/AlJFKeWMdKlSyYy0m8Bf6V7JB3upbkRfgm1k7Q
+         xjDFsjyZDBExrPE8iwVn5Z5t9DDLiknmSkwbeo/DE4+z0GaF6vSyReii2PJjumLD1w
+         N60WF18DHJJ2QwHSO+zxcd9B2LnccW/M4he9xT4A=
+Date:   Mon, 27 Jun 2022 10:05:16 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Greg Thelen <gthelen@google.com>
+Cc:     Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, torvalds@linux-foundation.org,
+        stable@vger.kernel.org, lwn@lwn.net, jslaby@suse.cz
+Subject: Re: Linux 5.10.125
+Message-ID: <YrlkvDVa79j4+JVx@kroah.com>
+References: <1656164548242121@kroah.com>
+ <xr93fsjr5901.fsf@gthelen-ubiquity2.mtv.corp.google.com>
+ <ea9b3819-418a-5b79-8bcd-0b28ead70a61@kernel.dk>
+ <6bc6ae48-b569-2002-118a-d3468b0278cd@kernel.dk>
+ <xr93czeu64sx.fsf@gthelen-ubiquity2.mtv.corp.google.com>
+ <YrlGDylVhmjFZpZf@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <87bkue36h5.wl-maz@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9BxSeSDZLli5MRfAA--.6131S3
-X-Coremail-Antispam: 1UD129KBjvJXoW3WF43Jr13ur18ZryDXrWkWFg_yoWxJw4fpF
-        WUJF4jkr4UJr12qrnI9a15Xr9Iy34xKrWjqF4fGa4agryq9Fn7WF1qyry29F1rAr4UWF12
-        vr1DtFW3uFn8ArJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU901xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E
-        87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r10
-        6r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr4
-        1lF7I21c0EjII2zVCS5cI20VAGYxC7Mxk0xIA0c2IEe2xFo4CEbIxvr21lc2xSY4AK6svP
-        MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_XrWUJr1UMxC20s026xCaFVCjc4
-        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
-        17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
-        IF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Zr0_Wr1U
-        MIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIda
-        VFxhVjvjDU0xZFpf9x0JUZa9-UUUUU=
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrlGDylVhmjFZpZf@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/6/27 下午3:34, Marc Zyngier wrote:
-> On Mon, 20 Jun 2022 04:12:10 +0100,
-> Jianmin Lv <lvjianmin@loongson.cn> wrote:
->>
->>
->>
->> On 2022/6/19 上午1:22, Marc Zyngier wrote:
->>> On Wed, 15 Jun 2022 07:07:24 +0100,
->>> Jianmin Lv <lvjianmin@loongson.cn> wrote:
->>>>
->>>> The library file contains following content:
->>>> - Implement acpi_get_gsi_domain_id callback.
->>>> - Implement initialization of vector group entries and APIs
->>>>     for building hierachy irqdomains.
->>>>
->>>> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
->>>> ---
->>>>    drivers/irqchip/Makefile                   |   2 +-
->>>>    drivers/irqchip/irq-loongarch-pic-common.c | 122 +++++++++++++++++++++++++++++
->>>>    drivers/irqchip/irq-loongarch-pic-common.h |  39 +++++++++
->>>>    3 files changed, 162 insertions(+), 1 deletion(-)
->>>>    create mode 100644 drivers/irqchip/irq-loongarch-pic-common.c
->>>>    create mode 100644 drivers/irqchip/irq-loongarch-pic-common.h
->>>>
->>>> diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
->>>> index 6894a13..2d0d871 100644
->>>> --- a/drivers/irqchip/Makefile
->>>> +++ b/drivers/irqchip/Makefile
->>>> @@ -103,7 +103,7 @@ obj-$(CONFIG_LS1X_IRQ)			+= irq-ls1x.o
->>>>    obj-$(CONFIG_TI_SCI_INTR_IRQCHIP)	+= irq-ti-sci-intr.o
->>>>    obj-$(CONFIG_TI_SCI_INTA_IRQCHIP)	+= irq-ti-sci-inta.o
->>>>    obj-$(CONFIG_TI_PRUSS_INTC)		+= irq-pruss-intc.o
->>>> -obj-$(CONFIG_IRQ_LOONGARCH_CPU)		+= irq-loongarch-cpu.o
->>>> +obj-$(CONFIG_IRQ_LOONGARCH_CPU)		+= irq-loongarch-cpu.o irq-loongarch-pic-common.o
->>>>    obj-$(CONFIG_LOONGSON_LIOINTC)		+= irq-loongson-liointc.o
->>>>    obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
->>>>    obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
->>>> diff --git a/drivers/irqchip/irq-loongarch-pic-common.c b/drivers/irqchip/irq-loongarch-pic-common.c
->>>> new file mode 100644
->>>> index 0000000..2f75362
->>>> --- /dev/null
->>>> +++ b/drivers/irqchip/irq-loongarch-pic-common.c
->>>> @@ -0,0 +1,122 @@
->>>> +// SPDX-License-Identifier: GPL-2.0-only
->>>> +/*
->>>> + * Copyright (C) 2022 Loongson Limited, All Rights Reserved.
->>>> + */
->>>> +
->>>> +#include <linux/irq.h>
->>>> +#include <linux/pci.h>
->>>> +#include <linux/acpi.h>
->>>> +#include "irq-loongarch-pic-common.h"
->>>> +
->>>> +static struct acpi_vector_group vector_group[MAX_IO_PICS];
->>>> +
->>>> +struct acpi_madt_bio_pic *acpi_pchpic[MAX_IO_PICS];
->>>> +
->>>> +struct fwnode_handle *liointc_handle;
->>>> +struct fwnode_handle *pch_lpc_handle;
->>>> +struct fwnode_handle *pch_msi_handle[MAX_IO_PICS];
->>>> +struct fwnode_handle *pch_pic_handle[MAX_IO_PICS];
->>>
->>> Why aren't these in individual drivers, and then have accessors to
->>> retrieve them?
->>>
->>
->> Ok, I'll try to put them in individual drivers.
->>
->>
->>>> +
->>>> +static int find_pch_pic(u32 gsi)
->>>> +{
->>>> +	int i, start, end;
->>>> +
->>>> +	/* Find the PCH_PIC that manages this GSI. */
->>>> +	for (i = 0; i < MAX_IO_PICS; i++) {
->>>> +		struct acpi_madt_bio_pic *irq_cfg = acpi_pchpic[i];
->>>> +
->>>> +		if (!irq_cfg)
->>>> +			return -1;
->>>> +
->>>> +		start = irq_cfg->gsi_base;
->>>> +		end   = irq_cfg->gsi_base + irq_cfg->size;
->>>> +		if (gsi >= start && gsi < end)
->>>> +			return i;
->>>> +	}
->>>> +
->>>> +	pr_err("ERROR: Unable to locate PCH_PIC for GSI %d\n", gsi);
->>>> +	return -1;
->>>> +}
->>>
->>> Same thing. This really should be in the PCH driver, and be called by
->>> lpic_get_gsi_domain().
->>>
->>
->> Ok, I'll try to put them in PCH driver.
->>
->>
->>>> +
->>>> +struct fwnode_handle *lpic_get_gsi_domain_id(u32 gsi)
->>>> +{
->>>> +	int id;
->>>> +	struct fwnode_handle *domain_handle = NULL;
->>>> +
->>>> +	switch (gsi) {
->>>> +	case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
->>>> +		if (liointc_handle)
->>>> +			domain_handle = liointc_handle;
->>>> +		break;
->>>> +
->>>> +	case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
->>>> +		if (pch_lpc_handle)
->>>> +			domain_handle = pch_lpc_handle;
->>>> +		break;
->>>> +
->>>> +	case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
->>>> +		id = find_pch_pic(gsi);
->>>> +		if (id >= 0 && pch_pic_handle[id])
->>>> +			domain_handle = pch_pic_handle[id];
->>>> +
->>>> +		break;
->>>> +	}
->>>> +
->>>> +	return domain_handle;
->>>> +}
->>>> +
->>>> +static int pci_mcfg_parse(struct acpi_table_header *header)
->>>> +{
->>>> +	struct acpi_table_mcfg *mcfg;
->>>> +	struct acpi_mcfg_allocation *mptr;
->>>> +	int i, n;
->>>> +
->>>> +	if (header->length < sizeof(struct acpi_table_mcfg))
->>>> +		return -EINVAL;
->>>> +
->>>> +	n = (header->length - sizeof(struct acpi_table_mcfg)) /
->>>> +					sizeof(struct acpi_mcfg_allocation);
->>>> +	mcfg = (struct acpi_table_mcfg *)header;
->>>> +	mptr = (struct acpi_mcfg_allocation *) &mcfg[1];
->>>> +
->>>> +	for (i = 0; i < n; i++, mptr++)
->>>> +		vector_group[mptr->pci_segment].node = (mptr->address >> 44) & 0xf;
->>>> +
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +void __init init_vector_parent_group(void)
->>>> +{
->>>> +	acpi_table_parse(ACPI_SIG_MCFG, pci_mcfg_parse);
->>>> +}
->>>
->>> I really don't think the PCI code should be anywhere near
->>> this. Frankly, this file looks like a dumping ground for totally
->>> unrelated stuff.
->>>
->>
->>
->> For ARM, the msi domain of a pci device is matched by comparing PCI
->> segment of it and PCI segment of msi domain's parent domain(its
->> domain).
->> The PCI segment number here is as in MCFG and as returned by _SEG in
->> the namespace.
->>
->> For LoongArch, a similar way is used, but we don't use
->> IORT-like table, rather, we directly used PCI segment and Base
->> address(node information is in bit44-47 of the address) in MCFG for
->> it, so we need to get them by early parsing MCFG before creating MSI
->> and PCH irqdomain(MSI and PCH irqdomain have the same node as their
->> parent
->> irqdomain).
->>
->> If the related code is not suitable to be here, Maybe I should put
->> them in arch/loongarch/kernel/irq.c and call init_vector_parent_group
->> before irqchip_init().
+On Mon, Jun 27, 2022 at 07:54:23AM +0200, Greg Kroah-Hartman wrote:
+> On Sun, Jun 26, 2022 at 10:42:06PM -0700, Greg Thelen wrote:
+> > Jens Axboe <axboe@kernel.dk> wrote:
+> > 
+> > > On 6/26/22 6:04 PM, Jens Axboe wrote:
+> > >> On 6/26/22 4:56 PM, Greg Thelen wrote:
+> > >>> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> > >>>
+> > >>>> I'm announcing the release of the 5.10.125 kernel.
+> > >>>>
+> > >>>> All users of the 5.10 kernel series must upgrade.
+> > >>>>
+> > >>>> The updated 5.10.y git tree can be found at:
+> > >>>> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.10.y
+> > >>>> and can be browsed at the normal kernel.org git web browser:
+> > >>>> 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+> > >>>>
+> > >>>> thanks,
+> > >>>>
+> > >>>> greg k-h
+> > >>>>
+> > >>>> ------------
+> > >>>>
+> > >>>>  Makefile                              |    2 
+> > >>>>  arch/arm64/mm/cache.S                 |    2 
+> > >>>>  arch/s390/mm/pgtable.c                |    2 
+> > >>>>  drivers/tty/serial/serial_core.c      |   34 ++++--------
+> > >>>>  drivers/usb/gadget/function/u_ether.c |   11 +++-
+> > >>>>  fs/io_uring.c                         |   23 +++++---
+> > >>>>  fs/zonefs/super.c                     |   92 ++++++++++++++++++++++------------
+> > >>>>  net/ipv4/inet_hashtables.c            |   31 ++++++++---
+> > >>>>  8 files changed, 122 insertions(+), 75 deletions(-)
+> > >>>>
+> > >>>> Christian Borntraeger (1):
+> > >>>>       s390/mm: use non-quiescing sske for KVM switch to keyed guest
+> > >>>>
+> > >>>> Damien Le Moal (1):
+> > >>>>       zonefs: fix zonefs_iomap_begin() for reads
+> > >>>>
+> > >>>> Eric Dumazet (1):
+> > >>>>       tcp: add some entropy in __inet_hash_connect()
+> > >>>>
+> > >>>> Greg Kroah-Hartman (1):
+> > >>>>       Linux 5.10.125
+> > >>>>
+> > >>>> Jens Axboe (1):
+> > >>>>       io_uring: add missing item types for various requests
+> > >>>>
+> > >>>> Lukas Wunner (1):
+> > >>>>       serial: core: Initialize rs485 RTS polarity already on probe
+> > >>>>
+> > >>>> Marian Postevca (1):
+> > >>>>       usb: gadget: u_ether: fix regression in setting fixed MAC address
+> > >>>>
+> > >>>> Will Deacon (1):
+> > >>>>       arm64: mm: Don't invalidate FROM_DEVICE buffers at start of DMA transfer
+> > >>>>
+> > >>>> Willy Tarreau (5):
+> > >>>>       tcp: use different parts of the port_offset for index and offset
+> > >>>>       tcp: add small random increments to the source port
+> > >>>>       tcp: dynamically allocate the perturb table used by source ports
+> > >>>>       tcp: increase source port perturb table to 2^16
+> > >>>>       tcp: drop the hash_32() part from the index calculation
+> > >>>
+> > >>> 5.10.125 commit df3f3bb5059d20ef094d6b2f0256c4bf4127a859 ("io_uring: add
+> > >>> missing item types for various requests") causes panic when running
+> > >>> test/iopoll.t from https://github.com/axboe/liburing commit
+> > >>> dda4848a9911120a903bef6284fb88286f4464c9 (liburing-2.2).
+> > >>>
+> > >>> Here's a manually annotated panic message:
+> > >>> [  359.047161] list_del corruption, ffffa42098824f80->next is LIST_POISON1 (dead000000000100)
+> > >>> [  359.055393] kernel BUG at lib/list_debug.c:47!
+> > >>> [  359.059786] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC PTI
+> > >>> [  359.065463] CPU: 11 PID: 15862 Comm: iopoll.t Tainted: G S        I       5.10.124 #1
+> > >>> [  359.081804] RIP: 0010:__list_del_entry_valid+0x49/0x80
+> > >>> [  359.086880] Code: c2 22 48 39 d1 74 25 48 8b 11 48 39 f2 75 2d 48 8b 50 08 48 39 f2 75 34 b0 01 5d c3 48 c7 c7 68 15 79 b1 31 c0 e8 c5 a2 5a 00 <0f> 0b 48 c7 c7 d8 8e 76 b1 31 c0 e8 b5 a2 5a 00 0f 0b 48 c7 c7 69
+> > >>> [  359.105431] RSP: 0018:ffffb6b66785bd58 EFLAGS: 00010046
+> > >>> [  359.110592] RAX: 000000000000004e RBX: ffffa42098824f00 RCX: d07284ea1fbba400
+> > >>> [  359.117642] RDX: ffffa43f7f4f05b8 RSI: ffffa43f7f4dff48 RDI: ffffa43f7f4dff48
+> > >>> [  359.124691] RBP: ffffb6b66785bd58 R08: 0000000000000000 R09: ffffffffb1f38540
+> > >>> [  359.131740] R10: 00000000ffff7fff R11: 0000000000000000 R12: 0000000000000282
+> > >>> [  359.138789] R13: ffffb6b66785beb8 R14: ffffa42095d33e00 R15: ffffa420937e3d20
+> > >>> [  359.145836] FS:  00000000004f8380(0000) GS:ffffa43f7f4c0000(0000) knlGS:0000000000000000
+> > >>> [  359.153830] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > >>> [  359.159506] CR2: 0000000000539388 CR3: 000000027b57c006 CR4: 00000000003706e0
+> > >>> [  359.166552] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > >>> [  359.173600] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > >>> [  359.180647] Call Trace:
+> > >>> [  359.183064]  io_dismantle_req+0x1da/0x2b0
+> > >>>                     __list_del_entry [include/linux/list.h:132]
+> > >>>                     list_del [include/linux/list.h:146]
+> > >>>                     io_req_drop_files [fs/io_uring.c:5934]
+> > >>>                     io_req_clean_work [fs/io_uring.c:1315]
+> > >>>                     io_dismantle_req [fs/io_uring.c:1911]
+> > >>> [  359.187023]  io_do_iopoll+0x4e5/0x790
+> > >>> [  359.194602]  __se_sys_io_uring_enter+0x39b/0x6f0
+> > >>> [  359.208318]  __x64_sys_io_uring_enter+0x29/0x30
+> > >>> [  359.212793]  do_syscall_64+0x31/0x40
+> > >>> [  359.216324]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > >> 
+> > >> Well that sucks, I wonder why mine didn't fail like that. I'll see if I
+> > >> can hit this and send a fix. Thanks for reporting!
+> > >
+> > > Below should do it, I apologize for that. I think my test box booted the
+> > > previous kernel which is why it didn't hit it in my regression tests :-(
+> > >
+> > > Greg, can you add this to 5.10-stable? Verified it ran tests with the
+> > > right kernel now...
 > 
-> That'd probably be better. This really is arch-specific stuff, and not
-> interrupt-controller related.
-> 
+> Great, I'll go just do a release with this in it right now to help
+> others out.
 
-Ok, I'll do that in next version.
-
-> 	M.
-> 
-
+5.10.126 is now released with this fix.
