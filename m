@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACE0CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 259C9CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241632AbiF0V4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
+        id S241644AbiF0V4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241291AbiF0Vyx (ORCPT
+        with ESMTP id S241301AbiF0Vy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:54:53 -0400
+        Mon, 27 Jun 2022 17:54:56 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCC35F7F;
-        Mon, 27 Jun 2022 14:54:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2CF630C;
+        Mon, 27 Jun 2022 14:54:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366892; x=1687902892;
+  t=1656366893; x=1687902893;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ammg3A2Mnovfv+rRVb0tQyZFWoZUYbJqVmLEz3yGWKI=;
-  b=cV1bi6lq2myWZ6zNXdb5Z396q0MVVy/3KHuUEAYPrdDC/Uw0JyJZZFxC
-   nbBq2JBmArarkJsBI8z+t7zpFknRMfNhFdW+a28rk1tJR4KTANoF7hnnO
-   voiaBeM55lvUprLgVVlZONOGPL0+cRi9mkjMQuG7iDZTv58nEAYkUUI2Y
-   c5MvCiV1O72CoUFFlB7Zx0PQ99hHgy7KA/lclLxO4lhiKSa48Ko3ps8f7
-   9HDJuXZNWtwO0hfOvbLBO9QWbWxBLEAJd8dAof5vqFtE5zWIo38B3rRUx
-   9kxbymB+glp+F37fJgRyuT9yVooTSdY8FfcB8pG/Ra+ymAufsaKn0YjF+
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609510"
+  bh=5Wv/IPFVTRe4jyjKqgjJvRX4XujCf32I2mYt7uAyjxc=;
+  b=Qys/B4J65u7Xl3DEJWo/NloDpnd1qvCos7ATNf1gTOIh5zd3vRDoPoH0
+   XBPt5KWTxnpNkBd75ipZUAGGdiJNCpkyOrO1RbLPi9HM86+nDgIeX5r3F
+   rPYRHZ4bi8OYmF7kQjw5nAslfrgiCMAj3ouarmWwzzb7276z4ipVjvPar
+   DD+BJWJw9GOkMugxLgSBA/Jqnlbv0IgABnKklcrKhz/U0ofxiKwEvCXEW
+   X90c+BQXZv6MHWjh/FJJIg4CJk21gFPYAu4eD5Bw/v2/4W76vzfBghaM8
+   jwVX2ySoZsGelJaoKGtmHRsIKBs9/DXgod/L2EYCp/89xzBZXXgOJc9eu
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609513"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281609510"
+   d="scan'208";a="281609513"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:49 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:50 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863481"
+   d="scan'208";a="657863490"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:49 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:50 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>
-Subject: [PATCH v7 016/102] KVM: TDX: Add TDX "architectural" error codes
-Date:   Mon, 27 Jun 2022 14:53:08 -0700
-Message-Id: <0cf120bfa07e12aa648fc66fba19df7506c69ebf.1656366338.git.isaku.yamahata@intel.com>
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH v7 018/102] KVM: TDX: Add helper functions to print TDX SEAMCALL error
+Date:   Mon, 27 Jun 2022 14:53:10 -0700
+Message-Id: <d3cad93883534f12a9a83746c9ee5640db3c2bcc.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -54,61 +53,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Add error codes for the TDX SEAMCALLs both for TDX VMM side for TDH
-SEAMCALL and TDX guest side for TDG.VP.VMCALL.  KVM issues the TDX
-SEAMCALLs and checks its error code.  KVM handles hypercall from the TDX
-guest and may return an error.  So error code for the TDX guest is also
-needed.
+Add helper functions to print out errors from the TDX module in a uniform
+manner.
 
-TDX SEAMCALL uses bits 31:0 to return more information, so these error
-codes will only exactly match RAX[63:32].  Error codes for TDG.VP.VMCALL is
-defined by TDX Guest-Host-Communication interface spec.
-
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/vmx/tdx_errno.h | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
- create mode 100644 arch/x86/kvm/vmx/tdx_errno.h
+ arch/x86/kvm/Makefile        |  2 +-
+ arch/x86/kvm/vmx/tdx_error.c | 22 ++++++++++++++++++++++
+ arch/x86/kvm/vmx/tdx_ops.h   |  3 +++
+ 3 files changed, 26 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/kvm/vmx/tdx_error.c
 
-diff --git a/arch/x86/kvm/vmx/tdx_errno.h b/arch/x86/kvm/vmx/tdx_errno.h
+diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
+index e2c05195cb95..f1ad445df505 100644
+--- a/arch/x86/kvm/Makefile
++++ b/arch/x86/kvm/Makefile
+@@ -24,7 +24,7 @@ kvm-$(CONFIG_KVM_XEN)	+= xen.o
+ kvm-intel-y		+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
+ 			   vmx/evmcs.o vmx/nested.o vmx/posted_intr.o vmx/main.o
+ kvm-intel-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
+-kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o
++kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o vmx/tdx_error.o
+ 
+ kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o svm/sev.o
+ 
+diff --git a/arch/x86/kvm/vmx/tdx_error.c b/arch/x86/kvm/vmx/tdx_error.c
 new file mode 100644
-index 000000000000..5c878488795d
+index 000000000000..61ed855d1188
 --- /dev/null
-+++ b/arch/x86/kvm/vmx/tdx_errno.h
-@@ -0,0 +1,29 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* architectural status code for SEAMCALL */
++++ b/arch/x86/kvm/vmx/tdx_error.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0
++/* functions to record TDX SEAMCALL error */
 +
-+#ifndef __KVM_X86_TDX_ERRNO_H
-+#define __KVM_X86_TDX_ERRNO_H
++#include <linux/kernel.h>
++#include <linux/bug.h>
 +
-+#define TDX_SEAMCALL_STATUS_MASK		0xFFFFFFFF00000000ULL
++#include "tdx_ops.h"
 +
-+/*
-+ * TDX SEAMCALL Status Codes (returned in RAX)
-+ */
-+#define TDX_SUCCESS				0x0000000000000000ULL
-+#define TDX_NON_RECOVERABLE_VCPU		0x4000000100000000ULL
-+#define TDX_INTERRUPTED_RESUMABLE		0x8000000300000000ULL
-+#define TDX_LIFECYCLE_STATE_INCORRECT		0xC000060700000000ULL
-+#define TDX_VCPU_NOT_ASSOCIATED			0x8000070200000000ULL
-+#define TDX_KEY_GENERATION_FAILED		0x8000080000000000ULL
-+#define TDX_KEY_STATE_INCORRECT			0xC000081100000000ULL
-+#define TDX_KEY_CONFIGURED			0x0000081500000000ULL
-+#define TDX_EPT_WALK_FAILED			0xC0000B0000000000ULL
++void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out)
++{
++	if (!out) {
++		pr_err_ratelimited("SEAMCALL[%lld] failed: 0x%llx\n",
++				op, error_code);
++		return;
++	}
 +
-+/*
-+ * TDG.VP.VMCALL Status Codes (returned in R10)
-+ */
-+#define TDG_VP_VMCALL_SUCCESS			0x0000000000000000ULL
-+#define TDG_VP_VMCALL_INVALID_OPERAND		0x8000000000000000ULL
-+#define TDG_VP_VMCALL_TDREPORT_FAILED		0x8000000000000001ULL
++	pr_err_ratelimited(
++		"SEAMCALL[%lld] failed: 0x%llx "
++		"RCX 0x%llx, RDX 0x%llx, R8 0x%llx, R9 0x%llx, R10 0x%llx, R11 0x%llx\n",
++		op, error_code,
++		out->rcx, out->rdx, out->r8, out->r9, out->r10, out->r11);
++}
+diff --git a/arch/x86/kvm/vmx/tdx_ops.h b/arch/x86/kvm/vmx/tdx_ops.h
+index 85adbf49c277..8cc2f01c509b 100644
+--- a/arch/x86/kvm/vmx/tdx_ops.h
++++ b/arch/x86/kvm/vmx/tdx_ops.h
+@@ -9,12 +9,15 @@
+ #include <asm/cacheflush.h>
+ #include <asm/asm.h>
+ #include <asm/kvm_host.h>
++#include <asm/tdx.h>
+ 
+ #include "tdx_errno.h"
+ #include "tdx_arch.h"
+ 
+ #ifdef CONFIG_INTEL_TDX_HOST
+ 
++void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out);
 +
-+#endif /* __KVM_X86_TDX_ERRNO_H */
+ static inline u64 tdh_mng_addcx(hpa_t tdr, hpa_t addr)
+ {
+ 	clflush_cache_range(__va(addr), PAGE_SIZE);
 -- 
 2.25.1
 
