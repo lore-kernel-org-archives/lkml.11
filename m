@@ -2,195 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D28C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 286F5CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:12:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232663AbiF0JMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 05:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34790 "EHLO
+        id S233811AbiF0JMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 05:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233786AbiF0JMd (ORCPT
+        with ESMTP id S233786AbiF0JMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 05:12:33 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFD62664;
-        Mon, 27 Jun 2022 02:12:31 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3E49FE0004;
-        Mon, 27 Jun 2022 09:12:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656321148;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P/aeWWjcU0pgTxSwnjFANZsIuEo0pdJ58U5EC/Hg9ws=;
-        b=pjj1BJqlH41VjgpxpUnUPjFak7CZHgFA73fITnzpLF2aujUnxSv5YBybx35HmLB/1u8afq
-        UhQ2zBx3y6bMSHU2THvZeaHhvJREii3B1WyfhfM/oiKxtdqiz7c9JC3IPOPp/3G8fRse1n
-        KJ8YSiMFayq0TQqu7ZES9J6Zyq8/JhOaVmqkTiUHcc8ythxd2K08zQozS2B3rPt+5ayr5x
-        IKUZOcVqmeZQ0z7CLyQx1ZcWd8JZaf2V4BHErcfXvamtxpBfGrjdrA//enBhMI8+V7NQEa
-        kBpHbEQl0+NSZRlGq6K1TiA0hB3rYDjFKlJ61vlk8z7WLzCVtdXbMbRA1fAGTw==
-Date:   Mon, 27 Jun 2022 11:11:39 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Frank Rowand <frowand.list@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lizhi Hou <lizhi.hou@xilinx.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH 1/2] of: create of_root if no dtb provided
-Message-ID: <20220627111139.22ea1abd@fixe.home>
-In-Reply-To: <6d40876c-2751-01bb-94ab-7c9ab90e636f@gmail.com>
-References: <20220624034327.2542112-1-frowand.list@gmail.com>
-        <20220624034327.2542112-2-frowand.list@gmail.com>
-        <20220624141320.3c473605@fixe.home>
-        <6d40876c-2751-01bb-94ab-7c9ab90e636f@gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Mon, 27 Jun 2022 05:12:45 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C021D2667
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:12:43 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 504171FAD6;
+        Mon, 27 Jun 2022 09:12:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1656321162; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=hWcCqwO3BTodK8igIZw+OA8TsjbOJ7vRUphPsAiYNv4=;
+        b=eeRgR8VepGtYhh2IgHJ7MPaSon2kC3s6egMSpO80f5L/5WThzmff4qewigVLB+qJH0ZuiK
+        RyXfaMTuLi70NRl7KBO4wEm55ZMvF83BXRZEuXzpVxAhe0PnOFIqR7mmiQ3HTy9ZSkMKeW
+        aOIpRpowQ0O+6qqnHcE0FY9rx7XZIUM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1656321162;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=hWcCqwO3BTodK8igIZw+OA8TsjbOJ7vRUphPsAiYNv4=;
+        b=3gYlwMlEoElkfTm6cd/wO/q3VHQTTqvtC51R3D2kE8IUa5YnQaypTGqU4CXX87A8rJEBdX
+        PseDLBPqHiUkCrBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 362C113456;
+        Mon, 27 Jun 2022 09:12:42 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qcRbDIp0uWKHIgAAMHmgww
+        (envelope-from <hare@suse.de>); Mon, 27 Jun 2022 09:12:42 +0000
+Message-ID: <f69f7f28-cf24-ebca-41f2-f6cf76435839@suse.de>
+Date:   Mon, 27 Jun 2022 11:12:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Matthew Wilcox <matthew@wil.cx>, Mel Gorman <mgorman@suse.de>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Jan Kara <jack@suse.cz>
+From:   Hannes Reinecke <hare@suse.de>
+Subject: Oddities in do_read_cache_page()
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 24 Jun 2022 11:44:07 -0500,
-Frank Rowand <frowand.list@gmail.com> a =C3=A9crit :
+Hey Matt,
 
-> On 6/24/22 08:13, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Le Thu, 23 Jun 2022 22:43:26 -0500,
-> > frowand.list@gmail.com a =C3=A9crit :
-> >  =20
-> >> =20
-> >> +/*
-> >> + * __dtb_empty_root_begin[] magically created by cmd_dt_S_dtb in
-> >> + * scripts/Makefile.lib
-> >> + */
-> >> +extern void *__dtb_empty_root_begin;
-> >> +
-> >>  /*
-> >>   * of_fdt_limit_memory - limit the number of regions in the /memory n=
-ode
-> >>   * @limit: maximum entries
-> >> @@ -1332,8 +1338,13 @@ bool __init early_init_dt_scan(void *params)
-> >>   */
-> >>  void __init unflatten_device_tree(void)
-> >>  { =20
-> >=20
-> > Hi Frank,
-> >=20
-> > This function is only defined when CONFIG_OF_EARLY_FLATTREE is enabled.=
- =20
->=20
-> More precisely, only if CONFIG_OF_FLATTREE is enabled.  But that would
-> most likely be seleved by CONFIG_OF_EARLY_FLATTREE, so in practice the
-> issue you raise is valid.
->=20
-> > Which means that on platforms that do not select this, the default
-> > empty device-tree creation will not be done. =20
->=20
-> Yes, so platforms that need this functionality need to select this
-> option.
+I've stumbled across this code in do_read_cache_page():
 
-Yes, but this seems a bit odd because this is not really a early
-flattree that is provided by the firmware. This simply allows to have a
-working support for overlays (As a "side effect" I agree).
+         struct folio *folio;
 
->=20
-> >=20
-> > This configuration option is selected by the platform and not by the
-> > user. On x86, only one config enables this (X86_INTEL_CE) which means
-> > this won't work on all the other platforms even if CONFIG_OF is
-> > selected. I would need this to work by only selected CONFIG_OF. =20
->=20
-> Maybe this means that CONFIG_OF should be changed to select
-> CONFIG_OF_FLATTREE.  Any opinions on this Rob?
->=20
-> > That's why I decided to add the of_root creation in of_core_init()
-> > using a function (of_fdt_unflatten()) that is provided if CONFIG_OF is
-> > defined. =20
->=20
-> I mentioned this in response to the previous patch series, but will
-> repeat here for those who might not have read that email thread.
->=20
-> I do not want the root live tree to be created buy different code in
-> different places; I want one central place where this occurs.  When
-> the tree can be created in multiple places by different code blocks,
-> it becomes more difficult to understand the code and more likely that
-> one of the tree creation code blocks is not updated when another is.
+         folio = do_read_cache_folio(mapping, index, filler, file, gfp);
+         if (IS_ERR(folio))
+                 return &folio->page;
+         return folio_file_page(folio, index);
 
-Understood, my point was more about the fact that I did not wanted to
-select CONFIG_OF_FLATTREE to be able to use that support which does not
-seems entirely tied to having a "early flattree".
+Following 'do_read_cache_folio()' I see that it does things like
 
-Thanks,
+                 folio = filemap_alloc_folio(gfp, 0);
+                 if (!folio)
+                         return ERR_PTR(-ENOMEM);
 
-Cl=C3=A9ment
+Now I freely admit that my knowledge of folios is hazy at best, but 
+dereferencing an error pointer is something I would seriously frown upon 
+  if I were to review the code.
+Care to explain?
+Or is it, indeed, simply a bug?
 
->=20
-> >  =20
-> >> -	__unflatten_device_tree(initial_boot_params, NULL, &of_root,
-> >> +	if (!initial_boot_params) {
-> >> +		initial_boot_params =3D (void *) __dtb_empty_root_begin;
-> >> +		unflatten_and_copy_device_tree();
-> >> +	} else {
-> >> +		__unflatten_device_tree(initial_boot_params, NULL, &of_root,
-> >>  				early_init_dt_alloc_memory_arch, false);
-> >> +	}
-> >> =20
-> >>  	/* Get pointer to "/chosen" and "/aliases" nodes for use everywhere =
-*/
-> >>  	of_alias_scan(early_init_dt_alloc_memory_arch);
-> >> @@ -1373,6 +1384,12 @@ void __init unflatten_and_copy_device_tree(void)
-> >>  	unflatten_device_tree();
-> >>  }
-> >> =20
-> >> +void __init setup_of(void)
-> >> +{
-> >> +	if (!of_root)
-> >> +		unflatten_device_tree();
-> >> +}
-> >> +
-> >>  #ifdef CONFIG_SYSFS
-> >>  static ssize_t of_fdt_raw_read(struct file *filp, struct kobject *kob=
-j,
-> >>  			       struct bin_attribute *bin_attr,
-> >> diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
-> >> index d69ad5bb1eb1..4566876db351 100644
-> >> --- a/include/linux/of_fdt.h
-> >> +++ b/include/linux/of_fdt.h
-> >> @@ -81,6 +81,7 @@ extern const void *of_flat_dt_match_machine(const vo=
-id *default_match,
-> >>  /* Other Prototypes */
-> >>  extern void unflatten_device_tree(void);
-> >>  extern void unflatten_and_copy_device_tree(void);
-> >> +extern void setup_of(void);
-> >>  extern void early_init_devtree(void *);
-> >>  extern void early_get_first_memblock_info(void *, phys_addr_t *);
-> >>  #else /* CONFIG_OF_EARLY_FLATTREE */
-> >> @@ -91,6 +92,7 @@ static inline void early_init_fdt_reserve_self(void)=
- {}
-> >>  static inline const char *of_flat_dt_get_machine_name(void) { return =
-NULL; }
-> >>  static inline void unflatten_device_tree(void) {}
-> >>  static inline void unflatten_and_copy_device_tree(void) {}
-> >> +static inline void of_setup(void) {} =20
-> >  =20
->=20
-> > Shouldn't this be setup_of(void) ? =20
->=20
-> Yes, thanks!  Will fix.
->=20
-> One other thing I need to do is test this patch on a user mode linux
-> kernel.
->=20
-> -Frank
->=20
+Cheers,
 
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Hannes
+-- 
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
