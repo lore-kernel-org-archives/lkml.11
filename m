@@ -2,80 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF5D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 103FAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233638AbiF0Ipo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 04:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39662 "EHLO
+        id S232724AbiF0Iqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 04:46:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233019AbiF0Ipj (ORCPT
+        with ESMTP id S233019AbiF0Iqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 04:45:39 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906B1631E
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:45:38 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LWh9H1MqMzkWnN;
-        Mon, 27 Jun 2022 16:44:19 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 16:45:36 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 27 Jun
- 2022 16:45:36 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-        <iommu@lists.linux-foundation.org>
-CC:     <joro@8bytes.org>, <will@kernel.org>, <yf.wang@mediatek.com>
-Subject: [PATCH -next] iommu/dma: Fix missing mutex_init() in iommu_get_msi_cookie()
-Date:   Mon, 27 Jun 2022 16:55:33 +0800
-Message-ID: <20220627085533.1469141-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 27 Jun 2022 04:46:34 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4DA6353
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:46:33 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id g4so3983168ybg.9
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:46:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4vsOnIc+C2gY1UVlbVz/JDciMvgYEap1WYGcSJm7nik=;
+        b=izm5TvVaySgpwnEQF9/y67fAWYu9B2xhHcC5MrbsqfKRyBWcvUJOefttP3U8C7H5yK
+         cf/c+G/MDFeL9d3jWR3ZM1W+uRZZqwp2hTAlphjRcQ4y5gzmknF6zrBjrzS5Oq9593TH
+         prMhKu/+/nH//vvJzE+A8myFZw0Vf2YB5togDcAyh2pSj1lg7+NXGygkUac2Pq5BEBXO
+         5+wwtXrzIkpK6w7dEXtmMbM9imlU0I4M6KLt1i3bZoyGQ30Vb87yxIZpNyIgjCBXAtgw
+         DSd6AsFRpnuauM1qBq8q0T/kLZUm8tLjA1oB1Fx/TPENkDLwNudIWg8vpilEWofAkp3b
+         qS3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4vsOnIc+C2gY1UVlbVz/JDciMvgYEap1WYGcSJm7nik=;
+        b=oJLa0ziUJtUmkj0rqLB1KIVnCsymH5FwINwKY/SCsd3wuQwU7D4P+cSXKoEMhlghfo
+         XzwBhh96DBk8A+jPG5KcX8v92JMVgJZGXcN644iw9skrECkhRqr9wEiJO+4T/URCcSna
+         fG0oANLdei9VCXd/Cedrtll6g5qKDV7/95UNnSLAaA5Ce/zjus/8fgYT25b9KmdP5lU7
+         nHdD+X+sKQe85YJl5tKU+dIMgbA+c/eY4XU05ww+SLxfstvm6PehcFQ3Fqj9q3GqojYy
+         ZwGpMbtrDXoBMTyQiY41j0AzwP2wgyGD6518nOebSz/TCSrwdGugIZY6Or7fyX8dXeU+
+         6IfQ==
+X-Gm-Message-State: AJIora8mZIZ+HCkGlwmatWYcC1RxXEvKboCmMNdR8OWfpONx/3gf3dQ8
+        NKvnhM8MwHZuTSEGZKfogLvrPZilKGMEpQzISDh3GQ==
+X-Google-Smtp-Source: AGRyM1tmdR+Xbj5kJ69vq4foOyHTSytqN33Xz6MWmkpMcamFreKrameDkaAL4/75vWqZ0Cye+/NLca9lf7qZmNQ/HPM=
+X-Received: by 2002:a25:6c5:0:b0:669:a17a:2289 with SMTP id
+ 188-20020a2506c5000000b00669a17a2289mr12352386ybg.231.1656319592797; Mon, 27
+ Jun 2022 01:46:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
+ <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
+ <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
+ <20220623185730.25b88096@kernel.org> <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
+ <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
+ <20220624070656.GE79500@shbuild999.sh.intel.com> <20220624144358.lqt2ffjdry6p5u4d@google.com>
+ <20220625023642.GA40868@shbuild999.sh.intel.com> <20220627023812.GA29314@shbuild999.sh.intel.com>
+In-Reply-To: <20220627023812.GA29314@shbuild999.sh.intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 27 Jun 2022 10:46:21 +0200
+Message-ID: <CANn89i+6NPujMyiQxriZRt6vhv6hNrAntXxi1uOhJ0SSqnJ47w@mail.gmail.com>
+Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
+To:     Feng Tang <feng.tang@intel.com>
+Cc:     Shakeel Butt <shakeelb@google.com>, Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cookie_alloc() is called by iommu_get_dma_cookie() and iommu_get_msi_cookie(),
-but the mutex is only initialized in iommu_get_dma_cookie(), move mutex_init()
-into cookie_alloc() to make sure the mutex will be initialized.
+On Mon, Jun 27, 2022 at 4:38 AM Feng Tang <feng.tang@intel.com> wrote:
+>
+> On Sat, Jun 25, 2022 at 10:36:42AM +0800, Feng Tang wrote:
+> > On Fri, Jun 24, 2022 at 02:43:58PM +0000, Shakeel Butt wrote:
+> > > On Fri, Jun 24, 2022 at 03:06:56PM +0800, Feng Tang wrote:
+> > > > On Thu, Jun 23, 2022 at 11:34:15PM -0700, Shakeel Butt wrote:
+> > > [...]
+> > > > >
+> > > > > Feng, can you please explain the memcg setup on these test machines
+> > > > > and if the tests are run in root or non-root memcg?
+> > > >
+> > > > I don't know the exact setup, Philip/Oliver from 0Day can correct me.
+> > > >
+> > > > I logged into a test box which runs netperf test, and it seems to be
+> > > > cgoup v1 and non-root memcg. The netperf tasks all sit in dir:
+> > > > '/sys/fs/cgroup/memory/system.slice/lkp-bootstrap.service'
+> > > >
+> > >
+> > > Thanks Feng. Can you check the value of memory.kmem.tcp.max_usage_in_bytes
+> > > in /sys/fs/cgroup/memory/system.slice/lkp-bootstrap.service after making
+> > > sure that the netperf test has already run?
+> >
+> > memory.kmem.tcp.max_usage_in_bytes:0
+>
+> Sorry, I made a mistake that in the original report from Oliver, it
+> was 'cgroup v2' with a 'debian-11.1' rootfs.
+>
+> When you asked about cgroup info, I tried the job on another tbox, and
+> the original 'job.yaml' didn't work, so I kept the 'netperf' test
+> parameters and started a new job which somehow run with a 'debian-10.4'
+> rootfs and acutally run with cgroup v1.
+>
+> And as you mentioned cgroup version does make a big difference, that
+> with v1, the regression is reduced to 1% ~ 5% on different generations
+> of test platforms. Eric mentioned they also got regression report,
+> but much smaller one, maybe it's due to the cgroup version?
 
-Fixes: ac9a5d522bb8 ("iommu/dma: Fix race condition during iova_domain initialization")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/iommu/dma-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This was using the current net-next tree.
+Used recipe was something like:
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 1910f4f1612b..e29157380c48 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -294,6 +294,7 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
- 	if (cookie) {
- 		INIT_LIST_HEAD(&cookie->msi_page_list);
- 		cookie->type = type;
-+		mutex_init(&cookie->mutex);
- 	}
- 	return cookie;
- }
-@@ -311,7 +312,6 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
- 	if (!domain->iova_cookie)
- 		return -ENOMEM;
- 
--	mutex_init(&domain->iova_cookie->mutex);
- 	return 0;
- }
- 
--- 
-2.25.1
+Make sure cgroup2 is mounted or mount it by mount -t cgroup2 none $MOUNT_POINT.
+Enable memory controller by echo +memory > $MOUNT_POINT/cgroup.subtree_control.
+Create a cgroup by mkdir $MOUNT_POINT/job.
+Jump into that cgroup by echo $$ > $MOUNT_POINT/job/cgroup.procs.
 
+<Launch tests>
+
+The regression was smaller than 1%, so considered noise compared to
+the benefits of the bug fix.
+
+>
+> Thanks,
+> Feng
+>
+> > And here is more memcg stats (let me know if you want to check more)
+> >
+> > > If this is non-zero then network memory accounting is enabled and the
+> > > slowdown is expected.
+> >
+> > >From the perf-profile data in original report, both
+> > __sk_mem_raise_allocated() and __sk_mem_reduce_allocated() are called
+> > much more often, which call memcg charge/uncharge functions.
+> >
+> > IIUC, the call chain is:
+> >
+> > __sk_mem_raise_allocated
+> >     sk_memory_allocated_add
+> >     mem_cgroup_charge_skmem
+> >         charge memcg->tcpmem (for cgroup v2)
+> >       try_charge memcg (for v1)
+> >
+> > Also from Eric's one earlier commit log:
+> >
+> > "
+> > net: implement per-cpu reserves for memory_allocated
+> > ...
+> > This means we are going to call sk_memory_allocated_add()
+> > and sk_memory_allocated_sub() more often.
+> > ...
+> > "
+> >
+> > So this slowdown is related to the more calling of charge/uncharge?
+> >
+> > Thanks,
+> > Feng
+> >
+> > > > And the rootfs is a debian based rootfs
+> > > >
+> > > > Thanks,
+> > > > Feng
+> > > >
+> > > >
+> > > > > thanks,
+> > > > > Shakeel
