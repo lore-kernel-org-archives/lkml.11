@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC82C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 960E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235116AbiF0LfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
+        id S236010AbiF0LfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236237AbiF0Lda (ORCPT
+        with ESMTP id S236247AbiF0Lda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:33:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B86D10B;
-        Mon, 27 Jun 2022 04:30:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11355D119;
+        Mon, 27 Jun 2022 04:30:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63852B8111A;
-        Mon, 27 Jun 2022 11:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D20C3411D;
-        Mon, 27 Jun 2022 11:30:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9046561355;
+        Mon, 27 Jun 2022 11:30:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B93DC3411D;
+        Mon, 27 Jun 2022 11:30:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329439;
-        bh=10mVpdiw6f+f02y4ZjqUbiBDWe4mSbM1JwVKYUuAddI=;
+        s=korg; t=1656329442;
+        bh=NGrFpnGNy+UhulDZSNrnYduBOQTEXJrXmxA3Afg3+7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pjNPh7ywehEnX163ijqbjjDciUGMRPfSQ4o284Ide2ic+RiY+gTOE/3uwckujuwmF
-         SMof7KCsXPn7W0jxlUlKjkEqDTaOIYkMhwO1P/YjGBk+rnSik7nOJpk/CRyfuejsGe
-         6XrFCoLVn5Gy9I83aMuItFP6VG2ZIfjKdneWd+2Q=
+        b=g4SkJgiGRXXWGAe4hAKmoo0L8gkqfqVGqfy37QsQGJUojIGWhlaIGyP9eM5bmpeL5
+         9yHMPg0YjmWv9oEMoh7aBDTEZe942zgeH2r51IZcIUc/nFq6X7VTHH4BvBlyo1FKCE
+         mWstepnwD1Ksodo9meXaAR3Wmyq0Q2DAEdLeDhqQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.4 60/60] powerpc/pseries: wire up rng during setup_arch()
-Date:   Mon, 27 Jun 2022 13:22:11 +0200
-Message-Id: <20220627111929.455633485@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 5.4 47/60] xtensa: Fix refcount leak bug in time.c
+Date:   Mon, 27 Jun 2022 13:21:58 +0200
+Message-Id: <20220627111929.073062554@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -49,82 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Liang He <windhl@126.com>
 
-commit e561e472a3d441753bd012333b057f48fef1045b upstream.
+commit a0117dc956429f2ede17b323046e1968d1849150 upstream.
 
-The platform's RNG must be available before random_init() in order to be
-useful for initial seeding, which in turn means that it needs to be
-called from setup_arch(), rather than from an init call. Fortunately,
-each platform already has a setup_arch function pointer, which means
-it's easy to wire this up. This commit also removes some noisy log
-messages that don't add much.
+In calibrate_ccount(), of_find_compatible_node() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
-Fixes: a489043f4626 ("powerpc/pseries: Implement arch_get_random_long() based on H_RANDOM")
-Cc: stable@vger.kernel.org # v3.13+
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220611151015.548325-4-Jason@zx2c4.com
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220617124432.4049006-1-windhl@126.com>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/platforms/pseries/pseries.h |    2 ++
- arch/powerpc/platforms/pseries/rng.c     |   11 +++--------
- arch/powerpc/platforms/pseries/setup.c   |    2 ++
- 3 files changed, 7 insertions(+), 8 deletions(-)
+ arch/xtensa/kernel/time.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/powerpc/platforms/pseries/pseries.h
-+++ b/arch/powerpc/platforms/pseries/pseries.h
-@@ -114,4 +114,6 @@ int dlpar_workqueue_init(void);
- void pseries_setup_rfi_flush(void);
- void pseries_lpar_read_hblkrm_characteristics(void);
- 
-+void pseries_rng_init(void);
-+
- #endif /* _PSERIES_PSERIES_H */
---- a/arch/powerpc/platforms/pseries/rng.c
-+++ b/arch/powerpc/platforms/pseries/rng.c
-@@ -10,6 +10,7 @@
- #include <asm/archrandom.h>
- #include <asm/machdep.h>
- #include <asm/plpar_wrappers.h>
-+#include "pseries.h"
- 
- 
- static int pseries_get_random_long(unsigned long *v)
-@@ -24,19 +25,13 @@ static int pseries_get_random_long(unsig
- 	return 0;
- }
- 
--static __init int rng_init(void)
-+void __init pseries_rng_init(void)
- {
- 	struct device_node *dn;
- 
- 	dn = of_find_compatible_node(NULL, NULL, "ibm,random");
- 	if (!dn)
--		return -ENODEV;
--
--	pr_info("Registering arch random hook.\n");
--
-+		return;
- 	ppc_md.get_random_seed = pseries_get_random_long;
--
- 	of_node_put(dn);
--	return 0;
- }
--machine_subsys_initcall(pseries, rng_init);
---- a/arch/powerpc/platforms/pseries/setup.c
-+++ b/arch/powerpc/platforms/pseries/setup.c
-@@ -792,6 +792,8 @@ static void __init pSeries_setup_arch(vo
- 
- 	if (swiotlb_force == SWIOTLB_FORCE)
- 		ppc_swiotlb_enable = 1;
-+
-+	pseries_rng_init();
- }
- 
- static void pseries_panic(char *str)
+--- a/arch/xtensa/kernel/time.c
++++ b/arch/xtensa/kernel/time.c
+@@ -160,6 +160,7 @@ static void __init calibrate_ccount(void
+ 	cpu = of_find_compatible_node(NULL, NULL, "cdns,xtensa-cpu");
+ 	if (cpu) {
+ 		clk = of_clk_get(cpu, 0);
++		of_node_put(cpu);
+ 		if (!IS_ERR(clk)) {
+ 			ccount_freq = clk_get_rate(clk);
+ 			return;
 
 
