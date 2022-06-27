@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C048CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239651AbiF0MAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
+        id S239667AbiF0MAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238922AbiF0Lwt (ORCPT
+        with ESMTP id S238917AbiF0Lwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:52:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57462DF22;
-        Mon, 27 Jun 2022 04:46:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B30DF1D;
+        Mon, 27 Jun 2022 04:46:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E91A3B80D37;
-        Mon, 27 Jun 2022 11:46:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50C86C3411D;
-        Mon, 27 Jun 2022 11:46:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F17461187;
+        Mon, 27 Jun 2022 11:46:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6764EC3411D;
+        Mon, 27 Jun 2022 11:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330387;
-        bh=SxpGI+CQk3fn6M8/MgNMGVqxpD3nKniUZv1qZm4HGwE=;
+        s=korg; t=1656330384;
+        bh=/OV4TQT7m05Fi0VZVfG2VTpYR5hu8IQh+pTF8a8E0mw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XY7uRXaEps9mOa4O0Gwi+kNrzkoNXynOUYhKr5DcOvV8w8JGfHJGOeRcQc4NvNBUZ
-         Aqzj1CALBJtMW71GmzBMnAZUNi7UwmVFbyMYGxqUIYP4cmMcNDZWQ2bF672yqQyG3L
-         iZI0ju83birm18lPptqiz02Ipk6kgez/YO7tCnGM=
+        b=hHuydioKCse2QR7eMMQiz8HO1WK4Y1c/mqsIDHNjw/jwqEodPbCzTMG0Y+OKr9chZ
+         NdnP2LztawpauRDoTdpPT8tVDWuSjqi9mugfW3JXabS431U/dmZbvN2tWVJtT3W2uN
+         2bN077MMGp0u4NTLhO28FvEWnl+0dPzWNkP0Q/5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aashish Sharma <shraash@google.com>,
-        kernel test robot <lkp@intel.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>, Stable@vger.kernel.org,
+        stable@vger.kernel.org,
+        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 131/181] iio:proximity:sx9324: Check ret value of device_property_read_u32_array()
-Date:   Mon, 27 Jun 2022 13:21:44 +0200
-Message-Id: <20220627111948.489224737@linuxfoundation.org>
+Subject: [PATCH 5.18 140/181] iio: imu: inv_icm42600: Fix broken icm42600 (chip id 0 value)
+Date:   Mon, 27 Jun 2022 13:21:53 +0200
+Message-Id: <20220627111948.747069861@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,42 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aashish Sharma <shraash@google.com>
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-commit 70171ed6dc53d2f580166d47f5b66cf51a6d0092 upstream.
+commit 106b391e1b859100a3f38f0ad874236e9be06bde upstream.
 
-0-day reports:
+The 0 value used for INV_CHIP_ICM42600 was not working since the
+match in i2c/spi was checking against NULL value.
 
-drivers/iio/proximity/sx9324.c:868:3: warning: Value stored
-to 'ret' is never read [clang-analyzer-deadcode.DeadStores]
+To keep this check, add a first INV_CHIP_INVALID 0 value as safe
+guard.
 
-Put an if condition to break out of switch if ret is non-zero.
-
-Signed-off-by: Aashish Sharma <shraash@google.com>
-Fixes: a8ee3b32f5da ("iio:proximity:sx9324: Add dt_binding support")
-Reported-by: kernel test robot <lkp@intel.com>
-[swboyd@chromium.org: Reword commit subject, add fixes tag]
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
-Link: https://lore.kernel.org/r/20220613232224.2466278-1-swboyd@chromium.org
+Fixes: 31c24c1e93c3 ("iio: imu: inv_icm42600: add core of new inv_icm42600 driver")
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Link: https://lore.kernel.org/r/20220609102301.4794-1-jmaneyrol@invensense.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/proximity/sx9324.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h      |    1 +
+ drivers/iio/imu/inv_icm42600/inv_icm42600_core.c |    2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/iio/proximity/sx9324.c
-+++ b/drivers/iio/proximity/sx9324.c
-@@ -885,6 +885,9 @@ sx9324_get_default_reg(struct device *de
- 			break;
- 		ret = device_property_read_u32_array(dev, prop, pin_defs,
- 						     ARRAY_SIZE(pin_defs));
-+		if (ret)
-+			break;
-+
- 		for (pin = 0; pin < SX9324_NUM_PINS; pin++)
- 			raw |= (pin_defs[pin] << (2 * pin)) &
- 			       SX9324_REG_AFE_PH0_PIN_MASK(pin);
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+@@ -17,6 +17,7 @@
+ #include "inv_icm42600_buffer.h"
+ 
+ enum inv_icm42600_chip {
++	INV_CHIP_INVALID,
+ 	INV_CHIP_ICM42600,
+ 	INV_CHIP_ICM42602,
+ 	INV_CHIP_ICM42605,
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+@@ -565,7 +565,7 @@ int inv_icm42600_core_probe(struct regma
+ 	bool open_drain;
+ 	int ret;
+ 
+-	if (chip < 0 || chip >= INV_CHIP_NB) {
++	if (chip <= INV_CHIP_INVALID || chip >= INV_CHIP_NB) {
+ 		dev_err(dev, "invalid chip = %d\n", chip);
+ 		return -ENODEV;
+ 	}
 
 
