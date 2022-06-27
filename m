@@ -2,122 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1512EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 01:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 029F3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 02:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbiF0Bqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 21:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
+        id S230174AbiF0CDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 22:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiF0Bqh (ORCPT
+        with ESMTP id S229910AbiF0CDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 21:46:37 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50CA22AF5
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 18:46:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656294397; x=1687830397;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=25q2Ot9qhgZzcqFAUdp6LMnf76NSWxWGDc2QUqsYmo8=;
-  b=bpuWvPoRTGG7klfvTjTUmQCk3/Z2JskHqooxy15JlWKno4bvAmlza84m
-   dKYJJsOc7pBRZYmT3rprSn72sg5WElPH74bYTZSzWhijBZcBRyIuEMril
-   kfQfIj1eeaKyb/yP36FdLOrJz1tC8sII2pp4as8G5WYtZ/JN6HaMsZO2+
-   w+oAu2begv4ykwYNIRqG+F148M7g3foPDONWnE1NOOJIYFV7JLP9dmkPl
-   FbFodKxkl5VXxMfZHHbDanwxs32NBZXmpHaC5UDIb17sBGuwcLLymuCJy
-   ramwSW2yWVQAZhNmjeojKG2n/Pg/Exv9iXPpmtKDRs68kKsZpsmKjd36Q
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="270074332"
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="270074332"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2022 18:46:36 -0700
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="835979159"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2022 18:46:35 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, Zi Yan <ziy@nvidia.com>,
-        Yang Shi <shy828301@gmail.com>
-Subject: Re: [PATCH 4/7] migrate_pages(): fix failure counting for THP
- subpages retrying
-References: <20220624025309.1033400-1-ying.huang@intel.com>
-        <20220624025309.1033400-5-ying.huang@intel.com>
-        <f2e1ea63-d0ca-7a80-fc16-90622ef2017d@linux.alibaba.com>
-Date:   Mon, 27 Jun 2022 09:46:31 +0800
-In-Reply-To: <f2e1ea63-d0ca-7a80-fc16-90622ef2017d@linux.alibaba.com> (Baolin
-        Wang's message of "Fri, 24 Jun 2022 17:45:50 +0800")
-Message-ID: <87zghy7ua0.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Sun, 26 Jun 2022 22:03:06 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53619F4C
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 19:03:05 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso8039471pjk.0
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 19:03:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cFzsYDSniCnlBZ03HwKNu3S5QmFfxy2xvMgtRDJMZis=;
+        b=W9NMxYS6VjeyTC2cMMP/U2hMAgucbyOeYIMRtdhZhBzWM9I5CHJvC78CT5KjWoRSaI
+         YMzEn64lLecRyWTMhmh0DrHudZ2V8CW8H/fh2J5A0kUiPIXFaaiKzPzEaOeWTlieEib0
+         RzNwvSJPuZS6TGyznaBwVLM9izVf6IwyagW8sNL0vyHz9rXDH9/INPnaOfE4mNWGB6+j
+         EHtJnShucEnJpz2SjeJ3B06AvpibDKU7g8RGBvsSTA6UqjenJhNn4rlQ3c05GJmR4qcl
+         Lk+TrcPs0cWqt6+Kmek4rYYmJccguriPiiBOQudPQNC9JtmDL6HWcSgH0IN2z+JLduXZ
+         gFmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cFzsYDSniCnlBZ03HwKNu3S5QmFfxy2xvMgtRDJMZis=;
+        b=M9b67GF0e1ynvj8wT4T1IbhxIitXEKQ9b/gGiDyPdzSx32q1zI97gsqjiCmOtLuGfQ
+         7l7HJmat5pFYwc/15nLDjbheJQEi6m/n1l/gkB02FfczQbTF4cUomVrayE5zCpZvi5jS
+         +OVbP/NNhMMGWuFfZoYqVBOxu9lNcEPtqcNxlNX7rwPFeKWazEZQb3C5NLkTVPKCBilH
+         p2+ptkKbNCkN5Nb0WH6zRF6FTExrBwGAc64sGPWSjYTGuhdr7l/Ah+wftWqLGqgxS20u
+         j/lbY6Sow1REI/Z16+ys7bioTsusMp+oK12tF8AyAzwwg/2mea3q92V9jYmiPwLpHNLy
+         BXaA==
+X-Gm-Message-State: AJIora+5d8ISPAtnreGdombAPF8+05Mk64Kr3hwcq55PNkN4GtQnBeAo
+        FljPX1EQ/ECO2S0lzeM3Xzil/A==
+X-Google-Smtp-Source: AGRyM1sMApCNujHeAcMS6o2le4b1Rwn51Wk9w2AAmuhkBTXz7YYbL0AMbuIim8kFUBy3QBW5KtcrJg==
+X-Received: by 2002:a17:90b:4c86:b0:1ec:cc0f:32da with SMTP id my6-20020a17090b4c8600b001eccc0f32damr18286077pjb.66.1656295384629;
+        Sun, 26 Jun 2022 19:03:04 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([103.135.249.206])
+        by smtp.gmail.com with ESMTPSA id g8-20020a056a00078800b0050e006279bfsm5834982pfu.137.2022.06.26.19.02.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jun 2022 19:03:04 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 10:02:56 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Yicong Yang <yangyicong@hisilicon.com>
+Cc:     gregkh@linuxfoundation.org, alexander.shishkin@linux.intel.com,
+        james.clark@arm.com, will@kernel.org, robin.murphy@arm.com,
+        acme@kernel.org, jonathan.cameron@huawei.com,
+        john.garry@huawei.com, helgaas@kernel.org,
+        lorenzo.pieralisi@arm.com, mathieu.poirier@linaro.org,
+        suzuki.poulose@arm.com, mark.rutland@arm.com, joro@8bytes.org,
+        shameerali.kolothum.thodi@huawei.com, peterz@infradead.org,
+        mingo@redhat.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
+        prime.zeng@huawei.com, liuqi115@huawei.com,
+        zhangshaokun@hisilicon.com, linuxarm@huawei.com
+Subject: Re: [PATCH v9 5/8] perf tool: Add support for HiSilicon PCIe Tune
+ and Trace device driver
+Message-ID: <20220627020256.GB143063@leoy-ThinkPad-X240s>
+References: <20220606115555.41103-1-yangyicong@hisilicon.com>
+ <20220606115555.41103-6-yangyicong@hisilicon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606115555.41103-6-yangyicong@hisilicon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Baolin Wang <baolin.wang@linux.alibaba.com> writes:
+On Mon, Jun 06, 2022 at 07:55:52PM +0800, Yicong Yang wrote:
+> From: Qi Liu <liuqi115@huawei.com>
+> 
+> HiSilicon PCIe tune and trace device (PTT) could dynamically tune
+> the PCIe link's events, and trace the TLP headers).
+> 
+> This patch add support for PTT device in perf tool, so users could
+> use 'perf record' to get TLP headers trace data.
+> 
+> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 
-> On 6/24/2022 10:53 AM, Huang Ying wrote:
->> If THP is failed to be migrated for -ENOSYS and -ENOMEM, the THP will
->> be split into thp_split_pages, and after other pages are migrated,
->> pages in thp_split_pages will be migrated with no_subpage_counting ==
->> true, because its failure have been counted already.  If some pages in
->> thp_split_pages are retried during migration, we should not count
->> their failure if no_subpage_counting == true too.  This is done this
->> patch to fix the failure counting for THP subpages retrying.
->
-> Good catch. Totally agree with you. It seems we can move the condition
-> into -EAGAIN case like other cases did?
->
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index 1ece23d80bc4..491c2d07402b 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1463,7 +1463,7 @@ int migrate_pages(struct list_head *from,
-> new_page_t get_new_page,
->                         case -EAGAIN:
->                                 if (is_thp)
->                                         thp_retry++;
-> -                               else
-> +                               else if (!no_subpage_counting)
->                                         retry++;
->                                 break;
+Just one minor comment.
 
-This has another effect except fixing the failure counting.  That is,
-the split subpages of THP will not be retried for 10 times for -EAGAIN.
-TBH, I think that we should do that.  But because this has some behavior
-change, it's better to be done in a separate patch?  Do you have
-interest to do that on top of this patchset?
+[...]
 
-> Anyway this patch looks good to me.
-> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> diff --git a/tools/perf/util/hisi-ptt.h b/tools/perf/util/hisi-ptt.h
+> new file mode 100644
+> index 000000000000..2db9b4056214
+> --- /dev/null
+> +++ b/tools/perf/util/hisi-ptt.h
+> @@ -0,0 +1,19 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * HiSilicon PCIe Trace and Tuning (PTT) support
+> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
+> + */
+> +
+> +#ifndef INCLUDE__PERF_HISI_PTT_H__
+> +#define INCLUDE__PERF_HISI_PTT_H__
+> +
+> +#define HISI_PTT_PMU_NAME		"hisi_ptt"
+> +#define HISI_PTT_AUXTRACE_PRIV_SIZE	sizeof(u64)
+> +
+> +struct auxtrace_record *hisi_ptt_recording_init(int *err,
+> +						struct perf_pmu *hisi_ptt_pmu);
+> +
+> +int hisi_ptt_process_auxtrace_info(union perf_event *event,
+> +				   struct perf_session *session);
 
-Thanks!
+The function hisi_ptt_process_auxtrace_info() is introduced by next
+patch for support PTT decoding, for good practice (e.g. keep
+bisection), it's good to introduce function declaration and definition
+in one patch.
 
-Best Regards,
-Huang, Ying
+With this fixing, this patch looks good to me:
 
->> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
->> Fixes: 5984fabb6e82 ("mm: move_pages: report the number of non-attempted pages")
->> Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
->> Cc: Zi Yan <ziy@nvidia.com>
->> Cc: Yang Shi <shy828301@gmail.com>
->> --- >   mm/migrate.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->> diff --git a/mm/migrate.c b/mm/migrate.c
->> index 542533e4e3cf..61dab3025a1d 100644
->> --- a/mm/migrate.c
->> +++ b/mm/migrate.c
->> @@ -1477,7 +1477,8 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
->>   			}
->>   		}
->>   	}
->> -	nr_failed += retry;
->> +	if (!no_subpage_counting)
->> +		nr_failed += retry;
->>   	nr_thp_failed += thp_retry;
->>   	/*
->>   	 * Try to migrate subpages of fail-to-migrate THPs, no nr_failed
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
+
+> +
+> +#endif
+> -- 
+> 2.24.0
