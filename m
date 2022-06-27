@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7055CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1991C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237531AbiF0Lpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
+        id S237720AbiF0Lpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237426AbiF0Lmu (ORCPT
+        with ESMTP id S237447AbiF0Lmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:50 -0400
+        Mon, 27 Jun 2022 07:42:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD13F64;
-        Mon, 27 Jun 2022 04:37:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F4DB6E;
+        Mon, 27 Jun 2022 04:38:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC1F760C98;
-        Mon, 27 Jun 2022 11:37:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D731BC3411D;
-        Mon, 27 Jun 2022 11:37:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E50461143;
+        Mon, 27 Jun 2022 11:38:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60926C341C7;
+        Mon, 27 Jun 2022 11:38:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329862;
-        bh=fjO+gy8E13zpEMADm2t3CoBV0cHGMWdxR1twvteRKVU=;
+        s=korg; t=1656329889;
+        bh=h5rA93nbs6B0+WXubFOxP0JtaG4uJ3x4StUNmxB6ctk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TLXfOMcf576RWs5HsHaqXN7cLiqe4xymkIuiYtbk1hLWSSKGPGcW8dDPwp3p6S5gn
-         HmAIT/eDxAr/f+ddTpM3z/xG/U10ADgE4NPOHD9FSXVTNGngA4bARuoxWQuoKtZ/Di
-         /ctcHKboED1q8jG2VcfTU1OzX3y175gKKe1D6g5E=
+        b=fodsqUjcECrWsfzbZCNFmQHY1+Rs5B1kJ4wbVp6Do2NJNe2YcfJV7saeiXy5jw29U
+         oBgpkvJIbU2Pcy5vLL4dvLuDovEo2PkuPru9+AWGY/Jt523HIcRzjBxBuXNAzq0VJC
+         C7uEgZLWyC9ftnP7SVwZiXR7RqsTkyOG5gFuuud8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5.15 127/135] memory: samsung: exynos5422-dmc: Fix refcount leak in of_get_dram_timings
-Date:   Mon, 27 Jun 2022 13:22:14 +0200
-Message-Id: <20220627111941.838407231@linuxfoundation.org>
+        stable@vger.kernel.org, Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Dominique Martinet <asmadeus@codewreck.org>
+Subject: [PATCH 5.18 014/181] 9p: Fix refcounting during full path walks for fid lookups
+Date:   Mon, 27 Jun 2022 13:19:47 +0200
+Message-Id: <20220627111944.976333174@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
-References: <20220627111938.151743692@linuxfoundation.org>
+In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
+References: <20220627111944.553492442@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,92 +49,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Tyler Hicks <tyhicks@linux.microsoft.com>
 
-commit 1332661e09304b7b8e84e5edc11811ba08d12abe upstream.
+commit 2a3dcbccd64ba35c045fac92272ff981c4cbef44 upstream.
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-This function doesn't call of_node_put() in some error paths.
-To unify the structure, Add put_node label and goto it on errors.
+Decrement the refcount of the parent dentry's fid after walking
+each path component during a full path walk for a lookup. Failure to do
+so can lead to fids that are not clunked until the filesystem is
+unmounted, as indicated by this warning:
 
-Fixes: 6e7674c3c6df ("memory: Add DMC driver for Exynos5422")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
-Link: https://lore.kernel.org/r/20220602041721.64348-1-linmq006@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ 9pnet: found fid 3 not clunked
+
+The improper refcounting after walking resulted in open(2) returning
+-EIO on any directories underneath the mount point when using the virtio
+transport. When using the fd transport, there's no apparent issue until
+the filesytem is unmounted and the warning above is emitted to the logs.
+
+In some cases, the user may not yet be attached to the filesystem and a
+new root fid, associated with the user, is created and attached to the
+root dentry before the full path walk is performed. Increment the new
+root fid's refcount to two in that situation so that it can be safely
+decremented to one after it is used for the walk operation. The new fid
+will still be attached to the root dentry when
+v9fs_fid_lookup_with_uid() returns so a final refcount of one is
+correct/expected.
+
+Link: https://lkml.kernel.org/r/20220527000003.355812-2-tyhicks@linux.microsoft.com
+Link: https://lkml.kernel.org/r/20220612085330.1451496-4-asmadeus@codewreck.org
+Fixes: 6636b6dcc3db ("9p: add refcount to p9_fid struct")
+Cc: stable@vger.kernel.org
+Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+[Dominique: fix clunking fid multiple times discussed in second link]
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/memory/samsung/exynos5422-dmc.c |   29 ++++++++++++++++++-----------
- 1 file changed, 18 insertions(+), 11 deletions(-)
+ fs/9p/fid.c |   22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
---- a/drivers/memory/samsung/exynos5422-dmc.c
-+++ b/drivers/memory/samsung/exynos5422-dmc.c
-@@ -1187,33 +1187,39 @@ static int of_get_dram_timings(struct ex
+--- a/fs/9p/fid.c
++++ b/fs/9p/fid.c
+@@ -152,7 +152,7 @@ static struct p9_fid *v9fs_fid_lookup_wi
+ 	const unsigned char **wnames, *uname;
+ 	int i, n, l, clone, access;
+ 	struct v9fs_session_info *v9ses;
+-	struct p9_fid *fid, *old_fid = NULL;
++	struct p9_fid *fid, *old_fid;
  
- 	dmc->timing_row = devm_kmalloc_array(dmc->dev, TIMING_COUNT,
- 					     sizeof(u32), GFP_KERNEL);
--	if (!dmc->timing_row)
--		return -ENOMEM;
-+	if (!dmc->timing_row) {
-+		ret = -ENOMEM;
-+		goto put_node;
-+	}
+ 	v9ses = v9fs_dentry2v9ses(dentry);
+ 	access = v9ses->flags & V9FS_ACCESS_MASK;
+@@ -194,13 +194,12 @@ static struct p9_fid *v9fs_fid_lookup_wi
+ 		if (IS_ERR(fid))
+ 			return fid;
  
- 	dmc->timing_data = devm_kmalloc_array(dmc->dev, TIMING_COUNT,
- 					      sizeof(u32), GFP_KERNEL);
--	if (!dmc->timing_data)
--		return -ENOMEM;
-+	if (!dmc->timing_data) {
-+		ret = -ENOMEM;
-+		goto put_node;
-+	}
- 
- 	dmc->timing_power = devm_kmalloc_array(dmc->dev, TIMING_COUNT,
- 					       sizeof(u32), GFP_KERNEL);
--	if (!dmc->timing_power)
--		return -ENOMEM;
-+	if (!dmc->timing_power) {
-+		ret = -ENOMEM;
-+		goto put_node;
-+	}
- 
- 	dmc->timings = of_lpddr3_get_ddr_timings(np_ddr, dmc->dev,
- 						 DDR_TYPE_LPDDR3,
- 						 &dmc->timings_arr_size);
- 	if (!dmc->timings) {
--		of_node_put(np_ddr);
- 		dev_warn(dmc->dev, "could not get timings from DT\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_node;
++		refcount_inc(&fid->count);
+ 		v9fs_fid_add(dentry->d_sb->s_root, fid);
  	}
- 
- 	dmc->min_tck = of_lpddr3_get_min_tck(np_ddr, dmc->dev);
- 	if (!dmc->min_tck) {
--		of_node_put(np_ddr);
- 		dev_warn(dmc->dev, "could not get tck from DT\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_node;
+ 	/* If we are root ourself just return that */
+-	if (dentry->d_sb->s_root == dentry) {
+-		refcount_inc(&fid->count);
++	if (dentry->d_sb->s_root == dentry)
+ 		return fid;
+-	}
+ 	/*
+ 	 * Do a multipath walk with attached root.
+ 	 * When walking parent we need to make sure we
+@@ -212,6 +211,7 @@ static struct p9_fid *v9fs_fid_lookup_wi
+ 		fid = ERR_PTR(n);
+ 		goto err_out;
  	}
- 
- 	/* Sorted array of OPPs with frequency ascending */
-@@ -1227,13 +1233,14 @@ static int of_get_dram_timings(struct ex
- 					     clk_period_ps);
++	old_fid = fid;
+ 	clone = 1;
+ 	i = 0;
+ 	while (i < n) {
+@@ -221,19 +221,15 @@ static struct p9_fid *v9fs_fid_lookup_wi
+ 		 * walk to ensure none of the patch component change
+ 		 */
+ 		fid = p9_client_walk(fid, l, &wnames[i], clone);
++		/* non-cloning walk will return the same fid */
++		if (fid != old_fid) {
++			p9_client_clunk(old_fid);
++			old_fid = fid;
++		}
+ 		if (IS_ERR(fid)) {
+-			if (old_fid) {
+-				/*
+-				 * If we fail, clunk fid which are mapping
+-				 * to path component and not the last component
+-				 * of the path.
+-				 */
+-				p9_client_clunk(old_fid);
+-			}
+ 			kfree(wnames);
+ 			goto err_out;
+ 		}
+-		old_fid = fid;
+ 		i += l;
+ 		clone = 0;
  	}
- 
--	of_node_put(np_ddr);
- 
- 	/* Take the highest frequency's timings as 'bypass' */
- 	dmc->bypass_timing_row = dmc->timing_row[idx - 1];
- 	dmc->bypass_timing_data = dmc->timing_data[idx - 1];
- 	dmc->bypass_timing_power = dmc->timing_power[idx - 1];
- 
-+put_node:
-+	of_node_put(np_ddr);
- 	return ret;
- }
- 
 
 
