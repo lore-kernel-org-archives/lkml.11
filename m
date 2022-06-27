@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 898FBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38B4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238668AbiF0LwT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
+        id S238678AbiF0Lw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238377AbiF0LsW (ORCPT
+        with ESMTP id S238393AbiF0LsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:22 -0400
+        Mon, 27 Jun 2022 07:48:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEABFD34;
-        Mon, 27 Jun 2022 04:41:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE74BE30;
+        Mon, 27 Jun 2022 04:41:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 070ED6120B;
-        Mon, 27 Jun 2022 11:41:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14BA7C3411D;
-        Mon, 27 Jun 2022 11:40:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1F1F611AE;
+        Mon, 27 Jun 2022 11:41:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5186C3411D;
+        Mon, 27 Jun 2022 11:41:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330060;
-        bh=+1FbClF0Z4V7fDTn2YOUEgIDdWMdgXXxnSO9h32EB18=;
+        s=korg; t=1656330063;
+        bh=n1kN6QUvuP5FKMu+ird+MiX9I1OOaASG6N4jrNYqVUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=drIW9xOVPDE4DkfWpRVp9xdp0XSdC5ozT9BzN0HQ+mX8lP0E8dTFOtNcu/N8Ccdz+
-         wnw/OZdFvJ6R4EW5BgOxmTTskxVGrSBV5dK+tdYC9wQKXttBECEG55izd6bcdjSIUI
-         cZBRLpC0oH5fcfnXPGCHFlDkWfdmlCe5DMFoY4co=
+        b=uuWR2vCGy7n/zFCUklVk6qnSipATzZX3AKhQxOMf3BOHWyc66D7jP1QRIo9y4h+3J
+         gthcJVJJI6vRNF+Z0RpTa01yU9Uw+i0RgVbQqqohNuLS2Zh+cJEvoMZccUc6TPLGQv
+         1AiIrWjwa5dgjWmvL76RNJuHa113O2v8BbVn2iHc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, German Gomez <german.gomez@arm.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
+        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
+        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
+        Ian Rogers <irogers@google.com>,
+        Disha Goel <disgoel@linux.vnet.ibm.com>,
+        Jiri Olsa <jolsa@kernel.org>, Kajol Jain <kjain@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nageswara R Sastry <rnsastry@linux.ibm.com>,
         Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 070/181] perf test: Record only user callchains on the "Check Arm64 callgraphs are complete in fp mode" test
-Date:   Mon, 27 Jun 2022 13:20:43 +0200
-Message-Id: <20220627111946.593967753@linuxfoundation.org>
+Subject: [PATCH 5.18 071/181] perf test topology: Use !strncmp(right platform) to fix guest PPC comparision check
+Date:   Mon, 27 Jun 2022 13:20:44 +0200
+Message-Id: <20220627111946.622947848@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -52,57 +57,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Petlan <mpetlan@redhat.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-[ Upstream commit 72dcae8efd42699bbfd55e1ef187310c4e2e5dcb ]
+[ Upstream commit b236371421df57b93fc49c4b9d0e53bd1aab2b2e ]
 
-The testcase 'Check Arm64 callgraphs are complete in fp mode' wants to
-see the following output:
+commit cfd7092c31aed728 ("perf test session topology: Fix test to skip
+the test in guest environment") added check to skip the testcase if the
+socket_id can't be fetched from topology info.
 
-    610 leaf
-    62f parent
-    648 main
+But the condition check uses strncmp which should be changed to !strncmp
+and to correctly match platform.
 
-However, without excluding kernel callchains, the output might look like:
+Fix this condition check.
 
-	ffffc2ff40ef1b5c arch_local_irq_enable
-	ffffc2ff419d032c __schedule
-	ffffc2ff419d06c0 schedule
-	ffffc2ff40e4da30 do_notify_resume
-	ffffc2ff40e421b0 work_pending
-	             610 leaf
-	             62f parent
-	             648 main
-
-Adding '--user-callchains' leaves only the wanted symbols in the chain.
-
-Fixes: cd6382d82752737e ("perf test arm64: Test unwinding using fame-pointer (fp) mode")
-Suggested-by: German Gomez <german.gomez@arm.com>
-Reviewed-by: German Gomez <german.gomez@arm.com>
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
-Signed-off-by: Michael Petlan <mpetlan@redhat.com>
-Cc: German Gomez <german.gomez@arm.com>
+Fixes: cfd7092c31aed728 ("perf test session topology: Fix test to skip the test in guest environment")
+Reported-by: Thomas Richter <tmricht@linux.ibm.com>
+Signed-off-by: Athira Jajeev <atrajeev@linux.vnet.ibm.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Cc: Disha Goel <disgoel@linux.vnet.ibm.com>
 Cc: Jiri Olsa <jolsa@kernel.org>
-Link: https://lore.kernel.org/r/20220614105207.26223-1-mpetlan@redhat.com
+Cc: Kajol Jain <kjain@linux.ibm.com>
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nageswara R Sastry <rnsastry@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220610135939.63361-1-atrajeev@linux.vnet.ibm.com
 Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/tests/shell/test_arm_callgraph_fp.sh | 2 +-
+ tools/perf/tests/topology.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/perf/tests/shell/test_arm_callgraph_fp.sh b/tools/perf/tests/shell/test_arm_callgraph_fp.sh
-index 6ffbb27afaba..ec108d45d3c6 100755
---- a/tools/perf/tests/shell/test_arm_callgraph_fp.sh
-+++ b/tools/perf/tests/shell/test_arm_callgraph_fp.sh
-@@ -43,7 +43,7 @@ CFLAGS="-g -O0 -fno-inline -fno-omit-frame-pointer"
- cc $CFLAGS $TEST_PROGRAM_SOURCE -o $TEST_PROGRAM || exit 1
- 
- # Add a 1 second delay to skip samples that are not in the leaf() function
--perf record -o $PERF_DATA --call-graph fp -e cycles//u -D 1000 -- $TEST_PROGRAM 2> /dev/null &
-+perf record -o $PERF_DATA --call-graph fp -e cycles//u -D 1000 --user-callchains -- $TEST_PROGRAM 2> /dev/null &
- PID=$!
- 
- echo " + Recording (PID=$PID)..."
+diff --git a/tools/perf/tests/topology.c b/tools/perf/tests/topology.c
+index d23a9e322ff5..0b4f61b6cc6b 100644
+--- a/tools/perf/tests/topology.c
++++ b/tools/perf/tests/topology.c
+@@ -115,7 +115,7 @@ static int check_cpu_topology(char *path, struct perf_cpu_map *map)
+ 	 * physical_package_id will be set to -1. Hence skip this
+ 	 * test if physical_package_id returns -1 for cpu from perf_cpu_map.
+ 	 */
+-	if (strncmp(session->header.env.arch, "powerpc", 7)) {
++	if (!strncmp(session->header.env.arch, "ppc64le", 7)) {
+ 		if (cpu__get_socket_id(perf_cpu_map__cpu(map, 0)) == -1)
+ 			return TEST_SKIP;
+ 	}
 -- 
 2.35.1
 
