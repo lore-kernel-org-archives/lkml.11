@@ -2,103 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A11C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:01:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233603AbiF0JBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 05:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53578 "EHLO
+        id S233774AbiF0JBW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 05:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232665AbiF0JBN (ORCPT
+        with ESMTP id S233653AbiF0JBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 05:01:13 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB09638D;
-        Mon, 27 Jun 2022 02:01:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656320472; x=1687856472;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Q8IKnNQM5WuT51cs8F0X37bF3np5AyCm5DrvLRqHPNg=;
-  b=LdxQKtLM2RVNvp9ogJ6K1DVwD3EZ2BZ8bkFPpAgbRyRN9mo3Bc7L0X4w
-   1HyHSzhjJlCMxjhF+8qMpw5Y6E4jjC/exHKwHSPKqWtKTieeBpHlxyRkO
-   BJWMZd6goQc1b1w75sNGKoCyBqtORfVz6iZYpbzlJVK7BcVfLQsem3fTQ
-   h5dg5gmvrxIK88+m6MtuV4zAUSnU0CWN1I1Qm7fFx0pieI/A18/1P7kSx
-   wZD+w0fCMIPFJ5Ejfjbpm2Y+ni9+H3PkDipzDuFBE1AKcr9/dX0N+PBcZ
-   pPTrT6SUwzdwugpulGVvo50ha6asbKEyfnqLam6vjBi5UHUXlnMTAq2YC
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="281442844"
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="281442844"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 02:01:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="679498814"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by FMSMGA003.fm.intel.com with ESMTP; 27 Jun 2022 02:01:09 -0700
-Date:   Mon, 27 Jun 2022 16:52:55 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     tien.sung.ang@intel.com
-Cc:     christophe.jaillet@wanadoo.fr, hao.wu@intel.com,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mdf@kernel.org, trix@redhat.com
-Subject: Re: [PATCH v2] fpga: altera-cvp: Truncated bitstream error support
-Message-ID: <20220627085255.GA2264502@yilunxu-OptiPlex-7050>
-References: <20220608103058.GG481269@yilunxu-OptiPlex-7050>
- <20220627074553.3136597-1-tien.sung.ang@intel.com>
+        Mon, 27 Jun 2022 05:01:20 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38148638D
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:01:19 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id l11so15540117ybu.13
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:01:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sE+c2xBowUT0oZC9mJQkDcVYUMmhR1gbqrppxK7hGZQ=;
+        b=EaOtpJG1VTk5K3EQ8AGM1DheeW112pL2+D/Ji/GXydUHnQIKmMQLm+7mzEy7kIf53Q
+         c2I6VJbLQe4LotUrbFCadEldgNY4qPzYukLrtw2PVBXDVhU1iE/+8rEKzz5jseLHlIaf
+         0uBVTbd9scAsRleKLjLYPlvZwLGUmLMLRVVEOeOvy2cGhWp4hdkWqVEHf3E3298mBfwk
+         9UpU7jrIASTXhXWU+2qQqPYxxvECCKgpbCdV23BNSmv7eH1QXqT9v5Th05TgAhrc0wGL
+         21LHUj7KowEgMCZsU9/on9bNp9y5C/0t7P69JhvFswJu6eyRIEtN4htNMP7aARHEBzDy
+         j/tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sE+c2xBowUT0oZC9mJQkDcVYUMmhR1gbqrppxK7hGZQ=;
+        b=KeUHvCYvTRcHXy7kT95ldPJ6kTlS4zOGVeprrrhWXZ6RgGE4Lj/qmrnX3+2pqW8rqR
+         ZdlOtGYj682Nbh+Trpi+HwGeQerMK915wKveIuZ/K32jZON4qeA5VEEBYL9C5YCNGFrt
+         1qyjdkFD19g0yjqemNJjId4qrwGP4iOD1tutIfEwENAJEZ+Z2LD0I5QH9IOpXbJS0BfA
+         dIHObKdymw11BFxkrfV7ztxAMt18TpjGwDng1N5Ko78cKB+TYqD7lPD8Np2iGInTKf6a
+         9dgDtXCEVlkk9oDgyVUNTcSa8mhiI7nV2sT8/d0MUTHsOqJs5FDuPnzlRAoJhfM8kN3M
+         BMEA==
+X-Gm-Message-State: AJIora8AYPJMNZX5QErm//ZAt7mPffuIxF2NzcNP3gmDGFB3rkjXzlmR
+        PN/iyPNRTRwOwIe5EIbDUEXAq66NN/FmUhLYSoCysA==
+X-Google-Smtp-Source: AGRyM1vf0ubueZoJ427sMdcLnwQLYRPIcHlV/NXtwe2cG4KgWMgSwQBjg2vI+ToQ9/fKNI+vfmY3XB6b6+sUaXEMyM4=
+X-Received: by 2002:a25:3383:0:b0:66b:6205:1583 with SMTP id
+ z125-20020a253383000000b0066b62051583mr12237480ybz.387.1656320478104; Mon, 27
+ Jun 2022 02:01:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627074553.3136597-1-tien.sung.ang@intel.com>
+References: <20220625054524.2445867-1-zys.zljxml@gmail.com>
+In-Reply-To: <20220625054524.2445867-1-zys.zljxml@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 27 Jun 2022 11:01:07 +0200
+Message-ID: <CANn89iKyovwB1WC0FbGV3tqz2f+0rSShtPjStuEhvyygSjOGrQ@mail.gmail.com>
+Subject: Re: [PATCH v2] ipv6/sit: fix ipip6_tunnel_get_prl when memory
+ allocation fails
+To:     zys.zljxml@gmail.com
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        katrinzhou <katrinzhou@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 03:45:53PM +0800, tien.sung.ang@intel.com wrote:
-> > > Though without doubt, your solution is doable, I have a 
-> > > discussion with the Intel architect and they insisted that
-> > > the device driver must not make such a decision. The decision to 
-> > > drop or accept a transfer is up to the firmware. The firmware
-> 
-> > Why dropping or accepting is forbidden, but padding is allowed? If the
-> > decision is no operation to the data, then padding should also be
-> > forbidden.
-> 
-> > > insisted that the buffer be padded with whatever value. They
-> 
-> > If I understand right, the 2 decisions are conflicted. On one hand,
-> > the driver should not care about the data. On another hand, the
-> > driver should still care about the data for some rule.
-> 
-> > So please firstly reach your agreement before making patches.
-> 
-> Had some delays in replying,from the perspective of the driver, 
-> Intel architects want it to be just purely on the transfer of 
-> data without inspecting the data. 
-> If the size of a transfer is 4096bytes, we can padd it. 
-> I can do that which I think it is not an issue.
-> Let me create a reworked patch to pad the payload with Zeros.
+On Sat, Jun 25, 2022 at 7:45 AM <zys.zljxml@gmail.com> wrote:
+>
+> From: katrinzhou <katrinzhou@tencent.com>
+>
+> Fix an illegal copy_to_user() attempt when the system fails to
+> allocate memory for prl due to a lack of memory.
 
-No, it's not about padding with Zeros or other values. If we should
-stick on no image touching, then please fix the firmware. If we need
-a workaround in driver, then making a decent fix. Blindly copy the image
-is just a bad idea, and it could actually be avoided.
+I do not really see an illegal copy_to_user()
 
-Thanks,
-Yilun
+c = 0
+-> len = 0
 
-> Would this be OK for patch v3?
-> 
-> > > Yes, it could look confusing to other programmers. And, yes, the 
-> > > padding doesn't matter. Let me relook into this. As the driver is 
-> > > already re-tested by the silicon validatioin. 
-> > > I want to avoid making any change as it
-> > > would meant another couple of weeks of re-testing. 
-> > > Can this be accepted as it is?
-> 
-> > Sorry, I can't. Some clarification is needed.
-> 
-> Reply as above, let us implement the padding in the
-> next patch v3. Appreciate your inputs. Thanks
+if ((len && copy_to_user(a + 1, kp, len)) || put_user(len, &a->datalen))
+
+So the copy_to_user() should not be called ?
+
+I think you should only mention that after this patch, correct error
+code is returned (-ENOMEM)
+
+
+>
+> Addresses-Coverity: ("Unused value")
+> Fixes: 300aaeeaab5f ("[IPV6] SIT: Add SIOCGETPRL ioctl to get/dump PRL.")
+> Signed-off-by: katrinzhou <katrinzhou@tencent.com>
+> ---
+>
+> Changes in v2:
+> - Move the position of label "out"
+>
+>  net/ipv6/sit.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+>
+> diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+> index c0b138c20992..3330882c0f94 100644
+> --- a/net/ipv6/sit.c
+> +++ b/net/ipv6/sit.c
+> @@ -323,8 +323,6 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
+>                 kcalloc(cmax, sizeof(*kp), GFP_KERNEL_ACCOUNT | __GFP_NOWARN) :
+>                 NULL;
+>
+> -       rcu_read_lock();
+> -
+>         ca = min(t->prl_count, cmax);
+>
+>         if (!kp) {
+> @@ -342,6 +340,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
+>         }
+>
+>         c = 0;
+> +       rcu_read_lock();
+>         for_each_prl_rcu(t->prl) {
+>                 if (c >= cmax)
+>                         break;
+> @@ -353,7 +352,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
+>                 if (kprl.addr != htonl(INADDR_ANY))
+>                         break;
+>         }
+> -out:
+> +
+>         rcu_read_unlock();
+>
+>         len = sizeof(*kp) * c;
+> @@ -362,7 +361,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
+>                 ret = -EFAULT;
+>
+>         kfree(kp);
+> -
+> +out:
+>         return ret;
+>  }
+>
+> --
+> 2.27.0
+>
