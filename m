@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 293CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239546AbiF0MBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
+        id S239595AbiF0MBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238802AbiF0Lwj (ORCPT
+        with ESMTP id S238867AbiF0Lwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB12CBE28;
-        Mon, 27 Jun 2022 04:45:46 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997C7DEE6;
+        Mon, 27 Jun 2022 04:46:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69AEFB80DFB;
-        Mon, 27 Jun 2022 11:45:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7B7FC3411D;
-        Mon, 27 Jun 2022 11:45:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3536061188;
+        Mon, 27 Jun 2022 11:46:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46455C3411D;
+        Mon, 27 Jun 2022 11:46:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330344;
-        bh=B2hSXjbr+rHpgwDe32O/tcnJQcZZzJ7ADtnfxO42u40=;
+        s=korg; t=1656330367;
+        bh=XD01nU63sTO0XqJJuZPfLOromHDSrYBbyMEACs/xTzw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ex7EXjzSB5iNzrwl67cE39evtyBuMAOY1bAQLKATaORBaFf0P4mJk++uzCLhudpt4
-         1IOQlVFT6SHnOPpfGB72ZHLv9veFS8Yyp7z2ZIXVHyXpRlkMaq6jEyvgI/SvxMn2d1
-         5rCPJk4/yPFIB2oQxmyJmnlXIGO8uuNKoiim2138=
+        b=Sq9wefwreD5VhPE2KY0xzxIFCeDaQFqYDcHPdv8PHAM0cSFJGlA1kcj4yergMW63l
+         +B32FCvfkIAKR6U8WZzkIRG2L1Y9dqHPuVWnpA1Wvg4iEYN6CzDkcY8qZYU9rym1pR
+         gpxFnqnpf5vc6j8mSS6Li5BsSnb4T1abhDRI0Pg8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aswath Govindraju <a-govindraju@ti.com>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 5.18 165/181] arm64: dts: ti: k3-am64-main: Remove support for HS400 speed mode
-Date:   Mon, 27 Jun 2022 13:22:18 +0200
-Message-Id: <20220627111949.471277410@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.18 172/181] ARM: cns3xxx: Fix refcount leak in cns3xxx_init
+Date:   Mon, 27 Jun 2022 13:22:25 +0200
+Message-Id: <20220627111949.672778263@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -48,40 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aswath Govindraju <a-govindraju@ti.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 0c0af88f3f318e73237f7fadd02d0bf2b6c996bb upstream.
+commit 1ba904b6b16e08de5aed7c1349838d9cd0d178c5 upstream.
 
-AM64 SoC, does not support HS400 and HS200 is the maximum supported speed
-mode[1]. Therefore, fix the device tree node to reflect the same.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-[1] - https://www.ti.com/lit/ds/symlink/am6442.pdf
-      (SPRSP56C – JANUARY 2021 – REVISED FEBRUARY 2022)
-
-Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Link: https://lore.kernel.org/r/20220512064859.32059-1-a-govindraju@ti.com
+Fixes: 415f59142d9d ("ARM: cns3xxx: initial DT support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Krzysztof Halasa <khalasa@piap.pl>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/ti/k3-am64-main.dtsi |    2 --
- 1 file changed, 2 deletions(-)
+ arch/arm/mach-cns3xxx/core.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-@@ -456,13 +456,11 @@
- 		clock-names = "clk_ahb", "clk_xin";
- 		mmc-ddr-1_8v;
- 		mmc-hs200-1_8v;
--		mmc-hs400-1_8v;
- 		ti,trm-icp = <0x2>;
- 		ti,otap-del-sel-legacy = <0x0>;
- 		ti,otap-del-sel-mmc-hs = <0x0>;
- 		ti,otap-del-sel-ddr52 = <0x6>;
- 		ti,otap-del-sel-hs200 = <0x7>;
--		ti,otap-del-sel-hs400 = <0x4>;
- 	};
+--- a/arch/arm/mach-cns3xxx/core.c
++++ b/arch/arm/mach-cns3xxx/core.c
+@@ -372,6 +372,7 @@ static void __init cns3xxx_init(void)
+ 		/* De-Asscer SATA Reset */
+ 		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SATA));
+ 	}
++	of_node_put(dn);
  
- 	sdhci1: mmc@fa00000 {
+ 	dn = of_find_compatible_node(NULL, NULL, "cavium,cns3420-sdhci");
+ 	if (of_device_is_available(dn)) {
+@@ -385,6 +386,7 @@ static void __init cns3xxx_init(void)
+ 		cns3xxx_pwr_clk_en(CNS3XXX_PWR_CLK_EN(SDIO));
+ 		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SDIO));
+ 	}
++	of_node_put(dn);
+ 
+ 	pm_power_off = cns3xxx_power_off;
+ 
 
 
