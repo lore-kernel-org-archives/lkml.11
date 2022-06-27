@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 806E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F98C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239592AbiF0MAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55946 "EHLO
+        id S239600AbiF0MAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238874AbiF0Lwp (ORCPT
+        with ESMTP id S238891AbiF0Lwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A56DEF3;
-        Mon, 27 Jun 2022 04:46:14 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC8DDF06;
+        Mon, 27 Jun 2022 04:46:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0723F61187;
-        Mon, 27 Jun 2022 11:46:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05859C341C8;
-        Mon, 27 Jun 2022 11:46:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE7B461187;
+        Mon, 27 Jun 2022 11:46:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC150C3411D;
+        Mon, 27 Jun 2022 11:46:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330373;
-        bh=35LKQ7rqtURbT8tYGnjwC+dwCSoqGuzw00DcZd1ksng=;
+        s=korg; t=1656330379;
+        bh=OwvYnA7/5qDWKQi4sdQeQUk53ntcR+7QQfQTeKfoTB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H2eUVjQmc4pnoPy5HoWh4/LSzjHqDHEqQO/PB3XwkdrkfAtkI2VEPCtEBlegG5/+F
-         kNHEVIjlD/KGHCLlxRB66ou0YiD0CZZTZSMkOWuV6IwjVeHKXIZoRmWB9wm/kEMfM/
-         jpv2YBKIH57o7HUhKwAJwVMH3IWt/SlgVI78a15c=
+        b=tqCyvx+zDGL79oGGty5h1P+klZmdDjGlur0TtU3rnAaklnj0FxgKyh6uFz+CnyWIh
+         mDXgbLxui2vvskxhy3o/a1KOgqBQVmIhZ683zbEYU4LOeFTNdsEwNzcrFfOLVAkS3Q
+         MotRNzYOG2Z/behMEaJCbKE7ip5xLB4dyuEGYF4M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Hans de Goede <hdegoede@redhat.com>, Stable@vger.kernel.org,
+        stable@vger.kernel.org,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Lars-Peter Clausen <lars@metafoo.de>, Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 136/181] iio: accel: mma8452: ignore the return value of reset operation
-Date:   Mon, 27 Jun 2022 13:21:49 +0200
-Message-Id: <20220627111948.631690799@linuxfoundation.org>
+Subject: [PATCH 5.18 138/181] iio: trigger: sysfs: fix use-after-free on remove
+Date:   Mon, 27 Jun 2022 13:21:51 +0200
+Message-Id: <20220627111948.689074422@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,44 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
-commit bf745142cc0a3e1723f9207fb0c073c88464b7b4 upstream.
+commit 78601726d4a59a291acc5a52da1d3a0a6831e4e8 upstream.
 
-On fxls8471, after set the reset bit, the device will reset immediately,
-will not give ACK. So ignore the return value of this reset operation,
-let the following code logic to check whether the reset operation works.
+Ensure that the irq_work has completed before the trigger is freed.
 
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Fixes: ecabae713196 ("iio: mma8452: Initialise before activating")
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/1655292718-14287-1-git-send-email-haibo.chen@nxp.com
+ ==================================================================
+ BUG: KASAN: use-after-free in irq_work_run_list
+ Read of size 8 at addr 0000000064702248 by task python3/25
+
+ Call Trace:
+  irq_work_run_list
+  irq_work_tick
+  update_process_times
+  tick_sched_handle
+  tick_sched_timer
+  __hrtimer_run_queues
+  hrtimer_interrupt
+
+ Allocated by task 25:
+  kmem_cache_alloc_trace
+  iio_sysfs_trig_add
+  dev_attr_store
+  sysfs_kf_write
+  kernfs_fop_write_iter
+  new_sync_write
+  vfs_write
+  ksys_write
+  sys_write
+
+ Freed by task 25:
+  kfree
+  iio_sysfs_trig_remove
+  dev_attr_store
+  sysfs_kf_write
+  kernfs_fop_write_iter
+  new_sync_write
+  vfs_write
+  ksys_write
+  sys_write
+
+ ==================================================================
+
+Fixes: f38bc926d022 ("staging:iio:sysfs-trigger: Use irq_work to properly active trigger")
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+Link: https://lore.kernel.org/r/20220519091925.1053897-1-vincent.whitchurch@axis.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/accel/mma8452.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/iio/trigger/iio-trig-sysfs.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1510,10 +1510,14 @@ static int mma8452_reset(struct i2c_clie
- 	int i;
- 	int ret;
+--- a/drivers/iio/trigger/iio-trig-sysfs.c
++++ b/drivers/iio/trigger/iio-trig-sysfs.c
+@@ -191,6 +191,7 @@ static int iio_sysfs_trigger_remove(int
+ 	}
  
--	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
-+	/*
-+	 * Find on fxls8471, after config reset bit, it reset immediately,
-+	 * and will not give ACK, so here do not check the return value.
-+	 * The following code will read the reset register, and check whether
-+	 * this reset works.
-+	 */
-+	i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG2,
- 					MMA8452_CTRL_REG2_RST);
--	if (ret < 0)
--		return ret;
+ 	iio_trigger_unregister(t->trig);
++	irq_work_sync(&t->work);
+ 	iio_trigger_free(t->trig);
  
- 	for (i = 0; i < 10; i++) {
- 		usleep_range(100, 200);
+ 	list_del(&t->l);
 
 
