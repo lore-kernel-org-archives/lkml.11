@@ -2,146 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16189C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE410C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:59:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233906AbiF0N7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35194 "EHLO
+        id S235041AbiF0N7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236352AbiF0N70 (ORCPT
+        with ESMTP id S234719AbiF0N7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:59:26 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F269FE5
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:59:24 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id e40so13192409eda.2
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:59:24 -0700 (PDT)
+        Mon, 27 Jun 2022 09:59:49 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A867B49A;
+        Mon, 27 Jun 2022 06:59:48 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id t21so9134808pfq.1;
+        Mon, 27 Jun 2022 06:59:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xr9C6lKJBWSsgA7sh+r218LRs6Tue8WKsUgtQwWr6II=;
-        b=OwyNsXe+N1ciOYY5a2+9p/kLZBgOMX6lCaNRB23dU31VZwWM4QVHT0ZuaX3kdB2DbC
-         ERSE26axXBNxCwF0OcqQfjtC9679Xw09G2J2qx5IZG44oez2hZcOXdCo/BnWrMyAYbcj
-         hlp2r6sSjOvJIRcIleSBWhrpORJsxe5M17J4U=
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WaB9LDb/1ugCm0MZi0f1VmnmxGApQh/5MPfqBXxkKlE=;
+        b=K8g1mBwKNs6ee06SCu4rI40VR8Ot6UQEkWVxeGKYeSkE7TNuZ7vXXUMJgVC6n/7LSB
+         XXmxl0t6x8AINPAvqrAz7tBK+PHLWXHhPCJV5VK00/jGcGqYaCGd/qqfy+cfQsWF/HMU
+         S6o1tNYd6vOAWhmuiv+5VP5o2lNthqdBsuDP4stREd8FHbarsKm7SUEmNL7SDdRp7C7r
+         XPPWGFwj+dO5IW/5lFq9gi72COOmk4GpAKsJ36TU5NORjPVJ9dL45kgcGaNbLL6B5Hau
+         Bi+0hEt2lCpaLWWfuCladJJLtbraVaf58AkZKSiM38e1BEeBc70j8rV36bVtAGQKZR+7
+         bSmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xr9C6lKJBWSsgA7sh+r218LRs6Tue8WKsUgtQwWr6II=;
-        b=slTPSiRnUfZKUetrAgtxXvaP+dgZ0+X+8bQCuUXIrat+3ckGAEa9braGe/9lR2QdMP
-         7Y1PhQetYYoF4ZQsNPvz/lN3wfysLkAhTxOMi+1Om7R0oeZyEnDQhn3qoLm8SLKk0fYX
-         zTZvZmudZeXSH+83+tHXmnggzSDDJn5S0A6N4/Jx029MQVQx2qdQr541+HkyRMt5j/PD
-         OYFzmIjdI8aOkQDAJ7YNXH8l2b6TWdVGs0c/4Uq0JZI8DDZH6b1XyPRdZ66aAXPaqSNk
-         gZknnSUt+JkwaYRsgK7SJ/2OnZPhKLPlGONfHf/Q05PzdK98cCJu2HiASpvdhUJCSwEx
-         FSOQ==
-X-Gm-Message-State: AJIora9mHor43l6sw+NES04SzrZuNRpLHIyoDbZqeFgbG9nMYzVrC8uw
-        6g5E/uRZ7bM8HRGhoifK0yr2fzheL8mdbQ==
-X-Google-Smtp-Source: AGRyM1tXnuh+rvXi+fyvrii+acqQf8yfPWw/iNW8yWfk+UREdTX8OV/LUiFp7/V+mN2v3ZNDFDdtwA==
-X-Received: by 2002:a05:6402:1d50:b0:436:beac:a4e3 with SMTP id dz16-20020a0564021d5000b00436beaca4e3mr17136089edb.191.1656338362361;
-        Mon, 27 Jun 2022 06:59:22 -0700 (PDT)
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com. [209.85.128.41])
-        by smtp.gmail.com with ESMTPSA id j24-20020aa7de98000000b00435726bd375sm7516060edv.57.2022.06.27.06.59.21
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WaB9LDb/1ugCm0MZi0f1VmnmxGApQh/5MPfqBXxkKlE=;
+        b=foOG5axpaWUG6Ll7IYGTcT+YzxN+neB39Z3YCp4XaGMifn7Uj8bR6oKg4K7ZMaFZCF
+         AATnilKpp+zmOthlFsry8TMgkNnS3b4o6daEoArIYJDvoBJ6mMRJYxCtNUpRZDgyKftZ
+         4p6rg2GLb1CarJhsuLIvWBsC2mVTuCI4sybMLPo9euzq2Gc6lJujAfsi5qJ5QpJlMyQB
+         ixGXpkRHKLETM1NbymPdwTM9QjgYh8c9/KdjuVdvYedUcv4EywxhDrxttsmzXdnUjSNw
+         eFdovuF6jTNJI0xjPk7/8sTxaU+KGlz07PikBUSc4dODSQuW6modjMI0PxyLMCu9S+CD
+         4rpg==
+X-Gm-Message-State: AJIora8sIzBVfiZ/G+2be2URzCG4fsN5vnUXHDKg6BFH0TnUT1YH8oES
+        4oYrxtxW5WL/44uoSuMbBtyuzTIaGBU=
+X-Google-Smtp-Source: AGRyM1vGRfm7ps7k0HmHiQSxD7aIYodqJ/+aHLX6xuSY2rELiC4AXQ7iNs7refvsS3zT4wPMCJwkPg==
+X-Received: by 2002:a63:698a:0:b0:40c:4714:2425 with SMTP id e132-20020a63698a000000b0040c47142425mr12455886pgc.548.1656338387909;
+        Mon, 27 Jun 2022 06:59:47 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id p22-20020a1709027ed600b0016a0fe1a1fbsm7275275plb.220.2022.06.27.06.59.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 06:59:21 -0700 (PDT)
-Received: by mail-wm1-f41.google.com with SMTP id 189so5014055wmz.2
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:59:21 -0700 (PDT)
-X-Received: by 2002:a7b:c14c:0:b0:3a0:4a8b:e2e5 with SMTP id
- z12-20020a7bc14c000000b003a04a8be2e5mr5559120wmi.188.1656338360672; Mon, 27
- Jun 2022 06:59:20 -0700 (PDT)
+        Mon, 27 Jun 2022 06:59:45 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <5e7390c3-8f86-e2a0-83af-ef1f9e6bc100@roeck-us.net>
+Date:   Mon, 27 Jun 2022 06:59:41 -0700
 MIME-Version: 1.0
-References: <20220626013906.885523-1-joebar@chromium.org> <20220625183538.v14.1.Id769ddc5dbf570ccb511db96da59f97d08f75a9c@changeid>
-In-Reply-To: <20220625183538.v14.1.Id769ddc5dbf570ccb511db96da59f97d08f75a9c@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 27 Jun 2022 06:59:08 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Xs20zLOSwhqL+30ziQquCaqtQ2Od_-3oLF5YAv3FRdUA@mail.gmail.com>
-Message-ID: <CAD=FV=Xs20zLOSwhqL+30ziQquCaqtQ2Od_-3oLF5YAv3FRdUA@mail.gmail.com>
-Subject: Re: [PATCH v14 1/5] arm64: dts: qcom: sc7180: Add wormdingler dts files
-To:     "Joseph S. Barrera III" <joebar@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v11 1/3] usb: typec: tcpci: move tcpci.h to
+ include/linux/usb/
+Content-Language: en-US
+To:     Xin Ji <xji@analogixsemi.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
+        jli@analogixsemi.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220627044331.2180641-1-xji@analogixsemi.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220627044331.2180641-1-xji@analogixsemi.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 6/26/22 21:43, Xin Ji wrote:
+> USB PD controllers which consisting of a microcontroller (acting as the TCPM)
+> and a port controller (TCPC) - may require that the driver for the PD
+> controller accesses directly also the on-chip port controller in some cases.
+> 
+> Move tcpci.h to include/linux/usb/ is convenience access TCPC registers.
+> 
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
 
-On Sat, Jun 25, 2022 at 6:40 PM Joseph S. Barrera III
-<joebar@chromium.org> wrote:
->
-> Wormdingler is a trogdor-based board, shipping to customers as the
-> Lenovo IdeaPad Chromebook Duet 3. These dts files are copies from
-> the downstream Chrome OS 5.4 kernel, but with the camera
-> (sc7180-trogdor-mipi-camera.dtsi) #include removed.
->
-> Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
->
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+
+> 
 > ---
->
-> (no changes since v9)
->
-> Changes in v9:
-> - Correct version history, based on diffing earlier patches.
->
-> Changes in v7:
-> - Restore changes requested by Doug.
->
-> Changes in v6:
-> - Only include sc7180.dtsi in sc7180-trogdor.dtsi (19794489fa24).
-> - Simplify spi0/spi6 labeling (d277cab7afc7).
-> - Simplify trackpad enabling (51d30402be75).
-> - Accidentally deleted changes requested by Doug.
->
-> Changes in v5:
-> - Replace _ in node name with -
-> - Order nodes by name
->
-> Changes in v4:
-> - Clean up rt5682s files
-> - Restore camcc definition
-> - Add missing version history
->
-> Changes in v3:
-> - Remove camcc definition
->
-> Changes in v2:
-> - Word wrap patch description.
-> - Remove "Author" from patch description.
-> - Fix whitespace around "en_pp3300_dx_edp"
->
->  arch/arm64/boot/dts/qcom/Makefile             |   6 +
->  .../sc7180-trogdor-wormdingler-rev0-boe.dts   |  22 +
->  .../sc7180-trogdor-wormdingler-rev0-inx.dts   |  22 +
->  .../qcom/sc7180-trogdor-wormdingler-rev0.dtsi |  53 +++
->  ...0-trogdor-wormdingler-rev1-boe-rt5682s.dts |  29 ++
->  .../sc7180-trogdor-wormdingler-rev1-boe.dts   |  28 ++
->  ...0-trogdor-wormdingler-rev1-inx-rt5682s.dts |  29 ++
->  .../sc7180-trogdor-wormdingler-rev1-inx.dts   |  22 +
->  .../dts/qcom/sc7180-trogdor-wormdingler.dtsi  | 408 ++++++++++++++++++
->  9 files changed, 619 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-inx.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0.dtsi
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi
+> V9 -> V10: Rebase on the latest code
+> V8 -> V9 : Add more commit message
+> V7 -> V8 : Fix Guanter's comment, remove unnecessary explain
+> ---
+>   drivers/usb/typec/tcpm/tcpci.c                        | 3 +--
+>   drivers/usb/typec/tcpm/tcpci_maxim.c                  | 3 +--
+>   drivers/usb/typec/tcpm/tcpci_mt6360.c                 | 3 +--
+>   drivers/usb/typec/tcpm/tcpci_rt1711h.c                | 2 +-
+>   {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h | 1 +
+>   5 files changed, 5 insertions(+), 7 deletions(-)
+>   rename {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h (99%)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
+> index f33e08eb7670..812784702d53 100644
+> --- a/drivers/usb/typec/tcpm/tcpci.c
+> +++ b/drivers/usb/typec/tcpm/tcpci.c
+> @@ -13,11 +13,10 @@
+>   #include <linux/property.h>
+>   #include <linux/regmap.h>
+>   #include <linux/usb/pd.h>
+> +#include <linux/usb/tcpci.h>
+>   #include <linux/usb/tcpm.h>
+>   #include <linux/usb/typec.h>
+>   
+> -#include "tcpci.h"
+> -
+>   #define	PD_RETRY_COUNT_DEFAULT			3
+>   #define	PD_RETRY_COUNT_3_0_OR_HIGHER		2
+>   #define	AUTO_DISCHARGE_DEFAULT_THRESHOLD_MV	3500
+> diff --git a/drivers/usb/typec/tcpm/tcpci_maxim.c b/drivers/usb/typec/tcpm/tcpci_maxim.c
+> index df2505570f07..4b6705f3d7b7 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_maxim.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_maxim.c
+> @@ -11,11 +11,10 @@
+>   #include <linux/module.h>
+>   #include <linux/regmap.h>
+>   #include <linux/usb/pd.h>
+> +#include <linux/usb/tcpci.h>
+>   #include <linux/usb/tcpm.h>
+>   #include <linux/usb/typec.h>
+>   
+> -#include "tcpci.h"
+> -
+>   #define PD_ACTIVITY_TIMEOUT_MS				10000
+>   
+>   #define TCPC_VENDOR_ALERT				0x80
+> diff --git a/drivers/usb/typec/tcpm/tcpci_mt6360.c b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> index 8a952eaf9016..1b7c31278ebb 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> @@ -11,10 +11,9 @@
+>   #include <linux/of.h>
+>   #include <linux/platform_device.h>
+>   #include <linux/regmap.h>
+> +#include <linux/usb/tcpci.h>
+>   #include <linux/usb/tcpm.h>
+>   
+> -#include "tcpci.h"
+> -
+>   #define MT6360_REG_PHYCTRL1	0x80
+>   #define MT6360_REG_PHYCTRL3	0x82
+>   #define MT6360_REG_PHYCTRL7	0x86
+> diff --git a/drivers/usb/typec/tcpm/tcpci_rt1711h.c b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> index b56a0880a044..3291ca4948da 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> @@ -10,9 +10,9 @@
+>   #include <linux/i2c.h>
+>   #include <linux/interrupt.h>
+>   #include <linux/gpio/consumer.h>
+> +#include <linux/usb/tcpci.h>
+>   #include <linux/usb/tcpm.h>
+>   #include <linux/regmap.h>
+> -#include "tcpci.h"
+>   
+>   #define RT1711H_VID		0x29CF
+>   #define RT1711H_PID		0x1711
+> diff --git a/drivers/usb/typec/tcpm/tcpci.h b/include/linux/usb/tcpci.h
+> similarity index 99%
+> rename from drivers/usb/typec/tcpm/tcpci.h
+> rename to include/linux/usb/tcpci.h
+> index b2edd45f13c6..20c0bedb8ec8 100644
+> --- a/drivers/usb/typec/tcpm/tcpci.h
+> +++ b/include/linux/usb/tcpci.h
+> @@ -9,6 +9,7 @@
+>   #define __LINUX_USB_TCPCI_H
+>   
+>   #include <linux/usb/typec.h>
+> +#include <linux/usb/tcpm.h>
+>   
+>   #define TCPC_VENDOR_ID			0x0
+>   #define TCPC_PRODUCT_ID			0x2
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-
-I put this on a google,wormdingler-rev2-sku0 and confirmed that it at
-least booted up and showed stuff on the screen.
-
-Tested-by: Douglas Anderson <dianders@chromium.org>
