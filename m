@@ -2,149 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B595C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D65C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235478AbiF0PwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 11:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51672 "EHLO
+        id S238799AbiF0PwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 11:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238605AbiF0Pv5 (ORCPT
+        with ESMTP id S238614AbiF0Pv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 11:51:57 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C652819C0C;
-        Mon, 27 Jun 2022 08:51:51 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25RCSNNM017521;
-        Mon, 27 Jun 2022 10:51:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=cNlZorGv6JS7ckt03ISAuWh7D5us6y00SzunIsbrn6k=;
- b=K543wORAWqrSoMZDLFueXD+QpZq13i89k3H1uAFL/AarOwOX5XtqEOBRAvd01mSbGBas
- 1fEpjgP2pyhhSSNaNrjOdZSbzxNDmmivP4V29XT+ut3z8r3PLAiu/FMU1BH9Ejd+bC1b
- +ZP6gO0IvM7AWEAHAhnLxxnqORKn2cIbFIs+ORunGIBKEHeornjX8Rahsug2kRGAqwY4
- 3ouAzeecLPP2Nq0SofK4HJKBy9n7+0whBZpx6+zi0Ts3XEoVeQhgRYNav3B61OI/A1tX
- QYw3ubdATVCJsPQwUL4l7Z/pIxt0OaKuBgNQybML6ysZywqNvhZ5fwm/37DkWTnN7r43 vg== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gwys2k0uh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 27 Jun 2022 10:51:44 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 27 Jun
- 2022 16:51:42 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Mon, 27 Jun 2022 16:51:42 +0100
-Received: from sbinding-cirrus-dsktp.ad.cirrus.com (unknown [198.90.238.163])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 3C00A2A1;
-        Mon, 27 Jun 2022 15:51:42 +0000 (UTC)
-From:   Stefan Binding <sbinding@opensource.cirrus.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-CC:     <linux-acpi@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v3 1/2] ACPI: utils: Add api to read _SUB from ACPI
-Date:   Mon, 27 Jun 2022 16:51:37 +0100
-Message-ID: <20220627155138.807420-2-sbinding@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220627155138.807420-1-sbinding@opensource.cirrus.com>
-References: <20220627155138.807420-1-sbinding@opensource.cirrus.com>
+        Mon, 27 Jun 2022 11:51:58 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE699193EC
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:51:51 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id u189so13413155oib.4
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:51:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ACMt+3gd0WeWEO4zAvKHfGmdHNjeEgmzzRorzEO8OBw=;
+        b=S7vVltqVFyPWDgkx3urxeq1fSYIanMWU4w04IcHnhHvCGKwOiPMCcyAoZ8OFeW4aH1
+         B7o+UTCQwppWEWXf4LHepEqnFLG4WccrbFGj0fRvklp8EppWd/sYMtRZjCDcmK0cjs7H
+         zItnJRRbfNHiPy5vEgpYSUuVqJ6exRelij9i4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ACMt+3gd0WeWEO4zAvKHfGmdHNjeEgmzzRorzEO8OBw=;
+        b=F9X9Js1OL/l1yXOk7A8sRncRsQzYDS53tRneXXvZyS+s8YbeAk6lqoVvh9m0oBS4IN
+         giLt+vZvSMCu3U7Fuhp2bC/tYBO/kdgp1HE8ARltCD+sl3JpYCOXqUh0gePcTmXWEyYX
+         oaDDjRNTutS9yIBIOelgqB/pMARrTdwrH/NdhpfOL0+Yo75n7TQ26wevJFgKvLcaIV0C
+         6p1HFXenjVmL+P+A+US8WahJJwJ5XvAj4OLnKCUYp3/d60Wum2TwvUI1sQqzqcJhqKvO
+         6Wig5oexJb9NES/KfM2PCw2ErwPG/1rn5Cp/BDObqQcFDUAfpEeZQxOhM7JEgjijmrT5
+         7srw==
+X-Gm-Message-State: AJIora9i56iuP+t+gnoEK49axH6yLL/obeEfHTaV+DwJLxb3fdEaX78A
+        hyYzFjxIr+yBMcodxkzdhDBEzA==
+X-Google-Smtp-Source: AGRyM1uSg9BhGhCGEiFsNutZIatJeC/ZQ2GnuNnGjCpkQC5Pjilq3I5ke+gQ5cagxZwppjlJtdZF9g==
+X-Received: by 2002:aca:170b:0:b0:335:6ee0:cd2a with SMTP id j11-20020aca170b000000b003356ee0cd2amr4067799oii.198.1656345110972;
+        Mon, 27 Jun 2022 08:51:50 -0700 (PDT)
+Received: from [192.168.0.41] ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id i1-20020a4addc1000000b0041b768b58basm6085091oov.22.2022.06.27.08.51.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 08:51:50 -0700 (PDT)
+Message-ID: <b7c23d54-d196-98d1-8187-605f6d4dca4d@cloudflare.com>
+Date:   Mon, 27 Jun 2022 10:51:48 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: DuqIE9-RarZwtpyVxb_Ga0837oESTzqD
-X-Proofpoint-GUID: DuqIE9-RarZwtpyVxb_Ga0837oESTzqD
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
+Content-Language: en-US
+To:     Christian Brauner <brauner@kernel.org>,
+        Paul Moore <paul@paul-moore.com>
+Cc:     Casey Schaufler <casey@schaufler-ca.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, serge@hallyn.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com
+References: <20220621233939.993579-1-fred@cloudflare.com>
+ <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
+ <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com>
+ <CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com>
+ <20220627121137.cnmctlxxtcgzwrws@wittgenstein>
+From:   Frederick Lawler <fred@cloudflare.com>
+In-Reply-To: <20220627121137.cnmctlxxtcgzwrws@wittgenstein>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a wrapper function to read the _SUB string from ACPI.
+On 6/27/22 7:11 AM, Christian Brauner wrote:
+> On Thu, Jun 23, 2022 at 11:21:37PM -0400, Paul Moore wrote:
+>> On Wed, Jun 22, 2022 at 10:24 AM Frederick Lawler <fred@cloudflare.com> wrote:
+>>> On 6/21/22 7:19 PM, Casey Schaufler wrote:
+>>>> On 6/21/2022 4:39 PM, Frederick Lawler wrote:
+>>>>> While creating a LSM BPF MAC policy to block user namespace creation, we
+>>>>> used the LSM cred_prepare hook because that is the closest hook to
+>>>>> prevent
+>>>>> a call to create_user_ns().
+>>>>>
+>>>>> The calls look something like this:
+>>>>>
+>>>>>       cred = prepare_creds()
+>>>>>           security_prepare_creds()
+>>>>>               call_int_hook(cred_prepare, ...
+>>>>>       if (cred)
+>>>>>           create_user_ns(cred)
+>>>>>
+>>>>> We noticed that error codes were not propagated from this hook and
+>>>>> introduced a patch [1] to propagate those errors.
+>>>>>
+>>>>> The discussion notes that security_prepare_creds()
+>>>>> is not appropriate for MAC policies, and instead the hook is
+>>>>> meant for LSM authors to prepare credentials for mutation. [2]
+>>>>>
+>>>>> Ultimately, we concluded that a better course of action is to introduce
+>>>>> a new security hook for LSM authors. [3]
+>>>>>
+>>>>> This patch set first introduces a new security_create_user_ns() function
+>>>>> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
+>>>>
+>>>> Why restrict this hook to user namespaces? It seems that an LSM that
+>>>> chooses to preform controls on user namespaces may want to do so for
+>>>> network namespaces as well.
+>>>
+>>> IIRC, CLONE_NEWUSER is the only namespace flag that does not require
+>>> CAP_SYS_ADMIN. There is a security use case to prevent this namespace
+>>> from being created within an unprivileged environment. I'm not opposed
+>>> to a more generic hook, but I don't currently have a use case to block
+>>> any others. We can also say the same is true for the other namespaces:
+>>> add this generic security function to these too.
+>>>
+>>> I'm curious what others think about this too.
+>>
+>> While user namespaces are obviously one of the more significant
+>> namespaces from a security perspective, I do think it seems reasonable
+>> that the LSMs could benefit from additional namespace creation hooks.
+>> However, I don't think we need to do all of them at once, starting
+>> with a userns hook seems okay to me.
+>>
+>> I also think that using the same LSM hook as an access control point
+>> for all of the different namespaces would be a mistake.  At the very
+> 
+> Agreed. >
+>> least we would need to pass a flag or some form of context to the hook
+>> to indicate which new namespace(s) are being requested and I fear that
+>> is a problem waiting to happen.  That isn't to say someone couldn't
+>> mistakenly call the security_create_user_ns(...) from the mount
+>> namespace code, but I suspect that is much easier to identify as wrong
+>> than the equivalent security_create_ns(USER, ...).
+> 
+> Yeah, I think that's a pretty unlikely scenario.
+> 
+>>
+>> We also should acknowledge that while in most cases the current task's
+>> credentials are probably sufficient to make any LSM access control
+>> decisions around namespace creation, it's possible that for some
+>> namespaces we would need to pass additional, namespace specific info
+>> to the LSM.  With a shared LSM hook this could become rather awkward.
+> 
+> Agreed.
+> 
+>>
+>>>> Also, the hook seems backwards. You should
+>>>> decide if the creation of the namespace is allowed before you create it.
+>>>> Passing the new namespace to a function that checks to see creating a
+>>>> namespace is allowed doesn't make a lot off sense.
+>>>
+>>> I think having more context to a security hook is a good thing.
+>>
+>> This is one of the reasons why I usually like to see at least one LSM
+>> implementation to go along with every new/modified hook.  The
+>> implementation forces you to think about what information is necessary
+>> to perform a basic access control decision; sometimes it isn't always
+>> obvious until you have to write the access control :)
+> 
+> I spoke to Frederick at length during LSS and as I've been given to
+> understand there's a eBPF program that would immediately use this new
+> hook. Now I don't want to get into the whole "Is the eBPF LSM hook
+> infrastructure an LSM" but I think we can let this count as a legitimate
+> first user of this hook/code.
+> 
+>>
+>> [aside: If you would like to explore the SELinux implementation let me
+>> know, I'm happy to work with you on this.  I suspect Casey and the
+>> other LSM maintainers would also be willing to do the same for their
+>> LSMs.]
+>>
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
----
- drivers/acpi/utils.c | 38 ++++++++++++++++++++++++++++++++++++++
- include/linux/acpi.h |  6 ++++++
- 2 files changed, 44 insertions(+)
+I can take a shot at making a SELinux implementation, but the question 
+becomes: is that for v2 or a later patch? I don't think the 
+implementation for SELinux would be too complicated (i.e. make a call to 
+avc_has_perm()?) but, testing and revisions might take a bit longer.
 
-diff --git a/drivers/acpi/utils.c b/drivers/acpi/utils.c
-index 3a9773a09e19..4ef9ee4ad0d8 100644
---- a/drivers/acpi/utils.c
-+++ b/drivers/acpi/utils.c
-@@ -291,6 +291,44 @@ int acpi_get_local_address(acpi_handle handle, u32 *addr)
- }
- EXPORT_SYMBOL(acpi_get_local_address);
- 
-+#define ACPI_MAX_SUB_BUF_SIZE	9
-+
-+const char *acpi_get_subsystem_id(acpi_handle handle)
-+{
-+	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-+	union acpi_object *obj;
-+	acpi_status status;
-+	const char *sub;
-+
-+	status = acpi_evaluate_object(handle, METHOD_NAME__SUB, NULL, &buffer);
-+	if (ACPI_FAILURE(status)) {
-+		acpi_handle_debug(handle, "Reading ACPI _SUB failed: %#x\n", status);
-+		return ERR_PTR(-ENODATA);
-+	}
-+
-+	obj = buffer.pointer;
-+	if (obj->type == ACPI_TYPE_STRING) {
-+		if (strlen(obj->string.pointer) < ACPI_MAX_SUB_BUF_SIZE &&
-+		    strlen(obj->string.pointer) > 0) {
-+			sub = kstrdup(obj->string.pointer, GFP_KERNEL);
-+			if (!sub)
-+				sub = ERR_PTR(-ENOMEM);
-+		} else {
-+			acpi_handle_err(handle, "ACPI _SUB Length %d is Invalid\n",
-+					strlen(obj->string.pointer));
-+			sub = ERR_PTR(-EINVAL);
-+		}
-+	} else {
-+		acpi_handle_warn(handle, "Warning ACPI _SUB did not return a string\n");
-+		sub = ERR_PTR(-EINVAL);
-+	}
-+
-+	acpi_os_free(buffer.pointer);
-+
-+	return sub;
-+}
-+EXPORT_SYMBOL_GPL(acpi_get_subsystem_id);
-+
- acpi_status
- acpi_evaluate_reference(acpi_handle handle,
- 			acpi_string pathname,
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 4f82a5bc6d98..968a187f14f0 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -762,6 +762,7 @@ static inline u64 acpi_arch_get_root_pointer(void)
- #endif
- 
- int acpi_get_local_address(acpi_handle handle, u32 *addr);
-+const char *acpi_get_subsystem_id(acpi_handle handle);
- 
- #else	/* !CONFIG_ACPI */
- 
-@@ -1023,6 +1024,11 @@ static inline int acpi_get_local_address(acpi_handle handle, u32 *addr)
- 	return -ENODEV;
- }
- 
-+static inline const char *acpi_get_subsystem_id(acpi_handle handle)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
- static inline int acpi_register_wakeup_handler(int wake_irq,
- 	bool (*wakeup)(void *context), void *context)
- {
--- 
-2.25.1
+>> In this particular case I think the calling task's credentials are
+>> generally all that is needed.  You mention that the newly created
+> 
+> Agreed.
+> 
+>> namespace would be helpful, so I'll ask: what info in the new ns do
+>> you believe would be helpful in making an access decision about its
+>> creation?
+>>
+
+In the other thread [1], there was mention of xattr mapping support. As 
+I understand Caseys response to this thread [2], that feature is no 
+longer requested for this hook.
+
+Users can still access the older parent ns from the passed in cred, but 
+I was thinking of handling the transition point here. There's probably 
+more suitable hooks for that case.
+
+
+>> Once we've sorted that we can make a better decision about the hook
+>> placement, but right now my gut feeling is that we only need to pass
+>> the task's creds, and I think placing the hook right after the UID/GID
+>> mapping check (before the new ns allocation) would be the best spot.
+> 
+
+I don't specifically have a use case to pass the new user namespace for 
+this hook at this time. I'll move the hook in v2.
+
+> When I toyed with this I placed it directly into create_user_ns() and
+> only relied on the calling task's cred. I just created an eBPF program
+> that verifies the caller is capable(CAP_SYS_ADMIN). Since both the
+> chrooted and mapping check return EPERM it doesn't really matter that
+> much where exactly. Conceptually it makes more sense to me to place it
+> after the mapping check because then all the preliminaries are done.
+> 
+
+Agreed.
+
+> Christian
+
+Links:
+1. 
+https://lore.kernel.org/all/4ae12ee6-959c-51cb-9d7a-54adb3a0ea53@schaufler-ca.com/
+2. 
+https://lore.kernel.org/all/4b62f0c5-9f3c-e0bc-d836-1b7cdea429da@schaufler-ca.com/
 
