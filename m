@@ -2,98 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 224E8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB73C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:40:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233032AbiF0HjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47334 "EHLO
+        id S233045AbiF0Hkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233016AbiF0HjL (ORCPT
+        with ESMTP id S233043AbiF0Hkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:39:11 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B88D62
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:39:10 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id m14so7431106plg.5
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:39:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=84vnIVuBqL0L/KhL8ipRi5YoW8T44EFGau2fZe7lDYk=;
-        b=CR/V6XamEcp4AysM+5uSYwPtEEVAnfzAP1WEyrROMMF/OxFkPytNejVdT/tRIbqUOQ
-         cPMwXL+8unmxZ/OaykahbtP2Pjx9VmlFmAn3a24zwEKFYjrHuC5c8EvGeK79TU4m2q3U
-         5TFseuEJx24N6shyWULlNx2uoRGt4UAzAQFS8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=84vnIVuBqL0L/KhL8ipRi5YoW8T44EFGau2fZe7lDYk=;
-        b=QXrMDSg8PxuNaU5YfK6WIV6kmWlDegqtv9iJpnS7kN7QAADxjqa3KyqxdEB0zKUF+Z
-         heGuqVfVimrdSAZpF+nx8XW5XupqrL18PYBrULOf7C+Q8vQ5CbteAF+YU0FZtvTRoUi1
-         2h3GKDew6tY21/DwX2WTe3js2ch85NjFEK+rvFn3gcgiFam6rJz3G8pC2Jp47J3BKmw6
-         BlstrXL9qTa/AsrUsunmZUFe0uQ5fdOb4jwvK6Xd4NvVBIkV5SjMh+9IciXzOcikky/x
-         XwgplDFgWNLHQXMuiIcn4dnsH5fCWG9wCibIzOc19acNQpwK4prbhWbBfJfOJlkQM8wl
-         gUCA==
-X-Gm-Message-State: AJIora8e49vHxhAwHMAxs70P5i4QtgpM/Ph6eiO7SIaTUjgWinBjW7e6
-        1iAsOTvcjUcv5j3fn+3nbe6Lvw==
-X-Google-Smtp-Source: AGRyM1s2mJD4A0ufT2RCu0F7qPDwL3ap1UgQJSr3ShtTgfGexhtlWxJMyoFHbHEZ1/ooqmo1CQSr2Q==
-X-Received: by 2002:a17:902:f151:b0:16a:466a:4ae4 with SMTP id d17-20020a170902f15100b0016a466a4ae4mr13910802plb.61.1656315550312;
-        Mon, 27 Jun 2022 00:39:10 -0700 (PDT)
-Received: from google.com ([240f:75:7537:3187:52a:ee1f:c89c:ee78])
-        by smtp.gmail.com with ESMTPSA id a4-20020a62bd04000000b00525714c3e07sm6480649pff.48.2022.06.27.00.39.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 00:39:09 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 16:39:02 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+0b7c8bfd17c00d016fb4@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, elver@google.com, glider@google.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        john.ogness@linutronix.de, linux-kernel@vger.kernel.org,
-        npiggin@gmail.com, pmladek@suse.com, rdunlap@infradead.org,
-        rostedt@goodmis.org, senozhatsky@chromium.org, swboyd@chromium.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] possible deadlock in console_unlock (2)
-Message-ID: <YrlelmgGpTtBva/0@google.com>
-References: <000000000000dab76c05d0bc284c@google.com>
- <00000000000095e3d105e2553f0a@google.com>
- <CACT4Y+Yf4ckOJjGkkFh_HYEKDjQo34wN=q18ADbP3=vhd5eQJQ@mail.gmail.com>
+        Mon, 27 Jun 2022 03:40:36 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202D560E3
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:40:31 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by albert.telenet-ops.be with bizsmtp
+        id o7gT2700T4C55Sk067gU04; Mon, 27 Jun 2022 09:40:28 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o5jMB-00128D-M5
+        for linux-kernel@vger.kernel.org; Mon, 27 Jun 2022 09:40:27 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o5jMB-00CJH0-3I
+        for linux-kernel@vger.kernel.org; Mon, 27 Jun 2022 09:40:27 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     linux-kernel@vger.kernel.org
+Subject: Build regressions/improvements in v5.19-rc4
+Date:   Mon, 27 Jun 2022 09:40:27 +0200
+Message-Id: <20220627074027.2933898-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <CAHk-=wjRt2bxDDT9-Uq337dAg6jipZfetgSsHejggU=JHmyK6A@mail.gmail.com>
+References: <CAHk-=wjRt2bxDDT9-Uq337dAg6jipZfetgSsHejggU=JHmyK6A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+Yf4ckOJjGkkFh_HYEKDjQo34wN=q18ADbP3=vhd5eQJQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On (22/06/27 09:11), Dmitry Vyukov wrote:
-> > syzbot suspects this issue was fixed by commit:
-> >
-> > commit faebd693c59387b7b765fab64b543855e15a91b4
-> > Author: John Ogness <john.ogness@linutronix.de>
-> > Date:   Thu Apr 21 21:22:36 2022 +0000
-> >
-> >     printk: rename cpulock functions
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17ed359bf00000
-> > start commit:   aa051d36ce4a Merge tag 'for-linus-2022052401' of git://git..
-> > git tree:       upstream
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=6c31e1555a4c59f3
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=0b7c8bfd17c00d016fb4
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16a5aad6f00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d697c3f00000
-> >
-> > If the result looks correct, please mark the issue as fixed by replying with:
-> >
-> > #syz fix: printk: rename cpulock functions
-> >
-> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> 
-> 
-> I guess this is also:
-> 
-> #syz fix: printk: add kthread console printers
+Below is the list of build error/warning regressions/improvements in
+v5.19-rc4[1] compared to v5.18[2].
 
-Dmirty, we have reverted console kthreads for the time being.
+Summarized:
+  - build errors: +7/-10
+  - build warnings: +11/-10
+
+JFYI, when comparing v5.19-rc4[1] to v5.19-rc3[3], the summaries are:
+  - build errors: +0/-2
+  - build warnings: +23/-0
+
+Note that there may be false regressions, as some logs are incomplete.
+Still, they're build errors/warnings.
+
+Happy fixing! ;-)
+
+Thanks to the linux-next team for providing the build service.
+
+[1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/03c765b0e3b4cb5063276b086c76f7a612856a9a/ (all 135 configs)
+[2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/4b0986a3613c92f4ec1bdc7f60ec66fea135991f/ (131 out of 135 configs)
+[3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/a111daf0c53ae91e71fd2bfe7497862d14132e3e/ (all 135 configs)
+
+
+*** ERRORS ***
+
+7 error regressions:
+  + /kisskb/src/arch/um/include/asm/page.h: error: too few arguments to function 'to_phys':  => 105:20
+  + /kisskb/src/drivers/nvdimm/pmem.c: error: conflicting types for 'to_phys':  => 48:20
+  + /kisskb/src/drivers/nvdimm/pmem.c: error: control reaches end of non-void function [-Werror=return-type]:  => 324:1
+  + /kisskb/src/drivers/tty/serial/sh-sci.c: error: unused variable 'sport' [-Werror=unused-variable]:  => 2655:26
+  + /kisskb/src/include/ufs/ufshci.h: error: initializer element is not constant:  => 245:36
+  + error: relocation truncated to fit: R_SPARC_WDISP22 against `.init.text':  => (.head.text+0x5100), (.head.text+0x5040)
+  + error: relocation truncated to fit: R_SPARC_WDISP22 against symbol `leon_smp_cpu_startup' defined in .text section in arch/sparc/kernel/trampoline_32.o:  => (.init.text+0xa4)
+
+10 error improvements:
+  - /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'X86_VENDOR_AMD' undeclared (first use in this function): 149:37 => 
+  - /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'struct cpuinfo_um' has no member named 'x86_vendor': 149:22 => 
+  - /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: control reaches end of non-void function [-Werror=return-type]: 150:1 => 
+  - /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: 'struct cpuinfo_um' has no member named 'x86_cache_size': 88:22 => 
+  - /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: control reaches end of non-void function [-Werror=return-type]: 89:1 => 
+  - /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: implicit declaration of function '__copy_user_nocache' [-Werror=implicit-function-declaration]: 100:2 => 
+  - /kisskb/src/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: error: case label does not reduce to an integer constant: 4917:4 => 
+  - /kisskb/src/drivers/scsi/aacraid/commsup.c: error: case label does not reduce to an integer constant: 1983:2 => 
+  - error: arch/sparc/kernel/head_32.o: relocation truncated to fit: R_SPARC_WDISP22 against `.init.text': (.head.text+0x5100), (.head.text+0x5040) => 
+  - error: arch/sparc/kernel/head_32.o: relocation truncated to fit: R_SPARC_WDISP22 against symbol `leon_smp_cpu_startup' defined in .text section in arch/sparc/kernel/trampoline_32.o: (.init.text+0xa4) => 
+
+
+*** WARNINGS ***
+
+11 warning regressions:
+  + .config: warning: override: ARCH_RV32I changes choice state:  => 3863
+  + arch/m68k/configs/multi_defconfig: warning: symbol value 'm' invalid for ZPOOL:  => 61
+  + arch/m68k/configs/sun3_defconfig: warning: symbol value 'm' invalid for ZPOOL:  => 37
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47b0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47c8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47e0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47f8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4810): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4828): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4840): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x52bc): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names:  => N/A
+
+10 warning improvements:
+  - .config: warning: override: reassigning to symbol GCC_PLUGIN_RANDSTRUCT: 12253, 12475 => 
+  - /kisskb/src/drivers/scsi/mpt3sas/mpt3sas_base.c: warning: array subscript 'Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]' is partly outside array bounds of 'unsigned char[20]' [-Warray-bounds]: 5400:40, 5396:40, 5403:43 => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4790): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47a8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47c0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47d8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47f0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4808): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4820): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x45d4): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names: N/A => 
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
