@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1034CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC45CCA48B
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239505AbiF0L5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49714 "EHLO
+        id S240060AbiF0L6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238395AbiF0LvA (ORCPT
+        with ESMTP id S238626AbiF0Lv7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:51:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B682701;
-        Mon, 27 Jun 2022 04:44:13 -0700 (PDT)
+        Mon, 27 Jun 2022 07:51:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BE0A461;
+        Mon, 27 Jun 2022 04:44:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26418B80DFB;
-        Mon, 27 Jun 2022 11:44:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89FB2C3411D;
-        Mon, 27 Jun 2022 11:44:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94F28612E3;
+        Mon, 27 Jun 2022 11:44:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AD7DC341C7;
+        Mon, 27 Jun 2022 11:44:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330250;
-        bh=zx5xph49eIIUqVb6C/JvM336sbAqW2fGeUXD2ZzUzgs=;
+        s=korg; t=1656330295;
+        bh=vdb3E6WRlDL20adQ9KZ21R2W9oW3boQenfgRmu7+Rxg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hvAydbWuLEA27Q8Tp9YBdkfP4qRnBjOM5NHIPm1r6oMaQhMvYzzh7E6urJl3TI718
-         a1hsdIjcobQeWWsKY58l/belhoe+wTaYBlge3d0l1keFC1KXeI30mCkDR7ocoTeiT9
-         W2o/sMVXTjY2X8fEl+uXO/OgPhz9Se4gS6lcImoQ=
+        b=ppL0uATf7RO5lJ8ljfiUwJNTtY7AH4CEMWOs+Uf7eL3IFf5nsW4oomXU/BV2a8PyW
+         Xwg+B6sxo/qxbEcFxlBgSMIiMaHRYgtPGaEZ5AUR4kj+ujXSu0h32uRuC8yZLAh3Qe
+         mdIRe4pcGNWVV9bUymWks/7lQWvIyoeb2S6ZbFtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Marangi <ansuelsmth@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 094/181] net: dsa: qca8k: reduce mgmt ethernet timeout
-Date:   Mon, 27 Jun 2022 13:21:07 +0200
-Message-Id: <20220627111947.284030478@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Jialin Zhang <zhangjialin11@huawei.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.18 150/181] iio: adc: ti-ads131e08: add missing fwnode_handle_put() in ads131e08_alloc_channels()
+Date:   Mon, 27 Jun 2022 13:22:03 +0200
+Message-Id: <20220627111949.033741522@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,40 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Marangi <ansuelsmth@gmail.com>
+From: Jialin Zhang <zhangjialin11@huawei.com>
 
-[ Upstream commit 85467f7da18992311deafdbf32a8d163cb1e98d7 ]
+commit 47dcf770abc793f347a65a24c24d550c936f08b0 upstream.
 
-The current mgmt ethernet timeout is set to 100ms. This value is too
-big and would slow down any mdio command in case the mgmt ethernet
-packet have some problems on the receiving part.
-Reduce it to just 5ms to handle case when some operation are done on the
-master port that would cause the mgmt ethernet to not work temporarily.
+fwnode_handle_put() should be used when terminating
+device_for_each_child_node() iteration with break or return to prevent
+stale device node references from being left behind.
 
-Fixes: 5950c7c0a68c ("net: dsa: qca8k: add support for mgmt read/write in Ethernet packet")
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Link: https://lore.kernel.org/r/20220621151633.11741-1-ansuelsmth@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d935eddd2799 ("iio: adc: Add driver for Texas Instruments ADS131E0x ADC family")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Jialin Zhang <zhangjialin11@huawei.com>
+Link: https://lore.kernel.org/r/20220517033020.2033324-1-zhangjialin11@huawei.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/qca8k.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ti-ads131e08.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index f375627174c8..e553e3e6fa0f 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -15,7 +15,7 @@
+--- a/drivers/iio/adc/ti-ads131e08.c
++++ b/drivers/iio/adc/ti-ads131e08.c
+@@ -739,7 +739,7 @@ static int ads131e08_alloc_channels(stru
+ 	device_for_each_child_node(dev, node) {
+ 		ret = fwnode_property_read_u32(node, "reg", &channel);
+ 		if (ret)
+-			return ret;
++			goto err_child_out;
  
- #define QCA8K_ETHERNET_MDIO_PRIORITY			7
- #define QCA8K_ETHERNET_PHY_PRIORITY			6
--#define QCA8K_ETHERNET_TIMEOUT				100
-+#define QCA8K_ETHERNET_TIMEOUT				5
+ 		ret = fwnode_property_read_u32(node, "ti,gain", &tmp);
+ 		if (ret) {
+@@ -747,7 +747,7 @@ static int ads131e08_alloc_channels(stru
+ 		} else {
+ 			ret = ads131e08_pga_gain_to_field_value(st, tmp);
+ 			if (ret < 0)
+-				return ret;
++				goto err_child_out;
  
- #define QCA8K_NUM_PORTS					7
- #define QCA8K_NUM_CPU_PORTS				2
--- 
-2.35.1
-
+ 			channel_config[i].pga_gain = tmp;
+ 		}
+@@ -758,7 +758,7 @@ static int ads131e08_alloc_channels(stru
+ 		} else {
+ 			ret = ads131e08_validate_channel_mux(st, tmp);
+ 			if (ret)
+-				return ret;
++				goto err_child_out;
+ 
+ 			channel_config[i].mux = tmp;
+ 		}
+@@ -784,6 +784,10 @@ static int ads131e08_alloc_channels(stru
+ 	st->channel_config = channel_config;
+ 
+ 	return 0;
++
++err_child_out:
++	fwnode_handle_put(node);
++	return ret;
+ }
+ 
+ static void ads131e08_regulator_disable(void *data)
 
 
