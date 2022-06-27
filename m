@@ -2,116 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DED2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A967C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239583AbiF0Qhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
+        id S237826AbiF0Qi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239545AbiF0Qh2 (ORCPT
+        with ESMTP id S239250AbiF0QiZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:37:28 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829671114B
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:37:26 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id p136so11487539ybg.4
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:37:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M2vRONC13amhSE1W+iisI+raE+PvPU52ESA4pnszZg8=;
-        b=UEcpkmCqZthqdDmCcJb/GHcW0WYvQnSCthVpaKsdmJhtGXLqN7CSupnYP/T9EPiFCT
-         dpWNdyhfR++Q5OkhmkqsGWC8xP+zsLjqe1hZEPiTRDPwzXUixzZdYN+OrQiKxHD6+YND
-         syqoKAJUsXT0A6UFFYH6qKrCaYiRvAEakeCdLDH8ogsyCp24jeLat9pAf8A3f5Kaa916
-         Ne+P4JzkAkzuD8jViCtMZRJ9dzBpqQSf0OwuZA8SljXz57Vy4S+6COF26L6Jk7HDX7m7
-         cflaOdwbvTx9eRoOi8K6EYa7WK7WZCXi9s387y7i3owFFtCUK9XdXU/EVohHplY0b3pr
-         tt2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M2vRONC13amhSE1W+iisI+raE+PvPU52ESA4pnszZg8=;
-        b=brSwXHfmoXrb5XM3KBziBYyPN4+4NlRTMWbtHUYfzrLK1uSeQJz4RHoE7lRAJ8JT6C
-         WqWOP4w6zAx6rgAg1AevzgOLScfewI5GS93c7ZBb9QnOvodJZm4I9W+Jf/Iq1wE13DQf
-         +pIjXnkgfJOik1l/rmDcHvSYhsjhsU5+wOdhD4x1AT+fx1hSi472FXYG60G9H0UZREWx
-         Wc9xQER9AIXcbMS613jxV8Ozo/LoJxmbicvTtW3IZu75/U+fkjeypxDDbnpeaD2Eo/u0
-         vZorigfI08kRpGrMAhNXgJU8B9APKrxYo86m9uDygnMo3k+r2YP2bv2hoWN8H770HlGc
-         /Seg==
-X-Gm-Message-State: AJIora9rtBmsqR/Kwrxwxuxh2ymHfVQCFF4ZcCXeizTRjTKwOjXat4Jh
-        RgHwg212Tj7rDsrKrA9+XX8LletmG1uXUMdGjVinmg==
-X-Google-Smtp-Source: AGRyM1sTPM7jj4zDy93zPEKtxPXKrzDkCiWDP4UO0S1kmWgyzlhK983F6Y8r4ItcgcZqCrhSji4lQVe3yDiErQ+njmI=
-X-Received: by 2002:a25:83cf:0:b0:66b:c7e5:faf with SMTP id
- v15-20020a2583cf000000b0066bc7e50fafmr14517036ybm.288.1656347845647; Mon, 27
- Jun 2022 09:37:25 -0700 (PDT)
+        Mon, 27 Jun 2022 12:38:25 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC979B858;
+        Mon, 27 Jun 2022 09:38:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1656347901;
+        bh=yd22nbeWjoHI5mPQLuBmGHFqp7xWncZwRwI9JVbyqGE=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=b8tQbookbrnDkzUPpy1yCTH+YHcnv3PTTUgcNB62ISoRi13YXVlJSJFYcLI/J6BSQ
+         /YL9OfgL/SX8rI2BrrzpZR2tx2v7yN1yVBdRpTg+EKxT5Osn0G/n6pPVtKNTRFeQF0
+         anmOe2Z+MkqEEKkDu9ec0BCsN/R9weUS+maBhD58=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.34.201]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MulqD-1noL2E0Voh-00rrdd; Mon, 27
+ Jun 2022 18:38:21 +0200
+Message-ID: <49e7b2de-3fac-70f3-5607-a0c511b13fd6@gmx.de>
+Date:   Mon, 27 Jun 2022 18:38:20 +0200
 MIME-Version: 1.0
-References: <4e685057-b07d-745d-fdaa-1a6a5a681060@openvz.org>
- <0fe836b4-5c0f-0e32-d511-db816d359748@openvz.org> <c516033f-a9e4-3485-26d9-a68afa694c1d@openvz.org>
- <YrSP25ebDmXE+kPS@dhcp22.suse.cz> <CALvZod4WsmrpfZtfnP4AmvtnkvBRngXXGyhM6+aQzkdfjsinAQ@mail.gmail.com>
- <YrXDV7uPpmDigh3G@dhcp22.suse.cz>
-In-Reply-To: <YrXDV7uPpmDigh3G@dhcp22.suse.cz>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Mon, 27 Jun 2022 09:37:14 -0700
-Message-ID: <CALvZod6U8DvMUcuUNfpQRwfkevQB7=nP4ZLA2gWGNf_JGdyARQ@mail.gmail.com>
-Subject: Re: [PATCH mm v5 0/9] memcg: accounting for objects allocated by
- mkdir, cgroup
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Vasily Averin <vvs@openvz.org>, kernel@openvz.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+From:   Ronald Warsow <rwarsow@gmx.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Content-Language: de-DE
+Subject: Re: [PATCH 5.18 000/181] 5.18.8-rc1 review
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:qAzEVzOlHfMBpYVB8i8dviaOgdIQGYytRRtrHnHuYC1Yb6F1HUH
+ tgK56CDqMMtiVoIe85p4Muwi/kolyUBnlL8NWLMp/DCuVoI+84eP18sRiZK06brgg069Z7g
+ hq+yb0e1LfWXvOcoBGl3MOh8yOxx6ifGxeNOSc33OMQDB0ooOLJDYb+ZSLIhMsu5LluIMCJ
+ wE1VDm0/JjSmgViI4z7dA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:YtcChZPsR04=:ntYZcw5nFwRHwnwVlAoUF+
+ XoDBv2QJFMzizlOx+1pQ3QqMDTk5k+XmPVDxcUpiVEzh6W93T97HzPHmTH3GFCT3jf+/uv3cO
+ r7qxG42gmVIq/cxLYr6tJz6beA7UL83ehanStm8n/SpcBtgH4ptnN3WF06FVRaABGek2iCjHU
+ NVF2rpJAq3CFOjie7h13TBPu8fZu5QjrWmW1DofHZpIwrPdJ8zpABEL3KLf52QCE6MaHukPQ4
+ +lFpavcT6l0G7R1jraS3uxSrepbz392WrzDLhEF0xeuVeqK/vJnjVIqlXUpg1RKqxtn5jfmnB
+ eIx6lsxrqFsPo18De3EzBS0aa3bTFcmYgS5JOo297kMbJTCbC+VklpbQaqP7euGaazq839ipW
+ uRRPXUVZEIeT4Ec0dkjzRm96T3oJqfG57AwrfwtqMUirzus95asLlNQNpWlQ62US15satmL2P
+ l/y1898LtniJATMkYqltLZISh/8fCyjwUguu6xIizIn3214vjfwVkd8Nys5H8U8x0mc7JCFMI
+ gC+hEojgNcjK6yaGI/a8EByA9dUElbtIMNk6+VPNP6eyQLsZdp1C6SyPofawZGWH04Nsnn5NA
+ MoFLdmOvBxSe5U1r5MCaJGV2cMGRCu2ZQt4ZKUuaTp8EnbfIg8HMHctNKoVyzZopbL1R2a1F8
+ Slp0KsoIOV856FF9ijYguUQtEsLiFfpjHdBvFkf2z+SRfoXfa72MNmEOHCMEeD538esSVK2wj
+ Omswd9Onqb60Vt108o4OiYHnAw1yHTVSBy16Rdw74RIfTe4nPoad00NgGlPhktLEzxjyyOR3+
+ M7XXhd7fthoY1TLgf2Bn3vBfaqUoqgC2ZSj8c55cBAHnKQBTzbJ8jzAVAzjP1ICUKcogY5Qqt
+ Cun9RQqlpyGDgYG2DVkY0wHLL1Fwlr5ARH4/FKZL++PsiMZTvbrcrk0vqawYcJzyA9ieUu/+X
+ uZNmfMyhBsIaGK5ItvESOItgYEe3SiLeFw8HywIDuENk+WA9TrKGjCJrD/3jsdfkqwsIUQVsw
+ Vca6YS1kFLumVuaHNVtzKuKdVYkwadXP2c9/wrh9Z+dNp63X2ygkoyfXS0Eim+oCaiYdoFB1y
+ 5Oix4S6+VyL8lVWx1OmNDs6zNW2ol9awZx/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 6:59 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Thu 23-06-22 09:55:33, Shakeel Butt wrote:
-> > On Thu, Jun 23, 2022 at 9:07 AM Michal Hocko <mhocko@suse.com> wrote:
-> > >
-> > > On Thu 23-06-22 18:03:31, Vasily Averin wrote:
-> > > > Dear Michal,
-> > > > do you still have any concerns about this patch set?
-> > >
-> > > Yes, I do not think we have concluded this to be really necessary. IIRC
-> > > Roman would like to see lingering cgroups addressed in not-so-distant
-> > > future (http://lkml.kernel.org/r/Ypd2DW7id4M3KJJW@carbon) and we already
-> > > have a limit for the number of cgroups in the tree. So why should we
-> > > chase after allocations that correspond the cgroups and somehow try to
-> > > cap their number via the memory consumption. This looks like something
-> > > that will get out of sync eventually and it also doesn't seem like the
-> > > best control to me (comparing to an explicit limit to prevent runaways).
-> > > --
-> >
-> > Let me give a counter argument to that. On a system running multiple
-> > workloads, how can the admin come up with a sensible limit for the
-> > number of cgroups?
->
-> How is that any easier through memory consumption? Something that might
-> change between kernel versions?
+hallo Greg
 
-In v2, we do provide a way for admins to right size the containers
-without killing them. Actually we are trying to use memory.high for
-right sizing the jobs. (It is not the best but workable and there are
-opportunities to improve it).
+5.18.8-rc1
 
-Similar mechanisms for other types of limits are lacking. Usually the
-application would be getting the error for which it can not do
-anything most of the time.
+compiles (see [1]), boots and runs here on x86_64
+(Intel i5-11400, Fedora 36)
 
-> Is it even possible to prevent from id
-> depletion by the memory consumption? Any medium sized memcg can easily
-> consume all the ids AFAICS.
+[1]
+a regression against 5.18.7:
 
-Though the patch series is pitched as protection against OOMs, I think
-it is beneficial irrespective. Protection against an adversarial actor
-should not be the aim here. IMO this patch series improves the memory
-association to the actual user which is better than unattributed
-memory treated as system overhead.
+...
+
+LD      vmlinux.o
+   MODPOST vmlinux.symvers
+WARNING: modpost: vmlinux.o(___ksymtab_gpl+tick_nohz_full_setup+0x0):
+Section mismatch in reference from the variable
+__ksymtab_tick_nohz_full_setup to the function
+.init.text:tick_nohz_full_setup()
+The symbol tick_nohz_full_setup is exported and annotated __init
+Fix this by removing the __init annotation of tick_nohz_full_setup or
+drop the export.
+...
+
+
+Tested-by: Ronald Warsow <rwarsow@gmx.de
+
+
+Thanks
+
+Ronald
+
