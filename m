@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD11C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 527E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236673AbiF0LjH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:39:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33696 "EHLO
+        id S236682AbiF0LjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236460AbiF0Lhd (ORCPT
+        with ESMTP id S236477AbiF0Lhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BDD1083;
-        Mon, 27 Jun 2022 04:32:59 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FAFA223;
+        Mon, 27 Jun 2022 04:33:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54B7F60920;
-        Mon, 27 Jun 2022 11:32:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6032BC3411D;
-        Mon, 27 Jun 2022 11:32:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD3DEB80E6F;
+        Mon, 27 Jun 2022 11:33:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C34C3411D;
+        Mon, 27 Jun 2022 11:33:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329578;
-        bh=mOz0bUko/Aq9cVya7lmZnQKIlYbi1GBF6Mw25F2zQ4M=;
+        s=korg; t=1656329590;
+        bh=FFo5qQnm4OH0okQMXRGwjQ4ynXyznGl40vyyIuYjSbQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l8/ybG5X0Xmx5C9m7xeaPf7zBruU4vZiGQ1PGjf/IUF47D92Ai8DGEcsno+djWkEw
-         xkOYL51F5LmiphFUMXYpSAx+8Hhp6lQgYsGOT8q76GT3xBW9d9TQa336bL/9w6mLBQ
-         VC+z1DjvstrI/wwnzuz9EFFVYsV3FXaRoFJrrlCw=
+        b=Js4Zzo7I+Fr1C/mT4PWNJPYiJiQeS0G0D6HfsQuEDRJ6urUw+lMyYcTOjJjLKdT10
+         hNa7mBX8K1sMguwXgN0TTYJFX8H3Y598OaEgo1wqEz0UlqaL0UYvrCO3V7WuhTZ4lL
+         VpHn7kLuIiwqCzSuNz5jIZL5+ngpOsiOer55fCBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 046/135] KVM: arm64: Prevent kmemleak from accessing pKVM memory
-Date:   Mon, 27 Jun 2022 13:20:53 +0200
-Message-Id: <20220627111939.496922216@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 050/135] igb: fix a use-after-free issue in igb_clean_tx_ring
+Date:   Mon, 27 Jun 2022 13:20:57 +0200
+Message-Id: <20220627111939.612269699@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,90 +51,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Perret <qperret@google.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 56961c6331463cce2d84d0f973177a517fb33a82 ]
+[ Upstream commit 3f6a57ee8544ec3982f8a3cbcbf4aea7d47eb9ec ]
 
-Commit a7259df76702 ("memblock: make memblock_find_in_range method
-private") changed the API using which memory is reserved for the pKVM
-hypervisor. However, memblock_phys_alloc() differs from the original API in
-terms of kmemleak semantics -- the old one didn't report the reserved
-regions to kmemleak while the new one does. Unfortunately, when protected
-KVM is enabled, all kernel accesses to pKVM-private memory result in a
-fatal exception, which can now happen because of kmemleak scans:
+Fix the following use-after-free bug in igb_clean_tx_ring routine when
+the NIC is running in XDP mode. The issue can be triggered redirecting
+traffic into the igb NIC and then closing the device while the traffic
+is flowing.
 
-$ echo scan > /sys/kernel/debug/kmemleak
-[   34.991354] kvm [304]: nVHE hyp BUG at: [<ffff800008fa3750>] __kvm_nvhe_handle_host_mem_abort+0x270/0x290!
-[   34.991580] kvm [304]: Hyp Offset: 0xfffe8be807e00000
-[   34.991813] Kernel panic - not syncing: HYP panic:
-[   34.991813] PS:600003c9 PC:0000f418011a3750 ESR:00000000f2000800
-[   34.991813] FAR:ffff000439200000 HPFAR:0000000004792000 PAR:0000000000000000
-[   34.991813] VCPU:0000000000000000
-[   34.993660] CPU: 0 PID: 304 Comm: bash Not tainted 5.19.0-rc2 #102
-[   34.994059] Hardware name: linux,dummy-virt (DT)
-[   34.994452] Call trace:
-[   34.994641]  dump_backtrace.part.0+0xcc/0xe0
-[   34.994932]  show_stack+0x18/0x6c
-[   34.995094]  dump_stack_lvl+0x68/0x84
-[   34.995276]  dump_stack+0x18/0x34
-[   34.995484]  panic+0x16c/0x354
-[   34.995673]  __hyp_pgtable_total_pages+0x0/0x60
-[   34.995933]  scan_block+0x74/0x12c
-[   34.996129]  scan_gray_list+0xd8/0x19c
-[   34.996332]  kmemleak_scan+0x2c8/0x580
-[   34.996535]  kmemleak_write+0x340/0x4a0
-[   34.996744]  full_proxy_write+0x60/0xbc
-[   34.996967]  vfs_write+0xc4/0x2b0
-[   34.997136]  ksys_write+0x68/0xf4
-[   34.997311]  __arm64_sys_write+0x20/0x2c
-[   34.997532]  invoke_syscall+0x48/0x114
-[   34.997779]  el0_svc_common.constprop.0+0x44/0xec
-[   34.998029]  do_el0_svc+0x2c/0xc0
-[   34.998205]  el0_svc+0x2c/0x84
-[   34.998421]  el0t_64_sync_handler+0xf4/0x100
-[   34.998653]  el0t_64_sync+0x18c/0x190
-[   34.999252] SMP: stopping secondary CPUs
-[   35.000034] Kernel Offset: disabled
-[   35.000261] CPU features: 0x800,00007831,00001086
-[   35.000642] Memory Limit: none
-[   35.001329] ---[ end Kernel panic - not syncing: HYP panic:
-[   35.001329] PS:600003c9 PC:0000f418011a3750 ESR:00000000f2000800
-[   35.001329] FAR:ffff000439200000 HPFAR:0000000004792000 PAR:0000000000000000
-[   35.001329] VCPU:0000000000000000 ]---
+[   73.322719] CPU: 1 PID: 487 Comm: xdp_redirect Not tainted 5.18.3-apu2 #9
+[   73.330639] Hardware name: PC Engines APU2/APU2, BIOS 4.0.7 02/28/2017
+[   73.337434] RIP: 0010:refcount_warn_saturate+0xa7/0xf0
+[   73.362283] RSP: 0018:ffffc9000081f798 EFLAGS: 00010282
+[   73.367761] RAX: 0000000000000000 RBX: ffffc90000420f80 RCX: 0000000000000000
+[   73.375200] RDX: ffff88811ad22d00 RSI: ffff88811ad171e0 RDI: ffff88811ad171e0
+[   73.382590] RBP: 0000000000000900 R08: ffffffff82298f28 R09: 0000000000000058
+[   73.390008] R10: 0000000000000219 R11: ffffffff82280f40 R12: 0000000000000090
+[   73.397356] R13: ffff888102343a40 R14: ffff88810359e0e4 R15: 0000000000000000
+[   73.404806] FS:  00007ff38d31d740(0000) GS:ffff88811ad00000(0000) knlGS:0000000000000000
+[   73.413129] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   73.419096] CR2: 000055cff35f13f8 CR3: 0000000106391000 CR4: 00000000000406e0
+[   73.426565] Call Trace:
+[   73.429087]  <TASK>
+[   73.431314]  igb_clean_tx_ring+0x43/0x140 [igb]
+[   73.436002]  igb_down+0x1d7/0x220 [igb]
+[   73.439974]  __igb_close+0x3c/0x120 [igb]
+[   73.444118]  igb_xdp+0x10c/0x150 [igb]
+[   73.447983]  ? igb_pci_sriov_configure+0x70/0x70 [igb]
+[   73.453362]  dev_xdp_install+0xda/0x110
+[   73.457371]  dev_xdp_attach+0x1da/0x550
+[   73.461369]  do_setlink+0xfd0/0x10f0
+[   73.465166]  ? __nla_validate_parse+0x89/0xc70
+[   73.469714]  rtnl_setlink+0x11a/0x1e0
+[   73.473547]  rtnetlink_rcv_msg+0x145/0x3d0
+[   73.477709]  ? rtnl_calcit.isra.0+0x130/0x130
+[   73.482258]  netlink_rcv_skb+0x8d/0x110
+[   73.486229]  netlink_unicast+0x230/0x340
+[   73.490317]  netlink_sendmsg+0x215/0x470
+[   73.494395]  __sys_sendto+0x179/0x190
+[   73.498268]  ? move_addr_to_user+0x37/0x70
+[   73.502547]  ? __sys_getsockname+0x84/0xe0
+[   73.506853]  ? netlink_setsockopt+0x1c1/0x4a0
+[   73.511349]  ? __sys_setsockopt+0xc8/0x1d0
+[   73.515636]  __x64_sys_sendto+0x20/0x30
+[   73.519603]  do_syscall_64+0x3b/0x80
+[   73.523399]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   73.528712] RIP: 0033:0x7ff38d41f20c
+[   73.551866] RSP: 002b:00007fff3b945a68 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+[   73.559640] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff38d41f20c
+[   73.567066] RDX: 0000000000000034 RSI: 00007fff3b945b30 RDI: 0000000000000003
+[   73.574457] RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
+[   73.581852] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff3b945ab0
+[   73.589179] R13: 0000000000000000 R14: 0000000000000003 R15: 00007fff3b945b30
+[   73.596545]  </TASK>
+[   73.598842] ---[ end trace 0000000000000000 ]---
 
-Fix this by explicitly excluding the hypervisor's memory pool from
-kmemleak like we already do for the hyp BSS.
-
-Cc: Mike Rapoport <rppt@kernel.org>
-Fixes: a7259df76702 ("memblock: make memblock_find_in_range method private")
-Signed-off-by: Quentin Perret <qperret@google.com>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220616161135.3997786-1-qperret@google.com
+Fixes: 9cbc948b5a20c ("igb: add XDP support")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Link: https://lore.kernel.org/r/e5c01d549dc37bff18e46aeabd6fb28a7bcf84be.1655388571.git.lorenzo@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kvm/arm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-index a30c036577a3..f181527f9d43 100644
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -2011,11 +2011,11 @@ static int finalize_hyp_mode(void)
- 		return 0;
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index b88303351484..5ee5ee8e6848 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -4819,8 +4819,11 @@ static void igb_clean_tx_ring(struct igb_ring *tx_ring)
+ 	while (i != tx_ring->next_to_use) {
+ 		union e1000_adv_tx_desc *eop_desc, *tx_desc;
  
- 	/*
--	 * Exclude HYP BSS from kmemleak so that it doesn't get peeked
--	 * at, which would end badly once the section is inaccessible.
--	 * None of other sections should ever be introspected.
-+	 * Exclude HYP sections from kmemleak so that they don't get peeked
-+	 * at, which would end badly once inaccessible.
- 	 */
- 	kmemleak_free_part(__hyp_bss_start, __hyp_bss_end - __hyp_bss_start);
-+	kmemleak_free_part(__va(hyp_mem_base), hyp_mem_size);
- 	return pkvm_drop_host_privileges();
- }
+-		/* Free all the Tx ring sk_buffs */
+-		dev_kfree_skb_any(tx_buffer->skb);
++		/* Free all the Tx ring sk_buffs or xdp frames */
++		if (tx_buffer->type == IGB_TYPE_SKB)
++			dev_kfree_skb_any(tx_buffer->skb);
++		else
++			xdp_return_frame(tx_buffer->xdpf);
  
+ 		/* unmap skb header data */
+ 		dma_unmap_single(tx_ring->dev,
 -- 
 2.35.1
 
