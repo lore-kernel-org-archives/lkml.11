@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BCCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03EF7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239340AbiF0MBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
+        id S239802AbiF0MBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239077AbiF0LxR (ORCPT
+        with ESMTP id S239107AbiF0LxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:53:17 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EB8DF61
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:47:43 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id t17-20020a1c7711000000b003a0434b0af7so2927082wmi.0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:47:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=INtcSWuYJqZv/51emZbtl4GZQaiJjf0FK2Rx9NjjvdU=;
-        b=lXdwJ3T0hWwRd2FjZSZn9NLejvaZP+hX41vR+vG5z+fZjvrrydxxOLj1Mni1SG4T7y
-         Qe5BcuNLmNeZK/FS3GCOOf7x+pDpbcUgJxr+V6XrdkoUNaSn914ItjglppuYDkfPvMiy
-         zytYCkt0WQaCqTxpSMo592v4DxD5Hx+tQoZjbuwc/DFTsnQlp1GFxT7EOXhVdjxvQlTQ
-         Fo4M12AvXbbyS7Ws7mXh98rG/Ya9pqX80Gr4tTZKEL8OAe3xNpLc9mOK3hf9A+XHLuuA
-         AkjiwLE1Z67hLAP8huWWKsZh7jBohB5FQNIhzUz32SHG+Q1ftRvvGmykPeRm3NkcZ35g
-         ZF8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=INtcSWuYJqZv/51emZbtl4GZQaiJjf0FK2Rx9NjjvdU=;
-        b=iir0mVEEEzDbASg+5oW0e80VAhT5fR8Nk/xKnh+/NYk2ZgPT65Xuj2Wc9wF+QJQz4y
-         8j4rGREEWUZ96edk3DlKIRIim62ulle5axpzzZWVCJtH/ru2SaC2xoeReD29havJIrpb
-         T8w2mwaU9WgiyPYWVTdDrLpEo4gXZlOTG34F/AaWiagxFessxxHhR0wu5FVNB7dW5Jno
-         nfj6b1Q1Vs/XL1Pf4qPVE4gKklu8jAWSsi3RjsyT5XCIrS+mqRXg0AMFzKerQaw5uIHQ
-         WqA5Coc2f0CIWDJ73l3QOJLl5Z+lpt6mPmvnxAhAosdRQuuuzem/2DGcdAJy7pIV+9+7
-         55lg==
-X-Gm-Message-State: AJIora/Tc6n3nCsfKeCcETGbznIaDOWsW2tpL6G3UQQRcmlHw8Z51/X7
-        o7+R03OGpRmEwca25w689g3t4A==
-X-Google-Smtp-Source: AGRyM1sxv+0qF++QDNW/7QJglg4BElyh4Bi1+WA1w2r7AwtDUgy4amACvWODEcwnxlDOf3dBJq0Zmg==
-X-Received: by 2002:a05:600c:58e:b0:3a0:48dc:defc with SMTP id o14-20020a05600c058e00b003a048dcdefcmr7554631wmd.54.1656330462296;
-        Mon, 27 Jun 2022 04:47:42 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id h4-20020a5d4304000000b0021b829d111csm10478996wrq.112.2022.06.27.04.47.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 04:47:41 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 12:47:39 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        sre@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
-        lgirdwood@gmail.com, lars@metafoo.de, rafael@kernel.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 02/10] dt-bindings: mfd: add bindings for AXP192 MFD
- device
-Message-ID: <YrmY292D/0vfIO4j@google.com>
-References: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com>
- <20220603135714.12007-3-aidanmacdonald.0x0@gmail.com>
+        Mon, 27 Jun 2022 07:53:20 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57815BDF
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:48:49 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LWmD3026LzkWdZ;
+        Mon, 27 Jun 2022 19:46:58 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 27 Jun 2022 19:48:47 +0800
+Subject: Re: [PATCH v2 5/9] mm, hwpoison: make unpoison aware of raw error
+ info in hwpoisoned hugepage
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     Naoya Horiguchi <nao.horiguchi@gmail.com>, <linux-mm@kvack.org>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        <linux-kernel@vger.kernel.org>
+References: <20220623235153.2623702-1-naoya.horiguchi@linux.dev>
+ <20220623235153.2623702-6-naoya.horiguchi@linux.dev>
+ <ea1d17d8-89df-04b7-29e8-0da53dbd3312@huawei.com>
+Message-ID: <2b6a6b19-c930-6d27-5929-363802e42596@huawei.com>
+Date:   Mon, 27 Jun 2022 19:48:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220603135714.12007-3-aidanmacdonald.0x0@gmail.com>
+In-Reply-To: <ea1d17d8-89df-04b7-29e8-0da53dbd3312@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 03 Jun 2022, Aidan MacDonald wrote:
-
-> The AXP192 is another X-Powers PMIC similar to the existing ones.
+On 2022/6/27 16:32, Miaohe Lin wrote:
+> On 2022/6/24 7:51, Naoya Horiguchi wrote:
+>> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+>>
+>> Raw error info list needs to be removed when hwpoisoned hugetlb is
+>> unpoisioned.  And unpoison handler needs to know how many errors there
+>> are in the target hugepage. So add them.
+>>
+>> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
 > 
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-> ---
->  Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> snip
+> 
+>> @@ -2255,7 +2275,7 @@ int unpoison_memory(unsigned long pfn)
+>>  unlock_mutex:
+>>  	mutex_unlock(&mf_mutex);
+>>  	if (!ret || freeit) {
+>> -		num_poisoned_pages_dec();
+>> +		num_poisoned_pages_sub(count);
+> 
+> IIUC, num_poisoned_pages will only be incremented once for hugetlb page. If many
+> subpages are hwpoisoned, they will reach the "else if (res == -EHWPOISON)" path
+> in try_memory_failure_hugetlb and thus num_poisoned_pages_inc is ignored. Maybe
+> that should be changed so subpages can contribute to the num_poisoned_pages
+> or should we just do num_poisoned_pages_dec here? Or am I miss something?
 
-Applied, thanks.
+Sorry. I re-read patch 4/9 and I found hugetlb_set_page_hwpoison will increment the
+num_poisoned_pages for each subpages. Please ignore this question.
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> 
+> Thanks!
+> 
+>>  		unpoison_pr_info("Unpoison: Software-unpoisoned page %#lx\n",
+>>  				 page_to_pfn(p), &unpoison_rs);
+>>  	}
+>>
+> 
+
