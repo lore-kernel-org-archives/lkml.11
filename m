@@ -2,124 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F10CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:09:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241103AbiF0UH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 16:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51600 "EHLO
+        id S240958AbiF0UJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 16:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237249AbiF0UH4 (ORCPT
+        with ESMTP id S238117AbiF0UJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 16:07:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6681EAC8;
-        Mon, 27 Jun 2022 13:07:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37451B81AD1;
-        Mon, 27 Jun 2022 20:07:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B08F7C3411D;
-        Mon, 27 Jun 2022 20:07:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656360471;
-        bh=PEF5oPoXv6B1fccK8/hH1cXGUgU2nGyTWsqpDEZ2vhU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=mxgUeXkcJ52XR6O87ZEKKE3Kz2rJTV++8nqp7XwOpVb6l7kzk/oQRd6FhJYOMBNAg
-         Y9Q6cyoad3+J86qItTaEpD6t2DxEI29KSLOu0trF4SXK7NGIl3i13w+LmtO2yRcSmp
-         tNaYSU7ORt62+aBsAqVMxEAAk3GOVPqq/ac4wb3bjkRtANg1e/idl5dBC9QlmMCkPY
-         wPg8bOrsbIqOSjLoeSGYVSfCh3dqOZSa4l7EWY/5uaDHAajzJL8uSlxk/tOgaJh0db
-         cedjCkWwMiEsoLQWDv5Rt7LG/i0xMiyfsUZ1mswaxjVtJgDaJevTaSQmWq6aA5QY4u
-         /vYuodlXS5r0Q==
-Date:   Mon, 27 Jun 2022 15:07:50 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Ren Zhijie <renzhijie2@huawei.com>
-Cc:     kishon@ti.com, lpieralisi@kernel.org, kw@linux.com,
-        bhelgaas@google.com, jdmason@kudzu.us, Frank.Li@nxp.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] PCI: endpoint: Fix Kconfig dependency
-Message-ID: <20220627200750.GA1774052@bhelgaas>
+        Mon, 27 Jun 2022 16:09:52 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8796E1EEEF;
+        Mon, 27 Jun 2022 13:09:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656360591; x=1687896591;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9Y+WRv+3bNc+qxaeVc48eNX/Xc1VlLk0PtZO4CV4sAs=;
+  b=t7PaHcTd0EiaAQ8cJ7bksYRzJ1nMefwMs5pCvIlKgl1VRHLfioJqxZm2
+   a9ew6GzR34QW9etABvFpXE9BFW+4lByi0UJa6kZXMz0Tfj8CjiQRxyA12
+   GQ8e9EqGHd+K/3R94DNk8HauGAz6HtR/Ie7JTMDN7vONiLgeEVzq8CL6B
+   mIv9NqZF7L3+SBbWUFgU8Tr7rwunVTU6WGra+nGvGN6oJH8/6IsuXimRA
+   zLcLIR2qbacAuBDNmqW8vclCbQAEIOuFIy0h9+y/xjZPAtkiUiOG/dsjC
+   GOkc+qNqnw0xHpAFmtv2F0eY50FC4f42LeMx2fTZKtfmCBY4uH1oRL+nT
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="162277514"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jun 2022 13:09:50 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 27 Jun 2022 13:09:47 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 27 Jun 2022 13:09:44 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <vladimir.oltean@nxp.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 0/7] net: lan966x: Add lag support
+Date:   Mon, 27 Jun 2022 22:13:23 +0200
+Message-ID: <20220627201330.45219-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627195712.GA1772707@bhelgaas>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 02:57:14PM -0500, Bjorn Helgaas wrote:
-> On Fri, Jun 24, 2022 at 09:19:11AM +0800, Ren Zhijie wrote:
-> > If CONFIG_NTB is not set and CONFIG_PCI_EPF_VNTB is y.
-> > 
-> > make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-, will be failed, like this:
-> > 
-> > drivers/pci/endpoint/functions/pci-epf-vntb.o: In function `epf_ntb_cmd_handler':
-> > pci-epf-vntb.c:(.text+0x95e): undefined reference to `ntb_db_event'
-> > pci-epf-vntb.c:(.text+0xa1f): undefined reference to `ntb_link_event'
-> > pci-epf-vntb.c:(.text+0xa42): undefined reference to `ntb_link_event'
-> > drivers/pci/endpoint/functions/pci-epf-vntb.o: In function `pci_vntb_probe':
-> > pci-epf-vntb.c:(.text+0x1250): undefined reference to `ntb_register_device'
-> > 
-> > The functions ntb_*() are defined in drivers/ntb/core.c, which need CONFIG_NTB setting y to be build-in.
-> > To fix this build error, add depends on NTB.
-> > 
-> > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > Fixes: ff32fac00d97("NTB: EPF: support NTB transfer between PCI RC and EP connection")
-> > Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
-> > Acked-by: Frank Li <frank.li@nxp.com>
-> 
-> Am I missing something? 
-> 
->   02:54:01 ~/linux (next)$ git checkout -b wip/ren-endpoint-ntb v5.19-rc1
->   Switched to a new branch 'wip/ren-endpoint-ntb'
->   02:54:23 ~/linux (wip/ren-endpoint-ntb)$ b4 am -om/ https://lore.kernel.org/r/20220624011911.164146-1-renzhijie2@huawei.com
->   Looking up https://lore.kernel.org/r/20220624011911.164146-1-renzhijie2%40huawei.com
->   Analyzing 1 messages in the thread
->   Checking attestation on all messages, may take a moment...
->   ---
->     [PATCH] PCI: endpoint: Fix Kconfig dependency
->   ---
->   Total patches: 1
->   ---
->    Link: https://lore.kernel.org/r/20220624011911.164146-1-renzhijie2@huawei.com
->    Base: not specified
-> 	 git am m/20220624_renzhijie2_pci_endpoint_fix_kconfig_dependency.mbx
->   02:54:47 ~/linux (wip/ren-endpoint-ntb)$ git am m/20220624_renzhijie2_pci_endpoint_fix_kconfig_dependency.mbx
->   Applying: PCI: endpoint: Fix Kconfig dependency
->   error: patch failed: drivers/pci/endpoint/functions/Kconfig:29
->   error: drivers/pci/endpoint/functions/Kconfig: patch does not apply
->   Patch failed at 0001 PCI: endpoint: Fix Kconfig dependency
->   hint: Use 'git am --show-current-patch' to see the failed patch
->   When you have resolved this problem, run "git am --continue".
->   If you prefer to skip this patch, run "git am --skip" instead.
->   To restore the original branch and stop patching, run "git am --abort".
-> 
-> Obviously I could fix this manually, but if there's something wrong
-> with your patch posting process, we should fix it.
+Add lag support for lan966x.
+First 4 patches don't do any changes to the current behaviour, they
+just prepare for lag support. While the rest is to add the lag support.
 
-Oh, I see the problem.  This patch depends on some other VNTB patch
-that hasn't been merged yet.  That means this fix should be squashed
-into the VNTB patch that adds "config PCI_EPF_VNTB".
+v1->v2:
+- fix the LAG PGIDs when ports go down, in this way is not
+  needed anymore the last patch of the series.
 
-> > ---
-> > v2: Fix some commit message errors
-> > ---
-> >  drivers/pci/endpoint/functions/Kconfig | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/pci/endpoint/functions/Kconfig b/drivers/pci/endpoint/functions/Kconfig
-> > index 362555b024e8..9beee4f0f4ee 100644
-> > --- a/drivers/pci/endpoint/functions/Kconfig
-> > +++ b/drivers/pci/endpoint/functions/Kconfig
-> > @@ -29,6 +29,7 @@ config PCI_EPF_NTB
-> >  config PCI_EPF_VNTB
-> >          tristate "PCI Endpoint NTB driver"
-> >          depends on PCI_ENDPOINT
-> > +        depends on NTB
-> >          select CONFIGFS_FS
-> >          help
-> >            Select this configuration option to enable the Non-Transparent
-> > -- 
-> > 2.17.1
-> > 
+Horatiu Vultur (7):
+  net: lan966x: Add reqisters used to configure lag interfaces
+  net: lan966x: Split lan966x_fdb_event_work
+  net: lan966x: Expose lan966x_switchdev_nb and
+    lan966x_switchdev_blocking_nb
+  net: lan966x: Extend lan966x_foreign_bridging_check
+  net: lan966x: Add lag support for lan966x.
+  net: lan966x: Extend FDB to support also lag
+  net: lan966x: Extend MAC to support also lag interfaces.
+
+ .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+ .../ethernet/microchip/lan966x/lan966x_fdb.c  | 153 ++++++---
+ .../ethernet/microchip/lan966x/lan966x_lag.c  | 322 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_mac.c  |  66 +++-
+ .../ethernet/microchip/lan966x/lan966x_main.h |  41 +++
+ .../ethernet/microchip/lan966x/lan966x_regs.h |  45 +++
+ .../microchip/lan966x/lan966x_switchdev.c     | 115 +++++--
+ 7 files changed, 654 insertions(+), 90 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+
+-- 
+2.33.0
+
