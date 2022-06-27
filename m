@@ -2,200 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11410CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:17:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1360BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239187AbiF0QRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50684 "EHLO
+        id S238593AbiF0QRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235713AbiF0QRl (ORCPT
+        with ESMTP id S239191AbiF0QRp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:17:41 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98BF618B17;
-        Mon, 27 Jun 2022 09:17:39 -0700 (PDT)
+        Mon, 27 Jun 2022 12:17:45 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBF118B36
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:17:44 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id s14so11632565ljs.3
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:17:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.uk; i=@amazon.co.uk; q=dns/txt;
-  s=amazon201209; t=1656346659; x=1687882659;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version:subject;
-  bh=USxLX1hhBixQIrWe2JRk26WbQIpHEUrB18xFgZhH74s=;
-  b=AEgoPJ7+VsOyrvO1wKlydr4J21BuVveM2+xSBNqfnUgrKJfHwlc/Gtue
-   9euZcFZOEXD5a2WBjFdxEnESS52fJ0oNaWFHCqFJLH7JE3gR1t0CzYpkO
-   UxpVI01V97DO+Caiqp9LkSI7q8Z2wk2TAb2xNsgd87Owb6Y5yvKVzVKSY
-   c=;
-X-IronPort-AV: E=Sophos;i="5.92,226,1650931200"; 
-   d="scan'208";a="102349472"
-Subject: RE: [PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
- if present
-Thread-Topic: [PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
- if present
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 27 Jun 2022 15:56:51 +0000
-Received: from EX13D32EUC003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com (Postfix) with ESMTPS id 8C15DA37DA;
-        Mon, 27 Jun 2022 15:56:46 +0000 (UTC)
-Received: from EX13D32EUC003.ant.amazon.com (10.43.164.24) by
- EX13D32EUC003.ant.amazon.com (10.43.164.24) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Mon, 27 Jun 2022 15:56:45 +0000
-Received: from EX13D32EUC003.ant.amazon.com ([10.43.164.24]) by
- EX13D32EUC003.ant.amazon.com ([10.43.164.24]) with mapi id 15.00.1497.036;
- Mon, 27 Jun 2022 15:56:45 +0000
-From:   "Durrant, Paul" <pdurrant@amazon.co.uk>
-To:     Sean Christopherson <seanjc@google.com>
-CC:     "x86@kernel.org" <x86@kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        "Jim Mattson" <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Borislav Petkov" <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Thread-Index: AQHYhhnGr94/Tz5Zr06wX+PVouePzq1bgNUAgAAEIQCAB+LOUIAAB6YAgAAA80A=
-Date:   Mon, 27 Jun 2022 15:56:45 +0000
-Message-ID: <e4711fc9017246978a0b452f1b5ca868@EX13D32EUC003.ant.amazon.com>
-References: <20220622092202.15548-1-pdurrant@amazon.com>
- <YrMqtHzNSean+qkh@google.com>
- <834f41a88e9f49b6b72d9d3672d702e5@EX13D32EUC003.ant.amazon.com>
- <0abf9f5de09e45ef9eb06b56bf16e3e6@EX13D32EUC003.ant.amazon.com>
- <YrnSFGURsmxV2Qmu@google.com>
-In-Reply-To: <YrnSFGURsmxV2Qmu@google.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.165.192]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IFCSeMWa9h9GX5PoDNQOnkciA1SMKLpehV1m9QrYxug=;
+        b=sH054xMJMWAdWEQgNnIeDaI9aRGZam9yTrCSC25x7I92aDv5SqHaKk2Pa/VnQl6gP8
+         hmPPwdPRdI8pGMC2ajGI6dabju8PRmFnla72eH4OnSDS7NdJPkHGiisBfiQhOjy5Td8W
+         pm4/RzsdVvsQSvTAuuEfcwpjZ2OYiAktQ3UQdLwHQDXnhM7LKdBCw9UMSNb3QWHNePTz
+         Lyupfd+C7UYPCqWan8PIhebM/OHO4oPumZBBNR5lCH42XHcSSZtpzwSradM39VjliALk
+         3krX/fpzeDB9di9ABbqT2rYyoHgIVw1dMN5fcFbki3C117cxcMnLwDZPPexy3vygsRVv
+         ED3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IFCSeMWa9h9GX5PoDNQOnkciA1SMKLpehV1m9QrYxug=;
+        b=j9GG+FNzM4Xxjy/giiN/43vrE5vgOF+w8C29JYDO/4tjo0/eAKl2I3ba0OnoqjWxvk
+         CeCjsK4zi4b6ps1aF2G8BkmpS85ErpHCCSATD69Xphpqd29L5u3xOdiho8M1uOb0Vvm9
+         JalSOvpAjV0gnV5qW/KP923SBbJ7TsjOKaN9jNoZQxX8ekqlOVBqzhnjhH5Iya/q7PyG
+         3ve2A4bkEWNnuYb6i48YIKfg8kX/bx7geSToiWSrHuM3VcWC2iExw6oisk/z8g0ajMTc
+         d4mNvIIDd/FreABKjfcwz4joKdzNm2WS2HUT5HTJvbLodhwE6AHetrUFmOAU2B32s7Uz
+         uARg==
+X-Gm-Message-State: AJIora831BAT+kF2+eEzoMZUtzFGJgAHhAqYWU36vPPIvAXuQ7TkcPtw
+        kLrEi5FvZ0nkqXb5pbRmB9FdETO+Y3LIz6IHM8tEdA==
+X-Google-Smtp-Source: AGRyM1vc1fb6tmRtoRk2eM/MqjNyTJsbg6uxDwz3tmaaoZLLhGU4yZSRiGKND6kPOWF/35tdb79NK/jTJhNQx6rZTQc=
+X-Received: by 2002:a2e:1f01:0:b0:25a:5960:3c39 with SMTP id
+ f1-20020a2e1f01000000b0025a59603c39mr7162503ljf.282.1656346662295; Mon, 27
+ Jun 2022 09:17:42 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <CAMkAt6osbEGBFrgn=y1=x4mDHC1aL40BwaW0NdGHF8qmWd7ktA@mail.gmail.com>
+ <20220627113019.3q62luiay7izhehr@black.fi.intel.com> <CAMj1kXHD5XBAS1aBjzg1RCeK6qgtanUSED_xyTZ0v1j+UShMKw@mail.gmail.com>
+ <20220627122230.7eetepoufd5w3lxd@black.fi.intel.com>
+In-Reply-To: <20220627122230.7eetepoufd5w3lxd@black.fi.intel.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Mon, 27 Jun 2022 10:17:30 -0600
+Message-ID: <CAMkAt6oJJaRM_dy=y2BP99VziPriVuA4jAmMc=G7njwJYKFgyg@mail.gmail.com>
+Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted memory
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marcelo Cerri <marcelo.cerri@canonical.com>,
+        tim.gardner@canonical.com,
+        Khalid ElMously <khalid.elmously@canonical.com>,
+        philip.cox@canonical.com,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -----Original Message-----
-> From: Sean Christopherson <seanjc@google.com>
-> Sent: 27 June 2022 16:52
-> To: Durrant, Paul <pdurrant@amazon.co.uk>
-> Cc: x86@kernel.org; kvm@vger.kernel.org; linux-kernel@vger.kernel.org; Pa=
-olo Bonzini
-> <pbonzini@redhat.com>; Vitaly Kuznetsov <vkuznets@redhat.com>; Wanpeng Li=
- <wanpengli@tencent.com>; Jim
-> Mattson <jmattson@google.com>; Joerg Roedel <joro@8bytes.org>; Thomas Gle=
-ixner <tglx@linutronix.de>;
-> Ingo Molnar <mingo@redhat.com>; Borislav Petkov <bp@alien8.de>; Dave Hans=
-en
-> <dave.hansen@linux.intel.com>; H. Peter Anvin <hpa@zytor.com>
-> Subject: RE: [EXTERNAL][PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc=
- info) sub-leaves, if present
->=20
-> CAUTION: This email originated from outside of the organization. Do not c=
-lick links or open
-> attachments unless you can confirm the sender and know the content is saf=
-e.
->=20
->=20
->=20
-> On Mon, Jun 27, 2022, Durrant, Paul wrote:
-> > > -----Original Message-----
-> > [snip]
-> > > > > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > > > > index 00e23dc518e0..8b45f9975e45 100644
-> > > > > --- a/arch/x86/kvm/x86.c
-> > > > > +++ b/arch/x86/kvm/x86.c
-> > > > > @@ -3123,6 +3123,7 @@ static int kvm_guest_time_update(struct kvm=
-_vcpu *v)
-> > > > >       if (vcpu->xen.vcpu_time_info_cache.active)
-> > > > >               kvm_setup_guest_pvclock(v, &vcpu->xen.vcpu_time_inf=
-o_cache, 0);
-> > > > >       kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
-> > > > > +     kvm_xen_setup_tsc_info(v);
+On Mon, Jun 27, 2022 at 6:22 AM Kirill A. Shutemov
+<kirill.shutemov@linux.intel.com> wrote:
+>
+> On Mon, Jun 27, 2022 at 01:54:45PM +0200, Ard Biesheuvel wrote:
+> > On Mon, 27 Jun 2022 at 13:30, Kirill A. Shutemov
+> > <kirill.shutemov@linux.intel.com> wrote:
+> > >
+> > > On Fri, Jun 24, 2022 at 10:37:10AM -0600, Peter Gonda wrote:
+> > > > On Tue, Jun 14, 2022 at 6:03 AM Kirill A. Shutemov
+> > > > <kirill.shutemov@linux.intel.com> wrote:
+> > > > >
+> > > > > UEFI Specification version 2.9 introduces the concept of memory
+> > > > > acceptance: some Virtual Machine platforms, such as Intel TDX or AMD
+> > > > > SEV-SNP, requiring memory to be accepted before it can be used by the
+> > > > > guest. Accepting happens via a protocol specific for the Virtual
+> > > > > Machine platform.
+> > > > >
+> > > > > Accepting memory is costly and it makes VMM allocate memory for the
+> > > > > accepted guest physical address range. It's better to postpone memory
+> > > > > acceptance until memory is needed. It lowers boot time and reduces
+> > > > > memory overhead.
+> > > > >
+> > > > > The kernel needs to know what memory has been accepted. Firmware
+> > > > > communicates this information via memory map: a new memory type --
+> > > > > EFI_UNACCEPTED_MEMORY -- indicates such memory.
+> > > > >
+> > > > > Range-based tracking works fine for firmware, but it gets bulky for
+> > > > > the kernel: e820 has to be modified on every page acceptance. It leads
+> > > > > to table fragmentation, but there's a limited number of entries in the
+> > > > > e820 table
+> > > > >
+> > > > > Another option is to mark such memory as usable in e820 and track if the
+> > > > > range has been accepted in a bitmap. One bit in the bitmap represents
+> > > > > 2MiB in the address space: one 4k page is enough to track 64GiB or
+> > > > > physical address space.
+> > > > >
+> > > > > In the worst-case scenario -- a huge hole in the middle of the
+> > > > > address space -- It needs 256MiB to handle 4PiB of the address
+> > > > > space.
+> > > > >
+> > > > > Any unaccepted memory that is not aligned to 2M gets accepted upfront.
+> > > > >
+> > > > > The approach lowers boot time substantially. Boot to shell is ~2.5x
+> > > > > faster for 4G TDX VM and ~4x faster for 64G.
+> > > > >
+> > > > > TDX-specific code isolated from the core of unaccepted memory support. It
+> > > > > supposed to help to plug-in different implementation of unaccepted memory
+> > > > > such as SEV-SNP.
+> > > > >
+> > > > > The tree can be found here:
+> > > > >
+> > > > > https://github.com/intel/tdx.git guest-unaccepted-memory
 > > > >
-> > > > This can be called inside this if statement, no?
+> > > > Hi Kirill,
 > > > >
-> > > >         if (unlikely(vcpu->hw_tsc_khz !=3D tgt_tsc_khz)) {
-> > > >
-> > > >         }
-> > > >
+> > > > I have a couple questions about this feature mainly about how cloud
+> > > > customers can use this, I assume since this is a confidential compute
+> > > > feature a large number of the users of these patches will be cloud
+> > > > customers using TDX and SNP. One issue I see with these patches is how
+> > > > do we as a cloud provider know whether a customer's linux image
+> > > > supports this feature, if the image doesn't have these patches UEFI
+> > > > needs to fully validate the memory, if the image does we can use this
+> > > > new protocol. In GCE we supply our VMs with a version of the EDK2 FW
+> > > > and the customer doesn't input into which UEFI we run, as far as I can
+> > > > tell from the Azure SNP VM documentation it seems very similar. We
+> > > > need to somehow tell our UEFI in the VM what to do based on the image.
+> > > > The current way I can see to solve this issue would be to have our
+> > > > customers give us metadata about their VM's image but this seems kinda
+> > > > burdensome on our customers (I assume we'll have more features which
+> > > > both UEFI and kernel need to both support inorder to be turned on like
+> > > > this one) and error-prone, if a customer incorrectly labels their
+> > > > image it may fail to boot.. Has there been any discussion about how to
+> > > > solve this? My naive thoughts were what if UEFI and Kernel had some
+> > > > sort of feature negotiation. Maybe that could happen via an extension
+> > > > to exit boot services or a UEFI runtime driver, I'm not sure what's
+> > > > best here just some ideas.
+> > >
+> > > Just as an idea, we can put info into UTS_VERSION which can be read from
+> > > the built bzImage. We have info on SMP and preeption there already.
+> > >
 > >
-> > I think it ought to be done whenever the shared copy of Xen's vcpu_info=
- is
-> > updated (it will always match on real Xen) so unconditionally calling i=
-t here
-> > seems reasonable.
->=20
-> But isn't the call pointless if the vCPU's hw_tsc_khz is unchanged?  E.g =
-if the
-> params were explicitly passed in, then it would look like:
->=20
->         if (unlikely(vcpu->hw_tsc_khz !=3D tgt_tsc_khz)) {
->                 kvm_get_time_scale(NSEC_PER_SEC, tgt_tsc_khz * 1000LL,
->                                    &vcpu->hv_clock.tsc_shift,
->                                    &vcpu->hv_clock.tsc_to_system_mul);
->                 vcpu->hw_tsc_khz =3D tgt_tsc_khz;
->=20
->                 kvm_xen_setup_tsc_info(vcpu, tgt_tsc_khz,
->                                        vcpu->hv_clock.tsc_shift,
->                                        vcpu->hv_clock.tsc_to_system_mul);
->         }
->=20
-> Explicitly passing in the arguments probably isn't necessary, just use a =
-more
-> precise name, e.g. kvm_xen_update_tsc_khz(), to make it clear that the up=
-date is
-> limited to TSC frequency changes.
->=20
-> > > > > +{
-> > > > > +     u32 base =3D 0;
-> > > > > +     u32 function;
-> > > > > +
-> > > > > +     for_each_possible_hypervisor_cpuid_base(function) {
-> > > > > +             struct kvm_cpuid_entry2 *entry =3D kvm_find_cpuid_e=
-ntry(vcpu, function, 0);
-> > > > > +
-> > > > > +             if (entry &&
-> > > > > +                 entry->ebx =3D=3D XEN_CPUID_SIGNATURE_EBX &&
-> > > > > +                 entry->ecx =3D=3D XEN_CPUID_SIGNATURE_ECX &&
-> > > > > +                 entry->edx =3D=3D XEN_CPUID_SIGNATURE_EDX) {
-> > > > > +                     base =3D function;
-> > > > > +                     break;
-> > > > > +             }
-> > > > > +     }
-> > > > > +     if (!base)
-> > > > > +             return;
-> > > > > +
-> > > > > +     function =3D base | XEN_CPUID_LEAF(3);
-> > > > > +     vcpu->arch.xen.tsc_info_1 =3D kvm_find_cpuid_entry(vcpu, fu=
-nction, 1);
-> > > > > +     vcpu->arch.xen.tsc_info_2 =3D kvm_find_cpuid_entry(vcpu, fu=
-nction, 2);
-> > > >
-> > > > Is it really necessary to cache the leave?  Guest CPUID isn't optim=
-ized, but it's
-> > > > not _that_ slow, and unless I'm missing something updating the TSC =
-frequency and
-> > > > scaling info should be uncommon, i.e. not performance critical.
+> > Instead of hacking this into the binary, couldn't we define a protocol
+> > that the kernel will call from the EFI stub (before EBS()) to identify
+> > itself as an image that understands unaccepted memory, and knows how
+> > to deal with it?
 > >
-> > If we're updating the values in the leaves on every entry into the gues=
-t (as
-> > with calls to kvm_setup_guest_pvclock()) then I think the cached pointe=
-rs are
-> > worthwhile.
->=20
-> But why would you update on every entry to the guest?   Isn't this a rare=
- operation
-> if the update is limited to changes in the host CPU's TSC frequency?  Or =
-am I
-> missing something?
+> > That way, the firmware can accept all the memory on behalf of the OS
+> > at ExitBootServices() time, unless the OS has indicated there is no
+> > need to do so.
+>
+> I agree it would be better. But I think it would require change to EFI
+> spec, no?
 
-No, I am indeed forgetting that there is no offset to update (there once wa=
-s) so indeed the values will only change if the freq changes... so I'll dro=
-p the caching.
+Could this somehow be amended on to the UEFI Specification version 2.9
+change which added all of the unaccepted memory features?
 
-  Paul
+>
+> --
+>  Kirill A. Shutemov
