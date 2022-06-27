@@ -2,175 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B46C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 10:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF14CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 10:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233712AbiF0KKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 06:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
+        id S233424AbiF0KLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 06:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233186AbiF0KKg (ORCPT
+        with ESMTP id S231776AbiF0KL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 06:10:36 -0400
-Received: from sdore.me (unknown [89.188.170.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8342640C
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 03:10:20 -0700 (PDT)
-Received: by sdore.me (Postfix, from userid 1000)
-        id 1345287F24B; Mon, 27 Jun 2022 13:00:44 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=sdore.me; s=SERV;
-        t=1656324044; bh=kKwJ/1I7KEuxIoPLdrkYJiu2t+xD/W5dhB262nifPKM=;
-        h=From:To:Cc:Subject:Date;
-        b=WIhXfqDAx91WP3nGCo8vGywCXvG4UEmddWxUuntzVqr4lri9AV90m4V/jirYKZljg
-         kMuzZeBlBFwamFWKlGJQ7wMzE6E6AWOQHF+ixm+PwJc1wXHVSyEM1uIsv/0jb4Q5xF
-         m3pny5vNwEtc39npnLoAp99/Zi9Q/F5SuAuoYkJU=
-From:   Egor Vorontsov <sdoregor@sdore.me>
-Cc:     Egor Vorontsov <sdoregor@sdore.me>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jonas Hahnfeld <hahnjo@hahnjo.de>,
-        William Overton <willovertonuk@gmail.com>,
-        Brendan Grieve <brendan@grieve.com.au>,
-        Alexander Tsoy <alexander@tsoy.me>,
-        alsa-devel@alsa-project.org (moderated list:SOUND),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 1/2] ALSA: usb-audio: Add quirk for Fiero SC-01
-Date:   Mon, 27 Jun 2022 13:00:34 +0300
-Message-Id: <20220627100041.2861494-1-sdoregor@sdore.me>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+        Mon, 27 Jun 2022 06:11:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDDF6401;
+        Mon, 27 Jun 2022 03:11:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF161B8106E;
+        Mon, 27 Jun 2022 10:11:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66AF1C3411D;
+        Mon, 27 Jun 2022 10:11:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656324684;
+        bh=uM9Jg0xWGjqPi0Q4iaOPjmzP/20updvm1fUGxrOmNGM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=G0lRwuQ5A6e7SuAtuHgJhvkJ9nOwh4bP0BSZ2uoYhzGNN347xKLZ79PT5l8WJS9Fg
+         la8tZGg6YkAYUreLjih3n5IgGhpBnNyTBCaHlHkyky1F9M1t/CdfpKqVv+3KwCOd4O
+         0isOnQEIG3vwdUGH2JP26UKlfCyGJ/xeslFDLpXBYKGA/pYeQIr5EhKXL9T04l+ZgW
+         h+RMJ/Q+2e5qD3xI62wre8v3GzN9Vp3jf54EfdTxKeTP32Ee2H5dM1MdnxscqM1V9w
+         dSb54w2w8hFtwfi5NfH+n7NuVkQXK2gH0Fj8kV2HpzRF5QIkmslMz/+vNhbsm542aw
+         DCCoNxhorI2fw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o5liE-003OOJ-5W;
+        Mon, 27 Jun 2022 11:11:22 +0100
+Date:   Mon, 27 Jun 2022 11:11:21 +0100
+Message-ID: <87a69y2z7a.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH v2 2/2] irqchip/sifive-plic: Add support for Renesas RZ/Five SoC
+In-Reply-To: <CAMuHMdVt9FjCtvMgJcCh=g2b+8b-fgabGbOLDcXNrrPMpC+3jQ@mail.gmail.com>
+References: <20220626004326.8548-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <20220626004326.8548-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <87wnd3erab.wl-maz@kernel.org>
+        <CA+V-a8tcxj_N0sBHhgAZAN8WSJ12JnDzAvUUnCXto3wHLqNVwg@mail.gmail.com>
+        <87v8snehwi.wl-maz@kernel.org>
+        <CAMuHMdVt9FjCtvMgJcCh=g2b+8b-fgabGbOLDcXNrrPMpC+3jQ@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: geert@linux-m68k.org, prabhakar.csengg@gmail.com, prabhakar.mahadev-lad.rj@bp.renesas.com, tglx@linutronix.de, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, sagar.kadam@sifive.com, palmer@dabbelt.com, paul.walmsley@sifive.com, linux-riscv@lists.infradead.org, devicetree@vger.kernel.org, geert+renesas@glider.be, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, biju.das.jz@bp.renesas.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fiero SC-01 is a USB sound card with two mono inputs and a single
-stereo output. The inputs are composed into a single stereo stream.
+On Mon, 27 Jun 2022 09:53:13 +0100,
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> 
+> Hi Marc,
+> 
+> On Sun, Jun 26, 2022 at 2:19 PM Marc Zyngier <maz@kernel.org> wrote:
+> > On Sun, 26 Jun 2022 10:38:18 +0100,
+> > "Lad, Prabhakar" <prabhakar.csengg@gmail.com> wrote:
+> > > On Sun, Jun 26, 2022 at 9:56 AM Marc Zyngier <maz@kernel.org> wrote:
+> > > > On Sun, 26 Jun 2022 01:43:26 +0100,
+> > > > Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > > > > The Renesas RZ/Five SoC has a RISC-V AX45MP AndesCore with NCEPLIC100. The
+> > > > > NCEPLIC100 supports both edge-triggered and level-triggered interrupts. In
+> > > > > case of edge-triggered interrupts NCEPLIC100 ignores the next interrupt
+> > > > > edge until the previous completion message has been received and
+> > > > > NCEPLIC100 doesn't support pending interrupt counter, hence losing the
+> > > > > interrupts if not acknowledged in time.
+> > > > >
+> > > > > So the workaround for edge-triggered interrupts to be handled correctly
+> > > > > and without losing is that it needs to be acknowledged first and then
+> > > > > handler must be run so that we don't miss on the next edge-triggered
+> > > > > interrupt.
+> > > > >
+> > > > > This patch adds a new compatible string for Renesas RZ/Five SoC and adds
+> > > > > support to change interrupt flow based on the interrupt type. It also
+> > > > > implements irq_ack and irq_set_type callbacks.
+> > > > >
+> > > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> 
+> > > > > +     if (of_device_is_compatible(node, "renesas,r9a07g043-plic")) {
+> > > > > +             priv->of_data = RENESAS_R9A07G043_PLIC;
+> > > > > +             plic_chip.name = "Renesas RZ/Five PLIC";
+> > > >
+> > > > NAK. The irq_chip structure isn't the place for platform marketing.
+> > > > This is way too long anyway (and same for the edge version), and you
+> > > > even sent me a patch to make that structure const...
+> > > >
+> > > My bad will drop this.
+> >
+> > And why you're at it, please turn this rather random 'of_data' into
+> > something like:
+> >
+> > diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
+> > index bb87e4c3b88e..cd1683b77caf 100644
+> > --- a/drivers/irqchip/irq-sifive-plic.c
+> > +++ b/drivers/irqchip/irq-sifive-plic.c
+> > @@ -64,6 +64,10 @@ struct plic_priv {
+> >         struct cpumask lmask;
+> >         struct irq_domain *irqdomain;
+> >         void __iomem *regs;
+> > +       enum {
+> > +               VANILLA_PLIC,
+> > +               RENESAS_R9A07G043_PLIC,
+> > +       } flavour;
+> >  };
+> >
+> >  struct plic_handler {
+> >
+> > to give some structure to the whole thing, because I'm pretty sure
+> > we'll see more braindead implementations as time goes by.
+> 
+> What about using a feature flag (e.g. had_edge_irqs) instead?
 
-The device uses a vendor-provided driver on Windows and does not work
-at all without it. The driver mostly provides ASIO functionality, but
-also alters the way the sound card is queried for sample rates and
-clocks.
+Sure. Then make this an unsigned long, and have a set of quirk bits,
+because I expect this to grow quickly.
 
-ALSA queries those failing with an EPIPE (same as Windows 10 does).
-Presumably, the vendor-provided driver does not query it at all, simply
-matching by VID:PID. Thus, I consider this a buggy firmware and adhere
-to a set of fixed endpoint quirks instead.
+>
+> > It almost feels like I've written this whole patch. Oh wait...
+> 
+> > Without deviation from the norm, progress is not possible.
+> 
+> How applicable ;-)
 
-The soundcard has an internal clock. Implicit feedback mode is required
-for the playback.
+I'm not sure there is any sign of progress here, and evolution
+through random mutation has a pretty massive failure rate.
 
-I have updated my device to v1.1.0 from a Windows 10 VM using a vendor-
-provided binary prior to the development, hoping for it to just begin
-working. The device provides no obvious way to downgrade the firmware,
-and regardless, there's no binary available for v1.0.0 anyway.
+Thanks,
 
-Thus, I will be getting another unit to extend the patch with support
-for that. Expected to be a simple copy-paste of the existing one,
-though.
+	M.
 
-There were no previous reports of that device in context of Linux
-anywhere. Other issues have been reported though, but that's out of the
-scope.
-
-Signed-off-by: Egor Vorontsov <sdoregor@sdore.me>
----
- sound/usb/quirks-table.h | 68 ++++++++++++++++++++++++++++++++++++++++
- sound/usb/quirks.c       |  2 ++
- 2 files changed, 70 insertions(+)
-
-diff --git a/sound/usb/quirks-table.h b/sound/usb/quirks-table.h
-index 4f56e1784932..c61445eb83d8 100644
---- a/sound/usb/quirks-table.h
-+++ b/sound/usb/quirks-table.h
-@@ -4119,6 +4119,74 @@ YAMAHA_DEVICE(0x7010, "UB99"),
- 		}
- 	}
- },
-+{
-+	/*
-+	 * Fiero SC-01 (firmware v1.1.0)
-+	 */
-+	USB_DEVICE(0x2b53, 0x0031),
-+	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-+		.vendor_name = "Fiero",
-+		.product_name = "SC-01",
-+		.ifnum = QUIRK_ANY_INTERFACE,
-+		.type = QUIRK_COMPOSITE,
-+		.data = &(const struct snd_usb_audio_quirk[]) {
-+			{
-+				.ifnum = 0,
-+				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-+			},
-+			/* Playback */
-+			{
-+				.ifnum = 1,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 1,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x01,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC,
-+					.rates = SNDRV_PCM_RATE_48000 |
-+						 SNDRV_PCM_RATE_96000,
-+					.rate_min = 48000,
-+					.rate_max = 96000,
-+					.nr_rates = 2,
-+					.rate_table = (unsigned int[]) { 48000, 96000 },
-+					.clock = 0x29
-+				}
-+			},
-+			/* Capture */
-+			{
-+				.ifnum = 2,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 2,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x82,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC |
-+						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
-+					.rates = SNDRV_PCM_RATE_48000 |
-+						 SNDRV_PCM_RATE_96000,
-+					.rate_min = 48000,
-+					.rate_max = 96000,
-+					.nr_rates = 2,
-+					.rate_table = (unsigned int[]) { 48000, 96000 },
-+					.clock = 0x29
-+				}
-+			},
-+			{
-+				.ifnum = -1
-+			}
-+		}
-+	}
-+},
- 
- #undef USB_DEVICE_VENDOR_SPEC
- #undef USB_AUDIO_DEVICE
-diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
-index e8468f9b007d..81bdd921a279 100644
---- a/sound/usb/quirks.c
-+++ b/sound/usb/quirks.c
-@@ -1908,6 +1908,8 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
- 		   QUIRK_FLAG_ALIGN_TRANSFER),
- 	DEVICE_FLG(0x1224, 0x2a25, /* Jieli Technology USB PHY 2.0 */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
-+	DEVICE_FLG(0x2b53, 0x0031, /* Fiero SC-01 (firmware v1.1.0) */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
- 
- 	/* Vendor matches */
- 	VENDOR_FLG(0x045e, /* MS Lifecam */
 -- 
-2.36.1
-
+Without deviation from the norm, progress is not possible.
