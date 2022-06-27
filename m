@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA43C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9972C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236795AbiF0Ljh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
+        id S236800AbiF0Ljk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236489AbiF0Lhf (ORCPT
+        with ESMTP id S236512AbiF0Lhh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6CB28C;
-        Mon, 27 Jun 2022 04:33:20 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3BB33B;
+        Mon, 27 Jun 2022 04:33:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46C16609D0;
-        Mon, 27 Jun 2022 11:33:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12F77C3411D;
-        Mon, 27 Jun 2022 11:33:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0234B81122;
+        Mon, 27 Jun 2022 11:33:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B13C3411D;
+        Mon, 27 Jun 2022 11:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329599;
-        bh=jCMUa1qxy25zcTSppi5OnwFRN6ISO/vpezVuczdRk88=;
+        s=korg; t=1656329630;
+        bh=TF5d/BHxq2w1bvYLH1hdioTZerRuKVXo3Ch1/2RYsV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IX+aOburNHUbkuFdbdUxzkA8YIdLX0dOSNoLHM2BLLZtf8hkDxgbJj2TAeMG3fi86
-         GKSXeJi1UEbAE/1LTS0utBptU8HC+KezgFer8Cr1VrnAcTDyZM/xH+uWUYBXNzBr9V
-         QaTtRiOolB+BExtSKv2pjMnf7FgM5nbxhtOJwuD0=
+        b=v+De4w1AmGUBAoibCQfAA/sWPLPjC78qOA6SUW1RhOV5KO7XzHm4tjjYtjq9MArW+
+         +/bR1fNbDTcaHnmNOqaFiELsCvylXDosAhKAqwLySyrm9lpuTOa4gIrkBD0OT2QhM4
+         IR5SEmiRIPbjMv8O4dSh5w5hgGn7NKouPgobLnNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Yuming Chen <chenyuming.junnan@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 053/135] net/sched: sch_netem: Fix arithmetic in netem_dump() for 32-bit platforms
-Date:   Mon, 27 Jun 2022 13:21:00 +0200
-Message-Id: <20220627111939.698442908@linuxfoundation.org>
+Subject: [PATCH 5.15 062/135] net/tls: fix tls_sk_proto_close executed repeatedly
+Date:   Mon, 27 Jun 2022 13:21:09 +0200
+Message-Id: <20220627111939.957678321@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -53,70 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Ziyang Xuan <william.xuanziyang@huawei.com>
 
-[ Upstream commit a2b1a5d40bd12b44322c2ccd40bb0ec1699708b6 ]
+[ Upstream commit 69135c572d1f84261a6de2a1268513a7e71753e2 ]
 
-As reported by Yuming, currently tc always show a latency of UINT_MAX
-for netem Qdisc's on 32-bit platforms:
+After setting the sock ktls, update ctx->sk_proto to sock->sk_prot by
+tls_update(), so now ctx->sk_proto->close is tls_sk_proto_close(). When
+close the sock, tls_sk_proto_close() is called for sock->sk_prot->close
+is tls_sk_proto_close(). But ctx->sk_proto->close() will be executed later
+in tls_sk_proto_close(). Thus tls_sk_proto_close() executed repeatedly
+occurred. That will trigger the following bug.
 
-    $ tc qdisc add dev dummy0 root netem latency 100ms
-    $ tc qdisc show dev dummy0
-    qdisc netem 8001: root refcnt 2 limit 1000 delay 275s  275s
-                                               ^^^^^^^^^^^^^^^^
+=================================================================
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+RIP: 0010:tls_sk_proto_close+0xd8/0xaf0 net/tls/tls_main.c:306
+Call Trace:
+ <TASK>
+ tls_sk_proto_close+0x356/0xaf0 net/tls/tls_main.c:329
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:428
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1365
 
-Let us take a closer look at netem_dump():
+Updating a proto which is same with sock->sk_prot is incorrect. Add proto
+and sock->sk_prot equality check at the head of tls_update() to fix it.
 
-        qopt.latency = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->latency,
-                             UINT_MAX);
-
-qopt.latency is __u32, psched_tdiff_t is signed long,
-(psched_tdiff_t)(UINT_MAX) is negative for 32-bit platforms, so
-qopt.latency is always UINT_MAX.
-
-Fix it by using psched_time_t (u64) instead.
-
-Note: confusingly, users have two ways to specify 'latency':
-
-  1. normally, via '__u32 latency' in struct tc_netem_qopt;
-  2. via the TCA_NETEM_LATENCY64 attribute, which is s64.
-
-For the second case, theoretically 'latency' could be negative.  This
-patch ignores that corner case, since it is broken (i.e. assigning a
-negative s64 to __u32) anyways, and should be handled separately.
-
-Thanks Ted Lin for the analysis [1] .
-
-[1] https://github.com/raspberrypi/linux/issues/3512
-
-Reported-by: Yuming Chen <chenyuming.junnan@bytedance.com>
-Fixes: 112f9cb65643 ("netem: convert to qdisc_watchdog_schedule_ns")
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
-Link: https://lore.kernel.org/r/20220616234336.2443-1-yepeilin.cs@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 95fa145479fb ("bpf: sockmap/tls, close can race with map free")
+Reported-by: syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_netem.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/tls/tls_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-index 0c345e43a09a..adc5407fd5d5 100644
---- a/net/sched/sch_netem.c
-+++ b/net/sched/sch_netem.c
-@@ -1146,9 +1146,9 @@ static int netem_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	struct tc_netem_rate rate;
- 	struct tc_netem_slot slot;
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 9aac9c60d786..057c1af6182a 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -790,6 +790,9 @@ static void tls_update(struct sock *sk, struct proto *p,
+ {
+ 	struct tls_context *ctx;
  
--	qopt.latency = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->latency),
-+	qopt.latency = min_t(psched_time_t, PSCHED_NS2TICKS(q->latency),
- 			     UINT_MAX);
--	qopt.jitter = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->jitter),
-+	qopt.jitter = min_t(psched_time_t, PSCHED_NS2TICKS(q->jitter),
- 			    UINT_MAX);
- 	qopt.limit = q->limit;
- 	qopt.loss = q->loss;
++	if (sk->sk_prot == p)
++		return;
++
+ 	ctx = tls_get_ctx(sk);
+ 	if (likely(ctx)) {
+ 		ctx->sk_write_space = write_space;
 -- 
 2.35.1
 
