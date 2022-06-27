@@ -2,120 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D871C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239923AbiF0TBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
+        id S239965AbiF0TCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239613AbiF0TBT (ORCPT
+        with ESMTP id S237682AbiF0TCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 15:01:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE45510DE
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:01:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B28E615E1
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 19:01:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 901C8C341CB;
-        Mon, 27 Jun 2022 19:01:17 +0000 (UTC)
-Date:   Mon, 27 Jun 2022 15:01:15 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     John 'Warthog9' Hawley <warthog9@eaglescrag.net>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: possible trace_printk() bug in v5.19-rc1
-Message-ID: <20220627150115.066e17d1@gandalf.local.home>
-In-Reply-To: <25C37F40-7D8E-41C6-961F-0774C8138CCB@oracle.com>
-References: <F6C267B0-83EA-4151-A4EC-44482AC52C59@oracle.com>
-        <20220616113400.15335d91@gandalf.local.home>
-        <E309A098-DA06-490D-A75C-E6295C2987B9@oracle.com>
-        <20220617155019.373adda7@gandalf.local.home>
-        <3BAD2CD9-3A34-4140-A28C-0FE798B83C41@oracle.com>
-        <355D2478-33D3-4046-8422-E512F42C51BC@oracle.com>
-        <20220624190819.59df11d3@rorschach.local.home>
-        <3EB14A14-767B-4B66-9B28-97DDE7EECFD2@oracle.com>
-        <20220625134552.08c1a23a@rorschach.local.home>
-        <0bf1d366-348c-0f91-8f0a-fc9cc6228783@kernel.org>
-        <12417afa-331b-e0f6-a3b0-19623e38590b@eaglescrag.net>
-        <308F6A3B-1FB9-42CD-8239-12B0FD0F5FDB@oracle.com>
-        <20220627131140.56761db9@gandalf.local.home>
-        <25C37F40-7D8E-41C6-961F-0774C8138CCB@oracle.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 27 Jun 2022 15:02:14 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F124110F1;
+        Mon, 27 Jun 2022 12:02:11 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id D62711C82;
+        Mon, 27 Jun 2022 21:02:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1656356530;
+        bh=QUJv18/6zJCD1zJscujVYpMclJuiO0AH8NqgXjGTLyc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Qb18xkKwTBQRMZIWOf73u/aeJvB1hUGv8ueemWZ6yDcz0XXwhxdPu3/xHGqBR24Z/
+         Rr8189T/5dFIVMmzndrcZfs46vVevAWKh732FN0I6HyPk1CrgAM9ZfwCksqEWUG/7R
+         NZBYrOcCARXvH7yQZvY8orietph1Mzbisp67EvaA=
+Date:   Mon, 27 Jun 2022 22:01:51 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Sebastian Fricke <sebastian.fricke@collabora.com>
+Cc:     linux-media@vger.kernel.org, kernel@collabora.com,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] media: Fix incorrect P010 chroma order description
+Message-ID: <Yrn+nwBu/PD6djq/@pendragon.ideasonboard.com>
+References: <20220627071224.16787-1-sebastian.fricke@collabora.com>
+ <YrltXpTYqMZK/AZV@pendragon.ideasonboard.com>
+ <20220627170209.hzf3ezujtrm2ahau@basti-XPS-13-9310>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220627170209.hzf3ezujtrm2ahau@basti-XPS-13-9310>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 27 Jun 2022 17:19:18 +0000
-Chuck Lever III <chuck.lever@oracle.com> wrote:
+Hi Sebastian,
 
-> > Would you be able to send me a trace.dat file that has this issue?  
+On Mon, Jun 27, 2022 at 07:02:09PM +0200, Sebastian Fricke wrote:
+> On 27.06.2022 11:42, Laurent Pinchart wrote:
+> > On Mon, Jun 27, 2022 at 09:12:23AM +0200, Sebastian Fricke wrote:
+> >> The chroma order of P010 is `CbCr`,
+> >> match with the descriptions in `include/uapi/linux/videodev2.h` and the
+> >> documentation.
+> >>
+> >> Fixes: 5374d8fb75f31 Add P010 video format
+> >
+> > This should be
+> >
+> > Fixes: 5374d8fb75f3 ("media: Add P010 video format")
 > 
-> Sending under separate cover.
+> I assume this can probably be fixed while merging it right? So, I don't
+> have to resend it.
 
-I found this is the kallsyms output:
+No need to resend indeed, this can be fixed when merging.
 
-ffffffffac820000 b __brk_early_pgt_alloc
-ffffffffac830000 B _end
-ffffffffac830000 B __brk_limit
-ffffffffc0948205 0944410 t qrtr_alloc_ctrl_packet       [qrtr]
-ffffffffc0944470 t qrtr_node_enqueue    [qrtr]
-ffffffffc094d100 b __key.5      [qrtr]
-ffffffffc09448b0 t qrtr_reset_ports     [qrtr]
-ffffffffc094c1c0 d qrtr_ports   [qrtr]
-ffffffffc094d100 b __key.3      [qrtr]
-ffffffffc094d100 b __key.4      [qrtr]
+> > I recommend adding the following to your ~/.gitconfig:
+> >
+> > [pretty]
+> >	fixes = Fixes: %h (\"%s\")
+> >
+> > You can then use `git show --pretty=fixes -s` to generate the right
+> > Fixes: tag. If you fix lots of bugs, an alias in your ~/.bashrc is also
+> > useful:
+> >
+> > gpf() {
+> >	git show --pretty=fixes -s ${1:-HEAD} | xclip -selection clipboard
+> > }
+> 
+> Thanks a lot for the advice :).
+> 
+> >
+> >> Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+> >
+> > Reviewed-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+> >
+> >> ---
+> >>  drivers/media/v4l2-core/v4l2-ioctl.c | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+> >> index e2526701294e..e03362c8aef9 100644
+> >> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+> >> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+> >> @@ -1306,7 +1306,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+> >>  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
+> >>  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
+> >>  	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
+> >> -	case V4L2_PIX_FMT_P010:		descr = "10-bit Y/CrCb 4:2:0"; break;
+> >> +	case V4L2_PIX_FMT_P010:		descr = "10-bit Y/CbCr 4:2:0"; break;
+> >>  	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/CbCr 4:2:0 (4x4 Linear)"; break;
+> >>  	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
+> >>  	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
 
-The line with:
+-- 
+Regards,
 
-  ffffffffc0948205 0944410 t qrtr_alloc_ctrl_packet       [qrtr]
-
-Causes the parsing to stop, because it is not of a proper format. It has
-that extra "0944410" in it, which will break the parsing.
-
-Now the question is, why does that exist? And yes, that's a kernel bug.
-
-The kallsyms code that outputs this file is:
-
-static int s_show(struct seq_file *m, void *p)
-{
-	void *value;
-	struct kallsym_iter *iter = m->private;
-
-	/* Some debugging symbols have no name.  Ignore them. */
-	if (!iter->name[0])
-		return 0;
-
-	value = iter->show_value ? (void *)iter->value : NULL;
-
-	if (iter->module_name[0]) {
-		char type;
-
-		/*
-		 * Label it "global" if it is exported,
-		 * "local" if not exported.
-		 */
-		type = iter->exported ? toupper(iter->type) :
-					tolower(iter->type);
-		seq_printf(m, "%px %c %s\t[%s]\n", value,
-			   type, iter->name, iter->module_name);
-	} else
-		seq_printf(m, "%px %c %s\n", value,
-			   iter->type, iter->name);
-	return 0;
-}
-
-So how did it get that strange output.
-
-Hmm, I bet it is because trace-cmd reads it in BUFSIZ blocks, and that the
-seq_file code got confused when parsing between two elements, I bet
-something got dropped. I'll go see if there was any seq_file updates that
-could have caused this.
-
--- Steve
+Laurent Pinchart
