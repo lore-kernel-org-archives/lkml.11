@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 678A5C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE65BCCA485
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241907AbiF0V5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:57:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
+        id S241958AbiF0V5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241374AbiF0Vy7 (ORCPT
+        with ESMTP id S241419AbiF0VzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:54:59 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24656305;
-        Mon, 27 Jun 2022 14:54:56 -0700 (PDT)
+        Mon, 27 Jun 2022 17:55:09 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB64C644C;
+        Mon, 27 Jun 2022 14:54:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366896; x=1687902896;
+  t=1656366897; x=1687902897;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/mQaXP2VIXEOdSbOXfM9daL4mBgq94R6l1BwCramulU=;
-  b=Vn8jb+ugd6GgLTZBCtdlvRANR0nYzyeis2N3BBRy5uKjrnW2fJ3j1wMe
-   TtN3uSJHyzkBDjVmAF2YoFkY+0CZwnPrknGjcT8ew+1OHZT5kXxNRoi6v
-   veddpzFk2yUCGC7zU2algB2fTPWWaKcB/v9BU9t7e5QY0Z76jTIvWgnw+
-   ik/ca18mZeBFor36wZa2exzQLWP4lIqf/0+/UCebjmOfjSQqsSbpQ1EV7
-   A1LlZ+ni1SI5Rm2q4QM5ar+0/vzgsfxXJJneS8b8+h0lTbgKhA8HYO0B2
-   PiY5hIRNLMeiYmoLhR72OEEXnRIcv3CUreniTX0UyCdOLjrTadD4awC8N
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609537"
+  bh=yzsW3HP34uHnzDykzPATauL2DDgMbwFkjBwFhJu1DX0=;
+  b=GsesZUvOkKPN2I5eiX8EJK2QPKL+UKJh33nMsab4lvcbqam+K974HJH5
+   +07B92/K2PB0t883rszgO/2lww3lmPokgvJmCBMS1DlgJar0TTBaZCOzn
+   yqE7y60Ho1T/pUGGIXwvJMoUrS4dGckf+R85kRDXHRC1yArMn5Sqp9O5B
+   Ucus40wq0y7U0gZFBJBqcaN65mZNZxWu31ysSzQpn1t9fKUnzAYjTS0j6
+   itG+C8kMkYo81zd3bj15KI1tj+DQ7oXRlP6SCg149KVgMjdy4PFpit4s+
+   bDkIQTZ7u7dwuItVRMPsvFenJIZA2WRE2R8rxmdwvRWNHyakdql+YfW3U
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116097"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281609537"
+   d="scan'208";a="279116097"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:52 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:56 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863541"
+   d="scan'208";a="657863627"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:52 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:56 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>
-Subject: [PATCH v7 033/102] KVM: x86/mmu: Add address conversion functions for TDX shared bits
-Date:   Mon, 27 Jun 2022 14:53:25 -0700
-Message-Id: <69f4b4942d5f17fad40a8d08556488b8e4b7954d.1656366338.git.isaku.yamahata@intel.com>
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH v7 059/102] [MARKER] The start of TDX KVM patch series: TD finalization
+Date:   Mon, 27 Jun 2022 14:53:51 -0700
+Message-Id: <d385bde6f0ad58cb3a361e1401c22f548c268492.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -54,81 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rick Edgecombe <rick.p.edgecombe@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-TDX repurposes one GPA bits (51 bit or 47 bit based on configuration) to
-indicate the GPA is private(if cleared) or shared (if set) with VMM.  If
-GPA.shared is set, GPA is converted existing conventional EPT pointed by
-EPTP.  If GPA.shared bit is cleared, GPA is converted by Secure-EPT(S-EPT)
-TDX module manages.  VMM has to issue SEAM call to TDX module to operate on
-S-EPT.  e.g. populating/zapping guest page or shadow page by TDH.PAGE.{ADD,
-REMOVE} for guest page, TDH.PAGE.SEPT.{ADD, REMOVE} S-EPT etc.
-
-Several hooks needs to be added to KVM MMU to support TDX.  Add a function
-to check if KVM MMU is running for TDX and several functions for address
-conversation between private-GPA and shared-GPA.
+This empty commit is to mark the start of patch series of TD finalization.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/asm/kvm_host.h |  2 ++
- arch/x86/kvm/mmu.h              | 32 ++++++++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+)
+ Documentation/virt/kvm/intel-tdx-layer-status.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index e5d4e5b60fdc..2c47aab72a1b 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1339,7 +1339,9 @@ struct kvm_arch {
- 	 */
- 	u32 max_vcpu_ids;
+diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+index 5797d172176d..53897312699f 100644
+--- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
++++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+@@ -21,11 +21,11 @@ Patch Layer status
+ * TD VM creation/destruction:           Applied
+ * TD vcpu creation/destruction:         Applied
+ * TDX EPT violation:                    Applied
+-* TD finalization:                      Not yet
++* TD finalization:                      Applying
+ * TD vcpu enter/exit:                   Not yet
+ * TD vcpu interrupts/exit/hypercall:    Not yet
  
-+#ifdef CONFIG_KVM_MMU_PRIVATE
- 	gfn_t gfn_shared_mask;
-+#endif
- };
- 
- struct kvm_vm_stat {
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index f8192864b496..ccf0ba7a6387 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -286,4 +286,36 @@ static inline gpa_t kvm_translate_gpa(struct kvm_vcpu *vcpu,
- 		return gpa;
- 	return translate_nested_gpa(vcpu, gpa, access, exception);
- }
-+
-+static inline gfn_t kvm_gfn_shared_mask(const struct kvm *kvm)
-+{
-+#ifdef CONFIG_KVM_MMU_PRIVATE
-+	return kvm->arch.gfn_shared_mask;
-+#else
-+	return 0;
-+#endif
-+}
-+
-+static inline gfn_t kvm_gfn_shared(const struct kvm *kvm, gfn_t gfn)
-+{
-+	return gfn | kvm_gfn_shared_mask(kvm);
-+}
-+
-+static inline gfn_t kvm_gfn_private(const struct kvm *kvm, gfn_t gfn)
-+{
-+	return gfn & ~kvm_gfn_shared_mask(kvm);
-+}
-+
-+static inline gpa_t kvm_gpa_private(const struct kvm *kvm, gpa_t gpa)
-+{
-+	return gpa & ~gfn_to_gpa(kvm_gfn_shared_mask(kvm));
-+}
-+
-+static inline bool kvm_is_private_gpa(const struct kvm *kvm, gpa_t gpa)
-+{
-+	gfn_t mask = kvm_gfn_shared_mask(kvm);
-+
-+	return mask && !(gpa_to_gfn(gpa) & mask);
-+}
-+
- #endif
+ * KVM MMU GPA shared bits:              Applied
+ * KVM TDP refactoring for TDX:          Applied
+ * KVM TDP MMU hooks:                    Applied
+-* KVM TDP MMU MapGPA:                   Not yet
++* KVM TDP MMU MapGPA:                   Applied
 -- 
 2.25.1
 
