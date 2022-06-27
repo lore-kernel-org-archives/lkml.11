@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8430CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDE94C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238890AbiF0Lx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49688 "EHLO
+        id S238910AbiF0LyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238373AbiF0LsW (ORCPT
+        with ESMTP id S238372AbiF0LsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:48:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91856FD26;
-        Mon, 27 Jun 2022 04:40:58 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C52FD1A;
+        Mon, 27 Jun 2022 04:40:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2545F611B8;
-        Mon, 27 Jun 2022 11:40:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 354A7C36AE2;
-        Mon, 27 Jun 2022 11:40:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDA24B81126;
+        Mon, 27 Jun 2022 11:40:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52CAFC341C8;
+        Mon, 27 Jun 2022 11:40:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330057;
-        bh=rtkociItVY4GySdFeYnZVICr5i00ah2LEMi002RbqO0=;
+        s=korg; t=1656330054;
+        bh=ZsL1VgM0jfdDxU8UfBSdjwW5Nvhb3WaZ+2QVkoudGQU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rnRCI6fMtiw2tiT3Pyj6w++XBn2nTP9HeT8mlFqXGz/VyXI7wj9L2rnPaZIutl+tn
-         80Ub27oV/fkQ6KTJqJKdDXBE4t4i1eb1smNCPuj3eG4gktUTsyzBcXAJED3k0cmP+N
-         6EdwkC+6xgp/d8kxLHn+gSvs5r9/XS2QoRJgiD0U=
+        b=mC/OOD3dYmQUiOd+Nw4We42Pz99Jjysmcuq7pEvK6aioSyQF6MssXF2bWKz7msUfi
+         8yJgKi59Gbc4mhNtHUA78bv1kn93VuRkADjLxhK2we9GDkOcijAWBmIa+3JsxbkPQ+
+         LXCHVjnaVyH9bZchKdlwWrQrTML7mRgO45umISv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 069/181] net: phy: at803x: fix NULL pointer dereference on AR9331 PHY
-Date:   Mon, 27 Jun 2022 13:20:42 +0200
-Message-Id: <20220627111946.565417165@linuxfoundation.org>
+Subject: [PATCH 5.18 068/181] drm/msm/dp: force link training for display resolution change
+Date:   Mon, 27 Jun 2022 13:20:41 +0200
+Message-Id: <20220627111946.536485301@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,82 +50,196 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit 9926de7315be3d606cc011a305ad9adb9e8e14c9 ]
+[ Upstream commit a6e2af64a79afa7f1b29375b5231e840a84bb845 ]
 
-Latest kernel will explode on the PHY interrupt config, since it depends
-now on allocated priv. So, run probe to allocate priv to fix it.
+Display resolution change is implemented through drm modeset. Older
+modeset (resolution) has to be disabled first before newer modeset
+(resolution) can be enabled. Display disable will turn off both
+pixel clock and main link clock so that main link have to be
+re-trained during display enable to have new video stream flow
+again. At current implementation, display enable function manually
+kicks up irq_hpd_handle which will read panel link status and start
+link training if link status is not in sync state.
 
- ar9331_switch ethernet.1:10 lan0 (uninitialized): PHY [!ahb!ethernet@1a000000!mdio!switch@10:00] driver [Qualcomm Atheros AR9331 built-in PHY] (irq=13)
- CPU 0 Unable to handle kernel paging request at virtual address 0000000a, epc == 8050e8a8, ra == 80504b34
-         ...
- Call Trace:
- [<8050e8a8>] at803x_config_intr+0x5c/0xd0
- [<80504b34>] phy_request_interrupt+0xa8/0xd0
- [<8050289c>] phylink_bringup_phy+0x2d8/0x3ac
- [<80502b68>] phylink_fwnode_phy_connect+0x118/0x130
- [<8074d8ec>] dsa_slave_create+0x270/0x420
- [<80743b04>] dsa_port_setup+0x12c/0x148
- [<8074580c>] dsa_register_switch+0xaf0/0xcc0
- [<80511344>] ar9331_sw_probe+0x370/0x388
- [<8050cb78>] mdio_probe+0x44/0x70
- [<804df300>] really_probe+0x200/0x424
- [<804df7b4>] __driver_probe_device+0x290/0x298
- [<804df810>] driver_probe_device+0x54/0xe4
- [<804dfd50>] __device_attach_driver+0xe4/0x130
- [<804dcb00>] bus_for_each_drv+0xb4/0xd8
- [<804dfac4>] __device_attach+0x104/0x1a4
- [<804ddd24>] bus_probe_device+0x48/0xc4
- [<804deb44>] deferred_probe_work_func+0xf0/0x10c
- [<800a0ffc>] process_one_work+0x314/0x4d4
- [<800a17fc>] worker_thread+0x2a4/0x354
- [<800a9a54>] kthread+0x134/0x13c
- [<8006306c>] ret_from_kernel_thread+0x14/0x1c
+However, there is rare case that a particular panel links status keep
+staying in sync for some period of time after main link had been shut
+down previously at display disabled. In this case, main link retraining
+will not be executed by irq_hdp_handle(). Hence video stream of newer
+display resolution will fail to be transmitted to panel due to main
+link is not in sync between host and panel.
 
-Same Issue would affect some other PHYs (QCA8081, QCA9561), so fix it
-too.
+This patch will bypass irq_hpd_handle() in favor of directly call
+dp_ctrl_on_stream() to always perform link training in regardless of
+main link status. So that no unexpected exception resolution change
+failure cases will happen. Also this implementation are more efficient
+than manual kicking off irq_hpd_handle function.
 
-Fixes: 3265f4218878 ("net: phy: at803x: add fiber support")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Changes in v2:
+-- set force_link_train flag on DP only (is_edp == false)
+
+Changes in v3:
+-- revise commit  text
+-- add Fixes tag
+
+Changes in v4:
+-- revise commit  text
+
+Changes in v5:
+-- fix spelling at commit text
+
+Changes in v6:
+-- split dp_ctrl_on_stream() for phy test case
+-- revise commit text for modeset
+
+Changes in v7:
+-- drop 0 assignment at local variable (ret = 0)
+
+Changes in v8:
+-- add patch to remove pixel_rate from dp_ctrl
+
+Changes in v9:
+-- forward declare dp_ctrl_on_stream_phy_test_report()
+
+Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/489895/
+Link: https://lore.kernel.org/r/1655411200-7255-1-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/at803x.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    | 33 ++++++++++++++++++++++-------
+ drivers/gpu/drm/msm/dp/dp_ctrl.h    |  2 +-
+ drivers/gpu/drm/msm/dp/dp_display.c | 13 ++++++------
+ 3 files changed, 32 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 6a467e7817a6..59fe356942b5 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -2072,6 +2072,8 @@ static struct phy_driver at803x_driver[] = {
- 	/* ATHEROS AR9331 */
- 	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
- 	.name			= "Qualcomm Atheros AR9331 built-in PHY",
-+	.probe			= at803x_probe,
-+	.remove			= at803x_remove,
- 	.suspend		= at803x_suspend,
- 	.resume			= at803x_resume,
- 	.flags			= PHY_POLL_CABLE_TEST,
-@@ -2087,6 +2089,8 @@ static struct phy_driver at803x_driver[] = {
- 	/* Qualcomm Atheros QCA9561 */
- 	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
- 	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
-+	.probe			= at803x_probe,
-+	.remove			= at803x_remove,
- 	.suspend		= at803x_suspend,
- 	.resume			= at803x_resume,
- 	.flags			= PHY_POLL_CABLE_TEST,
-@@ -2151,6 +2155,8 @@ static struct phy_driver at803x_driver[] = {
- 	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
- 	.name			= "Qualcomm QCA8081",
- 	.flags			= PHY_POLL_CABLE_TEST,
-+	.probe			= at803x_probe,
-+	.remove			= at803x_remove,
- 	.config_intr		= at803x_config_intr,
- 	.handle_interrupt	= at803x_handle_interrupt,
- 	.get_tunable		= at803x_get_tunable,
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index de1974916ad2..499d0bbc442c 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1523,6 +1523,8 @@ static int dp_ctrl_link_maintenance(struct dp_ctrl_private *ctrl)
+ 	return ret;
+ }
+ 
++static int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl);
++
+ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
+ {
+ 	int ret = 0;
+@@ -1545,7 +1547,7 @@ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
+ 
+ 	ret = dp_ctrl_on_link(&ctrl->dp_ctrl);
+ 	if (!ret)
+-		ret = dp_ctrl_on_stream(&ctrl->dp_ctrl);
++		ret = dp_ctrl_on_stream_phy_test_report(&ctrl->dp_ctrl);
+ 	else
+ 		DRM_ERROR("failed to enable DP link controller\n");
+ 
+@@ -1800,7 +1802,27 @@ static int dp_ctrl_link_retrain(struct dp_ctrl_private *ctrl)
+ 	return dp_ctrl_setup_main_link(ctrl, &training_step);
+ }
+ 
+-int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
++static int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
++{
++	int ret;
++	struct dp_ctrl_private *ctrl;
++
++	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
++
++	ctrl->dp_ctrl.pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
++
++	ret = dp_ctrl_enable_stream_clocks(ctrl);
++	if (ret) {
++		DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
++		return ret;
++	}
++
++	dp_ctrl_send_phy_test_pattern(ctrl);
++
++	return 0;
++}
++
++int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train)
+ {
+ 	int ret = 0;
+ 	bool mainlink_ready = false;
+@@ -1831,12 +1853,7 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
+ 		goto end;
+ 	}
+ 
+-	if (ctrl->link->sink_request & DP_TEST_LINK_PHY_TEST_PATTERN) {
+-		dp_ctrl_send_phy_test_pattern(ctrl);
+-		return 0;
+-	}
+-
+-	if (!dp_ctrl_channel_eq_ok(ctrl))
++	if (force_link_train || !dp_ctrl_channel_eq_ok(ctrl))
+ 		dp_ctrl_link_retrain(ctrl);
+ 
+ 	/* stop txing train pattern to end link training */
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.h b/drivers/gpu/drm/msm/dp/dp_ctrl.h
+index 2433edbc70a6..dcc7af21a5f0 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.h
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.h
+@@ -20,7 +20,7 @@ struct dp_ctrl {
+ };
+ 
+ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl);
+-int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl);
++int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train);
+ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_off(struct dp_ctrl *dp_ctrl);
+ void dp_ctrl_push_idle(struct dp_ctrl *dp_ctrl);
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index d11c81d8a5db..12270bd3cff9 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -903,7 +903,7 @@ static int dp_display_enable(struct dp_display_private *dp, u32 data)
+ 		return 0;
+ 	}
+ 
+-	rc = dp_ctrl_on_stream(dp->ctrl);
++	rc = dp_ctrl_on_stream(dp->ctrl, data);
+ 	if (!rc)
+ 		dp_display->power_on = true;
+ 
+@@ -1590,6 +1590,7 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 	int rc = 0;
+ 	struct dp_display_private *dp_display;
+ 	u32 state;
++	bool force_link_train = false;
+ 
+ 	dp_display = container_of(dp, struct dp_display_private, dp_display);
+ 	if (!dp_display->dp_mode.drm_mode.clock) {
+@@ -1618,10 +1619,12 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 
+ 	state =  dp_display->hpd_state;
+ 
+-	if (state == ST_DISPLAY_OFF)
++	if (state == ST_DISPLAY_OFF) {
+ 		dp_display_host_phy_init(dp_display);
++		force_link_train = true;
++	}
+ 
+-	dp_display_enable(dp_display, 0);
++	dp_display_enable(dp_display, force_link_train);
+ 
+ 	rc = dp_display_post_enable(dp);
+ 	if (rc) {
+@@ -1630,10 +1633,6 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 		dp_display_unprepare(dp);
+ 	}
+ 
+-	/* manual kick off plug event to train link */
+-	if (state == ST_DISPLAY_OFF)
+-		dp_add_event(dp_display, EV_IRQ_HPD_INT, 0, 0);
+-
+ 	/* completed connection */
+ 	dp_display->hpd_state = ST_CONNECTED;
+ 
 -- 
 2.35.1
 
