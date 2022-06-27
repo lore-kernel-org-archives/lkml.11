@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 341BCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236699AbiF0LkW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34298 "EHLO
+        id S236820AbiF0Ljp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236622AbiF0Lhq (ORCPT
+        with ESMTP id S236500AbiF0Lhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A250B7647;
-        Mon, 27 Jun 2022 04:34:15 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDA52A8;
+        Mon, 27 Jun 2022 04:33:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B6D860C16;
-        Mon, 27 Jun 2022 11:34:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30659C36AEC;
-        Mon, 27 Jun 2022 11:34:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9FBBB81117;
+        Mon, 27 Jun 2022 11:33:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36D05C341C7;
+        Mon, 27 Jun 2022 11:33:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329654;
-        bh=yaSV6uBt+vuqUdI0AEJ2je99Or9bv9Z6Be/O9K1FXvI=;
+        s=korg; t=1656329618;
+        bh=KxrZ/ggmY1P8dw6EksNkGBSczEF1xATz3fcSjYLLMZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2DyYaPp/llufwzH3ps1r/eEgelmkMF7dkfWrh2CZnlNIEa7AGF1dPEAkmpXcjeYZQ
-         5h4QgbBtu6a3+IEWTy7UDq8gm56PhkAVMvCUWg1xpo5R7RfvefRJZKEIko0bdnXNcH
-         MY3SiRDvHbVtErTG/+xv4f5C/XarsluzKmuoq1kg=
+        b=PPvNEwLPwO+e51yPt8tMSYdKVd4A43WPabwd/B2bqh9AOJn/WVP3GnQswTmOw9Jxu
+         4Oe0PICyftUZrrC7/Bd1MNDFmJimsCFdpBhFs3vo98oTgsT12cYSCS8VpKKk8cmPNv
+         3pTOYuTL+ilPoP93LfX0ipniXhDZFet75Xjv7avE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.15 069/135] ice: ethtool: advertise 1000M speeds properly
-Date:   Mon, 27 Jun 2022 13:21:16 +0200
-Message-Id: <20220627111940.161786454@linuxfoundation.org>
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 058/135] drm/msm/dp: do not initialize phy until plugin interrupt received
+Date:   Mon, 27 Jun 2022 13:21:05 +0200
+Message-Id: <20220627111939.841455345@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,84 +50,495 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit c3d184c83ff4b80167e34edfc3d21df424bf27ff ]
+[ Upstream commit 989ebe7bc4463002c210db0010c8475797a9098f ]
 
-In current implementation ice_update_phy_type enables all link modes
-for selected speed. This approach doesn't work for 1000M speeds,
-because both copper (1000baseT) and optical (1000baseX) standards
-cannot be enabled at once.
+Current DP drivers have regulators, clocks, irq and phy are grouped
+together within a function and executed not in a symmetric manner.
+This increase difficulty of code maintenance and limited code scalability.
+This patch divides the driver life cycle of operation into four states,
+resume (including booting up), dongle plugin, dongle unplugged and suspend.
+Regulators, core clocks and irq are grouped together and enabled at resume
+(or booting up) so that the DP controller is armed and ready to receive HPD
+plugin interrupts. HPD plugin interrupt is generated when a dongle plugs
+into DUT (device under test). Once HPD plugin interrupt is received, DP
+controller will initialize phy so that dpcd read/write will function and
+following link training can be proceeded successfully. DP phy will be
+disabled after main link is teared down at end of unplugged HPD interrupt
+handle triggered by dongle unplugged out of DUT. Finally regulators, code
+clocks and irq are disabled at corresponding suspension.
 
-Fix this, by adding the function `ice_set_phy_type_from_speed()`
-for 1000M speeds.
+Changes in V2:
+-- removed unnecessary dp_ctrl NULL check
+-- removed unnecessary phy init_count and power_count DRM_DEBUG_DP logs
+-- remove flip parameter out of dp_ctrl_irq_enable()
+-- add fixes tag
 
-Fixes: 48cb27f2fd18 ("ice: Implement handlers for ethtool PHY/link operations")
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Changes in V3:
+-- call dp_display_host_phy_init() instead of dp_ctrl_phy_init() at
+        dp_display_host_init() for eDP
+
+Changes in V4:
+-- rewording commit text to match this commit changes
+
+Changes in V5:
+-- rebase on top of msm-next branch
+
+Changes in V6:
+-- delete flip variable
+
+Changes in V7:
+-- dp_ctrl_irq_enable/disabe() merged into dp_ctrl_reset_irq_ctrl()
+
+Changes in V8:
+-- add more detail comment regrading dp phy at dp_display_host_init()
+
+Changes in V9:
+-- remove set phy_initialized to false when -ECONNRESET detected
+
+Changes in v10:
+--  group into one series
+
+Changes in v11:
+-- drop drm/msm/dp: dp_link_parse_sink_count() return immediately
+	if aux read
+
+Changes in v12:
+-- move dp_display_host_phy_exit() after dp_display_host_deinit()
+
+Changes in v13:
+-- do not execute phy_init until plugged_in interrupt for edp, same as DP.
+
+Changes in v14:
+-- remove redundant dp->core_initialized = false form dp_pm_suspend.
+
+Changes in v15:
+-- remove core_initialized flag check at both host_init and host_deinit
+
+Changes in v16:
+-- remove dp_display_host_phy_exit core_initialized=false at dp_pm_suspend
+
+Changes in v17:
+-- remove core_initialized checking before execute attention_cb()
+
+Changes in v18:
+-- remove core_initialized checking at dp_pm_suspend
+
+Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/1642531648-8448-2-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 39 +++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    |  80 ++++++++------------
+ drivers/gpu/drm/msm/dp/dp_ctrl.h    |   8 +-
+ drivers/gpu/drm/msm/dp/dp_display.c | 111 ++++++++++++++--------------
+ 3 files changed, 92 insertions(+), 107 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 19f115402969..982db894754f 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -2150,6 +2150,42 @@ ice_setup_autoneg(struct ice_port_info *p, struct ethtool_link_ksettings *ks,
- 	return err;
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index 1992347537e6..0776b1960f21 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1348,60 +1348,44 @@ static int dp_ctrl_enable_stream_clocks(struct dp_ctrl_private *ctrl)
+ 	return ret;
  }
  
-+/**
-+ * ice_set_phy_type_from_speed - set phy_types based on speeds
-+ * and advertised modes
-+ * @ks: ethtool link ksettings struct
-+ * @phy_type_low: pointer to the lower part of phy_type
-+ * @phy_type_high: pointer to the higher part of phy_type
-+ * @adv_link_speed: targeted link speeds bitmap
-+ */
-+static void
-+ice_set_phy_type_from_speed(const struct ethtool_link_ksettings *ks,
-+			    u64 *phy_type_low, u64 *phy_type_high,
-+			    u16 adv_link_speed)
+-int dp_ctrl_host_init(struct dp_ctrl *dp_ctrl, bool flip, bool reset)
++void dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable)
 +{
-+	/* Handle 1000M speed in a special way because ice_update_phy_type
-+	 * enables all link modes, but having mixed copper and optical
-+	 * standards is not supported.
-+	 */
-+	adv_link_speed &= ~ICE_AQ_LINK_SPEED_1000MB;
++	struct dp_ctrl_private *ctrl;
 +
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseT_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_T |
-+				 ICE_PHY_TYPE_LOW_1G_SGMII;
++	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
 +
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseKX_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_KX;
++	dp_catalog_ctrl_reset(ctrl->catalog);
 +
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseX_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_SX |
-+				 ICE_PHY_TYPE_LOW_1000BASE_LX;
-+
-+	ice_update_phy_type(phy_type_low, phy_type_high, adv_link_speed);
++	if (enable)
++		dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
 +}
 +
- /**
-  * ice_set_link_ksettings - Set Speed and Duplex
-  * @netdev: network interface device structure
-@@ -2286,7 +2322,8 @@ ice_set_link_ksettings(struct net_device *netdev,
- 		adv_link_speed = curr_link_speed;
++void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl)
+ {
+ 	struct dp_ctrl_private *ctrl;
+ 	struct dp_io *dp_io;
+ 	struct phy *phy;
  
- 	/* Convert the advertise link speeds to their corresponded PHY_TYPE */
--	ice_update_phy_type(&phy_type_low, &phy_type_high, adv_link_speed);
-+	ice_set_phy_type_from_speed(ks, &phy_type_low, &phy_type_high,
-+				    adv_link_speed);
+-	if (!dp_ctrl) {
+-		DRM_ERROR("Invalid input data\n");
+-		return -EINVAL;
+-	}
+-
+ 	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
+ 	dp_io = &ctrl->parser->io;
+ 	phy = dp_io->phy;
  
- 	if (!autoneg_changed && adv_link_speed == curr_link_speed) {
- 		netdev_info(netdev, "Nothing changed, exiting without setting anything.\n");
+-	ctrl->dp_ctrl.orientation = flip;
+-
+-	if (reset)
+-		dp_catalog_ctrl_reset(ctrl->catalog);
+-
+-	DRM_DEBUG_DP("flip=%d\n", flip);
+ 	dp_catalog_ctrl_phy_reset(ctrl->catalog);
+ 	phy_init(phy);
+-	dp_catalog_ctrl_enable_irq(ctrl->catalog, true);
+-
+-	return 0;
+ }
+ 
+-/**
+- * dp_ctrl_host_deinit() - Uninitialize DP controller
+- * @dp_ctrl: Display Port Driver data
+- *
+- * Perform required steps to uninitialize DP controller
+- * and its resources.
+- */
+-void dp_ctrl_host_deinit(struct dp_ctrl *dp_ctrl)
++void dp_ctrl_phy_exit(struct dp_ctrl *dp_ctrl)
+ {
+ 	struct dp_ctrl_private *ctrl;
+ 	struct dp_io *dp_io;
+ 	struct phy *phy;
+ 
+-	if (!dp_ctrl) {
+-		DRM_ERROR("Invalid input data\n");
+-		return;
+-	}
+-
+ 	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
+ 	dp_io = &ctrl->parser->io;
+ 	phy = dp_io->phy;
+ 
+-	dp_catalog_ctrl_enable_irq(ctrl->catalog, false);
++	dp_catalog_ctrl_phy_reset(ctrl->catalog);
+ 	phy_exit(phy);
+-
+-	DRM_DEBUG_DP("Host deinitialized successfully\n");
+ }
+ 
+ static bool dp_ctrl_use_fixed_nvid(struct dp_ctrl_private *ctrl)
+@@ -1471,7 +1455,10 @@ static int dp_ctrl_deinitialize_mainlink(struct dp_ctrl_private *ctrl)
+ 	}
+ 
+ 	phy_power_off(phy);
++
++	/* aux channel down, reinit phy */
+ 	phy_exit(phy);
++	phy_init(phy);
+ 
+ 	return 0;
+ }
+@@ -1877,8 +1864,14 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
+ 		return ret;
+ 	}
+ 
++	DRM_DEBUG_DP("Before, phy=%x init_count=%d power_on=%d\n",
++		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
++
+ 	phy_power_off(phy);
+ 
++	DRM_DEBUG_DP("After, phy=%x init_count=%d power_on=%d\n",
++		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
++
+ 	/* aux channel down, reinit phy */
+ 	phy_exit(phy);
+ 	phy_init(phy);
+@@ -1887,23 +1880,6 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
+ 	return ret;
+ }
+ 
+-void dp_ctrl_off_phy(struct dp_ctrl *dp_ctrl)
+-{
+-	struct dp_ctrl_private *ctrl;
+-	struct dp_io *dp_io;
+-	struct phy *phy;
+-
+-	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
+-	dp_io = &ctrl->parser->io;
+-	phy = dp_io->phy;
+-
+-	dp_catalog_ctrl_reset(ctrl->catalog);
+-
+-	phy_exit(phy);
+-
+-	DRM_DEBUG_DP("DP off phy done\n");
+-}
+-
+ int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
+ {
+ 	struct dp_ctrl_private *ctrl;
+@@ -1931,10 +1907,14 @@ int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
+ 		DRM_ERROR("Failed to disable link clocks. ret=%d\n", ret);
+ 	}
+ 
++	DRM_DEBUG_DP("Before, phy=%x init_count=%d power_on=%d\n",
++		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
++
+ 	phy_power_off(phy);
+-	phy_exit(phy);
+ 
+-	DRM_DEBUG_DP("DP off done\n");
++	DRM_DEBUG_DP("After, phy=%x init_count=%d power_on=%d\n",
++		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
++
+ 	return ret;
+ }
+ 
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.h b/drivers/gpu/drm/msm/dp/dp_ctrl.h
+index 2363a2df9597..2433edbc70a6 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.h
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.h
+@@ -19,12 +19,9 @@ struct dp_ctrl {
+ 	u32 pixel_rate;
+ };
+ 
+-int dp_ctrl_host_init(struct dp_ctrl *dp_ctrl, bool flip, bool reset);
+-void dp_ctrl_host_deinit(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl);
+-void dp_ctrl_off_phy(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_off(struct dp_ctrl *dp_ctrl);
+ void dp_ctrl_push_idle(struct dp_ctrl *dp_ctrl);
+ void dp_ctrl_isr(struct dp_ctrl *dp_ctrl);
+@@ -34,4 +31,9 @@ struct dp_ctrl *dp_ctrl_get(struct device *dev, struct dp_link *link,
+ 			struct dp_power *power, struct dp_catalog *catalog,
+ 			struct dp_parser *parser);
+ 
++void dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable);
++void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl);
++void dp_ctrl_phy_exit(struct dp_ctrl *dp_ctrl);
++void dp_ctrl_irq_phy_exit(struct dp_ctrl *dp_ctrl);
++
+ #endif /* _DP_CTRL_H_ */
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 32b8dbb917bf..bbd0bf820192 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -81,6 +81,7 @@ struct dp_display_private {
+ 
+ 	/* state variables */
+ 	bool core_initialized;
++	bool phy_initialized;
+ 	bool hpd_irq_on;
+ 	bool audio_supported;
+ 
+@@ -362,36 +363,45 @@ static int dp_display_process_hpd_high(struct dp_display_private *dp)
+ 	return rc;
+ }
+ 
+-static void dp_display_host_init(struct dp_display_private *dp, int reset)
++static void dp_display_host_phy_init(struct dp_display_private *dp)
+ {
+-	bool flip = false;
++	DRM_DEBUG_DP("core_init=%d phy_init=%d\n",
++			dp->core_initialized, dp->phy_initialized);
+ 
+-	DRM_DEBUG_DP("core_initialized=%d\n", dp->core_initialized);
+-	if (dp->core_initialized) {
+-		DRM_DEBUG_DP("DP core already initialized\n");
+-		return;
++	if (!dp->phy_initialized) {
++		dp_ctrl_phy_init(dp->ctrl);
++		dp->phy_initialized = true;
+ 	}
++}
++
++static void dp_display_host_phy_exit(struct dp_display_private *dp)
++{
++	DRM_DEBUG_DP("core_init=%d phy_init=%d\n",
++			dp->core_initialized, dp->phy_initialized);
+ 
+-	if (dp->usbpd->orientation == ORIENTATION_CC2)
+-		flip = true;
++	if (dp->phy_initialized) {
++		dp_ctrl_phy_exit(dp->ctrl);
++		dp->phy_initialized = false;
++	}
++}
++
++static void dp_display_host_init(struct dp_display_private *dp)
++{
++	DRM_DEBUG_DP("core_initialized=%d\n", dp->core_initialized);
+ 
+-	dp_power_init(dp->power, flip);
+-	dp_ctrl_host_init(dp->ctrl, flip, reset);
++	dp_power_init(dp->power, false);
++	dp_ctrl_reset_irq_ctrl(dp->ctrl, true);
+ 	dp_aux_init(dp->aux);
+ 	dp->core_initialized = true;
+ }
+ 
+ static void dp_display_host_deinit(struct dp_display_private *dp)
+ {
+-	if (!dp->core_initialized) {
+-		DRM_DEBUG_DP("DP core not initialized\n");
+-		return;
+-	}
++	DRM_DEBUG_DP("core_initialized=%d\n", dp->core_initialized);
+ 
+-	dp_ctrl_host_deinit(dp->ctrl);
++	dp_ctrl_reset_irq_ctrl(dp->ctrl, false);
+ 	dp_aux_deinit(dp->aux);
+ 	dp_power_deinit(dp->power);
+-
+ 	dp->core_initialized = false;
+ }
+ 
+@@ -409,7 +419,7 @@ static int dp_display_usbpd_configure_cb(struct device *dev)
+ 	dp = container_of(g_dp_display,
+ 			struct dp_display_private, dp_display);
+ 
+-	dp_display_host_init(dp, false);
++	dp_display_host_phy_init(dp);
+ 
+ 	rc = dp_display_process_hpd_high(dp);
+ end:
+@@ -550,11 +560,6 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
+ 	ret = dp_display_usbpd_configure_cb(&dp->pdev->dev);
+ 	if (ret) {	/* link train failed */
+ 		dp->hpd_state = ST_DISCONNECTED;
+-
+-		if (ret == -ECONNRESET) { /* cable unplugged */
+-			dp->core_initialized = false;
+-		}
+-
+ 	} else {
+ 		/* start sentinel checking in case of missing uevent */
+ 		dp_add_event(dp, EV_CONNECT_PENDING_TIMEOUT, 0, tout);
+@@ -624,8 +629,7 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 	if (state == ST_DISCONNECTED) {
+ 		/* triggered by irq_hdp with sink_count = 0 */
+ 		if (dp->link->sink_count == 0) {
+-			dp_ctrl_off_phy(dp->ctrl);
+-			dp->core_initialized = false;
++			dp_display_host_phy_exit(dp);
+ 		}
+ 		mutex_unlock(&dp->event_mutex);
+ 		return 0;
+@@ -687,7 +691,6 @@ static int dp_disconnect_pending_timeout(struct dp_display_private *dp, u32 data
+ static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
+ {
+ 	u32 state;
+-	int ret;
+ 
+ 	mutex_lock(&dp->event_mutex);
+ 
+@@ -712,16 +715,8 @@ static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
+ 		return 0;
+ 	}
+ 
+-	/*
+-	 * dp core (ahb/aux clks) must be initialized before
+-	 * irq_hpd be handled
+-	 */
+-	if (dp->core_initialized) {
+-		ret = dp_display_usbpd_attention_cb(&dp->pdev->dev);
+-		if (ret == -ECONNRESET) { /* cable unplugged */
+-			dp->core_initialized = false;
+-		}
+-	}
++	dp_display_usbpd_attention_cb(&dp->pdev->dev);
++
+ 	DRM_DEBUG_DP("hpd_state=%d\n", state);
+ 
+ 	mutex_unlock(&dp->event_mutex);
+@@ -916,12 +911,19 @@ static int dp_display_disable(struct dp_display_private *dp, u32 data)
+ 
+ 	dp_display->audio_enabled = false;
+ 
+-	/* triggered by irq_hpd with sink_count = 0 */
+ 	if (dp->link->sink_count == 0) {
++		/*
++		 * irq_hpd with sink_count = 0
++		 * hdmi unplugged out of dongle
++		 */
+ 		dp_ctrl_off_link_stream(dp->ctrl);
+ 	} else {
++		/*
++		 * unplugged interrupt
++		 * dongle unplugged out of DUT
++		 */
+ 		dp_ctrl_off(dp->ctrl);
+-		dp->core_initialized = false;
++		dp_display_host_phy_exit(dp);
+ 	}
+ 
+ 	dp_display->power_on = false;
+@@ -1051,7 +1053,7 @@ void msm_dp_snapshot(struct msm_disp_state *disp_state, struct msm_dp *dp)
+ static void dp_display_config_hpd(struct dp_display_private *dp)
+ {
+ 
+-	dp_display_host_init(dp, true);
++	dp_display_host_init(dp);
+ 	dp_catalog_ctrl_hpd_config(dp->catalog);
+ 
+ 	/* Enable interrupt first time
+@@ -1318,20 +1320,23 @@ static int dp_pm_resume(struct device *dev)
+ 	dp->hpd_state = ST_DISCONNECTED;
+ 
+ 	/* turn on dp ctrl/phy */
+-	dp_display_host_init(dp, true);
++	dp_display_host_init(dp);
+ 
+ 	dp_catalog_ctrl_hpd_config(dp->catalog);
+ 
+-	/*
+-	 * set sink to normal operation mode -- D0
+-	 * before dpcd read
+-	 */
+-	dp_link_psm_config(dp->link, &dp->panel->link_info, false);
+ 
+ 	if (dp_catalog_link_is_connected(dp->catalog)) {
++		/*
++		 * set sink to normal operation mode -- D0
++		 * before dpcd read
++		 */
++		dp_display_host_phy_init(dp);
++		dp_link_psm_config(dp->link, &dp->panel->link_info, false);
+ 		sink_count = drm_dp_read_sink_count(dp->aux);
+ 		if (sink_count < 0)
+ 			sink_count = 0;
++
++		dp_display_host_phy_exit(dp);
+ 	}
+ 
+ 	dp->link->sink_count = sink_count;
+@@ -1370,18 +1375,16 @@ static int dp_pm_suspend(struct device *dev)
+ 	DRM_DEBUG_DP("Before, core_inited=%d power_on=%d\n",
+ 			dp->core_initialized, dp_display->power_on);
+ 
+-	if (dp->core_initialized == true) {
+-		/* mainlink enabled */
+-		if (dp_power_clk_status(dp->power, DP_CTRL_PM))
+-			dp_ctrl_off_link_stream(dp->ctrl);
++	/* mainlink enabled */
++	if (dp_power_clk_status(dp->power, DP_CTRL_PM))
++		dp_ctrl_off_link_stream(dp->ctrl);
+ 
+-		dp_display_host_deinit(dp);
+-	}
+-
+-	dp->hpd_state = ST_SUSPENDED;
++	dp_display_host_phy_exit(dp);
+ 
+ 	/* host_init will be called at pm_resume */
+-	dp->core_initialized = false;
++	dp_display_host_deinit(dp);
++
++	dp->hpd_state = ST_SUSPENDED;
+ 
+ 	DRM_DEBUG_DP("After, core_inited=%d power_on=%d\n",
+ 			dp->core_initialized, dp_display->power_on);
+@@ -1538,7 +1541,7 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 	state =  dp_display->hpd_state;
+ 
+ 	if (state == ST_DISPLAY_OFF)
+-		dp_display_host_init(dp_display, true);
++		dp_display_host_phy_init(dp_display);
+ 
+ 	dp_display_enable(dp_display, 0);
+ 
 -- 
 2.35.1
 
