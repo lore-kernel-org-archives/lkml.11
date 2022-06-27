@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01045C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41EB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbiF0LXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
+        id S234563AbiF0LXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234538AbiF0LXB (ORCPT
+        with ESMTP id S234544AbiF0LXE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:23:01 -0400
+        Mon, 27 Jun 2022 07:23:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871FC1C8;
-        Mon, 27 Jun 2022 04:23:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8C2654B;
+        Mon, 27 Jun 2022 04:23:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B2B361451;
-        Mon, 27 Jun 2022 11:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CBE2C341C7;
-        Mon, 27 Jun 2022 11:22:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B1286144F;
+        Mon, 27 Jun 2022 11:23:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D283C3411D;
+        Mon, 27 Jun 2022 11:23:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656328979;
-        bh=SYnv/FhFH1ekUtV6eC1WyevHUII+0SmBoVZiwtyZeUA=;
+        s=korg; t=1656328982;
+        bh=XfgLOJdxrlG9Mmu3iDIZDiD4n1y+qaWvN+p8XJPvlh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bSWmsO7gzJHeISktB6p6nO1TqVnI+4oRrU64tJI7wLQTIL86KG2TNlumKnskmHAnC
-         DwZs8Sl7NLfGYq83AH2Nb//eH0Tvjj78nmJ5xyl48uTz1G/krDwkitu7GiZxRxnPbF
-         7CxbNACqDyRP6x9PusgPHHEOv6rC4nwmvaxTUEXo=
+        b=uS9wMaWhaW6pIwK614Y9QrrFi68r6n9z7cUnhCKIiVT3Jy2P1MlfS5fp+edEpn5qn
+         lhTqnb8PrU5lAspaV52H9z0JTKaSEgXljVKna0B5khfDlRP+zFf8NAPUciEu0/GPnW
+         DcMq9FDrgXe8fe9M76DQfGSYokSAoohieTVL/YQ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rosemarie ORiorden <roriorden@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.10 011/102] net: openvswitch: fix parsing of nw_proto for IPv6 fragments
-Date:   Mon, 27 Jun 2022 13:20:22 +0200
-Message-Id: <20220627111933.799293833@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        Anand Jain <anand.jain@oracle.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.10 012/102] btrfs: add error messages to all unrecognized mount options
+Date:   Mon, 27 Jun 2022 13:20:23 +0200
+Message-Id: <20220627111933.828735444@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -49,63 +50,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rosemarie O'Riorden <roriorden@redhat.com>
+From: David Sterba <dsterba@suse.com>
 
-commit 12378a5a75e33f34f8586706eb61cca9e6d4690c upstream.
+commit e3a4167c880cf889f66887a152799df4d609dd21 upstream.
 
-When a packet enters the OVS datapath and does not match any existing
-flows installed in the kernel flow cache, the packet will be sent to
-userspace to be parsed, and a new flow will be created. The kernel and
-OVS rely on each other to parse packet fields in the same way so that
-packets will be handled properly.
+Almost none of the errors stemming from a valid mount option but wrong
+value prints a descriptive message which would help to identify why
+mount failed. Like in the linked report:
 
-As per the design document linked below, OVS expects all later IPv6
-fragments to have nw_proto=44 in the flow key, so they can be correctly
-matched on OpenFlow rules. OpenFlow controllers create pipelines based
-on this design.
+  $ uname -r
+  v4.19
+  $ mount -o compress=zstd /dev/sdb /mnt
+  mount: /mnt: wrong fs type, bad option, bad superblock on
+  /dev/sdb, missing codepage or helper program, or other error.
+  $ dmesg
+  ...
+  BTRFS error (device sdb): open_ctree failed
 
-This behavior was changed by the commit in the Fixes tag so that
-nw_proto equals the next_header field of the last extension header.
-However, there is no counterpart for this change in OVS userspace,
-meaning that this field is parsed differently between OVS and the
-kernel. This is a problem because OVS creates actions based on what is
-parsed in userspace, but the kernel-provided flow key is used as a match
-criteria, as described in Documentation/networking/openvswitch.rst. This
-leads to issues such as packets incorrectly matching on a flow and thus
-the wrong list of actions being applied to the packet. Such changes in
-packet parsing cannot be implemented without breaking the userspace.
+Errors caused by memory allocation failures are left out as it's not a
+user error so reporting that would be confusing.
 
-The offending commit is partially reverted to restore the expected
-behavior.
-
-The change technically made sense and there is a good reason that it was
-implemented, but it does not comply with the original design of OVS.
-If in the future someone wants to implement such a change, then it must
-be user-configurable and disabled by default to preserve backwards
-compatibility with existing OVS versions.
-
-Cc: stable@vger.kernel.org
-Fixes: fa642f08839b ("openvswitch: Derive IP protocol number for IPv6 later frags")
-Link: https://docs.openvswitch.org/en/latest/topics/design/#fragments
-Signed-off-by: Rosemarie O'Riorden <roriorden@redhat.com>
-Acked-by: Eelco Chaudron <echaudro@redhat.com>
-Link: https://lore.kernel.org/r/20220621204845.9721-1-roriorden@redhat.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Link: https://lore.kernel.org/linux-btrfs/9c3fec36-fc61-3a33-4977-a7e207c3fa4e@gmx.de/
+CC: stable@vger.kernel.org # 4.9+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Reviewed-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/openvswitch/flow.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/super.c |   39 ++++++++++++++++++++++++++++++++-------
+ 1 file changed, 32 insertions(+), 7 deletions(-)
 
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -265,7 +265,7 @@ static int parse_ipv6hdr(struct sk_buff
- 	if (flags & IP6_FH_F_FRAG) {
- 		if (frag_off) {
- 			key->ip.frag = OVS_FRAG_TYPE_LATER;
--			key->ip.proto = nexthdr;
-+			key->ip.proto = NEXTHDR_FRAGMENT;
- 			return 0;
- 		}
- 		key->ip.frag = OVS_FRAG_TYPE_FIRST;
+--- a/fs/btrfs/super.c
++++ b/fs/btrfs/super.c
+@@ -652,6 +652,8 @@ int btrfs_parse_options(struct btrfs_fs_
+ 				compress_force = false;
+ 				no_compress++;
+ 			} else {
++				btrfs_err(info, "unrecognized compression value %s",
++					  args[0].from);
+ 				ret = -EINVAL;
+ 				goto out;
+ 			}
+@@ -710,8 +712,11 @@ int btrfs_parse_options(struct btrfs_fs_
+ 		case Opt_thread_pool:
+ 			ret = match_int(&args[0], &intarg);
+ 			if (ret) {
++				btrfs_err(info, "unrecognized thread_pool value %s",
++					  args[0].from);
+ 				goto out;
+ 			} else if (intarg == 0) {
++				btrfs_err(info, "invalid value 0 for thread_pool");
+ 				ret = -EINVAL;
+ 				goto out;
+ 			}
+@@ -772,8 +777,11 @@ int btrfs_parse_options(struct btrfs_fs_
+ 			break;
+ 		case Opt_ratio:
+ 			ret = match_int(&args[0], &intarg);
+-			if (ret)
++			if (ret) {
++				btrfs_err(info, "unrecognized metadata_ratio value %s",
++					  args[0].from);
+ 				goto out;
++			}
+ 			info->metadata_ratio = intarg;
+ 			btrfs_info(info, "metadata ratio %u",
+ 				   info->metadata_ratio);
+@@ -790,6 +798,8 @@ int btrfs_parse_options(struct btrfs_fs_
+ 				btrfs_set_and_info(info, DISCARD_ASYNC,
+ 						   "turning on async discard");
+ 			} else {
++				btrfs_err(info, "unrecognized discard mode value %s",
++					  args[0].from);
+ 				ret = -EINVAL;
+ 				goto out;
+ 			}
+@@ -814,6 +824,8 @@ int btrfs_parse_options(struct btrfs_fs_
+ 				btrfs_set_and_info(info, FREE_SPACE_TREE,
+ 						   "enabling free space tree");
+ 			} else {
++				btrfs_err(info, "unrecognized space_cache value %s",
++					  args[0].from);
+ 				ret = -EINVAL;
+ 				goto out;
+ 			}
+@@ -889,8 +901,12 @@ int btrfs_parse_options(struct btrfs_fs_
+ 			break;
+ 		case Opt_check_integrity_print_mask:
+ 			ret = match_int(&args[0], &intarg);
+-			if (ret)
++			if (ret) {
++				btrfs_err(info,
++				"unrecognized check_integrity_print_mask value %s",
++					args[0].from);
+ 				goto out;
++			}
+ 			info->check_integrity_print_mask = intarg;
+ 			btrfs_info(info, "check_integrity_print_mask 0x%x",
+ 				   info->check_integrity_print_mask);
+@@ -905,13 +921,15 @@ int btrfs_parse_options(struct btrfs_fs_
+ 			goto out;
+ #endif
+ 		case Opt_fatal_errors:
+-			if (strcmp(args[0].from, "panic") == 0)
++			if (strcmp(args[0].from, "panic") == 0) {
+ 				btrfs_set_opt(info->mount_opt,
+ 					      PANIC_ON_FATAL_ERROR);
+-			else if (strcmp(args[0].from, "bug") == 0)
++			} else if (strcmp(args[0].from, "bug") == 0) {
+ 				btrfs_clear_opt(info->mount_opt,
+ 					      PANIC_ON_FATAL_ERROR);
+-			else {
++			} else {
++				btrfs_err(info, "unrecognized fatal_errors value %s",
++					  args[0].from);
+ 				ret = -EINVAL;
+ 				goto out;
+ 			}
+@@ -919,8 +937,12 @@ int btrfs_parse_options(struct btrfs_fs_
+ 		case Opt_commit_interval:
+ 			intarg = 0;
+ 			ret = match_int(&args[0], &intarg);
+-			if (ret)
++			if (ret) {
++				btrfs_err(info, "unrecognized commit_interval value %s",
++					  args[0].from);
++				ret = -EINVAL;
+ 				goto out;
++			}
+ 			if (intarg == 0) {
+ 				btrfs_info(info,
+ 					   "using default commit interval %us",
+@@ -934,8 +956,11 @@ int btrfs_parse_options(struct btrfs_fs_
+ 			break;
+ 		case Opt_rescue:
+ 			ret = parse_rescue_options(info, args[0].from);
+-			if (ret < 0)
++			if (ret < 0) {
++				btrfs_err(info, "unrecognized rescue value %s",
++					  args[0].from);
+ 				goto out;
++			}
+ 			break;
+ #ifdef CONFIG_BTRFS_DEBUG
+ 		case Opt_fragment_all:
 
 
