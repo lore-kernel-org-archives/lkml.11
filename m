@@ -2,89 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1823C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 03:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 988F1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 03:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232714AbiF0DTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 23:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        id S232292AbiF0DXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 23:23:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231975AbiF0DT2 (ORCPT
+        with ESMTP id S232089AbiF0DXh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 23:19:28 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D02E64;
-        Sun, 26 Jun 2022 20:19:26 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R231e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0VHRTHrs_1656299959;
-Received: from 30.240.101.24(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0VHRTHrs_1656299959)
-          by smtp.aliyun-inc.com;
-          Mon, 27 Jun 2022 11:19:21 +0800
-Message-ID: <58792bb9-c25c-d457-a57c-b82a4d42533f@linux.alibaba.com>
-Date:   Mon, 27 Jun 2022 11:19:18 +0800
+        Sun, 26 Jun 2022 23:23:37 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1882C272C
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 20:23:35 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 25R3MHAb012147;
+        Mon, 27 Jun 2022 12:22:17 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 25R3MHAb012147
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1656300138;
+        bh=97eYsVHQn/scMnYMH7pkhsbcSK1IhdPPocIh+75FGu4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XNMCAB9x85Ft9HMdR9kedVHwdO0LTsltZioD+x8g6ccs+5wbjVW/TEsh8KWSYdSzA
+         znIhrrkCv8CRy0Zvc6UWYB74nrfTJpgl5Z/1AeUNXML54lAEJR8Vf6Vq3cawndB7G/
+         FZ86rZon9wFC0fvFYQH7yox7GAWsyZWUDgfiqxVP0kQEQHx415cdyW+zX++wkjaASW
+         ZIk5dkAu1VvubC06lZdh0Bu1KFfKKb+lbubODnCopGok48wdEpk/4MpI4sw3wRJxE+
+         kKQVtw/uV53gp0gh2RLnlfQXqZEJqmf4phRUJFxI0nAY18GQGoJKY+8jL+fdosg6+N
+         0eNJLYK1c/cuQ==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     Frederic Weisbecker <fweisbec@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH] tick/nohz: unexport __init-annotated tick_nohz_full_setup()
+Date:   Mon, 27 Jun 2022 12:22:09 +0900
+Message-Id: <20220627032209.52396-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH v4 0/2] pkcs7: support SM2/SM3 and EC-RDSA/streebog
- algorithms
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     David Howells <dhowells@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Elvira Khabirova <e.khabirova@omp.ru>,
-        Vitaly Chikunov <vt@altlinux.org>,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Gilad Ben-Yossef <gilad@benyossef.com>,
-        Pascal van Leeuwen <pvanleeuwen@rambus.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210918080737.17252-1-tianjia.zhang@linux.alibaba.com>
- <ea7d5934-01f4-bd2e-09d5-0916eb72e8d8@linux.alibaba.com>
- <Yrf5QWnKL2ocoEq6@kernel.org>
-From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-In-Reply-To: <Yrf5QWnKL2ocoEq6@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jarkko,
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-On 6/26/22 2:14 PM, Jarkko Sakkinen wrote:
-> On Fri, Jun 17, 2022 at 05:19:03PM +0800, Tianjia Zhang wrote:
->> Hi Jarkko,
->>
->> On 9/18/21 4:07 PM, Tianjia Zhang wrote:
->>> This series of patches integrates the two patches sended separately,
->>> resolves the conflict, and rebases on the latest code.
->>>
->>> The two patches respectively support the SM2/SM3 and EC-RDSA/streebog
->>> algorithm combinations for the pkcs7 parser.
->>>
->>> Elvira Khabirova (1):
->>>     pkcs7: support EC-RDSA/streebog in SignerInfo
->>>
->>> Tianjia Zhang (1):
->>>     pkcs7: parser support SM2 and SM3 algorithms combination
->>>
->>>    crypto/asymmetric_keys/pkcs7_parser.c | 18 ++++++++++++++++++
->>>    1 file changed, 18 insertions(+)
->>>
->>
->> No response from David, can you pick this?
->>
->> Best regards,
->> Tianjia
-> 
-> You should CC me the series then.
-> 
-> BR, Jarkko
+modpost used to detect it, but it had been broken for a decade.
 
-Thanks, I will resend these series.
+Commit 28438794aba4 ("modpost: fix section mismatch check for exported
+init/exit sections") fixed it so modpost started to warn it again, then
+this showed up:
 
-Best regards,
-Tianjia
+    MODPOST vmlinux.symvers
+  WARNING: modpost: vmlinux.o(___ksymtab_gpl+tick_nohz_full_setup+0x0): Section mismatch in reference from the variable __ksymtab_tick_nohz_full_setup to the function .init.text:tick_nohz_full_setup()
+  The symbol tick_nohz_full_setup is exported and annotated __init
+  Fix this by removing the __init annotation of tick_nohz_full_setup or drop the export.
+
+Drop the export because tick_nohz_full_setup() is only called from the
+built-in code in kernel/sched/isolation.c.
+
+Fixes: ae9e557b5be2 ("time: Export tick start/stop functions for rcutorture")
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+ kernel/time/tick-sched.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index 58a11f859ac7..30049580cd62 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -526,7 +526,6 @@ void __init tick_nohz_full_setup(cpumask_var_t cpumask)
+ 	cpumask_copy(tick_nohz_full_mask, cpumask);
+ 	tick_nohz_full_running = true;
+ }
+-EXPORT_SYMBOL_GPL(tick_nohz_full_setup);
+ 
+ static int tick_nohz_cpu_down(unsigned int cpu)
+ {
+-- 
+2.32.0
+
