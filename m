@@ -2,118 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E46A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2776C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238017AbiF0PU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 11:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60116 "EHLO
+        id S238058AbiF0PUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 11:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236789AbiF0PTW (ORCPT
+        with ESMTP id S237854AbiF0PTZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 11:19:22 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21432B7DB
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:19:20 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id t21so9346953pfq.1
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:19:20 -0700 (PDT)
+        Mon, 27 Jun 2022 11:19:25 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B640615FD7;
+        Mon, 27 Jun 2022 08:19:24 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id cf14so13530052edb.8;
+        Mon, 27 Jun 2022 08:19:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YaZf+iuRf5VcdUABylMh/I8zxebuNZqSPzEggA0QsB8=;
-        b=EAZiPo1z5Oj055MNcLne6utIxA3+KNzAFdg+8cktsPfsaEj9t+alS08Gh9t/KvWzfJ
-         MNEVhFUpDFSbSWqT1iKKSAuOYTXK8siJi1QzE9kbM0TGnNmPsOYBQX3jTLA/yBIp6onh
-         rXK0DS2rmHFfxfgT3Mgeq7ObsFasLHWqqbUFKLWtZO1mIXSDvb8pJ9wVBOQk8hxwpB4m
-         A9u841zQ/QP/0xkYJbpiVw0l2qQiwa8OvZLZyXR+mLK0VyyKaXxVYC8R/pad2jfp5wwD
-         c3HlXmdX3bsjsQUb7jaCyTxAFEs95x9V1NtkWJ1+bcQPrr4mDuV6Bd1kbrTgmOacdfk8
-         Wfug==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=iUi8PRt1C1hxriDLpqIJwYgJ7+Ti+qx1RIsoZc3JWOw=;
+        b=bfzJZMSrLClLHbt1G5H03y4ulCRznQDgHU77oL1p5y+rwFWsnrknNBj6PuVqNX8lQg
+         b87b76r1ryfwhAM12BB6huxCzsSmx1lsNvI9qlC4qWuuxyAomhpErXHXeuP++MNpADL2
+         ukgcOjokHVkjqYoHnWjBEaeSK07tNIBNPcZq/o2cbqmRLaF835o7Ye/CIo7HmW4igtWl
+         KfTANRZA2xfXOqUnknz1lffuDipWm7wySS6Ub/TW/DdpiRmP2zEH02d4qxiHWWXmSELO
+         B9nEwzC1K00J3XpqbbKL9ov4XDLd5Mv0oZn7487IvvdbR219B7MvljhSXXIVMocEvaPq
+         y0JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YaZf+iuRf5VcdUABylMh/I8zxebuNZqSPzEggA0QsB8=;
-        b=2bknJPXvhmP8JkAzZZIRVF6dC3a3QP1653VfHp3LtFjVEIGBLNml27KTzOqmlTYYcu
-         J628E94KT2Oz10uJSvytDKOMgXxo53ome9ns4zvjrq5oFxoX1NENYsjGMboeDbtcTP7h
-         MRIgBe/BT0ftSSuxxIt7svjARyoAHQVVKovmTDkiZL6loj+6EKnVoK3hUXKpgZDAyz9u
-         Di7taLK2z1xsv1DQZbAHhpAVOfXKwCtFT5YM5UAaJ17QQ5/Ji9iN1ijIfWdYFnqqzAE1
-         jeaJ2409XjVQPFi7HHAAw5yikfOH8wI+0hb+PEFzCyEo3KWmX3G2fLdJcVEP6AS09mc/
-         hJzQ==
-X-Gm-Message-State: AJIora8Gs2KdmIr/NNmvWfPT+fmyBcD1TTaEZTrQhJRdbtkmFBdrxvvR
-        cRSNeSQop9iGbIYNwUV7dH2sAg==
-X-Google-Smtp-Source: AGRyM1vHuTM6ZgX8JalSiT8QyeSxhAVGc/h5+tA5iASu1cjNANEQXeoNehpvLiPcclhIac/WHxozOg==
-X-Received: by 2002:a63:90c7:0:b0:40d:3c0d:33f4 with SMTP id a190-20020a6390c7000000b0040d3c0d33f4mr13116674pge.334.1656343159459;
-        Mon, 27 Jun 2022 08:19:19 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id bf20-20020a056a000d9400b00525392cb386sm7451670pfb.201.2022.06.27.08.19.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=iUi8PRt1C1hxriDLpqIJwYgJ7+Ti+qx1RIsoZc3JWOw=;
+        b=sIVMGLLLRzaq0DMcaZVXEPHCSLjbE/hAnhCffenqQzfnpzUBdevZtCAWF6amk+tkoM
+         8woFUJ/TILdUWobzXaAP1uXK2AzHAuFfFUJJ8eNvb06AMb6/uQx8EzqblLuQQBFlbiJH
+         My+g0O10wUvR1rhMtOsDsKluoF8FUh0cz2Jl1ROY7xTWceo2sitlOMCfJxFuabWj4Nha
+         zlV2wA89WiTJ56lPYdLtDGZO427X/XNIyZ18qR+PskzuWfy9q4661/ZMO8+awULWB8TS
+         ZFKu2rD/zDanz5Scw2V3PIciWAQaObUfz6ycNOS6v7Db24dKiSzWdCwdK1MFJYcmGR9B
+         K0Kg==
+X-Gm-Message-State: AJIora8qnDaltO102qJ0DX/zCUwwyl3kmyG8+gO6AjBZr891HI8SLV9T
+        Bx2TpZo24gvKgIOmfE2CNtw=
+X-Google-Smtp-Source: AGRyM1slJBMDBsuNHpBj4n7MqHsIZaDLMAhmKyrXOce9iFdlI007tFK5W5uPJ8jNdY9haIjz73z1yA==
+X-Received: by 2002:aa7:c45a:0:b0:435:d7a4:99bc with SMTP id n26-20020aa7c45a000000b00435d7a499bcmr17000932edr.158.1656343163248;
+        Mon, 27 Jun 2022 08:19:23 -0700 (PDT)
+Received: from felia.fritz.box (200116b826511b0021a0c74157938809.dip.versatel-1u1.de. [2001:16b8:2651:1b00:21a0:c741:5793:8809])
+        by smtp.gmail.com with ESMTPSA id z8-20020a170906434800b00722f2a0944fsm5076901ejm.107.2022.06.27.08.19.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 08:19:19 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 15:19:15 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paul Durrant <pdurrant@amazon.com>
-Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Woodhouse <dwmw2@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH v4] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info)
- sub-leaves, if present
-Message-ID: <YrnKc6RoqDM/At3T@google.com>
-References: <20220622151728.13622-1-pdurrant@amazon.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622151728.13622-1-pdurrant@amazon.com>
+        Mon, 27 Jun 2022 08:19:22 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Hu Haowen <src.res@email.cn>, linux-doc@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net
+Cc:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [RFC PATCH 05/11] docs: admin: devices:  drop confusing outdated statement on Latex
+Date:   Mon, 27 Jun 2022 17:18:13 +0200
+Message-Id: <20220627151819.22694-6-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220627151819.22694-1-lukas.bulwahn@gmail.com>
+References: <20220627151819.22694-1-lukas.bulwahn@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022, Paul Durrant wrote:
-> The scaling information in subleaf 1 should match the values set by KVM in
-> the 'vcpu_info' sub-structure 'time_info' (a.k.a. pvclock_vcpu_time_info)
-> which is shared with the guest, but is not directly available to the VMM.
-> The offset values are not set since a TSC offset is already applied.
-> The TSC frequency should also be set in sub-leaf 2.
-> 
-> Cache pointers to the sub-leaves when CPUID is updated by the VMM and
-> populate the relevant information prior to entering the guest.
+The statement that the Latex version of Linux Device List is unmaintained,
+must go back to some historic time where there were actually two separate
+document sources, one in a txt format and another in a tex format (maybe
+even just on lanana.org).
 
-All of my comments about the code still apply.
+Nowadays, html and tex are generated from the ReST document file and the
+statement might be confused, believing the actual generated LaTeX document
+from the maintained ReST document could be an unmaintained one.
 
-https://lore.kernel.org/all/YrMqtHzNSean+qkh@google.com
+Remove this statement on the LaTeX version and only keep pointing out that
+the version on lanana.org is no longer maintained.
 
-> Signed-off-by: Paul Durrant <pdurrant@amazon.com>
-> ---
-> Cc: David Woodhouse <dwmw2@infradead.org>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+ Documentation/admin-guide/devices.rst | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Cc: can go in the changelog, it's helpful info to carry with the commit as it
-documents who was made aware of the patch, e.g. show who may have had a cance to
-object/review.
+diff --git a/Documentation/admin-guide/devices.rst b/Documentation/admin-guide/devices.rst
+index 035275fedbdd..e3776d77374b 100644
+--- a/Documentation/admin-guide/devices.rst
++++ b/Documentation/admin-guide/devices.rst
+@@ -7,10 +7,9 @@ This list is the Linux Device List, the official registry of allocated
+ device numbers and ``/dev`` directory nodes for the Linux operating
+ system.
+ 
+-The LaTeX version of this document is no longer maintained, nor is
+-the document that used to reside at lanana.org.  This version in the
+-mainline Linux kernel is the master document.  Updates shall be sent
+-as patches to the kernel maintainers (see the
++The version of this document at lanana.org is no longer maintained.  This
++version in the mainline Linux kernel is the master document.  Updates
++shall be sent as patches to the kernel maintainers (see the
+ :ref:`Documentation/process/submitting-patches.rst <submittingpatches>` document).
+ Specifically explore the sections titled "CHAR and MISC DRIVERS", and
+ "BLOCK LAYER" in the MAINTAINERS file to find the right maintainers
+-- 
+2.17.1
 
-> 
-> v2:
->  - Make sure sub-leaf pointers are NULLed if the time leaf is removed
-> 
-> v3:
->  - Add leaf limit check in kvm_xen_set_cpuid()
-> 
-> v4:
->  - Update commit comment
-
-Please start with the most recent verison and work backardwards, that way reviewers
-can quickly see the delta for _this_ version.  I.e.
-
-
-v4:
-
-v3:
-
-v2:
-
-v1:
