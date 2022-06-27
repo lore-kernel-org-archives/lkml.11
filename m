@@ -2,109 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA26EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A608CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240668AbiF0U6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 16:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42476 "EHLO
+        id S240775AbiF0U7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 16:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240640AbiF0U6E (ORCPT
+        with ESMTP id S238130AbiF0U7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 16:58:04 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074342DFA
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:58:00 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id b2so2254292plx.7
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:58:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=adMAWDqE9XsjKAybHVZCJMjitDWcVJbYgUcZRIR8kZM=;
-        b=IhjZyX1kpPfVbaRXMX6O2DUl1E29zWnsmW8TdwKFdiCdMrS9lryLzUkp+Z4IsKSYCV
-         UPSo2Ky4iZlqCSDqj15OwuvYjxS5dudFNLGVn0qos9S1h0UZLWyc9HKUhme3BMOHQGYt
-         8kTgPGOgHPW7OiffilgZPkvCKCbxPDEFvdj6TIzFNajCm1DMbOXd1cZZI2wZrCU8RvoL
-         odiw71jjk3HTrOeg5gYSwbC1BD2wa/61NWA4PC1rP44Skfnpqp6I8w+4xFwAk5xnxwER
-         ZMJUGVc5fsObVT/oQscvxvks+tbpTHJh3iXSdRPSXdvs5R/o909zGRIOuMcL02CeWsz8
-         9mTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=adMAWDqE9XsjKAybHVZCJMjitDWcVJbYgUcZRIR8kZM=;
-        b=ZRgnDY5pku/9KNo+0duhxYj1ggUvTmoni03Q02X7LeP5mbYSwAjXbd4ugML4qfFIn+
-         B3PizIq2An6xScOzN35juczpgl4P0/6+gz79C7h1zwg3DG6xjcL0I9ELjKAKCVL9A11D
-         I0aMV+qPqdMDJ/6l3lzdymEj3qS2beyLhASPQ7pHvMAYOgA6DEIoxk5XshB3FSCfmkKB
-         vLIRrYN58UUDcej+D+BwDrlG+inshNzaIscluaKwr4aXN3h1tiZfXkircUjLdgvtSb5R
-         Q0P/TEuldTsPKTKBZY7elqpAQInPwTsA7oy2o8bStSd2UPa2G3AEU4ac0C3wnAifT+zS
-         wUoA==
-X-Gm-Message-State: AJIora/j0iWK/oVwConXpl3WnRUglnEdVtNeoSM6W1Q/WGVTbrDD67KC
-        3F8sV81CgyiVvKUvys16OPmE/HvLV/6v1/cHbmP66A==
-X-Google-Smtp-Source: AGRyM1vsi9I/iHkofZJSd+JvWcYEJXAo0EHK8vTZDryp/NkqE1Nja1RSidybLFzaWCLFag058s/S2XjJBy92xC0+cbo=
-X-Received: by 2002:a17:90b:2245:b0:1ed:fef:5656 with SMTP id
- hk5-20020a17090b224500b001ed0fef5656mr17433525pjb.100.1656363479320; Mon, 27
- Jun 2022 13:57:59 -0700 (PDT)
+        Mon, 27 Jun 2022 16:59:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D125FC7;
+        Mon, 27 Jun 2022 13:59:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4FD9617B9;
+        Mon, 27 Jun 2022 20:59:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17655C34115;
+        Mon, 27 Jun 2022 20:59:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656363549;
+        bh=IwJ0CC/Vj6OL7cqtOj68jFfnXHtLikaHxffslXL7QKM=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=NEZbbKPdh/+XjDaRuZHmG3M8+RTApW/KGSSyd/1S2bnKgYHwAZBMlPEzM1dfuvvy3
+         jX+Az+0lNPLv/1bf9wiwk2Ti/WleKjJ6+Q8T32/b6oy928BhhhNmb5FIbQqLq99kmq
+         k9F13ldNorsGovIr6dbFfGIEP8Q0JrctxA1Hpv0O5QVP0rXi1tzXQ9xk8oKi+GJKe1
+         SVQcbXKPPUORPzYhJAeSW8z/IEbwDoGSHgpcll3+Y2V2aixliajikPc6mbdajsWfZK
+         /4Wag6ZtKGPO20VGucK24r5W785YnE7BK6L2Bkwx+dS1d72vNaD5sdenHuAAH35dPz
+         IBswkBlGs0ahA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id CB8475C04B1; Mon, 27 Jun 2022 13:59:07 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 13:59:07 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Uladzislau Rezki <urezki@gmail.com>
+Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
+        rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rushikesh.s.kadam@intel.com, neeraj.iitr10@gmail.com,
+        frederic@kernel.org, rostedt@goodmis.org, vineeth@bitbyteword.org
+Subject: Re: [PATCH v2 8/8] rcu/kfree: Fix kfree_rcu_shrink_count() return
+ value
+Message-ID: <20220627205907.GM1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220622225102.2112026-1-joel@joelfernandes.org>
+ <20220622225102.2112026-10-joel@joelfernandes.org>
+ <Yrn9a5pOvhvL/eZj@pc638.lan>
 MIME-Version: 1.0
-References: <20220627161123.1386853-1-pgonda@google.com> <Yrnync27TAhgSRUq@google.com>
-In-Reply-To: <Yrnync27TAhgSRUq@google.com>
-From:   Mingwei Zhang <mizhang@google.com>
-Date:   Mon, 27 Jun 2022 13:57:48 -0700
-Message-ID: <CAL715WKEUYRFf2n9Gjx_n7oD1gRUVG1t73CNrS416YDWyKtV1A@mail.gmail.com>
-Subject: Re: [PATCH] KVM: SEV: Clear the pages pointer in sev_unpin_memory
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Peter Gonda <pgonda@google.com>, kvm <kvm@vger.kernel.org>,
-        Greg Thelen <gthelen@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yrn9a5pOvhvL/eZj@pc638.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 1:37 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Mon, Jun 27, 2022, Peter Gonda wrote:
-> > Clear to the @pages array pointer in sev_unpin_memory to avoid leaving a
-> > dangling pointer to invalid memory.
-> >
-> > Signed-off-by: Peter Gonda <pgonda@google.com>
-> > Cc: Greg Thelen <gthelen@google.com>
-> > Cc: Paolo Bonzini <pbonzini@redhat.com>
-> > Cc: Sean Christopherson <seanjc@google.com>
-> > Cc: Tom Lendacky <thomas.lendacky@amd.com>
-> > Cc: kvm@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
+On Mon, Jun 27, 2022 at 08:56:43PM +0200, Uladzislau Rezki wrote:
+> > As per the comments in include/linux/shrinker.h, .count_objects callback
+> > should return the number of freeable items, but if there are no objects
+> > to free, SHRINK_EMPTY should be returned. The only time 0 is returned
+> > should be when we are unable to determine the number of objects, or the
+> > cache should be skipped for another reason.
+> > 
+> > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 > > ---
-> >  arch/x86/kvm/svm/sev.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> > index 309bcdb2f929..485ad86c01c6 100644
-> > --- a/arch/x86/kvm/svm/sev.c
-> > +++ b/arch/x86/kvm/svm/sev.c
-> > @@ -452,6 +452,7 @@ static void sev_unpin_memory(struct kvm *kvm, struct page **pages,
-> >       unpin_user_pages(pages, npages);
-> >       kvfree(pages);
-> >       sev->pages_locked -= npages;
-> > +     *pages = NULL;
->
-> Would this have helped detect a real bug?  I generally like cleaning up, but this
-> leaves things in a somewhat inconsistent state, e.g. when unpinning a kvm_enc_region,
-> pages will be NULL but npages will be non-zero.  It's somewhat moot because the
-> region is immediately freed in that case, but that begs the question of what real
-> benefit this provides.  sev_dbg_crypt() is the only flow where there's much danger
-> of a use-after-free.
+> >  kernel/rcu/tree.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> > index 711679d10cbb..935788e8d2d7 100644
+> > --- a/kernel/rcu/tree.c
+> > +++ b/kernel/rcu/tree.c
+> > @@ -3722,7 +3722,7 @@ kfree_rcu_shrink_count(struct shrinker *shrink, struct shrink_control *sc)
+> >  		atomic_set(&krcp->backoff_page_cache_fill, 1);
+> >  	}
+> >  
+> > -	return count;
+> > +	return count == 0 ? SHRINK_EMPTY : count;
+> >  }
+> >  
+> >  static unsigned long
+> > -- 
+> > 2.37.0.rc0.104.g0611611a94-goog
+> > 
+> Looks good to me!
+> 
+> Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
 
-+1
+Now that you mention it, this does look independent of the rest of
+the series.  I have pulled it in with Uladzislau's Reviewed-by.
 
-We could send thousands of patches like this. But I think none of them
-would be directly helpful. Sometimes, things could be even worse,
-i.e., imagine when those NULL pointers got deferenced, they become
-BUG_ON(true).
-
-If there are bugs related with those pointers, better to fix those bugs instead.
-
-Thanks.
--Mingwei
+							Thanx, Paul
