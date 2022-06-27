@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E40A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01638C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234834AbiF0LY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
+        id S234851AbiF0LZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234780AbiF0LYi (ORCPT
+        with ESMTP id S234773AbiF0LYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:24:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DB5658B;
-        Mon, 27 Jun 2022 04:24:38 -0700 (PDT)
+        Mon, 27 Jun 2022 07:24:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FCED6465;
+        Mon, 27 Jun 2022 04:24:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A071D61458;
-        Mon, 27 Jun 2022 11:24:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB10C3411D;
-        Mon, 27 Jun 2022 11:24:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B448D6144F;
+        Mon, 27 Jun 2022 11:24:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4AEFC341C7;
+        Mon, 27 Jun 2022 11:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329077;
-        bh=vEOyzikwHr8yUIyT1NrM8XxN7gOHcBAHFwZsTCrnaNM=;
+        s=korg; t=1656329080;
+        bh=P0tWy7cJEL9kkpx71bBa2tmpGbmvNuA/IBc6wvgOmig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=edZSr5JYUekTSbL5mqLAD0ZW6n9XktTLFVaG0rMAzpBbdSYAWUZR18FGUy0lMxf18
-         TUuUjEHOhZk0xCSxW9bTUpWZiMPeboDkf+0MbDSohF9rglg3Naag+CEaETwaeUg57I
-         roRLgRVDrxB1aT6R2py3d96znlw0wf9uN54Ssivk=
+        b=Gh2v1rF6hSAy4jx9e/326sMqvy+LGTL/lU+Qq9HUOYwp/41Kw1QKycAkkZXYIghMw
+         b6jdzWq83/qYPV2BVr18woZpGvo15ZDt0WwOlBz7uNF5mGsljvsg/fk/+LKt2uCq7+
+         CtEymjLDBli9nRXDuGMQ867L11Xzduub+slYWCmk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 005/102] ALSA: hda/conexant: Fix missing beep setup
-Date:   Mon, 27 Jun 2022 13:20:16 +0200
-Message-Id: <20220627111933.621750485@linuxfoundation.org>
+        stable@vger.kernel.org, Soham Sen <contact@sohamsen.me>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 006/102] ALSA: hda/realtek: Add mute LED quirk for HP Omen laptop
+Date:   Mon, 27 Jun 2022 13:20:17 +0200
+Message-Id: <20220627111933.651226655@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -47,44 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Soham Sen <contact@sohamsen.me>
 
-commit 5faa0bc69102f3a4c605581564c367be5eb94dfa upstream.
+commit b2e6b3d9bbb0a59ba7c710cc06e44cc548301f5f upstream.
 
-Currently the Conexant codec driver sets up the beep NID after calling
-snd_hda_gen_parse_auto_config().  It turned out that this results in
-the insufficient setup for the beep control, as the generic parser
-handles the fake path in snd_hda_gen_parse_auto_config() only if the
-beep_nid is set up beforehand.
+The HP Omen 15 laptop needs a quirk to toggle the mute LED. It already is implemented for a different variant of the HP Omen laptop so a fixup entry is needed for this variant.
 
-For dealing with the beep widget properly, call cx_auto_parse_beep()
-before snd_hda_gen_parse_auto_config() call.
-
-Fixes: 51e19ca5f755 ("ALSA: hda/conexant - Clean up beep code")
+Signed-off-by: Soham Sen <contact@sohamsen.me>
 Cc: <stable@vger.kernel.org>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216152
-Link: https://lore.kernel.org/r/20220620104008.1994-1-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220609181919.45535-1-contact@sohamsen.me
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_conexant.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/pci/hda/patch_conexant.c
-+++ b/sound/pci/hda/patch_conexant.c
-@@ -1072,11 +1072,11 @@ static int patch_conexant_auto(struct hd
- 	if (err < 0)
- 		goto error;
- 
--	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
-+	err = cx_auto_parse_beep(codec);
- 	if (err < 0)
- 		goto error;
- 
--	err = cx_auto_parse_beep(codec);
-+	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
- 	if (err < 0)
- 		goto error;
- 
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8768,6 +8768,7 @@ static const struct snd_pci_quirk alc269
+ 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
+ 	SND_PCI_QUIRK(0x103c, 0x8783, "HP ZBook Fury 15 G7 Mobile Workstation",
+ 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
++	SND_PCI_QUIRK(0x103c, 0x8787, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8788, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x87c8, "HP", ALC287_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x87e5, "HP ProBook 440 G8 Notebook PC", ALC236_FIXUP_HP_GPIO_LED),
 
 
