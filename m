@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BBA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 886C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236647AbiF0LkM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
+        id S236694AbiF0LkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236507AbiF0Lhg (ORCPT
+        with ESMTP id S236498AbiF0Lhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:36 -0400
+        Mon, 27 Jun 2022 07:37:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1272E8;
-        Mon, 27 Jun 2022 04:33:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40993290;
+        Mon, 27 Jun 2022 04:33:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3467B8111C;
-        Mon, 27 Jun 2022 11:33:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53270C3411D;
-        Mon, 27 Jun 2022 11:33:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0268FB81117;
+        Mon, 27 Jun 2022 11:33:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579CBC3411D;
+        Mon, 27 Jun 2022 11:33:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329627;
-        bh=F2vki6Df2yc89XFUIgYW8IjDO5ssmm9VswUnVyk46A0=;
+        s=korg; t=1656329615;
+        bh=a5OrQc6zCfZOOPj7beO3LYZfOp0JdsRpSNA96LCPC8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hz09aeslfcaQ521j1Hi2wMlyolCC9pSqU5mUVGk7H0p3LThaFz9QiUSnTypi3lwrU
-         0htNOf+J6cKHlYoPKUGflcjO8c+3xnBeeDAnvF+9bq66fKppOR6ZWDbjhO7lZng5Ke
-         NMHC6a7b5Zd3T09waXBcA+VpyiuMA7Cugga4IpU0=
+        b=Wt9btUnkCoELC8YOIhrnofviKiWYqt+C3NZFkiYbOgXLVcE7eToIPauzWO0EmgyXF
+         z/44NmDLHjJVpwDGyvO14Kr5hR7LKVGE7wKX/lLdUD6szmghQrV38s2HPzqCfNfP8V
+         Lp8LZYJgjE/1OZi34h4oYjPqGdLYRNWAIJBwnk5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Eric Dumazet <edumazet@google.com>,
-        William Tu <u9012063@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 061/135] erspan: do not assume transport header is always set
-Date:   Mon, 27 Jun 2022 13:21:08 +0200
-Message-Id: <20220627111939.928273061@linuxfoundation.org>
+Subject: [PATCH 5.15 057/135] drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read failed
+Date:   Mon, 27 Jun 2022 13:21:04 +0200
+Message-Id: <20220627111939.812819579@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,125 +50,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit 301bd140ed0b24f0da660874c7e8a47dad8c8222 ]
+[ Upstream commit f61550b3864b9578527c28cf9c465316ac1566e1 ]
 
-Rewrite tests in ip6erspan_tunnel_xmit() and
-erspan_fb_xmit() to not assume transport header is set.
+Add checking aux read/write status at both dp_link_parse_sink_count()
+and dp_link_parse_sink_status_filed() to avoid long timeout delay if
+dp aux read/write failed at timeout due to cable unplugged.
 
-syzbot reported:
+Changes in V4:
+-- split this patch as stand alone patch
 
-WARNING: CPU: 0 PID: 1350 at include/linux/skbuff.h:2911 skb_transport_header include/linux/skbuff.h:2911 [inline]
-WARNING: CPU: 0 PID: 1350 at include/linux/skbuff.h:2911 ip6erspan_tunnel_xmit+0x15af/0x2eb0 net/ipv6/ip6_gre.c:963
-Modules linked in:
-CPU: 0 PID: 1350 Comm: aoe_tx0 Not tainted 5.19.0-rc2-syzkaller-00160-g274295c6e53f #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-RIP: 0010:skb_transport_header include/linux/skbuff.h:2911 [inline]
-RIP: 0010:ip6erspan_tunnel_xmit+0x15af/0x2eb0 net/ipv6/ip6_gre.c:963
-Code: 0f 47 f0 40 88 b5 7f fe ff ff e8 8c 16 4b f9 89 de bf ff ff ff ff e8 a0 12 4b f9 66 83 fb ff 0f 85 1d f1 ff ff e8 71 16 4b f9 <0f> 0b e9 43 f0 ff ff e8 65 16 4b f9 48 8d 85 30 ff ff ff ba 60 00
-RSP: 0018:ffffc90005daf910 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 000000000000ffff RCX: 0000000000000000
-RDX: ffff88801f032100 RSI: ffffffff882e8d3f RDI: 0000000000000003
-RBP: ffffc90005dafab8 R08: 0000000000000003 R09: 000000000000ffff
-R10: 000000000000ffff R11: 0000000000000000 R12: ffff888024f21d40
-R13: 000000000000a288 R14: 00000000000000b0 R15: ffff888025a2e000
-FS: 0000000000000000(0000) GS:ffff88802c800000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2e425000 CR3: 000000006d099000 CR4: 0000000000152ef0
-Call Trace:
-<TASK>
-__netdev_start_xmit include/linux/netdevice.h:4805 [inline]
-netdev_start_xmit include/linux/netdevice.h:4819 [inline]
-xmit_one net/core/dev.c:3588 [inline]
-dev_hard_start_xmit+0x188/0x880 net/core/dev.c:3604
-sch_direct_xmit+0x19f/0xbe0 net/sched/sch_generic.c:342
-__dev_xmit_skb net/core/dev.c:3815 [inline]
-__dev_queue_xmit+0x14a1/0x3900 net/core/dev.c:4219
-dev_queue_xmit include/linux/netdevice.h:2994 [inline]
-tx+0x6a/0xc0 drivers/block/aoe/aoenet.c:63
-kthread+0x1e7/0x3b0 drivers/block/aoe/aoecmd.c:1229
-kthread+0x2e9/0x3a0 kernel/kthread.c:376
-ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-</TASK>
+Changes in v5:
+-- rebase on msm-next branch
 
-Fixes: d5db21a3e697 ("erspan: auto detect truncated ipv6 packets.")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: William Tu <u9012063@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Tested-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/1638985262-2072-1-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_gre.c  | 15 ++++++++++-----
- net/ipv6/ip6_gre.c | 15 ++++++++++-----
- 2 files changed, 20 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/msm/dp/dp_display.c | 12 +++++++++---
+ drivers/gpu/drm/msm/dp/dp_link.c    | 19 ++++++++++++++-----
+ 2 files changed, 23 insertions(+), 8 deletions(-)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index f23528c77539..fc74a3e3b3e1 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -524,7 +524,6 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
- 	int tunnel_hlen;
- 	int version;
- 	int nhoff;
--	int thoff;
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index a66ee63253a3..32b8dbb917bf 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -712,9 +712,15 @@ static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
+ 		return 0;
+ 	}
  
- 	tun_info = skb_tunnel_info(skb);
- 	if (unlikely(!tun_info || !(tun_info->mode & IP_TUNNEL_INFO_TX) ||
-@@ -558,10 +557,16 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
- 	    (ntohs(ip_hdr(skb)->tot_len) > skb->len - nhoff))
- 		truncate = true;
+-	ret = dp_display_usbpd_attention_cb(&dp->pdev->dev);
+-	if (ret == -ECONNRESET) { /* cable unplugged */
+-		dp->core_initialized = false;
++	/*
++	 * dp core (ahb/aux clks) must be initialized before
++	 * irq_hpd be handled
++	 */
++	if (dp->core_initialized) {
++		ret = dp_display_usbpd_attention_cb(&dp->pdev->dev);
++		if (ret == -ECONNRESET) { /* cable unplugged */
++			dp->core_initialized = false;
++		}
+ 	}
+ 	DRM_DEBUG_DP("hpd_state=%d\n", state);
  
--	thoff = skb_transport_header(skb) - skb_mac_header(skb);
--	if (skb->protocol == htons(ETH_P_IPV6) &&
--	    (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff))
--		truncate = true;
-+	if (skb->protocol == htons(ETH_P_IPV6)) {
-+		int thoff;
-+
-+		if (skb_transport_header_was_set(skb))
-+			thoff = skb_transport_header(skb) - skb_mac_header(skb);
-+		else
-+			thoff = nhoff + sizeof(struct ipv6hdr);
-+		if (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff)
-+			truncate = true;
+diff --git a/drivers/gpu/drm/msm/dp/dp_link.c b/drivers/gpu/drm/msm/dp/dp_link.c
+index a5bdfc5029de..d4d31e5bda07 100644
+--- a/drivers/gpu/drm/msm/dp/dp_link.c
++++ b/drivers/gpu/drm/msm/dp/dp_link.c
+@@ -737,18 +737,25 @@ static int dp_link_parse_sink_count(struct dp_link *dp_link)
+ 	return 0;
+ }
+ 
+-static void dp_link_parse_sink_status_field(struct dp_link_private *link)
++static int dp_link_parse_sink_status_field(struct dp_link_private *link)
+ {
+ 	int len = 0;
+ 
+ 	link->prev_sink_count = link->dp_link.sink_count;
+-	dp_link_parse_sink_count(&link->dp_link);
++	len = dp_link_parse_sink_count(&link->dp_link);
++	if (len < 0) {
++		DRM_ERROR("DP parse sink count failed\n");
++		return len;
 +	}
  
- 	if (version == 1) {
- 		erspan_build_header(skb, ntohl(tunnel_id_to_key32(key->tun_id)),
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index a817ac6d9759..70ef4d4ebff4 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -944,7 +944,6 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
- 	__be16 proto;
- 	__u32 mtu;
- 	int nhoff;
--	int thoff;
- 
- 	if (!pskb_inet_may_pull(skb))
- 		goto tx_err;
-@@ -965,10 +964,16 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
- 	    (ntohs(ip_hdr(skb)->tot_len) > skb->len - nhoff))
- 		truncate = true;
- 
--	thoff = skb_transport_header(skb) - skb_mac_header(skb);
--	if (skb->protocol == htons(ETH_P_IPV6) &&
--	    (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff))
--		truncate = true;
-+	if (skb->protocol == htons(ETH_P_IPV6)) {
-+		int thoff;
-+
-+		if (skb_transport_header_was_set(skb))
-+			thoff = skb_transport_header(skb) - skb_mac_header(skb);
-+		else
-+			thoff = nhoff + sizeof(struct ipv6hdr);
-+		if (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff)
-+			truncate = true;
+ 	len = drm_dp_dpcd_read_link_status(link->aux,
+ 		link->link_status);
+-	if (len < DP_LINK_STATUS_SIZE)
++	if (len < DP_LINK_STATUS_SIZE) {
+ 		DRM_ERROR("DP link status read failed\n");
+-	dp_link_parse_request(link);
++		return len;
 +	}
++
++	return dp_link_parse_request(link);
+ }
  
- 	if (skb_cow_head(skb, dev->needed_headroom ?: t->hlen))
- 		goto tx_err;
+ /**
+@@ -1023,7 +1030,9 @@ int dp_link_process_request(struct dp_link *dp_link)
+ 
+ 	dp_link_reset_data(link);
+ 
+-	dp_link_parse_sink_status_field(link);
++	ret = dp_link_parse_sink_status_field(link);
++	if (ret)
++		return ret;
+ 
+ 	if (link->request.test_requested == DP_TEST_LINK_EDID_READ) {
+ 		dp_link->sink_request |= DP_TEST_LINK_EDID_READ;
 -- 
 2.35.1
 
