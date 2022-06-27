@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7522C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C82DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239383AbiF0L5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50002 "EHLO
+        id S239185AbiF0L5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238197AbiF0Lu3 (ORCPT
+        with ESMTP id S238204AbiF0Lua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:50:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CFE2196;
-        Mon, 27 Jun 2022 04:43:40 -0700 (PDT)
+        Mon, 27 Jun 2022 07:50:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21100101E;
+        Mon, 27 Jun 2022 04:43:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 644CDB80E32;
-        Mon, 27 Jun 2022 11:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA463C3411D;
-        Mon, 27 Jun 2022 11:43:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2F6861240;
+        Mon, 27 Jun 2022 11:43:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C026BC3411D;
+        Mon, 27 Jun 2022 11:43:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330218;
-        bh=TbJXaK1rbMB8btpOBGJnwp1o3DBVqNZI0GMIlKu8slk=;
+        s=korg; t=1656330221;
+        bh=SPjt+EvEQ4079Mv+pWhVZgBzhL/o5jfkH6JC8grHV94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gYEy+fWlxWfPFEBmHzAgkaQEx5t8PwqxyzjTObZsoJ1zoclJPKkuf17u0EhmYbnjm
-         uoWpAowC927pm9IPW9TWsoSUAbrWk9YjKi6vbDgTO5/cz9CbujQjb7G4XySWtta3Lk
-         4jc1DVL61oe1+uGnnyNlnpo2LhnsTtabFearM0Xk=
+        b=X/rtqP6xiOLZrnXZ3HJBwZf5TR8GmyT2V/Af+1JWoKN9jNCaTlaIP7/oIqYtLUxm4
+         x35VTG1Mq/p2qtC2jdDtXtqNpYbbW0vVzgeKQPSsRpU9Zer48jxRmdahbO/UrT5idR
+         98FF4HXF+NDPByvPwAlIfLTe0/XKMexs1X0ctbh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 5.18 122/181] dt-bindings: usb: ohci: Increase the number of PHYs
-Date:   Mon, 27 Jun 2022 13:21:35 +0200
-Message-Id: <20220627111948.231950197@linuxfoundation.org>
+Subject: [PATCH 5.18 123/181] dt-bindings: usb: ehci: Increase the number of PHYs
+Date:   Mon, 27 Jun 2022 13:21:36 +0200
+Message-Id: <20220627111948.260032848@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,31 +50,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-commit 0f074c1c95ea496dc91279b6c4b9845a337517fa upstream.
+commit 9faa1c8f92f33daad9db96944139de225cefa199 upstream.
 
 "make dtbs_check":
 
-    arch/arm/boot/dts/r8a77470-iwg23s-sbc.dtb: usb@ee080000: phys: [[17, 0], [31]] is too long
-	    From schema: Documentation/devicetree/bindings/usb/generic-ohci.yaml
-    arch/arm/boot/dts/r8a77470-iwg23s-sbc.dtb: usb@ee0c0000: phys: [[17, 1], [33], [21, 0]] is too long
-	    From schema: Documentation/devicetree/bindings/usb/generic-ohci.yaml
+    arch/arm/boot/dts/r8a77470-iwg23s-sbc.dtb: usb@ee080100: phys: [[17, 0], [31]] is too long
+	    From schema: Documentation/devicetree/bindings/usb/generic-ehci.yaml
+    arch/arm/boot/dts/r8a77470-iwg23s-sbc.dtb: usb@ee0c0100: phys: [[17, 1], [33], [21, 0]] is too long
+	    From schema: Documentation/devicetree/bindings/usb/generic-ehci.yaml
 
-Some USB OHCI controllers (e.g. on the Renesas RZ/G1C SoC) have multiple
+Some USB EHCI controllers (e.g. on the Renesas RZ/G1C SoC) have multiple
 PHYs.  Increase the maximum number of PHYs to 3, which is sufficient for
 now.
 
 Fixes: 0499220d6dadafa5 ("dt-bindings: Add missing array size constraints")
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/0112f9c8881513cb33bf7b66bc743dd08b35a2f5.1655301203.git.geert+renesas@glider.be
+Link: https://lore.kernel.org/r/c5d19e2f9714f43effd90208798fc1936098078f.1655301043.git.geert+renesas@glider.be
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/usb/generic-ohci.yaml |    3 ++-
+ Documentation/devicetree/bindings/usb/generic-ehci.yaml |    3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-+++ b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-@@ -102,7 +102,8 @@ properties:
-       Overrides the detected port count
+--- a/Documentation/devicetree/bindings/usb/generic-ehci.yaml
++++ b/Documentation/devicetree/bindings/usb/generic-ehci.yaml
+@@ -135,7 +135,8 @@ properties:
+       Phandle of a companion.
  
    phys:
 -    maxItems: 1
