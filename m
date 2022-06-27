@@ -2,158 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F08CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC9ECCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:08:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233485AbiF0IH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 04:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
+        id S233504AbiF0IIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 04:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233470AbiF0IH0 (ORCPT
+        with ESMTP id S232474AbiF0IIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 04:07:26 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC7D5F6F
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:07:24 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 450CD1F982;
-        Mon, 27 Jun 2022 08:07:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1656317243; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ISmUJypDEnwyNLjOZHHl3YxuwgS1HsL3sHzfpjHOgNc=;
-        b=U5vF9ggw+RqFSxI011hhAyFzIpWwoE1SwSFRSCwATM9d/e93uKrcJTAodL9k1q7GLqQ4xl
-        WKcVqYD0OsNk1REYQLhzy3/ItAaRkdJIWnCrd9JAIV5vsQvOuxFJGhlFsebeTZkHa1dxy/
-        pRUtsRBfWHnzVY3/qLEyeu6nAfIJwiM=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DB2F22C141;
-        Mon, 27 Jun 2022 08:07:22 +0000 (UTC)
-Date:   Mon, 27 Jun 2022 10:07:22 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: Re: re. Spurious wakeup on a newly created kthread
-Message-ID: <YrllOoGRqp+Cdc9/@dhcp22.suse.cz>
-References: <20220622140853.31383-1-pmladek@suse.com>
- <YraWWl+Go17uPOgR@mtj.duckdns.org>
+        Mon, 27 Jun 2022 04:08:43 -0400
+X-Greylist: delayed 907 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 01:08:42 PDT
+Received: from sender-of-o52.zoho.in (sender-of-o52.zoho.in [103.117.158.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C45160C5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:08:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1656316363; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=Xx7tFFMW2BvOgsvh9UpO0SPNDSBx4hqN+NOxeq2pLpDzt4J1ro4mYakYgm/30XioCTCIEeJHGGD2mL4R5t7O/gtAwoeSb89HPs8oaHabVt0q4o7CrUCmuxPgYfFVgdtT7nLDpr1128GJoTftgD0MNn5ruitSrJMll++dsHy05L0=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1656316363; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=PkTNShGVs8cbPtNe9xMeE2pHNFEEOEsGDDAa223Zl0o=; 
+        b=dTqyd5hJcSqJ67L4vXEHI6DmimcX6qFOZ9zdD7kj9xUHW9iHs+ydPBcqi1KdKvEcxeCcaLyq/4T7cKNEIgkASphxUTd4HcOIxo7zQTHyBtRyyRN8d0sx/cwUID58w94ooaleofeefr7UQPMdPCtoi3btmcNDHPNhsVpqePBMNz8=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656316363;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+        bh=PkTNShGVs8cbPtNe9xMeE2pHNFEEOEsGDDAa223Zl0o=;
+        b=Cgz4ntPyFtZz65goAJpOZqeCHowdaH8lozTg86lWo38pMWo5IB+oQMm8DA03s00X
+        MMMddAfwu0wBS67QNK/t/xXn8UiW3t8eKgsWiCcg4KVECftL4hrWx/Gqm0qiBrcve7w
+        o41734yAjjz5rPJjjIVq8jPPoGo+45ZHXGOdY6PE=
+Received: from localhost.localdomain (103.249.234.162 [103.249.234.162]) by mx.zoho.in
+        with SMTPS id 1656316360890712.3411104478961; Mon, 27 Jun 2022 13:22:40 +0530 (IST)
+From:   Siddh Raman Pant <code@siddh.me>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Vladis Dronov <vdronov@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <20220627075148.140705-1-code@siddh.me>
+Subject: [PATCH 1/1] tools/testing/crypto: Use vzalloc instead of vmalloc+memset
+Date:   Mon, 27 Jun 2022 13:21:48 +0530
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YraWWl+Go17uPOgR@mtj.duckdns.org>
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat 25-06-22 14:00:10, Tejun Heo wrote:
-[...]
-> tl;dr is that the worker creation code expects a newly created worker
-> kthread to sit tight until the creator finishes setting up stuff and
-> sends the initial wakeup. However, something, which wasn't identified
-> in the report (Petr, it'd be great if you can find out who did the
-> wakeup), wakes up the new kthread before the creation path is done
-> with init which causes the new kthread to try to deref a NULL pointer.
+This fixes the corresponding coccinelle warning.
 
-One thing that hasn't been really mentioned explicitly but it might be
-really important. 5.3.18-2-rt is the RT patchset backported to 5.3
-based SLES kernel. We do not know whether the upstream RT patchset is
-affected the same way and due to nature of the customer we cannot really
-have this tested on that kernel.
+Signed-off-by: Siddh Raman Pant <code@siddh.me>
+---
+ tools/testing/crypto/chacha20-s390/test-cipher.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-I have tried to dig that out from the crash dump but no luck
-unfortunately. I was able to find the kthread pointer on few stacks:
-crash> search -t ffff9ca77e9a8000
-PID: 2      TASK: ffff9ca700381d80  CPU: 0   COMMAND: "kthreadd"
-ffffb0f68001fd78: ffff9ca77e9a8000
-ffffb0f68001fe38: ffff9ca77e9a8000
+diff --git a/tools/testing/crypto/chacha20-s390/test-cipher.c b/tools/testi=
+ng/crypto/chacha20-s390/test-cipher.c
+index 34e8b855266f..8141d45df51a 100644
+--- a/tools/testing/crypto/chacha20-s390/test-cipher.c
++++ b/tools/testing/crypto/chacha20-s390/test-cipher.c
+@@ -252,29 +252,26 @@ static int __init chacha_s390_test_init(void)
+ =09memset(plain, 'a', data_size);
+ =09get_random_bytes(plain, (data_size > 256 ? 256 : data_size));
+=20
+-=09cipher_generic =3D vmalloc(data_size);
++=09cipher_generic =3D vzalloc(data_size);
+ =09if (!cipher_generic) {
+ =09=09pr_info("could not allocate cipher_generic buffer\n");
+ =09=09ret =3D -2;
+ =09=09goto out;
+ =09}
+-=09memset(cipher_generic, 0, data_size);
+=20
+-=09cipher_s390 =3D vmalloc(data_size);
++=09cipher_s390 =3D vzalloc(data_size);
+ =09if (!cipher_s390) {
+ =09=09pr_info("could not allocate cipher_s390 buffer\n");
+ =09=09ret =3D -2;
+ =09=09goto out;
+ =09}
+-=09memset(cipher_s390, 0, data_size);
+=20
+-=09revert =3D vmalloc(data_size);
++=09revert =3D vzalloc(data_size);
+ =09if (!revert) {
+ =09=09pr_info("could not allocate revert buffer\n");
+ =09=09ret =3D -2;
+ =09=09goto out;
+ =09}
+-=09memset(revert, 0, data_size);
+=20
+ =09if (debug)
+ =09=09print_hex_dump(KERN_INFO, "src: ", DUMP_PREFIX_OFFSET,
+--=20
+2.35.1
 
-PID: 842    TASK: ffff9ca75e6349c0  CPU: 0   COMMAND: "sysmon"
-ffffb0f6808e7c50: ffff9ca77e9a8000
-ffffb0f6808e7da8: ffff9ca77e9a8000
 
-PID: 2035   TASK: ffff9ca71e252c40  CPU: 1   COMMAND: "vReqJob"
-ffffb0f68300fba8: ffff9ca77e9a8000
-ffffb0f68300fbf0: ffff9ca77e9a8000
-
-PID: 16127  TASK: ffff9ca77e9abb00  CPU: 0   COMMAND: "kworker/0:0H"
-ffffb0f688067dd0: ffff9ca77e9a8000
-
-PID: 16213  TASK: ffff9ca77e9a8000  CPU: 1   COMMAND: "kworker/0:2H"
-ffffb0f68822fba0: ffff9ca77e9a8000
-ffffb0f68822fca0: ffff9ca77e9a8000
-ffffb0f68822fd70: ffff9ca77e9a8000
-ffffb0f68822fe38: ffff9ca77e9a8000
-ffffb0f68822fef8: ffff9ca77e9a8000
-
-kthreadadd is not all that interesting because that one has created the
-thread. sysmon is 
-crash> bt ffff9ca75e6349c0
-PID: 842    TASK: ffff9ca75e6349c0  CPU: 0   COMMAND: "sysmon"
- #0 [ffffb0f6808e7be8] __schedule at ffffffffaa94bef1
- #1 [ffffb0f6808e7c78] preempt_schedule_common at ffffffffaa94c5d1
- #2 [ffffb0f6808e7c80] ___preempt_schedule at ffffffffaa201bb6
- #3 [ffffb0f6808e7cd8] rt_mutex_postunlock at ffffffffaa309f6b
- #4 [ffffb0f6808e7ce8] rt_mutex_futex_unlock at ffffffffaa94ea7c
- #5 [ffffb0f6808e7d30] rt_spin_unlock at ffffffffaa950ace
- #6 [ffffb0f6808e7d38] proc_pid_status at ffffffffaa4c9ff4
- #7 [ffffb0f6808e7dd8] proc_single_show at ffffffffaa4c3801
- #8 [ffffb0f6808e7e10] seq_read at ffffffffaa47c1b8
- #9 [ffffb0f6808e7e70] vfs_read at ffffffffaa455fd9
-#10 [ffffb0f6808e7ea0] ksys_read at ffffffffaa456364
-
-so collecting /pro/status data and releasing the sighand lock.
-
-crash> bt ffff9ca71e252c40
-PID: 2035   TASK: ffff9ca71e252c40  CPU: 1   COMMAND: "vReqJob"
- #0 [ffffb0f68300fbb0] __schedule at ffffffffaa94bef1
- #1 [ffffb0f68300fc40] schedule at ffffffffaa94c4e6
- #2 [ffffb0f68300fc50] futex_wait_queue_me at ffffffffaa33e2c0
- #3 [ffffb0f68300fc88] futex_wait at ffffffffaa33f199
- #4 [ffffb0f68300fd98] do_futex at ffffffffaa341062
- #5 [ffffb0f68300fe70] __x64_sys_futex at ffffffffaa341a7e
- #6 [ffffb0f68300fee0] do_syscall_64 at ffffffffaa2025f0
-
-is scheduled into the kthread which is expected because the newly
-created kernel thread should be running kthread() where it sleeps before
-calling the thread function.
-
-kworker/0:2H is our tkrehad worker.
-
-crash> bt ffff9ca77e9abb00
- #5 [ffffb0f688067c90] delay_tsc at ffffffffaa9479fc
- #6 [ffffb0f688067c90] wait_for_xmitr at ffffffffaa6c1e45
- #7 [ffffb0f688067cb0] serial8250_console_putchar at ffffffffaa6c1ee6
- #8 [ffffb0f688067cc8] uart_console_write at ffffffffaa6bb095
- #9 [ffffb0f688067cf0] serial8250_console_write at ffffffffaa6c5962
-#10 [ffffb0f688067d70] console_unlock at ffffffffaa30d795
-#11 [ffffb0f688067db0] vprintk_emit at ffffffffaa30fc11
-#12 [ffffb0f688067e00] printk at ffffffffaa3103c0
-#13 [ffffb0f688067e68] __kthread_bind_mask at ffffffffaa2d74df
-#14 [ffffb0f688067e90] create_worker at ffffffffaa2cfc13
-#15 [ffffb0f688067ed8] worker_thread at ffffffffaa2d1cbe
-#16 [ffffb0f688067f10] kthread at ffffffffaa2d6da2
-
-is the delayed thread which is creating the worker and currently stuck
-somewhere in the printk (console) code.
-
-So if somebody has woken up our thread from inside kthread() then it
-doesn't have that pointer on the stack and I couldn't it find elsewhere
-either. Maybe somebody has an idea where to look at.
-
-Btw. I still haven't caught up with the rest of the email thread and
-today will be quite busy for me. Anyway, if somebody has ideas about a
-further post mortem debugging then I am more than happy to help out.
--- 
-Michal Hocko
-SUSE Labs
