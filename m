@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CFF6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9629FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239322AbiF0L7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
+        id S239336AbiF0L7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238753AbiF0Lwf (ORCPT
+        with ESMTP id S238794AbiF0Lwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E43B872;
-        Mon, 27 Jun 2022 04:45:30 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECF9DE9A;
+        Mon, 27 Jun 2022 04:45:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 294EF612A5;
-        Mon, 27 Jun 2022 11:45:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35AE8C341C7;
-        Mon, 27 Jun 2022 11:45:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B93A9B80D37;
+        Mon, 27 Jun 2022 11:45:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C1BC341CB;
+        Mon, 27 Jun 2022 11:45:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330329;
-        bh=QM0AfxK4IuaFTjGiDZn/JFX8f2kV59KHfY0gtwTQpUw=;
+        s=korg; t=1656330341;
+        bh=R9WiNoA1Z375yZXr23Z0fc8V/aSxJXUXwDvhAfWi05s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ze+6jw2Ej3FDdV84xkESm7U+VJmHFano19WjozSh1+WNSxbVtt0GJZ3zf60+r6d2O
-         MphOsdL6R/VdhGMXQzvI+0oAu9JIBkEs8e23g/tYvKAuA0RTLNkhzoOqNtBDJgrXM8
-         49CRacjWQR2AlmIR1gHP4uDZ9MKibxUnXVrlmgBw=
+        b=1OD2Kf0RgqDMjdY+g1T3GPSXc8J889D5gpltCgVSVr7I4Cw/R3xawokeWkyWA1Ant
+         FDviB1X4/1EoGqn7frmF16hAe/woTd1PcHRI5GEsHmMZ4fQ9rRpYIQ6/xpFje9I1/k
+         O+pe3IKhjkCY+VO024nAYbXFKzRPB8OSsD58O2f8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Rokosov <ddrokosov@sberdevices.ru>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 134/181] iio:accel:bma180: rearrange iio trigger get and register
-Date:   Mon, 27 Jun 2022 13:21:47 +0200
-Message-Id: <20220627111948.574719741@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.18 164/181] ARM: dts: imx6qdl: correct PU regulator ramp delay
+Date:   Mon, 27 Jun 2022 13:22:17 +0200
+Message-Id: <20220627111949.442997221@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,45 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Rokosov <DDRokosov@sberdevices.ru>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-commit e5f3205b04d7f95a2ef43bce4b454a7f264d6923 upstream.
+commit 93a8ba2a619816d631bd69e9ce2172b4d7a481b8 upstream.
 
-IIO trigger interface function iio_trigger_get() should be called after
-iio_trigger_register() (or its devm analogue) strictly, because of
-iio_trigger_get() acquires module refcnt based on the trigger->owner
-pointer, which is initialized inside iio_trigger_register() to
-THIS_MODULE.
-If this call order is wrong, the next iio_trigger_put() (from sysfs
-callback or "delete module" path) will dereference "default" module
-refcnt, which is incorrect behaviour.
+Contrary to what was believed at the time, the ramp delay of 150us is not
+plenty for the PU LDO with the default step time of 512 pulses of the 24MHz
+clock. Measurements have shown that after enabling the LDO the voltage on
+VDDPU_CAP jumps to ~750mV in the first step and after that the regulator
+executes the normal ramp up as defined by the step size control.
 
-Fixes: 0668a4e4d297 ("iio: accel: bma180: Fix indio_dev->trig assignment")
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220524181150.9240-2-ddrokosov@sberdevices.ru
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+This means it takes the regulator between 360us and 370us to ramp up to
+the nominal 1.15V voltage for this power domain. With the old setting of
+the ramp delay the power up of the PU GPC domain would happen in the middle
+of the regulator ramp with the voltage being at around 900mV. Apparently
+this was enough for most units to properly power up the peripherals in the
+domain and execute the reset. Some units however, fail to power up properly,
+especially when the chip is at a low temperature. In that case any access
+to the GPU registers would yield an incorrect result with no way to recover
+from this situation.
+
+Change the ramp delay to 380us to cover the measured ramp up time with a
+bit of additional slack.
+
+Fixes: 40130d327f72 ("ARM: dts: imx6qdl: Allow disabling the PU regulator, add a enable ramp delay")
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/accel/bma180.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6qdl.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -1006,11 +1006,12 @@ static int bma180_probe(struct i2c_clien
- 
- 		data->trig->ops = &bma180_trigger_ops;
- 		iio_trigger_set_drvdata(data->trig, indio_dev);
--		indio_dev->trig = iio_trigger_get(data->trig);
- 
- 		ret = iio_trigger_register(data->trig);
- 		if (ret)
- 			goto err_trigger_free;
-+
-+		indio_dev->trig = iio_trigger_get(data->trig);
- 	}
- 
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+--- a/arch/arm/boot/dts/imx6qdl.dtsi
++++ b/arch/arm/boot/dts/imx6qdl.dtsi
+@@ -762,7 +762,7 @@
+ 					regulator-name = "vddpu";
+ 					regulator-min-microvolt = <725000>;
+ 					regulator-max-microvolt = <1450000>;
+-					regulator-enable-ramp-delay = <150>;
++					regulator-enable-ramp-delay = <380>;
+ 					anatop-reg-offset = <0x140>;
+ 					anatop-vol-bit-shift = <9>;
+ 					anatop-vol-bit-width = <5>;
 
 
