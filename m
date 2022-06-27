@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2480C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6812C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234690AbiF0LYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
+        id S234744AbiF0LY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234691AbiF0LYJ (ORCPT
+        with ESMTP id S234702AbiF0LYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:24:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D959C6570;
-        Mon, 27 Jun 2022 04:24:05 -0700 (PDT)
+        Mon, 27 Jun 2022 07:24:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F40A6578;
+        Mon, 27 Jun 2022 04:24:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CF36B81116;
-        Mon, 27 Jun 2022 11:24:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE36C3411D;
-        Mon, 27 Jun 2022 11:24:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 063A061454;
+        Mon, 27 Jun 2022 11:24:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03812C3411D;
+        Mon, 27 Jun 2022 11:24:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329043;
-        bh=mMkmVKer74gbOMIKTqwBA5hzA8580mKSYpCDSXeUC7A=;
+        s=korg; t=1656329046;
+        bh=TJxd5l/FQ144uRvUJQpPK3pSbYgbwSLYcxsPK3FiQnk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pmNVL2qWI8jCTfEnC0h7FQPL2SWvQxSccD5dHuWlgZAhChonkdE8PnxwfKeBgA5/M
-         Wpw2ONMS3PPQL4kZ4BfTl0A8AHqs8KRbPX4u4Eezq4mWrl8Ip0mU+hKPWhmCl/P++E
-         vjDccQQhIZdGjPWoTC9BkodguA+O9xqwDomO0Xvc=
+        b=hUuk/NxHBZoLDwrooiviE6qrHs0JIsYsdoMv+ao0mLo+iUc9x8VKuFZrV2HplJ5Fx
+         mePWrdo4EyJFac4WtxlsoH8Rn4OPxPOq8UTG+Q6S60UXadOY50deaIOdiE8WUWKsp9
+         nkdmTbZNo+YwGlRUpOATG6D56fkrDkpyujGhhi9I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Spacek <ondrej.spacek@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 030/102] phy: aquantia: Fix AN when higher speeds than 1G are not advertised
-Date:   Mon, 27 Jun 2022 13:20:41 +0200
-Message-Id: <20220627111934.360247127@linuxfoundation.org>
+Subject: [PATCH 5.10 031/102] tipc: simplify the finalize work queue
+Date:   Mon, 27 Jun 2022 13:20:42 +0200
+Message-Id: <20220627111934.389114522@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -50,61 +50,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Manoil <claudiu.manoil@nxp.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit 9b7fd1670a94a57d974795acebde843a5c1a354e ]
+[ Upstream commit be07f056396d6bb40963c45a02951c566ddeef8e ]
 
-Even when the eth port is resticted to work with speeds not higher than 1G,
-and so the eth driver is requesting the phy (via phylink) to advertise up
-to 1000BASET support, the aquantia phy device is still advertising for 2.5G
-and 5G speeds.
-Clear these advertising defaults when requested.
+This patch is to use "struct work_struct" for the finalize work queue
+instead of "struct tipc_net_work", as it can get the "net" and "addr"
+from tipc_net's other members and there is no need to add extra net
+and addr in tipc_net by defining "struct tipc_net_work".
 
-Cc: Ondrej Spacek <ondrej.spacek@nxp.com>
-Fixes: 09c4c57f7bc41 ("net: phy: aquantia: add support for auto-negotiation configuration")
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Link: https://lore.kernel.org/r/20220610084037.7625-1-claudiu.manoil@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Note that it's safe to get net from tn->bcl as bcl is always released
+after the finalize work queue is done.
+
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/aquantia_main.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ net/tipc/core.c     |  4 ++--
+ net/tipc/core.h     |  8 +-------
+ net/tipc/discover.c |  4 ++--
+ net/tipc/link.c     |  5 +++++
+ net/tipc/link.h     |  1 +
+ net/tipc/net.c      | 15 +++------------
+ 6 files changed, 14 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
-index 41e7c1432497..75a62d1cc737 100644
---- a/drivers/net/phy/aquantia_main.c
-+++ b/drivers/net/phy/aquantia_main.c
-@@ -34,6 +34,8 @@
- #define MDIO_AN_VEND_PROV			0xc400
- #define MDIO_AN_VEND_PROV_1000BASET_FULL	BIT(15)
- #define MDIO_AN_VEND_PROV_1000BASET_HALF	BIT(14)
-+#define MDIO_AN_VEND_PROV_5000BASET_FULL	BIT(11)
-+#define MDIO_AN_VEND_PROV_2500BASET_FULL	BIT(10)
- #define MDIO_AN_VEND_PROV_DOWNSHIFT_EN		BIT(4)
- #define MDIO_AN_VEND_PROV_DOWNSHIFT_MASK	GENMASK(3, 0)
- #define MDIO_AN_VEND_PROV_DOWNSHIFT_DFLT	4
-@@ -230,9 +232,20 @@ static int aqr_config_aneg(struct phy_device *phydev)
- 			      phydev->advertising))
- 		reg |= MDIO_AN_VEND_PROV_1000BASET_HALF;
+diff --git a/net/tipc/core.c b/net/tipc/core.c
+index 40c03085c0ea..96bfcb2986f5 100644
+--- a/net/tipc/core.c
++++ b/net/tipc/core.c
+@@ -60,7 +60,7 @@ static int __net_init tipc_init_net(struct net *net)
+ 	tn->trial_addr = 0;
+ 	tn->addr_trial_end = 0;
+ 	tn->capabilities = TIPC_NODE_CAPABILITIES;
+-	INIT_WORK(&tn->final_work.work, tipc_net_finalize_work);
++	INIT_WORK(&tn->work, tipc_net_finalize_work);
+ 	memset(tn->node_id, 0, sizeof(tn->node_id));
+ 	memset(tn->node_id_string, 0, sizeof(tn->node_id_string));
+ 	tn->mon_threshold = TIPC_DEF_MON_THRESHOLD;
+@@ -112,7 +112,7 @@ static void __net_exit tipc_exit_net(struct net *net)
  
-+	/* Handle the case when the 2.5G and 5G speeds are not advertised */
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
-+			      phydev->advertising))
-+		reg |= MDIO_AN_VEND_PROV_2500BASET_FULL;
+ 	tipc_detach_loopback(net);
+ 	/* Make sure the tipc_net_finalize_work() finished */
+-	cancel_work_sync(&tn->final_work.work);
++	cancel_work_sync(&tn->work);
+ 	tipc_net_stop(net);
+ 
+ 	tipc_bcast_stop(net);
+diff --git a/net/tipc/core.h b/net/tipc/core.h
+index 992924a849be..73a26b0b9ca1 100644
+--- a/net/tipc/core.h
++++ b/net/tipc/core.h
+@@ -90,12 +90,6 @@ extern unsigned int tipc_net_id __read_mostly;
+ extern int sysctl_tipc_rmem[3] __read_mostly;
+ extern int sysctl_tipc_named_timeout __read_mostly;
+ 
+-struct tipc_net_work {
+-	struct work_struct work;
+-	struct net *net;
+-	u32 addr;
+-};
+-
+ struct tipc_net {
+ 	u8  node_id[NODE_ID_LEN];
+ 	u32 node_addr;
+@@ -150,7 +144,7 @@ struct tipc_net {
+ 	struct tipc_crypto *crypto_tx;
+ #endif
+ 	/* Work item for net finalize */
+-	struct tipc_net_work final_work;
++	struct work_struct work;
+ 	/* The numbers of work queues in schedule */
+ 	atomic_t wq_count;
+ };
+diff --git a/net/tipc/discover.c b/net/tipc/discover.c
+index d4ecacddb40c..14bc20604051 100644
+--- a/net/tipc/discover.c
++++ b/net/tipc/discover.c
+@@ -167,7 +167,7 @@ static bool tipc_disc_addr_trial_msg(struct tipc_discoverer *d,
+ 
+ 	/* Apply trial address if we just left trial period */
+ 	if (!trial && !self) {
+-		tipc_sched_net_finalize(net, tn->trial_addr);
++		schedule_work(&tn->work);
+ 		msg_set_prevnode(buf_msg(d->skb), tn->trial_addr);
+ 		msg_set_type(buf_msg(d->skb), DSC_REQ_MSG);
+ 	}
+@@ -307,7 +307,7 @@ static void tipc_disc_timeout(struct timer_list *t)
+ 	if (!time_before(jiffies, tn->addr_trial_end) && !tipc_own_addr(net)) {
+ 		mod_timer(&d->timer, jiffies + TIPC_DISC_INIT);
+ 		spin_unlock_bh(&d->lock);
+-		tipc_sched_net_finalize(net, tn->trial_addr);
++		schedule_work(&tn->work);
+ 		return;
+ 	}
+ 
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index 7a353ff62844..064fdb8e50e1 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -344,6 +344,11 @@ char tipc_link_plane(struct tipc_link *l)
+ 	return l->net_plane;
+ }
+ 
++struct net *tipc_link_net(struct tipc_link *l)
++{
++	return l->net;
++}
 +
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT,
-+			      phydev->advertising))
-+		reg |= MDIO_AN_VEND_PROV_5000BASET_FULL;
-+
- 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_VEND_PROV,
- 				     MDIO_AN_VEND_PROV_1000BASET_HALF |
--				     MDIO_AN_VEND_PROV_1000BASET_FULL, reg);
-+				     MDIO_AN_VEND_PROV_1000BASET_FULL |
-+				     MDIO_AN_VEND_PROV_2500BASET_FULL |
-+				     MDIO_AN_VEND_PROV_5000BASET_FULL, reg);
- 	if (ret < 0)
- 		return ret;
- 	if (ret > 0)
+ void tipc_link_update_caps(struct tipc_link *l, u16 capabilities)
+ {
+ 	l->peer_caps = capabilities;
+diff --git a/net/tipc/link.h b/net/tipc/link.h
+index fc07232c9a12..a16f401fdabd 100644
+--- a/net/tipc/link.h
++++ b/net/tipc/link.h
+@@ -156,4 +156,5 @@ int tipc_link_bc_sync_rcv(struct tipc_link *l,   struct tipc_msg *hdr,
+ int tipc_link_bc_nack_rcv(struct tipc_link *l, struct sk_buff *skb,
+ 			  struct sk_buff_head *xmitq);
+ bool tipc_link_too_silent(struct tipc_link *l);
++struct net *tipc_link_net(struct tipc_link *l);
+ #endif
+diff --git a/net/tipc/net.c b/net/tipc/net.c
+index 0bb2323201da..671cb4f9d563 100644
+--- a/net/tipc/net.c
++++ b/net/tipc/net.c
+@@ -41,6 +41,7 @@
+ #include "socket.h"
+ #include "node.h"
+ #include "bcast.h"
++#include "link.h"
+ #include "netlink.h"
+ #include "monitor.h"
+ 
+@@ -138,19 +139,9 @@ static void tipc_net_finalize(struct net *net, u32 addr)
+ 
+ void tipc_net_finalize_work(struct work_struct *work)
+ {
+-	struct tipc_net_work *fwork;
++	struct tipc_net *tn = container_of(work, struct tipc_net, work);
+ 
+-	fwork = container_of(work, struct tipc_net_work, work);
+-	tipc_net_finalize(fwork->net, fwork->addr);
+-}
+-
+-void tipc_sched_net_finalize(struct net *net, u32 addr)
+-{
+-	struct tipc_net *tn = tipc_net(net);
+-
+-	tn->final_work.net = net;
+-	tn->final_work.addr = addr;
+-	schedule_work(&tn->final_work.work);
++	tipc_net_finalize(tipc_link_net(tn->bcl), tn->trial_addr);
+ }
+ 
+ void tipc_net_stop(struct net *net)
 -- 
 2.35.1
 
