@@ -2,253 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 505A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 855EBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234916AbiF0LZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
+        id S234922AbiF0LZ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:25:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234838AbiF0LY6 (ORCPT
+        with ESMTP id S234836AbiF0LY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:24:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B107E658D;
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0739A6595
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:24:58 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id l6so7875077plg.11
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:24:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o2g5Ldg/I/cSNmt5LyWh3PGUjmhi+xrQzjDLIO63cF8=;
+        b=KnHwizho8n+ujcf81Nq3ubS+lXqtmMZXdNk+CtXA9EkbySLxUMsT09fsicneCRucZ+
+         CzgVqIQEqhnE217otouh10UJFRl52KfWnEL6IOtfO7OierpB2srQRGfDTytvfHGKPLWM
+         xghGsj4d/WRlrfrYApPlEWga7mixLW5pX9maA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o2g5Ldg/I/cSNmt5LyWh3PGUjmhi+xrQzjDLIO63cF8=;
+        b=v43j5jn7MgQyNRm1V15ykiOBv6TwVqGxa4+s5lXe2YT4qIW3xN19AhCdFikF9Ktw7i
+         fuV396n0N0VmW17pzHRXuJbLIy7GHWp5YxdGHPQKL15ArPpQqPITGTiSbqD0aTl8MF4q
+         6xYxXN7UXjlB3urcT9O6zmK40OKKbdTrc60HGPtSEvveZigySRxqagpVn5gk+Zb3TzSc
+         ZkkU/IVFXHs27AjBuw9k+7ICnSpENU2G3aNrhW8/uNsiuhOMJu7XizSz3E4bw8Zvv38n
+         7ubROLls0yQmypYYaibnLgM/CHvzuQU1ExAnyLD5QuEWrkGVk0LWa3hLpkoAA6EGFv3v
+         gtsw==
+X-Gm-Message-State: AJIora+x2TxjLg+dukojgoUEJ6xOOm/WmE0BrDQzvd3sn8+W6sSWc0UH
+        kWwC3pk+qWpsLs/5upQ8vx5zRA==
+X-Google-Smtp-Source: AGRyM1saXkC/duFsfRvk4UdfX+kVIKUM9JPJ761lPsGD6drYEJ/WKXgV9kTcrRtAEWz7H6k3TspbHg==
+X-Received: by 2002:a17:902:988a:b0:16a:7f1b:552 with SMTP id s10-20020a170902988a00b0016a7f1b0552mr10307483plp.60.1656329097453;
         Mon, 27 Jun 2022 04:24:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D04BB81122;
-        Mon, 27 Jun 2022 11:24:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97AF0C3411D;
-        Mon, 27 Jun 2022 11:24:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329095;
-        bh=NBzjfNLBjAb6DpyahI58MfyEpU2ijm9IrURcZdTKtlo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aw7wrj3qXkcYYgCvkL6lJZkUoPCANuEGD8+Qo0eO14SwzkoEUUPXL9+LS6JqLVOta
-         Td0Z7+3bBiqw9cc4ciehVoDOoVbOa6Ie8/psFQHaW1EI5sCTS9L36pUFX+hRIdFbgO
-         HRMQWQ++4igxKwD7Wl6n1fIl5WlufMD7Ihp3JTvU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kuogee Hsieh <khsieh@codeaurora.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 041/102] drm/msm/dp: fix connect/disconnect handled at irq_hpd
-Date:   Mon, 27 Jun 2022 13:20:52 +0200
-Message-Id: <20220627111934.689852502@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
-References: <20220627111933.455024953@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:2dc1:c31b:b5ed:f3aa])
+        by smtp.gmail.com with ESMTPSA id lj4-20020a17090b344400b001ece32cbec9sm9246889pjb.24.2022.06.27.04.24.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 04:24:57 -0700 (PDT)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Chen-Yu Tsai <wenst@chromium.org>, linux-media@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>
+Subject: [PATCH 0/4] media: mediatek: vcodec: Fix 4K decoding support
+Date:   Mon, 27 Jun 2022 19:23:58 +0800
+Message-Id: <20220627112402.2332046-1-wenst@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <khsieh@codeaurora.org>
+While testing a backport of recent mtk-vcodec developments on ChromeOS
+v5.10 kernel [1], it was found that 4K decoding support had regressed.
+The decoder was not correctly reporting 4K frame sizes when queried,
+and ChromeOS then determined that the hardware did not support it.
 
-[ Upstream commit c58eb1b54feefc3a47fab78addd14083bc941c44 ]
+This turned out to be a mix of different bugs:
 
-Some usb type-c dongle use irq_hpd request to perform device connection
-and disconnection. This patch add handling of both connection and
-disconnection are based on the state of hpd_state and sink_count.
+1. Frame size enumeration on the output side should not depend on the
+   currently set format, or any other derived state. This is fixed in
+   patch 1.
 
-Changes in V2:
--- add dp_display_handle_port_ststus_changed()
--- fix kernel test robot complaint
+2. The default resolution limit was not set according to the default
+   output format determined at runtime, but hard-coded to 1080p. An
+   S_FMT call is needed to override this. This is fixed in patch 2.
 
-Changes in V3:
--- add encoder_mode_set into struct dp_display_private
+3. TRY_FMT on the output side was incorrectly clamping the resolution
+   based on the current maximum values. It should not. Fixed in patch
+   3.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 26b8d66a399e ("drm/msm/dp: promote irq_hpd handle to handle link training correctly")
-Tested-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Kuogee Hsieh <khsieh@codeaurora.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/msm/dp/dp_display.c | 92 +++++++++++++++++------------
- 1 file changed, 55 insertions(+), 37 deletions(-)
+The last patch fixes an odd error in the bug, where the maximum
+resolution restriction could be lifted to 4K, even if the output format
+doesn't allow it. In practice this wouldn't cause any issues given the
+other fixes in this series and other existing checks in both the driver
+and V4L2 core, but it seemed easy to fix.
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index f1f777baa2c4..a3de1d0523ea 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -102,6 +102,8 @@ struct dp_display_private {
- 	struct dp_display_mode dp_mode;
- 	struct msm_dp dp_display;
- 
-+	bool encoder_mode_set;
-+
- 	/* wait for audio signaling */
- 	struct completion audio_comp;
- 
-@@ -306,13 +308,24 @@ static void dp_display_send_hpd_event(struct msm_dp *dp_display)
- 	drm_helper_hpd_irq_event(connector->dev);
- }
- 
--static int dp_display_send_hpd_notification(struct dp_display_private *dp,
--					    bool hpd)
-+
-+static void dp_display_set_encoder_mode(struct dp_display_private *dp)
- {
--	static bool encoder_mode_set;
- 	struct msm_drm_private *priv = dp->dp_display.drm_dev->dev_private;
- 	struct msm_kms *kms = priv->kms;
- 
-+	if (!dp->encoder_mode_set && dp->dp_display.encoder &&
-+				kms->funcs->set_encoder_mode) {
-+		kms->funcs->set_encoder_mode(kms,
-+				dp->dp_display.encoder, false);
-+
-+		dp->encoder_mode_set = true;
-+	}
-+}
-+
-+static int dp_display_send_hpd_notification(struct dp_display_private *dp,
-+					    bool hpd)
-+{
- 	if ((hpd && dp->dp_display.is_connected) ||
- 			(!hpd && !dp->dp_display.is_connected)) {
- 		DRM_DEBUG_DP("HPD already %s\n", (hpd ? "on" : "off"));
-@@ -325,15 +338,6 @@ static int dp_display_send_hpd_notification(struct dp_display_private *dp,
- 
- 	dp->dp_display.is_connected = hpd;
- 
--	if (dp->dp_display.is_connected && dp->dp_display.encoder
--				&& !encoder_mode_set
--				&& kms->funcs->set_encoder_mode) {
--		kms->funcs->set_encoder_mode(kms,
--				dp->dp_display.encoder, false);
--		DRM_DEBUG_DP("set_encoder_mode() Completed\n");
--		encoder_mode_set = true;
--	}
--
- 	dp_display_send_hpd_event(&dp->dp_display);
- 
- 	return 0;
-@@ -369,7 +373,6 @@ static int dp_display_process_hpd_high(struct dp_display_private *dp)
- 
- 	dp_add_event(dp, EV_USER_NOTIFICATION, true, 0);
- 
--
- end:
- 	return rc;
- }
-@@ -386,6 +389,8 @@ static void dp_display_host_init(struct dp_display_private *dp)
- 	if (dp->usbpd->orientation == ORIENTATION_CC2)
- 		flip = true;
- 
-+	dp_display_set_encoder_mode(dp);
-+
- 	dp_power_init(dp->power, flip);
- 	dp_ctrl_host_init(dp->ctrl, flip);
- 	dp_aux_init(dp->aux);
-@@ -469,24 +474,42 @@ static void dp_display_handle_video_request(struct dp_display_private *dp)
- 	}
- }
- 
--static int dp_display_handle_irq_hpd(struct dp_display_private *dp)
-+static int dp_display_handle_port_ststus_changed(struct dp_display_private *dp)
- {
--	u32 sink_request;
--
--	sink_request = dp->link->sink_request;
-+	int rc = 0;
- 
--	if (sink_request & DS_PORT_STATUS_CHANGED) {
--		if (dp_display_is_sink_count_zero(dp)) {
--			DRM_DEBUG_DP("sink count is zero, nothing to do\n");
--			return -ENOTCONN;
-+	if (dp_display_is_sink_count_zero(dp)) {
-+		DRM_DEBUG_DP("sink count is zero, nothing to do\n");
-+		if (dp->hpd_state != ST_DISCONNECTED) {
-+			dp->hpd_state = ST_DISCONNECT_PENDING;
-+			dp_add_event(dp, EV_USER_NOTIFICATION, false, 0);
-+		}
-+	} else {
-+		if (dp->hpd_state == ST_DISCONNECTED) {
-+			dp->hpd_state = ST_CONNECT_PENDING;
-+			rc = dp_display_process_hpd_high(dp);
-+			if (rc)
-+				dp->hpd_state = ST_DISCONNECTED;
- 		}
-+	}
-+
-+	return rc;
-+}
-+
-+static int dp_display_handle_irq_hpd(struct dp_display_private *dp)
-+{
-+	u32 sink_request = dp->link->sink_request;
- 
--		return dp_display_process_hpd_high(dp);
-+	if (dp->hpd_state == ST_DISCONNECTED) {
-+		if (sink_request & DP_LINK_STATUS_UPDATED) {
-+			DRM_ERROR("Disconnected, no DP_LINK_STATUS_UPDATED\n");
-+			return -EINVAL;
-+		}
- 	}
- 
- 	dp_ctrl_handle_sink_request(dp->ctrl);
- 
--	if (dp->link->sink_request & DP_TEST_LINK_VIDEO_PATTERN)
-+	if (sink_request & DP_TEST_LINK_VIDEO_PATTERN)
- 		dp_display_handle_video_request(dp);
- 
- 	return 0;
-@@ -517,19 +540,10 @@ static int dp_display_usbpd_attention_cb(struct device *dev)
- 	rc = dp_link_process_request(dp->link);
- 	if (!rc) {
- 		sink_request = dp->link->sink_request;
--		if (sink_request & DS_PORT_STATUS_CHANGED) {
--			/* same as unplugged */
--			hpd->hpd_high = 0;
--			dp->hpd_state = ST_DISCONNECT_PENDING;
--			dp_add_event(dp, EV_USER_NOTIFICATION, false, 0);
--		}
--
--		rc = dp_display_handle_irq_hpd(dp);
--
--		if (!rc && (sink_request & DS_PORT_STATUS_CHANGED)) {
--			hpd->hpd_high = 1;
--			dp->hpd_state = ST_CONNECT_PENDING;
--		}
-+		if (sink_request & DS_PORT_STATUS_CHANGED)
-+			rc = dp_display_handle_port_ststus_changed(dp);
-+		else
-+			rc = dp_display_handle_irq_hpd(dp);
- 	}
- 
- 	return rc;
-@@ -694,6 +708,7 @@ static int dp_disconnect_pending_timeout(struct dp_display_private *dp, u32 data
- static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
- {
- 	u32 state;
-+	int ret;
- 
- 	mutex_lock(&dp->event_mutex);
- 
-@@ -704,7 +719,10 @@ static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
- 		return 0;
- 	}
- 
--	dp_display_usbpd_attention_cb(&dp->pdev->dev);
-+	ret = dp_display_usbpd_attention_cb(&dp->pdev->dev);
-+	if (ret == -ECONNRESET) { /* cable unplugged */
-+		dp->core_initialized = false;
-+	}
- 
- 	mutex_unlock(&dp->event_mutex);
- 
+This series is based on next-20220627 with media-staging at
+
+     d8e8aa866ed8 ("media: mediatek: vcodec: Report supported bitrate modes")
+
+merged in.
+
+This was only tested on the backport kernel [1] on MT8195, which is the
+only currently supported SoC that does 4K decoding. Hopefully the folks
+at Collabora can give this a test on their mainline MT8195 integration
+branch.
+
+
+Regards
+ChenYu
+
+[1] https://crrev.com/c/3713491
+
+Chen-Yu Tsai (4):
+  media: mediatek: vcodec: dec: Fix 4K frame size enumeration
+  media: mediatek: vcodec: dec: Set default max resolution based on
+    format
+  media: mediatek: vcodec: dec: Fix resolution clamping in TRY_FMT
+  media: mediatek: vcodec: dec: Set maximum resolution when S_FMT on
+    output only
+
+ .../platform/mediatek/vcodec/mtk_vcodec_dec.c | 45 ++++++++++++++-----
+ .../vcodec/mtk_vcodec_dec_stateless.c         |  7 +++
+ 2 files changed, 41 insertions(+), 11 deletions(-)
+
 -- 
-2.35.1
-
-
+2.37.0.rc0.161.g10f37bed90-goog
 
