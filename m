@@ -2,125 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2B9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:51:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233157AbiF0Hu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55904 "EHLO
+        id S233161AbiF0HvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232606AbiF0Hu5 (ORCPT
+        with ESMTP id S233159AbiF0HvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:50:57 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0096E2DD3;
-        Mon, 27 Jun 2022 00:50:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656316257; x=1687852257;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=h/AoKKoXNc3Rq8V2c3hlG/7uD1Te+5Trb9BH8fj762M=;
-  b=uM22t4eanplIaWh8mq7RPOSBKNQ73n7vIvzvKQwQstl0Ugr8GgbhTS/g
-   6oGSbQQcqI7IcuAhYuYqM9A0FyBLv+xjJDNL1gGL0VkFMvmxxqDMBSkfn
-   EbIQ6f1Fbry7qoEit8YkA3fc0BIl7sDzvfeYmrfaA3b6gM57Wl15yHw4F
-   I=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 27 Jun 2022 00:50:01 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 00:50:00 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 27 Jun 2022 00:50:00 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 27 Jun 2022 00:49:54 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v5 2/2] pinctrl: qcom: sc7280: Add clock optional check for ADSP bypass targets
-Date:   Mon, 27 Jun 2022 13:19:24 +0530
-Message-ID: <1656316164-28666-3-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1656316164-28666-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1656316164-28666-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 27 Jun 2022 03:51:07 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065AD6168;
+        Mon, 27 Jun 2022 00:51:01 -0700 (PDT)
+X-UUID: b3e4799511524f0ca443ae7925150390-20220627
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:c2756198-7b65-4fe0-b6ba-48ddbafd8c76,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:25
+X-CID-META: VersionHash:b14ad71,CLOUDID:4252212e-1756-4fa3-be7f-474a6e4be921,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: b3e4799511524f0ca443ae7925150390-20220627
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 827043868; Mon, 27 Jun 2022 15:50:54 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Mon, 27 Jun 2022 15:50:53 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Mon, 27 Jun 2022 15:50:53 +0800
+Message-ID: <a2612c2628eefbbf909d4847b3d0067746813f33.camel@mediatek.com>
+Subject: Re: [PATCH v14 01/15] dt-bindings: mediatek,dpi: Add DP_INTF
+ compatible
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Mon, 27 Jun 2022 15:50:52 +0800
+In-Reply-To: <20220624030946.14961-2-rex-bc.chen@mediatek.com>
+References: <20220624030946.14961-1-rex-bc.chen@mediatek.com>
+         <20220624030946.14961-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update lpass lpi pin control driver, with clock optional check for ADSP
-disabled platforms. This check required for distingushing ADSP based
-platforms and ADSP bypass platforms.
-In case of ADSP enabled platforms, where audio is routed through ADSP
-macro and decodec GDSC Switches are triggered as clocks by pinctrl
-driver and ADSP firmware controls them. So It's mandatory to enable
-them in ADSP based solutions.
-In case of ADSP bypass platforms clock voting is optional as these macro
-and dcodec GDSC switches are maintained as power domains and operated from
-lpass clock drivers.
-Remove redundant private data variable is_clk_optional.
+Hi, Bo-Chen:
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.c        | 2 +-
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.h        | 1 -
- drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c | 1 -
- 3 files changed, 1 insertion(+), 3 deletions(-)
+On Fri, 2022-06-24 at 11:09 +0800, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
+> 
+> DP_INTF is similar to DPI but does not have the exact same feature
+> set
+> or register layouts.
+> 
+> DP_INTF is the sink of the display pipeline that is connected to the
+> DisplayPort controller and encoder unit. It takes the same clocks as
+> DPI.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> [Bo-Chen: Modify reviewers' comments.]
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-index 74810ec..e97ce45 100644
---- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-+++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-@@ -401,7 +401,7 @@ int lpi_pinctrl_probe(struct platform_device *pdev)
- 		return dev_err_probe(dev, PTR_ERR(pctrl->slew_base),
- 				     "Slew resource not provided\n");
- 
--	if (data->is_clk_optional)
-+	if (of_property_read_bool(dev->of_node, "qcom,adsp-bypass-mode"))
- 		ret = devm_clk_bulk_get_optional(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
- 	else
- 		ret = devm_clk_bulk_get(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
-diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
-index 759d5d8..afbac2a 100644
---- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
-+++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
-@@ -77,7 +77,6 @@ struct lpi_pinctrl_variant_data {
- 	int ngroups;
- 	const struct lpi_function *functions;
- 	int nfunctions;
--	bool is_clk_optional;
- };
- 
- int lpi_pinctrl_probe(struct platform_device *pdev);
-diff --git a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
-index 2add9a4..d615b6c5 100644
---- a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
-+++ b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
-@@ -141,7 +141,6 @@ static const struct lpi_pinctrl_variant_data sc7280_lpi_data = {
- 	.ngroups = ARRAY_SIZE(sc7280_groups),
- 	.functions = sc7280_functions,
- 	.nfunctions = ARRAY_SIZE(sc7280_functions),
--	.is_clk_optional = true,
- };
- 
- static const struct of_device_id lpi_pinctrl_of_match[] = {
--- 
-2.7.4
+Except this line,
+
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
+
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> ---
+>  .../bindings/display/mediatek/mediatek,dpi.yaml       | 11 ++++++---
+> --
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git
+> a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
+> l
+> b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
+> l
+> index 77ee1b923991..8e526a4b134e 100644
+> ---
+> a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
+> l
+> +++
+> b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
+> l
+> @@ -4,16 +4,16 @@
+>  $id: 
+> http://devicetree.org/schemas/display/mediatek/mediatek,dpi.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: mediatek DPI Controller Device Tree Bindings
+> +title: mediatek DPI and DP_INTF Controller
+>  
+>  maintainers:
+>    - CK Hu <ck.hu@mediatek.com>
+>    - Jitao shi <jitao.shi@mediatek.com>
+>  
+>  description: |
+> -  The Mediatek DPI function block is a sink of the display subsystem
+> and
+> -  provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422 pixel data on a
+> parallel
+> -  output bus.
+> +  The Mediatek DPI and DP_INTF function blocks are a sink of the
+> display
+> +  subsystem and provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422
+> pixel data on a
+> +  parallel output bus.
+>  
+>  properties:
+>    compatible:
+> @@ -24,6 +24,7 @@ properties:
+>        - mediatek,mt8183-dpi
+>        - mediatek,mt8186-dpi
+>        - mediatek,mt8192-dpi
+> +      - mediatek,mt8195-dp-intf
+>  
+>    reg:
+>      maxItems: 1
+> @@ -55,7 +56,7 @@ properties:
+>      $ref: /schemas/graph.yaml#/properties/port
+>      description:
+>        Output port node. This port should be connected to the input
+> port of an
+> -      attached HDMI or LVDS encoder chip.
+> +      attached HDMI, LVDS or DisplayPort encoder chip.
+>  
+>  required:
+>    - compatible
 
