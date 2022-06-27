@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1FBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B3A9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236231AbiF0LgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54236 "EHLO
+        id S236241AbiF0LgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235628AbiF0Ld7 (ORCPT
+        with ESMTP id S235660AbiF0LeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:33:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6039BE6;
-        Mon, 27 Jun 2022 04:31:17 -0700 (PDT)
+        Mon, 27 Jun 2022 07:34:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEB2C40;
+        Mon, 27 Jun 2022 04:31:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4181B60920;
-        Mon, 27 Jun 2022 11:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4915FC3411D;
-        Mon, 27 Jun 2022 11:31:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16D77608D4;
+        Mon, 27 Jun 2022 11:31:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 280D2C341C7;
+        Mon, 27 Jun 2022 11:31:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329476;
-        bh=qVmso/Xeu4w+IvyAtNFsFsv8nDCVZ86jwETqtgL64rc=;
+        s=korg; t=1656329479;
+        bh=DXbOOTUZxJQ/VJmdQpelWwPF76o9ryuqCBm+cRcEnDE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CtO0B+HjjHDPaYAhwL78ZPfqMNoos9bXVDXyQEfw+rxtNoz0l0XeO/FVMdUiVhv9n
-         /VKeHYq/hBLU24Sn4LrBa8COEE1RsBSsADSNg6Lyxg3LVhMUbglTfpYDJoeE3Gh+zS
-         h4Xx3BoWsMrvICbqTK3l9kgUipQJCh3xuKuPzGHw=
+        b=Vx75pexAc+Cinzei5C3iUQWZ+gaLA2lPRePbtg/6HeIdUGrtZteCLTOYUhrM1c2Hf
+         hOB1Mhy00UdMQ2xxEOTXgHjF+QEC9inog04zhxB2jsqBdckXMx7JLizbKQAOapWHGG
+         6j+996BsI6uwWXQk3nokEOvmSJyV0cZeozNpaPMY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Tyler Hicks <tyhicks@linux.microsoft.com>,
         Christian Schoenebeck <linux_oss@crudebyte.com>,
         Dominique Martinet <asmadeus@codewreck.org>
-Subject: [PATCH 5.15 012/135] 9p: fix fid refcount leak in v9fs_vfs_atomic_open_dotl
-Date:   Mon, 27 Jun 2022 13:20:19 +0200
-Message-Id: <20220627111938.515303174@linuxfoundation.org>
+Subject: [PATCH 5.15 013/135] 9p: fix fid refcount leak in v9fs_vfs_get_link
+Date:   Mon, 27 Jun 2022 13:20:20 +0200
+Message-Id: <20220627111938.543822391@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,49 +51,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dominique Martinet <asmadeus@codewreck.org>
 
-commit beca774fc51a9ba8abbc869cf0c3d965ff17cd24 upstream.
+commit e5690f263208c5abce7451370b7786eb25b405eb upstream.
 
-We need to release directory fid if we fail halfway through open
+we check for protocol version later than required, after a fid has
+been obtained. Just move the version check earlier.
 
-This fixes fid leaking with xfstests generic 531
-
-Link: https://lkml.kernel.org/r/20220612085330.1451496-2-asmadeus@codewreck.org
+Link: https://lkml.kernel.org/r/20220612085330.1451496-3-asmadeus@codewreck.org
 Fixes: 6636b6dcc3db ("9p: add refcount to p9_fid struct")
 Cc: stable@vger.kernel.org
-Reported-by: Tyler Hicks <tyhicks@linux.microsoft.com>
 Reviewed-by: Tyler Hicks <tyhicks@linux.microsoft.com>
 Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/9p/vfs_inode_dotl.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/9p/vfs_inode.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/fs/9p/vfs_inode_dotl.c
-+++ b/fs/9p/vfs_inode_dotl.c
-@@ -276,6 +276,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *
- 	if (IS_ERR(ofid)) {
- 		err = PTR_ERR(ofid);
- 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
-+		p9_client_clunk(dfid);
- 		goto out;
- 	}
+--- a/fs/9p/vfs_inode.c
++++ b/fs/9p/vfs_inode.c
+@@ -1228,15 +1228,15 @@ static const char *v9fs_vfs_get_link(str
+ 		return ERR_PTR(-ECHILD);
  
-@@ -287,6 +288,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *
- 	if (err) {
- 		p9_debug(P9_DEBUG_VFS, "Failed to get acl values in creat %d\n",
- 			 err);
-+		p9_client_clunk(dfid);
- 		goto error;
- 	}
- 	err = p9_client_create_dotl(ofid, name, v9fs_open_to_dotl_flags(flags),
-@@ -294,6 +296,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *
- 	if (err < 0) {
- 		p9_debug(P9_DEBUG_VFS, "p9_client_open_dotl failed in creat %d\n",
- 			 err);
-+		p9_client_clunk(dfid);
- 		goto error;
- 	}
- 	v9fs_invalidate_inode_attr(dir);
+ 	v9ses = v9fs_dentry2v9ses(dentry);
+-	fid = v9fs_fid_lookup(dentry);
++	if (!v9fs_proto_dotu(v9ses))
++		return ERR_PTR(-EBADF);
++
+ 	p9_debug(P9_DEBUG_VFS, "%pd\n", dentry);
++	fid = v9fs_fid_lookup(dentry);
+ 
+ 	if (IS_ERR(fid))
+ 		return ERR_CAST(fid);
+ 
+-	if (!v9fs_proto_dotu(v9ses))
+-		return ERR_PTR(-EBADF);
+-
+ 	st = p9_client_stat(fid);
+ 	p9_client_clunk(fid);
+ 	if (IS_ERR(st))
 
 
