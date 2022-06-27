@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 013C1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 558E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242456AbiF0WCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 18:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
+        id S242462AbiF0WC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 18:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241603AbiF0Vzy (ORCPT
+        with ESMTP id S241649AbiF0V4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:55:54 -0400
+        Mon, 27 Jun 2022 17:56:11 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70AD18365;
-        Mon, 27 Jun 2022 14:55:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D2318B02;
+        Mon, 27 Jun 2022 14:55:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1656366910; x=1687902910;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Z+oGW1stVMnX6ptGRRcW6UXD1Jk+CvVMKsEtYzTtz08=;
-  b=MUaQzJJd9yCu6c+/vCyNok5kEoIkqFqGRmXdu4BH6beyxdlSxW+iyhqk
-   rIFsLc/mUelIAHgf+zgETM9N2eJMhpmLPblBWTQOGWM6tFQzx66te7e9/
-   7LwggRj1p0exAJei+EsS2uaTuBArYS+mWTO+gKdJW55Prl9VwqukZP9qo
-   CipoCyv861NmbQpchBwhk404A1rq7oF7S9okkzuyHcFkBMk4zqFpWAOIL
-   xgeDPjFEDq7RTtUAM1yazznO8LnyIP8ddsILLe4CnAera3Yz21dxrHL9L
-   gt9KdwXZSnDCWiwtn39vr3tJlWBHdGuo4t/2kpD7M+2SpXZduVjCNQNFL
+  bh=Z2v9awnUY4jkBBjDyMt8sC+0XqJ7pmCWw7adCSxhLw0=;
+  b=Xr/NpRFKqhc/q7fRUs78MrPQqR1A8NqTAR/ZJDDMdFj4nGeFQ47yyJNm
+   0QUxEzswxmNqD0T3gIhUsUN8ODoKk/AOB+2slLyJ0fasBQJPufiO3PW3h
+   Q8rmtunfyiZ7CSEofK+PQQvAdMvyXiFHh3HdJ/iqHj4Q2qHEbWijEGa/h
+   ac8ASPNLWz0COpjNtNfSWWuOUuSBW7vAeet/51loeNkiTHbq8DWcyd9Mg
+   p+3v2Z2Wmu5UoWnF2WvtqgdTZjfo1/WX/WH/rcgrq+aYGF6Oqybupk/9N
+   bwZaBgzIe4cAHW0LZutFoPIWC6b3bX/rO3gwLYIYtC8DDd/SWG+nN9Z9K
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116147"
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116150"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="279116147"
+   d="scan'208";a="279116150"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:02 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863755"
+   d="scan'208";a="657863764"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:02 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 095/102] KVM: TDX: Handle TDX PV report fatal error hypercall
-Date:   Mon, 27 Jun 2022 14:54:27 -0700
-Message-Id: <fc9fa1611a46c9cace99d6e718f84bab7cef79b9.1656366338.git.isaku.yamahata@intel.com>
+Subject: [PATCH v7 097/102] KVM: TDX: Handle TDG.VP.VMCALL<GetTdVmCallInfo> hypercall
+Date:   Mon, 27 Jun 2022 14:54:29 -0700
+Message-Id: <76d4e3cef05d6560a8c7606d66acefd2b1298db3.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -55,65 +55,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Wire up TDX PV report fatal error hypercall to KVM_SYSTEM_EVENT_CRASH KVM
-exit event.
+Implement TDG.VP.VMCALL<GetTdVmCallInfo> hypercall.  If the input value is
+zero, return success code and zero in output registers.
+
+TDG.VP.VMCALL<GetTdVmCallInfo> hypercall is a subleaf of TDG.VP.VMCALL to
+enumerate which TDG.VP.VMCALL sub leaves are supported.  This hypercall is
+for future enhancement of the Guest-Host-Communication Interface (GHCI)
+specification.  The GHCI version of 344426-001US defines it to require
+input R12 to be zero and to return zero in output registers, R11, R12, R13,
+and R14 so that guest TD enumerates no enhancement.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/tdx.c   | 20 ++++++++++++++++++++
- include/uapi/linux/kvm.h |  1 +
- 2 files changed, 21 insertions(+)
+ arch/x86/kvm/vmx/tdx.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index dc66c799cae8..00baecbb62ff 100644
+index d4ac573d9db3..b1a1a7d96f39 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1203,6 +1203,24 @@ static int tdx_emulate_wrmsr(struct kvm_vcpu *vcpu)
+@@ -1203,6 +1203,20 @@ static int tdx_emulate_wrmsr(struct kvm_vcpu *vcpu)
  	return 1;
  }
  
-+static int tdx_report_fatal_error(struct kvm_vcpu *vcpu)
++static int tdx_get_td_vm_call_info(struct kvm_vcpu *vcpu)
 +{
-+	/*
-+	 * Exit to userspace device model for teardown.
-+	 * Because guest TD is already panicing, returning an error to guerst TD
-+	 * doesn't make sense.  No argument check is done.
-+	 */
-+
-+	vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
-+	vcpu->run->system_event.type = KVM_SYSTEM_EVENT_TDX;
-+	vcpu->run->system_event.ndata = 3;
-+	vcpu->run->system_event.data[0] = TDG_VP_VMCALL_REPORT_FATAL_ERROR;
-+	vcpu->run->system_event.data[1] = tdvmcall_a0_read(vcpu);
-+	vcpu->run->system_event.data[2] = tdvmcall_a1_read(vcpu);
-+
-+	return 0;
++	if (tdvmcall_a0_read(vcpu))
++		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
++	else {
++		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
++		kvm_r11_write(vcpu, 0);
++		tdvmcall_a0_write(vcpu, 0);
++		tdvmcall_a1_write(vcpu, 0);
++		tdvmcall_a2_write(vcpu, 0);
++	}
++	return 1;
 +}
 +
- static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+ static int tdx_report_fatal_error(struct kvm_vcpu *vcpu)
  {
- 	if (tdvmcall_exit_type(vcpu))
-@@ -1221,6 +1239,8 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+ 	/*
+@@ -1297,6 +1311,8 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
  		return tdx_emulate_rdmsr(vcpu);
  	case EXIT_REASON_MSR_WRITE:
  		return tdx_emulate_wrmsr(vcpu);
-+	case TDG_VP_VMCALL_REPORT_FATAL_ERROR:
-+		return tdx_report_fatal_error(vcpu);
- 	default:
- 		break;
- 	}
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 6d6785d2685f..014337760dfa 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -448,6 +448,7 @@ struct kvm_run {
- #define KVM_SYSTEM_EVENT_WAKEUP         4
- #define KVM_SYSTEM_EVENT_SUSPEND        5
- #define KVM_SYSTEM_EVENT_SEV_TERM       6
-+#define KVM_SYSTEM_EVENT_TDX            7
- 			__u32 type;
- 			__u32 ndata;
- 			union {
++	case TDG_VP_VMCALL_GET_TD_VM_CALL_INFO:
++		return tdx_get_td_vm_call_info(vcpu);
+ 	case TDG_VP_VMCALL_REPORT_FATAL_ERROR:
+ 		return tdx_report_fatal_error(vcpu);
+ 	case TDG_VP_VMCALL_MAP_GPA:
 -- 
 2.25.1
 
