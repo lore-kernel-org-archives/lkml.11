@@ -2,125 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FB3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FACFCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236301AbiF0Nvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54360 "EHLO
+        id S236363AbiF0Nxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236296AbiF0Nv3 (ORCPT
+        with ESMTP id S236405AbiF0Nxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:51:29 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F97A47E
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:51:27 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id cu16so14767493qvb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:51:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=IO/5LQDipzPqsfiPf2oKew6mU+NIadwTqMByhggPg0I=;
-        b=GOyk+HaLucKVVNkgp6ddt+d56vzd0A8t7G4KOm1AbUEU5/BeYVRzygTy8xCIa+lNPf
-         Si1v7SHohI30eBXdgPyC7mZJixMFZ35tJljXaSgkh0Li26Q+p0JAIButdSaunBS85MXd
-         WXo6/Mf1UKxdoyn+uUXME6FEzJ7YFXrx6o2LDBi9QFHEZtTbCLtan2urHYd2GWdvzte5
-         3V0ii1UopvsZFN2VxRhYSgOy6FU3B7szGbIf0CymZAbD0Ba5wzZmNVE7nN1mxUBGPJ2n
-         duSOw6JuHYdOLa2znVpddX5BlAaBgG0AbhYMuNzwZXU/IS2NZvQlGSPIK6kyuB6VzIBx
-         PFKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=IO/5LQDipzPqsfiPf2oKew6mU+NIadwTqMByhggPg0I=;
-        b=KhEj635TiVPaosDI1f4xgBoCf9Ud1Nt9yRfIqyd1R2nJSrUHlRUlBMJPWaxLPX4yuh
-         XSn5cWtNWS1S3tAjvVQB/IzIgQfXaviZMdLC5ic0L8gqzFWC8BjXXqYIvTUvPpZIdKbX
-         RQiGVGgq+8nKunbu2VHzAhb5iFUh9wsfgj5AxihnKZpnoWkhDmeEqA7v0d2WrRohYh0x
-         x+a04/sJMK26HFya2o/U7ZIsiLGeYTsM/vRoC1yPVkBzNNAT8CspKYBV1sToInN8KXS8
-         234WQuMxQGR7SxQzwILLEsXeiSP/D7h+8InYcCGqwdquX7RyjEPpbdx42VcPSIcNEQtr
-         sisg==
-X-Gm-Message-State: AJIora9344mGuGfcTSVB2Iv4N824n54137n09DnETg4HElyfcBcPCBKE
-        0FW1YyPGrkND7UiMvOaC58/K+Q==
-X-Google-Smtp-Source: AGRyM1uwTUgcdBTwPIHf6SCg4Il6IWSeM4ajg7IuHzzyn8HZDcP+XrUxKuXlZI8HzHEN016LOLSDHA==
-X-Received: by 2002:a05:622a:5985:b0:31b:899:3093 with SMTP id gb5-20020a05622a598500b0031b08993093mr2059921qtb.616.1656337886689;
-        Mon, 27 Jun 2022 06:51:26 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net. [192.222.136.102])
-        by smtp.gmail.com with ESMTPSA id s24-20020ac85ed8000000b00317c519be8bsm6996967qtx.66.2022.06.27.06.51.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:51:26 -0700 (PDT)
-Message-ID: <36eef859d63640b4456360e17383635644703e3d.camel@ndufresne.ca>
-Subject: Re: DMA-buf and uncached system memory
-From:   Nicolas Dufresne <nicolas@ndufresne.ca>
-To:     Lucas Stach <l.stach@pengutronix.de>,
-        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Pekka Paalanen <ppaalanen@gmail.com>
-Cc:     "Sharma, Shashank" <Shashank.Sharma@amd.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        linux-media <linux-media@vger.kernel.org>
-Date:   Mon, 27 Jun 2022 09:51:24 -0400
-In-Reply-To: <fbb228cd78e9bebd7e7921c19e0c4c09d0891f23.camel@pengutronix.de>
-References: <91ff0bbb-ea3a-2663-3453-dea96ccd6dd8@amd.com>
-         <YCuPhOT4GhY3RR/6@phenom.ffwll.local>
-         <9178e19f5c0e141772b61b759abaa0d176f902b6.camel@ndufresne.ca>
-         <CAPj87rPYQNkgVEdHECQcHcYe2nCpgF3RYQKk_=wwhvJSxwHXCg@mail.gmail.com>
-         <c6e65ee1-531e-d72c-a6a6-da7149e34f18@amd.com>
-         <20220623101326.18beeab3@eldfell>
-         <954d0a9b-29ef-52ef-f6ca-22d7e6aa3f4d@amd.com>
-         <4b69f9f542d6efde2190b73c87096e87fa24d8ef.camel@pengutronix.de>
-         <adc626ec-ff5a-5c06-44ce-09111be450cd@amd.com>
-         <fbb228cd78e9bebd7e7921c19e0c4c09d0891f23.camel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+        Mon, 27 Jun 2022 09:53:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B9EAE5E;
+        Mon, 27 Jun 2022 06:53:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA1DE60B6E;
+        Mon, 27 Jun 2022 13:53:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11AEEC341C8;
+        Mon, 27 Jun 2022 13:53:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656338027;
+        bh=KeUxoXRLceyNLJDPGAHbexKOJPPtikzWE+zHw3i3VjM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=avxQG4M8qF5ml29v3+eje3QmUgCzNhGzWWSRnydlzb6+CjZKoXLNdeoUvvgN7aNZO
+         pGD2mRVrE4e3Mnz8ABA9dgoovNNVzd5pWt+lYSgJpe05Jh0DEml+4M0Aof0xmrdmHi
+         RJzMTZNJ/uWeoe/oyMLufSPhapZr3tAah24JLhbnnjpG2Ey77ze+QK2LfFNJ6dsJfr
+         i+qXctvjGs+HjRHu+pMfffpHFnTBm+L7iz3qp7ar2tgN6CTq+nrWomVh+HCgfu6Ml7
+         QwiAUKl9Z/jF05+9KNbdnjLk0ker5SFqYNyjgZh+da92dDW/0yv5PrYR+IBe/S1z1B
+         qxoh9s+Y1J6Qg==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o5pBQ-003SiH-Na;
+        Mon, 27 Jun 2022 14:53:44 +0100
 MIME-Version: 1.0
+Date:   Mon, 27 Jun 2022 14:53:44 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH v2 2/2] irqchip/sifive-plic: Add support for Renesas
+ RZ/Five SoC
+In-Reply-To: <CAMuHMdUWC_7MPnP6LcOqi96FAhrAENC4iwtv2ksZVnvR8BC4ww@mail.gmail.com>
+References: <20220626004326.8548-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220626004326.8548-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <87wnd3erab.wl-maz@kernel.org>
+ <CA+V-a8tcxj_N0sBHhgAZAN8WSJ12JnDzAvUUnCXto3wHLqNVwg@mail.gmail.com>
+ <87v8snehwi.wl-maz@kernel.org>
+ <CAMuHMdVt9FjCtvMgJcCh=g2b+8b-fgabGbOLDcXNrrPMpC+3jQ@mail.gmail.com>
+ <CA+V-a8uLzLJ=wB6oUu0b2oZO=FPSCTSrqb=3m9=BJxATFKmjMw@mail.gmail.com>
+ <CAMuHMdUWC_7MPnP6LcOqi96FAhrAENC4iwtv2ksZVnvR8BC4ww@mail.gmail.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <0fdbfdd0ee1c7ca39f8d3e2f86af1194@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: geert@linux-m68k.org, prabhakar.csengg@gmail.com, prabhakar.mahadev-lad.rj@bp.renesas.com, tglx@linutronix.de, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, sagar.kadam@sifive.com, palmer@dabbelt.com, paul.walmsley@sifive.com, linux-riscv@lists.infradead.org, devicetree@vger.kernel.org, geert+renesas@glider.be, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, biju.das.jz@bp.renesas.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 2022-06-27 14:12, Geert Uytterhoeven wrote:
+> Hi Prabhakar,
+> 
+> On Mon, Jun 27, 2022 at 3:06 PM Lad, Prabhakar
+> <prabhakar.csengg@gmail.com> wrote:
+>> On Mon, Jun 27, 2022 at 9:53 AM Geert Uytterhoeven 
+>> <geert@linux-m68k.org> wrote:
+>> > On Sun, Jun 26, 2022 at 2:19 PM Marc Zyngier <maz@kernel.org> wrote:
+>> > > On Sun, 26 Jun 2022 10:38:18 +0100,
+>> > > "Lad, Prabhakar" <prabhakar.csengg@gmail.com> wrote:
+>> > > > On Sun, Jun 26, 2022 at 9:56 AM Marc Zyngier <maz@kernel.org> wrote:
+>> > > > > On Sun, 26 Jun 2022 01:43:26 +0100,
+>> > > > > Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>> > > > > > The Renesas RZ/Five SoC has a RISC-V AX45MP AndesCore with NCEPLIC100. The
+>> > > > > > NCEPLIC100 supports both edge-triggered and level-triggered interrupts. In
+>> > > > > > case of edge-triggered interrupts NCEPLIC100 ignores the next interrupt
+>> > > > > > edge until the previous completion message has been received and
+>> > > > > > NCEPLIC100 doesn't support pending interrupt counter, hence losing the
+>> > > > > > interrupts if not acknowledged in time.
+>> > > > > >
+>> > > > > > So the workaround for edge-triggered interrupts to be handled correctly
+>> > > > > > and without losing is that it needs to be acknowledged first and then
+>> > > > > > handler must be run so that we don't miss on the next edge-triggered
+>> > > > > > interrupt.
+>> > > > > >
+>> > > > > > This patch adds a new compatible string for Renesas RZ/Five SoC and adds
+>> > > > > > support to change interrupt flow based on the interrupt type. It also
+>> > > > > > implements irq_ack and irq_set_type callbacks.
+>> > > > > >
+>> > > > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>> >
+>> > > > > > +     if (of_device_is_compatible(node, "renesas,r9a07g043-plic")) {
+>> > > > > > +             priv->of_data = RENESAS_R9A07G043_PLIC;
+>> > > > > > +             plic_chip.name = "Renesas RZ/Five PLIC";
+>> > > > >
+>> > > > > NAK. The irq_chip structure isn't the place for platform marketing.
+>> > > > > This is way too long anyway (and same for the edge version), and you
+>> > > > > even sent me a patch to make that structure const...
+>> > > > >
+>> > > > My bad will drop this.
+>> > >
+>> > > And why you're at it, please turn this rather random 'of_data' into
+>> > > something like:
+>> > >
+>> > > diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
+>> > > index bb87e4c3b88e..cd1683b77caf 100644
+>> > > --- a/drivers/irqchip/irq-sifive-plic.c
+>> > > +++ b/drivers/irqchip/irq-sifive-plic.c
+>> > > @@ -64,6 +64,10 @@ struct plic_priv {
+>> > >         struct cpumask lmask;
+>> > >         struct irq_domain *irqdomain;
+>> > >         void __iomem *regs;
+>> > > +       enum {
+>> > > +               VANILLA_PLIC,
+>> > > +               RENESAS_R9A07G043_PLIC,
+>> > > +       } flavour;
+>> > >  };
+>> > >
+>> > >  struct plic_handler {
+>> > >
+>> > > to give some structure to the whole thing, because I'm pretty sure
+>> > > we'll see more braindead implementations as time goes by.
+>> >
+>> > What about using a feature flag (e.g. had_edge_irqs) instead?
+>> 
+>> diff --git a/drivers/irqchip/irq-sifive-plic.c
+>> b/drivers/irqchip/irq-sifive-plic.c
+>> index 9f16833dcb41..247c3c98b655 100644
+>> --- a/drivers/irqchip/irq-sifive-plic.c
+>> +++ b/drivers/irqchip/irq-sifive-plic.c
+>> @@ -60,13 +60,13 @@
+>>  #define        PLIC_DISABLE_THRESHOLD          0x7
+>>  #define        PLIC_ENABLE_THRESHOLD           0
+>> 
+>> +#define PLIC_QUIRK_EDGE_INTERRUPT      BIT(0)
+>> 
+>>  struct plic_priv {
+>>         struct cpumask lmask;
+>>         struct irq_domain *irqdomain;
+>>         void __iomem *regs;
+>> +       u32 plic_quirks;
+>>  };
+>> 
+>> What about something like above?
+> 
+> LGTM.
+> 
+> Marc suggested to make this unsigned long, but TBH, that won't make
+> much of a difference.  PLICs are present on RV32 SoCs, too, so you
+> cannot rely on having more than 32 bits anyway.
 
-Le jeudi 23 juin 2022 =C3=A0 10:58 +0200, Lucas Stach a =C3=A9crit=C2=A0:
-> > > In the DMA API keeping things mapped is also a valid use-case, but th=
-en
-> > > you need to do explicit domain transfers via the dma_sync_* family,
-> > > which DMA-buf has not inherited. Again those sync are no-ops on cache
-> > > coherent architectures, but do any necessary cache maintenance on non
-> > > coherent arches.
-> >=20
-> > Correct, yes. Coherency is mandatory for DMA-buf, you can't use=20
-> > dma_sync_* on it when you are the importer.
-> >=20
-> > The exporter could of course make use of that because he is the owner o=
-f=20
-> > the buffer.
->=20
-> In the example given here with UVC video, you don't know that the
-> buffer will be exported and needs to be coherent without
-> synchronization points, due to the mapping cache at the DRM side. So
-> V4L2 naturally allocates the buffers from CPU cached memory. If the
-> expectation is that those buffers are device coherent without relying
-> on the map/unmap_attachment calls, then V4L2 needs to always
-> synchronize caches on DQBUF when the=C2=A0 buffer is allocated from CPU
-> cached memory and a single DMA-buf attachment exists. And while writing
-> this I realize that this is probably exactly what V4L2 should do...
+But it will make a difference on a 64bit platform, as we want to
+use test_bit() and co to check for features.
 
-I'm not sure we are making any progress here. Doing so will just regress
-performance of coherent devices used to render UVC video feeds. In fact, th=
-ey
-are all coherent except the display controller (on Intel). What my colleagu=
-e was
-suggesting me to try (with the expectation that some adaptation will be nee=
-ded,
-perhaps new signalling flags), is to read the dma_coherency_mask values on =
-the
-devices that calls attach() and adapt v4l2 exporter accordingly.
-
-Its likely wrong as-is, not intended to be used for that, but the value is =
-that
-it tries to fix the problem, unlike what I'm reading here.
-
-Nicolas
-
+         M.
+-- 
+Jazz is not dead. It just smells funny...
