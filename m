@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF62C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 17:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 801BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 17:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239941AbiF0Rgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 13:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
+        id S239952AbiF0Rgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 13:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239672AbiF0Rga (ORCPT
+        with ESMTP id S236554AbiF0Rgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 13:36:30 -0400
+        Mon, 27 Jun 2022 13:36:31 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78FFD11C;
-        Mon, 27 Jun 2022 10:36:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7765B7E8;
+        Mon, 27 Jun 2022 10:36:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656351389; x=1687887389;
+  t=1656351390; x=1687887390;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Em0msSweJpuFDsPd3dCpZXzqrTObd8eQjNQD6ivh7qM=;
-  b=NtW5Mb0slweTn6Ii0E5gc+JYWyRO9iYH4E/N5phIomTga0qVEVSj84en
-   cES2LViyKwZmDWFqkHlVcOWfTNec2YWrcvbrap3b/GMHNxzFgaTl9vuDu
-   AxC7bKuafe07FjWX97iyr4ycAF0WPklc/Zw7Q2kIHt08R2h+Z5DKHwJ/B
-   cGy0F3VfvIbfuF4f5XNnZCg83ij13q3J7dpPO31Y7ynoquPOTxwSYwhRC
-   yJKltdsdogAQOCUJmM8CfdnVTv7nOq1CWAjWIUi9kFQoQh9VRAs4mamFW
-   jTCv3jsolnXTvESBOKG269T+j+Mk3yCK+ES8dE0lPnruwETC9keOOH63e
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270262440"
+  bh=7U0bhTw0dtUrU2VGYXfIxm/WfRNBk8w0m06gn51Rzpw=;
+  b=FHbs0YWMjnfAQtsS+HLIjSvDp/ZfgTPz6nhW7ODmkkFOXzcHVOyuPmSx
+   DxJgSyJafCSztVGJzbXFOAZifDX7dHWViRJFP78Jc4wiJrM2JEqqXjJEb
+   2NHgm1CfPLWhJv9v17lKEDK8WEG4eYhfmTxTpATtZnwtkvGZtcbtMRRpz
+   bSSk1/UvFrCFM+nVk0Q/TwaULz/4oOrB0v3YnInIHd7Np6l3We2/IxgO1
+   o9sINfd6neg5j8JdP8nk1WAvTgH2Fyyf4NtHgyFaK7uEz86vcdPH0Ts/F
+   cj6dKplG2ieKAyP0PwlaV6FNq5CeuKr+n4x6IynPqdy/hLIMnd8bnJfcE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270262450"
 X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
-   d="scan'208";a="270262440"
+   d="scan'208";a="270262450"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 10:36:11 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 10:36:12 -0700
 X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
-   d="scan'208";a="594399442"
+   d="scan'208";a="594399454"
 Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
   by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 10:36:11 -0700
 From:   Tony Luck <tony.luck@intel.com>
@@ -44,67 +44,119 @@ Cc:     Smita.KoralahalliChannabasappa@amd.com,
         linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
         x86@kernel.org, yazen.ghannam@amd.com, patches@lists.linux.dev,
         Tony Luck <tony.luck@intel.com>
-Subject: [PATCH v2 0/5] Handle corrected machine check interrupt storms
-Date:   Mon, 27 Jun 2022 10:36:00 -0700
-Message-Id: <20220627173605.514504-1-tony.luck@intel.com>
+Subject: [PATCH v2 3/5] x86/mce: Introduce mce_handle_storm() to deal with begin/end of storms
+Date:   Mon, 27 Jun 2022 10:36:03 -0700
+Message-Id: <20220627173605.514504-4-tony.luck@intel.com>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <YrFSSZqjtWlm9rUr@agluck-desk3.sc.intel.com>
+In-Reply-To: <20220627173605.514504-1-tony.luck@intel.com>
 References: <YrFSSZqjtWlm9rUr@agluck-desk3.sc.intel.com>
+ <20220627173605.514504-1-tony.luck@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the logic of handling Intel's corrected machine check interrupt
-storms to AMD's threshold interrupts.
+From: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
 
-First two patches are from Tony which cleans up the existing storm
-handling for Intel and proposes per CPU per bank storm handling.
+Intel and AMD need to take different actions when a storm begins or
+ends. Prepare for the storm code moving from intel.c into core.c by
+adding a function that checks CPU vendor to pick the right action.
 
-Third and fourth patches do some cleanup and refactoring on the CMCI
-storm handling in order to extend similar workaround for AMD's threshold
-interrupt storms. These two patches could be merged into Tony's second
-patch of CMCI storm mitigation.
+No functional changes.
 
-AMD's storm mitigation for threshold interrupts also relies on per CPU
-per bank approach similar to Intel. But unlike CMCI storm handling it does
-not set thresholds to reduce rate of interrupts on a storm. Rather it
-turns off the interrupt on the current CPU and bank if there is a storm
-and re-enables back the interrupts when the storm subsides.
+[Tony: Changed from function pointer to regular function]
 
-It is okay to turn off threshold interrupts on AMD systems as other error
-severities continue to be handled even if the threshold interrupts are
-turned off. Uncorrected errors will generate a #MC and deferred errors
-have a unique separate deferred error interrupt. The final patch adds
-support for handling threshold interrupt storms on AMD systems.
+Signed-off-by: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+---
+ arch/x86/kernel/cpu/mce/core.c     |  9 +++++++++
+ arch/x86/kernel/cpu/mce/intel.c    | 12 ++++++++++--
+ arch/x86/kernel/cpu/mce/internal.h |  3 +++
+ 3 files changed, 22 insertions(+), 2 deletions(-)
 
-Changes since v1:
-
-1) Fix shift computation when keeping track of bank history. Shift
-should be "1" when a storm is in progress (because polling once per
-second). When a storm is not in progress shift should be based on
-number of seconds since the bank was last checked.
-
-2) Changed Smita's code in part 0003 to avoid use of a function pointer
-(since the kernel is avoiding indirect branch points that might be
-trainable for various Spectre-like issues).
-
-Smita Koralahalli (2):
-  x86/mce: Introduce mce_handle_storm() to deal with begin/end of storms
-  x86/mce: Handle AMD threshold interrupt storms
-  x86/mce: Move storm handling to core.
-
-Tony Luck (3):
-  x86/mce: Remove old CMCI storm mitigation code
-  x86/mce: Add per-bank CMCI storm mitigation
-
- arch/x86/kernel/cpu/mce/amd.c      |  49 ++++++++
- arch/x86/kernel/cpu/mce/core.c     | 139 +++++++++++++++++-----
- arch/x86/kernel/cpu/mce/intel.c    | 179 +++++++----------------------
- arch/x86/kernel/cpu/mce/internal.h |  33 ++++--
- 4 files changed, 230 insertions(+), 170 deletions(-)
-
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 776d4724b1e0..f4d2a7ba29f7 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -1985,6 +1985,15 @@ static void mce_zhaoxin_feature_clear(struct cpuinfo_x86 *c)
+ 	intel_clear_lmce();
+ }
+ 
++void mce_handle_storm(int bank, bool on)
++{
++	switch (boot_cpu_data.x86_vendor) {
++	case X86_VENDOR_INTEL:
++		mce_intel_handle_storm(bank, on);
++		break;
++	}
++}
++
+ static void __mcheck_cpu_init_vendor(struct cpuinfo_x86 *c)
+ {
+ 	switch (c->x86_vendor) {
+diff --git a/arch/x86/kernel/cpu/mce/intel.c b/arch/x86/kernel/cpu/mce/intel.c
+index 4106877de028..4238b73c2143 100644
+--- a/arch/x86/kernel/cpu/mce/intel.c
++++ b/arch/x86/kernel/cpu/mce/intel.c
+@@ -152,6 +152,14 @@ static void cmci_set_threshold(int bank, int thresh)
+ 	raw_spin_unlock_irqrestore(&cmci_discover_lock, flags);
+ }
+ 
++void mce_intel_handle_storm(int bank, bool on)
++{
++	if (on)
++		cmci_set_threshold(bank, cmci_threshold[bank]);
++	else
++		cmci_set_threshold(bank, CMCI_STORM_THRESHOLD);
++}
++
+ static void cmci_storm_begin(int bank)
+ {
+ 	__set_bit(bank, this_cpu_ptr(mce_poll_banks));
+@@ -211,13 +219,13 @@ void track_cmci_storm(int bank, u64 status)
+ 		if (history & GENMASK_ULL(STORM_END_POLL_THRESHOLD - 1, 0))
+ 			return;
+ 		pr_notice("CPU%d BANK%d CMCI storm subsided\n", smp_processor_id(), bank);
+-		cmci_set_threshold(bank, cmci_threshold[bank]);
++		mce_handle_storm(bank, true);
+ 		cmci_storm_end(bank);
+ 	} else {
+ 		if (hweight64(history) < STORM_BEGIN_THRESHOLD)
+ 			return;
+ 		pr_notice("CPU%d BANK%d CMCI storm detected\n", smp_processor_id(), bank);
+-		cmci_set_threshold(bank, CMCI_STORM_THRESHOLD);
++		mce_handle_storm(bank, false);
+ 		cmci_storm_begin(bank);
+ 	}
+ }
+diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
+index ab451526f6df..78467f6cdd04 100644
+--- a/arch/x86/kernel/cpu/mce/internal.h
++++ b/arch/x86/kernel/cpu/mce/internal.h
+@@ -43,12 +43,14 @@ extern mce_banks_t mce_banks_ce_disabled;
+ void track_cmci_storm(int bank, u64 status);
+ 
+ #ifdef CONFIG_X86_MCE_INTEL
++void mce_intel_handle_storm(int bank, bool on);
+ void cmci_disable_bank(int bank);
+ void intel_init_cmci(void);
+ void intel_init_lmce(void);
+ void intel_clear_lmce(void);
+ bool intel_filter_mce(struct mce *m);
+ #else
++static inline void mce_intel_handle_storm(int bank, bool on) { }
+ static inline void cmci_disable_bank(int bank) { }
+ static inline void intel_init_cmci(void) { }
+ static inline void intel_init_lmce(void) { }
+@@ -57,6 +59,7 @@ static inline bool intel_filter_mce(struct mce *m) { return false; }
+ #endif
+ 
+ void mce_timer_kick(bool storm);
++void mce_handle_storm(int bank, bool on);
+ 
+ #ifdef CONFIG_ACPI_APEI
+ int apei_write_mce(struct mce *m);
 -- 
 2.35.3
 
