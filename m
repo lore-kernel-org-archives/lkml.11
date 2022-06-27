@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63163C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA157C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236754AbiF0Lk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34828 "EHLO
+        id S236913AbiF0Lkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236631AbiF0Lhr (ORCPT
+        with ESMTP id S236641AbiF0Lhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:47 -0400
+        Mon, 27 Jun 2022 07:37:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA6B9581;
-        Mon, 27 Jun 2022 04:34:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82DE9A19F;
+        Mon, 27 Jun 2022 04:34:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 585E4609D0;
-        Mon, 27 Jun 2022 11:34:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CDB2C341C7;
-        Mon, 27 Jun 2022 11:34:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20B9460D36;
+        Mon, 27 Jun 2022 11:34:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C31FC341C7;
+        Mon, 27 Jun 2022 11:34:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329657;
-        bh=eU7ffsXny43EM6B0Oa141SdDyFn9LBVKac9FeL9aIL4=;
+        s=korg; t=1656329663;
+        bh=C88ww3Xx2DCGQ5MlVMXpgIN8KdABzagHj9fVFlSeTCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uhYXzzPfLxr7vwBVSbzwWExky0KtFvM5fRZq2/75FgZndlqLmHmYgHw9sroriwat8
-         /jCVy9U5rQ/XIMfxjAsnEfuUr0HtHLmQwqQYe66hR2tyS6V1GncUzVF64QcV7co1id
-         szbu6MwiG2JO01Icwr+tYU8/KuWzn/N6hWsHAM40=
+        b=ZGkW6AWe+hXSnMTOHlUDAMpMwH48/yOxen0sjO43JCHXOPmfRhuVKnKvrgrMFBW51
+         C9ATY4Cc3yTV6NFPlHnV2jMbXud2Y2xM7Xidc5mzO2txxILfBq1mZoPH0hqfNzSsFY
+         efT4mxKq6bqDWburV8EEc0N7uoHM1nui7ONEdN5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 070/135] regmap-irq: Fix a bug in regmap_irq_enable() for type_in_mask chips
-Date:   Mon, 27 Jun 2022 13:21:17 +0200
-Message-Id: <20220627111940.192356116@linuxfoundation.org>
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.15 072/135] igb: Make DMA faster when CPU is active on the PCIe link
+Date:   Mon, 27 Jun 2022 13:21:19 +0200
+Message-Id: <20220627111940.249884198@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,53 +52,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 485037ae9a095491beb7f893c909a76cc4f9d1e7 ]
+[ Upstream commit 4e0effd9007ea0be31f7488611eb3824b4541554 ]
 
-When enabling a type_in_mask irq, the type_buf contents must be
-AND'd with the mask of the IRQ we're enabling to avoid enabling
-other IRQs by accident, which can happen if several type_in_mask
-irqs share a mask register.
+Intel I210 on some Intel Alder Lake platforms can only achieve ~750Mbps
+Tx speed via iperf. The RR2DCDELAY shows around 0x2xxx DMA delay, which
+will be significantly lower when 1) ASPM is disabled or 2) SoC package
+c-state stays above PC3. When the RR2DCDELAY is around 0x1xxx the Tx
+speed can reach to ~950Mbps.
 
-Fixes: bc998a730367 ("regmap: irq: handle HW using separate rising/falling edge interrupts")
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Link: https://lore.kernel.org/r/20220620200644.1961936-2-aidanmacdonald.0x0@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+According to the I210 datasheet "8.26.1 PCIe Misc. Register - PCIEMISC",
+"DMA Idle Indication" doesn't seem to tie to DMA coalesce anymore, so
+set it to 1b for "DMA is considered idle when there is no Rx or Tx AND
+when there are no TLPs indicating that CPU is active detected on the
+PCIe link (such as the host executes CSR or Configuration register read
+or write operation)" and performing Tx should also fall under "active
+CPU on PCIe link" case.
+
+In addition to that, commit b6e0c419f040 ("igb: Move DMA Coalescing init
+code to separate function.") seems to wrongly changed from enabling
+E1000_PCIEMISC_LX_DECISION to disabling it, also fix that.
+
+Fixes: b6e0c419f040 ("igb: Move DMA Coalescing init code to separate function.")
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220621221056.604304-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/regmap/regmap-irq.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
-index 4a446259a184..cd12078ed51b 100644
---- a/drivers/base/regmap/regmap-irq.c
-+++ b/drivers/base/regmap/regmap-irq.c
-@@ -252,6 +252,7 @@ static void regmap_irq_enable(struct irq_data *data)
- 	struct regmap_irq_chip_data *d = irq_data_get_irq_chip_data(data);
- 	struct regmap *map = d->map;
- 	const struct regmap_irq *irq_data = irq_to_regmap_irq(d, data->hwirq);
-+	unsigned int reg = irq_data->reg_offset / map->reg_stride;
- 	unsigned int mask, type;
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 5ee5ee8e6848..db11a1c278f6 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -9823,11 +9823,10 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	u32 dmac_thr;
+ 	u16 hwm;
++	u32 reg;
  
- 	type = irq_data->type.type_falling_val | irq_data->type.type_rising_val;
-@@ -268,14 +269,14 @@ static void regmap_irq_enable(struct irq_data *data)
- 	 * at the corresponding offset in regmap_irq_set_type().
- 	 */
- 	if (d->chip->type_in_mask && type)
--		mask = d->type_buf[irq_data->reg_offset / map->reg_stride];
-+		mask = d->type_buf[reg] & irq_data->mask;
- 	else
- 		mask = irq_data->mask;
+ 	if (hw->mac.type > e1000_82580) {
+ 		if (adapter->flags & IGB_FLAG_DMAC) {
+-			u32 reg;
+-
+ 			/* force threshold to 0. */
+ 			wr32(E1000_DMCTXTH, 0);
  
- 	if (d->chip->clear_on_unmask)
- 		d->clear_status = true;
+@@ -9860,7 +9859,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
+ 			/* Disable BMC-to-OS Watchdog Enable */
+ 			if (hw->mac.type != e1000_i354)
+ 				reg &= ~E1000_DMACR_DC_BMC2OSW_EN;
+-
+ 			wr32(E1000_DMACR, reg);
  
--	d->mask_buf[irq_data->reg_offset / map->reg_stride] &= ~mask;
-+	d->mask_buf[reg] &= ~mask;
- }
+ 			/* no lower threshold to disable
+@@ -9877,12 +9875,12 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
+ 			 */
+ 			wr32(E1000_DMCTXTH, (IGB_MIN_TXPBSIZE -
+ 			     (IGB_TX_BUF_4096 + adapter->max_frame_size)) >> 6);
++		}
  
- static void regmap_irq_disable(struct irq_data *data)
+-			/* make low power state decision controlled
+-			 * by DMA coal
+-			 */
++		if (hw->mac.type >= e1000_i210 ||
++		    (adapter->flags & IGB_FLAG_DMAC)) {
+ 			reg = rd32(E1000_PCIEMISC);
+-			reg &= ~E1000_PCIEMISC_LX_DECISION;
++			reg |= E1000_PCIEMISC_LX_DECISION;
+ 			wr32(E1000_PCIEMISC, reg);
+ 		} /* endif adapter->dmac is not disabled */
+ 	} else if (hw->mac.type == e1000_82580) {
 -- 
 2.35.1
 
