@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 060ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C64C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238948AbiF0L4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
+        id S239301AbiF0L4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237061AbiF0Lsu (ORCPT
+        with ESMTP id S237500AbiF0Lsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:48:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE871D60;
-        Mon, 27 Jun 2022 04:42:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C76C9D4E;
+        Mon, 27 Jun 2022 04:42:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A3DFB80E32;
-        Mon, 27 Jun 2022 11:42:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E01C3411D;
-        Mon, 27 Jun 2022 11:42:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B0D4B80DFB;
+        Mon, 27 Jun 2022 11:42:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1909C3411D;
+        Mon, 27 Jun 2022 11:42:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330168;
-        bh=iw43diHJtN+Vp2gXJ7OHL4Zzhj+a3l8VTeGf8BfgsPk=;
+        s=korg; t=1656330171;
+        bh=4w7b4pWpD7UXDkoehSBUHN1bW7Sn6vafUsjWmz8QO+8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PHxldZ4cio8tYH+ZgsIbTVrKmcP0OxsfdQr+fJEj2aqvHt6l/fFEOPzzB8bHvi7ZV
-         lAWruDPlfthmGVREY8p3Fkn6loCj/40IGF8MoQ87lMtDPLABDI/8QZBeXRuJYbGqu4
-         3/q3+KvCwtyk954XrzuqSxZYbRjO7dff7pUlYmMo=
+        b=BRx5mUQye6VweSPC/NUlCCr77aIPmhof8mK8MWvpYrc2vh5W9GFPwpbJ4CieNABMt
+         XQw8alR5y2MTHl8YtyI6A6FgrkwdIHiNsz82Hyf/2VkkBCEYeI8Szx9jhpb2T0+JmR
+         m/xy5v5o93CaG6WKmhHzO/vSeQ+twGJ9jGAy94dw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 090/181] regmap-irq: Fix a bug in regmap_irq_enable() for type_in_mask chips
-Date:   Mon, 27 Jun 2022 13:21:03 +0200
-Message-Id: <20220627111947.169713407@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 108/181] io_uring: make apoll_events a __poll_t
+Date:   Mon, 27 Jun 2022 13:21:21 +0200
+Message-Id: <20220627111947.829741373@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,53 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 485037ae9a095491beb7f893c909a76cc4f9d1e7 ]
+[ Upstream commit 58f5c8d39e0ea07fdaaea6a85c49000da83dc0cc ]
 
-When enabling a type_in_mask irq, the type_buf contents must be
-AND'd with the mask of the IRQ we're enabling to avoid enabling
-other IRQs by accident, which can happen if several type_in_mask
-irqs share a mask register.
+apoll_events is fed to vfs_poll and the poll tables, so it should be
+a __poll_t.
 
-Fixes: bc998a730367 ("regmap: irq: handle HW using separate rising/falling edge interrupts")
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Link: https://lore.kernel.org/r/20220620200644.1961936-2-aidanmacdonald.0x0@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220518084005.3255380-5-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/regmap/regmap-irq.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/io_uring.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
-index 400c7412a7dc..4f785bc7981c 100644
---- a/drivers/base/regmap/regmap-irq.c
-+++ b/drivers/base/regmap/regmap-irq.c
-@@ -252,6 +252,7 @@ static void regmap_irq_enable(struct irq_data *data)
- 	struct regmap_irq_chip_data *d = irq_data_get_irq_chip_data(data);
- 	struct regmap *map = d->map;
- 	const struct regmap_irq *irq_data = irq_to_regmap_irq(d, data->hwirq);
-+	unsigned int reg = irq_data->reg_offset / map->reg_stride;
- 	unsigned int mask, type;
- 
- 	type = irq_data->type.type_falling_val | irq_data->type.type_rising_val;
-@@ -268,14 +269,14 @@ static void regmap_irq_enable(struct irq_data *data)
- 	 * at the corresponding offset in regmap_irq_set_type().
- 	 */
- 	if (d->chip->type_in_mask && type)
--		mask = d->type_buf[irq_data->reg_offset / map->reg_stride];
-+		mask = d->type_buf[reg] & irq_data->mask;
- 	else
- 		mask = irq_data->mask;
- 
- 	if (d->chip->clear_on_unmask)
- 		d->clear_status = true;
- 
--	d->mask_buf[irq_data->reg_offset / map->reg_stride] &= ~mask;
-+	d->mask_buf[reg] &= ~mask;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index ca9ed3d899e6..1070d22a1c2b 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -926,7 +926,7 @@ struct io_kiocb {
+ 		/* used by request caches, completion batching and iopoll */
+ 		struct io_wq_work_node	comp_list;
+ 		/* cache ->apoll->events */
+-		int apoll_events;
++		__poll_t apoll_events;
+ 	};
+ 	atomic_t			refs;
+ 	atomic_t			poll_refs;
+@@ -5984,7 +5984,7 @@ static void io_apoll_task_func(struct io_kiocb *req, bool *locked)
+ 		io_req_complete_failed(req, ret);
  }
  
- static void regmap_irq_disable(struct irq_data *data)
+-static void __io_poll_execute(struct io_kiocb *req, int mask, int events)
++static void __io_poll_execute(struct io_kiocb *req, int mask, __poll_t events)
+ {
+ 	req->result = mask;
+ 	/*
+@@ -6003,7 +6003,8 @@ static void __io_poll_execute(struct io_kiocb *req, int mask, int events)
+ 	io_req_task_work_add(req, false);
+ }
+ 
+-static inline void io_poll_execute(struct io_kiocb *req, int res, int events)
++static inline void io_poll_execute(struct io_kiocb *req, int res,
++		__poll_t events)
+ {
+ 	if (io_poll_get_ownership(req))
+ 		__io_poll_execute(req, res, events);
 -- 
 2.35.1
 
