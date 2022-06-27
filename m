@@ -2,243 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1981DCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5DF7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234958AbiF0NHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
+        id S235272AbiF0NIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234935AbiF0NHl (ORCPT
+        with ESMTP id S235080AbiF0NH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:07:41 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D6E65A8;
-        Mon, 27 Jun 2022 06:07:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656335224; x=1687871224;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6rq7G08GhO71nswW2YFTrLYTHyw3WQN6jd5/+z4OnT4=;
-  b=UZ0ugkjPjvaODOXbLjcwL/5kCnVG6BQlyCN3Ml0uj6jpX39azroNjI51
-   z2ON+XFm4sQiaoDaO31YUjuTcp6macj5JL6oKzATuJtrWaMBSMaugrZvX
-   32KReGRAIRDQ6Mw7/n8bV5wz4ZZvuRiu+DP2CyLK0jC1eWQp9kdMg+00z
-   A=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 27 Jun 2022 06:07:03 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 06:07:03 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 27 Jun 2022 06:07:03 -0700
-Received: from [10.216.8.230] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 27 Jun
- 2022 06:06:58 -0700
-Message-ID: <5d2a3a55-ae24-1bbb-2448-e7a23b9debde@quicinc.com>
-Date:   Mon, 27 Jun 2022 18:36:53 +0530
+        Mon, 27 Jun 2022 09:07:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCBF636F
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:07:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AE6CB8166D
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:07:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C13EBC3411D;
+        Mon, 27 Jun 2022 13:07:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656335252;
+        bh=nV79Q5azCfltiNcYxLCaCC7JoCoTXIWDuHA0bpXISFg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=y09OIJDQRhDYmaJubskhBcuje9FuR947hSDeIO5VuCBQCiBihs/BKjPIdkZRUZe93
+         1SXRtpSH1u93YsZZ2Xq4jWLzzhN4Df5LvxFYlUdxvmx+W//st1eN++/yapG2NZ6RE6
+         7YI+wBLy6MO24F+vaiv377xsyJCzJdYpkK1WcUyY=
+Date:   Mon, 27 Jun 2022 15:07:29 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Yangxi Xiang <xyangxi5@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Igor Matheus Andrade Torrente <igormtorrente@gmail.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        nick black <dankamongmen@gmail.com>
+Subject: Re: [PATCH v2] vt: fix memory overlapping when deleting chars in the
+ buffer
+Message-ID: <YrmrkQ1cIZZALRh5@kroah.com>
+References: <20220627125428.19885-1-xyangxi5@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 1/3] dt-bindings: usb: dwc3: Add support for multiport
- related properties
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
-        <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>, <quic_jackp@quicinc.com>,
-        <ahalaney@redhat.com>
-References: <1654709787-23686-1-git-send-email-quic_harshq@quicinc.com>
- <1654709787-23686-2-git-send-email-quic_harshq@quicinc.com>
- <20220609153826.GA3828657-robh@kernel.org>
- <ac3676bf-cd5c-be21-913a-0de6dc55bc7c@quicinc.com>
- <20220610172210.GE1787330-robh@kernel.org>
-From:   Harsh Agarwal <quic_harshq@quicinc.com>
-In-Reply-To: <20220610172210.GE1787330-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627125428.19885-1-xyangxi5@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 27, 2022 at 08:54:28PM +0800, Yangxi Xiang wrote:
+> A memory overlapping copy occurs when deleting a long line. This memory
+> overlapping copy can cause data corruption when scr_memcpyw is optimized
+> to memcpy because memcpy does not ensure its behavior if the destination
+> buffer overlaps with the source buffer. The line buffer is not always
+> broken, because the memcpy utilizes the hardware acceleration, whose
+> result is not deterministic.
+> 
+> Fix this problem by using replacing the scr_memcpyw with scr_memmovew, and
+> preserving the memcpy optimization when the buffers are not overlapping.
+> 
+> Fixes: 81732c3b2fed ("Fix line garbage in virtual console").
+> Signed-off-by: Yangxi Xiang <xyangxi5@gmail.com>
+> ---
+>  drivers/tty/vt/vt.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index f8c87c4d7399..d87bff9d8ed5 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -853,9 +853,13 @@ static void insert_char(struct vc_data *vc, unsigned int nr)
+>  static void delete_char(struct vc_data *vc, unsigned int nr)
+>  {
+>  	unsigned short *p = (unsigned short *) vc->vc_pos;
+> +	unsigned short cp = (vc->vc_cols - vc->state.x - nr) * 2;
+>  
+>  	vc_uniscr_delete(vc, nr);
+> -	scr_memcpyw(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
+> +	if (cp > nr)
+> +		scr_memmovew(p, p + nr, cp);
+> +	else
+> +		scr_memcpyw(p, p + nr, cp);
+>  	scr_memsetw(p + vc->vc_cols - vc->state.x - nr, vc->vc_video_erase_char,
+>  			nr * 2);
+>  	vc->vc_need_wrap = 0;
+> -- 
+> 2.17.1
+> 
 
-On 6/10/2022 10:52 PM, Rob Herring wrote:
-> On Fri, Jun 10, 2022 at 05:25:25PM +0530, Harsh Agarwal wrote:
->> On 6/9/2022 9:08 PM, Rob Herring wrote:
->>> On Wed, Jun 08, 2022 at 11:06:25PM +0530, Harsh Agarwal wrote:
->>>> Added support for multiport, mport, num_usb2_phy and num_usb3_phy
->>>> properties. These properties are used to support devices having
->>>> a multiport controller.
->>>>
->>>> Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
->>>> ---
->>>>    .../devicetree/bindings/usb/snps,dwc3.yaml         | 53 ++++++++++++++++++++++
->>>>    1 file changed, 53 insertions(+)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
->>>> index d41265b..9332fa2 100644
->>>> --- a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
->>>> +++ b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
->>>> @@ -343,6 +343,32 @@ properties:
->>>>          This port is used with the 'usb-role-switch' property  to connect the
->>>>          dwc3 to type C connector.
->>>> +  multiport:
->>> Again, I don't think this is going to play well if you need to describe
->>> USB devices in your DT. For example, a USB hub with additional DT
->>> properties.
->> Thanks for the review Rob.
->> Can you please explain why would one want to describe a USB hub in device
->> tree ?
-> Because someone soldered a hub on the board and then connected extra
-> things like resets, GPIOs, supplies which are all outside of standard
-> USB. It's quite common...
->
-> There's some flavors of Beagle boards that have a USB ethernet on board.
-> Guess what, they skipped out on a eeprom and so the device and a MAC
-> address has to be described in DT (if you want a stable MAC addr).
->
->> IF USB hub is attached to a root port , it would be enumerated by the SW. I
->> am not clear how DT is coming
->> into picture. Even if there was a scenario to add DT properties for a hub,
->> then this multiport node would be like a nop
->> as it just helps us to get the PHY phandles in a proper way.
-> It won't be enumerated by the SW if it has to be powered on first using
-> non-standard resources.
->
->> Do you feel we still might have a problem with multiport node ?
-> A board design could have a hub or device on any or all your ports.
->
->>>> +    description:
->>>> +      If a single USB controller supports multiple ports, then it's referred to as
->>>> +      a multiport controller. Each port of the multiport controller can support
->>>> +      either High Speed or Super Speed or both and have their own PHY phandles. Each
->>>> +      port is represented by "mport" node and all the "mport" nodes are grouped
->>>> +      together inside the "multiport" node where individual "mport" node defines the
->>>> +      PHYs supported by that port.
->>>> +
->>>> +  num_usb2_phy:
->>>> +    description: Total number of HS-PHYs defined by the multiport controller.
->>>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>>> +
->>>> +  num_usb3_phy:
->>>> +    description: Total number of SS-PHYs defined by the multiport controller.
->>>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>>> +
->>>> +  mport:
->>>> +    description: Each mport node represents one port of the multiport controller.
->>>> +    oneOf:
->>>> +      - required:
->>>> +        - usb-phy
->>> This is deprecated. Why are you adding it?
->> Do you mean "usb-phy" is deprecated ?
-> It is replaced by 'phys'. Any new user should use 'phys'.
->
->> Internally we use usb-phy with our downstream GLUE driver
-> Upstream does not care about that.
->
->>>> +      - required:
->>>> +        - phys
->>>> +        - phy-names
->>> Other multi port USB hosts just have a list of phys. Why can't you just
->>> use phy-names to identify each phy:
->>>
->>> phy-names = "port0-hs", "port0-ss", "port1-hs", "port1-ss", "port2-hs",
->>>     "port3-hs";
->> With the above method we would have to do some kind of string parsing on the
->> phy-names to get the HS and SS PHYs as we need to cater to different
->> combinations of Ports ( some support HS+SS , other supports SS only).
-> You are doing string parsing anyways to get the child nodes and
-> properties.
->
->> So one challenge here is with the "usb-phy". There we directly define the
->> phy phandles and that might/might-not have proper sub-strings. eg
->> USB_QMP_PHY . So extracting PHYS could be tricky if the phy-handle does not
->> have proper substring like "SS" "HS" etc.
-> The schema can and should enforce that you have the proper strings.
-Hi Rob,
-Apologies for replying late.
+Hi,
 
-I get your concern. Yes we can remove the "multiport" node and instead 
-define the
-USB phy phandles all in one place. Still I would need to add support for 
-both generic-phy and
-usb-phy framework as downstream many vendors are using "usb-phy" and 
-it's supported by ACK as well.
-This would not regress anything with Generic PHY.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-@Greg can you please comment as ACK has support for usb-phy framework.
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-Now coming to implementation, let's consider a 4 port USB multiport 
-controller having
-4 HS PHYs and 2 SS PHYs.  We can have two approaches here
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
 
-#1 -> If we could mandate using "HS" or "SS" as substring in
-phy-names or usb-phy, then we can calculate number of HS and SS phy and 
-also get
-corresponding PHY nodes. Only concern here is that downstream vendors 
-might need
-to change their existing usb-phy names and add proper substring if they 
-are not doing so ;
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
-phy = <&usb-hs-phy>,<&usb-ss-phy>,
-       <&usb-hs-phy1>, <&usb-ss-phy1>,
-       <&usb-hs-phy2>, <&usb-hs-phy3>;
+thanks,
 
-phy-names = "port0-hs", "port0-ss", "port1-hs", "port1-ss", "port2-hs",
-    "port3-hs";
-
-
-OR
-
-
-#2-> We could mandate defining the USB phy in HS - SS pairs.
-For ports that has only HS PHY, we would need to define usb_nop_phy in 
-SS place.
-Then we can calculate the number of HS & SS phys and get corresponding
-PHY nodes by using simple fact that HS phy would be defined at odd places &
-SS phy defined at even. Here substrings are not mandated.
-
-phy = <&usb-hs-phy>,<&usb-qmp-phy>,
-       <&usb-hs-phy1>, <&usb-qmp-phy1>,
-       <&usb-hs-phy2>, <&usb_nop_phy>
-       <&usb-hs-phy3>, <&usb_nop_phy>;
-
-phy-names = "port0-hs", "port0-ss",
-	    "port1-hs", "port1-ss",
-	    "port2-hs", "usb-nop",
-	    "port3-hs", "usb-nop";
-
-
-Please let me know if you prefer any approach here or have any suggestions.
-
->   
->
->> We cannot break existing implementation and so we thought of going with the
->> "multiport" node approach, listing below some flexibility :
-> How would this break?
->
->> 1. Better representation of the PHYs and it's relation with a port.
->> 2. Here for each port we pick the first PHY as HS and 2nd PHY as SS as we
->> have been doing traditionally.
->> So for "usb-phy" we need not care how the PHY handles are named.
->>
->> 3. It's future proof incase we need to add additional properties specific to
->> a port. We can just add those properties inside MP_1 or MP_2 etc.
->> Though nothing like this has yet been implemented.
-> Then you have to consider how the standard USB device binding fits into
-> this, and it needs to work for anyone with multiple ports. The
-> usb-hcd.yaml schema already defines that child nodes represent a USB
-> device attached to a port on the host. 'reg' is the port number.
->
-> Rob
+greg k-h's patch email bot
