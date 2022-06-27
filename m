@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39332C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6A0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:01:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242174AbiF0WBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 18:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
+        id S242170AbiF0WBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 18:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241568AbiF0Vzr (ORCPT
+        with ESMTP id S241570AbiF0Vzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 17:55:47 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC07B4AC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11C713DFB;
         Mon, 27 Jun 2022 14:55:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1656366906; x=1687902906;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=H/pkX/tBwiIVsZnERORebGxYDAsGCIkLRPu+msNBXho=;
-  b=kA57KVf+JqMbEy4ZLuXesj4tcHyfSHbt1vOpAjueuUrdG9/6dCX+Ih9u
-   hK0W2p54+ojBrt6yj/JOwsNQqm34iwvOPfYew+qZ5nciEihu8x/RGgXS5
-   LGcEoKcJRLpsL3Xz+4n+vc+rcS6XQ+1DeyfaLTjLvnHOIwtINUhyLwBDS
-   nMG43Yc5iKwCQhwOsOkmhwv/MtkvbWlKvIZqQZCmleIFRmAPgHpr0Jzqr
-   MhXqW1QKiEsz70sAxoPU1dKSGJ0s2LwZGhPCxlGk+7JjOgjEfyxUX+SSc
-   eRqK1iWNWLFHK7tLl4juu09Djjy+FdARhloxC+46T4n/n3FVgPHhkg7hq
+  bh=8BrPNw5ZeAWOOfIQSyGr7Gu6ZgI+pfpvXp44VqIh+yU=;
+  b=hZwKv9cVOsw/Ly1G7e+KhD88ab+2r/mOgk5jYSqz9fbft32EqogalpWO
+   y66bXHxSS2A76NJ/xN5sdarbdePWv9aErQNENPB7Qk5OOTV8Eee2gIsdy
+   IYIhO3xqF2ATs2UEgITEzbZXR4nnFjcXQVt2thdMFLfZHo1YFyb2QVHsx
+   ii7bTE41GS1/IVhite94B0zIWpGCEyQexOFnNbtvuUT2NBbBPp2hIy1Ij
+   RhFr0SsxIkjiZm48F9qV4dgSa2tw9sn7wo1iItzvw3tvEjbECDGltekRH
+   Dt0qaHQ3JtdJfK3FIoRnqKcGzsmkR3AEgwMJByFraX8NdZWEhFf+9zyyB
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116129"
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116131"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="279116129"
+   d="scan'208";a="279116131"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:00 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863705"
+   d="scan'208";a="657863711"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:00 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>
-Subject: [PATCH v7 082/102] KVM: x86: Split core of hypercall emulation to helper function
-Date:   Mon, 27 Jun 2022 14:54:14 -0700
-Message-Id: <e852a5fe63bf81f249f4e824db0608e083e7c814.1656366338.git.isaku.yamahata@intel.com>
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH v7 084/102] KVM: TDX: handle EXIT_REASON_OTHER_SMI
+Date:   Mon, 27 Jun 2022 14:54:16 -0700
+Message-Id: <b2b3466b7c7826d18d5566902126e9f283daa5d3.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -54,116 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-By necessity, TDX will use a different register ABI for hypercalls.
-Break out the core functionality so that it may be reused for TDX.
+If the control reaches EXIT_REASON_OTHER_SMI, #SMI is delivered and
+handled right after returning from the TDX module to KVM nothing needs to
+be done in KVM.  Continue TDX vcpu execution.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h |  4 +++
- arch/x86/kvm/x86.c              | 54 ++++++++++++++++++++-------------
- 2 files changed, 37 insertions(+), 21 deletions(-)
+ arch/x86/include/uapi/asm/vmx.h | 1 +
+ arch/x86/kvm/vmx/tdx.c          | 7 +++++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 6a940700eb9a..42d209fe0a4f 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1948,6 +1948,10 @@ static inline void kvm_clear_apicv_inhibit(struct kvm *kvm,
- 	kvm_set_or_clear_apicv_inhibit(kvm, reason, false);
- }
+diff --git a/arch/x86/include/uapi/asm/vmx.h b/arch/x86/include/uapi/asm/vmx.h
+index a5faf6d88f1b..b3a30ef3efdd 100644
+--- a/arch/x86/include/uapi/asm/vmx.h
++++ b/arch/x86/include/uapi/asm/vmx.h
+@@ -34,6 +34,7 @@
+ #define EXIT_REASON_TRIPLE_FAULT        2
+ #define EXIT_REASON_INIT_SIGNAL			3
+ #define EXIT_REASON_SIPI_SIGNAL         4
++#define EXIT_REASON_OTHER_SMI           6
  
-+unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
-+				      unsigned long a0, unsigned long a1,
-+				      unsigned long a2, unsigned long a3,
-+				      int op_64_bit);
- int kvm_emulate_hypercall(struct kvm_vcpu *vcpu);
+ #define EXIT_REASON_INTERRUPT_WINDOW    7
+ #define EXIT_REASON_NMI_WINDOW          8
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index c29501a69167..e5268bfa8d27 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -1209,6 +1209,13 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
+ 	WARN_ON_ONCE(fastpath != EXIT_FASTPATH_NONE);
  
- int kvm_mmu_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa, u64 error_code,
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 39473b561e27..a68a917ebdff 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9316,26 +9316,15 @@ static int complete_hypercall_exit(struct kvm_vcpu *vcpu)
- 	return kvm_skip_emulated_instruction(vcpu);
- }
- 
--int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
-+unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
-+				      unsigned long a0, unsigned long a1,
-+				      unsigned long a2, unsigned long a3,
-+				      int op_64_bit)
- {
--	unsigned long nr, a0, a1, a2, a3, ret;
--	int op_64_bit;
--
--	if (kvm_xen_hypercall_enabled(vcpu->kvm))
--		return kvm_xen_hypercall(vcpu);
--
--	if (kvm_hv_hypercall_enabled(vcpu))
--		return kvm_hv_hypercall(vcpu);
--
--	nr = kvm_rax_read(vcpu);
--	a0 = kvm_rbx_read(vcpu);
--	a1 = kvm_rcx_read(vcpu);
--	a2 = kvm_rdx_read(vcpu);
--	a3 = kvm_rsi_read(vcpu);
-+	unsigned long ret;
- 
- 	trace_kvm_hypercall(nr, a0, a1, a2, a3);
- 
--	op_64_bit = is_64_bit_hypercall(vcpu);
- 	if (!op_64_bit) {
- 		nr &= 0xFFFFFFFF;
- 		a0 &= 0xFFFFFFFF;
-@@ -9344,11 +9333,6 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
- 		a3 &= 0xFFFFFFFF;
- 	}
- 
--	if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
--		ret = -KVM_EPERM;
--		goto out;
--	}
--
- 	ret = -KVM_ENOSYS;
- 
- 	switch (nr) {
-@@ -9407,6 +9391,34 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
- 		ret = -KVM_ENOSYS;
+ 	switch (exit_reason.basic) {
++	case EXIT_REASON_OTHER_SMI:
++		/*
++		 * If reach here, it's not a Machine Check System Management
++		 * Interrupt(MSMI).  #SMI is delivered and handled right after
++		 * SEAMRET, nothing needs to be done in KVM.
++		 */
++		return 1;
+ 	default:
  		break;
  	}
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(__kvm_emulate_hypercall);
-+
-+int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
-+{
-+	unsigned long nr, a0, a1, a2, a3, ret;
-+	int op_64_bit;
-+
-+	if (kvm_xen_hypercall_enabled(vcpu->kvm))
-+		return kvm_xen_hypercall(vcpu);
-+
-+	if (kvm_hv_hypercall_enabled(vcpu))
-+		return kvm_hv_hypercall(vcpu);
-+
-+	nr = kvm_rax_read(vcpu);
-+	a0 = kvm_rbx_read(vcpu);
-+	a1 = kvm_rcx_read(vcpu);
-+	a2 = kvm_rdx_read(vcpu);
-+	a3 = kvm_rsi_read(vcpu);
-+	op_64_bit = is_64_bit_hypercall(vcpu);
-+
-+	if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
-+		ret = -KVM_EPERM;
-+		goto out;
-+	}
-+
-+	ret = __kvm_emulate_hypercall(vcpu, nr, a0, a1, a2, a3, op_64_bit);
- out:
- 	if (!op_64_bit)
- 		ret = (u32)ret;
 -- 
 2.25.1
 
