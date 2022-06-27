@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E5CCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236386AbiF0LiV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:38:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
+        id S236344AbiF0LiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236175AbiF0Lgy (ORCPT
+        with ESMTP id S235253AbiF0Lg7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:36:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C7B1024;
-        Mon, 27 Jun 2022 04:32:08 -0700 (PDT)
+        Mon, 27 Jun 2022 07:36:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C2A1100;
+        Mon, 27 Jun 2022 04:32:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5265360C24;
-        Mon, 27 Jun 2022 11:32:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61359C3411D;
-        Mon, 27 Jun 2022 11:32:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C31E1B81117;
+        Mon, 27 Jun 2022 11:32:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07B7CC3411D;
+        Mon, 27 Jun 2022 11:32:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329527;
-        bh=qkzfQ32P8g1iyhktAofgtqx+i7q6bGkAGLqGcHXT5xQ=;
+        s=korg; t=1656329533;
+        bh=NqWKPAx54vazXc3qKoDsW40jReYuUC9TIV8zapkZdIQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MAFPRraJ8JYp4JRPros0Tho9jVW2WshQbfSExX0jjDrHRSafRtsUGU8GAt8x38WWn
-         J8Fz8+xZtYqw3uRaBqZX2e737r/BFMNX9uOhNIHKZYWQfnvrgkX7I7k62LRAAC4TFr
-         6m05IA1molT7t3hl44r29TbkBlxHBQD9AtvIJWUE=
+        b=17tw7R1zXt+5L+jCfJopB9gCZHhrGhVNjG/acGSPQeJxPiNHMWZ7qMgnFZaiOXVcH
+         a13/nx6sJAhov6wJjvzfNZa2mgyriSnTD7Kfh2qYW4PLvNLgDmeTmSJ2Ol8VwC3D0L
+         FYyq6LOGNsRypqpiq740nZpVD57aNOKJworcSEUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>
-Subject: [PATCH 5.15 028/135] drm/i915: Implement w/a 22010492432 for adl-s
-Date:   Mon, 27 Jun 2022 13:20:35 +0200
-Message-Id: <20220627111938.977418858@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 003/135] ALSA: hda/via: Fix missing beep setup
+Date:   Mon, 27 Jun 2022 13:20:10 +0200
+Message-Id: <20220627111938.255103708@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,43 +47,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 13bd259b64bb58ae130923ada42ebc19bf3f2fa2 upstream.
+commit c7807b27d510e5aa53c8a120cfc02c33c24ebb5f upstream.
 
-adl-s needs the combo PLL DCO fraction w/a as well.
-Gets us slightly more accurate clock out of the PLL.
+Like the previous fix for Conexant codec, the beep_nid has to be set
+up before calling snd_hda_gen_parse_auto_config(); otherwise it'd miss
+the path setup.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220613201439.23341-1-ville.syrjala@linux.intel.com
-Reviewed-by: Matt Roper <matthew.d.roper@intel.com>
-(cherry picked from commit d36bdd77b9e6aa7f5cb7b0f11ebbab8e5febf10b)
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Fix the call order for addressing the missing beep setup.
+
+Fixes: 0e8f9862493a ("ALSA: hda/via - Simplify control management")
+Cc: <stable@vger.kernel.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216152
+Link: https://lore.kernel.org/r/20220620104008.1994-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_dpll_mgr.c |    4 ++--
+ sound/pci/hda/patch_via.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/i915/display/intel_dpll_mgr.c
-+++ b/drivers/gpu/drm/i915/display/intel_dpll_mgr.c
-@@ -2434,7 +2434,7 @@ static void icl_wrpll_params_populate(st
- }
+--- a/sound/pci/hda/patch_via.c
++++ b/sound/pci/hda/patch_via.c
+@@ -520,11 +520,11 @@ static int via_parse_auto_config(struct
+ 	if (err < 0)
+ 		return err;
  
- /*
-- * Display WA #22010492432: ehl, tgl, adl-p
-+ * Display WA #22010492432: ehl, tgl, adl-s, adl-p
-  * Program half of the nominal DCO divider fraction value.
-  */
- static bool
-@@ -2442,7 +2442,7 @@ ehl_combo_pll_div_frac_wa_needed(struct
- {
- 	return ((IS_PLATFORM(i915, INTEL_ELKHARTLAKE) &&
- 		 IS_JSL_EHL_DISPLAY_STEP(i915, STEP_B0, STEP_FOREVER)) ||
--		 IS_TIGERLAKE(i915) || IS_ALDERLAKE_P(i915)) &&
-+		 IS_TIGERLAKE(i915) || IS_ALDERLAKE_S(i915) || IS_ALDERLAKE_P(i915)) &&
- 		 i915->dpll.ref_clks.nssc == 38400;
- }
+-	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
++	err = auto_parse_beep(codec);
+ 	if (err < 0)
+ 		return err;
+ 
+-	err = auto_parse_beep(codec);
++	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
+ 	if (err < 0)
+ 		return err;
  
 
 
