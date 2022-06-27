@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D5FCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C82B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235824AbiF0LfY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
+        id S236086AbiF0Lf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236325AbiF0Ldh (ORCPT
+        with ESMTP id S235351AbiF0LcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:33:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E985DEAC;
-        Mon, 27 Jun 2022 04:30:57 -0700 (PDT)
+        Mon, 27 Jun 2022 07:32:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8E76579;
+        Mon, 27 Jun 2022 04:29:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B253612D8;
-        Mon, 27 Jun 2022 11:30:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C3F2C3411D;
-        Mon, 27 Jun 2022 11:30:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2845B81122;
+        Mon, 27 Jun 2022 11:29:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40D49C3411D;
+        Mon, 27 Jun 2022 11:29:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329456;
-        bh=CE16h4Za8gFzCYa0eRZvLILjAcKuoaholZwAc3agvQI=;
+        s=korg; t=1656329361;
+        bh=hqBg51TtQ2Y5YQFT14WWcZJPCnt/QxcNOyTLRLJ9cAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=af7puuye9HCFPQ2GVW6VnuO21O95dzcb7EsXwSXuZxRCxq7+Akq5GzxX5SEPDSnGP
-         fJNl5O5DyBOAV/j3TI8gOFh83cQlgU8XprK7hNR7oi19PboFJ0qmsmKIo3gfRMyTI+
-         EPN1anO+bZryWTQGxYhIu92DYumxUWRATqmNUXQY=
+        b=YKdcr4jJbDiZPXru7cCAI6weRvxVw+GwnVsX4ATQuKr0/C9Cz5QEOZmQbuxBP+EmA
+         di/SyP2hxHYlrkXybmNjNWDuwexDUOCDzPDtdxGmnG3wj7RyDvy/JcrCbPixMXcEF9
+         77qLlCLFuDj/dv1wAKhWa1d5mZgadlELlbWAJNJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.4 52/60] ARM: dts: imx6qdl: correct PU regulator ramp delay
-Date:   Mon, 27 Jun 2022 13:22:03 +0200
-Message-Id: <20220627111929.221347169@linuxfoundation.org>
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 32/60] Revert "net/tls: fix tls_sk_proto_close executed repeatedly"
+Date:   Mon, 27 Jun 2022 13:21:43 +0200
+Message-Id: <20220627111928.633100609@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -48,47 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Jakub Kicinski <kuba@kernel.org>
 
-commit 93a8ba2a619816d631bd69e9ce2172b4d7a481b8 upstream.
+[ Upstream commit 1b205d948fbb06a7613d87dcea0ff5fd8a08ed91 ]
 
-Contrary to what was believed at the time, the ramp delay of 150us is not
-plenty for the PU LDO with the default step time of 512 pulses of the 24MHz
-clock. Measurements have shown that after enabling the LDO the voltage on
-VDDPU_CAP jumps to ~750mV in the first step and after that the regulator
-executes the normal ramp up as defined by the step size control.
+This reverts commit 69135c572d1f84261a6de2a1268513a7e71753e2.
 
-This means it takes the regulator between 360us and 370us to ramp up to
-the nominal 1.15V voltage for this power domain. With the old setting of
-the ramp delay the power up of the PU GPC domain would happen in the middle
-of the regulator ramp with the voltage being at around 900mV. Apparently
-this was enough for most units to properly power up the peripherals in the
-domain and execute the reset. Some units however, fail to power up properly,
-especially when the chip is at a low temperature. In that case any access
-to the GPU registers would yield an incorrect result with no way to recover
-from this situation.
+This commit was just papering over the issue, ULP should not
+get ->update() called with its own sk_prot. Each ULP would
+need to add this check.
 
-Change the ramp delay to 380us to cover the measured ramp up time with a
-bit of additional slack.
-
-Fixes: 40130d327f72 ("ARM: dts: imx6qdl: Allow disabling the PU regulator, add a enable ramp delay")
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 69135c572d1f ("net/tls: fix tls_sk_proto_close executed repeatedly")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/r/20220620191353.1184629-1-kuba@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/tls/tls_main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/arch/arm/boot/dts/imx6qdl.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl.dtsi
-@@ -766,7 +766,7 @@
- 					regulator-name = "vddpu";
- 					regulator-min-microvolt = <725000>;
- 					regulator-max-microvolt = <1450000>;
--					regulator-enable-ramp-delay = <150>;
-+					regulator-enable-ramp-delay = <380>;
- 					anatop-reg-offset = <0x140>;
- 					anatop-vol-bit-shift = <9>;
- 					anatop-vol-bit-width = <5>;
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index df9177d96f7f..7aba4ee77aba 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -803,9 +803,6 @@ static void tls_update(struct sock *sk, struct proto *p,
+ {
+ 	struct tls_context *ctx;
+ 
+-	if (sk->sk_prot == p)
+-		return;
+-
+ 	ctx = tls_get_ctx(sk);
+ 	if (likely(ctx)) {
+ 		ctx->sk_write_space = write_space;
+-- 
+2.35.1
+
 
 
