@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C82B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D116C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236086AbiF0Lf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55488 "EHLO
+        id S236095AbiF0Lfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235351AbiF0LcQ (ORCPT
+        with ESMTP id S235677AbiF0Lcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:32:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8E76579;
-        Mon, 27 Jun 2022 04:29:24 -0700 (PDT)
+        Mon, 27 Jun 2022 07:32:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C904E95A3;
+        Mon, 27 Jun 2022 04:29:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2845B81122;
-        Mon, 27 Jun 2022 11:29:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40D49C3411D;
-        Mon, 27 Jun 2022 11:29:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54FD0614E6;
+        Mon, 27 Jun 2022 11:29:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C6D3C3411D;
+        Mon, 27 Jun 2022 11:29:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329361;
-        bh=hqBg51TtQ2Y5YQFT14WWcZJPCnt/QxcNOyTLRLJ9cAg=;
+        s=korg; t=1656329370;
+        bh=y9i6OcD3+jttfol87JifqvXY8ddQ2O+EJsT5yNM2FLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YKdcr4jJbDiZPXru7cCAI6weRvxVw+GwnVsX4ATQuKr0/C9Cz5QEOZmQbuxBP+EmA
-         di/SyP2hxHYlrkXybmNjNWDuwexDUOCDzPDtdxGmnG3wj7RyDvy/JcrCbPixMXcEF9
-         77qLlCLFuDj/dv1wAKhWa1d5mZgadlELlbWAJNJ4=
+        b=0jky/vpF1yIa1he5wVsRCrQnlq4VbdLC+ekAKH5h317VVi8ubqnhp+5v/yWZkZIQO
+         p2bhYUZnsI9TR6KrregwFeqeM0mvF9qXosezEFNBAjE/PMg4oeZdBj9AwVwrzGcZbn
+         NjCayxX5iPkgHIFY3bbxXosYNWltMe9jwC1TZ/PU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 32/60] Revert "net/tls: fix tls_sk_proto_close executed repeatedly"
-Date:   Mon, 27 Jun 2022 13:21:43 +0200
-Message-Id: <20220627111928.633100609@linuxfoundation.org>
+Subject: [PATCH 5.4 35/60] iio: adc: vf610: fix conversion mode sysfs node name
+Date:   Mon, 27 Jun 2022 13:21:46 +0200
+Message-Id: <20220627111928.723166638@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -50,40 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit 1b205d948fbb06a7613d87dcea0ff5fd8a08ed91 ]
+[ Upstream commit f1a633b15cd5371a2a83f02c513984e51132dd68 ]
 
-This reverts commit 69135c572d1f84261a6de2a1268513a7e71753e2.
+The documentation missed the "in_" prefix for this IIO_SHARED_BY_DIR
+entry.
 
-This commit was just papering over the issue, ULP should not
-get ->update() called with its own sk_prot. Each ULP would
-need to add this check.
-
-Fixes: 69135c572d1f ("net/tls: fix tls_sk_proto_close executed repeatedly")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/r/20220620191353.1184629-1-kuba@kernel.org
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: bf04c1a367e3 ("iio: adc: vf610: implement configurable conversion modes")
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Acked-by: Haibo Chen <haibo.chen@nxp.com>
+Link: https://lore.kernel.org/r/560dc93fafe5ef7e9a409885fd20b6beac3973d8.1653900626.git.baruch@tkos.co.il
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tls/tls_main.c | 3 ---
- 1 file changed, 3 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio-vf610 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index df9177d96f7f..7aba4ee77aba 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -803,9 +803,6 @@ static void tls_update(struct sock *sk, struct proto *p,
- {
- 	struct tls_context *ctx;
- 
--	if (sk->sk_prot == p)
--		return;
--
- 	ctx = tls_get_ctx(sk);
- 	if (likely(ctx)) {
- 		ctx->sk_write_space = write_space;
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610 b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+index 308a6756d3bf..491ead804488 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-vf610
++++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+@@ -1,4 +1,4 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/conversion_mode
++What:		/sys/bus/iio/devices/iio:deviceX/in_conversion_mode
+ KernelVersion:	4.2
+ Contact:	linux-iio@vger.kernel.org
+ Description:
 -- 
 2.35.1
 
