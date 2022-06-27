@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C744CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 949E5CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234981AbiF0LZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
+        id S234994AbiF0LZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234809AbiF0LZP (ORCPT
+        with ESMTP id S234886AbiF0LZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:25:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578A3656D;
-        Mon, 27 Jun 2022 04:25:03 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68D3659B;
+        Mon, 27 Jun 2022 04:25:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D4B8B8112E;
-        Mon, 27 Jun 2022 11:25:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6215DC3411D;
-        Mon, 27 Jun 2022 11:25:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9237761359;
+        Mon, 27 Jun 2022 11:25:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92065C341C7;
+        Mon, 27 Jun 2022 11:25:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329100;
-        bh=CKac3KZZhJcn3Q67KLTPnJl3UxDqru+VaQrAyE0IhHk=;
+        s=korg; t=1656329104;
+        bh=IUTMOUZQBaEKK+FbjIuRCLQ5gadokMU3chQGYhcUoXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KgvYPU7mj/JU4mtpImVma/OuvNpm0km0RS/U/MlyiW5gqVM7hRcXSDtZOswLdiykB
-         ylJJEgS6/cqxARcO0zhjlJ5iY0lZwLpArHGwoTL+m9nuIgeRgSWzH/ccO9kQRkXf6f
-         yuogTLl6i2SBwGQ6w2QaL5SrCAMbkQqt6t4i3tcc=
+        b=L4AM+4XpQH5cByrVzQ+rTzHML/Ei2KhD2rABS+u5lUR45MrSjajns4fb7WWNb5nfn
+         GlGu7Vg8+uVNM7fX4ufS8HCt9Cni8bwwBj+FtI9A6AvQonIzopTM7GfLYqW2Ln7eka
+         sBgEDniUxGnnGQ7Mf+kPlIQAg1gCZKoog4v9kzfk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.10 051/102] igb: Make DMA faster when CPU is active on the PCIe link
-Date:   Mon, 27 Jun 2022 13:21:02 +0200
-Message-Id: <20220627111934.986653452@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 052/102] virtio_net: fix xdp_rxq_info bug after suspend/resume
+Date:   Mon, 27 Jun 2022 13:21:03 +0200
+Message-Id: <20220627111935.016599779@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -52,81 +52,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-[ Upstream commit 4e0effd9007ea0be31f7488611eb3824b4541554 ]
+[ Upstream commit 8af52fe9fd3bf5e7478da99193c0632276e1dfce ]
 
-Intel I210 on some Intel Alder Lake platforms can only achieve ~750Mbps
-Tx speed via iperf. The RR2DCDELAY shows around 0x2xxx DMA delay, which
-will be significantly lower when 1) ASPM is disabled or 2) SoC package
-c-state stays above PC3. When the RR2DCDELAY is around 0x1xxx the Tx
-speed can reach to ~950Mbps.
+The following sequence currently causes a driver bug warning
+when using virtio_net:
 
-According to the I210 datasheet "8.26.1 PCIe Misc. Register - PCIEMISC",
-"DMA Idle Indication" doesn't seem to tie to DMA coalesce anymore, so
-set it to 1b for "DMA is considered idle when there is no Rx or Tx AND
-when there are no TLPs indicating that CPU is active detected on the
-PCIe link (such as the host executes CSR or Configuration register read
-or write operation)" and performing Tx should also fall under "active
-CPU on PCIe link" case.
+  # ip link set eth0 up
+  # echo mem > /sys/power/state (or e.g. # rtcwake -s 10 -m mem)
+  <resume>
+  # ip link set eth0 down
 
-In addition to that, commit b6e0c419f040 ("igb: Move DMA Coalescing init
-code to separate function.") seems to wrongly changed from enabling
-E1000_PCIEMISC_LX_DECISION to disabling it, also fix that.
+  Missing register, driver bug
+  WARNING: CPU: 0 PID: 375 at net/core/xdp.c:138 xdp_rxq_info_unreg+0x58/0x60
+  Call trace:
+   xdp_rxq_info_unreg+0x58/0x60
+   virtnet_close+0x58/0xac
+   __dev_close_many+0xac/0x140
+   __dev_change_flags+0xd8/0x210
+   dev_change_flags+0x24/0x64
+   do_setlink+0x230/0xdd0
+   ...
 
-Fixes: b6e0c419f040 ("igb: Move DMA Coalescing init code to separate function.")
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220621221056.604304-1-anthony.l.nguyen@intel.com
+This happens because virtnet_freeze() frees the receive_queue
+completely (including struct xdp_rxq_info) but does not call
+xdp_rxq_info_unreg(). Similarly, virtnet_restore() sets up the
+receive_queue again but does not call xdp_rxq_info_reg().
+
+Actually, parts of virtnet_freeze_down() and virtnet_restore_up()
+are almost identical to virtnet_close() and virtnet_open(): only
+the calls to xdp_rxq_info_(un)reg() are missing. This means that
+we can fix this easily and avoid such problems in the future by
+just calling virtnet_close()/open() from the freeze/restore handlers.
+
+Aside from adding the missing xdp_rxq_info calls the only difference
+is that the refill work is only cancelled if netif_running(). However,
+this should not make any functional difference since the refill work
+should only be active if the network interface is actually up.
+
+Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Link: https://lore.kernel.org/r/20220621114845.3650258-1-stephan.gerhold@kernkonzept.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/net/virtio_net.c | 25 ++++++-------------------
+ 1 file changed, 6 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 758e468e677a..4e51f4bb58ff 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -9829,11 +9829,10 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
- 	struct e1000_hw *hw = &adapter->hw;
- 	u32 dmac_thr;
- 	u16 hwm;
-+	u32 reg;
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index cbe47eed7cc3..ad9064df3deb 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -2366,7 +2366,6 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
+ static void virtnet_freeze_down(struct virtio_device *vdev)
+ {
+ 	struct virtnet_info *vi = vdev->priv;
+-	int i;
  
- 	if (hw->mac.type > e1000_82580) {
- 		if (adapter->flags & IGB_FLAG_DMAC) {
--			u32 reg;
+ 	/* Make sure no work handler is accessing the device */
+ 	flush_work(&vi->config_work);
+@@ -2374,14 +2373,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
+ 	netif_tx_lock_bh(vi->dev);
+ 	netif_device_detach(vi->dev);
+ 	netif_tx_unlock_bh(vi->dev);
+-	cancel_delayed_work_sync(&vi->refill);
 -
- 			/* force threshold to 0. */
- 			wr32(E1000_DMCTXTH, 0);
+-	if (netif_running(vi->dev)) {
+-		for (i = 0; i < vi->max_queue_pairs; i++) {
+-			napi_disable(&vi->rq[i].napi);
+-			virtnet_napi_tx_disable(&vi->sq[i].napi);
+-		}
+-	}
++	if (netif_running(vi->dev))
++		virtnet_close(vi->dev);
+ }
  
-@@ -9866,7 +9865,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
- 			/* Disable BMC-to-OS Watchdog Enable */
- 			if (hw->mac.type != e1000_i354)
- 				reg &= ~E1000_DMACR_DC_BMC2OSW_EN;
+ static int init_vqs(struct virtnet_info *vi);
+@@ -2389,7 +2382,7 @@ static int init_vqs(struct virtnet_info *vi);
+ static int virtnet_restore_up(struct virtio_device *vdev)
+ {
+ 	struct virtnet_info *vi = vdev->priv;
+-	int err, i;
++	int err;
+ 
+ 	err = init_vqs(vi);
+ 	if (err)
+@@ -2398,15 +2391,9 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+ 	virtio_device_ready(vdev);
+ 
+ 	if (netif_running(vi->dev)) {
+-		for (i = 0; i < vi->curr_queue_pairs; i++)
+-			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+-				schedule_delayed_work(&vi->refill, 0);
 -
- 			wr32(E1000_DMACR, reg);
+-		for (i = 0; i < vi->max_queue_pairs; i++) {
+-			virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
+-			virtnet_napi_tx_enable(vi, vi->sq[i].vq,
+-					       &vi->sq[i].napi);
+-		}
++		err = virtnet_open(vi->dev);
++		if (err)
++			return err;
+ 	}
  
- 			/* no lower threshold to disable
-@@ -9883,12 +9881,12 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
- 			 */
- 			wr32(E1000_DMCTXTH, (IGB_MIN_TXPBSIZE -
- 			     (IGB_TX_BUF_4096 + adapter->max_frame_size)) >> 6);
-+		}
- 
--			/* make low power state decision controlled
--			 * by DMA coal
--			 */
-+		if (hw->mac.type >= e1000_i210 ||
-+		    (adapter->flags & IGB_FLAG_DMAC)) {
- 			reg = rd32(E1000_PCIEMISC);
--			reg &= ~E1000_PCIEMISC_LX_DECISION;
-+			reg |= E1000_PCIEMISC_LX_DECISION;
- 			wr32(E1000_PCIEMISC, reg);
- 		} /* endif adapter->dmac is not disabled */
- 	} else if (hw->mac.type == e1000_82580) {
+ 	netif_tx_lock_bh(vi->dev);
 -- 
 2.35.1
 
