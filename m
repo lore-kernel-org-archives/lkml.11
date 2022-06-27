@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC45CCA48B
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB5BCCA491
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240060AbiF0L6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49706 "EHLO
+        id S240031AbiF0L6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238626AbiF0Lv7 (ORCPT
+        with ESMTP id S238389AbiF0LwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:51:59 -0400
+        Mon, 27 Jun 2022 07:52:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BE0A461;
-        Mon, 27 Jun 2022 04:44:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF10BCE1A;
+        Mon, 27 Jun 2022 04:44:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94F28612E3;
-        Mon, 27 Jun 2022 11:44:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AD7DC341C7;
-        Mon, 27 Jun 2022 11:44:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7789E61240;
+        Mon, 27 Jun 2022 11:44:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86972C3411D;
+        Mon, 27 Jun 2022 11:44:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330295;
-        bh=vdb3E6WRlDL20adQ9KZ21R2W9oW3boQenfgRmu7+Rxg=;
+        s=korg; t=1656330297;
+        bh=VS8BmZ8909KCcCnoHtJqqExaasepZarkctZPvYDNzPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ppL0uATf7RO5lJ8ljfiUwJNTtY7AH4CEMWOs+Uf7eL3IFf5nsW4oomXU/BV2a8PyW
-         Xwg+B6sxo/qxbEcFxlBgSMIiMaHRYgtPGaEZ5AUR4kj+ujXSu0h32uRuC8yZLAh3Qe
-         mdIRe4pcGNWVV9bUymWks/7lQWvIyoeb2S6ZbFtA=
+        b=Yd9aBVy+/kpvVCftgZF+N9FJNe4Hc8tQtjrp8mVt8l6wSsjXV7AlFEzpqIHBbQV6M
+         z1K62vdZEJHI81ALHQidwRV1vUrEgnJ7T8Bv/3l0KRQlVj/bnrGEavp4fh/5Se5gBW
+         H7UEEu30Jq4oQC0hAB01vJ3P7ml5rVptdxnmDw6E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Jialin Zhang <zhangjialin11@huawei.com>,
+        stable@vger.kernel.org, Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 150/181] iio: adc: ti-ads131e08: add missing fwnode_handle_put() in ads131e08_alloc_channels()
-Date:   Mon, 27 Jun 2022 13:22:03 +0200
-Message-Id: <20220627111949.033741522@linuxfoundation.org>
+Subject: [PATCH 5.18 133/181] iio:accel:kxcjk-1013: rearrange iio trigger get and register
+Date:   Mon, 27 Jun 2022 13:21:46 +0200
+Message-Id: <20220627111948.546519661@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,64 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jialin Zhang <zhangjialin11@huawei.com>
+From: Dmitry Rokosov <DDRokosov@sberdevices.ru>
 
-commit 47dcf770abc793f347a65a24c24d550c936f08b0 upstream.
+commit ed302925d708f2f97ae5e9fd6c56c16bb34f6629 upstream.
 
-fwnode_handle_put() should be used when terminating
-device_for_each_child_node() iteration with break or return to prevent
-stale device node references from being left behind.
+IIO trigger interface function iio_trigger_get() should be called after
+iio_trigger_register() (or its devm analogue) strictly, because of
+iio_trigger_get() acquires module refcnt based on the trigger->owner
+pointer, which is initialized inside iio_trigger_register() to
+THIS_MODULE.
+If this call order is wrong, the next iio_trigger_put() (from sysfs
+callback or "delete module" path) will dereference "default" module
+refcnt, which is incorrect behaviour.
 
-Fixes: d935eddd2799 ("iio: adc: Add driver for Texas Instruments ADS131E0x ADC family")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Jialin Zhang <zhangjialin11@huawei.com>
-Link: https://lore.kernel.org/r/20220517033020.2033324-1-zhangjialin11@huawei.com
+Fixes: c1288b833881 ("iio: accel: kxcjk-1013: Increment ref counter for indio_dev->trig")
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220524181150.9240-3-ddrokosov@sberdevices.ru
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/ti-ads131e08.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/iio/accel/kxcjk-1013.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/adc/ti-ads131e08.c
-+++ b/drivers/iio/adc/ti-ads131e08.c
-@@ -739,7 +739,7 @@ static int ads131e08_alloc_channels(stru
- 	device_for_each_child_node(dev, node) {
- 		ret = fwnode_property_read_u32(node, "reg", &channel);
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -1554,12 +1554,12 @@ static int kxcjk1013_probe(struct i2c_cl
+ 
+ 		data->dready_trig->ops = &kxcjk1013_trigger_ops;
+ 		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+-		indio_dev->trig = data->dready_trig;
+-		iio_trigger_get(indio_dev->trig);
+ 		ret = iio_trigger_register(data->dready_trig);
  		if (ret)
--			return ret;
-+			goto err_child_out;
+ 			goto err_poweroff;
  
- 		ret = fwnode_property_read_u32(node, "ti,gain", &tmp);
- 		if (ret) {
-@@ -747,7 +747,7 @@ static int ads131e08_alloc_channels(stru
- 		} else {
- 			ret = ads131e08_pga_gain_to_field_value(st, tmp);
- 			if (ret < 0)
--				return ret;
-+				goto err_child_out;
- 
- 			channel_config[i].pga_gain = tmp;
- 		}
-@@ -758,7 +758,7 @@ static int ads131e08_alloc_channels(stru
- 		} else {
- 			ret = ads131e08_validate_channel_mux(st, tmp);
- 			if (ret)
--				return ret;
-+				goto err_child_out;
- 
- 			channel_config[i].mux = tmp;
- 		}
-@@ -784,6 +784,10 @@ static int ads131e08_alloc_channels(stru
- 	st->channel_config = channel_config;
- 
- 	return 0;
++		indio_dev->trig = iio_trigger_get(data->dready_trig);
 +
-+err_child_out:
-+	fwnode_handle_put(node);
-+	return ret;
- }
- 
- static void ads131e08_regulator_disable(void *data)
+ 		data->motion_trig->ops = &kxcjk1013_trigger_ops;
+ 		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
+ 		ret = iio_trigger_register(data->motion_trig);
 
 
