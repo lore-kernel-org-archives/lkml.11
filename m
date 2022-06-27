@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6735C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 443CAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239612AbiF0MA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S239625AbiF0MAb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238853AbiF0Lwn (ORCPT
+        with ESMTP id S238898AbiF0Lws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AA6BC0F;
-        Mon, 27 Jun 2022 04:46:01 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F20DF0F;
+        Mon, 27 Jun 2022 04:46:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EDD29CE171B;
-        Mon, 27 Jun 2022 11:45:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1192DC36AED;
-        Mon, 27 Jun 2022 11:45:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 869E261187;
+        Mon, 27 Jun 2022 11:46:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 997C5C3411D;
+        Mon, 27 Jun 2022 11:46:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330358;
-        bh=nNhet8or/hoY+pxRtadru407botWQgZVpH0oUBA5Dhg=;
+        s=korg; t=1656330382;
+        bh=JI8q8nWm4Q7nBzEZmsr6UgIbIz5QfLN/iEi1FTJoC14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0rbIIPoelFS5iEJ66OCs/BvGd3nRDxFke8xgRTRC/lIji0hLKDkEBkfLd5W/GOTy
-         0WyGM+xUyQYFGmG0qm59DhWNqbP/yPeMzs5etESg+DuAPJtcC4ZJv1Na+fbYwjqCwS
-         K8kJmywigJ8oPleP0zzCbcXhjzXZQCd/1Ly5/zKs=
+        b=PLVz4ZR9aLGSVqPDwg/ZQJcWJpBJMnuEb02XlRPGSG/2Tp3g24At7SDBychg/UfU2
+         A1seSsFs2t6B7JBfkK93snLAL9HmFnCM9d7t2Ji8y0QeRSvsW2pC/0fW26lHhgkBAH
+         O4wh/rTOO8eBmBybxC0sDUFdeIEiJWNSZPUgnpkM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5.18 170/181] memory: mtk-smi: add missing put_device() call in mtk_smi_device_link_common
-Date:   Mon, 27 Jun 2022 13:22:23 +0200
-Message-Id: <20220627111949.615555228@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.18 139/181] iio: adc: stm32: fix maximum clock rate for stm32mp15x
+Date:   Mon, 27 Jun 2022 13:21:52 +0200
+Message-Id: <20220627111948.718532192@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -48,47 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Olivier Moysan <olivier.moysan@foss.st.com>
 
-commit 038ae37c510fd57cbc543ac82db1e7b23b28557a upstream.
+commit 990539486e7e311fb5dab1bf4d85d1a8973ae644 upstream.
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling paths.
+Change maximum STM32 ADC input clock rate to 36MHz, as specified
+in STM32MP15x datasheets.
 
-Fixes: 47404757702e ("memory: mtk-smi: Add device link for smi-sub-common")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220601120118.60225-1-linmq006@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fixes: d58c67d1d851 ("iio: adc: stm32-adc: add support for STM32MP1")
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220609095234.375925-1-olivier.moysan@foss.st.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/memory/mtk-smi.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iio/adc/stm32-adc-core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index 86a3d34f418e..4c5154e0bf00 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -404,13 +404,16 @@ static int mtk_smi_device_link_common(struct device *dev, struct device **com_de
- 	of_node_put(smi_com_node);
- 	if (smi_com_pdev) {
- 		/* smi common is the supplier, Make sure it is ready before */
--		if (!platform_get_drvdata(smi_com_pdev))
-+		if (!platform_get_drvdata(smi_com_pdev)) {
-+			put_device(&smi_com_pdev->dev);
- 			return -EPROBE_DEFER;
-+		}
- 		smi_com_dev = &smi_com_pdev->dev;
- 		link = device_link_add(dev, smi_com_dev,
- 				       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
- 		if (!link) {
- 			dev_err(dev, "Unable to link smi-common dev\n");
-+			put_device(&smi_com_pdev->dev);
- 			return -ENODEV;
- 		}
- 		*com_dev = smi_com_dev;
--- 
-2.36.1
-
+--- a/drivers/iio/adc/stm32-adc-core.c
++++ b/drivers/iio/adc/stm32-adc-core.c
+@@ -805,7 +805,7 @@ static const struct stm32_adc_priv_cfg s
+ static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
+ 	.regs = &stm32h7_adc_common_regs,
+ 	.clk_sel = stm32h7_adc_clk_sel,
+-	.max_clk_rate_hz = 40000000,
++	.max_clk_rate_hz = 36000000,
+ 	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
+ 	.num_irqs = 2,
+ };
 
 
