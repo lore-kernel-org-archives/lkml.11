@@ -2,77 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F06C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA82CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233764AbiF0I5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 04:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50002 "EHLO
+        id S233722AbiF0I7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 04:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233760AbiF0I5M (ORCPT
+        with ESMTP id S233409AbiF0I65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 04:57:12 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A68C0638C;
-        Mon, 27 Jun 2022 01:57:09 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id D258D1E80D5E;
-        Mon, 27 Jun 2022 16:56:14 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id NySigRwC0Z_G; Mon, 27 Jun 2022 16:56:12 +0800 (CST)
-Received: from localhost.localdomain (unknown [219.141.250.2])
-        (Authenticated sender: kunyu@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 3812C1E80D11;
-        Mon, 27 Jun 2022 16:56:12 +0800 (CST)
-From:   Li kunyu <kunyu@nfschina.com>
-To:     shuah@kernel.org
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Li kunyu <kunyu@nfschina.com>
-Subject: [PATCH] tools: Strong conversion of void type pointer could be removed
-Date:   Mon, 27 Jun 2022 16:56:54 +0800
-Message-Id: <20220627085654.2902-1-kunyu@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Mon, 27 Jun 2022 04:58:57 -0400
+Received: from outbound-smtp14.blacknight.com (outbound-smtp14.blacknight.com [46.22.139.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7886252
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:58:50 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
+        by outbound-smtp14.blacknight.com (Postfix) with ESMTPS id 5D3541C4329
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:58:48 +0100 (IST)
+Received: (qmail 23735 invoked from network); 27 Jun 2022 08:58:48 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 27 Jun 2022 08:58:48 -0000
+Date:   Mon, 27 Jun 2022 09:46:45 +0100
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>,
+        Hugh Dickins <hughd@google.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+Subject: [PATCH] mm/page_alloc: Replace local_lock with normal spinlock -fix
+Message-ID: <20220627084645.GA27531@techsingularity.net>
+References: <20220624125423.6126-1-mgorman@techsingularity.net>
+ <20220624125423.6126-8-mgorman@techsingularity.net>
+ <CAOUHufba2KQLbFMoHusTpvEBHS_EWQ1NnOfm3Wczmykk0A1pTw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <CAOUHufba2KQLbFMoHusTpvEBHS_EWQ1NnOfm3Wczmykk0A1pTw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The void pointer argument does not require a cast assignment because it
-is the address passed.
+As noted by Yu Zhao, use pcp_spin_trylock_irqsave instead of
+pcpu_spin_trylock_irqsave. This is a fix to the mm-unstable patch
+mm-page_alloc-replace-local_lock-with-normal-spinlock.patch
 
-Signed-off-by: Li kunyu <kunyu@nfschina.com>
+Reported-by: Yu Zhao <yuzhao@google.com>
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 ---
- tools/testing/selftests/x86/fsgsbase.c      | 2 +-
- tools/testing/selftests/x86/test_vsyscall.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ mm/page_alloc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/x86/fsgsbase.c b/tools/testing/selftests/x86/fsgsbase.c
-index 8c780cce941d..5d99261317e1 100644
---- a/tools/testing/selftests/x86/fsgsbase.c
-+++ b/tools/testing/selftests/x86/fsgsbase.c
-@@ -63,7 +63,7 @@ static void clearhandler(int sig)
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 71065b01827b..934d1b5a5449 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -3493,7 +3493,7 @@ void free_unref_page(struct page *page, unsigned int order)
  
- static void sigsegv(int sig, siginfo_t *si, void *ctx_void)
- {
--	ucontext_t *ctx = (ucontext_t*)ctx_void;
-+	ucontext_t *ctx = ctx_void;
- 
- 	if (!want_segv) {
- 		clearhandler(SIGSEGV);
-diff --git a/tools/testing/selftests/x86/test_vsyscall.c b/tools/testing/selftests/x86/test_vsyscall.c
-index 5b45e6986aea..2416941a0952 100644
---- a/tools/testing/selftests/x86/test_vsyscall.c
-+++ b/tools/testing/selftests/x86/test_vsyscall.c
-@@ -184,7 +184,7 @@ static volatile unsigned long segv_err;
- 
- static void sigsegv(int sig, siginfo_t *info, void *ctx_void)
- {
--	ucontext_t *ctx = (ucontext_t *)ctx_void;
-+	ucontext_t *ctx = ctx_void;
- 
- 	segv_err =  ctx->uc_mcontext.gregs[REG_ERR];
- 	siglongjmp(jmpbuf, 1);
--- 
-2.18.2
-
+ 	zone = page_zone(page);
+ 	pcp_trylock_prepare(UP_flags);
+-	pcp = pcpu_spin_trylock_irqsave(struct per_cpu_pages, lock, zone->per_cpu_pageset, flags);
++	pcp = pcp_spin_trylock_irqsave(zone->per_cpu_pageset, flags);
+ 	if (pcp) {
+ 		free_unref_page_commit(zone, pcp, page, migratetype, order);
+ 		pcp_spin_unlock_irqrestore(pcp, flags);
