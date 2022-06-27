@@ -2,83 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA76EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:09:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 551A2CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240363AbiF0TJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
+        id S240370AbiF0TKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237795AbiF0TJL (ORCPT
+        with ESMTP id S240365AbiF0TKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 15:09:11 -0400
-X-Greylist: delayed 462 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 12:09:10 PDT
-Received: from shelob.oktetlabs.ru (shelob.oktetlabs.ru [91.220.146.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E9725C4;
-        Mon, 27 Jun 2022 12:09:10 -0700 (PDT)
-Received: from bree.oktetlabs.ru (bree.oktetlabs.ru [192.168.34.5])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by shelob.oktetlabs.ru (Postfix) with ESMTPS id 92342A5;
-        Mon, 27 Jun 2022 22:01:25 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 shelob.oktetlabs.ru 92342A5
-Authentication-Results: shelob.oktetlabs.ru/92342A5; dkim=none;
-        dkim-atps=neutral
-From:   Ivan Malov <ivan.malov@oktetlabs.ru>
-To:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        netdev@vger.kernel.org
-Cc:     Andrew Rybchenko <andrew.rybchenko@oktetlabs.ru>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Subject: [PATCH] xsk: clear page contiguity bit when unmapping pool
-Date:   Mon, 27 Jun 2022 22:01:20 +0300
-Message-Id: <20220627190120.176470-1-ivan.malov@oktetlabs.ru>
-X-Mailer: git-send-email 2.30.2
+        Mon, 27 Jun 2022 15:10:33 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A003B5597;
+        Mon, 27 Jun 2022 12:10:32 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id n16-20020a17090ade9000b001ed15b37424so10310355pjv.3;
+        Mon, 27 Jun 2022 12:10:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=/TJYBcpsxpHM1dgljke9KHv7g4SupUF3o95Sw1aZ2ck=;
+        b=IUrCqExbfNSEqdj1+aclN5lVCX6iP7eBPxz3UnA29I42X7w8qUJC0d2QFa6lECfvHS
+         lTMdErf6FACs1/hyp38L86tGz+o787pLf2VIheb7iIKAGcJlc9+ImxpPc6dZHKPr2Lnd
+         297Swn9MhvVXOe5pLyL9hyobmlUtJUylIgtVuWFNUy7M/cvy0Ei9a+7/6RNLP/vuaWpm
+         qPXLfyJ7VkpxIpiy0dSvQGEwS2wO1IikzptCMphwHEF+yGlRha2BCj6vVKJloizO0jzV
+         wtWURRXun0tZKmoLu2aju0/0SznVwcWbO33ww6x17xU68Xd6vEBZdnna3JSmuqObPHbN
+         196g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=/TJYBcpsxpHM1dgljke9KHv7g4SupUF3o95Sw1aZ2ck=;
+        b=IMOxxCH+3YW5q69QljDGHjGdATj/9ipfgW8YCq9jPRqEyKqBRh2RZXFh4D7ZsUEVfT
+         mzyE2c4HHjZRyqIbUedzt1hnDzWumsvZ+nLG3+Sk/z0xcWNMzal8k1FLfXDcQnoHeIKl
+         ILWXqMi+/qF5Wbcni0hFrj1L/19CjIzt39lLEcCfP8PfC01hO3DDcPajvIXh4/pDcDga
+         6EsNtsdJOaojsCFXBewDrTw4w8ViVOiRXUqN/RAi5JStChLWQHyqii4df9+DRv5dzjMh
+         LKUvfXKhMiBz2PyciB+RSaywmCZCkwZ6DeoS/bqambujl3RFc+c8KYEAbumVLkh3K+qX
+         uxqQ==
+X-Gm-Message-State: AJIora91OBj6bihYl7CPX5A7XSvvfFZyAdfauZt6Awu7PWCc9g02kP2J
+        0C8f7S8c2PRRSttO0AzNRnY=
+X-Google-Smtp-Source: AGRyM1v4pZPlgtYqoeaDHgmUszlXO0IEON1F8nITnkj9iOAgcw3+OR56oHGI6Qm3c0Gt8vy7rjuFZw==
+X-Received: by 2002:a17:902:bc4c:b0:16a:4849:ddbe with SMTP id t12-20020a170902bc4c00b0016a4849ddbemr816273plz.25.1656357031911;
+        Mon, 27 Jun 2022 12:10:31 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:4120])
+        by smtp.gmail.com with ESMTPSA id t5-20020a17090aae0500b001ec4f258028sm7805995pjq.55.2022.06.27.12.10.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 12:10:31 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 28 Jun 2022 04:10:29 +0900
+From:   Tejun Heo <tj@kernel.org>
+To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Cc:     Waiman Long <longman@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [PATCH v11 7/8] cgroup/cpuset: Update description of
+ cpuset.cpus.partition in cgroup-v2.rst
+Message-ID: <YroApRMPV/6zO5I8@mtj.duckdns.org>
+References: <20220510153413.400020-1-longman@redhat.com>
+ <20220510153413.400020-8-longman@redhat.com>
+ <YqYnQ4U4t6j/3UaL@slm.duckdns.org>
+ <404171dc-0da3-21f2-5003-9718f875e967@redhat.com>
+ <YqarMyNo9oHxhZFh@slm.duckdns.org>
+ <20220613142452.GB6910@blackbody.suse.cz>
+ <YqdzuSQuAeiPXQvy@slm.duckdns.org>
+ <20220613175548.GB21665@blackbody.suse.cz>
+ <Yqd7WMFj6AEyV3Cy@slm.duckdns.org>
+ <20220614115345.GA6771@blackbody.suse.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220614115345.GA6771@blackbody.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a XSK pool gets mapped, xp_check_dma_contiguity() adds bit 0x1
-to pages' DMA addresses that go in ascending order and at 4K stride.
-The problem is that the bit does not get cleared before doing unmap.
+Hello,
 
-As a result, a lot of warnings from iommu_dma_unmap_page() are seen
-suggesting mapping lookup failures at drivers/iommu/dma-iommu.c:848.
+On Tue, Jun 14, 2022 at 01:53:45PM +0200, Michal Koutný wrote:
+> On Mon, Jun 13, 2022 at 08:00:56AM -1000, Tejun Heo <tj@kernel.org> wrote:
+> > Yeah, I don't know why this part is different from any other errors that the
+> > parent can make.
+> 
+> It's different because a write to parent's cpuset.cpus is independent of
+> whether cpuset.cpus of its children are exclusive or not.
+> In an extreme case the children may be non-exclusive
+> 
+>     parent	cpuset.cpus=0-3 //   valid partition
+>     `- child_1	cpuset.cpus=0-1	// invalid partition
+>     `- child_2	cpuset.cpus=1-2 // invalid partition
+> 
+> but the parent can still be a valid partition (thanks to cpu no. 3 in
+> the example above).
+> 
+> Do I miss anything?
 
-Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+What I'm trying to say is that cpuset.cpus of child_1 and child_2 are
+owned by the parent, so a feature which blocks siblings from
+intersecting each other doesn't make whole lot of sense because all
+those files are under the control of the parent who would have the
+power to enable or disable the restrition anyway.
 
-Signed-off-by: Ivan Malov <ivan.malov@oktetlabs.ru>
----
- net/xdp/xsk_buff_pool.c | 1 +
- 1 file changed, 1 insertion(+)
+The partition mode file is owned by the parent too, right? So, all
+these are to be configured by the same entity and the errors can be
+reported the same way, no?
 
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index 87bdd71c7bb6..f70112176b7c 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -332,6 +332,7 @@ static void __xp_dma_unmap(struct xsk_dma_map *dma_map, unsigned long attrs)
- 	for (i = 0; i < dma_map->dma_pages_cnt; i++) {
- 		dma = &dma_map->dma_pages[i];
- 		if (*dma) {
-+			*dma &= ~XSK_NEXT_PG_CONTIG_MASK;
- 			dma_unmap_page_attrs(dma_map->dev, *dma, PAGE_SIZE,
- 					     DMA_BIDIRECTIONAL, attrs);
- 			*dma = 0;
+Thanks.
+
 -- 
-2.30.2
-
+tejun
