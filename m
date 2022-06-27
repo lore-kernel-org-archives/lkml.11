@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 293CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B51C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:02:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239595AbiF0MBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
+        id S239903AbiF0MCA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238867AbiF0Lwo (ORCPT
+        with ESMTP id S238880AbiF0Lwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:44 -0400
+        Mon, 27 Jun 2022 07:52:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997C7DEE6;
-        Mon, 27 Jun 2022 04:46:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556FEDEFA;
+        Mon, 27 Jun 2022 04:46:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3536061188;
-        Mon, 27 Jun 2022 11:46:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46455C3411D;
-        Mon, 27 Jun 2022 11:46:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E56AD61187;
+        Mon, 27 Jun 2022 11:46:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F071CC3411D;
+        Mon, 27 Jun 2022 11:46:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330367;
-        bh=XD01nU63sTO0XqJJuZPfLOromHDSrYBbyMEACs/xTzw=;
+        s=korg; t=1656330376;
+        bh=CLKucOR1KV+hTdnmQuZOHWx60dJ5jfawBtDEBI3Okjc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sq9wefwreD5VhPE2KY0xzxIFCeDaQFqYDcHPdv8PHAM0cSFJGlA1kcj4yergMW63l
-         +B32FCvfkIAKR6U8WZzkIRG2L1Y9dqHPuVWnpA1Wvg4iEYN6CzDkcY8qZYU9rym1pR
-         gpxFnqnpf5vc6j8mSS6Li5BsSnb4T1abhDRI0Pg8=
+        b=uekNuu3blndvybXtTuD2wa0EDWSh7WeRQa3rpeWvG78+NfDHtRYq5NMekMjMvwD7W
+         fwiuK37fs4QJ1439ZjvpZ831D48w6sDZ6IqZSOZ2GHzxPpKT4t05LFavwhcO8ltM+M
+         ShahPyIc7rnK3vBq8STnWP2dfTao0JTXRGlMmah8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.18 172/181] ARM: cns3xxx: Fix refcount leak in cns3xxx_init
-Date:   Mon, 27 Jun 2022 13:22:25 +0200
-Message-Id: <20220627111949.672778263@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.18 137/181] iio: gyro: mpu3050: Fix the error handling in mpu3050_power_up()
+Date:   Mon, 27 Jun 2022 13:21:50 +0200
+Message-Id: <20220627111948.660257806@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,40 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 1ba904b6b16e08de5aed7c1349838d9cd0d178c5 upstream.
+commit b2f5ad97645e1deb5ca9bcb7090084b92cae35d2 upstream.
 
-of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+The driver should disable regulators when fails at regmap_update_bits().
 
-Fixes: 415f59142d9d ("ARM: cns3xxx: initial DT support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Krzysztof Halasa <khalasa@piap.pl>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Cc: <Stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220510092431.1711284-1-zheyuma97@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-cns3xxx/core.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/gyro/mpu3050-core.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm/mach-cns3xxx/core.c
-+++ b/arch/arm/mach-cns3xxx/core.c
-@@ -372,6 +372,7 @@ static void __init cns3xxx_init(void)
- 		/* De-Asscer SATA Reset */
- 		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SATA));
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -874,6 +874,7 @@ static int mpu3050_power_up(struct mpu30
+ 	ret = regmap_update_bits(mpu3050->map, MPU3050_PWR_MGM,
+ 				 MPU3050_PWR_MGM_SLEEP, 0);
+ 	if (ret) {
++		regulator_bulk_disable(ARRAY_SIZE(mpu3050->regs), mpu3050->regs);
+ 		dev_err(mpu3050->dev, "error setting power mode\n");
+ 		return ret;
  	}
-+	of_node_put(dn);
- 
- 	dn = of_find_compatible_node(NULL, NULL, "cavium,cns3420-sdhci");
- 	if (of_device_is_available(dn)) {
-@@ -385,6 +386,7 @@ static void __init cns3xxx_init(void)
- 		cns3xxx_pwr_clk_en(CNS3XXX_PWR_CLK_EN(SDIO));
- 		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SDIO));
- 	}
-+	of_node_put(dn);
- 
- 	pm_power_off = cns3xxx_power_off;
- 
 
 
