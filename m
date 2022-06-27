@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC43C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:45:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D9C6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237359AbiF0LpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
+        id S237666AbiF0LpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237416AbiF0Lmt (ORCPT
+        with ESMTP id S237409AbiF0Lmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:42:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C07F30;
-        Mon, 27 Jun 2022 04:37:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF06F14;
+        Mon, 27 Jun 2022 04:37:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF004B81117;
-        Mon, 27 Jun 2022 11:37:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 118D9C3411D;
-        Mon, 27 Jun 2022 11:37:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8491BB8111B;
+        Mon, 27 Jun 2022 11:37:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00A9EC3411D;
+        Mon, 27 Jun 2022 11:37:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329850;
-        bh=B2hSXjbr+rHpgwDe32O/tcnJQcZZzJ7ADtnfxO42u40=;
+        s=korg; t=1656329847;
+        bh=N7dJWLRMRxzL2biPyLakUYQmTOEGugbKkPbjLBE8LRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bedk/Vm+MrRX3kyJ511Nh3TY3As1ONjGamOHaNasC/7W7KD+tu2gxCfUqtQ3HaMgP
-         QmVYhVriPCOXuZ7T3SM6ENCVQR0n1Kj5fTFF7UhCvn8U7mJ5xezt/QXTbSuXgK7EMs
-         cFepkgER8ecspNXNg+bFwBZGxldrplXDFJDQWRWI=
+        b=MFIJY5FwhMS64NdD+P1fg4mOyGZnuG/98jKSWtPJOyNocPBT83k18dKt41DJJGu9a
+         252H/U5Y3mH1hWYs4kdUsY5y8SEALnA7FAvus3KneU/dZIyvnVGAmcH7fPFcu11vOr
+         uh+R1619BgU3e/yyOAMKzeTBffTIhmajxHI7/r/c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aswath Govindraju <a-govindraju@ti.com>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 5.15 123/135] arm64: dts: ti: k3-am64-main: Remove support for HS400 speed mode
-Date:   Mon, 27 Jun 2022 13:22:10 +0200
-Message-Id: <20220627111941.724118150@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.15 122/135] ARM: dts: imx6qdl: correct PU regulator ramp delay
+Date:   Mon, 27 Jun 2022 13:22:09 +0200
+Message-Id: <20220627111941.695258314@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -48,40 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aswath Govindraju <a-govindraju@ti.com>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-commit 0c0af88f3f318e73237f7fadd02d0bf2b6c996bb upstream.
+commit 93a8ba2a619816d631bd69e9ce2172b4d7a481b8 upstream.
 
-AM64 SoC, does not support HS400 and HS200 is the maximum supported speed
-mode[1]. Therefore, fix the device tree node to reflect the same.
+Contrary to what was believed at the time, the ramp delay of 150us is not
+plenty for the PU LDO with the default step time of 512 pulses of the 24MHz
+clock. Measurements have shown that after enabling the LDO the voltage on
+VDDPU_CAP jumps to ~750mV in the first step and after that the regulator
+executes the normal ramp up as defined by the step size control.
 
-[1] - https://www.ti.com/lit/ds/symlink/am6442.pdf
-      (SPRSP56C – JANUARY 2021 – REVISED FEBRUARY 2022)
+This means it takes the regulator between 360us and 370us to ramp up to
+the nominal 1.15V voltage for this power domain. With the old setting of
+the ramp delay the power up of the PU GPC domain would happen in the middle
+of the regulator ramp with the voltage being at around 900mV. Apparently
+this was enough for most units to properly power up the peripherals in the
+domain and execute the reset. Some units however, fail to power up properly,
+especially when the chip is at a low temperature. In that case any access
+to the GPU registers would yield an incorrect result with no way to recover
+from this situation.
 
-Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Link: https://lore.kernel.org/r/20220512064859.32059-1-a-govindraju@ti.com
+Change the ramp delay to 380us to cover the measured ramp up time with a
+bit of additional slack.
+
+Fixes: 40130d327f72 ("ARM: dts: imx6qdl: Allow disabling the PU regulator, add a enable ramp delay")
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/ti/k3-am64-main.dtsi |    2 --
- 1 file changed, 2 deletions(-)
+ arch/arm/boot/dts/imx6qdl.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-@@ -456,13 +456,11 @@
- 		clock-names = "clk_ahb", "clk_xin";
- 		mmc-ddr-1_8v;
- 		mmc-hs200-1_8v;
--		mmc-hs400-1_8v;
- 		ti,trm-icp = <0x2>;
- 		ti,otap-del-sel-legacy = <0x0>;
- 		ti,otap-del-sel-mmc-hs = <0x0>;
- 		ti,otap-del-sel-ddr52 = <0x6>;
- 		ti,otap-del-sel-hs200 = <0x7>;
--		ti,otap-del-sel-hs400 = <0x4>;
- 	};
- 
- 	sdhci1: mmc@fa00000 {
+--- a/arch/arm/boot/dts/imx6qdl.dtsi
++++ b/arch/arm/boot/dts/imx6qdl.dtsi
+@@ -763,7 +763,7 @@
+ 					regulator-name = "vddpu";
+ 					regulator-min-microvolt = <725000>;
+ 					regulator-max-microvolt = <1450000>;
+-					regulator-enable-ramp-delay = <150>;
++					regulator-enable-ramp-delay = <380>;
+ 					anatop-reg-offset = <0x140>;
+ 					anatop-vol-bit-shift = <9>;
+ 					anatop-vol-bit-width = <5>;
 
 
