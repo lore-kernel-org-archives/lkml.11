@@ -2,88 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 397D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:18:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C127CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:18:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235156AbiF0NSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34538 "EHLO
+        id S234319AbiF0NSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234120AbiF0NS2 (ORCPT
+        with ESMTP id S234978AbiF0NS3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:18:28 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5E7C6F;
+        Mon, 27 Jun 2022 09:18:29 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD67CF0;
+        Mon, 27 Jun 2022 06:18:26 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id z19so12935149edb.11;
+        Mon, 27 Jun 2022 06:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:date:in-reply-to:message-id
+         :mime-version;
+        bh=bYTHdHMf3jC1jHl9DPaG8LW+XxhPJYraR1ILnGyaWRE=;
+        b=f7txa/JvespsDWBSVg8Ll3tCX6K3cgmKj2lHck8JsGumPgcNxcfqJbch+A/UMBa4Sn
+         mUWOW5Rpz/SqzZaGRqMUi05ujw2jA3MImbffJFCiSIQdl+50++0mfL4sh5okGmDJ7Bx/
+         oCfMm9fKe+6lJt4PMnhjSB4VuJ5D8y5ApzQT1zVxl30i1jOMykW017Dw9qoux3qPQJVF
+         3juShRUsDYWYYKWBJzOWmMJ+jrRhF3lk9h6eEd0W7xcZLDK+9V1Bbq09XFETPfC2UGpP
+         J8MAl41OEORRjiElAHKikKzOjbCxPizi5JSBNYfxCtycR6gt7OJjJkRfJcNeQyF7ZoAh
+         fNJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=bYTHdHMf3jC1jHl9DPaG8LW+XxhPJYraR1ILnGyaWRE=;
+        b=IhPlyBoxTZ8nrVWUYm2xJ21GvbR0vrtmuPWNEGrHINu8OEmJDUoxzyk+DbtbbAPBRq
+         uaDi3d9dxtncBiHj1KJU8bxFxfvCfghPdbh8Bs0Na3uRiad24ocvFlOTGKcapUMLse+R
+         5OdUXd+We5Ogxg3ZuBFLKsERbOn1RBJgJ2L1N+PCXdFwE3/nPFenHfFPuhPfWbScZ38Z
+         b0LNaR/Rv0SDrV3YS/Zj7O7gJ/rg5ikuXOlMJJHHYBWmTwtS/hiLEtbu9OxDYO4KPUxT
+         2P7YT7nOzZ0P4Dn1U5bwssyMRf8CJuaKq/Hq2IsS6rShLYd2LAGu9Tf4wzcA7Ol/eKlD
+         WWXA==
+X-Gm-Message-State: AJIora9SOzTFWGf8WJI1BwOla1rB6cpDS47qLbRQCRMUwOC7HUXvqpfs
+        TOSrrjUK+Rr4uNs4av46iiw=
+X-Google-Smtp-Source: AGRyM1sOiuU691m9UNqKILrcF++Me1UMVhCLagzUfxoYS+ZZ9h9DjZQudKSBeU5wzuC1B2KMFg4l+A==
+X-Received: by 2002:a05:6402:84a:b0:426:262d:967e with SMTP id b10-20020a056402084a00b00426262d967emr16126132edz.286.1656335905115;
+        Mon, 27 Jun 2022 06:18:25 -0700 (PDT)
+Received: from localhost (92.40.170.45.threembb.co.uk. [92.40.170.45])
+        by smtp.gmail.com with ESMTPSA id g3-20020a170906594300b006f3ef214daesm5014147ejr.20.2022.06.27.06.18.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 27 Jun 2022 06:18:24 -0700 (PDT)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LWp8t22bkz6H8NV;
-        Mon, 27 Jun 2022 21:14:22 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 15:18:22 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 14:18:19 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <s.shtylyov@omp.ru>, <damien.lemoal@opensource.wdc.com>
-CC:     <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH] ata: pata_cs5535: Fix W=1 warnings
-Date:   Mon, 27 Jun 2022 21:12:20 +0800
-Message-ID: <1656335540-50293-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+References: <20220618214009.2178567-1-aidanmacdonald.0x0@gmail.com>
+ <20220618214009.2178567-14-aidanmacdonald.0x0@gmail.com>
+ <cafd8a40ad35dcf8a35350261af6031c@walle.cc>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
+        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
+        gregkh@linuxfoundation.org, lgirdwood@gmail.com, lars@metafoo.de,
+        rafael@kernel.org, quic_gurus@quicinc.com,
+        sebastian.reichel@collabora.com, andy.shevchenko@gmail.com,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH v3 13/16] pinctrl: Add AXP192 pin control driver
+Date:   Mon, 27 Jun 2022 14:12:58 +0100
+In-reply-to: <cafd8a40ad35dcf8a35350261af6031c@walle.cc>
+Message-ID: <me4ummrWKIPseIG4ay7yCfrumN8sIdvc@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-x86_64 allmodconfig build with W=1 gives these warnings:
 
-drivers/ata/pata_cs5535.c: In function ‘cs5535_set_piomode’:
-drivers/ata/pata_cs5535.c:93:11: error: variable ‘dummy’ set but not used [-Werror=unused-but-set-variable]
-  u32 reg, dummy;
-           ^~~~~
-drivers/ata/pata_cs5535.c: In function ‘cs5535_set_dmamode’:
-drivers/ata/pata_cs5535.c:132:11: error: variable ‘dummy’ set but not used [-Werror=unused-but-set-variable]
-  u32 reg, dummy;
-           ^~~~~
-cc1: all warnings being treated as errors
+Michael Walle <michael@walle.cc> writes:
 
-Mark variables 'dummy' as "maybe unused" to satisfy when rdmsr() is
-stubbed, which is the same as what we already do in pata_cs5536.c .
+> Hi,
+>
+> As Linus suggested you could have a look at devm_gpio_regmap_register()
+> with a custom xlate() callback and some improvements. But I've never
+> worked with pinctrl so I might be wrong. See below.
+>
+>> +static int axp192_gpio_get(struct gpio_chip *chip, unsigned int offset)
+>> +{
+>> +	struct axp192_pctl *pctl = gpiochip_get_data(chip);
+>> +	const struct axp192_pctl_reg_info *reginfo = &pctl->desc->in_regs[offset];
+>> +	unsigned int val;
+>> +	int ret;
+>> +
+>> +	ret = regmap_read(pctl->regmap, reginfo->reg, &val);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return !!(val & reginfo->mask);
+>> +}
+>
+> This should work.
+>
+>> +
+>> +static int axp192_gpio_get_direction(struct gpio_chip *chip, unsigned
+>> int offset)
+>> +{
+>> +	struct axp192_pctl *pctl = gpiochip_get_data(chip);
+>> +	const struct axp192_pctl_reg_info *reginfo =
+>> &pctl->desc->ctrl_regs[offset];
+>> +	const u8 *input_muxvals = pctl->desc->functions[AXP192_FUNC_INPUT].muxvals;
+>> +	unsigned int val;
+>> +	int ret;
+>> +
+>> +	ret = regmap_read(pctl->regmap, reginfo->reg, &val);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	if ((val & reginfo->mask) == (input_muxvals[offset] <<
+>> (ffs(reginfo->mask) - 1)))
+>> +		return GPIO_LINE_DIRECTION_IN;
+>
+> This isn't supported (yet) in gpio-regmap...
+>
+>> +
+>> +	return GPIO_LINE_DIRECTION_OUT;
+>> +}
+>> +
+>> +static void axp192_gpio_set(struct gpio_chip *chip, unsigned int
+>> offset, int value)
+>> +{
+>> +	struct axp192_pctl *pctl = gpiochip_get_data(chip);
+>> +	const struct axp192_pctl_reg_info *reginfo = &pctl->desc->out_regs[offset];
+>> +
+>> +	regmap_update_bits(pctl->regmap, reginfo->reg, reginfo->mask, value
+>> ? reginfo->mask : 0);
+>> +}
+>> +
+>> +static int axp192_gpio_direction_input(struct gpio_chip *chip,
+>> unsigned int offset)
+>> +{
+>> +	return pinctrl_gpio_direction_input(chip->base + offset);
+>> +}
+>
+> ..as well as this.
+>
+>> +
+>> +static int axp192_gpio_direction_output(struct gpio_chip *chip,
+>> unsigned int offset, int value)
+>> +{
+>> +	chip->set(chip, offset, value);
+>
+> Why don't you call pinctrl_gpio_direction_output() here?
 
-Signed-off-by: John Garry <john.garry@huawei.com>
+Probably because I copied this from pinctrl-axp209. I'll fix it in
+the next version.
 
-diff --git a/drivers/ata/pata_cs5535.c b/drivers/ata/pata_cs5535.c
-index 6725931f3c35..c2c3238ff84b 100644
---- a/drivers/ata/pata_cs5535.c
-+++ b/drivers/ata/pata_cs5535.c
-@@ -90,7 +90,7 @@ static void cs5535_set_piomode(struct ata_port *ap, struct ata_device *adev)
- 	static const u16 pio_cmd_timings[5] = {
- 		0xF7F4, 0x53F3, 0x13F1, 0x5131, 0x1131
- 	};
--	u32 reg, dummy;
-+	u32 reg, __maybe_unused dummy;
- 	struct ata_device *pair = ata_dev_pair(adev);
- 
- 	int mode = adev->pio_mode - XFER_PIO_0;
-@@ -129,7 +129,7 @@ static void cs5535_set_dmamode(struct ata_port *ap, struct ata_device *adev)
- 	static const u32 mwdma_timings[3] = {
- 		0x7F0FFFF3, 0x7F035352, 0x7F024241
- 	};
--	u32 reg, dummy;
-+	u32 reg, __maybe_unused dummy;
- 	int mode = adev->dma_mode;
- 
- 	rdmsr(ATAC_CH0D0_DMA + 2 * adev->devno, reg, dummy);
--- 
-2.35.3
+>
+>
+> I *think* what is needed for gpio-regmap to support this is:
+>  - support values and masks for the direction, for now, we
+>    only support single bits.
+>  - support the pinctrl_gpio_direction_{input,output} calls
+>
+> -michael
 
+That sounds about right, thanks for taking a look.
