@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AB8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B527C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238375AbiF0LwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
+        id S238634AbiF0LwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238319AbiF0LsQ (ORCPT
+        with ESMTP id S238332AbiF0LsS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDBFF5A0;
-        Mon, 27 Jun 2022 04:40:35 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365BFF5B5;
+        Mon, 27 Jun 2022 04:40:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BD0F61150;
-        Mon, 27 Jun 2022 11:40:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F3DC3411D;
-        Mon, 27 Jun 2022 11:40:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63E71B8113A;
+        Mon, 27 Jun 2022 11:40:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F85C341C7;
+        Mon, 27 Jun 2022 11:40:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330034;
-        bh=d8JKmmRVrPL5SRlGvMibHDSx/F6Do94oJhCPca3ayR8=;
+        s=korg; t=1656330043;
+        bh=mWL7/54HZCr/k7UXZsz1bzBhAmI7c/Igb97da6crnUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2a6der1T5v+Yw1OLCRTp0N9uy+/vAV1QY/39QevHNIDXEXxr5djVNA5dvvKFsek8t
-         JaOFj2tWyN4hSYhJE76BlLAmlLKhZBdN/9ZEklXxuOF7vdM0feawtEtTgQqQZhFvye
-         2v5FjSQoQS+ifdfFSLmxuiN5zxapJNb3QVxR0xiA=
+        b=2uxhd8/4V3mDmwH1HsP3r75L/RovTQ/xwALr1GffAncHAGItp510wPLw5PyEa5qb+
+         S5sI2228eQuiQLXPll+8goCTpySqgzSNxU9brCt7YRxfKRTxg33S69o1xsVRwsne6p
+         XFZHt4cvgMSCk4ULO4BlzUMOPbV/+tqQ2/EVrgso=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        Sergey Gorenko <sergeygo@nvidia.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 062/181] igb: fix a use-after-free issue in igb_clean_tx_ring
-Date:   Mon, 27 Jun 2022 13:20:35 +0200
-Message-Id: <20220627111946.364439499@linuxfoundation.org>
+Subject: [PATCH 5.18 047/181] scsi: iscsi: Exclude zero from the endpoint ID range
+Date:   Mon, 27 Jun 2022 13:20:20 +0200
+Message-Id: <20220627111945.927460986@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,91 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Sergey Gorenko <sergeygo@nvidia.com>
 
-[ Upstream commit 3f6a57ee8544ec3982f8a3cbcbf4aea7d47eb9ec ]
+[ Upstream commit f6eed15f3ea76596ccc689331e1cc850b999133b ]
 
-Fix the following use-after-free bug in igb_clean_tx_ring routine when
-the NIC is running in XDP mode. The issue can be triggered redirecting
-traffic into the igb NIC and then closing the device while the traffic
-is flowing.
+The kernel returns an endpoint ID as r.ep_connect_ret.handle in the
+iscsi_uevent. The iscsid validates a received endpoint ID and treats zero
+as an error. The commit referenced in the fixes line changed the endpoint
+ID range, and zero is always assigned to the first endpoint ID.  So, the
+first attempt to create a new iSER connection always fails.
 
-[   73.322719] CPU: 1 PID: 487 Comm: xdp_redirect Not tainted 5.18.3-apu2 #9
-[   73.330639] Hardware name: PC Engines APU2/APU2, BIOS 4.0.7 02/28/2017
-[   73.337434] RIP: 0010:refcount_warn_saturate+0xa7/0xf0
-[   73.362283] RSP: 0018:ffffc9000081f798 EFLAGS: 00010282
-[   73.367761] RAX: 0000000000000000 RBX: ffffc90000420f80 RCX: 0000000000000000
-[   73.375200] RDX: ffff88811ad22d00 RSI: ffff88811ad171e0 RDI: ffff88811ad171e0
-[   73.382590] RBP: 0000000000000900 R08: ffffffff82298f28 R09: 0000000000000058
-[   73.390008] R10: 0000000000000219 R11: ffffffff82280f40 R12: 0000000000000090
-[   73.397356] R13: ffff888102343a40 R14: ffff88810359e0e4 R15: 0000000000000000
-[   73.404806] FS:  00007ff38d31d740(0000) GS:ffff88811ad00000(0000) knlGS:0000000000000000
-[   73.413129] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   73.419096] CR2: 000055cff35f13f8 CR3: 0000000106391000 CR4: 00000000000406e0
-[   73.426565] Call Trace:
-[   73.429087]  <TASK>
-[   73.431314]  igb_clean_tx_ring+0x43/0x140 [igb]
-[   73.436002]  igb_down+0x1d7/0x220 [igb]
-[   73.439974]  __igb_close+0x3c/0x120 [igb]
-[   73.444118]  igb_xdp+0x10c/0x150 [igb]
-[   73.447983]  ? igb_pci_sriov_configure+0x70/0x70 [igb]
-[   73.453362]  dev_xdp_install+0xda/0x110
-[   73.457371]  dev_xdp_attach+0x1da/0x550
-[   73.461369]  do_setlink+0xfd0/0x10f0
-[   73.465166]  ? __nla_validate_parse+0x89/0xc70
-[   73.469714]  rtnl_setlink+0x11a/0x1e0
-[   73.473547]  rtnetlink_rcv_msg+0x145/0x3d0
-[   73.477709]  ? rtnl_calcit.isra.0+0x130/0x130
-[   73.482258]  netlink_rcv_skb+0x8d/0x110
-[   73.486229]  netlink_unicast+0x230/0x340
-[   73.490317]  netlink_sendmsg+0x215/0x470
-[   73.494395]  __sys_sendto+0x179/0x190
-[   73.498268]  ? move_addr_to_user+0x37/0x70
-[   73.502547]  ? __sys_getsockname+0x84/0xe0
-[   73.506853]  ? netlink_setsockopt+0x1c1/0x4a0
-[   73.511349]  ? __sys_setsockopt+0xc8/0x1d0
-[   73.515636]  __x64_sys_sendto+0x20/0x30
-[   73.519603]  do_syscall_64+0x3b/0x80
-[   73.523399]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   73.528712] RIP: 0033:0x7ff38d41f20c
-[   73.551866] RSP: 002b:00007fff3b945a68 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-[   73.559640] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff38d41f20c
-[   73.567066] RDX: 0000000000000034 RSI: 00007fff3b945b30 RDI: 0000000000000003
-[   73.574457] RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
-[   73.581852] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff3b945ab0
-[   73.589179] R13: 0000000000000000 R14: 0000000000000003 R15: 00007fff3b945b30
-[   73.596545]  </TASK>
-[   73.598842] ---[ end trace 0000000000000000 ]---
-
-Fixes: 9cbc948b5a20c ("igb: add XDP support")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Link: https://lore.kernel.org/r/e5c01d549dc37bff18e46aeabd6fb28a7bcf84be.1655388571.git.lorenzo@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220613123854.55073-1-sergeygo@nvidia.com
+Fixes: 3c6ae371b8a1 ("scsi: iscsi: Release endpoint ID when its freed")
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Signed-off-by: Sergey Gorenko <sergeygo@nvidia.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 68be2976f539..1c26bec7d6fa 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -4819,8 +4819,11 @@ static void igb_clean_tx_ring(struct igb_ring *tx_ring)
- 	while (i != tx_ring->next_to_use) {
- 		union e1000_adv_tx_desc *eop_desc, *tx_desc;
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 2c0dd64159b0..5d21f07456c6 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -212,7 +212,12 @@ iscsi_create_endpoint(int dd_size)
+ 		return NULL;
  
--		/* Free all the Tx ring sk_buffs */
--		dev_kfree_skb_any(tx_buffer->skb);
-+		/* Free all the Tx ring sk_buffs or xdp frames */
-+		if (tx_buffer->type == IGB_TYPE_SKB)
-+			dev_kfree_skb_any(tx_buffer->skb);
-+		else
-+			xdp_return_frame(tx_buffer->xdpf);
- 
- 		/* unmap skb header data */
- 		dma_unmap_single(tx_ring->dev,
+ 	mutex_lock(&iscsi_ep_idr_mutex);
+-	id = idr_alloc(&iscsi_ep_idr, ep, 0, -1, GFP_NOIO);
++
++	/*
++	 * First endpoint id should be 1 to comply with user space
++	 * applications (iscsid).
++	 */
++	id = idr_alloc(&iscsi_ep_idr, ep, 1, -1, GFP_NOIO);
+ 	if (id < 0) {
+ 		mutex_unlock(&iscsi_ep_idr_mutex);
+ 		printk(KERN_ERR "Could not allocate endpoint ID. Error %d.\n",
 -- 
 2.35.1
 
