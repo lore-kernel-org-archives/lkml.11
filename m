@@ -2,326 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57110CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1981DCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234952AbiF0NHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45914 "EHLO
+        id S234958AbiF0NHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234890AbiF0NHa (ORCPT
+        with ESMTP id S234935AbiF0NHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:07:30 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22ADB53;
-        Mon, 27 Jun 2022 06:06:54 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id eq6so12907873edb.6;
-        Mon, 27 Jun 2022 06:06:54 -0700 (PDT)
+        Mon, 27 Jun 2022 09:07:41 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D6E65A8;
+        Mon, 27 Jun 2022 06:07:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=Og1be9n3VJuoYVVqYwwqw56Ub9H2bVsORIbJIIqf7K4=;
-        b=Wu0kXiCavC8JwpQyxs8T72mOivG0aXRYf6OdBKnDSewAVSltsIgFWVEFJlrCpCna9Z
-         oOSTX8uyHXnw0cjx7jk2AH6aecrCGvVIbEWZnB/fbY5eJz83TtOb155EpVZ/KDcTMPLX
-         /xYPuFq1YVZbCTYcxa67t+DmQvaXvx31fuCF3+JZyPgxDABNra8+IU/9BBkjk6hept0y
-         u1JejVQfdsuuqA14Op6Hoz6yEBjaAtbs6tiJSjGVIHBS6G3s+nue6XqOJ1/T02bsT/LL
-         I05veIdNcRpzlYCulHEmO+oJEdsuhWLY3gMl7VzC3gHNxjoF3hU3++myGGi8omPFAp8D
-         HZIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=Og1be9n3VJuoYVVqYwwqw56Ub9H2bVsORIbJIIqf7K4=;
-        b=Z9+JAMnyTQmH1km/OEwLbxuE4Lcl2rRMv0VUm+kmiVd+K3eiO2Mlgk5NVD3voKJTn5
-         67oXOYa+kfkIEOgCNQYUtEYq7AasMfSMVGI8tGKPcEu78j7RpO6UnxugX9ydqxrhqbqf
-         38EfuCN+CYunJ0Thi/Vy/dF5qVsPMrKCjiP6dGZC9dkpBU8BzHKXPcwow/VtOu80XQuB
-         SnIvO7ZUQfuD3Ln1ZfXxvBZCei4+ZgN+MhtqRxv51RJxXn255Etz7plS4SAiylXXUvln
-         DX7uOw5eTke4utiQJcU3X4okvjF4F2bEFaUVkLx4nT6uZGpgc1e25ff/3pBxYGegOdH1
-         6r6Q==
-X-Gm-Message-State: AJIora+IVj0qQsCCdGaqSmPMKCawsEt0Ilh4N5MYgDHGUVFidShWgbzY
-        nHl98oSgHL9I3nTSLhXLjaM=
-X-Google-Smtp-Source: AGRyM1sdFYw/gA/pvthK9nXJetTj9y/RKSK1qtU81NYUz/k7MhR0W/D9ce7h8b57luSzlQu8gXiccA==
-X-Received: by 2002:a05:6402:d05:b0:435:b2a6:94eb with SMTP id eb5-20020a0564020d0500b00435b2a694ebmr15985376edb.87.1656335213382;
-        Mon, 27 Jun 2022 06:06:53 -0700 (PDT)
-Received: from localhost (92.40.170.45.threembb.co.uk. [92.40.170.45])
-        by smtp.gmail.com with ESMTPSA id cb25-20020a0564020b7900b004359dafe822sm7578913edb.29.2022.06.27.06.06.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:06:52 -0700 (PDT)
-References: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com>
- <20220603135714.12007-7-aidanmacdonald.0x0@gmail.com>
- <YrmaX6/dbYKAFDQ4@google.com>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        sre@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
-        lgirdwood@gmail.com, lars@metafoo.de, rafael@kernel.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 06/10] mfd: axp20x: Add support for AXP192
-Date:   Mon, 27 Jun 2022 14:02:00 +0100
-In-reply-to: <YrmaX6/dbYKAFDQ4@google.com>
-Message-ID: <pA6goDL2KKtUckLScUkFqzlvRxCHYZaB@localhost>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656335224; x=1687871224;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=6rq7G08GhO71nswW2YFTrLYTHyw3WQN6jd5/+z4OnT4=;
+  b=UZ0ugkjPjvaODOXbLjcwL/5kCnVG6BQlyCN3Ml0uj6jpX39azroNjI51
+   z2ON+XFm4sQiaoDaO31YUjuTcp6macj5JL6oKzATuJtrWaMBSMaugrZvX
+   32KReGRAIRDQ6Mw7/n8bV5wz4ZZvuRiu+DP2CyLK0jC1eWQp9kdMg+00z
+   A=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 27 Jun 2022 06:07:03 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 06:07:03 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 27 Jun 2022 06:07:03 -0700
+Received: from [10.216.8.230] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 27 Jun
+ 2022 06:06:58 -0700
+Message-ID: <5d2a3a55-ae24-1bbb-2448-e7a23b9debde@quicinc.com>
+Date:   Mon, 27 Jun 2022 18:36:53 +0530
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 1/3] dt-bindings: usb: dwc3: Add support for multiport
+ related properties
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>, <quic_jackp@quicinc.com>,
+        <ahalaney@redhat.com>
+References: <1654709787-23686-1-git-send-email-quic_harshq@quicinc.com>
+ <1654709787-23686-2-git-send-email-quic_harshq@quicinc.com>
+ <20220609153826.GA3828657-robh@kernel.org>
+ <ac3676bf-cd5c-be21-913a-0de6dc55bc7c@quicinc.com>
+ <20220610172210.GE1787330-robh@kernel.org>
+From:   Harsh Agarwal <quic_harshq@quicinc.com>
+In-Reply-To: <20220610172210.GE1787330-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-Lee Jones <lee.jones@linaro.org> writes:
+On 6/10/2022 10:52 PM, Rob Herring wrote:
+> On Fri, Jun 10, 2022 at 05:25:25PM +0530, Harsh Agarwal wrote:
+>> On 6/9/2022 9:08 PM, Rob Herring wrote:
+>>> On Wed, Jun 08, 2022 at 11:06:25PM +0530, Harsh Agarwal wrote:
+>>>> Added support for multiport, mport, num_usb2_phy and num_usb3_phy
+>>>> properties. These properties are used to support devices having
+>>>> a multiport controller.
+>>>>
+>>>> Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
+>>>> ---
+>>>>    .../devicetree/bindings/usb/snps,dwc3.yaml         | 53 ++++++++++++++++++++++
+>>>>    1 file changed, 53 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
+>>>> index d41265b..9332fa2 100644
+>>>> --- a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
+>>>> +++ b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
+>>>> @@ -343,6 +343,32 @@ properties:
+>>>>          This port is used with the 'usb-role-switch' property  to connect the
+>>>>          dwc3 to type C connector.
+>>>> +  multiport:
+>>> Again, I don't think this is going to play well if you need to describe
+>>> USB devices in your DT. For example, a USB hub with additional DT
+>>> properties.
+>> Thanks for the review Rob.
+>> Can you please explain why would one want to describe a USB hub in device
+>> tree ?
+> Because someone soldered a hub on the board and then connected extra
+> things like resets, GPIOs, supplies which are all outside of standard
+> USB. It's quite common...
+>
+> There's some flavors of Beagle boards that have a USB ethernet on board.
+> Guess what, they skipped out on a eeprom and so the device and a MAC
+> address has to be described in DT (if you want a stable MAC addr).
+>
+>> IF USB hub is attached to a root port , it would be enumerated by the SW. I
+>> am not clear how DT is coming
+>> into picture. Even if there was a scenario to add DT properties for a hub,
+>> then this multiport node would be like a nop
+>> as it just helps us to get the PHY phandles in a proper way.
+> It won't be enumerated by the SW if it has to be powered on first using
+> non-standard resources.
+>
+>> Do you feel we still might have a problem with multiport node ?
+> A board design could have a hub or device on any or all your ports.
+>
+>>>> +    description:
+>>>> +      If a single USB controller supports multiple ports, then it's referred to as
+>>>> +      a multiport controller. Each port of the multiport controller can support
+>>>> +      either High Speed or Super Speed or both and have their own PHY phandles. Each
+>>>> +      port is represented by "mport" node and all the "mport" nodes are grouped
+>>>> +      together inside the "multiport" node where individual "mport" node defines the
+>>>> +      PHYs supported by that port.
+>>>> +
+>>>> +  num_usb2_phy:
+>>>> +    description: Total number of HS-PHYs defined by the multiport controller.
+>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>>> +
+>>>> +  num_usb3_phy:
+>>>> +    description: Total number of SS-PHYs defined by the multiport controller.
+>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>>> +
+>>>> +  mport:
+>>>> +    description: Each mport node represents one port of the multiport controller.
+>>>> +    oneOf:
+>>>> +      - required:
+>>>> +        - usb-phy
+>>> This is deprecated. Why are you adding it?
+>> Do you mean "usb-phy" is deprecated ?
+> It is replaced by 'phys'. Any new user should use 'phys'.
+>
+>> Internally we use usb-phy with our downstream GLUE driver
+> Upstream does not care about that.
+>
+>>>> +      - required:
+>>>> +        - phys
+>>>> +        - phy-names
+>>> Other multi port USB hosts just have a list of phys. Why can't you just
+>>> use phy-names to identify each phy:
+>>>
+>>> phy-names = "port0-hs", "port0-ss", "port1-hs", "port1-ss", "port2-hs",
+>>>     "port3-hs";
+>> With the above method we would have to do some kind of string parsing on the
+>> phy-names to get the HS and SS PHYs as we need to cater to different
+>> combinations of Ports ( some support HS+SS , other supports SS only).
+> You are doing string parsing anyways to get the child nodes and
+> properties.
+>
+>> So one challenge here is with the "usb-phy". There we directly define the
+>> phy phandles and that might/might-not have proper sub-strings. eg
+>> USB_QMP_PHY . So extracting PHYS could be tricky if the phy-handle does not
+>> have proper substring like "SS" "HS" etc.
+> The schema can and should enforce that you have the proper strings.
+Hi Rob,
+Apologies for replying late.
 
-> On Fri, 03 Jun 2022, Aidan MacDonald wrote:
->
->> The AXP192 PMIC is similar to the AXP202/AXP209, but with different
->> regulators, additional GPIOs, and a different IRQ register layout.
->> 
->> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
->> ---
->>  drivers/mfd/axp20x-i2c.c   |   2 +
->>  drivers/mfd/axp20x.c       | 150 +++++++++++++++++++++++++++++++++++++
->>  include/linux/mfd/axp20x.h |  84 +++++++++++++++++++++
->>  3 files changed, 236 insertions(+)
->> 
->> diff --git a/drivers/mfd/axp20x-i2c.c b/drivers/mfd/axp20x-i2c.c
->> index 00ab48018d8d..9ada58fad77f 100644
->> --- a/drivers/mfd/axp20x-i2c.c
->> +++ b/drivers/mfd/axp20x-i2c.c
->> @@ -62,6 +62,7 @@ static int axp20x_i2c_remove(struct i2c_client *i2c)
->>  #ifdef CONFIG_OF
->>  static const struct of_device_id axp20x_i2c_of_match[] = {
->>  	{ .compatible = "x-powers,axp152", .data = (void *)AXP152_ID },
->> +	{ .compatible = "x-powers,axp192", .data = (void *)AXP192_ID },
->>  	{ .compatible = "x-powers,axp202", .data = (void *)AXP202_ID },
->>  	{ .compatible = "x-powers,axp209", .data = (void *)AXP209_ID },
->>  	{ .compatible = "x-powers,axp221", .data = (void *)AXP221_ID },
->> @@ -75,6 +76,7 @@ MODULE_DEVICE_TABLE(of, axp20x_i2c_of_match);
->>  
->>  static const struct i2c_device_id axp20x_i2c_id[] = {
->>  	{ "axp152", 0 },
->> +	{ "axp192", 0 },
->>  	{ "axp202", 0 },
->>  	{ "axp209", 0 },
->>  	{ "axp221", 0 },
->> diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
->> index 8161a5dc68e8..7f64e5c83fe2 100644
->> --- a/drivers/mfd/axp20x.c
->> +++ b/drivers/mfd/axp20x.c
->> @@ -34,6 +34,7 @@
->>  
->>  static const char * const axp20x_model_names[] = {
->>  	"AXP152",
->> +	"AXP192",
->>  	"AXP202",
->>  	"AXP209",
->>  	"AXP221",
->> @@ -92,6 +93,35 @@ static const struct regmap_access_table axp20x_volatile_table = {
->>  	.n_yes_ranges	= ARRAY_SIZE(axp20x_volatile_ranges),
->>  };
->>  
->> +static const struct regmap_range axp192_writeable_ranges[] = {
->> +	regmap_reg_range(AXP192_DATACACHE(0), AXP192_DATACACHE(5)),
->> +	regmap_reg_range(AXP192_PWR_OUT_CTRL, AXP192_IRQ5_STATE),
->> +	regmap_reg_range(AXP20X_DCDC_MODE, AXP192_N_RSTO_CTRL),
->> +	regmap_reg_range(AXP20X_CC_CTRL, AXP20X_CC_CTRL),
->> +};
->> +
->> +static const struct regmap_range axp192_volatile_ranges[] = {
->> +	regmap_reg_range(AXP20X_PWR_INPUT_STATUS, AXP192_USB_OTG_STATUS),
->> +	regmap_reg_range(AXP192_IRQ1_STATE, AXP192_IRQ4_STATE),
->> +	regmap_reg_range(AXP192_IRQ5_STATE, AXP192_IRQ5_STATE),
->> +	regmap_reg_range(AXP20X_ACIN_V_ADC_H, AXP20X_IPSOUT_V_HIGH_L),
->> +	regmap_reg_range(AXP20X_TIMER_CTRL, AXP20X_TIMER_CTRL),
->> +	regmap_reg_range(AXP192_GPIO2_0_STATE, AXP192_GPIO2_0_STATE),
->> +	regmap_reg_range(AXP192_GPIO4_3_STATE, AXP192_GPIO4_3_STATE),
->> +	regmap_reg_range(AXP192_N_RSTO_CTRL, AXP192_N_RSTO_CTRL),
->> +	regmap_reg_range(AXP20X_CHRG_CC_31_24, AXP20X_CC_CTRL),
->> +};
->> +
->> +static const struct regmap_access_table axp192_writeable_table = {
->> +	.yes_ranges	= axp192_writeable_ranges,
->> +	.n_yes_ranges	= ARRAY_SIZE(axp192_writeable_ranges),
->> +};
->> +
->> +static const struct regmap_access_table axp192_volatile_table = {
->> +	.yes_ranges	= axp192_volatile_ranges,
->> +	.n_yes_ranges	= ARRAY_SIZE(axp192_volatile_ranges),
->> +};
->> +
->>  /* AXP22x ranges are shared with the AXP809, as they cover the same range */
->>  static const struct regmap_range axp22x_writeable_ranges[] = {
->>  	regmap_reg_range(AXP20X_DATACACHE(0), AXP20X_IRQ5_STATE),
->> @@ -173,6 +203,25 @@ static const struct resource axp152_pek_resources[] = {
->>  	DEFINE_RES_IRQ_NAMED(AXP152_IRQ_PEK_FAL_EDGE, "PEK_DBF"),
->>  };
->>  
->> +static const struct resource axp192_gpio_resources[] = {
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_GPIO0_INPUT, "GPIO0"),
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_GPIO1_INPUT, "GPIO1"),
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_GPIO2_INPUT, "GPIO2"),
->> +};
->> +
->> +static const struct resource axp192_ac_power_supply_resources[] = {
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_ACIN_PLUGIN, "ACIN_PLUGIN"),
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_ACIN_REMOVAL, "ACIN_REMOVAL"),
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_ACIN_OVER_V, "ACIN_OVER_V"),
->> +};
->> +
->> +static const struct resource axp192_usb_power_supply_resources[] = {
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_VBUS_PLUGIN, "VBUS_PLUGIN"),
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_VBUS_REMOVAL, "VBUS_REMOVAL"),
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_VBUS_VALID, "VBUS_VALID"),
->> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_VBUS_NOT_VALID, "VBUS_NOT_VALID"),
->> +};
->> +
->>  static const struct resource axp20x_ac_power_supply_resources[] = {
->>  	DEFINE_RES_IRQ_NAMED(AXP20X_IRQ_ACIN_PLUGIN, "ACIN_PLUGIN"),
->>  	DEFINE_RES_IRQ_NAMED(AXP20X_IRQ_ACIN_REMOVAL, "ACIN_REMOVAL"),
->> @@ -245,6 +294,15 @@ static const struct regmap_config axp152_regmap_config = {
->>  	.cache_type	= REGCACHE_RBTREE,
->>  };
->>  
->> +static const struct regmap_config axp192_regmap_config = {
->> +	.reg_bits	= 8,
->> +	.val_bits	= 8,
->> +	.wr_table	= &axp192_writeable_table,
->> +	.volatile_table	= &axp192_volatile_table,
->> +	.max_register	= AXP20X_CC_CTRL,
->> +	.cache_type	= REGCACHE_RBTREE,
->> +};
->> +
->>  static const struct regmap_config axp20x_regmap_config = {
->>  	.reg_bits	= 8,
->>  	.val_bits	= 8,
->> @@ -304,6 +362,55 @@ static const struct regmap_irq axp152_regmap_irqs[] = {
->>  	INIT_REGMAP_IRQ(AXP152, GPIO0_INPUT,		2, 0),
->>  };
->>  
->> +static const struct regmap_irq axp192_regmap_irqs[] = {
->> +	INIT_REGMAP_IRQ(AXP192, ACIN_OVER_V,		0, 7),
->> +	INIT_REGMAP_IRQ(AXP192, ACIN_PLUGIN,		0, 6),
->> +	INIT_REGMAP_IRQ(AXP192, ACIN_REMOVAL,		0, 5),
->> +	INIT_REGMAP_IRQ(AXP192, VBUS_OVER_V,		0, 4),
->> +	INIT_REGMAP_IRQ(AXP192, VBUS_PLUGIN,		0, 3),
->> +	INIT_REGMAP_IRQ(AXP192, VBUS_REMOVAL,		0, 2),
->> +	INIT_REGMAP_IRQ(AXP192, VBUS_V_LOW,		0, 1),
->> +	INIT_REGMAP_IRQ(AXP192, BATT_PLUGIN,		1, 7),
->> +	INIT_REGMAP_IRQ(AXP192, BATT_REMOVAL,	        1, 6),
->> +	INIT_REGMAP_IRQ(AXP192, BATT_ENT_ACT_MODE,	1, 5),
->> +	INIT_REGMAP_IRQ(AXP192, BATT_EXIT_ACT_MODE,	1, 4),
->> +	INIT_REGMAP_IRQ(AXP192, CHARG,		        1, 3),
->> +	INIT_REGMAP_IRQ(AXP192, CHARG_DONE,		1, 2),
->> +	INIT_REGMAP_IRQ(AXP192, BATT_TEMP_HIGH,	        1, 1),
->> +	INIT_REGMAP_IRQ(AXP192, BATT_TEMP_LOW,	        1, 0),
->> +	INIT_REGMAP_IRQ(AXP192, DIE_TEMP_HIGH,	        2, 7),
->> +	INIT_REGMAP_IRQ(AXP192, CHARG_I_LOW,		2, 6),
->> +	INIT_REGMAP_IRQ(AXP192, DCDC1_V_LONG,	        2, 5),
->> +	INIT_REGMAP_IRQ(AXP192, DCDC2_V_LONG,	        2, 4),
->> +	INIT_REGMAP_IRQ(AXP192, DCDC3_V_LONG,	        2, 3),
->> +	INIT_REGMAP_IRQ(AXP192, PEK_SHORT,		2, 1),
->> +	INIT_REGMAP_IRQ(AXP192, PEK_LONG,		2, 0),
->> +	INIT_REGMAP_IRQ(AXP192, N_OE_PWR_ON,		3, 7),
->> +	INIT_REGMAP_IRQ(AXP192, N_OE_PWR_OFF,	        3, 6),
->> +	INIT_REGMAP_IRQ(AXP192, VBUS_VALID,		3, 5),
->> +	INIT_REGMAP_IRQ(AXP192, VBUS_NOT_VALID,	        3, 4),
->> +	INIT_REGMAP_IRQ(AXP192, VBUS_SESS_VALID,	3, 3),
->> +	INIT_REGMAP_IRQ(AXP192, VBUS_SESS_END,	        3, 2),
->> +	INIT_REGMAP_IRQ(AXP192, LOW_PWR_LVL,	        3, 0),
->> +	INIT_REGMAP_IRQ(AXP192, TIMER,			4, 7),
->> +	INIT_REGMAP_IRQ(AXP192, GPIO2_INPUT,		4, 2),
->> +	INIT_REGMAP_IRQ(AXP192, GPIO1_INPUT,		4, 1),
->> +	INIT_REGMAP_IRQ(AXP192, GPIO0_INPUT,		4, 0),
->> +};
->> +
->> +static int axp192_get_irq_reg(unsigned int base_reg, int i)
->
-> Nit: If you have to respin this set, please rename 'i'.
->
-> Unless used as an iterator, 'i' is a terrible variable name.
->
+I get your concern. Yes we can remove the "multiport" node and instead 
+define the
+USB phy phandles all in one place. Still I would need to add support for 
+both generic-phy and
+usb-phy framework as downstream many vendors are using "usb-phy" and 
+it's supported by ACK as well.
+This would not regress anything with Generic PHY.
 
-Ack. I had to rework the regmap changes and split them out to their
-own series, so I'll fix this when I rebase.
+@Greg can you please comment as ACK has support for usb-phy framework.
 
->> +{
->> +	/* linear mapping for IRQ1 to IRQ4 */
->> +	if (i < 4)
->> +		return base_reg + i;
->> +
->> +	/* handle IRQ5 separately */
->> +	if (base_reg == AXP192_IRQ1_EN)
->> +		return AXP192_IRQ5_EN;
->> +	else
->> +		return AXP192_IRQ5_STATE;
->> +}
->> +
->>  static const struct regmap_irq axp20x_regmap_irqs[] = {
->>  	INIT_REGMAP_IRQ(AXP20X, ACIN_OVER_V,		0, 7),
->>  	INIT_REGMAP_IRQ(AXP20X, ACIN_PLUGIN,		0, 6),
->> @@ -514,6 +621,19 @@ static const struct regmap_irq_chip axp152_regmap_irq_chip = {
->>  	.num_regs		= 3,
->>  };
->>  
->> +static const struct regmap_irq_chip axp192_regmap_irq_chip = {
->> +	.name			= "axp192_irq_chip",
->> +	.status_base		= AXP192_IRQ1_STATE,
->> +	.ack_base		= AXP192_IRQ1_STATE,
->> +	.mask_base		= AXP192_IRQ1_EN,
->> +	.mask_invert		= true,
->> +	.init_ack_masked	= true,
->> +	.irqs			= axp192_regmap_irqs,
->> +	.num_irqs		= ARRAY_SIZE(axp192_regmap_irqs),
->> +	.num_regs		= 5,
->> +	.get_irq_reg		= axp192_get_irq_reg,
->> +};
->> +
->>  static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
->>  	.name			= "axp20x_irq_chip",
->>  	.status_base		= AXP20X_IRQ1_STATE,
->> @@ -588,6 +708,30 @@ static const struct regmap_irq_chip axp809_regmap_irq_chip = {
->>  	.num_regs		= 5,
->>  };
->>  
->> +static const struct mfd_cell axp192_cells[] = {
->> +	{
->> +		.name		= "axp192-gpio",
->> +		.of_compatible	= "x-powers,axp192-gpio",
->> +		.num_resources	= ARRAY_SIZE(axp192_gpio_resources),
->> +		.resources	= axp192_gpio_resources,
->> +	}, {
->> +		.name		= "axp20x-regulator",
->
-> Nit: Is it possible to put one line entries at the bottom?
->
-> And format like this:
->
->     { .name = "axp20x-regulator" }
->
+Now coming to implementation, let's consider a 4 port USB multiport 
+controller having
+4 HS PHYs and 2 SS PHYs.  We can have two approaches here
 
-OK.
+#1 -> If we could mandate using "HS" or "SS" as substring in
+phy-names or usb-phy, then we can calculate number of HS and SS phy and 
+also get
+corresponding PHY nodes. Only concern here is that downstream vendors 
+might need
+to change their existing usb-phy names and add proper substring if they 
+are not doing so ;
 
->> +	}, {
->> +		.name		= "axp192-adc",
->> +		.of_compatible	= "x-powers,axp192-adc",
->> +	}, {
->> +		.name		= "axp20x-ac-power-supply",
->> +		.of_compatible	= "x-powers,axp202-ac-power-supply",
->> +		.num_resources	= ARRAY_SIZE(axp192_ac_power_supply_resources),
->> +		.resources	= axp192_ac_power_supply_resources,
->> +	}, {
->> +		.name		= "axp20x-usb-power-supply",
->> +		.of_compatible	= "x-powers,axp192-usb-power-supply",
->> +		.num_resources	= ARRAY_SIZE(axp192_usb_power_supply_resources),
->> +		.resources	= axp192_usb_power_supply_resources,
->> +	}
->> +};
+phy = <&usb-hs-phy>,<&usb-ss-phy>,
+       <&usb-hs-phy1>, <&usb-ss-phy1>,
+       <&usb-hs-phy2>, <&usb-hs-phy3>;
+
+phy-names = "port0-hs", "port0-ss", "port1-hs", "port1-ss", "port2-hs",
+    "port3-hs";
+
+
+OR
+
+
+#2-> We could mandate defining the USB phy in HS - SS pairs.
+For ports that has only HS PHY, we would need to define usb_nop_phy in 
+SS place.
+Then we can calculate the number of HS & SS phys and get corresponding
+PHY nodes by using simple fact that HS phy would be defined at odd places &
+SS phy defined at even. Here substrings are not mandated.
+
+phy = <&usb-hs-phy>,<&usb-qmp-phy>,
+       <&usb-hs-phy1>, <&usb-qmp-phy1>,
+       <&usb-hs-phy2>, <&usb_nop_phy>
+       <&usb-hs-phy3>, <&usb_nop_phy>;
+
+phy-names = "port0-hs", "port0-ss",
+	    "port1-hs", "port1-ss",
+	    "port2-hs", "usb-nop",
+	    "port3-hs", "usb-nop";
+
+
+Please let me know if you prefer any approach here or have any suggestions.
+
+>   
 >
-> For my own reference (apply this as-is to your sign-off block):
+>> We cannot break existing implementation and so we thought of going with the
+>> "multiport" node approach, listing below some flexibility :
+> How would this break?
 >
->   Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-
-Thanks!
-
-Regards, Aidan
+>> 1. Better representation of the PHYs and it's relation with a port.
+>> 2. Here for each port we pick the first PHY as HS and 2nd PHY as SS as we
+>> have been doing traditionally.
+>> So for "usb-phy" we need not care how the PHY handles are named.
+>>
+>> 3. It's future proof incase we need to add additional properties specific to
+>> a port. We can just add those properties inside MP_1 or MP_2 etc.
+>> Though nothing like this has yet been implemented.
+> Then you have to consider how the standard USB device binding fits into
+> this, and it needs to work for anyone with multiple ports. The
+> usb-hcd.yaml schema already defines that child nodes represent a USB
+> device attached to a port on the host. 'reg' is the port number.
+>
+> Rob
