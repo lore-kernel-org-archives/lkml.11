@@ -2,139 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB943CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E766AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238569AbiF0Pfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 11:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
+        id S238847AbiF0Pgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 11:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238567AbiF0Pfk (ORCPT
+        with ESMTP id S238756AbiF0Pfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 11:35:40 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CB31A829
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:35:37 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id c205so9358842pfc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:35:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0M1pQcOKied9vqnWW/vxW+YZhV9nZDUGj0eSUFDJbwg=;
-        b=Cv61qlgrIl9Hv9WvUrykcJQWqfl6bT/dGI9EfXEXeQMObQcjF8qFPkJ4lxEIMKZQM+
-         Tdw34lCxt44f5k2/Z7ulr6Lvy6lknHiv+9DdCmdMfimmwemlRrIpnNtY3WNnOhzWLM56
-         9ocMgnjpRORfrpUiHF2ZQh+9fKbVOvnIBjg5s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0M1pQcOKied9vqnWW/vxW+YZhV9nZDUGj0eSUFDJbwg=;
-        b=PW/eOQutXafJEKh4pgDL5QFWG9AhoLDMdZ98nPsl6/iuyYuT8TJiuhzNi8iiOgqHxd
-         i/INqI+xAxZLWUFs0ke2kK3lAF7gjA/oPyExYF6TvhDrxYyphOGBlU/KlxtKai3Lc/1b
-         2UItXjNxlhqdeaozo3ZYxm7K3aza3p1hjq+S6KGlvsCxhlhpuzE09tO+sg8i8Q5MAgtW
-         ycVxRnlVU7WMQ8K6ywzhYZ2i2+Ws9ckoZvUcHkJlxn1J11N0U7OZOwFsuBVzmlBs8kAJ
-         LtxgAdAxqKuLgfoHKyRs4mZj1Lb1P+f+Z8uZ0IBY4GVmLIvdqWGFMmdYXeiG+WO/yiwY
-         iyrA==
-X-Gm-Message-State: AJIora9u4O+q3nhEkQ2o04LOTTyXXkAlyXGuTJbdbtUXKJlx9RSXrTTH
-        nERURTx2jPuBPPTPWF4690t77g==
-X-Google-Smtp-Source: AGRyM1tmA32fcPl+dNPL9uVWTM9M7VWXEcrf6Blr3EM8NH842MbiJviT40bZbAwSKyWKFIITMupuYg==
-X-Received: by 2002:a63:8f56:0:b0:40c:9877:9f51 with SMTP id r22-20020a638f56000000b0040c98779f51mr13147028pgn.206.1656344137416;
-        Mon, 27 Jun 2022 08:35:37 -0700 (PDT)
-Received: from localhost ([2620:15c:11a:202:f31c:687c:3a61:62c5])
-        by smtp.gmail.com with UTF8SMTPSA id cd21-20020a056a00421500b0051b32c2a5a7sm7434309pfb.138.2022.06.27.08.35.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 08:35:37 -0700 (PDT)
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>
-Cc:     linux-security-module@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>, Milan Broz <gmazyland@gmail.com>,
-        dm-devel@redhat.com, Douglas Anderson <dianders@chromium.org>,
-        linux-kernel@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v7 3/3] dm: verity-loadpin: Use CONFIG_SECURITY_LOADPIN_VERITY for conditional compilation
-Date:   Mon, 27 Jun 2022 08:35:26 -0700
-Message-Id: <20220627083512.v7.3.I5aca2dcc3b06de4bf53696cd21329dce8272b8aa@changeid>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220627153526.3750341-1-mka@chromium.org>
-References: <20220627153526.3750341-1-mka@chromium.org>
+        Mon, 27 Jun 2022 11:35:52 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475EC1AD88
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:35:45 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25RF6Qip004248;
+        Mon, 27 Jun 2022 15:35:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=3tfjcfA1umXJ4zRA8k81/Dm9rb1xlzZ/FzN7iv+qR7k=;
+ b=i4DAl4iToA77Ek7S+1qQWoVgwOooNicJZmnXoz+PYNZ3i5BBiezgII4hIBEmqazgasOv
+ znFq47ecF9kYvVDmw7BdYRJv9BWI7JLZS6Nqreyqap56NPFIZOqnX/FrVh+c2AuLffjd
+ qGvp6047lzshP827GB/9UrCLFjlUWDi9cvCCdgEcoTBrDhnb6lnk0T85qHVql7kHFoB7
+ aSy8KrY44ndOyARXfxnE3T2M2hslErbYSxA4VZqxs5NEA/s50mVCPzS5Bv5c1C6ULt1b
+ /hqfe0QnEng7ysiz0vXisXqPDUJ8c1UEq1ZrVg32yE7s0/bNgayd3JZzjEdGdWLmQsX3 zA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyeht9q5v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 15:35:12 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25RFKerq003707;
+        Mon, 27 Jun 2022 15:35:12 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyeht9q3s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 15:35:12 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25RFYjZJ004307;
+        Mon, 27 Jun 2022 15:35:09 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gwt08u55t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 15:35:09 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25RFZEwo28574032
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 27 Jun 2022 15:35:14 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 41C2BA405F;
+        Mon, 27 Jun 2022 15:35:07 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 286D1A405B;
+        Mon, 27 Jun 2022 15:35:03 +0000 (GMT)
+Received: from [9.43.63.124] (unknown [9.43.63.124])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 27 Jun 2022 15:35:02 +0000 (GMT)
+Message-ID: <92eae2ef-f9b6-019a-5a8e-728cdd9bbbc0@linux.vnet.ibm.com>
+Date:   Mon, 27 Jun 2022 21:05:02 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
+Content-Language: en-US
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Sathvika Vasireddy <sv@linux.ibm.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Cc:     "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "paulus@samba.org" <paulus@samba.org>
+References: <20220624183238.388144-1-sv@linux.ibm.com>
+ <20220624183238.388144-12-sv@linux.ibm.com>
+ <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
+From:   Sathvika Vasireddy <sv@linux.vnet.ibm.com>
+In-Reply-To: <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 4KBnhyse84Bsf1tf-lv6ToDA5RguKz1x
+X-Proofpoint-ORIG-GUID: DRBNFF3yOeqTv-LmNDmfHMb205HicYjd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-27_06,2022-06-24_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=974 adultscore=0
+ suspectscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
+ malwarescore=0 phishscore=0 spamscore=0 impostorscore=0 clxscore=1015
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206270067
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The verity glue for LoadPin is only needed when CONFIG_SECURITY_LOADPIN_VERITY
-is set, use this option for conditional compilation instead of the combo of
-CONFIG_DM_VERITY and CONFIG_SECURITY_LOADPIN.
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-Acked-by: Kees Cook <keescook@chromium.org>
----
+On 25/06/22 12:16, Christophe Leroy wrote:
+>
+> Le 24/06/2022 à 20:32, Sathvika Vasireddy a écrit :
+>> objtool is throwing *unannotated intra-function call*
+>> warnings with a few instructions that are marked
+>> unreachable. Remove unreachable() from WARN_ON()
+>> to fix these warnings, as the codegen remains same
+>> with and without unreachable() in WARN_ON().
+> Did you try the two exemples described in commit 1e688dd2a3d6
+> ("powerpc/bug: Provide better flexibility to WARN_ON/__WARN_FLAGS() with
+> asm goto") ?
+>
+> Without your patch:
+>
+> 00000640 <test>:
+>    640:	81 23 00 84 	lwz     r9,132(r3)
+>    644:	71 29 40 00 	andi.   r9,r9,16384
+>    648:	40 82 00 0c 	bne     654 <test+0x14>
+>    64c:	80 63 00 0c 	lwz     r3,12(r3)
+>    650:	4e 80 00 20 	blr
+>    654:	0f e0 00 00 	twui    r0,0
+>
+> 00000658 <test9w>:
+>    658:	2c 04 00 00 	cmpwi   r4,0
+>    65c:	41 82 00 0c 	beq     668 <test9w+0x10>
+>    660:	7c 63 23 96 	divwu   r3,r3,r4
+>    664:	4e 80 00 20 	blr
+>    668:	0f e0 00 00 	twui    r0,0
+>    66c:	38 60 00 00 	li      r3,0
+>    670:	4e 80 00 20 	blr
+>
+>
+> With your patch:
+>
+> 00000640 <test>:
+>    640:	81 23 00 84 	lwz     r9,132(r3)
+>    644:	71 29 40 00 	andi.   r9,r9,16384
+>    648:	40 82 00 0c 	bne     654 <test+0x14>
+>    64c:	80 63 00 0c 	lwz     r3,12(r3)
+>    650:	4e 80 00 20 	blr
+>    654:	0f e0 00 00 	twui    r0,0
+>    658:	4b ff ff f4 	b       64c <test+0xc>		<==
+>
+> 0000065c <test9w>:
+>    65c:	2c 04 00 00 	cmpwi   r4,0
+>    660:	41 82 00 0c 	beq     66c <test9w+0x10>
+>    664:	7c 63 23 96 	divwu   r3,r3,r4
+>    668:	4e 80 00 20 	blr
+>    66c:	0f e0 00 00 	twui    r0,0
+>    670:	38 60 00 00 	li      r3,0			<==
+>    674:	4e 80 00 20 	blr				<==
+>    678:	38 60 00 00 	li      r3,0
+>    67c:	4e 80 00 20 	blr
+>
+The builtin variant of unreachable (__builtin_unreachable()) works.
 
-Changes in v7:
-- none
+How about using that instead of unreachable() ?
 
-Changes in v6:
-- none
 
-Changes in v5:
-- added 'Acked-by' tag from Kees
-
-Changes in v4:
-- none
-
-Changes in v3:
-- none
-
-Changes in v2:
-- none
-
- drivers/md/Makefile               | 7 +------
- include/linux/dm-verity-loadpin.h | 2 +-
- 2 files changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/md/Makefile b/drivers/md/Makefile
-index 71771901c823..a96441752ec7 100644
---- a/drivers/md/Makefile
-+++ b/drivers/md/Makefile
-@@ -83,6 +83,7 @@ obj-$(CONFIG_DM_LOG_WRITES)	+= dm-log-writes.o
- obj-$(CONFIG_DM_INTEGRITY)	+= dm-integrity.o
- obj-$(CONFIG_DM_ZONED)		+= dm-zoned.o
- obj-$(CONFIG_DM_WRITECACHE)	+= dm-writecache.o
-+obj-$(CONFIG_SECURITY_LOADPIN_VERITY)	+= dm-verity-loadpin.o
- 
- ifeq ($(CONFIG_DM_INIT),y)
- dm-mod-objs			+= dm-init.o
-@@ -108,12 +109,6 @@ ifeq ($(CONFIG_DM_VERITY_VERIFY_ROOTHASH_SIG),y)
- dm-verity-objs			+= dm-verity-verify-sig.o
- endif
- 
--ifeq ($(CONFIG_DM_VERITY),y)
--ifeq ($(CONFIG_SECURITY_LOADPIN),y)
--dm-verity-objs			+= dm-verity-loadpin.o
--endif
--endif
--
- ifeq ($(CONFIG_DM_AUDIT),y)
- dm-mod-objs			+= dm-audit.o
- endif
-diff --git a/include/linux/dm-verity-loadpin.h b/include/linux/dm-verity-loadpin.h
-index fb695ecaa5d5..552b817ab102 100644
---- a/include/linux/dm-verity-loadpin.h
-+++ b/include/linux/dm-verity-loadpin.h
-@@ -15,7 +15,7 @@ struct dm_verity_loadpin_trusted_root_digest {
- 	u8 data[];
- };
- 
--#if IS_ENABLED(CONFIG_SECURITY_LOADPIN) && IS_BUILTIN(CONFIG_DM_VERITY)
-+#if IS_ENABLED(CONFIG_SECURITY_LOADPIN_VERITY)
- bool dm_verity_loadpin_is_bdev_trusted(struct block_device *bdev);
- #else
- static inline bool dm_verity_loadpin_is_bdev_trusted(struct block_device *bdev)
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+- Sathvika
 
