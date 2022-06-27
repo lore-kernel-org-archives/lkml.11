@@ -2,129 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03393CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E46A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237859AbiF0PUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 11:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
+        id S238017AbiF0PU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 11:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237807AbiF0PTW (ORCPT
+        with ESMTP id S236789AbiF0PTW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 11:19:22 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA7911450;
-        Mon, 27 Jun 2022 08:19:21 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id o10so13568738edi.1;
-        Mon, 27 Jun 2022 08:19:21 -0700 (PDT)
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21432B7DB
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:19:20 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id t21so9346953pfq.1
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:19:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=hFmbK8M11XjJzoVFfZwjfb4w2B8a5R3YTDT8W3rNvcQ=;
-        b=EqM+us6vfLvad4kXXDn1AjcivBngldlek+jWxMpAm2Vc5HI676j2YS3QWCgrYGSLPc
-         nRsdJCfinQfKudnDj9eJBV49m05r2C4B9nlJf+hA4FoLosukjqDb0yTd44foaslGZdDt
-         KKBeTRTh6E1mSiP5NqCAWJpr0N6+mg+LA3TZuRcITUVJ4fW6nUPmCHo1qFiMsVicE6gE
-         5s4Uqxx+XFgdULrm3sH/eUGT3PVAKuFQ6O/huxcr+cWL4ws8cDtN3AYviMN5XimUd6Z6
-         abxOfzEEd5JmNAWlPyql1ecRqjgsGyFJZx4Mnejy95REwj4QYRxA6XuC/AvUZphGgaLl
-         7pKg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YaZf+iuRf5VcdUABylMh/I8zxebuNZqSPzEggA0QsB8=;
+        b=EAZiPo1z5Oj055MNcLne6utIxA3+KNzAFdg+8cktsPfsaEj9t+alS08Gh9t/KvWzfJ
+         MNEVhFUpDFSbSWqT1iKKSAuOYTXK8siJi1QzE9kbM0TGnNmPsOYBQX3jTLA/yBIp6onh
+         rXK0DS2rmHFfxfgT3Mgeq7ObsFasLHWqqbUFKLWtZO1mIXSDvb8pJ9wVBOQk8hxwpB4m
+         A9u841zQ/QP/0xkYJbpiVw0l2qQiwa8OvZLZyXR+mLK0VyyKaXxVYC8R/pad2jfp5wwD
+         c3HlXmdX3bsjsQUb7jaCyTxAFEs95x9V1NtkWJ1+bcQPrr4mDuV6Bd1kbrTgmOacdfk8
+         Wfug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=hFmbK8M11XjJzoVFfZwjfb4w2B8a5R3YTDT8W3rNvcQ=;
-        b=i9XAvM6rQzS0PjluBDQRmJGk6lIjmK+/bwjnNLcMD/AqJ+9d97ZsAjUD2H53t6wGhe
-         3UVqBFqt/654hAFYtwwqQNQC0FO2EnwkV7JZFpHZVy8WBWX7ixLa0wG5tVvOzbFIiSxg
-         43tps2EioOxVYeRFbfAq8FxW6z8KOsCd/OZf7jVhOFOr5g4Uolf1rN1YT19WhXvT15vE
-         LTLIULGjuIecfaSDjldrampeY2rQOmqDMFT/yPsfQ1EjYBljalQMxEY6MwqdYmotjn9s
-         CvaEH+lSNVswB2AN3+C7QEiXpbrGC38dSeKvkqAIDVxKhlO8Oox4GQmnBcH118qc8FQr
-         EiJg==
-X-Gm-Message-State: AJIora8QoqlO5PkuEAWrAn3BVzhggjd6XBCwM8thzVmePxEYPnn+fyXF
-        oSlhQaLI2zpRXwx4hqO2xSjuSQDrPfU=
-X-Google-Smtp-Source: AGRyM1tRBnxf9cJdr2BSxJoHKIVNW+/xKayrwlNzxMc/10JnS47CN4eTCmWwkLRx0xYneB7u0fUPvA==
-X-Received: by 2002:a05:6402:3299:b0:435:787f:8058 with SMTP id f25-20020a056402329900b00435787f8058mr17029183eda.79.1656343159850;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YaZf+iuRf5VcdUABylMh/I8zxebuNZqSPzEggA0QsB8=;
+        b=2bknJPXvhmP8JkAzZZIRVF6dC3a3QP1653VfHp3LtFjVEIGBLNml27KTzOqmlTYYcu
+         J628E94KT2Oz10uJSvytDKOMgXxo53ome9ns4zvjrq5oFxoX1NENYsjGMboeDbtcTP7h
+         MRIgBe/BT0ftSSuxxIt7svjARyoAHQVVKovmTDkiZL6loj+6EKnVoK3hUXKpgZDAyz9u
+         Di7taLK2z1xsv1DQZbAHhpAVOfXKwCtFT5YM5UAaJ17QQ5/Ji9iN1ijIfWdYFnqqzAE1
+         jeaJ2409XjVQPFi7HHAAw5yikfOH8wI+0hb+PEFzCyEo3KWmX3G2fLdJcVEP6AS09mc/
+         hJzQ==
+X-Gm-Message-State: AJIora8Gs2KdmIr/NNmvWfPT+fmyBcD1TTaEZTrQhJRdbtkmFBdrxvvR
+        cRSNeSQop9iGbIYNwUV7dH2sAg==
+X-Google-Smtp-Source: AGRyM1vHuTM6ZgX8JalSiT8QyeSxhAVGc/h5+tA5iASu1cjNANEQXeoNehpvLiPcclhIac/WHxozOg==
+X-Received: by 2002:a63:90c7:0:b0:40d:3c0d:33f4 with SMTP id a190-20020a6390c7000000b0040d3c0d33f4mr13116674pge.334.1656343159459;
         Mon, 27 Jun 2022 08:19:19 -0700 (PDT)
-Received: from felia.fritz.box (200116b826511b0021a0c74157938809.dip.versatel-1u1.de. [2001:16b8:2651:1b00:21a0:c741:5793:8809])
-        by smtp.gmail.com with ESMTPSA id z8-20020a170906434800b00722f2a0944fsm5076901ejm.107.2022.06.27.08.19.18
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id bf20-20020a056a000d9400b00525392cb386sm7451670pfb.201.2022.06.27.08.19.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 27 Jun 2022 08:19:19 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Hu Haowen <src.res@email.cn>, linux-doc@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net
-Cc:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-hwmon@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [RFC PATCH 03/11] docs: kernel-docs: reflect that it is community-maintained
-Date:   Mon, 27 Jun 2022 17:18:11 +0200
-Message-Id: <20220627151819.22694-4-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220627151819.22694-1-lukas.bulwahn@gmail.com>
-References: <20220627151819.22694-1-lukas.bulwahn@gmail.com>
+Date:   Mon, 27 Jun 2022 15:19:15 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paul Durrant <pdurrant@amazon.com>
+Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Woodhouse <dwmw2@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH v4] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info)
+ sub-leaves, if present
+Message-ID: <YrnKc6RoqDM/At3T@google.com>
+References: <20220622151728.13622-1-pdurrant@amazon.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622151728.13622-1-pdurrant@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove and rephrase statements that only make sense if a single author
-exclusively would maintain this document, but we would really want to
-consider this being a page maintained by the kernel community, as it is
-placed in the kernel repository,  and let us hope that more contributors
-suggest some more documents.
+On Wed, Jun 22, 2022, Paul Durrant wrote:
+> The scaling information in subleaf 1 should match the values set by KVM in
+> the 'vcpu_info' sub-structure 'time_info' (a.k.a. pvclock_vcpu_time_info)
+> which is shared with the guest, but is not directly available to the VMM.
+> The offset values are not set since a TSC offset is already applied.
+> The TSC frequency should also be set in sub-leaf 2.
+> 
+> Cache pointers to the sub-leaves when CPUID is updated by the VMM and
+> populate the relevant information prior to entering the guest.
 
-Further, do some minor word-smithing.
+All of my comments about the code still apply.
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
- Documentation/process/kernel-docs.rst | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+https://lore.kernel.org/all/YrMqtHzNSean+qkh@google.com
 
-diff --git a/Documentation/process/kernel-docs.rst b/Documentation/process/kernel-docs.rst
-index 5d6fa71895cc..b2523267ffc7 100644
---- a/Documentation/process/kernel-docs.rst
-+++ b/Documentation/process/kernel-docs.rst
-@@ -3,7 +3,8 @@
- Index of Further Kernel Documentation
- =====================================
- 
--          Juan-Mariano de Goyeneche <jmseyas@dit.upm.es>
-+Initial Author: Juan-Mariano de Goyeneche (<jmseyas@dit.upm.es>;
-+email address is defunct now.)
- 
- The need for a document like this one became apparent in the
- linux-kernel mailing list as the same questions, asking for pointers
-@@ -16,21 +17,16 @@ philosophy and design decisions behind this code.
- 
- Unfortunately, not many documents are available for beginners to
- start. And, even if they exist, there was no "well-known" place which
--kept track of them. These lines try to cover this lack. All documents
--available on line known by the author are listed, while some reference
--books are also mentioned.
-+kept track of them. These lines try to cover this lack.
- 
- PLEASE, if you know any paper not listed here or write a new document,
--send me an e-mail, and I'll include a reference to it here. Any
--corrections, ideas or comments are also welcomed.
-+include a reference to it here, following the kernel's patch submission
-+process. Any corrections, ideas or comments are also welcome.
- 
--The papers that follow are listed in no particular order. All are
--cataloged with the following fields: the document's "Title", the
--"Author"/s, the "URL" where they can be found, some "Keywords" helpful
--when searching for specific topics, and a brief "Description" of the
--Document.
--
--Enjoy!
-+All documents are cataloged with the following fields: the document's
-+"Title", the "Author"/s, the "URL" where they can be found, some
-+"Keywords" helpful when searching for specific topics, and a brief
-+"Description" of the Document.
- 
- .. note::
- 
--- 
-2.17.1
+> Signed-off-by: Paul Durrant <pdurrant@amazon.com>
+> ---
+> Cc: David Woodhouse <dwmw2@infradead.org>
 
+Cc: can go in the changelog, it's helpful info to carry with the commit as it
+documents who was made aware of the patch, e.g. show who may have had a cance to
+object/review.
+
+> 
+> v2:
+>  - Make sure sub-leaf pointers are NULLed if the time leaf is removed
+> 
+> v3:
+>  - Add leaf limit check in kvm_xen_set_cpuid()
+> 
+> v4:
+>  - Update commit comment
+
+Please start with the most recent verison and work backardwards, that way reviewers
+can quickly see the delta for _this_ version.  I.e.
+
+
+v4:
+
+v3:
+
+v2:
+
+v1:
