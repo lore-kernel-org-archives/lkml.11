@@ -2,66 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD326C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:27:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B14AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:27:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235660AbiF0N1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39294 "EHLO
+        id S235788AbiF0N1u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235554AbiF0N1R (ORCPT
+        with ESMTP id S235683AbiF0N1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:27:17 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C0E643C
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:27:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=oVD+QIl1BooxhQ4c9TLCTCyf9nUe8Yh23CWiTKDZtFw=; b=moT2H7vy0ds8RhMZueK4Hz5/u5
-        kBF155FPvcg5S1mr37SB1xvpS5DY4Jg8VjxDBSKg42s8UR7mle7R/Uqs5rvWcVxmgQwLMR03ougHV
-        iQN19lMVKCSJRK6nbBSLRsTHgxb6mxJO+NGkm6JcMM62+cGIEd6jZ9XxviONYb1cXtL8ErBg86/nT
-        jBoUOwh0ZhKrrrgQIokaNNr9QUgE7fULEp7RikwFdChUmT4ZGnBpt2maxobOqnXI+no271CRRoEM5
-        yNI42atW/+zXVmOBJkIFAjE2zwZ3N8ooYFueeOBDEYxvoJ/4iOVY3SlTam84gKpB10COQ1Fl5V3cf
-        IWrm9qIA==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o5old-00BOMN-K8; Mon, 27 Jun 2022 13:27:05 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 668D6300478;
-        Mon, 27 Jun 2022 15:27:03 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 51AA7200B5F27; Mon, 27 Jun 2022 15:27:03 +0200 (CEST)
-Date:   Mon, 27 Jun 2022 15:27:03 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
-        ebiederm@xmission.com,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH] signal: break out of wait loops on kthread_stop()
-Message-ID: <YrmwJyueoz1Z4ti0@hirez.programming.kicks-ass.net>
-References: <20220627120020.608117-1-Jason@zx2c4.com>
+        Mon, 27 Jun 2022 09:27:48 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8597641B
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:27:47 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LWpRZ0xQFz9spN;
+        Mon, 27 Jun 2022 21:27:06 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 27 Jun 2022 21:27:44 +0800
+Subject: Re: [PATCH v3 1/2] mm/swapfile: fix possible data races of
+ inuse_pages
+To:     Qian Cai <quic_qiancai@quicinc.com>
+CC:     <akpm@linux-foundation.org>, <david@redhat.com>,
+        <ying.huang@intel.com>, <songmuchun@bytedance.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220625093346.48894-1-linmiaohe@huawei.com>
+ <20220625093346.48894-2-linmiaohe@huawei.com> <Yrml4mB3sa5fZVJa@qian>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <fe3c4834-71a6-7867-2108-eca43fde62fc@huawei.com>
+Date:   Mon, 27 Jun 2022 21:27:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627120020.608117-1-Jason@zx2c4.com>
+In-Reply-To: <Yrml4mB3sa5fZVJa@qian>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 02:00:20PM +0200, Jason A. Donenfeld wrote:
+On 2022/6/27 20:43, Qian Cai wrote:
+> On Sat, Jun 25, 2022 at 05:33:45PM +0800, Miaohe Lin wrote:
+>> si->inuse_pages could still be accessed concurrently now. The plain reads
+>> outside si->lock critical section, i.e. swap_show and si_swapinfo, which
+>> results in data races. READ_ONCE and WRITE_ONCE is used to fix such data
+>> races. Note these data races should be ok because they're just used for
+>> showing swap info.
+> 
+> Was this found by kcsan? If so, it would be useful to record the exact
+> kscan report in the commit message.
 
-> +bool __kthread_should_stop(struct task_struct *k)
-> +{
-> +	return (k->flags & PF_KTHREAD) &&
-> +	       test_bit(KTHREAD_SHOULD_STOP, &to_kthread(k)->flags);
-> +}
+Sorry, it's found via code inspection.
 
-This used to be a racy pattern; not sure it still is since Eric poked at
-this last, but please use __to_kthread() instead.
+Thanks.
+
+> .
+> 
+
