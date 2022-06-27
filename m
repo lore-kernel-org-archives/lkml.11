@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9522AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5046FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:47:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237861AbiF0LrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42360 "EHLO
+        id S237867AbiF0LrH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237367AbiF0Lmq (ORCPT
+        with ESMTP id S237437AbiF0Lmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F5DDA0;
-        Mon, 27 Jun 2022 04:37:10 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192CF1BE;
+        Mon, 27 Jun 2022 04:37:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 643F5609D0;
-        Mon, 27 Jun 2022 11:37:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C7B6C3411D;
-        Mon, 27 Jun 2022 11:37:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3A6BB8111B;
+        Mon, 27 Jun 2022 11:37:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E67DC341C7;
+        Mon, 27 Jun 2022 11:37:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329829;
-        bh=w8pEeD49eTpvRe45M7NoRlebckBgfBtMDWOyG0gSJaQ=;
+        s=korg; t=1656329874;
+        bh=zckJ25KeNwOmmOgkYtdLY02GYh+uT/iHtBb4i7YgXj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O3ptwaDU+hNCj01H7ROYVdR8iEFLRuzCE9HmRqnwidbSk+8xlEAf6gnvoHFiP3GB8
-         RFabHgfaFu587c/8sw7uyvwphX19SM+xdieU6Rglpe2761FQILB6a6gxo0gFXWHu8h
-         2H5+ZdFHRByrDGZ4+bFDPVOhEAoTzcdT7iAhkvCU=
+        b=YebQubZy0IYFCyJWtBr3QrIcdcfxQgwt+Gp+Zv0+G+ppBXkPQ+LaQVnOX36mnwQ0X
+         VE7tNBNfYIMGdYHHaOvmJYZYDbFDs7zHszL2mawcZZ7kTNwpFLYh43AG7CC49yr/id
+         AHpBwz5cHAEmWqJYdue9G+AwqienuhSzuMADOLQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Ivan T. Ivanov" <iivanov@suse.de>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 5.15 130/135] ARM: dts: bcm2711-rpi-400: Fix GPIO line names
-Date:   Mon, 27 Jun 2022 13:22:17 +0200
-Message-Id: <20220627111941.923820586@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.18 001/181] random: schedule mix_interrupt_randomness() less often
+Date:   Mon, 27 Jun 2022 13:19:34 +0200
+Message-Id: <20220627111944.599548853@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
-References: <20220627111938.151743692@linuxfoundation.org>
+In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
+References: <20220627111944.553492442@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,39 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit b9b6d4c925604b70d007feb4c77b8cc4c038d2da upstream.
+commit 534d2eaf1970274150596fdd2bf552721e65d6b2 upstream.
 
-The GPIO expander line names has been fixed in the vendor tree last year,
-so upstream these changes.
+It used to be that mix_interrupt_randomness() would credit 1 bit each
+time it ran, and so add_interrupt_randomness() would schedule mix() to
+run every 64 interrupts, a fairly arbitrary number, but nonetheless
+considered to be a decent enough conservative estimate.
 
-Fixes: 1c701accecf2 ("ARM: dts: Add Raspberry Pi 400 support")
-Reported-by: Ivan T. Ivanov <iivanov@suse.de>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Since e3e33fc2ea7f ("random: do not use input pool from hard IRQs"),
+mix() is now able to credit multiple bits, depending on the number of
+calls to add(). This was done for reasons separate from this commit, but
+it has the nice side effect of enabling this patch to schedule mix()
+less often.
+
+Currently the rules are:
+a) Credit 1 bit for every 64 calls to add().
+b) Schedule mix() once a second that add() is called.
+c) Schedule mix() once every 64 calls to add().
+
+Rules (a) and (c) no longer need to be coupled. It's still important to
+have _some_ value in (c), so that we don't "over-saturate" the fast
+pool, but the once per second we get from rule (b) is a plenty enough
+baseline. So, by increasing the 64 in rule (c) to something larger, we
+avoid calling queue_work_on() as frequently during irq storms.
+
+This commit changes that 64 in rule (c) to be 1024, which means we
+schedule mix() 16 times less often. And it does *not* need to change the
+64 in rule (a).
+
+Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
+Cc: stable@vger.kernel.org
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/bcm2711-rpi-400.dts |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/bcm2711-rpi-400.dts
-+++ b/arch/arm/boot/dts/bcm2711-rpi-400.dts
-@@ -28,12 +28,12 @@
- &expgpio {
- 	gpio-line-names = "BT_ON",
- 			  "WL_ON",
--			  "",
-+			  "PWR_LED_OFF",
- 			  "GLOBAL_RESET",
- 			  "VDD_SD_IO_SEL",
--			  "CAM_GPIO",
-+			  "GLOBAL_SHUTDOWN",
- 			  "SD_PWR_ON",
--			  "SD_OC_N";
-+			  "SHUTDOWN_REQUEST";
- };
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1038,7 +1038,7 @@ void add_interrupt_randomness(int irq)
+ 	if (new_count & MIX_INFLIGHT)
+ 		return;
  
- &genet_mdio {
+-	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
++	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
+ 		return;
+ 
+ 	if (unlikely(!fast_pool->mix.func))
 
 
