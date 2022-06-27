@@ -2,274 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A28C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF83FCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236961AbiF0OWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 10:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38794 "EHLO
+        id S237270AbiF0OXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 10:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237201AbiF0OVf (ORCPT
+        with ESMTP id S236999AbiF0OXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 10:21:35 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2189E13CF9;
-        Mon, 27 Jun 2022 07:21:33 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25RDUGvG019903;
-        Mon, 27 Jun 2022 16:21:19 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=zspda62bHDTpbxjlx3pNU8tSQuN0TE9W+gSeJGZZuks=;
- b=CJOwTPStfgOH01/tErFc9mX2FtMPxEgWXNsuMoccQbNKRzQPePFi9DpEtzx7nh60FMps
- dJTznLO0Fi967vOnp/DL8NW+2afa84PtIuf5GG5BV/V+brvXLOLor/eE18Law97gpcHy
- UommIdmZnnR/KbR1tCR7R7D7S2XUqJdLHCPX1vlXbKvqbrKTBcLwCOYQM0UbLIBIZAvU
- nCz2Ha0fbEbWbpNcWxrPx/ba82XtHtUGXI/ksExNt7yBunLO4TXPXbOGwmD64Xh7E7X/
- POjR/jYnD8uXL1wxkm/m6+2eh09jqw8UL/qukvFvEtUA5yCMdJWHm0Wvza0NCtngbPbq mw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gy9mr1sd3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jun 2022 16:21:19 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7F97F10002A;
-        Mon, 27 Jun 2022 16:21:17 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id F318822177F;
-        Mon, 27 Jun 2022 16:21:16 +0200 (CEST)
-Received: from [10.48.1.102] (10.75.127.46) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 27 Jun
- 2022 16:21:15 +0200
-Message-ID: <845d6817-d2e4-7925-f7f5-da1102514636@foss.st.com>
-Date:   Mon, 27 Jun 2022 16:21:15 +0200
+        Mon, 27 Jun 2022 10:23:06 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3640413F22
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:22:53 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id s1so13288946wra.9
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:22:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=FeV1hNgcIlRD8vtoxkTZySTIebKF1oNgpi73Pm+Sqqw=;
+        b=hnVY5/tYmCOiBd+Gqly3Rjz9bsbVA75CKg3xCAgOyaGdffrQzR0Q9lwJB8tDl/9s6y
+         TdvCaH2YmBoxcd9PyJZgSi3pjdTwErqECq5Pgm5ivZPdaM50uI9YAAYbF/ZKeCTfQPoN
+         VsjziyH0TMtYKJEKVy9dIqQ01VXqhfRcSluv/SGK8H61f6nWLQNAlSaGlFCAv1RZ/cu0
+         W48fSZdiGvFkCK2ElrF9nnfD8VeoowhUUdrqVuLSduciVqzfwS3FCq1eZfGdaDw6G/LM
+         gZAWmFkjgikMvoOw/SOnDBaGZbuofeFOODU4uJr7eJSm6ofTRvefIySBwjRn8xbKEFCD
+         a90Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=FeV1hNgcIlRD8vtoxkTZySTIebKF1oNgpi73Pm+Sqqw=;
+        b=sKPIKXq1oG9c1LG8e9uEmkjiqOp6NGZWz8aSGf8DBygebPJRlMRdbGLkD6wji2w/zh
+         iz4EKROMCF6/F55dJsqTXrVlBlh+coSeH9vJTiSShkY6ceJZGoc3rTPlTw0fU+AuVfT7
+         s336oFYIUKjd4RsI7SuLCa5FKbulpjFmphTKUACxcmTVsabKD83X8oylgeN9Vq95VhIL
+         /Z7Qrpu/E+yomJaQ8aqkWP38GZt45oWwXCkoppkuAgXvWOSaPWhhl4NmMN63O4y6/Ad1
+         1h5JA2WjClp+TT3LmfL55wwMjMvqewjuAevXUlcVW435ZHWSIM8HL2llWPyewvyjRmQK
+         vkog==
+X-Gm-Message-State: AJIora/P6WhP1OTq7PPgaK53bCHGSEbgNKt1pljvrq9ScuWFIHPWfmEq
+        0Mq+M4ZmKM27mTOZL5F+Gav/hg==
+X-Google-Smtp-Source: AGRyM1sjI6M8T0da+YH6qaHw6hmjwF4LQrCjEPKNsXZM7MhPVYOv+/xv1jHeE9vsMc6PWjZh2kKoKQ==
+X-Received: by 2002:adf:d1c2:0:b0:21b:e465:1e36 with SMTP id b2-20020adfd1c2000000b0021be4651e36mr5818287wrd.271.1656339771707;
+        Mon, 27 Jun 2022 07:22:51 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id bg21-20020a05600c3c9500b003a046549a85sm8120659wmb.37.2022.06.27.07.22.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 07:22:51 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 15:22:49 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     cy_huang <u0084500@gmail.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        broonie@kernel.org, dmitry.torokhov@gmail.com, lgirdwood@gmail.com,
+        cy_huang@richtek.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] mfd: rt5120: Add Richtek PMIC support
+Message-ID: <Yrm9ObaltUiQUTqS@google.com>
+References: <1655892104-10874-1-git-send-email-u0084500@gmail.com>
+ <1655892104-10874-3-git-send-email-u0084500@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/4] dt-bindings: usb: typec: add bindings for stm32g0
- controller
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <robh+dt@kernel.org>, <heikki.krogerus@linux.intel.com>,
-        <gregkh@linuxfoundation.org>
-CC:     <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <amelie.delaunay@foss.st.com>, <alexandre.torgue@foss.st.com>
-References: <20220624155413.399190-1-fabrice.gasnier@foss.st.com>
- <20220624155413.399190-2-fabrice.gasnier@foss.st.com>
- <ddb0e946-c955-1404-c1cd-c2548f34ec35@linaro.org>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-In-Reply-To: <ddb0e946-c955-1404-c1cd-c2548f34ec35@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-27_06,2022-06-24_01,2022-06-22_01
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1655892104-10874-3-git-send-email-u0084500@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/24/22 18:16, Krzysztof Kozlowski wrote:
-> On 24/06/2022 17:54, Fabrice Gasnier wrote:
->> This patch adds DT schema documentation for the STM32G0 Type-C controller.
+On Wed, 22 Jun 2022, cy_huang wrote:
+
+> From: ChiYuan Huang <cy_huang@richtek.com>
 > 
-> No "This patch"
+> Add Richtek RT5120 PMIC I2C driver.
 
-Hi Krzysztof,
+Why a whole new driver?
 
-ack,
+How different is this to rt5033?
 
+Looks like this could easily be woven into this existing support?
+
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> ---
+>  drivers/mfd/Kconfig  |  12 +++++
+>  drivers/mfd/Makefile |   1 +
+>  drivers/mfd/rt5120.c | 125 +++++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 138 insertions(+)
+>  create mode 100644 drivers/mfd/rt5120.c
 > 
-> https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
-> 
->> STM32G0 provides an integrated USB Type-C and power delivery interface.
->> It can be programmed with a firmware to handle UCSI protocol over I2C
->> interface. A GPIO is used as an interrupt line.
->> It may be used as a wakeup source, so use optional "wakeup-source" and
->> "power-domains" properties to support wakeup.
->>
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
->> ---
->>  .../bindings/usb/st,typec-stm32g0.yaml        | 83 +++++++++++++++++++
->>  1 file changed, 83 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/usb/st,typec-stm32g0.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/usb/st,typec-stm32g0.yaml b/Documentation/devicetree/bindings/usb/st,typec-stm32g0.yaml
->> new file mode 100644
->> index 0000000000000..b2729bd015a1a
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/usb/st,typec-stm32g0.yaml
->> @@ -0,0 +1,83 @@
->> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: "http://devicetree.org/schemas/usb/st,typec-stm32g0.yaml#"
->> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> 
-> No quotes.
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index 3b59456..866619c 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -1127,6 +1127,18 @@ config MFD_RT5033
+>  	  sub-devices like charger, fuel gauge, flash LED, current source,
+>  	  LDO and Buck.
+>  
+> +config MFD_RT5120
+> +	tristate "Richtek RT5120 Power Management IC"
+> +	depends on I2C
+> +	select MFD_CORE
+> +	select REGMAP_I2C
+> +	select REGMAP_IRQ
+> +	help
+> +	  The enables support for Richtek RT5120 PMIC. It includes four high
+> +	  efficiency buck converters and one LDO voltage regulator. The device
+> +	  is targeted at providing the CPU voltage, memory, I/O and peripheral
+> +	  power rails in home entertainment devices.
+> +
+>  config MFD_RC5T583
+>  	bool "Ricoh RC5T583 Power Management system device"
+>  	depends on I2C=y
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index 858cacf..27e8add 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -234,6 +234,7 @@ obj-$(CONFIG_MFD_HI655X_PMIC)   += hi655x-pmic.o
+>  obj-$(CONFIG_MFD_DLN2)		+= dln2.o
+>  obj-$(CONFIG_MFD_RT4831)	+= rt4831.o
+>  obj-$(CONFIG_MFD_RT5033)	+= rt5033.o
+> +obj-$(CONFIG_MFD_RT5120)	+= rt5120.o
+>  obj-$(CONFIG_MFD_SKY81452)	+= sky81452.o
+>  
+>  intel-soc-pmic-objs		:= intel_soc_pmic_core.o intel_soc_pmic_crc.o
+> diff --git a/drivers/mfd/rt5120.c b/drivers/mfd/rt5120.c
+> new file mode 100644
+> index 00000000..e7c5f3c
+> --- /dev/null
+> +++ b/drivers/mfd/rt5120.c
+> @@ -0,0 +1,125 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +
+> +#include <linux/i2c.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/module.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/regmap.h>
+> +
+> +#define RT5120_REG_INTENABLE	0x1D
+> +#define RT5120_REG_INTSTAT	0x1E
+> +#define RT5120_REG_FZCMODE	0x44
+> +
+> +#define RT5120_INT_HOTDIE	0
+> +#define RT5120_INT_PWRKEY_REL	5
+> +#define RT5120_INT_PWRKEY_PRESS	6
+> +
+> +static const struct regmap_range rt5120_rd_yes_ranges[] = {
+> +	regmap_reg_range(0x03, 0x13),
+> +	regmap_reg_range(0x1c, 0x20),
+> +	regmap_reg_range(0x44, 0x44)
+> +};
+> +
+> +static const struct regmap_range rt5120_wr_yes_ranges[] = {
+> +	regmap_reg_range(0x06, 0x13),
+> +	regmap_reg_range(0x1c, 0x20),
+> +	regmap_reg_range(0x44, 0x44)
+> +};
+> +
+> +static const struct regmap_access_table rt5120_rd_table = {
+> +	.yes_ranges = rt5120_rd_yes_ranges,
+> +	.n_yes_ranges = ARRAY_SIZE(rt5120_rd_yes_ranges),
+> +};
+> +
+> +static const struct regmap_access_table rt5120_wr_table = {
+> +	.yes_ranges = rt5120_wr_yes_ranges,
+> +	.n_yes_ranges = ARRAY_SIZE(rt5120_wr_yes_ranges),
+> +};
+> +
+> +static const struct regmap_config rt5120_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.max_register = RT5120_REG_FZCMODE,
+> +
+> +	.wr_table = &rt5120_wr_table,
+> +	.rd_table = &rt5120_rd_table,
+> +};
+> +
+> +static const struct regmap_irq rt5120_irqs[] = {
+> +	REGMAP_IRQ_REG_LINE(RT5120_INT_HOTDIE, 8),
+> +	REGMAP_IRQ_REG_LINE(RT5120_INT_PWRKEY_REL, 8),
+> +	REGMAP_IRQ_REG_LINE(RT5120_INT_PWRKEY_PRESS, 8)
+> +};
+> +
+> +static const struct regmap_irq_chip rt5120_irq_chip = {
+> +	.name = "rt5120-pmic",
+> +	.status_base = RT5120_REG_INTSTAT,
+> +	.mask_base = RT5120_REG_INTENABLE,
+> +	.ack_base = RT5120_REG_INTSTAT,
+> +	.mask_invert = true,
+> +	.use_ack = true,
+> +	.num_regs = 1,
+> +	.irqs = rt5120_irqs,
+> +	.num_irqs = ARRAY_SIZE(rt5120_irqs),
+> +};
+> +
+> +static const struct resource rt5120_regulator_resources[] = {
+> +	DEFINE_RES_IRQ(RT5120_INT_HOTDIE)
+> +};
+> +
+> +static const struct resource rt5120_pwrkey_resources[] = {
+> +	DEFINE_RES_IRQ_NAMED(RT5120_INT_PWRKEY_PRESS, "pwrkey-press"),
+> +	DEFINE_RES_IRQ_NAMED(RT5120_INT_PWRKEY_REL, "pwrkey-release")
+> +};
+> +
+> +static const struct mfd_cell rt5120_devs[] = {
+> +	MFD_CELL_RES("rt5120-regulator", rt5120_regulator_resources),
+> +	MFD_CELL_OF("rt5120-pwrkey", rt5120_pwrkey_resources, NULL, 0, 0,
+> +		    "richtek,rt5120-pwrkey")
+> +};
+> +
+> +static int rt5120_probe(struct i2c_client *i2c)
+> +{
+> +	struct regmap *regmap;
+> +	struct regmap_irq_chip_data *irq_data;
+> +	int ret;
+> +
+> +	regmap = devm_regmap_init_i2c(i2c, &rt5120_regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		ret = PTR_ERR(regmap);
+> +		dev_err(&i2c->dev, "Failed to init regmap (%d)\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = devm_regmap_add_irq_chip(&i2c->dev, regmap, i2c->irq,
+> +				       IRQF_ONESHOT, 0, &rt5120_irq_chip,
+> +				       &irq_data);
+> +	if (ret) {
+> +		dev_err(&i2c->dev, "Failed to add irq chip (%d)\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	return devm_mfd_add_devices(&i2c->dev, PLATFORM_DEVID_AUTO, rt5120_devs,
+> +				    ARRAY_SIZE(rt5120_devs), NULL, 0,
+> +				    regmap_irq_get_domain(irq_data));
+> +}
+> +
+> +static const struct of_device_id rt5120_device_match_table[] = {
+> +	{ .compatible = "richtek,rt5120", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, rt5120_device_match_table);
+> +
+> +static struct i2c_driver rt5120_driver = {
+> +	.driver = {
+> +		.name = "rt5120",
+> +		.of_match_table = rt5120_device_match_table,
+> +	},
+> +	.probe_new = rt5120_probe,
+> +};
+> +module_i2c_driver(rt5120_driver);
+> +
+> +MODULE_AUTHOR("ChiYuan Huang <cy_huang@richtek.com>");
+> +MODULE_DESCRIPTION("Richtek RT5120 I2C driver");
+> +MODULE_LICENSE("GPL v2");
 
-ack,
-
-> 
->> +
->> +title: STMicroelectronics STM32G0 Type-C controller bindings
-> 
-> s/bindings//
-
-ack,
-
-> 
->> +
->> +description: |
->> +  The STM32G0 MCU can be programmed to control Type-C connector(s) through I2C
->> +  typically using the UCSI protocol over I2C, with a dedicated alert
->> +  (interrupt) pin.
->> +
->> +maintainers:
->> +  - Fabrice Gasnier <fabrice.gasnier@foss.st.com>
->> +
->> +properties:
->> +  compatible:
->> +    const: st,stm32g0-typec
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  connector:
->> +    type: object> +    allOf:
->> +      - $ref: ../connector/usb-connector.yaml#
-> 
-> Full path, so /schemas/connector/...
-> 
-> unevaluatedProperties: false
-
-ack,
-
-> 
->> +
->> +  firmware-name:
->> +    description: |
->> +      Should contain the name of the default firmware image
->> +      file located on the firmware search path
->> +
->> +  wakeup-source: true
->> +  power-domains: true
-> 
-> maxItems
-
-Do you mean maxItems regarding the "power-domains" property ?
-This will depend on the user platform, where it's used as an I2C device.
-So I'm not sure this can / should be specified here.
-Could please you clarify ?
-
-> 
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/interrupt-controller/irq.h>
->> +    i2c5 {
-> 
-> Just "i2c"
-
-ack,
-
-> 
->> +      #address-cells = <1>;
->> +      #size-cells = <0>;
->> +
->> +      stm32g0@53 {
-> 
-> Generic node name describing class of the device.
-
-
-I wasn't aware of generic node name for an I2C device (not talking of
-the controller). I may have missed it.
-
-Could you please clarify ?
-
-> 
->> +        compatible = "st,stm32g0-typec";
->> +        reg = <0x53>;
->> +        /* Alert pin on GPIO PE12 */
->> +        interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
->> +        interrupt-parent = <&gpioe>;
->> +
->> +        /* Example with one type-C connector */
->> +        connector {
->> +          compatible = "usb-c-connector";
->> +          label = "USB-C";
->> +
->> +          port {
-> 
-> This does not look like proper schema of connector.yaml.
-
-This refers to graph.yaml [1], where similar example is seen [2].
-
-https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/graph.yaml#L79
-
-https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/graph.yaml#L207
-
-    device-1 {
-        port {
-            device_1_output: endpoint {
-                remote-endpoint = <&device_2_input>;
-            };
-        };
-    };
-    device-2 {
-        port {
-            device_2_input: endpoint {
-                remote-endpoint = <&device_1_output>;
-            };
-        };
-    };
-
-
-Could you please clarify this point too ?
-
-> 
->> +            con_usb_c_ep: endpoint {
->> +              remote-endpoint = <&usbotg_hs_ep>;
->> +            };
->> +          };
->> +        };
->> +      };
->> +    };
->> +
->> +    usbotg_hs {
-> 
-> Generic node names, no underscores in node names.
-
-ack, I guess you'd recommend "usb" here. I'll update it.
-
-Thanks for reviewing,
-Best Regards,
-Fabrice
-
-> 
->> +      usb-role-switch;
->> +      port {
->> +        usbotg_hs_ep: endpoint {
->> +          remote-endpoint = <&con_usb_c_ep>;
->> +        };
->> +      };
->> +    };
->> +...
-> 
-> 
-> Best regards,
-> Krzysztof
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
