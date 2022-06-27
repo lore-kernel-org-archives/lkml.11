@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE46C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F29C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242225AbiF0V7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60284 "EHLO
+        id S242230AbiF0V7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241538AbiF0Vzk (ORCPT
+        with ESMTP id S241519AbiF0Vzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:55:40 -0400
+        Mon, 27 Jun 2022 17:55:31 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828CEF5B6;
-        Mon, 27 Jun 2022 14:55:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B316BDECF;
+        Mon, 27 Jun 2022 14:55:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366903; x=1687902903;
+  t=1656366902; x=1687902902;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ok0044DbrsgcuNJNzGhk84qOYw5k5tS/LDbhV8oGjXY=;
-  b=NAnLHUxLIjGqZOX+iy1Wz3s6+eSA/qkys5GzAMqRuT10FEDslMNPsUGT
-   /P3kJL0Ds0UcelsL6ViO6AeAo9WYgzo7HvsMX/4l+LUOAFMiZfzUyvfA8
-   Zze0e84m8Ck90E8PY0rcCG5H/HSJHUCdM4DOjj8c94CmjTYKj4sByHYuj
-   l0kIAyIMcVAv1xGVC1FPwE16TPf0+OrSHRIYlBmrl6CDPMs6Rm7w3FoWZ
-   we1oqMm/rXUzdQTsN7MZYloAKJJwwHQ2j9J6syF+bXS/j0GxBVh5hEGAN
-   +LFsioUscRXA0DDrIVy60MvwPpNgI+T09l28sc6eKceAovTydphMZ9KOX
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116116"
+  bh=YTRyMTy4Cbklvo2axfnNj1XLWBlbWaoRN/EJpr2hGEo=;
+  b=LPXa6aXLJNVkVV1mv0qcuePg+wIzndrbc168IwJhJfKNCjeK1BjCGLFm
+   77VdiQwTnt5j+lU/sC0PjP99epgBtuOLdiPa9rqcWNxHZKCy/9pbBKFb4
+   zBXIOfENj7PZ22ONhhVuBeJjIdTl1nSm2tRT69ppOeKQ9BrTZPJrjeYKQ
+   sw/5LKSWSF8GY50OQxajNO/Py+i8DyYjMCMdd/M9TJsVr5bjCLaLoz2i5
+   16UCZLszhpKxy68qKUDauZtrrfA2Rh1d/whBl0lsGuFl3YYAv3OTkOKDu
+   uQ8PEvhg74zm+bKEu0qIENPTmEMyfAARHBPbA1DAB5MlOdp+iGEFj6J6X
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116113"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="279116116"
+   d="scan'208";a="279116113"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:58 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863675"
+   d="scan'208";a="657863667"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:58 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Xiaoyao Li <xiaoyao.li@intel.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Chao Gao <chao.gao@intel.com>
-Subject: [PATCH v7 073/102] KVM: x86: Add a switch_db_regs flag to handle TDX's auto-switched behavior
-Date:   Mon, 27 Jun 2022 14:54:05 -0700
-Message-Id: <105e8d5126bb9a4bedb4e8668ed04e30861a568f.1656366338.git.isaku.yamahata@intel.com>
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH v7 071/102] KVM: TDX: restore debug store when TD exit
+Date:   Mon, 27 Jun 2022 14:54:03 -0700
+Message-Id: <bbcb1bc7da18c1675a1c72e6e25c27342c6834c7.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -58,93 +55,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Add a flag, KVM_DEBUGREG_AUTO_SWITCHED_GUEST, to skip saving/restoring DRs
-irrespective of any other flags.  TDX-SEAM unconditionally saves and
-restores guest DRs and reset to architectural INIT state on TD exit.
-So, KVM needs to save host DRs before TD enter without restoring guest DRs
-and restore host DRs after TD exit.
+Because debug store is clobbered, restore it on TD exit.
 
-Opportunistically convert the KVM_DEBUGREG_* definitions to use BIT().
-
-Reported-by: Xiaoyao Li <xiaoyao.li@intel.com>
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Co-developed-by: Chao Gao <chao.gao@intel.com>
-Signed-off-by: Chao Gao <chao.gao@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h |  9 +++++++--
- arch/x86/kvm/vmx/tdx.c          |  1 +
- arch/x86/kvm/x86.c              | 11 ++++++++---
- 3 files changed, 16 insertions(+), 5 deletions(-)
+ arch/x86/events/intel/ds.c | 1 +
+ arch/x86/kvm/vmx/tdx.c     | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index a1d186190287..1f5be98b7630 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -556,8 +556,13 @@ struct kvm_pmu {
- struct kvm_pmu_ops;
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index 376cc3d66094..cdba4227ad3b 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -2256,3 +2256,4 @@ void perf_restore_debug_store(void)
  
- enum {
--	KVM_DEBUGREG_BP_ENABLED = 1,
--	KVM_DEBUGREG_WONT_EXIT = 2,
-+	KVM_DEBUGREG_BP_ENABLED		= BIT(0),
-+	KVM_DEBUGREG_WONT_EXIT		= BIT(1),
-+	/*
-+	 * Guest debug registers are saved/restored by hardware on exit from
-+	 * or enter guest. KVM needn't switch them.
-+	 */
-+	KVM_DEBUGREG_AUTO_SWITCH	= BIT(2),
- };
- 
- struct kvm_mtrr_range {
+ 	wrmsrl(MSR_IA32_DS_AREA, (unsigned long)ds);
+ }
++EXPORT_SYMBOL_GPL(perf_restore_debug_store);
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 4db9bfe2c534..c256853efed5 100644
+index c9cb9670f7cf..0de113a643e4 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -545,6 +545,7 @@ int tdx_vcpu_create(struct kvm_vcpu *vcpu)
+@@ -663,6 +663,7 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
+ 	tdx_vcpu_enter_exit(vcpu, tdx);
  
- 	vcpu->arch.efer = EFER_SCE | EFER_LME | EFER_LMA | EFER_NX;
+ 	tdx_user_return_update_cache();
++	perf_restore_debug_store();
+ 	tdx_restore_host_xsave_state(vcpu);
+ 	tdx->host_state_need_restore = true;
  
-+	vcpu->arch.switch_db_regs = KVM_DEBUGREG_AUTO_SWITCH;
- 	vcpu->arch.cr0_guest_owned_bits = -1ul;
- 	vcpu->arch.cr4_guest_owned_bits = -1ul;
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index ce0ef32c2619..39473b561e27 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -10326,7 +10326,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 	if (vcpu->arch.guest_fpu.xfd_err)
- 		wrmsrl(MSR_IA32_XFD_ERR, vcpu->arch.guest_fpu.xfd_err);
- 
--	if (unlikely(vcpu->arch.switch_db_regs)) {
-+	if (unlikely(vcpu->arch.switch_db_regs & ~KVM_DEBUGREG_AUTO_SWITCH)) {
- 		set_debugreg(0, 7);
- 		set_debugreg(vcpu->arch.eff_db[0], 0);
- 		set_debugreg(vcpu->arch.eff_db[1], 1);
-@@ -10368,6 +10368,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 	 */
- 	if (unlikely(vcpu->arch.switch_db_regs & KVM_DEBUGREG_WONT_EXIT)) {
- 		WARN_ON(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP);
-+		WARN_ON(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH);
- 		static_call(kvm_x86_sync_dirty_debug_regs)(vcpu);
- 		kvm_update_dr0123(vcpu);
- 		kvm_update_dr7(vcpu);
-@@ -10380,8 +10381,12 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 	 * care about the messed up debug address registers. But if
- 	 * we have some of them active, restore the old state.
- 	 */
--	if (hw_breakpoint_active())
--		hw_breakpoint_restore();
-+	if (hw_breakpoint_active()) {
-+		if (!(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH))
-+			hw_breakpoint_restore();
-+		else
-+			set_debugreg(__this_cpu_read(cpu_dr7), 7);
-+	}
- 
- 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;
- 	vcpu->arch.last_guest_tsc = kvm_read_l1_tsc(vcpu, rdtsc());
 -- 
 2.25.1
 
