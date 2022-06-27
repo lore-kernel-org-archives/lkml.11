@@ -2,88 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A19D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 748A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231474AbiF0GmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 02:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
+        id S232449AbiF0Gm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 02:42:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230455AbiF0GmA (ORCPT
+        with ESMTP id S231767AbiF0Gm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 02:42:00 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9643896
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:41:58 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id d14so8298966pjs.3
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:41:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=45rauxW62zvLiLrUYdOABR/1r2UUII+y5PQH23JQu7k=;
-        b=vhJiLwQCcFv1Yt6V2yG+9+dObL9WLX6fmLFxVczsb1YHUoreh12Pi8nSs4GErNzvpV
-         5V9xb73nB2888hljZbsR327vjZCmTDW6nSpy3h3wt0ViTXOUFRmpoP7TgfWUK1HhLjzp
-         lTUGwqSfqakgzvKRHVkxFx2ZZguCL9M4BIgCRV01skb5o+FnFptRkRPLwOIo/h35HZQy
-         X7mgKXYHVbmmEttrTkz4As+vdrVb2pDEpNl1Ow7sjEbUzy/VJXi1S+xlTdiHhvZ/rkmd
-         DOUOS8aPOLvdaRwrCkxIA3HsVoUnpzxhd0AqERM6fQMZIwpnERb3GXCziX2Pkyd5TK7P
-         5X5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=45rauxW62zvLiLrUYdOABR/1r2UUII+y5PQH23JQu7k=;
-        b=7EjvK8RNu/71BAoDz/v4k+FddYAm68ACGm3tUBYvS5AlAxDedob7wHqMfTxesu+ZW5
-         TcVVdCnCF/s0WbSDsmwkwQTM/z5zA/UxkYJ+Y+EaSd1V2W5eVZAQdhCoHR69cOY1zHRc
-         /FKH6B0k/gTX1CBkL6zBQC4QKf9xASsZ/YqrGbtoPwwsD3CuUSincIoFvims46geS8zi
-         guG+9lwwNvBhAiNo78WvUvEAkXpW08jnF/hWXbjBFfxW4/wZu+Qbk2i/APc0vucDfgvl
-         R7ETQBzqUadqVjVGM7v0w1ajHm49WtjpitUgiuBHgFLj3UAJTT43fyKCpMn3sZJlp+qP
-         /5Ig==
-X-Gm-Message-State: AJIora8HVx114cHdS0pItyMICxCzMs7E/6mU2hnNQQ5TqHpalCBVvT9u
-        AX2I9B09SD97KhutGBXTmgHTIg==
-X-Google-Smtp-Source: AGRyM1viYEO4TpTC4lUvX8VkhvtNg6ETswsD7mpBbxH+A0JO6sX4fcnU9+xgZXgcwEJpuRRsDyKwiw==
-X-Received: by 2002:a17:90b:3ece:b0:1ed:13a9:8531 with SMTP id rm14-20020a17090b3ece00b001ed13a98531mr19005332pjb.183.1656312117699;
-        Sun, 26 Jun 2022 23:41:57 -0700 (PDT)
-Received: from localhost ([122.172.201.58])
-        by smtp.gmail.com with ESMTPSA id g38-20020a635226000000b0040cb1f55391sm6281148pgb.2.2022.06.26.23.41.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jun 2022 23:41:57 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 12:11:55 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     Keerthy <j-keerthy@ti.com>, Dave Gerlach <d-gerlach@ti.com>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH 5/5] OPP: Remove custom OPP helper support
-Message-ID: <20220627064155.jo7iqz5h33l7a4vn@vireshk-i7>
-References: <cover.1653991004.git.viresh.kumar@linaro.org>
- <2e6ee73dbc8a231377547a8e9497561cadb38166.1653991004.git.viresh.kumar@linaro.org>
- <565ff879-11e4-1ae4-08d8-1237a875ef12@gmail.com>
- <20220627060636.rfpok75zydgcwwo6@vireshk-i7>
- <4a8114f7-4ee6-a9ad-f5be-ceaf64be8a0e@gmail.com>
+        Mon, 27 Jun 2022 02:42:26 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FC73881;
+        Sun, 26 Jun 2022 23:42:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656312142; x=1687848142;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/B9jPCXoGr+s2dOSilHfB1A0vqJQl+HCS0EByBkjXms=;
+  b=VbhPiumJkyxNlGQ91SmFinRUX4nQXV3UJ40YzXQFZs9CgQjw2I/u+b79
+   Skrp5qbSuT87vrh8VFqZHpyumhcOjy9aPlahyGX0zGxeI8fh7e6A2PMmr
+   WycljlJJ2E7Rq0ooZNz0Vhb6Xu3FVPdLvQ3yHMj/XNLwFGRsoMGVzbdQZ
+   GI1xAmZWmCOZEPOIuCw8VErdhy5dOl53b9ShXS3J1H2HmKyEic8CAWzx+
+   8iHL8ZHNkPvdLqJ8EgIZBz2klAOQ7SJUd6p5/kpflFZqfYaCMa7ZbC8J0
+   Q2lUqUxa/9NjSpzDjfuu1g0aXVaQcfsr/j0bZbpfp8Fk92Ff/323ModPw
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
+   d="scan'208";a="179614170"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Jun 2022 23:42:21 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Sun, 26 Jun 2022 23:42:21 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Sun, 26 Jun 2022 23:42:21 -0700
+Date:   Mon, 27 Jun 2022 08:46:12 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 5/8] net: lan966x: Add lag support for lan966x.
+Message-ID: <20220627064612.vzz2sd7kxpxnprxc@soft-dev3-1.localhost>
+References: <20220626130451.1079933-1-horatiu.vultur@microchip.com>
+ <20220626130451.1079933-6-horatiu.vultur@microchip.com>
+ <20220626141139.kbwhpgmwzp7rpxgy@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <4a8114f7-4ee6-a9ad-f5be-ceaf64be8a0e@gmail.com>
+In-Reply-To: <20220626141139.kbwhpgmwzp7rpxgy@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27-06-22, 09:10, Dmitry Osipenko wrote:
-> Okay, but Tegra 3d driver doesn't need config_regulators(), it needs
-> customized set_opp() to set clock rate for both 3d engines.
+The 06/26/2022 17:11, Vladimir Oltean wrote:
+> 
+> Hi Horatiu,
 
-What does that mean, you need to set two clocks ? There is separate
-support added for that already [1].
+Hi Vladimir,
+
+> 
+> Just casually browsing through the patches. A comment below.
+
+> 
+> On Sun, Jun 26, 2022 at 03:04:48PM +0200, Horatiu Vultur wrote:
+> > Add link aggregation hardware offload support for lan966x
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+> >  .../ethernet/microchip/lan966x/lan966x_lag.c  | 296 ++++++++++++++++++
+> >  .../ethernet/microchip/lan966x/lan966x_main.h |  28 ++
+> >  .../microchip/lan966x/lan966x_switchdev.c     |  78 ++++-
+> >  4 files changed, 388 insertions(+), 16 deletions(-)
+> >  create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+> >
+> > diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
+> > index fd2e0ebb2427..0c22c86bdaa9 100644
+> > --- a/drivers/net/ethernet/microchip/lan966x/Makefile
+> > +++ b/drivers/net/ethernet/microchip/lan966x/Makefile
+> > @@ -8,4 +8,4 @@ obj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o
+> >  lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
+> >                       lan966x_mac.o lan966x_ethtool.o lan966x_switchdev.o \
+> >                       lan966x_vlan.o lan966x_fdb.o lan966x_mdb.o \
+> > -                     lan966x_ptp.o lan966x_fdma.o
+> > +                     lan966x_ptp.o lan966x_fdma.o lan966x_lag.o
+> > diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+> > new file mode 100644
+> > index 000000000000..c721a05d44d2
+> > --- /dev/null
+> > +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+> > @@ -0,0 +1,296 @@
+> > +// SPDX-License-Identifier: GPL-2.0+
+> > +
+> > +#include "lan966x_main.h"
+> > +
+> > +static void lan966x_lag_set_aggr_pgids(struct lan966x *lan966x)
+> > +{
+> > +     u32 visited = GENMASK(lan966x->num_phys_ports - 1, 0);
+> > +     int p, lag, i;
+> > +
+> > +     /* Reset destination and aggregation PGIDS */
+> > +     for (p = 0; p < lan966x->num_phys_ports; ++p)
+> > +             lan_wr(ANA_PGID_PGID_SET(BIT(p)),
+> > +                    lan966x, ANA_PGID(p));
+> > +
+> > +     for (p = PGID_AGGR; p < PGID_SRC; ++p)
+> > +             lan_wr(ANA_PGID_PGID_SET(visited),
+> > +                    lan966x, ANA_PGID(p));
+> > +
+> > +     /* The visited ports bitmask holds the list of ports offloading any
+> > +      * bonding interface. Initially we mark all these ports as unvisited,
+> > +      * then every time we visit a port in this bitmask, we know that it is
+> > +      * the lowest numbered port, i.e. the one whose logical ID == physical
+> > +      * port ID == LAG ID. So we mark as visited all further ports in the
+> > +      * bitmask that are offloading the same bonding interface. This way,
+> > +      * we set up the aggregation PGIDs only once per bonding interface.
+> > +      */
+> > +     for (p = 0; p < lan966x->num_phys_ports; ++p) {
+> > +             struct lan966x_port *port = lan966x->ports[p];
+> > +
+> > +             if (!port || !port->bond)
+> > +                     continue;
+> > +
+> > +             visited &= ~BIT(p);
+> > +     }
+> > +
+> > +     /* Now, set PGIDs for each active LAG */
+> > +     for (lag = 0; lag < lan966x->num_phys_ports; ++lag) {
+> > +             struct lan966x_port *port = lan966x->ports[lag];
+> > +             int num_active_ports = 0;
+> > +             struct net_device *bond;
+> > +             unsigned long bond_mask;
+> > +             u8 aggr_idx[16];
+> > +
+> > +             if (!port || !port->bond || (visited & BIT(lag)))
+> > +                     continue;
+> > +
+> > +             bond = port->bond;
+> > +             bond_mask = lan966x_lag_get_mask(lan966x, bond, true);
+> > +
+> > +             for_each_set_bit(p, &bond_mask, lan966x->num_phys_ports) {
+> > +                     lan_wr(ANA_PGID_PGID_SET(bond_mask),
+> > +                            lan966x, ANA_PGID(p));
+> > +                     aggr_idx[num_active_ports++] = p;
+> > +             }
+> 
+> This incorrect logic seems to have been copied from ocelot from before
+> commit a14e6b69f393 ("net: mscc: ocelot: fix incorrect balancing with
+> down LAG ports").
+> 
+> The issue is that you calculate bond_mask with only_active_ports=true.
+> This means the for_each_set_bit() will not iterate through the inactive
+> LAG ports, and won't set the bond_mask as the PGID destination for those
+> ports.
+> 
+> That isn't what is desired; as explained in that commit, inactive LAG
+> ports should be removed via the aggregation PGIDs and not via the
+> destination PGIDs. Otherwise, an FDB entry targeted towards the
+> LAG (effectively towards the "primary" LAG port, whose logical port ID
+> gives the LAG ID) will not egress even the "secondary" LAG port if the
+> primary's link is down.
+
+Thanks for looking at this.
+That is correct, ocelot was the source of inspiration. The issue that
+you described in the mentioned commit is fixed in the last patch of this
+series.
+I will have a look at your commit and will try to integrated it. Thanks.
+
+> 
+> > +
+> > +             for (i = PGID_AGGR; i < PGID_SRC; ++i) {
+> > +                     u32 ac;
+> > +
+> > +                     ac = lan_rd(lan966x, ANA_PGID(i));
+> > +                     ac &= ~bond_mask;
+> > +                     /* Don't do division by zero if there was no active
+> > +                      * port. Just make all aggregation codes zero.
+> > +                      */
+> > +                     if (num_active_ports)
+> > +                             ac |= BIT(aggr_idx[i % num_active_ports]);
+> > +                     lan_wr(ANA_PGID_PGID_SET(ac),
+> > +                            lan966x, ANA_PGID(i));
+> > +             }
+> > +
+> > +             /* Mark all ports in the same LAG as visited to avoid applying
+> > +              * the same config again.
+> > +              */
+> > +             for (p = lag; p < lan966x->num_phys_ports; p++) {
+> > +                     struct lan966x_port *port = lan966x->ports[p];
+> > +
+> > +                     if (!port)
+> > +                             continue;
+> > +
+> > +                     if (port->bond == bond)
+> > +                             visited |= BIT(p);
+> > +             }
+> > +     }
+> > +}
 
 -- 
-viresh
-
-[1] https://lore.kernel.org/lkml/cover.1654849214.git.viresh.kumar@linaro.org/
+/Horatiu
