@@ -2,111 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1612CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 05:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A606ECCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 05:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232626AbiF0FEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 01:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
+        id S232486AbiF0FEj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 01:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232600AbiF0FEB (ORCPT
+        with ESMTP id S232636AbiF0FEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 01:04:01 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3886D60D5
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 22:01:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656306107; x=1687842107;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=wnEGGoffUXHTptd3QB7RLIQ4tVTfa7uOXq4q8O+qUiU=;
-  b=Ffq34aNujqKhh/GnEzYaaPHRXuvPGn17CM1Ez3Nfpwcl7V8qap1eQhcK
-   O6dHLUbY6GbmGAu6v+S3YUQmbjA/NwmlQN1apsTf+GxIUHgzmrLSF1ipU
-   mk6cVmLLr3wCJoW++AJparWTkVt272GuUSAI2qQkhNWMzUS10lTcPTPr9
-   qJeoRxdUiiijuJFcWbdE3K/9JqpMmv9Ukv9CI3kkz7CImx3oMSeoz6HiD
-   Ru1MfHJrvnEyRe7dXBLPWOK9Gha0PWfZmuxBe7GaNe0VDbaI2iCLvSTrQ
-   QxmBm3knsOr90Qgo4c6lOoOJpIIx7D6i0/4DuxkUFoijBbRcMU20BXf7E
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="282446877"
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="282446877"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2022 22:01:46 -0700
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="646247486"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.30.178]) ([10.255.30.178])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2022 22:01:43 -0700
-Subject: Re: [kbuild-all] Re: [norov:fns 7/19]
- include/linux/compiler_types.h:352:45: error: call to
- '__compiletime_assert_600' declared with attribute error: BUILD_BUG_ON
- failed: !__builtin_constant_p(res)
-To:     Yury Norov <yury.norov@gmail.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-References: <202206230121.wlBiPZcR-lkp@intel.com>
- <20220623110820.1017185-1-alexandr.lobakin@intel.com>
- <YrSccxLBlrJ3DyTx@yury-laptop>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <0b0027a2-797f-4e59-5d3c-820223075536@intel.com>
-Date:   Mon, 27 Jun 2022 13:01:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Mon, 27 Jun 2022 01:04:04 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F099F60F7;
+        Sun, 26 Jun 2022 22:01:50 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5A23216F2;
+        Sun, 26 Jun 2022 22:01:50 -0700 (PDT)
+Received: from a077893.blr.arm.com (unknown [10.162.42.6])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id ECAFF3F5A1;
+        Sun, 26 Jun 2022 22:01:42 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org
+Cc:     hch@infradead.org, christophe.leroy@csgroup.eu,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org,
+        x86@kernel.org, openrisc@lists.librecores.org,
+        linux-xtensa@linux-xtensa.org, linux-csky@vger.kernel.org,
+        linux-hexagon@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-um@lists.infradead.org,
+        linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vineet Gupta <vgupta@kernel.org>
+Subject: [PATCH V5 22/26] arc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date:   Mon, 27 Jun 2022 10:28:29 +0530
+Message-Id: <20220627045833.1590055-23-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220627045833.1590055-1-anshuman.khandual@arm.com>
+References: <20220627045833.1590055-1-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <YrSccxLBlrJ3DyTx@yury-laptop>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This enables ARCH_HAS_VM_GET_PAGE_PROT on the platform and exports standard
+vm_get_page_prot() implementation via DECLARE_VM_GET_PAGE_PROT, which looks
+up a private and static protection_map[] array. Subsequently all __SXXX and
+__PXXX macros can be dropped which are no longer needed.
 
+Cc: Vineet Gupta <vgupta@kernel.org>
+Cc: linux-snps-arc@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ arch/arc/Kconfig                          |  1 +
+ arch/arc/include/asm/pgtable-bits-arcv2.h | 18 ------------------
+ arch/arc/mm/mmap.c                        | 20 ++++++++++++++++++++
+ 3 files changed, 21 insertions(+), 18 deletions(-)
 
-On 6/24/2022 1:01 AM, Yury Norov wrote:
-> On Thu, Jun 23, 2022 at 01:08:20PM +0200, Alexander Lobakin wrote:
->> From: kernel test robot <lkp@intel.com>
->> Date: Thu, 23 Jun 2022 01:16:29 +0800
->>
->> Hi Yury,
->>
->>> tree:   https://github.com/norov/linux fns
->>> head:   dc85542660535a9072c3b98819f4b80ff182b92a
->>> commit: 2f52f0373b1a1bcf54a4aedc202518f6bed4c74f [7/19] lib: test_bitmap: add compile-time optimization/evaluations assertions
->>> config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220623/202206230121.wlBiPZcR-lkp@intel.com/config)
->>> compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
->>> reproduce (this is a W=1 build):
->>>          # https://github.com/norov/linux/commit/2f52f0373b1a1bcf54a4aedc202518f6bed4c74f
->>>          git remote add norov https://github.com/norov/linux
->>>          git fetch --no-tags norov fns
->>>          git checkout 2f52f0373b1a1bcf54a4aedc202518f6bed4c74f
->>>          # save the config file
->>>          mkdir build_dir && cp config build_dir/.config
->>>          make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
->>
->> Can't reproduce it at all on x86_64 with the attached config, were
->> there any other changes maybe that could cause this?
-> 
-> This is my working branch, and it shouldn't be that loud. But
-> anyways...
+diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
+index 9e3653253ef2..8be56a5d8a9b 100644
+--- a/arch/arc/Kconfig
++++ b/arch/arc/Kconfig
+@@ -13,6 +13,7 @@ config ARC
+ 	select ARCH_HAS_SETUP_DMA_OPS
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
++	select ARCH_HAS_VM_GET_PAGE_PROT
+ 	select ARCH_SUPPORTS_ATOMIC_RMW if ARC_HAS_LLSC
+ 	select ARCH_32BIT_OFF_T
+ 	select BUILDTIME_TABLE_SORT
+diff --git a/arch/arc/include/asm/pgtable-bits-arcv2.h b/arch/arc/include/asm/pgtable-bits-arcv2.h
+index 183d23bc1e00..b23be557403e 100644
+--- a/arch/arc/include/asm/pgtable-bits-arcv2.h
++++ b/arch/arc/include/asm/pgtable-bits-arcv2.h
+@@ -72,24 +72,6 @@
+  *     This is to enable COW mechanism
+  */
+ 	/* xwr */
+-#define __P000  PAGE_U_NONE
+-#define __P001  PAGE_U_R
+-#define __P010  PAGE_U_R	/* Pvt-W => !W */
+-#define __P011  PAGE_U_R	/* Pvt-W => !W */
+-#define __P100  PAGE_U_X_R	/* X => R */
+-#define __P101  PAGE_U_X_R
+-#define __P110  PAGE_U_X_R	/* Pvt-W => !W and X => R */
+-#define __P111  PAGE_U_X_R	/* Pvt-W => !W */
+-
+-#define __S000  PAGE_U_NONE
+-#define __S001  PAGE_U_R
+-#define __S010  PAGE_U_W_R	/* W => R */
+-#define __S011  PAGE_U_W_R
+-#define __S100  PAGE_U_X_R	/* X => R */
+-#define __S101  PAGE_U_X_R
+-#define __S110  PAGE_U_X_W_R	/* X => R */
+-#define __S111  PAGE_U_X_W_R
+-
+ #ifndef __ASSEMBLY__
+ 
+ #define pte_write(pte)		(pte_val(pte) & _PAGE_WRITE)
+diff --git a/arch/arc/mm/mmap.c b/arch/arc/mm/mmap.c
+index 722d26b94307..fce5fa2b4f52 100644
+--- a/arch/arc/mm/mmap.c
++++ b/arch/arc/mm/mmap.c
+@@ -74,3 +74,23 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
+ 	info.align_offset = pgoff << PAGE_SHIFT;
+ 	return vm_unmapped_area(&info);
+ }
++
++static const pgprot_t protection_map[16] = {
++	[VM_NONE]					= PAGE_U_NONE,
++	[VM_READ]					= PAGE_U_R,
++	[VM_WRITE]					= PAGE_U_R,
++	[VM_WRITE | VM_READ]				= PAGE_U_R,
++	[VM_EXEC]					= PAGE_U_X_R,
++	[VM_EXEC | VM_READ]				= PAGE_U_X_R,
++	[VM_EXEC | VM_WRITE]				= PAGE_U_X_R,
++	[VM_EXEC | VM_WRITE | VM_READ]			= PAGE_U_X_R,
++	[VM_SHARED]					= PAGE_U_NONE,
++	[VM_SHARED | VM_READ]				= PAGE_U_R,
++	[VM_SHARED | VM_WRITE]				= PAGE_U_W_R,
++	[VM_SHARED | VM_WRITE | VM_READ]		= PAGE_U_W_R,
++	[VM_SHARED | VM_EXEC]				= PAGE_U_X_R,
++	[VM_SHARED | VM_EXEC | VM_READ]			= PAGE_U_X_R,
++	[VM_SHARED | VM_EXEC | VM_WRITE]		= PAGE_U_X_W_R,
++	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= PAGE_U_X_W_R
++};
++DECLARE_VM_GET_PAGE_PROT
+-- 
+2.25.1
 
-Hi Yury,
-
-Sorry for the inconvenience, we'll only send reports to you privately
-in future.
-
-Best Regards,
-Rong Chen
-
-> 
-> There are some patches on top of your series. This is my
-> work-in-progress. If you think it's not relevant, please ignore
-> this.
-> 
-> Thanks,
-> Yury
-> _______________________________________________
-> kbuild-all mailing list -- kbuild-all@lists.01.org
-> To unsubscribe send an email to kbuild-all-leave@lists.01.org
-> 
