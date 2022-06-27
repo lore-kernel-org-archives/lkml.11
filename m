@@ -2,142 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 527E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFEEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236682AbiF0LjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        id S236698AbiF0LjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236477AbiF0Lhe (ORCPT
+        with ESMTP id S236475AbiF0Lhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:37:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FAFA223;
-        Mon, 27 Jun 2022 04:33:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD3DEB80E6F;
-        Mon, 27 Jun 2022 11:33:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C34C3411D;
-        Mon, 27 Jun 2022 11:33:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329590;
-        bh=FFo5qQnm4OH0okQMXRGwjQ4ynXyznGl40vyyIuYjSbQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Js4Zzo7I+Fr1C/mT4PWNJPYiJiQeS0G0D6HfsQuEDRJ6urUw+lMyYcTOjJjLKdT10
-         hNa7mBX8K1sMguwXgN0TTYJFX8H3Y598OaEgo1wqEz0UlqaL0UYvrCO3V7WuhTZ4lL
-         VpHn7kLuIiwqCzSuNz5jIZL5+ngpOsiOer55fCBw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 050/135] igb: fix a use-after-free issue in igb_clean_tx_ring
-Date:   Mon, 27 Jun 2022 13:20:57 +0200
-Message-Id: <20220627111939.612269699@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
-References: <20220627111938.151743692@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB21132
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:33:12 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id n14-20020a056e021bae00b002d92c91da8aso5534888ili.15
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:33:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=r74xeVThUWO/LSsITiSIjgYPJgIfQdHJyOxtqSL9wTk=;
+        b=2CvJQpU30PZwf2rU+CKtpWDUGD4PjeZsv9uQvK7gGe5GaHsrBdy8Cp9YXtat5TUOHg
+         h0MMdmawJNeCCW8/K2yq4tftmgEhWmdDZ7KPXWixzLPtLzudXq4UgG2IRYTM+MQIfh5M
+         J3l46x2MgNC6o2mv7ZZWO3w0scUCuyxGSafGbWNTDzaM3OzYE+wMJ5wRq+K1/kRCHIKn
+         xEg2u1vM7MkQFuSuhno3X8Yy2QlrlwemlCexrmufnlRgz9EIGwbnqSDGQcIBdv6Ukyx0
+         Hf1UguwhMBCjH9LkLGpfGgzISvC2Bm3DQ6OU4yXLs5WexRqE6e7ezd8ZFUtxTOrGs9OW
+         zK1w==
+X-Gm-Message-State: AJIora8M0MzIwZzpDg9mA8oE/AeR3akX3aGhYoXw7yLEFUcn63mGFz/J
+        aQpfekrhZgsr911fZSpu6KukYxLZwdg/Im6iH453xt8MTVwv
+X-Google-Smtp-Source: AGRyM1tsVe0ETMcrRl7sA/aI/qKL3BgLMLs+jKmmH2MHKhwhhdA8r0+XBjLUHyIHxb+4w16oEXyqavGNKbHsFbpvsdPxZyUwt0yH
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:5:b0:339:e628:b96c with SMTP id
+ z5-20020a056638000500b00339e628b96cmr7782418jao.203.1656329591485; Mon, 27
+ Jun 2022 04:33:11 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 04:33:11 -0700
+In-Reply-To: <20220627104113.933-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ee810005e26c4817@google.com>
+Subject: Re: [syzbot] WARNING in binder_alloc_vma_close
+From:   syzbot <syzbot+da54fa8d793ca89c741f@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+Hello,
 
-[ Upstream commit 3f6a57ee8544ec3982f8a3cbcbf4aea7d47eb9ec ]
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Fix the following use-after-free bug in igb_clean_tx_ring routine when
-the NIC is running in XDP mode. The issue can be triggered redirecting
-traffic into the igb NIC and then closing the device while the traffic
-is flowing.
+Reported-and-tested-by: syzbot+da54fa8d793ca89c741f@syzkaller.appspotmail.com
 
-[   73.322719] CPU: 1 PID: 487 Comm: xdp_redirect Not tainted 5.18.3-apu2 #9
-[   73.330639] Hardware name: PC Engines APU2/APU2, BIOS 4.0.7 02/28/2017
-[   73.337434] RIP: 0010:refcount_warn_saturate+0xa7/0xf0
-[   73.362283] RSP: 0018:ffffc9000081f798 EFLAGS: 00010282
-[   73.367761] RAX: 0000000000000000 RBX: ffffc90000420f80 RCX: 0000000000000000
-[   73.375200] RDX: ffff88811ad22d00 RSI: ffff88811ad171e0 RDI: ffff88811ad171e0
-[   73.382590] RBP: 0000000000000900 R08: ffffffff82298f28 R09: 0000000000000058
-[   73.390008] R10: 0000000000000219 R11: ffffffff82280f40 R12: 0000000000000090
-[   73.397356] R13: ffff888102343a40 R14: ffff88810359e0e4 R15: 0000000000000000
-[   73.404806] FS:  00007ff38d31d740(0000) GS:ffff88811ad00000(0000) knlGS:0000000000000000
-[   73.413129] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   73.419096] CR2: 000055cff35f13f8 CR3: 0000000106391000 CR4: 00000000000406e0
-[   73.426565] Call Trace:
-[   73.429087]  <TASK>
-[   73.431314]  igb_clean_tx_ring+0x43/0x140 [igb]
-[   73.436002]  igb_down+0x1d7/0x220 [igb]
-[   73.439974]  __igb_close+0x3c/0x120 [igb]
-[   73.444118]  igb_xdp+0x10c/0x150 [igb]
-[   73.447983]  ? igb_pci_sriov_configure+0x70/0x70 [igb]
-[   73.453362]  dev_xdp_install+0xda/0x110
-[   73.457371]  dev_xdp_attach+0x1da/0x550
-[   73.461369]  do_setlink+0xfd0/0x10f0
-[   73.465166]  ? __nla_validate_parse+0x89/0xc70
-[   73.469714]  rtnl_setlink+0x11a/0x1e0
-[   73.473547]  rtnetlink_rcv_msg+0x145/0x3d0
-[   73.477709]  ? rtnl_calcit.isra.0+0x130/0x130
-[   73.482258]  netlink_rcv_skb+0x8d/0x110
-[   73.486229]  netlink_unicast+0x230/0x340
-[   73.490317]  netlink_sendmsg+0x215/0x470
-[   73.494395]  __sys_sendto+0x179/0x190
-[   73.498268]  ? move_addr_to_user+0x37/0x70
-[   73.502547]  ? __sys_getsockname+0x84/0xe0
-[   73.506853]  ? netlink_setsockopt+0x1c1/0x4a0
-[   73.511349]  ? __sys_setsockopt+0xc8/0x1d0
-[   73.515636]  __x64_sys_sendto+0x20/0x30
-[   73.519603]  do_syscall_64+0x3b/0x80
-[   73.523399]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   73.528712] RIP: 0033:0x7ff38d41f20c
-[   73.551866] RSP: 002b:00007fff3b945a68 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-[   73.559640] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff38d41f20c
-[   73.567066] RDX: 0000000000000034 RSI: 00007fff3b945b30 RDI: 0000000000000003
-[   73.574457] RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
-[   73.581852] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff3b945ab0
-[   73.589179] R13: 0000000000000000 R14: 0000000000000003 R15: 00007fff3b945b30
-[   73.596545]  </TASK>
-[   73.598842] ---[ end trace 0000000000000000 ]---
+Tested on:
 
-Fixes: 9cbc948b5a20c ("igb: add XDP support")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Link: https://lore.kernel.org/r/e5c01d549dc37bff18e46aeabd6fb28a7bcf84be.1655388571.git.lorenzo@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+commit:         08897940 Add linux-next specific files for 20220623
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=16ecb94c080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fb185a52c6ad0a8e
+dashboard link: https://syzkaller.appspot.com/bug?extid=da54fa8d793ca89c741f
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=134bd9e4080000
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index b88303351484..5ee5ee8e6848 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -4819,8 +4819,11 @@ static void igb_clean_tx_ring(struct igb_ring *tx_ring)
- 	while (i != tx_ring->next_to_use) {
- 		union e1000_adv_tx_desc *eop_desc, *tx_desc;
- 
--		/* Free all the Tx ring sk_buffs */
--		dev_kfree_skb_any(tx_buffer->skb);
-+		/* Free all the Tx ring sk_buffs or xdp frames */
-+		if (tx_buffer->type == IGB_TYPE_SKB)
-+			dev_kfree_skb_any(tx_buffer->skb);
-+		else
-+			xdp_return_frame(tx_buffer->xdpf);
- 
- 		/* unmap skb header data */
- 		dma_unmap_single(tx_ring->dev,
--- 
-2.35.1
-
-
-
+Note: testing is done by a robot and is best-effort only.
