@@ -2,320 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF3FCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BAECCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240032AbiF0MC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:02:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58750 "EHLO
+        id S240198AbiF0MCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:02:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239640AbiF0L54 (ORCPT
+        with ESMTP id S239740AbiF0L6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:57:56 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D885DF64
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:54:11 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id o16-20020a05600c379000b003a02eaea815so4750078wmr.0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:54:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=nNoaWz2DLfztpbfMaaOu9PND9CXL/stNC5CxyVcj8tw=;
-        b=s0FEU6AivObD1lzT2SuxslJpVSIXyDDsuFB0W7kASRDUlSFyBNXIGpEBrYgWxxbOLr
-         pADpmFpbeRHDXuUrloWKz+QrjRXV87KEleWiYHYpTRkMzZ3mbZk+pt04e5a3kVnMU6GZ
-         CZj+MLN0u+Cl0VoSCJPdrZDls00sd1/daPXrU5CXskGv8kFtkeALfEiWJi5e/hkjlABy
-         n4s9LX1uBbD5hvzmkV8vijcL7h5ep3jCVXzFrK9MTGQH/H+2viSJie24i/o8JhccnYUo
-         /cip9/pXsctWiRyYT31HX0pRTcNqmuS7XA/ddac5oBXR8bMFreniec+taVX+53lzpAPg
-         RALg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=nNoaWz2DLfztpbfMaaOu9PND9CXL/stNC5CxyVcj8tw=;
-        b=bgdYAQpxVOIQJ3kn3cEBN2IE5ZMsyQb5NWxkXSeVCCL7fcdkBQ9bShXHK9elMn7KyI
-         AUSWNtBBZ1jNO5VaXdt0iypyjzSfZo36YMiDhZGhquBfuQDE8X5VNBXgKVc3X2piKLd4
-         Q2wR1eudEDIccGLSgxsgpQBKldkr0vujMYdY2ZWN9mu3gd4irzUbXVrqIN3ox+TbKcMC
-         4cISmMitQyJlJvatGM+79N5nbHsyvHQnqjGqM9s69io34CFwRrmXvqYsh6EGbDG6uzCM
-         hivDXLOqG0FHC8CEfvZEPQlfWKO684E+Tj166sQdWM7dXk5BqfQ9C/OYxao27nlD+W+6
-         RIJQ==
-X-Gm-Message-State: AJIora9av7/cHlZMh0C14Oqs1Wj56xu9mhYzSN7CALhLPwqcBeYeuhj0
-        IMTfI5C1cvpRuj7Xrr6Eac/vHg==
-X-Google-Smtp-Source: AGRyM1v2YCbjkUWS+vtyeJezfTvhqmE7y9nvKbHozDF85HWmhsPzgY7ui0/J/OUKoCoLxEqG21Y3Xw==
-X-Received: by 2002:a05:600c:a42:b0:39c:9166:5a55 with SMTP id c2-20020a05600c0a4200b0039c91665a55mr14839526wmq.141.1656330849806;
-        Mon, 27 Jun 2022 04:54:09 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id a7-20020adffb87000000b0021b89181863sm10331609wrr.41.2022.06.27.04.54.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 04:54:09 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 12:54:07 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        sre@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
-        lgirdwood@gmail.com, lars@metafoo.de, rafael@kernel.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 06/10] mfd: axp20x: Add support for AXP192
-Message-ID: <YrmaX6/dbYKAFDQ4@google.com>
-References: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com>
- <20220603135714.12007-7-aidanmacdonald.0x0@gmail.com>
+        Mon, 27 Jun 2022 07:58:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39396DFC3;
+        Mon, 27 Jun 2022 04:54:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5DAE614AD;
+        Mon, 27 Jun 2022 11:54:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CDA7C341C8;
+        Mon, 27 Jun 2022 11:54:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656330897;
+        bh=XEdbP8hqb+/krqVBOaT/MtmmlBAa4vhY3AGwXhq3CUU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=raV+9ibzVQrQsVRCFNZJTJvkTNhqnBTxPavBWkUWR75o1LO+7C5F1+UCJAWMWymD+
+         L799rsTEKaDMIn8QFOdIWF7SrGFdi3n4hc5Hpez7TKBpl/ZB1JO2NuRImH6Nx15VXm
+         Z18J4VhQboOaxZZMLCXhc/PRVmoYpcC12LWE8cI1vV1iw4E0DVEFT995c2ETzRpc/w
+         9VbMu25zUWB3Jhm/W5D8swGGZYg73jyQIW6cY6NsccmxS+jSlnbO2Js4L2tFHTrbZI
+         qUf9ZpES5UE4W3IQezAHox+aYrwT0Z5jYjh54fciLUA0G/En4O14oVn7ZZcCGE4xz6
+         J4YopxXvzoK7w==
+Received: by mail-oi1-f173.google.com with SMTP id l81so12465050oif.9;
+        Mon, 27 Jun 2022 04:54:57 -0700 (PDT)
+X-Gm-Message-State: AJIora+EjdVGZ0BcheXccTiD6A0f3qDg3C9WisrsiF/+hOylaqUZQ0P5
+        ZD5kKK3o2jE/CCz5m+0KaDoogyrZb4zBFyaBBn4=
+X-Google-Smtp-Source: AGRyM1tMfijM2yOVlQBNkgcCYnDOR346PAX9FQZZ0R34sh1Dal8EtaYPD5OTZaPXjnnpvmXr0e45xYZePPKh/BQG9Uc=
+X-Received: by 2002:a05:6808:13c6:b0:335:3e54:94bc with SMTP id
+ d6-20020a05680813c600b003353e5494bcmr9612504oiw.228.1656330896263; Mon, 27
+ Jun 2022 04:54:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220603135714.12007-7-aidanmacdonald.0x0@gmail.com>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <CAMkAt6osbEGBFrgn=y1=x4mDHC1aL40BwaW0NdGHF8qmWd7ktA@mail.gmail.com> <20220627113019.3q62luiay7izhehr@black.fi.intel.com>
+In-Reply-To: <20220627113019.3q62luiay7izhehr@black.fi.intel.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Mon, 27 Jun 2022 13:54:45 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXHD5XBAS1aBjzg1RCeK6qgtanUSED_xyTZ0v1j+UShMKw@mail.gmail.com>
+Message-ID: <CAMj1kXHD5XBAS1aBjzg1RCeK6qgtanUSED_xyTZ0v1j+UShMKw@mail.gmail.com>
+Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted memory
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Peter Gonda <pgonda@google.com>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marcelo Cerri <marcelo.cerri@canonical.com>,
+        tim.gardner@canonical.com, khalid.elmously@canonical.com,
+        philip.cox@canonical.com,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 03 Jun 2022, Aidan MacDonald wrote:
+On Mon, 27 Jun 2022 at 13:30, Kirill A. Shutemov
+<kirill.shutemov@linux.intel.com> wrote:
+>
+> On Fri, Jun 24, 2022 at 10:37:10AM -0600, Peter Gonda wrote:
+> > On Tue, Jun 14, 2022 at 6:03 AM Kirill A. Shutemov
+> > <kirill.shutemov@linux.intel.com> wrote:
+> > >
+> > > UEFI Specification version 2.9 introduces the concept of memory
+> > > acceptance: some Virtual Machine platforms, such as Intel TDX or AMD
+> > > SEV-SNP, requiring memory to be accepted before it can be used by the
+> > > guest. Accepting happens via a protocol specific for the Virtual
+> > > Machine platform.
+> > >
+> > > Accepting memory is costly and it makes VMM allocate memory for the
+> > > accepted guest physical address range. It's better to postpone memory
+> > > acceptance until memory is needed. It lowers boot time and reduces
+> > > memory overhead.
+> > >
+> > > The kernel needs to know what memory has been accepted. Firmware
+> > > communicates this information via memory map: a new memory type --
+> > > EFI_UNACCEPTED_MEMORY -- indicates such memory.
+> > >
+> > > Range-based tracking works fine for firmware, but it gets bulky for
+> > > the kernel: e820 has to be modified on every page acceptance. It leads
+> > > to table fragmentation, but there's a limited number of entries in the
+> > > e820 table
+> > >
+> > > Another option is to mark such memory as usable in e820 and track if the
+> > > range has been accepted in a bitmap. One bit in the bitmap represents
+> > > 2MiB in the address space: one 4k page is enough to track 64GiB or
+> > > physical address space.
+> > >
+> > > In the worst-case scenario -- a huge hole in the middle of the
+> > > address space -- It needs 256MiB to handle 4PiB of the address
+> > > space.
+> > >
+> > > Any unaccepted memory that is not aligned to 2M gets accepted upfront.
+> > >
+> > > The approach lowers boot time substantially. Boot to shell is ~2.5x
+> > > faster for 4G TDX VM and ~4x faster for 64G.
+> > >
+> > > TDX-specific code isolated from the core of unaccepted memory support. It
+> > > supposed to help to plug-in different implementation of unaccepted memory
+> > > such as SEV-SNP.
+> > >
+> > > The tree can be found here:
+> > >
+> > > https://github.com/intel/tdx.git guest-unaccepted-memory
+> >
+> > Hi Kirill,
+> >
+> > I have a couple questions about this feature mainly about how cloud
+> > customers can use this, I assume since this is a confidential compute
+> > feature a large number of the users of these patches will be cloud
+> > customers using TDX and SNP. One issue I see with these patches is how
+> > do we as a cloud provider know whether a customer's linux image
+> > supports this feature, if the image doesn't have these patches UEFI
+> > needs to fully validate the memory, if the image does we can use this
+> > new protocol. In GCE we supply our VMs with a version of the EDK2 FW
+> > and the customer doesn't input into which UEFI we run, as far as I can
+> > tell from the Azure SNP VM documentation it seems very similar. We
+> > need to somehow tell our UEFI in the VM what to do based on the image.
+> > The current way I can see to solve this issue would be to have our
+> > customers give us metadata about their VM's image but this seems kinda
+> > burdensome on our customers (I assume we'll have more features which
+> > both UEFI and kernel need to both support inorder to be turned on like
+> > this one) and error-prone, if a customer incorrectly labels their
+> > image it may fail to boot.. Has there been any discussion about how to
+> > solve this? My naive thoughts were what if UEFI and Kernel had some
+> > sort of feature negotiation. Maybe that could happen via an extension
+> > to exit boot services or a UEFI runtime driver, I'm not sure what's
+> > best here just some ideas.
+>
+> Just as an idea, we can put info into UTS_VERSION which can be read from
+> the built bzImage. We have info on SMP and preeption there already.
+>
 
-> The AXP192 PMIC is similar to the AXP202/AXP209, but with different
-> regulators, additional GPIOs, and a different IRQ register layout.
-> 
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-> ---
->  drivers/mfd/axp20x-i2c.c   |   2 +
->  drivers/mfd/axp20x.c       | 150 +++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/axp20x.h |  84 +++++++++++++++++++++
->  3 files changed, 236 insertions(+)
-> 
-> diff --git a/drivers/mfd/axp20x-i2c.c b/drivers/mfd/axp20x-i2c.c
-> index 00ab48018d8d..9ada58fad77f 100644
-> --- a/drivers/mfd/axp20x-i2c.c
-> +++ b/drivers/mfd/axp20x-i2c.c
-> @@ -62,6 +62,7 @@ static int axp20x_i2c_remove(struct i2c_client *i2c)
->  #ifdef CONFIG_OF
->  static const struct of_device_id axp20x_i2c_of_match[] = {
->  	{ .compatible = "x-powers,axp152", .data = (void *)AXP152_ID },
-> +	{ .compatible = "x-powers,axp192", .data = (void *)AXP192_ID },
->  	{ .compatible = "x-powers,axp202", .data = (void *)AXP202_ID },
->  	{ .compatible = "x-powers,axp209", .data = (void *)AXP209_ID },
->  	{ .compatible = "x-powers,axp221", .data = (void *)AXP221_ID },
-> @@ -75,6 +76,7 @@ MODULE_DEVICE_TABLE(of, axp20x_i2c_of_match);
->  
->  static const struct i2c_device_id axp20x_i2c_id[] = {
->  	{ "axp152", 0 },
-> +	{ "axp192", 0 },
->  	{ "axp202", 0 },
->  	{ "axp209", 0 },
->  	{ "axp221", 0 },
-> diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-> index 8161a5dc68e8..7f64e5c83fe2 100644
-> --- a/drivers/mfd/axp20x.c
-> +++ b/drivers/mfd/axp20x.c
-> @@ -34,6 +34,7 @@
->  
->  static const char * const axp20x_model_names[] = {
->  	"AXP152",
-> +	"AXP192",
->  	"AXP202",
->  	"AXP209",
->  	"AXP221",
-> @@ -92,6 +93,35 @@ static const struct regmap_access_table axp20x_volatile_table = {
->  	.n_yes_ranges	= ARRAY_SIZE(axp20x_volatile_ranges),
->  };
->  
-> +static const struct regmap_range axp192_writeable_ranges[] = {
-> +	regmap_reg_range(AXP192_DATACACHE(0), AXP192_DATACACHE(5)),
-> +	regmap_reg_range(AXP192_PWR_OUT_CTRL, AXP192_IRQ5_STATE),
-> +	regmap_reg_range(AXP20X_DCDC_MODE, AXP192_N_RSTO_CTRL),
-> +	regmap_reg_range(AXP20X_CC_CTRL, AXP20X_CC_CTRL),
-> +};
-> +
-> +static const struct regmap_range axp192_volatile_ranges[] = {
-> +	regmap_reg_range(AXP20X_PWR_INPUT_STATUS, AXP192_USB_OTG_STATUS),
-> +	regmap_reg_range(AXP192_IRQ1_STATE, AXP192_IRQ4_STATE),
-> +	regmap_reg_range(AXP192_IRQ5_STATE, AXP192_IRQ5_STATE),
-> +	regmap_reg_range(AXP20X_ACIN_V_ADC_H, AXP20X_IPSOUT_V_HIGH_L),
-> +	regmap_reg_range(AXP20X_TIMER_CTRL, AXP20X_TIMER_CTRL),
-> +	regmap_reg_range(AXP192_GPIO2_0_STATE, AXP192_GPIO2_0_STATE),
-> +	regmap_reg_range(AXP192_GPIO4_3_STATE, AXP192_GPIO4_3_STATE),
-> +	regmap_reg_range(AXP192_N_RSTO_CTRL, AXP192_N_RSTO_CTRL),
-> +	regmap_reg_range(AXP20X_CHRG_CC_31_24, AXP20X_CC_CTRL),
-> +};
-> +
-> +static const struct regmap_access_table axp192_writeable_table = {
-> +	.yes_ranges	= axp192_writeable_ranges,
-> +	.n_yes_ranges	= ARRAY_SIZE(axp192_writeable_ranges),
-> +};
-> +
-> +static const struct regmap_access_table axp192_volatile_table = {
-> +	.yes_ranges	= axp192_volatile_ranges,
-> +	.n_yes_ranges	= ARRAY_SIZE(axp192_volatile_ranges),
-> +};
-> +
->  /* AXP22x ranges are shared with the AXP809, as they cover the same range */
->  static const struct regmap_range axp22x_writeable_ranges[] = {
->  	regmap_reg_range(AXP20X_DATACACHE(0), AXP20X_IRQ5_STATE),
-> @@ -173,6 +203,25 @@ static const struct resource axp152_pek_resources[] = {
->  	DEFINE_RES_IRQ_NAMED(AXP152_IRQ_PEK_FAL_EDGE, "PEK_DBF"),
->  };
->  
-> +static const struct resource axp192_gpio_resources[] = {
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_GPIO0_INPUT, "GPIO0"),
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_GPIO1_INPUT, "GPIO1"),
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_GPIO2_INPUT, "GPIO2"),
-> +};
-> +
-> +static const struct resource axp192_ac_power_supply_resources[] = {
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_ACIN_PLUGIN, "ACIN_PLUGIN"),
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_ACIN_REMOVAL, "ACIN_REMOVAL"),
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_ACIN_OVER_V, "ACIN_OVER_V"),
-> +};
-> +
-> +static const struct resource axp192_usb_power_supply_resources[] = {
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_VBUS_PLUGIN, "VBUS_PLUGIN"),
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_VBUS_REMOVAL, "VBUS_REMOVAL"),
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_VBUS_VALID, "VBUS_VALID"),
-> +	DEFINE_RES_IRQ_NAMED(AXP192_IRQ_VBUS_NOT_VALID, "VBUS_NOT_VALID"),
-> +};
-> +
->  static const struct resource axp20x_ac_power_supply_resources[] = {
->  	DEFINE_RES_IRQ_NAMED(AXP20X_IRQ_ACIN_PLUGIN, "ACIN_PLUGIN"),
->  	DEFINE_RES_IRQ_NAMED(AXP20X_IRQ_ACIN_REMOVAL, "ACIN_REMOVAL"),
-> @@ -245,6 +294,15 @@ static const struct regmap_config axp152_regmap_config = {
->  	.cache_type	= REGCACHE_RBTREE,
->  };
->  
-> +static const struct regmap_config axp192_regmap_config = {
-> +	.reg_bits	= 8,
-> +	.val_bits	= 8,
-> +	.wr_table	= &axp192_writeable_table,
-> +	.volatile_table	= &axp192_volatile_table,
-> +	.max_register	= AXP20X_CC_CTRL,
-> +	.cache_type	= REGCACHE_RBTREE,
-> +};
-> +
->  static const struct regmap_config axp20x_regmap_config = {
->  	.reg_bits	= 8,
->  	.val_bits	= 8,
-> @@ -304,6 +362,55 @@ static const struct regmap_irq axp152_regmap_irqs[] = {
->  	INIT_REGMAP_IRQ(AXP152, GPIO0_INPUT,		2, 0),
->  };
->  
-> +static const struct regmap_irq axp192_regmap_irqs[] = {
-> +	INIT_REGMAP_IRQ(AXP192, ACIN_OVER_V,		0, 7),
-> +	INIT_REGMAP_IRQ(AXP192, ACIN_PLUGIN,		0, 6),
-> +	INIT_REGMAP_IRQ(AXP192, ACIN_REMOVAL,		0, 5),
-> +	INIT_REGMAP_IRQ(AXP192, VBUS_OVER_V,		0, 4),
-> +	INIT_REGMAP_IRQ(AXP192, VBUS_PLUGIN,		0, 3),
-> +	INIT_REGMAP_IRQ(AXP192, VBUS_REMOVAL,		0, 2),
-> +	INIT_REGMAP_IRQ(AXP192, VBUS_V_LOW,		0, 1),
-> +	INIT_REGMAP_IRQ(AXP192, BATT_PLUGIN,		1, 7),
-> +	INIT_REGMAP_IRQ(AXP192, BATT_REMOVAL,	        1, 6),
-> +	INIT_REGMAP_IRQ(AXP192, BATT_ENT_ACT_MODE,	1, 5),
-> +	INIT_REGMAP_IRQ(AXP192, BATT_EXIT_ACT_MODE,	1, 4),
-> +	INIT_REGMAP_IRQ(AXP192, CHARG,		        1, 3),
-> +	INIT_REGMAP_IRQ(AXP192, CHARG_DONE,		1, 2),
-> +	INIT_REGMAP_IRQ(AXP192, BATT_TEMP_HIGH,	        1, 1),
-> +	INIT_REGMAP_IRQ(AXP192, BATT_TEMP_LOW,	        1, 0),
-> +	INIT_REGMAP_IRQ(AXP192, DIE_TEMP_HIGH,	        2, 7),
-> +	INIT_REGMAP_IRQ(AXP192, CHARG_I_LOW,		2, 6),
-> +	INIT_REGMAP_IRQ(AXP192, DCDC1_V_LONG,	        2, 5),
-> +	INIT_REGMAP_IRQ(AXP192, DCDC2_V_LONG,	        2, 4),
-> +	INIT_REGMAP_IRQ(AXP192, DCDC3_V_LONG,	        2, 3),
-> +	INIT_REGMAP_IRQ(AXP192, PEK_SHORT,		2, 1),
-> +	INIT_REGMAP_IRQ(AXP192, PEK_LONG,		2, 0),
-> +	INIT_REGMAP_IRQ(AXP192, N_OE_PWR_ON,		3, 7),
-> +	INIT_REGMAP_IRQ(AXP192, N_OE_PWR_OFF,	        3, 6),
-> +	INIT_REGMAP_IRQ(AXP192, VBUS_VALID,		3, 5),
-> +	INIT_REGMAP_IRQ(AXP192, VBUS_NOT_VALID,	        3, 4),
-> +	INIT_REGMAP_IRQ(AXP192, VBUS_SESS_VALID,	3, 3),
-> +	INIT_REGMAP_IRQ(AXP192, VBUS_SESS_END,	        3, 2),
-> +	INIT_REGMAP_IRQ(AXP192, LOW_PWR_LVL,	        3, 0),
-> +	INIT_REGMAP_IRQ(AXP192, TIMER,			4, 7),
-> +	INIT_REGMAP_IRQ(AXP192, GPIO2_INPUT,		4, 2),
-> +	INIT_REGMAP_IRQ(AXP192, GPIO1_INPUT,		4, 1),
-> +	INIT_REGMAP_IRQ(AXP192, GPIO0_INPUT,		4, 0),
-> +};
-> +
-> +static int axp192_get_irq_reg(unsigned int base_reg, int i)
+Instead of hacking this into the binary, couldn't we define a protocol
+that the kernel will call from the EFI stub (before EBS()) to identify
+itself as an image that understands unaccepted memory, and knows how
+to deal with it?
 
-Nit: If you have to respin this set, please rename 'i'.
+That way, the firmware can accept all the memory on behalf of the OS
+at ExitBootServices() time, unless the OS has indicated there is no
+need to do so.
 
-Unless used as an iterator, 'i' is a terrible variable name.
 
-> +{
-> +	/* linear mapping for IRQ1 to IRQ4 */
-> +	if (i < 4)
-> +		return base_reg + i;
+
+
+> Patch below does this:
+>
+> $ file arch/x86/boot/bzImage
+> arch/x86/boot/bzImage: Linux kernel x86 boot executable bzImage, version 5.19.0-rc3-00016-g2f6aa48e28d9-dirty (kas@box) #2300 SMP PREEMPT_DYNAMIC UNACCEPTED_MEMORY Mon Jun 27 14:23:04 , RO-rootFS, swap_dev 0XC, Normal VGA
+>
+> Note UNACCEPTED_MEMORY in the output.
+>
+> Probably we want to have there info on which flavour of unaccepted memory
+> is supported (TDX/SNP/whatever). It is a bit more tricky.
+>
+> Any opinion?
+>
+> diff --git a/init/Makefile b/init/Makefile
+> index d82623d7fc8e..6688ea43e6bf 100644
+> --- a/init/Makefile
+> +++ b/init/Makefile
+> @@ -32,7 +32,7 @@ quiet_cmd_compile.h = CHK     $@
+>         $(CONFIG_SHELL) $(srctree)/scripts/mkcompile_h $@       \
+>         "$(UTS_MACHINE)" "$(CONFIG_SMP)" "$(CONFIG_PREEMPT_BUILD)"      \
+>         "$(CONFIG_PREEMPT_DYNAMIC)" "$(CONFIG_PREEMPT_RT)" \
+> -       "$(CONFIG_CC_VERSION_TEXT)" "$(LD)"
+> +       "$(CONFIG_UNACCEPTED_MEMORY)" "$(CONFIG_CC_VERSION_TEXT)" "$(LD)"
+>
+>  include/generated/compile.h: FORCE
+>         $(call cmd,compile.h)
+> diff --git a/scripts/mkcompile_h b/scripts/mkcompile_h
+> index ca40a5258c87..efacfecad699 100755
+> --- a/scripts/mkcompile_h
+> +++ b/scripts/mkcompile_h
+> @@ -7,8 +7,9 @@ SMP=$3
+>  PREEMPT=$4
+>  PREEMPT_DYNAMIC=$5
+>  PREEMPT_RT=$6
+> -CC_VERSION="$7"
+> -LD=$8
+> +UNACCEPTED_MEMORY=$7
+> +CC_VERSION="$8"
+> +LD=$9
+>
+>  # Do not expand names
+>  set -f
+> @@ -51,6 +52,10 @@ elif [ -n "$PREEMPT" ] ; then
+>         CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT"
+>  fi
+>
+> +if [ -n "$UNACCEPTED_MEMORY" ] ; then
+> +       CONFIG_FLAGS="$CONFIG_FLAGS UNACCEPTED_MEMORY"
+> +fi
 > +
-> +	/* handle IRQ5 separately */
-> +	if (base_reg == AXP192_IRQ1_EN)
-> +		return AXP192_IRQ5_EN;
-> +	else
-> +		return AXP192_IRQ5_STATE;
-> +}
-> +
->  static const struct regmap_irq axp20x_regmap_irqs[] = {
->  	INIT_REGMAP_IRQ(AXP20X, ACIN_OVER_V,		0, 7),
->  	INIT_REGMAP_IRQ(AXP20X, ACIN_PLUGIN,		0, 6),
-> @@ -514,6 +621,19 @@ static const struct regmap_irq_chip axp152_regmap_irq_chip = {
->  	.num_regs		= 3,
->  };
->  
-> +static const struct regmap_irq_chip axp192_regmap_irq_chip = {
-> +	.name			= "axp192_irq_chip",
-> +	.status_base		= AXP192_IRQ1_STATE,
-> +	.ack_base		= AXP192_IRQ1_STATE,
-> +	.mask_base		= AXP192_IRQ1_EN,
-> +	.mask_invert		= true,
-> +	.init_ack_masked	= true,
-> +	.irqs			= axp192_regmap_irqs,
-> +	.num_irqs		= ARRAY_SIZE(axp192_regmap_irqs),
-> +	.num_regs		= 5,
-> +	.get_irq_reg		= axp192_get_irq_reg,
-> +};
-> +
->  static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
->  	.name			= "axp20x_irq_chip",
->  	.status_base		= AXP20X_IRQ1_STATE,
-> @@ -588,6 +708,30 @@ static const struct regmap_irq_chip axp809_regmap_irq_chip = {
->  	.num_regs		= 5,
->  };
->  
-> +static const struct mfd_cell axp192_cells[] = {
-> +	{
-> +		.name		= "axp192-gpio",
-> +		.of_compatible	= "x-powers,axp192-gpio",
-> +		.num_resources	= ARRAY_SIZE(axp192_gpio_resources),
-> +		.resources	= axp192_gpio_resources,
-> +	}, {
-> +		.name		= "axp20x-regulator",
-
-Nit: Is it possible to put one line entries at the bottom?
-
-And format like this:
-
-    { .name = "axp20x-regulator" }
-
-> +	}, {
-> +		.name		= "axp192-adc",
-> +		.of_compatible	= "x-powers,axp192-adc",
-> +	}, {
-> +		.name		= "axp20x-ac-power-supply",
-> +		.of_compatible	= "x-powers,axp202-ac-power-supply",
-> +		.num_resources	= ARRAY_SIZE(axp192_ac_power_supply_resources),
-> +		.resources	= axp192_ac_power_supply_resources,
-> +	}, {
-> +		.name		= "axp20x-usb-power-supply",
-> +		.of_compatible	= "x-powers,axp192-usb-power-supply",
-> +		.num_resources	= ARRAY_SIZE(axp192_usb_power_supply_resources),
-> +		.resources	= axp192_usb_power_supply_resources,
-> +	}
-> +};
-
-For my own reference (apply this as-is to your sign-off block):
-
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+>  # Truncate to maximum length
+>  UTS_LEN=64
+>  UTS_VERSION="$(echo $UTS_VERSION $CONFIG_FLAGS $TIMESTAMP | cut -b -$UTS_LEN)"
+> --
+>  Kirill A. Shutemov
