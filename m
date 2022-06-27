@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3528BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47ECBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235175AbiF0L2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44738 "EHLO
+        id S235329AbiF0L2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235121AbiF0L0p (ORCPT
+        with ESMTP id S235133AbiF0L0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:26:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 013399FC2;
-        Mon, 27 Jun 2022 04:26:41 -0700 (PDT)
+        Mon, 27 Jun 2022 07:26:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E327657;
+        Mon, 27 Jun 2022 04:26:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D06D61456;
-        Mon, 27 Jun 2022 11:26:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC82C3411D;
-        Mon, 27 Jun 2022 11:26:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2572B81125;
+        Mon, 27 Jun 2022 11:26:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54182C3411D;
+        Mon, 27 Jun 2022 11:26:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329200;
-        bh=aSg6SCDboFrRDptYfGjd8aZCjQ3TtrJ6lY+80tf9SwQ=;
+        s=korg; t=1656329205;
+        bh=klJ26jnLWH9oFW4gAZy/aelKxwmR4wrpLRbrkGf00zU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YNy7gBBlNYOPKkQS4BgZHVphX5l59qsGvcGQh5lcF7eV7FtDTBVuau84kx14biN7P
-         Ysh6576Z0uo7j5RU2I8EM4w2E1baeBSyTYyHZ6/mjB7SyBEF5tRPo3Ky2hk7Zp3wH4
-         PnQipCJGrvgDtVyb44bvcOrrJ7gRfdBRdaJPynIo=
+        b=S+tFMjaF+UtV8xJKEQHXSlpXFdKpqQWxMqkyRoCZTkRAT/tscIYEFXavCspxxsceJ
+         tRHPGtjvFBbTVFa8beUom577d8etlBDJy/dH0NaU7gYPY+UKgSZevtxVM+mScFNywz
+         ip5CNquFXhy87EJE8MtI5AwJ+hm7eeSZ/HiRnIdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Yannick Brosseau <yannick.brosseau@gmail.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 081/102] iio: adc: stm32: Fix ADCs iteration in irq handler
-Date:   Mon, 27 Jun 2022 13:21:32 +0200
-Message-Id: <20220627111935.871020960@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Jie2x Zhou <jie2x.zhou@intel.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 045/102] selftests: netfilter: correct PKTGEN_SCRIPT_PATHS in nft_concat_range.sh
+Date:   Mon, 27 Jun 2022 13:20:56 +0200
+Message-Id: <20220627111934.809301512@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -51,79 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yannick Brosseau <yannick.brosseau@gmail.com>
+From: Jie2x Zhou <jie2x.zhou@intel.com>
 
-commit d2214cca4d3eadc74eac9e30301ec7cad5355f00 upstream.
+[ Upstream commit 5d79d8af8dec58bf709b3124d09d9572edd9c617 ]
 
-The irq handler was only checking the mask for the first ADCs in the case of the
-F4 and H7 generation, since it was iterating up to the num_irq value. This patch add
-the maximum number of ADC in the common register, which map to the number of entries of
-eoc_msk and ovr_msk in stm32_adc_common_regs. This allow the handler to check all ADCs in
-that module.
+Before change:
+make -C netfilter
+ TEST: performance
+   net,port                                                      [SKIP]
+   perf not supported
+   port,net                                                      [SKIP]
+   perf not supported
+   net6,port                                                     [SKIP]
+   perf not supported
+   port,proto                                                    [SKIP]
+   perf not supported
+   net6,port,mac                                                 [SKIP]
+   perf not supported
+   net6,port,mac,proto                                           [SKIP]
+   perf not supported
+   net,mac                                                       [SKIP]
+   perf not supported
 
-Tested on a STM32F429NIH6.
+After change:
+   net,mac                                                       [ OK ]
+     baseline (drop from netdev hook):               2061098pps
+     baseline hash (non-ranged entries):             1606741pps
+     baseline rbtree (match on first field only):    1191607pps
+     set with  1000 full, ranged entries:            1639119pps
+ok 8 selftests: netfilter: nft_concat_range.sh
 
-Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
-Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
-Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Link: https://lore.kernel.org/r/20220516203939.3498673-2-yannick.brosseau@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 611973c1e06f ("selftests: netfilter: Introduce tests for sets with range concatenation")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/stm32-adc-core.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ tools/testing/selftests/netfilter/nft_concat_range.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/adc/stm32-adc-core.c
-+++ b/drivers/iio/adc/stm32-adc-core.c
-@@ -64,6 +64,7 @@ struct stm32_adc_priv;
-  * @max_clk_rate_hz: maximum analog clock rate (Hz, from datasheet)
-  * @has_syscfg: SYSCFG capability flags
-  * @num_irqs:	number of interrupt lines
-+ * @num_adcs:   maximum number of ADC instances in the common registers
-  */
- struct stm32_adc_priv_cfg {
- 	const struct stm32_adc_common_regs *regs;
-@@ -71,6 +72,7 @@ struct stm32_adc_priv_cfg {
- 	u32 max_clk_rate_hz;
- 	unsigned int has_syscfg;
- 	unsigned int num_irqs;
-+	unsigned int num_adcs;
- };
+diff --git a/tools/testing/selftests/netfilter/nft_concat_range.sh b/tools/testing/selftests/netfilter/nft_concat_range.sh
+index b5eef5ffb58e..af3461cb5c40 100755
+--- a/tools/testing/selftests/netfilter/nft_concat_range.sh
++++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
+@@ -31,7 +31,7 @@ BUGS="flush_remove_add reload"
  
- /**
-@@ -333,7 +335,7 @@ static void stm32_adc_irq_handler(struct
- 	 * before invoking the interrupt handler (e.g. call ISR only for
- 	 * IRQ-enabled ADCs).
- 	 */
--	for (i = 0; i < priv->cfg->num_irqs; i++) {
-+	for (i = 0; i < priv->cfg->num_adcs; i++) {
- 		if ((status & priv->cfg->regs->eoc_msk[i] &&
- 		     stm32_adc_eoc_enabled(priv, i)) ||
- 		     (status & priv->cfg->regs->ovr_msk[i]))
-@@ -784,6 +786,7 @@ static const struct stm32_adc_priv_cfg s
- 	.clk_sel = stm32f4_adc_clk_sel,
- 	.max_clk_rate_hz = 36000000,
- 	.num_irqs = 1,
-+	.num_adcs = 3,
- };
+ # List of possible paths to pktgen script from kernel tree for performance tests
+ PKTGEN_SCRIPT_PATHS="
+-	../../../samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
++	../../../../samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
+ 	pktgen/pktgen_bench_xmit_mode_netif_receive.sh"
  
- static const struct stm32_adc_priv_cfg stm32h7_adc_priv_cfg = {
-@@ -792,6 +795,7 @@ static const struct stm32_adc_priv_cfg s
- 	.max_clk_rate_hz = 36000000,
- 	.has_syscfg = HAS_VBOOSTER,
- 	.num_irqs = 1,
-+	.num_adcs = 2,
- };
- 
- static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
-@@ -800,6 +804,7 @@ static const struct stm32_adc_priv_cfg s
- 	.max_clk_rate_hz = 36000000,
- 	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
- 	.num_irqs = 2,
-+	.num_adcs = 2,
- };
- 
- static const struct of_device_id stm32_adc_of_match[] = {
+ # Definition of set types:
+-- 
+2.35.1
+
 
 
