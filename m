@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A81FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2ADC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237020AbiF0Lld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34298 "EHLO
+        id S234600AbiF0Llk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236494AbiF0Lhf (ORCPT
+        with ESMTP id S236687AbiF0Lhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1C2283;
-        Mon, 27 Jun 2022 04:33:30 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E788EB4B1;
+        Mon, 27 Jun 2022 04:34:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFA6860A10;
-        Mon, 27 Jun 2022 11:33:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C1CC3411D;
-        Mon, 27 Jun 2022 11:33:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A80EDB81123;
+        Mon, 27 Jun 2022 11:34:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB21EC3411D;
+        Mon, 27 Jun 2022 11:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329609;
-        bh=4d/QsRyDTmGy61tkrt2m4n5m+CpbXi9uRl2S66/x0Mk=;
+        s=korg; t=1656329675;
+        bh=qmI3PqT2124o3z+qcI7qRD+yNh0AzZCX1HZJF35pEdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CBO5+gAicKQ+JqEiQ6AuGmiLVun5X8epAEPCA45lrxxwXyQO/61Ait7JKdaXYi2UA
-         qsyStOdbGr8KE9NFZnphxYf/t2vM074dnlZW6+IVb4tiH11umyczENqvySzXF1KMDK
-         Npxyw+/E6sQHiZevClGrr287Iy542U+f3DhRnkcM=
+        b=FAK8nc+dJV4M1WSmzmUZsAT5rSvZpr7qtY3JLli0J25Z3nzhHuO8QAFEisFPuu0LT
+         b4sXfYrycN5yxDPZXJP23xM4FKgd1RgJ8tx+2gcoveIW/5tWIOvSKQqDSrY9AW8EQX
+         NEWexyLilkht25OX34K3qcoAN5CJIVGtaw5yIHC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 055/135] drm/msm/dp: check core_initialized before disable interrupts at dp_display_unbind()
-Date:   Mon, 27 Jun 2022 13:21:02 +0200
-Message-Id: <20220627111939.755751793@linuxfoundation.org>
+Subject: [PATCH 5.15 075/135] sock: redo the psock vs ULP protection check
+Date:   Mon, 27 Jun 2022 13:21:22 +0200
+Message-Id: <20220627111940.337879163@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,66 +51,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit d80c3ba0ac247791a4ed7a0cd865a64906c8906a ]
+[ Upstream commit e34a07c0ae3906f97eb18df50902e2a01c1015b6 ]
 
-During msm initialize phase, dp_display_unbind() will be called to undo
-initializations had been done by dp_display_bind() previously if there is
-error happen at msm_drm_bind. In this case, core_initialized flag had to
-be check to make sure clocks is on before update DP controller register
-to disable HPD interrupts. Otherwise system will crash due to below NOC
-fatal error.
+Commit 8a59f9d1e3d4 ("sock: Introduce sk->sk_prot->psock_update_sk_prot()")
+has moved the inet_csk_has_ulp(sk) check from sk_psock_init() to
+the new tcp_bpf_update_proto() function. I'm guessing that this
+was done to allow creating psocks for non-inet sockets.
 
-QTISECLIB [01f01a7ad]CNOC2 ERROR: ERRLOG0_LOW = 0x00061007
-QTISECLIB [01f01a7ad]GEM_NOC ERROR: ERRLOG0_LOW = 0x00001007
-QTISECLIB [01f0371a0]CNOC2 ERROR: ERRLOG0_HIGH = 0x00000003
-QTISECLIB [01f055297]GEM_NOC ERROR: ERRLOG0_HIGH = 0x00000003
-QTISECLIB [01f072beb]CNOC2 ERROR: ERRLOG1_LOW = 0x00000024
-QTISECLIB [01f0914b8]GEM_NOC ERROR: ERRLOG1_LOW = 0x00000042
-QTISECLIB [01f0ae639]CNOC2 ERROR: ERRLOG1_HIGH = 0x00004002
-QTISECLIB [01f0cc73f]GEM_NOC ERROR: ERRLOG1_HIGH = 0x00004002
-QTISECLIB [01f0ea092]CNOC2 ERROR: ERRLOG2_LOW = 0x0009020c
-QTISECLIB [01f10895f]GEM_NOC ERROR: ERRLOG2_LOW = 0x0ae9020c
-QTISECLIB [01f125ae1]CNOC2 ERROR: ERRLOG2_HIGH = 0x00000000
-QTISECLIB [01f143be7]GEM_NOC ERROR: ERRLOG2_HIGH = 0x00000000
-QTISECLIB [01f16153a]CNOC2 ERROR: ERRLOG3_LOW = 0x00000000
-QTISECLIB [01f17fe07]GEM_NOC ERROR: ERRLOG3_LOW = 0x00000000
-QTISECLIB [01f19cf89]CNOC2 ERROR: ERRLOG3_HIGH = 0x00000000
-QTISECLIB [01f1bb08e]GEM_NOC ERROR: ERRLOG3_HIGH = 0x00000000
-QTISECLIB [01f1d8a31]CNOC2 ERROR: SBM1 FAULTINSTATUS0_LOW = 0x00000002
-QTISECLIB [01f1f72a4]GEM_NOC ERROR: SBM0 FAULTINSTATUS0_LOW = 0x00000001
-QTISECLIB [01f21a217]CNOC3 ERROR: ERRLOG0_LOW = 0x00000006
-QTISECLIB [01f23dfd3]NOC error fatal
+Unfortunately the destruction path for psock includes the ULP
+unwind, so we need to fail the sk_psock_init() itself.
+Otherwise if ULP is already present we'll notice that later,
+and call tcp_update_ulp() with the sk_proto of the ULP
+itself, which will most likely result in the ULP looping
+its callbacks.
 
-changes in v2:
--- drop the first patch (drm/msm: enable msm irq after all initializations are done successfully at msm_drm_init()) since the problem had been fixed by other patch
-
-Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/488387/
-Link: https://lore.kernel.org/r/1654538139-7450-1-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: 8a59f9d1e3d4 ("sock: Introduce sk->sk_prot->psock_update_sk_prot()")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: John Fastabend <john.fastabend@gmail.com>
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
+Link: https://lore.kernel.org/r/20220620191353.1184629-2-kuba@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/net/inet_sock.h | 5 +++++
+ net/core/skmsg.c        | 5 +++++
+ net/ipv4/tcp_bpf.c      | 3 ---
+ net/tls/tls_main.c      | 2 ++
+ 4 files changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 7b624191abf1..8b51a5cc3eb8 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -260,7 +260,8 @@ static void dp_display_unbind(struct device *dev, struct device *master,
- 			struct dp_display_private, dp_display);
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index 9e1111f5915b..d81b7f85819e 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -252,6 +252,11 @@ struct inet_sock {
+ #define IP_CMSG_CHECKSUM	BIT(7)
+ #define IP_CMSG_RECVFRAGSIZE	BIT(8)
  
- 	/* disable all HPD interrupts */
--	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
-+	if (dp->core_initialized)
-+		dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
++static inline bool sk_is_inet(struct sock *sk)
++{
++	return sk->sk_family == AF_INET || sk->sk_family == AF_INET6;
++}
++
+ /**
+  * sk_to_full_sk - Access to a full socket
+  * @sk: pointer to a socket
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index cc381165ea08..ede0af308f40 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -695,6 +695,11 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
  
- 	kthread_stop(dp->ev_tsk);
+ 	write_lock_bh(&sk->sk_callback_lock);
  
++	if (sk_is_inet(sk) && inet_csk_has_ulp(sk)) {
++		psock = ERR_PTR(-EINVAL);
++		goto out;
++	}
++
+ 	if (sk->sk_user_data) {
+ 		psock = ERR_PTR(-EBUSY);
+ 		goto out;
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 1cdcb4df0eb7..2c597a4e429a 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -612,9 +612,6 @@ int tcp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore)
+ 		return 0;
+ 	}
+ 
+-	if (inet_csk_has_ulp(sk))
+-		return -EINVAL;
+-
+ 	if (sk->sk_family == AF_INET6) {
+ 		if (tcp_bpf_assert_proto_ops(psock->sk_proto))
+ 			return -EINVAL;
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 9aac9c60d786..62b1c5e32bbd 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -790,6 +790,8 @@ static void tls_update(struct sock *sk, struct proto *p,
+ {
+ 	struct tls_context *ctx;
+ 
++	WARN_ON_ONCE(sk->sk_prot == p);
++
+ 	ctx = tls_get_ctx(sk);
+ 	if (likely(ctx)) {
+ 		ctx->sk_write_space = write_space;
 -- 
 2.35.1
 
