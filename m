@@ -2,65 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 878E7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16444C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241070AbiF0UEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 16:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45388 "EHLO
+        id S240909AbiF0UEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 16:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240946AbiF0UDr (ORCPT
+        with ESMTP id S240958AbiF0UDu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 16:03:47 -0400
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78671CB05
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:46 -0700 (PDT)
-Received: by mail-oo1-xc34.google.com with SMTP id j2-20020a4ab1c2000000b00425813b407bso1946635ooo.10
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:46 -0700 (PDT)
+        Mon, 27 Jun 2022 16:03:50 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3A91CB16
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:49 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id l9-20020a056830268900b006054381dd35so8176116otu.4
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=HmW7NHlc2F8dYXX3wKYrd6wCu9K6Bcpsop4DyzRdkHM=;
-        b=y/3xEwxBw8ybGgCtx4O5OFcrlVpfbSP9Zc498vJXiryyW0PE9qMreg72ZMKyrZsohI
-         cfRa1z7qs26T7x4ZUmpfxa6JSKJ1ynKaV3WJQQE/u59ijdbaKgum3BDNF7NS1GqJn541
-         I+HnLRfDQhnouwz40a8mTyUdMQ738zpB2qI8ZeU3TdWQ5z482fNO1JrRlSyl6wZ4r2RG
-         iWpsCN349kDrvya1IjsXh9xwhOQ0+M3K+5lgcJWQEOMaeETbJQKkXeEkCJhoLD4vrkzP
-         n9pvIRM0wbQlTBcziEuKVktF9HAwQTk9ACkgW/gPDLL0HLcWNwELvyRfGOUdQ9ZPDL+F
-         hfvg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UWqi/2Fd9mBt21y7lsS0FXVlAccLBJZChsj63IUqSu4=;
+        b=zGrJ4hreZ4iGQhp9qU9Zb374QznewAE4U/GCqirFYeKT/pWmkSgHvHqEZg+HG8ZIIV
+         2sQ4SwWVdsqya/Lnt59fxCRUcQaUH14bHa48fL7LuZwzJltU15VwJmXZpTrcZWEnVh+k
+         C7f3Xd7W2+eUg8M9fjN27oYAIpDwG/ME73WNiPyL153T5hX6tO9qezSw8XrPDBrBtfzE
+         ORjdNQICSo5RXTWU7BdvS8VH2xMM1mXdKi8agmQ/r3w3Rq+aXya6pB/jvG26vcitKiFE
+         QwejX2StAX04wo8BBa32ByiFKvXU57FOcwPLZJ02yHllgdVei21J5HfHH/p/TgYg5YPg
+         0SLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HmW7NHlc2F8dYXX3wKYrd6wCu9K6Bcpsop4DyzRdkHM=;
-        b=1rgm1x/MH3r8d2BqKWQMwpKHup7KhsEFsnUatcF0QhGzwOhkwiC8h1CCeKr9g8nerQ
-         vGxWKkZ0kX8ZfgY6+nKrrDDR6dX2OS29isfbLkrngBBdIBoNjwQ+ExJpe8C1NzDdq1En
-         s6nl4IIchuhMpF1LelXRyJrV2iaMFF5tZZpA16JUC3ParkuqnsrqAQ2Xfb16MwYAfSGd
-         Rbh+mxiPxWOG6+qY8CHRaM73bOeejKkWgjNLk3G+ztCNN5f8yw3EQTsHYiL47+W49YFs
-         GVebj4r8/+Hm4Q6natgLCZigRhXw036WUgLRWetD3J8fsmp4C2Av+MLs5Zx6urGS0+D+
-         47Cg==
-X-Gm-Message-State: AJIora+BzibmMCyap44IKEH3zcBQb8F7MswgndSwOCOuJk+5OODLTfxZ
-        4tHViFahRstkVHJVeJd4/KTzmw==
-X-Google-Smtp-Source: AGRyM1v1LT4W3dC8w/TKrwuSEDNmyV/FvjO4VpiI4Y1XKqqVkN5+VZtz0FFB46abdtCjVbJeKT14/g==
-X-Received: by 2002:a4a:81c1:0:b0:425:b01b:f757 with SMTP id s1-20020a4a81c1000000b00425b01bf757mr1022959oog.1.1656360226076;
-        Mon, 27 Jun 2022 13:03:46 -0700 (PDT)
+        bh=UWqi/2Fd9mBt21y7lsS0FXVlAccLBJZChsj63IUqSu4=;
+        b=R9Gcx0cG2PAYNr5DgsnYyazHdhYkmrObRaD3TPZk2Vbqar2Uon17oX/gvWPna9FM8G
+         r7onnNZuhZZfc0syPn/ODJ7GP/4ew2lvcv53qCfNamHr7U2isywUda1M3Oyn8IRlnKke
+         kGQe+wn4NunTAvqkwWUoYGzvovgnDQFriwL/cqgjxNPslTf+mecDA2KqzOrP9uddTOdH
+         uA8pe9NhY3caflK0CdF327s6z9vpeVTZ/QaoaZs7viehXCaYYhZPjSha+blIqBwmOpUS
+         aCgHjlJ2q0XCxeUEeyPstIsudz1UuQ+xnN9+wbfTIS/ro9YJ6FVwYO8YaXbRhqcGZFEP
+         GKxw==
+X-Gm-Message-State: AJIora8lvuFxx0r3yT2jReSxQrSUNWrNrsBKQvBA91Zvu40hOmi1nJ+P
+        Z0Y0laW+6WEENn7aFnMb7I5pDA==
+X-Google-Smtp-Source: AGRyM1sEmKjlDu5igrD1beTjFuleq5EpcMiMGrtfjytreE56MmhbZyTo3VY3nT5Wq7Cpi7pSnEn23Q==
+X-Received: by 2002:a05:6830:2706:b0:60c:7f84:8ab9 with SMTP id j6-20020a056830270600b0060c7f848ab9mr6611117otu.243.1656360229190;
+        Mon, 27 Jun 2022 13:03:49 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id m16-20020a4a9510000000b0041bdf977c6dsm6428729ooi.31.2022.06.27.13.03.44
+        by smtp.gmail.com with ESMTPSA id m16-20020a4a9510000000b0041bdf977c6dsm6428729ooi.31.2022.06.27.13.03.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 13:03:45 -0700 (PDT)
+        Mon, 27 Jun 2022 13:03:48 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     quic_rohkumar@quicinc.com, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, srinivas.kandagatla@linaro.org,
-        robh+dt@kernel.org, swboyd@chromium.org,
+        robh+dt@kernel.org, swboyd@chromium.org, quic_rjendra@quicinc.com,
         devicetree@vger.kernel.org,
         Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
         judyhsiao@chromium.org, agross@kernel.org, dianders@chromium.org
-Subject: Re: [PATCH v14 0/4] Add lpass pin control support for audio on sc7280 based targets
-Date:   Mon, 27 Jun 2022 15:03:01 -0500
-Message-Id: <165636016349.3080661.6166496276966890494.b4-ty@linaro.org>
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: (subset) [PATCH v2] arm64: dts: qcom: sc7280-qcard: Add ldo_l17b regulator node
+Date:   Mon, 27 Jun 2022 15:03:03 -0500
+Message-Id: <165636016348.3080661.8833987764086571024.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1651763004-32533-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1651763004-32533-1-git-send-email-quic_srivasam@quicinc.com>
+In-Reply-To: <1650621734-10297-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1650621734-10297-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -68,70 +69,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022 20:33:20 +0530, Srinivasa Rao Mandadapu wrote:
-> This patch set is to add lpass pin control support for Audio over I2S,
-> wcd codec and digital mics.
+On Fri, 22 Apr 2022 15:32:14 +0530, Srinivasa Rao Mandadapu wrote:
+> Add pm7325 ldo_l17b regulator, which is required for
+> wcd codec vdd buck supply on sc7280-qcard board.
 > 
-> Changes Since V13:
->     -- Remove redundant properties in lpass lpi pin control nodes.
->     -- Sort lpass lpi pin control nodes.
-> Changes Since V12:
->     -- Split common lpass lpi pin control nodes to functionality specific nodes.
->     -- Move common pin control properties to corresponding default nodes.
-> Changes Since V11:
->     -- Move CRD specific pinmux nodes to crd specific file.
-> Changes Since V10:
->     -- Add lpass lpi pinmux and MI2S pinmux support for rev5+ boards.
->     -- Remove dependency patches link in the cover-letter as it is merged.
-> Changes Since V9:
->     -- Remove redundant prefix in node name.
-> Changes Since V8:
->     -- Modify label and node names to lpass specific.
->     -- Sort nodes as per node names and kind of nodes like pinctrl and device nodes.
-> Changes Since V7:
->     -- Sort mi2s pincontrol nodes as per node name.
->     -- Fix typo errors.
-> Changes Since V6:
->     -- Move amp_en node to corresponding consumer patch.
->     -- Update label and node names.
->     -- Remove redundant drive-strengths.
->     -- Remove herobrine crd specific mi2s configuration.
-> Changes Since V5:
->     -- Remove redundant function property in amp_en node.
->     -- Move board specific properties of lpass pin control node to board specific file.
->     -- Remove redundant properties in pin control nodes.
->     -- Move wcd938x codec reset and CTIA/OMTP pin control patches to other series.
-> Changes Since V4:
->     -- Add primary and secondary I2S pinmux nodes for herobrine specific targets.
-> Changes Since V3:
->     -- Add pinctrl nodes for wcd codec reset and CTIA/OMTP headset selection.
-> Changes Since V2:
->     -- Move lpass pin control node to main dtsi file.
->     -- Sort nodes alphabetically.
->     -- Remove redundant wcd reset gpio nodes.
->     -- Remove redundant input-enable field in dmic pin control nodes.
->     -- Update amp_en node.
->     -- Fix typo errors.
->     -- Modify node names.
->     -- Create patches on latest kernel.
-> Changes Since V1:
->     -- Merge pinmux and pinconf properties in amp_en and wcd pin reset node.
->     -- Split common i2s pin control nodes to functionality specific nodes.
->     -- Move board specific properties to board specific dtsi file.
->     -- Update dmic pin control node name.
 > 
-> [...]
 
 Applied, thanks!
 
-[1/4] arm64: dts: qcom: sc7280: Add pinmux for I2S speaker and Headset
-      commit: b9e3f65ecf85854c9717467c3cffaca194edd19f
-[2/4] arm64: dts: qcom: sc7280: Add secondary MI2S pinmux specifications for CRD 3.0/3.1
-      commit: 06c73a39c38b9321e638002450dcb22aa592ae99
-[3/4] arm64: dts: qcom: sc7280: add lpass lpi pin controller node
-      commit: 32d4541abe0f981cbcc45e142543d5811fd07692
-[4/4] arm64: dts: qcom: sc7280-herobrine: Add lpi pinmux properties for CRD 3.0/3.1
-      commit: a4c1fc8cff056461b9bd0e07e775f93073b4d527
+[1/1] arm64: dts: qcom: sc7280-qcard: Add ldo_l17b regulator node
+      commit: a57de71f0980aeaef4c1c1e88bb2d396b9ccb650
 
 Best regards,
 -- 
