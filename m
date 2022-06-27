@@ -2,122 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE739C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB12C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240844AbiF0U7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 16:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44298 "EHLO
+        id S240869AbiF0VAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:00:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239653AbiF0U7g (ORCPT
+        with ESMTP id S240838AbiF0U75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 16:59:36 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290845FD5;
-        Mon, 27 Jun 2022 13:59:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656363575; x=1687899575;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Qlh2pWlwHqBy4thP9knrY3EK29U5a83tGaMLEWAlvBo=;
-  b=PTRCsYMFkf0MBbsG6QK1IcSOcg0iK0AYE0g60CcsyJwIM5a7TuRjZU2D
-   m7sI24Q61lKqEL8kX4wuDEC2KwloyxMGs28AfBKaJ0Frewu2+30zKvwdD
-   /xCYlbqVXj46zwd8ZIhrjIWu7yLkqRiNwi19nu3nfifDe/Js3+uzHl+QW
-   YLKd24Xbbs6vctqVYOfka8/Ki4mcV5tnOrxfJTxwi/PlQl0QG7f4H8WG1
-   Uf5KjmcLeTJK1h7G/b6ypEa8uOvMpWTUDnoP4yqogjDDkMXuwWxTOlBZU
-   5OOZOvn/+F7MrVnVknETgj2HpO+XmZFJcQ1m0wZa9yJS2i/rua2kn5CpT
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="282295696"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="282295696"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 13:59:34 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="732476412"
-Received: from jsagoe-mobl1.amr.corp.intel.com (HELO [10.209.12.66]) ([10.209.12.66])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 13:59:33 -0700
-Message-ID: <84e93539-a2f9-f68e-416a-ea3d8fc725af@intel.com>
-Date:   Mon, 27 Jun 2022 13:58:35 -0700
+        Mon, 27 Jun 2022 16:59:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B25F5FBF
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:59:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656363595;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=P2ALvax4QLHT/PRvyeFgcmdY6fh0+YOux9iV3/Np/Vk=;
+        b=dglIoFwONywXiBsQNPkFgD7rgqJWbBTTemHaKD966xhSGTqBANRzKiiinL2trbGS++GDJK
+        Gb9fjUbWBQLe0KPh2doGYI+zC58RdBCS/7bBptT7r52zOi1y2aL0ya9WTWOWdOVtgW5uPk
+        wIFpk54CDCJyvyCT4cwtUl38u810Aug=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-81-fw-lYOQWOSKY2vJq6gFlig-1; Mon, 27 Jun 2022 16:59:51 -0400
+X-MC-Unique: fw-lYOQWOSKY2vJq6gFlig-1
+Received: by mail-qv1-f72.google.com with SMTP id v13-20020ad4528d000000b004707f3f4683so10444354qvr.14
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:59:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P2ALvax4QLHT/PRvyeFgcmdY6fh0+YOux9iV3/Np/Vk=;
+        b=LNP//5SneknvKckRPtG4Wk6FtwaL+3lbfhfL4DJJy43WsjKYABEtnd0kIQIHCFaodV
+         1DNYxoshQUcebBUmAr6lh5rLoEjBPYJ3L9rkbU2+pljFBR5SBkocxtq5p+h6jOObYToB
+         YKoix1WyJxlyoRqI5XxycWn1SerlXYpYf8GdfiBdPKzp4+0Gzktj4AlRTTePVqtsZiGa
+         aSrW5inPvsRKPOBFZb9mJXHVEp8L+SXpL7oeH3zCcAmr6nqI9O+cxscnFGRC0GOkiZn4
+         olJk1iSp7xV6F2n9+4+5NiJQRBERHhnlYFYPj1aih8H/PYYVL5O8Pv9+BpQOwevnLAzZ
+         rVMQ==
+X-Gm-Message-State: AJIora+y1/Ys0/sukVsDU+/sruaIF0n8IH8cst+wy8sbJqENeePeLNPh
+        ZRPkxoMuZ/iHc2rCcSIRNiMStJobIcW6HfvNuHvEbB8OL3cYpUjNrn3M17EcsdijS0Sb5sG5pzK
+        HdfVbr52wv/Hh4Dga8k4sC3CW
+X-Received: by 2002:ad4:4ee4:0:b0:472:7778:ff86 with SMTP id dv4-20020ad44ee4000000b004727778ff86mr1162013qvb.109.1656363591488;
+        Mon, 27 Jun 2022 13:59:51 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tOGQ37j2Gu0CzjFIVikcF7haS9EBEvbksI9EbPMv+s+mbkvrI4aOi6vEzPyMNbkPK8eNqn+g==
+X-Received: by 2002:ad4:4ee4:0:b0:472:7778:ff86 with SMTP id dv4-20020ad44ee4000000b004727778ff86mr1162003qvb.109.1656363591235;
+        Mon, 27 Jun 2022 13:59:51 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id x9-20020a05620a448900b006a708baa069sm1787831qkp.101.2022.06.27.13.59.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 13:59:50 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     lewis.hanly@microchip.com, conor.dooley@microchip.com,
+        a.zummo@towertech.it, alexandre.belloni@bootlin.com,
+        daire.mcnamara@microchip.com
+Cc:     linux-riscv@lists.infradead.org, linux-rtc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] rtc: remove 'pending' variable from mpfs_rtc_wakeup_irq_handler()
+Date:   Mon, 27 Jun 2022 16:59:43 -0400
+Message-Id: <20220627205943.2075043-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v5 07/22] x86/virt/tdx: Implement SEAMCALL function
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1655894131.git.kai.huang@intel.com>
- <095e6bbc57b4470e1e9a9104059a5238c9775f00.1655894131.git.kai.huang@intel.com>
- <069a062e-a4a6-09af-7b74-7f4929f2ec0b@intel.com>
- <5ce7ebfe54160ea35e432bf50207ebed32db31fc.camel@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <5ce7ebfe54160ea35e432bf50207ebed32db31fc.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/26/22 22:23, Kai Huang wrote:
-> On Fri, 2022-06-24 at 11:38 -0700, Dave Hansen wrote:
->> On 6/22/22 04:16, Kai Huang wrote:
->>> SEAMCALL instruction causes #GP when SEAMRR isn't enabled, and #UD when
->>> CPU is not in VMX operation.  The TDX_MODULE_CALL macro doesn't handle
->>> SEAMCALL exceptions.  Leave to the caller to guarantee those conditions
->>> before calling __seamcall().
->>
->> I was trying to make the argument earlier that you don't need *ANY*
->> detection for TDX, other than the ability to make a SEAMCALL.
->> Basically, patch 01/22 could go away.
-...
->> So what does patch 01/22 buy us?  One EXTABLE entry?
-> 
-> There are below pros if we can detect whether TDX is enabled by BIOS during boot
-> before initializing the TDX Module:
-> 
-> 1) There are requirements from customers to report whether platform supports TDX
-> and the TDX keyID numbers before initializing the TDX module so the userspace
-> cloud software can use this information to do something.  Sorry I cannot find
-> the lore link now.
+cppcheck reports
+[drivers/rtc/rtc-mpfs.c:219]: (style) Variable 'pending' is assigned a value that is never used.
 
-<sigh>
+The fetched CONTROL_REG stored in pending is unused and partially
+duplicates the functionality of the later call to mpfs_rtc_clear().  This looks
+like leftover development code, so remove pending.
 
-Never listen to customers literally.  It'll just lead you down the wrong
-path.  They told you, "we need $FOO in dmesg" and you ran with it
-without understanding why.  The fact that you even *need* to find the
-lore link is because you didn't bother to realize what they really needed.
+Fixes: 0b31d703598d ("rtc: Add driver for Microchip PolarFire SoC")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/rtc/rtc-mpfs.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-dmesg is not ABI.  It's for humans.  If you need data out of the kernel,
-do it with a *REAL* ABI.  Not dmesg.
+diff --git a/drivers/rtc/rtc-mpfs.c b/drivers/rtc/rtc-mpfs.c
+index db9c638e50f7..f14d1925e0c9 100644
+--- a/drivers/rtc/rtc-mpfs.c
++++ b/drivers/rtc/rtc-mpfs.c
+@@ -213,10 +213,7 @@ static inline struct clk *mpfs_rtc_init_clk(struct device *dev)
+ static irqreturn_t mpfs_rtc_wakeup_irq_handler(int irq, void *dev)
+ {
+ 	struct mpfs_rtc_dev *rtcdev = dev;
+-	unsigned long pending;
+ 
+-	pending = readl(rtcdev->base + CONTROL_REG);
+-	pending &= CONTROL_ALARM_ON_BIT;
+ 	mpfs_rtc_clear_irq(rtcdev);
+ 
+ 	rtc_update_irq(rtcdev->rtc, 1, RTC_IRQF | RTC_AF);
+-- 
+2.27.0
 
-> 2) As you can see, it can be used to handle ACPI CPU/memory hotplug and driver
-> managed memory hotplug.  Kexec() support patch also can use it.
-> 
-> Particularly, in concept, ACPI CPU/memory hotplug is only related to whether TDX
-> is enabled by BIOS, but not whether TDX module is loaded, or the result of
-> initializing the TDX module.  So I think we should have some code to detect TDX
-> during boot.
-
-This is *EXACTLY* why our colleagues at Intel needs to tell us about
-what the OS and firmware should do when TDX is in varying states of decay.
-
-Does the mere presence of the TDX module prevent hotplug?  Or, if a
-system has the TDX module loaded but no intent to ever use TDX, why
-can't it just use hotplug like a normal system which is not addled with
-the TDX albatross around its neck?
-
-> Also, it seems adding EXTABLE to TDX_MODULE_CALL doesn't have significantly less
-> code comparing to detecting TDX during boot:
-
-It depends on a bunch of things.  It might only be a line or two of
-assembly.
-
-If you actually went and tried it, you might be able to convince me it's
-a bad idea.
