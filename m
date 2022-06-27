@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B51C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F283EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239903AbiF0MCA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55958 "EHLO
+        id S239916AbiF0MCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238880AbiF0Lwp (ORCPT
+        with ESMTP id S238940AbiF0Lwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556FEDEFA;
-        Mon, 27 Jun 2022 04:46:17 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54673DF30;
+        Mon, 27 Jun 2022 04:46:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E56AD61187;
-        Mon, 27 Jun 2022 11:46:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F071CC3411D;
-        Mon, 27 Jun 2022 11:46:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E640F610A0;
+        Mon, 27 Jun 2022 11:46:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3D6AC3411D;
+        Mon, 27 Jun 2022 11:46:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330376;
-        bh=CLKucOR1KV+hTdnmQuZOHWx60dJ5jfawBtDEBI3Okjc=;
+        s=korg; t=1656330396;
+        bh=A5UBWaCrl/qkluSIKGtZTc8F6JYpzds5b08cBXNIoF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uekNuu3blndvybXtTuD2wa0EDWSh7WeRQa3rpeWvG78+NfDHtRYq5NMekMjMvwD7W
-         fwiuK37fs4QJ1439ZjvpZ831D48w6sDZ6IqZSOZ2GHzxPpKT4t05LFavwhcO8ltM+M
-         ShahPyIc7rnK3vBq8STnWP2dfTao0JTXRGlMmah8=
+        b=n9265Ds5tuXwEH+TIO7/cBTC/5oR0c4mIIcejfdy+WEXC2ggfmMk39pqBkqKsUAKV
+         +S2TF6x/UdmNZpnem4uqlw1vSs7tw6h1xDPtu4/sUQ4CNxgBPP9mfXrDfeNRliq1Pa
+         TQaJN4rOCm+np5m9JpIO533rX5SdRvaQ9D62C5kk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 137/181] iio: gyro: mpu3050: Fix the error handling in mpu3050_power_up()
-Date:   Mon, 27 Jun 2022 13:21:50 +0200
-Message-Id: <20220627111948.660257806@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Tom Zanussi <tzanussi@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.18 177/181] perf build-id: Fix caching files with a wrong build ID
+Date:   Mon, 27 Jun 2022 13:22:30 +0200
+Message-Id: <20220627111949.815516804@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,31 +51,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit b2f5ad97645e1deb5ca9bcb7090084b92cae35d2 upstream.
+commit ab66fdace8581ef3b4e7cf5381a168ed4058d779 upstream.
 
-The driver should disable regulators when fails at regmap_update_bits().
+Build ID events associate a file name with a build ID.  However, when
+using perf inject, there is no guarantee that the file on the current
+machine at the current time has that build ID. Fix by comparing the
+build IDs and skip adding to the cache if they are different.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Cc: <Stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220510092431.1711284-1-zheyuma97@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Example:
+
+  $ echo "int main() {return 0;}" > prog.c
+  $ gcc -o prog prog.c
+  $ perf record --buildid-all ./prog
+  [ perf record: Woken up 1 times to write data ]
+  [ perf record: Captured and wrote 0.019 MB perf.data ]
+  $ file-buildid() { file $1 | awk -F= '{print $2}' | awk -F, '{print $1}' ; }
+  $ file-buildid prog
+  444ad9be165d8058a48ce2ffb4e9f55854a3293e
+  $ file-buildid ~/.debug/$(pwd)/prog/444ad9be165d8058a48ce2ffb4e9f55854a3293e/elf
+  444ad9be165d8058a48ce2ffb4e9f55854a3293e
+  $ echo "int main() {return 1;}" > prog.c
+  $ gcc -o prog prog.c
+  $ file-buildid prog
+  885524d5aaa24008a3e2b06caa3ea95d013c0fc5
+
+Before:
+
+  $ perf buildid-cache --purge $(pwd)/prog
+  $ perf inject -i perf.data -o junk
+  $ file-buildid ~/.debug/$(pwd)/prog/444ad9be165d8058a48ce2ffb4e9f55854a3293e/elf
+  885524d5aaa24008a3e2b06caa3ea95d013c0fc5
+  $
+
+After:
+
+  $ perf buildid-cache --purge $(pwd)/prog
+  $ perf inject -i perf.data -o junk
+  $ file-buildid ~/.debug/$(pwd)/prog/444ad9be165d8058a48ce2ffb4e9f55854a3293e/elf
+
+  $
+
+Fixes: 454c407ec17a0c63 ("perf: add perf-inject builtin")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Tom Zanussi <tzanussi@gmail.com>
+Link: https://lore.kernel.org/r/20220621125144.5623-1-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/gyro/mpu3050-core.c |    1 +
- 1 file changed, 1 insertion(+)
+ tools/perf/util/build-id.c |   28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -874,6 +874,7 @@ static int mpu3050_power_up(struct mpu30
- 	ret = regmap_update_bits(mpu3050->map, MPU3050_PWR_MGM,
- 				 MPU3050_PWR_MGM_SLEEP, 0);
- 	if (ret) {
-+		regulator_bulk_disable(ARRAY_SIZE(mpu3050->regs), mpu3050->regs);
- 		dev_err(mpu3050->dev, "error setting power mode\n");
- 		return ret;
+--- a/tools/perf/util/build-id.c
++++ b/tools/perf/util/build-id.c
+@@ -872,6 +872,30 @@ out_free:
+ 	return err;
+ }
+ 
++static int filename__read_build_id_ns(const char *filename,
++				      struct build_id *bid,
++				      struct nsinfo *nsi)
++{
++	struct nscookie nsc;
++	int ret;
++
++	nsinfo__mountns_enter(nsi, &nsc);
++	ret = filename__read_build_id(filename, bid);
++	nsinfo__mountns_exit(&nsc);
++
++	return ret;
++}
++
++static bool dso__build_id_mismatch(struct dso *dso, const char *name)
++{
++	struct build_id bid;
++
++	if (filename__read_build_id_ns(name, &bid, dso->nsinfo) < 0)
++		return false;
++
++	return !dso__build_id_equal(dso, &bid);
++}
++
+ static int dso__cache_build_id(struct dso *dso, struct machine *machine,
+ 			       void *priv __maybe_unused)
+ {
+@@ -886,6 +910,10 @@ static int dso__cache_build_id(struct ds
+ 		is_kallsyms = true;
+ 		name = machine->mmap_name;
  	}
++
++	if (!is_kallsyms && dso__build_id_mismatch(dso, name))
++		return 0;
++
+ 	return build_id_cache__add_b(&dso->bid, name, dso->nsinfo,
+ 				     is_kallsyms, is_vdso);
+ }
 
 
