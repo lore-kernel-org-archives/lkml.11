@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD9ACC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 018EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239264AbiF0L7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49984 "EHLO
+        id S239279AbiF0L7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238734AbiF0Lwc (ORCPT
+        with ESMTP id S238742AbiF0Lwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19D9B876;
-        Mon, 27 Jun 2022 04:45:24 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F290B878;
+        Mon, 27 Jun 2022 04:45:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 652B661274;
-        Mon, 27 Jun 2022 11:45:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C025C341C7;
-        Mon, 27 Jun 2022 11:45:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16E18B80D37;
+        Mon, 27 Jun 2022 11:45:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 605B5C36AE2;
+        Mon, 27 Jun 2022 11:45:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330323;
-        bh=DbXdLwPzPVehIiYYx0SzG5vlmmlEZFlgi5vI0uDfZxo=;
+        s=korg; t=1656330326;
+        bh=xOz26b464Jr+wd4R4JClEqCLPVOgcpYimj+WmATziVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QuRLDvBBxbuRNOg8lzlWLRNLb/R1Doca8LI8PZNnhmtPo1wCOqG982TcicIuSruto
-         y/ja51RcE6SkrNJAGcIW9LV8NHVbLFh0MlbbBITU7HrzLpsMXM0cQfNctNnRsiB5hV
-         36m8K+ccH22L9bSmZrH5Ndhz6wsWxlOdXOlt7hYQ=
+        b=2cM51C4DaTBnm8TLkLr8JTANy4fz94uQ+aQTRs+7ZCsj0OK2AXzvEQd5W1N5jvgLj
+         QjjB9TivitBLrftAdMgXmKlTZSkvlk7HjU3vkreEqHTWW7KaSB6bjebbh+34PAHCJ4
+         BMKq7+/0jqWgfTTlusd0OgqeJFI/cLwAB5gi+phA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sathvika Vasireddy <sathvika@linux.ibm.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Tyrel Datwyler <tyreld@linux.ibm.com>,
-        Nathan Lynch <nathanl@linux.ibm.com>,
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
         Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.18 159/181] powerpc/rtas: Allow ibm,platform-dump RTAS call with null buffer address
-Date:   Mon, 27 Jun 2022 13:22:12 +0200
-Message-Id: <20220627111949.295495608@linuxfoundation.org>
+Subject: [PATCH 5.18 160/181] powerpc/powernv: wire up rng during setup_arch
+Date:   Mon, 27 Jun 2022 13:22:13 +0200
+Message-Id: <20220627111949.324846589@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -52,60 +49,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Donnellan <ajd@linux.ibm.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 7bc08056a6dabc3a1442216daf527edf61ac24b6 upstream.
+commit f3eac426657d985b97c92fa5f7ae1d43f04721f3 upstream.
 
-Add a special case to block_rtas_call() to allow the ibm,platform-dump RTAS
-call through the RTAS filter if the buffer address is 0.
+The platform's RNG must be available before random_init() in order to be
+useful for initial seeding, which in turn means that it needs to be
+called from setup_arch(), rather than from an init call.
 
-According to PAPR, ibm,platform-dump is called with a null buffer address
-to notify the platform firmware that processing of a particular dump is
-finished.
+Complicating things, however, is that POWER8 systems need some per-cpu
+state and kmalloc, which isn't available at this stage. So we split
+things up into an early phase and a later opportunistic phase. This
+commit also removes some noisy log messages that don't add much.
 
-Without this, on a pseries machine with CONFIG_PPC_RTAS_FILTER enabled, an
-application such as rtas_errd that is attempting to retrieve a dump will
-encounter an error at the end of the retrieval process.
-
-Fixes: bd59380c5ba4 ("powerpc/rtas: Restrict RTAS requests from userspace")
-Cc: stable@vger.kernel.org
-Reported-by: Sathvika Vasireddy <sathvika@linux.ibm.com>
-Signed-off-by: Andrew Donnellan <ajd@linux.ibm.com>
-Reviewed-by: Tyrel Datwyler <tyreld@linux.ibm.com>
-Reviewed-by: Nathan Lynch <nathanl@linux.ibm.com>
+Fixes: a4da0d50b2a0 ("powerpc: Implement arch_get_random_long/int() for powernv")
+Cc: stable@vger.kernel.org # v3.13+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+[mpe: Add of_node_put(), use pnv naming, minor change log editing]
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220614134952.156010-1-ajd@linux.ibm.com
+Link: https://lore.kernel.org/r/20220621140849.127227-1-Jason@zx2c4.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/rtas.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ arch/powerpc/platforms/powernv/powernv.h |    2 +
+ arch/powerpc/platforms/powernv/rng.c     |   52 +++++++++++++++++++++----------
+ arch/powerpc/platforms/powernv/setup.c   |    2 +
+ 3 files changed, 40 insertions(+), 16 deletions(-)
 
---- a/arch/powerpc/kernel/rtas.c
-+++ b/arch/powerpc/kernel/rtas.c
-@@ -1061,7 +1061,7 @@ static struct rtas_filter rtas_filters[]
- 	{ "get-time-of-day", -1, -1, -1, -1, -1 },
- 	{ "ibm,get-vpd", -1, 0, -1, 1, 2 },
- 	{ "ibm,lpar-perftools", -1, 2, 3, -1, -1 },
--	{ "ibm,platform-dump", -1, 4, 5, -1, -1 },
-+	{ "ibm,platform-dump", -1, 4, 5, -1, -1 },		/* Special cased */
- 	{ "ibm,read-slot-reset-state", -1, -1, -1, -1, -1 },
- 	{ "ibm,scan-log-dump", -1, 0, 1, -1, -1 },
- 	{ "ibm,set-dynamic-indicator", -1, 2, -1, -1, -1 },
-@@ -1110,6 +1110,15 @@ static bool block_rtas_call(int token, i
- 				size = 1;
+--- a/arch/powerpc/platforms/powernv/powernv.h
++++ b/arch/powerpc/platforms/powernv/powernv.h
+@@ -42,4 +42,6 @@ ssize_t memcons_copy(struct memcons *mc,
+ u32 __init memcons_get_size(struct memcons *mc);
+ struct memcons *__init memcons_init(struct device_node *node, const char *mc_prop_name);
  
- 			end = base + size - 1;
++void pnv_rng_init(void);
 +
-+			/*
-+			 * Special case for ibm,platform-dump - NULL buffer
-+			 * address is used to indicate end of dump processing
-+			 */
-+			if (!strcmp(f->name, "ibm,platform-dump") &&
-+			    base == 0)
-+				return false;
-+
- 			if (!in_rmo_buf(base, end))
- 				goto err;
+ #endif /* _POWERNV_H */
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -17,6 +17,7 @@
+ #include <asm/prom.h>
+ #include <asm/machdep.h>
+ #include <asm/smp.h>
++#include "powernv.h"
+ 
+ #define DARN_ERR 0xFFFFFFFFFFFFFFFFul
+ 
+@@ -28,7 +29,6 @@ struct powernv_rng {
+ 
+ static DEFINE_PER_CPU(struct powernv_rng *, powernv_rng);
+ 
+-
+ int powernv_hwrng_present(void)
+ {
+ 	struct powernv_rng *rng;
+@@ -98,9 +98,6 @@ static int __init initialise_darn(void)
+ 			return 0;
  		}
+ 	}
+-
+-	pr_warn("Unable to use DARN for get_random_seed()\n");
+-
+ 	return -EIO;
+ }
+ 
+@@ -163,32 +160,55 @@ static __init int rng_create(struct devi
+ 
+ 	rng_init_per_cpu(rng, dn);
+ 
+-	pr_info_once("Registering arch random hook.\n");
+-
+ 	ppc_md.get_random_seed = powernv_get_random_long;
+ 
+ 	return 0;
+ }
+ 
+-static __init int rng_init(void)
++static int __init pnv_get_random_long_early(unsigned long *v)
+ {
+ 	struct device_node *dn;
+-	int rc;
++
++	if (!slab_is_available())
++		return 0;
++
++	if (cmpxchg(&ppc_md.get_random_seed, pnv_get_random_long_early,
++		    NULL) != pnv_get_random_long_early)
++		return 0;
+ 
+ 	for_each_compatible_node(dn, NULL, "ibm,power-rng") {
+-		rc = rng_create(dn);
+-		if (rc) {
+-			pr_err("Failed creating rng for %pOF (%d).\n",
+-				dn, rc);
++		if (rng_create(dn))
+ 			continue;
+-		}
+-
+ 		/* Create devices for hwrng driver */
+ 		of_platform_device_create(dn, NULL, NULL);
+ 	}
+ 
+-	initialise_darn();
++	if (!ppc_md.get_random_seed)
++		return 0;
++	return ppc_md.get_random_seed(v);
++}
++
++void __init pnv_rng_init(void)
++{
++	struct device_node *dn;
+ 
++	/* Prefer darn over the rest. */
++	if (!initialise_darn())
++		return;
++
++	dn = of_find_compatible_node(NULL, NULL, "ibm,power-rng");
++	if (dn)
++		ppc_md.get_random_seed = pnv_get_random_long_early;
++
++	of_node_put(dn);
++}
++
++static int __init pnv_rng_late_init(void)
++{
++	unsigned long v;
++	/* In case it wasn't called during init for some other reason. */
++	if (ppc_md.get_random_seed == pnv_get_random_long_early)
++		pnv_get_random_long_early(&v);
+ 	return 0;
+ }
+-machine_subsys_initcall(powernv, rng_init);
++machine_subsys_initcall(powernv, pnv_rng_late_init);
+--- a/arch/powerpc/platforms/powernv/setup.c
++++ b/arch/powerpc/platforms/powernv/setup.c
+@@ -203,6 +203,8 @@ static void __init pnv_setup_arch(void)
+ 	pnv_check_guarded_cores();
+ 
+ 	/* XXX PMCS */
++
++	pnv_rng_init();
+ }
+ 
+ static void __init pnv_init(void)
 
 
