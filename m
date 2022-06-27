@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30253C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63CDECCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234576AbiF0L1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46030 "EHLO
+        id S235231AbiF0L11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233236AbiF0L0f (ORCPT
+        with ESMTP id S235088AbiF0L0g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:26:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE0795B3;
-        Mon, 27 Jun 2022 04:26:13 -0700 (PDT)
+        Mon, 27 Jun 2022 07:26:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1186B657B;
+        Mon, 27 Jun 2022 04:26:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB962614A2;
-        Mon, 27 Jun 2022 11:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56E0C3411D;
-        Mon, 27 Jun 2022 11:26:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A697F614A4;
+        Mon, 27 Jun 2022 11:26:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B79D0C3411D;
+        Mon, 27 Jun 2022 11:26:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329172;
-        bh=YEWPxdckj3HbKhMDZMzBuatDvbXySe6JrnuwUn0KqiM=;
+        s=korg; t=1656329178;
+        bh=+3NWgB8HIlGFeNlKiovmSOs5fC1vXOQkzR7b4yd8WeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tEn9wJBweli80b5adlDn4iAsnPP5Cx3fR6/qpQtPFlniKkTs9qyF6iwS4r9PfFIlL
-         FxLF3w0SrGhpXMZn1aTiVUiOoMjx50es/GzR3y4B95AE9Hg61NTj79PHU3aAp1MzuB
-         GrHmwVe1EAzqWsuMIuFNwGdF0J2gDiFX0zMbM+Qw=
+        b=dysWHhTYM/HvRaKGGs6oIxJC0U90eKSv2ARBOQLMLLF9jGVBUXKnJdPhL+08uqvog
+         /WPk94KllM+R+sH9lx7s7nNvaaflJbkX54N7e8rqkZm8boUjV2GwgzRDgvdBkCA3yL
+         Fx6l2GjV+rt9c1EMfpA/wuTgbqR+w3xwYZFbaujk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 073/102] iio:chemical:ccs811: rearrange iio trigger get and register
-Date:   Mon, 27 Jun 2022 13:21:24 +0200
-Message-Id: <20220627111935.635574402@linuxfoundation.org>
+Subject: [PATCH 5.10 075/102] iio:accel:mxc4005: rearrange iio trigger get and register
+Date:   Mon, 27 Jun 2022 13:21:26 +0200
+Message-Id: <20220627111935.694114966@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -52,7 +52,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dmitry Rokosov <DDRokosov@sberdevices.ru>
 
-commit d710359c0b445e8c03e24f19ae2fb79ce7282260 upstream.
+commit 9354c224c9b4f55847a0de3e968cba2ebf15af3b upstream.
 
 IIO trigger interface function iio_trigger_get() should be called after
 iio_trigger_register() (or its devm analogue) strictly, because of
@@ -63,32 +63,36 @@ If this call order is wrong, the next iio_trigger_put() (from sysfs
 callback or "delete module" path) will dereference "default" module
 refcnt, which is incorrect behaviour.
 
-Fixes: f1f065d7ac30 ("iio: chemical: ccs811: Add support for data ready trigger")
+Fixes: 47196620c82f ("iio: mxc4005: add data ready trigger for mxc4005")
 Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220524181150.9240-5-ddrokosov@sberdevices.ru
+Link: https://lore.kernel.org/r/20220524181150.9240-4-ddrokosov@sberdevices.ru
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/chemical/ccs811.c |    4 ++--
+ drivers/iio/accel/mxc4005.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/chemical/ccs811.c
-+++ b/drivers/iio/chemical/ccs811.c
-@@ -500,11 +500,11 @@ static int ccs811_probe(struct i2c_clien
- 		data->drdy_trig->dev.parent = &client->dev;
- 		data->drdy_trig->ops = &ccs811_trigger_ops;
- 		iio_trigger_set_drvdata(data->drdy_trig, indio_dev);
--		indio_dev->trig = data->drdy_trig;
+--- a/drivers/iio/accel/mxc4005.c
++++ b/drivers/iio/accel/mxc4005.c
+@@ -461,8 +461,6 @@ static int mxc4005_probe(struct i2c_clie
+ 		data->dready_trig->dev.parent = &client->dev;
+ 		data->dready_trig->ops = &mxc4005_trigger_ops;
+ 		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+-		indio_dev->trig = data->dready_trig;
 -		iio_trigger_get(indio_dev->trig);
- 		ret = iio_trigger_register(data->drdy_trig);
- 		if (ret)
- 			goto err_poweroff;
+ 		ret = devm_iio_trigger_register(&client->dev,
+ 						data->dready_trig);
+ 		if (ret) {
+@@ -470,6 +468,8 @@ static int mxc4005_probe(struct i2c_clie
+ 				"failed to register trigger\n");
+ 			return ret;
+ 		}
 +
-+		indio_dev->trig = iio_trigger_get(data->drdy_trig);
++		indio_dev->trig = iio_trigger_get(data->dready_trig);
  	}
  
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ 	return devm_iio_device_register(&client->dev, indio_dev);
 
 
