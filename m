@@ -2,105 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5D2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232707AbiF0HT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
+        id S231791AbiF0HUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiF0HTl (ORCPT
+        with ESMTP id S232362AbiF0HUH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:19:41 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49E460C7
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:19:40 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id c4so7371876plc.8
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:19:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JZxq3Li79Z5k+2Clzn+hx3pkrXwmS0AqWBIMTiHuigE=;
-        b=YoJk8KjRUA8HnE8CN4p7T8Au6cwFpQcElxQIPbmvUjEE1tFTsWDAk1BhEFOFyKvYc6
-         e6YRvvyJM01BQMco6OLnsGUYziE/XieXJI7An7VirI4K9J1J9+TTCt1qaM4FEiXwxZXb
-         7Ox/735AD+3WdwIXAdUwW3PUDQWYWXLOSmblgtFvmuKcEaRapx7PRIEHdAPqgsBQlu3F
-         ipUBzZtpU07AySCyq5JNDWu/2R4wn3b7iGglGjIClREk4V9p0NL7jND4mX7Y+OFFbiY1
-         042HsCB/6SoQRC0DZhWGiwtudG9toX5yfsygw7kllFBJcfDvGWbo9yfKCByqYmNkiiKb
-         m4Kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JZxq3Li79Z5k+2Clzn+hx3pkrXwmS0AqWBIMTiHuigE=;
-        b=HwDf4IhR6QhKIbBZtPj7MkI/3bMHljmKEhwJcqJ2q7RFUhD9qhki/IWTv44fzKTK6q
-         eYGUKb4uNatwdfI1C62+CBM0RzkynF2rqXNnRaIPU9SDbr7/pJnQAjk/y4sQT+1ZAHjs
-         C9bCBjSsMfxVN426HYVTTyj5vY5fLmpdbi7AMBKWuNzU1ocTNYJL+41M1Aq5dxX02AcZ
-         sTrPKbqgY6eUdyDW4dwuokdGiP1R+eBT1djCpQgq7Xy+GAyVKnLCFEL8YxrqhsSPQPjo
-         1gn0HSkIzWUGYvp7mJqlewgdkKLla9/vzLuN1I4pku+fTOkYgZp/DVmrCkYXdD/Mxrne
-         /YGA==
-X-Gm-Message-State: AJIora+Nw887/LhfIjxewdD4HslvvEF1VME2HtQSQagTtIT2P8DgQpDv
-        TT0qidhN8wYEk/Qfvl2epyrq3w==
-X-Google-Smtp-Source: AGRyM1uC/3nSEX8tCkOtmgtRPhmunty3WQGjgI1Keul6y/SKIEJq6JZw22D4MJswZuXm00T6VFIjIA==
-X-Received: by 2002:a17:90a:8d02:b0:1ec:a006:ea13 with SMTP id c2-20020a17090a8d0200b001eca006ea13mr18740749pjo.229.1656314380229;
-        Mon, 27 Jun 2022 00:19:40 -0700 (PDT)
-Received: from localhost ([122.172.201.58])
-        by smtp.gmail.com with ESMTPSA id p15-20020a635b0f000000b0040d180a3493sm6397589pgb.27.2022.06.27.00.19.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 00:19:39 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 12:49:37 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     Keerthy <j-keerthy@ti.com>, Dave Gerlach <d-gerlach@ti.com>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH 5/5] OPP: Remove custom OPP helper support
-Message-ID: <20220627071937.uneeudaqzo2aa2me@vireshk-i7>
-References: <cover.1653991004.git.viresh.kumar@linaro.org>
- <2e6ee73dbc8a231377547a8e9497561cadb38166.1653991004.git.viresh.kumar@linaro.org>
- <565ff879-11e4-1ae4-08d8-1237a875ef12@gmail.com>
- <20220627060636.rfpok75zydgcwwo6@vireshk-i7>
- <4a8114f7-4ee6-a9ad-f5be-ceaf64be8a0e@gmail.com>
- <20220627064155.jo7iqz5h33l7a4vn@vireshk-i7>
- <d18a1f18-d78c-2db8-9b19-196dc88978c2@gmail.com>
+        Mon, 27 Jun 2022 03:20:07 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5C25FE5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:20:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=K8NxPx1jbqhLbCIeQl9QlBhlrp1zweaLyeE/ESUidak=; b=uzdIbozA0ktf0YFaK/anRamjlD
+        SlZXIoHYFJZN0gnZbAz6jAVW1z1g1qF04O0Px871KkmaSR/StWRtGgMTBHezIGDVRBaAqb4O+Dudb
+        Gm4jbtfX+l+4nyDeLLxZDHpVZYEePOPPDI3tQN6m4wID+1uYLXVcysTKyyQlk3mBEl+OOcBRgJ3We
+        mVIBTaVKJZ6e9fCqS5qadsW0sDfK+Tr4hYpQMiBNC8aL5ALK6had5us6H8wIArsrIhT28w5xKW/+t
+        yfu+ZaahSXD7ZayXAKWzvp+g38q884rtGCX+Ya/LWEEQYRQrU34+kdP/c8h+wduLuYF2+fgpqZjOO
+        fR2fDU1g==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o5j28-00B8to-4F; Mon, 27 Jun 2022 07:19:44 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 8FA2930040C;
+        Mon, 27 Jun 2022 09:11:11 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id E759D29BD6E00; Mon, 27 Jun 2022 09:11:10 +0200 (CEST)
+Date:   Mon, 27 Jun 2022 09:11:10 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Wedson Almeida Filho <wedsonaf@google.com>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Tejun Heo <tj@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Oleg Nesterov <oleg@redhat.com>
+Subject: Re: re. Spurious wakeup on a newly created kthread
+Message-ID: <YrlYDppYKw6HRP1j@hirez.programming.kicks-ass.net>
+References: <YraWWl+Go17uPOgR@mtj.duckdns.org>
+ <CAHk-=wiC7rj1o7vTnYUPfD7YxAu09MZiZbahHqvLm9+Cgg1dFw@mail.gmail.com>
+ <874k0863x8.fsf@email.froward.int.ebiederm.org>
+ <CAHk-=wgTG2K3erROP19320zBN6BHVf0hRfXGdawkGR4gzrJN6w@mail.gmail.com>
+ <CAHk-=whLsaRKaFKS0UffeCYYCVyP0bbiB4BTYTaXtScgu6R9yA@mail.gmail.com>
+ <87pmiw1fy6.fsf@email.froward.int.ebiederm.org>
+ <CAHk-=wiutNT47oNhyk_WvMj2qp4pehYFptXCUzW=u_2STLQiww@mail.gmail.com>
+ <CAHk-=whX_=BNZ4kVEAu2NV3CMnhwsuYTyE65FQXUMx8VPNOAOA@mail.gmail.com>
+ <87y1xkwa28.fsf@email.froward.int.ebiederm.org>
+ <YrjxcR2M6AD6S9dW@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d18a1f18-d78c-2db8-9b19-196dc88978c2@gmail.com>
+In-Reply-To: <YrjxcR2M6AD6S9dW@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27-06-22, 10:09, Dmitry Osipenko wrote:
-> Yes, I missed that multi-clock OPP patch, thanks.
+On Mon, Jun 27, 2022 at 12:01:04AM +0000, Wedson Almeida Filho wrote:
+> On Sat, Jun 24, 2022 at 07:19:27PM -0500, Eric W. Biederman wrote:
+> > 
+> > Further it is necessary for Peter Zijlstra's rewrite of the kernel
+> > freezer.   As anything that isn't a special stop state (which
+> > TASK_UNINTERRUPTIBLE is not) will receive a spurious wake up on when
+> > thawed out.
 > 
-> Seems _opp_compare_key() won't work properly for the multi-clocks since
-> Tegra doesn't have bandwidth nor level for the 3d OPPs. Why does it need
-> to check opp_table->clk_count == 1? Shouldn't it be opp_table->clk_count
-> > 0?
+> Do you know if the current (i.e., prior to the rewrite) kernel freezer
+> also sends spurious wakeups when thawing tasks?
 
-The problem is that when we have multiple clocks, we can't assume any
-of them as primary. Its the combination of the clock frequencies that
-make them unique. Otherwise, what will happen if we have same
-frequency of the first clock in two OPPs, but different frequency of
-the second clock.
+Current freezer can thaw at random points in time, even before SMP
+bringup if you're unlucky. And yes, I think it can induce 'spurious'
+wakeups as well.
 
-Because of this, we won't also support multiple clocks in all freq
-finder APIs, like dev_pm_opp_find_freq_exact(). We can't do that from
-just one frequency.
+But really; like Linus already said upsteam, every wait loop *MUST*
+already be able to deal with spurious wakeups. This is why pretty much
+every wait primitive we have looks like:
 
-Ideally, the drivers should now be calling dev_pm_opp_set_opp() to set
-the OPP now.
+	for (;;) {
+		set_current_state(state);
+		if (cond)
+			break;
+		schedule();
+	}
+	__set_current_state(RUNNING);
 
-For your case, I think you can just add levels (like index) in the OPP
-table. So we can uniquely identify each OPP.
+Which is immune to random wake-ups since it need @cond to make progress.
+*NEVER* rely on just the wakeup itself for progress, that's buggy as
+heck in lots of ways.
 
--- 
-viresh
+There are a few exceptions, but they all require special wait states and
+much carefulness.
