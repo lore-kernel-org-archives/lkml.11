@@ -2,133 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D42F1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D28C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233787AbiF0JK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 05:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
+        id S232663AbiF0JMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 05:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233571AbiF0JK0 (ORCPT
+        with ESMTP id S233786AbiF0JMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 05:10:26 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6419F2667;
-        Mon, 27 Jun 2022 02:10:22 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 310998106;
-        Mon, 27 Jun 2022 09:05:11 +0000 (UTC)
-Date:   Mon, 27 Jun 2022 12:10:20 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
- driver_deferred_probe_check_state()
-Message-ID: <Yrlz/P6Un2fACG98@atomide.com>
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com>
- <YrFzK6EiVvXmzVG6@atomide.com>
- <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
- <YrKhkmj3jCQA39X/@atomide.com>
- <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
- <YrQP3OZbe8aCQxKU@atomide.com>
- <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
+        Mon, 27 Jun 2022 05:12:33 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFD62664;
+        Mon, 27 Jun 2022 02:12:31 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3E49FE0004;
+        Mon, 27 Jun 2022 09:12:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1656321148;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P/aeWWjcU0pgTxSwnjFANZsIuEo0pdJ58U5EC/Hg9ws=;
+        b=pjj1BJqlH41VjgpxpUnUPjFak7CZHgFA73fITnzpLF2aujUnxSv5YBybx35HmLB/1u8afq
+        UhQ2zBx3y6bMSHU2THvZeaHhvJREii3B1WyfhfM/oiKxtdqiz7c9JC3IPOPp/3G8fRse1n
+        KJ8YSiMFayq0TQqu7ZES9J6Zyq8/JhOaVmqkTiUHcc8ythxd2K08zQozS2B3rPt+5ayr5x
+        IKUZOcVqmeZQ0z7CLyQx1ZcWd8JZaf2V4BHErcfXvamtxpBfGrjdrA//enBhMI8+V7NQEa
+        kBpHbEQl0+NSZRlGq6K1TiA0hB3rYDjFKlJ61vlk8z7WLzCVtdXbMbRA1fAGTw==
+Date:   Mon, 27 Jun 2022 11:11:39 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Frank Rowand <frowand.list@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lizhi Hou <lizhi.hou@xilinx.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH 1/2] of: create of_root if no dtb provided
+Message-ID: <20220627111139.22ea1abd@fixe.home>
+In-Reply-To: <6d40876c-2751-01bb-94ab-7c9ab90e636f@gmail.com>
+References: <20220624034327.2542112-1-frowand.list@gmail.com>
+        <20220624034327.2542112-2-frowand.list@gmail.com>
+        <20220624141320.3c473605@fixe.home>
+        <6d40876c-2751-01bb-94ab-7c9ab90e636f@gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Saravana Kannan <saravanak@google.com> [220623 08:17]:
-> On Thu, Jun 23, 2022 at 12:01 AM Tony Lindgren <tony@atomide.com> wrote:
-> >
-> > * Saravana Kannan <saravanak@google.com> [220622 19:05]:
-> > > On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
-> > > > This issue is no directly related fw_devlink. It is a side effect of
-> > > > removing driver_deferred_probe_check_state(). We no longer return
-> > > > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
-> > >
-> > > Yes, I understand the issue. But driver_deferred_probe_check_state()
-> > > was deleted because fw_devlink=on should have short circuited the
-> > > probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
-> > > probe function and hitting this -ENOENT failure. That's why I was
-> > > asking the other questions.
-> >
-> > OK. So where is the -EPROBE_DEFER supposed to happen without
-> > driver_deferred_probe_check_state() then?
-> 
-> device_links_check_suppliers() call inside really_probe() would short
-> circuit and return an -EPROBE_DEFER if the device links are created as
-> expected.
+Le Fri, 24 Jun 2022 11:44:07 -0500,
+Frank Rowand <frowand.list@gmail.com> a =C3=A9crit :
 
-OK
+> On 6/24/22 08:13, Cl=C3=A9ment L=C3=A9ger wrote:
+> > Le Thu, 23 Jun 2022 22:43:26 -0500,
+> > frowand.list@gmail.com a =C3=A9crit :
+> >  =20
+> >> =20
+> >> +/*
+> >> + * __dtb_empty_root_begin[] magically created by cmd_dt_S_dtb in
+> >> + * scripts/Makefile.lib
+> >> + */
+> >> +extern void *__dtb_empty_root_begin;
+> >> +
+> >>  /*
+> >>   * of_fdt_limit_memory - limit the number of regions in the /memory n=
+ode
+> >>   * @limit: maximum entries
+> >> @@ -1332,8 +1338,13 @@ bool __init early_init_dt_scan(void *params)
+> >>   */
+> >>  void __init unflatten_device_tree(void)
+> >>  { =20
+> >=20
+> > Hi Frank,
+> >=20
+> > This function is only defined when CONFIG_OF_EARLY_FLATTREE is enabled.=
+ =20
+>=20
+> More precisely, only if CONFIG_OF_FLATTREE is enabled.  But that would
+> most likely be seleved by CONFIG_OF_EARLY_FLATTREE, so in practice the
+> issue you raise is valid.
+>=20
+> > Which means that on platforms that do not select this, the default
+> > empty device-tree creation will not be done. =20
+>=20
+> Yes, so platforms that need this functionality need to select this
+> option.
 
-> > Hmm so I'm not seeing any supplier for the top level ocp device in
-> > the booting case without your patches. I see the suppliers for the
-> > ocp child device instances only.
-> 
-> Hmmm... this is strange (that the device link isn't there), but this
-> is what I suspected.
+Yes, but this seems a bit odd because this is not really a early
+flattree that is provided by the firmware. This simply allows to have a
+working support for overlays (As a "side effect" I agree).
 
-Yup, maybe it's because of the supplier being a device in the child
-interconnect for the ocp.
+>=20
+> >=20
+> > This configuration option is selected by the platform and not by the
+> > user. On x86, only one config enables this (X86_INTEL_CE) which means
+> > this won't work on all the other platforms even if CONFIG_OF is
+> > selected. I would need this to work by only selected CONFIG_OF. =20
+>=20
+> Maybe this means that CONFIG_OF should be changed to select
+> CONFIG_OF_FLATTREE.  Any opinions on this Rob?
+>=20
+> > That's why I decided to add the of_root creation in of_core_init()
+> > using a function (of_fdt_unflatten()) that is provided if CONFIG_OF is
+> > defined. =20
+>=20
+> I mentioned this in response to the previous patch series, but will
+> repeat here for those who might not have read that email thread.
+>=20
+> I do not want the root live tree to be created buy different code in
+> different places; I want one central place where this occurs.  When
+> the tree can be created in multiple places by different code blocks,
+> it becomes more difficult to understand the code and more likely that
+> one of the tree creation code blocks is not updated when another is.
 
-> Now we need to figure out why it's missing. There are only a few
-> things that could cause this and I don't see any of those. I already
-> checked to make sure the power domain in this instance had a proper
-> driver with a probe() function -- if it didn't, then that's one thing
-> that'd could have caused the missing device link. The device does seem
-> to have a proper driver, so looks like I can rule that out.
-> 
-> Can you point me to the dts file that corresponds to the specific
-> board you are testing this one? I probably won't find anything, but I
-> want to rule out some of the possibilities.
+Understood, my point was more about the fact that I did not wanted to
+select CONFIG_OF_FLATTREE to be able to use that support which does not
+seems entirely tied to having a "early flattree".
 
-You can use the beaglebone black dts for example, that's
-arch/arm/boot/dts/am335x-boneblack.dts and uses am33xx.dtsi for
-ocp interconnect with simple-pm-bus.
+Thanks,
 
-> All the device link creation logic is inside drivers/base/core.c. So
-> if you can look at the existing messages or add other stuff to figure
-> out why the device link isn't getting created, that'd be handy. In
-> either case, I'll continue staring at the DT and code to see what
-> might be happening here.
+Cl=C3=A9ment
 
-In device_links_check_suppliers() I see these ocp suppliers:
+>=20
+> >  =20
+> >> -	__unflatten_device_tree(initial_boot_params, NULL, &of_root,
+> >> +	if (!initial_boot_params) {
+> >> +		initial_boot_params =3D (void *) __dtb_empty_root_begin;
+> >> +		unflatten_and_copy_device_tree();
+> >> +	} else {
+> >> +		__unflatten_device_tree(initial_boot_params, NULL, &of_root,
+> >>  				early_init_dt_alloc_memory_arch, false);
+> >> +	}
+> >> =20
+> >>  	/* Get pointer to "/chosen" and "/aliases" nodes for use everywhere =
+*/
+> >>  	of_alias_scan(early_init_dt_alloc_memory_arch);
+> >> @@ -1373,6 +1384,12 @@ void __init unflatten_and_copy_device_tree(void)
+> >>  	unflatten_device_tree();
+> >>  }
+> >> =20
+> >> +void __init setup_of(void)
+> >> +{
+> >> +	if (!of_root)
+> >> +		unflatten_device_tree();
+> >> +}
+> >> +
+> >>  #ifdef CONFIG_SYSFS
+> >>  static ssize_t of_fdt_raw_read(struct file *filp, struct kobject *kob=
+j,
+> >>  			       struct bin_attribute *bin_attr,
+> >> diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
+> >> index d69ad5bb1eb1..4566876db351 100644
+> >> --- a/include/linux/of_fdt.h
+> >> +++ b/include/linux/of_fdt.h
+> >> @@ -81,6 +81,7 @@ extern const void *of_flat_dt_match_machine(const vo=
+id *default_match,
+> >>  /* Other Prototypes */
+> >>  extern void unflatten_device_tree(void);
+> >>  extern void unflatten_and_copy_device_tree(void);
+> >> +extern void setup_of(void);
+> >>  extern void early_init_devtree(void *);
+> >>  extern void early_get_first_memblock_info(void *, phys_addr_t *);
+> >>  #else /* CONFIG_OF_EARLY_FLATTREE */
+> >> @@ -91,6 +92,7 @@ static inline void early_init_fdt_reserve_self(void)=
+ {}
+> >>  static inline const char *of_flat_dt_get_machine_name(void) { return =
+NULL; }
+> >>  static inline void unflatten_device_tree(void) {}
+> >>  static inline void unflatten_and_copy_device_tree(void) {}
+> >> +static inline void of_setup(void) {} =20
+> >  =20
+>=20
+> > Shouldn't this be setup_of(void) ? =20
+>=20
+> Yes, thanks!  Will fix.
+>=20
+> One other thing I need to do is test this patch on a user mode linux
+> kernel.
+>=20
+> -Frank
+>=20
 
-platform ocp: device_links_check_suppliers: 1024: supplier 44e00d00.prm: link->status: 0 link->flags: 000001c0
-platform ocp: device_links_check_suppliers: 1024: supplier 44e01000.prm: link->status: 0 link->flags: 000001c0
-platform ocp: device_links_check_suppliers: 1024: supplier 44e00c00.prm: link->status: 0 link->flags: 000001c0
-platform ocp: device_links_check_suppliers: 1024: supplier 44e00e00.prm: link->status: 0 link->flags: 000001c0
-platform ocp: device_links_check_suppliers: 1024: supplier 44e01100.prm: link->status: 0 link->flags: 000001c0
-platform ocp: device_links_check_suppliers: 1024: supplier fixedregulator0: link->status: 1 link->flags: 000001c0
 
-No -EPROBE_DEFER is returned in device_links_check_suppliers() for
-44e00c00.prm supplier for beaglebone black for example, 0 gets
-returned.
 
-Regards,
-
-Tony
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
