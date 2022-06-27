@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25512C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B1BAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237965AbiF0L7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
+        id S238683AbiF0L7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:59:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238683AbiF0Lw3 (ORCPT
+        with ESMTP id S238726AbiF0Lwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63AE5AE4F;
-        Mon, 27 Jun 2022 04:45:07 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1666DB857;
+        Mon, 27 Jun 2022 04:45:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA49460DF7;
-        Mon, 27 Jun 2022 11:45:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F292CC3411D;
-        Mon, 27 Jun 2022 11:45:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9176612AE;
+        Mon, 27 Jun 2022 11:45:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA7E3C341CF;
+        Mon, 27 Jun 2022 11:45:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330306;
-        bh=4w0rb8WM7fGTNmflEmNCvYh4biFDvlmKXvwa62Cg0+s=;
+        s=korg; t=1656330318;
+        bh=ZNgvKeXZtttq9V+DTUA+x2cKls0AD7Igat+A75HaGIk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ijin3Z/cJBfaIIDfmF/oNbetuL29t7uK1w2z+eZ0xNfbOFoAsd01Aqd/4c0QdjyWU
-         5Je+B3JwPpbbEBi9Iw7+5e1myUt73ABU056bdDTaMl7M3fk5VNruuEyQ6iaZwYA3Qb
-         hY7ZWkQvi1NlMVdV5yvxp7ucVOPPGFI7AXpAQ78U=
+        b=YbSoPCuNi/MtglBWipI3F0Wpb98qq6IB8P5zPBRE/DnrSPtzm+cAZmGmYXnmuVvtW
+         RS+6mbcHchexjlgWfNSSRgslLyC6CrFlqOOGypl6hatZfb9F8SfsY0nlBjhdechI7a
+         +a7phzq/Ju5lHfc4U08+Uxgc6vKda8am83fWz30c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH 5.18 153/181] parisc/stifb: Fix fb_is_primary_device() only available with CONFIG_FB_STI
-Date:   Mon, 27 Jun 2022 13:22:06 +0200
-Message-Id: <20220627111949.119387136@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.18 157/181] powerpc/microwatt: wire up rng during setup_arch()
+Date:   Mon, 27 Jun 2022 13:22:10 +0200
+Message-Id: <20220627111949.237945884@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -48,52 +49,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 1d0811b03eb30b2f0793acaa96c6ce90b8b9c87a upstream.
+commit 20a9689b3607456d92c6fb764501f6a95950b098 upstream.
 
-Fix this build error noticed by the kernel test robot:
+The platform's RNG must be available before random_init() in order to be
+useful for initial seeding, which in turn means that it needs to be
+called from setup_arch(), rather than from an init call. Fortunately,
+each platform already has a setup_arch function pointer, which means
+it's easy to wire this up. This commit also removes some noisy log
+messages that don't add much.
 
-drivers/video/console/sticore.c:1132:5: error: redefinition of 'fb_is_primary_device'
- arch/parisc/include/asm/fb.h:18:19: note: previous definition of 'fb_is_primary_device'
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: stable@vger.kernel.org   # v5.10+
+Fixes: c25769fddaec ("powerpc/microwatt: Add support for hardware random number generator")
+Cc: stable@vger.kernel.org # v5.14+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220611151015.548325-2-Jason@zx2c4.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/include/asm/fb.h    |    2 +-
- drivers/video/console/sticore.c |    2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ arch/powerpc/platforms/microwatt/microwatt.h |    7 +++++++
+ arch/powerpc/platforms/microwatt/rng.c       |   10 +++-------
+ arch/powerpc/platforms/microwatt/setup.c     |    8 ++++++++
+ 3 files changed, 18 insertions(+), 7 deletions(-)
+ create mode 100644 arch/powerpc/platforms/microwatt/microwatt.h
 
---- a/arch/parisc/include/asm/fb.h
-+++ b/arch/parisc/include/asm/fb.h
-@@ -12,7 +12,7 @@ static inline void fb_pgprotect(struct f
- 	pgprot_val(vma->vm_page_prot) |= _PAGE_NO_CACHE;
+--- /dev/null
++++ b/arch/powerpc/platforms/microwatt/microwatt.h
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _MICROWATT_H
++#define _MICROWATT_H
++
++void microwatt_rng_init(void);
++
++#endif /* _MICROWATT_H */
+--- a/arch/powerpc/platforms/microwatt/rng.c
++++ b/arch/powerpc/platforms/microwatt/rng.c
+@@ -11,6 +11,7 @@
+ #include <asm/archrandom.h>
+ #include <asm/cputable.h>
+ #include <asm/machdep.h>
++#include "microwatt.h"
+ 
+ #define DARN_ERR 0xFFFFFFFFFFFFFFFFul
+ 
+@@ -29,7 +30,7 @@ static int microwatt_get_random_darn(uns
+ 	return 1;
  }
  
--#if defined(CONFIG_STI_CONSOLE) || defined(CONFIG_FB_STI)
-+#if defined(CONFIG_FB_STI)
- int fb_is_primary_device(struct fb_info *info);
- #else
- static inline int fb_is_primary_device(struct fb_info *info)
---- a/drivers/video/console/sticore.c
-+++ b/drivers/video/console/sticore.c
-@@ -1127,6 +1127,7 @@ int sti_call(const struct sti_struct *st
- 	return ret;
- }
- 
-+#if defined(CONFIG_FB_STI)
- /* check if given fb_info is the primary device */
- int fb_is_primary_device(struct fb_info *info)
+-static __init int rng_init(void)
++void __init microwatt_rng_init(void)
  {
-@@ -1142,6 +1143,7 @@ int fb_is_primary_device(struct fb_info
- 	return (sti->info == info);
+ 	unsigned long val;
+ 	int i;
+@@ -37,12 +38,7 @@ static __init int rng_init(void)
+ 	for (i = 0; i < 10; i++) {
+ 		if (microwatt_get_random_darn(&val)) {
+ 			ppc_md.get_random_seed = microwatt_get_random_darn;
+-			return 0;
++			return;
+ 		}
+ 	}
+-
+-	pr_warn("Unable to use DARN for get_random_seed()\n");
+-
+-	return -EIO;
  }
- EXPORT_SYMBOL(fb_is_primary_device);
-+#endif
+-machine_subsys_initcall(, rng_init);
+--- a/arch/powerpc/platforms/microwatt/setup.c
++++ b/arch/powerpc/platforms/microwatt/setup.c
+@@ -16,6 +16,8 @@
+ #include <asm/xics.h>
+ #include <asm/udbg.h>
  
- MODULE_AUTHOR("Philipp Rumpf, Helge Deller, Thomas Bogendoerfer");
- MODULE_DESCRIPTION("Core STI driver for HP's NGLE series graphics cards in HP PARISC machines");
++#include "microwatt.h"
++
+ static void __init microwatt_init_IRQ(void)
+ {
+ 	xics_init();
+@@ -32,10 +34,16 @@ static int __init microwatt_populate(voi
+ }
+ machine_arch_initcall(microwatt, microwatt_populate);
+ 
++static void __init microwatt_setup_arch(void)
++{
++	microwatt_rng_init();
++}
++
+ define_machine(microwatt) {
+ 	.name			= "microwatt",
+ 	.probe			= microwatt_probe,
+ 	.init_IRQ		= microwatt_init_IRQ,
++	.setup_arch		= microwatt_setup_arch,
+ 	.progress		= udbg_progress,
+ 	.calibrate_decr		= generic_calibrate_decr,
+ };
 
 
