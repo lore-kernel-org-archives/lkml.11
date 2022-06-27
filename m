@@ -2,227 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5742C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:13:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD00BCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239108AbiF0QN2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
+        id S239128AbiF0QNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239021AbiF0QNM (ORCPT
+        with ESMTP id S239135AbiF0QNi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:13:12 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BE3140D6
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:13:10 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id l2-20020a05600c4f0200b0039c55c50482so7853214wmq.0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:13:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XYw7CGFO//CItwO+VZ/QzzGgwBzkgCzOgnZsxxYoTY4=;
-        b=AP8G17ouwX9ay9Nsklm0TKFMzxwv/NWaVziOluPLmZmnWmq03RlfjWfSxM4UQ1GMN5
-         U5vTf22WStIu22sjeRwc9g+ixi0h4/mXIPo+l9qTyT+Oc7M/30OSU3I3JXJw7kEWIDhD
-         RXMwPqnmRCEj8vK5iOJB/LkRl+Bq6gDTMKt4JQAFS+erDyP2268MyPD2N5ydzDKli0xO
-         g9om5V+4vfKqDYHURINaY1jMLBOtbAesc1f86f81qyOcdp/wVbjSIRbzuhpwq7W8sD8m
-         b9N7+VZAkfIaGnJthH9lrfhhmfncxx+yQvC2BGsGC8g9cBegS8WF4+tZbyhPTqXRY3NL
-         Adeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XYw7CGFO//CItwO+VZ/QzzGgwBzkgCzOgnZsxxYoTY4=;
-        b=5H9tNCztfq9tdHAI17sT/YxGwtqZOmrfAI4g32xyqZd7rdtevanHkXCpVnT+dpI3NG
-         8VglNrWDOL8M1GN7b0mcmluBS5yxVvmnp9KrRK/xS+pdtPfEuJA90mdCijZJEzw9byqF
-         RdP2I8788dd5HUshE75faA0vED4EOc7d8TrsWbpkFIN+awjfpgRVEVY+Dcrjume2Vcm/
-         cmwp4qiVMpXAB5BcqsmHJx5NS1vMr/yYLwa0DTuoGQxDLVsyvOWUivKXNQqF25YsXT8D
-         Ics58f811wZe1s1mRQYKa5YT7E3vGcriOdOiEAWjGJJYIG1NKH7nxmcvGQfgYlTyDErt
-         gdAw==
-X-Gm-Message-State: AJIora8U5WVj1kxNDsK7ROKDhauJWlUK0fNq1KeLXOXmPpwrWFXBKZlb
-        XN20x63+/NaRCHL9eMX2GUU=
-X-Google-Smtp-Source: AGRyM1vVUM1sq3THYxF0+f/5T7IB/yfC/bim5nxm8lDQImUcWMPfgAI5TeGngQaDoMUY2LCxuGReIA==
-X-Received: by 2002:a1c:7414:0:b0:3a0:201c:5b7f with SMTP id p20-20020a1c7414000000b003a0201c5b7fmr21074157wmc.170.1656346389529;
-        Mon, 27 Jun 2022 09:13:09 -0700 (PDT)
-Received: from localhost.localdomain ([94.73.36.128])
-        by smtp.gmail.com with ESMTPSA id c7-20020adffb47000000b0021b9504cc83sm10883600wrs.31.2022.06.27.09.13.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 09:13:09 -0700 (PDT)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     javierm@redhat.com
-Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
-        mripard@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
-        maarten.lankhorst@linux.intel.com, jani.nikula@linux.intel.com,
-        maira.canal@usp.br, isabbasso@riseup.net, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, dri-devel@lists.freedesktop.org,
-        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH 4/4] drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb565()
-Date:   Mon, 27 Jun 2022 18:11:32 +0200
-Message-Id: <20220627161132.33256-5-jose.exposito89@gmail.com>
+        Mon, 27 Jun 2022 12:13:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DEB186E5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:13:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 528D3B81186
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 16:13:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D22C3411D;
+        Mon, 27 Jun 2022 16:13:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656346412;
+        bh=5Eiao4YckIx1rV8LSQxic4/kEhehVORgdHvrvRDRKu0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qu7hLvCDcgOTXERvXWEdBRsbjojMj9azE7PYdGf1axLagEfZ0jOKE7xd7Jernf99T
+         aiDSBcY9dPeemPEXKAo2LVDaxTySyKtwkde5FB8VfrT1pLOXJ/hx533f3Mwcgw1f4M
+         ED3RDkNajY0xCAXUuOoYkZzsrOpSmCVAlFkwhP4wz3sQ6qcQmZqhVnTS4GeCJJ54Je
+         va5JG6kvjI2fCJbVLeLfEKWwZEIbSYUVll4DUfW22DTVnurdt0vrG6hkgZInEgigGf
+         rR1SnpK8P/D+vv7QTJzNJ4ozyeiyTTZOmkw42FwMwYfSF4XNtSAuuIIsPc1S/4OfLq
+         bxLkfTxKB/9/Q==
+From:   Oded Gabbay <ogabbay@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ofir Bitton <obitton@habana.ai>
+Subject: [PATCH] habanalabs: remove redundant argument in access_dev_mem APIs
+Date:   Mon, 27 Jun 2022 19:13:27 +0300
+Message-Id: <20220627161327.775077-1-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220627161132.33256-1-jose.exposito89@gmail.com>
-References: <20220627161132.33256-1-jose.exposito89@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the existing test cases to test the conversion from XRGB8888 to
-RGB565.
+From: Ofir Bitton <obitton@habana.ai>
 
-The documentation and the color picker available on [1] are useful
-resources to understand this patch and validate the values returned by
-the conversion function.
+Region structure is derived from region type, hence no need to pass
+it as an argument.
 
-[1] http://www.barth-dev.de/online/rgb565-color-picker/
-
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Ofir Bitton <obitton@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- .../gpu/drm/tests/drm_format_helper_test.c    | 100 +++++++++++++++++-
- 1 file changed, 99 insertions(+), 1 deletion(-)
+ drivers/misc/habanalabs/common/debugfs.c    | 3 +--
+ drivers/misc/habanalabs/common/device.c     | 5 ++---
+ drivers/misc/habanalabs/common/habanalabs.h | 8 ++++----
+ 3 files changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/tests/drm_format_helper_test.c b/drivers/gpu/drm/tests/drm_format_helper_test.c
-index 52dc41cc7c60..3fbe8026bccc 100644
---- a/drivers/gpu/drm/tests/drm_format_helper_test.c
-+++ b/drivers/gpu/drm/tests/drm_format_helper_test.c
-@@ -48,7 +48,7 @@ struct convert_xrgb8888_case {
- 	unsigned int pitch;
- 	struct drm_rect clip;
- 	const u32 xrgb8888[TEST_BUF_SIZE];
--	struct convert_xrgb8888_result results[1];
-+	struct convert_xrgb8888_result results[3];
+diff --git a/drivers/misc/habanalabs/common/debugfs.c b/drivers/misc/habanalabs/common/debugfs.c
+index 0f07c2de986b..aaf5235a58d5 100644
+--- a/drivers/misc/habanalabs/common/debugfs.c
++++ b/drivers/misc/habanalabs/common/debugfs.c
+@@ -695,8 +695,7 @@ static int hl_access_dev_mem_by_region(struct hl_device *hdev, u64 addr,
+ 		if (addr >= mem_reg->region_base &&
+ 			addr <= mem_reg->region_base + mem_reg->region_size - acc_size) {
+ 			*found = true;
+-			return hdev->asic_funcs->access_dev_mem(hdev, mem_reg, i,
+-				addr, val, acc_type);
++			return hdev->asic_funcs->access_dev_mem(hdev, i, addr, val, acc_type);
+ 		}
+ 	}
+ 	return 0;
+diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
+index c42557052f88..adf0ff26636c 100644
+--- a/drivers/misc/habanalabs/common/device.c
++++ b/drivers/misc/habanalabs/common/device.c
+@@ -245,14 +245,13 @@ int hl_access_cfg_region(struct hl_device *hdev, u64 addr, u64 *val,
+  * hl_access_dev_mem - access device memory
+  *
+  * @hdev: pointer to habanalabs device structure
+- * @region: the memory region the address belongs to
+  * @region_type: the type of the region the address belongs to
+  * @addr: the address to access
+  * @val: the value to write from or read to
+  * @acc_type: the type of access (r/w, 32/64)
+  */
+-int hl_access_dev_mem(struct hl_device *hdev, struct pci_mem_region *region,
+-		enum pci_region region_type, u64 addr, u64 *val, enum debugfs_access_type acc_type)
++int hl_access_dev_mem(struct hl_device *hdev, enum pci_region region_type,
++			u64 addr, u64 *val, enum debugfs_access_type acc_type)
+ {
+ 	switch (region_type) {
+ 	case PCI_REGION_CFG:
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index c5f9501b1113..c7401b524aed 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -1455,8 +1455,8 @@ struct hl_asic_funcs {
+ 	u32* (*get_stream_master_qid_arr)(void);
+ 	int (*mmu_get_real_page_size)(struct hl_device *hdev, struct hl_mmu_properties *mmu_prop,
+ 					u32 page_size, u32 *real_page_size, bool is_dram_addr);
+-	int (*access_dev_mem)(struct hl_device *hdev, struct pci_mem_region *region,
+-		enum pci_region region_type, u64 addr, u64 *val, enum debugfs_access_type acc_type);
++	int (*access_dev_mem)(struct hl_device *hdev, enum pci_region region_type,
++				u64 addr, u64 *val, enum debugfs_access_type acc_type);
+ 	u64 (*set_dram_bar_base)(struct hl_device *hdev, u64 addr);
  };
  
- static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
-@@ -64,6 +64,26 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 				.dst_pitch = 0,
- 				.expected = { 0xE0 },
- 			},
-+			{
-+				.dst_format = DRM_FORMAT_RGB565,
-+				.has_swab = true,
-+				.conv_swab = {
-+					.func = drm_fb_xrgb8888_to_rgb565,
-+					.swab = false,
-+				},
-+				.dst_pitch = 0,
-+				.expected = { 0x00, 0xF8 },
-+			},
-+			{
-+				.dst_format = DRM_FORMAT_RGB565,
-+				.has_swab = true,
-+				.conv_swab = {
-+					.func = drm_fb_xrgb8888_to_rgb565,
-+					.swab = true,
-+				},
-+				.dst_pitch = 0,
-+				.expected = { 0xF8, 0x00 },
-+			},
- 		},
- 	},
- 	{
-@@ -81,6 +101,26 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 				.dst_pitch = 0,
- 				.expected = { 0xE0 },
- 			},
-+			{
-+				.dst_format = DRM_FORMAT_RGB565,
-+				.has_swab = true,
-+				.conv_swab = {
-+					.func = drm_fb_xrgb8888_to_rgb565,
-+					.swab = false,
-+				},
-+				.dst_pitch = 0,
-+				.expected = { 0x00, 0xF8 },
-+			},
-+			{
-+				.dst_format = DRM_FORMAT_RGB565,
-+				.has_swab = true,
-+				.conv_swab = {
-+					.func = drm_fb_xrgb8888_to_rgb565,
-+					.swab = true,
-+				},
-+				.dst_pitch = 0,
-+				.expected = { 0xF8, 0x00 },
-+			},
- 		},
- 	},
- 	{
-@@ -110,6 +150,36 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 					0xFC, 0x1F,
- 				},
- 			},
-+			{
-+				.dst_format = DRM_FORMAT_RGB565,
-+				.has_swab = true,
-+				.conv_swab = {
-+					.func = drm_fb_xrgb8888_to_rgb565,
-+					.swab = false,
-+				},
-+				.dst_pitch = 0,
-+				.expected = {
-+					0xFF, 0xFF, 0x00, 0x00,
-+					0x00, 0xF8, 0xE0, 0x07,
-+					0x1F, 0x00, 0x1F, 0xF8,
-+					0xE0, 0xFF, 0xFF, 0x07,
-+				},
-+			},
-+			{
-+				.dst_format = DRM_FORMAT_RGB565,
-+				.has_swab = true,
-+				.conv_swab = {
-+					.func = drm_fb_xrgb8888_to_rgb565,
-+					.swab = true,
-+				},
-+				.dst_pitch = 0,
-+				.expected = {
-+					0xFF, 0xFF, 0x00, 0x00,
-+					0xF8, 0x00, 0x07, 0xE0,
-+					0x00, 0x1F, 0xF8, 0x1F,
-+					0xFF, 0xE0, 0x07, 0xFF,
-+				},
-+			},
- 		},
- 	},
- 	{
-@@ -133,6 +203,34 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 					0xA0, 0x6D, 0x0A, 0x00, 0x00,
- 				},
- 			},
-+			{
-+				.dst_format = DRM_FORMAT_RGB565,
-+				.has_swab = true,
-+				.conv_swab = {
-+					.func = drm_fb_xrgb8888_to_rgb565,
-+					.swab = false,
-+				},
-+				.dst_pitch = 10,
-+				.expected = {
-+					0x33, 0x0A, 0x60, 0x12, 0x00, 0xA8, 0x00, 0x00, 0x00, 0x00,
-+					0x8E, 0x6B, 0x33, 0x0A, 0x60, 0x12, 0x00, 0x00, 0x00, 0x00,
-+					0x00, 0xA8, 0x8E, 0x6B, 0x33, 0x0A, 0x00, 0x00, 0x00, 0x00,
-+				},
-+			},
-+			{
-+				.dst_format = DRM_FORMAT_RGB565,
-+				.has_swab = true,
-+				.conv_swab = {
-+					.func = drm_fb_xrgb8888_to_rgb565,
-+					.swab = true,
-+				},
-+				.dst_pitch = 10,
-+				.expected = {
-+					0x0A, 0x33, 0x12, 0x60, 0xA8, 0x00, 0x00, 0x00, 0x00, 0x00,
-+					0x6B, 0x8E, 0x0A, 0x33, 0x12, 0x60, 0x00, 0x00, 0x00, 0x00,
-+					0xA8, 0x00, 0x6B, 0x8E, 0x0A, 0x33, 0x00, 0x00, 0x00, 0x00,
-+				},
-+			},
- 		},
- 	},
- };
+@@ -3133,8 +3133,8 @@ void hl_dma_unmap_sgtable(struct hl_device *hdev, struct sg_table *sgt,
+ 				enum dma_data_direction dir);
+ int hl_access_cfg_region(struct hl_device *hdev, u64 addr, u64 *val,
+ 	enum debugfs_access_type acc_type);
+-int hl_access_dev_mem(struct hl_device *hdev, struct pci_mem_region *region,
+-		enum pci_region region_type, u64 addr, u64 *val, enum debugfs_access_type acc_type);
++int hl_access_dev_mem(struct hl_device *hdev, enum pci_region region_type,
++			u64 addr, u64 *val, enum debugfs_access_type acc_type);
+ int hl_device_open(struct inode *inode, struct file *filp);
+ int hl_device_open_ctrl(struct inode *inode, struct file *filp);
+ bool hl_device_operational(struct hl_device *hdev,
 -- 
 2.25.1
 
