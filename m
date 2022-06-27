@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B844C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:34:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235854AbiF0Lej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
+        id S235873AbiF0Len (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:34:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236036AbiF0LdF (ORCPT
+        with ESMTP id S236058AbiF0LdH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:33:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D852DBCB8;
-        Mon, 27 Jun 2022 04:30:08 -0700 (PDT)
+        Mon, 27 Jun 2022 07:33:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8CB1BE05;
+        Mon, 27 Jun 2022 04:30:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71C82B8112E;
-        Mon, 27 Jun 2022 11:30:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF970C3411D;
-        Mon, 27 Jun 2022 11:30:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 663B8B8111A;
+        Mon, 27 Jun 2022 11:30:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77BBC3411D;
+        Mon, 27 Jun 2022 11:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329406;
-        bh=MbXe0ur52wnHNXV65jswXkfskRWW47XRp/QkLCJo9nw=;
+        s=korg; t=1656329409;
+        bh=rluxQ2+A54yIjuuZuUh66DBwb2gFHEaBDbn3E7gQcac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YWDrUMewBj33EMio+vKdrPp1whs5ybk4j6TjjYULN6MjnAh3F+ZWktjcO7FTJXLQS
-         yTsDbrq9+qm2ARDn0djMcDQdqoq6GNEO/qePH371wq7oao5tRbajQekF1TkGcsJWGu
-         CEzJfP2TqrbzmlnW3qYbc9y6jTei83C8KN5wpBDc=
+        b=t67rs93C1/aQz3AqZQXy4eQB/oPDJwh6vB5xMRj88sSgnbM4j+QEI6XeLqRDyI5hK
+         taFLWT6k1FsXFfCpX3aBXTze+eRKccCzUhPEaQsH7f+hQ7zCViytNFnr7YcvIB14+C
+         2DDu9FAug+5ySfvGaVAX/1o9VFRg5H2k79r6Bv38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chevron Li <chevron.li@bayhubtech.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.4 08/60] mmc: sdhci-pci-o2micro: Fix card detect by dealing with debouncing
-Date:   Mon, 27 Jun 2022 13:21:19 +0200
-Message-Id: <20220627111927.896346056@linuxfoundation.org>
+        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.4 09/60] mtd: rawnand: gpmi: Fix setting busy timeout setting
+Date:   Mon, 27 Jun 2022 13:21:20 +0200
+Message-Id: <20220627111927.925744356@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -48,34 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chevron Li <chevron.li@bayhubtech.com>
+From: Sascha Hauer <s.hauer@pengutronix.de>
 
-commit e591fcf6b4e39335c9b128b17738fcd2fdd278ae upstream.
+commit 06781a5026350cde699d2d10c9914a25c1524f45 upstream.
 
-The result from ->get_cd() may be incorrect as the card detect debouncing
-isn't managed correctly. Let's fix it.
+The DEVICE_BUSY_TIMEOUT value is described in the Reference Manual as:
 
-Signed-off-by: Chevron Li<chevron.li@bayhubtech.com>
-Fixes: 7d44061704dd ("mmc: sdhci-pci-o2micro: Fix O2 Host data read/write DLL Lock phase shift issue")
+| Timeout waiting for NAND Ready/Busy or ATA IRQ. Used in WAIT_FOR_READY
+| mode. This value is the number of GPMI_CLK cycles multiplied by 4096.
+
+So instead of multiplying the value in cycles with 4096, we have to
+divide it by that value. Use DIV_ROUND_UP to make sure we are on the
+safe side, especially when the calculated value in cycles is smaller
+than 4096 as typically the case.
+
+This bug likely never triggered because any timeout != 0 usually will
+do. In my case the busy timeout in cycles was originally calculated as
+2408, which multiplied with 4096 is 0x968000. The lower 16 bits were
+taken for the 16 bit wide register field, so the register value was
+0x8000. With 2970bf5a32f0 ("mtd: rawnand: gpmi: fix controller timings
+setting") however the value in cycles became 2384, which multiplied
+with 4096 is 0x950000. The lower 16 bit are 0x0 now resulting in an
+intermediate timeout when reading from NAND.
+
+Fixes: b1206122069aa ("mtd: rawnand: gpmi: use core timings instead of an empirical derivation")
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220602132543.596-1-chevron.li@bayhubtech.com
-[Ulf: Updated the commit message]
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220614083138.3455683-1-s.hauer@pengutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/sdhci-pci-o2micro.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/mmc/host/sdhci-pci-o2micro.c
-+++ b/drivers/mmc/host/sdhci-pci-o2micro.c
-@@ -145,6 +145,8 @@ static int sdhci_o2_get_cd(struct mmc_ho
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -682,7 +682,7 @@ static void gpmi_nfc_compute_timings(str
+ 	hw->timing0 = BF_GPMI_TIMING0_ADDRESS_SETUP(addr_setup_cycles) |
+ 		      BF_GPMI_TIMING0_DATA_HOLD(data_hold_cycles) |
+ 		      BF_GPMI_TIMING0_DATA_SETUP(data_setup_cycles);
+-	hw->timing1 = BF_GPMI_TIMING1_BUSY_TIMEOUT(busy_timeout_cycles * 4096);
++	hw->timing1 = BF_GPMI_TIMING1_BUSY_TIMEOUT(DIV_ROUND_UP(busy_timeout_cycles, 4096));
  
- 	if (!(sdhci_readw(host, O2_PLL_DLL_WDT_CONTROL1) & O2_PLL_LOCK_STATUS))
- 		sdhci_o2_enable_internal_clock(host);
-+	else
-+		sdhci_o2_wait_card_detect_stable(host);
- 
- 	return !!(sdhci_readl(host, SDHCI_PRESENT_STATE) & SDHCI_CARD_PRESENT);
- }
+ 	/*
+ 	 * Derive NFC ideal delay from {3}:
 
 
