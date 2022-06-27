@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB830C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235530AbiF0LaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
+        id S235536AbiF0LaJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235133AbiF0L3G (ORCPT
+        with ESMTP id S235330AbiF0L3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:29:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA6CA6;
-        Mon, 27 Jun 2022 04:28:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84EF6AA;
+        Mon, 27 Jun 2022 04:28:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26683B81116;
-        Mon, 27 Jun 2022 11:28:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CCBC3411D;
-        Mon, 27 Jun 2022 11:27:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32513B8111A;
+        Mon, 27 Jun 2022 11:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AD59C3411D;
+        Mon, 27 Jun 2022 11:28:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329279;
-        bh=/U2yq+Js1bVAShlLkoTADj5bBuk/MmaXULBdYrraMHA=;
+        s=korg; t=1656329282;
+        bh=vgvNJrHBHS9C46/WmKV1U9Crcq8Uj+IGHmrgSflbAnM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qiTDWTZggTb5/LBUBHK2ymZB0lRgjI/qCJm37LBTDa87a5ac9pBzzEuWY93ky0foB
-         dmfwTm9iroq7TPEPEgBl0eYF6sL/R5fVSI/E+JFo/gEFSRTgOsVSZ1lAopZmWXXg7T
-         nCKRo5o80cGsv30J+3+Avy55HiZJXnKqpNTftjaw=
+        b=QHSIVXWJOokS/oyvlSx1Swf6mcTX6jfSz1dka+5HR3eLkdQdv0bGLe9UjpGzQspX2
+         lrz/3Cz0n0oVUjhHuJ4rZ6FVRVV7bVHia7Dt/Yz8HRYlPepzFmRbYehv+5KkkEc+m4
+         qVnPPUMNJNt1QW3vuv8ErFWMT8rV9n50NwNnSR/A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jun Li <jun.li@nxp.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.10 092/102] ARM: dts: imx7: Move hsic_phy power domain to HSIC PHY node
-Date:   Mon, 27 Jun 2022 13:21:43 +0200
-Message-Id: <20220627111936.196205159@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.10 083/102] iio: adc: axp288: Override TS pin bias current for some models
+Date:   Mon, 27 Jun 2022 13:21:34 +0200
+Message-Id: <20220627111935.930159000@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -50,41 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 552ca27929ab28b341ae9b2629f0de3a84c98ee8 upstream.
+commit 048058399f19d43cf21de9f5d36cd8144337d004 upstream.
 
-Move the power domain to its actual user. This keeps the power domain
-enabled even when the USB host is runtime suspended. This is necessary
-to detect any downstream events, like device attach.
+Since commit 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling") we
+preserve the bias current set by the firmware at boot. This fixes issues
+we were seeing on various models.
 
-Fixes: 02f8eb40ef7b ("ARM: dts: imx7s: Add power domain for imx7d HSIC")
-Suggested-by: Jun Li <jun.li@nxp.com>
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Some models like the Nuvision Solo 10 Draw tablet actually need the
+old hardcoded 80ųA bias current for battery temperature monitoring
+to work properly.
+
+Add a quirk entry for the Nuvision Solo 10 Draw to the DMI quirk table
+to restore setting the bias current to 80ųA on this model.
+
+Fixes: 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling")
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215882
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220506095040.21008-1-hdegoede@redhat.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx7s.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/axp288_adc.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/arm/boot/dts/imx7s.dtsi
-+++ b/arch/arm/boot/dts/imx7s.dtsi
-@@ -102,6 +102,7 @@
- 		compatible = "usb-nop-xceiv";
- 		clocks = <&clks IMX7D_USB_HSIC_ROOT_CLK>;
- 		clock-names = "main_clk";
-+		power-domains = <&pgc_hsic_phy>;
- 		#phy-cells = <0>;
- 	};
+--- a/drivers/iio/adc/axp288_adc.c
++++ b/drivers/iio/adc/axp288_adc.c
+@@ -196,6 +196,14 @@ static const struct dmi_system_id axp288
+ 		},
+ 		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
+ 	},
++	{
++		/* Nuvision Solo 10 Draw */
++		.matches = {
++		  DMI_MATCH(DMI_SYS_VENDOR, "TMAX"),
++		  DMI_MATCH(DMI_PRODUCT_NAME, "TM101W610L"),
++		},
++		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
++	},
+ 	{}
+ };
  
-@@ -1104,7 +1105,6 @@
- 				compatible = "fsl,imx7d-usb", "fsl,imx27-usb";
- 				reg = <0x30b30000 0x200>;
- 				interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
--				power-domains = <&pgc_hsic_phy>;
- 				clocks = <&clks IMX7D_USB_CTRL_CLK>;
- 				fsl,usbphy = <&usbphynop3>;
- 				fsl,usbmisc = <&usbmisc3 0>;
 
 
