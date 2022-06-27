@@ -2,80 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8294BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D53DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236262AbiF0NrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50074 "EHLO
+        id S236586AbiF0NsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236225AbiF0NrV (ORCPT
+        with ESMTP id S236395AbiF0Nrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:47:21 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955B660C0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:47:20 -0700 (PDT)
+        Mon, 27 Jun 2022 09:47:32 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E44860C0
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:47:31 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id i25so7641711wrc.13
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:47:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656337640; x=1687873640;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Gnsf+QTLVChURM0F3ZGZR9Oqi9oIQdMjnKYpZYGncic=;
-  b=NeNb2Jvn13siisZn8tYNSaWW0Os0tl1v80PguT//2FobrSsOLLakN7i8
-   Mch9B6CYPFgdTl2m3nejAkoJLqeyL1c1Q9SyuVC2ddFKUppwiMc8aSq5k
-   tX8J0AYRnrWUMsYoUA9HuL1BcUZMLjpxdqYahaXAlb37wbM6Ed51alvxU
-   E=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 27 Jun 2022 06:47:20 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 06:47:20 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 27 Jun 2022 06:47:19 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 27 Jun
- 2022 06:47:18 -0700
-Date:   Mon, 27 Jun 2022 09:47:16 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-CC:     <akpm@linux-foundation.org>, <david@redhat.com>,
-        <ying.huang@intel.com>, <songmuchun@bytedance.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] mm/swapfile: fix possible data races of
- inuse_pages
-Message-ID: <Yrm05NQs5+tCZawR@qian>
-References: <20220625093346.48894-1-linmiaohe@huawei.com>
- <20220625093346.48894-2-linmiaohe@huawei.com>
- <Yrml4mB3sa5fZVJa@qian>
- <fe3c4834-71a6-7867-2108-eca43fde62fc@huawei.com>
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=thKvXG+JY3HbxZ4gHoPQEiQ+g4hVQKN6LBHIr47r/6k=;
+        b=jHNN/E/FNcXapK91iIDirAbb8f+wGuCbENy43xqwJNYCKodSw6sMQw5o3qBrwoBv5/
+         EBbdUO7C5KuSgFCPffAH0hqEQALbGoEhGlayBiez57/4mxZptaX6hEocri8MCD8m966N
+         OME3Wcv0nSd6XZR/+W7O/B5zMbnkZvTMlu8LM5E9rwowE0h+aIvHeu4JnabkLnMtWNe4
+         G8RV8szA1uuKsx5r46GEGat4w4/vEQAUFzl6zHJ1KxDpQl+86EpH8s4wTvkG459LGk/9
+         tViG69hLpnyGmp44Y+BX5CWXoQwZF+1pPjCcH6OMt93d4h4vxXiWINOb52yB3mtjKJ5I
+         y5lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=thKvXG+JY3HbxZ4gHoPQEiQ+g4hVQKN6LBHIr47r/6k=;
+        b=tXZsBjqerpKnFIEZlq/f468VPFuOzz47SLoNXPswjlZXA+0zxhEahYeIH0yX44thBO
+         J24gm/vcR2XayINxXQ2QOaabszsYPzg4WNczvxHt2veRZOIv4pyKyJfDxH8hHVDouZb3
+         pSeDA62TQJaipdHKuH+2W+koL64nS38lFjo8XrXooPBblaFu7sMKP2fZmvjLwKw9DdhB
+         o/aXXKP3Kh9Z2m4nVNwWIKCB+r9I2lJQap9JnhGErI+KXTOmWSmpyldnr0bN6aJIG/v2
+         LU0gF+o2K1KbXA2FbydJHjV3lelM95rEboyr5fTChPi4XBTy2PV+3v1MZJZVIME6/HpB
+         lOww==
+X-Gm-Message-State: AJIora9nF7N5Lg61kjVsW1ZaOt9+tDn+uwEfxUUeRTVJXs/aBtzpMP19
+        nU3JjO2ht36s8yI9LLJn6+oxNLpN2eGQlQ==
+X-Google-Smtp-Source: AGRyM1u6bcKos2Ai+xOrhZQz5EBIS0SCQvcwH2heAPU9X0Nf/agWvME05l1J5jMwiTo3Zm2Bvu++Zg==
+X-Received: by 2002:a05:6000:15c1:b0:21b:ad5e:2798 with SMTP id y1-20020a05600015c100b0021bad5e2798mr12340957wry.237.1656337649964;
+        Mon, 27 Jun 2022 06:47:29 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id p13-20020a05600c358d00b003942a244f47sm18847964wmq.32.2022.06.27.06.47.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 06:47:29 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 14:47:27 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Liu Ying <victor.liu@nxp.com>
+Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, andrzej.hajda@intel.com,
+        narmstrong@baylibre.com, robert.foss@linaro.org,
+        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, mchehab@kernel.org,
+        marcel.ziswiler@toradex.com, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v9 13/14] dt-bindings: mfd: Add i.MX8qm/qxp Control and
+ Status Registers module binding
+Message-ID: <Yrm07wceI4DfGVNG@google.com>
+References: <20220611141421.718743-1-victor.liu@nxp.com>
+ <20220611141421.718743-14-victor.liu@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <fe3c4834-71a6-7867-2108-eca43fde62fc@huawei.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220611141421.718743-14-victor.liu@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 09:27:43PM +0800, Miaohe Lin wrote:
-> On 2022/6/27 20:43, Qian Cai wrote:
-> > On Sat, Jun 25, 2022 at 05:33:45PM +0800, Miaohe Lin wrote:
-> >> si->inuse_pages could still be accessed concurrently now. The plain reads
-> >> outside si->lock critical section, i.e. swap_show and si_swapinfo, which
-> >> results in data races. READ_ONCE and WRITE_ONCE is used to fix such data
-> >> races. Note these data races should be ok because they're just used for
-> >> showing swap info.
-> > 
-> > Was this found by kcsan? If so, it would be useful to record the exact
-> > kscan report in the commit message.
-> 
-> Sorry, it's found via code inspection.
+On Sat, 11 Jun 2022, Liu Ying wrote:
 
-Well, if we are going to do a WRITE_ONCE() in those places just for
-documentation purpose now, I think we will need to fix all places in the mm
-subsystem to be consistent.
+> This patch adds bindings for i.MX8qm/qxp Control and Status Registers module.
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Liu Ying <victor.liu@nxp.com>
+> ---
+> v8->v9:
+> * No change.
+> 
+> v7->v8:
+> * No change.
+> 
+> v6->v7:
+> * Add Rob's R-b tag.
+> 
+> v5->v6:
+> * Drop 'select' schema. (Rob)
+> 
+> v4->v5:
+> * Newly introduced in v5. (Rob)
+> 
+>  .../bindings/mfd/fsl,imx8qxp-csr.yaml         | 192 ++++++++++++++++++
+>  1 file changed, 192 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/fsl,imx8qxp-csr.yaml
+
+Applied, thanks.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
