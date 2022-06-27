@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDABAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20522C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235676AbiF0Lea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54092 "EHLO
+        id S235754AbiF0Led (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235967AbiF0Lc7 (ORCPT
+        with ESMTP id S235989AbiF0LdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:32:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7776ABC90;
-        Mon, 27 Jun 2022 04:29:58 -0700 (PDT)
+        Mon, 27 Jun 2022 07:33:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FA5BCA9;
+        Mon, 27 Jun 2022 04:30:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EED5F614EC;
-        Mon, 27 Jun 2022 11:29:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034F6C3411D;
-        Mon, 27 Jun 2022 11:29:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89038B81120;
+        Mon, 27 Jun 2022 11:30:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 017DEC3411D;
+        Mon, 27 Jun 2022 11:29:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329397;
-        bh=d4ivODzHRCoUbS18FraA4uE1V6HELuJGshoYN4G+sEk=;
+        s=korg; t=1656329400;
+        bh=oS4JqcnqTMwkuhSqxF7Xow7fCFBCovJFEcg1qA2kNVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kQuPa3Aqaxpiv8csjVDVIVrCaJ0iTG/to0O/r0KwSvFHjEKsEm/zYoykfyCzrmAHn
-         ZNUuxAUs3T6SN6LTg0Cd8JFv7PU3eWPcLxm6y0y+GBko9MtyWvC5meL2Cbf8GBuTHz
-         zkyPwucpXWTslG191CFXT3a2eB98jr4tle0vKiAA=
+        b=Cy8MMJx1kBwNvWFBFynh2Ut8Gl49vS6VbfYwIJje7bmLDVwN9rqXZSpp58ms9xPEb
+         HaEzptH8qooah0WnjdDQrzJ+/+FbfzSCCOV8syNhTiflu909RY4PFruez/ZJ99iwkG
+         bBDkLYer91qXQtr4o53eWWppiTdGSh/bgxIamPD0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Lars-Peter Clausen <lars@metafoo.de>, Stable@vger.kernel.org,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.4 43/60] iio: trigger: sysfs: fix use-after-free on remove
-Date:   Mon, 27 Jun 2022 13:21:54 +0200
-Message-Id: <20220627111928.957293275@linuxfoundation.org>
+Subject: [PATCH 5.4 44/60] iio: adc: stm32: fix maximum clock rate for stm32mp15x
+Date:   Mon, 27 Jun 2022 13:21:55 +0200
+Message-Id: <20220627111928.986365479@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -50,69 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Olivier Moysan <olivier.moysan@foss.st.com>
 
-commit 78601726d4a59a291acc5a52da1d3a0a6831e4e8 upstream.
+commit 990539486e7e311fb5dab1bf4d85d1a8973ae644 upstream.
 
-Ensure that the irq_work has completed before the trigger is freed.
+Change maximum STM32 ADC input clock rate to 36MHz, as specified
+in STM32MP15x datasheets.
 
- ==================================================================
- BUG: KASAN: use-after-free in irq_work_run_list
- Read of size 8 at addr 0000000064702248 by task python3/25
-
- Call Trace:
-  irq_work_run_list
-  irq_work_tick
-  update_process_times
-  tick_sched_handle
-  tick_sched_timer
-  __hrtimer_run_queues
-  hrtimer_interrupt
-
- Allocated by task 25:
-  kmem_cache_alloc_trace
-  iio_sysfs_trig_add
-  dev_attr_store
-  sysfs_kf_write
-  kernfs_fop_write_iter
-  new_sync_write
-  vfs_write
-  ksys_write
-  sys_write
-
- Freed by task 25:
-  kfree
-  iio_sysfs_trig_remove
-  dev_attr_store
-  sysfs_kf_write
-  kernfs_fop_write_iter
-  new_sync_write
-  vfs_write
-  ksys_write
-  sys_write
-
- ==================================================================
-
-Fixes: f38bc926d022 ("staging:iio:sysfs-trigger: Use irq_work to properly active trigger")
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Link: https://lore.kernel.org/r/20220519091925.1053897-1-vincent.whitchurch@axis.com
+Fixes: d58c67d1d851 ("iio: adc: stm32-adc: add support for STM32MP1")
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220609095234.375925-1-olivier.moysan@foss.st.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/trigger/iio-trig-sysfs.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/adc/stm32-adc-core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/trigger/iio-trig-sysfs.c
-+++ b/drivers/iio/trigger/iio-trig-sysfs.c
-@@ -196,6 +196,7 @@ static int iio_sysfs_trigger_remove(int
- 	}
- 
- 	iio_trigger_unregister(t->trig);
-+	irq_work_sync(&t->work);
- 	iio_trigger_free(t->trig);
- 
- 	list_del(&t->l);
+--- a/drivers/iio/adc/stm32-adc-core.c
++++ b/drivers/iio/adc/stm32-adc-core.c
+@@ -815,7 +815,7 @@ static const struct stm32_adc_priv_cfg s
+ static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
+ 	.regs = &stm32h7_adc_common_regs,
+ 	.clk_sel = stm32h7_adc_clk_sel,
+-	.max_clk_rate_hz = 40000000,
++	.max_clk_rate_hz = 36000000,
+ 	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
+ 	.num_irqs = 2,
+ };
 
 
