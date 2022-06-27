@@ -2,143 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C553ACCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0FFCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236221AbiF0Nq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
+        id S236236AbiF0NrV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236207AbiF0Nq1 (ORCPT
+        with ESMTP id S236017AbiF0NrU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:46:27 -0400
-X-Greylist: delayed 581 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 06:46:27 PDT
-Received: from mail.schwermer.no (mail.schwermer.no [49.12.228.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0B45FE6
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:46:26 -0700 (PDT)
-X-Virus-Scanned: Yes
-From:   Sven Schwermer <sven@svenschwermer.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svenschwermer.de;
-        s=mail; t=1656337003;
-        bh=MdvDeolfGEI+XD+m0bExOjxknYBsPePR2vr4zCgI4uE=;
-        h=From:To:Cc:Subject:In-Reply-To:References;
-        b=u1FzuNABNwE1tKB6IJ/XSJOodrU7Ik1wajPzvIyIrNphF2NZ7FJetnKyJGLIQZULR
-         yYkPZZn+h2UofZKG4ZDMQvdPs/7Pr5Xxd49sFpeyMmOCOgze/cWJOz5Mm1vIKB2FwX
-         cRTLey4JqRAcneqw37/42DXb3HrsRTBeUscFE7TsV72ypoVAPvCmejihJqN6/9a1+U
-         ijmTxmh0OtMrofVwcLQkJOtVEtwMKRBNxVmgsiCo3AnK4OARZP2K+mSAaAQcRWXd47
-         TKasI1IZnmSWFiMcgGsi595HhpJLIlBSZoPH+kzq5jv/UMJheIWXWzSW5qL/TnDPs5
-         DYdMSO5IMjm+Q==
-To:     linux-usb@vger.kernel.org, oliver@neukum.org
-Cc:     Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND v2 2/2] net: usb: cdc_ether: Add Fibocom MA510 modem
-Date:   Mon, 27 Jun 2022 15:36:20 +0200
-Message-Id: <20220627133620.272716-2-sven@svenschwermer.de>
-In-Reply-To: <20220627133620.272716-1-sven@svenschwermer.de>
-References: <20220627133620.272716-1-sven@svenschwermer.de>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 27 Jun 2022 09:47:20 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C301A5FE6
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:47:19 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B3E7C175A;
+        Mon, 27 Jun 2022 06:47:19 -0700 (PDT)
+Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 251923F5A1;
+        Mon, 27 Jun 2022 06:47:19 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 14:47:17 +0100
+From:   Ionela Voinescu <ionela.voinescu@arm.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Atish Patra <atishp@rivosinc.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Qing Wang <wangqing@vivo.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Pierre Gondois <pierre.gondois@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v4 18/20] arch_topology: Set cluster identifier in each
+ core/thread from /cpu-map
+Message-ID: <Yrm05bAzu6c29XXB@arm.com>
+References: <20220621192034.3332546-1-sudeep.holla@arm.com>
+ <20220621192034.3332546-19-sudeep.holla@arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220621192034.3332546-19-sudeep.holla@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+On Tuesday 21 Jun 2022 at 20:20:32 (+0100), Sudeep Holla wrote:
+> Let us set the cluster identifier as parsed from the device tree
+> cluster nodes within /cpu-map.
+> 
+> We don't support nesting of clusters yet as there are no real hardware
+> to support clusters of clusters.
+> 
+> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+> ---
+>  drivers/base/arch_topology.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> index 39be5dbaf4da..75604f783bfc 100644
+> --- a/drivers/base/arch_topology.c
+> +++ b/drivers/base/arch_topology.c
+> @@ -497,7 +497,7 @@ static int __init get_cpu_for_node(struct device_node *node)
+>  }
+>  
+>  static int __init parse_core(struct device_node *core, int package_id,
+> -			     int core_id)
+> +			     int cluster_id, int core_id)
+>  {
+>  	char name[20];
+>  	bool leaf = true;
+> @@ -513,6 +513,7 @@ static int __init parse_core(struct device_node *core, int package_id,
+>  			cpu = get_cpu_for_node(t);
+>  			if (cpu >= 0) {
+>  				cpu_topology[cpu].package_id = package_id;
+> +				cpu_topology[cpu].cluster_id = cluster_id;
+>  				cpu_topology[cpu].core_id = core_id;
+>  				cpu_topology[cpu].thread_id = i;
+>  			} else if (cpu != -ENODEV) {
+> @@ -534,6 +535,7 @@ static int __init parse_core(struct device_node *core, int package_id,
+>  		}
+>  
+>  		cpu_topology[cpu].package_id = package_id;
+> +		cpu_topology[cpu].cluster_id = cluster_id;
+>  		cpu_topology[cpu].core_id = core_id;
+>  	} else if (leaf && cpu != -ENODEV) {
+>  		pr_err("%pOF: Can't get CPU for leaf core\n", core);
+> @@ -543,7 +545,8 @@ static int __init parse_core(struct device_node *core, int package_id,
+>  	return 0;
+>  }
+>  
+> -static int __init parse_cluster(struct device_node *cluster, int depth)
+> +static int __init
+> +parse_cluster(struct device_node *cluster, int cluster_id, int depth)
+>  {
+>  	char name[20];
+>  	bool leaf = true;
+> @@ -563,7 +566,7 @@ static int __init parse_cluster(struct device_node *cluster, int depth)
+>  		c = of_get_child_by_name(cluster, name);
+>  		if (c) {
+>  			leaf = false;
+> -			ret = parse_cluster(c, depth + 1);
+> +			ret = parse_cluster(c, i, depth + 1);
+>  			of_node_put(c);
+>  			if (ret != 0)
+>  				return ret;
+> @@ -587,7 +590,7 @@ static int __init parse_cluster(struct device_node *cluster, int depth)
+>  			}
+>  
+>  			if (leaf) {
+> -				ret = parse_core(c, 0, core_id++);
+> +				ret = parse_core(c, 0, cluster_id, core_id++);
+>  			} else {
+>  				pr_err("%pOF: Non-leaf cluster with core %s\n",
+>  				       cluster, name);
+> @@ -626,7 +629,7 @@ static int __init parse_dt_topology(void)
+>  	if (!map)
+>  		goto out;
+>  
+> -	ret = parse_cluster(map, 0);
+> +	ret = parse_cluster(map, -1, 0);
+>  	if (ret != 0)
+>  		goto out_map;
+>  
+> -- 
+> 2.36.1
+> 
 
-Since this is a modem device enumerating as an Ethernet adapter, we need
-to whitelist it as a WWAN device which tells userspace that this device
-requires setup (via AT commands) before it can be used.
+Reviewed-by: Ionela Voinescu <ionela.voinescu@arm.com>
 
-The MA510 modem has 3 USB configurations that are configurable via the AT
-command AT+GTUSBMODE={30,31,32} which make the modem enumerate with the
-following interfaces, respectively:
-
-30: Diag + QDSS + Modem + RMNET
-31: Diag + Modem + AT + ECM
-32: Modem + AT + ECM
-
-Detailed descriptions of the ECM-mode USB configurations follow:
-
-+GTUSBMODE: 31
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#= 99 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=2cb7 ProdID=0106 Rev= 0.00
-S:  Manufacturer=Fibocom MA510 Modem
-S:  Product=Fibocom MA510 Modem
-S:  SerialNumber=55e2695b
-C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
-A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=82(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
-E:  Ad=84(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
-E:  Ad=86(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-+GTUSBMODE: 32
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=100 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=2cb7 ProdID=010a Rev= 0.00
-S:  Manufacturer=Fibocom MA510 Modem
-S:  Product=Fibocom MA510 Modem
-S:  SerialNumber=55e2695b
-C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
-A:  FirstIf#= 2 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=81(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
-E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
-E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-I:  If#= 3 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-I:* If#= 3 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
----
- drivers/net/usb/cdc_ether.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
-index d165df1ad6d6..90685f5da91c 100644
---- a/drivers/net/usb/cdc_ether.c
-+++ b/drivers/net/usb/cdc_ether.c
-@@ -1006,6 +1006,18 @@ static const struct usb_device_id	products[] = {
- 				      USB_CDC_SUBCLASS_ETHERNET,
- 				      USB_CDC_PROTO_NONE),
- 	.driver_info = (unsigned long)&wwan_info,
-+}, {
-+	/* Fibocom MA510 (ECM mode; +GTUSBMODE=31) */
-+	USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x0106, USB_CLASS_COMM,
-+				      USB_CDC_SUBCLASS_ETHERNET,
-+				      USB_CDC_PROTO_NONE),
-+	.driver_info = (unsigned long)&wwan_info,
-+}, {
-+	/* Fibocom MA510 (ECM mode; +GTUSBMODE=32) */
-+	USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x010a, USB_CLASS_COMM,
-+				      USB_CDC_SUBCLASS_ETHERNET,
-+				      USB_CDC_PROTO_NONE),
-+	.driver_info = (unsigned long)&wwan_info,
- }, {
- 	USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ETHERNET,
- 			USB_CDC_PROTO_NONE),
--- 
-2.36.1
-
+Thanks,
+Ionela.
