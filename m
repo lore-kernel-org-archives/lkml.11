@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0707CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46998CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236939AbiF0LoW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
+        id S237083AbiF0LoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237305AbiF0Lmk (ORCPT
+        with ESMTP id S237293AbiF0Lmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:42:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1704CDF2D;
-        Mon, 27 Jun 2022 04:36:52 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC12DF86;
+        Mon, 27 Jun 2022 04:36:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7ED860C9B;
-        Mon, 27 Jun 2022 11:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF97C3411D;
-        Mon, 27 Jun 2022 11:36:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59854B81125;
+        Mon, 27 Jun 2022 11:36:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3724C3411D;
+        Mon, 27 Jun 2022 11:36:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329811;
-        bh=HntDoXniYj/5of/4GddtV0AzCXgaQh2XJZbRGx/gDMQ=;
+        s=korg; t=1656329808;
+        bh=y9i6OcD3+jttfol87JifqvXY8ddQ2O+EJsT5yNM2FLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gqPdxjyG+KMjKNcqIgBV3vKksI0ue+7yomBgSJCnOjJgwtFlu8EwnEWvSybFC39vZ
-         SFW9bmmRZKTVmeg6cnGLk+KjvDFkZf9IrUB2wnjgBAMP/39L25ldW+KI/tzlg1xl+t
-         ZAkOGg6bt1iSqAvyxL8buWy0ft9nldbWAxDjYiSg=
+        b=oPd4JhhxOU1BvU7WQzb5vQpEvbXV0tNCGfNACqG4RJr/Bfv2J5Rsjcet2eIyDR9hF
+         otGjMWolKk+/HTY4bwg+wqGjQ+RD1crjNWoJh0Kuqj74nbaP+EwS6KCyXFzhGmAA0t
+         mje9OfXMmml2ehl/eMB9OyiG1rRlcbryjid6QV34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 083/135] usb: typec: wcove: Drop wrong dependency to INTEL_SOC_PMIC
-Date:   Mon, 27 Jun 2022 13:21:30 +0200
-Message-Id: <20220627111940.570147067@linuxfoundation.org>
+Subject: [PATCH 5.15 082/135] iio: adc: vf610: fix conversion mode sysfs node name
+Date:   Mon, 27 Jun 2022 13:21:29 +0200
+Message-Id: <20220627111940.541023583@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,43 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit 9ef165406308515dcf2e3f6e97b39a1c56d86db5 ]
+[ Upstream commit f1a633b15cd5371a2a83f02c513984e51132dd68 ]
 
-Intel SoC PMIC is a generic name for all PMICs that are used
-on Intel platforms. In particular, INTEL_SOC_PMIC kernel configuration
-option refers to Crystal Cove PMIC, which has never been a part
-of any Intel Broxton hardware. Drop wrong dependency from Kconfig.
+The documentation missed the "in_" prefix for this IIO_SHARED_BY_DIR
+entry.
 
-Note, the correct dependency is satisfied via ACPI PMIC OpRegion driver,
-which the Type-C depends on.
-
-Fixes: d2061f9cc32d ("usb: typec: add driver for Intel Whiskey Cove PMIC USB Type-C PHY")
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20220620104316.57592-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bf04c1a367e3 ("iio: adc: vf610: implement configurable conversion modes")
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Acked-by: Haibo Chen <haibo.chen@nxp.com>
+Link: https://lore.kernel.org/r/560dc93fafe5ef7e9a409885fd20b6beac3973d8.1653900626.git.baruch@tkos.co.il
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/tcpm/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ Documentation/ABI/testing/sysfs-bus-iio-vf610 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/typec/tcpm/Kconfig b/drivers/usb/typec/tcpm/Kconfig
-index 557f392fe24d..073fd2ea5e0b 100644
---- a/drivers/usb/typec/tcpm/Kconfig
-+++ b/drivers/usb/typec/tcpm/Kconfig
-@@ -56,7 +56,6 @@ config TYPEC_WCOVE
- 	tristate "Intel WhiskeyCove PMIC USB Type-C PHY driver"
- 	depends on ACPI
- 	depends on MFD_INTEL_PMC_BXT
--	depends on INTEL_SOC_PMIC
- 	depends on BXT_WC_PMIC_OPREGION
- 	help
- 	  This driver adds support for USB Type-C on Intel Broxton platforms
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610 b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+index 308a6756d3bf..491ead804488 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-vf610
++++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+@@ -1,4 +1,4 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/conversion_mode
++What:		/sys/bus/iio/devices/iio:deviceX/in_conversion_mode
+ KernelVersion:	4.2
+ Contact:	linux-iio@vger.kernel.org
+ Description:
 -- 
 2.35.1
 
