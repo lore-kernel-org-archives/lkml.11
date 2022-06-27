@@ -2,92 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FAD3CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEB9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238738AbiF0Lxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49914 "EHLO
+        id S238779AbiF0Lxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238265AbiF0LsL (ORCPT
+        with ESMTP id S238336AbiF0LsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:11 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A8E3BCB5
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:40:12 -0700 (PDT)
-Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx39kNl7liP_FfAA--.6156S5;
-        Mon, 27 Jun 2022 19:40:01 +0800 (CST)
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Hanjun Guo <guohanjun@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V13 03/13] genirq/generic_chip: export irq_unmap_generic_chip
-Date:   Mon, 27 Jun 2022 19:39:47 +0800
-Message-Id: <1656329997-20524-4-git-send-email-lvjianmin@loongson.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
-References: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
-X-CM-TRANSID: AQAAf9Dx39kNl7liP_FfAA--.6156S5
-X-Coremail-Antispam: 1UD129KBjvJXoW7AFy8uFy5JrWrKFy7CFykZrb_yoW8Xw18pa
-        yrWa47WrWkGr18ZFWUGF1kuryavrs7GFW2ya1SvF92yr18Jws2gFykWrnavF40934xuFWY
-        yFs7tFy8ur1UWFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkE1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCF
-        04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
-        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1l
-        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxV
-        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j
-        6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHU
-        DUUUUU=
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+        Mon, 27 Jun 2022 07:48:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38229F5A1;
+        Mon, 27 Jun 2022 04:40:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C980861180;
+        Mon, 27 Jun 2022 11:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B85C341C7;
+        Mon, 27 Jun 2022 11:40:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656330046;
+        bh=D1S1Yty5XrdXUr+pNNeKQBUfDvsurleJROtK6ST4Bew=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ecEGG1iWkk4fuUep0A3C/CEzjft5BagNZqNaD9zj3+Hk1dBzj33TlnI2tf0f9G14f
+         P/Gj3zvJ1j2FVjyXJ5VJyO1n8Yg504j1ZjvifVwx7TJZMpMaCrpJWo/RIlKntUUcNG
+         5mHv9/Ajw7m67wr2uutCVaaktctMWZW7EDkT1a1U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Yuming Chen <chenyuming.junnan@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 065/181] net/sched: sch_netem: Fix arithmetic in netem_dump() for 32-bit platforms
+Date:   Mon, 27 Jun 2022 13:20:38 +0200
+Message-Id: <20220627111946.450908786@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
+References: <20220627111944.553492442@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some irq controllers have to re-implement a private version for
-irq_generic_chip_ops, because they have a different xlate to translate
-hwirq. Export irq_unmap_generic_chip for reusing in user defined
-ops.
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+[ Upstream commit a2b1a5d40bd12b44322c2ccd40bb0ec1699708b6 ]
+
+As reported by Yuming, currently tc always show a latency of UINT_MAX
+for netem Qdisc's on 32-bit platforms:
+
+    $ tc qdisc add dev dummy0 root netem latency 100ms
+    $ tc qdisc show dev dummy0
+    qdisc netem 8001: root refcnt 2 limit 1000 delay 275s  275s
+                                               ^^^^^^^^^^^^^^^^
+
+Let us take a closer look at netem_dump():
+
+        qopt.latency = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->latency,
+                             UINT_MAX);
+
+qopt.latency is __u32, psched_tdiff_t is signed long,
+(psched_tdiff_t)(UINT_MAX) is negative for 32-bit platforms, so
+qopt.latency is always UINT_MAX.
+
+Fix it by using psched_time_t (u64) instead.
+
+Note: confusingly, users have two ways to specify 'latency':
+
+  1. normally, via '__u32 latency' in struct tc_netem_qopt;
+  2. via the TCA_NETEM_LATENCY64 attribute, which is s64.
+
+For the second case, theoretically 'latency' could be negative.  This
+patch ignores that corner case, since it is broken (i.e. assigning a
+negative s64 to __u32) anyways, and should be handled separately.
+
+Thanks Ted Lin for the analysis [1] .
+
+[1] https://github.com/raspberrypi/linux/issues/3512
+
+Reported-by: Yuming Chen <chenyuming.junnan@bytedance.com>
+Fixes: 112f9cb65643 ("netem: convert to qdisc_watchdog_schedule_ns")
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Link: https://lore.kernel.org/r/20220616234336.2443-1-yepeilin.cs@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/irq.h       | 1 +
- kernel/irq/generic-chip.c | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ net/sched/sch_netem.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index 5053082..83a4574 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -1121,6 +1121,7 @@ struct irq_domain_chip_generic {
- /* Setup functions for irq_chip_generic */
- int irq_map_generic_chip(struct irq_domain *d, unsigned int virq,
- 			 irq_hw_number_t hw_irq);
-+void irq_unmap_generic_chip(struct irq_domain *d, unsigned int virq);
- struct irq_chip_generic *
- irq_alloc_generic_chip(const char *name, int nr_ct, unsigned int irq_base,
- 		       void __iomem *reg_base, irq_flow_handler_t handler);
-diff --git a/kernel/irq/generic-chip.c b/kernel/irq/generic-chip.c
-index f0862eb..c653cd3 100644
---- a/kernel/irq/generic-chip.c
-+++ b/kernel/irq/generic-chip.c
-@@ -431,7 +431,7 @@ int irq_map_generic_chip(struct irq_domain *d, unsigned int virq,
- 	return 0;
- }
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index ed4ccef5d6a8..5449ed114e40 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -1146,9 +1146,9 @@ static int netem_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	struct tc_netem_rate rate;
+ 	struct tc_netem_slot slot;
  
--static void irq_unmap_generic_chip(struct irq_domain *d, unsigned int virq)
-+void irq_unmap_generic_chip(struct irq_domain *d, unsigned int virq)
- {
- 	struct irq_data *data = irq_domain_get_irq_data(d, virq);
- 	struct irq_domain_chip_generic *dgc = d->gc;
+-	qopt.latency = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->latency),
++	qopt.latency = min_t(psched_time_t, PSCHED_NS2TICKS(q->latency),
+ 			     UINT_MAX);
+-	qopt.jitter = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->jitter),
++	qopt.jitter = min_t(psched_time_t, PSCHED_NS2TICKS(q->jitter),
+ 			    UINT_MAX);
+ 	qopt.limit = q->limit;
+ 	qopt.loss = q->loss;
 -- 
-1.8.3.1
+2.35.1
+
+
 
