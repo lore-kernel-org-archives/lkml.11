@@ -2,109 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 422E8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:02:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55553C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240790AbiF0UCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 16:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
+        id S240789AbiF0UCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 16:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237819AbiF0UCn (ORCPT
+        with ESMTP id S237819AbiF0UCw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 16:02:43 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45FCD1C91D;
-        Mon, 27 Jun 2022 13:02:42 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id g26so21389835ejb.5;
-        Mon, 27 Jun 2022 13:02:42 -0700 (PDT)
+        Mon, 27 Jun 2022 16:02:52 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBEC21C924
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:02:50 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id q18-20020a9d7c92000000b00616b27cda7cso6554273otn.9
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:02:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2RG4T2ZEU66wsxzlt1P5Q73rY/z91mE7K4blE6N8+0Q=;
-        b=EUILz45/4OGmZNOcDM30R2wHd/eF99q4yXPjOuDCAvrsDr3DfKx3NIHoBj0T2MYU64
-         3l8lLeTEMq8t5ji1LfmOSveityf0k8W90FqiF19Xqh78fDMpP8c7eUF0w4OUOBinzOZ7
-         9DDSiXXl6wFtnHIvA6GWLkqeSCJDoE48RKHCrfHJjzv0pmOapH4sGjKXl94nx5f4pI6P
-         IRjhyXIGF3bw/40Oo+Np+J2UsWcG9Z0X2Hp82yNSpwjJtSYNIHtUmrwAu3JOoTZ8UOOn
-         mmWbCbdSIRtiAjGJ5u1Cj37WitFpdymnAZHUsHzI973xfES16jQz9a7dXh3+BG/7N3j/
-         b6Eg==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=32+pYyBzsUADZK/USZZWRdjG4+AC0lABRMoHRP/yr1M=;
+        b=nxV1pazrE3xVmh1LX/HlRMYNTdOjbKwW0RRCRVu9T6jkSNo72sz01NuioSXN637++Z
+         b2AmAuDtTrrhStoYWSiOXtpgTrLKdZeEkbwlHG4tCtrt1pXbnIQ8Sc3i5QhU0GyPpZW2
+         zh5xzrpaq2r4OY2ESHBGrWRJGNUk8oZYa/f3M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2RG4T2ZEU66wsxzlt1P5Q73rY/z91mE7K4blE6N8+0Q=;
-        b=NA383uevUYQnGlHMJyvAsDoTRjrATLKmBlQwarCguejKy2DmQpWLEGkFVEmeWTYket
-         eyGJeCQ7ighUi95rCB9OiYhIzvZmo9rI8xpx9GIAs6JogPZe1DuPuGTIOdSouBQsI7Mv
-         eXg9l7qtHXygJlelejdrLKeFO87f94HQrowhN1AyTMHRQCMNpB0RcG2Y8tfED640PitZ
-         vGikmG6vnk41Fi32BhS1ItmgY5H3aU1TV5iaN4rshTuMOfWXVxOOua/JlFw8aGTtwlNm
-         6Au2Q5foxEhxSjfEfHHXCNUW9OOgL28rnOBIKtDmEW4+QXH43dAu39WHbG0OXtxiLD4w
-         9YeA==
-X-Gm-Message-State: AJIora9CwQPlfmRSjtlfATd6cCm90vPLf62xvWJmm+2YXwjFqJanUVG3
-        bp3rdHPHSzGK466J1hrrNkg=
-X-Google-Smtp-Source: AGRyM1ulqyAb4/mEof+6ZmLX6fDypco+ES2GGDjas9Fvn/zPh50a1MDHhWjsJ6ox+kdLfYgegg/x1Q==
-X-Received: by 2002:a17:907:8a25:b0:726:c9f2:2f5e with SMTP id sc37-20020a1709078a2500b00726c9f22f5emr687054ejc.286.1656360160702;
-        Mon, 27 Jun 2022 13:02:40 -0700 (PDT)
-Received: from skbuf ([188.25.231.135])
-        by smtp.gmail.com with ESMTPSA id x2-20020a05640225c200b00435651c4a01sm8145270edb.56.2022.06.27.13.02.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 13:02:39 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 23:02:38 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v1 2/3] net: dsa: ar9331: add support for pause
- stats
-Message-ID: <20220627200238.en2b5zij4sakau2t@skbuf>
-References: <20220624125902.4068436-1-o.rempel@pengutronix.de>
- <20220624125902.4068436-2-o.rempel@pengutronix.de>
- <20220624220317.ckhx6z7cmzegvoqi@skbuf>
- <20220626171008.GA7581@pengutronix.de>
- <20220627091521.3b80a4e8@kernel.org>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=32+pYyBzsUADZK/USZZWRdjG4+AC0lABRMoHRP/yr1M=;
+        b=WXpEn5M3Fmfd8jnFQRCs+WcNjGedXrypk65UzGcTiRSV5M1TgtOBPb6vD3Yg9kr2HX
+         4xEhDaqFVDQPyAfeo7BXWaeAaCr8H4zJiDfFuh3iLoDfHabfR5l3sTLtfwoTitoxiy5i
+         s5nLmk7XE05gV3rTtklt4SsBgUewuWwTxe+gtn9hA4tMHDyiv/WRKxh8DQn7UOn8ZKpR
+         ijNp5ClcW9T66GNL83mcurIX42/IJ3WP0BMHIF5YUnfDzDtgAjBlbQcg6dXYn1JyFuer
+         ieVz4eYqIrMsExV9TmbwAOkcxmRUpYbxZloU8vVKlfXL6/Y3R78MwzMzu5z9fNeY682A
+         HWDA==
+X-Gm-Message-State: AJIora/lX06Qrtoys19rF5M0OcHjygfH96kDapL+voFDjZZq17PIpjlV
+        NR22zghBjZQpwLLqfPoFDGoPZ9eNy9iXlp6dJJCzjw==
+X-Google-Smtp-Source: AGRyM1sUw3aUn8cs+jsZnRLI9HEdw7aGdjxn3slIwtFmzZUccOZBZrgs+CFrxV/GByzKlfqxHxRNuOwt68VgnVijZA8=
+X-Received: by 2002:a9d:6484:0:b0:60b:eb0b:4054 with SMTP id
+ g4-20020a9d6484000000b0060beb0b4054mr6754340otl.159.1656360170138; Mon, 27
+ Jun 2022 13:02:50 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 27 Jun 2022 13:02:49 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627091521.3b80a4e8@kernel.org>
+In-Reply-To: <20220620085415.GA13744@hu-pkondeti-hyd.qualcomm.com>
+References: <1654158277-12921-1-git-send-email-quic_kriskura@quicinc.com>
+ <1654158277-12921-3-git-send-email-quic_kriskura@quicinc.com>
+ <YpkRDi2m7cLaKYEf@google.com> <Yp5nf2w8uVZ38/XZ@google.com>
+ <Yqd9IHQEj3Ex+FcF@google.com> <YqjLHyUVEjf7I3MI@google.com>
+ <20220616091110.GA24114@hu-pkondeti-hyd.qualcomm.com> <YqtlRQOwb3t6Xtd0@google.com>
+ <20220620085415.GA13744@hu-pkondeti-hyd.qualcomm.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 27 Jun 2022 13:02:49 -0700
+Message-ID: <CAE-0n52bq9feA6BVdAp791SWQtT1Yj4M2ppg3o_KOaRFO8r+0Q@mail.gmail.com>
+Subject: Re: [PATCH v20 2/5] usb: dwc3: core: Host wake up support from system suspend
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Pavan Kondeti <quic_pkondeti@quicinc.com>
+Cc:     Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, quic_ppratap@quicinc.com,
+        quic_vpulyala@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 09:15:21AM -0700, Jakub Kicinski wrote:
-> On Sun, 26 Jun 2022 19:10:08 +0200 Oleksij Rempel wrote:
-> > > Is there an authoritative source who is able to tell whether rtnl_link_stats64 ::
-> > > rx_packets and tx_packets should count PAUSE frames or not?  
-> > 
-> > Yes, it will be interesting to know how to proceed with it.
-> 
-> I'm curious as well, AFAIK most drivers do not count pause to ifc stats.
+Quoting Pavan Kondeti (2022-06-20 01:54:15)
+> +Felipe, Bjorn
+>
+> On Thu, Jun 16, 2022 at 10:15:49AM -0700, Matthias Kaehlcke wrote:
+> > On Thu, Jun 16, 2022 at 02:41:10PM +0530, Pavan Kondeti wrote:
+> >
+> > Good point! It doesn't really ensure that the child is probed (actually it
+> > won't be probed and DL_FLAG_AUTOPROBE_CONSUMER doesn't make sense here), it
+> > could happen that dwc3_qcom_probe() is deferred multiple times, but eventually
+> > the PHYs should be ready and dwc3_probe() be invoked through
+> > of_platform_populate().
+>
+> This is a generic problem i.e if a parent can only proceed after the child
+> devices are bounded (i.e probed successfully), how to ensure this behavior
+> from the parent's probe? Since we can't block the parent probe (async probe is
+> not the default behavior), we have to identify the condition that the children
+> are deferring probe, so that parent also can do that.
+>
+> Can we add a API in drivers core to tell if a device probe is deferred or
+> not? This can be done by testing list_empty(&dev->p->deferred_probe) under
+> deferred_probe_mutex mutex. The parent can return EPROBE_DEFER based on this
+> API return value.
+>
+> Another alternative would be explicitly checking if the child device suppliers
+> are ready or not before adding child device. That would require decoupling
+> of_platform_populate() to creating devices and adding devices.
+>
+> Note that this problem is not just limited to suppliers not ready. if the
+> dwc3-qcom is made asynchronous probe, then its child also probed
+> asynchronously and there is no guarantee that child would be probed by the
+> time of_platform_populate() is returned.  The bus notifier might come handy
+> in this case. The parent can register for this notifier and waiting for
+> the children device's BUS_NOTIFY_BOUND_DRIVER/BUS_NOTIFY_DRIVER_NOT_BOUND
+> notifications. This would also work in our case, if we move to
+> of_platform_populate() outside the probe().
+>
+> Would like to hear other people thoughts on this.
+>
 
-How do you know? Just because they manually bump stats->tx_bytes and
-stats->tx_packets during ndo_start_xmit?
-
-That would be a good assumption, but what if a network driver populates
-struct rtnl_link_stats64 entirely based on counters reported by hardware,
-including {rx,tx}_{packets,bytes}?
-
-Personally I can't really find a reason why not count pause frames if
-you can. And in the same note, why go to the extra lengths of hiding
-them as Oleksij does. For example, the ocelot/felix switches do count
-PAUSE frames as packets/bytes, both on rx and tx.
-
-> > For example KSZ switch do count pause frame Bytes together will other
-> > frames. At same time, atheros switch do not count pause frame bytes
-> > at all.
-> > 
-> > To make things worse, i can manually send pause frame of any size, so
-> > it will not be accounted by HW. What ever decision we will made, i
-> > will need to calculate typical pause frame size and hope it will fit
-> > for 90% of cases.
-> 
-> :(
+I'm not following very closely but it sounds like a problem that may be
+solved by using the component driver code (see
+include/linux/component.h). That would let you move anything that needs
+to be done once the child devices probe to the aggregate driver 'bind'
+function (see struct component_master_ops::bind).
