@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E52CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA92C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236109AbiF0Lfc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
+        id S236116AbiF0Lff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235801AbiF0Lcp (ORCPT
+        with ESMTP id S235913AbiF0Lcz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:32:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001CAB84E;
-        Mon, 27 Jun 2022 04:29:41 -0700 (PDT)
+        Mon, 27 Jun 2022 07:32:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D68109;
+        Mon, 27 Jun 2022 04:29:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F0BD614E6;
-        Mon, 27 Jun 2022 11:29:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 365D9C3411D;
-        Mon, 27 Jun 2022 11:29:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1AA2B8111B;
+        Mon, 27 Jun 2022 11:29:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C014C3411D;
+        Mon, 27 Jun 2022 11:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329379;
-        bh=e5SxuUVBR5YTS1lsaIKWd96E4rewCB1yPA1mZtrYxBA=;
+        s=korg; t=1656329388;
+        bh=xYxiTnQiNYNkHpstZ5wyUZKasR0aKcFMUnvba22Y3So=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AWeWtBW/08IOOfIxeflalEhRf/nzHpGpOST7JUDQ5Kis2RlfjkakB9dVcRUjjSNBA
-         kRMwH7hWMv/X03j28m8WknHP/fBenkuCOTOBjbmZK736LbkLeBk81x3DVTnscDhhdX
-         AU52eAk2oKNNci/TFVI11LvyF3t0Bvn0ACJpL5U0=
+        b=NuiS/QlI5YJJokHKY1PGi79Y6zEA37KVJ4n6TUzQ7LOh+80OmgwULkfGfrpqnfbif
+         HqMx89+e+258q9fR+ZgAIGG9ebja8YijbCkE47LkHjISNHrwJgerQokl43LlPQ13yb
+         D4by3J5SDQ4yHoNajps0bnDbOorUCbDDpi0Miobg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Rokosov <ddrokosov@sberdevices.ru>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stable@vger.kernel.org,
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Hans de Goede <hdegoede@redhat.com>, Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.4 38/60] iio:chemical:ccs811: rearrange iio trigger get and register
-Date:   Mon, 27 Jun 2022 13:21:49 +0200
-Message-Id: <20220627111928.811227872@linuxfoundation.org>
+Subject: [PATCH 5.4 41/60] iio: accel: mma8452: ignore the return value of reset operation
+Date:   Mon, 27 Jun 2022 13:21:52 +0200
+Message-Id: <20220627111928.898410833@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -50,45 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Rokosov <DDRokosov@sberdevices.ru>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-commit d710359c0b445e8c03e24f19ae2fb79ce7282260 upstream.
+commit bf745142cc0a3e1723f9207fb0c073c88464b7b4 upstream.
 
-IIO trigger interface function iio_trigger_get() should be called after
-iio_trigger_register() (or its devm analogue) strictly, because of
-iio_trigger_get() acquires module refcnt based on the trigger->owner
-pointer, which is initialized inside iio_trigger_register() to
-THIS_MODULE.
-If this call order is wrong, the next iio_trigger_put() (from sysfs
-callback or "delete module" path) will dereference "default" module
-refcnt, which is incorrect behaviour.
+On fxls8471, after set the reset bit, the device will reset immediately,
+will not give ACK. So ignore the return value of this reset operation,
+let the following code logic to check whether the reset operation works.
 
-Fixes: f1f065d7ac30 ("iio: chemical: ccs811: Add support for data ready trigger")
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220524181150.9240-5-ddrokosov@sberdevices.ru
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Fixes: ecabae713196 ("iio: mma8452: Initialise before activating")
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/1655292718-14287-1-git-send-email-haibo.chen@nxp.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/chemical/ccs811.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/accel/mma8452.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/drivers/iio/chemical/ccs811.c
-+++ b/drivers/iio/chemical/ccs811.c
-@@ -418,11 +418,11 @@ static int ccs811_probe(struct i2c_clien
- 		data->drdy_trig->dev.parent = &client->dev;
- 		data->drdy_trig->ops = &ccs811_trigger_ops;
- 		iio_trigger_set_drvdata(data->drdy_trig, indio_dev);
--		indio_dev->trig = data->drdy_trig;
--		iio_trigger_get(indio_dev->trig);
- 		ret = iio_trigger_register(data->drdy_trig);
- 		if (ret)
- 			goto err_poweroff;
-+
-+		indio_dev->trig = iio_trigger_get(data->drdy_trig);
- 	}
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -1489,10 +1489,14 @@ static int mma8452_reset(struct i2c_clie
+ 	int i;
+ 	int ret;
  
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+-	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
++	/*
++	 * Find on fxls8471, after config reset bit, it reset immediately,
++	 * and will not give ACK, so here do not check the return value.
++	 * The following code will read the reset register, and check whether
++	 * this reset works.
++	 */
++	i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG2,
+ 					MMA8452_CTRL_REG2_RST);
+-	if (ret < 0)
+-		return ret;
+ 
+ 	for (i = 0; i < 10; i++) {
+ 		usleep_range(100, 200);
 
 
