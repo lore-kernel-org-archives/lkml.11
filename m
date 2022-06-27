@@ -2,175 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8073FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240489AbiF0MTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
+        id S235644AbiF0MVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234757AbiF0MTA (ORCPT
+        with ESMTP id S233276AbiF0MVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 08:19:00 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6823BC2F
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 05:18:59 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id e28so7626109wra.0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 05:18:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=1g17xM8gnJx00whU//iJuDwTqW1vNMfdEO12lxgIMRg=;
-        b=nnRWhRQQn7M0KwLCecW+Y+EkDq9bIjiupyRwyOtlwv8MrNFBuARr4zHKZSKrIsTIJ3
-         0gVSH/b6ge/jCVktMQDQ9QJX+6tNNIRN2Q/t/GUu+KI1gIxGwHNo1WhQnFKh8HiSn/X7
-         T9D3s0EQPQHzZgXuF2Z8RgB64TURRpe8MnzR8VF+xLoTuDZUpN1v3nXW1GmVcbNvzJWO
-         EI6NRPO7CBAKwlqTVeEdrnJn5pTXP6yzTXLbxSZ3AdWKHH6s6ZEKXdHUDRpzyqTh0l5l
-         B3vZkhEahSCbwj8OTzKuyLIElzg+4OYLundvzQmrZ8/Na3/9XU2mD6yo5y6mawwpE/E2
-         CItA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=1g17xM8gnJx00whU//iJuDwTqW1vNMfdEO12lxgIMRg=;
-        b=TS3Ff1Xfs/7PZsJ5TTDPybTxD5Tb38tTePv1BXvpm3uVO0V4eDDogRXl2nN+AJkT1j
-         zX/yYQzaV2SKifGYmvkA+c9l/5WGE8raS7Y2DgJpJJix53Drv7Y5FNNmoVSl7M6hUqtp
-         +ft0E258VH8ROEmhFkB5pKWAt3J+nHq4KtP9JEgxCBPSVchnfWR3bWbpYnVqc5flvnOg
-         RYjol2HAOmlhCCON5IOI45dHB/XF2e0t2ki9zBbBHSEMElrqGUqx3DmtMGIXrGrjsKdx
-         3JKhS+mJmJPQ9eitkV/A4ZYEvuCcgXfTX95d+GUE8R+jwpsgil+LcjY3kghhF3zJIVf6
-         kzOg==
-X-Gm-Message-State: AJIora+RNTEgIcKBDMus/k6RWwjry2QpQtFcHcbOxdq03lGT3b41YEBT
-        EvJljQwhJBSrFZYtouopWUTu4A==
-X-Google-Smtp-Source: AGRyM1u4TP5LCca8253ru9d3GMUu8AESPz11A5pMqCmyN2YYdwnSPSoviXwuo6a+AgFlUTtD0v38Tg==
-X-Received: by 2002:a5d:69cd:0:b0:21b:a9a2:e6e2 with SMTP id s13-20020a5d69cd000000b0021ba9a2e6e2mr12114876wrw.332.1656332338290;
-        Mon, 27 Jun 2022 05:18:58 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:6f56:f3c6:ba4f:bf5c? ([2001:861:44c0:66c0:6f56:f3c6:ba4f:bf5c])
-        by smtp.gmail.com with ESMTPSA id ay4-20020a05600c1e0400b003a047dccfffsm5564078wmb.42.2022.06.27.05.18.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 05:18:57 -0700 (PDT)
-Message-ID: <19a3fd3b-ec9a-6b8e-5a79-46ff13f8f4e5@baylibre.com>
-Date:   Mon, 27 Jun 2022 14:18:56 +0200
+        Mon, 27 Jun 2022 08:21:37 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3763EBC22;
+        Mon, 27 Jun 2022 05:21:36 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9B4436601692;
+        Mon, 27 Jun 2022 13:21:31 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656332493;
+        bh=ll0AAC70x8gIRC6X3Ln5rb75u7PNOK8G5e/4cbb1H7Q=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=E5DvMsjZKeokPps3T1LLq3BO8IrN/6THedJeI7NQ4Y8RzSCr2oNpB9rZnTw9DtlBm
+         hxNAzRT42jeBiiZ2Kn6OGjIJ1/1eAccJoMcR8RQ5RHq3CgyAiMLtnGtB4YkDL+2RgK
+         LEluaH6g5rKybr06kpR5wfXEGHlC2/ME7o5LjYqTNdfP62TB9eNZa2AH4yU6ra0/66
+         o28fiJDd4AR8MsuQ/zJgSI6eP9/ExbbQUbkNndMwiI1Yza+Mrr8RoOJCinBc3EPpxA
+         6GnIHI1waCh9u58x86fvtYcvIr7dOQ2us6rxvFx7x9Y/6sF1rfclcUPUkzl95PZJTz
+         w2jji8YwZvZhg==
+Message-ID: <cc003570-31a6-61d8-1432-fb77d5f0f109@collabora.com>
+Date:   Mon, 27 Jun 2022 14:21:28 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] drm/bridge: add it6505 driver read config from dt
- property
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3] Bluetooth: btmtksdio: Add in-band wakeup support
 Content-Language: en-US
-To:     allen <allen.chen@ite.com.tw>
-Cc:     Pin-yen Lin <treapking@google.com>,
-        Jau-Chih Tseng <Jau-Chih.Tseng@ite.com.tw>,
-        Hermes Wu <Hermes.Wu@ite.com.tw>,
-        Kenneth Hung <Kenneth.Hung@ite.com.tw>,
-        Pin-yen Lin <treapking@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220627054038.18600-1-allen.chen@ite.com.tw>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220627054038.18600-1-allen.chen@ite.com.tw>
+To:     sean.wang@mediatek.com, marcel@holtmann.org,
+        johan.hedberg@gmail.com
+Cc:     Soul.Huang@mediatek.com, YN.Chen@mediatek.com,
+        Leon.Yen@mediatek.com, Eric-SY.Chang@mediatek.com,
+        Deren.Wu@mediatek.com, km.lin@mediatek.com,
+        robin.chiu@mediatek.com, Eddie.Chen@mediatek.com,
+        ch.yeh@mediatek.com, posh.sun@mediatek.com, ted.huang@mediatek.com,
+        Eric.Liang@mediatek.com, Stella.Chang@mediatek.com,
+        Tom.Chou@mediatek.com, steve.lee@mediatek.com, jsiuda@google.com,
+        frankgor@google.com, abhishekpandit@google.com,
+        michaelfsun@google.com, mcchou@chromium.org, shawnku@google.com,
+        linux-bluetooth@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Yake Yang <yake.yang@mediatek.com>
+References: <848d3d5baf23eb78411a9672b8973ae3c593db98.1656285304.git.objelf@gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <848d3d5baf23eb78411a9672b8973ae3c593db98.1656285304.git.objelf@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/06/2022 07:40, allen wrote:
-> From: allen chen <allen.chen@ite.com.tw>
+Il 27/06/22 01:27, sean.wang@mediatek.com ha scritto:
+> From: Sean Wang <sean.wang@mediatek.com>
 > 
-> add read max-lane and max-pixel-clock from dt property
-
-Those 2 properties should be documented first in the DT bindings.
-
-Neil
-
+> Commit ce64b3e94919 ("Bluetooth: mt7921s: Support wake on bluetooth")
+> adds the wake on bluethooth via a dedicated GPIO.
 > 
-> Signed-off-by: Allen Chen <allen.chen@ite.com.tw>
-> Signed-off-by: Pin-yen Lin <treapking@chromium.org>
-> ---
->   drivers/gpu/drm/bridge/ite-it6505.c | 35 ++++++++++++++++++++++++++---
->   1 file changed, 32 insertions(+), 3 deletions(-)
+> Extend the wake-on-bluetooth to use the SDIO DAT1 pin (in-band wakeup),
+> when supported by the SDIO host driver.
 > 
-> diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
-> index 4b673c4792d77..c9121d4635a52 100644
-> --- a/drivers/gpu/drm/bridge/ite-it6505.c
-> +++ b/drivers/gpu/drm/bridge/ite-it6505.c
-> @@ -436,6 +436,8 @@ struct it6505 {
->   	bool powered;
->   	bool hpd_state;
->   	u32 afe_setting;
-> +	u32 max_dpi_pixel_clock;
-> +	u32 max_lane_count;
->   	enum hdcp_state hdcp_status;
->   	struct delayed_work hdcp_work;
->   	struct work_struct hdcp_wait_ksv_list;
-> @@ -1466,7 +1468,8 @@ static void it6505_parse_link_capabilities(struct it6505 *it6505)
->   	it6505->lane_count = link->num_lanes;
->   	DRM_DEV_DEBUG_DRIVER(dev, "Sink support %d lanes training",
->   			     it6505->lane_count);
-> -	it6505->lane_count = min_t(int, it6505->lane_count, MAX_LANE_COUNT);
-> +	it6505->lane_count = min_t(int, it6505->lane_count,
-> +				   it6505->max_lane_count);
->   
->   	it6505->branch_device = drm_dp_is_branch(it6505->dpcd);
->   	DRM_DEV_DEBUG_DRIVER(dev, "Sink %sbranch device",
-> @@ -2895,7 +2898,7 @@ it6505_bridge_mode_valid(struct drm_bridge *bridge,
->   	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
->   		return MODE_NO_INTERLACE;
->   
-> -	if (mode->clock > DPI_PIXEL_CLK_MAX)
-> +	if (mode->clock > it6505->max_dpi_pixel_clock)
->   		return MODE_CLOCK_HIGH;
->   
->   	it6505->video_info.clock = mode->clock;
-> @@ -3057,6 +3060,8 @@ static void it6505_parse_dt(struct it6505 *it6505)
->   {
->   	struct device *dev = &it6505->client->dev;
->   	u32 *afe_setting = &it6505->afe_setting;
-> +	u32 *max_lane_count = &it6505->max_lane_count;
-> +	u32 *max_dpi_pixel_clock = &it6505->max_dpi_pixel_clock;
->   
->   	it6505->lane_swap_disabled =
->   		device_property_read_bool(dev, "no-laneswap");
-> @@ -3072,7 +3077,31 @@ static void it6505_parse_dt(struct it6505 *it6505)
->   	} else {
->   		*afe_setting = 0;
->   	}
-> -	DRM_DEV_DEBUG_DRIVER(dev, "using afe_setting: %d", *afe_setting);
-> +
-> +	if (device_property_read_u32(dev, "max-lane-count",
-> +				     max_lane_count) == 0) {
-> +		if (*max_lane_count > 4 || *max_lane_count == 3) {
-> +			dev_err(dev, "max lane count error, use default");
-> +			*max_lane_count = MAX_LANE_COUNT;
-> +		}
-> +	} else {
-> +		*max_lane_count = MAX_LANE_COUNT;
-> +	}
-> +
-> +	if (device_property_read_u32(dev, "max-dpi-pixel-clock",
-> +				     max_dpi_pixel_clock) == 0) {
-> +		if (*max_dpi_pixel_clock > 297000) {
-> +			dev_err(dev, "max pixel clock error, use default");
-> +			*max_dpi_pixel_clock = DPI_PIXEL_CLK_MAX;
-> +		}
-> +	} else {
-> +		*max_dpi_pixel_clock = DPI_PIXEL_CLK_MAX;
-> +	}
-> +
-> +	DRM_DEV_DEBUG_DRIVER(dev, "using afe_setting: %u, max_lane_count: %u",
-> +			     it6505->afe_setting, it6505->max_lane_count);
-> +	DRM_DEV_DEBUG_DRIVER(dev, "using max_dpi_pixel_clock: %u kHz",
-> +			     it6505->max_dpi_pixel_clock);
->   }
->   
->   static ssize_t receive_timing_debugfs_show(struct file *file, char __user *buf,
+> Co-developed-by: Yake Yang <yake.yang@mediatek.com>
+> Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
