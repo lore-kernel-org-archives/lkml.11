@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1714C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D29AEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237769AbiF0LqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
+        id S237776AbiF0LqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237482AbiF0Lm5 (ORCPT
+        with ESMTP id S237530AbiF0LnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:57 -0400
+        Mon, 27 Jun 2022 07:43:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D931032;
-        Mon, 27 Jun 2022 04:38:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5D6218A;
+        Mon, 27 Jun 2022 04:38:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E43AFB81131;
-        Mon, 27 Jun 2022 11:38:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FC64C341C8;
-        Mon, 27 Jun 2022 11:38:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA064B8111B;
+        Mon, 27 Jun 2022 11:38:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A052C385A5;
+        Mon, 27 Jun 2022 11:38:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329901;
-        bh=6rfuECoAQGN3FD79+0/eSerQ3q5YkBvZZJUs251aIBQ=;
+        s=korg; t=1656329910;
+        bh=JXIKRGHa/Sjg+2XJ3qBVZDz5+Zbhxzia6vybKt68K9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C+z9kP2FJ17SFHLGJbBZUmtkSsFTacH06CMNMGMa2R5VuGsyXUN5BS5CqCkdHXvHS
-         H10zQfwHM+13F089FiGOgsdPSRCx5Kj0PTs3+jo6I5Ts4S5yj9QqtpWJmLlKjREga/
-         A8Bmy0/HuMwdicuRRFAF84zwtbpqVxjM3UlWRgyo=
+        b=ZKLHoAmPJgYdIcsxt2Hq5zpJpm+Z1f/gOJIw15/9L6t/jY9e3YrSR0TkENWjQeP+g
+         h5f/uPIP6DHGAD1QoPhrBye4lwoEdMx5BbRdD4XJsC8vfIpKVunSEkX2RIJsMMlr81
+         FXWc9rL7K39t8kq6ejmfuMPybCNRdtmKdYVgUbtM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.18 018/181] btrfs: fix hang during unmount when block group reclaim task is running
-Date:   Mon, 27 Jun 2022 13:19:51 +0200
-Message-Id: <20220627111945.091421579@linuxfoundation.org>
+        stable@vger.kernel.org, Brian King <brking@linux.vnet.ibm.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 021/181] scsi: ibmvfc: Store vhost pointer during subcrq allocation
+Date:   Mon, 27 Jun 2022 13:19:54 +0200
+Message-Id: <20220627111945.179667191@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -48,142 +49,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Tyrel Datwyler <tyreld@linux.ibm.com>
 
-commit 31e70e527806c546a72262f2fc3d982ee23c42d3 upstream.
+commit aeaadcde1a60138bceb65de3cdaeec78170b4459 upstream.
 
-When we start an unmount, at close_ctree(), if we have the reclaim task
-running and in the middle of a data block group relocation, we can trigger
-a deadlock when stopping an async reclaim task, producing a trace like the
-following:
+Currently the back pointer from a queue to the vhost adapter isn't set
+until after subcrq interrupt registration. The value is available when a
+queue is first allocated and can/should be also set for primary and async
+queues as well as subcrqs.
 
-[629724.498185] task:kworker/u16:7   state:D stack:    0 pid:681170 ppid:     2 flags:0x00004000
-[629724.499760] Workqueue: events_unbound btrfs_async_reclaim_metadata_space [btrfs]
-[629724.501267] Call Trace:
-[629724.501759]  <TASK>
-[629724.502174]  __schedule+0x3cb/0xed0
-[629724.502842]  schedule+0x4e/0xb0
-[629724.503447]  btrfs_wait_on_delayed_iputs+0x7c/0xc0 [btrfs]
-[629724.504534]  ? prepare_to_wait_exclusive+0xc0/0xc0
-[629724.505442]  flush_space+0x423/0x630 [btrfs]
-[629724.506296]  ? rcu_read_unlock_trace_special+0x20/0x50
-[629724.507259]  ? lock_release+0x220/0x4a0
-[629724.507932]  ? btrfs_get_alloc_profile+0xb3/0x290 [btrfs]
-[629724.508940]  ? do_raw_spin_unlock+0x4b/0xa0
-[629724.509688]  btrfs_async_reclaim_metadata_space+0x139/0x320 [btrfs]
-[629724.510922]  process_one_work+0x252/0x5a0
-[629724.511694]  ? process_one_work+0x5a0/0x5a0
-[629724.512508]  worker_thread+0x52/0x3b0
-[629724.513220]  ? process_one_work+0x5a0/0x5a0
-[629724.514021]  kthread+0xf2/0x120
-[629724.514627]  ? kthread_complete_and_exit+0x20/0x20
-[629724.515526]  ret_from_fork+0x22/0x30
-[629724.516236]  </TASK>
-[629724.516694] task:umount          state:D stack:    0 pid:719055 ppid:695412 flags:0x00004000
-[629724.518269] Call Trace:
-[629724.518746]  <TASK>
-[629724.519160]  __schedule+0x3cb/0xed0
-[629724.519835]  schedule+0x4e/0xb0
-[629724.520467]  schedule_timeout+0xed/0x130
-[629724.521221]  ? lock_release+0x220/0x4a0
-[629724.521946]  ? lock_acquired+0x19c/0x420
-[629724.522662]  ? trace_hardirqs_on+0x1b/0xe0
-[629724.523411]  __wait_for_common+0xaf/0x1f0
-[629724.524189]  ? usleep_range_state+0xb0/0xb0
-[629724.524997]  __flush_work+0x26d/0x530
-[629724.525698]  ? flush_workqueue_prep_pwqs+0x140/0x140
-[629724.526580]  ? lock_acquire+0x1a0/0x310
-[629724.527324]  __cancel_work_timer+0x137/0x1c0
-[629724.528190]  close_ctree+0xfd/0x531 [btrfs]
-[629724.529000]  ? evict_inodes+0x166/0x1c0
-[629724.529510]  generic_shutdown_super+0x74/0x120
-[629724.530103]  kill_anon_super+0x14/0x30
-[629724.530611]  btrfs_kill_super+0x12/0x20 [btrfs]
-[629724.531246]  deactivate_locked_super+0x31/0xa0
-[629724.531817]  cleanup_mnt+0x147/0x1c0
-[629724.532319]  task_work_run+0x5c/0xa0
-[629724.532984]  exit_to_user_mode_prepare+0x1a6/0x1b0
-[629724.533598]  syscall_exit_to_user_mode+0x16/0x40
-[629724.534200]  do_syscall_64+0x48/0x90
-[629724.534667]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[629724.535318] RIP: 0033:0x7fa2b90437a7
-[629724.535804] RSP: 002b:00007ffe0b7e4458 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
-[629724.536912] RAX: 0000000000000000 RBX: 00007fa2b9182264 RCX: 00007fa2b90437a7
-[629724.538156] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000555d6cf20dd0
-[629724.539053] RBP: 0000555d6cf20ba0 R08: 0000000000000000 R09: 00007ffe0b7e3200
-[629724.539956] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-[629724.540883] R13: 0000555d6cf20dd0 R14: 0000555d6cf20cb0 R15: 0000000000000000
-[629724.541796]  </TASK>
+This fixes a crash observed during kexec/kdump on Power 9 with legacy XICS
+interrupt controller where a pending subcrq interrupt from the previous
+kernel can be replayed immediately upon IRQ registration resulting in
+dereference of a garbage backpointer in ibmvfc_interrupt_scsi().
 
-This happens because:
+Kernel attempted to read user page (58) - exploit attempt? (uid: 0)
+BUG: Kernel NULL pointer dereference on read at 0x00000058
+Faulting instruction address: 0xc008000003216a08
+Oops: Kernel access of bad area, sig: 11 [#1]
+...
+NIP [c008000003216a08] ibmvfc_interrupt_scsi+0x40/0xb0 [ibmvfc]
+LR [c0000000082079e8] __handle_irq_event_percpu+0x98/0x270
+Call Trace:
+[c000000047fa3d80] [c0000000123e6180] 0xc0000000123e6180 (unreliable)
+[c000000047fa3df0] [c0000000082079e8] __handle_irq_event_percpu+0x98/0x270
+[c000000047fa3ea0] [c000000008207d18] handle_irq_event+0x98/0x188
+[c000000047fa3ef0] [c00000000820f564] handle_fasteoi_irq+0xc4/0x310
+[c000000047fa3f40] [c000000008205c60] generic_handle_irq+0x50/0x80
+[c000000047fa3f60] [c000000008015c40] __do_irq+0x70/0x1a0
+[c000000047fa3f90] [c000000008016d7c] __do_IRQ+0x9c/0x130
+[c000000014622f60] [0000000020000000] 0x20000000
+[c000000014622ff0] [c000000008016e50] do_IRQ+0x40/0xa0
+[c000000014623020] [c000000008017044] replay_soft_interrupts+0x194/0x2f0
+[c000000014623210] [c0000000080172a8] arch_local_irq_restore+0x108/0x170
+[c000000014623240] [c000000008eb1008] _raw_spin_unlock_irqrestore+0x58/0xb0
+[c000000014623270] [c00000000820b12c] __setup_irq+0x49c/0x9f0
+[c000000014623310] [c00000000820b7c0] request_threaded_irq+0x140/0x230
+[c000000014623380] [c008000003212a50] ibmvfc_register_scsi_channel+0x1e8/0x2f0 [ibmvfc]
+[c000000014623450] [c008000003213d1c] ibmvfc_init_sub_crqs+0xc4/0x1f0 [ibmvfc]
+[c0000000146234d0] [c0080000032145a8] ibmvfc_reset_crq+0x150/0x210 [ibmvfc]
+[c000000014623550] [c0080000032147c8] ibmvfc_init_crq+0x160/0x280 [ibmvfc]
+[c0000000146235f0] [c00800000321a9cc] ibmvfc_probe+0x2a4/0x530 [ibmvfc]
 
-1) Before entering close_ctree() we have the async block group reclaim
-   task running and relocating a data block group;
-
-2) There's an async metadata (or data) space reclaim task running;
-
-3) We enter close_ctree() and park the cleaner kthread;
-
-4) The async space reclaim task is at flush_space() and runs all the
-   existing delayed iputs;
-
-5) Before the async space reclaim task calls
-   btrfs_wait_on_delayed_iputs(), the block group reclaim task which is
-   doing the data block group relocation, creates a delayed iput at
-   replace_file_extents() (called when COWing leaves that have file extent
-   items pointing to relocated data extents, during the merging phase
-   of relocation roots);
-
-6) The async reclaim space reclaim task blocks at
-   btrfs_wait_on_delayed_iputs(), since we have a new delayed iput;
-
-7) The task at close_ctree() then calls cancel_work_sync() to stop the
-   async space reclaim task, but it blocks since that task is waiting for
-   the delayed iput to be run;
-
-8) The delayed iput is never run because the cleaner kthread is parked,
-   and no one else runs delayed iputs, resulting in a hang.
-
-So fix this by stopping the async block group reclaim task before we
-park the cleaner kthread.
-
-Fixes: 18bb8bbf13c183 ("btrfs: zoned: automatically reclaim zones")
-CC: stable@vger.kernel.org # 5.15+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Link: https://lore.kernel.org/r/20220616191126.1281259-2-tyreld@linux.ibm.com
+Fixes: 3034ebe26389 ("scsi: ibmvfc: Add alloc/dealloc routines for SCSI Sub-CRQ Channels")
+Cc: stable@vger.kernel.org
+Reviewed-by: Brian King <brking@linux.vnet.ibm.com>
+Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/disk-io.c |   13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/scsi/ibmvscsi/ibmvfc.c |    3 ++-
+ drivers/scsi/ibmvscsi/ibmvfc.h |    2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -4639,6 +4639,17 @@ void __cold close_ctree(struct btrfs_fs_
- 	int ret;
- 
- 	set_bit(BTRFS_FS_CLOSING_START, &fs_info->flags);
+--- a/drivers/scsi/ibmvscsi/ibmvfc.c
++++ b/drivers/scsi/ibmvscsi/ibmvfc.c
+@@ -5682,6 +5682,8 @@ static int ibmvfc_alloc_queue(struct ibm
+ 	queue->cur = 0;
+ 	queue->fmt = fmt;
+ 	queue->size = PAGE_SIZE / fmt_size;
 +
-+	/*
-+	 * We may have the reclaim task running and relocating a data block group,
-+	 * in which case it may create delayed iputs. So stop it before we park
-+	 * the cleaner kthread otherwise we can get new delayed iputs after
-+	 * parking the cleaner, and that can make the async reclaim task to hang
-+	 * if it's waiting for delayed iputs to complete, since the cleaner is
-+	 * parked and can not run delayed iputs - this will make us hang when
-+	 * trying to stop the async reclaim task.
-+	 */
-+	cancel_work_sync(&fs_info->reclaim_bgs_work);
- 	/*
- 	 * We don't want the cleaner to start new transactions, add more delayed
- 	 * iputs, etc. while we're closing. We can't use kthread_stop() yet
-@@ -4679,8 +4690,6 @@ void __cold close_ctree(struct btrfs_fs_
- 	cancel_work_sync(&fs_info->async_data_reclaim_work);
- 	cancel_work_sync(&fs_info->preempt_reclaim_work);
++	queue->vhost = vhost;
+ 	return 0;
+ }
  
--	cancel_work_sync(&fs_info->reclaim_bgs_work);
--
- 	/* Cancel or finish ongoing discard work */
- 	btrfs_discard_cleanup(fs_info);
+@@ -5790,7 +5792,6 @@ static int ibmvfc_register_scsi_channel(
+ 	}
  
+ 	scrq->hwq_id = index;
+-	scrq->vhost = vhost;
+ 
+ 	LEAVE;
+ 	return 0;
+--- a/drivers/scsi/ibmvscsi/ibmvfc.h
++++ b/drivers/scsi/ibmvscsi/ibmvfc.h
+@@ -789,6 +789,7 @@ struct ibmvfc_queue {
+ 	spinlock_t _lock;
+ 	spinlock_t *q_lock;
+ 
++	struct ibmvfc_host *vhost;
+ 	struct ibmvfc_event_pool evt_pool;
+ 	struct list_head sent;
+ 	struct list_head free;
+@@ -797,7 +798,6 @@ struct ibmvfc_queue {
+ 	union ibmvfc_iu cancel_rsp;
+ 
+ 	/* Sub-CRQ fields */
+-	struct ibmvfc_host *vhost;
+ 	unsigned long cookie;
+ 	unsigned long vios_cookie;
+ 	unsigned long hw_irq;
 
 
