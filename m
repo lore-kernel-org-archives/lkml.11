@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57546C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F3DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229654AbiF0Gkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 02:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
+        id S232437AbiF0Gkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 02:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232331AbiF0Gkm (ORCPT
+        with ESMTP id S232372AbiF0Gkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 02:40:42 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2078.outbound.protection.outlook.com [40.107.96.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958CF2DC4
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:40:41 -0700 (PDT)
+        Mon, 27 Jun 2022 02:40:47 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2059.outbound.protection.outlook.com [40.107.212.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EFB2BFE
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:40:46 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z2g2l0NrqRI8AO2WR5atOlhdDH4jWPxpj6df/VuaOtTjKvFhHKQk40xsD0Xaq+m698dM5DMMaR6MLl8oMyory0HoBz7n/5eR+OZSJyeypGSBJT2Yvq5YYxnOUcCxiz0eUFAqqxN1sCYiTlYm2KyHZnHbJS1RDT5TEfpfvEhKKoAi4XOnhofOZIS1F7Ht5JkD39VdDv6Zk27dWpQXaz7KXJrd2YNgiqS5hUo9QXMyb8XHd1O4FfyM2rR7YFT3VyA69J2ROqWzDzeg9GJDrUmA/41DVlSGNHGwjnwt7MS8Y3eyOj/+N6KKzywc32B+edfkSn48oBtrxNr26I3MvhDMdA==
+ b=lGL0zgQrFLr+Z+1jFgm5yhh0iFFfzPa1mHydAm0SSwtmYhu7N7a9eYuz3JKcQ//D7gVwsXtLxtgQyY3eLAa8x8EgXr88MpGbzHx/zy4vqLZYP4gj1isIMy94oYKaQf+n4Q4hBTobzCSxgkpAQ3LpJZwKr6sfcZWJRKrr6bVzuExSiAL4aWDsd9TcxAP/Ybrhnq5KF0k64ybDpRIPS7aI9S4KiNrOnkSoGMH9/CeXNP4Sc9m7qf0WwAV6pf7MuRUIrmig6p5YlC6p0203K36FxVNRurYDCNmROmIj3Oo2wABlXBxchZS3/cH1NiT4gWwnBHm6QQ8dERmBvdIYI/uVag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9638R0Y1i+laSeovK1OLHStCmgsdfhzQ6IPSStNgP0Y=;
- b=FcafXbyAU1hFqgoXD5Ik1QkVi4lLoqDL1nK2ooRTVRMAtdz9Mvmv1AiZ+KhAdGbhkgHg/86HffrhKBjxNIT0xEgnoDzqZq3K608a7RHiH9zVomV2zrzKPFFXgnNpBiPrd7Dw9SNHoYKFPmsnrC0eCmVnMpiONnuFyrQuEUMjHWJVgfj6Sux95nyfuFwSiketZyvaEsUwc2gNapjmfa3IVg8apEoet7Lms/0Ah485RtGnOSfAcyo4q0IpB8FYbB4F2Pf0WFqf6vcmzCrK7OmF/FFicG5wuCywSNKMkHd4PzAZtVqv+QmKOPMv7J3lzliaHQ4ogVr0ohbrZkZHUj1JJw==
+ bh=VBi8kkmp3h5AaS4co5lPYL1+k03FcMbR9k9RmHDNaqU=;
+ b=hLS491T6oe48dZvNV2D77mSn/8hLF9RocLvUnb+mPCaYNoQM+ydN0Vp5+RFVsIJgLKFUiti+ioMeFR3/w5YC4nos/DYPOAWGOHYkSXFqRvV1qldaX2R3L+Yn2upI45AdYx8Vl+gZbsiA67RML8v9EoqTBm5ZXnIpmXJ7aTycwps1rzicpWXCaOi3Yk4v22jO7MT2+iXsPmGHv+4o67H2N8IhweeORrMMKVD7domeEF1G41qGn9c/1tsC8Dn+MjybE6qz3pkmCu1I9RNdl6W8akDkNzLy5HjHUnoC4gc+oeHUAQex7aglOWyjOErvPBIXzwK1fbDJdl02SS3707QH2w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=monstr.eu smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -29,35 +29,35 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9638R0Y1i+laSeovK1OLHStCmgsdfhzQ6IPSStNgP0Y=;
- b=rByWQjbYwkZhK3OIIKTeo6o6JhU0rdlkx2D7jxqjOUYbVqYvtNPMgtNuRnnJKBnW7jRwGb3oUkhAsb92YUbIeJXFiDNjo/fzd05BFa4KdM0EINF1UpC40RLIF4nHBAnqOM03fuP/B2cfaQGIHimkUtAOVAgSMPS171DDh6KwNvE=
-Received: from BN6PR13CA0031.namprd13.prod.outlook.com (2603:10b6:404:13e::17)
- by CY4PR0201MB3555.namprd02.prod.outlook.com (2603:10b6:910:93::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Mon, 27 Jun
- 2022 06:40:39 +0000
-Received: from BN1NAM02FT032.eop-nam02.prod.protection.outlook.com
- (2603:10b6:404:13e:cafe::f3) by BN6PR13CA0031.outlook.office365.com
- (2603:10b6:404:13e::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.12 via Frontend
- Transport; Mon, 27 Jun 2022 06:40:39 +0000
+ bh=VBi8kkmp3h5AaS4co5lPYL1+k03FcMbR9k9RmHDNaqU=;
+ b=LX1GGNpMMZVAOrrfQPaAYnPL+HMsn7fULw8o5vH9pg5+puMSV4cEMGkcjMN0SLoB6H0TVf8oKOZ/RxOkoEk/1a/xnVJMl57ZDUdIByaBG+ew8PtehrPNgBm/ev29+ZQYCbYmAHiw01QeM4jzeK57SX+5Z8qw+OBjUR3pUlrzr08=
+Received: from SN4PR0501CA0153.namprd05.prod.outlook.com
+ (2603:10b6:803:2c::31) by SJ0PR02MB7199.namprd02.prod.outlook.com
+ (2603:10b6:a03:294::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Mon, 27 Jun
+ 2022 06:40:42 +0000
+Received: from SN1NAM02FT0035.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:2c:cafe::31) by SN4PR0501CA0153.outlook.office365.com
+ (2603:10b6:803:2c::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.7 via Frontend
+ Transport; Mon, 27 Jun 2022 06:40:42 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT032.mail.protection.outlook.com (10.13.3.192) with Microsoft SMTP
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0035.mail.protection.outlook.com (10.97.4.137) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5373.15 via Frontend Transport; Mon, 27 Jun 2022 06:40:38 +0000
+ 15.20.5373.15 via Frontend Transport; Mon, 27 Jun 2022 06:40:42 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Sun, 26 Jun 2022 23:40:38 -0700
+ 15.1.2176.14; Sun, 26 Jun 2022 23:40:29 -0700
 Received: from smtp.xilinx.com (172.19.127.96) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Sun, 26 Jun 2022 23:40:38 -0700
+ 15.1.2176.14 via Frontend Transport; Sun, 26 Jun 2022 23:40:29 -0700
 Envelope-to: monstr@monstr.eu,
  arnd@arndb.de,
  shorne@gmail.com,
@@ -69,167 +69,69 @@ Envelope-to: monstr@monstr.eu,
 Received: from [10.140.6.6] (port=50182 helo=xhdappanad40.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <appana.durga.rao@xilinx.com>)
-        id 1o5iQH-000Bsc-HP; Sun, 26 Jun 2022 23:40:37 -0700
+        id 1o5iQ9-000Bsc-4X; Sun, 26 Jun 2022 23:40:29 -0700
 From:   Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
 To:     <monstr@monstr.eu>, <arnd@arndb.de>, <shorne@gmail.com>,
         <ebiederm@xmission.com>, <appanad@amd.com>
 CC:     <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <sam@ravnborg.org>,
         Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-Subject: [PATCH 3/3] microblaze: Add support for error injection
-Date:   Mon, 27 Jun 2022 12:10:24 +0530
-Message-ID: <20220627064024.771037-4-appana.durga.rao@xilinx.com>
+Subject: [PATCH 0/3] microblaze: Add support for TMR Subsystem 
+Date:   Mon, 27 Jun 2022 12:10:21 +0530
+Message-ID: <20220627064024.771037-1-appana.durga.rao@xilinx.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220627064024.771037-1-appana.durga.rao@xilinx.com>
-References: <20220627064024.771037-1-appana.durga.rao@xilinx.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3126f465-75c5-48b3-84d0-08da5807f2e4
-X-MS-TrafficTypeDiagnostic: CY4PR0201MB3555:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7095ffd3-79bc-4f0e-ba2a-08da5807f506
+X-MS-TrafficTypeDiagnostic: SJ0PR02MB7199:EE_
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /ke7rUaLnYnR+lEi7wvE89GjnpxBP+w3CDkAdU59aJZsmCYHBsVTlMRwFCGqrPVmu/sJvNpnllEV3bEJwuYlDuCHJ1e1tzGXjljEQfYQXKeHRYUm4EiGS3ddDW3XbsTWUL7Vd7SOVsGs6r55P29stdVLsRJAyEMn+XOT5lXQWKH/V2e4+OX9mcuh+/pSh7udA6yG+myBW+zi2KcTT6cQkYk3xuZlBaKbaMuJ+rZqqHpF9TSHgd4zsVKqRHvHedFUZ32064b5lKNcdOq7l0Aaa7qnKenxA+xB4MsSbcECteCUn/o7KvU+RH9uVKm+YHnZRqvkZaD70/v7QO0a6g398Ha2P1jYX9+r5zfj2oFKeBTq/whfdPNIN5yI+hXkOhdx82qk4Z6V1cSIqcl2dujC13sd89ZUBkvKcWqW0yKwxhZSyke1VvFxnaJLJxpIotBzLxckY7al0owShn/z7LM6VMjS3o8rSinurFbMNAD9aPOF+N0N9ERajXi350JB6UoTw2MNsWIvoizcYz3tMuK6M+c19ya/NE3ULxzfCGNuhHR9jkgqM6PzNhgNp9I26UwduiQu/shiKSpYq/HsboQXb5tvApmZl6GJ4OupK3MGgYaJA1q/TcJRW6438bXd21TfnE/QEw7BG+/o/ESuualbVUPyqrjjPawQAZsWu+J0bWRYvMYhhHeJcxw/LM9SmMEce+enbJSRtLXbJdzYWEwjDYewWaXgPPa7sLSs1lgr76LYGsOiRYteYHxp9jX9ikddNpD0lZc31Z/HivOz6JZXHN9hnImKFCVO4NvRVh5o/1reYCBpW1slgIB3KotQ2QQ6bmSRjfjKhkg+8bqQNhYYxA==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(396003)(39860400002)(136003)(36840700001)(46966006)(40470700004)(1076003)(478600001)(107886003)(40480700001)(110136005)(26005)(54906003)(316002)(186003)(82310400005)(336012)(426003)(47076005)(36756003)(2616005)(40460700003)(7636003)(83380400001)(356005)(5660300002)(8936002)(41300700001)(7696005)(6666004)(103116003)(36860700001)(8676002)(70206006)(70586007)(4326008)(2906002)(9786002)(82740400003)(102446001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: QldNql9qrIAPLcwJTb8HACij4ZQx0QpO9gZh+JY5hU5HUBlWd6V3giRDiAE6/Qk0IlDLU/LzbEC9eNkd+apJt9mNbm96EeP5gIrRK8SagdMVT06dBtVe6295y/zoZ1pDG62OkuUhygxOo/XON5gz5L96WpWV/V2oy4dQdy4BzpKKXKjswGJvk6saW5WLjZ8IaOs2CopY0CnENOYhWvXoBaKuJTA0haEV3EhQ8zU3pZQU/npK44V2uSKCQ2r3/moN928nNaP1x8g2HYY8dOThLGA6e+B48xsz3t9FTVvrlS3KFpeeoBfNqhqjXR4SzJkafUJ93OnYc5FNTUAVY1VrP7VVRdLnWHWk9SDiJLEZjsY/AaADqyetdaeANuNuc3Uy6njQa1iCxMBGE8goHXzEVPGadfCWU4EoytwsnbbpCu/QFjSw58Cza56K7kZxawIqCW8W4ofvsMVWfHkMi7eiLhP7A9a4gmKTvZllhDBTsfO57nx5996pGWjPWPNV+eNtnIqsmV6KHSXc95ypl1yP38l1mjO8mSsy0+7X771h5O/ciTmmcyfxJc8lJaOC5Nwos8wDuWDrb2Is1yolPfJN5PU9WH4TGYjnwl0KLP60BCUYcHu42XmLMRHhlq5Xc9iwE0nKFYZQnL/9HNF+QfRvPz0vUomA9QbGZOd3bQZrvIDHQ8BMzZW92lv8mq345D2+xFJyhwG5HMoDTUI/b6Y1cgxHbA/V3blod3PRrMN94EMdEyYJr32pi7nYOIVb8utGEOyXf2/Bv/aWW0bb9az9dDqu2a3/l6ubjPogf0OkQTUy9ys0YzIkm0533YkkiTeWjm1inFI4AckfNLhuEcWQWxJvxrFH5ht4i4cV2CCAlyQ=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(376002)(346002)(396003)(40470700004)(36840700001)(46966006)(110136005)(40480700001)(316002)(426003)(70206006)(47076005)(54906003)(107886003)(2906002)(2616005)(1076003)(336012)(103116003)(186003)(41300700001)(26005)(4743002)(82740400003)(7696005)(6666004)(356005)(966005)(8676002)(9786002)(82310400005)(5660300002)(36860700001)(4326008)(83380400001)(40460700003)(7636003)(478600001)(36756003)(70586007)(8936002)(102446001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2022 06:40:38.8018
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2022 06:40:42.4283
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3126f465-75c5-48b3-84d0-08da5807f2e4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7095ffd3-79bc-4f0e-ba2a-08da5807f506
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT032.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0035.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR0201MB3555
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR02MB7199
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To inject the error using the tmr inject IP reset vectors need to be placed
-in lmb(bram) due to the limitation in HW when this code runs out of DDR.
-Below code adds the error inject code to the .init.ivt section to copy
-it in machine_early_init to lmb/Bram location. C_BASE_VECTORS which allow
-moving reset vectors out of 0 location is not currently supported by
-Microblaze architecture, that's why all the time reset vectors with
-injection code is all the time copied to address 0.
+This patch series adds support for Triple Modular Redundancy Subsystem,
+Triple Modular Redundancy (TMR) Microblaze solution provides soft error
+detection, correction and recovery for Microblaze cores in the system.
+The Xilinx/AMD Triple Modular Redundancy (TMR) solution in Vivado provides
+all the necessary building blocks to implement a redundant triplicated
+MicroBlaze subsystem. This processing subsystem is fault-tolerant and
+continues to operate nominally after encountering an error. Together
+with the capability to detect and recover from errors, the implementation
+ensures the reliability of the entire subsystem, for more details about
+IP please refer PG268[1].
 
-As of now getting this functionality working CPU switches to real mode
-and simply jumps to bram, which causes triggering of fault which continues
-to call_xmb_manager_break break handler which will at the end calls the
-error count callback function and performs recovery.
+[1]: https://docs.xilinx.com/r/en-US/pg268-tmr/Triple-Modular-Redundancy-TMR-v1.0-LogiCORE-IP-Product-Guide-PG268
 
-Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
----
- .../include/asm/xilinx_mb_manager.h           |  8 +++
- arch/microblaze/kernel/entry.S                | 52 +++++++++++++++++++
- 2 files changed, 60 insertions(+)
+Appana Durga Kedareswara rao (3):
+  microblaze: Add xmb_manager_register function
+  microblaze: Add custom break vector handler for mb manager
+  microblaze: Add support for error injection
 
-diff --git a/arch/microblaze/include/asm/xilinx_mb_manager.h b/arch/microblaze/include/asm/xilinx_mb_manager.h
-index 392c3aa278dc..7b6995722b0c 100644
---- a/arch/microblaze/include/asm/xilinx_mb_manager.h
-+++ b/arch/microblaze/include/asm/xilinx_mb_manager.h
-@@ -5,6 +5,8 @@
- #ifndef _XILINX_MB_MANAGER_H
- #define _XILINX_MB_MANAGER_H
- 
-+# ifndef __ASSEMBLY__
-+
- #include <linux/of_address.h>
- 
- /*
-@@ -17,5 +19,11 @@
- void xmb_manager_register(uintptr_t phys_baseaddr, u32 cr_val,
- 			  void (*callback)(void *data),
- 			  void *priv, void (*reset_callback)(void *data));
-+asmlinkage void xmb_inject_err(void);
-+
-+# endif /* __ASSEMBLY__ */
-+
-+/* Error injection offset */
-+#define XMB_INJECT_ERR_OFFSET	0x200
- 
- #endif /* _XILINX_MB_MANAGER_H */
-diff --git a/arch/microblaze/kernel/entry.S b/arch/microblaze/kernel/entry.S
-index df367bf94b26..2bb2fea70b3e 100644
---- a/arch/microblaze/kernel/entry.S
-+++ b/arch/microblaze/kernel/entry.S
-@@ -27,6 +27,7 @@
- 
- #include <asm/page.h>
- #include <asm/unistd.h>
-+#include <asm/xilinx_mb_manager.h>
- 
- #include <linux/errno.h>
- #include <asm/signal.h>
-@@ -1151,6 +1152,41 @@ ENTRY(_switch_to)
- 	nop
- 
- #ifdef CONFIG_MB_MANAGER
-+.global xmb_inject_err
-+.section .text
-+.align 2
-+.ent xmb_inject_err
-+.type xmb_inject_err, @function
-+xmb_inject_err:
-+	addik	r1, r1, -PT_SIZE
-+	SAVE_REGS
-+
-+	/* Switch to real mode */
-+	VM_OFF;
-+	set_bip;
-+	mbar	1
-+	mbar	2
-+	bralid	r15, XMB_INJECT_ERR_OFFSET
-+	nop;
-+
-+	/* enable virtual mode */
-+	set_vms;
-+	/* barrier for instructions and data accesses */
-+	mbar	1
-+	mbar	2
-+	/*
-+	 * Enable Interrupts, Virtual Protected Mode, equalize
-+	 * initial state for all possible entries.
-+	 */
-+	rtbd    r0, 1f
-+	nop;
-+1:
-+	RESTORE_REGS
-+	addik	r1, r1, PT_SIZE
-+	rtsd	r15, 8;
-+	nop;
-+.end xmb_inject_err
-+
- .section .data
- .global xmb_manager_dev
- .global xmb_manager_baseaddr
-@@ -1225,6 +1261,22 @@ ENTRY(_reset)
- 	.org	0x20
- 	brai	TOPHYS(_hw_exception_handler);	/* HW exception handler */
- 
-+#ifdef CONFIG_MB_MANAGER
-+	/*
-+	 * For TMR Inject API which injects the error should
-+	 * be executed from LMB.
-+	 * TMR Inject is programmed with address of 0x200 so that
-+	 * when program counter matches with this address error will
-+	 * be injected. 0x200 is expected to be next available bram
-+	 * offset, hence used for this api.
-+	 */
-+	.org	XMB_INJECT_ERR_OFFSET
-+xmb_inject_error:
-+	nop
-+	rtsd	r15, 8
-+	nop
-+#endif
-+
- .section .rodata,"a"
- #include "syscall_table.S"
- 
+ arch/microblaze/Kconfig                       |  10 +
+ .../include/asm/xilinx_mb_manager.h           |  29 ++
+ arch/microblaze/kernel/asm-offsets.c          |   7 +
+ arch/microblaze/kernel/entry.S                | 302 +++++++++++++++++-
+ 4 files changed, 347 insertions(+), 1 deletion(-)
+ create mode 100644 arch/microblaze/include/asm/xilinx_mb_manager.h
+
 -- 
 2.25.1
 
