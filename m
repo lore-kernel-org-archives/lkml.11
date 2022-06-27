@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2608C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD27FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:42:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236166AbiF0NmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47026 "EHLO
+        id S236258AbiF0Nmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234535AbiF0Nl6 (ORCPT
+        with ESMTP id S234459AbiF0Nmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:41:58 -0400
+        Mon, 27 Jun 2022 09:42:44 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62A1B2DCD;
-        Mon, 27 Jun 2022 06:41:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3FB02DCD
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:42:43 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 28E471758;
-        Mon, 27 Jun 2022 06:41:57 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B7E7A1758;
+        Mon, 27 Jun 2022 06:42:43 -0700 (PDT)
 Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8AB623F5A1;
-        Mon, 27 Jun 2022 06:41:56 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 14:41:54 +0100
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 29DB43F5A1;
+        Mon, 27 Jun 2022 06:42:43 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 14:42:41 +0100
 From:   Ionela Voinescu <ionela.voinescu@arm.com>
 To:     Sudeep Holla <sudeep.holla@arm.com>
 Cc:     linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
@@ -34,78 +34,78 @@ Cc:     linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         "Rafael J . Wysocki" <rafael@kernel.org>,
         Pierre Gondois <pierre.gondois@arm.com>,
         linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v4 01/20] ACPI: PPTT: Use table offset as fw_token
- instead of virtual address
-Message-ID: <Yrmzkwur1NVQ8NSA@arm.com>
+        linux-riscv@lists.infradead.org, Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v4 12/20] arch_topology: Set thread sibling cpumask only
+ within the cluster
+Message-ID: <Yrmz0ZAUaFCqMt5u@arm.com>
 References: <20220621192034.3332546-1-sudeep.holla@arm.com>
- <20220621192034.3332546-2-sudeep.holla@arm.com>
+ <20220621192034.3332546-13-sudeep.holla@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220621192034.3332546-2-sudeep.holla@arm.com>
+In-Reply-To: <20220621192034.3332546-13-sudeep.holla@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sudeep,
+On Tuesday 21 Jun 2022 at 20:20:26 (+0100), Sudeep Holla wrote:
+> Currently the cluster identifier is not set on the DT based platforms.
+> The reset or default value is -1 for all the CPUs. Once we assign the
+> cluster identifier values correctly that imay result in getting the thread
+                                           ^^^^
+Nit: 					   may
+> siblings wrongs as the core identifiers can be same for 2 different CPUs
+Nit:       ^^^^^^
+	   wrong
 
-On Tuesday 21 Jun 2022 at 20:20:15 (+0100), Sudeep Holla wrote:
-> There is need to use the cache sharing information quite early during
-> the boot before the secondary cores are up and running. The permanent
-> memory map for all the ACPI tables(via acpi_permanent_mmap) is turned
-> on in acpi_early_init() which is quite late for the above requirement.
-> 
-> As a result there is possibility that the ACPI PPTT gets mapped to
-> different virtual addresses. In such scenarios, using virtual address as
-> fw_token before the acpi_permanent_mmap is enabled results in different
-> fw_token for the same cache entity and hence wrong cache sharing
-> information will be deduced based on the same.
-> 
-> Instead of using virtual address, just use the table offset as the
-> unique firmware token for the caches. The same offset is used as
-> ACPI identifiers if the firmware has not set a valid one for other
-> entries in the ACPI PPTT.
-> 
-> Cc: linux-acpi@vger.kernel.org
-> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> ---
->  drivers/acpi/pptt.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> Hi Rafael,
-> 
-> If you are happy with this change, can you provide Ack, so that it can be
-> merged together with other changes ?
-> 
-> Regards,
-> Sudeep
-> 
-> diff --git a/drivers/acpi/pptt.c b/drivers/acpi/pptt.c
-> index 701f61c01359..763f021d45e6 100644
-> --- a/drivers/acpi/pptt.c
-> +++ b/drivers/acpi/pptt.c
-> @@ -437,7 +437,8 @@ static void cache_setup_acpi_cpu(struct acpi_table_header *table,
->  		pr_debug("found = %p %p\n", found_cache, cpu_node);
->  		if (found_cache)
->  			update_cache_properties(this_leaf, found_cache,
-> -			                        cpu_node, table->revision);
-> +						ACPI_TO_POINTER(ACPI_PTR_DIFF(cpu_node, table)),
-> +						table->revision);
->  
->  		index++;
->  	}
-> -- 
-> 2.36.1
-> 
-
-I've run the set on Kunpeng920 where Dietmar noticed an issue [1] before
-and it looks good to me.
-
-Tested-by: Ionela Voinescu <ionela.voinescu@arm.com>
-
-[1]
-https://lore.kernel.org/lkml/0bf199a0-251d-323c-974a-bfd4e26f4cce@arm.com/
 
 Thanks,
 Ionela.
+
+> belonging to 2 different cluster.
+> 
+> So, in order to get the thread sibling cpumasks correct, we need to
+> update them only if the cores they belong are in the same cluster within
+> the socket. Let us skip updation of the thread sibling cpumaks if the
+> cluster identifier doesn't match.
+> 
+> This change won't affect even if the cluster identifiers are not set
+> currently but will avoid any breakage once we set the same correctly.
+> 
+> Reviewed-by: Gavin Shan <gshan@redhat.com>
+> Tested-by: Gavin Shan <gshan@redhat.com>
+> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+> ---
+>  drivers/base/arch_topology.c | 12 +++++++-----
+>  1 file changed, 7 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> index b63cc52e12ce..7a5ff1ea5f00 100644
+> --- a/drivers/base/arch_topology.c
+> +++ b/drivers/base/arch_topology.c
+> @@ -708,15 +708,17 @@ void update_siblings_masks(unsigned int cpuid)
+>  		if (cpuid_topo->package_id != cpu_topo->package_id)
+>  			continue;
+>  
+> -		if (cpuid_topo->cluster_id == cpu_topo->cluster_id &&
+> -		    cpuid_topo->cluster_id != -1) {
+> +		cpumask_set_cpu(cpuid, &cpu_topo->core_sibling);
+> +		cpumask_set_cpu(cpu, &cpuid_topo->core_sibling);
+> +
+> +		if (cpuid_topo->cluster_id != cpu_topo->cluster_id)
+> +			continue;
+> +
+> +		if (cpuid_topo->cluster_id != -1) {
+>  			cpumask_set_cpu(cpu, &cpuid_topo->cluster_sibling);
+>  			cpumask_set_cpu(cpuid, &cpu_topo->cluster_sibling);
+>  		}
+>  
+> -		cpumask_set_cpu(cpuid, &cpu_topo->core_sibling);
+> -		cpumask_set_cpu(cpu, &cpuid_topo->core_sibling);
+> -
+>  		if (cpuid_topo->core_id != cpu_topo->core_id)
+>  			continue;
+>  
+> -- 
+> 2.36.1
+> 
