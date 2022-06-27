@@ -2,145 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8544AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230258AbiF0Gz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 02:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        id S232622AbiF0G5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 02:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbiF0Gz5 (ORCPT
+        with ESMTP id S231540AbiF0G5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 02:55:57 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2BA2DE0
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:55:57 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id i8-20020a17090aee8800b001ecc929d14dso9636486pjz.0
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:55:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=s6YskhKblBTp6d670n0jUd5N1jVCJFrPSjByo6zg+n4=;
-        b=iSYaiX/dx41GqEc0XwQdpzKEEbHBUo9kx8Vgzp9oZKa00sHUJh62oNgysgOzrmkJDZ
-         +oCrpo19mNHhUz7L/tjW4p3PLH8+eIsWY1Xt4VIVulxeZJWdS6XJKHHeZAzpTsgggpoq
-         X+YPxjaAe7YB31/TJsLpXN6WYsSx15i8hR1rNWz5TyntA1jmAgEKdztNsfay9vh5gY0e
-         KlnXNKKV/Hqc+8rAULiQlB0cxozLlBRuPqxRO8zNIGx8Iu36PTLDYToBCgRrMhi0Z8gO
-         hcqnEEPfRNztvyJtdGp8WWNC2sElnhLGjmp4aowBJgDqMkN/CeIbqhkONZOP1Pl+mk1t
-         2XUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=s6YskhKblBTp6d670n0jUd5N1jVCJFrPSjByo6zg+n4=;
-        b=ABuL0BeQaf+cxqPXl5TcpcHXE4ihJKYupiOoFYiZXyhw47Z2DBLSFjo5MDN02EYvR5
-         FpXZtYttnqvcyGLtNyAM4N5ERPrcHh18dINFuJ+Sjwil66JLoP262L26rgOGlzSxSMoa
-         8dmWwVsfgfxkztqdBp7WCgVyme5SUdMREQuhXNysRuQsbdPOzNl+VYc1q91oVjsLezOa
-         4FX+n0BtUhW9FQNxd5gHotLKES2DpY+Bng1j6IYKgheqnqsQSb5ENmGi4ndbb+llysM0
-         V+Wy8F6ZHZw2aa9au3H//A54qDYDLmNXEyPrXuZDWIC2RzOeQZXbrgi7IL0ZHsLjLH2G
-         f4vg==
-X-Gm-Message-State: AJIora+tB/oP3SxHNiNMjNayIHGtVfyEBGyzBvbWE58OEb/ojeDQiFnT
-        Km1eVjBzLsXsvbzJwF4JdS7Pqw==
-X-Google-Smtp-Source: AGRyM1vhoRU/LPowseuW576E5KPJwNpI7Hlzq51YcTSiqutzHyiBJhj5MmrUhAowVihcR5nXchQXvA==
-X-Received: by 2002:a17:90a:1c09:b0:1ea:91d4:5a7f with SMTP id s9-20020a17090a1c0900b001ea91d45a7fmr19569048pjs.232.1656312956629;
-        Sun, 26 Jun 2022 23:55:56 -0700 (PDT)
-Received: from [10.4.214.173] ([139.177.225.237])
-        by smtp.gmail.com with ESMTPSA id y27-20020a634b1b000000b0040cff9def93sm6224491pga.66.2022.06.26.23.55.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Jun 2022 23:55:56 -0700 (PDT)
-Message-ID: <037fc8c3-9b71-cb83-8882-95d5459a494f@bytedance.com>
-Date:   Mon, 27 Jun 2022 14:55:50 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH] mm: hugetlb: kill set_huge_swap_pte_at()
-Content-Language: en-US
-To:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        mike.kravetz@oracle.com, songmuchun@bytedance.com,
-        akpm@linux-foundation.org, catalin.marinas@arm.com, will@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-References: <20220626145717.53572-1-zhengqi.arch@bytedance.com>
- <f0cfe169-44fa-5653-d454-149ef286d3bb@arm.com>
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-In-Reply-To: <f0cfe169-44fa-5653-d454-149ef286d3bb@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 27 Jun 2022 02:57:43 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D35D65F41
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:57:41 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx_9ffVLliS7pfAA--.12285S2;
+        Mon, 27 Jun 2022 14:57:36 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     WANG Xuerui <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Xuefeng Li <lixuefeng@loongson.cn>, loongarch@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] LoongArch: Fix section mismatch warning
+Date:   Mon, 27 Jun 2022 14:57:35 +0800
+Message-Id: <1656313055-547-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9Dx_9ffVLliS7pfAA--.12285S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Xr4UCF45CF4ruFW3GF43GFg_yoWkurXE9r
+        4xtw1rGr4kGw4jvFWxXw4SqF1jv3yrZ3WIq3WxXw4rG3Wftw13AF4xJay3Zw1DKrZrCFs8
+        ArWjgr9Iyr47tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb48FF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r47
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUUiiSJUUUU
+        U==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+init_numa_memory() is annotated __init and not used by any module,
+thus don't export it.
 
+Remove not needed EXPORT_SYMBOL for init_numa_memory() to fix the
+following section mismatch warning:
 
-On 2022/6/27 14:18, Anshuman Khandual wrote:
-> 
-> 
-> On 6/26/22 20:27, Qi Zheng wrote:
->> The commit e5251fd43007 ("mm/hugetlb: introduce set_huge_swap_pte_at()
->> helper") add set_huge_swap_pte_at() to handle swap entries on
->> architectures that support hugepages consisting of contiguous ptes.
->> And currently the set_huge_swap_pte_at() is only overridden by arm64.
->>
->> The set_huge_swap_pte_at() provide a sz parameter to help determine
->> the number of entries to be updated. But in fact, all hugetlb swap
->> entries contain pfn information, so we can find the corresponding
->> folio through the pfn recorded in the swap entry, then the folio_size()
->> is the number of entries that need to be updated.
->>
->> And considering that users will easily cause bugs by ignoring the
->> difference between set_huge_swap_pte_at() and set_huge_pte_at().
->> Let's handle swap entries in set_huge_pte_at() and remove the
->> set_huge_swap_pte_at(), then we can call set_huge_pte_at()
->> anywhere, which simplifies our coding.
->>
->> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
->> ---
->>   arch/arm64/include/asm/hugetlb.h |  3 ---
->>   arch/arm64/mm/hugetlbpage.c      | 34 ++++++++++++++++----------------
->>   include/linux/hugetlb.h          | 13 ------------
->>   mm/hugetlb.c                     |  8 +++-----
->>   mm/rmap.c                        | 11 +++--------
->>   5 files changed, 23 insertions(+), 46 deletions(-)
->>
->> diff --git a/arch/arm64/include/asm/hugetlb.h b/arch/arm64/include/asm/hugetlb.h
->> index 1fd2846dbefe..d20f5da2d76f 100644
->> --- a/arch/arm64/include/asm/hugetlb.h
->> +++ b/arch/arm64/include/asm/hugetlb.h
->> @@ -46,9 +46,6 @@ extern void huge_pte_clear(struct mm_struct *mm, unsigned long addr,
->>   			   pte_t *ptep, unsigned long sz);
->>   #define __HAVE_ARCH_HUGE_PTEP_GET
->>   extern pte_t huge_ptep_get(pte_t *ptep);
->> -extern void set_huge_swap_pte_at(struct mm_struct *mm, unsigned long addr,
->> -				 pte_t *ptep, pte_t pte, unsigned long sz);
->> -#define set_huge_swap_pte_at set_huge_swap_pte_at
->>   
->>   void __init arm64_hugetlb_cma_reserve(void);
->>   
->> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
->> index c9e076683e5d..58b89b9d13e0 100644
->> --- a/arch/arm64/mm/hugetlbpage.c
->> +++ b/arch/arm64/mm/hugetlbpage.c
->> @@ -238,6 +238,13 @@ static void clear_flush(struct mm_struct *mm,
->>   	flush_tlb_range(&vma, saddr, addr);
->>   }
->>   
->> +static inline struct folio *hugetlb_swap_entry_to_folio(swp_entry_t entry)
->> +{
->> +	VM_BUG_ON(!is_migration_entry(entry) && !is_hwpoison_entry(entry));
->> +
->> +	return page_folio(pfn_to_page(swp_offset(entry)));
->> +}
-> 
-> Extracting this huge page size from swap entry is an additional operation which
-> will increase the over all cost for set_huge_swap_pte_at(). At present the size
+  MODPOST vmlinux.symvers
+WARNING: modpost: vmlinux.o(___ksymtab+init_numa_memory+0x0): Section mismatch in reference
+from the variable __ksymtab_init_numa_memory to the function .init.text:init_numa_memory()
+The symbol init_numa_memory is exported and annotated __init
+Fix this by removing the __init annotation of init_numa_memory or drop the export.
 
-Hmm, I think this cost is very small. And replacing
-set_huge_swap_pte_at() by transparently handling swap entries helps
-reduce possible bugs, which is worthwhile.
+This is build on Linux 5.19-rc4.
 
-> value is readily available near set_huge_swap_pte_at() call sites.
+Fixes: d4b6f1562a3c ("LoongArch: Add Non-Uniform Memory Access (NUMA) support")
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ arch/loongarch/kernel/numa.c | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/arch/loongarch/kernel/numa.c b/arch/loongarch/kernel/numa.c
+index a76f547..a13f925 100644
+--- a/arch/loongarch/kernel/numa.c
++++ b/arch/loongarch/kernel/numa.c
+@@ -429,7 +429,6 @@ int __init init_numa_memory(void)
+ 	return 0;
+ }
+ 
+-EXPORT_SYMBOL(init_numa_memory);
+ #endif
+ 
+ void __init paging_init(void)
 -- 
-Thanks,
-Qi
+2.1.0
+
