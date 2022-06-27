@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 226D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C015C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236949AbiF0Lkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        id S236958AbiF0Lk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236693AbiF0Lhx (ORCPT
+        with ESMTP id S236340AbiF0Lg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FFAB84E;
-        Mon, 27 Jun 2022 04:34:39 -0700 (PDT)
+        Mon, 27 Jun 2022 07:36:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01DC101E;
+        Mon, 27 Jun 2022 04:32:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB61C608D4;
-        Mon, 27 Jun 2022 11:34:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAD86C3411D;
-        Mon, 27 Jun 2022 11:34:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3792E60920;
+        Mon, 27 Jun 2022 11:32:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AA38C341C7;
+        Mon, 27 Jun 2022 11:32:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329678;
-        bh=9QGJbyTlVUNAzfSE1doz10YkoD1SL9YbeGU0BFssGrA=;
+        s=korg; t=1656329530;
+        bh=9bAV0+306x5lteaFMiWqSZkBkr8FcYIqevBwLdY+pKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m6pMd7keBxs/THnURovsm795Iactp2Tc1jnwVZk4X2mwJAq/s/6p5EvjE7E4ZlFFM
-         GjM5HWj2fHr6BNGYIVt87U6nFQr33dgy1fIpvdALSU7PFDcsrOd+GPDV1tN0BDjRA9
-         6MU/jeUOb/GcvI8SJfq1V8dEspTaf/YlMZVWzT/w=
+        b=Y3L449+yfM0z3LEm1KONAjQkGC3QqteminuNX+qNGUzaTwfsqS0ODRL07dAKHarD8
+         o1z2JFWCZe8OvBej0CjCKjai3vySoKh7ZSHddBHC4xz6kUBe42i397oSEATeUQnVup
+         EupasvdKhSSHjkecSJMizhc6fV0T3RbZ2hSOrvGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Enzo Matsumiya <ematsumiya@suse.de>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 076/135] nvme-pci: add NO APST quirk for Kioxia device
-Date:   Mon, 27 Jun 2022 13:21:23 +0200
-Message-Id: <20220627111940.367162166@linuxfoundation.org>
+        stable@vger.kernel.org, Charles Yeh <charlesyeh522@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.15 029/135] USB: serial: pl2303: add support for more HXN (G) types
+Date:   Mon, 27 Jun 2022 13:20:36 +0200
+Message-Id: <20220627111939.005772297@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -48,54 +48,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Enzo Matsumiya <ematsumiya@suse.de>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 5a6254d55e2a9f7919ead8580d7aa0c7a382b26a ]
+commit ae60aac59a9ad8ab64a4b07de509a534a75b6bac upstream.
 
-This particular Kioxia device times out and aborts I/O during any load,
-but it's more easily observable with discards (fstrim).
+Add support for further HXN (G) type devices (GT variant, GL variant, GS
+variant and GR) and document the bcdDevice mapping.
 
-The device gets to a state that is also not possible to use
-"nvme set-feature" to disable APST.
-Booting with nvme_core.default_ps_max_latency=0 solves the issue.
+Note that the TA and TB types use the same bcdDevice as some GT and GE
+variants, respectively, but that the HX status request can be used to
+determine which is which.
 
-We had a dozen or so of these devices behaving this same way in
-customer environments.
+Also note that we currently do not distinguish between the various HXN
+(G) types in the driver but that this may change eventually (e.g. when
+adding GPIO support).
 
-Signed-off-by: Enzo Matsumiya <ematsumiya@suse.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Charles Yeh <charlesyeh522@gmail.com>
+Link: https://lore.kernel.org/r/YrF77b9DdeumUAee@hovoldconsulting.com
+Cc: stable@vger.kernel.org	# 5.13
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/core.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/usb/serial/pl2303.c |   29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 9bc9f6d225bd..3ef1f9112ee0 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -2475,6 +2475,20 @@ static const struct nvme_core_quirk_entry core_quirks[] = {
- 		.vid = 0x14a4,
- 		.fr = "22301111",
- 		.quirks = NVME_QUIRK_SIMPLE_SUSPEND,
-+	},
-+	{
-+		/*
-+		 * This Kioxia CD6-V Series / HPE PE8030 device times out and
-+		 * aborts I/O during any load, but more easily reproducible
-+		 * with discards (fstrim).
-+		 *
-+		 * The device is left in a state where it is also not possible
-+		 * to use "nvme set-feature" to disable APST, but booting with
-+		 * nvme_core.default_ps_max_latency=0 works.
-+		 */
-+		.vid = 0x1e0f,
-+		.mn = "KCD6XVUL6T40",
-+		.quirks = NVME_QUIRK_NO_APST,
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -436,22 +436,27 @@ static int pl2303_detect_type(struct usb
+ 		break;
+ 	case 0x200:
+ 		switch (bcdDevice) {
+-		case 0x100:
++		case 0x100:	/* GC */
+ 		case 0x105:
++			return TYPE_HXN;
++		case 0x300:	/* GT / TA */
++			if (pl2303_supports_hx_status(serial))
++				return TYPE_TA;
++			fallthrough;
+ 		case 0x305:
++		case 0x400:	/* GL */
+ 		case 0x405:
++			return TYPE_HXN;
++		case 0x500:	/* GE / TB */
++			if (pl2303_supports_hx_status(serial))
++				return TYPE_TB;
++			fallthrough;
++		case 0x505:
++		case 0x600:	/* GS */
+ 		case 0x605:
+-			/*
+-			 * Assume it's an HXN-type if the device doesn't
+-			 * support the old read request value.
+-			 */
+-			if (!pl2303_supports_hx_status(serial))
+-				return TYPE_HXN;
+-			break;
+-		case 0x300:
+-			return TYPE_TA;
+-		case 0x500:
+-			return TYPE_TB;
++		case 0x700:	/* GR */
++		case 0x705:
++			return TYPE_HXN;
+ 		}
+ 		break;
  	}
- };
- 
--- 
-2.35.1
-
 
 
