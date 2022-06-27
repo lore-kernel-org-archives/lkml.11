@@ -2,88 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 117D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 23:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D5B1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 23:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242480AbiF0Xmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 19:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53146 "EHLO
+        id S242496AbiF0XnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 19:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242290AbiF0Xmh (ORCPT
+        with ESMTP id S242290AbiF0XnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 19:42:37 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B36E12D0B;
-        Mon, 27 Jun 2022 16:42:37 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id bo5so10434016pfb.4;
-        Mon, 27 Jun 2022 16:42:37 -0700 (PDT)
+        Mon, 27 Jun 2022 19:43:02 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E041D9
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 16:43:01 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-31780ad7535so100576107b3.8
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 16:43:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yHrk3Ru/BmHoq6X5rHNQ4IrniQMDGYITLqWiJGP0J5Y=;
-        b=Fr84w1pVtX1gJluJYLQbY2737Dg9MiTl2zTra7WZgfobfXFbeHaAx1jfSkrMfP7yP+
-         OJYQRY5WTkLpnD0yT53edGd5MNfBFodGxIHNTO/9W8u6SUuHVFeAlm3GcJEHRKjFQOF6
-         uE9zR1NRIGJgNxHaB74FcK6csgc1d/BLQql23Eya+QNJrTeiPJz1JV+aH71OEDI5Ll4U
-         aoRJ+kQ4ZxK7hlrDlG31jthhlk18nGs58n0JtMbyXB3NMAh5T0KbgmMxoU0xqisb+dtW
-         AjDZX2i/BwP0rEjLRBvwiWMZuzUJIKIan8rZF7VyXpaZf6z/CpNYh6Mgn6OzW2aYgRT/
-         55nw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kDH8nCKE+Rk+mLLCcRc/EY/phPcC3Vah5J9OCcFx0Hc=;
+        b=I2H7+Imgyei3TLEIV0b8EayiG3a6fOGNwNzhw7YUzdJsrJx5Sa+Xv5+nANIRZOzhK1
+         PiNsAMtuoeRxW826kqYTKzhANa8gUBX2PWFtRA/S8KrjDylzzxI2RZbd9hm+GYiOGYBP
+         ntmm7PUaEsiIBcwR3N+5qVU3IYOP/O7ghGb3gJtKWJh+lZV+aYhfuYWaUZaGyMwiqE1K
+         bWM6NACMYDOgLeDlqLzqFo71nOQ8Wz1MkkOtnsgiQ+9/YXq8y7rw7SHZ9ygmrkFLelKj
+         TGVR32SR6IlTZnrcyeqdELcHrpS36icVuAhgUmrQfXXYjZlWR0/N95pZVilY+gR1Mjg2
+         Miig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=yHrk3Ru/BmHoq6X5rHNQ4IrniQMDGYITLqWiJGP0J5Y=;
-        b=scWdBVtoQRZBwa8dyBOhuEb8e8vQ5KmYL3Iq46yyfrtilBUzbLDQKJIib12cM9KSSt
-         FCevtCvKyroMBcuaMlzcZO40LUaetgJxis6PEJxxSlz+CjkEu4jO6v98tP4ZOQ2Mkfgv
-         z7k/orvdt2nxShGA3xupzP0B2jh2/Nts4A/AJDwWM0UqgigGhsQqhIlL7B5GHebcKsMp
-         86jOzmOQb8mANp+TNibKsO7say84+HVN+LeGNans8cslD3spwvbXOvNQzAblxJbTX7L/
-         xtVha6AuU4+oDI0uVLkXxHNfJqz1MPJMkzD4VAjdQD362qQapsdaOyPVjBRZ8hMY0y8Z
-         zSQw==
-X-Gm-Message-State: AJIora8AmMGiNgNNIWWqZXJ9i/LkcMiWfFpud2gSJvRyP7INMfGrn72Y
-        7focZAsmLsa46U9IMphPA/I=
-X-Google-Smtp-Source: AGRyM1uY0diTRcDDs+KtMjwK6Ted2m3xUXsToSE/RkXB3iP0GoTbki6AnVVZq9Hx7MTjBGdPw9EjEg==
-X-Received: by 2002:a05:6a00:16c1:b0:520:6ede:24fb with SMTP id l1-20020a056a0016c100b005206ede24fbmr546108pfc.7.1656373356727;
-        Mon, 27 Jun 2022 16:42:36 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id i72-20020a62874b000000b0051b9d15fc18sm7913305pfe.156.2022.06.27.16.42.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 16:42:36 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 27 Jun 2022 16:42:35 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.18 000/181] 5.18.8-rc1 review
-Message-ID: <20220627234235.GD2980567@roeck-us.net>
-References: <20220627111944.553492442@linuxfoundation.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kDH8nCKE+Rk+mLLCcRc/EY/phPcC3Vah5J9OCcFx0Hc=;
+        b=OmSGyJ7rmCsmtVgOZ6m2Mun1eTDeanry9ke5WGXnv5B71ya5N2GmqcvDJyELexjkgN
+         QmWMJflQDJ33Gy3cE4my2SPZ9cryrJpCja+LVk3dDxy5V0Hq7TZwYL1bq93yU7fsPUcY
+         +jPKlB97EuN94bTwqSPMdXA1ylDAfT+VQix1tdlr7y1eHTDDwK/ZSlkzZQ+ztFifHFaU
+         y/QnOW8H0DsbFPmw/XBJ8HEGgMkovysabY36LL62lzhBUAsG4AOb8TMmPrwaLo0RzOI3
+         cqTQ/iFTeBwRgFsLIJaoahGxBv2bVOMtP+C2gQacHYtZ7kfZvFsSQhxu2QMXYBdtEq0w
+         gwJA==
+X-Gm-Message-State: AJIora/gQAoL6JQGXd+5qTWEt2/seXNJFvNVzGl9o84jSA5t9jdsJdtZ
+        9EDqrjkrOJ4PWGkK8F1bnZmpMkLVW8mrjO/h58dc7A==
+X-Google-Smtp-Source: AGRyM1vtgukrH0lPIavGy6PN09frlla89CCezcO1MR/XP83gOvqGwAyv7x7NutAEcpEgkFlUPEHftFmdKQtCznwxE/s=
+X-Received: by 2002:a81:19ca:0:b0:31b:732c:15e9 with SMTP id
+ 193-20020a8119ca000000b0031b732c15e9mr17210855ywz.167.1656373380221; Mon, 27
+ Jun 2022 16:43:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
+References: <20220619120451.95251-1-wuyun.abel@bytedance.com> <20220619120451.95251-5-wuyun.abel@bytedance.com>
+In-Reply-To: <20220619120451.95251-5-wuyun.abel@bytedance.com>
+From:   Josh Don <joshdon@google.com>
+Date:   Mon, 27 Jun 2022 16:42:49 -0700
+Message-ID: <CABk29NuXvCTkbQ=MdX5F+YswhOAPZSAQTAXn7B_uuKRr4=XVnQ@mail.gmail.com>
+Subject: Re: [PATCH v4 4/7] sched/fair: remove useless check in select_idle_core
+To:     Abel Wu <wuyun.abel@bytedance.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Chen Yu <yu.c.chen@intel.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        "Gautham R . Shenoy" <gautham.shenoy@amd.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 01:19:33PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.8 release.
-> There are 181 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 29 Jun 2022 11:19:09 +0000.
-> Anything received after that time might be too late.
-> 
+On Sun, Jun 19, 2022 at 5:05 AM Abel Wu <wuyun.abel@bytedance.com> wrote:
+>
+> The function only gets called when sds->has_idle_cores is true which can
+> be possible only when sched_smt_present is enabled.
+>
+> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
+> ---
+>  kernel/sched/fair.c | 3 ---
+>  1 file changed, 3 deletions(-)
+>
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index aba1dad19574..1cc86e76e38e 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -6256,9 +6256,6 @@ static int select_idle_core(struct task_struct *p, int core, struct cpumask *cpu
+>         bool idle = true;
+>         int cpu;
+>
+> -       if (!static_branch_likely(&sched_smt_present))
+> -               return __select_idle_cpu(core, p);
+> -
 
-Build results:
-	total: 154 pass: 154 fail: 0
-Qemu test results:
-	total: 489 pass: 489 fail: 0
+The static branch is basically free; although you're right that we
+currently don't take !smt_present branch direction here, it doesn't
+seem harmful to leave this check in case assumptions change about when
+we call select_idle_core().
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-
-Guenter
+>         for_each_cpu(cpu, cpu_smt_mask(core)) {
+>                 if (!available_idle_cpu(cpu)) {
+>                         idle = false;
+> --
+> 2.31.1
+>
