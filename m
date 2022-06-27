@@ -2,219 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D38CCA47E
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFDA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240413AbiF0ThU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
+        id S238543AbiF0Tjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238466AbiF0ThR (ORCPT
+        with ESMTP id S231765AbiF0Tjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 15:37:17 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBED9631D;
-        Mon, 27 Jun 2022 12:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1656358632; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:references; bh=6eSzpP3gF9wHixe+jAcmFdCUtXsxEMHUrso/b5UAcMU=;
-        b=W/PDWKW+pdopMXowbtUohfKpQSg2dAd2G3CsI91U+epglSW0ADxlADmzw24TOKFXIHZzHd
-        NAHRbbzIzznigka8ZOGaOZ9RKim89SJNBl0y4UCfg8XWQcJzzuxDFB9LkGBTKeHcYjb87k
-        8SuLTjTpbftef72CClCmBxRIe2bgTUo=
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v3] brcmfmac: Remove #ifdef guards for PM related functions
-Date:   Mon, 27 Jun 2022 20:37:01 +0100
-Message-Id: <20220627193701.31074-1-paul@crapouillou.net>
+        Mon, 27 Jun 2022 15:39:46 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D6A112A8D;
+        Mon, 27 Jun 2022 12:39:45 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 65D001758;
+        Mon, 27 Jun 2022 12:39:45 -0700 (PDT)
+Received: from [10.57.84.159] (unknown [10.57.84.159])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DE96A3F792;
+        Mon, 27 Jun 2022 12:39:43 -0700 (PDT)
+Message-ID: <8b237fd0-96f0-ad48-dfcb-e4a46e4463eb@arm.com>
+Date:   Mon, 27 Jun 2022 20:39:32 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 1/2] vfio/type1: Simplify bus_type determination
+Content-Language: en-GB
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     cohuck@redhat.com, kvm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        jgg@nvidia.com, baolu.lu@linux.intel.com, iommu@lists.linux.dev
+References: <194a12d3434d7b38f84fa96503c7664451c8c395.1656092606.git.robin.murphy@arm.com>
+ <20220627132136.2b902875.alex.williamson@redhat.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220627132136.2b902875.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
-handle the .suspend/.resume callbacks.
+On 2022-06-27 20:21, Alex Williamson wrote:
+> On Fri, 24 Jun 2022 18:51:44 +0100
+> Robin Murphy <robin.murphy@arm.com> wrote:
+> 
+>> Since IOMMU groups are mandatory for drivers to support, it stands to
+>> reason that any device which has been successfully added to a group
+>> must be on a bus supported by that IOMMU driver, and therefore a domain
+>> viable for any device in the group must be viable for all devices in
+>> the group. This already has to be the case for the IOMMU API's internal
+>> default domain, for instance. Thus even if the group contains devices on
+>> different buses, that can only mean that the IOMMU driver actually
+>> supports such an odd topology, and so without loss of generality we can
+>> expect the bus type of any device in a group to be suitable for IOMMU
+>> API calls.
+>>
+>> Furthermore, scrutiny reveals a lack of protection for the bus being
+>> removed while vfio_iommu_type1_attach_group() is using it; the reference
+>> that VFIO holds on the iommu_group ensures that data remains valid, but
+>> does not prevent the group's membership changing underfoot.
+>>
+>> We can address both concerns by recycling vfio_bus_type() into some
+>> superficially similar logic to indirect the IOMMU API calls themselves.
+>> Each call is thus protected from races by the IOMMU group's own locking,
+>> and we no longer need to hold group-derived pointers beyond that scope.
+>> It also gives us an easy path for the IOMMU API's migration of bus-based
+>> interfaces to device-based, of which we can already take the first step
+>> with device_iommu_capable(). As with domains, any capability must in
+>> practice be consistent for devices in a given group - and after all it's
+>> still the same capability which was expected to be consistent across an
+>> entire bus! - so there's no need for any complicated validation.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>
+>> v3: Complete rewrite yet again, and finally it doesn't feel like we're
+>> stretching any abstraction boundaries the wrong way, and the diffstat
+>> looks right too. I did think about embedding IOMMU_CAP_INTR_REMAP
+>> directly in the callback, but decided I like the consistency of minimal
+>> generic wrappers. And yes, if the capability isn't supported then it
+>> does end up getting tested for the whole group, but meh, it's harmless.
+>>
+>>   drivers/vfio/vfio_iommu_type1.c | 42 +++++++++++++++++----------------
+>>   1 file changed, 22 insertions(+), 20 deletions(-)
+>>
+>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>> index c13b9290e357..a77ff00c677b 100644
+>> --- a/drivers/vfio/vfio_iommu_type1.c
+>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>> @@ -1679,18 +1679,6 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+>>   	return ret;
+>>   }
+>>   
+>> -static int vfio_bus_type(struct device *dev, void *data)
+>> -{
+>> -	struct bus_type **bus = data;
+>> -
+>> -	if (*bus && *bus != dev->bus)
+>> -		return -EINVAL;
+>> -
+>> -	*bus = dev->bus;
+>> -
+>> -	return 0;
+>> -}
+>> -
+>>   static int vfio_iommu_replay(struct vfio_iommu *iommu,
+>>   			     struct vfio_domain *domain)
+>>   {
+>> @@ -2153,13 +2141,25 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
+>>   	list_splice_tail(iova_copy, iova);
+>>   }
+>>   
+> 
+> Any objection if I add the following comment:
+> 
+> /* Redundantly walks non-present capabilities to simplify caller */
 
-These macros allow the suspend and resume functions to be automatically
-dropped by the compiler when CONFIG_SUSPEND is disabled, without having
-to use #ifdef guards.
+Not at all, feel free - I guess if I felt it was worth pre-empting the 
+review question then it probably is subtle enough to deserve a code comment!
 
-Some other functions not directly called by the .suspend/.resume
-callbacks, but still related to PM were also taken outside #ifdef
-guards.
+Thanks,
+Robin.
 
-The advantage is then that these functions are now always compiled
-independently of any Kconfig option, and thanks to that bugs and
-regressions are easier to catch.
-
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
-
-Notes:
-    v2:
-    - Move checks for IS_ENABLED(CONFIG_PM_SLEEP) inside functions to keep
-      the calling functions intact.
-    - Reword the commit message to explain why this patch is useful.
-    
-    v3:
-    - Remove useless IS_ENABLED(CONFIG_PM_SLEEP) check in
-      brcmf_sdiod_freezer_detach()
-
- .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 36 +++++++------------
- .../broadcom/brcm80211/brcmfmac/sdio.c        |  5 ++-
- .../broadcom/brcm80211/brcmfmac/sdio.h        | 16 ---------
- 3 files changed, 15 insertions(+), 42 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-index 9c598ea97499..62d5c5f5fbc8 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-@@ -784,9 +784,11 @@ void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev)
- 	sdiodev->txglomsz = sdiodev->settings->bus.sdio.txglomsz;
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
- {
-+	if (!IS_ENABLED(CONFIG_PM_SLEEP))
-+		return 0;
-+
- 	sdiodev->freezer = kzalloc(sizeof(*sdiodev->freezer), GFP_KERNEL);
- 	if (!sdiodev->freezer)
- 		return -ENOMEM;
-@@ -833,7 +835,8 @@ static void brcmf_sdiod_freezer_off(struct brcmf_sdio_dev *sdiodev)
- 
- bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev)
- {
--	return atomic_read(&sdiodev->freezer->freezing);
-+	return IS_ENABLED(CONFIG_PM_SLEEP) &&
-+		atomic_read(&sdiodev->freezer->freezing);
- }
- 
- void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
-@@ -847,24 +850,16 @@ void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
- 
- void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev)
- {
--	atomic_inc(&sdiodev->freezer->thread_count);
-+	if (IS_ENABLED(CONFIG_PM_SLEEP))
-+		atomic_inc(&sdiodev->freezer->thread_count);
- }
- 
- void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev)
- {
--	atomic_dec(&sdiodev->freezer->thread_count);
--}
--#else
--static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
--{
--	return 0;
-+	if (IS_ENABLED(CONFIG_PM_SLEEP))
-+		atomic_dec(&sdiodev->freezer->thread_count);
- }
- 
--static void brcmf_sdiod_freezer_detach(struct brcmf_sdio_dev *sdiodev)
--{
--}
--#endif /* CONFIG_PM_SLEEP */
--
- int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev)
- {
- 	sdiodev->state = BRCMF_SDIOD_DOWN;
-@@ -1136,7 +1131,6 @@ void brcmf_sdio_wowl_config(struct device *dev, bool enabled)
- 	brcmf_dbg(SDIO, "WOWL not supported\n");
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int brcmf_ops_sdio_suspend(struct device *dev)
- {
- 	struct sdio_func *func;
-@@ -1204,11 +1198,9 @@ static int brcmf_ops_sdio_resume(struct device *dev)
- 	return ret;
- }
- 
--static const struct dev_pm_ops brcmf_sdio_pm_ops = {
--	.suspend	= brcmf_ops_sdio_suspend,
--	.resume		= brcmf_ops_sdio_resume,
--};
--#endif	/* CONFIG_PM_SLEEP */
-+static DEFINE_SIMPLE_DEV_PM_OPS(brcmf_sdio_pm_ops,
-+				brcmf_ops_sdio_suspend,
-+				brcmf_ops_sdio_resume);
- 
- static struct sdio_driver brcmf_sdmmc_driver = {
- 	.probe = brcmf_ops_sdio_probe,
-@@ -1217,9 +1209,7 @@ static struct sdio_driver brcmf_sdmmc_driver = {
- 	.id_table = brcmf_sdmmc_ids,
- 	.drv = {
- 		.owner = THIS_MODULE,
--#ifdef CONFIG_PM_SLEEP
--		.pm = &brcmf_sdio_pm_ops,
--#endif	/* CONFIG_PM_SLEEP */
-+		.pm = pm_sleep_ptr(&brcmf_sdio_pm_ops),
- 		.coredump = brcmf_dev_coredump,
- 	},
- };
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index 212fbbe1cd7e..58ed6b70f8c5 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -4020,15 +4020,14 @@ brcmf_sdio_probe_attach(struct brcmf_sdio *bus)
- 	 */
- 	brcmf_sdiod_sgtable_alloc(sdiodev);
- 
--#ifdef CONFIG_PM_SLEEP
- 	/* wowl can be supported when KEEP_POWER is true and (WAKE_SDIO_IRQ
- 	 * is true or when platform data OOB irq is true).
- 	 */
--	if ((sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_KEEP_POWER) &&
-+	if (IS_ENABLED(CONFIG_PM_SLEEP) &&
-+	    (sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_KEEP_POWER) &&
- 	    ((sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_WAKE_SDIO_IRQ) ||
- 	     (sdiodev->settings->bus.sdio.oob_irq_supported)))
- 		sdiodev->bus_if->wowl_supported = true;
--#endif
- 
- 	if (brcmf_sdio_kso_init(bus)) {
- 		brcmf_err("error enabling KSO\n");
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-index 15d2c02fa3ec..47351ff458ca 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-@@ -346,26 +346,10 @@ int brcmf_sdiod_abort(struct brcmf_sdio_dev *sdiodev, struct sdio_func *func);
- void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_change_state(struct brcmf_sdio_dev *sdiodev,
- 			      enum brcmf_sdiod_state state);
--#ifdef CONFIG_PM_SLEEP
- bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev);
--#else
--static inline bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev)
--{
--	return false;
--}
--static inline void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
--{
--}
--static inline void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev)
--{
--}
--static inline void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev)
--{
--}
--#endif /* CONFIG_PM_SLEEP */
- 
- int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev);
- int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev);
--- 
-2.35.1
-
+> 
+> Thanks,
+> Alex
+> 
+>> +static int vfio_iommu_device_capable(struct device *dev, void *data)
+>> +{
+>> +	return device_iommu_capable(dev, (enum iommu_cap)data);
+>> +}
+>> +
+>> +static int vfio_iommu_domain_alloc(struct device *dev, void *data)
+>> +{
+>> +	struct iommu_domain **domain = data;
+>> +
+>> +	*domain = iommu_domain_alloc(dev->bus);
+>> +	return 1; /* Don't iterate */
+>> +}
+>> +
+>>   static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>   		struct iommu_group *iommu_group, enum vfio_group_type type)
+>>   {
+>>   	struct vfio_iommu *iommu = iommu_data;
+>>   	struct vfio_iommu_group *group;
+>>   	struct vfio_domain *domain, *d;
+>> -	struct bus_type *bus = NULL;
+>>   	bool resv_msi, msi_remap;
+>>   	phys_addr_t resv_msi_base = 0;
+>>   	struct iommu_domain_geometry *geo;
+>> @@ -2192,18 +2192,19 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>   		goto out_unlock;
+>>   	}
+>>   
+>> -	/* Determine bus_type in order to allocate a domain */
+>> -	ret = iommu_group_for_each_dev(iommu_group, &bus, vfio_bus_type);
+>> -	if (ret)
+>> -		goto out_free_group;
+>> -
+>>   	ret = -ENOMEM;
+>>   	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+>>   	if (!domain)
+>>   		goto out_free_group;
+>>   
+>> +	/*
+>> +	 * Going via the iommu_group iterator avoids races, and trivially gives
+>> +	 * us a representative device for the IOMMU API call. We don't actually
+>> +	 * want to iterate beyond the first device (if any).
+>> +	 */
+>>   	ret = -EIO;
+>> -	domain->domain = iommu_domain_alloc(bus);
+>> +	iommu_group_for_each_dev(iommu_group, &domain->domain,
+>> +				 vfio_iommu_domain_alloc);
+>>   	if (!domain->domain)
+>>   		goto out_free_domain;
+>>   
+>> @@ -2258,7 +2259,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>   	list_add(&group->next, &domain->group_list);
+>>   
+>>   	msi_remap = irq_domain_check_msi_remap() ||
+>> -		    iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
+>> +		    iommu_group_for_each_dev(iommu_group, (void *)IOMMU_CAP_INTR_REMAP,
+>> +					     vfio_iommu_device_capable);
+>>   
+>>   	if (!allow_unsafe_interrupts && !msi_remap) {
+>>   		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
+> 
