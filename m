@@ -2,246 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E6DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 03:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8928FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 03:09:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230205AbiF0DE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 23:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37774 "EHLO
+        id S231584AbiF0DJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 23:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232544AbiF0DCc (ORCPT
+        with ESMTP id S230384AbiF0DJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 23:02:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3CE535F41
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 20:02:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656298940;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hEhVbVAlzfBZtzXNd2XXxlARCTohOEunStuxgNOGE38=;
-        b=ho9eNOLcmC0ezOZomlHvmYwiIdrYwtOJIw91Bm0Wqsl40HtdrgQ5fiDeeXBxLQm1xhcxNz
-        bjTJsbFwSrjc113FzhpCmJVkvDzKmbuxphCUkKeoDNWRBmmRP/nFkoJpv8PsnLhyfojAZ0
-        NdqnSsf+gxdFv2mnPCQmkB357426StQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-373-aaIyQsndM9SXMa9x7w_qog-1; Sun, 26 Jun 2022 23:02:17 -0400
-X-MC-Unique: aaIyQsndM9SXMa9x7w_qog-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 268D7800971;
-        Mon, 27 Jun 2022 03:02:16 +0000 (UTC)
-Received: from [10.22.16.87] (unknown [10.22.16.87])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 441E418EAB;
-        Mon, 27 Jun 2022 03:02:15 +0000 (UTC)
-Message-ID: <e57ab7f6-09e0-9189-8b08-4d68be76f518@redhat.com>
-Date:   Sun, 26 Jun 2022 23:02:14 -0400
+        Sun, 26 Jun 2022 23:09:06 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A2E21BC;
+        Sun, 26 Jun 2022 20:09:04 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id r9so4090342ljp.9;
+        Sun, 26 Jun 2022 20:09:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WvIC9OvUBfBvTPqKiHij6MJ+gTuN01q56rsASlI6Vw4=;
+        b=N4ePTGRVI2MbUavCF5Mr07vChNUUP9Ug6sycoWzNN846VPxMvy5OUFetl+mfFFEK90
+         COjDBwnM80/IFCJnc84ahmtOVMyAP59zt0By/C18yiI0oluLQXf37J2RiKH0QrxX01wG
+         J3V0UuPH5L4Q899OFl7oG2rIZjWSikE0eQP6eAO1twUtVP+BzTcfLyqpWShqTbfx3mhW
+         ziARONAC+fQejRJivwMB6G9lVLaKaTJe8osTQTwjMak/GhbBaycisUUIQWNim38/Ib2c
+         Xmo2rWzbuec5Vd6QsdUYjJ9Z6jg6QyPOS1g+SDBVKliDmBoSjAKM1KUyScQy1eSx+LDq
+         kMvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WvIC9OvUBfBvTPqKiHij6MJ+gTuN01q56rsASlI6Vw4=;
+        b=HSEN/4fZjAluM6dqLIQ7Uk0NauDWEbicgTkpmWOWCSUdFKXrwBZm9+cIk16BReTRgx
+         1aQCymHZ6VrcJ4sDqiZ6yQnEIMiekv1TZc4Lbvyg/YBc9PLp0HsyRCGLvbIj/SyLmKi7
+         f4zOwWyUL9eMN67y0S3TYa6MmLpOvHsexPaauqeF8l+xWTUnh/EGYRJAgwa4PJFLUSFt
+         v1xL6BaoFhw8UZDEoe6WzM17LJ8w7Epn17Rv8nso/kiJI09kMpQR7HvlgpyVF3uc7ii8
+         nHXqiwWlur56NDRtLcE3PX/Il1ZEeXiElU9ALuxXFZmoBfRFRb9Xj2jozRkjsJEE3hpr
+         wpZQ==
+X-Gm-Message-State: AJIora/TaKVCEiPihGT8c2SC7lgPjwm2H3ynO+vj+XrKeL/7yGVkSPC1
+        0BRV7Dp2H7hXwBWb6ExP9JPOnr0Nl/OjkZKK+tU=
+X-Google-Smtp-Source: AGRyM1se/Xl2csUNLIaa15GXvPosumiIesoPofcb9H+G41ZaW5mACO49PGUcBi0NrOheV0NXPgqFw3EU9HzrHS4cG/A=
+X-Received: by 2002:a2e:b4b4:0:b0:25b:b56e:9c9d with SMTP id
+ q20-20020a2eb4b4000000b0025bb56e9c9dmr4000703ljm.168.1656299342700; Sun, 26
+ Jun 2022 20:09:02 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2] x86/paravirt: useless assignment instructions cause
- Unixbench full core performance degradation
-Content-Language: en-US
-To:     Guo Hui <guohui@uniontech.com>, peterz@infradead.org
-Cc:     jgross@suse.com, srivatsa@csail.mit.edu, amakhalov@vmware.com,
-        pv-drivers@vmware.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, will@kernel.org, boqun.feng@gmail.com,
-        virtualization@lists.linux-foundation.org,
-        wangxiaohua@uniontech.com, linux-kernel@vger.kernel.org
-References: <f6b68466-968c-4a91-655a-23970280a072@redhat.com>
- <20220627021350.25714-1-guohui@uniontech.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <20220627021350.25714-1-guohui@uniontech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+References: <20220625153439.513559-1-tanzixuan.me@gmail.com> <YrhxE4s0hLvbbibp@krava>
+In-Reply-To: <YrhxE4s0hLvbbibp@krava>
+From:   =?UTF-8?B?6LCt5qKT54WK?= <tanzixuan.me@gmail.com>
+Date:   Mon, 27 Jun 2022 11:08:34 +0800
+Message-ID: <CABwm_eT_LE6VbLMgT31yqW=tc_obLP=6E0jnMqVn1sMdWrVVNw@mail.gmail.com>
+Subject: Re: [PATCH] perf build: Suppress openssl v3 deprecation warnings in
+ libcrypto feature test
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Zixuan Tan <tanzixuangg@gmail.com>, terrelln@fb.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/26/22 22:13, Guo Hui wrote:
-> The instructions assigned to the vcpu_is_preempted function parameter
-> in the X86 architecture physical machine are redundant instructions,
-> causing the multi-core performance of Unixbench to drop by about 4% to 5%.
-> The C function is as follows:
-> static bool vcpu_is_preempted(long vcpu);
+On Sun, Jun 26, 2022 at 10:45 PM Jiri Olsa <olsajiri@gmail.com> wrote:
 >
-> The parameter 'vcpu' in the function osq_lock
-> that calls the function vcpu_is_preempted is assigned as follows:
+> On Sat, Jun 25, 2022 at 11:34:38PM +0800, Zixuan Tan wrote:
+> > With OpenSSL v3 installed, the libcrypto feature check fails as it use the
+> > deprecated MD5_* API (and is compiled with -Werror). The error message is
+> > as follows.
+> >
+> > $ make tools/perf
+> > ```
+> > Makefile.config:778: No libcrypto.h found, disables jitted code injection,
+> > please install openssl-devel or libssl-dev
+> >
+> > Auto-detecting system features:
+> > ...                         dwarf: [ on  ]
+> > ...            dwarf_getlocations: [ on  ]
+> > ...                         glibc: [ on  ]
+> > ...                        libbfd: [ on  ]
+> > ...                libbfd-buildid: [ on  ]
+> > ...                        libcap: [ on  ]
+> > ...                        libelf: [ on  ]
+> > ...                       libnuma: [ on  ]
+> > ...        numa_num_possible_cpus: [ on  ]
+> > ...                       libperl: [ on  ]
+> > ...                     libpython: [ on  ]
+> > ...                     libcrypto: [ OFF ]
+> > ...                     libunwind: [ on  ]
+> > ...            libdw-dwarf-unwind: [ on  ]
+> > ...                          zlib: [ on  ]
+> > ...                          lzma: [ on  ]
+> > ...                     get_cpuid: [ on  ]
+> > ...                           bpf: [ on  ]
+> > ...                        libaio: [ on  ]
+> > ...                       libzstd: [ on  ]
+> > ...        disassembler-four-args: [ on  ]
+> > ```
+> >
+> > This is very confusing because the suggested library (on my Ubuntu 20.04
+> > it is libssl-dev) is already installed. As the test only checks for the
+> > presence of libcrypto, this commit suppresses the deprecation warning to
+> > allow the test to pass.
+> >
+> > Signed-off-by: Zixuan Tan <tanzixuan.me@gmail.com>
+> > ---
+> >  tools/build/feature/test-libcrypto.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >
+> > diff --git a/tools/build/feature/test-libcrypto.c b/tools/build/feature/test-libcrypto.c
+> > index a98174e0569c..31afff093d0b 100644
+> > --- a/tools/build/feature/test-libcrypto.c
+> > +++ b/tools/build/feature/test-libcrypto.c
+> > @@ -2,6 +2,12 @@
+> >  #include <openssl/sha.h>
+> >  #include <openssl/md5.h>
+> >
+> > +/*
+> > + * The MD5_* API have been deprecated since OpenSSL 3.0, which causes the
+> > + * feature test to fail silently. This is a workaround.
+> > + */
 >
-> The C code is in the function node_cpu:
-> cpu = node->cpu - 1;
+> then we use these deprecated MD5 calls in util/genelf.c if libcrypto is detected,
+> so I wonder how come the rest of the compilation passed for you.. do you have
+> CONFIG_JITDUMP disabled?
 >
-> The instructions corresponding to the C code are:
-> mov 0x14(%rax),%edi
-> sub $0x1,%edi
+> thanks,
+> jirka
 >
-> The above instructions are unnecessary
-> in the X86 Native operating environment,
-> causing high cache-misses and degrading performance.
->
-> This patch uses static_key to not execute this instruction
-> in the Native runtime environment.
->
-> The code is as follows:
->
-> DEFINE_STATIC_KEY_FALSE(preemted_key);
->
-> static inline int node_cpu(struct optimistic_spin_node *node)
-> {
->       int cpu = 0;
->
->       if (!static_branch_unlikely(&preemted_key))
->               cpu = node->cpu - 1;
->
->       return cpu;
-> }
->
-> The patch effect is as follows two machines,
-> Unixbench runs with full core score:
->
-> 1. Machine configuration:
-> Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz
-> CPU core: 40
-> Memory: 256G
-> OS Kernel: 5.19-rc3
->
-> Before using the patch:
-> System Benchmarks Index Values               BASELINE       RESULT    INDEX
-> Dhrystone 2 using register variables         116700.0  948326591.2  81261.9
-> Double-Precision Whetstone                       55.0     211986.3  38543.0
-> Execl Throughput                                 43.0      43453.2  10105.4
-> File Copy 1024 bufsize 2000 maxblocks          3960.0     438936.2   1108.4
-> File Copy 256 bufsize 500 maxblocks            1655.0     118197.4    714.2
-> File Copy 4096 bufsize 8000 maxblocks          5800.0    1534674.7   2646.0
-> Pipe Throughput                               12440.0   46482107.6  37365.0
-> Pipe-based Context Switching                   4000.0    1915094.2   4787.7
-> Process Creation                                126.0      85442.2   6781.1
-> Shell Scripts (1 concurrent)                     42.4      69400.7  16368.1
-> Shell Scripts (8 concurrent)                      6.0       8877.2  14795.3
-> System Call Overhead                          15000.0    4714906.1   3143.3
->                                                                     ========
-> System Benchmarks Index Score                                        7923.3
->
-> After using the patch:
-> System Benchmarks Index Values               BASELINE       RESULT    INDEX
-> Dhrystone 2 using register variables         116700.0  947032915.5  81151.1
-> Double-Precision Whetstone                       55.0     211971.2  38540.2
-> Execl Throughput                                 43.0      45054.8  10477.9
-> File Copy 1024 bufsize 2000 maxblocks          3960.0     515024.9   1300.6
-> File Copy 256 bufsize 500 maxblocks            1655.0     146354.6    884.3
-> File Copy 4096 bufsize 8000 maxblocks          5800.0    1679995.9   2896.5
-> Pipe Throughput                               12440.0   46466394.2  37352.4
-> Pipe-based Context Switching                   4000.0    1898221.4   4745.6
-> Process Creation                                126.0      85653.1   6797.9
-> Shell Scripts (1 concurrent)                     42.4      69437.3  16376.7
-> Shell Scripts (8 concurrent)                      6.0       8898.9  14831.4
-> System Call Overhead                          15000.0    4658746.7   3105.8
->                                                                     ========
-> System Benchmarks Index Score                                        8248.8
->
-> 2. Machine configuration:
-> Hygon C86 7185 32-core Processor
-> CPU core: 128
-> Memory: 256G
-> OS Kernel: 5.19-rc3
->
-> Before using the patch:
-> System Benchmarks Index Values               BASELINE       RESULT    INDEX
-> Dhrystone 2 using register variables         116700.0 2256644068.3 193371.4
-> Double-Precision Whetstone                       55.0     438969.9  79812.7
-> Execl Throughput                                 43.0      10108.6   2350.8
-> File Copy 1024 bufsize 2000 maxblocks          3960.0     275892.8    696.7
-> File Copy 256 bufsize 500 maxblocks            1655.0      72082.7    435.5
-> File Copy 4096 bufsize 8000 maxblocks          5800.0     925043.4   1594.9
-> Pipe Throughput                               12440.0  118905512.5  95583.2
-> Pipe-based Context Switching                   4000.0    7820945.7  19552.4
-> Process Creation                                126.0      31233.3   2478.8
-> Shell Scripts (1 concurrent)                     42.4      49042.8  11566.7
-> Shell Scripts (8 concurrent)                      6.0       6656.0  11093.3
-> System Call Overhead                          15000.0    6816047.5   4544.0
->                                                                     ========
-> System Benchmarks Index Score                                        7756.6
->
-> After using the patch:
-> System Benchmarks Index Values               BASELINE       RESULT    INDEX
-> Dhrystone 2 using register variables         116700.0 2252272929.4 192996.8
-> Double-Precision Whetstone                       55.0     451847.2  82154.0
-> Execl Throughput                                 43.0      10595.1   2464.0
-> File Copy 1024 bufsize 2000 maxblocks          3960.0     301279.3    760.8
-> File Copy 256 bufsize 500 maxblocks            1655.0      79291.3    479.1
-> File Copy 4096 bufsize 8000 maxblocks          5800.0    1039755.2   1792.7
-> Pipe Throughput                               12440.0  118701468.1  95419.2
-> Pipe-based Context Switching                   4000.0    8073453.3  20183.6
-> Process Creation                                126.0      33440.9   2654.0
-> Shell Scripts (1 concurrent)                     42.4      52722.6  12434.6
-> Shell Scripts (8 concurrent)                      6.0       7050.4  11750.6
-> System Call Overhead                          15000.0    6834371.5   4556.2
->                                                                     ========
-> System Benchmarks Index Score                                        8157.8
->
-> Signed-off-by: Guo Hui <guohui@uniontech.com>
-> ---
->   arch/x86/kernel/paravirt-spinlocks.c | 4 ++++
->   kernel/locking/osq_lock.c            | 9 ++++++++-
->   2 files changed, 12 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/x86/kernel/paravirt-spinlocks.c b/arch/x86/kernel/paravirt-spinlocks.c
-> index 9e1ea99ad..7a55f8407 100644
-> --- a/arch/x86/kernel/paravirt-spinlocks.c
-> +++ b/arch/x86/kernel/paravirt-spinlocks.c
-> @@ -33,6 +33,8 @@ bool pv_is_native_vcpu_is_preempted(void)
->   		__raw_callee_save___native_vcpu_is_preempted;
->   }
->   
-> +DECLARE_STATIC_KEY_FALSE(preemted_key);
-> +
->   void __init paravirt_set_cap(void)
->   {
->   	if (!pv_is_native_spin_unlock())
-> @@ -40,4 +42,6 @@ void __init paravirt_set_cap(void)
->   
->   	if (!pv_is_native_vcpu_is_preempted())
->   		setup_force_cpu_cap(X86_FEATURE_VCPUPREEMPT);
-> +	else
-> +		static_branch_enable(&preemted_key);
->   }
-> diff --git a/kernel/locking/osq_lock.c b/kernel/locking/osq_lock.c
-> index d5610ad52..a8798e701 100644
-> --- a/kernel/locking/osq_lock.c
-> +++ b/kernel/locking/osq_lock.c
-> @@ -22,9 +22,16 @@ static inline int encode_cpu(int cpu_nr)
->   	return cpu_nr + 1;
->   }
->   
-> +DEFINE_STATIC_KEY_FALSE(preemted_key);
-> +
->   static inline int node_cpu(struct optimistic_spin_node *node)
->   {
-> -	return node->cpu - 1;
-> +	int cpu = 0;
-> +
-> +	if (!static_branch_unlikely(&preemted_key))
-> +		cpu = node->cpu - 1;
-> +
-> +	return cpu;
->   }
->   
->   static inline struct optimistic_spin_node *decode_cpu(int encoded_cpu_val)
+No, CONFIG_JITDUMP is not disabled. I am using the default configuration.
 
-This looks much better now.
+Yes, you are right. The rest of the compilation should fail, but it doesn't.
+I checked the verbose build commands. This seems to be the result of another
+inconsistency.
 
-However vcpu_is_preempted() is not just used by x86, it is also used in 
-arm64, powerpc and s390. If you want to default disable node_cpu(), you 
-have to either make the necessary changes in all those places or you 
-have to change it a way that won't affect other arches while disabling 
-it for the x86 case.
+If libcrypto is detected, the macro "HAVE_LIBCRYPTO_SUPPORT" will be
+defined, but in perf/util/genelf.c, "HAVE_LIBCRYPTO" without the "_SUPPORT"
+prefix is checked. This causes urandom always be used to create build id
+rather than MD5 and SHA1, no matter what the detection result is.
 
-Cheers,
-Longman
+In perf/Makefile.config, from line 776
+```
+ifndef NO_LIBCRYPTO
+  ifneq ($(feature-libcrypto), 1)
+    msg := $(warning No libcrypto.h found, disables jitted code injection,
+            please install openssl-devel or libssl-dev);
+    NO_LIBCRYPTO := 1
+  else                                  <-- if libcrypto feature detected
+    CFLAGS += -DHAVE_LIBCRYPTO_SUPPORT  <-- define this
+    EXTLIBS += -lcrypto
+    $(call detected,CONFIG_CRYPTO)
+  endif
+endif
+```
 
+In perf/util/genelf.c, from line 33
+```
+#ifdef HAVE_LIBCRYPTO                <-- but check this, it's always false
+
+#define BUILD_ID_MD5
+#undef BUILD_ID_SHA /* does not seem to work well when linked with Java */
+#undef BUILD_ID_URANDOM /* different uuid for each run */
+
+#ifdef BUILD_ID_SHA
+#include <openssl/sha.h>
+#endif
+
+#ifdef BUILD_ID_MD5
+#include <openssl/md5.h>
+#endif
+#endif                               <-- this block will be skipped
+```
+
+Maybe we should fix this, to really make use of libcrypto if it is available?
+
+Links:
+ This commit include the genelf.c:
+  https://lore.kernel.org/all/1448874143-7269-3-git-send-email-eranian@google.com/T/#mb6d3e18bee4901b71a4d4ef4f406feaaf48346d9
+ This commit include the feature test:
+  https://lore.kernel.org/all/1448874143-7269-3-git-send-email-eranian@google.com/T/#m12a2ababf8ad3e366d56d9efab870592e6ff60a5
+
+Thanks,
+Zixuan
+
+> > +#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+> > +
+> >  int main(void)
+> >  {
+> >       MD5_CTX context;
+> > --
+> > 2.34.1
+> >
