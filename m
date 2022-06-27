@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 364C7CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C933C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236606AbiF0Lit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
+        id S236620AbiF0Liz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236435AbiF0Lhb (ORCPT
+        with ESMTP id S236450AbiF0Lhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFA22611;
-        Mon, 27 Jun 2022 04:32:37 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBE1262C;
+        Mon, 27 Jun 2022 04:32:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40507B80E6F;
-        Mon, 27 Jun 2022 11:32:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE161C3411D;
-        Mon, 27 Jun 2022 11:32:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C75B60023;
+        Mon, 27 Jun 2022 11:32:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C3DDC3411D;
+        Mon, 27 Jun 2022 11:32:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329555;
-        bh=tkJ1LgvX+GAPmgrFsw38JGxjxTf4yOBpQcrHf4qRLeU=;
+        s=korg; t=1656329563;
+        bh=NV9RtVFudLDqIXphuh/TH5G1CLuIWV62EEo6CBzyooM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LVPvcrJjl8F6SVxV+FxEfAVA8tHEpRiXp5dlF8JrwVCtlj+fi835aMvsnY+u2DmIu
-         iQVjl8re3ywHiRnC/5qd+qsNDYdsNGClCT+TrR1mqJ0OVK9jfbQMpr2svpL+9M7iSx
-         JcXYGI2jaKIgCsbxdd2SSNb+kH4Shui2TXbUayR8=
+        b=I0N+R2e8rXPdYFTBdemsXavd9rf8jlwv/FsMxqMj81dx9n+NNlDz+ACbLOVguKfvU
+         peWc49S6vUs7CkDULM7LNJTPZxtcJMu/fyfo+BZeq6oR8PzDBIX87SrRHtNqFVL6qf
+         6fVQD8DsTizjVeNy6nC3NFEr5M3VjlkfnXEm/RWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kailang Yang <kailang@realtek.com>,
+        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 006/135] ALSA: hda/realtek - ALC897 headset MIC no sound
-Date:   Mon, 27 Jun 2022 13:20:13 +0200
-Message-Id: <20220627111938.343433471@linuxfoundation.org>
+Subject: [PATCH 5.15 009/135] ALSA: hda/realtek: Add quirk for Clevo NS50PU
+Date:   Mon, 27 Jun 2022 13:20:16 +0200
+Message-Id: <20220627111938.428499739@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -48,54 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kailang Yang <kailang@realtek.com>
+From: Tim Crawford <tcrawford@system76.com>
 
-commit fe6900bd8156467365bd5b976df64928fdebfeb0 upstream.
+commit 627ce0d68eb4b53e995b08089fa9da1e513ec5ba upstream.
 
-There is not have Headset Mic verb table in BIOS default.
-So, it will have recording issue from headset MIC.
-Add the verb table value without jack detect. It will turn on Headset Mic.
+Fixes headset detection on Clevo NS50PU.
 
-Signed-off-by: Kailang Yang <kailang@realtek.com>
+Signed-off-by: Tim Crawford <tcrawford@system76.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/719133a27d8844a890002cb817001dfa@realtek.com
+Link: https://lore.kernel.org/r/20220622150017.9897-1-tcrawford@system76.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -10522,6 +10522,7 @@ enum {
- 	ALC668_FIXUP_MIC_DET_COEF,
- 	ALC897_FIXUP_LENOVO_HEADSET_MIC,
- 	ALC897_FIXUP_HEADSET_MIC_PIN,
-+	ALC897_FIXUP_HP_HSMIC_VERB,
- };
- 
- static const struct hda_fixup alc662_fixups[] = {
-@@ -10941,6 +10942,13 @@ static const struct hda_fixup alc662_fix
- 		.chained = true,
- 		.chain_id = ALC897_FIXUP_LENOVO_HEADSET_MIC
- 	},
-+	[ALC897_FIXUP_HP_HSMIC_VERB] = {
-+		.type = HDA_FIXUP_PINS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x19, 0x01a1913c }, /* use as headset mic, without its own jack detect */
-+			{ }
-+		},
-+	},
- };
- 
- static const struct snd_pci_quirk alc662_fixup_tbl[] = {
-@@ -10966,6 +10974,7 @@ static const struct snd_pci_quirk alc662
- 	SND_PCI_QUIRK(0x1028, 0x0698, "Dell", ALC668_FIXUP_DELL_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1028, 0x069f, "Dell", ALC668_FIXUP_DELL_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x1632, "HP RP5800", ALC662_FIXUP_HP_RP5800),
-+	SND_PCI_QUIRK(0x103c, 0x8719, "HP", ALC897_FIXUP_HP_HSMIC_VERB),
- 	SND_PCI_QUIRK(0x103c, 0x873e, "HP", ALC671_FIXUP_HP_HEADSET_MIC2),
- 	SND_PCI_QUIRK(0x103c, 0x885f, "HP 288 Pro G8", ALC671_FIXUP_HP_HEADSET_MIC2),
- 	SND_PCI_QUIRK(0x1043, 0x1080, "Asus UX501VW", ALC668_FIXUP_HEADSET_MODE),
+@@ -9000,6 +9000,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1558, 0x70f3, "Clevo NH77DPQ", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x70f4, "Clevo NH77EPY", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x70f6, "Clevo NH77DPQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1558, 0x7716, "Clevo NS50PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8228, "Clevo NR40BU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8520, "Clevo NH50D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8521, "Clevo NH77D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
 
 
