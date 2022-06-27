@@ -2,146 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19476C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 057BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232990AbiF0HwN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
+        id S233167AbiF0HxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232663AbiF0HwD (ORCPT
+        with ESMTP id S229827AbiF0HxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:52:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9CC76174
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:51:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656316309;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=xZRxk45blbbVKouBNkJa4r6LzelZm251Oyfsi7Y/n3g=;
-        b=U+9Xtuar5jpg1NiJ/d/M//KPzzMfb924bFaaOdXVSfovuM9gBhH+baI2F0S1yQwfce52cN
-        pF2azUy+2H8NhAkW83nAPLgslbQkloUXrtz3Uinjy2UVbWHDlUy9UzfDvR/Wp6L/fjJjdv
-        7dQMpgG2cwUC9HEl6nisnUSviDhZw7Y=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-59-GVZDCNw-OxyYp1Mg5P2hcA-1; Mon, 27 Jun 2022 03:51:48 -0400
-X-MC-Unique: GVZDCNw-OxyYp1Mg5P2hcA-1
-Received: by mail-pj1-f69.google.com with SMTP id h11-20020a17090a130b00b001eca05382e7so3228768pja.9
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:51:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xZRxk45blbbVKouBNkJa4r6LzelZm251Oyfsi7Y/n3g=;
-        b=S3YDQVTW1e8XBeVcEOfd8HNnXU2qdzrMTBGDr5OCEJiDygl3j6l149xOolT+Tqk8Q7
-         +hJEfA7grZogudQADy535Z8bCkSQxUVmhsVG9FZfVSJhT087q8hj6cfoLSmGDCU2KWke
-         AQdPmqHVWaZFLouOJ/9fvvcWXOcvx76a/L8cUg2JRFANnSwgT7qcPrspLnDhcxSqVkOS
-         w+25qz/cwdNcdRWEHBQokBp4BHbSEG/sMoZ9F0ROlthiMnWpKjyYyj3SkgUrQjK/smfP
-         0RYWjRx2iwZxDMuWu26N+Jt6Bci/RFMprztFex7wuvtnw4B6yA8LAHhlkFIcS8Y2HowL
-         396A==
-X-Gm-Message-State: AJIora9f0CJnmkYrOnQTsa/ksrrgnfDoI1bRAuMiuAxBDzCfAUV7KXAV
-        YIN1CX87y5UddGa3RmxTLLRhMtSLd6987Pv1vHGuRDcT69FT2uiP5jvO/bqfkv4zSQgZJM4N7HN
-        LSCfOpFNk41PEUJHRQI2sHWc4
-X-Received: by 2002:a17:903:230d:b0:16a:73ce:9068 with SMTP id d13-20020a170903230d00b0016a73ce9068mr13186034plh.57.1656316307234;
-        Mon, 27 Jun 2022 00:51:47 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vA7kWLyjSTH2Ul73cyviWapNDDOK80s/6Tz5T94ix0V5MyOp52lL87RqwN812fFM4e7ARtjQ==
-X-Received: by 2002:a17:903:230d:b0:16a:73ce:9068 with SMTP id d13-20020a170903230d00b0016a73ce9068mr13186019plh.57.1656316306908;
-        Mon, 27 Jun 2022 00:51:46 -0700 (PDT)
-Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id em20-20020a17090b015400b001eae86cf683sm6520169pjb.42.2022.06.27.00.51.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 00:51:46 -0700 (PDT)
-From:   Tao Liu <ltao@redhat.com>
-To:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     akpm@linux-foundation.org, Tao Liu <ltao@redhat.com>
-Subject: [PATCH v2] kdump: round up the total memory size to 128M for crashkernel reservation
-Date:   Mon, 27 Jun 2022 15:44:41 +0800
-Message-Id: <20220627074440.187222-1-ltao@redhat.com>
-X-Mailer: git-send-email 2.33.1
+        Mon, 27 Jun 2022 03:53:14 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFA565FC8;
+        Mon, 27 Jun 2022 00:53:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9CBB61758;
+        Mon, 27 Jun 2022 00:53:13 -0700 (PDT)
+Received: from [192.168.4.21] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 791553F5A1;
+        Mon, 27 Jun 2022 00:53:08 -0700 (PDT)
+Message-ID: <5db4e640-8165-d7bf-c6b6-192ea7edfafd@arm.com>
+Date:   Mon, 27 Jun 2022 08:52:51 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH net-next 1/4] time64.h: define PSEC_PER_NSEC and use it in
+ tc-taprio
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        linux-kernel@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <20220626120505.2369600-1-vladimir.oltean@nxp.com>
+ <20220626120505.2369600-2-vladimir.oltean@nxp.com>
+From:   Vincenzo Frascino <vincenzo.frascino@arm.com>
+In-Reply-To: <20220626120505.2369600-2-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The total memory size we get in kernel is usually slightly less than
-the actual memory size because BIOS/firmware will reserve some memory
-region. So it won't export all memory as usable.
+Hi Vladimir,
 
-E.g, on my x86_64 kvm guest with 1G memory, the total_mem value shows:
-UEFI boot with ovmf:   0x3faef000
-Legacy boot kvm guest: 0x3ff7ec00
+On 6/26/22 13:05, Vladimir Oltean wrote:
+> Time-sensitive networking code needs to work with PTP times expressed in
+> nanoseconds, and with packet transmission times expressed in
+> picoseconds, since those would be fractional at higher than gigabit
+> speed when expressed in nanoseconds.
+> 
+> Convert the existing uses in tc-taprio to a PSEC_PER_NSEC macro.
+> 
+> Cc: Andy Lutomirski <luto@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  include/vdso/time64.h  | 1 +
+>  net/sched/sch_taprio.c | 4 ++--
+>  2 files changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/vdso/time64.h b/include/vdso/time64.h
+> index b40cfa2aa33c..f1c2d02474ae 100644
+> --- a/include/vdso/time64.h
+> +++ b/include/vdso/time64.h
+> @@ -6,6 +6,7 @@
+>  #define MSEC_PER_SEC	1000L
+>  #define USEC_PER_MSEC	1000L
+>  #define NSEC_PER_USEC	1000L
+> +#define PSEC_PER_NSEC	1000L
 
-When specifying crashkernel=1G-2G:128M, if we have a 1G memory machine,
-we get total size 1023M from firmware. Then it will not fall into
-1G-2G, thus no memory reserved. User will never know this, it is hard
-to let user know the exact total value in kernel.
+Are you planning to use this definition in the vdso library code? If not, you
+should define PSEC_PER_NSEC in "include/linux/time64.h". The vdso namespace
+should contain only the definitions shared by the implementations of the kernel
+and of the vdso library.
 
-One way is to use dmi/smbios to get physical memory size, but it's not
-reliable as well. According to Prarit hardware vendors sometimes screw
-this up. Thus round up total size to 128M to work around this problem.
-
-This patch is a resend of [1] and rebased onto v5.19-rc2, and the
-original credit goes to Dave Young <dyoung@redhat.com>.
-
-[1]: http://lists.infradead.org/pipermail/kexec/2018-April/020568.html
-
-Signed-off-by: Tao Liu <ltao@redhat.com>
----
-v1 -> v2:
-Modified commit log based on Baoquan's advice.
----
- kernel/crash_core.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 71122e01623c..b58b27cbdb61 100644
---- a/kernel/crash_core.c
-+++ b/kernel/crash_core.c
-@@ -9,6 +9,7 @@
- #include <linux/init.h>
- #include <linux/utsname.h>
- #include <linux/vmalloc.h>
-+#include <linux/sizes.h>
- 
- #include <asm/page.h>
- #include <asm/sections.h>
-@@ -43,6 +44,15 @@ static int __init parse_crashkernel_mem(char *cmdline,
- 					unsigned long long *crash_base)
- {
- 	char *cur = cmdline, *tmp;
-+	unsigned long long total_mem = system_ram;
-+
-+	/*
-+	 * Firmware sometimes reserves some memory regions for its own use,
-+	 * so the system memory size is less than the actual physical memory
-+	 * size. Work around this by rounding up the total size to 128M,
-+	 * which is enough for most test cases.
-+	 */
-+	total_mem = roundup(total_mem, SZ_128M);
- 
- 	/* for each entry of the comma-separated list */
- 	do {
-@@ -87,13 +97,13 @@ static int __init parse_crashkernel_mem(char *cmdline,
- 			return -EINVAL;
- 		}
- 		cur = tmp;
--		if (size >= system_ram) {
-+		if (size >= total_mem) {
- 			pr_warn("crashkernel: invalid size\n");
- 			return -EINVAL;
- 		}
- 
- 		/* match ? */
--		if (system_ram >= start && system_ram < end) {
-+		if (total_mem >= start && total_mem < end) {
- 			*crash_size = size;
- 			break;
- 		}
+...
 -- 
-2.33.1
-
+Regards,
+Vincenzo
