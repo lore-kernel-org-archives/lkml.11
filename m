@@ -2,108 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 558E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E024C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242462AbiF0WC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 18:02:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
+        id S242471AbiF0WC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 18:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241649AbiF0V4L (ORCPT
+        with ESMTP id S241710AbiF0V4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:56:11 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D2318B02;
-        Mon, 27 Jun 2022 14:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366910; x=1687902910;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Z2v9awnUY4jkBBjDyMt8sC+0XqJ7pmCWw7adCSxhLw0=;
-  b=Xr/NpRFKqhc/q7fRUs78MrPQqR1A8NqTAR/ZJDDMdFj4nGeFQ47yyJNm
-   0QUxEzswxmNqD0T3gIhUsUN8ODoKk/AOB+2slLyJ0fasBQJPufiO3PW3h
-   Q8rmtunfyiZ7CSEofK+PQQvAdMvyXiFHh3HdJ/iqHj4Q2qHEbWijEGa/h
-   ac8ASPNLWz0COpjNtNfSWWuOUuSBW7vAeet/51loeNkiTHbq8DWcyd9Mg
-   p+3v2Z2Wmu5UoWnF2WvtqgdTZjfo1/WX/WH/rcgrq+aYGF6Oqybupk/9N
-   bwZaBgzIe4cAHW0LZutFoPIWC6b3bX/rO3gwLYIYtC8DDd/SWG+nN9Z9K
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116150"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="279116150"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:02 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863764"
-Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:02 -0700
-From:   isaku.yamahata@intel.com
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 097/102] KVM: TDX: Handle TDG.VP.VMCALL<GetTdVmCallInfo> hypercall
-Date:   Mon, 27 Jun 2022 14:54:29 -0700
-Message-Id: <76d4e3cef05d6560a8c7606d66acefd2b1298db3.1656366338.git.isaku.yamahata@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
+        Mon, 27 Jun 2022 17:56:21 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D927F18E33;
+        Mon, 27 Jun 2022 14:55:18 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C6F881758;
+        Mon, 27 Jun 2022 14:55:18 -0700 (PDT)
+Received: from [10.57.85.164] (unknown [10.57.85.164])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 57D733F66F;
+        Mon, 27 Jun 2022 14:55:17 -0700 (PDT)
+Message-ID: <2cb087fe-21d8-7513-4e55-b836d7086a1c@arm.com>
+Date:   Mon, 27 Jun 2022 22:55:16 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH v2 2/3] dt-bindings: arm: Convert CoreSight bindings to DT
+ schema
+To:     Rob Herring <robh@kernel.org>
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220603011933.3277315-1-robh@kernel.org>
+ <20220603011933.3277315-3-robh@kernel.org>
+ <01e9e2a0-df0a-3b31-f819-d68c6eb0f01d@arm.com>
+ <20220627201115.GA2870653-robh@kernel.org>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20220627201115.GA2870653-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+On 27/06/2022 21:11, Rob Herring wrote:
+> On Mon, Jun 20, 2022 at 06:17:20PM +0100, Suzuki K Poulose wrote:
+>> Hi Rob
+>>
+>> A big Thank You for the effort ! A minor comment below.
+>>
+>> On 03/06/2022 02:19, Rob Herring wrote:
+>>> Each CoreSight component has slightly different requirements and
+>>> nothing applies to every component, so each CoreSight component has its
+>>> own schema document.
+>>>
+>>> Signed-off-by: Rob Herring <robh@kernel.org>
+>>> --
+>>> v2:
+>>>    - Add missing arm,coresight-dynamic-replicator.yaml and
+>>>      arm,coresight-static-funnel.yaml
+>>>    - Update MAINTAINERS
+>>>    - Fix coresight.txt references
+>>>    - Fix double blank line
+>>> ---
+>>>    .../bindings/arm/arm,coresight-catu.yaml      | 101 +++++
+>>>    .../bindings/arm/arm,coresight-cti.yaml       |   3 +-
+>>>    .../arm/arm,coresight-dynamic-funnel.yaml     | 126 ++++++
+>>>    .../arm/arm,coresight-dynamic-replicator.yaml | 126 ++++++
+>>>    .../bindings/arm/arm,coresight-etb10.yaml     |  92 ++++
+>>>    .../bindings/arm/arm,coresight-etm.yaml       | 156 +++++++
+>>>    .../arm/arm,coresight-static-funnel.yaml      |  89 ++++
+>>>    .../arm/arm,coresight-static-replicator.yaml  |  90 ++++
+>>>    .../bindings/arm/arm,coresight-stm.yaml       | 101 +++++
+>>>    .../bindings/arm/arm,coresight-tmc.yaml       | 131 ++++++
+>>>    .../bindings/arm/arm,coresight-tpiu.yaml      |  91 ++++
+>>>    .../arm/arm,embedded-trace-extension.yaml     |   1 -
+>>>    .../devicetree/bindings/arm/coresight.txt     | 402 ------------------
+>>>    Documentation/trace/coresight/coresight.rst   |   2 +-
+>>>    MAINTAINERS                                   |   3 +-
+>>>    15 files changed, 1106 insertions(+), 408 deletions(-)
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-catu.yaml
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-dynamic-funnel.yaml
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-dynamic-replicator.yaml
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-etb10.yaml
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-etm.yaml
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-static-funnel.yaml
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-static-replicator.yaml
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-stm.yaml
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-tmc.yaml
+>>>    create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-tpiu.yaml
+>>>    delete mode 100644 Documentation/devicetree/bindings/arm/coresight.txt
+>>>
+>>
+>> ...
+>>
+>>> diff --git a/Documentation/devicetree/bindings/arm/arm,coresight-etm.yaml b/Documentation/devicetree/bindings/arm/arm,coresight-etm.yaml
+>>> new file mode 100644
+>>> index 000000000000..e0377ce48537
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/arm/arm,coresight-etm.yaml
+>>> @@ -0,0 +1,156 @@
+>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/arm/arm,coresight-etm.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: Arm CoreSight Embedded Trace MacroCell
+>>> +
+>>> +maintainers:
+>>> +  - Mathieu Poirier <mathieu.poirier@linaro.org>
+>>> +  - Mike Leach <mike.leach@linaro.org>
+>>> +  - Leo Yan <leo.yan@linaro.org>
+>>> +  - Suzuki K Poulose <suzuki.poulose@arm.com>
+>>> +
+>>> +description: |
+>>> +  CoreSight components are compliant with the ARM CoreSight architecture
+>>> +  specification and can be connected in various topologies to suit a particular
+>>> +  SoCs tracing needs. These trace components can generally be classified as
+>>> +  sinks, links and sources. Trace data produced by one or more sources flows
+>>> +  through the intermediate links connecting the source to the currently selected
+>>> +  sink.
+>>> +
+>>> +  The Embedded Trace Macrocell (ETM) is a real-time trace module providing
+>>> +  instruction and data tracing of a processor.
+>>> +
+>>> +select:
+>>> +  properties:
+>>> +    compatible:
+>>> +      contains:
+>>> +        enum:
+>>> +          - arm,coresight-etm3x
+>>> +          - arm,coresight-etm4x
+>>> +          - arm,coresight-etm4x-sysreg
+>>> +  required:
+>>> +    - compatible
+>>> +
+>>> +allOf:
+>>> +  - if:
+>>> +      not:
+>>> +        properties:
+>>> +          compatible:
+>>> +            contains:
+>>> +              const: arm,coresight-etm4x-sysreg
+>>> +    then:
+>>> +      $ref: /schemas/arm/primecell.yaml#
+>>> +      required:
+>>> +        - reg
+> 
+> 
+> ^^^^
+> 
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    oneOf:
+>>> +      - description:
+>>> +          Embedded Trace Macrocell with memory mapped access.
+>>> +        items:
+>>> +          - enum:
+>>> +              - arm,coresight-etm3x
+>>> +              - arm,coresight-etm4x
+>>> +          - const: arm,primecell
+>>> +      - description:
+>>> +          Embedded Trace Macrocell (version 4.x), with system register access only
+>>> +        const: arm,coresight-etm4x-sysreg
+>>> +
+>>> +  reg:
+>>> +    maxItems: 1
+>>
+>> The register field is mandatory for everything, except
+>> arm,coresight-etm4x-sysreg. Is there a way to enforce that
+>> selectively for the others ?
+> 
+> Yes, that's what it is doing up above that I flagged.
+> 
 
-Implement TDG.VP.VMCALL<GetTdVmCallInfo> hypercall.  If the input value is
-zero, return success code and zero in output registers.
+Thanks for the claritification.
 
-TDG.VP.VMCALL<GetTdVmCallInfo> hypercall is a subleaf of TDG.VP.VMCALL to
-enumerate which TDG.VP.VMCALL sub leaves are supported.  This hypercall is
-for future enhancement of the Guest-Host-Communication Interface (GHCI)
-specification.  The GHCI version of 344426-001US defines it to require
-input R12 to be zero and to return zero in output registers, R11, R12, R13,
-and R14 so that guest TD enumerates no enhancement.
+...
 
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
----
- arch/x86/kvm/vmx/tdx.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+>>> diff --git a/Documentation/devicetree/bindings/arm/arm,coresight-stm.yaml b/Documentation/devicetree/bindings/arm/arm,coresight-stm.yaml
+>>> new file mode 100644
+>>> index 000000000000..905008faa012
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/arm/arm,coresight-stm.yaml
+>>> @@ -0,0 +1,101 @@
+>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/arm/arm,coresight-stm.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: Arm CoreSight System Trace MacroCell
+>>> +
+>>> +maintainers:
+>>> +  - Mathieu Poirier <mathieu.poirier@linaro.org>
+>>> +  - Mike Leach <mike.leach@linaro.org>
+>>> +  - Leo Yan <leo.yan@linaro.org>
+>>> +  - Suzuki K Poulose <suzuki.poulose@arm.com>
+>>> +
+>>> +description: |
+>>> +  CoreSight components are compliant with the ARM CoreSight architecture
+>>> +  specification and can be connected in various topologies to suit a particular
+>>> +  SoCs tracing needs. These trace components can generally be classified as
+>>> +  sinks, links and sources. Trace data produced by one or more sources flows
+>>> +  through the intermediate links connecting the source to the currently selected
+>>> +  sink.
+>>> +
+>>> +  The STM is a trace source that is integrated into a CoreSight system, designed
+>>> +  primarily for high-bandwidth trace of instrumentation embedded into software.
+>>> +  This instrumentation is made up of memory-mapped writes to the STM Advanced
+>>> +  eXtensible Interface (AXI) slave, which carry information about the behavior
+>>> +  of the software.
+>>> +
+>>> +select:
+>>> +  properties:
+>>> +    compatible:
+>>> +      contains:
+>>> +        const: arm,coresight-stm
+>>> +  required:
+>>> +    - compatible
+>>> +
+>>> +allOf:
+>>> +  - $ref: /schemas/arm/primecell.yaml#
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    items:
+>>> +      - const: arm,coresight-stm
+>>> +      - const: arm,primecell
+>>> +
+>>> +  reg:
+>>> +    maxItems: 2
+>>
+>> stm-stimulus-base is mandatory for stm. So I believe, we should add
+>>
+>> 	minItems: 2
+>> above ?
+> 
+> That's the default if not explicit.
 
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index d4ac573d9db3..b1a1a7d96f39 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1203,6 +1203,20 @@ static int tdx_emulate_wrmsr(struct kvm_vcpu *vcpu)
- 	return 1;
- }
- 
-+static int tdx_get_td_vm_call_info(struct kvm_vcpu *vcpu)
-+{
-+	if (tdvmcall_a0_read(vcpu))
-+		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
-+	else {
-+		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
-+		kvm_r11_write(vcpu, 0);
-+		tdvmcall_a0_write(vcpu, 0);
-+		tdvmcall_a1_write(vcpu, 0);
-+		tdvmcall_a2_write(vcpu, 0);
-+	}
-+	return 1;
-+}
-+
- static int tdx_report_fatal_error(struct kvm_vcpu *vcpu)
- {
- 	/*
-@@ -1297,6 +1311,8 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
- 		return tdx_emulate_rdmsr(vcpu);
- 	case EXIT_REASON_MSR_WRITE:
- 		return tdx_emulate_wrmsr(vcpu);
-+	case TDG_VP_VMCALL_GET_TD_VM_CALL_INFO:
-+		return tdx_get_td_vm_call_info(vcpu);
- 	case TDG_VP_VMCALL_REPORT_FATAL_ERROR:
- 		return tdx_report_fatal_error(vcpu);
- 	case TDG_VP_VMCALL_MAP_GPA:
--- 
-2.25.1
+Ok. So, with the above explanation, ( with gratitude )
 
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
