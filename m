@@ -2,128 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D43E0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C04C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239242AbiF0QbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60218 "EHLO
+        id S239307AbiF0Qcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239239AbiF0QbW (ORCPT
+        with ESMTP id S239401AbiF0Qco (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:31:22 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5723AB7CC
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:31:21 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 54AEA1758;
-        Mon, 27 Jun 2022 09:31:21 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 438F13F66F;
-        Mon, 27 Jun 2022 09:31:19 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 17:30:08 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Ionela Voinescu <ionela.voinescu@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Pierre Gondois <pierre.gondois@arm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v4 16/20] arch_topology: Drop unnecessary check for
- uninitialised package_id
-Message-ID: <20220627163008.qnyx27arpxmihpya@bogus>
-References: <20220621192034.3332546-1-sudeep.holla@arm.com>
- <20220621192034.3332546-17-sudeep.holla@arm.com>
- <Yrms1OMuSZ2GhmT7@arm.com>
+        Mon, 27 Jun 2022 12:32:44 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D994B7C2
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:32:43 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id f190so5488445wma.5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:32:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3jWqe5eCEvfhJ7SMk4jmfVBzaJ6AjX6eIUnqn4WhHcw=;
+        b=XVc9E0UydcgtLVpzee18YUE9wICJ2T/ZGKJI2aIKDSZ0FG2od9hCMeDuQ04H0LHste
+         EMlYDFtHmqQHE5QTJzqXpgfexBrPEb8s/gNrhGLcVlknqbf5WVjUoLqoF4/auGb1d2pp
+         KvCmBZx6+xHU2kGHRslJarja7ML5hE8qjc9vYEWtYm6gDaLMyKKY/CNS1qDDYMmNrf2q
+         eJGzNf6Kt2xl35zFybppKqqjGgCbEToH9xB5OnUM9RQIoqOID+E6UxNMgQJxGaGbAiK+
+         A9lg9ufuLtyP3v79JJ+7OzMGSKg+ItpegL4oXNOvBdIBkW74CZhBWA2w3qXGGoNk6Q2Y
+         GrXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3jWqe5eCEvfhJ7SMk4jmfVBzaJ6AjX6eIUnqn4WhHcw=;
+        b=n9B7EMO36cxxLYpcDqzLvS6uB5xBoKjuzykS3YXSVMGu4Zy7uFJdltYJo4r7l4f6of
+         mQbVl76Rd6crQU7PiioG2jTHWq4zVfxUckB8iIi1LSxDRoyuzeUKB1JtOHGku1OOBbjm
+         ES5eFn8V9dKxW55QadUsql6K+iaOseM0VMoy3CjVqcTwRyd0qLvSnMExyHjjqGQY41jo
+         /3pJ8Y8/BP4LIzy1uU8paHpHjUjV4/y0xbMZtkevDAA29oPujmoQDzMhrfCVy5xlBDcZ
+         WN0ublkzmVrhbCJLFTn51Tqnjm+W2RvBCfZ7vpVvzjWTrUjwlU/hdFrkhNNIdmZnbJI7
+         aDGg==
+X-Gm-Message-State: AJIora/295zuf/fbRhWMSp4+p93FlkS6ppFB9rcz4NraMo2wOFbB0EDB
+        3tRWDC2b8J3dUIaWFQHCB0Tels9QrzqBZpJBTouxkw==
+X-Google-Smtp-Source: AGRyM1t48nYJVTT2qNAqd3qaLOiynSoa4TcaU+Vs4a6qOvjq1erfTLSCVvuvbMMR2hkQh4b41MolwKgSaJZvfs85Jjs=
+X-Received: by 2002:a05:600c:4081:b0:3a0:47c4:8dd0 with SMTP id
+ k1-20020a05600c408100b003a047c48dd0mr9768995wmh.178.1656347561570; Mon, 27
+ Jun 2022 09:32:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yrms1OMuSZ2GhmT7@arm.com>
+References: <20220617210717.27126-1-madvenka@linux.microsoft.com>
+ <20220623173224.GB16966@willie-the-truck> <66545c21-cfcf-60eb-4acf-39be99520369@linux.microsoft.com>
+ <YrgkdBtbFmOvKJpX@FVFF77S0Q05N> <b7f62c2e-b2ef-1528-d126-b2e0c001a7c4@linux.microsoft.com>
+In-Reply-To: <b7f62c2e-b2ef-1528-d126-b2e0c001a7c4@linux.microsoft.com>
+From:   Kalesh Singh <kaleshsingh@google.com>
+Date:   Mon, 27 Jun 2022 09:32:30 -0700
+Message-ID: <CAC_TJveqCTToimvrrTrEcRAxERL0EW+61PxS9emb-u51Eo4Eug@mail.gmail.com>
+Subject: Re: [PATCH v15 0/6] arm64: Reorganize the unwinder and implement
+ stack trace reliability checks
+To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>, Will Deacon <will@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morris <jamorris@linux.microsoft.com>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        live-patching@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Marc Zyngier <maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 02:12:52PM +0100, Ionela Voinescu wrote:
-> On Tuesday 21 Jun 2022 at 20:20:30 (+0100), Sudeep Holla wrote:
-> > With the support of socket node parsing from the device tree and
-> > assigning 0 as package_id in absence of socket nodes, there is no need
-> > to check for invalid package_id. It is always initialised to 0 or values
-> > from the device tree socket nodes.
-> > 
-> > Just drop that now redundant check for uninitialised package_id.
-> > 
-> > Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> > ---
-> >  drivers/base/arch_topology.c | 11 -----------
-> >  1 file changed, 11 deletions(-)
-> > 
-> > diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> > index 46fa1b70b02b..42448a5a9412 100644
-> > --- a/drivers/base/arch_topology.c
-> > +++ b/drivers/base/arch_topology.c
-> > @@ -611,7 +611,6 @@ static int __init parse_dt_topology(void)
-> >  {
-> >  	struct device_node *cn, *map;
-> >  	int ret = 0;
-> > -	int cpu;
-> >  
-> >  	cn = of_find_node_by_path("/cpus");
-> >  	if (!cn) {
-> > @@ -633,16 +632,6 @@ static int __init parse_dt_topology(void)
-> >  
-> >  	topology_normalize_cpu_scale();
-> >  
-> > -	/*
-> > -	 * Check that all cores are in the topology; the SMP code will
-> > -	 * only mark cores described in the DT as possible.
-> > -	 */
-> > -	for_each_possible_cpu(cpu)
-> > -		if (cpu_topology[cpu].package_id < 0) {
-> > -			ret = -EINVAL;
-> > -			break;
-> > -		}
-> > -
-> 
-> Maybe it would still be good to keep this for systems with potential
-> errors in DT, where one forgets to add a core in cpu-map.
+On Sun, Jun 26, 2022 at 9:33 PM Madhavan T. Venkataraman
+<madvenka@linux.microsoft.com> wrote:
 >
+>
+>
+> On 6/26/22 04:18, Mark Rutland wrote:
+> > On Fri, Jun 24, 2022 at 12:19:01AM -0500, Madhavan T. Venkataraman wrote:
+> >>
+> >>
+> >> On 6/23/22 12:32, Will Deacon wrote:
+> >>> On Fri, Jun 17, 2022 at 04:07:11PM -0500, madvenka@linux.microsoft.com wrote:
+> >>>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+> >>>>
+> >>>> I have synced this patch series to v5.19-rc2.
+> >>>> I have also removed the following patch.
+> >>>>
+> >>>>    [PATCH v14 7/7] arm64: Select HAVE_RELIABLE_STACKTRACE
+> >>>>
+> >>>> as HAVE_RELIABLE_STACKTRACE depends on STACK_VALIDATION which is not present
+> >>>> yet. This patch will be added in the future once Objtool is enhanced to
+> >>>> provide stack validation in some form.
+> >>>
+> >>> Given that it's not at all obvious that we're going to end up using objtool
+> >>> for arm64, does this patch series gain us anything in isolation?
+> >>>
+> >>
+> >> BTW, I have synced my patchset to 5.19-rc2 and sent it as v15.
+> >>
+> >> So, to answer your question, patches 1 thru 3 in v15 are still useful even if we don't
+> >> consider reliable stacktrace. These patches reorganize the unwinder code based on
+> >> comments from both Mark Rutland and Mark Brown. Mark Brown has already OKed them.
+> >> If Mark Rutland OKes them, we should upstream them.
+> >
+> > Sorry for the delay; I have been rather swamped recently and haven't had the
+> > time to give this the time it needs.
+> >
+> > I'm happy with patches 1 and 2, and I've acked those in case Will wants to pick
+> > them.
+> >
+> > Kalesh (cc'd) is working to share the unwinder code with hyp, and I think that
+> > we need to take a step back and consider how we can make the design work
+> > cleanly with that. I'd had a go at prototyping making the unwinder more data
+> > driven, but I haven't come up with something satisfactory so far.
+> >
+> > It would be good if you could look at / comment on each others series.
+> >
+>
+> I will review Kalesh's unwinder changes.
 
-Though I would ideally prefer to catch such DT issues with schema, I know
-we are no there yet. So I agree to retain this.
+Thanks Mark, I'll take a look.
 
-> For example, if I modify juno.dts as follows:
-> 
-> --- a/arch/arm64/boot/dts/arm/juno.dts
-> +++ b/arch/arm64/boot/dts/arm/juno.dts
-> @@ -51,12 +51,9 @@ core0 {
->                                         cpu = <&A53_0>;
->                                 };
->                                 core1 {
-> -                                       cpu = <&A53_1>;
-> -                               };
-> -                               core2 {
->                                         cpu = <&A53_2>;
->                                 };
-> -                               core3 {
-> +                               core2 {
->                                         cpu = <&A53_3>;
->                                 };
->                         };
-> 
-> and miss a little core in cluster1, I would end up with an incomplete
-> topology: core3 would have cluster_id as -1, while all other CPUs would
-> have a valid value; also, core3 would have package_id = -1.
-> 
+Madhavan, I'm in the process of preparing a new version. Let me rebase
+on your first 2 patches and resend, so you can look at that version
+instead.
 
-Indeed. I didn't consider the case where DT would have issues when I dropped
-this check. I will drop this patch. Thanks again.
+Thanks,
+Kalesh
 
--- 
-Regards,
-Sudeep
+>
+> Thanks.
+>
+> Madhavan
