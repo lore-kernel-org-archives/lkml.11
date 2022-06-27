@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BF0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235602AbiF0LbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
+        id S235516AbiF0LbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235505AbiF0L3u (ORCPT
+        with ESMTP id S235514AbiF0L3x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:29:50 -0400
+        Mon, 27 Jun 2022 07:29:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1114EB4B;
-        Mon, 27 Jun 2022 04:28:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D00B6A;
+        Mon, 27 Jun 2022 04:28:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D933B8111A;
-        Mon, 27 Jun 2022 11:28:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13DEDC3411D;
-        Mon, 27 Jun 2022 11:28:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83344B81123;
+        Mon, 27 Jun 2022 11:28:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA648C3411D;
+        Mon, 27 Jun 2022 11:28:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329309;
-        bh=kDihq9Bw183BjtWkYgzYJBoXpL/l/VQicOl/orkDVZM=;
+        s=korg; t=1656329312;
+        bh=H3PkShMS5tf0/PpMKZejczg+nRG9ZJY4p0skfPXy2wo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ip3Wu/L2UQ2B083j7WzoB+2Qd74EIZWZyovq472gRumkgVb6OXD1mhgHEpQ2ueeJ
-         mLRBUzfaZA/4xAHIei6YviqZvwvgS2zsZ4YIHiRpG6bQOjWUs+75EpoWY/DHxBMqT9
-         3S9Ki85UqLQsf5w9jtYBKGYKaSqedhGhnlYwWmxQ=
+        b=rkOrmDEv3sJlBZNNmswWxBbiWQZwPzRTQT4edRKga5NJQK6C2v7+AWbUK9oKazoqe
+         W+1KlHGSisyjBvg4fdxj/lsYXZ0vSqaT2uWItwq4p6F241gXv54ozVkTzEbT/XEwBw
+         oaMy8eatJv8eVRVXdN+0rUnnkXC35PqFf8K8MRZI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Jon Maxwell <jmaxwell37@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Curtis Taylor <cutaylor-pub@yahoo.com>,
-        Martin KaFai Lau <kafai@fb.com>,
+        stable@vger.kernel.org, Ondrej Spacek <ondrej.spacek@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 17/60] bpf: Fix request_sock leak in sk lookup helpers
-Date:   Mon, 27 Jun 2022 13:21:28 +0200
-Message-Id: <20220627111928.168248168@linuxfoundation.org>
+Subject: [PATCH 5.4 18/60] phy: aquantia: Fix AN when higher speeds than 1G are not advertised
+Date:   Mon, 27 Jun 2022 13:21:29 +0200
+Message-Id: <20220627111928.196980705@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -52,96 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Maxwell <jmaxwell37@gmail.com>
+From: Claudiu Manoil <claudiu.manoil@nxp.com>
 
-[ Upstream commit 3046a827316c0e55fc563b4fb78c93b9ca5c7c37 ]
+[ Upstream commit 9b7fd1670a94a57d974795acebde843a5c1a354e ]
 
-A customer reported a request_socket leak in a Calico cloud environment. We
-found that a BPF program was doing a socket lookup with takes a refcnt on
-the socket and that it was finding the request_socket but returning the parent
-LISTEN socket via sk_to_full_sk() without decrementing the child request socket
-1st, resulting in request_sock slab object leak. This patch retains the
-existing behaviour of returning full socks to the caller but it also decrements
-the child request_socket if one is present before doing so to prevent the leak.
+Even when the eth port is resticted to work with speeds not higher than 1G,
+and so the eth driver is requesting the phy (via phylink) to advertise up
+to 1000BASET support, the aquantia phy device is still advertising for 2.5G
+and 5G speeds.
+Clear these advertising defaults when requested.
 
-Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
-thanks to Antoine Tenart for the reproducer and patch input.
-
-v2 of this patch contains, refactor as per Daniel Borkmann's suggestions to
-validate RCU flags on the listen socket so that it balances with bpf_sk_release()
-and update comments as per Martin KaFai Lau's suggestion. One small change to
-Daniels suggestion, put "sk = sk2" under "if (sk2 != sk)" to avoid an extra
-instruction.
-
-Fixes: f7355a6c0497 ("bpf: Check sk_fullsock() before returning from bpf_sk_lookup()")
-Fixes: edbf8c01de5a ("bpf: add skc_lookup_tcp helper")
-Co-developed-by: Antoine Tenart <atenart@kernel.org>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/bpf/56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net
-Link: https://lore.kernel.org/bpf/20220615011540.813025-1-jmaxwell37@gmail.com
+Cc: Ondrej Spacek <ondrej.spacek@nxp.com>
+Fixes: 09c4c57f7bc41 ("net: phy: aquantia: add support for auto-negotiation configuration")
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Link: https://lore.kernel.org/r/20220610084037.7625-1-claudiu.manoil@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 34 ++++++++++++++++++++++++++++------
- 1 file changed, 28 insertions(+), 6 deletions(-)
+ drivers/net/phy/aquantia_main.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index b0df4ddbe30c..eba96343c7af 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5313,10 +5313,21 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
- 					   ifindex, proto, netns_id, flags);
+diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
+index 975789d9349d..75d8351ee250 100644
+--- a/drivers/net/phy/aquantia_main.c
++++ b/drivers/net/phy/aquantia_main.c
+@@ -34,6 +34,8 @@
+ #define MDIO_AN_VEND_PROV			0xc400
+ #define MDIO_AN_VEND_PROV_1000BASET_FULL	BIT(15)
+ #define MDIO_AN_VEND_PROV_1000BASET_HALF	BIT(14)
++#define MDIO_AN_VEND_PROV_5000BASET_FULL	BIT(11)
++#define MDIO_AN_VEND_PROV_2500BASET_FULL	BIT(10)
+ #define MDIO_AN_VEND_PROV_DOWNSHIFT_EN		BIT(4)
+ #define MDIO_AN_VEND_PROV_DOWNSHIFT_MASK	GENMASK(3, 0)
+ #define MDIO_AN_VEND_PROV_DOWNSHIFT_DFLT	4
+@@ -230,9 +232,20 @@ static int aqr_config_aneg(struct phy_device *phydev)
+ 			      phydev->advertising))
+ 		reg |= MDIO_AN_VEND_PROV_1000BASET_HALF;
  
- 	if (sk) {
--		sk = sk_to_full_sk(sk);
--		if (!sk_fullsock(sk)) {
-+		struct sock *sk2 = sk_to_full_sk(sk);
++	/* Handle the case when the 2.5G and 5G speeds are not advertised */
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
++			      phydev->advertising))
++		reg |= MDIO_AN_VEND_PROV_2500BASET_FULL;
 +
-+		/* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk
-+		 * sock refcnt is decremented to prevent a request_sock leak.
-+		 */
-+		if (!sk_fullsock(sk2))
-+			sk2 = NULL;
-+		if (sk2 != sk) {
- 			sock_gen_put(sk);
--			return NULL;
-+			/* Ensure there is no need to bump sk2 refcnt */
-+			if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
-+				WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
-+				return NULL;
-+			}
-+			sk = sk2;
- 		}
- 	}
- 
-@@ -5350,10 +5361,21 @@ bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
- 					 flags);
- 
- 	if (sk) {
--		sk = sk_to_full_sk(sk);
--		if (!sk_fullsock(sk)) {
-+		struct sock *sk2 = sk_to_full_sk(sk);
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT,
++			      phydev->advertising))
++		reg |= MDIO_AN_VEND_PROV_5000BASET_FULL;
 +
-+		/* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk
-+		 * sock refcnt is decremented to prevent a request_sock leak.
-+		 */
-+		if (!sk_fullsock(sk2))
-+			sk2 = NULL;
-+		if (sk2 != sk) {
- 			sock_gen_put(sk);
--			return NULL;
-+			/* Ensure there is no need to bump sk2 refcnt */
-+			if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
-+				WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
-+				return NULL;
-+			}
-+			sk = sk2;
- 		}
- 	}
- 
+ 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_VEND_PROV,
+ 				     MDIO_AN_VEND_PROV_1000BASET_HALF |
+-				     MDIO_AN_VEND_PROV_1000BASET_FULL, reg);
++				     MDIO_AN_VEND_PROV_1000BASET_FULL |
++				     MDIO_AN_VEND_PROV_2500BASET_FULL |
++				     MDIO_AN_VEND_PROV_5000BASET_FULL, reg);
+ 	if (ret < 0)
+ 		return ret;
+ 	if (ret > 0)
 -- 
 2.35.1
 
