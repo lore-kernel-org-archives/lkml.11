@@ -2,122 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9E9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FA9CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:44:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240630AbiF0TnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:43:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54876 "EHLO
+        id S240655AbiF0Tou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240593AbiF0Tlr (ORCPT
+        with ESMTP id S231872AbiF0Tot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 15:41:47 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330171704F
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:41:46 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id o4so10539228wrh.3
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:41:46 -0700 (PDT)
+        Mon, 27 Jun 2022 15:44:49 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DB419026;
+        Mon, 27 Jun 2022 12:44:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZPnaNl2N6OCS49bYwYg25LRRooD0U5t+6njnQfYqn3w=;
-        b=MOohgr19HljbByTvyNxJnTzuFRc+80XEY83slSBV3T38pJReWc/r2vS/nOk5tM3fgh
-         o0PeEHbIXwdYX8w8o/2Z+tOWI/pblKRMqN6cWcuVmoSgQJcUM4k7o3KZ8Bga/IW3cMxn
-         htf5vt82qgwz2AdmKcvtLew4WTHJpzSLNlFEtSdw1lUDBPfmzQ6VPma4Ihqx416iMO9q
-         OjG2BfW5Fb/pMNNGTa0W3lzf/5Uj3IdmCXYm0bDti+q5Vvni3wozuVRvHSs4b2osYT2/
-         INsrbelKnz8FWtbN/E4RVTXkbha41T/RhTGSoWBux0TT5r20qWoUKgEs96eGFAOTBcM3
-         SHKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZPnaNl2N6OCS49bYwYg25LRRooD0U5t+6njnQfYqn3w=;
-        b=V3iPgNNaPxWb3PFBDY/I0vxa5eCdOgFOl6C5BZq+gR40tqTHTBn3ssJiRS4bFeZI+c
-         ZM2sgqTufIVhtTJeVSLkMP712ZWLT97sfneymaAbdmsThHWau8xYVBpiiv5LoW+oa3z5
-         x8vQGS+8j9s+VAZNmsIpPri0ZboREcQDK9+eb7fLt2hwdZIjjgsnboXF6AKIMYPrpYa/
-         M0ZmhYa06VLcpPH4PuLntOVosAnOL9R4FhoVOPYkAOGoR5xHlqLm+LZWS27SEk6pZnyd
-         XHnIzkNylq4OmbjW2kvv48w7jyV6djqVmTagAzRZEPlszDgywcy4WIAQVuqCh1VlKjLb
-         MSog==
-X-Gm-Message-State: AJIora+J8w3k1lWfy59MzDO4X1wl+Lu+A00DRU1+2JdDUuWN1mWo52Gb
-        vb7x7V5b53WlLrZr1kumNmXPXw==
-X-Google-Smtp-Source: AGRyM1tRVPClRCoBOM+0dnNBF8Xh0WBUSfTyTPIl0mjH8CFu3Jd18gFLSGXlP3EBu9PNI15KlSes5w==
-X-Received: by 2002:a5d:500a:0:b0:21b:8274:9ddc with SMTP id e10-20020a5d500a000000b0021b82749ddcmr14053574wrt.251.1656358904731;
-        Mon, 27 Jun 2022 12:41:44 -0700 (PDT)
-Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id e9-20020a5d4e89000000b0021a3a87fda9sm11428047wru.47.2022.06.27.12.41.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 12:41:44 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Dillon Min <dillon.minfei@gmail.com>,
-        Heng Sia <jee.heng.sia@intel.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH v2 16/16] riscv: dts: canaan: build all devicetress if SOC_CANAAN
-Date:   Mon, 27 Jun 2022 20:40:04 +0100
-Message-Id: <20220627194003.2395484-17-mail@conchuod.ie>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627194003.2395484-1-mail@conchuod.ie>
-References: <20220627194003.2395484-1-mail@conchuod.ie>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656359087; x=1687895087;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=EKcrWv1hq/h1NGE3SQ79xrzHsQ93vU4b2aszg+ojf1c=;
+  b=fGEhRVGUIjMIudqUUa0aLDMqwLKzx5iighcz29t594Oag70d/NBx5/pi
+   R67oe+fl4JYHrXOv3mZx7OnKm/I4gqmX7OGKy0mNMdhGap2+f9w5Bd34c
+   H/xCJNrnNQRnT1MC3MxVnfVpCTxxl9QUYvzjLhpw84FYhQN5LPouZANjH
+   Y=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 27 Jun 2022 12:44:47 -0700
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 12:44:47 -0700
+Received: from hu-gurus-sd.qualcomm.com (10.80.80.8) by
+ nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 27 Jun 2022 12:44:47 -0700
+From:   Guru Das Srinagesh <quic_gurus@quicinc.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     David Heidelberg <david@ixit.cz>,
+        Robert Marko <robimarko@gmail.com>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Elliot Berman <quic_eberman@quicinc.com>,
+        Guru Das Srinagesh <quic_gurus@quicinc.com>
+Subject: [PATCH 0/5] SCM: Add support for wait-queue aware firmware
+Date:   Mon, 27 Jun 2022 12:44:31 -0700
+Message-ID: <1656359076-13018-1-git-send-email-quic_gurus@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+This patch series enables the QCOM SCM driver to support firmware (FW) versions
+that expect the high-level OS (HLOS) to be tolerant of SCM call requests not
+being processed right away and, instead, being placed on a wait-queue in FW and
+processed accordingly.
 
-Testing & checking the Canaan devicetrees is inconvenient as only the
-devicetree corresponding to SOC_CANAAN_K210_DTB_BUILTIN will be built.
-Change the Makefile so that all devicetrees are built by default if
-SOC_CANAAN but only the one specified by SOC_CANAAN_K210_DTB_BUILTIN
-gets built as an object.
+The problem this feature is fixing is as follows. In a scenario where there is
+a VM in addition to HLOS (and an underlying hypervisor):
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- arch/riscv/boot/dts/canaan/Makefile | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+1. HLOS makes an SMC call on core 5
+2. The hypervisor scheduling interrupt interrupts this SMC call.
+3. The hypervisor schedules the VM on core 5.
+4. The VM makes an SMC call on core 5.
+5. The SMC call is non-interruptibly stuck on FW spinlock on core 5.
+6. HLOS cannot reschedule since core 5 is not responding to Reschedule IPIs.
+7. Watchdog timer expires waiting for core 5.
 
-diff --git a/arch/riscv/boot/dts/canaan/Makefile b/arch/riscv/boot/dts/canaan/Makefile
-index c61b08ac8554..befe4eb7527b 100644
---- a/arch/riscv/boot/dts/canaan/Makefile
-+++ b/arch/riscv/boot/dts/canaan/Makefile
-@@ -1,3 +1,9 @@
- # SPDX-License-Identifier: GPL-2.0
--dtb-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += $(addsuffix .dtb, $(CONFIG_SOC_CANAAN_K210_DTB_SOURCE))
--obj-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += $(addsuffix .o, $(dtb-y))
-+dtb-$(CONFIG_SOC_CANAAN) += canaan_kd233.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += k210_generic.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maix_bit.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maix_dock.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maix_go.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maixduino.dtb
-+
-+obj-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += $(addsuffix .dtb.o, $(CONFIG_SOC_CANAAN_K210_DTB_SOURCE))
+This problem is solved by FW returning a new return code SCM_WAITQ_SLEEP to
+HLOS right away when it is overwhelmed by the VM's SMC call. HLOS then places
+the call on a wait-queue and wakes it up when it receives an interrupt that
+signifies "all-clear".
+
+This new design also supports scenarios involving only HLOS (and no other VMs).
+Such scenarios make use of a second new return code SCM_WAITQ_WAKE.
+
+There are three new SMC calls also being defined in this design that, together
+with the two new return codes, form the handshake protocol between Linux and
+FW.
+
+This design is also backwards-compatible with existing firmware versions that
+do not support this feature.
+
+Guru Das Srinagesh (5):
+  dt-bindings: firmware: qcom-scm: Add "allow-multi-call" property
+  firmware: qcom: scm: Optionally remove SCM call serialization
+  dt-bindings: firmware: qcom-scm: Add optional interrupt
+  firmware: qcom: scm: Add wait-queue helper functions
+  firmware: qcom: scm: Add wait-queue handling logic
+
+ .../devicetree/bindings/firmware/qcom,scm.txt      |   4 +
+ drivers/firmware/qcom_scm-smc.c                    | 143 +++++++++++++++++++--
+ drivers/firmware/qcom_scm.c                        | 124 +++++++++++++++++-
+ drivers/firmware/qcom_scm.h                        |  14 ++
+ 4 files changed, 275 insertions(+), 10 deletions(-)
+
 -- 
-2.36.1
+2.7.4
 
