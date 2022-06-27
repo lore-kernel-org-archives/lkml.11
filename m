@@ -2,80 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0407C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF9FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233934AbiF0JaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 05:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49762 "EHLO
+        id S234013AbiF0Jar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 05:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233884AbiF0JaJ (ORCPT
+        with ESMTP id S232874AbiF0Jap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 05:30:09 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D163718A
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:30:08 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id o4so8182722wrh.3
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:30:08 -0700 (PDT)
+        Mon, 27 Jun 2022 05:30:45 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDE518A
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:30:43 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id o19-20020a05600c4fd300b003a0489f414cso1678593wmq.4
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:30:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=cd0dGlxS3lhXEywnR/6FkGKK1ogQZNR4Q8TNrLmu+N4=;
-        b=GXXWOwmac4DoGtIkpAqyAR8KvIPiWKfClDuoGQKkauZpU1Gh1cIo3nYg1PvsGU16nA
-         gxnNkgf8DDiHP9FwNbV65gvsTKz52FIdzrS1tB5NZwliU509YCUph9hRydj2Ed1VymEp
-         hRRxAEaWcDxASuemfk1tdAdrU1ABkaRWzBIoJqnDqlyCwWE7TMa7TjHy8Stxx569hqU8
-         Xw91uryUe0c69spzuDdIOQHQNA/EcQ4FD66lsT+g3lQ7hgk7yZql9yNLkEi7cUHYzwt5
-         IgkV8YIuH1rKD4DqPEwRgwsGE7HTAGX3pOni9tPmlyaGQgYJ3sQYwhRFG+ima8Oe1FZE
-         9LlQ==
+        bh=yrjSb0Ckr6OyB8OTvoc1bSQEObi6R4PR8vq3UsAz654=;
+        b=e0GvQoe6562R15lcwVHIqfpjpax8YEefnMUjbGIGMspx0m6qzJaxqH9ZhV+93PxIhE
+         xsSrFdnoSbO2YyUtqDKnvM4q1Kwn+JkGBKcRINUYbsHxzvmFDoceFM5bqoIvG9CqBjcA
+         9gzXRobka+NuhIFUECY+WDOTMgkSdj1WhXVzq6CYfQe1VUa73CHnP0bukebiGY+yQJ5O
+         T3L7rVb0QLwQ/yz+29mWOEbj1VPu79VcBA5rx+7a1Sc9r/BNhYgURyY1ddS3w8BiPE1W
+         4G9ZOQnINzMuPCVzT6YiEBWZ0RhtWK8MIyMeFbtFBgMMwCNe6zb8Xr3DFon3E1dzDIa3
+         b9Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=cd0dGlxS3lhXEywnR/6FkGKK1ogQZNR4Q8TNrLmu+N4=;
-        b=72SeYP1K/fTZM0mHh0F2wJ4f9H62RjvDKd1tKuWPabbuWy2kAXEATife0QWRKdBTDS
-         DLK8Wqch6zUXBzG6RxuFCq4XrFZAWycLWnCl4yss3pliyYRTN3NO/rYIVWwp7gHBsj3Y
-         GSxOedQSY8G+JG0u0eDQUmbE+AkuK5bobADy6tMtLSO95lfDRpmdGZqqIhzOOIcrKjZD
-         HfGwDEgtpKbE4OCvDPX6FN1e79FG8C7+2DyKIZxQ9hO4JaaJpQWNCfmR/tGs4Ntbtezb
-         dMUVw6J6G+4+lP8l8rHjKVUovRPb4uhiqBYuridsXPzaLbF81NkJjHEzlsVb0YIC3Lgi
-         xPyA==
-X-Gm-Message-State: AJIora8y+SLWrl5fub7M36QhG4+DTYLyPI2+n+1baxxzSUprZHs6+IGf
-        ifjN9G8DJpRDmyfp7R2FWLirQA==
-X-Google-Smtp-Source: AGRyM1t91+8MZTKoH2nDlZBDD7AUAi9ckE5QNRxXAmU2VDI7I2qnhR0/WxRLoNA6o3J693aI7BafjQ==
-X-Received: by 2002:a05:6000:1f08:b0:21b:ae8f:4f0a with SMTP id bv8-20020a0560001f0800b0021bae8f4f0amr11784449wrb.456.1656322207431;
-        Mon, 27 Jun 2022 02:30:07 -0700 (PDT)
+        bh=yrjSb0Ckr6OyB8OTvoc1bSQEObi6R4PR8vq3UsAz654=;
+        b=pYttlPOEiCUDwPOmENYyTYoQNkZuF97T964wDGiSmGjZ8d6H9uIWwZbWkiXUvP2x1c
+         nIf3Gp/VDrkaszKUxYt5ZsvmDmNtk6bYIzXKGsywXYWpCOwo9hEfjOV+cA32n3JoLcyp
+         rJFgmgYID3/KIBkrlLzkoUJ5pHwh0coZMM20OjoYnKIYgUr9kN71U41IA6B7X+BWBu4P
+         uFsrpSAhS4CDRTLejZ4zkJR/tic3p3SzsQDxp/aoIlvdmTPziOc7aoCKNJYpCfQGQ6iT
+         6VGNPqqeXvT1QSK4dg3yDsnEzRyMnBHq1XUCF5ecCt9mQEQDSFOW3Or0iPHB8Ny69VIL
+         lC3g==
+X-Gm-Message-State: AJIora9k9Q3ar5kbyW3+oKljmhUshro6s3fqpwS1/ODbXDEfokIFtvei
+        L9axinvVoVKf+JcJht0UjgUNIL30aXk/cw==
+X-Google-Smtp-Source: AGRyM1u7f8zpjsNsmCKfFBXkK22cYXVPQp05GB/B+aAp9Djsj7JwipP5zH3KC1oEF14VHpJkF1cS0Q==
+X-Received: by 2002:a05:600c:a42:b0:39c:9086:8a34 with SMTP id c2-20020a05600c0a4200b0039c90868a34mr19101536wmq.169.1656322241922;
+        Mon, 27 Jun 2022 02:30:41 -0700 (PDT)
 Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id m12-20020adffe4c000000b0020d106c0386sm9747810wrs.89.2022.06.27.02.30.06
+        by smtp.gmail.com with ESMTPSA id m34-20020a05600c3b2200b003a03ae64f57sm12616410wms.8.2022.06.27.02.30.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 02:30:06 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 10:30:05 +0100
+        Mon, 27 Jun 2022 02:30:41 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 10:30:39 +0100
 From:   Lee Jones <lee.jones@linaro.org>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     linux-kernel@vger.kernel.org, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 08/11] mfd: intel_soc_pmic_bxtwc: Use bits.h macros
- for all masks
-Message-ID: <Yrl4nXfHs1oM2dpV@google.com>
+Subject: Re: [PATCH v1 09/11] mfd: intel_soc_pmic_bxtwc: Use sysfs_emit()
+ instead of sprintf()
+Message-ID: <Yrl4v2cTXa/U3A8Q@google.com>
 References: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
- <20220616165823.4919-8-andriy.shevchenko@linux.intel.com>
+ <20220616165823.4919-9-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220616165823.4919-8-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220616165823.4919-9-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Thu, 16 Jun 2022, Andy Shevchenko wrote:
-65;6800;1c
-> Currently we are using BIT(), but GENMASK(). Make use of the latter one
-> as well (far less error-prone, far more concise).
+
+> sysfs_emit() is preferred over sprintf() when formatting the value to be
+> returned to user space in show() functions, because it knows about sysfs
+> buffer specifics and has sanity checks.
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->  drivers/mfd/intel_soc_pmic_bxtwc.c | 21 +++++++++++----------
->  1 file changed, 11 insertions(+), 10 deletions(-)
+>  drivers/mfd/intel_soc_pmic_bxtwc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
 For my own reference (apply this as-is to your sign-off block):
 
