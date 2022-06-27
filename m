@@ -2,96 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE37FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:00:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 422E8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240615AbiF0UA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 16:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
+        id S240790AbiF0UCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 16:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239677AbiF0UAX (ORCPT
+        with ESMTP id S237819AbiF0UCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 16:00:23 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2870D1C919
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:00:23 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id u20so10715840iob.8
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:00:23 -0700 (PDT)
+        Mon, 27 Jun 2022 16:02:43 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45FCD1C91D;
+        Mon, 27 Jun 2022 13:02:42 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id g26so21389835ejb.5;
+        Mon, 27 Jun 2022 13:02:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PmCKzNT4RC0cnhUtaHaQ03s7DAWtzdqqPOrOyNCaBG4=;
-        b=Lt+YE31WcR2166d1SPefS3gly61tzJRoFn0vjHM7iUytsQWmwywyNP1NhELFviJYJg
-         z0yK8zqzfS6guP+e0ELetZxZop9Da7wzGBAYCsqVaQfxTnumc17G9lIZt69fr37cvpD8
-         O81in/LREwcQ83rDdRe+gnb+QaVaEnmCak8yU=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2RG4T2ZEU66wsxzlt1P5Q73rY/z91mE7K4blE6N8+0Q=;
+        b=EUILz45/4OGmZNOcDM30R2wHd/eF99q4yXPjOuDCAvrsDr3DfKx3NIHoBj0T2MYU64
+         3l8lLeTEMq8t5ji1LfmOSveityf0k8W90FqiF19Xqh78fDMpP8c7eUF0w4OUOBinzOZ7
+         9DDSiXXl6wFtnHIvA6GWLkqeSCJDoE48RKHCrfHJjzv0pmOapH4sGjKXl94nx5f4pI6P
+         IRjhyXIGF3bw/40Oo+Np+J2UsWcG9Z0X2Hp82yNSpwjJtSYNIHtUmrwAu3JOoTZ8UOOn
+         mmWbCbdSIRtiAjGJ5u1Cj37WitFpdymnAZHUsHzI973xfES16jQz9a7dXh3+BG/7N3j/
+         b6Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PmCKzNT4RC0cnhUtaHaQ03s7DAWtzdqqPOrOyNCaBG4=;
-        b=4rbLlk4BTqqmhk6ybty3yuslzBfklZz7qWZv5bYTWIwViKDGXLcmKFb4B6arCSQR8L
-         t3R0nzYs0/Ylf3z/QEfmTDoxUSqlHdiExRQ+IwvT86FfUge3cnaE291roHenUKzOQbgS
-         1IFHfUuIsh+zRpfZyZA1poDFMkqjfhMp38qJKitTI4DwoeO4rexkwKJJf/RXQJBP5ImH
-         aWcZwC7tBggXl8RXoFFuxau8zGu4gOZ+rh68Dgdwn4Ol0EV+gYYin0gk3J3tFQGF7u7J
-         9/xuw3t/kWMA+78CrirBTWMSbEepmO5QV3e1ecomxt0oaurrL+W28NELEkoowV7K1dHC
-         m+NQ==
-X-Gm-Message-State: AJIora9eJQOLirOYm4KQmB6lWZd1qcwCSrhfOv9KHwD62CvCyBVrf+wZ
-        sIJGY01tBa0x7MVkDnEPHd7Lew==
-X-Google-Smtp-Source: AGRyM1sxkFZ/FihbfEp2fsnz9ta8t0G6W1fz3wAwi7f1Z8Fj4gM/2esUWtYgHvBxcSjeadYfKWjDOQ==
-X-Received: by 2002:a05:6602:2c4e:b0:657:4115:d9e4 with SMTP id x14-20020a0566022c4e00b006574115d9e4mr7259526iov.91.1656360022577;
-        Mon, 27 Jun 2022 13:00:22 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id r16-20020a02b110000000b0032e271a558csm5039190jah.168.2022.06.27.13.00.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 13:00:22 -0700 (PDT)
-Subject: Re: [PATCH v12 3/4] trace/objtrace: Add testcases for objtrace
-To:     Jeff Xie <xiehuan09@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
-        Tom Zanussi <zanussi@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220606160943.663180-1-xiehuan09@gmail.com>
- <20220606160943.663180-4-xiehuan09@gmail.com>
- <20220626010331.f2be529cfb52706d58bbdc2f@kernel.org>
- <CAEr6+EB2_nfpZW00_4pDcvhqpO9abEPZNA5m8pU6DmNWPRKjEQ@mail.gmail.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <55f53474-a2c8-dd56-a473-8cec8d2f9e8e@linuxfoundation.org>
-Date:   Mon, 27 Jun 2022 14:00:21 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2RG4T2ZEU66wsxzlt1P5Q73rY/z91mE7K4blE6N8+0Q=;
+        b=NA383uevUYQnGlHMJyvAsDoTRjrATLKmBlQwarCguejKy2DmQpWLEGkFVEmeWTYket
+         eyGJeCQ7ighUi95rCB9OiYhIzvZmo9rI8xpx9GIAs6JogPZe1DuPuGTIOdSouBQsI7Mv
+         eXg9l7qtHXygJlelejdrLKeFO87f94HQrowhN1AyTMHRQCMNpB0RcG2Y8tfED640PitZ
+         vGikmG6vnk41Fi32BhS1ItmgY5H3aU1TV5iaN4rshTuMOfWXVxOOua/JlFw8aGTtwlNm
+         6Au2Q5foxEhxSjfEfHHXCNUW9OOgL28rnOBIKtDmEW4+QXH43dAu39WHbG0OXtxiLD4w
+         9YeA==
+X-Gm-Message-State: AJIora9CwQPlfmRSjtlfATd6cCm90vPLf62xvWJmm+2YXwjFqJanUVG3
+        bp3rdHPHSzGK466J1hrrNkg=
+X-Google-Smtp-Source: AGRyM1ulqyAb4/mEof+6ZmLX6fDypco+ES2GGDjas9Fvn/zPh50a1MDHhWjsJ6ox+kdLfYgegg/x1Q==
+X-Received: by 2002:a17:907:8a25:b0:726:c9f2:2f5e with SMTP id sc37-20020a1709078a2500b00726c9f22f5emr687054ejc.286.1656360160702;
+        Mon, 27 Jun 2022 13:02:40 -0700 (PDT)
+Received: from skbuf ([188.25.231.135])
+        by smtp.gmail.com with ESMTPSA id x2-20020a05640225c200b00435651c4a01sm8145270edb.56.2022.06.27.13.02.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 13:02:39 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 23:02:38 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v1 2/3] net: dsa: ar9331: add support for pause
+ stats
+Message-ID: <20220627200238.en2b5zij4sakau2t@skbuf>
+References: <20220624125902.4068436-1-o.rempel@pengutronix.de>
+ <20220624125902.4068436-2-o.rempel@pengutronix.de>
+ <20220624220317.ckhx6z7cmzegvoqi@skbuf>
+ <20220626171008.GA7581@pengutronix.de>
+ <20220627091521.3b80a4e8@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAEr6+EB2_nfpZW00_4pDcvhqpO9abEPZNA5m8pU6DmNWPRKjEQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627091521.3b80a4e8@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/25/22 11:05 AM, Jeff Xie wrote:
-> Hi Masami,
+On Mon, Jun 27, 2022 at 09:15:21AM -0700, Jakub Kicinski wrote:
+> On Sun, 26 Jun 2022 19:10:08 +0200 Oleksij Rempel wrote:
+> > > Is there an authoritative source who is able to tell whether rtnl_link_stats64 ::
+> > > rx_packets and tx_packets should count PAUSE frames or not?  
+> > 
+> > Yes, it will be interesting to know how to proceed with it.
 > 
-> On Sun, Jun 26, 2022 at 12:03 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->>
->> Hi,
->>
->> This looks good to me (and I tested).
->>
->> Tested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
->> Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
->>
->> BTW, please use 'selftests/ftrace:' tag instead of (or in addition to)
->> 'trace/objtrace:' for the ftracetest patch. And please Cc to
->> linux-kselftest@vger.kernel.org and Shuah Khan.
-> 
-> Thanks for the reminder, I will do it like this in my next version.
-> 
+> I'm curious as well, AFAIK most drivers do not count pause to ifc stats.
 
-Yes. Please. It isn't my Inbox or patchwork ... Send v2 with Masami's
-Tested-by and Ack so I can pull this in.
+How do you know? Just because they manually bump stats->tx_bytes and
+stats->tx_packets during ndo_start_xmit?
 
-thanks,
--- Shuah
+That would be a good assumption, but what if a network driver populates
+struct rtnl_link_stats64 entirely based on counters reported by hardware,
+including {rx,tx}_{packets,bytes}?
+
+Personally I can't really find a reason why not count pause frames if
+you can. And in the same note, why go to the extra lengths of hiding
+them as Oleksij does. For example, the ocelot/felix switches do count
+PAUSE frames as packets/bytes, both on rx and tx.
+
+> > For example KSZ switch do count pause frame Bytes together will other
+> > frames. At same time, atheros switch do not count pause frame bytes
+> > at all.
+> > 
+> > To make things worse, i can manually send pause frame of any size, so
+> > it will not be accounted by HW. What ever decision we will made, i
+> > will need to calculate typical pause frame size and hope it will fit
+> > for 90% of cases.
+> 
+> :(
