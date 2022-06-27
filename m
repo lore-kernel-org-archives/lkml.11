@@ -2,90 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE052C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD326C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:27:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235639AbiF0N1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39234 "EHLO
+        id S235660AbiF0N1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235554AbiF0N1J (ORCPT
+        with ESMTP id S235554AbiF0N1R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:27:09 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A7D63FB
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:27:08 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id s1so13051522wra.9
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:27:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=T+pY+yP/H+gzjKcBU2a+UyBAKSlhvpHgjb+2kRJ+ebs=;
-        b=xOG9SsHLzBKJLk0Q/byfn23vqyLt11wbYavKU42bnCILy9AQJJHUxhWBFRJS9Xe+IM
-         OvW7kOOa4plmdopXXZOlu50qmTEuAtpH+2ouif3GgVC62truhpUlUJCObdMyRHHywmOd
-         LpgHvMCTkOZq82moZLM9Riwk/P6ONAJncHVog7tmTViRAmoJHZDz4e36Pljs+A58XMov
-         29x2s/EHISJ7y99O58hOaZSsSH5vQL0HeL3r0hXg2ltTKlSFT9WF3gzMKpfsEPtQlbVH
-         0d+dTqburHiFqJPGM0Wib+DakFFx8NxSGiIJj/gUQvQCeNTzPd6aR1MlyreRSaNWQ58V
-         xIbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=T+pY+yP/H+gzjKcBU2a+UyBAKSlhvpHgjb+2kRJ+ebs=;
-        b=0YEhYaBNmLcEbrJnL1ilJ9XQXtIW5UwA8Bg63kkugmd7FxHJLFIqrKLfGfcVGyzcWf
-         yV6Y0W6dUXrhZp/nOKyrw9JAbzao3XeuD5MCwFeZuC+5QNdEQ0JnnU16Kict3ns/21GB
-         lX2VArBNzai9TSRjE45F1HqkTeiLhQowrrJEyO81tJZvesrYZfYGLbDwwtx5Qp8UmKJV
-         IYkOAXcTgn19ITJLvwDkaThyXaDbJdnyjb80JGp7+ppJb3Oodn+7vWEnQcP/iylkjhO+
-         0kq9rONBI0XTPldmINIAy+W9O4A4OjvXX1aaQw1KKLrWEVAlRPJrD/iUToETxx9mGlOU
-         8mQQ==
-X-Gm-Message-State: AJIora+ld//FNnnPe87CZozOk8ZwKHPTvfC1S4m4KOISCvVvZc5Cv3xj
-        yuGPzo6E4xOoM6FAZ9waEyXpb+y00AF9Fg==
-X-Google-Smtp-Source: AGRyM1t7QjD2wwcs1yIcEGPkJimlwgxVaxQvRky01LKhXaUHV3inu65I0ePAbVZ97jsWPyREBYu//Q==
-X-Received: by 2002:adf:f84a:0:b0:21b:88b8:183 with SMTP id d10-20020adff84a000000b0021b88b80183mr12194935wrq.265.1656336426660;
-        Mon, 27 Jun 2022 06:27:06 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id r21-20020a05600c35d500b003a02f957245sm17950845wmq.26.2022.06.27.06.27.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:27:06 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 14:27:04 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 6/9] mfd: intel_soc_pmic_crc: Drop redundant
- ACPI_PTR() and ifdeffery
-Message-ID: <YrmwKCoSP8XsEa5g@google.com>
-References: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
- <20220616182524.7956-6-andriy.shevchenko@linux.intel.com>
+        Mon, 27 Jun 2022 09:27:17 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C0E643C
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=oVD+QIl1BooxhQ4c9TLCTCyf9nUe8Yh23CWiTKDZtFw=; b=moT2H7vy0ds8RhMZueK4Hz5/u5
+        kBF155FPvcg5S1mr37SB1xvpS5DY4Jg8VjxDBSKg42s8UR7mle7R/Uqs5rvWcVxmgQwLMR03ougHV
+        iQN19lMVKCSJRK6nbBSLRsTHgxb6mxJO+NGkm6JcMM62+cGIEd6jZ9XxviONYb1cXtL8ErBg86/nT
+        jBoUOwh0ZhKrrrgQIokaNNr9QUgE7fULEp7RikwFdChUmT4ZGnBpt2maxobOqnXI+no271CRRoEM5
+        yNI42atW/+zXVmOBJkIFAjE2zwZ3N8ooYFueeOBDEYxvoJ/4iOVY3SlTam84gKpB10COQ1Fl5V3cf
+        IWrm9qIA==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o5old-00BOMN-K8; Mon, 27 Jun 2022 13:27:05 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 668D6300478;
+        Mon, 27 Jun 2022 15:27:03 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 51AA7200B5F27; Mon, 27 Jun 2022 15:27:03 +0200 (CEST)
+Date:   Mon, 27 Jun 2022 15:27:03 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
+        ebiederm@xmission.com,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>
+Subject: Re: [PATCH] signal: break out of wait loops on kthread_stop()
+Message-ID: <YrmwJyueoz1Z4ti0@hirez.programming.kicks-ass.net>
+References: <20220627120020.608117-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220616182524.7956-6-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220627120020.608117-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022, Andy Shevchenko wrote:
+On Mon, Jun 27, 2022 at 02:00:20PM +0200, Jason A. Donenfeld wrote:
 
-> The driver depends on ACPI, ACPI_PTR() resolution is always the same.
-> Otherwise a compiler may produce a warning.
-> 
-> That said, the rule of thumb either ugly ifdeffery with ACPI_PTR or
-> none should be used in a driver.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/mfd/Kconfig              | 4 ++--
->  drivers/mfd/intel_soc_pmic_crc.c | 6 ++----
->  2 files changed, 4 insertions(+), 6 deletions(-)
+> +bool __kthread_should_stop(struct task_struct *k)
+> +{
+> +	return (k->flags & PF_KTHREAD) &&
+> +	       test_bit(KTHREAD_SHOULD_STOP, &to_kthread(k)->flags);
+> +}
 
-Applied, thanks.
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+This used to be a racy pattern; not sure it still is since Eric poked at
+this last, but please use __to_kthread() instead.
