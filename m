@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC839C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA46CCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234053AbiF0LXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43224 "EHLO
+        id S234579AbiF0LXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234561AbiF0LXK (ORCPT
+        with ESMTP id S233839AbiF0LXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:23:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB4E6551;
-        Mon, 27 Jun 2022 04:23:09 -0700 (PDT)
+        Mon, 27 Jun 2022 07:23:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB36164F8;
+        Mon, 27 Jun 2022 04:23:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 341B461449;
-        Mon, 27 Jun 2022 11:23:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F161C341D3;
-        Mon, 27 Jun 2022 11:23:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C6F7B8111B;
+        Mon, 27 Jun 2022 11:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4427C3411D;
+        Mon, 27 Jun 2022 11:23:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656328988;
-        bh=OrQNp/NvSb8zcOgcVLnKDaJ6Qwhu7yjiRubOs8inkS4=;
+        s=korg; t=1656328991;
+        bh=x7P22JytzPf6oNjq71S/evHGGCzh/+caYNfY3VnwaO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x1+yYn8bU1eK2v25pOYwk76doIROVDnfmUkjfj5dB7/SnogphYCViaHlb8VsMnzeu
-         Qw8Mk4kVTVQywDcXJIbasYL8P0AVnIiwaBPA53Jlz2Y4eh+n3CiQnnoUjQz0k/GPyW
-         8FGbvgq2m4wLkjdGbaW3d0Q978iUTCiCUPoW6LMA=
+        b=UllUc9aXHCLBDcDxFj72SR7Scoe3N/fTWmsPHjLKHaHXNX2P/jADud4/V3F2va2Mn
+         BFh4Y7rZZNEjLdTbb/PSoaEWRrVL1oKur3C7rg7FT8TxPxbh2rYH0aABeefLuP0XtO
+         V3Nhd1YkFGe44Fd95SHWjXJkIaF/bUQzyNtL6Xxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.10 014/102] mtd: rawnand: gpmi: Fix setting busy timeout setting
-Date:   Mon, 27 Jun 2022 13:20:25 +0200
-Message-Id: <20220627111933.888631027@linuxfoundation.org>
+        stable@vger.kernel.org, Edward Wu <edwardwu@realtek.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.10 015/102] ata: libata: add qc->flags in ata_qc_complete_template tracepoint
+Date:   Mon, 27 Jun 2022 13:20:26 +0200
+Message-Id: <20220627111933.917810311@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -48,49 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Edward Wu <edwardwu@realtek.com>
 
-commit 06781a5026350cde699d2d10c9914a25c1524f45 upstream.
+commit 540a92bfe6dab7310b9df2e488ba247d784d0163 upstream.
 
-The DEVICE_BUSY_TIMEOUT value is described in the Reference Manual as:
+Add flags value to check the result of ata completion
 
-| Timeout waiting for NAND Ready/Busy or ATA IRQ. Used in WAIT_FOR_READY
-| mode. This value is the number of GPMI_CLK cycles multiplied by 4096.
-
-So instead of multiplying the value in cycles with 4096, we have to
-divide it by that value. Use DIV_ROUND_UP to make sure we are on the
-safe side, especially when the calculated value in cycles is smaller
-than 4096 as typically the case.
-
-This bug likely never triggered because any timeout != 0 usually will
-do. In my case the busy timeout in cycles was originally calculated as
-2408, which multiplied with 4096 is 0x968000. The lower 16 bits were
-taken for the 16 bit wide register field, so the register value was
-0x8000. With 2970bf5a32f0 ("mtd: rawnand: gpmi: fix controller timings
-setting") however the value in cycles became 2384, which multiplied
-with 4096 is 0x950000. The lower 16 bit are 0x0 now resulting in an
-intermediate timeout when reading from NAND.
-
-Fixes: b1206122069aa ("mtd: rawnand: gpmi: use core timings instead of an empirical derivation")
+Fixes: 255c03d15a29 ("libata: Add tracepoints")
 Cc: stable@vger.kernel.org
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220614083138.3455683-1-s.hauer@pengutronix.de
+Signed-off-by: Edward Wu <edwardwu@realtek.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/trace/events/libata.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -683,7 +683,7 @@ static void gpmi_nfc_compute_timings(str
- 	hw->timing0 = BF_GPMI_TIMING0_ADDRESS_SETUP(addr_setup_cycles) |
- 		      BF_GPMI_TIMING0_DATA_HOLD(data_hold_cycles) |
- 		      BF_GPMI_TIMING0_DATA_SETUP(data_setup_cycles);
--	hw->timing1 = BF_GPMI_TIMING1_BUSY_TIMEOUT(busy_timeout_cycles * 4096);
-+	hw->timing1 = BF_GPMI_TIMING1_BUSY_TIMEOUT(DIV_ROUND_UP(busy_timeout_cycles, 4096));
+--- a/include/trace/events/libata.h
++++ b/include/trace/events/libata.h
+@@ -249,6 +249,7 @@ DECLARE_EVENT_CLASS(ata_qc_complete_temp
+ 		__entry->hob_feature	= qc->result_tf.hob_feature;
+ 		__entry->nsect		= qc->result_tf.nsect;
+ 		__entry->hob_nsect	= qc->result_tf.hob_nsect;
++		__entry->flags		= qc->flags;
+ 	),
  
- 	/*
- 	 * Derive NFC ideal delay from {3}:
+ 	TP_printk("ata_port=%u ata_dev=%u tag=%d flags=%s status=%s " \
 
 
