@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8678ACCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F01CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238825AbiF0Lwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48250 "EHLO
+        id S238859AbiF0Lwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238425AbiF0Ls0 (ORCPT
+        with ESMTP id S238418AbiF0LsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0518BE3B;
-        Mon, 27 Jun 2022 04:41:24 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E38FD39;
+        Mon, 27 Jun 2022 04:41:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DBBE6114A;
-        Mon, 27 Jun 2022 11:41:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50198C341C7;
-        Mon, 27 Jun 2022 11:41:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 748DAB81123;
+        Mon, 27 Jun 2022 11:41:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C51F3C3411D;
+        Mon, 27 Jun 2022 11:41:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330083;
-        bh=FQmQsw/JHqQauGIOeLNCGxhNOogk+4nagum2qrSg5p4=;
+        s=korg; t=1656330075;
+        bh=4M6/LgjfkYIQkAY4gTnqSLIOWKBiQFCtYcUKZIJRxKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R7GjA4/1COP+HmuyPz2yVxq+P1M/rnyeVzLQp8ky/ybg2Lj2S8DfVxXtzWxhSXxrG
-         5M7VCNaPDf4rWXffshMO/GqQbDwBe+EfhjUSjM009SeZ5y7VyKVA0mdBcsxI+mAzyF
-         tda/QDRFJ/7nv+dUNmJaepjPWb2+qOy4bXkrSb6c=
+        b=H5coTcIj2IeQQc3razdM7IOYc4rP8v9rpdhKpedDj9s6mBJ4yNUrufVUHREohPEYj
+         IJAbcEnkYDnAokStGmO1McHRvSBwifrYEQNiingsmCKNNnOOWsFfmVCtl31Yo1hW1x
+         Sz6CXNHYCkmq15IaxgVFQnTs7E3Bw0pus5Ufp70g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Jie2x Zhou <jie2x.zhou@intel.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Ciara Loftus <ciara.loftus@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 077/181] selftests: netfilter: correct PKTGEN_SCRIPT_PATHS in nft_concat_range.sh
-Date:   Mon, 27 Jun 2022 13:20:50 +0200
-Message-Id: <20220627111946.795380068@linuxfoundation.org>
+Subject: [PATCH 5.18 048/181] xsk: Fix generic transmit when completion queue reservation fails
+Date:   Mon, 27 Jun 2022 13:20:21 +0200
+Message-Id: <20220627111945.957686172@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,58 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jie2x Zhou <jie2x.zhou@intel.com>
+From: Ciara Loftus <ciara.loftus@intel.com>
 
-[ Upstream commit 5d79d8af8dec58bf709b3124d09d9572edd9c617 ]
+[ Upstream commit a6e944f25cdbe6b82275402b8bc9a55ad7aac10b ]
 
-Before change:
-make -C netfilter
- TEST: performance
-   net,port                                                      [SKIP]
-   perf not supported
-   port,net                                                      [SKIP]
-   perf not supported
-   net6,port                                                     [SKIP]
-   perf not supported
-   port,proto                                                    [SKIP]
-   perf not supported
-   net6,port,mac                                                 [SKIP]
-   perf not supported
-   net6,port,mac,proto                                           [SKIP]
-   perf not supported
-   net,mac                                                       [SKIP]
-   perf not supported
+Two points of potential failure in the generic transmit function are:
 
-After change:
-   net,mac                                                       [ OK ]
-     baseline (drop from netdev hook):               2061098pps
-     baseline hash (non-ranged entries):             1606741pps
-     baseline rbtree (match on first field only):    1191607pps
-     set with  1000 full, ranged entries:            1639119pps
-ok 8 selftests: netfilter: nft_concat_range.sh
+  1. completion queue (cq) reservation failure.
+  2. skb allocation failure
 
-Fixes: 611973c1e06f ("selftests: netfilter: Introduce tests for sets with range concatenation")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Originally the cq reservation was performed first, followed by the skb
+allocation. Commit 675716400da6 ("xdp: fix possible cq entry leak")
+reversed the order because at the time there was no mechanism available
+to undo the cq reservation which could have led to possible cq entry leaks
+in the event of skb allocation failure. However if the skb allocation is
+performed first and the cq reservation then fails, the xsk skb destructor
+is called which blindly adds the skb address to the already full cq leading
+to undefined behavior.
+
+This commit restores the original order (cq reservation followed by skb
+allocation) and uses the xskq_prod_cancel helper to undo the cq reserve
+in event of skb allocation failure.
+
+Fixes: 675716400da6 ("xdp: fix possible cq entry leak")
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Link: https://lore.kernel.org/bpf/20220614070746.8871-1-ciara.loftus@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/netfilter/nft_concat_range.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/xdp/xsk.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/netfilter/nft_concat_range.sh b/tools/testing/selftests/netfilter/nft_concat_range.sh
-index b35010cc7f6a..a6991877e50c 100755
---- a/tools/testing/selftests/netfilter/nft_concat_range.sh
-+++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
-@@ -31,7 +31,7 @@ BUGS="flush_remove_add reload"
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index d6bcdbfd0fc5..9b12ea3ab85a 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -538,12 +538,6 @@ static int xsk_generic_xmit(struct sock *sk)
+ 			goto out;
+ 		}
  
- # List of possible paths to pktgen script from kernel tree for performance tests
- PKTGEN_SCRIPT_PATHS="
--	../../../samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-+	../../../../samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
- 	pktgen/pktgen_bench_xmit_mode_netif_receive.sh"
+-		skb = xsk_build_skb(xs, &desc);
+-		if (IS_ERR(skb)) {
+-			err = PTR_ERR(skb);
+-			goto out;
+-		}
+-
+ 		/* This is the backpressure mechanism for the Tx path.
+ 		 * Reserve space in the completion queue and only proceed
+ 		 * if there is space in it. This avoids having to implement
+@@ -552,11 +546,19 @@ static int xsk_generic_xmit(struct sock *sk)
+ 		spin_lock_irqsave(&xs->pool->cq_lock, flags);
+ 		if (xskq_prod_reserve(xs->pool->cq)) {
+ 			spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+-			kfree_skb(skb);
+ 			goto out;
+ 		}
+ 		spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
  
- # Definition of set types:
++		skb = xsk_build_skb(xs, &desc);
++		if (IS_ERR(skb)) {
++			err = PTR_ERR(skb);
++			spin_lock_irqsave(&xs->pool->cq_lock, flags);
++			xskq_prod_cancel(xs->pool->cq);
++			spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
++			goto out;
++		}
++
+ 		err = __dev_direct_xmit(skb, xs->queue_id);
+ 		if  (err == NETDEV_TX_BUSY) {
+ 			/* Tell user-space to retry the send */
 -- 
 2.35.1
 
