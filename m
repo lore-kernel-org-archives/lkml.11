@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F675C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:47:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9522AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237856AbiF0LrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:47:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
+        id S237861AbiF0LrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237327AbiF0Lmn (ORCPT
+        with ESMTP id S237367AbiF0Lmq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDA2D5A;
-        Mon, 27 Jun 2022 04:36:56 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F5DDA0;
+        Mon, 27 Jun 2022 04:37:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D33FB8111E;
-        Mon, 27 Jun 2022 11:36:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AE23C3411D;
-        Mon, 27 Jun 2022 11:36:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 643F5609D0;
+        Mon, 27 Jun 2022 11:37:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C7B6C3411D;
+        Mon, 27 Jun 2022 11:37:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329813;
-        bh=TcHc6ly3RnIaoYHfj4FYHbIuRRaerYtPooK/T4HWDNg=;
+        s=korg; t=1656329829;
+        bh=w8pEeD49eTpvRe45M7NoRlebckBgfBtMDWOyG0gSJaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iD4txPJ7n/WoD7i8wvUDlNqAPwtB6hWsQhEsPM1oRddcym008hQS47TLcXfPH4L9A
-         7ogH/okLPuntUqUjw/ZZQ7MeNu1C8gihbryiJukPa/PCiEC3zjWWwfVJZwJSrOQHZ4
-         WozU/lUMjGuxYhVO9LrISQ9+jVrEh8VDX2ZQr/DA=
+        b=O3ptwaDU+hNCj01H7ROYVdR8iEFLRuzCE9HmRqnwidbSk+8xlEAf6gnvoHFiP3GB8
+         RFabHgfaFu587c/8sw7uyvwphX19SM+xdieU6Rglpe2761FQILB6a6gxo0gFXWHu8h
+         2H5+ZdFHRByrDGZ4+bFDPVOhEAoTzcdT7iAhkvCU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.15 084/135] xhci: turn off port power in shutdown
-Date:   Mon, 27 Jun 2022 13:21:31 +0200
-Message-Id: <20220627111940.598796004@linuxfoundation.org>
+        stable@vger.kernel.org, "Ivan T. Ivanov" <iivanov@suse.de>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 5.15 130/135] ARM: dts: bcm2711-rpi-400: Fix GPIO line names
+Date:   Mon, 27 Jun 2022 13:22:17 +0200
+Message-Id: <20220627111941.923820586@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -48,86 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-commit 83810f84ecf11dfc5a9414a8b762c3501b328185 upstream.
+commit b9b6d4c925604b70d007feb4c77b8cc4c038d2da upstream.
 
-If ports are not turned off in shutdown then runtime suspended
-self-powered USB devices may survive in U3 link state over S5.
+The GPIO expander line names has been fixed in the vendor tree last year,
+so upstream these changes.
 
-During subsequent boot, if firmware sends an IPC command to program
-the port in DISCONNECT state, it will time out, causing significant
-delay in the boot time.
-
-Turning off roothub port power is also recommended in xhci
-specification 4.19.4 "Port Power" in the additional note.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220623111945.1557702-3-mathias.nyman@linux.intel.com
+Fixes: 1c701accecf2 ("ARM: dts: Add Raspberry Pi 400 support")
+Reported-by: Ivan T. Ivanov <iivanov@suse.de>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-hub.c |    2 +-
- drivers/usb/host/xhci.c     |   15 +++++++++++++--
- drivers/usb/host/xhci.h     |    2 ++
- 3 files changed, 16 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/bcm2711-rpi-400.dts |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -652,7 +652,7 @@ struct xhci_hub *xhci_get_rhub(struct us
-  * It will release and re-aquire the lock while calling ACPI
-  * method.
-  */
--static void xhci_set_port_power(struct xhci_hcd *xhci, struct usb_hcd *hcd,
-+void xhci_set_port_power(struct xhci_hcd *xhci, struct usb_hcd *hcd,
- 				u16 index, bool on, unsigned long *flags)
- 	__must_hold(&xhci->lock)
- {
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -774,6 +774,8 @@ static void xhci_stop(struct usb_hcd *hc
- void xhci_shutdown(struct usb_hcd *hcd)
- {
- 	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
-+	unsigned long flags;
-+	int i;
+--- a/arch/arm/boot/dts/bcm2711-rpi-400.dts
++++ b/arch/arm/boot/dts/bcm2711-rpi-400.dts
+@@ -28,12 +28,12 @@
+ &expgpio {
+ 	gpio-line-names = "BT_ON",
+ 			  "WL_ON",
+-			  "",
++			  "PWR_LED_OFF",
+ 			  "GLOBAL_RESET",
+ 			  "VDD_SD_IO_SEL",
+-			  "CAM_GPIO",
++			  "GLOBAL_SHUTDOWN",
+ 			  "SD_PWR_ON",
+-			  "SD_OC_N";
++			  "SHUTDOWN_REQUEST";
+ };
  
- 	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
- 		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
-@@ -789,12 +791,21 @@ void xhci_shutdown(struct usb_hcd *hcd)
- 		del_timer_sync(&xhci->shared_hcd->rh_timer);
- 	}
- 
--	spin_lock_irq(&xhci->lock);
-+	spin_lock_irqsave(&xhci->lock, flags);
- 	xhci_halt(xhci);
-+
-+	/* Power off USB2 ports*/
-+	for (i = 0; i < xhci->usb2_rhub.num_ports; i++)
-+		xhci_set_port_power(xhci, xhci->main_hcd, i, false, &flags);
-+
-+	/* Power off USB3 ports*/
-+	for (i = 0; i < xhci->usb3_rhub.num_ports; i++)
-+		xhci_set_port_power(xhci, xhci->shared_hcd, i, false, &flags);
-+
- 	/* Workaround for spurious wakeups at shutdown with HSW */
- 	if (xhci->quirks & XHCI_SPURIOUS_WAKEUP)
- 		xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
--	spin_unlock_irq(&xhci->lock);
-+	spin_unlock_irqrestore(&xhci->lock, flags);
- 
- 	xhci_cleanup_msix(xhci);
- 
---- a/drivers/usb/host/xhci.h
-+++ b/drivers/usb/host/xhci.h
-@@ -2174,6 +2174,8 @@ int xhci_hub_control(struct usb_hcd *hcd
- int xhci_hub_status_data(struct usb_hcd *hcd, char *buf);
- int xhci_find_raw_port_number(struct usb_hcd *hcd, int port1);
- struct xhci_hub *xhci_get_rhub(struct usb_hcd *hcd);
-+void xhci_set_port_power(struct xhci_hcd *xhci, struct usb_hcd *hcd, u16 index,
-+			 bool on, unsigned long *flags);
- 
- void xhci_hc_died(struct xhci_hcd *xhci);
- 
+ &genet_mdio {
 
 
