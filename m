@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F425C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4570CCA473
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238731AbiF0Lwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
+        id S238798AbiF0Lwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238402AbiF0LsY (ORCPT
+        with ESMTP id S238424AbiF0Ls0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:24 -0400
+        Mon, 27 Jun 2022 07:48:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB125C19;
-        Mon, 27 Jun 2022 04:41:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64EAABE39;
+        Mon, 27 Jun 2022 04:41:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8EE2CB81134;
-        Mon, 27 Jun 2022 11:41:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E437AC341C7;
-        Mon, 27 Jun 2022 11:41:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 138D5B8112E;
+        Mon, 27 Jun 2022 11:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 778D4C3411D;
+        Mon, 27 Jun 2022 11:41:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330069;
-        bh=FrKv/fYisOYImlCmHvguXRljYQWRRY7Ecyt+PcKsa6E=;
+        s=korg; t=1656330080;
+        bh=E49iyCRj4QbP3/EbZLXLwZp+fDTLfjOcMQvlo3rHagI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y69VIK3g/2ygs0nuEPJgX5bo/Cbjnd01E8d9C8sRAt0lkgOlMjg5+56l5X4QTA0Ph
-         TTyTkW+epdCswgIZaNNFP7FjbGHzmz0JJRkInPgqzR3ZG9/PajxPHoAnazQmR7p41w
-         MaDzr55rzNDHlLA6DoaJBohM3RpJXzVNR0wGVEog=
+        b=dF/mlcjupZ/G6w3DY4ETisUwlQiH4ULbywI8s0zCETpdtyHKvfDGgya14th23y9yj
+         0VTBYrzKRFhATwYI1uUq7OVWEpjXkHe1A9rF5SAWB00e1BWhBFPwWDnrIgPwRl3J8x
+         NUQ3WxEldyN17M/cZpi8GrU5fMCjSL7NvqGejjzg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Riccardo Paolo Bestetti <pbl@bestov.io>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, zdi-disclosures@trendmicro.com,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 073/181] ipv4: fix bind address validity regression tests
-Date:   Mon, 27 Jun 2022 13:20:46 +0200
-Message-Id: <20220627111946.681083536@linuxfoundation.org>
+Subject: [PATCH 5.18 076/181] udmabuf: add back sanity check
+Date:   Mon, 27 Jun 2022 13:20:49 +0200
+Message-Id: <20220627111946.766827059@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,128 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Riccardo Paolo Bestetti <pbl@bestov.io>
+From: Gerd Hoffmann <kraxel@redhat.com>
 
-[ Upstream commit 313c502fa3b3494159cb8f18d4a6444d06c5c9a5 ]
+[ Upstream commit 05b252cccb2e5c3f56119d25de684b4f810ba40a ]
 
-Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-introduces support for binding to nonlocal addresses, as well as some
-basic test coverage for some of the related cases.
+Check vm_fault->pgoff before using it.  When we removed the warning, we
+also removed the check.
 
-Commit b4a028c4d031 ("ipv4: ping: fix bind address validity check")
-fixes a regression which incorrectly removed some checks for bind
-address validation. In addition, it introduces regression tests for
-those specific checks. However, those regression tests are defective, in
-that they perform the tests using an incorrect combination of bind
-flags. As a result, those tests fail when they should succeed.
-
-This commit introduces additional regression tests for nonlocal binding
-and fixes the defective regression tests. It also introduces new
-set_sysctl calls for the ipv4_bind test group, as to perform the ICMP
-binding tests it is necessary to allow ICMP socket creation by setting
-the net.ipv4.ping_group_range knob.
-
-Fixes: b4a028c4d031 ("ipv4: ping: fix bind address validity check")
-Reported-by: Riccardo Paolo Bestetti <pbl@bestov.io>
-Signed-off-by: Riccardo Paolo Bestetti <pbl@bestov.io>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 7b26e4e2119d ("udmabuf: drop WARN_ON() check.")
+Reported-by: zdi-disclosures@trendmicro.com
+Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 36 +++++++++++++++++------
- 1 file changed, 27 insertions(+), 9 deletions(-)
+ drivers/dma-buf/udmabuf.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 75223b63e3c8..03b586760164 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -1800,24 +1800,32 @@ ipv4_addr_bind_novrf()
- 	done
+diff --git a/drivers/dma-buf/udmabuf.c b/drivers/dma-buf/udmabuf.c
+index e7330684d3b8..9631f2fd2faf 100644
+--- a/drivers/dma-buf/udmabuf.c
++++ b/drivers/dma-buf/udmabuf.c
+@@ -32,8 +32,11 @@ static vm_fault_t udmabuf_vm_fault(struct vm_fault *vmf)
+ {
+ 	struct vm_area_struct *vma = vmf->vma;
+ 	struct udmabuf *ubuf = vma->vm_private_data;
++	pgoff_t pgoff = vmf->pgoff;
  
- 	#
--	# raw socket with nonlocal bind
-+	# tests for nonlocal bind
- 	#
- 	a=${NL_IP}
- 	log_start
--	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${NSA_DEV} -b
--	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after device bind"
-+	run_cmd nettest -s -R -f -l ${a} -b
-+	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address"
-+
-+	log_start
-+	run_cmd nettest -s -f -l ${a} -b
-+	log_test_addr ${a} $? 0 "TCP socket bind to nonlocal address"
-+
-+	log_start
-+	run_cmd nettest -s -D -P icmp -f -l ${a} -b
-+	log_test_addr ${a} $? 0 "ICMP socket bind to nonlocal address"
- 
- 	#
- 	# check that ICMP sockets cannot bind to broadcast and multicast addresses
- 	#
- 	a=${BCAST_IP}
- 	log_start
--	run_cmd nettest -s -R -P icmp -l ${a} -b
-+	run_cmd nettest -s -D -P icmp -l ${a} -b
- 	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address"
- 
- 	a=${MCAST_IP}
- 	log_start
--	run_cmd nettest -s -R -P icmp -f -l ${a} -b
-+	run_cmd nettest -s -D -P icmp -l ${a} -b
- 	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address"
- 
- 	#
-@@ -1870,24 +1878,32 @@ ipv4_addr_bind_vrf()
- 	log_test_addr ${a} $? 1 "Raw socket bind to out of scope address after VRF bind"
- 
- 	#
--	# raw socket with nonlocal bind
-+	# tests for nonlocal bind
- 	#
- 	a=${NL_IP}
- 	log_start
--	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
-+	run_cmd nettest -s -R -f -l ${a} -I ${VRF} -b
- 	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after VRF bind"
- 
-+	log_start
-+	run_cmd nettest -s -f -l ${a} -I ${VRF} -b
-+	log_test_addr ${a} $? 0 "TCP socket bind to nonlocal address after VRF bind"
-+
-+	log_start
-+	run_cmd nettest -s -D -P icmp -f -l ${a} -I ${VRF} -b
-+	log_test_addr ${a} $? 0 "ICMP socket bind to nonlocal address after VRF bind"
-+
- 	#
- 	# check that ICMP sockets cannot bind to broadcast and multicast addresses
- 	#
- 	a=${BCAST_IP}
- 	log_start
--	run_cmd nettest -s -R -P icmp -l ${a} -I ${VRF} -b
-+	run_cmd nettest -s -D -P icmp -l ${a} -I ${VRF} -b
- 	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address after VRF bind"
- 
- 	a=${MCAST_IP}
- 	log_start
--	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
-+	run_cmd nettest -s -D -P icmp -l ${a} -I ${VRF} -b
- 	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address after VRF bind"
- 
- 	#
-@@ -1922,10 +1938,12 @@ ipv4_addr_bind()
- 
- 	log_subsection "No VRF"
- 	setup
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
- 	ipv4_addr_bind_novrf
- 
- 	log_subsection "With VRF"
- 	setup "yes"
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
- 	ipv4_addr_bind_vrf
+-	vmf->page = ubuf->pages[vmf->pgoff];
++	if (pgoff >= ubuf->pagecount)
++		return VM_FAULT_SIGBUS;
++	vmf->page = ubuf->pages[pgoff];
+ 	get_page(vmf->page);
+ 	return 0;
  }
- 
 -- 
 2.35.1
 
