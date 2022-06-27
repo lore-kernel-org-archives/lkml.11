@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FEE8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D5FCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236061AbiF0LfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:35:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
+        id S235824AbiF0LfY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236317AbiF0Ldg (ORCPT
+        with ESMTP id S236325AbiF0Ldh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:33:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16712DEA2;
-        Mon, 27 Jun 2022 04:30:56 -0700 (PDT)
+        Mon, 27 Jun 2022 07:33:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E985DEAC;
+        Mon, 27 Jun 2022 04:30:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC887B8111B;
-        Mon, 27 Jun 2022 11:30:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D300C3411D;
-        Mon, 27 Jun 2022 11:30:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B253612D8;
+        Mon, 27 Jun 2022 11:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C3F2C3411D;
+        Mon, 27 Jun 2022 11:30:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329453;
-        bh=ENp+C17M95ListxMPUSfVGysZT5Z3g9W0BA635L+hEE=;
+        s=korg; t=1656329456;
+        bh=CE16h4Za8gFzCYa0eRZvLILjAcKuoaholZwAc3agvQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tni5OM9gKAzZaItOB1OdMZRA3OuQRwlmv+uEwn0Sff4pCri0j/QEs73VUOjiNM0Ep
-         QlQavm5RDcAyG1xpmmuUdOTX1TD5FPuVdFgXzJHd/nGYX7b/jRL9dPWcQNE7LT5NTa
-         XkJvZtgXsDvxrZyAEEOumRoK7m0qWP8y0+GoC4s0=
+        b=af7puuye9HCFPQ2GVW6VnuO21O95dzcb7EsXwSXuZxRCxq7+Akq5GzxX5SEPDSnGP
+         fJNl5O5DyBOAV/j3TI8gOFh83cQlgU8XprK7hNR7oi19PboFJ0qmsmKIo3gfRMyTI+
+         EPN1anO+bZryWTQGxYhIu92DYumxUWRATqmNUXQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.4 51/60] powerpc/powernv: wire up rng during setup_arch
-Date:   Mon, 27 Jun 2022 13:22:02 +0200
-Message-Id: <20220627111929.192191226@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.4 52/60] ARM: dts: imx6qdl: correct PU regulator ramp delay
+Date:   Mon, 27 Jun 2022 13:22:03 +0200
+Message-Id: <20220627111929.221347169@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -49,148 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-commit f3eac426657d985b97c92fa5f7ae1d43f04721f3 upstream.
+commit 93a8ba2a619816d631bd69e9ce2172b4d7a481b8 upstream.
 
-The platform's RNG must be available before random_init() in order to be
-useful for initial seeding, which in turn means that it needs to be
-called from setup_arch(), rather than from an init call.
+Contrary to what was believed at the time, the ramp delay of 150us is not
+plenty for the PU LDO with the default step time of 512 pulses of the 24MHz
+clock. Measurements have shown that after enabling the LDO the voltage on
+VDDPU_CAP jumps to ~750mV in the first step and after that the regulator
+executes the normal ramp up as defined by the step size control.
 
-Complicating things, however, is that POWER8 systems need some per-cpu
-state and kmalloc, which isn't available at this stage. So we split
-things up into an early phase and a later opportunistic phase. This
-commit also removes some noisy log messages that don't add much.
+This means it takes the regulator between 360us and 370us to ramp up to
+the nominal 1.15V voltage for this power domain. With the old setting of
+the ramp delay the power up of the PU GPC domain would happen in the middle
+of the regulator ramp with the voltage being at around 900mV. Apparently
+this was enough for most units to properly power up the peripherals in the
+domain and execute the reset. Some units however, fail to power up properly,
+especially when the chip is at a low temperature. In that case any access
+to the GPU registers would yield an incorrect result with no way to recover
+from this situation.
 
-Fixes: a4da0d50b2a0 ("powerpc: Implement arch_get_random_long/int() for powernv")
-Cc: stable@vger.kernel.org # v3.13+
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-[mpe: Add of_node_put(), use pnv naming, minor change log editing]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220621140849.127227-1-Jason@zx2c4.com
+Change the ramp delay to 380us to cover the measured ramp up time with a
+bit of additional slack.
+
+Fixes: 40130d327f72 ("ARM: dts: imx6qdl: Allow disabling the PU regulator, add a enable ramp delay")
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/platforms/powernv/powernv.h |    2 +
- arch/powerpc/platforms/powernv/rng.c     |   52 +++++++++++++++++++++----------
- arch/powerpc/platforms/powernv/setup.c   |    2 +
- 3 files changed, 40 insertions(+), 16 deletions(-)
+ arch/arm/boot/dts/imx6qdl.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/powerpc/platforms/powernv/powernv.h
-+++ b/arch/powerpc/platforms/powernv/powernv.h
-@@ -35,4 +35,6 @@ ssize_t memcons_copy(struct memcons *mc,
- u32 memcons_get_size(struct memcons *mc);
- struct memcons *memcons_init(struct device_node *node, const char *mc_prop_name);
- 
-+void pnv_rng_init(void);
-+
- #endif /* _POWERNV_H */
---- a/arch/powerpc/platforms/powernv/rng.c
-+++ b/arch/powerpc/platforms/powernv/rng.c
-@@ -17,6 +17,7 @@
- #include <asm/prom.h>
- #include <asm/machdep.h>
- #include <asm/smp.h>
-+#include "powernv.h"
- 
- #define DARN_ERR 0xFFFFFFFFFFFFFFFFul
- 
-@@ -28,7 +29,6 @@ struct powernv_rng {
- 
- static DEFINE_PER_CPU(struct powernv_rng *, powernv_rng);
- 
--
- int powernv_hwrng_present(void)
- {
- 	struct powernv_rng *rng;
-@@ -98,9 +98,6 @@ static int initialise_darn(void)
- 			return 0;
- 		}
- 	}
--
--	pr_warn("Unable to use DARN for get_random_seed()\n");
--
- 	return -EIO;
- }
- 
-@@ -163,32 +160,55 @@ static __init int rng_create(struct devi
- 
- 	rng_init_per_cpu(rng, dn);
- 
--	pr_info_once("Registering arch random hook.\n");
--
- 	ppc_md.get_random_seed = powernv_get_random_long;
- 
- 	return 0;
- }
- 
--static __init int rng_init(void)
-+static int __init pnv_get_random_long_early(unsigned long *v)
- {
- 	struct device_node *dn;
--	int rc;
-+
-+	if (!slab_is_available())
-+		return 0;
-+
-+	if (cmpxchg(&ppc_md.get_random_seed, pnv_get_random_long_early,
-+		    NULL) != pnv_get_random_long_early)
-+		return 0;
- 
- 	for_each_compatible_node(dn, NULL, "ibm,power-rng") {
--		rc = rng_create(dn);
--		if (rc) {
--			pr_err("Failed creating rng for %pOF (%d).\n",
--				dn, rc);
-+		if (rng_create(dn))
- 			continue;
--		}
--
- 		/* Create devices for hwrng driver */
- 		of_platform_device_create(dn, NULL, NULL);
- 	}
- 
--	initialise_darn();
-+	if (!ppc_md.get_random_seed)
-+		return 0;
-+	return ppc_md.get_random_seed(v);
-+}
-+
-+void __init pnv_rng_init(void)
-+{
-+	struct device_node *dn;
- 
-+	/* Prefer darn over the rest. */
-+	if (!initialise_darn())
-+		return;
-+
-+	dn = of_find_compatible_node(NULL, NULL, "ibm,power-rng");
-+	if (dn)
-+		ppc_md.get_random_seed = pnv_get_random_long_early;
-+
-+	of_node_put(dn);
-+}
-+
-+static int __init pnv_rng_late_init(void)
-+{
-+	unsigned long v;
-+	/* In case it wasn't called during init for some other reason. */
-+	if (ppc_md.get_random_seed == pnv_get_random_long_early)
-+		pnv_get_random_long_early(&v);
- 	return 0;
- }
--machine_subsys_initcall(powernv, rng_init);
-+machine_subsys_initcall(powernv, pnv_rng_late_init);
---- a/arch/powerpc/platforms/powernv/setup.c
-+++ b/arch/powerpc/platforms/powernv/setup.c
-@@ -168,6 +168,8 @@ static void __init pnv_setup_arch(void)
- 	powersave_nap = 1;
- 
- 	/* XXX PMCS */
-+
-+	pnv_rng_init();
- }
- 
- static void __init pnv_init(void)
+--- a/arch/arm/boot/dts/imx6qdl.dtsi
++++ b/arch/arm/boot/dts/imx6qdl.dtsi
+@@ -766,7 +766,7 @@
+ 					regulator-name = "vddpu";
+ 					regulator-min-microvolt = <725000>;
+ 					regulator-max-microvolt = <1450000>;
+-					regulator-enable-ramp-delay = <150>;
++					regulator-enable-ramp-delay = <380>;
+ 					anatop-reg-offset = <0x140>;
+ 					anatop-vol-bit-shift = <9>;
+ 					anatop-vol-bit-width = <5>;
 
 
