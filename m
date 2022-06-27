@@ -2,83 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46570C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233917AbiF0JRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 05:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37694 "EHLO
+        id S233931AbiF0JRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 05:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233841AbiF0JQ3 (ORCPT
+        with ESMTP id S233870AbiF0JQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 05:16:29 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B6A6250
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:16:28 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id z7so11994456edm.13
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:16:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=4yCp6aTXqUcXVsV0Np3Dwjlcr0jYRXR8pM5bj50a/ow=;
-        b=A/AH+rqyBgloYrW3r5UfZDex8wxiYwvMlaBdRYE7DqkFvHJv1lz7pOR/uEcpmNDf9l
-         zoKpIHNYtN3yFJ228uMZNAnlykPHvFa+gNngWSmW2m3U5tHGDjyFU4fCRgLVZzCX+7v7
-         iR6YiT2ta/zahwUpgsriaTIUU8CowWzLoEqU2tRQxCpf26W4PdbMuwSkSY+07eDKgS1Y
-         CFBaeepxTVduRlMysqV8xzkmf0E/oeTQ5QJ5f3Q3Kdyq/jkfsZTJsuuge1K+u3xnN+wo
-         us/25Le2kjU2H/YI3g0DTEVpCEu+hydMJ5uDE9vI5MBrlPKjTo7RU45fA4UjsxPspsU3
-         xwKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4yCp6aTXqUcXVsV0Np3Dwjlcr0jYRXR8pM5bj50a/ow=;
-        b=Yl+9IL280zVYo43rPvmZqKbF93jbOOJefVfrxyePiSjybkh3P8aBT6zS02Pe/BIstR
-         LBvbirLVGmj165/61KKLeiml+xioj+fZbJ2G0zeVnuR8fl/fkET2r6uQvsyVW0cYh+Cg
-         Fb5bpQNo3irqDRRZrOY4Qve1KC3O3Ua2IuF0SONwYE9mvWtZT4Qs+bPmFBMR3fLQSdTE
-         0lX9u8HPTnDNQata2xsMbVnIOQ5vH+dJI8VWg/o2Z78GP7794VEb/1qpr2TyXcO5vll7
-         umgyNu2r91UhQTFl8bsUEAJOohHdBvfI0O2i3FcC5Ml4ZLknMBZcaPS26E94pT6XKc5m
-         E1yw==
-X-Gm-Message-State: AJIora+t0YL7HvjfPd1iOwhEdKSikxj6XmBWHaQvjyhftewwii5Tu/ci
-        TOMtCf/URdXqNYAldyBLqqOhSw==
-X-Google-Smtp-Source: AGRyM1tGxNBHWOJWILt1IIISQWZABMsK2JgKp45IPF/kZntw7pMPmbIgZBPos3nCiw1YiVXFdIO6Nw==
-X-Received: by 2002:a05:6402:2549:b0:437:788d:b363 with SMTP id l9-20020a056402254900b00437788db363mr10845669edb.406.1656321387840;
-        Mon, 27 Jun 2022 02:16:27 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gy10-20020a170906f24a00b006f3ef214e2csm4805395ejb.146.2022.06.27.02.16.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 02:16:27 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     soc@kernel.org, linux-arm-kernel@lists.infradead.org,
-        nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        linux-kernel@vger.kernel.org, krzysztof.kozlowski@linaro.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        arm@kernel.org, alexandre.belloni@bootlin.com, robh+dt@kernel.org,
-        olof@lixom.net
-Subject: Re: (subset) [PATCH v3 40/40] ARM: dts: at91: drop unneeded status from gpio-keys
-Date:   Mon, 27 Jun 2022 11:16:00 +0200
-Message-Id: <165632135506.81841.16359602083216967103.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220616005333.18491-40-krzysztof.kozlowski@linaro.org>
-References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org> <20220616005333.18491-40-krzysztof.kozlowski@linaro.org>
+        Mon, 27 Jun 2022 05:16:53 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C826142;
+        Mon, 27 Jun 2022 02:16:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656321412; x=1687857412;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=ZfnjeGaTXA62WKjkc0ev0zGBTHlOx0/hvfL7GfyMNRA=;
+  b=f+GPv5/SyNFumSAdnRTDmRj+MF3xKUMvt2d8mcAa0KE4nGfweBLYbSe8
+   pf2Gv+OlNnX0CHQPjiJVAjsbpnt17YSWQNU9qeIlhB4hu6gJugtzCbG6m
+   Sn7TPLPGgEB/kPAqK3jRBpEnj+N1Ds5xvgvv44mAZ2E8NZZHZfQdSio6n
+   mmdVmXUihj8GWDE6DjC7kg+8ga4OSdKOQig35HXETbKhhettjSZDv11vP
+   IplBU54W27RWKuRobllEDsa6mectaWfbhoUkb/YItGVEV3wQCBIrf7fTH
+   8nFZXiLA3OCgOH++c6GCCmiJO2oP1MzRSqAJ4Ig9gK/PtGR7Ca7wszoIc
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
+   d="scan'208";a="179631289"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jun 2022 02:16:51 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 27 Jun 2022 02:16:50 -0700
+Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 27 Jun 2022 02:16:47 -0700
+From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+To:     <arnd@arndb.de>, <alexandre.belloni@bootlin.com>,
+        <krzysztof.kozlowski+dt@linaro.org>, <soc@kernel.org>,
+        <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <Kavyasree.Kotagiri@microchip.com>
+Subject: [PATCH] ARM: dts: lan966x: Cleanup flexcom3 usart pinctrl settings.
+Date:   Mon, 27 Jun 2022 14:42:17 +0530
+Message-ID: <20220627091217.21701-1-kavyasree.kotagiri@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 17:53:33 -0700, Krzysztof Kozlowski wrote:
-> Nodes do not need explicit status=okay.
-> 
-> 
+On pcb8291, Flexcom3 usart has only tx and rx pins.
+Cleaningup usart3 pinctrl settings.
 
-Applied, thanks!
+Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+---
+ arch/arm/boot/dts/lan966x-pcb8291.dts | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-[40/40] ARM: dts: at91: drop unneeded status from gpio-keys
-        https://git.kernel.org/krzk/linux/c/592feeea113553be142680a25a9c0850daae3567
-
-Best regards,
+diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
+index 3c7e3a7d6f14..5dc8ed4cee9a 100644
+--- a/arch/arm/boot/dts/lan966x-pcb8291.dts
++++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
+@@ -19,19 +19,13 @@
+ };
+ 
+ &gpio {
+-	fc_shrd7_pins: fc_shrd7-pins {
+-		pins = "GPIO_49";
+-		function = "fc_shrd7";
+-	};
+-
+-	fc_shrd8_pins: fc_shrd8-pins {
+-		pins = "GPIO_54";
+-		function = "fc_shrd8";
++	fc3_b_rxd_pins: fc3-b-rxd-pins {
++		pins = "GPIO_52";
++		function = "fc3_b";
+ 	};
+ 
+-	fc3_b_pins: fcb3-spi-pins {
+-		/* SCK, RXD, TXD */
+-		pins = "GPIO_51", "GPIO_52", "GPIO_53";
++	fc3_b_txd_pins: fc3-b-txd-pins {
++		pins = "GPIO_53";
+ 		function = "fc3_b";
+ 	};
+ 
+@@ -53,7 +47,7 @@
+ 	status = "okay";
+ 
+ 	usart3: serial@200 {
+-		pinctrl-0 = <&fc3_b_pins>, <&fc_shrd7_pins>, <&fc_shrd8_pins>;
++		pinctrl-0 = <&fc3_b_rxd_pins>, <&fc3_b_txd_pins>;
+ 		pinctrl-names = "default";
+ 		status = "okay";
+ 	};
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+2.17.1
+
