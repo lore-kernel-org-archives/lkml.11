@@ -2,94 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E912C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:57:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 190A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233241AbiF0H5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
+        id S233221AbiF0H6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233215AbiF0H53 (ORCPT
+        with ESMTP id S233212AbiF0H6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:57:29 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0456160E8
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:57:29 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 68so8359394pgb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:57:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jyqDF5Hpn2EUBCZeMxGZtJnLwcRJ4sS1ucd+2BRdDk4=;
-        b=qzPhTTdiRDFzMFpwSdyKg8WpEavFtchGHpONzR7KAUt3FNXZ5+gup4HUqmgGm1ShjR
-         cVmoJXM4C2NMJPbwsZxSQzBcyxRtIySH2B2CpFoa7uRPwEpPZ9UPPBOiPL0d9tccG6an
-         2KB8Yw46giMPSF6DpW7z7dkklmbQMOqQQylX+YZ7+yBwTP0rWPMlygxf6tm4l2R9Ior5
-         9LaJdfmQpr/67qZpPCmS3okU49W3CRUPsD0elkSwsH+m3Ke5+C01OnJ480UCXsUa9GMi
-         BZm3j9qs2UeLTBZBAHXfAyFK5C3hEt4/sgzOb8d9ID0/tetPn6iUPrhRhEj1WM0k4TU1
-         XSaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jyqDF5Hpn2EUBCZeMxGZtJnLwcRJ4sS1ucd+2BRdDk4=;
-        b=MThoNcHkALfXqs+s10NHh/WPoKrj/LUcMKzzU2ApPfJuRTSQB2SybDH2g1qx4KuguZ
-         nFUqReLYe/0nakT0Z2rhNLkBzWkK7YsE98dIstXq8usxTqGQM7hNQcgLuT4HP4GKtc1v
-         4hc57U50a30D6VISeOqNWdZhoc1s3xx7zFksOsjIfEc9HV8zc6FW65YwVDYO2gsz7RhD
-         PsjHBwTwiLUVsQEqvzp2mtIr+Pob9iRRDq4ahORk5x9DyjP4TbCZMlGdkWzqNtQwWtl7
-         Z+E3s2IERFeDIGDV6nJT21PKvHkee+3wjlqXYIT94vcHuRy6xwWBjh/Uw5bYZB6JE0G3
-         G4qA==
-X-Gm-Message-State: AJIora/w2V+VajfQuHemBQJUovXoJyBcVqyUYDDJEfaD++I635XpSKBV
-        DBJBxDwTULQuijpUSedpgTYF5g==
-X-Google-Smtp-Source: AGRyM1u7yUn3oLBcN0sCyNbL8gMeo0rCW5lez9SUotOMvwnCNp4G/4WfC8fpwA9lomLmUUyyAXH4fQ==
-X-Received: by 2002:aa7:9f9b:0:b0:525:1e0a:a6b4 with SMTP id z27-20020aa79f9b000000b005251e0aa6b4mr13623307pfr.5.1656316648483;
-        Mon, 27 Jun 2022 00:57:28 -0700 (PDT)
-Received: from localhost ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id f11-20020a62380b000000b0051829b1595dsm6491342pfa.130.2022.06.27.00.57.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 00:57:28 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 15:57:25 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Naoya Horiguchi <nao.horiguchi@gmail.com>
-Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/9] mm/hugetlb: separate path for hwpoison entry in
- copy_hugetlb_page_range()
-Message-ID: <Yrli5c0A8oKqF4EG@FVFYT0MHHV2J.usts.net>
-References: <20220623235153.2623702-1-naoya.horiguchi@linux.dev>
- <20220623235153.2623702-3-naoya.horiguchi@linux.dev>
+        Mon, 27 Jun 2022 03:58:30 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C21B2B3;
+        Mon, 27 Jun 2022 00:58:27 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LWg6q4d1BzkWfM;
+        Mon, 27 Jun 2022 15:57:07 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 27 Jun 2022 15:58:25 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 27 Jun
+ 2022 15:58:24 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-rtc@vger.kernel.org>
+CC:     <alexandre.belloni@bootlin.com>, <a.zummo@towertech.it>,
+        <s.hauer@pengutronix.de>, <a.fatoum@pengutronix.de>
+Subject: [PATCH -next v2] rtc: rv8803: fix missing unlock on error in rv8803_set_time()
+Date:   Mon, 27 Jun 2022 16:08:22 +0800
+Message-ID: <20220627080822.3881072-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220623235153.2623702-3-naoya.horiguchi@linux.dev>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 08:51:46AM +0900, Naoya Horiguchi wrote:
-> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
-> 
-> Originally copy_hugetlb_page_range() handles migration entries and hwpoisone
-> entries in similar manner.  But recently the related code path has more code
-> for migration entries, and when is_writable_migration_entry() was converted
-> to !is_readable_migration_entry(), hwpoison entries on source processes got
-> to be unexpectedly updated (which is legitimate for migration entries, but
-> not for hwpoison entries).  This results in unexpected serious issues like
-> kernel panic when foking processes with hwpoison entries in pmd.
-> 
-> Separate the if branch into one for hwpoison entries and one for migration
-> entries.
-> 
-> Fixes: 6c287605fd56 ("mm: remember exclusively mapped anonymous pages with PG_anon_exclusive")
-> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Add the missing unlock before return from function rv8803_set_time()
+in the error handling case.
 
-Thanks for fixing it.
+Fixes: f8176e0bb83f ("rtc: rv8803: initialize registers on post-probe voltage loss")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+---
+v2:
+  correct fix tag.
+---
+ drivers/rtc/rtc-rv8803.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+diff --git a/drivers/rtc/rtc-rv8803.c b/drivers/rtc/rtc-rv8803.c
+index fe1247e771b9..3527a0521e9b 100644
+--- a/drivers/rtc/rtc-rv8803.c
++++ b/drivers/rtc/rtc-rv8803.c
+@@ -315,8 +315,10 @@ static int rv8803_set_time(struct device *dev, struct rtc_time *tm)
+ 
+ 	if (flags & RV8803_FLAG_V2F) {
+ 		ret = rv8803_regs_reset(rv8803);
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&rv8803->flags_lock);
+ 			return ret;
++		}
+ 	}
+ 
+ 	ret = rv8803_write_reg(rv8803->client, RV8803_FLAG,
+-- 
+2.25.1
+
