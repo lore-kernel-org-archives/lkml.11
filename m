@@ -2,118 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C744CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234975AbiF0LZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
+        id S234981AbiF0LZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234873AbiF0LZG (ORCPT
+        with ESMTP id S234809AbiF0LZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:25:06 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCF565B6
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:25:03 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id n16-20020a17090ade9000b001ed15b37424so9109504pjv.3
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:25:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7dXRxtZvr+s2XVNzWzC29rU2+VQvIIaYQPfnDdLc66o=;
-        b=lCQwBZgKD56DJpohXiDdqChHVRMNjjSIqJXaJj7O+tImuokhzYLrf/x9F8WeAVXDLm
-         QqC1o5Dd3iwCQnUcchQy2Yzm2viR+3DCLfQGVlr9mtRWSOsI3uJUFUi3FhZoVvQcx7aq
-         FXZGJKa1Z/lT4IQCHxJq7hiO1ySSh4/+6HQk8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7dXRxtZvr+s2XVNzWzC29rU2+VQvIIaYQPfnDdLc66o=;
-        b=iNiKWZM9gTpsKG1SBqrL2KZO75981WQ75DxsXpR/SoouBV8VMmvZebf/ga7T9EScLB
-         ODcgcdS9DPWjy3Zy7oyvN5/cKcQLc9zJ37FV1Z4FPHyYjWsXhC1659RvZYcUlW3CIzk6
-         n8H327rPizQzZIec9jCBWt4zAOvHrX7pyu2h+Ov4PmErkE/wVXrUH6nHXRXKAmQB3lri
-         Ax/p909252+fIEqTGP23pAMalwzSmmzZzI7dmCzFSqTr7yifOiZiUfH9sJltra5GPgD5
-         +qRDW7qrvxFEsCp/21EetLKxPxpdpoGlT4gwbLCNjxX1kGN1kWhKvCxnX3qnpNXcQkDq
-         8eeg==
-X-Gm-Message-State: AJIora+BBUbQlpf1vGEStM6kUphhzq2HBpiglgBjvlxM+1AkEM4KUHMu
-        eJs/uQgZEX3MdvozqwvollUMcg==
-X-Google-Smtp-Source: AGRyM1viOHWHl84VVlTGqpixiZ6FlTpaaah53khsejDs3LQ40SRGD8i9SytWAXzQY+IU7V1myB2eqQ==
-X-Received: by 2002:a17:902:f10b:b0:16a:198f:bedb with SMTP id e11-20020a170902f10b00b0016a198fbedbmr14357909plb.16.1656329102608;
-        Mon, 27 Jun 2022 04:25:02 -0700 (PDT)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:2dc1:c31b:b5ed:f3aa])
-        by smtp.gmail.com with ESMTPSA id lj4-20020a17090b344400b001ece32cbec9sm9246889pjb.24.2022.06.27.04.25.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 04:25:02 -0700 (PDT)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Chen-Yu Tsai <wenst@chromium.org>, linux-media@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>
-Subject: [PATCH 2/4] media: mediatek: vcodec: dec: Set default max resolution based on format
-Date:   Mon, 27 Jun 2022 19:24:00 +0800
-Message-Id: <20220627112402.2332046-3-wenst@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220627112402.2332046-1-wenst@chromium.org>
-References: <20220627112402.2332046-1-wenst@chromium.org>
+        Mon, 27 Jun 2022 07:25:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578A3656D;
+        Mon, 27 Jun 2022 04:25:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D4B8B8112E;
+        Mon, 27 Jun 2022 11:25:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6215DC3411D;
+        Mon, 27 Jun 2022 11:25:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656329100;
+        bh=CKac3KZZhJcn3Q67KLTPnJl3UxDqru+VaQrAyE0IhHk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KgvYPU7mj/JU4mtpImVma/OuvNpm0km0RS/U/MlyiW5gqVM7hRcXSDtZOswLdiykB
+         ylJJEgS6/cqxARcO0zhjlJ5iY0lZwLpArHGwoTL+m9nuIgeRgSWzH/ccO9kQRkXf6f
+         yuogTLl6i2SBwGQ6w2QaL5SrCAMbkQqt6t4i3tcc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.10 051/102] igb: Make DMA faster when CPU is active on the PCIe link
+Date:   Mon, 27 Jun 2022 13:21:02 +0200
+Message-Id: <20220627111934.986653452@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
+References: <20220627111933.455024953@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit b018be06f3c7 ("media: mediatek: vcodec: Read max resolution
-from dec_capability") the driver ended up blindly setting the maximum
-resolution to 1080p, even if the hardware and default output format
-supported up to 4K. This would only be overridden by a subsequent
-S_FMT call.
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-Correctly initialize the maximum resolution based on the default output
-format.
+[ Upstream commit 4e0effd9007ea0be31f7488611eb3824b4541554 ]
 
-Fixes: b018be06f3c7 ("media: mediatek: vcodec: Read max resolution from dec_capability")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Intel I210 on some Intel Alder Lake platforms can only achieve ~750Mbps
+Tx speed via iperf. The RR2DCDELAY shows around 0x2xxx DMA delay, which
+will be significantly lower when 1) ASPM is disabled or 2) SoC package
+c-state stays above PC3. When the RR2DCDELAY is around 0x1xxx the Tx
+speed can reach to ~950Mbps.
+
+According to the I210 datasheet "8.26.1 PCIe Misc. Register - PCIEMISC",
+"DMA Idle Indication" doesn't seem to tie to DMA coalesce anymore, so
+set it to 1b for "DMA is considered idle when there is no Rx or Tx AND
+when there are no TLPs indicating that CPU is active detected on the
+PCIe link (such as the host executes CSR or Configuration register read
+or write operation)" and performing Tx should also fall under "active
+CPU on PCIe link" case.
+
+In addition to that, commit b6e0c419f040 ("igb: Move DMA Coalescing init
+code to separate function.") seems to wrongly changed from enabling
+E1000_PCIEMISC_LX_DECISION to disabling it, also fix that.
+
+Fixes: b6e0c419f040 ("igb: Move DMA Coalescing init code to separate function.")
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220621221056.604304-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../media/platform/mediatek/vcodec/mtk_vcodec_dec.c  | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-index fcb4b8131c49..f1b82d4c5be5 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-@@ -169,6 +169,16 @@ void mtk_vcodec_dec_set_default_params(struct mtk_vcodec_ctx *ctx)
- 	q_data->sizeimage[0] = DFT_CFG_WIDTH * DFT_CFG_HEIGHT;
- 	q_data->bytesperline[0] = 0;
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 758e468e677a..4e51f4bb58ff 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -9829,11 +9829,10 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	u32 dmac_thr;
+ 	u16 hwm;
++	u32 reg;
  
-+	if (!(ctx->dev->dec_capability & VCODEC_CAPABILITY_4K_DISABLED) &&
-+	    q_data->fmt->fourcc != V4L2_PIX_FMT_VP8_FRAME) {
-+		mtk_v4l2_debug(3, "4K is enabled");
-+		ctx->max_width = VCODEC_DEC_4K_CODED_WIDTH;
-+		ctx->max_height = VCODEC_DEC_4K_CODED_HEIGHT;
-+	} else {
-+		ctx->max_width = MTK_VDEC_MAX_W;
-+		ctx->max_height = MTK_VDEC_MAX_H;
-+	}
-+
- 	q_data = &ctx->q_data[MTK_Q_DATA_DST];
- 	memset(q_data, 0, sizeof(struct mtk_q_data));
- 	q_data->visible_width = DFT_CFG_WIDTH;
-@@ -177,8 +187,6 @@ void mtk_vcodec_dec_set_default_params(struct mtk_vcodec_ctx *ctx)
- 	q_data->coded_height = DFT_CFG_HEIGHT;
- 	q_data->fmt = ctx->dev->vdec_pdata->default_cap_fmt;
- 	q_data->field = V4L2_FIELD_NONE;
--	ctx->max_width = MTK_VDEC_MAX_W;
--	ctx->max_height = MTK_VDEC_MAX_H;
+ 	if (hw->mac.type > e1000_82580) {
+ 		if (adapter->flags & IGB_FLAG_DMAC) {
+-			u32 reg;
+-
+ 			/* force threshold to 0. */
+ 			wr32(E1000_DMCTXTH, 0);
  
- 	v4l_bound_align_image(&q_data->coded_width,
- 				MTK_VDEC_MIN_W,
+@@ -9866,7 +9865,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
+ 			/* Disable BMC-to-OS Watchdog Enable */
+ 			if (hw->mac.type != e1000_i354)
+ 				reg &= ~E1000_DMACR_DC_BMC2OSW_EN;
+-
+ 			wr32(E1000_DMACR, reg);
+ 
+ 			/* no lower threshold to disable
+@@ -9883,12 +9881,12 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
+ 			 */
+ 			wr32(E1000_DMCTXTH, (IGB_MIN_TXPBSIZE -
+ 			     (IGB_TX_BUF_4096 + adapter->max_frame_size)) >> 6);
++		}
+ 
+-			/* make low power state decision controlled
+-			 * by DMA coal
+-			 */
++		if (hw->mac.type >= e1000_i210 ||
++		    (adapter->flags & IGB_FLAG_DMAC)) {
+ 			reg = rd32(E1000_PCIEMISC);
+-			reg &= ~E1000_PCIEMISC_LX_DECISION;
++			reg |= E1000_PCIEMISC_LX_DECISION;
+ 			wr32(E1000_PCIEMISC, reg);
+ 		} /* endif adapter->dmac is not disabled */
+ 	} else if (hw->mac.type == e1000_82580) {
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
+2.35.1
+
+
 
