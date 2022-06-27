@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1176EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235593AbiF0Lax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
+        id S235602AbiF0LbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235477AbiF0L3m (ORCPT
+        with ESMTP id S235505AbiF0L3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:29:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6003FB07;
-        Mon, 27 Jun 2022 04:28:27 -0700 (PDT)
+        Mon, 27 Jun 2022 07:29:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1114EB4B;
+        Mon, 27 Jun 2022 04:28:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5873614ED;
-        Mon, 27 Jun 2022 11:28:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A02C3411D;
-        Mon, 27 Jun 2022 11:28:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D933B8111A;
+        Mon, 27 Jun 2022 11:28:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13DEDC3411D;
+        Mon, 27 Jun 2022 11:28:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329306;
-        bh=6AxkFONhHzmOfd4oMiIArsoJYhYr/Fsf+dMwrYnOOFM=;
+        s=korg; t=1656329309;
+        bh=kDihq9Bw183BjtWkYgzYJBoXpL/l/VQicOl/orkDVZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rzxdxvo0Q6mvJjqz84sX5FG51AxkruLQfwuBZBc349r+SFhgdk0OUXpwMOtaOmZwJ
-         wCXUOXnobPNpaJj319Rvd6lWGul+4pL7HxT+I9opB2WSq7yiE5d8q9ktYIXz53gd7k
-         0+S943NsBSSpONBkT2lvQM76vGK8QMhHFEx/jP28=
+        b=2ip3Wu/L2UQ2B083j7WzoB+2Qd74EIZWZyovq472gRumkgVb6OXD1mhgHEpQ2ueeJ
+         mLRBUzfaZA/4xAHIei6YviqZvwvgS2zsZ4YIHiRpG6bQOjWUs+75EpoWY/DHxBMqT9
+         3S9Ki85UqLQsf5w9jtYBKGYKaSqedhGhnlYwWmxQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ballon Shi <ballon.shi@quectel.com>,
-        Macpaul Lin <macpaul.lin@mediatek.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.4 16/60] USB: serial: option: add Quectel RM500K module support
-Date:   Mon, 27 Jun 2022 13:21:27 +0200
-Message-Id: <20220627111928.138227692@linuxfoundation.org>
+        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
+        Jon Maxwell <jmaxwell37@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Curtis Taylor <cutaylor-pub@yahoo.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 17/60] bpf: Fix request_sock leak in sk lookup helpers
+Date:   Mon, 27 Jun 2022 13:21:28 +0200
+Message-Id: <20220627111928.168248168@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -49,87 +52,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Macpaul Lin <macpaul.lin@mediatek.com>
+From: Jon Maxwell <jmaxwell37@gmail.com>
 
-commit 15b694e96c31807d8515aacfa687a1e8a4fbbadc upstream.
+[ Upstream commit 3046a827316c0e55fc563b4fb78c93b9ca5c7c37 ]
 
-Add usb product id of the Quectel RM500K module.
+A customer reported a request_socket leak in a Calico cloud environment. We
+found that a BPF program was doing a socket lookup with takes a refcnt on
+the socket and that it was finding the request_socket but returning the parent
+LISTEN socket via sk_to_full_sk() without decrementing the child request socket
+1st, resulting in request_sock slab object leak. This patch retains the
+existing behaviour of returning full socks to the caller but it also decrements
+the child request_socket if one is present before doing so to prevent the leak.
 
-RM500K provides 2 mandatory interfaces to Linux host after enumeration.
- - /dev/ttyUSB5: this is a serial interface for control path. User needs
-   to write AT commands to this device node to query status, set APN,
-   set PIN code, and enable/disable the data connection to 5G network.
- - ethX: this is the data path provided as a RNDIS devices. After the
-   data connection has been established, Linux host can access 5G data
-   network via this interface.
+Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
+thanks to Antoine Tenart for the reproducer and patch input.
 
-"RNDIS": RNDIS + ADB + AT (/dev/ttyUSB5) + MODEM COMs
+v2 of this patch contains, refactor as per Daniel Borkmann's suggestions to
+validate RCU flags on the listen socket so that it balances with bpf_sk_release()
+and update comments as per Martin KaFai Lau's suggestion. One small change to
+Daniels suggestion, put "sk = sk2" under "if (sk2 != sk)" to avoid an extra
+instruction.
 
-usb-devices output for 0x7001:
-T:  Bus=05 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  3 Spd=480 MxCh= 0
-D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=2c7c ProdID=7001 Rev=00.01
-S:  Manufacturer=MediaTek Inc.
-S:  Product=USB DATA CARD
-S:  SerialNumber=869206050009672
-C:  #Ifs=10 Cfg#= 1 Atr=a0 MxPwr=500mA
-I:  If#= 0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=02 Prot=ff Driver=rndis_host
-E:  Ad=82(I) Atr=03(Int.) MxPS=  64 Ivl=125us
-I:  If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:  If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:  If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:  If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:  If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=(none)
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:  If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:  If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:  If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:  If#= 9 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=09(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=8a(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-Co-developed-by: Ballon Shi <ballon.shi@quectel.com>
-Signed-off-by: Ballon Shi <ballon.shi@quectel.com>
-Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f7355a6c0497 ("bpf: Check sk_fullsock() before returning from bpf_sk_lookup()")
+Fixes: edbf8c01de5a ("bpf: add skc_lookup_tcp helper")
+Co-developed-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net
+Link: https://lore.kernel.org/bpf/20220615011540.813025-1-jmaxwell37@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/option.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/core/filter.c | 34 ++++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -257,6 +257,7 @@ static void option_instat_callback(struc
- #define QUECTEL_PRODUCT_RM500Q			0x0800
- #define QUECTEL_PRODUCT_EC200S_CN		0x6002
- #define QUECTEL_PRODUCT_EC200T			0x6026
-+#define QUECTEL_PRODUCT_RM500K			0x7001
+diff --git a/net/core/filter.c b/net/core/filter.c
+index b0df4ddbe30c..eba96343c7af 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5313,10 +5313,21 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+ 					   ifindex, proto, netns_id, flags);
  
- #define CMOTECH_VENDOR_ID			0x16d8
- #define CMOTECH_PRODUCT_6001			0x6001
-@@ -1150,6 +1151,7 @@ static const struct usb_device_id option
- 	  .driver_info = ZLP },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200S_CN, 0xff, 0, 0) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200T, 0xff, 0, 0) },
-+	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500K, 0xff, 0x00, 0x00) },
+ 	if (sk) {
+-		sk = sk_to_full_sk(sk);
+-		if (!sk_fullsock(sk)) {
++		struct sock *sk2 = sk_to_full_sk(sk);
++
++		/* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk
++		 * sock refcnt is decremented to prevent a request_sock leak.
++		 */
++		if (!sk_fullsock(sk2))
++			sk2 = NULL;
++		if (sk2 != sk) {
+ 			sock_gen_put(sk);
+-			return NULL;
++			/* Ensure there is no need to bump sk2 refcnt */
++			if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
++				WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
++				return NULL;
++			}
++			sk = sk2;
+ 		}
+ 	}
  
- 	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_6001) },
- 	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_CMU_300) },
+@@ -5350,10 +5361,21 @@ bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+ 					 flags);
+ 
+ 	if (sk) {
+-		sk = sk_to_full_sk(sk);
+-		if (!sk_fullsock(sk)) {
++		struct sock *sk2 = sk_to_full_sk(sk);
++
++		/* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk
++		 * sock refcnt is decremented to prevent a request_sock leak.
++		 */
++		if (!sk_fullsock(sk2))
++			sk2 = NULL;
++		if (sk2 != sk) {
+ 			sock_gen_put(sk);
+-			return NULL;
++			/* Ensure there is no need to bump sk2 refcnt */
++			if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
++				WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
++				return NULL;
++			}
++			sk = sk2;
+ 		}
+ 	}
+ 
+-- 
+2.35.1
+
 
 
