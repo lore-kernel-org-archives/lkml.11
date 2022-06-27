@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA446C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8428CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235337AbiF0L2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
+        id S235209AbiF0L2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235136AbiF0L0v (ORCPT
+        with ESMTP id S235168AbiF0L1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:26:51 -0400
+        Mon, 27 Jun 2022 07:27:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BC465B7;
-        Mon, 27 Jun 2022 04:26:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6098A9FC9;
+        Mon, 27 Jun 2022 04:26:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 125A661359;
-        Mon, 27 Jun 2022 11:26:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B402C3411D;
-        Mon, 27 Jun 2022 11:26:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2C4161460;
+        Mon, 27 Jun 2022 11:26:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BFE1C341CB;
+        Mon, 27 Jun 2022 11:26:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329208;
-        bh=vHphNEGDnvQP6fenj0WdjSl93B5+8QPE+d2p67vjjAI=;
+        s=korg; t=1656329214;
+        bh=bGl2TNNWVIQtfI6S6KPuTnnxACIF1gHxJti+5lW9KW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oK26BNfr9l1amyD53G5DTjOqUvU1Z8kQjZBAZXPaYeOKZCH9T4SkHO/XXhmjephsN
-         Bi0eWR664vIaUD26StwwLi/jikonRViKsddAdqQ6C05iRqB4clRPAHB1ZKFCIWxSDB
-         p6Vfd3GR3SHXnapx/22mAeaCeDaQoRuJj2gCK/rs=
+        b=1B1ZvubF9cfg6YDSqzBByPxe67HEM3Cq87C4WlTjyQxc4GdDRkqSuEwUI8y//662h
+         QvF9Ebhi7ful9WpRyM2iFKN/pcUbVAp6tr0DnygVPhGsiZFOOlRyJ/qOktuD/0U/aM
+         FINBBL5TV3YgldMuwNWgprj0d3W3lRBaikBd2FUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julien Grall <jgrall@amazon.com>,
-        Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 046/102] x86/xen: Remove undefined behavior in setup_features()
-Date:   Mon, 27 Jun 2022 13:20:57 +0200
-Message-Id: <20220627111934.838369816@linuxfoundation.org>
+Subject: [PATCH 5.10 048/102] afs: Fix dynamic root getattr
+Date:   Mon, 27 Jun 2022 13:20:59 +0200
+Message-Id: <20220627111934.896763562@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -49,34 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julien Grall <jgrall@amazon.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit ecb6237fa397b7b810d798ad19322eca466dbab1 ]
+[ Upstream commit cb78d1b5efffe4cf97e16766329dd7358aed3deb ]
 
-1 << 31 is undefined. So switch to 1U << 31.
+The recent patch to make afs_getattr consult the server didn't account
+for the pseudo-inodes employed by the dynamic root-type afs superblock
+not having a volume or a server to access, and thus an oops occurs if
+such a directory is stat'd.
 
-Fixes: 5ead97c84fa7 ("xen: Core Xen implementation")
-Signed-off-by: Julien Grall <jgrall@amazon.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220617103037.57828-1-julien@xen.org
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Fix this by checking to see if the vnode->volume pointer actually points
+anywhere before following it in afs_getattr().
+
+This can be tested by stat'ing a directory in /afs.  It may be
+sufficient just to do "ls /afs" and the oops looks something like:
+
+        BUG: kernel NULL pointer dereference, address: 0000000000000020
+        ...
+        RIP: 0010:afs_getattr+0x8b/0x14b
+        ...
+        Call Trace:
+         <TASK>
+         vfs_statx+0x79/0xf5
+         vfs_fstatat+0x49/0x62
+
+Fixes: 2aeb8c86d499 ("afs: Fix afs_getattr() to refetch file status if callback break occurred")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lore.kernel.org/r/165408450783.1031787.7941404776393751186.stgit@warthog.procyon.org.uk/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/features.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/afs/inode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/xen/features.c b/drivers/xen/features.c
-index 25c053b09605..2c306de228db 100644
---- a/drivers/xen/features.c
-+++ b/drivers/xen/features.c
-@@ -29,6 +29,6 @@ void xen_setup_features(void)
- 		if (HYPERVISOR_xen_version(XENVER_get_features, &fi) < 0)
- 			break;
- 		for (j = 0; j < 32; j++)
--			xen_features[i * 32 + j] = !!(fi.submap & 1<<j);
-+			xen_features[i * 32 + j] = !!(fi.submap & 1U << j);
- 	}
- }
+diff --git a/fs/afs/inode.c b/fs/afs/inode.c
+index 7e7a9454bcb9..826fae22a8cc 100644
+--- a/fs/afs/inode.c
++++ b/fs/afs/inode.c
+@@ -734,7 +734,8 @@ int afs_getattr(const struct path *path, struct kstat *stat,
+ 
+ 	_enter("{ ino=%lu v=%u }", inode->i_ino, inode->i_generation);
+ 
+-	if (!(query_flags & AT_STATX_DONT_SYNC) &&
++	if (vnode->volume &&
++	    !(query_flags & AT_STATX_DONT_SYNC) &&
+ 	    !test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
+ 		key = afs_request_key(vnode->volume->cell);
+ 		if (IS_ERR(key))
 -- 
 2.35.1
 
