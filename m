@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD02C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236931AbiF0Lkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
+        id S236937AbiF0Lkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236668AbiF0Lhu (ORCPT
+        with ESMTP id S236676AbiF0Lhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:50 -0400
+        Mon, 27 Jun 2022 07:37:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FB4B1CF;
-        Mon, 27 Jun 2022 04:34:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7851B30;
+        Mon, 27 Jun 2022 04:34:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BFD05B81122;
-        Mon, 27 Jun 2022 11:34:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A72C3411D;
-        Mon, 27 Jun 2022 11:34:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7DBFCB81122;
+        Mon, 27 Jun 2022 11:34:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E43AAC3411D;
+        Mon, 27 Jun 2022 11:34:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329669;
-        bh=Yyipdz0XzKZ0zgmwRFh5h1EHwsuJNqosUSfRRf+D3kk=;
+        s=korg; t=1656329672;
+        bh=H+6H7S1MyXDeZxHD1JnQsGsxEGrQRgQzWm2hxsUkdMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wp+OY+JJGObYvyDAlU7d2UFOjBtxKEzvtD+j0Mxt0xVklFM1omrxBhZbKIJGlnwFO
-         qk4DcbdCGca+GDQ4Wg+e7PhSGiJjQEARPGAwVa3NaZxlppGLwHdoVDpf9qYIHwPufI
-         tvYPrCTF1P6+7wWNfCmuOtUGxKZ8PVcPLeT9GfvQ=
+        b=eV0W8y5PJe33F0boXUQeQ63QEVgHgeLp+Pz4lRwEtzELi60WEFCCHRYqEbYBILLb1
+         TaZk+/Qi7l02E6Kdh4DuxKu+udZz3qNwWTG+fW0FHUpxNgmTkM9UiLkwKrbHkYM888
+         QgMRtnIAZpLFyUkwko+J++g8Pz+hWfhjjc6kSwig=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Lee Duncan <lduncan@suse.com>,
-        Sergey Gorenko <sergeygo@nvidia.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 038/135] scsi: iscsi: Exclude zero from the endpoint ID range
-Date:   Mon, 27 Jun 2022 13:20:45 +0200
-Message-Id: <20220627111939.264369566@linuxfoundation.org>
+Subject: [PATCH 5.15 074/135] Revert "net/tls: fix tls_sk_proto_close executed repeatedly"
+Date:   Mon, 27 Jun 2022 13:21:21 +0200
+Message-Id: <20220627111940.308932759@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -52,46 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Gorenko <sergeygo@nvidia.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit f6eed15f3ea76596ccc689331e1cc850b999133b ]
+[ Upstream commit 1b205d948fbb06a7613d87dcea0ff5fd8a08ed91 ]
 
-The kernel returns an endpoint ID as r.ep_connect_ret.handle in the
-iscsi_uevent. The iscsid validates a received endpoint ID and treats zero
-as an error. The commit referenced in the fixes line changed the endpoint
-ID range, and zero is always assigned to the first endpoint ID.  So, the
-first attempt to create a new iSER connection always fails.
+This reverts commit 69135c572d1f84261a6de2a1268513a7e71753e2.
 
-Link: https://lore.kernel.org/r/20220613123854.55073-1-sergeygo@nvidia.com
-Fixes: 3c6ae371b8a1 ("scsi: iscsi: Release endpoint ID when its freed")
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-Reviewed-by: Mike Christie <michael.christie@oracle.com>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Signed-off-by: Sergey Gorenko <sergeygo@nvidia.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+This commit was just papering over the issue, ULP should not
+get ->update() called with its own sk_prot. Each ULP would
+need to add this check.
+
+Fixes: 69135c572d1f ("net/tls: fix tls_sk_proto_close executed repeatedly")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/r/20220620191353.1184629-1-kuba@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_transport_iscsi.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/tls/tls_main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index bcdfcb25349a..5947b9d5746e 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -213,7 +213,12 @@ iscsi_create_endpoint(int dd_size)
- 		return NULL;
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 057c1af6182a..9aac9c60d786 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -790,9 +790,6 @@ static void tls_update(struct sock *sk, struct proto *p,
+ {
+ 	struct tls_context *ctx;
  
- 	mutex_lock(&iscsi_ep_idr_mutex);
--	id = idr_alloc(&iscsi_ep_idr, ep, 0, -1, GFP_NOIO);
-+
-+	/*
-+	 * First endpoint id should be 1 to comply with user space
-+	 * applications (iscsid).
-+	 */
-+	id = idr_alloc(&iscsi_ep_idr, ep, 1, -1, GFP_NOIO);
- 	if (id < 0) {
- 		mutex_unlock(&iscsi_ep_idr_mutex);
- 		printk(KERN_ERR "Could not allocate endpoint ID. Error %d.\n",
+-	if (sk->sk_prot == p)
+-		return;
+-
+ 	ctx = tls_get_ctx(sk);
+ 	if (likely(ctx)) {
+ 		ctx->sk_write_space = write_space;
 -- 
 2.35.1
 
