@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4EDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49FFAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237829AbiF0Lqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
+        id S237835AbiF0Lqt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237244AbiF0Lmh (ORCPT
+        with ESMTP id S237269AbiF0Lmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D34DF70;
-        Mon, 27 Jun 2022 04:36:41 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED73DF77;
+        Mon, 27 Jun 2022 04:36:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25703B8111C;
-        Mon, 27 Jun 2022 11:36:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93445C3411D;
-        Mon, 27 Jun 2022 11:36:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75427B81122;
+        Mon, 27 Jun 2022 11:36:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCF87C3411D;
+        Mon, 27 Jun 2022 11:36:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329799;
-        bh=P6fzE7iXoVUT+eQqAEMea/LZbGUVwRj9OH5L+AQ5ztY=;
+        s=korg; t=1656329805;
+        bh=Wzf6mL5B1FF5OzRXr4wRf/OyEiFM8U5n4HFXWIfItLU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xT8GmHWWsfSXu9okzK1oqRR2U8Zg57WmFp2WDIGyUPnRFHddhUIsDTbuaxu4QwckJ
-         3mlwwOsRjaiZxBfzAl6rMEyVVZY+u/Bk7WuRknDFOxODHPyUqqFsUn+iqGmJEgvGZR
-         k/VPg89yrXNObuBmLiSiot0GV9nm5Zkb6Pm9Jw8E=
+        b=jEgqmadzwTUv/LuEg41Xg3duMEWl98tE9/9QN5o8/FC/U5Lh7f744/pHXucvK6Heo
+         CyyYS20qHpXkCQOpfMWdIf47rHSNyu4awGjY7SXhlyl+5rPU4aKTRwVUMrfpVvtdlW
+         u+3bx8Vw7nqxC9rpY5kasJ15LWi671DU9BweYySw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Sumit Dubey2 <Sumit.Dubey2@ibm.com>,
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
         Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.15 117/135] powerpc: Enable execve syscall exit tracepoint
-Date:   Mon, 27 Jun 2022 13:22:04 +0200
-Message-Id: <20220627111941.549090742@linuxfoundation.org>
+Subject: [PATCH 5.15 119/135] powerpc/powernv: wire up rng during setup_arch
+Date:   Mon, 27 Jun 2022 13:22:06 +0200
+Message-Id: <20220627111941.606822232@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,58 +49,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit ec6d0dde71d760aa60316f8d1c9a1b0d99213529 upstream.
+commit f3eac426657d985b97c92fa5f7ae1d43f04721f3 upstream.
 
-On execve[at], we are zero'ing out most of the thread register state
-including gpr[0], which contains the syscall number. Due to this, we
-fail to trigger the syscall exit tracepoint properly. Fix this by
-retaining gpr[0] in the thread register state.
+The platform's RNG must be available before random_init() in order to be
+useful for initial seeding, which in turn means that it needs to be
+called from setup_arch(), rather than from an init call.
 
-Before this patch:
-  # tail /sys/kernel/debug/tracing/trace
-	       cat-123     [000] .....    61.449351: sys_execve(filename:
-  7fffa6b23448, argv: 7fffa6b233e0, envp: 7fffa6b233f8)
-	       cat-124     [000] .....    62.428481: sys_execve(filename:
-  7fffa6b23448, argv: 7fffa6b233e0, envp: 7fffa6b233f8)
-	      echo-125     [000] .....    65.813702: sys_execve(filename:
-  7fffa6b23378, argv: 7fffa6b233a0, envp: 7fffa6b233b0)
-	      echo-125     [000] .....    65.822214: sys_execveat(fd: 0,
-  filename: 1009ac48, argv: 7ffff65d0c98, envp: 7ffff65d0ca8, flags: 0)
+Complicating things, however, is that POWER8 systems need some per-cpu
+state and kmalloc, which isn't available at this stage. So we split
+things up into an early phase and a later opportunistic phase. This
+commit also removes some noisy log messages that don't add much.
 
-After this patch:
-  # tail /sys/kernel/debug/tracing/trace
-	       cat-127     [000] .....   100.416262: sys_execve(filename:
-  7fffa41b3448, argv: 7fffa41b33e0, envp: 7fffa41b33f8)
-	       cat-127     [000] .....   100.418203: sys_execve -> 0x0
-	      echo-128     [000] .....   103.873968: sys_execve(filename:
-  7fffa41b3378, argv: 7fffa41b33a0, envp: 7fffa41b33b0)
-	      echo-128     [000] .....   103.875102: sys_execve -> 0x0
-	      echo-128     [000] .....   103.882097: sys_execveat(fd: 0,
-  filename: 1009ac48, argv: 7fffd10d2148, envp: 7fffd10d2158, flags: 0)
-	      echo-128     [000] .....   103.883225: sys_execveat -> 0x0
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Tested-by: Sumit Dubey2 <Sumit.Dubey2@ibm.com>
+Fixes: a4da0d50b2a0 ("powerpc: Implement arch_get_random_long/int() for powernv")
+Cc: stable@vger.kernel.org # v3.13+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+[mpe: Add of_node_put(), use pnv naming, minor change log editing]
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220609103328.41306-1-naveen.n.rao@linux.vnet.ibm.com
+Link: https://lore.kernel.org/r/20220621140849.127227-1-Jason@zx2c4.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/process.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/powernv/powernv.h |    2 +
+ arch/powerpc/platforms/powernv/rng.c     |   52 +++++++++++++++++++++----------
+ arch/powerpc/platforms/powernv/setup.c   |    2 +
+ 3 files changed, 40 insertions(+), 16 deletions(-)
 
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -1818,7 +1818,7 @@ void start_thread(struct pt_regs *regs,
- 		tm_reclaim_current(0);
- #endif
+--- a/arch/powerpc/platforms/powernv/powernv.h
++++ b/arch/powerpc/platforms/powernv/powernv.h
+@@ -42,4 +42,6 @@ ssize_t memcons_copy(struct memcons *mc,
+ u32 memcons_get_size(struct memcons *mc);
+ struct memcons *memcons_init(struct device_node *node, const char *mc_prop_name);
  
--	memset(regs->gpr, 0, sizeof(regs->gpr));
-+	memset(&regs->gpr[1], 0, sizeof(regs->gpr) - sizeof(regs->gpr[0]));
- 	regs->ctr = 0;
- 	regs->link = 0;
- 	regs->xer = 0;
++void pnv_rng_init(void);
++
+ #endif /* _POWERNV_H */
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -17,6 +17,7 @@
+ #include <asm/prom.h>
+ #include <asm/machdep.h>
+ #include <asm/smp.h>
++#include "powernv.h"
+ 
+ #define DARN_ERR 0xFFFFFFFFFFFFFFFFul
+ 
+@@ -28,7 +29,6 @@ struct powernv_rng {
+ 
+ static DEFINE_PER_CPU(struct powernv_rng *, powernv_rng);
+ 
+-
+ int powernv_hwrng_present(void)
+ {
+ 	struct powernv_rng *rng;
+@@ -98,9 +98,6 @@ static int initialise_darn(void)
+ 			return 0;
+ 		}
+ 	}
+-
+-	pr_warn("Unable to use DARN for get_random_seed()\n");
+-
+ 	return -EIO;
+ }
+ 
+@@ -163,32 +160,55 @@ static __init int rng_create(struct devi
+ 
+ 	rng_init_per_cpu(rng, dn);
+ 
+-	pr_info_once("Registering arch random hook.\n");
+-
+ 	ppc_md.get_random_seed = powernv_get_random_long;
+ 
+ 	return 0;
+ }
+ 
+-static __init int rng_init(void)
++static int __init pnv_get_random_long_early(unsigned long *v)
+ {
+ 	struct device_node *dn;
+-	int rc;
++
++	if (!slab_is_available())
++		return 0;
++
++	if (cmpxchg(&ppc_md.get_random_seed, pnv_get_random_long_early,
++		    NULL) != pnv_get_random_long_early)
++		return 0;
+ 
+ 	for_each_compatible_node(dn, NULL, "ibm,power-rng") {
+-		rc = rng_create(dn);
+-		if (rc) {
+-			pr_err("Failed creating rng for %pOF (%d).\n",
+-				dn, rc);
++		if (rng_create(dn))
+ 			continue;
+-		}
+-
+ 		/* Create devices for hwrng driver */
+ 		of_platform_device_create(dn, NULL, NULL);
+ 	}
+ 
+-	initialise_darn();
++	if (!ppc_md.get_random_seed)
++		return 0;
++	return ppc_md.get_random_seed(v);
++}
++
++void __init pnv_rng_init(void)
++{
++	struct device_node *dn;
+ 
++	/* Prefer darn over the rest. */
++	if (!initialise_darn())
++		return;
++
++	dn = of_find_compatible_node(NULL, NULL, "ibm,power-rng");
++	if (dn)
++		ppc_md.get_random_seed = pnv_get_random_long_early;
++
++	of_node_put(dn);
++}
++
++static int __init pnv_rng_late_init(void)
++{
++	unsigned long v;
++	/* In case it wasn't called during init for some other reason. */
++	if (ppc_md.get_random_seed == pnv_get_random_long_early)
++		pnv_get_random_long_early(&v);
+ 	return 0;
+ }
+-machine_subsys_initcall(powernv, rng_init);
++machine_subsys_initcall(powernv, pnv_rng_late_init);
+--- a/arch/powerpc/platforms/powernv/setup.c
++++ b/arch/powerpc/platforms/powernv/setup.c
+@@ -190,6 +190,8 @@ static void __init pnv_setup_arch(void)
+ 	pnv_check_guarded_cores();
+ 
+ 	/* XXX PMCS */
++
++	pnv_rng_init();
+ }
+ 
+ static void __init pnv_init(void)
 
 
