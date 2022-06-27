@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 313CAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:32:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC4BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:32:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234949AbiF0LcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
+        id S234504AbiF0LcU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:32:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235569AbiF0Lbt (ORCPT
+        with ESMTP id S235104AbiF0Lb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:31:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C28F1106;
-        Mon, 27 Jun 2022 04:29:07 -0700 (PDT)
+        Mon, 27 Jun 2022 07:31:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D878117C;
+        Mon, 27 Jun 2022 04:29:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7988614EC;
-        Mon, 27 Jun 2022 11:29:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E34A8C341C8;
-        Mon, 27 Jun 2022 11:29:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B43EB81120;
+        Mon, 27 Jun 2022 11:29:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C96C1C3411D;
+        Mon, 27 Jun 2022 11:29:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329346;
-        bh=nNlTjBxA5nd4i3KBDtgYY2oKAdkO4zFbe5ZgGJlmHII=;
+        s=korg; t=1656329349;
+        bh=AQ+qKiZJFbHOjNCj/teult017izcdEKNS540K4VL6qU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=csFzvCv8uDz3d8GjQWpLmYy6tBD2lANdewHzkFYltAT2eEpo4WhAbGF7+QiJvHZ2E
-         26WoIw11QbI1lMM1xU6aSOpY7Wj1ajA/uEgT695aH3OOIpcSFi7Sh6lHa/ehqUBWgF
-         SacISkhqkWCvFofCP/5yitnlQmVgYB8pYo3lDCpE=
+        b=O0zLexhSVdruxmkOSrrjpSvgGQfTuhaa88j6xVZ3MeOcmP3IRuvj2BjmfzYF7ljrx
+         eQPtTS7tV56NtMFXbdjO6nA9zZQL9Vamov7hyDqNOMtgQc0Z/6EEap96t7dLQelDho
+         dA0chPbF8BnY0O5E5SKp0pBXGXc4UKNQE29faD24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.4 28/60] ice: ethtool: advertise 1000M speeds properly
-Date:   Mon, 27 Jun 2022 13:21:39 +0200
-Message-Id: <20220627111928.515000449@linuxfoundation.org>
+        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 29/60] regmap-irq: Fix a bug in regmap_irq_enable() for type_in_mask chips
+Date:   Mon, 27 Jun 2022 13:21:40 +0200
+Message-Id: <20220627111928.544357960@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -51,84 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-[ Upstream commit c3d184c83ff4b80167e34edfc3d21df424bf27ff ]
+[ Upstream commit 485037ae9a095491beb7f893c909a76cc4f9d1e7 ]
 
-In current implementation ice_update_phy_type enables all link modes
-for selected speed. This approach doesn't work for 1000M speeds,
-because both copper (1000baseT) and optical (1000baseX) standards
-cannot be enabled at once.
+When enabling a type_in_mask irq, the type_buf contents must be
+AND'd with the mask of the IRQ we're enabling to avoid enabling
+other IRQs by accident, which can happen if several type_in_mask
+irqs share a mask register.
 
-Fix this, by adding the function `ice_set_phy_type_from_speed()`
-for 1000M speeds.
-
-Fixes: 48cb27f2fd18 ("ice: Implement handlers for ethtool PHY/link operations")
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: bc998a730367 ("regmap: irq: handle HW using separate rising/falling edge interrupts")
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Link: https://lore.kernel.org/r/20220620200644.1961936-2-aidanmacdonald.0x0@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 39 +++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
+ drivers/base/regmap/regmap-irq.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index fc9ff985a62b..b297a3ca22fc 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -2337,6 +2337,42 @@ ice_setup_autoneg(struct ice_port_info *p, struct ethtool_link_ksettings *ks,
- 	return err;
+diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
+index 3d64c9331a82..3c1e554df4eb 100644
+--- a/drivers/base/regmap/regmap-irq.c
++++ b/drivers/base/regmap/regmap-irq.c
+@@ -214,6 +214,7 @@ static void regmap_irq_enable(struct irq_data *data)
+ 	struct regmap_irq_chip_data *d = irq_data_get_irq_chip_data(data);
+ 	struct regmap *map = d->map;
+ 	const struct regmap_irq *irq_data = irq_to_regmap_irq(d, data->hwirq);
++	unsigned int reg = irq_data->reg_offset / map->reg_stride;
+ 	unsigned int mask, type;
+ 
+ 	type = irq_data->type.type_falling_val | irq_data->type.type_rising_val;
+@@ -230,14 +231,14 @@ static void regmap_irq_enable(struct irq_data *data)
+ 	 * at the corresponding offset in regmap_irq_set_type().
+ 	 */
+ 	if (d->chip->type_in_mask && type)
+-		mask = d->type_buf[irq_data->reg_offset / map->reg_stride];
++		mask = d->type_buf[reg] & irq_data->mask;
+ 	else
+ 		mask = irq_data->mask;
+ 
+ 	if (d->chip->clear_on_unmask)
+ 		d->clear_status = true;
+ 
+-	d->mask_buf[irq_data->reg_offset / map->reg_stride] &= ~mask;
++	d->mask_buf[reg] &= ~mask;
  }
  
-+/**
-+ * ice_set_phy_type_from_speed - set phy_types based on speeds
-+ * and advertised modes
-+ * @ks: ethtool link ksettings struct
-+ * @phy_type_low: pointer to the lower part of phy_type
-+ * @phy_type_high: pointer to the higher part of phy_type
-+ * @adv_link_speed: targeted link speeds bitmap
-+ */
-+static void
-+ice_set_phy_type_from_speed(const struct ethtool_link_ksettings *ks,
-+			    u64 *phy_type_low, u64 *phy_type_high,
-+			    u16 adv_link_speed)
-+{
-+	/* Handle 1000M speed in a special way because ice_update_phy_type
-+	 * enables all link modes, but having mixed copper and optical
-+	 * standards is not supported.
-+	 */
-+	adv_link_speed &= ~ICE_AQ_LINK_SPEED_1000MB;
-+
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseT_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_T |
-+				 ICE_PHY_TYPE_LOW_1G_SGMII;
-+
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseKX_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_KX;
-+
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseX_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_SX |
-+				 ICE_PHY_TYPE_LOW_1000BASE_LX;
-+
-+	ice_update_phy_type(phy_type_low, phy_type_high, adv_link_speed);
-+}
-+
- /**
-  * ice_set_link_ksettings - Set Speed and Duplex
-  * @netdev: network interface device structure
-@@ -2472,7 +2508,8 @@ ice_set_link_ksettings(struct net_device *netdev,
- 		adv_link_speed = curr_link_speed;
- 
- 	/* Convert the advertise link speeds to their corresponded PHY_TYPE */
--	ice_update_phy_type(&phy_type_low, &phy_type_high, adv_link_speed);
-+	ice_set_phy_type_from_speed(ks, &phy_type_low, &phy_type_high,
-+				    adv_link_speed);
- 
- 	if (!autoneg_changed && adv_link_speed == curr_link_speed) {
- 		netdev_info(netdev, "Nothing changed, exiting without setting anything.\n");
+ static void regmap_irq_disable(struct irq_data *data)
 -- 
 2.35.1
 
