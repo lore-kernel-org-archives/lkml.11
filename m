@@ -2,105 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC641C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233931AbiF0JRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 05:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
+        id S233953AbiF0JR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 05:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233870AbiF0JQx (ORCPT
+        with ESMTP id S233936AbiF0JRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 05:16:53 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C826142;
-        Mon, 27 Jun 2022 02:16:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656321412; x=1687857412;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=ZfnjeGaTXA62WKjkc0ev0zGBTHlOx0/hvfL7GfyMNRA=;
-  b=f+GPv5/SyNFumSAdnRTDmRj+MF3xKUMvt2d8mcAa0KE4nGfweBLYbSe8
-   pf2Gv+OlNnX0CHQPjiJVAjsbpnt17YSWQNU9qeIlhB4hu6gJugtzCbG6m
-   Sn7TPLPGgEB/kPAqK3jRBpEnj+N1Ds5xvgvv44mAZ2E8NZZHZfQdSio6n
-   mmdVmXUihj8GWDE6DjC7kg+8ga4OSdKOQig35HXETbKhhettjSZDv11vP
-   IplBU54W27RWKuRobllEDsa6mectaWfbhoUkb/YItGVEV3wQCBIrf7fTH
-   8nFZXiLA3OCgOH++c6GCCmiJO2oP1MzRSqAJ4Ig9gK/PtGR7Ca7wszoIc
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="179631289"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jun 2022 02:16:51 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+        Mon, 27 Jun 2022 05:17:55 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175E662F4;
+        Mon, 27 Jun 2022 02:17:53 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LWhsP34JVz1L8j0;
+        Mon, 27 Jun 2022 17:15:37 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 27 Jun 2022 02:16:50 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 27 Jun 2022 02:16:47 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <arnd@arndb.de>, <alexandre.belloni@bootlin.com>,
-        <krzysztof.kozlowski+dt@linaro.org>, <soc@kernel.org>,
-        <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Kavyasree.Kotagiri@microchip.com>
-Subject: [PATCH] ARM: dts: lan966x: Cleanup flexcom3 usart pinctrl settings.
-Date:   Mon, 27 Jun 2022 14:42:17 +0530
-Message-ID: <20220627091217.21701-1-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
+ 15.1.2375.24; Mon, 27 Jun 2022 17:17:50 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 27 Jun 2022 17:17:49 +0800
+Subject: Re: [PATCH 5/5] arm64: kdump: Don't defer the reservation of crash
+ high memory
+To:     Baoquan He <bhe@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+CC:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        "Eric Biederman" <ebiederm@xmission.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Frank Rowand" <frowand.list@gmail.com>,
+        <devicetree@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>, <kexec@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Will Deacon <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        "Dave Kleikamp" <dave.kleikamp@oracle.com>,
+        liushixin <liushixin2@huawei.com>
+References: <20220613080932.663-1-thunder.leizhen@huawei.com>
+ <20220613080932.663-6-thunder.leizhen@huawei.com>
+ <YrFYHYgX3mC//t2l@MiWiFi-R3L-srv>
+ <3f66323d-f371-b931-65fb-edfae0f01c88@huawei.com> <YrIIJkhKWSuAqkCx@arm.com>
+ <YrLUREAoBMSZo7RR@MiWiFi-R3L-srv> <YrRzvO5F0dumsbAU@arm.com>
+ <Yrkbak66vYT55H4x@MiWiFi-R3L-srv>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <e3318551-4134-245a-c060-86ab81eb3e68@huawei.com>
+Date:   Mon, 27 Jun 2022 17:17:49 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <Yrkbak66vYT55H4x@MiWiFi-R3L-srv>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On pcb8291, Flexcom3 usart has only tx and rx pins.
-Cleaningup usart3 pinctrl settings.
 
-Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
----
- arch/arm/boot/dts/lan966x-pcb8291.dts | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
-index 3c7e3a7d6f14..5dc8ed4cee9a 100644
---- a/arch/arm/boot/dts/lan966x-pcb8291.dts
-+++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
-@@ -19,19 +19,13 @@
- };
- 
- &gpio {
--	fc_shrd7_pins: fc_shrd7-pins {
--		pins = "GPIO_49";
--		function = "fc_shrd7";
--	};
--
--	fc_shrd8_pins: fc_shrd8-pins {
--		pins = "GPIO_54";
--		function = "fc_shrd8";
-+	fc3_b_rxd_pins: fc3-b-rxd-pins {
-+		pins = "GPIO_52";
-+		function = "fc3_b";
- 	};
- 
--	fc3_b_pins: fcb3-spi-pins {
--		/* SCK, RXD, TXD */
--		pins = "GPIO_51", "GPIO_52", "GPIO_53";
-+	fc3_b_txd_pins: fc3-b-txd-pins {
-+		pins = "GPIO_53";
- 		function = "fc3_b";
- 	};
- 
-@@ -53,7 +47,7 @@
- 	status = "okay";
- 
- 	usart3: serial@200 {
--		pinctrl-0 = <&fc3_b_pins>, <&fc_shrd7_pins>, <&fc_shrd8_pins>;
-+		pinctrl-0 = <&fc3_b_rxd_pins>, <&fc3_b_txd_pins>;
- 		pinctrl-names = "default";
- 		status = "okay";
- 	};
+On 2022/6/27 10:52, Baoquan He wrote:
+> On 06/23/22 at 03:07pm, Catalin Marinas wrote:
+>> On Wed, Jun 22, 2022 at 04:35:16PM +0800, Baoquan He wrote:
+>>> On 06/21/22 at 07:04pm, Catalin Marinas wrote:
+>>>> The problem with splitting is that you can end up with two entries in
+>>>> the TLB for the same VA->PA mapping (e.g. one for a 4KB page and another
+>>>> for a 2MB block). In the lucky case, the CPU will trigger a TLB conflict
+>>>> abort (but can be worse like loss of coherency).
+>>>
+>>> Thanks for this explanation. Is this a drawback of arm64 design? X86
+>>> code do the same thing w/o issue, is there way to overcome this on
+>>> arm64 from hardware or software side?
+>>
+>> It is a drawback of the arm64 implementations. Having multiple TLB
+>> entries for the same VA would need additional logic in hardware to
+>> detect, so the microarchitects have pushed back. In ARMv8.4, some
+>> balanced was reached with FEAT_BBM so that the only visible side-effect
+>> is a potential TLB conflict abort that could be resolved by software.
+> 
+> I see, thx.
+> 
+>>
+>>> I ever got a arm64 server with huge memory, w or w/o crashkernel setting 
+>>> have different bootup time. And the more often TLB miss and flush will
+>>> cause performance cost. It is really a pity if we have very powerful
+>>> arm64 cpu and system capacity, but bottlenecked by this drawback.
+>>
+>> Is it only the boot time affected or the runtime performance as well?
+> 
+> Sorry for late reply. What I observerd is the boot time serious latecy
+> with huge memory. Since the timestamp is not available at that time,
+> we can't tell the number. I didn't notice the runtime performance.
+
+There's some data here, and I see you're not on the cc list.
+
+https://lore.kernel.org/linux-mm/1656241815-28494-1-git-send-email-guanghuifeng@linux.alibaba.com/T/
+
+> 
+> .
+> 
+
 -- 
-2.17.1
-
+Regards,
+  Zhen Lei
