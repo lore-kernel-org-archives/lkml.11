@@ -2,144 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA96CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F85C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236959AbiF0OY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 10:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38740 "EHLO
+        id S236999AbiF0OZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 10:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236951AbiF0OWV (ORCPT
+        with ESMTP id S237007AbiF0OY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 10:22:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2896F13EAE;
-        Mon, 27 Jun 2022 07:22:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7001B8175C;
-        Mon, 27 Jun 2022 14:22:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8558DC3411D;
-        Mon, 27 Jun 2022 14:22:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656339732;
-        bh=tbJJZM38KKTKF7ztOTPHwtQvMueD3cEf4XJoqh9xBGA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VlKVh1Gn1syHgeSU2fgl8TITGLA1uHaj9Pz6nTUhb0dtZANF4DTYTZ/ajfONoF3wT
-         lp2O2xb1l4zhUtpOykJ+l2Ru7/7puXju+W0YerouKtdl2eNB0ZA7pZlwWA22gr2qSN
-         cwRgrNdYpgXUfk7d+rdMpQiPGnG6z/fOXs/bAgJtXSyQHC1X3TwFyA9CNB8UqQ/emO
-         JXjli1QLv8lFiyJH+iUkwtjwysbzN4jZu6CXnL0X7kLXHFD8n7QvCLEkSZqIiLxbNS
-         ReWhsDwxucI+VdmzIbDcxYg6ZkIrpxPEDCMnd7jjcGuKjL0KSsTerZRmlv+k4CG6c2
-         i7YMpyq5brTjQ==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <maz@kernel.org>)
-        id 1o5pcw-003TFl-BT;
-        Mon, 27 Jun 2022 15:22:10 +0100
+        Mon, 27 Jun 2022 10:24:58 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31EC13F17;
+        Mon, 27 Jun 2022 07:24:56 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25RDUGw7019903;
+        Mon, 27 Jun 2022 16:24:47 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=5ybBWdltrOVfB3COS/9ZMlv6Yfed7gpPzfjsJK88MFQ=;
+ b=Mq7bMvfS4SG4urWivh0l6nssNofuNvhEzdofEwfDpnRk0kOTKFpwYRmyc20+JY9iKO5c
+ AIY0iUqFrHOHFbzuuzuv6AhuG0Y+4JDKUcNr6PMzfoVerbh2Nu4UJ9k0N7D6xIrVy4XV
+ Opwpa79OTwfTjuLwqm61Om36nmsLHMRAeDv1nHXPsOVMNPtLm+m4Gh44td1cVZtp032S
+ gJdyPpXvhqL91igL2MKSKsAcuw5dmFmMhG26D9bXgR74VJU/DHp9GsPw85nLWzXeZFXE
+ 47BxfjNgfR66rpcxHAYH6moxl7HIQKacY+fNyb14VpxN+A5UNbmw2IHafYcnV30p5VZO Vw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gy9mr1sy0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 16:24:47 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3363510002A;
+        Mon, 27 Jun 2022 16:24:47 +0200 (CEST)
+Received: from Webmail-eu.st.com (eqndag1node6.st.com [10.75.129.135])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CE12C217B6A;
+        Mon, 27 Jun 2022 16:24:46 +0200 (CEST)
+Received: from localhost (10.75.127.49) by EQNDAG1NODE6.st.com (10.75.129.135)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 27 Jun
+ 2022 16:23:55 +0200
+From:   Fabien Dessenne <fabien.dessenne@foss.st.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-gpio@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Fabien Dessenne <fabien.dessenne@foss.st.com>
+Subject: [PATCH] pinctrl: stm32: fix optional IRQ support to gpios
+Date:   Mon, 27 Jun 2022 16:23:50 +0200
+Message-ID: <20220627142350.742973-1-fabien.dessenne@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Date:   Mon, 27 Jun 2022 15:22:10 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: interrupt-controller: sifive,plic:
- Document Renesas RZ/Five SoC
-In-Reply-To: <CA+V-a8sihw9=Ychakh6tV+1+MpRayr=1VSnhSYZNp0F+f4Hdnw@mail.gmail.com>
-References: <20220626004326.8548-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220626004326.8548-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <87tu87eh5h.wl-maz@kernel.org>
- <CA+V-a8sihw9=Ychakh6tV+1+MpRayr=1VSnhSYZNp0F+f4Hdnw@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <1eb7b6525a98b330894b6ce2f9167dc2@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: prabhakar.csengg@gmail.com, prabhakar.mahadev-lad.rj@bp.renesas.com, tglx@linutronix.de, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, sagar.kadam@sifive.com, palmer@dabbelt.com, paul.walmsley@sifive.com, linux-riscv@lists.infradead.org, devicetree@vger.kernel.org, geert+renesas@glider.be, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, biju.das.jz@bp.renesas.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To EQNDAG1NODE6.st.com
+ (10.75.129.135)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-27_06,2022-06-24_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-27 13:27, Lad, Prabhakar wrote:
-> Hi Marc,
-> 
-> Thank you for the review.
-> 
-> On Sun, Jun 26, 2022 at 1:35 PM Marc Zyngier <maz@kernel.org> wrote:
->> 
->> On Sun, 26 Jun 2022 01:43:25 +0100,
->> Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->> >
->> > Document Renesas RZ/Five (R9A07G043) SoC.
->> >
->> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->> > ---
->> > v1->v2:
->> > * Fixed binding doc
->> > * Fixed review comments pointed by Krzysztof.
->> >
->> > RFC->v1:
->> > * Fixed Review comments pointed by Geert and Rob
->> > ---
->> >  .../sifive,plic-1.0.0.yaml                    | 44 +++++++++++++++++--
->> >  1 file changed, 41 insertions(+), 3 deletions(-)
->> >
->> > diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
->> > index 27092c6a86c4..59df367d1e44 100644
->> > --- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
->> > +++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
->> > @@ -28,7 +28,10 @@ description:
->> >
->> >    While the PLIC supports both edge-triggered and level-triggered interrupts,
->> >    interrupt handlers are oblivious to this distinction and therefore it is not
->> > -  specified in the PLIC device-tree binding.
->> > +  specified in the PLIC device-tree binding for SiFive PLIC (and similar PLIC's),
->> > +  but for the Renesas RZ/Five Soc (AX45MP AndesCore) which has NCEPLIC100 we need
->> > +  to specify the interrupt type as the flow for EDGE interrupts is different
->> > +  compared to LEVEL interrupts.
->> >
->> >    While the RISC-V ISA doesn't specify a memory layout for the PLIC, the
->> >    "sifive,plic-1.0.0" device is a concrete implementation of the PLIC that
->> > @@ -57,6 +60,7 @@ properties:
->> >            - enum:
->> >                - allwinner,sun20i-d1-plic
->> >            - const: thead,c900-plic
->> > +      - const: renesas,r9a07g043-plic
->> 
->> Since it is the NCEPLIC100 that is broken, shouldn't the compatible
->> string actually reflect that? I'd rather see 'andes,nceplic100' once
->> and for all instead of starting with Renesas, quickly followed by all
->> the other licensees that will inevitably integrate the same IP (which
->> isn't even specific to the AX45MP).
->> 
->> This IP also comes with all sort of added (mis-)features, which may or
->> may not be used in the future, and it would make sense to identify it
->> specifically.
->> 
-> Agreed, I'll update it as above.
+To act as an interrupt controller, a gpio bank relies on the
+"interrupt-parent" of the pin controller.
+When this optional "interrupt-parent" misses, do not create any IRQ domain.
 
-Please synchronise with Samuel to have a common series that fixes
-both the Renesas and Thead platforms.
+This fixes a "NULL pointer in stm32_gpio_domain_alloc()" kernel crash when
+the interrupt-parent = <exti> property is not declared in the Device Tree.
 
-Thanks,
+Fixes: 0eb9f683336d ("pinctrl: Add IRQ support to STM32 gpios")
 
-          M.
+Signed-off-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
+---
+ drivers/pinctrl/stm32/pinctrl-stm32.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
+index 57a33fb0f2d7..14bcca73238a 100644
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+@@ -1338,16 +1338,18 @@ static int stm32_gpiolib_register_bank(struct stm32_pinctrl *pctl, struct fwnode
+ 	bank->secure_control = pctl->match_data->secure_control;
+ 	spin_lock_init(&bank->lock);
+ 
+-	/* create irq hierarchical domain */
+-	bank->fwnode = fwnode;
++	if (pctl->domain) {
++		/* create irq hierarchical domain */
++		bank->fwnode = fwnode;
+ 
+-	bank->domain = irq_domain_create_hierarchy(pctl->domain, 0,
+-					STM32_GPIO_IRQ_LINE, bank->fwnode,
+-					&stm32_gpio_domain_ops, bank);
++		bank->domain = irq_domain_create_hierarchy(pctl->domain, 0, STM32_GPIO_IRQ_LINE,
++							   bank->fwnode, &stm32_gpio_domain_ops,
++							   bank);
+ 
+-	if (!bank->domain) {
+-		err = -ENODEV;
+-		goto err_clk;
++		if (!bank->domain) {
++			err = -ENODEV;
++			goto err_clk;
++		}
+ 	}
+ 
+ 	err = gpiochip_add_data(&bank->gpio_chip, bank);
+@@ -1510,6 +1512,8 @@ int stm32_pctl_probe(struct platform_device *pdev)
+ 	pctl->domain = stm32_pctrl_get_irq_domain(pdev);
+ 	if (IS_ERR(pctl->domain))
+ 		return PTR_ERR(pctl->domain);
++	if (!pctl->domain)
++		dev_warn(dev, "pinctrl without interrupt support\n");
+ 
+ 	/* hwspinlock is optional */
+ 	hwlock_id = of_hwspin_lock_get_id(pdev->dev.of_node, 0);
 -- 
-Jazz is not dead. It just smells funny...
+2.25.1
+
