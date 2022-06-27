@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CCACCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E40A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234820AbiF0LYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44720 "EHLO
+        id S234834AbiF0LY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234777AbiF0LYh (ORCPT
+        with ESMTP id S234780AbiF0LYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:24:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9126586;
-        Mon, 27 Jun 2022 04:24:36 -0700 (PDT)
+        Mon, 27 Jun 2022 07:24:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DB5658B;
+        Mon, 27 Jun 2022 04:24:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67D37B81126;
-        Mon, 27 Jun 2022 11:24:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1415C341C7;
-        Mon, 27 Jun 2022 11:24:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A071D61458;
+        Mon, 27 Jun 2022 11:24:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB10C3411D;
+        Mon, 27 Jun 2022 11:24:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329074;
-        bh=NqWKPAx54vazXc3qKoDsW40jReYuUC9TIV8zapkZdIQ=;
+        s=korg; t=1656329077;
+        bh=vEOyzikwHr8yUIyT1NrM8XxN7gOHcBAHFwZsTCrnaNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pznxYGZ4wo4UJMSG2VpnIVJ4y2uoxA17KyN3vpcpIqvFd7n820lVKE84TVOF8sESM
-         zfhtbn7niMG5uLvDRy31tVQnk7TQbZ4d+BEBtg4V24FMFvtdz9kTekeNHpVTj2h5HM
-         IB3NdM31XdNX6qQ86dVmOsF6hUJhtZXdcKZSuO2c=
+        b=edZSr5JYUekTSbL5mqLAD0ZW6n9XktTLFVaG0rMAzpBbdSYAWUZR18FGUy0lMxf18
+         TUuUjEHOhZk0xCSxW9bTUpWZiMPeboDkf+0MbDSohF9rglg3Naag+CEaETwaeUg57I
+         roRLgRVDrxB1aT6R2py3d96znlw0wf9uN54Ssivk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 004/102] ALSA: hda/via: Fix missing beep setup
-Date:   Mon, 27 Jun 2022 13:20:15 +0200
-Message-Id: <20220627111933.591599060@linuxfoundation.org>
+Subject: [PATCH 5.10 005/102] ALSA: hda/conexant: Fix missing beep setup
+Date:   Mon, 27 Jun 2022 13:20:16 +0200
+Message-Id: <20220627111933.621750485@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -49,39 +49,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit c7807b27d510e5aa53c8a120cfc02c33c24ebb5f upstream.
+commit 5faa0bc69102f3a4c605581564c367be5eb94dfa upstream.
 
-Like the previous fix for Conexant codec, the beep_nid has to be set
-up before calling snd_hda_gen_parse_auto_config(); otherwise it'd miss
-the path setup.
+Currently the Conexant codec driver sets up the beep NID after calling
+snd_hda_gen_parse_auto_config().  It turned out that this results in
+the insufficient setup for the beep control, as the generic parser
+handles the fake path in snd_hda_gen_parse_auto_config() only if the
+beep_nid is set up beforehand.
 
-Fix the call order for addressing the missing beep setup.
+For dealing with the beep widget properly, call cx_auto_parse_beep()
+before snd_hda_gen_parse_auto_config() call.
 
-Fixes: 0e8f9862493a ("ALSA: hda/via - Simplify control management")
+Fixes: 51e19ca5f755 ("ALSA: hda/conexant - Clean up beep code")
 Cc: <stable@vger.kernel.org>
 Link: https://bugzilla.kernel.org/show_bug.cgi?id=216152
-Link: https://lore.kernel.org/r/20220620104008.1994-2-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220620104008.1994-1-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_via.c |    4 ++--
+ sound/pci/hda/patch_conexant.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/patch_via.c
-+++ b/sound/pci/hda/patch_via.c
-@@ -520,11 +520,11 @@ static int via_parse_auto_config(struct
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -1072,11 +1072,11 @@ static int patch_conexant_auto(struct hd
  	if (err < 0)
- 		return err;
+ 		goto error;
  
 -	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
-+	err = auto_parse_beep(codec);
++	err = cx_auto_parse_beep(codec);
  	if (err < 0)
- 		return err;
+ 		goto error;
  
--	err = auto_parse_beep(codec);
+-	err = cx_auto_parse_beep(codec);
 +	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
  	if (err < 0)
- 		return err;
+ 		goto error;
  
 
 
