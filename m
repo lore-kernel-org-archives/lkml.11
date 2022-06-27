@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E768CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 848FFCCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238884AbiF0Lyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49548 "EHLO
+        id S239005AbiF0Lyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238483AbiF0Lsb (ORCPT
+        with ESMTP id S238489AbiF0Lsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:48:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204B0BF59;
-        Mon, 27 Jun 2022 04:41:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDCABF70;
+        Mon, 27 Jun 2022 04:41:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B217861192;
-        Mon, 27 Jun 2022 11:41:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFED4C3411D;
-        Mon, 27 Jun 2022 11:41:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74CCD61150;
+        Mon, 27 Jun 2022 11:41:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80AE2C3411D;
+        Mon, 27 Jun 2022 11:41:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330110;
-        bh=viIllrMNqwwOM5W6eSKdS3DEUhpKz86OL8D4zf+4BfI=;
+        s=korg; t=1656330112;
+        bh=n9FZEQIgD8MigI+6BcU6gJN+cGDBxUZmCA6J21ivfb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2E4BoDJiX8qJpb265i0hmGLhkyNic70+faB43q2GtmVJX2sw8i+6kNi7GtXb2tPwJ
-         JXUGWCIYso8yxuvm4Eg48b/Dx9dxsRuyG7iiWe5Ev5sdF+XkEB6X+HChbdqfbmSbJK
-         ak/cuqPJrzuVZgJsu+qLNxB3lKQwADdi7Ad1q47I=
+        b=qbacEoRUNtIrWQrekkHBDbZdxuaKx1pGSspR5UxjjSF8/swTKdT2nzdGotihJlX0b
+         XcJhzMjHvDhtJYbI8cBRPpmlTcAJVCCFkgDSqtjeVxmUo/Q1tQzS4tp7wCoy8UCe2L
+         /39GMnHyM2wEDdw9O2iCRQ19ue2NtaMUXlzf0g/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marcin Szycik <marcin.szycik@linux.intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        Wojciech Drewek <wojciech.drewek@intel.com>,
         Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 085/181] ice: ignore protocol field in GTP offload
-Date:   Mon, 27 Jun 2022 13:20:58 +0200
-Message-Id: <20220627111947.025128170@linuxfoundation.org>
+Subject: [PATCH 5.18 086/181] ice: Fix switchdev rules book keeping
+Date:   Mon, 27 Jun 2022 13:20:59 +0200
+Message-Id: <20220627111947.053547619@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,46 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcin Szycik <marcin.szycik@linux.intel.com>
+From: Wojciech Drewek <wojciech.drewek@intel.com>
 
-[ Upstream commit d4ea6f6373ef56d1d795a24f1f5874f4a6019199 ]
+[ Upstream commit 3578dc90013b1fa20da996cdadd8515802716132 ]
 
-Commit 34a897758efe ("ice: Add support for inner etype in switchdev")
-added the ability to match on inner ethertype. A side effect of that change
-is that it is now impossible to add some filters for protocols which do not
-contain inner ethtype field. tc requires the protocol field to be specified
-when providing certain other options, e.g. src_ip. This is a problem in
-case of GTP - when user wants to specify e.g. src_ip, they also need to
-specify protocol in tc command (otherwise tc fails with: Illegal "src_ip").
-Because GTP is a tunnel, the protocol field is treated as inner protocol.
-GTP does not contain inner ethtype field and the filter cannot be added.
+Adding two filters with same matching criteria ends up with
+one rule in hardware with act = ICE_FWD_TO_VSI_LIST.
+In order to remove them properly we have to keep the
+information about vsi handle which is used in VSI bitmap
+(ice_adv_fltr_mgmt_list_entry::vsi_list_info::vsi_map).
 
-To fix this, ignore the ethertype field in case of GTP filters.
-
-Fixes: 9a225f81f540 ("ice: Support GTP-U and GTP-C offload in switchdev")
-Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+Fixes: 0d08a441fb1a ("ice: ndo_setup_tc implementation for PF")
+Reported-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_tc_lib.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-index 3acd9f921c44..734bfa121e24 100644
+index 734bfa121e24..2ce2694fcbd7 100644
 --- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-@@ -994,7 +994,9 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
- 		n_proto_key = ntohs(match.key->n_proto);
- 		n_proto_mask = ntohs(match.mask->n_proto);
+@@ -524,6 +524,7 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
+ 	 */
+ 	fltr->rid = rule_added.rid;
+ 	fltr->rule_id = rule_added.rule_id;
++	fltr->dest_id = rule_added.vsi_handle;
  
--		if (n_proto_key == ETH_P_ALL || n_proto_key == 0) {
-+		if (n_proto_key == ETH_P_ALL || n_proto_key == 0 ||
-+		    fltr->tunnel_type == TNL_GTPU ||
-+		    fltr->tunnel_type == TNL_GTPC) {
- 			n_proto_key = 0;
- 			n_proto_mask = 0;
- 		} else {
+ exit:
+ 	kfree(list);
 -- 
 2.35.1
 
