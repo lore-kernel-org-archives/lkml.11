@@ -2,93 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03EF7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E998BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239802AbiF0MBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
+        id S239812AbiF0MB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:01:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239107AbiF0LxU (ORCPT
+        with ESMTP id S238144AbiF0LvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:53:20 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57815BDF
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:48:49 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LWmD3026LzkWdZ;
-        Mon, 27 Jun 2022 19:46:58 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 19:48:47 +0800
-Subject: Re: [PATCH v2 5/9] mm, hwpoison: make unpoison aware of raw error
- info in hwpoisoned hugepage
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     Naoya Horiguchi <nao.horiguchi@gmail.com>, <linux-mm@kvack.org>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        <linux-kernel@vger.kernel.org>
-References: <20220623235153.2623702-1-naoya.horiguchi@linux.dev>
- <20220623235153.2623702-6-naoya.horiguchi@linux.dev>
- <ea1d17d8-89df-04b7-29e8-0da53dbd3312@huawei.com>
-Message-ID: <2b6a6b19-c930-6d27-5929-363802e42596@huawei.com>
-Date:   Mon, 27 Jun 2022 19:48:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Mon, 27 Jun 2022 07:51:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E16765B7;
+        Mon, 27 Jun 2022 04:44:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E2D1612B1;
+        Mon, 27 Jun 2022 11:44:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FD2AC341C7;
+        Mon, 27 Jun 2022 11:44:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656330268;
+        bh=6yZKZELZe/orphxEssy+HMvU+6chTugi8Gymd3CHgc8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OtUmW1IyBzxJhe7qjkk6Zzq5JXnsd2FJGXMJ7cJo/SatktSxVIbAuoTdlmvv/Dxza
+         fuYY/kk7VLtpd5/6YSBQOqRTuVRIzIiA1W7I7VKtEnl7vTOJY9ZItFDrba+jO1LBeU
+         kdZMxYEtwtBxJ0/lN9R7wIHXgUQDXwNQRMUt1Nag=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Peter Rosin <peda@axentia.se>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.18 141/181] iio: afe: rescale: Fix boolean logic bug
+Date:   Mon, 27 Jun 2022 13:21:54 +0200
+Message-Id: <20220627111948.775622609@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
+References: <20220627111944.553492442@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <ea1d17d8-89df-04b7-29e8-0da53dbd3312@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/27 16:32, Miaohe Lin wrote:
-> On 2022/6/24 7:51, Naoya Horiguchi wrote:
->> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
->>
->> Raw error info list needs to be removed when hwpoisoned hugetlb is
->> unpoisioned.  And unpoison handler needs to know how many errors there
->> are in the target hugepage. So add them.
->>
->> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-> 
-> snip
-> 
->> @@ -2255,7 +2275,7 @@ int unpoison_memory(unsigned long pfn)
->>  unlock_mutex:
->>  	mutex_unlock(&mf_mutex);
->>  	if (!ret || freeit) {
->> -		num_poisoned_pages_dec();
->> +		num_poisoned_pages_sub(count);
-> 
-> IIUC, num_poisoned_pages will only be incremented once for hugetlb page. If many
-> subpages are hwpoisoned, they will reach the "else if (res == -EHWPOISON)" path
-> in try_memory_failure_hugetlb and thus num_poisoned_pages_inc is ignored. Maybe
-> that should be changed so subpages can contribute to the num_poisoned_pages
-> or should we just do num_poisoned_pages_dec here? Or am I miss something?
+From: Linus Walleij <linus.walleij@linaro.org>
 
-Sorry. I re-read patch 4/9 and I found hugetlb_set_page_hwpoison will increment the
-num_poisoned_pages for each subpages. Please ignore this question.
+commit 9decacd8b3a432316d61c4366f302e63384cb08d upstream.
 
-> 
-> Thanks!
-> 
->>  		unpoison_pr_info("Unpoison: Software-unpoisoned page %#lx\n",
->>  				 page_to_pfn(p), &unpoison_rs);
->>  	}
->>
-> 
+When introducing support for processed channels I needed
+to invert the expression:
+
+  if (!iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
+      !iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
+        dev_err(dev, "source channel does not support raw/scale\n");
+
+To the inverse, meaning detect when we can usse raw+scale
+rather than when we can not. This was the result:
+
+  if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
+      iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
+       dev_info(dev, "using raw+scale source channel\n");
+
+Ooops. Spot the error. Yep old George Boole came up and bit me.
+That should be an &&.
+
+The current code "mostly works" because we have not run into
+systems supporting only raw but not scale or only scale but not
+raw, and I doubt there are few using the rescaler on anything
+such, but let's fix the logic.
+
+Cc: Liam Beguin <liambeguin@gmail.com>
+Cc: stable@vger.kernel.org
+Fixes: 53ebee949980 ("iio: afe: iio-rescale: Support processed channels")
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Liam Beguin <liambeguin@gmail.com>
+Acked-by: Peter Rosin <peda@axentia.se>
+Link: https://lore.kernel.org/r/20220524075448.140238-1-linus.walleij@linaro.org
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/iio/afe/iio-rescale.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -278,7 +278,7 @@ static int rescale_configure_channel(str
+ 	chan->ext_info = rescale->ext_info;
+ 	chan->type = rescale->cfg->type;
+ 
+-	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
++	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) &&
+ 	    iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE)) {
+ 		dev_info(dev, "using raw+scale source channel\n");
+ 	} else if (iio_channel_has_info(schan, IIO_CHAN_INFO_PROCESSED)) {
+
 
