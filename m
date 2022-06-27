@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7516FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66571C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235164AbiF0L1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
+        id S235172AbiF0L1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235100AbiF0L0l (ORCPT
+        with ESMTP id S235004AbiF0L0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:26:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D85D65A2;
-        Mon, 27 Jun 2022 04:26:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC6365A5;
+        Mon, 27 Jun 2022 04:26:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F14DFB8111D;
-        Mon, 27 Jun 2022 11:26:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DAD6C3411D;
-        Mon, 27 Jun 2022 11:26:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D71FB8111B;
+        Mon, 27 Jun 2022 11:26:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68B25C3411D;
+        Mon, 27 Jun 2022 11:26:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329184;
-        bh=XkIjSxMD1GD+nza+SZHqB4Fp59xxgyuTjT9wzg63mY4=;
+        s=korg; t=1656329187;
+        bh=d4ivODzHRCoUbS18FraA4uE1V6HELuJGshoYN4G+sEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sNBm2t96gmf3a9HaUX5B0XwzL17WcBOIQ0eBuevkP1Wl6WszD8V8DCGfcuVXRj79a
-         2BUZ3kOaOESQBCG77DgellC56NT6n5dqMlOWQ8E+4RwDzO8DPEdc+UCFN0R3YMsrCM
-         Gtua6RYbe3u6mYOHcuu2MVfqzoXYwv9Q9dC01ONE=
+        b=H1oWgVbsO7H5DlOfd4JYSiCmHNwWaBr56BxjBhNNrOPdks7ASb2ImZSyC6vvKk4sf
+         0MNyuwQ8kb6fVavCND5wf+XWvFGA3UuLcIxhFMcxeo+IdQ7bNyWixtHvgpoTezLIXg
+         xYqALz8evgHg5LVZ7N+u/Fcbsnz6gqCXDtyfNYoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stable@vger.kernel.org,
+        stable@vger.kernel.org,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Lars-Peter Clausen <lars@metafoo.de>, Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 077/102] iio: gyro: mpu3050: Fix the error handling in mpu3050_power_up()
-Date:   Mon, 27 Jun 2022 13:21:28 +0200
-Message-Id: <20220627111935.752615960@linuxfoundation.org>
+Subject: [PATCH 5.10 078/102] iio: trigger: sysfs: fix use-after-free on remove
+Date:   Mon, 27 Jun 2022 13:21:29 +0200
+Message-Id: <20220627111935.782809086@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -50,31 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
-commit b2f5ad97645e1deb5ca9bcb7090084b92cae35d2 upstream.
+commit 78601726d4a59a291acc5a52da1d3a0a6831e4e8 upstream.
 
-The driver should disable regulators when fails at regmap_update_bits().
+Ensure that the irq_work has completed before the trigger is freed.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+ ==================================================================
+ BUG: KASAN: use-after-free in irq_work_run_list
+ Read of size 8 at addr 0000000064702248 by task python3/25
+
+ Call Trace:
+  irq_work_run_list
+  irq_work_tick
+  update_process_times
+  tick_sched_handle
+  tick_sched_timer
+  __hrtimer_run_queues
+  hrtimer_interrupt
+
+ Allocated by task 25:
+  kmem_cache_alloc_trace
+  iio_sysfs_trig_add
+  dev_attr_store
+  sysfs_kf_write
+  kernfs_fop_write_iter
+  new_sync_write
+  vfs_write
+  ksys_write
+  sys_write
+
+ Freed by task 25:
+  kfree
+  iio_sysfs_trig_remove
+  dev_attr_store
+  sysfs_kf_write
+  kernfs_fop_write_iter
+  new_sync_write
+  vfs_write
+  ksys_write
+  sys_write
+
+ ==================================================================
+
+Fixes: f38bc926d022 ("staging:iio:sysfs-trigger: Use irq_work to properly active trigger")
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+Link: https://lore.kernel.org/r/20220519091925.1053897-1-vincent.whitchurch@axis.com
 Cc: <Stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220510092431.1711284-1-zheyuma97@gmail.com
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/gyro/mpu3050-core.c |    1 +
+ drivers/iio/trigger/iio-trig-sysfs.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -872,6 +872,7 @@ static int mpu3050_power_up(struct mpu30
- 	ret = regmap_update_bits(mpu3050->map, MPU3050_PWR_MGM,
- 				 MPU3050_PWR_MGM_SLEEP, 0);
- 	if (ret) {
-+		regulator_bulk_disable(ARRAY_SIZE(mpu3050->regs), mpu3050->regs);
- 		dev_err(mpu3050->dev, "error setting power mode\n");
- 		return ret;
+--- a/drivers/iio/trigger/iio-trig-sysfs.c
++++ b/drivers/iio/trigger/iio-trig-sysfs.c
+@@ -196,6 +196,7 @@ static int iio_sysfs_trigger_remove(int
  	}
+ 
+ 	iio_trigger_unregister(t->trig);
++	irq_work_sync(&t->work);
+ 	iio_trigger_free(t->trig);
+ 
+ 	list_del(&t->l);
 
 
