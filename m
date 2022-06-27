@@ -2,105 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 763E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232388AbiF0HBx convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50452 "EHLO
+        id S232504AbiF0HCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiF0HBv (ORCPT
+        with ESMTP id S230096AbiF0HCT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:01:51 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D489D5F7E;
-        Mon, 27 Jun 2022 00:01:49 -0700 (PDT)
-Received: from canpemm500008.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LWdsT55gFzkWpD;
-        Mon, 27 Jun 2022 15:00:29 +0800 (CST)
-Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
- canpemm500008.china.huawei.com (7.192.105.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 15:01:16 +0800
-Received: from kwepemm600007.china.huawei.com ([7.193.23.208]) by
- kwepemm600007.china.huawei.com ([7.193.23.208]) with mapi id 15.01.2375.024;
- Mon, 27 Jun 2022 15:01:16 +0800
-From:   haijie <haijie1@huawei.com>
-To:     Vinod Koul <vkoul@kernel.org>
-CC:     "Wangzhou (B)" <wangzhou1@hisilicon.com>,
-        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/8] dmaengine: hisilicon: Fix CQ head update
-Thread-Topic: [PATCH 2/8] dmaengine: hisilicon: Fix CQ head update
-Thread-Index: AQHYiGfM3YbFHDZNZ0e0XQ9uDDsCpq1iQvQAgACSJCA=
-Date:   Mon, 27 Jun 2022 07:01:16 +0000
-Message-ID: <494c689c9141429caae0285a9e778c3b@huawei.com>
-References: <20220625074422.3479591-1-haijie1@huawei.com>
- <20220625074422.3479591-3-haijie1@huawei.com> <YrlKZgC999AYMvXY@matsya>
-In-Reply-To: <YrlKZgC999AYMvXY@matsya>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.67.102.167]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Mon, 27 Jun 2022 03:02:19 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65F55F7B
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:02:18 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id o16so11610701wra.4
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:02:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=LTRupNP8zGDlH2rCD8HF8CfVKNgPhKFXXtp+I+X0sqE=;
+        b=GunVaYPe0aHenehxsNEW691AFHt8ol+2ZpaACxMNN7V/O6NbASYFjjgf2oPP1TIHkT
+         zyrsf3rtFQO2r+a+ln7hc4FcdVUpTR84UaVo4n84rhHkT59PVUA8mM1UUshZ7eYJ04OA
+         DukqEEt/gYJIfQHoIwaxqwldk1RFEeobJAevTacX6yLfW33fJ+6IFJJl0sEic4JQBKjh
+         ahBgNZJB/q/PxcTxtb76QiavIknRfBGRXk9PAdrdNG8t0ykmmi4akYmp5j8PDwbgT1Tn
+         nrpCZjC9wllarxIx9fwFzJrHEeIsxdxz8FV9TtQy39PDPHdsfFEZk6bM2CLXwdlW8kBG
+         JzjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=LTRupNP8zGDlH2rCD8HF8CfVKNgPhKFXXtp+I+X0sqE=;
+        b=nrtluZ6OhIgaKbMk2kWdfUMn97vva0J/uuG4LBu1Jg4/wU/bs6l/dYoqYiSC8cdeuh
+         C1jnUyD0PvTbatMftigJPV0fJlslp+viDrop4n/Dxohxxk+YNlyjXOiLyd6P5M4h3Cna
+         ij24Lo3oA8GsrLrZK4HjNtUXbJMZr8LhXaQkVCfCtSE/S+ODWZVnM7kgEprCHwcgb0vY
+         kJ3XTyV8p2AoHniyBgLmKPifwLxj9wtQfK6UAACvZDXy9isxlNb7ybVxAimUe1Xhq9IO
+         QsUb6IeahryC+zcpts9NrT0AzHlzRC/9sVSLBLla+9GA9Kt2uGTISrWTpgLsTkDPwobO
+         T6uQ==
+X-Gm-Message-State: AJIora84HEfumOkEoXLNBU/Okzws4mR5RcgbYLcq1oegR4hEVW3xJErq
+        6z8uDKWVeuGUvSgzN5X78kDp4Q==
+X-Google-Smtp-Source: AGRyM1t7nroGAbqdhY6T5XxWBzJWB/PdIsEagImnNYDHnCS7rC/REHafmtvVrPe/H7ZA+YSTp30Fiw==
+X-Received: by 2002:a05:6000:1f08:b0:21b:ae8f:4f0a with SMTP id bv8-20020a0560001f0800b0021bae8f4f0amr11200060wrb.456.1656313337255;
+        Mon, 27 Jun 2022 00:02:17 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:6f56:f3c6:ba4f:bf5c? ([2001:861:44c0:66c0:6f56:f3c6:ba4f:bf5c])
+        by smtp.gmail.com with ESMTPSA id y10-20020a1c4b0a000000b0039c587342d8sm16489337wma.3.2022.06.27.00.02.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 00:02:16 -0700 (PDT)
+Message-ID: <ee17ba1e-19ef-f72d-ce81-077fa5c30bd7@baylibre.com>
+Date:   Mon, 27 Jun 2022 09:02:18 +0200
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v8 5/5] mtd: rawnand: meson: not support legacy clock
+Content-Language: en-US
+To:     Liang Yang <liang.yang@amlogic.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-mtd@lists.infradead.org
+Cc:     kernel test robot <lkp@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jianxin Pan <jianxin.pan@amlogic.com>,
+        Victor Wan <victor.wan@amlogic.com>,
+        XianWei Zhao <xianwei.zhao@amlogic.com>,
+        Kelvin Zhang <kelvin.zhang@amlogic.com>,
+        BiChao Zheng <bichao.zheng@amlogic.com>,
+        YongHui Yu <yonghui.yu@amlogic.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220627031703.33243-1-liang.yang@amlogic.com>
+ <20220627031703.33243-6-liang.yang@amlogic.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220627031703.33243-6-liang.yang@amlogic.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Vinod,
-
-This happens bacause I rearranged this patch without checking, it will be corrected in v2.
-
-Thanks.
-
------Original Message-----
-From: Vinod Koul [mailto:vkoul@kernel.org] 
-Sent: Monday, June 27, 2022 2:13 PM
-To: haijie <haijie1@huawei.com>
-Cc: Wangzhou (B) <wangzhou1@hisilicon.com>; dmaengine@vger.kernel.org; linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/8] dmaengine: hisilicon: Fix CQ head update
-
-On 25-06-22, 15:44, Jie Hai wrote:
-> After completion of data transfer of one or multiple descriptors, the 
-> completion status and the current head pointer to submission queue are 
-> written into the CQ and interrupt can be generated to inform the 
-> software. In interrupt process CQ is read and cq_head is updated.
+On 27/06/2022 05:17, Liang Yang wrote:
+> meson NFC driver use common clock interfaces. so the test robot report
+> some errors once using the legacy clock with HAVE_LEGACY_CLK on.
 > 
-> hisi_dma_irq updates cq_head only when the completion status is 
-> success. When an abnormal interrupt reports, cq_head will not update 
-> which will cause subsequent interrupt processes read the error CQ and 
-> never report the correct status.
-> 
-> This patch updates cq_head whenever CQ is accessed.
-> 
-> Fixes: e9f08b65250d ("dmaengine: hisilicon: Add Kunpeng DMA engine 
-> support")
-> 
-
-No need for blank line
-> Signed-off-by: Jie Hai <haijie1@huawei.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Liang Yang <liang.yang@amlogic.com>
 > ---
->  drivers/dma/hisi_dma.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
+>   drivers/mtd/nand/raw/Kconfig | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/dma/hisi_dma.c b/drivers/dma/hisi_dma.c index 
-> 98bc488893cc..0a0f8a4d168a 100644
-> --- a/drivers/dma/hisi_dma.c
-> +++ b/drivers/dma/hisi_dma.c
-> @@ -436,12 +436,11 @@ static irqreturn_t hisi_dma_irq(int irq, void *data)
->  	desc = chan->desc;
->  	cqe = chan->cq + chan->cq_head;
->  	if (desc) {
-> +		chan->cq_head = (chan->cq_head + 1) %
-> +				hdma_dev->chan_depth;
-> +		hisi_dma_chan_write(q_base, HISI_DMA_Q_CQ_HEAD_PTR,
+> diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
+> index 67b7cb67c030..c309cfeb74cd 100644
+> --- a/drivers/mtd/nand/raw/Kconfig
+> +++ b/drivers/mtd/nand/raw/Kconfig
+> @@ -395,7 +395,7 @@ config MTD_NAND_STM32_FMC2
+>   
+>   config MTD_NAND_MESON
+>   	tristate "Support for NAND controller on Amlogic's Meson SoCs"
+> -	depends on ARCH_MESON || COMPILE_TEST
+> +	depends on COMMON_CLK && (ARCH_MESON || COMPILE_TEST)
+>   	select MFD_SYSCON
+>   	help
+>   	  Enables support for NAND controller on Amlogic's Meson SoCs.
 
-q_base?
-
---
-~Vinod
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
