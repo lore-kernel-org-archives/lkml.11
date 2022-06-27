@@ -2,93 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9500EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7009C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236068AbiF0NYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37994 "EHLO
+        id S236144AbiF0NY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236055AbiF0NYw (ORCPT
+        with ESMTP id S236071AbiF0NYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:24:52 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A790C63AA
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:24:50 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id q9so13057529wrd.8
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:24:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=byIxRMuOa27jOrS24MLlEP5RbxFs2hCniyYjzuga7zE=;
-        b=UsQIz9AwLFXRZW/611PWA1TGLx/EKjLMG49oOIENwVNA2HfgrdVmjiLA5LE2c44YcD
-         8YPlFS2VPog7acW4tS5hrnzECgBp1K+mIZYro2lnBvlDA50dmbuWCkD7jAFL/+JdM663
-         Gp7F008ZJoiY8Tjm8JBzHOXFvAEcikK+Hdm0Yjg3ETxhDdzGVUnePuBHBHAzahstZ2pD
-         et8PHflKitsdu8eIQidHvcOIJP7QCt8GDtsPGCsX4Id8WHEjH9Ga5CPJbo+fenF0DMlI
-         iePtg3KStyqufLeK6JpXhVQKY82V1o4wVcWAh1a9MYwQvqPPa3pKeU2mJAr+P39mziVL
-         jnGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=byIxRMuOa27jOrS24MLlEP5RbxFs2hCniyYjzuga7zE=;
-        b=6FS4XM4M3iAaLmiDzttkVMYfDp1p3Jay4fDar/d7qr25YSXblJC3igVHlA8VSUrU33
-         ASPqsR5waEfxI48FsLwsC97iArCOmaCkXaIbRA/xaabRwPc+uDUWlGwd2nzswpJkN7yx
-         e2Dz2Cv3vAUt98LSPKifHOylYPiSnQXuoR/6CdTTT7Fouu+QT4d3qGRwzWoXvGlRgsL2
-         YPNdXfTEYRqULmc0hxlH5mMWTpYOAH19iQuAQLL4PgcXuTxUGY8EtupxlGCE/bapW7V3
-         gBZAtrEm4lvy/bWSwuALnif0SmJriY8VNxdTpnbs/tFipC/RvUn4oRdryutiVQYnwd0l
-         228w==
-X-Gm-Message-State: AJIora/q/KN9j6mBbuKTu7rfq6XNu4MxCMAbsJeWPGSlq2/VoIziDKqJ
-        WV0SO72U4o39zQkhS2UKx21wSg==
-X-Google-Smtp-Source: AGRyM1vZAkSBZxxD6y10J1gQ4scZoSfBKuXC2K439nhICMoqoFaJ0bjNcd9Bqjo6KW0lp3JI4jTvZg==
-X-Received: by 2002:a5d:598e:0:b0:219:ea16:5a2a with SMTP id n14-20020a5d598e000000b00219ea165a2amr12038693wri.343.1656336289239;
-        Mon, 27 Jun 2022 06:24:49 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id l14-20020a05600c4f0e00b003942a244f40sm18232984wmq.25.2022.06.27.06.24.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:24:48 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 14:24:47 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 3/9] mfd: intel_soc_pmic_crc: Use
- devm_regmap_add_irq_chip()
-Message-ID: <Yrmvny2YaF/IIFnX@google.com>
-References: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
- <20220616182524.7956-3-andriy.shevchenko@linux.intel.com>
+        Mon, 27 Jun 2022 09:24:53 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2EE063BE;
+        Mon, 27 Jun 2022 06:24:52 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25RDKrpL014505;
+        Mon, 27 Jun 2022 13:24:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=0AHL8AZDkqNDDEmvpD7+VWaXha+Xw2V5Mf/HF6f0TuY=;
+ b=aJ+TyPjIJpLc+yzG3W0G6Pnem5DgEwRTCXnGkIdpdtTKIgM2+RrPcq50Ap1q9MuNIlxE
+ ubzakoVb6ko9Ql2emOHxwkAiDyT5Q4xUtqlgFCEpCemlGEIZetoUvys3EQOYrdWLFkRG
+ 11vQzg3F/MxdP4ADByTqCi7LEulYEyzUwdyVLOJcHu63Nb8uMbeAsWmVmm/+8qXSNHHx
+ fzC8D9C7t5ronn8ZFpuZPcTXbI1Q2Koj3f/oZNHpneyCNuwxX9KFgLB92T/j/w4PpPwz
+ BlvKpiLBJb8UwoST7lo9g4uGOWWlnDH3Au15vudNmAb5bq099sVIizMKCgZqIJYx1coH qg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gydbw035g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 13:24:52 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25RDLTQu021700;
+        Mon, 27 Jun 2022 13:24:52 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gydbw034h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 13:24:51 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25RDJuKY031337;
+        Mon, 27 Jun 2022 13:24:49 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03fra.de.ibm.com with ESMTP id 3gwt08t9mx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jun 2022 13:24:49 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25RDOkdL21168572
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 27 Jun 2022 13:24:46 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5509111C04C;
+        Mon, 27 Jun 2022 13:24:46 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6274A11C04A;
+        Mon, 27 Jun 2022 13:24:45 +0000 (GMT)
+Received: from [9.171.84.214] (unknown [9.171.84.214])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 27 Jun 2022 13:24:45 +0000 (GMT)
+Message-ID: <0d90c2cb-e0e9-a112-1c85-9aa8fdd54311@linux.ibm.com>
+Date:   Mon, 27 Jun 2022 15:29:13 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220616182524.7956-3-andriy.shevchenko@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v10 1/3] KVM: s390: ipte lock for SCA access should be
+ contained in KVM
+Content-Language: en-US
+To:     Janosch Frank <frankja@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, cohuck@redhat.com, david@redhat.com,
+        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
+        nrb@linux.ibm.com
+References: <20220620125437.37122-1-pmorel@linux.ibm.com>
+ <20220620125437.37122-2-pmorel@linux.ibm.com>
+ <74a234eb-0705-3c42-214f-5cdc8b125c63@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <74a234eb-0705-3c42-214f-5cdc8b125c63@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: UMMH4xadU8S7istT9M783qntWC0_LSnE
+X-Proofpoint-ORIG-GUID: byymaZlGFS5i32Oe_-Yl1L8UjxSjYq8L
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-27_06,2022-06-24_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0 mlxscore=0
+ phishscore=0 adultscore=0 spamscore=0 malwarescore=0 mlxlogscore=999
+ impostorscore=0 bulkscore=0 priorityscore=1501 clxscore=1011
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206270058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022, Andy Shevchenko wrote:
 
-> Use devm_regmap_add_irq_chip() to simplify the code.
-> 
-> While at it, replace -1 magic parameter by PLATFORM_DEVID_NONE when
-> calling mfd_add_devices().
-> 
-> Note, the mfd_add_devices() left in non-devm variant here due to
-> potentially increased churn while wrapping pwm_remove_table().
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/mfd/intel_soc_pmic_crc.c | 24 +++++-------------------
->  1 file changed, 5 insertions(+), 19 deletions(-)
 
-For my own reference (apply this as-is to your sign-off block):
+On 6/24/22 07:47, Janosch Frank wrote:
+> On 6/20/22 14:54, Pierre Morel wrote:
+>> We can check if SIIF is enabled by testing the sclp_info struct
+>> instead of testing the sie control block eca variable.
+>> sclp.has_ssif is the only requirement to set ECA_SII anyway
+>> so we can go straight to the source for that.
+> 
+> 
+> The subject and commit description don't fit together.
+> You're doing two things in this patch and only describe one of them.
+> 
+> I'd suggest something like this:
+> 
+> KVM: s390: Cleanup ipte lock access and SIIF facility checks
+> 
+> We can check if SIIF is enabled by testing the sclp_info struct instead 
+> of testing the sie control block eca variable as that facility is always 
+> enabled if available.
+> 
+> Also let's cleanup all the ipte related struct member accesses which 
+> currently happen by referencing the KVM struct via the VCPU struct. 
+> Making the KVM struct the parameter to the ipte_* functions removes one 
+> level of indirection which makes the code more readable.
+> 
 
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+OK done.
+
+
+> 
+> Other than that I'm happy with this patch.
+
+
+Thanks,
+
+Pierre
+
+
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Pierre Morel
+IBM Lab Boeblingen
