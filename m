@@ -2,177 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B91B8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 02:04:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED99C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 02:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230205AbiF0CEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 26 Jun 2022 22:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
+        id S230319AbiF0CFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 26 Jun 2022 22:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiF0CEp (ORCPT
+        with ESMTP id S229492AbiF0CFQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 26 Jun 2022 22:04:45 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB257EB5;
-        Sun, 26 Jun 2022 19:04:43 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 60CE81A1A6F;
-        Mon, 27 Jun 2022 04:04:42 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D44631A1A73;
-        Mon, 27 Jun 2022 04:04:41 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id AEDEF1802205;
-        Mon, 27 Jun 2022 10:04:39 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     shengjiu.wang@gmail.com
-Subject: [PATCH v2] ASoC: dt-bindings: fsl,micfil: Convert format to json-schema
-Date:   Mon, 27 Jun 2022 09:50:13 +0800
-Message-Id: <1656294613-27867-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Sun, 26 Jun 2022 22:05:16 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F2FFF4C;
+        Sun, 26 Jun 2022 19:05:15 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 05DD21E80D5E;
+        Mon, 27 Jun 2022 10:04:23 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id a0yxhuLcFB-H; Mon, 27 Jun 2022 10:04:20 +0800 (CST)
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        (Authenticated sender: kunyu@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 42C851E80D11;
+        Mon, 27 Jun 2022 10:04:20 +0800 (CST)
+From:   Li kunyu <kunyu@nfschina.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        mturquette@baylibre.com, sboyd@kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Li kunyu <kunyu@nfschina.com>
+Subject: [PATCH] drivers: the return value statement of the gcc_sm6350_probe function has an extra semicolon
+Date:   Mon, 27 Jun 2022 10:05:00 +0800
+Message-Id: <20220627020500.135125-1-kunyu@nfschina.com>
+X-Mailer: git-send-email 2.18.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the NXP MICFIL binding to DT schema format using json-schema.
+I think this semicolon could be deleted.
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Signed-off-by: Li kunyu <kunyu@nfschina.com>
 ---
-changes in v2
-- add decription of interrupts.
+ drivers/clk/qcom/gcc-sm6350.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- .../devicetree/bindings/sound/fsl,micfil.txt  | 33 --------
- .../devicetree/bindings/sound/fsl,micfil.yaml | 77 +++++++++++++++++++
- 2 files changed, 77 insertions(+), 33 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.txt
- create mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.yaml
-
-diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.txt b/Documentation/devicetree/bindings/sound/fsl,micfil.txt
-deleted file mode 100644
-index 1ea05d4996c7..000000000000
---- a/Documentation/devicetree/bindings/sound/fsl,micfil.txt
-+++ /dev/null
-@@ -1,33 +0,0 @@
--NXP MICFIL Digital Audio Interface (MICFIL).
--
--The MICFIL digital interface provides a 16-bit audio signal from a PDM
--microphone bitstream in a configurable output sampling rate.
--
--Required properties:
--
--  - compatible		: Compatible list, contains "fsl,imx8mm-micfil"
--			  or "fsl,imx8mp-micfil"
--
--  - reg			: Offset and length of the register set for the device.
--
--  - interrupts		: Contains the micfil interrupts.
--
--  - clocks		: Must contain an entry for each entry in clock-names.
--
--  - clock-names		: Must include the "ipg_clk" for register access and
--			  "ipg_clk_app" for internal micfil clock.
--
--  - dmas		: Generic dma devicetree binding as described in
--			  Documentation/devicetree/bindings/dma/dma.txt.
--
--Example:
--micfil: micfil@30080000 {
--	compatible = "fsl,imx8mm-micfil";
--	reg = <0x0 0x30080000 0x0 0x10000>;
--	interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
--	clocks = <&clk IMX8MM_CLK_PDM_IPG>,
--		 <&clk IMX8MM_CLK_PDM_ROOT>;
--	clock-names = "ipg_clk", "ipg_clk_app";
--	dmas = <&sdma2 24 26 0x80000000>;
--};
-diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.yaml b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
-new file mode 100644
-index 000000000000..bf24faed7a4d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
-@@ -0,0 +1,77 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/fsl,micfil.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NXP MICFIL Digital Audio Interface (MICFIL)
-+
-+maintainers:
-+  - Shengjiu Wang <shengjiu.wang@nxp.com>
-+
-+description: |
-+  The MICFIL digital interface provides a 16-bit or 24-bit audio signal
-+  from a PDM microphone bitstream in a configurable output sampling rate.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - fsl,imx8mm-micfil
-+      - fsl,imx8mp-micfil
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    items:
-+      - description: Digital Microphone interface interrupt
-+      - description: Digital Microphone interface error interrupt
-+      - description: voice activity detector event interrupt
-+      - description: voice activity detector error interrupt
-+
-+  dmas:
-+    items:
-+      - description: DMA controller phandle and request line for RX
-+
-+  dma-names:
-+    items:
-+      - const: rx
-+
-+  clocks:
-+    items:
-+      - description: The ipg clock for register access
-+      - description: internal micfil clock
-+
-+  clock-names:
-+    items:
-+      - const: ipg_clk
-+      - const: ipg_clk_app
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - dmas
-+  - dma-names
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/imx8mm-clock.h>
-+    micfil: audio-controller@30080000 {
-+        compatible = "fsl,imx8mm-micfil";
-+        reg = <0x30080000 0x10000>;
-+        interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clk IMX8MM_CLK_PDM_IPG>,
-+                 <&clk IMX8MM_CLK_PDM_ROOT>;
-+        clock-names = "ipg_clk", "ipg_clk_app";
-+        dmas = <&sdma2 24 25 0>;
-+        dma-names = "rx";
-+    };
+diff --git a/drivers/clk/qcom/gcc-sm6350.c b/drivers/clk/qcom/gcc-sm6350.c
+index a4f7fba70393..69412400efa4 100644
+--- a/drivers/clk/qcom/gcc-sm6350.c
++++ b/drivers/clk/qcom/gcc-sm6350.c
+@@ -2558,7 +2558,7 @@ static int gcc_sm6350_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	return qcom_cc_really_probe(pdev, &gcc_sm6350_desc, regmap);;
++	return qcom_cc_really_probe(pdev, &gcc_sm6350_desc, regmap);
+ }
+ 
+ static struct platform_driver gcc_sm6350_driver = {
 -- 
-2.17.1
+2.18.2
 
