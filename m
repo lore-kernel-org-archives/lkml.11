@@ -2,116 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A4AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2EB8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239272AbiF0QX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
+        id S239280AbiF0QYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236443AbiF0QXZ (ORCPT
+        with ESMTP id S234676AbiF0QYG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:23:25 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C081A44A
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:23:24 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 060381758;
-        Mon, 27 Jun 2022 09:23:24 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 106C03F66F;
-        Mon, 27 Jun 2022 09:23:21 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 17:22:11 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Ionela Voinescu <ionela.voinescu@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Pierre Gondois <pierre.gondois@arm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v4 00/20] arch_topology: Updates to add socket support
- and fix cluster ids
-Message-ID: <20220627162211.t2dlu2no2turnc6r@bogus>
-References: <20220621192034.3332546-1-sudeep.holla@arm.com>
- <Yrm2lG3uskxT26Of@arm.com>
+        Mon, 27 Jun 2022 12:24:06 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6571EAE7E
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:24:05 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id n1so13786018wrg.12
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:24:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=9ZJokoMXakMIFvLaDTnIr0oqMcFY7ZRf51dGtS2NzKw=;
+        b=feeC4sKGHE7611Q+VF/dI1qLSv1TW8TB6IEUb172FaXQGILpjVUaEUzdifEOwGFOCR
+         2bQ5TCjXlEy5/hx5mWbltaaG2B8wr5ugFpllP8i6iOPzDtEZABXfGIP3DMXZ9FvR/5Uk
+         IzwOCB1CQCzzb5tGlJyMpgotO/sW/7G0KxDhK89RhjlWPVmH/gvJrNqlX8HgN2JRh9xl
+         /z3e2vhQkyYi+ROJJGuQ7bdtAh1WpsBmB05yEbqxAX17bkAAr/WfNX4gg0Lo7abcziJe
+         nSu3CLjJi5jsIKf3yB1Ud2thAqk1+UXl1TBX3rZLAIOX93jlxXgehnNP/Fl4PPt9wike
+         HiPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=9ZJokoMXakMIFvLaDTnIr0oqMcFY7ZRf51dGtS2NzKw=;
+        b=EZO2x7TW7Usvrki0pxBFrL+jvxR4k/pJ4lmQowJSKMKMbKf5Zg46ytxtC6qyd5tg9R
+         bG7lcJAS3BFSwNP3JmX9+LS0YAM80fQeRIDQYpfeqTZE2a/mog72mFi5cX24GowdQrK2
+         6FyrNahH4wrOrpUJM6ELKwzebDykeW+OxUhRgfP9M64GT/9ZtZhnJwtP/vGkWZcAlaaL
+         7cspOS686uB3spwMzaqKDi8gfL9Z7NWxryxOH48xggG4zqQjjT6GR5Pc+HhkunFpS4B7
+         DH85eBl0TDIFXnn22mxCPZInKyhEGMA/ldwKHJwrr9z1SMys+p0u6+K1HkCHYdKbloCo
+         ckSA==
+X-Gm-Message-State: AJIora/2m7SWL4NB4RBFWSCD+lqW9vN2fpx2Xl3YJ6+mXE7kzEMImvYf
+        FnPJIPVCkILfsOUd3zr/udgiWg==
+X-Google-Smtp-Source: AGRyM1uZ9qNp8zEkPoKpJGNx/hE5miAeiNLVcPpeva+u+qwk34ucCb4LUGHAkEV7oJ9n/6hP9pxjxQ==
+X-Received: by 2002:a5d:5966:0:b0:21b:80b5:ecc3 with SMTP id e38-20020a5d5966000000b0021b80b5ecc3mr12913127wri.130.1656347044005;
+        Mon, 27 Jun 2022 09:24:04 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id l16-20020adffe90000000b0021b9a4a75e2sm10887612wrr.30.2022.06.27.09.24.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 09:24:03 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 17:24:01 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Chen-Yu Tsai <wens@csie.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] mfd: axp20x: Add AXP221/AXP223/AXP809 GPIO cells
+Message-ID: <YrnZof9lwsIQCqu7@google.com>
+References: <20220616060915.48325-1-samuel@sholland.org>
+ <20220616060915.48325-3-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Yrm2lG3uskxT26Of@arm.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220616060915.48325-3-samuel@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 02:54:28PM +0100, Ionela Voinescu wrote:
-> Hi Sudeep,
-> 
-> On Tuesday 21 Jun 2022 at 20:20:14 (+0100), Sudeep Holla wrote:
-> > Hi All,
-> > 
-> > This version updates cacheinfo to populate and use the information from
-> > there for all the cache topology.
-> > 
-> > This series intends to fix some discrepancies we have in the CPU topology
-> > parsing from the device tree /cpu-map node. Also this diverges from the
-> > behaviour on a ACPI enabled platform. The expectation is that both DT
-> > and ACPI enabled systems must present consistent view of the CPU topology.
-> > 
-> > Currently we assign generated cluster count as the physical package identifier
-> > for each CPU which is wrong. The device tree bindings for CPU topology supports
-> > sockets to infer the socket or physical package identifier for a given CPU.
-> > Also we don't check if all the cores/threads belong to the same cluster before
-> > updating their sibling masks which is fine as we don't set the cluster id yet.
-> > 
-> > These changes also assigns the cluster identifier as parsed from the device tree
-> > cluster nodes within /cpu-map without support for nesting of the clusters.
-> > Finally, it also add support for socket nodes in /cpu-map. With this the
-> > parsing of exact same information from ACPI PPTT and /cpu-map DT node
-> > aligns well.
-> > 
-> > The only exception is that the last level cache id information can be
-> > inferred from the same ACPI PPTT while we need to parse CPU cache nodes
-> > in the device tree.
-> > 
-> > Hi Greg,
-> > 
-> > I had not cc-ed you on earlier 3 versions as we had some disagreement
-> > amongst Arm developers which we have not settled. Let me know how you want to
-> 
-> s/not/now :)
-> 
-> > merge this once you agree with the changes. I can set pull request if
-> > you prefer. Let me know.
-> > 
-> > v4[3]->v4:
-> > 	- Updated ACPI PPTT fw_token to use table offset instead of virtual
-> > 	  address as it could get changed for everytime it is mapped before
-> > 	  the global acpi_permanent_mmap is set
-> > 	- Added warning for the topology with nested clusters
-> > 	- Added update to cpu_clustergroup_mask so that introduction of
-> > 	  correct cluster_id doesn't break existing platforms by limiting
-> > 	  the span of clustergroup_mask(by Ionela)
-> > 
-> 
-> I've tested v4 on quite a few platforms:
->  - DT: Juno R0, DB845c, RB5
->  - ACPI: TX2, Ampere Altra, Kunpeng920
-> 
-> and it all looks good from my point of view (topology and sched domain
-> hierarchy).
-> 
-> So for the full set (after the changes requested for 16/20 and 20/20):
-> 
-> Tested-by: Ionela Voinescu <ionela.voinescu@arm.com>
->
+On Thu, 16 Jun 2022, Samuel Holland wrote:
 
-Thanks for all the review and testing. Much appreciated!
+> These PMICs all contain a compatible GPIO controller.
+> 
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> ---
+> 
+>  drivers/mfd/axp20x.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+
+Applied, thanks.
 
 -- 
-Regards,
-Sudeep
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
