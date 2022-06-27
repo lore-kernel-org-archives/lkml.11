@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DBBCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946A3CCA473
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239480AbiF0L5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50070 "EHLO
+        id S239681AbiF0L56 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:57:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238394AbiF0LvA (ORCPT
+        with ESMTP id S238423AbiF0LvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:51:00 -0400
+        Mon, 27 Jun 2022 07:51:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC972647;
-        Mon, 27 Jun 2022 04:44:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E59264D1;
+        Mon, 27 Jun 2022 04:44:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5683AB80DFB;
-        Mon, 27 Jun 2022 11:44:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A09F2C3411D;
-        Mon, 27 Jun 2022 11:44:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FABAB80D92;
+        Mon, 27 Jun 2022 11:44:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E515C3411D;
+        Mon, 27 Jun 2022 11:44:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330248;
-        bh=ZYBHfEZ/4hokI7PHDTYMSTxoY8i1qxcmK4/ccWaOjmc=;
+        s=korg; t=1656330256;
+        bh=4VFdD5ys/qbvFUCShz71aRXQVy+VKR+nSZ616eGOviU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hg+ONekUs83Tp/66dadqeroqFShpLo0sfpLHO9v83DdqF2bi6GgRD+vDta4rUuYcR
-         XRBoQM9sBkk1evnQfF0uyymWbOef0x9w7DrbI8YUZChkYG1qwfxTeF/0X3f+Ef6tdp
-         iqtBUpw2CZ83b4Q1J04/umkPWO7qDtM10y9Sg2ws=
+        b=NBKF9VYvrxa+RiH9DfV1ZSLWpwjfiK0mW4bzYRDisCIGVMv+8/X41Y/rrzI8Bo7Z1
+         jEji94gkLzHsnQ3gcocuSmXHbK+XW32gqBtLXwRJ6Js0SWh//dAfZUAgqM7HVwdkl9
+         LVjgH7Jtj1RtbptoXOApcdhAiR9NPwLJ8lgHtByI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aaron Ma <aaron.ma@canonical.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Mark Pearson <markpearson@lenovo.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 093/181] drm/amd: Revert "drm/amd/display: keep eDP Vdd on when eDP stream is already enabled"
-Date:   Mon, 27 Jun 2022 13:21:06 +0200
-Message-Id: <20220627111947.255307480@linuxfoundation.org>
+Subject: [PATCH 5.18 096/181] virtio_net: fix xdp_rxq_info bug after suspend/resume
+Date:   Mon, 27 Jun 2022 13:21:09 +0200
+Message-Id: <20220627111947.343327836@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,66 +52,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-[ Upstream commit 937e24b7f5595566a64e0f856ebab9147f2e4d1b ]
+[ Upstream commit 8af52fe9fd3bf5e7478da99193c0632276e1dfce ]
 
-A variety of Lenovo machines with Rembrandt APUs and OLED panels have
-stopped showing the display at login.  This behavior clears up after
-leaving it idle and moving the mouse or touching keyboard.
+The following sequence currently causes a driver bug warning
+when using virtio_net:
 
-It was bisected to be caused by commit 559e2655220d ("drm/amd/display:
-keep eDP Vdd on when eDP stream is already enabled").  Revert this commit
-to fix the issue.
+  # ip link set eth0 up
+  # echo mem > /sys/power/state (or e.g. # rtcwake -s 10 -m mem)
+  <resume>
+  # ip link set eth0 down
 
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/2047
-Reported-by: Aaron Ma <aaron.ma@canonical.com>
-Fixes: 559e2655220d ("drm/amd/display: keep eDP Vdd on when eDP stream is already enabled")
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Tested-by: Mark Pearson <markpearson@lenovo.com>
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+  Missing register, driver bug
+  WARNING: CPU: 0 PID: 375 at net/core/xdp.c:138 xdp_rxq_info_unreg+0x58/0x60
+  Call trace:
+   xdp_rxq_info_unreg+0x58/0x60
+   virtnet_close+0x58/0xac
+   __dev_close_many+0xac/0x140
+   __dev_change_flags+0xd8/0x210
+   dev_change_flags+0x24/0x64
+   do_setlink+0x230/0xdd0
+   ...
+
+This happens because virtnet_freeze() frees the receive_queue
+completely (including struct xdp_rxq_info) but does not call
+xdp_rxq_info_unreg(). Similarly, virtnet_restore() sets up the
+receive_queue again but does not call xdp_rxq_info_reg().
+
+Actually, parts of virtnet_freeze_down() and virtnet_restore_up()
+are almost identical to virtnet_close() and virtnet_open(): only
+the calls to xdp_rxq_info_(un)reg() are missing. This means that
+we can fix this easily and avoid such problems in the future by
+just calling virtnet_close()/open() from the freeze/restore handlers.
+
+Aside from adding the missing xdp_rxq_info calls the only difference
+is that the refill work is only cancelled if netif_running(). However,
+this should not make any functional difference since the refill work
+should only be active if the network interface is actually up.
+
+Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Link: https://lore.kernel.org/r/20220621114845.3650258-1-stephan.gerhold@kernkonzept.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../display/dc/dce110/dce110_hw_sequencer.c   | 24 ++-----------------
- 1 file changed, 2 insertions(+), 22 deletions(-)
+ drivers/net/virtio_net.c | 25 ++++++-------------------
+ 1 file changed, 6 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
-index 248602c15f3a..6007b847b54f 100644
---- a/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
-@@ -1771,29 +1771,9 @@ void dce110_enable_accelerated_mode(struct dc *dc, struct dc_state *context)
- 				break;
- 			}
- 		}
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index cbba9d2e8f32..10d548b07b9c 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -2768,7 +2768,6 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
+ static void virtnet_freeze_down(struct virtio_device *vdev)
+ {
+ 	struct virtnet_info *vi = vdev->priv;
+-	int i;
+ 
+ 	/* Make sure no work handler is accessing the device */
+ 	flush_work(&vi->config_work);
+@@ -2776,14 +2775,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
+ 	netif_tx_lock_bh(vi->dev);
+ 	netif_device_detach(vi->dev);
+ 	netif_tx_unlock_bh(vi->dev);
+-	cancel_delayed_work_sync(&vi->refill);
 -
--		/*
--		 * TO-DO: So far the code logic below only addresses single eDP case.
--		 * For dual eDP case, there are a few things that need to be
--		 * implemented first:
--		 *
--		 * 1. Change the fastboot logic above, so eDP link[0 or 1]'s
--		 * stream[0 or 1] will all be checked.
--		 *
--		 * 2. Change keep_edp_vdd_on to an array, and maintain keep_edp_vdd_on
--		 * for each eDP.
--		 *
--		 * Once above 2 things are completed, we can then change the logic below
--		 * correspondingly, so dual eDP case will be fully covered.
--		 */
--
--		// We are trying to enable eDP, don't power down VDD if eDP stream is existing
--		if ((edp_stream_num == 1 && edp_streams[0] != NULL) || can_apply_edp_fast_boot) {
-+		// We are trying to enable eDP, don't power down VDD
-+		if (can_apply_edp_fast_boot)
- 			keep_edp_vdd_on = true;
--			DC_LOG_EVENT_LINK_TRAINING("Keep eDP Vdd on\n");
--		} else {
--			DC_LOG_EVENT_LINK_TRAINING("No eDP stream enabled, turn eDP Vdd off\n");
+-	if (netif_running(vi->dev)) {
+-		for (i = 0; i < vi->max_queue_pairs; i++) {
+-			napi_disable(&vi->rq[i].napi);
+-			virtnet_napi_tx_disable(&vi->sq[i].napi);
 -		}
+-	}
++	if (netif_running(vi->dev))
++		virtnet_close(vi->dev);
+ }
+ 
+ static int init_vqs(struct virtnet_info *vi);
+@@ -2791,7 +2784,7 @@ static int init_vqs(struct virtnet_info *vi);
+ static int virtnet_restore_up(struct virtio_device *vdev)
+ {
+ 	struct virtnet_info *vi = vdev->priv;
+-	int err, i;
++	int err;
+ 
+ 	err = init_vqs(vi);
+ 	if (err)
+@@ -2800,15 +2793,9 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+ 	virtio_device_ready(vdev);
+ 
+ 	if (netif_running(vi->dev)) {
+-		for (i = 0; i < vi->curr_queue_pairs; i++)
+-			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+-				schedule_delayed_work(&vi->refill, 0);
+-
+-		for (i = 0; i < vi->max_queue_pairs; i++) {
+-			virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
+-			virtnet_napi_tx_enable(vi, vi->sq[i].vq,
+-					       &vi->sq[i].napi);
+-		}
++		err = virtnet_open(vi->dev);
++		if (err)
++			return err;
  	}
  
- 	// Check seamless boot support
+ 	netif_tx_lock_bh(vi->dev);
 -- 
 2.35.1
 
