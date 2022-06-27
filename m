@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22CBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7516FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235119AbiF0L1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
+        id S235164AbiF0L1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235099AbiF0L0l (ORCPT
+        with ESMTP id S235100AbiF0L0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:26:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A507DE8;
-        Mon, 27 Jun 2022 04:26:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D85D65A2;
+        Mon, 27 Jun 2022 04:26:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2716F61494;
-        Mon, 27 Jun 2022 11:26:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA0DAC3411D;
-        Mon, 27 Jun 2022 11:26:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F14DFB8111D;
+        Mon, 27 Jun 2022 11:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DAD6C3411D;
+        Mon, 27 Jun 2022 11:26:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329181;
-        bh=LLzPG23zo9T/7uQSdcduFmQ1qDCPxAi1LOn2QxtTcbg=;
+        s=korg; t=1656329184;
+        bh=XkIjSxMD1GD+nza+SZHqB4Fp59xxgyuTjT9wzg63mY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jIFi1AHi7pG710RMYRVehNgPM7ReRUi1wOKXhHJ5g8EA4SQXJvnhtireUiDAkyShh
-         dRsQO3MH9Fmqngdrc3WGb26Zg4Cli9lfQPde4b1v6YaDSGKueYUFk7U4OiC2og9sRv
-         QPn7O99zmAyKuD92u3+a2pPnvego5O5XD0t307tc=
+        b=sNBm2t96gmf3a9HaUX5B0XwzL17WcBOIQ0eBuevkP1Wl6WszD8V8DCGfcuVXRj79a
+         2BUZ3kOaOESQBCG77DgellC56NT6n5dqMlOWQ8E+4RwDzO8DPEdc+UCFN0R3YMsrCM
+         Gtua6RYbe3u6mYOHcuu2MVfqzoXYwv9Q9dC01ONE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Hans de Goede <hdegoede@redhat.com>, Stable@vger.kernel.org,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 076/102] iio: accel: mma8452: ignore the return value of reset operation
-Date:   Mon, 27 Jun 2022 13:21:27 +0200
-Message-Id: <20220627111935.723702026@linuxfoundation.org>
+Subject: [PATCH 5.10 077/102] iio: gyro: mpu3050: Fix the error handling in mpu3050_power_up()
+Date:   Mon, 27 Jun 2022 13:21:28 +0200
+Message-Id: <20220627111935.752615960@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -49,44 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit bf745142cc0a3e1723f9207fb0c073c88464b7b4 upstream.
+commit b2f5ad97645e1deb5ca9bcb7090084b92cae35d2 upstream.
 
-On fxls8471, after set the reset bit, the device will reset immediately,
-will not give ACK. So ignore the return value of this reset operation,
-let the following code logic to check whether the reset operation works.
+The driver should disable regulators when fails at regmap_update_bits().
 
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Fixes: ecabae713196 ("iio: mma8452: Initialise before activating")
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/1655292718-14287-1-git-send-email-haibo.chen@nxp.com
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Cc: <Stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220510092431.1711284-1-zheyuma97@gmail.com
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/accel/mma8452.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/iio/gyro/mpu3050-core.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1496,10 +1496,14 @@ static int mma8452_reset(struct i2c_clie
- 	int i;
- 	int ret;
- 
--	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
-+	/*
-+	 * Find on fxls8471, after config reset bit, it reset immediately,
-+	 * and will not give ACK, so here do not check the return value.
-+	 * The following code will read the reset register, and check whether
-+	 * this reset works.
-+	 */
-+	i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG2,
- 					MMA8452_CTRL_REG2_RST);
--	if (ret < 0)
--		return ret;
- 
- 	for (i = 0; i < 10; i++) {
- 		usleep_range(100, 200);
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -872,6 +872,7 @@ static int mpu3050_power_up(struct mpu30
+ 	ret = regmap_update_bits(mpu3050->map, MPU3050_PWR_MGM,
+ 				 MPU3050_PWR_MGM_SLEEP, 0);
+ 	if (ret) {
++		regulator_bulk_disable(ARRAY_SIZE(mpu3050->regs), mpu3050->regs);
+ 		dev_err(mpu3050->dev, "error setting power mode\n");
+ 		return ret;
+ 	}
 
 
