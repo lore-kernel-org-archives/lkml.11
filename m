@@ -2,103 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A77F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234943AbiF0LZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
+        id S234969AbiF0LZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234852AbiF0LZC (ORCPT
+        with ESMTP id S234853AbiF0LZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:25:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE23565A4;
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE30C65A5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:25:00 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id 65so8691435pfw.11
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:25:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=oXn3wWbVxQI6jCo/9N11UZ5IVbNzRYO/KcWY9DeSESE=;
+        b=YnPlXzKkEPch/sWHvGKsHeXpd88h+buPua0eN4oyDaqM34DNBm0PGwC+tZGTzDadAh
+         8Wr4EbkdVWgOXhwf9B9sm20t0EpfN6y1ybvTGdiQLTO4MaIgo+ruM/RZ3UNuEaqt4yfk
+         FvtJA6z6WkBX3v0VX40F+SeECrOgZaRAAtYfU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=oXn3wWbVxQI6jCo/9N11UZ5IVbNzRYO/KcWY9DeSESE=;
+        b=G+0sjPRZPQr/6V+0U74YdbKOGEJ2QnEmBQDQ6ofQqOk90L7t4oTKSnVsPdycVRdC6x
+         t05AZu0UnUtPKsnvlgnM9mkrvo59pAgQCiyKV0Ky2yKw1xUDS7fqg2aZ8zGB1I3VgQzC
+         QKVwS/hLtqA8SV+gdXoBnyIGFQ68tMqFRBTBMG6wycaguyeAU+l9eG8omV5EBP3lckL5
+         ozi/KluYSIXTFRYPhwgaaG71DmTylpl+NHH0L7JAT0KYjmBXF84y0l0nAFwm3ZfWgzKa
+         N5/TuCPje/nyB1DFk8oo9WDA4AJYIHi7zOs2cSt0adnFNc4A3MiuTXYEF00eOzFxSXcC
+         8vuQ==
+X-Gm-Message-State: AJIora9XGWCmLYv7Nnq38rYxvwT39KWepysUrVIOPWu7xORDWHKz/bVC
+        0/c7KMKHkz77Cyy9i9mRhB0mXg==
+X-Google-Smtp-Source: AGRyM1vaMaOkFM2pCPF4KFwOkt5DhQveHKus1rkl2C7vQO6ZDwtPdPvhygvlqcvYA0FYizMxom86mQ==
+X-Received: by 2002:a05:6a00:2187:b0:50c:ef4d:ef3b with SMTP id h7-20020a056a00218700b0050cef4def3bmr14510434pfi.83.1656329100033;
         Mon, 27 Jun 2022 04:25:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 269EEB81131;
-        Mon, 27 Jun 2022 11:24:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E158C341CE;
-        Mon, 27 Jun 2022 11:24:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329097;
-        bh=imWpLDIsJjUTNYncTyKlDjjIaGoQwmFKsOjWoAA651Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MP1FFCYMWpj3Yk48aFT6KPYNf24BUpSGvu4qpPxhA1KeQtg/EPP2ZwNa4Ie280ZxM
-         yKHdXv6LL2NOG8schf2R2yQTE7iat5Zf5yHfUtoG7b3u7ktQjFEYtZQxz0irvQSUZ0
-         axbGQfGz8xNmgglv45lD66PsdOnMbAmtBffm2dG4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 050/102] regmap-irq: Fix a bug in regmap_irq_enable() for type_in_mask chips
-Date:   Mon, 27 Jun 2022 13:21:01 +0200
-Message-Id: <20220627111934.957104272@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
-References: <20220627111933.455024953@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:2dc1:c31b:b5ed:f3aa])
+        by smtp.gmail.com with ESMTPSA id lj4-20020a17090b344400b001ece32cbec9sm9246889pjb.24.2022.06.27.04.24.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 04:24:59 -0700 (PDT)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Chen-Yu Tsai <wenst@chromium.org>, linux-media@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>
+Subject: [PATCH 1/4] media: mediatek: vcodec: dec: Fix 4K frame size enumeration
+Date:   Mon, 27 Jun 2022 19:23:59 +0800
+Message-Id: <20220627112402.2332046-2-wenst@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+In-Reply-To: <20220627112402.2332046-1-wenst@chromium.org>
+References: <20220627112402.2332046-1-wenst@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+This partially reverts commit b018be06f3c7 ("media: mediatek: vcodec:
+Read max resolution from dec_capability"). In this commit, the maximum
+resolution ended up being a function of both the firmware capability and
+the current set format.
 
-[ Upstream commit 485037ae9a095491beb7f893c909a76cc4f9d1e7 ]
+However, frame size enumeration for output (coded) formats should not
+depend on the format set, but should return supported resolutions for
+the format requested by userspace.
 
-When enabling a type_in_mask irq, the type_buf contents must be
-AND'd with the mask of the IRQ we're enabling to avoid enabling
-other IRQs by accident, which can happen if several type_in_mask
-irqs share a mask register.
+Fix this so that the driver returns the supported resolutions correctly,
+even if the instance only has default settings, or if the output format
+is currently set to VP8F, which does not support 4K.
 
-Fixes: bc998a730367 ("regmap: irq: handle HW using separate rising/falling edge interrupts")
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Link: https://lore.kernel.org/r/20220620200644.1961936-2-aidanmacdonald.0x0@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b018be06f3c7 ("media: mediatek: vcodec: Read max resolution from dec_capability")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 ---
- drivers/base/regmap/regmap-irq.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c    | 2 --
+ .../platform/mediatek/vcodec/mtk_vcodec_dec_stateless.c    | 7 +++++++
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
-index 87c5c421e0f4..4466f8bdab2e 100644
---- a/drivers/base/regmap/regmap-irq.c
-+++ b/drivers/base/regmap/regmap-irq.c
-@@ -220,6 +220,7 @@ static void regmap_irq_enable(struct irq_data *data)
- 	struct regmap_irq_chip_data *d = irq_data_get_irq_chip_data(data);
- 	struct regmap *map = d->map;
- 	const struct regmap_irq *irq_data = irq_to_regmap_irq(d, data->hwirq);
-+	unsigned int reg = irq_data->reg_offset / map->reg_stride;
- 	unsigned int mask, type;
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+index 5d6fdf18c3a6..fcb4b8131c49 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+@@ -595,8 +595,6 @@ static int vidioc_enum_framesizes(struct file *file, void *priv,
+ 		fsize->type = V4L2_FRMSIZE_TYPE_STEPWISE;
+ 		fsize->stepwise = dec_pdata->vdec_framesizes[i].stepwise;
  
- 	type = irq_data->type.type_falling_val | irq_data->type.type_rising_val;
-@@ -236,14 +237,14 @@ static void regmap_irq_enable(struct irq_data *data)
- 	 * at the corresponding offset in regmap_irq_set_type().
- 	 */
- 	if (d->chip->type_in_mask && type)
--		mask = d->type_buf[irq_data->reg_offset / map->reg_stride];
-+		mask = d->type_buf[reg] & irq_data->mask;
- 	else
- 		mask = irq_data->mask;
+-		fsize->stepwise.max_width = ctx->max_width;
+-		fsize->stepwise.max_height = ctx->max_height;
+ 		mtk_v4l2_debug(1, "%x, %d %d %d %d %d %d",
+ 				ctx->dev->dec_capability,
+ 				fsize->stepwise.min_width,
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_stateless.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_stateless.c
+index 16d55785d84b..9a4d3e3658aa 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_stateless.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_stateless.c
+@@ -360,6 +360,13 @@ static void mtk_vcodec_add_formats(unsigned int fourcc,
  
- 	if (d->chip->clear_on_unmask)
- 		d->clear_status = true;
- 
--	d->mask_buf[irq_data->reg_offset / map->reg_stride] &= ~mask;
-+	d->mask_buf[reg] &= ~mask;
- }
- 
- static void regmap_irq_disable(struct irq_data *data)
+ 		mtk_vdec_framesizes[count_framesizes].fourcc = fourcc;
+ 		mtk_vdec_framesizes[count_framesizes].stepwise = stepwise_fhd;
++		if (!(ctx->dev->dec_capability & VCODEC_CAPABILITY_4K_DISABLED) &&
++		    fourcc != V4L2_PIX_FMT_VP8_FRAME) {
++			mtk_vdec_framesizes[count_framesizes].stepwise.max_width =
++				VCODEC_DEC_4K_CODED_WIDTH;
++			mtk_vdec_framesizes[count_framesizes].stepwise.max_height =
++				VCODEC_DEC_4K_CODED_HEIGHT;
++		}
+ 		num_framesizes++;
+ 		break;
+ 	case V4L2_PIX_FMT_MM21:
 -- 
-2.35.1
-
-
+2.37.0.rc0.161.g10f37bed90-goog
 
