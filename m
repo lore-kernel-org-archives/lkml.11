@@ -2,65 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E82C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B33C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240849AbiF0UD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 16:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44460 "EHLO
+        id S240853AbiF0UD3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 16:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240793AbiF0UDR (ORCPT
+        with ESMTP id S240804AbiF0UDT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 16:03:17 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993661A042
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:16 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id u189so14353668oib.4
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:16 -0700 (PDT)
+        Mon, 27 Jun 2022 16:03:19 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780EC1A056
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:17 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id e131so14283153oif.13
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VPBtP8O1NCKFrWC7IwgvW5NewXUbLSOkqLdfABadWfA=;
-        b=dMgUYGh2K6cZb8P/yVnlDCfIIBO4RQ5LhVIgqL/WxRpqdgd3G7SCZ5AplYWN4ApqBW
-         F9DmVWEYl2Qv3SLwS8kGyroPCMlprCEfzLi/8/1eDVvtU3d6+9JlhzgXj3yFbDa+WYFO
-         PMbbZcB1v1730V7ti1bziaPqehnXoEU/MLSO1zO92d2LOpXWzW2XJTVz5PRPLci00xDa
-         M7RDAgDR71DkhYG284F8/adT2lqoRsbc9v76ijNfGNiCRm4SsQZqK0jsYzx/hr1grk2J
-         mrZPt9QdmYAiVqKAIPl2Ocje3H1+3QBUoRioovdtbZm0oTfpw1eLaPtGas01gTf08Lnf
-         M+0A==
+        bh=UhPhl+t5/ktAw8kSs3VVHsTa2VujQ4O2ZgSbpa+CTK8=;
+        b=wo6k1nvz2uAijMO/X2kzzMChd0/6KzyQXO2e+Y1CE5FncOKxMZFzEPzPaaBoWwDMJf
+         CC0Q6rWWmtRXEXZ8XC0TdzI9DBcKTlTRUIgd8NH2hHRavpKbC88uftAEqP0FdPzV9cDh
+         vNk8P+yLmimbZmwuivS5Ia04qxZ65t4WXQYjI4t+wn6v0nLLeQ1XUP2FGQwn3i0SOh/C
+         ip5UFuSd02tKk4L/9gLFoRM3dRl8MUcDObFV/pMB7QDL4IasCF5aIPORT6qw9yzXeOKL
+         /G+1ZpOuQO6EJDs/MlMzJTHkuXg5kGXtJlEsyruF17NlQL9nXV1eIAAqBzWML5OQcnvW
+         oosg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VPBtP8O1NCKFrWC7IwgvW5NewXUbLSOkqLdfABadWfA=;
-        b=EsXsxZb2+erndxmYnyuRo8Dppe1SHpVTqMB2+qzRdS64sp9OIH9vOIf+AzQ+wbpY6a
-         cyyYyF2t5kyFlR/jQ6ynhF6lyET0R0i40fohEusYogx52m9fYoJr2l5UdvjsleocAHqm
-         ofNhBaeYgZ1DtLh+sxZlPa/ddBbxyfmiarG//8RzrsHpmDxR8J0d9kUVaNmt2cy+JhCF
-         BPNY+4zJk0SbwAULgNwlEzwEbVtP8sAv+mHnWDck9dXNUsgZSCkKri08VL8NXBgrfolo
-         atVhPyPWGxkQodOHRGUmaDJKdzoLhxLbyxaKvp3wodQKkLPq0N7j2aPhhMxEBSTnfo/X
-         ZwFg==
-X-Gm-Message-State: AJIora8KVXPuRuRKK5wRZZBKoBIR0z1q4cMwCtPBC4z8YDuGhNR5B4Y1
-        E24PdLvFbGgqQi7aOVR3AO432Q==
-X-Google-Smtp-Source: AGRyM1vDmJmYyWM+kHHBQQayL5p1IvECtpBdyHBZN+PEmWbH8Oe2DldM+0bzJ28PnxHnyrlC/qP9cA==
-X-Received: by 2002:a05:6808:f12:b0:32f:7be5:9d5a with SMTP id m18-20020a0568080f1200b0032f7be59d5amr12135239oiw.150.1656360195862;
-        Mon, 27 Jun 2022 13:03:15 -0700 (PDT)
+        bh=UhPhl+t5/ktAw8kSs3VVHsTa2VujQ4O2ZgSbpa+CTK8=;
+        b=7QjgnSYU4b+ZX3oza+gtiNaCjomD3OgMKDR2NJGh91uHv8AmRXm7Ktu+kDbJqxJhRm
+         qhumTf+PLL9Bn0qWoaWEh2grt2VzzJf4T8y+sFh2alsBSDUB36o/MSq/dOR9sbSunEkw
+         NQ+cqEfCr+L9MBI9JiGjsqJ34A3D0Mf1FHzkctsSkfR3QkApHG2HHPdyv+Pnb6fw157Y
+         4flMox2JoBXwfVEsZtDEcJRRGM8E19ny6dsR5prb0530iUyND/bUYQB3wXOSsumBeu+2
+         9FZVWeMv8v7zn7PAvR6NTAfm4HUklLF8SQmNZvedvbn0lIpdsEVtH9/fJ0/eRob6gljK
+         BxUA==
+X-Gm-Message-State: AJIora8c/vmhAd7E91grQXX4H+HWJTgSsa3gFGDh1AccMvIrsFc8O/jt
+        LyPeNQmbTTtNQF26y7l0j4ZQrw==
+X-Google-Smtp-Source: AGRyM1se0SWBIF0TKW3xdl58Pn1tRqQwQ5vhssxGx+H/Jb8lwDq6ufWHQ1lzQZ06XrUuuwvFLMqHcQ==
+X-Received: by 2002:a05:6808:3096:b0:335:796f:abc2 with SMTP id bl22-20020a056808309600b00335796fabc2mr3044152oib.173.1656360197115;
+        Mon, 27 Jun 2022 13:03:17 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id m16-20020a4a9510000000b0041bdf977c6dsm6428729ooi.31.2022.06.27.13.03.14
+        by smtp.gmail.com with ESMTPSA id m16-20020a4a9510000000b0041bdf977c6dsm6428729ooi.31.2022.06.27.13.03.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 13:03:15 -0700 (PDT)
+        Mon, 27 Jun 2022 13:03:16 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Douglas Anderson <dianders@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        mka@chromium.org, swboyd@chromium.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+Cc:     linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        linux-arm-msm@vger.kernel.org, quic_khsieh@quicinc.com,
+        quic_sbillaka@quicinc.com, Rob Herring <robh+dt@kernel.org>,
+        quic_aravindh@quicinc.com, devicetree@vger.kernel.org,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>
-Subject: Re: (subset) [PATCH] arm64: dts: qcom: sc7280: Set SPI flash to 50 MHz for herobrine boards
-Date:   Mon, 27 Jun 2022 15:02:37 -0500
-Message-Id: <165636016348.3080661.18047211127885086217.b4-ty@linaro.org>
+        Matthias Kaehlcke <mka@chromium.org>,
+        quic_abhinavk@quicinc.com, Stephen Boyd <swboyd@chromium.org>
+Subject: Re: (subset) [PATCH] arm64: qcom: sc7280-herobrine: Enable DP
+Date:   Mon, 27 Jun 2022 15:02:38 -0500
+Message-Id: <165636016348.3080661.15532387701959292161.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220505161425.1.Icf6f3796d2fa122b4c0566d9317b461bfbc24b7f@changeid>
-References: <20220505161425.1.Icf6f3796d2fa122b4c0566d9317b461bfbc24b7f@changeid>
+In-Reply-To: <20220513065704.1.I9b9b9d4d1a3e0350a89221892261881a1771ad15@changeid>
+References: <20220513065704.1.I9b9b9d4d1a3e0350a89221892261881a1771ad15@changeid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -68,20 +70,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022 16:14:30 -0700, Douglas Anderson wrote:
-> sc7280-herobrine based boards are specced to be able to access their
-> SPI flash at 50 MHz with the drive strength of the pins set at 8. The
-> drive strength is already set to 8 in "sc7280-herobrine.dtsi", so
-> let's bump up the clock. The matching firmware change for this is at:
+On Fri, 13 May 2022 06:57:14 -0700, Douglas Anderson wrote:
+> This enables DisplayPort for herobrine boards.
 > 
-> https://review.coreboot.org/c/coreboot/+/63948
 > 
-> [...]
 
 Applied, thanks!
 
-[1/1] arm64: dts: qcom: sc7280: Set SPI flash to 50 MHz for herobrine boards
-      commit: d756a0b29f4013badc9d3b4ee7c24d4a700cbac9
+[1/1] arm64: qcom: sc7280-herobrine: Enable DP
+      commit: 4ab03ef8b33c2c80ac39da32c05f90f594b32e79
 
 Best regards,
 -- 
