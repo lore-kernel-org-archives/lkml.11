@@ -2,77 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F38C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 18:39:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BF9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 18:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236780AbiF0Sj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 14:39:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35198 "EHLO
+        id S237562AbiF0Sjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 14:39:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240402AbiF0Si3 (ORCPT
+        with ESMTP id S240569AbiF0Si3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 14:38:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D7F2FD;
-        Mon, 27 Jun 2022 11:38:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4E09615AE;
-        Mon, 27 Jun 2022 18:38:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1B9DC3411D;
-        Mon, 27 Jun 2022 18:38:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656355101;
-        bh=tpQhZQHIo3oAgckmaPgCZ4BNKAUK0XRiFuSAp70Cu8c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VTkRYWDjjVYa94ZaBuyuEozvQwpkROiN+nTDgabfp2ZHC/cee2Hx8BHgw1+hytmj6
-         sEoo/0DTgdMw35V5KIXKGb/BvgMC6OnHs9LZhmuT/3JTcODy6ENw+XyScjZAatC/oH
-         tHRNBiKZmg9p5Du1OBbQnRg5N/QrEB/J+B5w+fpZVtoMNgYhrfpvo4y8V1+/Nn/njU
-         uAGEcVETRgXf94TzYpa3HjRdW3Ihx9HJq4Fe2lo4fdGw8rW4rawyvAk/0OCvukW1ZR
-         lIvo/+fDZ226OOEky0wzu5BnRo6whDVUE9/X0njAvotepWFidSZWqw75CwqOxc0PEb
-         JL7WIM+kIENfg==
-Date:   Mon, 27 Jun 2022 11:38:12 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Praghadeesh T K S <praghadeeshthevendria@gmail.com>,
-        Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
-        praghadeeshtks@zohomail.in,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: Re: [PATCH] net: ethernet/nvidia: fix possible condition with no
- effect
-Message-ID: <20220627113812.08ae31f0@kernel.org>
-In-Reply-To: <Yrg+NZHBNcu3KFXn@lunn.ch>
-References: <20220626103539.80283-1-praghadeeshthevendria@gmail.com>
-        <Yrg+NZHBNcu3KFXn@lunn.ch>
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D9AF6F
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 11:37:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656355066; x=1687891066;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=T4uuBvNFjKg6EDQsHBWofjo+hbh+hcjj0XNxkBhknC4=;
+  b=f9cMTRGU9KIMPaG4EKhTmkh5TibjS3BibQwzEl/Reve7s/b+mR7YqZdk
+   pg516EjwnMrnZrc3iYCDFFK7FDBQd7qMwymjQIn5rZpWwpwmZm1wSVsx8
+   DZYMH1NY41vDqRiyv54mdKyPHwORSgcFFX88pOfo7cFKdBS5rpZsUoMzY
+   4stE6Ucnixklt+TFQ5FeppT/YHeuo+mWRLCsBv+X1rfQhZ/Y+9IkCgV09
+   HWX13YyhodwGI0hoEMukMZmZsGQPQXzgGMYvxJR1bz3qzHZoeyGB6wMoH
+   u/DjnkwjfijH/boxiju01rY6bQww5F+3CTWNoryIiXLUug8Rx9hkwvgB7
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="345532082"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="345532082"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 11:37:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="692738465"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 27 Jun 2022 11:37:44 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o5tcF-0008s0-Fz;
+        Mon, 27 Jun 2022 18:37:43 +0000
+Date:   Tue, 28 Jun 2022 02:36:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Frank Li <Frank.Li@nxp.com>
+Cc:     kbuild-all@lists.01.org, linux-ntb@googlegroups.com,
+        linux-kernel@vger.kernel.org, Jon Mason <jdmason@kudzu.us>
+Subject: [jonmason-ntb:ntb-next 6/8] pci-epf-vntb.c:undefined reference to
+ `ntb_db_event'
+Message-ID: <202206280254.MJOpIIDp-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 26 Jun 2022 13:08:37 +0200 Andrew Lunn wrote:
-> On Sun, Jun 26, 2022 at 10:35:39AM +0000, Praghadeesh T K S wrote:
-> > Fix Coccinelle bug, removed condition with no effect.  
-> 
-> This is not a coccinelle bug. If it was, you would be patching
-> coccinelle, not the kernel.
+tree:   https://github.com/jonmason/ntb ntb-next
+head:   0c4b285d9636cc850f55151fa6a250dd131e5192
+commit: ff32fac00d97661c715ee47bbfd867cae1f3aaf8 [6/8] NTB: EPF: support NTB transfer between PCI RC and EP connection
+config: arm64-randconfig-s031-20220627 (https://download.01.org/0day-ci/archive/20220628/202206280254.MJOpIIDp-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-31-g4880bd19-dirty
+        # https://github.com/jonmason/ntb/commit/ff32fac00d97661c715ee47bbfd867cae1f3aaf8
+        git remote add jonmason-ntb https://github.com/jonmason/ntb
+        git fetch --no-tags jonmason-ntb ntb-next
+        git checkout ff32fac00d97661c715ee47bbfd867cae1f3aaf8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-I'd say the commit message is better than the commit ;)
-Praghadeesh, could you fix Coccinelle to avoid matching:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-	if (/* case 1 */) {
-		/* BLOCK 1*/
-	} else (/* case 2 */ {
-		/* BLOCK 2 */
-	} else {
-		/* default == BLOCK 2 */
-	}
+All errors (new ones prefixed by >>):
 
-Because 99% of the time that construct is intentional.
+   aarch64-linux-ld: Unexpected GOT/PLT entries detected!
+   aarch64-linux-ld: Unexpected run-time procedure linkages detected!
+   aarch64-linux-ld: ID map text too big or misaligned
+   aarch64-linux-ld: drivers/pci/endpoint/functions/pci-epf-vntb.o: in function `epf_ntb_cmd_handler':
+>> pci-epf-vntb.c:(.text+0x3b8): undefined reference to `ntb_db_event'
+>> aarch64-linux-ld: pci-epf-vntb.c:(.text+0x464): undefined reference to `ntb_link_event'
+   aarch64-linux-ld: pci-epf-vntb.c:(.text+0x4cc): undefined reference to `ntb_link_event'
+   aarch64-linux-ld: drivers/pci/endpoint/functions/pci-epf-vntb.o: in function `pci_vntb_probe':
+>> pci-epf-vntb.c:(.text+0xf80): undefined reference to `ntb_register_device'
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
