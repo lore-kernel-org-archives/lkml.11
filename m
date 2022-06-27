@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D63EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237873AbiF0LrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
+        id S237659AbiF0LrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237443AbiF0Lmw (ORCPT
+        with ESMTP id S237467AbiF0Lmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A5AB57;
-        Mon, 27 Jun 2022 04:38:09 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F6DF67;
+        Mon, 27 Jun 2022 04:38:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 253A6B8111B;
-        Mon, 27 Jun 2022 11:38:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 751CDC3411D;
-        Mon, 27 Jun 2022 11:38:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 370126114D;
+        Mon, 27 Jun 2022 11:38:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4864FC341C8;
+        Mon, 27 Jun 2022 11:38:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329886;
-        bh=9aZEGUQibBiqqRr/XjEunyBYaZq138HKoLBe9gy5Q0Q=;
+        s=korg; t=1656329898;
+        bh=TiybJzSVz8izLkFtpH1FLS4k+JLx8oS7oe9r0JDSkBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0uu7Su1fWjNLQuQkE4ShKQu+JYVR9xuxM3p8r5pHjZh1Y3zalNhXsPxtaXf1oYjYZ
-         KQt1/x6wQ+qSc3wYeNIswR0+O8wksiiQEjK0TPZ8G97yAbF18UA+XTwWKPYK1sPyXj
-         k2aQms5eoABi60Qq28kkKV/xpW1S+ltS5DJ4OSdQ=
+        b=IT+7hB30Lh3/VD/YHoC6cDlMXvDa6aKX/7eVUWV7mriJzVApdqFAlgAA2xlR52v20
+         fr4oAU23gC4n4MSgYFWWmAaUEJvpxPTxG6VBTJLbbDJa67cVV5+1znM4aD30yrHIdZ
+         pfc0bTVumWRngx/YQ6+zDnuJOFgZY6vsudk14i/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Carlos Llamas <cmllamas@google.com>,
-        Riccardo Paolo Bestetti <pbl@bestov.io>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.18 013/181] ipv4: ping: fix bind address validity check
-Date:   Mon, 27 Jun 2022 13:19:46 +0200
-Message-Id: <20220627111944.947533207@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Dominique Martinet <asmadeus@codewreck.org>
+Subject: [PATCH 5.18 017/181] 9p: fix EBADF errors in cached mode
+Date:   Mon, 27 Jun 2022 13:19:50 +0200
+Message-Id: <20220627111945.062546213@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,124 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Riccardo Paolo Bestetti <pbl@bestov.io>
+From: Dominique Martinet <asmadeus@codewreck.org>
 
-commit b4a028c4d031c27704ad73b1195ca69a1206941e upstream.
+commit b0017602fdf6bd3f344dd49eaee8b6ffeed6dbac upstream.
 
-Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-introduced a helper function to fold duplicated validity checks of bind
-addresses into inet_addr_valid_or_nonlocal(). However, this caused an
-unintended regression in ping_check_bind_addr(), which previously would
-reject binding to multicast and broadcast addresses, but now these are
-both incorrectly allowed as reported in [1].
+cached operations sometimes need to do invalid operations (e.g. read
+on a write only file)
+Historic fscache had added a "writeback fid", a special handle opened
+RW as root, for this. The conversion to new fscache missed that bit.
 
-This patch restores the original check. A simple reordering is done to
-improve readability and make it evident that multicast and broadcast
-addresses should not be allowed. Also, add an early exit for INADDR_ANY
-which replaces lost behavior added by commit 0ce779a9f501 ("net: Avoid
-unnecessary inet_addr_type() call when addr is INADDR_ANY").
+This commit reinstates a slightly lesser variant of the original code
+that uses the writeback fid for partial pages backfills if the regular
+user fid had been open as WRONLY, and thus would lack read permissions.
 
-Furthermore, this patch introduces regression selftests to catch these
-specific cases.
-
-[1] https://lore.kernel.org/netdev/CANP3RGdkAcDyAZoT1h8Gtuu0saq+eOrrTiWbxnOs+5zn+cpyKg@mail.gmail.com/
-
-Fixes: 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-Cc: Miaohe Lin <linmiaohe@huawei.com>
-Reported-by: Maciej Żenczykowski <maze@google.com>
-Signed-off-by: Carlos Llamas <cmllamas@google.com>
-Signed-off-by: Riccardo Paolo Bestetti <pbl@bestov.io>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lkml.kernel.org/r/20220614033802.1606738-1-asmadeus@codewreck.org
+Fixes: eb497943fa21 ("9p: Convert to using the netfs helper lib to do reads and caching")
+Cc: stable@vger.kernel.org
+Cc: David Howells <dhowells@redhat.com>
+Reported-By: Christian Schoenebeck <linux_oss@crudebyte.com>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+Tested-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ping.c                           |   10 ++++++---
- tools/testing/selftests/net/fcnal-test.sh |   33 ++++++++++++++++++++++++++++++
- 2 files changed, 40 insertions(+), 3 deletions(-)
+ fs/9p/vfs_addr.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -319,12 +319,16 @@ static int ping_check_bind_addr(struct s
- 		pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
- 			 sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
+--- a/fs/9p/vfs_addr.c
++++ b/fs/9p/vfs_addr.c
+@@ -58,8 +58,21 @@ static void v9fs_issue_read(struct netfs
+  */
+ static int v9fs_init_request(struct netfs_io_request *rreq, struct file *file)
+ {
++	struct inode *inode = file_inode(file);
++	struct v9fs_inode *v9inode = V9FS_I(inode);
+ 	struct p9_fid *fid = file->private_data;
  
-+		if (addr->sin_addr.s_addr == htonl(INADDR_ANY))
-+			return 0;
++	BUG_ON(!fid);
 +
- 		tb_id = l3mdev_fib_table_by_index(net, sk->sk_bound_dev_if) ? : tb_id;
- 		chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr, tb_id);
- 
--		if (!inet_addr_valid_or_nonlocal(net, inet_sk(sk),
--					         addr->sin_addr.s_addr,
--	                                         chk_addr_ret))
-+		if (chk_addr_ret == RTN_MULTICAST ||
-+		    chk_addr_ret == RTN_BROADCAST ||
-+		    (chk_addr_ret != RTN_LOCAL &&
-+		     !inet_can_nonlocal_bind(net, isk)))
- 			return -EADDRNOTAVAIL;
- 
- #if IS_ENABLED(CONFIG_IPV6)
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -70,6 +70,10 @@ NSB_LO_IP6=2001:db8:2::2
- NL_IP=172.17.1.1
- NL_IP6=2001:db8:4::1
- 
-+# multicast and broadcast addresses
-+MCAST_IP=224.0.0.1
-+BCAST_IP=255.255.255.255
++	/* we might need to read from a fid that was opened write-only
++	 * for read-modify-write of page cache, use the writeback fid
++	 * for that */
++	if (rreq->origin == NETFS_READ_FOR_WRITE &&
++			(fid->mode & O_ACCMODE) == O_WRONLY) {
++		fid = v9inode->writeback_fid;
++		BUG_ON(!fid);
++	}
 +
- MD5_PW=abc123
- MD5_WRONG_PW=abc1234
- 
-@@ -308,6 +312,9 @@ addr2str()
- 	127.0.0.1) echo "loopback";;
- 	::1) echo "IPv6 loopback";;
- 
-+	${BCAST_IP}) echo "broadcast";;
-+	${MCAST_IP}) echo "multicast";;
-+
- 	${NSA_IP})	echo "ns-A IP";;
- 	${NSA_IP6})	echo "ns-A IPv6";;
- 	${NSA_LO_IP})	echo "ns-A loopback IP";;
-@@ -1801,6 +1808,19 @@ ipv4_addr_bind_novrf()
- 	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after device bind"
- 
- 	#
-+	# check that ICMP sockets cannot bind to broadcast and multicast addresses
-+	#
-+	a=${BCAST_IP}
-+	log_start
-+	run_cmd nettest -s -R -P icmp -l ${a} -b
-+	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address"
-+
-+	a=${MCAST_IP}
-+	log_start
-+	run_cmd nettest -s -R -P icmp -f -l ${a} -b
-+	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address"
-+
-+	#
- 	# tcp sockets
- 	#
- 	a=${NSA_IP}
-@@ -1858,6 +1878,19 @@ ipv4_addr_bind_vrf()
- 	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after VRF bind"
- 
- 	#
-+	# check that ICMP sockets cannot bind to broadcast and multicast addresses
-+	#
-+	a=${BCAST_IP}
-+	log_start
-+	run_cmd nettest -s -R -P icmp -l ${a} -I ${VRF} -b
-+	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address after VRF bind"
-+
-+	a=${MCAST_IP}
-+	log_start
-+	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
-+	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address after VRF bind"
-+
-+	#
- 	# tcp sockets
- 	#
- 	for a in ${NSA_IP} ${VRF_IP}
+ 	refcount_inc(&fid->count);
+ 	rreq->netfs_priv = fid;
+ 	return 0;
 
 
