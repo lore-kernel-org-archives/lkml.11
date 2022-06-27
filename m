@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31EC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0887C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235993AbiF0Lf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
+        id S236195AbiF0LgC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236382AbiF0Ldp (ORCPT
+        with ESMTP id S236391AbiF0Ldp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:33:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0873B71;
-        Mon, 27 Jun 2022 04:31:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B2DDEC2;
+        Mon, 27 Jun 2022 04:31:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CA166150E;
-        Mon, 27 Jun 2022 11:31:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9196DC3411D;
-        Mon, 27 Jun 2022 11:31:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E54D3B81117;
+        Mon, 27 Jun 2022 11:31:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C507C3411D;
+        Mon, 27 Jun 2022 11:31:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329465;
-        bh=vgvNJrHBHS9C46/WmKV1U9Crcq8Uj+IGHmrgSflbAnM=;
+        s=korg; t=1656329467;
+        bh=e/p9Qnzdte42bO//Lf9lGQYdt2m/fhuBqKCHXUO+XQ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BY/HP/TYdDG9uB39Q3V6eH6cfR2FaF4nlbNDPZyfqLLIlqYQymKv3bFT27ugF8msh
-         a/kXwRO4HGL/1AgvLriQuuCoGrM7BSOaOcCvfnzRmjI50aJgUsm0hTklH4zMt/6dC4
-         Z3pdI+OZTeDIPISUeKtqfvNxQY4XzhOHMiZlYGxM=
+        b=X7st+W5ULUzGQabBRm7RA4QgiCFPG8FO1DH5gQnF2qnnImTrS2G8eM5PmkhwU8m+O
+         4leuDnMazKaVRHEq8edy3n37tucTuR84OVhwFwT5c/ycYh7qbe+UfWxC22IaNM4qaH
+         chAXTLLfvzgo/Jr+oZvSHOw0B09ZbZnFzHL5+hN8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.4 45/60] iio: adc: axp288: Override TS pin bias current for some models
-Date:   Mon, 27 Jun 2022 13:21:56 +0200
-Message-Id: <20220627111929.015392263@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 001/135] random: schedule mix_interrupt_randomness() less often
+Date:   Mon, 27 Jun 2022 13:20:08 +0200
+Message-Id: <20220627111938.197936912@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
-References: <20220627111927.641837068@linuxfoundation.org>
+In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
+References: <20220627111938.151743692@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,48 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 048058399f19d43cf21de9f5d36cd8144337d004 upstream.
+commit 534d2eaf1970274150596fdd2bf552721e65d6b2 upstream.
 
-Since commit 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling") we
-preserve the bias current set by the firmware at boot. This fixes issues
-we were seeing on various models.
+It used to be that mix_interrupt_randomness() would credit 1 bit each
+time it ran, and so add_interrupt_randomness() would schedule mix() to
+run every 64 interrupts, a fairly arbitrary number, but nonetheless
+considered to be a decent enough conservative estimate.
 
-Some models like the Nuvision Solo 10 Draw tablet actually need the
-old hardcoded 80ųA bias current for battery temperature monitoring
-to work properly.
+Since e3e33fc2ea7f ("random: do not use input pool from hard IRQs"),
+mix() is now able to credit multiple bits, depending on the number of
+calls to add(). This was done for reasons separate from this commit, but
+it has the nice side effect of enabling this patch to schedule mix()
+less often.
 
-Add a quirk entry for the Nuvision Solo 10 Draw to the DMI quirk table
-to restore setting the bias current to 80ųA on this model.
+Currently the rules are:
+a) Credit 1 bit for every 64 calls to add().
+b) Schedule mix() once a second that add() is called.
+c) Schedule mix() once every 64 calls to add().
 
-Fixes: 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling")
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215882
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220506095040.21008-1-hdegoede@redhat.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Rules (a) and (c) no longer need to be coupled. It's still important to
+have _some_ value in (c), so that we don't "over-saturate" the fast
+pool, but the once per second we get from rule (b) is a plenty enough
+baseline. So, by increasing the 64 in rule (c) to something larger, we
+avoid calling queue_work_on() as frequently during irq storms.
+
+This commit changes that 64 in rule (c) to be 1024, which means we
+schedule mix() 16 times less often. And it does *not* need to change the
+64 in rule (a).
+
+Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
+Cc: stable@vger.kernel.org
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/axp288_adc.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/adc/axp288_adc.c
-+++ b/drivers/iio/adc/axp288_adc.c
-@@ -196,6 +196,14 @@ static const struct dmi_system_id axp288
- 		},
- 		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
- 	},
-+	{
-+		/* Nuvision Solo 10 Draw */
-+		.matches = {
-+		  DMI_MATCH(DMI_SYS_VENDOR, "TMAX"),
-+		  DMI_MATCH(DMI_PRODUCT_NAME, "TM101W610L"),
-+		},
-+		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
-+	},
- 	{}
- };
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1000,7 +1000,7 @@ void add_interrupt_randomness(int irq)
+ 	if (new_count & MIX_INFLIGHT)
+ 		return;
  
+-	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
++	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
+ 		return;
+ 
+ 	if (unlikely(!fast_pool->mix.func))
 
 
