@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4184AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2E73C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238726AbiF0QUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        id S238441AbiF0QWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:22:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238381AbiF0QUK (ORCPT
+        with ESMTP id S236443AbiF0QWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:20:10 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217261164
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:20:09 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id g4so2652284pgc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:20:09 -0700 (PDT)
+        Mon, 27 Jun 2022 12:22:51 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A741F2660
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:22:50 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id b2so1616839plx.7
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:22:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=l6X68KuyBDU81KFCllZcPJCpgvdaKM9lp1nYP5LV1kY=;
-        b=QYuHqx8JmD3fGZhFw9UuYiMUgaHHG5YjGJZr+BhXEcVvOKmxYAAHNIYT4pML0YKcd9
-         UOpJZM3FxgCDYFkMEGVBOlFqLEi8hSMYRQnc+e7vRrYWrYSatKpLhI/fy9hbjAzv1Pnb
-         Fzbk/A5QTs7U7PdF27OM5n8DIpWN30JeOZDLCACOEVdlNkDU2Q35PBJKkpYSbiWrD6Tw
-         wUqWe7xVXLUA8Y8WFwrTpTXlCat4Ci9KWWfxvDWzzZ/KX8yqgOjmViXM2APbm4qweJdE
-         PTl/Ci9fvhKr/8UGP8qNqQ7aXyTDMrVnpzr/DD4SM5yQhjeV+eXwvVZzqlB5dla5a1gv
-         MANA==
+        bh=cV3hVzy9TYCqPFueATEq37SOh6vFTuLA/SrvAB62Xzg=;
+        b=BseriqoiozT548bWf87kfEM21QE/lsC7Xh53iRBx2LmFdeNav386MocuZafko2ZdzZ
+         JQe5ovxOhcstFhT8iCD21C825q81Za8C3tdgW13ebnSYPD7k8WHS3yPH0VHQSCGZnmQf
+         FicGbHrtEuD0O3jI+Q4LIietAgpYwoWp5qedMxPLBADENHHnn+UkkXouxHyxDA/j0F9g
+         moM6KAIDklQszHLohnncrg9SWHa8qDcecTbUS930nHP7JYFxSIbGRQKh+59wLE+AXy7E
+         fCLhJT8SPzPCj5eph3yGYAVFqleuzS1aYTb4Me1axhRhNHXk+NS3u9/PAs9nbb1c6HO+
+         fcfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=l6X68KuyBDU81KFCllZcPJCpgvdaKM9lp1nYP5LV1kY=;
-        b=D9F0fQ5TuEekbL+eVcfAM2dpiupfQdWFgdFbbhVRKr0HRc2INaNYIHeDvCLBBXxQns
-         0vPG2JbuH0yNcstp1RaGF8udKu++jBII7Q+z9LVzI1r8ZZ7ENyAmIuYbyflvYaxtAbYy
-         wfyHivoAOXWsYVoukkH0ZE1ZNXfINbc7Qz7+PRsYseZDmsFeyMgk5tTSRvpcQZisuwR7
-         A3lhG06tWDs4VtIDpuXAXLDa1CkaLIB43H/Jvf7om4bcZ7A+jrj/fNfO+QWW0ck5Ee4+
-         G5aUKlwtsFDNk0RVHPqjDtU5+YyOybXyhorm16ZTAMSj3gvxAh+ZHBC3wuRlf/Ty0eo4
-         EckQ==
-X-Gm-Message-State: AJIora+Z9PxXpwzcW3UMEQZ4aXAOs38UeXPLPm78NO2C49j71ObtTp9E
-        X9353bcEyRZVyVDg+KK+YM8iww==
-X-Google-Smtp-Source: AGRyM1sm+8Ne4/LREAP1BhpBHmHl7sHKXi5L+eGvKtbQn5emgnCoxtJdYUMElvkncDMjnmXaWe/0bg==
-X-Received: by 2002:a63:710c:0:b0:40c:adcf:ce72 with SMTP id m12-20020a63710c000000b0040cadcfce72mr13747246pgc.310.1656346808483;
-        Mon, 27 Jun 2022 09:20:08 -0700 (PDT)
+        bh=cV3hVzy9TYCqPFueATEq37SOh6vFTuLA/SrvAB62Xzg=;
+        b=YIi+ote/lT/xdjD8IbcVIW1ZTxjiCISogsaYTw0lyE0eUk5ehDP856dvPvC9XAPwm6
+         cf2W8uwsfkRooDbast24QHsGcU3XaP5VMn0v7MI7rN5jwYcccJl4ePAxSxF0OJDwWcZl
+         XY6Skug4KIJg4iI3QvwJtTL8cG5HJc6ZW9Vt4V9ACp88Izn/SrIx6OiV0ILUONvxXGSR
+         w5GDXlDW7v1WlDiBVabt9cLH1yF5EtlQoX7tuoI6scwPLsDKJuGst8RJUO0flT/b/FFJ
+         GdLRIfw2m0I0M6onMhOUDXc0L1brnTDN4Z7DcEn6nu9IISjIU/Xz8CpgTEt6QDNkONGc
+         QB7w==
+X-Gm-Message-State: AJIora9hqOCEvLdMfSpSMRfeyqQYw6Y0eM3fBwlImBbgGx2bVzksFC1g
+        TxDHQvA9qNijUCHUDnCeziOIgw==
+X-Google-Smtp-Source: AGRyM1v1/klo71FJcOnTZoW3zB85VLk+X/utjbZmu0W37du2cpFLJFufJZy1ShhykQNqxxTcsGcOvw==
+X-Received: by 2002:a17:902:e54f:b0:16a:29de:9603 with SMTP id n15-20020a170902e54f00b0016a29de9603mr15741779plf.46.1656346970060;
+        Mon, 27 Jun 2022 09:22:50 -0700 (PDT)
 Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id 10-20020a17090a174a00b001ec84049064sm7538417pjm.41.2022.06.27.09.20.07
+        by smtp.gmail.com with ESMTPSA id o14-20020a17090a4e8e00b001e2bd411079sm9752135pjh.20.2022.06.27.09.22.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 09:20:08 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 16:20:04 +0000
+        Mon, 27 Jun 2022 09:22:49 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 16:22:46 +0000
 From:   Sean Christopherson <seanjc@google.com>
 To:     Yosry Ahmed <yosryahmed@google.com>
 Cc:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
@@ -70,62 +70,25 @@ Cc:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
         linux-mm@kvack.org
-Subject: Re: [PATCH v5 2/4] KVM: mmu: add a helper to account memory used by
- KVM MMU.
-Message-ID: <YrnYtMGmGDxCrwdv@google.com>
+Subject: Re: [PATCH v5 3/4] KVM: x86/mmu: count KVM mmu usage in secondary
+ pagetable stats.
+Message-ID: <YrnZVgq1E/u1nYm0@google.com>
 References: <20220606222058.86688-1-yosryahmed@google.com>
- <20220606222058.86688-3-yosryahmed@google.com>
+ <20220606222058.86688-4-yosryahmed@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220606222058.86688-3-yosryahmed@google.com>
+In-Reply-To: <20220606222058.86688-4-yosryahmed@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Mon, Jun 06, 2022, Yosry Ahmed wrote:
-> Add a helper to account pages used by KVM for page tables in secondary
-> pagetable stats. This function will be used by subsequent patches in
-> different archs.
-> 
-> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> ---
->  include/linux/kvm_host.h | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> index 883e86ec8e8c4..645585f3a4bed 100644
-> --- a/include/linux/kvm_host.h
-> +++ b/include/linux/kvm_host.h
-> @@ -2246,6 +2246,15 @@ static inline void kvm_handle_signal_exit(struct kvm_vcpu *vcpu)
->  }
->  #endif /* CONFIG_KVM_XFER_TO_GUEST_WORK */
->  
-> +/*
-> + * If nr > 1, we assume virt is the address of the first page of a block of
+> Count the pages used by KVM mmu on x86 for in secondary pagetable stats.
 
-But what if @nr is -2, which is technically less than 1?  :-)
+"for in" is funky.  And it's worth providing a brief explanation of what the
+secondary pagetable stats actually are.  "secondary" is confusingly close to
+"second level pagetables", e.g. might be misconstrued as KVM counters for the
+number of stage-2 / two-dimension paging page (TDP) tables.
 
-> + * pages that were allocated together (i.e accounted together).
-
-Don't document assumptions, document the rules.  And avoid "we", pronouns are
-ambiguous, e.g. is "we" the author, or KVM, or something else entirely?
-
-/*
- * If more than one page is being (un)accounted, @virt must be the address of
- * the first page of a block of pages what were allocated together.
- */
-
-
-> + */
-> +static inline void kvm_account_pgtable_pages(void *virt, int nr)
-> +{
-> +	mod_lruvec_page_state(virt_to_page(virt), NR_SECONDARY_PAGETABLE, nr);
-> +}
-> +
->  /*
->   * This defines how many reserved entries we want to keep before we
->   * kick the vcpu to the userspace to avoid dirty ring full.  This
-> -- 
-> 2.36.1.255.ge46751e96f-goog
-> 
+Code looks good, though it needs a rebased on kvm/queue.
