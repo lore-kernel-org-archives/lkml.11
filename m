@@ -2,165 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 949E5CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 872ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234994AbiF0LZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
+        id S234845AbiF0LZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234886AbiF0LZP (ORCPT
+        with ESMTP id S234887AbiF0LZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:25:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68D3659B;
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE9A8659E
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:25:05 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id l2so7786495pjf.1
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:25:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=D2+1y0LCJVkrfpHsQlRGxEvdnIAFt/zhTxrdy/ouAhU=;
+        b=FRaInAGaTCaXwvPDQiOiybyVs1ZTq7aqp376IA6xTXMeo48fL1QiC0oNsa5/HetL55
+         9HUHwrtKWYZ1Pn3nxng6Lr66Ut1zka2dTP94nT+yTufd+icL2WJ59mHZ/iaNZK4dkxE7
+         7+g5zJGUIdsmMd22pGGmiLmu4Xk3PdkamGcOk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=D2+1y0LCJVkrfpHsQlRGxEvdnIAFt/zhTxrdy/ouAhU=;
+        b=PdcnPR7BQE1bo4oeMpwGFsFceaLqtZ+ULs215ceHj9Ktjog9PyaH2FU0mOQC2QzcEB
+         Cz66Y75/u38RWli+NqqxhF9bxQrx+Fv7Y6+ClqPLIDAOmBXzC1sr6E+hj7gUKYyyc+lb
+         B4TENhGKvvoejoenwWW0Tc8zlGLgbQb1jP1pVYGAgU+QG+zEMKMstUfCixybDi6T3I5g
+         6xm9OhvD9MTfo5XJ9yYhV24hzgRcnXYh4CIniQRJZ49s7K8kQYXAbnaYLsScHb2deFrH
+         CaHpktsTjzaTjhj0E/U90cZgoz7G7UwKFHO4xJT/LVDmyz55zT/rkoudEKnE+Be5reAL
+         0gHQ==
+X-Gm-Message-State: AJIora+a2wRr0HiaAo7JVSbJyFB3rBZSYB+onOTjWOeFETnSNH7q14PO
+        y+Daw8YraQ47yGOFSg9Nd6jDKg==
+X-Google-Smtp-Source: AGRyM1vq1tIU8x5lkBrW/7ilQI/Txpt0kSZaL6oXEJkTV+khkTTmLOcOfrxjLLVXkYCHw9PaRKrIdA==
+X-Received: by 2002:a17:902:c2c6:b0:168:d8ce:90b2 with SMTP id c6-20020a170902c2c600b00168d8ce90b2mr14451592pla.110.1656329105228;
         Mon, 27 Jun 2022 04:25:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9237761359;
-        Mon, 27 Jun 2022 11:25:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92065C341C7;
-        Mon, 27 Jun 2022 11:25:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329104;
-        bh=IUTMOUZQBaEKK+FbjIuRCLQ5gadokMU3chQGYhcUoXs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L4AM+4XpQH5cByrVzQ+rTzHML/Ei2KhD2rABS+u5lUR45MrSjajns4fb7WWNb5nfn
-         GlGu7Vg8+uVNM7fX4ufS8HCt9Cni8bwwBj+FtI9A6AvQonIzopTM7GfLYqW2Ln7eka
-         sBgEDniUxGnnGQ7Mf+kPlIQAg1gCZKoog4v9kzfk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 052/102] virtio_net: fix xdp_rxq_info bug after suspend/resume
-Date:   Mon, 27 Jun 2022 13:21:03 +0200
-Message-Id: <20220627111935.016599779@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
-References: <20220627111933.455024953@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:2dc1:c31b:b5ed:f3aa])
+        by smtp.gmail.com with ESMTPSA id lj4-20020a17090b344400b001ece32cbec9sm9246889pjb.24.2022.06.27.04.25.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 04:25:04 -0700 (PDT)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Chen-Yu Tsai <wenst@chromium.org>, linux-media@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>
+Subject: [PATCH 3/4] media: mediatek: vcodec: dec: Fix resolution clamping in TRY_FMT
+Date:   Mon, 27 Jun 2022 19:24:01 +0800
+Message-Id: <20220627112402.2332046-4-wenst@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+In-Reply-To: <20220627112402.2332046-1-wenst@chromium.org>
+References: <20220627112402.2332046-1-wenst@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+In commit b018be06f3c7 ("media: mediatek: vcodec: Read max resolution
+from dec_capability"), TRY_FMT clamps the resolution to the maximum
+that was previously set either by default 1080p or the limit set by a
+previous S_FMT call. This does not make sense when doing TRY_FMT for
+the output side, which may have different capabilities.
 
-[ Upstream commit 8af52fe9fd3bf5e7478da99193c0632276e1dfce ]
+Instead, for the output side, find the maximum resolution based on the
+pixel format requested. For the capture side, continue to use the
+maximum resolution set by default or by a previous S_FMT call.
 
-The following sequence currently causes a driver bug warning
-when using virtio_net:
+The maximum resolution is found from the list of per-format frame
+sizes, so the patch "media: mediatek: vcodec: dec: Fix 4K frame size
+enumeration" is needed.
 
-  # ip link set eth0 up
-  # echo mem > /sys/power/state (or e.g. # rtcwake -s 10 -m mem)
-  <resume>
-  # ip link set eth0 down
-
-  Missing register, driver bug
-  WARNING: CPU: 0 PID: 375 at net/core/xdp.c:138 xdp_rxq_info_unreg+0x58/0x60
-  Call trace:
-   xdp_rxq_info_unreg+0x58/0x60
-   virtnet_close+0x58/0xac
-   __dev_close_many+0xac/0x140
-   __dev_change_flags+0xd8/0x210
-   dev_change_flags+0x24/0x64
-   do_setlink+0x230/0xdd0
-   ...
-
-This happens because virtnet_freeze() frees the receive_queue
-completely (including struct xdp_rxq_info) but does not call
-xdp_rxq_info_unreg(). Similarly, virtnet_restore() sets up the
-receive_queue again but does not call xdp_rxq_info_reg().
-
-Actually, parts of virtnet_freeze_down() and virtnet_restore_up()
-are almost identical to virtnet_close() and virtnet_open(): only
-the calls to xdp_rxq_info_(un)reg() are missing. This means that
-we can fix this easily and avoid such problems in the future by
-just calling virtnet_close()/open() from the freeze/restore handlers.
-
-Aside from adding the missing xdp_rxq_info calls the only difference
-is that the refill work is only cancelled if netif_running(). However,
-this should not make any functional difference since the refill work
-should only be active if the network interface is actually up.
-
-Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Link: https://lore.kernel.org/r/20220621114845.3650258-1-stephan.gerhold@kernkonzept.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b018be06f3c7 ("media: mediatek: vcodec: Read max resolution from dec_capability")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 ---
- drivers/net/virtio_net.c | 25 ++++++-------------------
- 1 file changed, 6 insertions(+), 19 deletions(-)
+ .../platform/mediatek/vcodec/mtk_vcodec_dec.c | 28 +++++++++++++++----
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index cbe47eed7cc3..ad9064df3deb 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2366,7 +2366,6 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
- static void virtnet_freeze_down(struct virtio_device *vdev)
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+index f1b82d4c5be5..ea951cb3b927 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+@@ -282,13 +282,29 @@ static int vidioc_try_fmt(struct mtk_vcodec_ctx *ctx, struct v4l2_format *f,
+ 			  const struct mtk_video_fmt *fmt)
  {
- 	struct virtnet_info *vi = vdev->priv;
--	int i;
+ 	struct v4l2_pix_format_mplane *pix_fmt_mp = &f->fmt.pix_mp;
++	const struct mtk_vcodec_dec_pdata *dec_pdata = ctx->dev->vdec_pdata;
++	unsigned int max_width, max_height;
++	int i;
++
++	if (V4L2_TYPE_IS_OUTPUT(f->type)) {
++		max_width = MTK_VDEC_MAX_W;
++		max_height = MTK_VDEC_MAX_H;
++		for (i = 0; i < *dec_pdata->num_framesizes; ++i)
++			if (f->fmt.pix_mp.pixelformat == dec_pdata->vdec_framesizes[i].fourcc) {
++				max_width = dec_pdata->vdec_framesizes[i].stepwise.max_width;
++				max_height = dec_pdata->vdec_framesizes[i].stepwise.max_height;
++			}
++	} else {
++		max_width = ctx->max_width;
++		max_height = ctx->max_height;
++	}
  
- 	/* Make sure no work handler is accessing the device */
- 	flush_work(&vi->config_work);
-@@ -2374,14 +2373,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
- 	netif_tx_lock_bh(vi->dev);
- 	netif_device_detach(vi->dev);
- 	netif_tx_unlock_bh(vi->dev);
--	cancel_delayed_work_sync(&vi->refill);
--
--	if (netif_running(vi->dev)) {
--		for (i = 0; i < vi->max_queue_pairs; i++) {
--			napi_disable(&vi->rq[i].napi);
--			virtnet_napi_tx_disable(&vi->sq[i].napi);
--		}
--	}
-+	if (netif_running(vi->dev))
-+		virtnet_close(vi->dev);
- }
+ 	pix_fmt_mp->field = V4L2_FIELD_NONE;
  
- static int init_vqs(struct virtnet_info *vi);
-@@ -2389,7 +2382,7 @@ static int init_vqs(struct virtnet_info *vi);
- static int virtnet_restore_up(struct virtio_device *vdev)
- {
- 	struct virtnet_info *vi = vdev->priv;
--	int err, i;
-+	int err;
+ 	pix_fmt_mp->width =
+-		clamp(pix_fmt_mp->width, MTK_VDEC_MIN_W, ctx->max_width);
++		clamp(pix_fmt_mp->width, MTK_VDEC_MIN_W, max_width);
+ 	pix_fmt_mp->height =
+-		clamp(pix_fmt_mp->height, MTK_VDEC_MIN_H, ctx->max_height);
++		clamp(pix_fmt_mp->height, MTK_VDEC_MIN_H, max_height);
  
- 	err = init_vqs(vi);
- 	if (err)
-@@ -2398,15 +2391,9 @@ static int virtnet_restore_up(struct virtio_device *vdev)
- 	virtio_device_ready(vdev);
+ 	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
+ 		pix_fmt_mp->num_planes = 1;
+@@ -306,16 +322,16 @@ static int vidioc_try_fmt(struct mtk_vcodec_ctx *ctx, struct v4l2_format *f,
+ 		tmp_h = pix_fmt_mp->height;
+ 		v4l_bound_align_image(&pix_fmt_mp->width,
+ 					MTK_VDEC_MIN_W,
+-					ctx->max_width, 6,
++					max_width, 6,
+ 					&pix_fmt_mp->height,
+ 					MTK_VDEC_MIN_H,
+-					ctx->max_height, 6, 9);
++					max_height, 6, 9);
  
- 	if (netif_running(vi->dev)) {
--		for (i = 0; i < vi->curr_queue_pairs; i++)
--			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
--				schedule_delayed_work(&vi->refill, 0);
--
--		for (i = 0; i < vi->max_queue_pairs; i++) {
--			virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
--			virtnet_napi_tx_enable(vi, vi->sq[i].vq,
--					       &vi->sq[i].napi);
--		}
-+		err = virtnet_open(vi->dev);
-+		if (err)
-+			return err;
- 	}
+ 		if (pix_fmt_mp->width < tmp_w &&
+-			(pix_fmt_mp->width + 64) <= ctx->max_width)
++			(pix_fmt_mp->width + 64) <= max_width)
+ 			pix_fmt_mp->width += 64;
+ 		if (pix_fmt_mp->height < tmp_h &&
+-			(pix_fmt_mp->height + 64) <= ctx->max_height)
++			(pix_fmt_mp->height + 64) <= max_height)
+ 			pix_fmt_mp->height += 64;
  
- 	netif_tx_lock_bh(vi->dev);
+ 		mtk_v4l2_debug(0,
 -- 
-2.35.1
-
-
+2.37.0.rc0.161.g10f37bed90-goog
 
