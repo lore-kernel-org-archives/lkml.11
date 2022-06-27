@@ -2,240 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 380EEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 10:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D78BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 10:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234067AbiF0KBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 06:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
+        id S233546AbiF0KBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 06:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233617AbiF0KBb (ORCPT
+        with ESMTP id S233887AbiF0KBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 06:01:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C00B63FE
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 03:01:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656324088;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XfIYzOFq9+jwXTV0OEEFxQKh2b4fXVCS3UReweWTk08=;
-        b=WjnT3nZ0TJW/DocrYhkxmD1ysgBXs7SfBNp9jPUZWfAYjX1hAgHYsQ4sdIWURUaA/4EZkc
-        o71lfUC9VXHeXTIC3aQFlAAklA3R9AqgpEhM6Q8fVhcRgTgmVwVSqCorCQeiQivjxmg0P9
-        /iXoNYm5MYa/rolOddVPmeuggkwwIus=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-7-7uOl0VN8MNKUerh85r9Nkg-1; Mon, 27 Jun 2022 06:01:27 -0400
-X-MC-Unique: 7uOl0VN8MNKUerh85r9Nkg-1
-Received: by mail-wm1-f71.google.com with SMTP id p22-20020a05600c359600b0039c7b23a1c7so7105209wmq.2
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 03:01:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XfIYzOFq9+jwXTV0OEEFxQKh2b4fXVCS3UReweWTk08=;
-        b=tGgQmsb7kEn5BUZgFgWQT5MR0F0MeareLOlEYlV3VjwxlR1Q6Euv5Xay2ddT+QUczB
-         fD+NTpTRVMrVWHiy//kbZ4JhLT+VRgA3NLS4V+ug/Q/y5fARPtN2+Rk9PwmQvidzB5Kb
-         PBznvI7jZm4Lt3oEW3WOTMJKKJtzb/feLC+WKi7tpMo6rQMTdJhge27wyyqRnXeU3987
-         qbFJQ4snqyaBbjiIuzmvfL0M12s9jymcrfzyNuJSH9MO32K4sOTinYzhX5mTvPNQgCWE
-         13xqJklWHLoYzo7IkfNw5P2tQTHGY4lGWcxLBBPdZz5My1tJZWwVbOhXOBGSkdCdWpkA
-         2Hpg==
-X-Gm-Message-State: AJIora+B7sxQAME7TRem4oNbzPZ6eTOTYQ4x7WERc2Yyo0d/J0XyLwOa
-        Lwt0s9ykh44SKstiZaYQNRgysbm+KYjTaN/L2Q+NGLIkjTEphEsi4cnm5Zsur/J+h4UAfXQS//q
-        ZtZGqXACf3Q50XltxMpK+t18l
-X-Received: by 2002:adf:d20e:0:b0:21b:9bf8:75e with SMTP id j14-20020adfd20e000000b0021b9bf8075emr11372945wrh.416.1656324086147;
-        Mon, 27 Jun 2022 03:01:26 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u71NWi+QLUpjcQmtx2VVGYmH07xgw2ZqtlMg5pGrYX9gCttKo+VrvS67vS2J5YcclFCLqr9Q==
-X-Received: by 2002:adf:d20e:0:b0:21b:9bf8:75e with SMTP id j14-20020adfd20e000000b0021b9bf8075emr11372921wrh.416.1656324085841;
-        Mon, 27 Jun 2022 03:01:25 -0700 (PDT)
-Received: from redhat.com ([2.54.45.90])
-        by smtp.gmail.com with ESMTPSA id c17-20020a05600c0ad100b003973ea7e725sm23047559wmr.0.2022.06.27.03.01.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 03:01:25 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 06:01:21 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Cindy Lu <lulu@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] vhost: Add rbtree vdpa_mem_tree to saved the
- counted mem
-Message-ID: <20220627055826-mutt-send-email-mst@kernel.org>
-References: <20220626090409.1011144-1-lulu@redhat.com>
- <20220626055420-mutt-send-email-mst@kernel.org>
- <CACLfguVMfqAiCVoNVr7J8ooQa35tNJOSK-XHqsdE3hdXsfOZ+A@mail.gmail.com>
+        Mon, 27 Jun 2022 06:01:50 -0400
+X-Greylist: delayed 616 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 03:01:42 PDT
+Received: from 7.mo548.mail-out.ovh.net (7.mo548.mail-out.ovh.net [46.105.33.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0456252
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 03:01:42 -0700 (PDT)
+Received: from mxplan5.mail.ovh.net (unknown [10.108.16.62])
+        by mo548.mail-out.ovh.net (Postfix) with ESMTPS id 7066B21B82;
+        Mon, 27 Jun 2022 09:43:22 +0000 (UTC)
+Received: from kaod.org (37.59.142.96) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Mon, 27 Jun
+ 2022 11:43:20 +0200
+Authentication-Results: garm.ovh; auth=pass (GARM-96R001214c8b85-88ae-43d7-9f45-820f0b88e976,
+                    D5BAD815273CE4794DDBC5929823026F491AE39B) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <82015d89-cab5-3e9a-a40e-e5dafa17ec0c@kaod.org>
+Date:   Mon, 27 Jun 2022 11:43:15 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACLfguVMfqAiCVoNVr7J8ooQa35tNJOSK-XHqsdE3hdXsfOZ+A@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [RFC PATCH 3/6] mtd: spi-nor: core: run calibration when
+ initialization is done
+Content-Language: en-US
+To:     Pratyush Yadav <p.yadav@ti.com>
+CC:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Michael Walle <michael@walle.cc>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mtd@lists.infradead.org>, <linux-spi@vger.kernel.org>,
+        Joel Stanley <joel@jms.id.au>
+References: <20210311191216.7363-1-p.yadav@ti.com>
+ <20210311191216.7363-4-p.yadav@ti.com> <20220517160226.4107f282@xps-13>
+ <20220518060640.os5fp5rez4ie7qc4@ti.com> <20220518091931.279c5398@xps-13>
+ <20220518075651.mvdhfnfbgutecgyq@ti.com>
+ <b3bfa5a6-caac-94ed-6741-04db9c2a9ee0@kaod.org>
+ <20220627091404.54257obrdazcjhre@ti.com>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <20220627091404.54257obrdazcjhre@ti.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.96]
+X-ClientProxiedBy: DAG3EX2.mxp5.local (172.16.2.22) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: d90d66d2-6dd4-4970-a538-40e48684ccd2
+X-Ovh-Tracer-Id: 8915438414617938820
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudeghedgvddtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvvehfhfgjtgfgihesthekredttdefjeenucfhrhhomhepveorughrihgtpgfnvggpifhorghtvghruceotghlgheskhgrohgurdhorhhgqeenucggtffrrghtthgvrhhnpeekteejtdelkeejvdevffduhfetteelieefgeefffeugffhfeekheffueefledujeenucfkpheptddrtddrtddrtddpfeejrdehledrudegvddrleeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtohepjhhovghlsehjmhhsrdhiugdrrghupdfovfetjfhoshhtpehmohehgeek
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 04:12:57PM +0800, Cindy Lu wrote:
-> On Sun, Jun 26, 2022 at 6:01 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Sun, Jun 26, 2022 at 05:04:08PM +0800, Cindy Lu wrote:
-> > > We count pinned_vm as follow in vhost-vDPA
-> > >
-> > > lock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-> > > if (npages + atomic64_read(&dev->mm->pinned_vm) > lock_limit) {
-> > >          ret = -ENOMEM;
-> > >          goto unlock;
-> > > }
-> > > This means if we have two vDPA devices for the same VM the pages
-> > > would be counted twice. So we add a tree to save the page that
-> > > counted and we will not count it again.
-> > >
-> > > Add vdpa_mem_tree to saved the mem that already counted.
-> > > use a hlist to saved the root for vdpa_mem_tree.
-> > >
-> > > Signed-off-by: Cindy Lu <lulu@redhat.com>
-> > > ---
-> > >  drivers/vhost/vhost.c | 63 +++++++++++++++++++++++++++++++++++++++++++
-> > >  drivers/vhost/vhost.h |  1 +
-> > >  2 files changed, 64 insertions(+)
-> > >
-> > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > > index 40097826cff0..4ca8b1ed944b 100644
-> > > --- a/drivers/vhost/vhost.c
-> > > +++ b/drivers/vhost/vhost.c
-> > > @@ -32,6 +32,8 @@
-> > >  #include <linux/kcov.h>
-> > >
-> > >  #include "vhost.h"
-> > > +#include <linux/hashtable.h>
-> > > +#include <linux/jhash.h>
-> > >
-> > >  static ushort max_mem_regions = 64;
-> > >  module_param(max_mem_regions, ushort, 0444);
-> > > @@ -49,6 +51,14 @@ enum {
-> > >  #define vhost_used_event(vq) ((__virtio16 __user *)&vq->avail->ring[vq->num])
-> > >  #define vhost_avail_event(vq) ((__virtio16 __user *)&vq->used->ring[vq->num])
-> > >
-> > > +struct vhost_vdpa_rbtree_node {
-> > > +     struct hlist_node node;
-> > > +     struct rb_root_cached vdpa_mem_tree;
-> > > +     struct mm_struct *mm_using;
-> > > +};
-> > > +static DECLARE_HASHTABLE(vhost_vdpa_rbtree_hlist, 8);
-> > > +int vhost_vdpa_rbtree_hlist_status;
-> > > +
-> > >  #ifdef CONFIG_VHOST_CROSS_ENDIAN_LEGACY
-> > >  static void vhost_disable_cross_endian(struct vhost_virtqueue *vq)
-> > >  {
-> >
-> > Are you trying to save some per-mm information here?
-> > Can't we just add it to mm_struct?
-> >
-> yes, this is a per-mm information, but I have checked with jason before,
-> seems it maybe difficult to change the mm_struct in upstream
-> so I add an to add a hlist  instead
-> Thanks
-> Cindy
+On 6/27/22 11:14, Pratyush Yadav wrote:
+> On 18/05/22 10:51AM, Cédric Le Goater wrote:
+>> Hello,
+>>
+>> On 5/18/22 09:56, Pratyush Yadav wrote:
+>>> On 18/05/22 09:19AM, Miquel Raynal wrote:
+>>>> Hi Pratyush,
+>>>>
+>>>> p.yadav@ti.com wrote on Wed, 18 May 2022 11:37:05 +0530:
+>>>>
+>>>>> +Cedric
+>>>>>
+>>>>> On 17/05/22 04:02PM, Miquel Raynal wrote:
+>>>>>> Hi Pratyush,
+>>>>>>
+>>>>>> p.yadav@ti.com wrote on Fri, 12 Mar 2021 00:42:13 +0530:
+>>>>>>> Once the flash is initialized tell the controller it can run
+>>>>>>> calibration procedures if needed. This can be useful when calibration is
+>>>>>>> needed to run at higher clock speeds.
+>>>>>>>
+>>>>>>> Signed-off-by: Pratyush Yadav <p.yadav@ti.com>
+>>>>>>> ---
+>>>>>>>    drivers/mtd/spi-nor/core.c | 12 ++++++++++--
+>>>>>>>    1 file changed, 10 insertions(+), 2 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+>>>>>>> index 88888df009f0..e0cbcaf1be89 100644
+>>>>>>> --- a/drivers/mtd/spi-nor/core.c
+>>>>>>> +++ b/drivers/mtd/spi-nor/core.c
+>>>>>>> @@ -3650,6 +3650,7 @@ static int spi_nor_probe(struct spi_mem *spimem)
+>>>>>>>    	 * checking what's really supported using spi_mem_supports_op().
+>>>>>>>    	 */
+>>>>>>>    	const struct spi_nor_hwcaps hwcaps = { .mask = SNOR_HWCAPS_ALL };
+>>>>>>> +	struct spi_mem_op op;
+>>>>>>>    	char *flash_name;
+>>>>>>>    	int ret;
+>>>>>>> @@ -3709,8 +3710,15 @@ static int spi_nor_probe(struct spi_mem *spimem)
+>>>>>>>    	if (ret)
+>>>>>>>    		return ret;
+>>>>>>> -	return mtd_device_register(&nor->mtd, data ? data->parts : NULL,
+>>>>>>> -				   data ? data->nr_parts : 0);
+>>>>>>> +	ret = mtd_device_register(&nor->mtd, data ? data->parts : NULL,
+>>>>>>> +				  data ? data->nr_parts : 0);
+>>>>>>> +	if (ret)
+>>>>>>> +		return ret;
+>>>>>>> +
+>>>>>>> +	op = spi_nor_spimem_get_read_op(nor);
+>>>>>>
+>>>>>> Isn't this too specific? I really don't know much about spi-nors, but I
+>>>>>> find odd to have this op being created here, why not moving this into
+>>>>>> the _do_calibration() helper?
+>>>>>
+>>>>> Maybe the naming confused you but this is a function in the SPI NOR
+>>>>> core, not in SPI MEM. SPI NOR supports both SPI MEM based controllers
+>>>>> and "legacy" controllers, so the convention is to add the "spimem"
+>>>>> prefix before SPI MEM specific functions. So I don't get the comment
+>>>>> about it being too specific. It is too specific to what?
+>>>>
+>>>> Mmh right, it's fine then.
+>>>>
+>>>>>
+>>>>> And how can spi_mem_do_calibration() know what op the flash uses to read
+>>>>> data? SPI NOR or SPI NAND would know it, but not SPI MEM. That is why we
+>>>>> pass in that information to spi_mem_do_calibration().
+>>>>
+>>>> But here the op is "spi-nor wide", I would have expected a
+>>>> per-device op. But that is not a big deal, that is something that can
+>>>> also be updated later if needed I guess.
+>>>
+>>> It is per-device. The op is generated using nor->read_opcode,
+>>> nor->addr_width, nor->read_dummy, etc. So if you have 2 NOR flashes on
+>>> your system with different opcodes, it would work for both.
+>>>
+>>>>
+>>>> One last question, is there something that mtd_device_register() does
+>>>> that is really needed for the calibration to work? Otherwise I would
+>>>> rather prefer to have that calibration happening before the user gets
+>>>> access to the device.
+>>
+>> Which would mean calling it right after :
+>>
+>> 	ret = spi_nor_create_read_dirmap(nor);
+>> 	if (ret)
+>> 		return ret;
+>>
+>> 	ret = spi_nor_create_write_dirmap(nor);
+>> 	if (ret)
+>> 		return ret;
+>>
+>>> The calibration works by reading a known pattern that is already written
+>>> to the flash again and again and seeing what delays work and what don't.
+>>> For that to happen, the controller driver needs to know where the
+>>> pattern is stored.
+>>
+>> Why don't you simply choose some random place, first 16KB for instance,
+>> and check that the data is random enough ? If not, declare calibration
+>> not possible and choose a default safe setting which is anyhow a
+>> requirement for calibration. Retry at reboot as data might have changed.
+> 
+> I did not come up with the pattern myself. But from what I can
+> understand, the pattern is not random at all, but is carefully chosen to
+> target certain ways a read can fail on the controller. So a random piece
+> of data won't work as well as this carefully designed pattern.
 
-Difficult how? You get more scrutiny if you try, for sure,
-and you need to need to generalize it enough that it looks
-useful outside the driver. But I guess that's good?
+True. I don't exactly remember how your proposal worked from the
+driver side but I imagine having a specific DT property to locate
+that pattern in the setup handler and to use it later on is not
+too complex.
 
-> >
-> >
-> > > @@ -571,6 +581,51 @@ static void vhost_detach_mm(struct vhost_dev *dev)
-> > >       dev->mm = NULL;
-> > >  }
-> > >
-> > > +struct rb_root_cached *vhost_vdpa_get_mem_tree(struct mm_struct *mm)
-> > > +{
-> > > +     struct vhost_vdpa_rbtree_node *rbtree_root = NULL;
-> > > +     struct rb_root_cached *vdpa_tree;
-> > > +     u32 key;
-> > > +
-> > > +     /* No hased table, init one */
-> > > +     if (vhost_vdpa_rbtree_hlist_status == 0) {
-> > > +             hash_init(vhost_vdpa_rbtree_hlist);
-> > > +             vhost_vdpa_rbtree_hlist_status = 1;
-> > > +     }
-> > > +
-> > > +     key = jhash_1word((u64)mm, JHASH_INITVAL);
-> > > +     hash_for_each_possible(vhost_vdpa_rbtree_hlist, rbtree_root, node,
-> > > +                            key) {
-> > > +             if (rbtree_root->mm_using == mm)
-> > > +                     return &(rbtree_root->vdpa_mem_tree);
-> > > +     }
-> > > +     rbtree_root = kmalloc(sizeof(*rbtree_root), GFP_KERNEL);
-> > > +     if (!rbtree_root)
-> > > +             return NULL;
-> > > +     rbtree_root->mm_using = mm;
-> > > +     rbtree_root->vdpa_mem_tree = RB_ROOT_CACHED;
-> > > +     hash_add(vhost_vdpa_rbtree_hlist, &rbtree_root->node, key);
-> > > +     vdpa_tree = &(rbtree_root->vdpa_mem_tree);
-> > > +     return vdpa_tree;
-> > > +}
-> > > +
-> > > +void vhost_vdpa_relase_mem_tree(struct mm_struct *mm)
-> > > +{
-> > > +     struct vhost_vdpa_rbtree_node *rbtree_root = NULL;
-> > > +     u32 key;
-> > > +
-> > > +     key = jhash_1word((u64)mm, JHASH_INITVAL);
-> > > +
-> > > +     /* No hased table, init one */
-> > > +     hash_for_each_possible(vhost_vdpa_rbtree_hlist, rbtree_root, node,
-> > > +                            key) {
-> > > +             if (rbtree_root->mm_using == mm) {
-> > > +                     hash_del(&rbtree_root->node);
-> > > +                     kfree(rbtree_root);
-> > > +             }
-> > > +     }
-> > > +}
-> > > +
-> > >  /* Caller should have device mutex */
-> > >  long vhost_dev_set_owner(struct vhost_dev *dev)
-> > >  {
-> > > @@ -605,6 +660,11 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
-> > >       err = vhost_dev_alloc_iovecs(dev);
-> > >       if (err)
-> > >               goto err_cgroup;
-> > > +     dev->vdpa_mem_tree = vhost_vdpa_get_mem_tree(dev->mm);
-> > > +     if (dev->vdpa_mem_tree == NULL) {
-> > > +             err = -ENOMEM;
-> > > +             goto err_cgroup;
-> > > +     }
-> > >
-> > >       return 0;
-> > >  err_cgroup:
-> > > @@ -613,6 +673,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
-> > >               dev->worker = NULL;
-> > >       }
-> > >  err_worker:
-> > > +     vhost_vdpa_relase_mem_tree(dev->mm);
-> > >       vhost_detach_mm(dev);
-> > >       dev->kcov_handle = 0;
-> > >  err_mm:
-> > > @@ -710,6 +771,8 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> > >               dev->worker = NULL;
-> > >               dev->kcov_handle = 0;
-> > >       }
-> > > +
-> > > +     vhost_vdpa_relase_mem_tree(dev->mm);
-> > >       vhost_detach_mm(dev);
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(vhost_dev_cleanup);
-> > > diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-> > > index d9109107af08..84de33de3abf 100644
-> > > --- a/drivers/vhost/vhost.h
-> > > +++ b/drivers/vhost/vhost.h
-> > > @@ -160,6 +160,7 @@ struct vhost_dev {
-> > >       int byte_weight;
-> > >       u64 kcov_handle;
-> > >       bool use_worker;
-> > > +     struct rb_root_cached *vdpa_mem_tree;
-> > >       int (*msg_handler)(struct vhost_dev *dev, u32 asid,
-> > >                          struct vhost_iotlb_msg *msg);
-> > >  };
-> > > --
-> > > 2.34.3
-> >
+>>> This series does that by looking at the MTD
+>>> partitions. For that to happen, we need to create those partitions
+>>> first, which happens after mtd_device_register().
+>>
+>> hmm, that might work for some boards. This is not at all the case for
+>> the BMC boards. Vendors can put any kind of flash model and/or layout
+>> and the driver needs to be more generic.
+> 
+> Yes, vendors can choose any layout, but one partition on that layout
+> would be your calibration pattern. I think you can use a different
+> compatible for that partition. 
 
+OK. and that it would become more generic then.
+
+> I have not thought this through yet though.
+
+If a partition is required, that's a dependency on mtdpart.
+
+It could be done from spi_nor_probe() after mtd_device_register() with
+some spimem handler using the 'struct mtd_partition' for the {size,offset}
+parameters.
+
+>>
+>>> But I am planning to use device tree to get that information now so this
+>>> should no longer be needed and we can do calibration before registering
+>>> the device with MTD.
+>>
+>> Perfect, we can move the calibration hook in spi_nor_create_read_dirmap()
+>> then, or in devm_spi_mem_dirmap_create(), which would make more sense IMHO.
+> 
+> Sorry, I still don't get why you want to tie dirmap and calibration
+> together. Just let them be independent and let flash drivers take care
+> of when to call what. SPI MEM should not care.
+
+I know you would prefer a specific handler and that can still be done.
+
+Thanks,
+
+C.
