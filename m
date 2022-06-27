@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 497E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 193C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:22:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237000AbiF0OWA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 10:22:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38054 "EHLO
+        id S237321AbiF0OWE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 10:22:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237036AbiF0OUp (ORCPT
+        with ESMTP id S237010AbiF0OUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 10:20:45 -0400
+        Mon, 27 Jun 2022 10:20:44 -0400
 Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB4412D18;
-        Mon, 27 Jun 2022 07:20:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0810411476;
+        Mon, 27 Jun 2022 07:20:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
         s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=n5fftUEvkFxqEj5rq74Mb5X3DmU+ng2FZSz30Wp76JY=; b=CDMpWG195NKdmg9ianCDajdA73
-        BJ9uQs2Tlyi41U67lX7v+6xNkD+3i1TqVDND+Kv55H0IrZA4H4pLjTF8ukeClglgGSH7f0aYe3znH
-        6Gw2HYme7H2n9XqHzqAeQsvXR3/ZuXHgDpuVzykt7kwlcqftjUhPaAlvEAwWZReDYpTYvlCd/LxYm
-        LSXMcGaqwaylp2AAy60q2YhqAE/MNZDW4GUO6IyQp26LLYCj6+FmUKqLZocWWLJfSFoQQPzZGwbD/
-        qzP2Ul9TGAUm1KJD6W3PztUJz1pi1aF+yaFGd/0n9ksvHq7u1Bi9NA4liJ5AXNv9tpvTgrIseHXcv
-        LmHb3SxA==;
+        bh=dC/cTQo/MJ767nLnh5GC42ACRkqVvW3EbSSHwsx8exs=; b=FyVVzgTzkyNIIvS6ArZvjUNN8k
+        ZPMmbS/N/qiCFnX+q3hpT1mY86q2/hTaXOuB0jQzd89hpC4ofa7ouTn6cegWAl3CVt17AcwoQCfq9
+        A7iHHfYbD1BdZ1r8OGqNKt9WXMsnY4kP8DcrkJtN96h2N4h/UebUQbTfVPJ5AOtBRuf0Bunnpykp1
+        4b3xHabQGvxD6doggMAHArFZyVq7dIkB58srk0Dn/CAQBNZFovqLXvBlpWoNji5YzBBsDg0ewc0PY
+        twiE9+IVB27SYqmMOq1BUxKa/yYQd5Bl3NZl9Q8IIX3hkpJ+M2GO7HIyYc99sB30S88I+wB20u/mC
+        vewuOH1g==;
 Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
         by mail.kapsi.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <cyndis@kapsi.fi>)
-        id 1o5pbP-003N2J-M6; Mon, 27 Jun 2022 17:20:34 +0300
+        id 1o5pbN-003N2J-PR; Mon, 27 Jun 2022 17:20:32 +0300
 From:   Mikko Perttunen <cyndis@kapsi.fi>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -42,9 +42,9 @@ Cc:     Mikko Perttunen <mperttunen@nvidia.com>,
         Robin Murphy <robin.murphy@arm.com>,
         dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7/v3 22/22] drm/tegra: vic: Add Tegra234 support
-Date:   Mon, 27 Jun 2022 17:20:08 +0300
-Message-Id: <20220627142008.2072474-23-cyndis@kapsi.fi>
+Subject: [PATCH v7/v3 14/22] gpu: host1x: Simplify register mapping and add common aperture
+Date:   Mon, 27 Jun 2022 17:20:00 +0300
+Message-Id: <20220627142008.2072474-15-cyndis@kapsi.fi>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627142008.2072474-1-cyndis@kapsi.fi>
 References: <20220627142008.2072474-1-cyndis@kapsi.fi>
@@ -59,59 +59,124 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mikko Perttunen <mperttunen@nvidia.com>
 
-Add Tegra234 support for VIC. It is backwards compatible with
-Tegra194.
+Refactor 'regs' property loading using devm_platform_ioremap_*
+and add loading of the 'common' region found on Tegra234.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
- drivers/gpu/drm/tegra/drm.c |  1 +
- drivers/gpu/drm/tegra/vic.c | 12 ++++++++++++
- 2 files changed, 13 insertions(+)
+ drivers/gpu/host1x/dev.c | 46 +++++++++++++++++-----------------------
+ drivers/gpu/host1x/dev.h |  3 +++
+ 2 files changed, 22 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
-index 9464f522e257..426ffeb51f72 100644
---- a/drivers/gpu/drm/tegra/drm.c
-+++ b/drivers/gpu/drm/tegra/drm.c
-@@ -1380,6 +1380,7 @@ static const struct of_device_id host1x_drm_subdevs[] = {
- 	{ .compatible = "nvidia,tegra194-sor", },
- 	{ .compatible = "nvidia,tegra194-vic", },
- 	{ .compatible = "nvidia,tegra194-nvdec", },
-+	{ .compatible = "nvidia,tegra234-vic", },
- 	{ /* sentinel */ }
+diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
+index 89cc79a48eab..8c6ce8014c09 100644
+--- a/drivers/gpu/host1x/dev.c
++++ b/drivers/gpu/host1x/dev.c
+@@ -40,6 +40,11 @@
+ #include "hw/host1x06.h"
+ #include "hw/host1x07.h"
+ 
++void host1x_common_writel(struct host1x *host1x, u32 v, u32 r)
++{
++	writel(v, host1x->common_regs + r);
++}
++
+ void host1x_hypervisor_writel(struct host1x *host1x, u32 v, u32 r)
+ {
+ 	writel(v, host1x->hv_regs + r);
+@@ -412,7 +417,6 @@ static int host1x_get_resets(struct host1x *host)
+ static int host1x_probe(struct platform_device *pdev)
+ {
+ 	struct host1x *host;
+-	struct resource *regs, *hv_regs = NULL;
+ 	int syncpt_irq;
+ 	int err;
+ 
+@@ -423,25 +427,23 @@ static int host1x_probe(struct platform_device *pdev)
+ 	host->info = of_device_get_match_data(&pdev->dev);
+ 
+ 	if (host->info->has_hypervisor) {
+-		regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "vm");
+-		if (!regs) {
+-			dev_err(&pdev->dev, "failed to get vm registers\n");
+-			return -ENXIO;
+-		}
++		host->regs = devm_platform_ioremap_resource_byname(pdev, "vm");
++		if (IS_ERR(host->regs))
++			return PTR_ERR(host->regs);
++
++		host->hv_regs = devm_platform_ioremap_resource_byname(pdev, "hypervisor");
++		if (IS_ERR(host->hv_regs))
++			return PTR_ERR(host->hv_regs);
+ 
+-		hv_regs = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+-						       "hypervisor");
+-		if (!hv_regs) {
+-			dev_err(&pdev->dev,
+-				"failed to get hypervisor registers\n");
+-			return -ENXIO;
++		if (host->info->has_common) {
++			host->common_regs = devm_platform_ioremap_resource_byname(pdev, "common");
++			if (IS_ERR(host->common_regs))
++				return PTR_ERR(host->common_regs);
+ 		}
+ 	} else {
+-		regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-		if (!regs) {
+-			dev_err(&pdev->dev, "failed to get registers\n");
+-			return -ENXIO;
+-		}
++		host->regs = devm_platform_ioremap_resource(pdev, 0);
++		if (IS_ERR(host->regs))
++			return PTR_ERR(host->regs);
+ 	}
+ 
+ 	syncpt_irq = platform_get_irq(pdev, 0);
+@@ -456,16 +458,6 @@ static int host1x_probe(struct platform_device *pdev)
+ 	/* set common host1x device data */
+ 	platform_set_drvdata(pdev, host);
+ 
+-	host->regs = devm_ioremap_resource(&pdev->dev, regs);
+-	if (IS_ERR(host->regs))
+-		return PTR_ERR(host->regs);
+-
+-	if (host->info->has_hypervisor) {
+-		host->hv_regs = devm_ioremap_resource(&pdev->dev, hv_regs);
+-		if (IS_ERR(host->hv_regs))
+-			return PTR_ERR(host->hv_regs);
+-	}
+-
+ 	host->dev->dma_parms = &host->dma_parms;
+ 	dma_set_max_seg_size(host->dev, UINT_MAX);
+ 
+diff --git a/drivers/gpu/host1x/dev.h b/drivers/gpu/host1x/dev.h
+index 7552a4554534..85edcc6e0fc7 100644
+--- a/drivers/gpu/host1x/dev.h
++++ b/drivers/gpu/host1x/dev.h
+@@ -100,6 +100,7 @@ struct host1x_info {
+ 	u64 dma_mask; /* mask of addressable memory */
+ 	bool has_wide_gather; /* supports GATHER_W opcode */
+ 	bool has_hypervisor; /* has hypervisor registers */
++	bool has_common; /* has common registers separate from hypervisor */
+ 	unsigned int num_sid_entries;
+ 	const struct host1x_sid_entry *sid_table;
+ 	/*
+@@ -115,6 +116,7 @@ struct host1x {
+ 
+ 	void __iomem *regs;
+ 	void __iomem *hv_regs; /* hypervisor region */
++	void __iomem *common_regs;
+ 	struct host1x_syncpt *syncpt;
+ 	struct host1x_syncpt_base *bases;
+ 	struct device *dev;
+@@ -156,6 +158,7 @@ struct host1x {
+ 	struct host1x_bo_cache cache;
  };
  
-diff --git a/drivers/gpu/drm/tegra/vic.c b/drivers/gpu/drm/tegra/vic.c
-index c5526bda88d6..c1734f823d04 100644
---- a/drivers/gpu/drm/tegra/vic.c
-+++ b/drivers/gpu/drm/tegra/vic.c
-@@ -447,11 +447,20 @@ static const struct vic_config vic_t194_config = {
- 	.supports_sid = true,
- };
- 
-+#define NVIDIA_TEGRA_234_VIC_FIRMWARE "nvidia/tegra234/vic.bin"
-+
-+static const struct vic_config vic_t234_config = {
-+	.firmware = NVIDIA_TEGRA_234_VIC_FIRMWARE,
-+	.version = 0x23,
-+	.supports_sid = true,
-+};
-+
- static const struct of_device_id tegra_vic_of_match[] = {
- 	{ .compatible = "nvidia,tegra124-vic", .data = &vic_t124_config },
- 	{ .compatible = "nvidia,tegra210-vic", .data = &vic_t210_config },
- 	{ .compatible = "nvidia,tegra186-vic", .data = &vic_t186_config },
- 	{ .compatible = "nvidia,tegra194-vic", .data = &vic_t194_config },
-+	{ .compatible = "nvidia,tegra234-vic", .data = &vic_t234_config },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, tegra_vic_of_match);
-@@ -590,3 +599,6 @@ MODULE_FIRMWARE(NVIDIA_TEGRA_186_VIC_FIRMWARE);
- #if IS_ENABLED(CONFIG_ARCH_TEGRA_194_SOC)
- MODULE_FIRMWARE(NVIDIA_TEGRA_194_VIC_FIRMWARE);
- #endif
-+#if IS_ENABLED(CONFIG_ARCH_TEGRA_234_SOC)
-+MODULE_FIRMWARE(NVIDIA_TEGRA_234_VIC_FIRMWARE);
-+#endif
++void host1x_common_writel(struct host1x *host1x, u32 v, u32 r);
+ void host1x_hypervisor_writel(struct host1x *host1x, u32 r, u32 v);
+ u32 host1x_hypervisor_readl(struct host1x *host1x, u32 r);
+ void host1x_sync_writel(struct host1x *host1x, u32 r, u32 v);
 -- 
 2.36.1
 
