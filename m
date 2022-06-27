@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47ECBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA446C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235329AbiF0L2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
+        id S235337AbiF0L2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235133AbiF0L0v (ORCPT
+        with ESMTP id S235136AbiF0L0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:26:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E327657;
-        Mon, 27 Jun 2022 04:26:48 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BC465B7;
+        Mon, 27 Jun 2022 04:26:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2572B81125;
-        Mon, 27 Jun 2022 11:26:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54182C3411D;
-        Mon, 27 Jun 2022 11:26:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 125A661359;
+        Mon, 27 Jun 2022 11:26:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B402C3411D;
+        Mon, 27 Jun 2022 11:26:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329205;
-        bh=klJ26jnLWH9oFW4gAZy/aelKxwmR4wrpLRbrkGf00zU=;
+        s=korg; t=1656329208;
+        bh=vHphNEGDnvQP6fenj0WdjSl93B5+8QPE+d2p67vjjAI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S+tFMjaF+UtV8xJKEQHXSlpXFdKpqQWxMqkyRoCZTkRAT/tscIYEFXavCspxxsceJ
-         tRHPGtjvFBbTVFa8beUom577d8etlBDJy/dH0NaU7gYPY+UKgSZevtxVM+mScFNywz
-         ip5CNquFXhy87EJE8MtI5AwJ+hm7eeSZ/HiRnIdc=
+        b=oK26BNfr9l1amyD53G5DTjOqUvU1Z8kQjZBAZXPaYeOKZCH9T4SkHO/XXhmjephsN
+         Bi0eWR664vIaUD26StwwLi/jikonRViKsddAdqQ6C05iRqB4clRPAHB1ZKFCIWxSDB
+         p6Vfd3GR3SHXnapx/22mAeaCeDaQoRuJj2gCK/rs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Jie2x Zhou <jie2x.zhou@intel.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Julien Grall <jgrall@amazon.com>,
+        Juergen Gross <jgross@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 045/102] selftests: netfilter: correct PKTGEN_SCRIPT_PATHS in nft_concat_range.sh
-Date:   Mon, 27 Jun 2022 13:20:56 +0200
-Message-Id: <20220627111934.809301512@linuxfoundation.org>
+Subject: [PATCH 5.10 046/102] x86/xen: Remove undefined behavior in setup_features()
+Date:   Mon, 27 Jun 2022 13:20:57 +0200
+Message-Id: <20220627111934.838369816@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -50,58 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jie2x Zhou <jie2x.zhou@intel.com>
+From: Julien Grall <jgrall@amazon.com>
 
-[ Upstream commit 5d79d8af8dec58bf709b3124d09d9572edd9c617 ]
+[ Upstream commit ecb6237fa397b7b810d798ad19322eca466dbab1 ]
 
-Before change:
-make -C netfilter
- TEST: performance
-   net,port                                                      [SKIP]
-   perf not supported
-   port,net                                                      [SKIP]
-   perf not supported
-   net6,port                                                     [SKIP]
-   perf not supported
-   port,proto                                                    [SKIP]
-   perf not supported
-   net6,port,mac                                                 [SKIP]
-   perf not supported
-   net6,port,mac,proto                                           [SKIP]
-   perf not supported
-   net,mac                                                       [SKIP]
-   perf not supported
+1 << 31 is undefined. So switch to 1U << 31.
 
-After change:
-   net,mac                                                       [ OK ]
-     baseline (drop from netdev hook):               2061098pps
-     baseline hash (non-ranged entries):             1606741pps
-     baseline rbtree (match on first field only):    1191607pps
-     set with  1000 full, ranged entries:            1639119pps
-ok 8 selftests: netfilter: nft_concat_range.sh
-
-Fixes: 611973c1e06f ("selftests: netfilter: Introduce tests for sets with range concatenation")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 5ead97c84fa7 ("xen: Core Xen implementation")
+Signed-off-by: Julien Grall <jgrall@amazon.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220617103037.57828-1-julien@xen.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/netfilter/nft_concat_range.sh | 2 +-
+ drivers/xen/features.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/netfilter/nft_concat_range.sh b/tools/testing/selftests/netfilter/nft_concat_range.sh
-index b5eef5ffb58e..af3461cb5c40 100755
---- a/tools/testing/selftests/netfilter/nft_concat_range.sh
-+++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
-@@ -31,7 +31,7 @@ BUGS="flush_remove_add reload"
- 
- # List of possible paths to pktgen script from kernel tree for performance tests
- PKTGEN_SCRIPT_PATHS="
--	../../../samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-+	../../../../samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
- 	pktgen/pktgen_bench_xmit_mode_netif_receive.sh"
- 
- # Definition of set types:
+diff --git a/drivers/xen/features.c b/drivers/xen/features.c
+index 25c053b09605..2c306de228db 100644
+--- a/drivers/xen/features.c
++++ b/drivers/xen/features.c
+@@ -29,6 +29,6 @@ void xen_setup_features(void)
+ 		if (HYPERVISOR_xen_version(XENVER_get_features, &fi) < 0)
+ 			break;
+ 		for (j = 0; j < 32; j++)
+-			xen_features[i * 32 + j] = !!(fi.submap & 1<<j);
++			xen_features[i * 32 + j] = !!(fi.submap & 1U << j);
+ 	}
+ }
 -- 
 2.35.1
 
