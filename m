@@ -2,109 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1029C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D39AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:39:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236517AbiF0Nd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43182 "EHLO
+        id S234705AbiF0NjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236422AbiF0Ndx (ORCPT
+        with ESMTP id S232562AbiF0NjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:33:53 -0400
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A9A6362;
-        Mon, 27 Jun 2022 06:33:52 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id p136so10567648ybg.4;
-        Mon, 27 Jun 2022 06:33:52 -0700 (PDT)
+        Mon, 27 Jun 2022 09:39:21 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857CF2632
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:39:20 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id b26so733358wrc.2
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:39:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=A2rpvdTdJky26gjxX0wluRuHNjBpznBQ1xsrTKGuRiY=;
+        b=kYWrWYmuFgWQPrgKzLox1BngJgLIExXP9CaHuJesiYeTlxZT1HZ6OvOn8JXBkX7vU8
+         3P1n4NSnyaMgPp3+8c/Ph8658Tf3g6osU8LqI084DKJE9OXidUsja5tuE8f6PXdZPBPq
+         0IQ+Rgy9vwkN3C2kKHtfVrk6TYtLaWcJEEFNzl/dNDjCWT8Ehvgq9iWisTn4Sf1i6KG3
+         Xr1zFV9A7zyJH0zKqsHUWyp9AFYj1wcb801K/1bNSXp8WC2d43bV3gXSSxlqqGNFrRaS
+         O95SjZXOq5LT6enfnrdTlyiOmt6qJiPIHfyfQSNTVHWYNfvCdLUVYM9ZGSdSgUbY09ED
+         0u6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ztN9msliEJWcvQDVWkbiAiIE0Z0BrDUarJzwnIGzjC8=;
-        b=YMw94vLB9C1PkhH+V5lHE0rNhfmHkWJaK7kt3QhDenuKQWmlOhucJzTRK/EJtRlOFz
-         Z4g2MghMccb9BofygtQjvq9OZgzYxk5XUnE7BXcjXcLBe4fOgiG0T1uSsEyF7pZ/y5D7
-         Y0K5AhY2xgiMGskIMtjl3Bpz1fq/5WMAm9q4KnXqQmTB2pC/oVHN+vCICvOAB0CUOOAZ
-         X45fPwpS13QQljWbylupAd+bnSCQzSFaqS4Cb1g9VuESufeKYg+m6uj9B4mBZ0kKkpaD
-         eflb54zIg/XuaGOsi2kHXC2eRHI1/6KM94dep+34aylNVoV+BKMGGFWugk3tp01FQTKE
-         xCpw==
-X-Gm-Message-State: AJIora/VDoTB+FIrujhlgzNanPht2ZH2YhFobQkIuZabib40fWX4f1x+
-        0F3W2HZ7imnzrF99EXiVjNyEgw0YG0bu/Wmt0uTjOpZGsaQ=
-X-Google-Smtp-Source: AGRyM1u6nXPXMKry/ijjdna0qNq6kJB5nE2ej9khpTTJLBr+PLqFMi0SnjuJi+npHJWR1euI7/M9kBb9E9n/NceMoqk=
-X-Received: by 2002:a25:9004:0:b0:66c:97a4:3053 with SMTP id
- s4-20020a259004000000b0066c97a43053mr10112879ybl.137.1656336831002; Mon, 27
- Jun 2022 06:33:51 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=A2rpvdTdJky26gjxX0wluRuHNjBpznBQ1xsrTKGuRiY=;
+        b=CgAFjAW2sLrk813yL5R3ECVHcUz0k8zXMaVjgchT4c8leS6bxo7u+z0hPQ99lsMeTa
+         CZqPcSplwHF514AwbtzhQmjO9AKJmCxSNS1m5k+/TlZzSXSXOCgjLOb8R9pdsrucZ0Xu
+         Dvyw7acPgN3A1IZKg196yTkhEBsbzJpsY5K0AjUjRMl0f3f/QFTgpQUuet0ZA+m4juvn
+         g6MzZi572TELKkV6AYsJFKXuNg1BsYxLACjO8QWh50vQ+rjRW8bQYzVjUtG50UuHB14u
+         Og7cBYEGnG4t7kFG7182q9ksNdZfxs+cm6ci0F/8fkQc1Ag9QzHc285Drqdtt6h7lvDy
+         Cd3A==
+X-Gm-Message-State: AJIora//iB/+tJqLvUuBex+9BUfCnKZgJJ8unATErw/q2t62FuRsUuE3
+        KmL4kLw9gzO92KZp+Ll/p1xXgA6398Q5CQ==
+X-Google-Smtp-Source: AGRyM1sMQjhIbSaVz08xa6KLJWDsUxHu+zWE7lpsNUzkKnVT0e73zTMwhlQuatwI5VcI3SvwY1O0tA==
+X-Received: by 2002:a5d:6da3:0:b0:21b:aaf5:b814 with SMTP id u3-20020a5d6da3000000b0021baaf5b814mr12161489wrs.140.1656337159092;
+        Mon, 27 Jun 2022 06:39:19 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id n7-20020a5d67c7000000b0021b9e8d4c22sm10621650wrw.61.2022.06.27.06.39.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 06:39:18 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 14:39:16 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 5/9] mfd: intel_soc_pmic_crc: Switch from
+ CONFIG_PM_SLEEP guards to pm_sleep_ptr() etc
+Message-ID: <YrmzBCSTizn8Z8XK@google.com>
+References: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
+ <20220616182524.7956-5-andriy.shevchenko@linux.intel.com>
+ <YrmwBxjN9lCgS01X@google.com>
 MIME-Version: 1.0
-References: <4e1d5db9dea68d82c94336a1d6aac404@walle.cc> <b8ec04dc-f803-ee2c-29b7-b0311eb8c5fb@linaro.org>
-In-Reply-To: <b8ec04dc-f803-ee2c-29b7-b0311eb8c5fb@linaro.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 27 Jun 2022 15:33:37 +0200
-Message-ID: <CAJZ5v0jz=ee5TrvYs0_ovWn9sT06bcKDucmmocD8L-d9ZZ5DzQ@mail.gmail.com>
-Subject: Re: fwnode_for_each_child_node() and OF backend discrepancy
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Michael Walle <michael@walle.cc>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Saravana Kannan <saravanak@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YrmwBxjN9lCgS01X@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 3:08 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 27/06/2022 14:49, Michael Walle wrote:
-> > Hi,
-> >
-> > I tired to iterate over all child nodes, regardless if they are
-> > available
-> > or not. Now there is that handy fwnode_for_each_child_node() (and the
-> > fwnode_for_each_available_child_node()). The only thing is the OF
-> > backend
-> > already skips disabled nodes [1], making fwnode_for_each_child_node()
-> > and
-> > fwnode_for_each_available_child_node() behave the same with the OF
-> > backend.
-> >
-> > Doesn't seem to be noticed by anyone for now. I'm not sure how to fix
-> > that
-> > one. fwnode_for_each_child_node() and also fwnode_get_next_child_node()
-> > are
-> > used by a handful of drivers. I've looked at some, but couldn't decide
-> > whether they really want to iterate over all child nodes or just the
-> > enabled
-> > ones.
->
-> If I get it correctly, this was introduced  by 8a0662d9ed29 ("Driver
-> core: Unified interface for firmware node properties")
-> .
+On Mon, 27 Jun 2022, Lee Jones wrote:
 
-Originally it was, but then it has been reworked a few times.
+> On Thu, 16 Jun 2022, Andy Shevchenko wrote:
+> 
+> > Letting the compiler remove these functions when the kernel is built
+> > without CONFIG_PM_SLEEP support is simpler and less error prone than the
+> > use of #ifdef based kernel configuration guards.
+> > 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > ---
+> >  drivers/mfd/intel_soc_pmic_crc.c | 7 ++-----
+> >  1 file changed, 2 insertions(+), 5 deletions(-)
+> 
+> Applied, thanks.
 
-The backend callbacks were introduced by Sakari, in particular.
+Sorry, wrong key combo - long day:
 
-> The question to Rafael - what was your intention when you added
-> device_get_next_child_node() looking only for available nodes?
+For my own reference (apply this as-is to your sign-off block):
 
-That depends on the backend.
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 
-fwnode_for_each_available_child_node() is more specific and IIRC it
-was introduced for fw_devlink (CC Saravana).
-
-> My understanding is that this implementation should be consistent with
-> OF implementation, so fwnode_get_next_child_node=get any child.
-
-IIUC, the OF implementation is not consistent with the
-fwnode_get_next_child_node=get any child thing.
-
-> However maybe ACPI treats it somehow differently?
-
-acpi_get_next_subnode() simply returns the next subnode it can find.
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
