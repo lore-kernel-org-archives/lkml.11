@@ -2,581 +2,543 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC82C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:10:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DE0CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:10:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240629AbiF0UKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 16:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54908 "EHLO
+        id S240367AbiF0UKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 16:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241135AbiF0UKJ (ORCPT
+        with ESMTP id S239355AbiF0UKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 16:10:09 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1D11F2C0;
-        Mon, 27 Jun 2022 13:10:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656360608; x=1687896608;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wgu6POdzgV8KAlLItDO1QhgVKPEmcMH6pP30KL3/CCk=;
-  b=HdpX5BUOWAFo5g4rNsZG5WFsp8edZtb6K5nTf7W4f6N49Fkg8TOiGD8+
-   g0TnGh5a1ok2DqYxHdHsvLNb+GE3xbN69I4JhNKfYI82z2L9w1+Xz+VMV
-   zkO8OAktETVGbM/gtGQ+YpvnvLvxr8NllGYFEA2cy7uAMsGjxg1JrnUO7
-   eGzbT3gOeQhy9Y0qti4Sxu6Z6nLYaZEC9+U26lslXrvN6oW/EKmslJdCq
-   D0YUG0f1RD//7yj+XdRsFwqI7LMBN1U//QNYPjwIgK2zrAU8Yvai+ekk6
-   xB5DdQDV9yyIIP/j0Uun45d5jDpTok9USW6UGHT8QYA74//Lotv39Py2R
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="169809425"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jun 2022 13:10:08 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 27 Jun 2022 13:09:58 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 27 Jun 2022 13:09:56 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 5/7] net: lan966x: Add lag support for lan966x.
-Date:   Mon, 27 Jun 2022 22:13:28 +0200
-Message-ID: <20220627201330.45219-6-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220627201330.45219-1-horatiu.vultur@microchip.com>
-References: <20220627201330.45219-1-horatiu.vultur@microchip.com>
+        Mon, 27 Jun 2022 16:10:49 -0400
+Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9061E1F2E9
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:10:47 -0700 (PDT)
+Received: by mail-oo1-xc2b.google.com with SMTP id f10-20020a4aa68a000000b0042579cb6238so2090018oom.7
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:10:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hFExjqqaFZRyzvRO/3MzKxEpNEgPwycl58jKIyFzQp8=;
+        b=MP3Z0zzW726o54qM6nWHhk5n9UljfNI9Z1E1qmkbbR0n68hrYbTO4sSZypZFX8bPT/
+         FYdihhVt0SggpXBlCwnoA1HYQndVt1WGsOYdbbIrVr5f15/mMPmSJ0gDbYjVxAFWq5kF
+         9PLE7Jwy2kJWhFofHh8Ws1OvDPlDUpfzuc9w4QtSjFFTW4u1vwD582pXJrIzdVIjzO2f
+         zOZtE7jLyifrzhaIo6XEC33l+c6fP4FT3aK2/XF38lHjI2AB6Sk9xld5ja0ROPl4Mm29
+         Ik8RDEBmaoHcrIqzTxAWf8trKeoK0h7AwznQN0pIgj6N3/ymhCgjQaaHdIpiM/WIP3wD
+         TArg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hFExjqqaFZRyzvRO/3MzKxEpNEgPwycl58jKIyFzQp8=;
+        b=RKhN114r7ONpxVQ4+4szFP6UJn+MMdOic4b5ffjrP2acIBXO9mW+9zFvnibxTwpr15
+         OIXV8ls24UcZLkVzn27Er+0TZHP4b2MEDoEx5aJdG+gAwtiIjTFmpVrcjkuayzejFqSu
+         0q7Qp+UVSutwBppLX0AdawuQaSu1dC1oHQJ36CN6oEqVfHam6O3TwASfB2zaFNHcdfXi
+         +IH6gsdQGC+pnjKFqM0TMJ5msyNdlJLUrBGc2M+cttRwlbC3CpRVjAbjD5AB4oiF8qfl
+         i+vFB+LV+365VXx3b9R1PRubFB07zbQOOzj0OvNdi2uamGHqPET9pzEp2zVeAxJozWmb
+         lbIw==
+X-Gm-Message-State: AJIora/Vz/wj/2wdDTh6LOuzT/UIF/V3RSZsJ09F1cS8Y2rCpP1kX8Gx
+        a206vZqzsZKZyWk51qRYuAwnzw==
+X-Google-Smtp-Source: AGRyM1tEovjEORdjnv/VCojfJMAHXrvvk7tPOwNbVkO0shIRs17+RLgsnRW380Ev5ttYeBU/LmQdVg==
+X-Received: by 2002:a4a:8688:0:b0:41f:8ef5:5b3e with SMTP id x8-20020a4a8688000000b0041f8ef55b3emr6630331ooh.34.1656360646805;
+        Mon, 27 Jun 2022 13:10:46 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id e28-20020a0568301f3c00b00616e3fcadaasm78599oth.62.2022.06.27.13.10.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 13:10:46 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 15:10:44 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] arm64: dts: qcom: align OPP table names with DT schema
+Message-ID: <YroOxPn/mQjJiJtX@builder.lan>
+References: <20220627093250.84391-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627093250.84391-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add link aggregation hardware offload support for lan966x
+On Mon 27 Jun 04:32 CDT 2022, Krzysztof Kozlowski wrote:
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
- .../ethernet/microchip/lan966x/lan966x_lag.c  | 292 ++++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_main.h |  27 ++
- .../microchip/lan966x/lan966x_switchdev.c     |  77 ++++-
- 4 files changed, 382 insertions(+), 16 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+> DT schema expects names of operating points tables to start with
+> "opp-table":
+> 
+>   ipq6018-cp01-c1.dtb: cpu_opp_table: $nodename:0: 'cpu_opp_table' does not match '^opp-table(-[a-z0-9]+)?$'
+> 
+> Use hyphens instead of underscores, fix the names to match DT schema or
+> remove the prefix entirely when it is not needed.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
-index fd2e0ebb2427..0c22c86bdaa9 100644
---- a/drivers/net/ethernet/microchip/lan966x/Makefile
-+++ b/drivers/net/ethernet/microchip/lan966x/Makefile
-@@ -8,4 +8,4 @@ obj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o
- lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
- 			lan966x_mac.o lan966x_ethtool.o lan966x_switchdev.o \
- 			lan966x_vlan.o lan966x_fdb.o lan966x_mdb.o \
--			lan966x_ptp.o lan966x_fdma.o
-+			lan966x_ptp.o lan966x_fdma.o lan966x_lag.o
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-new file mode 100644
-index 000000000000..0da398e51aa3
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-@@ -0,0 +1,292 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include "lan966x_main.h"
-+
-+static void lan966x_lag_set_aggr_pgids(struct lan966x *lan966x)
-+{
-+	u32 visited = GENMASK(lan966x->num_phys_ports - 1, 0);
-+	int p, lag, i;
-+
-+	/* Reset destination and aggregation PGIDS */
-+	for (p = 0; p < lan966x->num_phys_ports; ++p)
-+		lan_wr(ANA_PGID_PGID_SET(BIT(p)),
-+		       lan966x, ANA_PGID(p));
-+
-+	for (p = PGID_AGGR; p < PGID_SRC; ++p)
-+		lan_wr(ANA_PGID_PGID_SET(visited),
-+		       lan966x, ANA_PGID(p));
-+
-+	/* The visited ports bitmask holds the list of ports offloading any
-+	 * bonding interface. Initially we mark all these ports as unvisited,
-+	 * then every time we visit a port in this bitmask, we know that it is
-+	 * the lowest numbered port, i.e. the one whose logical ID == physical
-+	 * port ID == LAG ID. So we mark as visited all further ports in the
-+	 * bitmask that are offloading the same bonding interface. This way,
-+	 * we set up the aggregation PGIDs only once per bonding interface.
-+	 */
-+	for (p = 0; p < lan966x->num_phys_ports; ++p) {
-+		struct lan966x_port *port = lan966x->ports[p];
-+
-+		if (!port || !port->bond)
-+			continue;
-+
-+		visited &= ~BIT(p);
-+	}
-+
-+	/* Now, set PGIDs for each active LAG */
-+	for (lag = 0; lag < lan966x->num_phys_ports; ++lag) {
-+		struct net_device *bond = lan966x->ports[lag]->bond;
-+		int num_active_ports = 0;
-+		unsigned long bond_mask;
-+		u8 aggr_idx[16];
-+
-+		if (!bond || (visited & BIT(lag)))
-+			continue;
-+
-+		bond_mask = lan966x_lag_get_mask(lan966x, bond);
-+
-+		for_each_set_bit(p, &bond_mask, lan966x->num_phys_ports) {
-+			struct lan966x_port *port = lan966x->ports[p];
-+
-+			lan_wr(ANA_PGID_PGID_SET(bond_mask),
-+			       lan966x, ANA_PGID(p));
-+			if (port->lag_tx_active)
-+				aggr_idx[num_active_ports++] = p;
-+		}
-+
-+		for (i = PGID_AGGR; i < PGID_SRC; ++i) {
-+			u32 ac;
-+
-+			ac = lan_rd(lan966x, ANA_PGID(i));
-+			ac &= ~bond_mask;
-+			/* Don't do division by zero if there was no active
-+			 * port. Just make all aggregation codes zero.
-+			 */
-+			if (num_active_ports)
-+				ac |= BIT(aggr_idx[i % num_active_ports]);
-+			lan_wr(ANA_PGID_PGID_SET(ac),
-+			       lan966x, ANA_PGID(i));
-+		}
-+
-+		/* Mark all ports in the same LAG as visited to avoid applying
-+		 * the same config again.
-+		 */
-+		for (p = lag; p < lan966x->num_phys_ports; p++) {
-+			struct lan966x_port *port = lan966x->ports[p];
-+
-+			if (!port)
-+				continue;
-+
-+			if (port->bond == bond)
-+				visited |= BIT(p);
-+		}
-+	}
-+}
-+
-+static void lan966x_lag_set_port_ids(struct lan966x *lan966x)
-+{
-+	struct lan966x_port *port;
-+	u32 bond_mask;
-+	u32 lag_id;
-+	int p;
-+
-+	for (p = 0; p < lan966x->num_phys_ports; ++p) {
-+		port = lan966x->ports[p];
-+		if (!port)
-+			continue;
-+
-+		lag_id = port->chip_port;
-+
-+		bond_mask = lan966x_lag_get_mask(lan966x, port->bond);
-+		if (bond_mask)
-+			lag_id = __ffs(bond_mask);
-+
-+		lan_rmw(ANA_PORT_CFG_PORTID_VAL_SET(lag_id),
-+			ANA_PORT_CFG_PORTID_VAL,
-+			lan966x, ANA_PORT_CFG(port->chip_port));
-+	}
-+}
-+
-+int lan966x_lag_port_join(struct lan966x_port *port,
-+			  struct net_device *brport_dev,
-+			  struct net_device *bond,
-+			  struct netlink_ext_ack *extack)
-+{
-+	struct lan966x *lan966x = port->lan966x;
-+	struct net_device *dev = port->dev;
-+
-+	port->bond = bond;
-+	lan966x_lag_set_port_ids(lan966x);
-+	lan966x_update_fwd_mask(lan966x);
-+	lan966x_lag_set_aggr_pgids(lan966x);
-+
-+	switchdev_bridge_port_offload(brport_dev, dev, port,
-+				      &lan966x_switchdev_nb,
-+				      &lan966x_switchdev_blocking_nb,
-+				      false, extack);
-+
-+	return 0;
-+}
-+
-+void lan966x_lag_port_leave(struct lan966x_port *port, struct net_device *bond)
-+{
-+	struct lan966x *lan966x = port->lan966x;
-+
-+	port->bond = NULL;
-+	lan966x_lag_set_port_ids(lan966x);
-+	lan966x_update_fwd_mask(lan966x);
-+	lan966x_lag_set_aggr_pgids(lan966x);
-+}
-+
-+int lan966x_lag_port_prechangeupper(struct net_device *dev,
-+				    struct netdev_notifier_changeupper_info *info)
-+{
-+	struct lan966x_port *port = netdev_priv(dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	struct netdev_lag_upper_info *lui;
-+	struct netlink_ext_ack *extack;
-+
-+	extack = netdev_notifier_info_to_extack(&info->info);
-+	lui = info->upper_info;
-+	if (!lui)
-+		return NOTIFY_DONE;
-+
-+	if (lui->tx_type != NETDEV_LAG_TX_TYPE_HASH) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "LAG device using unsupported Tx type");
-+		return notifier_from_errno(-EINVAL);
-+	}
-+
-+	switch (lui->hash_type) {
-+	case NETDEV_LAG_HASH_L2:
-+		lan_wr(ANA_AGGR_CFG_AC_DMAC_ENA_SET(1) |
-+		       ANA_AGGR_CFG_AC_SMAC_ENA_SET(1),
-+		       lan966x, ANA_AGGR_CFG);
-+		break;
-+	case NETDEV_LAG_HASH_L34:
-+		lan_wr(ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA_SET(1) |
-+		       ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA_SET(1) |
-+		       ANA_AGGR_CFG_AC_IP4_SIPDIP_ENA_SET(1),
-+		       lan966x, ANA_AGGR_CFG);
-+		break;
-+	case NETDEV_LAG_HASH_L23:
-+		lan_wr(ANA_AGGR_CFG_AC_DMAC_ENA_SET(1) |
-+		       ANA_AGGR_CFG_AC_SMAC_ENA_SET(1) |
-+		       ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA_SET(1) |
-+		       ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA_SET(1),
-+		       lan966x, ANA_AGGR_CFG);
-+		break;
-+	default:
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "LAG device using unsupported hash type");
-+		return notifier_from_errno(-EINVAL);
-+	}
-+
-+	return NOTIFY_OK;
-+}
-+
-+int lan966x_lag_port_changelowerstate(struct net_device *dev,
-+				      struct netdev_notifier_changelowerstate_info *info)
-+{
-+	struct netdev_lag_lower_state_info *lag = info->lower_state_info;
-+	struct lan966x_port *port = netdev_priv(dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	bool is_active;
-+
-+	if (!port->bond)
-+		return NOTIFY_DONE;
-+
-+	is_active = lag->link_up && lag->tx_enabled;
-+	if (port->lag_tx_active == is_active)
-+		return NOTIFY_DONE;
-+
-+	port->lag_tx_active = is_active;
-+	lan966x_lag_set_aggr_pgids(lan966x);
-+
-+	return NOTIFY_OK;
-+}
-+
-+int lan966x_lag_netdev_prechangeupper(struct net_device *dev,
-+				      struct netdev_notifier_changeupper_info *info)
-+{
-+	struct lan966x_port *port;
-+	struct net_device *lower;
-+	struct list_head *iter;
-+	int err;
-+
-+	netdev_for_each_lower_dev(dev, lower, iter) {
-+		if (!lan966x_netdevice_check(lower))
-+			continue;
-+
-+		port = netdev_priv(lower);
-+		if (port->bond != dev)
-+			continue;
-+
-+		err = lan966x_port_prechangeupper(lower, dev, info);
-+		if (err)
-+			return err;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
-+int lan966x_lag_netdev_changeupper(struct net_device *dev,
-+				   struct netdev_notifier_changeupper_info *info)
-+{
-+	struct lan966x_port *port;
-+	struct net_device *lower;
-+	struct list_head *iter;
-+	int err;
-+
-+	netdev_for_each_lower_dev(dev, lower, iter) {
-+		if (!lan966x_netdevice_check(lower))
-+			continue;
-+
-+		port = netdev_priv(lower);
-+		if (port->bond != dev)
-+			continue;
-+
-+		err = lan966x_port_changeupper(lower, dev, info);
-+		if (err)
-+			return err;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
-+bool lan966x_lag_first_port(struct net_device *lag, struct net_device *dev)
-+{
-+	struct lan966x_port *port = netdev_priv(dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	unsigned long bond_mask;
-+
-+	if (port->bond != lag)
-+		return false;
-+
-+	bond_mask = lan966x_lag_get_mask(lan966x, lag);
-+	if (bond_mask && port->chip_port == __ffs(bond_mask))
-+		return true;
-+
-+	return false;
-+}
-+
-+u32 lan966x_lag_get_mask(struct lan966x *lan966x, struct net_device *bond)
-+{
-+	struct lan966x_port *port;
-+	u32 mask = 0;
-+	int p;
-+
-+	if (!bond)
-+		return mask;
-+
-+	for (p = 0; p < lan966x->num_phys_ports; p++) {
-+		port = lan966x->ports[p];
-+		if (!port)
-+			continue;
-+
-+		if (port->bond == bond)
-+			mask |= BIT(p);
-+	}
-+
-+	return mask;
-+}
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 4701c20c8393..23ddabea8d70 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -291,6 +291,9 @@ struct lan966x_port {
- 	u8 ptp_cmd;
- 	u16 ts_id;
- 	struct sk_buff_head tx_skbs;
-+
-+	struct net_device *bond;
-+	bool lag_tx_active;
- };
- 
- extern const struct phylink_mac_ops lan966x_phylink_mac_ops;
-@@ -407,6 +410,30 @@ int lan966x_fdma_init(struct lan966x *lan966x);
- void lan966x_fdma_deinit(struct lan966x *lan966x);
- irqreturn_t lan966x_fdma_irq_handler(int irq, void *args);
- 
-+int lan966x_lag_port_join(struct lan966x_port *port,
-+			  struct net_device *brport_dev,
-+			  struct net_device *bond,
-+			  struct netlink_ext_ack *extack);
-+void lan966x_lag_port_leave(struct lan966x_port *port, struct net_device *bond);
-+int lan966x_lag_port_prechangeupper(struct net_device *dev,
-+				    struct netdev_notifier_changeupper_info *info);
-+int lan966x_lag_port_changelowerstate(struct net_device *dev,
-+				      struct netdev_notifier_changelowerstate_info *info);
-+int lan966x_lag_netdev_prechangeupper(struct net_device *dev,
-+				      struct netdev_notifier_changeupper_info *info);
-+int lan966x_lag_netdev_changeupper(struct net_device *dev,
-+				   struct netdev_notifier_changeupper_info *info);
-+bool lan966x_lag_first_port(struct net_device *lag, struct net_device *dev);
-+u32 lan966x_lag_get_mask(struct lan966x *lan966x, struct net_device *bond);
-+
-+int lan966x_port_changeupper(struct net_device *dev,
-+			     struct net_device *brport_dev,
-+			     struct netdev_notifier_changeupper_info *info);
-+int lan966x_port_prechangeupper(struct net_device *dev,
-+				struct net_device *brport_dev,
-+				struct netdev_notifier_changeupper_info *info);
-+void lan966x_update_fwd_mask(struct lan966x *lan966x);
-+
- static inline void __iomem *lan_addr(void __iomem *base[],
- 				     int id, int tinst, int tcnt,
- 				     int gbase, int ginst,
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-index 4bc626ce031a..84d54e528501 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-@@ -130,7 +130,7 @@ static int lan966x_port_pre_bridge_flags(struct lan966x_port *port,
- 	return 0;
- }
- 
--static void lan966x_update_fwd_mask(struct lan966x *lan966x)
-+void lan966x_update_fwd_mask(struct lan966x *lan966x)
- {
- 	int i;
- 
-@@ -138,9 +138,14 @@ static void lan966x_update_fwd_mask(struct lan966x *lan966x)
- 		struct lan966x_port *port = lan966x->ports[i];
- 		unsigned long mask = 0;
- 
--		if (port && lan966x->bridge_fwd_mask & BIT(i))
-+		if (port && lan966x->bridge_fwd_mask & BIT(i)) {
- 			mask = lan966x->bridge_fwd_mask & ~BIT(i);
- 
-+			if (port->bond)
-+				mask &= ~lan966x_lag_get_mask(lan966x,
-+							      port->bond);
-+		}
-+
- 		mask |= BIT(CPU_PORT);
- 
- 		lan_wr(ANA_PGID_PGID_SET(mask),
-@@ -239,6 +244,7 @@ static int lan966x_port_attr_set(struct net_device *dev, const void *ctx,
- }
- 
- static int lan966x_port_bridge_join(struct lan966x_port *port,
-+				    struct net_device *brport_dev,
- 				    struct net_device *bridge,
- 				    struct netlink_ext_ack *extack)
- {
-@@ -256,7 +262,7 @@ static int lan966x_port_bridge_join(struct lan966x_port *port,
- 		}
- 	}
- 
--	err = switchdev_bridge_port_offload(dev, dev, port,
-+	err = switchdev_bridge_port_offload(brport_dev, dev, port,
- 					    &lan966x_switchdev_nb,
- 					    &lan966x_switchdev_blocking_nb,
- 					    false, extack);
-@@ -293,8 +299,9 @@ static void lan966x_port_bridge_leave(struct lan966x_port *port,
- 	lan966x_vlan_port_apply(port);
- }
- 
--static int lan966x_port_changeupper(struct net_device *dev,
--				    struct netdev_notifier_changeupper_info *info)
-+int lan966x_port_changeupper(struct net_device *dev,
-+			     struct net_device *brport_dev,
-+			     struct netdev_notifier_changeupper_info *info)
- {
- 	struct lan966x_port *port = netdev_priv(dev);
- 	struct netlink_ext_ack *extack;
-@@ -304,25 +311,42 @@ static int lan966x_port_changeupper(struct net_device *dev,
- 
- 	if (netif_is_bridge_master(info->upper_dev)) {
- 		if (info->linking)
--			err = lan966x_port_bridge_join(port, info->upper_dev,
-+			err = lan966x_port_bridge_join(port, brport_dev,
-+						       info->upper_dev,
- 						       extack);
- 		else
- 			lan966x_port_bridge_leave(port, info->upper_dev);
- 	}
- 
-+	if (netif_is_lag_master(info->upper_dev)) {
-+		if (info->linking)
-+			err = lan966x_lag_port_join(port, info->upper_dev,
-+						    info->upper_dev,
-+						    extack);
-+		else
-+			lan966x_lag_port_leave(port, info->upper_dev);
-+	}
-+
- 	return err;
- }
- 
--static int lan966x_port_prechangeupper(struct net_device *dev,
--				       struct netdev_notifier_changeupper_info *info)
-+int lan966x_port_prechangeupper(struct net_device *dev,
-+				struct net_device *brport_dev,
-+				struct netdev_notifier_changeupper_info *info)
- {
- 	struct lan966x_port *port = netdev_priv(dev);
-+	int err = NOTIFY_DONE;
- 
- 	if (netif_is_bridge_master(info->upper_dev) && !info->linking)
--		switchdev_bridge_port_unoffload(port->dev, port,
--						NULL, NULL);
-+		switchdev_bridge_port_unoffload(brport_dev, port, NULL, NULL);
- 
--	return NOTIFY_DONE;
-+	if (netif_is_lag_master(info->upper_dev) && info->linking)
-+		err = lan966x_lag_port_prechangeupper(dev, info);
-+
-+	if (netif_is_lag_master(info->upper_dev) && !info->linking)
-+		switchdev_bridge_port_unoffload(brport_dev, port, NULL, NULL);
-+
-+	return err;
- }
- 
- static int lan966x_foreign_bridging_check(struct net_device *upper,
-@@ -400,21 +424,44 @@ static int lan966x_netdevice_port_event(struct net_device *dev,
- 	int err = 0;
- 
- 	if (!lan966x_netdevice_check(dev)) {
--		if (event == NETDEV_CHANGEUPPER)
--			return lan966x_bridge_check(dev, ptr);
-+		switch (event) {
-+		case NETDEV_CHANGEUPPER:
-+		case NETDEV_PRECHANGEUPPER:
-+			err = lan966x_bridge_check(dev, ptr);
-+			if (err)
-+				return err;
-+
-+			if (netif_is_lag_master(dev)) {
-+				if (event == NETDEV_CHANGEUPPER)
-+					err = lan966x_lag_netdev_changeupper(dev,
-+									     ptr);
-+				else
-+					err = lan966x_lag_netdev_prechangeupper(dev,
-+										ptr);
-+
-+				return err;
-+			}
-+			break;
-+		default:
-+			return 0;
-+		}
-+
- 		return 0;
- 	}
- 
- 	switch (event) {
- 	case NETDEV_PRECHANGEUPPER:
--		err = lan966x_port_prechangeupper(dev, ptr);
-+		err = lan966x_port_prechangeupper(dev, dev, ptr);
- 		break;
- 	case NETDEV_CHANGEUPPER:
- 		err = lan966x_bridge_check(dev, ptr);
- 		if (err)
- 			return err;
- 
--		err = lan966x_port_changeupper(dev, ptr);
-+		err = lan966x_port_changeupper(dev, dev, ptr);
-+		break;
-+	case NETDEV_CHANGELOWERSTATE:
-+		err = lan966x_lag_port_changelowerstate(dev, ptr);
- 		break;
- 	}
- 
--- 
-2.33.0
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
+> 
+> ---
+> 
+> Changes since v1:
+> 1. Extend commit msg.
+> ---
+>  arch/arm64/boot/dts/qcom/ipq6018.dtsi |  2 +-
+>  arch/arm64/boot/dts/qcom/msm8916.dtsi |  2 +-
+>  arch/arm64/boot/dts/qcom/sc7180.dtsi  | 18 +++++++++---------
+>  arch/arm64/boot/dts/qcom/sc7280.dtsi  | 12 ++++++------
+>  arch/arm64/boot/dts/qcom/sdm630.dtsi  |  4 ++--
+>  arch/arm64/boot/dts/qcom/sdm845.dtsi  | 16 ++++++++--------
+>  arch/arm64/boot/dts/qcom/sm6350.dtsi  |  4 ++--
+>  arch/arm64/boot/dts/qcom/sm8150.dtsi  |  8 ++++----
+>  arch/arm64/boot/dts/qcom/sm8250.dtsi  | 16 ++++++++--------
+>  arch/arm64/boot/dts/qcom/sm8350.dtsi  |  4 ++--
+>  arch/arm64/boot/dts/qcom/sm8450.dtsi  |  2 +-
+>  11 files changed, 44 insertions(+), 44 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> index 0034a20a9705..8f528b8a5fec 100644
+> --- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> @@ -87,7 +87,7 @@ L2_0: l2-cache {
+>  		};
+>  	};
+>  
+> -	cpu_opp_table: cpu_opp_table {
+> +	cpu_opp_table: opp-table-cpu {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+> index 05472510e29d..ec22668e641b 100644
+> --- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+> @@ -216,7 +216,7 @@ CLUSTER_PWRDN: cluster-gdhs {
+>  		};
+>  	};
+>  
+> -	cpu_opp_table: cpu-opp-table {
+> +	cpu_opp_table: opp-table-cpu {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+> index 0abc765c615e..3a222ac71cca 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+> @@ -398,7 +398,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
+>  		};
+>  	};
+>  
+> -	cpu0_opp_table: cpu0_opp_table {
+> +	cpu0_opp_table: opp-table-cpu0 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -453,7 +453,7 @@ cpu0_opp10: opp-1804800000 {
+>  		};
+>  	};
+>  
+> -	cpu6_opp_table: cpu6_opp_table {
+> +	cpu6_opp_table: opp-table-cpu6 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -725,7 +725,7 @@ sdhc_1: sdhci@7c4000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc1_opp_table: sdhc1-opp-table {
+> +			sdhc1_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-100000000 {
+> @@ -744,7 +744,7 @@ opp-384000000 {
+>  			};
+>  		};
+>  
+> -		qup_opp_table: qup-opp-table {
+> +		qup_opp_table: opp-table-qup {
+>  			compatible = "operating-points-v2";
+>  
+>  			opp-75000000 {
+> @@ -2602,7 +2602,7 @@ sdhc_2: sdhci@8804000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc2_opp_table: sdhc2-opp-table {
+> +			sdhc2_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-100000000 {
+> @@ -2621,7 +2621,7 @@ opp-202000000 {
+>  			};
+>  		};
+>  
+> -		qspi_opp_table: qspi-opp-table {
+> +		qspi_opp_table: opp-table-qspi {
+>  			compatible = "operating-points-v2";
+>  
+>  			opp-75000000 {
+> @@ -2825,7 +2825,7 @@ video-encoder {
+>  				compatible = "venus-encoder";
+>  			};
+>  
+> -			venus_opp_table: venus-opp-table {
+> +			venus_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-150000000 {
+> @@ -2963,7 +2963,7 @@ dpu_intf0_out: endpoint {
+>  					};
+>  				};
+>  
+> -				mdp_opp_table: mdp-opp-table {
+> +				mdp_opp_table: opp-table {
+>  					compatible = "operating-points-v2";
+>  
+>  					opp-200000000 {
+> @@ -3042,7 +3042,7 @@ dsi0_out: endpoint {
+>  					};
+>  				};
+>  
+> -				dsi_opp_table: dsi-opp-table {
+> +				dsi_opp_table: opp-table {
+>  					compatible = "operating-points-v2";
+>  
+>  					opp-187500000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index fbe0633a0841..b387fab78bd8 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -417,7 +417,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
+>  		};
+>  	};
+>  
+> -	cpu0_opp_table: cpu0-opp-table {
+> +	cpu0_opp_table: opp-table-cpu0 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -477,7 +477,7 @@ cpu0_opp_2016mhz: opp-2016000000 {
+>  		};
+>  	};
+>  
+> -	cpu4_opp_table: cpu4-opp-table {
+> +	cpu4_opp_table: opp-table-cpu4 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -547,7 +547,7 @@ cpu4_opp_2611mhz: opp-2611200000 {
+>  		};
+>  	};
+>  
+> -	cpu7_opp_table: cpu7-opp-table {
+> +	cpu7_opp_table: opp-table-cpu7 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -763,7 +763,7 @@ psci {
+>  		method = "smc";
+>  	};
+>  
+> -	qspi_opp_table: qspi-opp-table {
+> +	qspi_opp_table: opp-table-qspi {
+>  		compatible = "operating-points-v2";
+>  
+>  		opp-75000000 {
+> @@ -787,7 +787,7 @@ opp-300000000 {
+>  		};
+>  	};
+>  
+> -	qup_opp_table: qup-opp-table {
+> +	qup_opp_table: opp-table-qup {
+>  		compatible = "operating-points-v2";
+>  
+>  		opp-75000000 {
+> @@ -3334,7 +3334,7 @@ video-firmware {
+>  				iommus = <&apps_smmu 0x21a2 0x0>;
+>  			};
+>  
+> -			venus_opp_table: venus-opp-table {
+> +			venus_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-133330000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
+> index 2a2944e16945..b4367339d8b9 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
+> @@ -1405,7 +1405,7 @@ mmcc: clock-controller@c8c0000 {
+>  					<0>;
+>  		};
+>  
+> -		dsi_opp_table: dsi-opp-table {
+> +		dsi_opp_table: opp-table-dsi {
+>  			compatible = "operating-points-v2";
+>  
+>  			opp-131250000 {
+> @@ -1494,7 +1494,7 @@ mdp5_intf1_out: endpoint {
+>  					};
+>  				};
+>  
+> -				mdp_opp_table: mdp-opp {
+> +				mdp_opp_table: opp-table {
+>  					compatible = "operating-points-v2";
+>  
+>  					opp-150000000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> index b96d0aa9f10b..2e9d93d6b28a 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> @@ -462,7 +462,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
+>  		};
+>  	};
+>  
+> -	cpu0_opp_table: cpu0_opp_table {
+> +	cpu0_opp_table: opp-table-cpu0 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -557,7 +557,7 @@ cpu0_opp18: opp-1766400000 {
+>  		};
+>  	};
+>  
+> -	cpu4_opp_table: cpu4_opp_table {
+> +	cpu4_opp_table: opp-table-cpu4 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -1104,7 +1104,7 @@ rng: rng@793000 {
+>  			clock-names = "core";
+>  		};
+>  
+> -		qup_opp_table: qup-opp-table {
+> +		qup_opp_table: opp-table-qup {
+>  			compatible = "operating-points-v2";
+>  
+>  			opp-50000000 {
+> @@ -3569,7 +3569,7 @@ sdhc_2: sdhci@8804000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc2_opp_table: sdhc2-opp-table {
+> +			sdhc2_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-9600000 {
+> @@ -3594,7 +3594,7 @@ opp-201500000 {
+>  			};
+>  		};
+>  
+> -		qspi_opp_table: qspi-opp-table {
+> +		qspi_opp_table: opp-table-qspi {
+>  			compatible = "operating-points-v2";
+>  
+>  			opp-19200000 {
+> @@ -3971,7 +3971,7 @@ video-core1 {
+>  				compatible = "venus-encoder";
+>  			};
+>  
+> -			venus_opp_table: venus-opp-table {
+> +			venus_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-100000000 {
+> @@ -4208,7 +4208,7 @@ clock_camcc: clock-controller@ad00000 {
+>  			clock-names = "bi_tcxo";
+>  		};
+>  
+> -		dsi_opp_table: dsi-opp-table {
+> +		dsi_opp_table: opp-table-dsi {
+>  			compatible = "operating-points-v2";
+>  
+>  			opp-19200000 {
+> @@ -4310,7 +4310,7 @@ dpu_intf2_out: endpoint {
+>  					};
+>  				};
+>  
+> -				mdp_opp_table: mdp-opp-table {
+> +				mdp_opp_table: opp-table {
+>  					compatible = "operating-points-v2";
+>  
+>  					opp-19200000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sm6350.dtsi b/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> index d4f8f33f3f0c..9297aa53d860 100644
+> --- a/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> @@ -497,7 +497,7 @@ sdhc_1: sdhci@7c4000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc1_opp_table: sdhc1-opp-table {
+> +			sdhc1_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-19200000 {
+> @@ -941,7 +941,7 @@ sdhc_2: sdhci@8804000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc2_opp_table: sdhc2-opp-table {
+> +			sdhc2_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-100000000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> index d3fd0af61766..c0c96c557bb0 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> @@ -288,7 +288,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
+>  		};
+>  	};
+>  
+> -	cpu0_opp_table: cpu0_opp_table {
+> +	cpu0_opp_table: opp-table-cpu0 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -383,7 +383,7 @@ cpu0_opp18: opp-1785600000 {
+>  		};
+>  	};
+>  
+> -	cpu4_opp_table: cpu4_opp_table {
+> +	cpu4_opp_table: opp-table-cpu4 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -473,7 +473,7 @@ cpu4_opp17: opp-2419200000 {
+>  		};
+>  	};
+>  
+> -	cpu7_opp_table: cpu7_opp_table {
+> +	cpu7_opp_table: opp-table-cpu7 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -3563,7 +3563,7 @@ sdhc_2: sdhci@8804000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc2_opp_table: sdhc2-opp-table {
+> +			sdhc2_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-19200000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> index 8098330aeb4f..e13e0e8a786b 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> @@ -336,7 +336,7 @@ CLUSTER_SLEEP_0: cluster-sleep-0 {
+>  		};
+>  	};
+>  
+> -	cpu0_opp_table: cpu0_opp_table {
+> +	cpu0_opp_table: opp-table-cpu0 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -426,7 +426,7 @@ cpu0_opp17: opp-1804800000 {
+>  		};
+>  	};
+>  
+> -	cpu4_opp_table: cpu4_opp_table {
+> +	cpu4_opp_table: opp-table-cpu4 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -521,7 +521,7 @@ cpu4_opp18: opp-2419200000 {
+>  		};
+>  	};
+>  
+> -	cpu7_opp_table: cpu7_opp_table {
+> +	cpu7_opp_table: opp-table-cpu7 {
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+>  
+> @@ -914,7 +914,7 @@ rng: rng@793000 {
+>  			clock-names = "core";
+>  		};
+>  
+> -		qup_opp_table: qup-opp-table {
+> +		qup_opp_table: opp-table-qup {
+>  			compatible = "operating-points-v2";
+>  
+>  			opp-50000000 {
+> @@ -2937,7 +2937,7 @@ sdhc_2: sdhci@8804000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc2_opp_table: sdhc2-opp-table {
+> +			sdhc2_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-19200000 {
+> @@ -3123,7 +3123,7 @@ video-encoder {
+>  				compatible = "venus-encoder";
+>  			};
+>  
+> -			venus_opp_table: venus-opp-table {
+> +			venus_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-720000000 {
+> @@ -3486,7 +3486,7 @@ dpu_intf2_out: endpoint {
+>  					};
+>  				};
+>  
+> -				mdp_opp_table: mdp-opp-table {
+> +				mdp_opp_table: opp-table {
+>  					compatible = "operating-points-v2";
+>  
+>  					opp-200000000 {
+> @@ -3656,7 +3656,7 @@ dsi1_phy: dsi-phy@ae96400 {
+>  
+>  				status = "disabled";
+>  
+> -				dsi_opp_table: dsi-opp-table {
+> +				dsi_opp_table: opp-table {
+>  					compatible = "operating-points-v2";
+>  
+>  					opp-187500000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+> index 743cba9b683c..db497b954f4c 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+> @@ -638,7 +638,7 @@ ipcc: mailbox@408000 {
+>  			#mbox-cells = <2>;
+>  		};
+>  
+> -		qup_opp_table_100mhz: qup-100mhz-opp-table {
+> +		qup_opp_table_100mhz: opp-table-qup100mhz {
+>  			compatible = "operating-points-v2";
+>  
+>  			opp-50000000 {
+> @@ -657,7 +657,7 @@ opp-100000000 {
+>  			};
+>  		};
+>  
+> -		qup_opp_table_120mhz: qup-120mhz-opp-table {
+> +		qup_opp_table_120mhz: opp-table-qup120mhz {
+>  			compatible = "operating-points-v2";
+>  
+>  			opp-50000000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+> index 7d08fad76371..ab4ea6672b48 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+> @@ -343,7 +343,7 @@ CLUSTER_PD: cpu-cluster0 {
+>  		};
+>  	};
+>  
+> -	qup_opp_table_100mhz: qup-100mhz-opp-table {
+> +	qup_opp_table_100mhz: opp-table-qup {
+>  		compatible = "operating-points-v2";
+>  
+>  		opp-50000000 {
+> -- 
+> 2.34.1
+> 
