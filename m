@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72223C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E98BEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239391AbiF0MBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
+        id S239846AbiF0MBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238308AbiF0Lvl (ORCPT
+        with ESMTP id S238712AbiF0Lwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:51:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3465565EA;
-        Mon, 27 Jun 2022 04:44:44 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5149AE73;
+        Mon, 27 Jun 2022 04:45:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9A2A60DF7;
-        Mon, 27 Jun 2022 11:44:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3CC7C3411D;
-        Mon, 27 Jun 2022 11:44:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A1CFB80D32;
+        Mon, 27 Jun 2022 11:45:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E41B3C3411D;
+        Mon, 27 Jun 2022 11:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330283;
-        bh=NpYFXr003tbfA2D33lVsxV2LZLJF1Qx54dSTcz5DN98=;
+        s=korg; t=1656330312;
+        bh=NSWLVHwkh4jCm7vqeyoTxm57tQ+lbvd9SSss7VBhs+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rm67xIsZuf4GknjWjg5Xcp0YVDMJkdCtdC6cy8OWZxkSy6cFA7HPZ3DZ/1mq35ECy
-         c5WbQ2oOHM06vspH1SW+BAeJCH2O4h0uyKjrLodXqPnL++SK0e1FqWgRQJegxZgxqA
-         BGGLvVx9QB/OeXxOKtanhIDBU8dD1pTaEMN1l4uA=
+        b=Xh855Mu3NpfH5iD+dMOwiIefW6j4sdfqW54zrxoMWV6WIRGr9cxjNwrkxZ0LJNbid
+         1CtFpzA6+oT0XPuQkI5jk+KL/wwfu8V35UWmNNokIvyzjdX7g7mVCZjzjBICQuCXk7
+         rixyiNKOeAAB5wBn6PX4Im8fzkDb/EsHJKNbwIq4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 146/181] iio: adc: stm32: fix vrefint wrong calibration value handling
-Date:   Mon, 27 Jun 2022 13:21:59 +0200
-Message-Id: <20220627111948.919222363@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        John David Anglin <dave.anglin@bell.net>
+Subject: [PATCH 5.18 155/181] parisc: Enable ARCH_HAS_STRICT_MODULE_RWX
+Date:   Mon, 27 Jun 2022 13:22:08 +0200
+Message-Id: <20220627111949.177477255@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,88 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olivier Moysan <olivier.moysan@foss.st.com>
+From: Helge Deller <deller@gmx.de>
 
-commit bc05f30fc24705cd023f38659303376eaa5767df upstream.
+commit 0a1355db36718178becd2bfe728a023933d73123 upstream.
 
-If the vrefint calibration is zero, the vrefint channel output value
-cannot be computed. Currently, in such case, the raw conversion value
-is returned, which is not relevant.
-Do not expose the vrefint channel when the output value cannot be
-computed, instead.
+Fix a boot crash on a c8000 machine as reported by Dave.  Basically it changes
+patch_map() to return an alias mapping to the to-be-patched code in order to
+prevent writing to write-protected memory.
 
-Fixes: 0e346b2cfa85 ("iio: adc: stm32-adc: add vrefint calibration support")
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
-Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Link: https://lore.kernel.org/r/20220609095856.376961-1-olivier.moysan@foss.st.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Suggested-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org   # v5.2+
+Link: https://lore.kernel.org/all/e8ec39e8-25f8-e6b4-b7ed-4cb23efc756e@bell.net/
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/stm32-adc.c | 27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+ arch/parisc/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index 8c5f05f593ab..11ef873d6453 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -1365,7 +1365,7 @@ static int stm32_adc_read_raw(struct iio_dev *indio_dev,
- 		else
- 			ret = -EINVAL;
- 
--		if (mask == IIO_CHAN_INFO_PROCESSED && adc->vrefint.vrefint_cal)
-+		if (mask == IIO_CHAN_INFO_PROCESSED)
- 			*val = STM32_ADC_VREFINT_VOLTAGE * adc->vrefint.vrefint_cal / *val;
- 
- 		iio_device_release_direct_mode(indio_dev);
-@@ -1969,10 +1969,10 @@ static int stm32_adc_populate_int_ch(struct iio_dev *indio_dev, const char *ch_n
- 
- 	for (i = 0; i < STM32_ADC_INT_CH_NB; i++) {
- 		if (!strncmp(stm32_adc_ic[i].name, ch_name, STM32_ADC_CH_SZ)) {
--			adc->int_ch[i] = chan;
--
--			if (stm32_adc_ic[i].idx != STM32_ADC_INT_CH_VREFINT)
--				continue;
-+			if (stm32_adc_ic[i].idx != STM32_ADC_INT_CH_VREFINT) {
-+				adc->int_ch[i] = chan;
-+				break;
-+			}
- 
- 			/* Get calibration data for vrefint channel */
- 			ret = nvmem_cell_read_u16(&indio_dev->dev, "vrefint", &vrefint);
-@@ -1980,10 +1980,15 @@ static int stm32_adc_populate_int_ch(struct iio_dev *indio_dev, const char *ch_n
- 				return dev_err_probe(indio_dev->dev.parent, ret,
- 						     "nvmem access error\n");
- 			}
--			if (ret == -ENOENT)
--				dev_dbg(&indio_dev->dev, "vrefint calibration not found\n");
--			else
--				adc->vrefint.vrefint_cal = vrefint;
-+			if (ret == -ENOENT) {
-+				dev_dbg(&indio_dev->dev, "vrefint calibration not found. Skip vrefint channel\n");
-+				return ret;
-+			} else if (!vrefint) {
-+				dev_dbg(&indio_dev->dev, "Null vrefint calibration value. Skip vrefint channel\n");
-+				return -ENOENT;
-+			}
-+			adc->int_ch[i] = chan;
-+			adc->vrefint.vrefint_cal = vrefint;
- 		}
- 	}
- 
-@@ -2020,7 +2025,9 @@ static int stm32_adc_generic_chan_init(struct iio_dev *indio_dev,
- 			}
- 			strncpy(adc->chan_name[val], name, STM32_ADC_CH_SZ);
- 			ret = stm32_adc_populate_int_ch(indio_dev, name, val);
--			if (ret)
-+			if (ret == -ENOENT)
-+				continue;
-+			else if (ret)
- 				goto err;
- 		} else if (ret != -EINVAL) {
- 			dev_err(&indio_dev->dev, "Invalid label %d\n", ret);
--- 
-2.36.1
-
+--- a/arch/parisc/Kconfig
++++ b/arch/parisc/Kconfig
+@@ -10,6 +10,7 @@ config PARISC
+ 	select ARCH_WANT_FRAME_POINTERS
+ 	select ARCH_HAS_ELF_RANDOMIZE
+ 	select ARCH_HAS_STRICT_KERNEL_RWX
++	select ARCH_HAS_STRICT_MODULE_RWX
+ 	select ARCH_HAS_UBSAN_SANITIZE_ALL
+ 	select ARCH_HAS_PTE_SPECIAL
+ 	select ARCH_NO_SG_CHAIN
 
 
