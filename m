@@ -2,96 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E067C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237783AbiF0PNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 11:13:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51730 "EHLO
+        id S237824AbiF0PNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 11:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237755AbiF0PMZ (ORCPT
+        with ESMTP id S237962AbiF0PM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 11:12:25 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235BE17E05;
-        Mon, 27 Jun 2022 08:12:20 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25RFC30V089876;
-        Mon, 27 Jun 2022 10:12:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1656342723;
-        bh=LM44d3M9KfHOsGyY3PknJroHsunJ8s7a74WgsZFUupM=;
-        h=From:To:CC:Subject:Date;
-        b=oHh8dN7La31yK91qdslFysUKnTyrhSX8XhvUYpBrAF3VSaOi3IKGv0ou+ehTR6FN+
-         o9OACFOFBln/4Xq1T0UgOPptMBAJvT7K8HANyn9S5uicfwvuOi0SRvFtEdXGmTKQnQ
-         GS2kyHLzF02bnmGuNZ4BRKN+i/xUCZyHU4Qs/N7A=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25RFC3L2002487
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 27 Jun 2022 10:12:03 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 27
- Jun 2022 10:12:03 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 27 Jun 2022 10:12:03 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25RFC2WY118456;
-        Mon, 27 Jun 2022 10:12:03 -0500
-From:   Aradhya Bhatia <a-bhatia1@ti.com>
-To:     Tomi Valkeinen <tomba@kernel.org>, Jyri Sarha <jyri.sarha@iki.fi>,
-        Rob Herring <robh+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Rahul T R <r-ravikumar@ti.com>,
-        Devarsh Thakkar <devarsht@ti.com>,
-        DRI Development List <dri-devel@lists.freedesktop.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        Linux Kernel List <linux-kernel@vger.kernel.org>,
-        Aradhya Bhatia <a-bhatia1@ti.com>
-Subject: [PATCH v3 0/2] Add DSS support for AM625 SoC
-Date:   Mon, 27 Jun 2022 20:41:58 +0530
-Message-ID: <20220627151200.4693-1-a-bhatia1@ti.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 27 Jun 2022 11:12:57 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF03811819
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:12:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656342776; x=1687878776;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NbIrdKrUNh3MxRBYH+k9IK39tT7o7aV72Bn2pVO6UI0=;
+  b=bK2UcJdtnabwb6b/hw6asJw0xnmbAD4c4+rAFv6eeDQpfaACr52gBeX2
+   KIPLK1fJmBy6+Gy0i/2elj6RAYf5M7v4x5zIU6RXaMn+rbZYBksHM6bRP
+   KvpGZFosx1XlBaGPtR7fZPavh+OYqHln0Qwjo3b9siPnaZhREjeQtqnNv
+   uV2sBJ5JCbTJB95G8OBFgk11ei5JBR3aX8F5/1+MOKoPAZjbAdf9hr7jU
+   rgQgonxVhC2WaXVtFohLan+eT0KjbfnwrdyGK5B/wdwlHZhsSah4l0VM0
+   5DOVp6zyJV4MRyw+01NcnJNdJjdgvlhBbvCj/LEss8cwvcZ34rCuOD+s9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="282203196"
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="282203196"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 08:12:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="594338030"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 27 Jun 2022 08:12:51 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 9FDC0D9; Mon, 27 Jun 2022 18:12:57 +0300 (EEST)
+Date:   Mon, 27 Jun 2022 18:12:57 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 4/5] x86/mm: Add noalias variants of
+ set_memory_*crypted() functions
+Message-ID: <20220627151257.fhynhvcnpk22kflw@black.fi.intel.com>
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220609025220.2615197-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <b4190b5d-89e8-b02f-5ef6-c05047af8166@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b4190b5d-89e8-b02f-5ef6-c05047af8166@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series adds a new compatible for the DSS IP on TI's AM625
-SoC. It further adds the required support for the same in the tidss
-driver. The IP is a newer version of the DSS IP available on AM65X SoC,
-with a major change being in the addition of another OLDI TX inside it.
-With the help of 2 OLDI TXes, this new DSS IP supports OLDI displays
-with a resolution of upto 2K. The OLDI support will be added
-subsequently.
+On Fri, Jun 24, 2022 at 06:19:23AM -0700, Dave Hansen wrote:
+> On 6/8/22 19:52, Kuppuswamy Sathyanarayanan wrote:
+> > set_memory_*crypted() functions are used to modify the "shared" page
+> > attribute of the given memory. Using these APIs will modify the page
+> > attributes of the aliased mappings (which also includes the direct
+> > mapping).
+> > 
+> > But such aliased mappings modification is not desirable in use cases
+> > like TDX guest, where the requirement is to create the shared mapping
+> > without touching the direct map. It is used when allocating VMM shared
+> > buffers using alloc_pages()/vmap()/set_memory_*crypted() API
+> > combinations.
+> > 
+> > So to support such use cases, add support for noalias variants of
+> > set_memory_*crypted() functions.
+> 
+> This changelog has a lot of words, but doesn't tell us much.
+> 
+> It basically says, we don't want to touch the direct map in use cases
+> where we don't want to touch the direct map.  Not helpful.
+> 
+> The alias processing is there for a reason.  What is it?  Why don't you
+> need alias processing for TDX?  Sure, you decided you don't want to
+> touch the direct map, but *WHY*?  Why is it normally OK to touch the
+> direct map, but not OK in this case?  Even better, why is it *DESIRABLE*
+> to leave the direct map alone?  Lastly, why is this safe?  If alias
+> processing was to protect us from something, why is losing that
+> protection OK here?
 
-Changelog:
+The whole idea of alloc_pages()/vmap()/set_memory_decrypted() exercise is
+to avoid direct map fragmentation.
 
-V3:
-  - Changed yaml enum in alphabetical order
-  - Corrected a typo
+Alias processing modifies direct mapping and highmap in addition to the
+mapping user requested the modification for. Alias processing is required
+to keep different mappings in sync, but here we want to avoid this because
+it leads to direct mapping fragmentation.
 
-V2:
-  - Removed redundant regsiter array
+Normally, direct mapping modifications are done for long-lasting
+allocation where fragmentation is lesser concern. Here we have transient
+allocation which may repeat over and over trashing the direct mapping.
 
-Aradhya Bhatia (2):
-  dt-bindings: display: ti,am65x-dss: Add am625 dss compatible
-  drm/tidss: Add support for AM625 DSS
+Speaking of safety, I wanted initially claim that it is safe as only owner
+of the allocation will touch the memory and it only does via the vmap
+mapping.
 
- .../bindings/display/ti/ti,am65x-dss.yaml     |  4 +-
- drivers/gpu/drm/tidss/tidss_dispc.c           | 56 ++++++++++++++++++-
- drivers/gpu/drm/tidss/tidss_dispc.h           |  2 +
- drivers/gpu/drm/tidss/tidss_drv.c             |  1 +
- 4 files changed, 61 insertions(+), 2 deletions(-)
+*BUT* 
+
+It made me thing about my recent story with load_unaligned_zeropad(). 
+If we leave the page in direct mapping mapped as private and
+load_unaligned_zeropad() will roll off to it, we will get SEPT violation
+that will terminate the TD as it is considered unaccepted.
+
+I think we must keep aliases in think. And vmap() doesn't make much sense
+in this case :/
+
+I urge you folks to consider DMA API again. Or have any other way to tap
+into swiotlb pool.
 
 -- 
-2.36.1
-
+ Kirill A. Shutemov
