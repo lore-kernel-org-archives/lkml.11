@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EDDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E276C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237234AbiF0Lni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34872 "EHLO
+        id S237302AbiF0Lnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237014AbiF0Ll1 (ORCPT
+        with ESMTP id S236874AbiF0Lle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:41:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED00CE2E;
-        Mon, 27 Jun 2022 04:35:58 -0700 (PDT)
+        Mon, 27 Jun 2022 07:41:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC03BD110;
+        Mon, 27 Jun 2022 04:36:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B022E6109A;
-        Mon, 27 Jun 2022 11:35:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCCA0C3411D;
-        Mon, 27 Jun 2022 11:35:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DAE2B81123;
+        Mon, 27 Jun 2022 11:36:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEDEAC3411D;
+        Mon, 27 Jun 2022 11:35:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329757;
-        bh=RmxleTHRx9eDngqkQmJd38Pc//gTKX73d1yQFgoNmmk=;
+        s=korg; t=1656329760;
+        bh=vz1h5OMLWpWAZLkaKT/60WGVx/L9y5HB7yfD7b9RAzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nVb2WoPLvRkF/+/uowenZcyDlmUfNQ8mxWJV+GnNMBqhER1GlGrVSV5FzfYaPZhOk
-         bt0hIpYeHUvPKs+p4xq6hRmwh30ileWVe2LarCxd+A8o45eGDv8MCsqgMzpTwjrAI5
-         9hbs1CH+4njdZsDXJUsEHavsTddBURARZ+9ReuRY=
+        b=2dZqbT2DdngQz/fK/ZytrUbsuEDwjY0ht+Bcde3TJauvnZzHSR1bxvTyiFqom6v2+
+         8zhDSqZ3fMolW4uXxPMpbq+8vurrsS+zxqzpDCBGR7nPc7TbSlcsyw7guBf8ywR/8F
+         2bQ8tUdBmNPDlm5rnEdhOSRRDhFMLq0C44wMkVAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Peter Rosin <peda@axentia.se>,
+        stable@vger.kernel.org,
+        Yannick Brosseau <yannick.brosseau@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 105/135] iio: afe: rescale: Fix boolean logic bug
-Date:   Mon, 27 Jun 2022 13:21:52 +0200
-Message-Id: <20220627111941.202746905@linuxfoundation.org>
+Subject: [PATCH 5.15 106/135] iio: adc: stm32: Fix ADCs iteration in irq handler
+Date:   Mon, 27 Jun 2022 13:21:53 +0200
+Message-Id: <20220627111941.230955576@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,55 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Yannick Brosseau <yannick.brosseau@gmail.com>
 
-commit 9decacd8b3a432316d61c4366f302e63384cb08d upstream.
+commit d2214cca4d3eadc74eac9e30301ec7cad5355f00 upstream.
 
-When introducing support for processed channels I needed
-to invert the expression:
+The irq handler was only checking the mask for the first ADCs in the case of the
+F4 and H7 generation, since it was iterating up to the num_irq value. This patch add
+the maximum number of ADC in the common register, which map to the number of entries of
+eoc_msk and ovr_msk in stm32_adc_common_regs. This allow the handler to check all ADCs in
+that module.
 
-  if (!iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
-      !iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
-        dev_err(dev, "source channel does not support raw/scale\n");
+Tested on a STM32F429NIH6.
 
-To the inverse, meaning detect when we can usse raw+scale
-rather than when we can not. This was the result:
-
-  if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
-      iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
-       dev_info(dev, "using raw+scale source channel\n");
-
-Ooops. Spot the error. Yep old George Boole came up and bit me.
-That should be an &&.
-
-The current code "mostly works" because we have not run into
-systems supporting only raw but not scale or only scale but not
-raw, and I doubt there are few using the rescaler on anything
-such, but let's fix the logic.
-
-Cc: Liam Beguin <liambeguin@gmail.com>
-Cc: stable@vger.kernel.org
-Fixes: 53ebee949980 ("iio: afe: iio-rescale: Support processed channels")
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Liam Beguin <liambeguin@gmail.com>
-Acked-by: Peter Rosin <peda@axentia.se>
-Link: https://lore.kernel.org/r/20220524075448.140238-1-linus.walleij@linaro.org
+Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
+Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220516203939.3498673-2-yannick.brosseau@gmail.com
+Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/afe/iio-rescale.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/stm32-adc-core.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -148,7 +148,7 @@ static int rescale_configure_channel(str
- 	chan->ext_info = rescale->ext_info;
- 	chan->type = rescale->cfg->type;
+--- a/drivers/iio/adc/stm32-adc-core.c
++++ b/drivers/iio/adc/stm32-adc-core.c
+@@ -64,6 +64,7 @@ struct stm32_adc_priv;
+  * @max_clk_rate_hz: maximum analog clock rate (Hz, from datasheet)
+  * @has_syscfg: SYSCFG capability flags
+  * @num_irqs:	number of interrupt lines
++ * @num_adcs:   maximum number of ADC instances in the common registers
+  */
+ struct stm32_adc_priv_cfg {
+ 	const struct stm32_adc_common_regs *regs;
+@@ -71,6 +72,7 @@ struct stm32_adc_priv_cfg {
+ 	u32 max_clk_rate_hz;
+ 	unsigned int has_syscfg;
+ 	unsigned int num_irqs;
++	unsigned int num_adcs;
+ };
  
--	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
-+	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) &&
- 	    iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE)) {
- 		dev_info(dev, "using raw+scale source channel\n");
- 	} else if (iio_channel_has_info(schan, IIO_CHAN_INFO_PROCESSED)) {
+ /**
+@@ -352,7 +354,7 @@ static void stm32_adc_irq_handler(struct
+ 	 * before invoking the interrupt handler (e.g. call ISR only for
+ 	 * IRQ-enabled ADCs).
+ 	 */
+-	for (i = 0; i < priv->cfg->num_irqs; i++) {
++	for (i = 0; i < priv->cfg->num_adcs; i++) {
+ 		if ((status & priv->cfg->regs->eoc_msk[i] &&
+ 		     stm32_adc_eoc_enabled(priv, i)) ||
+ 		     (status & priv->cfg->regs->ovr_msk[i]))
+@@ -796,6 +798,7 @@ static const struct stm32_adc_priv_cfg s
+ 	.clk_sel = stm32f4_adc_clk_sel,
+ 	.max_clk_rate_hz = 36000000,
+ 	.num_irqs = 1,
++	.num_adcs = 3,
+ };
+ 
+ static const struct stm32_adc_priv_cfg stm32h7_adc_priv_cfg = {
+@@ -804,6 +807,7 @@ static const struct stm32_adc_priv_cfg s
+ 	.max_clk_rate_hz = 36000000,
+ 	.has_syscfg = HAS_VBOOSTER,
+ 	.num_irqs = 1,
++	.num_adcs = 2,
+ };
+ 
+ static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
+@@ -812,6 +816,7 @@ static const struct stm32_adc_priv_cfg s
+ 	.max_clk_rate_hz = 36000000,
+ 	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
+ 	.num_irqs = 2,
++	.num_adcs = 2,
+ };
+ 
+ static const struct of_device_id stm32_adc_of_match[] = {
 
 
