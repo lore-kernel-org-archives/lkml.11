@@ -2,241 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 826C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:41:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A19D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:42:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232376AbiF0GlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 02:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35094 "EHLO
+        id S231474AbiF0GmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 02:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232331AbiF0Gkt (ORCPT
+        with ESMTP id S230455AbiF0GmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 02:40:49 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2046.outbound.protection.outlook.com [40.107.100.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087DA2DF3
-        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:40:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ld/ZYRAqU8fdbCoS7KtUlRQlOaUMdV5UgR3Qa48bNu7WIrcbRkChLN/wdXxqsgKay9r0Onc+3YsOPCKowbimd/bsndzO3hoNfTabAX49G7QmlvOaElw2ttfIbntxWNBxNtBcmUcKhHVE5IYJqkGAhVbcRVOn/qdnk1RV6iXzbNGQb/ADEpdyniEtCb4UbB2PGHklZuhyJJTimQ+auXE+ivh2Znb5k4Z372Cncvy6GWy+gvKOQmV6+gGeL8ksV0gv+N8o6NdD0d7k3tHDmb11UT/yaAxkO6mopdlGdQe2APR9MWYqJ7DHtUCTRQA7Xn2l3Jf71cOypow6Vz2+bk5kNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=My4PDXFyhvV8Zr3jLBvUCYRZfzBEoyIy3y1DndatSfg=;
- b=Qxt182GBOTdTz58gix5N6UkEBooOO8dzgGKCGBfOcYy7JrEJEtz0Lg2G7F/qR27d6cOILGk7ZNq+QOs/HA5bd1k1ty6zf4p0doMG9BpLL5Ls2TkmFsO5tuCRd6UBp42TjbPUdNWdVd3dIftOE9bXKIpVG06TfE6WnWxcErr0ahH4fdik7kZpM/CGdC882tDF0U6ViaHGgCQzR4Sl/NxLd2miUZW/RMGh6EKNlc7KPFnOUEEov2b3ksDo/HN/mRbCqQfwcvUgr00o3D7Wx53Y9nDQA/s9ENNKWQaPnSdyflOrJRYFBGd6N2G58jEOPs3/Xxtjd5a0NuMP1WJXxOBsqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=monstr.eu smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        Mon, 27 Jun 2022 02:42:00 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9643896
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:41:58 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id d14so8298966pjs.3
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:41:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=My4PDXFyhvV8Zr3jLBvUCYRZfzBEoyIy3y1DndatSfg=;
- b=GxCCGCNxFQ1Ken5anicdgbwdmNOjjeWeAvGgL1HVQhVfVYc0yEKnPnUzSfYeDiZJbytP200HFRYt+Uh87uIJ5BudP6GH6VhMgyRmIYQhqmt80fmV9Db2FS5nhI/P4BiV6vpDlfpN82KTE/xaug6of6wJo44/NMalIhNrlOVvfP0=
-Received: from SN4PR0501CA0139.namprd05.prod.outlook.com
- (2603:10b6:803:2c::17) by DM5PR02MB2810.namprd02.prod.outlook.com
- (2603:10b6:3:10c::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Mon, 27 Jun
- 2022 06:40:45 +0000
-Received: from SN1NAM02FT0035.eop-nam02.prod.protection.outlook.com
- (2603:10b6:803:2c:cafe::7e) by SN4PR0501CA0139.outlook.office365.com
- (2603:10b6:803:2c::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.6 via Frontend
- Transport; Mon, 27 Jun 2022 06:40:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0035.mail.protection.outlook.com (10.97.4.137) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5373.15 via Frontend Transport; Mon, 27 Jun 2022 06:40:44 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Sun, 26 Jun 2022 23:40:32 -0700
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Sun, 26 Jun 2022 23:40:32 -0700
-Envelope-to: monstr@monstr.eu,
- arnd@arndb.de,
- shorne@gmail.com,
- ebiederm@xmission.com,
- appanad@amd.com,
- linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- sam@ravnborg.org
-Received: from [10.140.6.6] (port=50182 helo=xhdappanad40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <appana.durga.rao@xilinx.com>)
-        id 1o5iQB-000Bsc-UW; Sun, 26 Jun 2022 23:40:32 -0700
-From:   Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-To:     <monstr@monstr.eu>, <arnd@arndb.de>, <shorne@gmail.com>,
-        <ebiederm@xmission.com>, <appanad@amd.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <sam@ravnborg.org>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-Subject: [PATCH 1/3] microblaze: Add xmb_manager_register function
-Date:   Mon, 27 Jun 2022 12:10:22 +0530
-Message-ID: <20220627064024.771037-2-appana.durga.rao@xilinx.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220627064024.771037-1-appana.durga.rao@xilinx.com>
-References: <20220627064024.771037-1-appana.durga.rao@xilinx.com>
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=45rauxW62zvLiLrUYdOABR/1r2UUII+y5PQH23JQu7k=;
+        b=vhJiLwQCcFv1Yt6V2yG+9+dObL9WLX6fmLFxVczsb1YHUoreh12Pi8nSs4GErNzvpV
+         5V9xb73nB2888hljZbsR327vjZCmTDW6nSpy3h3wt0ViTXOUFRmpoP7TgfWUK1HhLjzp
+         lTUGwqSfqakgzvKRHVkxFx2ZZguCL9M4BIgCRV01skb5o+FnFptRkRPLwOIo/h35HZQy
+         X7mgKXYHVbmmEttrTkz4As+vdrVb2pDEpNl1Ow7sjEbUzy/VJXi1S+xlTdiHhvZ/rkmd
+         DOUOS8aPOLvdaRwrCkxIA3HsVoUnpzxhd0AqERM6fQMZIwpnERb3GXCziX2Pkyd5TK7P
+         5X5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=45rauxW62zvLiLrUYdOABR/1r2UUII+y5PQH23JQu7k=;
+        b=7EjvK8RNu/71BAoDz/v4k+FddYAm68ACGm3tUBYvS5AlAxDedob7wHqMfTxesu+ZW5
+         TcVVdCnCF/s0WbSDsmwkwQTM/z5zA/UxkYJ+Y+EaSd1V2W5eVZAQdhCoHR69cOY1zHRc
+         /FKH6B0k/gTX1CBkL6zBQC4QKf9xASsZ/YqrGbtoPwwsD3CuUSincIoFvims46geS8zi
+         guG+9lwwNvBhAiNo78WvUvEAkXpW08jnF/hWXbjBFfxW4/wZu+Qbk2i/APc0vucDfgvl
+         R7ETQBzqUadqVjVGM7v0w1ajHm49WtjpitUgiuBHgFLj3UAJTT43fyKCpMn3sZJlp+qP
+         /5Ig==
+X-Gm-Message-State: AJIora8HVx114cHdS0pItyMICxCzMs7E/6mU2hnNQQ5TqHpalCBVvT9u
+        AX2I9B09SD97KhutGBXTmgHTIg==
+X-Google-Smtp-Source: AGRyM1viYEO4TpTC4lUvX8VkhvtNg6ETswsD7mpBbxH+A0JO6sX4fcnU9+xgZXgcwEJpuRRsDyKwiw==
+X-Received: by 2002:a17:90b:3ece:b0:1ed:13a9:8531 with SMTP id rm14-20020a17090b3ece00b001ed13a98531mr19005332pjb.183.1656312117699;
+        Sun, 26 Jun 2022 23:41:57 -0700 (PDT)
+Received: from localhost ([122.172.201.58])
+        by smtp.gmail.com with ESMTPSA id g38-20020a635226000000b0040cb1f55391sm6281148pgb.2.2022.06.26.23.41.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jun 2022 23:41:57 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 12:11:55 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     Keerthy <j-keerthy@ti.com>, Dave Gerlach <d-gerlach@ti.com>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH 5/5] OPP: Remove custom OPP helper support
+Message-ID: <20220627064155.jo7iqz5h33l7a4vn@vireshk-i7>
+References: <cover.1653991004.git.viresh.kumar@linaro.org>
+ <2e6ee73dbc8a231377547a8e9497561cadb38166.1653991004.git.viresh.kumar@linaro.org>
+ <565ff879-11e4-1ae4-08d8-1237a875ef12@gmail.com>
+ <20220627060636.rfpok75zydgcwwo6@vireshk-i7>
+ <4a8114f7-4ee6-a9ad-f5be-ceaf64be8a0e@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aaa7e760-a696-4c86-6a43-08da5807f660
-X-MS-TrafficTypeDiagnostic: DM5PR02MB2810:EE_
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NpRLXcTiUgQDt1fwVmFuW9kDcQFahoDdJIhC7WvcmzQLx90IMsronNi34KO2sQL/dAzbtzM0pc0SqObP0QKgBjPQlpjtQoMFVNnYKUQB8e9bbre6dUSYM2z+vWpkIjLoU3fz+/wG8feJVC5Q3kdcYRY0NWmgptcYzVWITF0GNDmLCBRcZve8UFXPdLccPEtS1WsNs+k2uHbyyMXeQZA3+ZbLwZPXaOBh99bdUd6Gb8JO1eQIXHyzD0+DpoDbYp6Kzj6fxnxYYNcSZaJXbWOT56S5nJmuxSszNJFKGeDF/1bIeKVaalR1tmSvM4Lpcj6gIGCu/TpoVjmRcRiQa78+niTfYO9Px36zPoNvL+5tN5rkhl1HpNpywCSI7w2fajUfZNN+01fmYVnB8SkBglalxRtiUlhSLJszdzs6/HqHU1iO/DMBdPd9L/+Hqe02E5ZIaJxc6tQiT5oTXqPI2uC4VA2FyMxpyzETHS4xxsW55Doi07+0RcppmeIo+5jb7JbvxAx6Sb74aXz5qpk9QBBJvsrkrw+RArucOvvXRZFPnHsjC1P2+Uj9sl77t9z/GyaqqWiRIXfUMJB4JMptANMP6jmM4I5DNmYUotU2JUhcqZgY5jpPSSZj5b2/eiTSR513X40J8wyjk0dcAn2VElFII5p6fmbR1fFuiLL9x1jD2AoRjBNvxHAabGgCKi1BATKOFtl5Xc/C5xNmcBnnH3zbjs1ih3Rb1WnQTrNKAZep4HyfWNjR9txayKcFYeGOtZ0oMQV+HPp2AOT+zpcgGN+6GSJjMRXOyo19SQiKu5q6L7HHTD0caQ9RBMK8e/DwHi7Lop//WSLrn60HhrJhNWwcgQ==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(396003)(39860400002)(346002)(40470700004)(36840700001)(46966006)(8936002)(7636003)(82310400005)(40480700001)(26005)(478600001)(82740400003)(5660300002)(9786002)(36756003)(186003)(356005)(6666004)(426003)(7696005)(336012)(103116003)(70206006)(70586007)(2616005)(41300700001)(107886003)(1076003)(83380400001)(47076005)(2906002)(110136005)(54906003)(316002)(4326008)(8676002)(40460700003)(36860700001)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2022 06:40:44.7094
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aaa7e760-a696-4c86-6a43-08da5807f660
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0035.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2810
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4a8114f7-4ee6-a9ad-f5be-ceaf64be8a0e@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Triple Modular Redundancy (TMR) Microblaze solution provides soft error
-injection, detection, correction and recovery for Microblaze cores in the
-system. The Xilinx/AMD Triple Modular Redundancy (TMR) solution in Vivado
-provides all the necessary building blocks to implement a redundant
-triplicated MicroBlaze subsystem. This processing subsystem is
-fault-tolerant and continues to operate nominally after encountering an
-error. Together with the capability to detect and recover from errors,
-the implementation ensures the reliability of the entire subsystem.
+On 27-06-22, 09:10, Dmitry Osipenko wrote:
+> Okay, but Tegra 3d driver doesn't need config_regulators(), it needs
+> customized set_opp() to set clock rate for both 3d engines.
 
-When the break vector gets asserted because of error injection,
-the break signal must be blocked before exiting from the break handler,
-This commit adds support for xmb_manager_register api which updates the
-TMR manager address and control register and error count and reset callback
-function arguments, which will be used by the break handler to block the
-break and call the error count callback function and reset callback
-function.
+What does that mean, you need to set two clocks ? There is separate
+support added for that already [1].
 
-Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
----
- arch/microblaze/Kconfig                       | 10 +++++
- .../include/asm/xilinx_mb_manager.h           | 21 +++++++++
- arch/microblaze/kernel/entry.S                | 44 +++++++++++++++++++
- 3 files changed, 75 insertions(+)
- create mode 100644 arch/microblaze/include/asm/xilinx_mb_manager.h
-
-diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
-index 8cf429ad1c84..7bcab7357f42 100644
---- a/arch/microblaze/Kconfig
-+++ b/arch/microblaze/Kconfig
-@@ -206,6 +206,16 @@ config TASK_SIZE
- 	hex "Size of user task space" if TASK_SIZE_BOOL
- 	default "0x80000000"
- 
-+config MB_MANAGER
-+	bool "Support for Microblaze Manager"
-+	depends on ADVANCED_OPTIONS
-+	help
-+	  This option enables API for configuring the MicroBlaze manager
-+	  control register, which is consumed by the break handler to
-+	  block the break.
-+
-+	  Say N here unless you know what you are doing.
-+
- endmenu
- 
- menu "Bus Options"
-diff --git a/arch/microblaze/include/asm/xilinx_mb_manager.h b/arch/microblaze/include/asm/xilinx_mb_manager.h
-new file mode 100644
-index 000000000000..392c3aa278dc
---- /dev/null
-+++ b/arch/microblaze/include/asm/xilinx_mb_manager.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2022 Xilinx, Inc.
-+ */
-+#ifndef _XILINX_MB_MANAGER_H
-+#define _XILINX_MB_MANAGER_H
-+
-+#include <linux/of_address.h>
-+
-+/*
-+ * When the break vector gets asserted because of error injection, the break
-+ * signal must be blocked before exiting from the break handler, Below api
-+ * updates the manager address and control register and error counter callback
-+ * arguments, which will be used by the break handler to block the break and
-+ * call the callback function.
-+ */
-+void xmb_manager_register(uintptr_t phys_baseaddr, u32 cr_val,
-+			  void (*callback)(void *data),
-+			  void *priv, void (*reset_callback)(void *data));
-+
-+#endif /* _XILINX_MB_MANAGER_H */
-diff --git a/arch/microblaze/kernel/entry.S b/arch/microblaze/kernel/entry.S
-index b179f8f6d287..b8e1dfe02d58 100644
---- a/arch/microblaze/kernel/entry.S
-+++ b/arch/microblaze/kernel/entry.S
-@@ -957,6 +957,50 @@ ENTRY(_switch_to)
- 	rtsd	r15, 8
- 	nop
- 
-+#ifdef CONFIG_MB_MANAGER
-+.section .data
-+.global xmb_manager_dev
-+.global xmb_manager_baseaddr
-+.global xmb_manager_crval
-+.global xmb_manager_callback
-+.global xmb_manager_reset_callback
-+.align 4
-+xmb_manager_dev:
-+	.long 0
-+xmb_manager_baseaddr:
-+	.long 0
-+xmb_manager_crval:
-+	.long 0
-+xmb_manager_callback:
-+	.long 0
-+xmb_manager_reset_callback:
-+	.long 0
-+
-+/*
-+ * When the break vector gets asserted because of error injection,
-+ * the break signal must be blocked before exiting from the
-+ * break handler, Below api updates the manager address and
-+ * control register and error count callback arguments,
-+ * which will be used by the break handler to block the
-+ * break and call the callback function.
-+ */
-+.global xmb_manager_register
-+.section .text
-+.align 2
-+.ent xmb_manager_register
-+.type xmb_manager_register, @function
-+xmb_manager_register:
-+	swi	r5, r0, xmb_manager_baseaddr
-+	swi	r6, r0, xmb_manager_crval
-+	swi	r7, r0, xmb_manager_callback
-+	swi	r8, r0, xmb_manager_dev
-+	swi	r9, r0, xmb_manager_reset_callback
-+
-+	rtsd	r15, 8;
-+	nop;
-+.end xmb_manager_register
-+#endif
-+
- ENTRY(_reset)
- 	VM_OFF
- 	brai	0; /* Jump to reset vector */
 -- 
-2.25.1
+viresh
 
+[1] https://lore.kernel.org/lkml/cover.1654849214.git.viresh.kumar@linaro.org/
