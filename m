@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 133C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:43:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241385AbiF0Vmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
+        id S241389AbiF0Vnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:43:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241285AbiF0Vme (ORCPT
+        with ESMTP id S238871AbiF0Vnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:42:34 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F8FBA0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 14:42:33 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id q6so21765368eji.13
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 14:42:33 -0700 (PDT)
+        Mon, 27 Jun 2022 17:43:41 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CFBC4A
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 14:43:40 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id fd6so14934428edb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 14:43:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/m5gEvG4Nkhnu6c3440vB73PXnwZ2jewkhSAliGBXTg=;
-        b=CynNGWCzO8u27qkFDIzY+jXsy8vbILCE7VFIfDkmWApFEP/TyAInFPWtLoi8W4oAJv
-         yRP1bnPJv+PoEUvfh/hvO8Nnx2y2AjIz/CszaBG+aQkExDPFi7OJbr/+buyNM3cuJzpL
-         QiNruHf7RNp23wTV4F7qqgkqzrV/zED8wFZamXl60ftr7DKklUJED02KuOkfGa/+QuqK
-         eSR2sUlA7gfJPtbcReFLZRg/BzoXQ6QzGoIAuB2LbOV0xv7nN2/pZ78o8K66JVTTLvLl
-         uMcvFqANm4pcYdgcWj6bxJWqXtfIjhIrq59dKA1kQLW4msu2vFcBV7x9IOXQ5mD2jvYT
-         iK6Q==
+        bh=H1XknEnfRCFWWO1LXEJmw/yXLZDBD0z0CO+bXSUF3KY=;
+        b=VfraCNxL3WGDCeRLxpsTD6VREJ07+yuuUDSzFON46Edw6+tXSXffSdDoF7eoQ4xdo1
+         4/eFKWb/m/jURAq8eVhrhAlrtNryoFQE2LZ3kwNC9xh1AnWbkoXeNGSkBzm9CH070RKQ
+         tuGscuRmNWmyMAHr96xKdTXJFwtva3l5WPDSbeHDADaYA7AvpiboY0DY/e5hg8Nk8hfr
+         4o8P+8tiL4EoS+5WZ3J1KZ+QYcFKspqN5KVoUYaem4dhZhdUScy3tEoj9quq09ZkPKdA
+         oEDh77ToBPLW+T7NoWX3X1k2GZNNRRO9//n2moFcOYbiy6e9MfRz5Iys81hsJ81gj20Y
+         xRWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/m5gEvG4Nkhnu6c3440vB73PXnwZ2jewkhSAliGBXTg=;
-        b=Pg1DvP54kuo0EwkLHXtlHSnp4lNkD0Ibqzrmo0Ncz9T81PUln7k29Sq5H5suRffBBS
-         m3GMh50iCTWSW3k8nR+1do/jjoPtQgCEZKj9tIWzzD/w5bOTxz+hrVUYVGnjiUH1jHx+
-         wKuWpZ4kjTQJEYgHBLaGpaYLUS6izeJAC2hmA2tExe41GLOyZ/pBaqaLb1ew+Merv/O4
-         CqNUNQ762fnY200Xy3ngHOLMO6FipeerURH2z9sMLuAMn4OS8a/eFdg8TKm5ifRgli9q
-         B0LiUA2FZv5Yz1e95Sshrdjj9fxz15hYEAkH1tURbZxzEcr0NA6RkSlREcew22G//BSA
-         JaZg==
-X-Gm-Message-State: AJIora8RtvFsR0YU//gEOtn0uNYllc1sg+S53RB5NH4n20YLU/7gaHnM
-        O3X9ySZcprePKobhrhDcmJfiVxVOCHD567PnZh4=
-X-Google-Smtp-Source: AGRyM1taWusL4FY3+GMWFIszRF5v07rsqFPHyB0aYp0PK+HTRRFV65ppUhrxHJAFgTBDtn2UdlK/lwl57yxqpNliC0Q=
-X-Received: by 2002:a17:907:a40f:b0:726:a8f5:1031 with SMTP id
- sg15-20020a170907a40f00b00726a8f51031mr5833402ejc.185.1656366151850; Mon, 27
- Jun 2022 14:42:31 -0700 (PDT)
+        bh=H1XknEnfRCFWWO1LXEJmw/yXLZDBD0z0CO+bXSUF3KY=;
+        b=n+iCuXxlxFvaRtiyncxqDbJgf/k4J7S4TUXKZoKPeFJFg6epeRz9JwgdaabSrxHI/I
+         0IAy4TKL/SAtrmLUD0L1IlhIzV5Vb8My/iT4KISZr2hsCCd6IEvk5OaKrQjTXHUkcdsX
+         oxLELKVUZ69ennWiaMSm8Jp10zCMs06LgiEhQgdQR5uMtdTzfaOWw8BOBmfmom+eNDVH
+         UZiZz3/QzLCa02WTGuUps0UD0Hwf8mBPu9zpbwhtzWAVmYbQixreW4VrPtA3gcQsTfKA
+         0rpk0eNLYaskeusEKfrG2IwmUldC1L7JUHj1O1MyYeg61F0a9inWD3oSBahbV9rmJtbJ
+         yGbg==
+X-Gm-Message-State: AJIora+0X0k8WV8Lknv3ITo7EOvYtQXdQwQyUJ2hpRmjcLuEDFwsdV/h
+        RmhYeJxYHJgG0oGw8yWHsgiB41pbSkpUk9wzFZk=
+X-Google-Smtp-Source: AGRyM1ty/F1vTKJ4iSXafpmMdgGebsJxkxtMH0H5oixaFzda6xrN+UoEjNyjWvXW0aPqdyRCXLmG71/0bvD9Z4sYB2c=
+X-Received: by 2002:a05:6402:158e:b0:435:7d0f:ac85 with SMTP id
+ c14-20020a056402158e00b004357d0fac85mr19127349edv.93.1656366219396; Mon, 27
+ Jun 2022 14:43:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220626142053.3373970-1-trix@redhat.com> <f55999ae-4ff3-2616-fda1-a97e5aa11524@amd.com>
-In-Reply-To: <f55999ae-4ff3-2616-fda1-a97e5aa11524@amd.com>
+References: <20220626144615.2227149-1-trix@redhat.com> <34b5c26c-bf3f-4b7c-3dd8-9e1317968c28@amd.com>
+In-Reply-To: <34b5c26c-bf3f-4b7c-3dd8-9e1317968c28@amd.com>
 From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Mon, 27 Jun 2022 17:42:20 -0400
-Message-ID: <CADnq5_Odt0jxU8voLjcmu8y1bQ57gzEd9ZBtAxrLLn9tHY65cg@mail.gmail.com>
-Subject: Re: [PATCH] drm/amd/display: Remove unused globals FORCE_RATE and FORCE_LANE_COUNT
+Date:   Mon, 27 Jun 2022 17:43:27 -0400
+Message-ID: <CADnq5_P8J12C-QZL7U9x6rs2RV44o-rvmESd7_R9b9qZuD_XhA@mail.gmail.com>
+Subject: Re: [PATCH] drm/amd/display: change to_dal_irq_source_dnc32() storage
+ class specifier to static
 To:     Aurabindo Pillai <aurabindo.pillai@amd.com>
 Cc:     Tom Rix <trix@redhat.com>,
         "Wentland, Harry" <harry.wentland@amd.com>,
@@ -62,11 +63,10 @@ Cc:     Tom Rix <trix@redhat.com>,
         xinhui pan <Xinhui.Pan@amd.com>,
         Dave Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Wenjing Liu <wenjing.liu@amd.com>, Jun Lei <Jun.Lei@amd.com>,
-        George Shen <George.Shen@amd.com>,
-        Jimmy Kizito <Jimmy.Kizito@amd.com>,
-        Jerry Zuo <Jerry.Zuo@amd.com>,
-        Michael Strauss <michael.strauss@amd.com>,
+        Qingqing Zhuo <Qingqing.Zhuo@amd.com>,
+        "Limonciello, Mario" <mario.limonciello@amd.com>,
+        "Kazlauskas, Nicholas" <nicholas.kazlauskas@amd.com>,
+        =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>,
         Maling list - DRI developers 
         <dri-devel@lists.freedesktop.org>,
         amd-gfx list <amd-gfx@lists.freedesktop.org>,
@@ -85,34 +85,31 @@ On Mon, Jun 27, 2022 at 9:20 AM Aurabindo Pillai
 >
 >
 >
-> On 2022-06-26 10:20, Tom Rix wrote:
+> On 2022-06-26 10:46, Tom Rix wrote:
 > > sparse reports
-> > drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:3885:6: warning: symbol 'FORCE_RATE' was not declared. Should it be static?
-> > drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:3886:10: warning: symbol 'FORCE_LANE_COUNT' was not declared. Should it be static?
+> > drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn32/irq_service_dcn32.c:39:20: warning: symbol 'to_dal_irq_source_dcn32' was not declared. Should it be static?
 > >
-> > Neither of thse variables is used in dc_link_dp.c.  Reviewing the commit listed in
-> > the fixes tag shows neither was used in the original patch.  So remove them.
+> > to_dal_irq_source_dnc32() is only referenced in irq_service_dnc32.c, so change its
+> > storage class specifier to static.
 > >
-> > Fixes: 265280b99822 ("drm/amd/display: add CLKMGR changes for DCN32/321")
+> > Fixes: 0efd4374f6b4 ("drm/amd/display: add dcn32 IRQ changes")
 > > Signed-off-by: Tom Rix <trix@redhat.com>
 > > ---
-> >   drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 3 ---
-> >   1 file changed, 3 deletions(-)
+> >   drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
 > >
-> > diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-> > index be1dcb0a2a06..f3421f2bd52e 100644
-> > --- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-> > +++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-> > @@ -3882,9 +3882,6 @@ static bool decide_mst_link_settings(const struct dc_link *link, struct dc_link_
-> >       return true;
-> >   }
+> > diff --git a/drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c b/drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c
+> > index 3a213ca2f077..b1012fa1977b 100644
+> > --- a/drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c
+> > +++ b/drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.c
+> > @@ -36,7 +36,7 @@
 > >
-> > -bool FORCE_RATE = false;
-> > -uint32_t FORCE_LANE_COUNT = 0;
-> > -
-> >   void decide_link_settings(struct dc_stream_state *stream,
-> >       struct dc_link_settings *link_setting)
-> >   {
->
+> >   #define DCN_BASE__INST0_SEG2                       0x000034C0
+> >
+> > -enum dc_irq_source to_dal_irq_source_dcn32(
+> > +static enum dc_irq_source to_dal_irq_source_dcn32(
+> >               struct irq_service *irq_service,
+> >               uint32_t src_id,
+> >               uint32_t ext_id)
 >
 > Reviewed-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
