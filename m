@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 886C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CB1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236694AbiF0LkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
+        id S236701AbiF0LkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236498AbiF0Lhf (ORCPT
+        with ESMTP id S236615AbiF0Lhp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40993290;
-        Mon, 27 Jun 2022 04:33:38 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA7D65F7;
+        Mon, 27 Jun 2022 04:34:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0268FB81117;
-        Mon, 27 Jun 2022 11:33:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579CBC3411D;
-        Mon, 27 Jun 2022 11:33:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3BF2B81125;
+        Mon, 27 Jun 2022 11:34:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BC99C341C8;
+        Mon, 27 Jun 2022 11:34:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329615;
-        bh=a5OrQc6zCfZOOPj7beO3LYZfOp0JdsRpSNA96LCPC8U=;
+        s=korg; t=1656329651;
+        bh=FS4UsGrJSd7A4rXzVZh89z4lEri7pdoYVOv5z3umqiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wt9btUnkCoELC8YOIhrnofviKiWYqt+C3NZFkiYbOgXLVcE7eToIPauzWO0EmgyXF
-         z/44NmDLHjJVpwDGyvO14Kr5hR7LKVGE7wKX/lLdUD6szmghQrV38s2HPzqCfNfP8V
-         Lp8LZYJgjE/1OZi34h4oYjPqGdLYRNWAIJBwnk5Y=
+        b=c4MbUE8f0zux7J6ZwcMrca51WziRlp2VuGrhu5QK3QtMpVtmJGGFZTJ3VXqX2Rbgn
+         Pa8iBlFsOTFWArosCH8j2KxVDBCRt2pUclyHY3P6ZHddVkBPpt5BlogXwzuE0McS78
+         2kAFX00Uhi6KjYKsZ5AAFgQ21SY4wCZSfflGLCkg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 057/135] drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read failed
-Date:   Mon, 27 Jun 2022 13:21:04 +0200
-Message-Id: <20220627111939.812819579@linuxfoundation.org>
+Subject: [PATCH 5.15 068/135] afs: Fix dynamic root getattr
+Date:   Mon, 27 Jun 2022 13:21:15 +0200
+Message-Id: <20220627111940.131728397@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,100 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit f61550b3864b9578527c28cf9c465316ac1566e1 ]
+[ Upstream commit cb78d1b5efffe4cf97e16766329dd7358aed3deb ]
 
-Add checking aux read/write status at both dp_link_parse_sink_count()
-and dp_link_parse_sink_status_filed() to avoid long timeout delay if
-dp aux read/write failed at timeout due to cable unplugged.
+The recent patch to make afs_getattr consult the server didn't account
+for the pseudo-inodes employed by the dynamic root-type afs superblock
+not having a volume or a server to access, and thus an oops occurs if
+such a directory is stat'd.
 
-Changes in V4:
--- split this patch as stand alone patch
+Fix this by checking to see if the vnode->volume pointer actually points
+anywhere before following it in afs_getattr().
 
-Changes in v5:
--- rebase on msm-next branch
+This can be tested by stat'ing a directory in /afs.  It may be
+sufficient just to do "ls /afs" and the oops looks something like:
 
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+        BUG: kernel NULL pointer dereference, address: 0000000000000020
+        ...
+        RIP: 0010:afs_getattr+0x8b/0x14b
+        ...
+        Call Trace:
+         <TASK>
+         vfs_statx+0x79/0xf5
+         vfs_fstatat+0x49/0x62
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Tested-by: Stephen Boyd <swboyd@chromium.org>
-Link: https://lore.kernel.org/r/1638985262-2072-1-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: 2aeb8c86d499 ("afs: Fix afs_getattr() to refetch file status if callback break occurred")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lore.kernel.org/r/165408450783.1031787.7941404776393751186.stgit@warthog.procyon.org.uk/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 12 +++++++++---
- drivers/gpu/drm/msm/dp/dp_link.c    | 19 ++++++++++++++-----
- 2 files changed, 23 insertions(+), 8 deletions(-)
+ fs/afs/inode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index a66ee63253a3..32b8dbb917bf 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -712,9 +712,15 @@ static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
- 		return 0;
- 	}
+diff --git a/fs/afs/inode.c b/fs/afs/inode.c
+index a47666ba48f5..785bacb972da 100644
+--- a/fs/afs/inode.c
++++ b/fs/afs/inode.c
+@@ -733,7 +733,8 @@ int afs_getattr(struct user_namespace *mnt_userns, const struct path *path,
  
--	ret = dp_display_usbpd_attention_cb(&dp->pdev->dev);
--	if (ret == -ECONNRESET) { /* cable unplugged */
--		dp->core_initialized = false;
-+	/*
-+	 * dp core (ahb/aux clks) must be initialized before
-+	 * irq_hpd be handled
-+	 */
-+	if (dp->core_initialized) {
-+		ret = dp_display_usbpd_attention_cb(&dp->pdev->dev);
-+		if (ret == -ECONNRESET) { /* cable unplugged */
-+			dp->core_initialized = false;
-+		}
- 	}
- 	DRM_DEBUG_DP("hpd_state=%d\n", state);
+ 	_enter("{ ino=%lu v=%u }", inode->i_ino, inode->i_generation);
  
-diff --git a/drivers/gpu/drm/msm/dp/dp_link.c b/drivers/gpu/drm/msm/dp/dp_link.c
-index a5bdfc5029de..d4d31e5bda07 100644
---- a/drivers/gpu/drm/msm/dp/dp_link.c
-+++ b/drivers/gpu/drm/msm/dp/dp_link.c
-@@ -737,18 +737,25 @@ static int dp_link_parse_sink_count(struct dp_link *dp_link)
- 	return 0;
- }
- 
--static void dp_link_parse_sink_status_field(struct dp_link_private *link)
-+static int dp_link_parse_sink_status_field(struct dp_link_private *link)
- {
- 	int len = 0;
- 
- 	link->prev_sink_count = link->dp_link.sink_count;
--	dp_link_parse_sink_count(&link->dp_link);
-+	len = dp_link_parse_sink_count(&link->dp_link);
-+	if (len < 0) {
-+		DRM_ERROR("DP parse sink count failed\n");
-+		return len;
-+	}
- 
- 	len = drm_dp_dpcd_read_link_status(link->aux,
- 		link->link_status);
--	if (len < DP_LINK_STATUS_SIZE)
-+	if (len < DP_LINK_STATUS_SIZE) {
- 		DRM_ERROR("DP link status read failed\n");
--	dp_link_parse_request(link);
-+		return len;
-+	}
-+
-+	return dp_link_parse_request(link);
- }
- 
- /**
-@@ -1023,7 +1030,9 @@ int dp_link_process_request(struct dp_link *dp_link)
- 
- 	dp_link_reset_data(link);
- 
--	dp_link_parse_sink_status_field(link);
-+	ret = dp_link_parse_sink_status_field(link);
-+	if (ret)
-+		return ret;
- 
- 	if (link->request.test_requested == DP_TEST_LINK_EDID_READ) {
- 		dp_link->sink_request |= DP_TEST_LINK_EDID_READ;
+-	if (!(query_flags & AT_STATX_DONT_SYNC) &&
++	if (vnode->volume &&
++	    !(query_flags & AT_STATX_DONT_SYNC) &&
+ 	    !test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
+ 		key = afs_request_key(vnode->volume->cell);
+ 		if (IS_ERR(key))
 -- 
 2.35.1
 
