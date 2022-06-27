@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3DEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C517C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235367AbiF0L2j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
+        id S235376AbiF0L2t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235151AbiF0L05 (ORCPT
+        with ESMTP id S235247AbiF0L13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:26:57 -0400
+        Mon, 27 Jun 2022 07:27:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE8565C3;
-        Mon, 27 Jun 2022 04:26:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A5895A3;
+        Mon, 27 Jun 2022 04:27:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21095612D8;
-        Mon, 27 Jun 2022 11:26:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DCE5C3411D;
-        Mon, 27 Jun 2022 11:26:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 154CC6149A;
+        Mon, 27 Jun 2022 11:27:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B3DFC3411D;
+        Mon, 27 Jun 2022 11:27:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329211;
-        bh=mQxZLlG1fnMhdpl5nNqIAaOfKrFy36I2HEN0sikocns=;
+        s=korg; t=1656329226;
+        bh=jaYeSq8RMd7CvRO05tklhk/K8wwDlJj9FKd33kmk2SU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lXHwJwy7519xBVaNe4PTGQiMsioMdej0TBc88e52TDdyRTox9hWl3S5AFE/Ku1+3w
-         qxAzPsbjXz7mc18wJrFS7yYQlPQrErS2JxGVrN8n6sy523RW+GOrEYnGgBJulAE0lZ
-         6GJy+lnMB7gnEQfUytEFcBATg6w0LR2NZ6Q/wbKM=
+        b=M6QaMv9Vkq+XZnTGCPwHKDWBSa6mMdgxfSlkPSjvbGe8u0GSfUeuVivpO1a6pCDBY
+         1wC9C/9W4eVpqfDvNUIKl0+xXdrpkdIHmA3JPWS6yNl6sQ1tW7muipDTW3AwCB/fdG
+         VXqLo2Vck/4M472Do3/Tq0a4kfHWVLgIyVtF6bVk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, k2ci <kernel-bot@kylinos.cn>,
-        huhai <huhai@kylinos.cn>,
-        Genjian Zhang <zhanggenjian@kylinos.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 047/102] MIPS: Remove repetitive increase irq_err_count
-Date:   Mon, 27 Jun 2022 13:20:58 +0200
-Message-Id: <20220627111934.867533399@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.10 093/102] ARM: dts: imx6qdl: correct PU regulator ramp delay
+Date:   Mon, 27 Jun 2022 13:21:44 +0200
+Message-Id: <20220627111936.225858508@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -51,61 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-[ Upstream commit c81aba8fde2aee4f5778ebab3a1d51bd2ef48e4c ]
+commit 93a8ba2a619816d631bd69e9ce2172b4d7a481b8 upstream.
 
-commit 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx") added
-a function irq_dispatch, and it'll increase irq_err_count when the get_irq
-callback returns a negative value, but increase irq_err_count in get_irq
-was not removed.
+Contrary to what was believed at the time, the ramp delay of 150us is not
+plenty for the PU LDO with the default step time of 512 pulses of the 24MHz
+clock. Measurements have shown that after enabling the LDO the voltage on
+VDDPU_CAP jumps to ~750mV in the first step and after that the regulator
+executes the normal ramp up as defined by the step size control.
 
-And also, modpost complains once gpio-vr41xx drivers become modules.
-  ERROR: modpost: "irq_err_count" [drivers/gpio/gpio-vr41xx.ko] undefined!
+This means it takes the regulator between 360us and 370us to ramp up to
+the nominal 1.15V voltage for this power domain. With the old setting of
+the ramp delay the power up of the PU GPC domain would happen in the middle
+of the regulator ramp with the voltage being at around 900mV. Apparently
+this was enough for most units to properly power up the peripherals in the
+domain and execute the reset. Some units however, fail to power up properly,
+especially when the chip is at a low temperature. In that case any access
+to the GPU registers would yield an incorrect result with no way to recover
+from this situation.
 
-So it would be a good idea to remove repetitive increase irq_err_count in
-get_irq callback.
+Change the ramp delay to 380us to cover the measured ramp up time with a
+bit of additional slack.
 
-Fixes: 27fdd325dace ("MIPS: Update VR41xx GPIO driver to use gpiolib")
-Fixes: 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx")
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: huhai <huhai@kylinos.cn>
-Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 40130d327f72 ("ARM: dts: imx6qdl: Allow disabling the PU regulator, add a enable ramp delay")
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/vr41xx/common/icu.c | 2 --
- drivers/gpio/gpio-vr41xx.c    | 2 --
- 2 files changed, 4 deletions(-)
+ arch/arm/boot/dts/imx6qdl.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/vr41xx/common/icu.c b/arch/mips/vr41xx/common/icu.c
-index 7b7f25b4b057..9240bcdbe74e 100644
---- a/arch/mips/vr41xx/common/icu.c
-+++ b/arch/mips/vr41xx/common/icu.c
-@@ -640,8 +640,6 @@ static int icu_get_irq(unsigned int irq)
- 
- 	printk(KERN_ERR "spurious ICU interrupt: %04x,%04x\n", pend1, pend2);
- 
--	atomic_inc(&irq_err_count);
--
- 	return -1;
- }
- 
-diff --git a/drivers/gpio/gpio-vr41xx.c b/drivers/gpio/gpio-vr41xx.c
-index 98cd715ccc33..8d09b619c166 100644
---- a/drivers/gpio/gpio-vr41xx.c
-+++ b/drivers/gpio/gpio-vr41xx.c
-@@ -217,8 +217,6 @@ static int giu_get_irq(unsigned int irq)
- 	printk(KERN_ERR "spurious GIU interrupt: %04x(%04x),%04x(%04x)\n",
- 	       maskl, pendl, maskh, pendh);
- 
--	atomic_inc(&irq_err_count);
--
- 	return -EINVAL;
- }
- 
--- 
-2.35.1
-
+--- a/arch/arm/boot/dts/imx6qdl.dtsi
++++ b/arch/arm/boot/dts/imx6qdl.dtsi
+@@ -756,7 +756,7 @@
+ 					regulator-name = "vddpu";
+ 					regulator-min-microvolt = <725000>;
+ 					regulator-max-microvolt = <1450000>;
+-					regulator-enable-ramp-delay = <150>;
++					regulator-enable-ramp-delay = <380>;
+ 					anatop-reg-offset = <0x140>;
+ 					anatop-vol-bit-shift = <9>;
+ 					anatop-vol-bit-width = <5>;
 
 
