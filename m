@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E34A8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67582C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235446AbiF0L33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46492 "EHLO
+        id S235457AbiF0L3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235373AbiF0L2t (ORCPT
+        with ESMTP id S235268AbiF0L2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:28:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC2D65B0;
-        Mon, 27 Jun 2022 04:27:32 -0700 (PDT)
+        Mon, 27 Jun 2022 07:28:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5747C65B7;
+        Mon, 27 Jun 2022 04:27:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B78E61460;
-        Mon, 27 Jun 2022 11:27:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7B6AC3411D;
-        Mon, 27 Jun 2022 11:27:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 183F5B81120;
+        Mon, 27 Jun 2022 11:27:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B66C341CB;
+        Mon, 27 Jun 2022 11:27:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329251;
-        bh=X6teW0KhDjIByImFmOErKxYMhlrwTw+PCdBRdEMHqUY=;
+        s=korg; t=1656329254;
+        bh=E01gtDYA+DLamTvwTd/8qIBpMQTy5fBElgZmB4vlylI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i9ML+l9lopt7DhxmQ0niH0RavmkYN/EJzSTq8ijcKTaxhD4yRAyYbzEVBOiPiXKmk
-         E71wA7PX0TSbVeVcMk7dQFih7VMlAESUU2lNUd/pc3R6I615KqtzafjgmR8XaUhwZ/
-         UUKYbC4XuT+Ypfxp9CgQ/lV2zsNatkoJ+M7y8Hac=
+        b=U3r4DwOAHfyz/MXe+IYDvbQaI+k+kOhkaNSIRYvTFa7fC04KCBM8PazGHF1OPbN+G
+         hbWJ7wxxhbL/ba3qAeQzFf6K4cvkEL2a9VdB2ZKgotnMOznAS0vKC0vVO2RGnCzJdz
+         fHUt1SUSSs481pbbTB8eF50nnvLPS0GjT3D2kK9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 5.10 101/102] kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS (2nd attempt)
-Date:   Mon, 27 Jun 2022 13:21:52 +0200
-Message-Id: <20220627111936.461651583@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 102/102] powerpc/pseries: wire up rng during setup_arch()
+Date:   Mon, 27 Jun 2022 13:21:53 +0200
+Message-Id: <20220627111936.491194994@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -49,49 +49,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 53632ba87d9f302a8d97a11ec2f4f4eec7bb75ea upstream.
+commit e561e472a3d441753bd012333b057f48fef1045b upstream.
 
-If CONFIG_TRIM_UNUSED_KSYMS is enabled and the kernel is built from
-a pristine state, the vmlinux is linked twice.
+The platform's RNG must be available before random_init() in order to be
+useful for initial seeding, which in turn means that it needs to be
+called from setup_arch(), rather than from an init call. Fortunately,
+each platform already has a setup_arch function pointer, which means
+it's easy to wire this up. This commit also removes some noisy log
+messages that don't add much.
 
-Commit 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for
-CONFIG_TRIM_UNUSED_KSYMS") explains why this happens, but it did not fix
-the issue at all.
-
-Now I realized I had applied a wrong patch.
-
-In v1 patch [1], the autoksyms_recursive target correctly recurses to
-"$(MAKE) -f $(srctree)/Makefile autoksyms_recursive".
-
-In v2 patch [2], I accidentally dropped the diff line, and it recurses to
-"$(MAKE) -f $(srctree)/Makefile vmlinux".
-
-Restore the code I intended in v1.
-
-[1]: https://lore.kernel.org/linux-kbuild/1521045861-22418-8-git-send-email-yamada.masahiro@socionext.com/
-[2]: https://lore.kernel.org/linux-kbuild/1521166725-24157-8-git-send-email-yamada.masahiro@socionext.com/
-
-Fixes: 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Tested-by: Sami Tolvanen <samitolvanen@google.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fixes: a489043f4626 ("powerpc/pseries: Implement arch_get_random_long() based on H_RANDOM")
+Cc: stable@vger.kernel.org # v3.13+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220611151015.548325-4-Jason@zx2c4.com
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/pseries/pseries.h |    2 ++
+ arch/powerpc/platforms/pseries/rng.c     |   11 +++--------
+ arch/powerpc/platforms/pseries/setup.c   |    2 ++
+ 3 files changed, 7 insertions(+), 8 deletions(-)
 
---- a/Makefile
-+++ b/Makefile
-@@ -1156,7 +1156,7 @@ KBUILD_MODULES := 1
+--- a/arch/powerpc/platforms/pseries/pseries.h
++++ b/arch/powerpc/platforms/pseries/pseries.h
+@@ -114,4 +114,6 @@ int dlpar_workqueue_init(void);
+ void pseries_setup_security_mitigations(void);
+ void pseries_lpar_read_hblkrm_characteristics(void);
  
- autoksyms_recursive: descend modules.order
- 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/adjust_autoksyms.sh \
--	  "$(MAKE) -f $(srctree)/Makefile vmlinux"
-+	  "$(MAKE) -f $(srctree)/Makefile autoksyms_recursive"
- endif
++void pseries_rng_init(void);
++
+ #endif /* _PSERIES_PSERIES_H */
+--- a/arch/powerpc/platforms/pseries/rng.c
++++ b/arch/powerpc/platforms/pseries/rng.c
+@@ -10,6 +10,7 @@
+ #include <asm/archrandom.h>
+ #include <asm/machdep.h>
+ #include <asm/plpar_wrappers.h>
++#include "pseries.h"
  
- autoksyms_h := $(if $(CONFIG_TRIM_UNUSED_KSYMS), include/generated/autoksyms.h)
+ 
+ static int pseries_get_random_long(unsigned long *v)
+@@ -24,19 +25,13 @@ static int pseries_get_random_long(unsig
+ 	return 0;
+ }
+ 
+-static __init int rng_init(void)
++void __init pseries_rng_init(void)
+ {
+ 	struct device_node *dn;
+ 
+ 	dn = of_find_compatible_node(NULL, NULL, "ibm,random");
+ 	if (!dn)
+-		return -ENODEV;
+-
+-	pr_info("Registering arch random hook.\n");
+-
++		return;
+ 	ppc_md.get_random_seed = pseries_get_random_long;
+-
+ 	of_node_put(dn);
+-	return 0;
+ }
+-machine_subsys_initcall(pseries, rng_init);
+--- a/arch/powerpc/platforms/pseries/setup.c
++++ b/arch/powerpc/platforms/pseries/setup.c
+@@ -824,6 +824,8 @@ static void __init pSeries_setup_arch(vo
+ 
+ 	if (swiotlb_force == SWIOTLB_FORCE)
+ 		ppc_swiotlb_enable = 1;
++
++	pseries_rng_init();
+ }
+ 
+ static void pseries_panic(char *str)
 
 
