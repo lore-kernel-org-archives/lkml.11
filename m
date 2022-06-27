@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57643C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAAAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237305AbiF0Loh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43552 "EHLO
+        id S237361AbiF0Lom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237361AbiF0Lmq (ORCPT
+        with ESMTP id S237355AbiF0Lmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A222DBB;
-        Mon, 27 Jun 2022 04:37:07 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70FDDA6;
+        Mon, 27 Jun 2022 04:37:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26246609D0;
-        Mon, 27 Jun 2022 11:37:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A874C3411D;
-        Mon, 27 Jun 2022 11:37:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89052B81117;
+        Mon, 27 Jun 2022 11:37:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9B18C3411D;
+        Mon, 27 Jun 2022 11:37:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329826;
-        bh=EfqybhqZKCqHI6x6TuEbBk8Qw1d4L2PCvm9+UEsIQUI=;
+        s=korg; t=1656329823;
+        bh=oSp11SA9Ushwr77sgGQoO8DqC1h3aTB+ykNjjjIV3lc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ygnFz7+udtmJ65Jqp1d8vs0MPbZM1lsgrLyB6RDEInFwDbUyf5oHjS9FDMBe3Fzz2
-         oI5Wz78M4zozBki9yKcjeIcMuuP6G+JYUMqKKOGMIGAXBO1gbhfyT0HIWsGYF0gDVz
-         ZsYhqetntbU5wAUQz5orMKLS2ZodgJBA4l1XNbnY=
+        b=Aqd9qvALgxZqmC9WHoXjwnX3fdPMU5d2lNQKbz1Vzoq257AsOP1V9d8RvYnrzXKDI
+         iJpk9Lo74uzDik6/iUvU8t/bUXD8JzN0/piRb/QhvO5EgcSnaVSWMLq/nHITJmuCUJ
+         wsuzezmnO30lENXlC/gykEvK0kWy+j3Bx53udZ4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jun Li <jun.li@nxp.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.15 121/135] ARM: dts: imx7: Move hsic_phy power domain to HSIC PHY node
-Date:   Mon, 27 Jun 2022 13:22:08 +0200
-Message-Id: <20220627111941.666378889@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Pankaj Raghav <p.raghav@samsung.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 077/135] nvme: move the Samsung X5 quirk entry to the core quirks
+Date:   Mon, 27 Jun 2022 13:21:24 +0200
+Message-Id: <20220627111940.395844173@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,41 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit 552ca27929ab28b341ae9b2629f0de3a84c98ee8 upstream.
+[ Upstream commit e6487833182a8a0187f0292aca542fc163ccd03e ]
 
-Move the power domain to its actual user. This keeps the power domain
-enabled even when the USB host is runtime suspended. This is necessary
-to detect any downstream events, like device attach.
+This device shares the PCI ID with the Samsung 970 Evo Plus that
+does not need or want the quirks.  Move the the quirk entry to the
+core table based on the model number instead.
 
-Fixes: 02f8eb40ef7b ("ARM: dts: imx7s: Add power domain for imx7d HSIC")
-Suggested-by: Jun Li <jun.li@nxp.com>
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bc360b0b1611 ("nvme-pci: add quirks for Samsung X5 SSDs")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Pankaj Raghav <p.raghav@samsung.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7s.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nvme/host/core.c | 14 ++++++++++++++
+ drivers/nvme/host/pci.c  |  4 ----
+ 2 files changed, 14 insertions(+), 4 deletions(-)
 
---- a/arch/arm/boot/dts/imx7s.dtsi
-+++ b/arch/arm/boot/dts/imx7s.dtsi
-@@ -104,6 +104,7 @@
- 		compatible = "usb-nop-xceiv";
- 		clocks = <&clks IMX7D_USB_HSIC_ROOT_CLK>;
- 		clock-names = "main_clk";
-+		power-domains = <&pgc_hsic_phy>;
- 		#phy-cells = <0>;
- 	};
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 3ef1f9112ee0..19054b791c67 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -2489,6 +2489,20 @@ static const struct nvme_core_quirk_entry core_quirks[] = {
+ 		.vid = 0x1e0f,
+ 		.mn = "KCD6XVUL6T40",
+ 		.quirks = NVME_QUIRK_NO_APST,
++	},
++	{
++		/*
++		 * The external Samsung X5 SSD fails initialization without a
++		 * delay before checking if it is ready and has a whole set of
++		 * other problems.  To make this even more interesting, it
++		 * shares the PCI ID with internal Samsung 970 Evo Plus that
++		 * does not need or want these quirks.
++		 */
++		.vid = 0x144d,
++		.mn = "Samsung Portable SSD X5",
++		.quirks = NVME_QUIRK_DELAY_BEFORE_CHK_RDY |
++			  NVME_QUIRK_NO_DEEPEST_PS |
++			  NVME_QUIRK_IGNORE_DEV_SUBNQN,
+ 	}
+ };
  
-@@ -1135,7 +1136,6 @@
- 				compatible = "fsl,imx7d-usb", "fsl,imx27-usb";
- 				reg = <0x30b30000 0x200>;
- 				interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
--				power-domains = <&pgc_hsic_phy>;
- 				clocks = <&clks IMX7D_USB_CTRL_CLK>;
- 				fsl,usbphy = <&usbphynop3>;
- 				fsl,usbmisc = <&usbmisc3 0>;
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 3ddd24a42043..58b8461b2b0f 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3380,10 +3380,6 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_128_BYTES_SQES |
+ 				NVME_QUIRK_SHARED_TAGS |
+ 				NVME_QUIRK_SKIP_CID_GEN },
+-	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
+-		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
+-				NVME_QUIRK_NO_DEEPEST_PS |
+-				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ 0, }
+ };
+-- 
+2.35.1
+
 
 
