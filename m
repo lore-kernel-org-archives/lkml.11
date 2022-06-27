@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF3A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239363AbiF0L47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
+        id S238393AbiF0L5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238044AbiF0Ltu (ORCPT
+        with ESMTP id S238147AbiF0Lu1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:49:50 -0400
+        Mon, 27 Jun 2022 07:50:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5546E71;
-        Mon, 27 Jun 2022 04:43:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F4110D9;
+        Mon, 27 Jun 2022 04:43:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D76FB61268;
-        Mon, 27 Jun 2022 11:43:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4002C341C7;
-        Mon, 27 Jun 2022 11:43:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C95C661192;
+        Mon, 27 Jun 2022 11:43:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC73BC3411D;
+        Mon, 27 Jun 2022 11:43:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330206;
-        bh=iloeB/dZ6LP3VpD/hj6iCJ5H6/wOfIuWN46VZKW9bYI=;
+        s=korg; t=1656330209;
+        bh=ZeZLL/oJitZEoiyARL1KO7IjtoeRu3fDu/1zE3CmHeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mw36LNMgd22PpNhjC0VpUaDE9Y7HPqEhcbZ6f5hN9pMEIMFFK0c8BR/zwnC8iNKNe
-         XxV5j6kCbeLpM6e/k8SowsB2/xXuJe4V+sRntPOrk2tg6dD5BpiypX0fUk1+aHVjBx
-         lxfAWlQj+BeK4oJZAlB56hxzdxpnnmpaQABj2zM4=
+        b=xuPb19l4VfXIlcD/X3sL+TUptpZuXyA7mSFHbYJtqfp/gsTO5R5FuUU7SICNKWDdX
+         noc3Eu3/yajfNdmZHWohO7GUpElbPK2vTsTWOYXQf5SCJ6OzhDPoXmmSZoVyC56Aqb
+         jvEipcU6zi9Ju4obME591s2V0mqN4fQQbisDInNc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Dan Vacura <w36195@motorola.com>
-Subject: [PATCH 5.18 118/181] usb: gadget: uvc: fix list double add in uvcg_video_pump
-Date:   Mon, 27 Jun 2022 13:21:31 +0200
-Message-Id: <20220627111948.117853093@linuxfoundation.org>
+        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@gmail.com>,
+        Hillf Danton <hdanton@sina.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+02b16343704b3af1667e@syzkaller.appspotmail.com
+Subject: [PATCH 5.18 119/181] usb: gadget: Fix non-unique driver names in raw-gadget driver
+Date:   Mon, 27 Jun 2022 13:21:32 +0200
+Message-Id: <20220627111948.146279033@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,47 +50,192 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Vacura <w36195@motorola.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 96163f835e65f8c9897487fac965819f0651d671 upstream.
+commit f2d8c2606825317b77db1f9ba0fc26ef26160b30 upstream.
 
-A panic can occur if the endpoint becomes disabled and the
-uvcg_video_pump adds the request back to the req_free list after it has
-already been queued to the endpoint. The endpoint complete will add the
-request back to the req_free list. Invalidate the local request handle
-once it's been queued.
+In a report for a separate bug (which has already been fixed by commit
+5f0b5f4d50fa "usb: gadget: fix race when gadget driver register via
+ioctl") in the raw-gadget driver, the syzbot console log included
+error messages caused by attempted registration of a new driver with
+the same name as an existing driver:
 
-<6>[  246.796704][T13726] configfs-gadget gadget: uvc: uvc_function_set_alt(1, 0)
-<3>[  246.797078][   T26] list_add double add: new=ffffff878bee5c40, prev=ffffff878bee5c40, next=ffffff878b0f0a90.
-<6>[  246.797213][   T26] ------------[ cut here ]------------
-<2>[  246.797224][   T26] kernel BUG at lib/list_debug.c:31!
-<6>[  246.807073][   T26] Call trace:
-<6>[  246.807180][   T26]  uvcg_video_pump+0x364/0x38c
-<6>[  246.807366][   T26]  process_one_work+0x2a4/0x544
-<6>[  246.807394][   T26]  worker_thread+0x350/0x784
-<6>[  246.807442][   T26]  kthread+0x2ac/0x320
+> kobject_add_internal failed for raw-gadget with -EEXIST, don't try to register things with the same name in the same directory.
+> UDC core: USB Raw Gadget: driver registration failed: -17
+> misc raw-gadget: fail, usb_gadget_register_driver returned -17
 
-Fixes: f9897ec0f6d3 ("usb: gadget: uvc: only pump video data if necessary")
-Cc: stable@vger.kernel.org
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Dan Vacura <w36195@motorola.com>
-Link: https://lore.kernel.org/r/20220617163154.16621-1-w36195@motorola.com
+These errors arise because raw_gadget.c registers a separate UDC
+driver for each of the UDC instances it creates, but these drivers all
+have the same name: "raw-gadget".  Until recently this wasn't a
+problem, but when the "gadget" bus was added and UDC drivers were
+registered on this bus, it became possible for name conflicts to cause
+the registrations to fail.  The reason is simply that the bus code in
+the driver core uses the driver name as a sysfs directory name (e.g.,
+/sys/bus/gadget/drivers/raw-gadget/), and you can't create two
+directories with the same pathname.
+
+To fix this problem, the driver names used by raw-gadget are made
+distinct by appending a unique ID number: "raw-gadget.N", with a
+different value of N for each driver instance.  And to avoid the
+proliferation of error handling code in the raw_ioctl_init() routine,
+the error return paths are refactored into the common pattern (goto
+statements leading to cleanup code at the end of the routine).
+
+Link: https://lore.kernel.org/all/0000000000008c664105dffae2eb@google.com/
+Fixes: fc274c1e9973 "USB: gadget: Add a new bus for gadgets"
+CC: Andrey Konovalov <andreyknvl@gmail.com>
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+02b16343704b3af1667e@syzkaller.appspotmail.com
+Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
+Acked-by: Hillf Danton <hdanton@sina.com>
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YqdG32w+3h8c1s7z@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/function/uvc_video.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/gadget/legacy/raw_gadget.c |   62 ++++++++++++++++++++++++---------
+ 1 file changed, 46 insertions(+), 16 deletions(-)
 
---- a/drivers/usb/gadget/function/uvc_video.c
-+++ b/drivers/usb/gadget/function/uvc_video.c
-@@ -415,6 +415,9 @@ static void uvcg_video_pump(struct work_
- 			uvcg_queue_cancel(queue, 0);
- 			break;
- 		}
+--- a/drivers/usb/gadget/legacy/raw_gadget.c
++++ b/drivers/usb/gadget/legacy/raw_gadget.c
+@@ -11,6 +11,7 @@
+ #include <linux/ctype.h>
+ #include <linux/debugfs.h>
+ #include <linux/delay.h>
++#include <linux/idr.h>
+ #include <linux/kref.h>
+ #include <linux/miscdevice.h>
+ #include <linux/module.h>
+@@ -36,6 +37,9 @@ MODULE_LICENSE("GPL");
+ 
+ /*----------------------------------------------------------------------*/
+ 
++static DEFINE_IDA(driver_id_numbers);
++#define DRIVER_DRIVER_NAME_LENGTH_MAX	32
 +
-+		/* Endpoint now owns the request */
-+		req = NULL;
- 		video->req_int_count++;
+ #define RAW_EVENT_QUEUE_SIZE	16
+ 
+ struct raw_event_queue {
+@@ -161,6 +165,9 @@ struct raw_dev {
+ 	/* Reference to misc device: */
+ 	struct device			*dev;
+ 
++	/* Make driver names unique */
++	int				driver_id_number;
++
+ 	/* Protected by lock: */
+ 	enum dev_state			state;
+ 	bool				gadget_registered;
+@@ -189,6 +196,7 @@ static struct raw_dev *dev_new(void)
+ 	spin_lock_init(&dev->lock);
+ 	init_completion(&dev->ep0_done);
+ 	raw_event_queue_init(&dev->queue);
++	dev->driver_id_number = -1;
+ 	return dev;
+ }
+ 
+@@ -199,6 +207,9 @@ static void dev_free(struct kref *kref)
+ 
+ 	kfree(dev->udc_name);
+ 	kfree(dev->driver.udc_name);
++	kfree(dev->driver.driver.name);
++	if (dev->driver_id_number >= 0)
++		ida_free(&driver_id_numbers, dev->driver_id_number);
+ 	if (dev->req) {
+ 		if (dev->ep0_urb_queued)
+ 			usb_ep_dequeue(dev->gadget->ep0, dev->req);
+@@ -422,6 +433,7 @@ static int raw_ioctl_init(struct raw_dev
+ 	struct usb_raw_init arg;
+ 	char *udc_driver_name;
+ 	char *udc_device_name;
++	char *driver_driver_name;
+ 	unsigned long flags;
+ 
+ 	if (copy_from_user(&arg, (void __user *)value, sizeof(arg)))
+@@ -440,36 +452,44 @@ static int raw_ioctl_init(struct raw_dev
+ 		return -EINVAL;
  	}
+ 
++	ret = ida_alloc(&driver_id_numbers, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
++	dev->driver_id_number = ret;
++
++	driver_driver_name = kmalloc(DRIVER_DRIVER_NAME_LENGTH_MAX, GFP_KERNEL);
++	if (!driver_driver_name) {
++		ret = -ENOMEM;
++		goto out_free_driver_id_number;
++	}
++	snprintf(driver_driver_name, DRIVER_DRIVER_NAME_LENGTH_MAX,
++				DRIVER_NAME ".%d", dev->driver_id_number);
++
+ 	udc_driver_name = kmalloc(UDC_NAME_LENGTH_MAX, GFP_KERNEL);
+-	if (!udc_driver_name)
+-		return -ENOMEM;
++	if (!udc_driver_name) {
++		ret = -ENOMEM;
++		goto out_free_driver_driver_name;
++	}
+ 	ret = strscpy(udc_driver_name, &arg.driver_name[0],
+ 				UDC_NAME_LENGTH_MAX);
+-	if (ret < 0) {
+-		kfree(udc_driver_name);
+-		return ret;
+-	}
++	if (ret < 0)
++		goto out_free_udc_driver_name;
+ 	ret = 0;
+ 
+ 	udc_device_name = kmalloc(UDC_NAME_LENGTH_MAX, GFP_KERNEL);
+ 	if (!udc_device_name) {
+-		kfree(udc_driver_name);
+-		return -ENOMEM;
++		ret = -ENOMEM;
++		goto out_free_udc_driver_name;
+ 	}
+ 	ret = strscpy(udc_device_name, &arg.device_name[0],
+ 				UDC_NAME_LENGTH_MAX);
+-	if (ret < 0) {
+-		kfree(udc_driver_name);
+-		kfree(udc_device_name);
+-		return ret;
+-	}
++	if (ret < 0)
++		goto out_free_udc_device_name;
+ 	ret = 0;
+ 
+ 	spin_lock_irqsave(&dev->lock, flags);
+ 	if (dev->state != STATE_DEV_OPENED) {
+ 		dev_dbg(dev->dev, "fail, device is not opened\n");
+-		kfree(udc_driver_name);
+-		kfree(udc_device_name);
+ 		ret = -EINVAL;
+ 		goto out_unlock;
+ 	}
+@@ -484,14 +504,24 @@ static int raw_ioctl_init(struct raw_dev
+ 	dev->driver.suspend = gadget_suspend;
+ 	dev->driver.resume = gadget_resume;
+ 	dev->driver.reset = gadget_reset;
+-	dev->driver.driver.name = DRIVER_NAME;
++	dev->driver.driver.name = driver_driver_name;
+ 	dev->driver.udc_name = udc_device_name;
+ 	dev->driver.match_existing_only = 1;
+ 
+ 	dev->state = STATE_DEV_INITIALIZED;
++	spin_unlock_irqrestore(&dev->lock, flags);
++	return ret;
+ 
+ out_unlock:
+ 	spin_unlock_irqrestore(&dev->lock, flags);
++out_free_udc_device_name:
++	kfree(udc_device_name);
++out_free_udc_driver_name:
++	kfree(udc_driver_name);
++out_free_driver_driver_name:
++	kfree(driver_driver_name);
++out_free_driver_id_number:
++	ida_free(&driver_id_numbers, dev->driver_id_number);
+ 	return ret;
+ }
  
 
 
