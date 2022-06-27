@@ -2,111 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21AD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1254DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239289AbiF0QYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55552 "EHLO
+        id S239297AbiF0QY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237910AbiF0QYe (ORCPT
+        with ESMTP id S237910AbiF0QYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:24:34 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC74BBE39
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:24:32 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id e28so8651122wra.0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:24:32 -0700 (PDT)
+        Mon, 27 Jun 2022 12:24:55 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21D9BE39;
+        Mon, 27 Jun 2022 09:24:54 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id e63so9571186pgc.5;
+        Mon, 27 Jun 2022 09:24:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3xCqZKogDypv6eypnWAIX07mm+p6TcVFKXGmBz5uwGo=;
-        b=EFJ93YBppveZN8tb8RoZSuAH5W5SG1LiH1nd2yGt5BUolxb7x2ATW1Kz7biQm14+S1
-         UM+Fp8eufEM8rSzaN98Vxy+yjs/rNMirq3kcwGggDlKitVyql4aB21ps9KcBglapj9Ua
-         1W4ZjfHFR1OX+l2hu2sbJa8kLFx8xcw+LngOMpTPoS5at+/yURveHnzp5IGPSJMu7ZvB
-         x275CN6l1938KDghGgk+NqN925rKkvVMXE8N/H2EY4ZUpwt+isaWFqtc66lQKg5sW1P0
-         qe563ZBGvDzi6k6E6WBMqiK4kFc+qfzpLTjoypM7LjJTmsiLm26bxb/pjD6ij7bCgcHB
-         9Yqw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=agTdFC77wAiPKF65qUDFakFqsb81qxDJ3UaD4sEYt/w=;
+        b=IIE+TLwo/0K9iYZITp/hc6jUuto3k5HhvAD+nsiUisLv5Q4wyvr9FmMjtJYZsH3E9S
+         Wzs6+cVruekXJPSY8wVLoZOU7kIYaO8EcBZqF2+r2+a+Ox3/W+rQ4jWtvvZMN2HM0C5O
+         QzYBRzgRINKohbhhk9bD7Dd1XLJ0A7sx2MfwMjPKt4f6Hjr4DxpWchGyvEsDN9G3Xvde
+         ae3vzMHrE2kgBP93GTa6ag/KAS5mfEFH56yPg1cfYiMM7LnTLOET5S8qHNldYHckM3gS
+         UK+qtGImHgor6rqpZY5chuYnLqBsxZ9FGT/Mgl9qjCMG5++fuTWOmo9eoPb0ODtsjMVK
+         yhBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3xCqZKogDypv6eypnWAIX07mm+p6TcVFKXGmBz5uwGo=;
-        b=BjnXNy+dP2Wez3fEfkhRwrpi6k5FRXTQkWJRKSY+B72wRP3tuRPwXeR7k77Gtn/fBN
-         a/nLZC/5XoFP9EOcNCObR/jNVBwccx7J2BSQ7cl9WX9KxZ47zJIVInC5ocm2Ga/RhZcT
-         Sx9GZv4gmbMZlPLMYVvbVBska+pfJXSlUZ7NhFnWIJVeEFtwmnUE6XChdlC+SLSwxVkZ
-         BIt1AQ9//MKKgZ7/kZpRwcBK4EZAz1nrHICdyLCe/QzLbMdZMmd8596uQTLeoOud7A2q
-         PWTi4UsfggiEP7dLx5plYxBptRzANAtN5OrJQIOGN2vwqwPzgAxTZK2xNdb63I7OemBd
-         9xTw==
-X-Gm-Message-State: AJIora+gHxPrrfcWBSOUSyl6xz2rKXJ4uLZINKHGJz6A3yVNnU+anasC
-        xI6mrM9Bz5/+ilrNPaGyV6XZIrYx8nZ3BLmD8K60ag==
-X-Google-Smtp-Source: AGRyM1tEYhoQe960g1sn2OovJNLpmUQIbQxWnmCUUyO6DqjFG9AG5gJFJE0O7TF8AscROp1Q2QZs7ydLv2dJU1UWp8U=
-X-Received: by 2002:a05:6000:a1e:b0:21b:8c8d:3cb5 with SMTP id
- co30-20020a0560000a1e00b0021b8c8d3cb5mr13353164wrb.372.1656347071360; Mon, 27
- Jun 2022 09:24:31 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=agTdFC77wAiPKF65qUDFakFqsb81qxDJ3UaD4sEYt/w=;
+        b=HCn4KS8skzPRWOIUDCIeV1yZyd06mnToGc48CraRjc1pIS3RIBaK6GrunI3VaeQxLo
+         GP1QkK6r1qme+sOOX6YHfCdLsvtx5IZ+dT657K7hBzEDkjD2Ffk8U8HfQxXQiTzq/oNi
+         gVo5vyT8IT0b72HGDm8W2zBRcj0hodA2Z0pRfUrYX0EtzHzfYHAV57tyY7u2Dsiicfoc
+         wpWIrJLgqP7C6O2QPCREAdUw++6NEdFoVvL55olbWeKSJjg2iFhOYyPwM53AGZl2VdAO
+         rZT4DX8ElmJqScNh+cU/tY5i0bgSUmfX47dq83CQg8kRFvTNCMloAFtgGSIP54BwYEn+
+         iw6g==
+X-Gm-Message-State: AJIora+NIQG7ibCYlEocUEA8mHXBV5jJlPAg5xLKePU4eqU/mOIdvPEj
+        /Aah2p3NrorM45Nyio9E5q8=
+X-Google-Smtp-Source: AGRyM1sG27yOPsRPwIvHWPhLNZZUlBJTHGS/Rtcv+tHJafgzf9lXLWrQ3EU8HM3gCD6lvDfXgJVNHA==
+X-Received: by 2002:a63:6e44:0:b0:40c:73a7:b6c9 with SMTP id j65-20020a636e44000000b0040c73a7b6c9mr13235895pgc.285.1656347094073;
+        Mon, 27 Jun 2022 09:24:54 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id t5-20020a17090aae0500b001ec4f258028sm7647327pjq.55.2022.06.27.09.24.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 09:24:53 -0700 (PDT)
+Message-ID: <7656fa2c-590a-8f0f-03ef-904e4f186c82@gmail.com>
+Date:   Mon, 27 Jun 2022 09:24:51 -0700
 MIME-Version: 1.0
-References: <20220606222058.86688-1-yosryahmed@google.com> <20220606222058.86688-2-yosryahmed@google.com>
- <YrnVxM/5KjVhkOnn@google.com>
-In-Reply-To: <YrnVxM/5KjVhkOnn@google.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Mon, 27 Jun 2022 09:23:55 -0700
-Message-ID: <CAJD7tkaMYhG7_AQgn6fLGFVuSB4wDpY_GzcvSS99tSzTUKFkTw@mail.gmail.com>
-Subject: Re: [PATCH v5 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
- page table uses.
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] clk: bcm: rpi: Fix error handling of
+ raspberrypi_fw_get_rate
+Content-Language: en-US
+To:     Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        Maxime Ripard <maxime@cerno.tech>, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220625083643.4012-1-stefan.wahren@i2se.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220625083643.4012-1-stefan.wahren@i2se.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 9:07 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Mon, Jun 06, 2022, Yosry Ahmed wrote:
-> > Add NR_SECONDARY_PAGETABLE stat to count secondary page table uses, e.g.
-> > KVM mmu. This provides more insights on the kernel memory used
-> > by a workload.
->
-> Please provide more justification for NR_SECONDARY_PAGETABLE in the changelog.
-> Specially, answer the questions that were asked in the previous version:
->
->   1. Why not piggyback NR_PAGETABLE?
->   2. Why a "generic" NR_SECONDARY_PAGETABLE instead of NR_VIRT_PAGETABLE?
->
-> It doesn't have to be super long, but provide enough info so that reviewers and
-> future readers don't need to go spelunking to understand the motivation for the
-> new counter type.
+On 6/25/22 01:36, Stefan Wahren wrote:
+> The function raspberrypi_fw_get_rate (e.g. used for the recalc_rate
+> hook) can fail to get the clock rate from the firmware. In this case
+> we cannot return a signed error value, which would be casted to
+> unsigned long. Fix this by returning 0 instead.
+> 
+> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 
-I added such justification in the cover letter, is it better to
-include it here alternatively?
-or do you think the description in the cover letter is lacking?
+Fixes: 4e85e535e6cc ("clk: bcm283x: add driver interfacing with 
+Raspberry Pi's firmware")
 
->
-> And it's probably worth an explicit Link to Marc's question that prompted the long
-> discussion in the previous version, that way if someone does want the gory details
-> they have a link readily available.
->
-> Link: https://lore.kernel.org/all/87ilqoi77b.wl-maz@kernel.org
-
-I will include the link in the next version.
-Thanks!
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
