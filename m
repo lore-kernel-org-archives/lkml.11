@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F321EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241729AbiF0V40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
+        id S241745AbiF0V4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241335AbiF0Vy4 (ORCPT
+        with ESMTP id S241337AbiF0Vy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 17:54:56 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C466333;
-        Mon, 27 Jun 2022 14:54:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033B2636D;
+        Mon, 27 Jun 2022 14:54:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1656366894; x=1687902894;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VWj1q7F255VWvoli/gyPtDrh6sKSr26y6yon2ebiLDc=;
-  b=lRqWow2xwj2vM5TrbqEBFqdb7ONeiDNjmQEyqiIr9MwlQ+1qsXLxgxIY
-   dfr8Fp0/n5G+IL3XmDZFrTfZ635yEAM4ei/z1JudU+rB/uhPI5dgvYttf
-   Av35x8ru4in+VwJ0C5i5AkDYaJc21el2X53xYo8ybrHU0sRYKxEaFk9NO
-   rb8cD5vkkK+scxndjiU9UnZtsxKNYFqsOu/CXNqclI2769Hmms6HFthPP
-   ROlmz8vI5A2kNIycyxj+Mc1hhvMUxP7hA1YTqtotSN2udrKh71s9qo+3l
-   deRqC1fucZdbt+mR4/ky9E+yrhkM+85d4uKi1aM/mn8IrRXwRSVtqip2A
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609517"
+  bh=TLfSg9fkW9Ol6Rant1TCFlyMti8/oM5cJHW1wx0IXMY=;
+  b=m3twIKayJVbFVj04XtGrGvpkSf3HCyG6jNTlyPIFlFHmR7oGvBh+cIXM
+   RGfxfyQ1Q6u85ThdPrNrJ9RedLlPAI/IP0XhoSIle4FO33HmLcG4GrOqf
+   BEeM56KUErbjk7pTPPI/RzWIDDMzS1nwD+qWQl+bwFsKXwhkGUuTEwVUY
+   wzD+7wSrGWYz38qMpIpNvM3r9IVY02QRwnSyOtU0z0cj5Mx6xIHqUU3Zz
+   5mMszhcaoki882HkBOTEyxNfNVftpqIFAyUXSeuwNSrpuPosvh5ojvbQp
+   +E0Ljsk73PRsrAbOukjqt2vlagH4mn51HweGiijGkPjtqdh4X7CR5pMBx
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609521"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281609517"
+   d="scan'208";a="281609521"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:50 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:51 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863500"
+   d="scan'208";a="657863510"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:50 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 021/102] x86/cpu: Add helper functions to allocate/free TDX private host key id
-Date:   Mon, 27 Jun 2022 14:53:13 -0700
-Message-Id: <86a3e7e9c3e8a4f3dd72d72ec370239d8e96306f.1656366338.git.isaku.yamahata@intel.com>
+Subject: [PATCH v7 024/102] KVM: TDX: Add place holder for TDX VM specific mem_enc_op ioctl
+Date:   Mon, 27 Jun 2022 14:53:16 -0700
+Message-Id: <d0438eb959af5984eb4a72c3054085bfecd3b57d.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -55,99 +55,115 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-TDX private host key id is assigned to guest TD.  The memory controller
-encrypts guest TD memory with the assigned TDX private host key id (HIKD).
-Add helper functions to allocate/free TDX private host key id so that TDX
-KVM manage it.
+Add a place holder function for TDX specific VM-scoped ioctl as mem_enc_op.
+TDX specific sub-commands will be added to retrieve/pass TDX specific
+parameters.
 
-Also export the global TDX private host key id that is used to encrypt TDX
-module, its memory and some dynamic data (TDR).  When VMM releasing
-encrypted page to reuse it, the page needs to be flushed with the used host
-key id.  VMM needs the global TDX private host key id to flush such pages
-TDX module accesses with the global TDX private host key id.
+KVM_MEMORY_ENCRYPT_OP was introduced for VM-scoped operations specific for
+guest state-protected VM.  It defined subcommands for technology-specific
+operations under KVM_MEMORY_ENCRYPT_OP.  Despite its name, the subcommands
+are not limited to memory encryption, but various technology-specific
+operations are defined.  It's natural to repurpose KVM_MEMORY_ENCRYPT_OP
+for TDX specific operations and define subcommands.
+
+TDX requires VM-scoped, and VCPU-scoped TDX-specific operations for device
+model, for example, qemu.  Getting system-wide parameters, TDX-specific VM
+initialization, and TDX-specific vCPU initialization.  Which requires KVM
+vCPU-scoped operations in addition to the existing VM-scoped operations.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/asm/tdx.h  |  7 +++++++
- arch/x86/virt/vmx/tdx/tdx.c | 33 ++++++++++++++++++++++++++++++++-
- 2 files changed, 39 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/main.c    |  9 +++++++++
+ arch/x86/kvm/vmx/tdx.c     | 26 ++++++++++++++++++++++++++
+ arch/x86/kvm/vmx/x86_ops.h |  4 ++++
+ 3 files changed, 39 insertions(+)
 
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index c887618e3cec..6c0925e73a27 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -144,6 +144,10 @@ struct tdsysinfo_struct {
- bool platform_tdx_enabled(void);
- int tdx_init(void);
- const struct tdsysinfo_struct *tdx_get_sysinfo(void);
-+u32 tdx_get_global_keyid(void);
-+int tdx_keyid_alloc(void);
-+void tdx_keyid_free(int keyid);
-+
- u64 __seamcall(u64 op, u64 rcx, u64 rdx, u64 r8, u64 r9,
- 	       struct tdx_module_output *out);
- #else	/* !CONFIG_INTEL_TDX_HOST */
-@@ -151,6 +155,9 @@ static inline bool platform_tdx_enabled(void) { return false; }
- static inline int tdx_init(void)  { return -ENODEV; }
- struct tdsysinfo_struct;
- static inline const struct tdsysinfo_struct *tdx_get_sysinfo(void) { return NULL; }
-+static inline u32 tdx_get_global_keyid(void) { return 0; };
-+static inline int tdx_keyid_alloc(void) { return -EOPNOTSUPP; }
-+static inline void tdx_keyid_free(int keyid) { }
- #endif	/* CONFIG_INTEL_TDX_HOST */
+diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+index 7b497ed1f21c..067f5de56c53 100644
+--- a/arch/x86/kvm/vmx/main.c
++++ b/arch/x86/kvm/vmx/main.c
+@@ -73,6 +73,14 @@ static void vt_vm_free(struct kvm *kvm)
+ 		return tdx_vm_free(kvm);
+ }
  
- #endif /* !__ASSEMBLY__ */
-diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-index 14f53494156c..322b6e0ac7dc 100644
---- a/arch/x86/virt/vmx/tdx/tdx.c
-+++ b/arch/x86/virt/vmx/tdx/tdx.c
-@@ -57,7 +57,13 @@ static struct cmr_info tdx_cmr_array[MAX_CMRS] __aligned(CMR_INFO_ARRAY_ALIGNMEN
- static int tdx_cmr_num;
- 
- /* TDX module global KeyID.  Used in TDH.SYS.CONFIG ABI. */
--static u32 tdx_global_keyid;
-+static u32 __read_mostly tdx_global_keyid;
-+
-+u32 tdx_get_global_keyid(void)
++static int vt_mem_enc_ioctl(struct kvm *kvm, void __user *argp)
 +{
-+	return tdx_global_keyid;
++	if (!is_td(kvm))
++		return -ENOTTY;
++
++	return tdx_vm_ioctl(kvm, argp);
 +}
-+EXPORT_SYMBOL_GPL(tdx_get_global_keyid);
++
+ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.name = "kvm_intel",
  
- /* Detect whether CPU supports SEAM */
- static int detect_seam(void)
-@@ -81,6 +87,31 @@ static int detect_seam(void)
+@@ -214,6 +222,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.vcpu_deliver_sipi_vector = kvm_vcpu_deliver_sipi_vector,
+ 
+ 	.dev_mem_enc_ioctl = tdx_dev_ioctl,
++	.mem_enc_ioctl = vt_mem_enc_ioctl,
+ };
+ 
+ struct kvm_x86_init_ops vt_init_ops __initdata = {
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index ec4ebba4152a..2a9dfd54189f 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -438,6 +438,32 @@ int tdx_dev_ioctl(void __user *argp)
  	return 0;
  }
  
-+/* TDX KeyID pool */
-+static DEFINE_IDA(tdx_keyid_pool);
-+
-+int tdx_keyid_alloc(void)
++int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
 +{
-+	if (WARN_ON_ONCE(!tdx_keyid_start || !tdx_keyid_num))
++	struct kvm_tdx_cmd tdx_cmd;
++	int r;
++
++	if (copy_from_user(&tdx_cmd, argp, sizeof(struct kvm_tdx_cmd)))
++		return -EFAULT;
++	if (tdx_cmd.error || tdx_cmd.unused)
 +		return -EINVAL;
 +
-+	/* The first keyID is reserved for the global key. */
-+	return ida_alloc_range(&tdx_keyid_pool, tdx_keyid_start + 1,
-+			       tdx_keyid_start + tdx_keyid_num - 1,
-+			       GFP_KERNEL);
++	mutex_lock(&kvm->lock);
++
++	switch (tdx_cmd.id) {
++	default:
++		r = -EINVAL;
++		goto out;
++	}
++
++	if (copy_to_user(argp, &tdx_cmd, sizeof(struct kvm_tdx_cmd)))
++		r = -EFAULT;
++
++out:
++	mutex_unlock(&kvm->lock);
++	return r;
 +}
-+EXPORT_SYMBOL_GPL(tdx_keyid_alloc);
 +
-+void tdx_keyid_free(int keyid)
-+{
-+	/* keyid = 0 is reserved. */
-+	if (!keyid || keyid <= 0)
-+		return;
-+
-+	ida_free(&tdx_keyid_pool, keyid);
-+}
-+EXPORT_SYMBOL_GPL(tdx_keyid_free);
-+
- static int detect_tdx_keyids(void)
+ int __init tdx_module_setup(void)
  {
- 	u64 keyid_part;
+ 	const struct tdsysinfo_struct *tdsysinfo;
+diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
+index 3027d9821fe1..ef6115ae0e88 100644
+--- a/arch/x86/kvm/vmx/x86_ops.h
++++ b/arch/x86/kvm/vmx/x86_ops.h
+@@ -137,6 +137,8 @@ int tdx_dev_ioctl(void __user *argp);
+ int tdx_vm_init(struct kvm *kvm);
+ void tdx_mmu_release_hkid(struct kvm *kvm);
+ void tdx_vm_free(struct kvm *kvm);
++
++int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
+ #else
+ static inline int tdx_hardware_setup(struct kvm_x86_ops *x86_ops) { return 0; }
+ static inline bool tdx_is_vm_type_supported(unsigned long type) { return false; }
+@@ -147,6 +149,8 @@ static inline int tdx_vm_init(struct kvm *kvm) { return -EOPNOTSUPP; }
+ static inline void tdx_mmu_release_hkid(struct kvm *kvm) {}
+ static inline void tdx_flush_shadow_all_private(struct kvm *kvm) {}
+ static inline void tdx_vm_free(struct kvm *kvm) {}
++
++static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
+ #endif
+ 
+ #endif /* __KVM_X86_VMX_X86_OPS_H */
 -- 
 2.25.1
 
