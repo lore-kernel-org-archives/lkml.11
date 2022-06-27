@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00164C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD11C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236661AbiF0LjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
+        id S236673AbiF0LjH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236448AbiF0Lhc (ORCPT
+        with ESMTP id S236460AbiF0Lhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:32 -0400
+        Mon, 27 Jun 2022 07:37:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C907B262F;
-        Mon, 27 Jun 2022 04:32:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BDD1083;
+        Mon, 27 Jun 2022 04:32:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65896608D4;
-        Mon, 27 Jun 2022 11:32:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76741C3411D;
-        Mon, 27 Jun 2022 11:32:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54B7F60920;
+        Mon, 27 Jun 2022 11:32:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6032BC3411D;
+        Mon, 27 Jun 2022 11:32:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329572;
-        bh=yZtRmRs4EyBjcnbChlGztpsIsEFvf0sBvVhe+dThbu0=;
+        s=korg; t=1656329578;
+        bh=mOz0bUko/Aq9cVya7lmZnQKIlYbi1GBF6Mw25F2zQ4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tzNhOqWJko43oL9MD7zar1iqpdHjO5/797tU5EN8L3RtoeNpgzbjR6cWam5Wkm0hd
-         syzBk/1WrgYnTobSojcwOassm4B5ByNocWVzBl2Im8KKJ3RD6EDRYqIi8YRjOlfWjZ
-         Zlnvxz9MexkDtliMvbJmNxp4FQ3aanMPfvEYRmWk=
+        b=l8/ybG5X0Xmx5C9m7xeaPf7zBruU4vZiGQ1PGjf/IUF47D92Ai8DGEcsno+djWkEw
+         xkOYL51F5LmiphFUMXYpSAx+8Hhp6lQgYsGOT8q76GT3xBW9d9TQa336bL/9w6mLBQ
+         VC+z1DjvstrI/wwnzuz9EFFVYsV3FXaRoFJrrlCw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Saurabh Sengar <ssengar@linux.microsoft.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 044/135] scsi: storvsc: Correct reporting of Hyper-V I/O size limits
-Date:   Mon, 27 Jun 2022 13:20:51 +0200
-Message-Id: <20220627111939.438743789@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 046/135] KVM: arm64: Prevent kmemleak from accessing pKVM memory
+Date:   Mon, 27 Jun 2022 13:20:53 +0200
+Message-Id: <20220627111939.496922216@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,97 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurabh Sengar <ssengar@linux.microsoft.com>
+From: Quentin Perret <qperret@google.com>
 
-[ Upstream commit 1d3e0980782fbafaf93285779fd3905e4f866802 ]
+[ Upstream commit 56961c6331463cce2d84d0f973177a517fb33a82 ]
 
-Current code is based on the idea that the max number of SGL entries
-also determines the max size of an I/O request.  While this idea was
-true in older versions of the storvsc driver when SGL entry length
-was limited to 4 Kbytes, commit 3d9c3dcc58e9 ("scsi: storvsc: Enable
-scatterlist entry lengths > 4Kbytes") removed that limitation. It's
-now theoretically possible for the block layer to send requests that
-exceed the maximum size supported by Hyper-V. This problem doesn't
-currently happen in practice because the block layer defaults to a
-512 Kbyte maximum, while Hyper-V in Azure supports 2 Mbyte I/O sizes.
-But some future configuration of Hyper-V could have a smaller max I/O
-size, and the block layer could exceed that max.
+Commit a7259df76702 ("memblock: make memblock_find_in_range method
+private") changed the API using which memory is reserved for the pKVM
+hypervisor. However, memblock_phys_alloc() differs from the original API in
+terms of kmemleak semantics -- the old one didn't report the reserved
+regions to kmemleak while the new one does. Unfortunately, when protected
+KVM is enabled, all kernel accesses to pKVM-private memory result in a
+fatal exception, which can now happen because of kmemleak scans:
 
-Fix this by correctly setting max_sectors as well as sg_tablesize to
-reflect the maximum I/O size that Hyper-V reports. While allowing
-I/O sizes larger than the block layer default of 512 Kbytes doesn’t
-provide any noticeable performance benefit in the tests we ran, it's
-still appropriate to report the correct underlying Hyper-V capabilities
-to the Linux block layer.
+$ echo scan > /sys/kernel/debug/kmemleak
+[   34.991354] kvm [304]: nVHE hyp BUG at: [<ffff800008fa3750>] __kvm_nvhe_handle_host_mem_abort+0x270/0x290!
+[   34.991580] kvm [304]: Hyp Offset: 0xfffe8be807e00000
+[   34.991813] Kernel panic - not syncing: HYP panic:
+[   34.991813] PS:600003c9 PC:0000f418011a3750 ESR:00000000f2000800
+[   34.991813] FAR:ffff000439200000 HPFAR:0000000004792000 PAR:0000000000000000
+[   34.991813] VCPU:0000000000000000
+[   34.993660] CPU: 0 PID: 304 Comm: bash Not tainted 5.19.0-rc2 #102
+[   34.994059] Hardware name: linux,dummy-virt (DT)
+[   34.994452] Call trace:
+[   34.994641]  dump_backtrace.part.0+0xcc/0xe0
+[   34.994932]  show_stack+0x18/0x6c
+[   34.995094]  dump_stack_lvl+0x68/0x84
+[   34.995276]  dump_stack+0x18/0x34
+[   34.995484]  panic+0x16c/0x354
+[   34.995673]  __hyp_pgtable_total_pages+0x0/0x60
+[   34.995933]  scan_block+0x74/0x12c
+[   34.996129]  scan_gray_list+0xd8/0x19c
+[   34.996332]  kmemleak_scan+0x2c8/0x580
+[   34.996535]  kmemleak_write+0x340/0x4a0
+[   34.996744]  full_proxy_write+0x60/0xbc
+[   34.996967]  vfs_write+0xc4/0x2b0
+[   34.997136]  ksys_write+0x68/0xf4
+[   34.997311]  __arm64_sys_write+0x20/0x2c
+[   34.997532]  invoke_syscall+0x48/0x114
+[   34.997779]  el0_svc_common.constprop.0+0x44/0xec
+[   34.998029]  do_el0_svc+0x2c/0xc0
+[   34.998205]  el0_svc+0x2c/0x84
+[   34.998421]  el0t_64_sync_handler+0xf4/0x100
+[   34.998653]  el0t_64_sync+0x18c/0x190
+[   34.999252] SMP: stopping secondary CPUs
+[   35.000034] Kernel Offset: disabled
+[   35.000261] CPU features: 0x800,00007831,00001086
+[   35.000642] Memory Limit: none
+[   35.001329] ---[ end Kernel panic - not syncing: HYP panic:
+[   35.001329] PS:600003c9 PC:0000f418011a3750 ESR:00000000f2000800
+[   35.001329] FAR:ffff000439200000 HPFAR:0000000004792000 PAR:0000000000000000
+[   35.001329] VCPU:0000000000000000 ]---
 
-Also tweak the virt_boundary_mask to reflect that the required
-alignment derives from Hyper-V communication using a 4 Kbyte page size,
-and not on the guest page size, which might be bigger (eg. ARM64).
+Fix this by explicitly excluding the hypervisor's memory pool from
+kmemleak like we already do for the hyp BSS.
 
-Link: https://lore.kernel.org/r/1655190355-28722-1-git-send-email-ssengar@linux.microsoft.com
-Fixes: 3d9c3dcc58e9 ("scsi: storvsc: Enable scatter list entry lengths > 4Kbytes")
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Cc: Mike Rapoport <rppt@kernel.org>
+Fixes: a7259df76702 ("memblock: make memblock_find_in_range method private")
+Signed-off-by: Quentin Perret <qperret@google.com>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220616161135.3997786-1-qperret@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/storvsc_drv.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
+ arch/arm64/kvm/arm.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 9eb1b88a29dd..71c7f7b435c4 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -1907,7 +1907,7 @@ static struct scsi_host_template scsi_driver = {
- 	.cmd_per_lun =		2048,
- 	.this_id =		-1,
- 	/* Ensure there are no gaps in presented sgls */
--	.virt_boundary_mask =	PAGE_SIZE-1,
-+	.virt_boundary_mask =	HV_HYP_PAGE_SIZE - 1,
- 	.no_write_same =	1,
- 	.track_queue_depth =	1,
- 	.change_queue_depth =	storvsc_change_queue_depth,
-@@ -1961,6 +1961,7 @@ static int storvsc_probe(struct hv_device *device,
- 	int max_targets;
- 	int max_channels;
- 	int max_sub_channels = 0;
-+	u32 max_xfer_bytes;
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index a30c036577a3..f181527f9d43 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -2011,11 +2011,11 @@ static int finalize_hyp_mode(void)
+ 		return 0;
  
  	/*
- 	 * Based on the windows host we are running on,
-@@ -2049,12 +2050,28 @@ static int storvsc_probe(struct hv_device *device,
- 	}
- 	/* max cmd length */
- 	host->max_cmd_len = STORVSC_MAX_CMD_LEN;
--
- 	/*
--	 * set the table size based on the info we got
--	 * from the host.
-+	 * Any reasonable Hyper-V configuration should provide
-+	 * max_transfer_bytes value aligning to HV_HYP_PAGE_SIZE,
-+	 * protecting it from any weird value.
-+	 */
-+	max_xfer_bytes = round_down(stor_device->max_transfer_bytes, HV_HYP_PAGE_SIZE);
-+	/* max_hw_sectors_kb */
-+	host->max_sectors = max_xfer_bytes >> 9;
-+	/*
-+	 * There are 2 requirements for Hyper-V storvsc sgl segments,
-+	 * based on which the below calculation for max segments is
-+	 * done:
-+	 *
-+	 * 1. Except for the first and last sgl segment, all sgl segments
-+	 *    should be align to HV_HYP_PAGE_SIZE, that also means the
-+	 *    maximum number of segments in a sgl can be calculated by
-+	 *    dividing the total max transfer length by HV_HYP_PAGE_SIZE.
-+	 *
-+	 * 2. Except for the first and last, each entry in the SGL must
-+	 *    have an offset that is a multiple of HV_HYP_PAGE_SIZE.
+-	 * Exclude HYP BSS from kmemleak so that it doesn't get peeked
+-	 * at, which would end badly once the section is inaccessible.
+-	 * None of other sections should ever be introspected.
++	 * Exclude HYP sections from kmemleak so that they don't get peeked
++	 * at, which would end badly once inaccessible.
  	 */
--	host->sg_tablesize = (stor_device->max_transfer_bytes >> PAGE_SHIFT);
-+	host->sg_tablesize = (max_xfer_bytes >> HV_HYP_PAGE_SHIFT) + 1;
- 	/*
- 	 * For non-IDE disks, the host supports multiple channels.
- 	 * Set the number of HW queues we are supporting.
+ 	kmemleak_free_part(__hyp_bss_start, __hyp_bss_end - __hyp_bss_start);
++	kmemleak_free_part(__va(hyp_mem_base), hyp_mem_size);
+ 	return pkvm_drop_host_privileges();
+ }
+ 
 -- 
 2.35.1
 
