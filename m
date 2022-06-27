@@ -2,106 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1209DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BED9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237561AbiF0Lpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
+        id S237747AbiF0Lpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237461AbiF0Lmx (ORCPT
+        with ESMTP id S237452AbiF0Lmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:53 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C63B3A4
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:38:18 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id b26so243426wrc.2
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:38:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=6pvGGZaD1oTvFXpN6ftachY08Cd5AqxujCjHUCfc6vc=;
-        b=nNWDY3PjoyUAfo3JFCEPweVZN45kAO4FJmCz++XnV2gMusNLaZwqyHicnSW6ovjL7j
-         JC59MWCAvvw9199bn821CUtYgbJ1VDgQJ2pSXAvMOX97nyamB0+tanaWXJcBWf+AQuFu
-         RIwu/kxplbXL3l5O1dbb8FyCnKzKRNlmUa9XoMoI5Ho1H0eEKP2Xh1W85vOZunEP6qYQ
-         ZaPsVHFIYawk82olsBV+7ZpWKlD9/Ea9eAbtWrWQq6CJ4c65fua5GjkMdVnaqdeiceF3
-         qQqyse60dXLDqPW6aGAUklQTWKrD+WJ6+leF6rblpPBla3JPtXVHRZWEqZRW6hUefmcj
-         mwbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=6pvGGZaD1oTvFXpN6ftachY08Cd5AqxujCjHUCfc6vc=;
-        b=WYHBTB6H90zpWD9RYkP5h7peTG5H+f7b543B/3tcx9eXujPONRCTc449qKv4JbkcFz
-         Uwrd/pLCxrNViJg7uYrVk1PEpSJ5iCmZJxxcVesJUBcJlca3+r+LFlvTt0zT5wiXI5fM
-         rHm9tqpwbdWTc8xvcfIpye1CMxLFVE4PnTSOGH68cTYKxESRiWHlMnC2PdCFxJi/o3DS
-         0JCMsTlmea0fJEXGKwmtBRHil1BfxRQTzo5KH8CQI7VrBYN1RY+Oejl1HsIJMFoLz9uR
-         J0nHVEaGduCRGS4nc6XFUBkxMAzmg1m3w6S/1mROYd/4gC9LYSjWfOUBsHeN2rKy3Qp5
-         +1FQ==
-X-Gm-Message-State: AJIora+i66F4kOgID9PVAjJAxC79ui7xuWtHJfG9Ne7wEhgNXnoUUig3
-        IcWvfiT+9R9mLK63AII7sKoMhw==
-X-Google-Smtp-Source: AGRyM1uXQLS8Q4aWycz3GihHCBPtSuHKP6mCc1QtRIrYhgNavIXv6w56zaZYob+9hvQxA8Jfw5/bXw==
-X-Received: by 2002:adf:fb84:0:b0:21a:10f2:1661 with SMTP id a4-20020adffb84000000b0021a10f21661mr12146464wrr.2.1656329896780;
-        Mon, 27 Jun 2022 04:38:16 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id o19-20020a1c7513000000b0039c18d3fe27sm12450076wmc.19.2022.06.27.04.38.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 04:38:16 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 12:38:14 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>
-Subject: [GIT PULL] Immutable branch between MFD and ACPI due for the v5.20
- merge window
-Message-ID: <YrmWpn03cys9WUK3@google.com>
-References: <1843211.tdWV9SEqCh@kreacher>
- <2653857.mvXUDI8C0e@kreacher>
- <2726954.BEx9A2HvPv@kreacher>
+        Mon, 27 Jun 2022 07:42:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D1ABC5;
+        Mon, 27 Jun 2022 04:38:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7D4AB81122;
+        Mon, 27 Jun 2022 11:38:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56CEEC3411D;
+        Mon, 27 Jun 2022 11:38:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656329892;
+        bh=pwOJvamP96Tuw1AUjx1q1pgZfW8V5ATClmD+AZJpHyk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TTAotees3rp7blWB10l4O0+nkp/klyNt4jmTvPI2asKLSqC1BuEYNDgtO/DwV05nL
+         4iLmbTPcYd5K3BZ/xcMmrFfYEhiJ9TQ84MMdljrbiVsYq1sBY8Ah0dMb0v4C8uY5b3
+         p9ysM0aXuxaIiy5D6DrHc16K9ViQb94BhbAh9qvM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Dominique Martinet <asmadeus@codewreck.org>
+Subject: [PATCH 5.18 015/181] 9p: fix fid refcount leak in v9fs_vfs_atomic_open_dotl
+Date:   Mon, 27 Jun 2022 13:19:48 +0200
+Message-Id: <20220627111945.005288038@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
+References: <20220627111944.553492442@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2726954.BEx9A2HvPv@kreacher>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rafael,
+From: Dominique Martinet <asmadeus@codewreck.org>
 
-As requested.
+commit beca774fc51a9ba8abbc869cf0c3d965ff17cd24 upstream.
 
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+We need to release directory fid if we fail halfway through open
 
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+This fixes fid leaking with xfstests generic 531
 
-are available in the Git repository at:
+Link: https://lkml.kernel.org/r/20220612085330.1451496-2-asmadeus@codewreck.org
+Fixes: 6636b6dcc3db ("9p: add refcount to p9_fid struct")
+Cc: stable@vger.kernel.org
+Reported-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Reviewed-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/9p/vfs_inode_dotl.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git tags/ib-mfd-acpi-for-rafael-v5.20
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -274,6 +274,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *
+ 	if (IS_ERR(ofid)) {
+ 		err = PTR_ERR(ofid);
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
++		p9_client_clunk(dfid);
+ 		goto out;
+ 	}
+ 
+@@ -285,6 +286,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *
+ 	if (err) {
+ 		p9_debug(P9_DEBUG_VFS, "Failed to get acl values in creat %d\n",
+ 			 err);
++		p9_client_clunk(dfid);
+ 		goto error;
+ 	}
+ 	err = p9_client_create_dotl(ofid, name, v9fs_open_to_dotl_flags(flags),
+@@ -292,6 +294,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *
+ 	if (err < 0) {
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_open_dotl failed in creat %d\n",
+ 			 err);
++		p9_client_clunk(dfid);
+ 		goto error;
+ 	}
+ 	v9fs_invalidate_inode_attr(dir);
 
-for you to fetch changes up to 0c9b9c2ac0df57b6b5949a51c45043b345698428:
 
-  mfd: core: Use acpi_dev_for_each_child() (2022-06-27 12:22:06 +0100)
-
-----------------------------------------------------------------
-Immutable branch between MFD and ACPI due for the v5.20 merge window
-
-----------------------------------------------------------------
-Rafael J. Wysocki (1):
-      mfd: core: Use acpi_dev_for_each_child()
-
- drivers/mfd/mfd-core.c | 31 ++++++++++++++++++++++++-------
- 1 file changed, 24 insertions(+), 7 deletions(-)
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
