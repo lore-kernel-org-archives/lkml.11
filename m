@@ -2,99 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF88FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 182C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232524AbiF0HCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        id S232563AbiF0HCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiF0HCi (ORCPT
+        with ESMTP id S232562AbiF0HCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:02:38 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214CD5F85;
-        Mon, 27 Jun 2022 00:02:38 -0700 (PDT)
-Received: from localhost.localdomain (unknown [39.45.206.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 02B056601824;
-        Mon, 27 Jun 2022 08:02:33 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656313356;
-        bh=NkkjEoi7BGZXZx4C9tWVopSMwjLqJE9iVqgsolVJlSw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lKK4GWAkOcn735UQAKvXWrnaV0iS4KwEjAcKoYvhhXAyCVszdbqVNqzqagzj6t96Y
-         ZhbM7BsvunS3+mIJRRg27KY8qsj3UxCGy36BxWB9xNfnCYFpGfGNQQxJOr0AVyXzMa
-         eqBxqS897B3bVyjGj7zEEG+dse5/xwu9dIevruuaXdjaLCq3zTSXKreG/hJ7ydB3Yv
-         j4u4I+gvf21bICypl0x+t3Q7KSc9p9MPHABJpWScWUeuH/jVYQu3iubmp4r2SVHz2o
-         DQ4W0Jr1mWjGX7eN9f83S0lb0qH52g+bX5bTHs0uXe1Z22RiTXTFbVpMxwPJ3mYxE0
-         0mvHNtZ2NMBtw==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Kieran Bingham <kbingham@kernel.org>
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        kernel@collabora.com, Shuah Khan <skhan@linuxfoundation.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1] kbuild: fix sub directory output build of kselftests
-Date:   Mon, 27 Jun 2022 12:02:14 +0500
-Message-Id: <20220627070214.432390-1-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 27 Jun 2022 03:02:42 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C49F65F6F;
+        Mon, 27 Jun 2022 00:02:40 -0700 (PDT)
+Received: (Authenticated sender: peter@korsgaard.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id D066D1C0004;
+        Mon, 27 Jun 2022 07:02:34 +0000 (UTC)
+Received: from peko by dell.be.48ers.dk with local (Exim 4.94.2)
+        (envelope-from <peter@korsgaard.com>)
+        id 1o5ilV-00Cdzm-Ni; Mon, 27 Jun 2022 09:02:33 +0200
+From:   Peter Korsgaard <peter@korsgaard.com>
+To:     Saurav Girepunje <saurav.girepunje@gmail.com>
+Cc:     santoshkumar.yadav@barco.com, peter.korsgaard@barco.com,
+        hdegoede@redhat.com, markgross@kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        saurav.girepunje@hotmail.com
+Subject: Re: [PATCH] platform: x86: Remove duplicated include in
+ barco-p50-gpio.c
+References: <YriUMDJoip0Mknh3@Sauravs-MacBook-Air.local>
+        <8735fr1bqh.fsf@dell.be.48ers.dk>
+        <924eb8a2-a040-0632-872b-e1951c71c169@gmail.com>
+Date:   Mon, 27 Jun 2022 09:02:33 +0200
+In-Reply-To: <924eb8a2-a040-0632-872b-e1951c71c169@gmail.com> (Saurav
+        Girepunje's message of "Mon, 27 Jun 2022 09:09:52 +0530")
+Message-ID: <87y1xizj06.fsf@dell.be.48ers.dk>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Build of kselftests fail if kernel's top most Makefile is used for
-running or building kselftests with separate output directory which is
-sub-directory. srctree is set to .. erroneously.
+>>>>> "Saurav" == Saurav Girepunje <saurav.girepunje@gmail.com> writes:
 
-make kselftest-all O=/linux_mainline/build
-Makefile:1080: ../scripts/Makefile.extrawarn: No such file or directory
+ > On 27/06/22 12:41 am, Peter Korsgaard wrote:
+ >>>>>>> "Saurav" == Saurav Girepunje <saurav.girepunje@gmail.com> writes:
+ >> 
+ >> > Remove the duplicate include of linux/io.h in barco-p50-gpio.c
+ >> > file.
+ >> 
+ >> > Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
+ >> 
+ >> What tree is this against? The io.h include in the line just above
+ >> delay.h was already removed by:
+ >> 
 
-make kselftest-all O=build
-Makefile:1080: ../scripts/Makefile.extrawarn: No such file or directory
+ > I am using git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git .
 
-Fix this by comparing abs_srctree with CURDIR instead of abs_objtree.
-CURDIR changes based on from where the command has been run and it sets
-the srctree correctly.
+staging? That seems an odd tree to make platform/x86 changes
+from. Just using the mainline tree would be a better choice.
 
-Fixes: 25b146c5b8cee("kbuild: allow Kbuild to start from any directory")
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
----
-Changes in V2:
-- Correct the bugfix instead of workaround
+ > if it fix on another tree . Please ignore this patch.
 
-V1: https://lore.kernel.org/lkml/20220223191016.1658728-1-usama.anjum@collabora.com/
----
- Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+git describe --contains 011881b80ebe773914b59905bce0f5e0ef93e7ba
+v5.19-rc2~1^2~5
 
-diff --git a/Makefile b/Makefile
-index e66358b64ede..4090d7afcda4 100644
---- a/Makefile
-+++ b/Makefile
-@@ -238,12 +238,12 @@ ifeq ($(need-sub-make),)
- # so that IDEs/editors are able to understand relative filenames.
- MAKEFLAGS += --no-print-directory
- 
--ifeq ($(abs_srctree),$(abs_objtree))
-+ifeq ($(abs_srctree),$(CURDIR))
-         # building in the source tree
-         srctree := .
- 	building_out_of_srctree :=
- else
--        ifeq ($(abs_srctree)/,$(dir $(abs_objtree)))
-+        ifeq ($(abs_srctree)/,$(dir $(CURDIR)))
-                 # building in a subdirectory of the source tree
-                 srctree := ..
-         else
+So it is in 5.19-rc2, released 2 weeks ago.
+
 -- 
-2.30.2
-
+Bye, Peter Korsgaard
