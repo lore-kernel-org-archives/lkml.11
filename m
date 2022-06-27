@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A446EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 290E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237006AbiF0LlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58510 "EHLO
+        id S236557AbiF0Lla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236482AbiF0Lhe (ORCPT
+        with ESMTP id S236593AbiF0Lhn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:34 -0400
+        Mon, 27 Jun 2022 07:37:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A6E22B;
-        Mon, 27 Jun 2022 04:33:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC4565D3;
+        Mon, 27 Jun 2022 04:34:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED1B608D4;
-        Mon, 27 Jun 2022 11:33:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19946C3411D;
-        Mon, 27 Jun 2022 11:33:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FDCB60C16;
+        Mon, 27 Jun 2022 11:34:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50DB4C341C8;
+        Mon, 27 Jun 2022 11:34:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329596;
-        bh=fLv9Z5zYBa6k80avfKlFPpGIGGwWWoBNa9hCd1onJXc=;
+        s=korg; t=1656329648;
+        bh=mQxZLlG1fnMhdpl5nNqIAaOfKrFy36I2HEN0sikocns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mN9bUKO2RyrB29+Vq682q3uzJpHEUT+hvQLhkHNQ+MSJS+HSOMWrnLnswudQlH9pJ
-         Tot5ALX+Q1q4/Xpb/DCMaa5emmMACnUzkv9QQyXGOgnZl+DxCB9DfB1oUobXz2oXSY
-         tQ+dj8fetlkNYmrnWaS2azpwHBI58AjWBjD9geh0=
+        b=O2D/3URiyPXZxzskLYAsadIICc+uEGkpO3IQdFXxvX1Ny2qAJKbIWsnutgr0vB1vE
+         vd4wa6NApvv6OQzOQfVKzp6zYYsVDwOOkLiH0Rr/a/WglKswVZya7yF5npVgM2B2jR
+         NlcjMV3EVjfnL3bWanJi60T/+nrqFmoLSCidG3X4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, k2ci <kernel-bot@kylinos.cn>,
+        huhai <huhai@kylinos.cn>,
+        Genjian Zhang <zhanggenjian@kylinos.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 052/135] ethtool: Fix get module eeprom fallback
-Date:   Mon, 27 Jun 2022 13:20:59 +0200
-Message-Id: <20220627111939.669448904@linuxfoundation.org>
+Subject: [PATCH 5.15 067/135] MIPS: Remove repetitive increase irq_err_count
+Date:   Mon, 27 Jun 2022 13:21:14 +0200
+Message-Id: <20220627111940.103110990@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,37 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
+From: huhai <huhai@kylinos.cn>
 
-[ Upstream commit a3bb7b63813f674fb62bac321cdd897cc62de094 ]
+[ Upstream commit c81aba8fde2aee4f5778ebab3a1d51bd2ef48e4c ]
 
-Function fallback_set_params() checks if the module type returned
-by a driver is ETH_MODULE_SFF_8079 and in this case it assumes
-that buffer returns a concatenated content of page  A0h and A2h.
-The check is wrong because the correct type is ETH_MODULE_SFF_8472.
+commit 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx") added
+a function irq_dispatch, and it'll increase irq_err_count when the get_irq
+callback returns a negative value, but increase irq_err_count in get_irq
+was not removed.
 
-Fixes: 96d971e307cc ("ethtool: Add fallback to get_module_eeprom from netlink command")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220616160856.3623273-1-ivecera@redhat.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+And also, modpost complains once gpio-vr41xx drivers become modules.
+  ERROR: modpost: "irq_err_count" [drivers/gpio/gpio-vr41xx.ko] undefined!
+
+So it would be a good idea to remove repetitive increase irq_err_count in
+get_irq callback.
+
+Fixes: 27fdd325dace ("MIPS: Update VR41xx GPIO driver to use gpiolib")
+Fixes: 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx")
+Reported-by: k2ci <kernel-bot@kylinos.cn>
+Signed-off-by: huhai <huhai@kylinos.cn>
+Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ethtool/eeprom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/vr41xx/common/icu.c | 2 --
+ drivers/gpio/gpio-vr41xx.c    | 2 --
+ 2 files changed, 4 deletions(-)
 
-diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
-index 7e6b37a54add..1c94bb8ea03f 100644
---- a/net/ethtool/eeprom.c
-+++ b/net/ethtool/eeprom.c
-@@ -36,7 +36,7 @@ static int fallback_set_params(struct eeprom_req_info *request,
- 	if (request->page)
- 		offset = request->page * ETH_MODULE_EEPROM_PAGE_LEN + offset;
+diff --git a/arch/mips/vr41xx/common/icu.c b/arch/mips/vr41xx/common/icu.c
+index 7b7f25b4b057..9240bcdbe74e 100644
+--- a/arch/mips/vr41xx/common/icu.c
++++ b/arch/mips/vr41xx/common/icu.c
+@@ -640,8 +640,6 @@ static int icu_get_irq(unsigned int irq)
  
--	if (modinfo->type == ETH_MODULE_SFF_8079 &&
-+	if (modinfo->type == ETH_MODULE_SFF_8472 &&
- 	    request->i2c_address == 0x51)
- 		offset += ETH_MODULE_EEPROM_PAGE_LEN * 2;
+ 	printk(KERN_ERR "spurious ICU interrupt: %04x,%04x\n", pend1, pend2);
+ 
+-	atomic_inc(&irq_err_count);
+-
+ 	return -1;
+ }
+ 
+diff --git a/drivers/gpio/gpio-vr41xx.c b/drivers/gpio/gpio-vr41xx.c
+index 98cd715ccc33..8d09b619c166 100644
+--- a/drivers/gpio/gpio-vr41xx.c
++++ b/drivers/gpio/gpio-vr41xx.c
+@@ -217,8 +217,6 @@ static int giu_get_irq(unsigned int irq)
+ 	printk(KERN_ERR "spurious GIU interrupt: %04x(%04x),%04x(%04x)\n",
+ 	       maskl, pendl, maskh, pendh);
+ 
+-	atomic_inc(&irq_err_count);
+-
+ 	return -EINVAL;
+ }
  
 -- 
 2.35.1
