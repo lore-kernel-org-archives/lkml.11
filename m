@@ -2,67 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA47C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235686AbiF0MaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33752 "EHLO
+        id S235607AbiF0Mah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232906AbiF0MaC (ORCPT
+        with ESMTP id S232906AbiF0Mae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 08:30:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E3B64D8
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 05:30:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E55C460C66
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:30:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01CA7C3411D;
-        Mon, 27 Jun 2022 12:29:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656333000;
-        bh=bf1hSYJqFeSB0yfJ08Jubf8Nw0Aqq11+gwvcPoJtXvQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YH75glbB7MNamTtykFB8MSGCQKjerYQK/KbwiTVdcbK6+WdcNVT/2hFPX93sQES3x
-         4MA1ZbJ+flVEeHHidE2+uY5Nbr7QQtDw2Rzx7o/iCNscQ3z5GT8zN+JBh/J/sZIctU
-         XlE8rOGsT3jOH5cEuZSxPATLXiyrdi0daToRpZdg=
-Date:   Mon, 27 Jun 2022 14:29:57 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Yangxi Xiang <xyangxi5@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Igor Matheus Andrade Torrente <igormtorrente@gmail.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        nick black <dankamongmen@gmail.com>
-Subject: Re: [PATCH] vt: fix memory overlapping when deleting chars in the
- buffer
-Message-ID: <YrmixTj6aF3Pwq0I@kroah.com>
-References: <YrmPi/D4dZAySgll@kroah.com>
- <20220627114016.11114-1-xyangxi5@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627114016.11114-1-xyangxi5@gmail.com>
+        Mon, 27 Jun 2022 08:30:34 -0400
+X-Greylist: delayed 515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 05:30:31 PDT
+Received: from mail.itpri.com (mx1.itpri.com [185.125.111.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DAC8766F
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 05:30:31 -0700 (PDT)
+X-Virus-Scanned: Yes
+From:   alexander.atanasov@virtuozzo.com
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     kernel@openvz.org,
+        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] Create debugfs file with virtio balloon usage information
+Date:   Mon, 27 Jun 2022 12:20:38 +0000
+Message-Id: <20220627122038.1921522-1-alexander.atanasov@virtuozzo.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 07:40:16PM +0800, Yangxi Xiang wrote:
-> > And what commit id does this fix, or has it always been broken?
-> 
-> It fixes the commit 81732c3 (tty vt: Fix line garbage in virtual
-> console on command line edition). The line buffer is not always
-> broken, because the memcpy utilized the hardware acceleration, whose
-> result is not deterministic. I fix this issue by replacing the
-> scr_memcpyw with scr_memmovew used in insert_char, and preserving the
-> memcpy optimization when the buffers are not overlapping.
+From: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
 
-Great, can you please resend the patch with that information all in it,
-and the proper Fixes: line tag added?
+Allow the guest to know how much it is ballooned by the host.
+It is useful when debugging out of memory conditions.
 
-thanks,
+When host gets back memory from the guest it is accounted
+as used memory in the guest but the guest have no way to know
+how much it is actually ballooned.
 
-greg k-h
+Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
+---
+ drivers/virtio/virtio_balloon.c | 91 +++++++++++++++++++++++++++++++++
+ 1 file changed, 91 insertions(+)
+
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+index b9737da6c4dd..a32a52c28a1f 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -10,6 +10,7 @@
+ #include <linux/virtio_balloon.h>
+ #include <linux/swap.h>
+ #include <linux/workqueue.h>
++#include <linux/debugfs.h>
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
+@@ -731,6 +732,91 @@ static void report_free_page_func(struct work_struct *work)
+ 	}
+ }
+ 
++/*
++ * DEBUGFS Interface
++ */
++#ifdef CONFIG_DEBUG_FS
++
++/**
++ * virtio_balloon_debug_show - shows statistics of balloon operations.
++ * @f: pointer to the &struct seq_file.
++ * @offset: ignored.
++ *
++ * Provides the statistics that can be accessed in virtio-balloon in the debugfs.
++ *
++ * Return: zero on success or an error code.
++ */
++static int virtio_balloon_debug_show(struct seq_file *f, void *offset)
++{
++	struct virtio_balloon *b = f->private;
++	u32 num_pages;
++	struct sysinfo i;
++
++	si_meminfo(&i);
++
++	seq_printf(f, "%-22s:", "capabilities");
++
++	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_MUST_TELL_HOST))
++		seq_puts(f, " tell_host");
++
++	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_STATS_VQ))
++		seq_puts(f, " stats");
++
++	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
++		seq_puts(f, " deflate_on_oom");
++
++	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_FREE_PAGE_HINT))
++		seq_puts(f, " free_page_hint");
++
++	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_PAGE_POISON))
++		seq_puts(f, " page_poison");
++
++	if (virtio_has_feature(b->vdev, VIRTIO_BALLOON_F_REPORTING))
++		seq_puts(f, " reporting");
++
++	seq_puts(f, "\n");
++
++	seq_printf(f, "%-22s: %d\n", "page_size", 4096);
++
++	virtio_cread_le(b->vdev, struct virtio_balloon_config, actual,
++			&num_pages);
++	/* Memory returned to host or amount we can inflate if possible */
++	seq_printf(f, "%-22s: %u\n", "ballooned_pages", num_pages);
++
++	/* Total Memory for the guest from host */
++	seq_printf(f, "%-22s: %lu\n", "total_pages", i.totalram);
++
++	/* Current memory for the guest */
++	seq_printf(f, "%-22s: %lu\n", "current_pages", i.totalram-num_pages);
++
++	return 0;
++}
++
++DEFINE_SHOW_ATTRIBUTE(virtio_balloon_debug);
++
++static void  virtio_balloon_debugfs_init(struct virtio_balloon *b)
++{
++	debugfs_create_file("virtio-balloon", 0444, NULL, b,
++			    &virtio_balloon_debug_fops);
++}
++
++static void  virtio_balloon_debugfs_exit(struct virtio_balloon *b)
++{
++	debugfs_remove(debugfs_lookup("virtio-balloon", NULL));
++}
++
++#else
++
++static inline void virtio_balloon_debugfs_init(struct virtio_balloon *b)
++{
++}
++
++static inline void virtio_balloon_debugfs_exit(struct virtio_balloon *b)
++{
++}
++
++#endif	/* CONFIG_DEBUG_FS */
++
+ #ifdef CONFIG_BALLOON_COMPACTION
+ /*
+  * virtballoon_migratepage - perform the balloon page migration on behalf of
+@@ -1019,6 +1105,9 @@ static int virtballoon_probe(struct virtio_device *vdev)
+ 
+ 	if (towards_target(vb))
+ 		virtballoon_changed(vdev);
++
++	virtio_balloon_debugfs_init(vb);
++
+ 	return 0;
+ 
+ out_unregister_oom:
+@@ -1065,6 +1154,8 @@ static void virtballoon_remove(struct virtio_device *vdev)
+ {
+ 	struct virtio_balloon *vb = vdev->priv;
+ 
++	virtio_balloon_debugfs_exit(vb);
++
+ 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
+ 		page_reporting_unregister(&vb->pr_dev_info);
+ 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
+-- 
+2.25.1
+
