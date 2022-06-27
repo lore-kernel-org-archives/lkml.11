@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9233CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD412C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235201AbiF0L1P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45314 "EHLO
+        id S235207AbiF0L1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235070AbiF0L00 (ORCPT
+        with ESMTP id S235069AbiF0L0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:26:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCC495AA;
-        Mon, 27 Jun 2022 04:26:07 -0700 (PDT)
+        Mon, 27 Jun 2022 07:26:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB6B65D4;
+        Mon, 27 Jun 2022 04:26:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BE9A614A0;
-        Mon, 27 Jun 2022 11:26:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A6B9C3411D;
-        Mon, 27 Jun 2022 11:26:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F91A614A0;
+        Mon, 27 Jun 2022 11:26:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1594CC3411D;
+        Mon, 27 Jun 2022 11:26:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329166;
-        bh=Zcfs2U8vP/9R8N+d/lYmQk1LfbiJ4kO8za9Vkp43rW8=;
+        s=korg; t=1656329169;
+        bh=wT2Xzz8Kl8V+HIEwFT7SJ0I8IoK2XrtUFmxPpLzf01w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W8UZWvvxPKDGPLfEJ/HICh9MuU2uSQO+GBQVcFSgdwrb98+1zCEop9VkO1w7j/fu7
-         Z9znGKB+ze7kxQt0/3WBjV6I/uFMQHfPzO1nh+MIkwdsMkuM6FxkzjaqF2NASxHJ1B
-         BvoJQNM0zUfTBfS3wEWx1nglREY/LK30Pzd5uPjc=
+        b=z6O2iFRvtH4qlEqkfXQ6ESf4SDTmB9NxIZlL0DTSFK8KAtRnDKl4iETDG8iMlFz2d
+         vPEuKcqZAXFOdKlr+hN8BsutGJHkBe56py2jX5BW3SVKEw8dZrFDe/t8EAgKvjnEG/
+         rNB8VyJYKllsdgrP6HimqA8Nxyd9+X0070dckbys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Yang <xu.yang_2@nxp.com>
-Subject: [PATCH 5.10 071/102] usb: chipidea: udc: check request status before setting device address
-Date:   Mon, 27 Jun 2022 13:21:22 +0200
-Message-Id: <20220627111935.576659631@linuxfoundation.org>
+        stable@vger.kernel.org, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.10 072/102] f2fs: attach inline_data after setting compression
+Date:   Mon, 27 Jun 2022 13:21:23 +0200
+Message-Id: <20220627111935.606422078@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -47,34 +47,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Yang <xu.yang_2@nxp.com>
+From: Jaegeuk Kim <jaegeuk@kernel.org>
 
-commit b24346a240b36cfc4df194d145463874985aa29b upstream.
+commit 4cde00d50707c2ef6647b9b96b2cb40b6eb24397 upstream.
 
-The complete() function may be called even though request is not
-completed. In this case, it's necessary to check request status so
-as not to set device address wrongly.
+This fixes the below corruption.
 
-Fixes: 10775eb17bee ("usb: chipidea: udc: update gadget states according to ch9")
-cc: <stable@vger.kernel.org>
-Signed-off-by: Xu Yang <xu.yang_2@nxp.com>
-Link: https://lore.kernel.org/r/20220623030242.41796-1-xu.yang_2@nxp.com
+[345393.335389] F2FS-fs (vdb): sanity_check_inode: inode (ino=6d0, mode=33206) should not have inline_data, run fsck to fix
+
+Cc: <stable@vger.kernel.org>
+Fixes: 677a82b44ebf ("f2fs: fix to do sanity check for inline inode")
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/chipidea/udc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/f2fs/namei.c |   17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/chipidea/udc.c
-+++ b/drivers/usb/chipidea/udc.c
-@@ -1034,6 +1034,9 @@ isr_setup_status_complete(struct usb_ep
- 	struct ci_hdrc *ci = req->context;
- 	unsigned long flags;
+--- a/fs/f2fs/namei.c
++++ b/fs/f2fs/namei.c
+@@ -91,8 +91,6 @@ static struct inode *f2fs_new_inode(stru
+ 	if (test_opt(sbi, INLINE_XATTR))
+ 		set_inode_flag(inode, FI_INLINE_XATTR);
  
-+	if (req->status < 0)
-+		return;
+-	if (test_opt(sbi, INLINE_DATA) && f2fs_may_inline_data(inode))
+-		set_inode_flag(inode, FI_INLINE_DATA);
+ 	if (f2fs_may_inline_dentry(inode))
+ 		set_inode_flag(inode, FI_INLINE_DENTRY);
+ 
+@@ -109,10 +107,6 @@ static struct inode *f2fs_new_inode(stru
+ 
+ 	f2fs_init_extent_tree(inode, NULL);
+ 
+-	stat_inc_inline_xattr(inode);
+-	stat_inc_inline_inode(inode);
+-	stat_inc_inline_dir(inode);
+-
+ 	F2FS_I(inode)->i_flags =
+ 		f2fs_mask_flags(mode, F2FS_I(dir)->i_flags & F2FS_FL_INHERITED);
+ 
+@@ -129,6 +123,14 @@ static struct inode *f2fs_new_inode(stru
+ 			set_compress_context(inode);
+ 	}
+ 
++	/* Should enable inline_data after compression set */
++	if (test_opt(sbi, INLINE_DATA) && f2fs_may_inline_data(inode))
++		set_inode_flag(inode, FI_INLINE_DATA);
 +
- 	if (ci->setaddr) {
- 		hw_usb_set_address(ci, ci->address);
- 		ci->setaddr = false;
++	stat_inc_inline_xattr(inode);
++	stat_inc_inline_inode(inode);
++	stat_inc_inline_dir(inode);
++
+ 	f2fs_set_inode_flags(inode);
+ 
+ 	trace_f2fs_new_inode(inode, 0);
+@@ -317,6 +319,9 @@ static void set_compress_inode(struct f2
+ 		if (!is_extension_exist(name, ext[i], false))
+ 			continue;
+ 
++		/* Do not use inline_data with compression */
++		stat_dec_inline_inode(inode);
++		clear_inode_flag(inode, FI_INLINE_DATA);
+ 		set_compress_context(inode);
+ 		return;
+ 	}
 
 
