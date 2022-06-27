@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B92DCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9233CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235190AbiF0L1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
+        id S235201AbiF0L1P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235063AbiF0L0X (ORCPT
+        with ESMTP id S235070AbiF0L00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:26:23 -0400
+        Mon, 27 Jun 2022 07:26:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E6665BE;
-        Mon, 27 Jun 2022 04:26:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCC495AA;
+        Mon, 27 Jun 2022 04:26:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3021061460;
-        Mon, 27 Jun 2022 11:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40315C3411D;
-        Mon, 27 Jun 2022 11:26:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BE9A614A0;
+        Mon, 27 Jun 2022 11:26:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A6B9C3411D;
+        Mon, 27 Jun 2022 11:26:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329163;
-        bh=MyDSI5RUebNDIc5u5vx4kaFMCJtuhYAwDkFKp5L7JuE=;
+        s=korg; t=1656329166;
+        bh=Zcfs2U8vP/9R8N+d/lYmQk1LfbiJ4kO8za9Vkp43rW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d5JJdAIE7YA8JUFj/zsMsk1gpGN/i74G6uMLF0GUEkTxE4WpPmfzy16V4jA7+LV7f
-         35p7/aJK62ClvScaqqXfOlJrewNm6PTX4ZQsUByLGs6pZLmh0XNJqBsd5zAvlh2Cp1
-         InM4Pognj6urpRgvlZkPmpUNRPg5gMMSO0NU8+k8=
+        b=W8UZWvvxPKDGPLfEJ/HICh9MuU2uSQO+GBQVcFSgdwrb98+1zCEop9VkO1w7j/fu7
+         Z9znGKB+ze7kxQt0/3WBjV6I/uFMQHfPzO1nh+MIkwdsMkuM6FxkzjaqF2NASxHJ1B
+         BvoJQNM0zUfTBfS3wEWx1nglREY/LK30Pzd5uPjc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@gmail.com>,
-        Alan Stern <stern@rowland.harvard.edu>
-Subject: [PATCH 5.10 070/102] USB: gadget: Fix double-free bug in raw_gadget driver
-Date:   Mon, 27 Jun 2022 13:21:21 +0200
-Message-Id: <20220627111935.546709684@linuxfoundation.org>
+        stable@vger.kernel.org, Xu Yang <xu.yang_2@nxp.com>
+Subject: [PATCH 5.10 071/102] usb: chipidea: udc: check request status before setting device address
+Date:   Mon, 27 Jun 2022 13:21:22 +0200
+Message-Id: <20220627111935.576659631@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -48,86 +47,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Xu Yang <xu.yang_2@nxp.com>
 
-commit 90bc2af24638659da56397ff835f3c95a948f991 upstream.
+commit b24346a240b36cfc4df194d145463874985aa29b upstream.
 
-Re-reading a recently merged fix to the raw_gadget driver showed that
-it inadvertently introduced a double-free bug in a failure pathway.
-If raw_ioctl_init() encounters an error after the driver ID number has
-been allocated, it deallocates the ID number before returning.  But
-when dev_free() runs later on, it will then try to deallocate the ID
-number a second time.
+The complete() function may be called even though request is not
+completed. In this case, it's necessary to check request status so
+as not to set device address wrongly.
 
-Closely related to this issue is another error in the recent fix: The
-ID number is stored in the raw_dev structure before the code checks to
-see whether the structure has already been initialized, in which case
-the new ID number would overwrite the earlier value.
-
-The solution to both bugs is to keep the new ID number in a local
-variable, and store it in the raw_dev structure only after the check
-for prior initialization.  No errors can occur after that point, so
-the double-free will never happen.
-
-Fixes: f2d8c2606825 ("usb: gadget: Fix non-unique driver names in raw-gadget driver")
-CC: Andrey Konovalov <andreyknvl@gmail.com>
-CC: <stable@vger.kernel.org>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YrMrRw5AyIZghN0v@rowland.harvard.edu
+Fixes: 10775eb17bee ("usb: chipidea: udc: update gadget states according to ch9")
+cc: <stable@vger.kernel.org>
+Signed-off-by: Xu Yang <xu.yang_2@nxp.com>
+Link: https://lore.kernel.org/r/20220623030242.41796-1-xu.yang_2@nxp.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/legacy/raw_gadget.c |   13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/usb/chipidea/udc.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/usb/gadget/legacy/raw_gadget.c
-+++ b/drivers/usb/gadget/legacy/raw_gadget.c
-@@ -429,6 +429,7 @@ out_put:
- static int raw_ioctl_init(struct raw_dev *dev, unsigned long value)
- {
- 	int ret = 0;
-+	int driver_id_number;
- 	struct usb_raw_init arg;
- 	char *udc_driver_name;
- 	char *udc_device_name;
-@@ -451,10 +452,9 @@ static int raw_ioctl_init(struct raw_dev
- 		return -EINVAL;
- 	}
+--- a/drivers/usb/chipidea/udc.c
++++ b/drivers/usb/chipidea/udc.c
+@@ -1034,6 +1034,9 @@ isr_setup_status_complete(struct usb_ep
+ 	struct ci_hdrc *ci = req->context;
+ 	unsigned long flags;
  
--	ret = ida_alloc(&driver_id_numbers, GFP_KERNEL);
--	if (ret < 0)
--		return ret;
--	dev->driver_id_number = ret;
-+	driver_id_number = ida_alloc(&driver_id_numbers, GFP_KERNEL);
-+	if (driver_id_number < 0)
-+		return driver_id_number;
- 
- 	driver_driver_name = kmalloc(DRIVER_DRIVER_NAME_LENGTH_MAX, GFP_KERNEL);
- 	if (!driver_driver_name) {
-@@ -462,7 +462,7 @@ static int raw_ioctl_init(struct raw_dev
- 		goto out_free_driver_id_number;
- 	}
- 	snprintf(driver_driver_name, DRIVER_DRIVER_NAME_LENGTH_MAX,
--				DRIVER_NAME ".%d", dev->driver_id_number);
-+				DRIVER_NAME ".%d", driver_id_number);
- 
- 	udc_driver_name = kmalloc(UDC_NAME_LENGTH_MAX, GFP_KERNEL);
- 	if (!udc_driver_name) {
-@@ -506,6 +506,7 @@ static int raw_ioctl_init(struct raw_dev
- 	dev->driver.driver.name = driver_driver_name;
- 	dev->driver.udc_name = udc_device_name;
- 	dev->driver.match_existing_only = 1;
-+	dev->driver_id_number = driver_id_number;
- 
- 	dev->state = STATE_DEV_INITIALIZED;
- 	spin_unlock_irqrestore(&dev->lock, flags);
-@@ -520,7 +521,7 @@ out_free_udc_driver_name:
- out_free_driver_driver_name:
- 	kfree(driver_driver_name);
- out_free_driver_id_number:
--	ida_free(&driver_id_numbers, dev->driver_id_number);
-+	ida_free(&driver_id_numbers, driver_id_number);
- 	return ret;
- }
- 
++	if (req->status < 0)
++		return;
++
+ 	if (ci->setaddr) {
+ 		hw_usb_set_address(ci, ci->address);
+ 		ci->setaddr = false;
 
 
