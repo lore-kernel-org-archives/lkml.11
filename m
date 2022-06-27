@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65930C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239121AbiF0L4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
+        id S239341AbiF0L4n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237711AbiF0Ls7 (ORCPT
+        with ESMTP id S237839AbiF0LtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C48FD7B;
-        Mon, 27 Jun 2022 04:43:02 -0700 (PDT)
+        Mon, 27 Jun 2022 07:49:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21778F;
+        Mon, 27 Jun 2022 04:43:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BCCFB80D37;
-        Mon, 27 Jun 2022 11:43:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 904A6C3411D;
-        Mon, 27 Jun 2022 11:42:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81ED661240;
+        Mon, 27 Jun 2022 11:43:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 934C6C3411D;
+        Mon, 27 Jun 2022 11:43:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330179;
-        bh=wbR3MEKdW6BKJKVYfURMA437j2DqDri/6fTczRaIwwU=;
+        s=korg; t=1656330186;
+        bh=nCDHVYBa6tLgsI2FQekanx0TPVqlYvk8XwJJwY5wi4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PXLLadvB20Uyv6YobbX+qQ/a6kw85rwpOpzHIrYwM2/+QXEWbhdhTkj4APndmP3QO
-         +HMCotfiLio7lhvh1a232kkDBwygSHtBYswf+wvPxk0p5U/Fvu/bIqNTk7Afqhee0u
-         eRTXfTY2/xW8CMlVVqvrhfFoELBhFm6rjlr1C3Cg=
+        b=i6v16WLwic0yAHa/9ZaLRJ0Z47UyubIk3TDnR4eo7JaCg7KhLNB7Xa+2xxgZQkSra
+         ySZLc8mQCoGlcicbBxIAJjI/C2lSVSI8GRx8q437ab2b49HFWazMyPPx+up1H4LMK2
+         GPsd8mkWKbizv2mP4yF0YSDHUbtFAY2b8iPB+BzY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 111/181] io_uring: fix wrong arm_poll error handling
-Date:   Mon, 27 Jun 2022 13:21:24 +0200
-Message-Id: <20220627111947.917086865@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 113/181] s390/crash: add missing iterator advance in copy_oldmem_page()
+Date:   Mon, 27 Jun 2022 13:21:26 +0200
+Message-Id: <20220627111947.974596667@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -48,34 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit 9d2ad2947a53abf5e5e6527a9eeed50a3a4cbc72 ]
+[ Upstream commit cc02e6e21aa5f2ac0defe8c15e5a9d024da6e73d ]
 
-Leaving ip.error set when a request was punted to task_work execution is
-problematic, don't forget to clear it.
+In case old memory was successfully copied the passed iterator
+should be advanced as well. Currently copy_oldmem_page() is
+always called with single-segment iterator. Should that ever
+change - copy_oldmem_user and copy_oldmem_kernel() functions
+would need a rework to deal with multi-segment iterators.
 
-Fixes: aa43477b04025 ("io_uring: poll rework")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/a6c84ef4182c6962380aebe11b35bdcb25b0ccfb.1655852245.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 5d8de293c224 ("vmcore: convert copy_oldmem_page() to take an iov_iter")
+Reviewed-by: Alexander Egorenkov <egorenar@linux.ibm.com>
+Tested-by: Alexander Egorenkov <egorenar@linux.ibm.com>
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/s390/kernel/crash_dump.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 38ecea726254..e4186635aaa8 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -6178,6 +6178,7 @@ static int __io_arm_poll_handler(struct io_kiocb *req,
- 		if (unlikely(ipt->error || !ipt->nr_entries)) {
- 			poll->events |= EPOLLONESHOT;
- 			req->apoll_events |= EPOLLONESHOT;
-+			ipt->error = 0;
- 		}
- 		__io_poll_execute(req, mask, poll->events);
+diff --git a/arch/s390/kernel/crash_dump.c b/arch/s390/kernel/crash_dump.c
+index a2c1c55daec0..2534a31d2550 100644
+--- a/arch/s390/kernel/crash_dump.c
++++ b/arch/s390/kernel/crash_dump.c
+@@ -219,6 +219,11 @@ ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn, size_t csize,
+ 	unsigned long src;
+ 	int rc;
+ 
++	if (!(iter_is_iovec(iter) || iov_iter_is_kvec(iter)))
++		return -EINVAL;
++	/* Multi-segment iterators are not supported */
++	if (iter->nr_segs > 1)
++		return -EINVAL;
+ 	if (!csize)
  		return 0;
+ 	src = pfn_to_phys(pfn) + offset;
+@@ -228,6 +233,8 @@ ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn, size_t csize,
+ 		rc = copy_oldmem_user(iter->iov->iov_base, src, csize);
+ 	else
+ 		rc = copy_oldmem_kernel(iter->kvec->iov_base, src, csize);
++	if (!rc)
++		iov_iter_advance(iter, csize);
+ 	return rc;
+ }
+ 
 -- 
 2.35.1
 
