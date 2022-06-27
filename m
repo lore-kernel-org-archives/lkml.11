@@ -2,97 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E826CCCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30675C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242067AbiF0WET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 18:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38806 "EHLO
+        id S242187AbiF0WEV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 18:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242431AbiF0WCB (ORCPT
+        with ESMTP id S242741AbiF0WDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 18:02:01 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3290BBC2A
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 14:58:57 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id a16so6950822ilr.6
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 14:58:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9GT2nNkf49vF8e158U/wUxr794H1AaU7oOi4NpwptRo=;
-        b=hI3vmhAhkEP9/+pbu0tlgrBl5K2kpR9NO/0KOOMQlkWERtpIiGxuMs6UYoVc0khr1B
-         T2N/zjxyZ5U9LpQOGiqhXC46jisNQvSetx43pFRoxEn/5vcfNHzlu0/SbHmnKwALj9iq
-         9jM1ZidZCct2NUfVieaRv5q5u1wMbm8FSEJXk=
+        Mon, 27 Jun 2022 18:03:06 -0400
+Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DEA1E3F4;
+        Mon, 27 Jun 2022 15:01:01 -0700 (PDT)
+Received: by mail-il1-f177.google.com with SMTP id a16so6954104ilr.6;
+        Mon, 27 Jun 2022 15:01:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9GT2nNkf49vF8e158U/wUxr794H1AaU7oOi4NpwptRo=;
-        b=kDS0aDOIB1oJYa2P+PScjblpI5WHVaiu58VfwfNIYFVklfB4Ppynndx2IgY8dIF+YS
-         zw7w4O69YfQ3YbeIsajWQjAXP1BJPzmPaQUhxwMzb1gzT96LgPkrKeNJ7XTK9gOGYKVf
-         WlUBCFJIfc5S/Iwlfow4LcYVdOtycceKVxmFGJ5EL8h5fFvSsw67/W5SksjBNIjC1Elv
-         g4zxs414YlR9OSfHxsa4ixX1gcPpzgjEcWWuyCWZ1xRmsdQRoryN38Pkau90UedgfEYL
-         /q5xyJ9UR0kOQNdUO1wSsMBbO1Kn4YeIx8R8ZhtOaJzDEr1IMYlUL41rh73baN1nhdkJ
-         dzBA==
-X-Gm-Message-State: AJIora8PYGcQ9PPekH+jZUXIQkQtRqPNF4qN2WduZVQu0La97db/9h7H
-        Rte8s6nX8aNw3Q/AIznS/tcm0A==
-X-Google-Smtp-Source: AGRyM1uZ8G2wTmyTVBvBNcpvF0K/igCH/hzNr+NZzmvopzmHYb/uOzsaqR+LDhuX70NqRGsjSNzyvg==
-X-Received: by 2002:a92:a041:0:b0:2d7:7935:effa with SMTP id b1-20020a92a041000000b002d77935effamr7843380ilm.222.1656367136275;
-        Mon, 27 Jun 2022 14:58:56 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id t3-20020a056e02060300b002d93c072c56sm4031214ils.40.2022.06.27.14.58.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 14:58:55 -0700 (PDT)
-Subject: Re: [PATCH 5.4 00/60] 5.4.202-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220627111927.641837068@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <ff5f22d8-37b5-df9d-5873-4a9ce7c1b070@linuxfoundation.org>
-Date:   Mon, 27 Jun 2022 15:58:55 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TZkUYB3BYeJsEsDSI6PmO4Ag8GHC0FQvV7iN+YB5Q0Q=;
+        b=zCp96mdzfFQ20ZZJPRmAEPFKrfLyyMs7EZ6is7dWfXsrtHO7OtKrjNg0wxaPeuz9ju
+         Z9yaEMaNFcFm7Cayu8tTQeKZFtgxQs5j/r+rzr1FGSec1/enyqQMRJoEY/3mOijncGXE
+         rpHKRK3/x2p6J8Z8zXi706446KG9/WEJjnSh9q7UMwwDp9YQBc4ZJpE4AIWE9OqHxi6L
+         qjU/zLR5rVIH/6wYzlXshsv2F65jfnRUT/OPDS8e5SIaj5oo55ZhApWuF/8i3CVa4HZw
+         VXasQ7qWsaH3YtSdRi//P+7fEzecaXW0FsdopgFl5oVf2UG+nfg7xgPjHQwCTOu2w3aj
+         K6zg==
+X-Gm-Message-State: AJIora/6z3SsFJ4Q4YYpArAv+GoMFZEQFfNrBf3bRE9WE1IOQMK+Ldw5
+        H4suWLQ2xww/0QPoDSc7Kg==
+X-Google-Smtp-Source: AGRyM1ssOJCADmXqWwlgb8kDzOGggbdItlatIWFU04SmaYPNYTJ0Nxv2RE7Xu59Xf0OzqmtEW0/lww==
+X-Received: by 2002:a05:6e02:188a:b0:2d4:7fd:dbf with SMTP id o10-20020a056e02188a00b002d407fd0dbfmr8113049ilu.217.1656367260514;
+        Mon, 27 Jun 2022 15:01:00 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id bo22-20020a056638439600b0033c8edf022bsm2409410jab.144.2022.06.27.15.00.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 15:01:00 -0700 (PDT)
+Received: (nullmailer pid 3041223 invoked by uid 1000);
+        Mon, 27 Jun 2022 22:00:58 -0000
+Date:   Mon, 27 Jun 2022 16:00:58 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Quan Nguyen <quan@os.amperecomputing.com>
+Cc:     Corey Minyard <minyard@acm.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Wolfram Sang <wsa@kernel.org>,
+        openipmi-developer@lists.sourceforge.net,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        Open Source Submission <patches@amperecomputing.com>,
+        Phong Vo <phong@os.amperecomputing.com>,
+        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
+Subject: Re: [PATCH v8 2/3] bindings: ipmi: Add binding for SSIF BMC driver
+Message-ID: <20220627220058.GA3036977-robh@kernel.org>
+References: <20220615090259.1121405-1-quan@os.amperecomputing.com>
+ <20220615090259.1121405-3-quan@os.amperecomputing.com>
 MIME-Version: 1.0
-In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615090259.1121405-3-quan@os.amperecomputing.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/27/22 5:21 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.202 release.
-> There are 60 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Wed, Jun 15, 2022 at 04:02:58PM +0700, Quan Nguyen wrote:
+> Add device tree binding document for the SSIF BMC driver.
 > 
-> Responses should be made by Wed, 29 Jun 2022 11:19:09 +0000.
-> Anything received after that time might be too late.
+> Signed-off-by: Quan Nguyen <quan@os.amperecomputing.com>
+> ---
+> v8:
+>   + None
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.202-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
+> v7:
+>   + Change compatible string from "ampere,ssif-bmc" to "ssif-bmc"  [Jae]
 > 
-> thanks,
+> v6:
+>   + None
 > 
-> greg k-h
+> v5:
+>   + None
 > 
+> v4:
+>   + Fix warning with dt_binding_check [Rob]
+>   + Change aspeed-ssif-bmc.yaml to ssif-bmc.yaml [Quan]
+> 
+> v3:
+>   + Switched to use DT schema format [Rob]
+> 
+> v2:
+>   + None
+> 
+>  .../devicetree/bindings/ipmi/ssif-bmc.yaml    | 38 +++++++++++++++++++
+>  1 file changed, 38 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/ipmi/ssif-bmc.yaml
 
-Compiled and booted on my test system. No dmesg regressions.
+Please add Acked-by/Reviewed-by tags when posting new versions. However,
+there's no need to repost patches *only* to add the tags. The upstream
+maintainer will do that for acks received on the version they apply.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
-
-thanks,
--- Shuah
+If a tag was not added on purpose, please state why and what changed.
