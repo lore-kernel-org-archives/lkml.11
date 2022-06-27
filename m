@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C933C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 460ACC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236620AbiF0Liz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
+        id S236635AbiF0Li7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236450AbiF0Lhc (ORCPT
+        with ESMTP id S236451AbiF0Lhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:37:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBE1262C;
-        Mon, 27 Jun 2022 04:32:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AA22632;
+        Mon, 27 Jun 2022 04:32:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C75B60023;
-        Mon, 27 Jun 2022 11:32:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C3DDC3411D;
-        Mon, 27 Jun 2022 11:32:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7227560920;
+        Mon, 27 Jun 2022 11:32:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651ACC3411D;
+        Mon, 27 Jun 2022 11:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329563;
-        bh=NV9RtVFudLDqIXphuh/TH5G1CLuIWV62EEo6CBzyooM=;
+        s=korg; t=1656329575;
+        bh=uwLP/YSqTMdpGRx9FDdvbNRrmMSkrIv3C1At+j3SF5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I0N+R2e8rXPdYFTBdemsXavd9rf8jlwv/FsMxqMj81dx9n+NNlDz+ACbLOVguKfvU
-         peWc49S6vUs7CkDULM7LNJTPZxtcJMu/fyfo+BZeq6oR8PzDBIX87SrRHtNqFVL6qf
-         6fVQD8DsTizjVeNy6nC3NFEr5M3VjlkfnXEm/RWI=
+        b=LV3lVAxDqfiWEuollvwDokiMP32aF7jSVyfadLpQVkiST48RqMt9LWBjgW88crPz8
+         Vkcne2lystLW5D7gWIw7nvCdN7VLGj2WusZDciCaio37P/MKzS/eKJS8HVQa54Wf3h
+         CNEQ16fABxM2V89hWlb0LGgfWIGTMPk3wHCqi4Uk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 009/135] ALSA: hda/realtek: Add quirk for Clevo NS50PU
-Date:   Mon, 27 Jun 2022 13:20:16 +0200
-Message-Id: <20220627111938.428499739@linuxfoundation.org>
+        stable@vger.kernel.org, Ondrej Spacek <ondrej.spacek@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 045/135] phy: aquantia: Fix AN when higher speeds than 1G are not advertised
+Date:   Mon, 27 Jun 2022 13:20:52 +0200
+Message-Id: <20220627111939.467741483@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -48,30 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Claudiu Manoil <claudiu.manoil@nxp.com>
 
-commit 627ce0d68eb4b53e995b08089fa9da1e513ec5ba upstream.
+[ Upstream commit 9b7fd1670a94a57d974795acebde843a5c1a354e ]
 
-Fixes headset detection on Clevo NS50PU.
+Even when the eth port is resticted to work with speeds not higher than 1G,
+and so the eth driver is requesting the phy (via phylink) to advertise up
+to 1000BASET support, the aquantia phy device is still advertising for 2.5G
+and 5G speeds.
+Clear these advertising defaults when requested.
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220622150017.9897-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Ondrej Spacek <ondrej.spacek@nxp.com>
+Fixes: 09c4c57f7bc41 ("net: phy: aquantia: add support for auto-negotiation configuration")
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Link: https://lore.kernel.org/r/20220610084037.7625-1-claudiu.manoil@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/aquantia_main.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9000,6 +9000,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1558, 0x70f3, "Clevo NH77DPQ", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x70f4, "Clevo NH77EPY", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x70f6, "Clevo NH77DPQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1558, 0x7716, "Clevo NS50PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8228, "Clevo NR40BU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8520, "Clevo NH50D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8521, "Clevo NH77D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
+index 968dd43a2b1e..3221224525ac 100644
+--- a/drivers/net/phy/aquantia_main.c
++++ b/drivers/net/phy/aquantia_main.c
+@@ -34,6 +34,8 @@
+ #define MDIO_AN_VEND_PROV			0xc400
+ #define MDIO_AN_VEND_PROV_1000BASET_FULL	BIT(15)
+ #define MDIO_AN_VEND_PROV_1000BASET_HALF	BIT(14)
++#define MDIO_AN_VEND_PROV_5000BASET_FULL	BIT(11)
++#define MDIO_AN_VEND_PROV_2500BASET_FULL	BIT(10)
+ #define MDIO_AN_VEND_PROV_DOWNSHIFT_EN		BIT(4)
+ #define MDIO_AN_VEND_PROV_DOWNSHIFT_MASK	GENMASK(3, 0)
+ #define MDIO_AN_VEND_PROV_DOWNSHIFT_DFLT	4
+@@ -231,9 +233,20 @@ static int aqr_config_aneg(struct phy_device *phydev)
+ 			      phydev->advertising))
+ 		reg |= MDIO_AN_VEND_PROV_1000BASET_HALF;
+ 
++	/* Handle the case when the 2.5G and 5G speeds are not advertised */
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
++			      phydev->advertising))
++		reg |= MDIO_AN_VEND_PROV_2500BASET_FULL;
++
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT,
++			      phydev->advertising))
++		reg |= MDIO_AN_VEND_PROV_5000BASET_FULL;
++
+ 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_VEND_PROV,
+ 				     MDIO_AN_VEND_PROV_1000BASET_HALF |
+-				     MDIO_AN_VEND_PROV_1000BASET_FULL, reg);
++				     MDIO_AN_VEND_PROV_1000BASET_FULL |
++				     MDIO_AN_VEND_PROV_2500BASET_FULL |
++				     MDIO_AN_VEND_PROV_5000BASET_FULL, reg);
+ 	if (ret < 0)
+ 		return ret;
+ 	if (ret > 0)
+-- 
+2.35.1
+
 
 
