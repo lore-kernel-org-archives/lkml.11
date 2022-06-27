@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B527C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED75AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238634AbiF0LwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
+        id S238639AbiF0LwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238332AbiF0LsS (ORCPT
+        with ESMTP id S238327AbiF0LsR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:18 -0400
+        Mon, 27 Jun 2022 07:48:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365BFF5B5;
-        Mon, 27 Jun 2022 04:40:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B3BF5AE;
+        Mon, 27 Jun 2022 04:40:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63E71B8113A;
-        Mon, 27 Jun 2022 11:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F85C341C7;
-        Mon, 27 Jun 2022 11:40:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 853A2B81135;
+        Mon, 27 Jun 2022 11:40:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF33EC3411D;
+        Mon, 27 Jun 2022 11:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330043;
-        bh=mWL7/54HZCr/k7UXZsz1bzBhAmI7c/Igb97da6crnUk=;
+        s=korg; t=1656330040;
+        bh=fLv9Z5zYBa6k80avfKlFPpGIGGwWWoBNa9hCd1onJXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2uxhd8/4V3mDmwH1HsP3r75L/RovTQ/xwALr1GffAncHAGItp510wPLw5PyEa5qb+
-         S5sI2228eQuiQLXPll+8goCTpySqgzSNxU9brCt7YRxfKRTxg33S69o1xsVRwsne6p
-         XFZHt4cvgMSCk4ULO4BlzUMOPbV/+tqQ2/EVrgso=
+        b=WBbESK9oXgHwUWtVTk4gV4lx2p+6k4TP0vuoCmcTWFRSqUaa/zYKZ2MsaV/20tuVf
+         2bz9S3SiCBp5ZEeTe2HcE9lpxx3cc9OoG3BJoFszzOFPzFZcurM6iOdrEVYUN0I112
+         ERUFOmKOTAEbT3OMquV5nPcpFE/9f70pZayvMXoc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Lee Duncan <lduncan@suse.com>,
-        Sergey Gorenko <sergeygo@nvidia.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 047/181] scsi: iscsi: Exclude zero from the endpoint ID range
-Date:   Mon, 27 Jun 2022 13:20:20 +0200
-Message-Id: <20220627111945.927460986@linuxfoundation.org>
+Subject: [PATCH 5.18 064/181] ethtool: Fix get module eeprom fallback
+Date:   Mon, 27 Jun 2022 13:20:37 +0200
+Message-Id: <20220627111946.422009251@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -52,46 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Gorenko <sergeygo@nvidia.com>
+From: Ivan Vecera <ivecera@redhat.com>
 
-[ Upstream commit f6eed15f3ea76596ccc689331e1cc850b999133b ]
+[ Upstream commit a3bb7b63813f674fb62bac321cdd897cc62de094 ]
 
-The kernel returns an endpoint ID as r.ep_connect_ret.handle in the
-iscsi_uevent. The iscsid validates a received endpoint ID and treats zero
-as an error. The commit referenced in the fixes line changed the endpoint
-ID range, and zero is always assigned to the first endpoint ID.  So, the
-first attempt to create a new iSER connection always fails.
+Function fallback_set_params() checks if the module type returned
+by a driver is ETH_MODULE_SFF_8079 and in this case it assumes
+that buffer returns a concatenated content of page  A0h and A2h.
+The check is wrong because the correct type is ETH_MODULE_SFF_8472.
 
-Link: https://lore.kernel.org/r/20220613123854.55073-1-sergeygo@nvidia.com
-Fixes: 3c6ae371b8a1 ("scsi: iscsi: Release endpoint ID when its freed")
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-Reviewed-by: Mike Christie <michael.christie@oracle.com>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Signed-off-by: Sergey Gorenko <sergeygo@nvidia.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 96d971e307cc ("ethtool: Add fallback to get_module_eeprom from netlink command")
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/20220616160856.3623273-1-ivecera@redhat.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_transport_iscsi.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/ethtool/eeprom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 2c0dd64159b0..5d21f07456c6 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -212,7 +212,12 @@ iscsi_create_endpoint(int dd_size)
- 		return NULL;
+diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
+index 7e6b37a54add..1c94bb8ea03f 100644
+--- a/net/ethtool/eeprom.c
++++ b/net/ethtool/eeprom.c
+@@ -36,7 +36,7 @@ static int fallback_set_params(struct eeprom_req_info *request,
+ 	if (request->page)
+ 		offset = request->page * ETH_MODULE_EEPROM_PAGE_LEN + offset;
  
- 	mutex_lock(&iscsi_ep_idr_mutex);
--	id = idr_alloc(&iscsi_ep_idr, ep, 0, -1, GFP_NOIO);
-+
-+	/*
-+	 * First endpoint id should be 1 to comply with user space
-+	 * applications (iscsid).
-+	 */
-+	id = idr_alloc(&iscsi_ep_idr, ep, 1, -1, GFP_NOIO);
- 	if (id < 0) {
- 		mutex_unlock(&iscsi_ep_idr_mutex);
- 		printk(KERN_ERR "Could not allocate endpoint ID. Error %d.\n",
+-	if (modinfo->type == ETH_MODULE_SFF_8079 &&
++	if (modinfo->type == ETH_MODULE_SFF_8472 &&
+ 	    request->i2c_address == 0x51)
+ 		offset += ETH_MODULE_EEPROM_PAGE_LEN * 2;
+ 
 -- 
 2.35.1
 
