@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:51:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB2FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238353AbiF0Lvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
+        id S238360AbiF0Lv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238311AbiF0LsP (ORCPT
+        with ESMTP id S238309AbiF0LsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:48:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0576CF59B;
-        Mon, 27 Jun 2022 04:40:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5233F59A;
+        Mon, 27 Jun 2022 04:40:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97F5960C16;
-        Mon, 27 Jun 2022 11:40:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F15C36AED;
-        Mon, 27 Jun 2022 11:40:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54E0AB81123;
+        Mon, 27 Jun 2022 11:40:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8ABDC341C7;
+        Mon, 27 Jun 2022 11:40:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330028;
-        bh=i7tt2QLqXksiiPiErEk6fj3nMFk3l0zF4KVChldBfBo=;
+        s=korg; t=1656330025;
+        bh=ANm7NZ3p20kcA1xNI5TBb7Uyk/XbUVFrE8pqixiN7l8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=osz4fYd4M1WpzbVIPB36anxbpLTW67wZDAXKzvnh7hSWF2tdtCaGK8iDU1DWMf3iY
-         ynd3I5izycfX8Hn90XDOkbTdWh7/hIFzMEethyLvKv4xvv/8X5Aw52iBOXeaq8SafC
-         TFUQKZ/MfSBQdGQb/4wB8fqyMRTTuSfWt+Cl/hCU=
+        b=IRNoEGdJwdHCDD2WfZfO+UNBIqaUyDOn/WIBUrnW5iUVXXVz1G6ZSms6LB+lWJMjN
+         M3jde3IdzV9TYGLDzyxIwzzlv29tTXaggRpIuI50mqHMXhA6/gaRrWlwABUALAhbBp
+         Wurvbb8c1RjOcCBqbbU0xVFkhSjIb7CqJpB4qlaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+3e3f419f4a7816471838@syzkaller.appspotmail.com,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        syzbot+47af19f3307fc9c5c82e@syzkaller.appspotmail.com,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Hoang Le <hoang.h.le@dektech.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 060/181] block: disable the elevator int del_gendisk
-Date:   Mon, 27 Jun 2022 13:20:33 +0200
-Message-Id: <20220627111946.306640058@linuxfoundation.org>
+Subject: [PATCH 5.18 059/181] tipc: fix use-after-free Read in tipc_named_reinit
+Date:   Mon, 27 Jun 2022 13:20:32 +0200
+Message-Id: <20220627111946.278079040@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,120 +53,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-[ Upstream commit 50e34d78815e474d410f342fbe783b18192ca518 ]
+[ Upstream commit 911600bf5a5e84bfda4d33ee32acc75ecf6159f0 ]
 
-The elevator is only used for file system requests, which are stopped in
-del_gendisk.  Move disabling the elevator and freeing the scheduler tags
-to the end of del_gendisk instead of doing that work in disk_release and
-blk_cleanup_queue to avoid a use after free on q->tag_set from
-disk_release as the tag_set might not be alive at that point.
+syzbot found the following issue on:
+==================================================================
+BUG: KASAN: use-after-free in tipc_named_reinit+0x94f/0x9b0
+net/tipc/name_distr.c:413
+Read of size 8 at addr ffff88805299a000 by task kworker/1:9/23764
 
-Move the blk_qos_exit call as well, as it just depends on the elevator
-exit and would be the only reason to keep the not exactly cheap queue
-freeze in disk_release.
+CPU: 1 PID: 23764 Comm: kworker/1:9 Not tainted
+5.18.0-rc4-syzkaller-00878-g17d49e6e8012 #0
+Hardware name: Google Compute Engine/Google Compute Engine,
+BIOS Google 01/01/2011
+Workqueue: events tipc_net_finalize_work
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495
+mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ tipc_named_reinit+0x94f/0x9b0 net/tipc/name_distr.c:413
+ tipc_net_finalize+0x234/0x3d0 net/tipc/net.c:138
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+ </TASK>
+[...]
+==================================================================
 
-Fixes: e155b0c238b2 ("blk-mq: Use shared tags for shared sbitmap support")
-Reported-by: syzbot+3e3f419f4a7816471838@syzkaller.appspotmail.com
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Tested-by: syzbot+3e3f419f4a7816471838@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20220614074827.458955-2-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+In the commit
+d966ddcc3821 ("tipc: fix a deadlock when flushing scheduled work"),
+the cancel_work_sync() function just to make sure ONLY the work
+tipc_net_finalize_work() is executing/pending on any CPU completed before
+tipc namespace is destroyed through tipc_exit_net(). But this function
+is not guaranteed the work is the last queued. So, the destroyed instance
+may be accessed in the work which will try to enqueue later.
+
+In order to completely fix, we re-order the calling of cancel_work_sync()
+to make sure the work tipc_net_finalize_work() was last queued and it
+must be completed by calling cancel_work_sync().
+
+Reported-by: syzbot+47af19f3307fc9c5c82e@syzkaller.appspotmail.com
+Fixes: d966ddcc3821 ("tipc: fix a deadlock when flushing scheduled work")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-core.c | 13 -------------
- block/genhd.c    | 39 +++++++++++----------------------------
- 2 files changed, 11 insertions(+), 41 deletions(-)
+ net/tipc/core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/block/blk-core.c b/block/blk-core.c
-index 84f7b7884d07..a7329475aba2 100644
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -322,19 +322,6 @@ void blk_cleanup_queue(struct request_queue *q)
- 		blk_mq_exit_queue(q);
- 	}
+diff --git a/net/tipc/core.c b/net/tipc/core.c
+index 3f4542e0f065..434e70eabe08 100644
+--- a/net/tipc/core.c
++++ b/net/tipc/core.c
+@@ -109,10 +109,9 @@ static void __net_exit tipc_exit_net(struct net *net)
+ 	struct tipc_net *tn = tipc_net(net);
  
--	/*
--	 * In theory, request pool of sched_tags belongs to request queue.
--	 * However, the current implementation requires tag_set for freeing
--	 * requests, so free the pool now.
--	 *
--	 * Queue has become frozen, there can't be any in-queue requests, so
--	 * it is safe to free requests now.
--	 */
--	mutex_lock(&q->sysfs_lock);
--	if (q->elevator)
--		blk_mq_sched_free_rqs(q);
--	mutex_unlock(&q->sysfs_lock);
+ 	tipc_detach_loopback(net);
++	tipc_net_stop(net);
+ 	/* Make sure the tipc_net_finalize_work() finished */
+ 	cancel_work_sync(&tn->work);
+-	tipc_net_stop(net);
 -
- 	/* @q is and will stay empty, shutdown and put */
- 	blk_put_queue(q);
- }
-diff --git a/block/genhd.c b/block/genhd.c
-index 3008ec213654..13daac1a9aef 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -652,6 +652,17 @@ void del_gendisk(struct gendisk *disk)
- 
- 	blk_sync_queue(q);
- 	blk_flush_integrity();
-+	blk_mq_cancel_work_sync(q);
-+
-+	blk_mq_quiesce_queue(q);
-+	if (q->elevator) {
-+		mutex_lock(&q->sysfs_lock);
-+		elevator_exit(q);
-+		mutex_unlock(&q->sysfs_lock);
-+	}
-+	rq_qos_exit(q);
-+	blk_mq_unquiesce_queue(q);
-+
- 	/*
- 	 * Allow using passthrough request again after the queue is torn down.
- 	 */
-@@ -1120,31 +1131,6 @@ static const struct attribute_group *disk_attr_groups[] = {
- 	NULL
- };
- 
--static void disk_release_mq(struct request_queue *q)
--{
--	blk_mq_cancel_work_sync(q);
--
--	/*
--	 * There can't be any non non-passthrough bios in flight here, but
--	 * requests stay around longer, including passthrough ones so we
--	 * still need to freeze the queue here.
--	 */
--	blk_mq_freeze_queue(q);
--
--	/*
--	 * Since the I/O scheduler exit code may access cgroup information,
--	 * perform I/O scheduler exit before disassociating from the block
--	 * cgroup controller.
--	 */
--	if (q->elevator) {
--		mutex_lock(&q->sysfs_lock);
--		elevator_exit(q);
--		mutex_unlock(&q->sysfs_lock);
--	}
--	rq_qos_exit(q);
--	__blk_mq_unfreeze_queue(q, true);
--}
--
- /**
-  * disk_release - releases all allocated resources of the gendisk
-  * @dev: the device representing this disk
-@@ -1166,9 +1152,6 @@ static void disk_release(struct device *dev)
- 	might_sleep();
- 	WARN_ON_ONCE(disk_live(disk));
- 
--	if (queue_is_mq(disk->queue))
--		disk_release_mq(disk->queue);
--
- 	blkcg_exit_queue(disk->queue);
- 
- 	disk_release_events(disk);
+ 	tipc_bcast_stop(net);
+ 	tipc_nametbl_stop(net);
+ 	tipc_sk_rht_destroy(net);
 -- 
 2.35.1
 
