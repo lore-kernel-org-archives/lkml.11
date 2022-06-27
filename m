@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E64C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239353AbiF0L4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:56:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
+        id S239363AbiF0L47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237698AbiF0Ls7 (ORCPT
+        with ESMTP id S238044AbiF0Ltu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4EED56;
-        Mon, 27 Jun 2022 04:42:58 -0700 (PDT)
+        Mon, 27 Jun 2022 07:49:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5546E71;
+        Mon, 27 Jun 2022 04:43:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D8BC6125A;
-        Mon, 27 Jun 2022 11:42:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A97A4C3411D;
-        Mon, 27 Jun 2022 11:42:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D76FB61268;
+        Mon, 27 Jun 2022 11:43:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4002C341C7;
+        Mon, 27 Jun 2022 11:43:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330177;
-        bh=HntDoXniYj/5of/4GddtV0AzCXgaQh2XJZbRGx/gDMQ=;
+        s=korg; t=1656330206;
+        bh=iloeB/dZ6LP3VpD/hj6iCJ5H6/wOfIuWN46VZKW9bYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FwW663oRxhk0weJBrAFasQ7clz4ab62S5WKThL3dujN4HZrUJxcf3gFfHOFDG+vn2
-         K8dNm+TasM8wdVPsYQqqulkm6BlH3abEKLbLVdG4PKCOCAZllx4wAstMxKllVsWqRk
-         p4/mYF+Jy2KAuF5yF3yfi+vGujCOqRZ3dKFYe10c=
+        b=Mw36LNMgd22PpNhjC0VpUaDE9Y7HPqEhcbZ6f5hN9pMEIMFFK0c8BR/zwnC8iNKNe
+         XxV5j6kCbeLpM6e/k8SowsB2/xXuJe4V+sRntPOrk2tg6dD5BpiypX0fUk1+aHVjBx
+         lxfAWlQj+BeK4oJZAlB56hxzdxpnnmpaQABj2zM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 110/181] usb: typec: wcove: Drop wrong dependency to INTEL_SOC_PMIC
-Date:   Mon, 27 Jun 2022 13:21:23 +0200
-Message-Id: <20220627111947.889105732@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Dan Vacura <w36195@motorola.com>
+Subject: [PATCH 5.18 118/181] usb: gadget: uvc: fix list double add in uvcg_video_pump
+Date:   Mon, 27 Jun 2022 13:21:31 +0200
+Message-Id: <20220627111948.117853093@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,45 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Dan Vacura <w36195@motorola.com>
 
-[ Upstream commit 9ef165406308515dcf2e3f6e97b39a1c56d86db5 ]
+commit 96163f835e65f8c9897487fac965819f0651d671 upstream.
 
-Intel SoC PMIC is a generic name for all PMICs that are used
-on Intel platforms. In particular, INTEL_SOC_PMIC kernel configuration
-option refers to Crystal Cove PMIC, which has never been a part
-of any Intel Broxton hardware. Drop wrong dependency from Kconfig.
+A panic can occur if the endpoint becomes disabled and the
+uvcg_video_pump adds the request back to the req_free list after it has
+already been queued to the endpoint. The endpoint complete will add the
+request back to the req_free list. Invalidate the local request handle
+once it's been queued.
 
-Note, the correct dependency is satisfied via ACPI PMIC OpRegion driver,
-which the Type-C depends on.
+<6>[  246.796704][T13726] configfs-gadget gadget: uvc: uvc_function_set_alt(1, 0)
+<3>[  246.797078][   T26] list_add double add: new=ffffff878bee5c40, prev=ffffff878bee5c40, next=ffffff878b0f0a90.
+<6>[  246.797213][   T26] ------------[ cut here ]------------
+<2>[  246.797224][   T26] kernel BUG at lib/list_debug.c:31!
+<6>[  246.807073][   T26] Call trace:
+<6>[  246.807180][   T26]  uvcg_video_pump+0x364/0x38c
+<6>[  246.807366][   T26]  process_one_work+0x2a4/0x544
+<6>[  246.807394][   T26]  worker_thread+0x350/0x784
+<6>[  246.807442][   T26]  kthread+0x2ac/0x320
 
-Fixes: d2061f9cc32d ("usb: typec: add driver for Intel Whiskey Cove PMIC USB Type-C PHY")
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20220620104316.57592-1-andriy.shevchenko@linux.intel.com
+Fixes: f9897ec0f6d3 ("usb: gadget: uvc: only pump video data if necessary")
+Cc: stable@vger.kernel.org
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Dan Vacura <w36195@motorola.com>
+Link: https://lore.kernel.org/r/20220617163154.16621-1-w36195@motorola.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/tcpm/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/usb/gadget/function/uvc_video.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/usb/typec/tcpm/Kconfig b/drivers/usb/typec/tcpm/Kconfig
-index 557f392fe24d..073fd2ea5e0b 100644
---- a/drivers/usb/typec/tcpm/Kconfig
-+++ b/drivers/usb/typec/tcpm/Kconfig
-@@ -56,7 +56,6 @@ config TYPEC_WCOVE
- 	tristate "Intel WhiskeyCove PMIC USB Type-C PHY driver"
- 	depends on ACPI
- 	depends on MFD_INTEL_PMC_BXT
--	depends on INTEL_SOC_PMIC
- 	depends on BXT_WC_PMIC_OPREGION
- 	help
- 	  This driver adds support for USB Type-C on Intel Broxton platforms
--- 
-2.35.1
-
+--- a/drivers/usb/gadget/function/uvc_video.c
++++ b/drivers/usb/gadget/function/uvc_video.c
+@@ -415,6 +415,9 @@ static void uvcg_video_pump(struct work_
+ 			uvcg_queue_cancel(queue, 0);
+ 			break;
+ 		}
++
++		/* Endpoint now owns the request */
++		req = NULL;
+ 		video->req_int_count++;
+ 	}
+ 
 
 
