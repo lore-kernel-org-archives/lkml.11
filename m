@@ -2,106 +2,410 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E23C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9960C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239680AbiF0MAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
+        id S239716AbiF0MAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238946AbiF0Lwv (ORCPT
+        with ESMTP id S238941AbiF0Lwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:52:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D2DDF64;
-        Mon, 27 Jun 2022 04:46:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4CBC61192;
-        Mon, 27 Jun 2022 11:46:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E267BC3411D;
-        Mon, 27 Jun 2022 11:46:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330399;
-        bh=XmVCpr/zKDWe90GV3W/5jn0rsMtY3ZHvfNsSb643UE4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NH+/09EsACx1D4t2BDBDAgsI97xBWDSORUA8qfvdjp/4j7yzq9v6Gy+k6to/ESsLy
-         Js503+LRa0Sxmm96NgIrj4EmMxGLTuy/W1gklculFxUKK4qgm/B6YxiIfm3qPNtLV9
-         comcTdJr2SebNa4jWEoqOGTSGT2FSE9Wwhz6Ygj8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.18 178/181] smb3: use netname when available on secondary channels
-Date:   Mon, 27 Jun 2022 13:22:31 +0200
-Message-Id: <20220627111949.843791924@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
-References: <20220627111944.553492442@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7ABF0BC0D
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:46:35 -0700 (PDT)
+Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx39kNl7liP_FfAA--.6156S11;
+        Mon, 27 Jun 2022 19:40:03 +0800 (CST)
+From:   Jianmin Lv <lvjianmin@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V13 09/13] irqchip/loongson-liointc: Add ACPI init support
+Date:   Mon, 27 Jun 2022 19:39:53 +0800
+Message-Id: <1656329997-20524-10-git-send-email-lvjianmin@loongson.cn>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
+References: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
+X-CM-TRANSID: AQAAf9Dx39kNl7liP_FfAA--.6156S11
+X-Coremail-Antispam: 1UD129KBjvJXoW3KryfuFy3Jry8Aw48tFyxZrb_yoWkGFyrpF
+        W8A34qqr45GFy7WrWvyFs8Za4ayw1Y9FsrXayfCas7AanrX3s5CF1ruFnFkF43C3yrWFWa
+        vF4rta18GF45Aa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvj1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCF
+        04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
+        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1l
+        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxV
+        AFwI0_Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8
+        JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoO
+        J5UUUUU
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: Huacai Chen <chenhuacai@loongson.cn>
 
-commit 9de74996a739bf0b7b5d8c260bd207ad6007442b upstream.
+We are preparing to add new Loongson (based on LoongArch, not compatible
+with old MIPS-based Loongson) support. LoongArch use ACPI other than DT
+as its boot protocol, so add ACPI init support.
 
-Some servers do not allow null netname contexts, which would cause
-multichannel to revert to single channel when mounting to some
-servers (e.g. Azure xSMB). The previous patch fixed that by avoiding
-incorrectly sending the netname context when there would be a null
-hostname sent in the netname context, while this patch fixes the null
-hostname for the secondary channel by using the hostname of the
-primary channel for the secondary channel.
+LIOINTC stands for "Legacy I/O Interrupts" that described in Section
+11.1 of "Loongson 3A5000 Processor Reference Manual". For more
+information please refer Documentation/loongarch/irq-chip-model.rst.
 
-Fixes: 4c14d7043fede ("cifs: populate empty hostnames for extra channels")
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Co-developed-by: Jianmin Lv <lvjianmin@loongson.cn>
+Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
 ---
- fs/cifs/smb2pdu.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ arch/loongarch/include/asm/irq.h       |   4 +-
+ arch/loongarch/kernel/irq.c            |   1 -
+ drivers/irqchip/irq-loongson-liointc.c | 227 ++++++++++++++++++++++-----------
+ 3 files changed, 154 insertions(+), 78 deletions(-)
 
-diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
-index 5e8c4737b183..12b4dddaedb0 100644
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -543,6 +543,7 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
- 		      struct TCP_Server_Info *server, unsigned int *total_len)
+diff --git a/arch/loongarch/include/asm/irq.h b/arch/loongarch/include/asm/irq.h
+index e1e9e04..fbd2bc9 100644
+--- a/arch/loongarch/include/asm/irq.h
++++ b/arch/loongarch/include/asm/irq.h
+@@ -105,7 +105,7 @@ static inline void eiointc_enable(void)
+ 
+ struct irq_domain *loongarch_cpu_irq_init(void);
+ 
+-struct irq_domain *liointc_acpi_init(struct irq_domain *parent,
++int liointc_acpi_init(struct irq_domain *parent,
+ 					struct acpi_madt_lio_pic *acpi_liointc);
+ struct irq_domain *eiointc_acpi_init(struct irq_domain *parent,
+ 					struct acpi_madt_eio_pic *acpi_eiointc);
+@@ -126,7 +126,7 @@ int pch_lpc_acpi_init(struct irq_domain *parent,
+ extern struct acpi_madt_bio_pic *acpi_pchpic[MAX_IO_PICS];
+ 
+ extern struct irq_domain *cpu_domain;
+-extern struct irq_domain *liointc_domain;
++extern struct fwnode_handle *liointc_handle;
+ extern struct fwnode_handle *pch_lpc_handle;
+ extern struct fwnode_handle *pch_msi_handle[MAX_IO_PICS];
+ extern struct fwnode_handle *pch_pic_handle[MAX_IO_PICS];
+diff --git a/arch/loongarch/kernel/irq.c b/arch/loongarch/kernel/irq.c
+index 82bc6c7..5695826 100644
+--- a/arch/loongarch/kernel/irq.c
++++ b/arch/loongarch/kernel/irq.c
+@@ -26,7 +26,6 @@
+ EXPORT_PER_CPU_SYMBOL(irq_stat);
+ 
+ struct irq_domain *cpu_domain;
+-struct irq_domain *liointc_domain;
+ struct acpi_vector_group pch_group[MAX_IO_PICS];
+ struct acpi_vector_group msi_group[MAX_IO_PICS];
+ 
+diff --git a/drivers/irqchip/irq-loongson-liointc.c b/drivers/irqchip/irq-loongson-liointc.c
+index 8d05d8b..f690155 100644
+--- a/drivers/irqchip/irq-loongson-liointc.c
++++ b/drivers/irqchip/irq-loongson-liointc.c
+@@ -23,7 +23,7 @@
+ #endif
+ 
+ #define LIOINTC_CHIP_IRQ	32
+-#define LIOINTC_NUM_PARENT 4
++#define LIOINTC_NUM_PARENT	4
+ #define LIOINTC_NUM_CORES	4
+ 
+ #define LIOINTC_INTC_CHIP_START	0x20
+@@ -51,6 +51,7 @@ struct liointc_handler_data {
+ };
+ 
+ struct liointc_priv {
++	struct fwnode_handle		*domain_handle;
+ 	struct irq_chip_generic		*gc;
+ 	struct liointc_handler_data	handler[LIOINTC_NUM_PARENT];
+ 	void __iomem			*core_isr[LIOINTC_NUM_CORES];
+@@ -58,6 +59,8 @@ struct liointc_priv {
+ 	bool				has_lpc_irq_errata;
+ };
+ 
++struct fwnode_handle *liointc_handle;
++
+ static void liointc_chained_handle_irq(struct irq_desc *desc)
  {
- 	char *pneg_ctxt;
-+	char *hostname = NULL;
- 	unsigned int ctxt_len, neg_context_count;
+ 	struct liointc_handler_data *handler = irq_desc_get_handler_data(desc);
+@@ -153,97 +156,83 @@ static void liointc_resume(struct irq_chip_generic *gc)
+ 	irq_gc_unlock_irqrestore(gc, flags);
+ }
  
- 	if (*total_len > 200) {
-@@ -574,9 +575,15 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
- 	*total_len += sizeof(struct smb2_posix_neg_context);
- 	pneg_ctxt += sizeof(struct smb2_posix_neg_context);
+-static const char * const parent_names[] = {"int0", "int1", "int2", "int3"};
+-static const char * const core_reg_names[] = {"isr0", "isr1", "isr2", "isr3"};
++static int parent_irq[LIOINTC_NUM_PARENT];
++static u32 parent_int_map[LIOINTC_NUM_PARENT];
++static const char *const parent_names[] = {"int0", "int1", "int2", "int3"};
++static const char *const core_reg_names[] = {"isr0", "isr1", "isr2", "isr3"};
  
--	if (server->hostname && (server->hostname[0] != 0)) {
-+	/*
-+	 * secondary channels don't have the hostname field populated
-+	 * use the hostname field in the primary channel instead
-+	 */
-+	hostname = CIFS_SERVER_IS_CHAN(server) ?
-+		server->primary_server->hostname : server->hostname;
-+	if (hostname && (hostname[0] != 0)) {
- 		ctxt_len = build_netname_ctxt((struct smb2_netname_neg_context *)pneg_ctxt,
--					server->hostname);
-+					      hostname);
- 		*total_len += ctxt_len;
- 		pneg_ctxt += ctxt_len;
- 		neg_context_count = 4;
+-static void __iomem *liointc_get_reg_byname(struct device_node *node,
+-						const char *name)
++static int liointc_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
++			     const u32 *intspec, unsigned int intsize,
++			     unsigned long *out_hwirq, unsigned int *out_type)
+ {
+-	int index = of_property_match_string(node, "reg-names", name);
+-
+-	if (index < 0)
+-		return NULL;
+-
+-	return of_iomap(node, index);
++	if (WARN_ON(intsize < 1))
++		return -EINVAL;
++	*out_hwirq = intspec[0] - GSI_MIN_CPU_IRQ;
++	*out_type = IRQ_TYPE_NONE;
++	return 0;
+ }
+ 
+-static int __init liointc_of_init(struct device_node *node,
+-				  struct device_node *parent)
++const struct irq_domain_ops acpi_irq_gc_ops = {
++	.map	= irq_map_generic_chip,
++	.unmap  = irq_unmap_generic_chip,
++	.xlate	= liointc_domain_xlate,
++};
++
++static int liointc_init(phys_addr_t addr, unsigned long size, int revision,
++		struct fwnode_handle *domain_handle, struct device_node *node)
+ {
++	int i, err;
++	void __iomem *base;
++	struct irq_chip_type *ct;
+ 	struct irq_chip_generic *gc;
+ 	struct irq_domain *domain;
+-	struct irq_chip_type *ct;
+ 	struct liointc_priv *priv;
+-	void __iomem *base;
+-	u32 of_parent_int_map[LIOINTC_NUM_PARENT];
+-	int parent_irq[LIOINTC_NUM_PARENT];
+-	bool have_parent = FALSE;
+-	int sz, i, err = 0;
+ 
+ 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
+-	if (of_device_is_compatible(node, "loongson,liointc-2.0")) {
+-		base = liointc_get_reg_byname(node, "main");
+-		if (!base) {
+-			err = -ENODEV;
+-			goto out_free_priv;
+-		}
++	base = ioremap(addr, size);
++	if (!base)
++		goto out_free_priv;
+ 
+-		for (i = 0; i < LIOINTC_NUM_CORES; i++)
+-			priv->core_isr[i] = liointc_get_reg_byname(node, core_reg_names[i]);
+-		if (!priv->core_isr[0]) {
+-			err = -ENODEV;
+-			goto out_iounmap_base;
+-		}
+-	} else {
+-		base = of_iomap(node, 0);
+-		if (!base) {
+-			err = -ENODEV;
+-			goto out_free_priv;
+-		}
++	priv->domain_handle = domain_handle;
+ 
+-		for (i = 0; i < LIOINTC_NUM_CORES; i++)
+-			priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS;
+-	}
++	for (i = 0; i < LIOINTC_NUM_CORES; i++)
++		priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS;
+ 
+-	for (i = 0; i < LIOINTC_NUM_PARENT; i++) {
+-		parent_irq[i] = of_irq_get_byname(node, parent_names[i]);
+-		if (parent_irq[i] > 0)
+-			have_parent = TRUE;
+-	}
+-	if (!have_parent) {
+-		err = -ENODEV;
+-		goto out_iounmap_isr;
+-	}
++	for (i = 0; i < LIOINTC_NUM_PARENT; i++)
++		priv->handler[i].parent_int_map = parent_int_map[i];
+ 
+-	sz = of_property_read_variable_u32_array(node,
+-						"loongson,parent_int_map",
+-						&of_parent_int_map[0],
+-						LIOINTC_NUM_PARENT,
+-						LIOINTC_NUM_PARENT);
+-	if (sz < 4) {
+-		pr_err("loongson-liointc: No parent_int_map\n");
+-		err = -ENODEV;
+-		goto out_iounmap_isr;
+-	}
++#ifdef CONFIG_OF
++	if (revision > 1) {
++		for (i = 0; i < LIOINTC_NUM_CORES; i++) {
++			int index = of_property_match_string(node,
++					"reg-names", core_reg_names[i]);
+ 
+-	for (i = 0; i < LIOINTC_NUM_PARENT; i++)
+-		priv->handler[i].parent_int_map = of_parent_int_map[i];
++			if (index < 0)
++				return -EINVAL;
++
++			priv->core_isr[i] = of_iomap(node, index);
++		}
++	}
++#endif
+ 
+ 	/* Setup IRQ domain */
+-	domain = irq_domain_add_linear(node, 32,
++	if (!node)
++		domain = irq_domain_create_linear(domain_handle, LIOINTC_CHIP_IRQ,
++					&acpi_irq_gc_ops, priv);
++	else
++		domain = irq_domain_create_linear(domain_handle, LIOINTC_CHIP_IRQ,
+ 					&irq_generic_chip_ops, priv);
+ 	if (!domain) {
+ 		pr_err("loongson-liointc: cannot add IRQ domain\n");
+-		err = -EINVAL;
+-		goto out_iounmap_isr;
++		goto out_iounmap;
+ 	}
+ 
+-	err = irq_alloc_domain_generic_chips(domain, 32, 1,
+-					node->full_name, handle_level_irq,
+-					IRQ_NOPROBE, 0, 0);
++	err = irq_alloc_domain_generic_chips(domain, LIOINTC_CHIP_IRQ, 1,
++					(node ? node->full_name : "LIOINTC"),
++					handle_level_irq, 0, IRQ_NOPROBE, 0);
+ 	if (err) {
+ 		pr_err("loongson-liointc: unable to register IRQ domain\n");
+ 		goto out_free_domain;
+@@ -299,24 +288,112 @@ static int __init liointc_of_init(struct device_node *node,
+ 				liointc_chained_handle_irq, &priv->handler[i]);
+ 	}
+ 
++	liointc_handle = domain_handle;
+ 	return 0;
+ 
+ out_free_domain:
+ 	irq_domain_remove(domain);
+-out_iounmap_isr:
+-	for (i = 0; i < LIOINTC_NUM_CORES; i++) {
+-		if (!priv->core_isr[i])
+-			continue;
+-		iounmap(priv->core_isr[i]);
+-	}
+-out_iounmap_base:
++out_iounmap:
+ 	iounmap(base);
+ out_free_priv:
+ 	kfree(priv);
+ 
+-	return err;
++	return -EINVAL;
++}
++
++#ifdef CONFIG_OF
++
++static int __init liointc_of_init(struct device_node *node,
++				  struct device_node *parent)
++{
++	bool have_parent = FALSE;
++	int sz, i, index, revision, err = 0;
++	struct resource res;
++
++	if (!of_device_is_compatible(node, "loongson,liointc-2.0")) {
++		index = 0;
++		revision = 1;
++	} else {
++		index = of_property_match_string(node, "reg-names", "main");
++		revision = 2;
++	}
++
++	if (of_address_to_resource(node, index, &res))
++		return -EINVAL;
++
++	for (i = 0; i < LIOINTC_NUM_PARENT; i++) {
++		parent_irq[i] = of_irq_get_byname(node, parent_names[i]);
++		if (parent_irq[i] > 0)
++			have_parent = TRUE;
++	}
++	if (!have_parent)
++		return -ENODEV;
++
++	sz = of_property_read_variable_u32_array(node,
++						"loongson,parent_int_map",
++						&parent_int_map[0],
++						LIOINTC_NUM_PARENT,
++						LIOINTC_NUM_PARENT);
++	if (sz < 4) {
++		pr_err("loongson-liointc: No parent_int_map\n");
++		return -ENODEV;
++	}
++
++	err = liointc_init(res.start, resource_size(&res),
++			revision, of_node_to_fwnode(node), node);
++	if (err < 0)
++		return err;
++
++	return 0;
+ }
+ 
+ IRQCHIP_DECLARE(loongson_liointc_1_0, "loongson,liointc-1.0", liointc_of_init);
+ IRQCHIP_DECLARE(loongson_liointc_1_0a, "loongson,liointc-1.0a", liointc_of_init);
+ IRQCHIP_DECLARE(loongson_liointc_2_0, "loongson,liointc-2.0", liointc_of_init);
++
++#endif
++
++#ifdef CONFIG_ACPI
++static int __init
++htintc_parse_madt(union acpi_subtable_headers *header,
++		       const unsigned long end)
++{
++	struct acpi_madt_ht_pic *htintc_entry = (struct acpi_madt_ht_pic *)header;
++	struct irq_domain *parent = irq_find_matching_fwnode(liointc_handle, DOMAIN_BUS_ANY);
++
++	return htvec_acpi_init(parent, htintc_entry);
++}
++
++static int __init acpi_cascade_irqdomain_init(void)
++{
++	acpi_table_parse_madt(ACPI_MADT_TYPE_HT_PIC,
++			      htintc_parse_madt, 0);
++	return 0;
++}
++int __init liointc_acpi_init(struct irq_domain *parent, struct acpi_madt_lio_pic *acpi_liointc)
++{
++	int ret;
++	struct fwnode_handle *domain_handle;
++
++	if (!acpi_liointc)
++		return -EINVAL;
++
++	parent_int_map[0] = acpi_liointc->cascade_map[0];
++	parent_int_map[1] = acpi_liointc->cascade_map[1];
++
++	parent_irq[0] = irq_create_mapping(parent, acpi_liointc->cascade[0]);
++	parent_irq[1] = irq_create_mapping(parent, acpi_liointc->cascade[1]);
++
++	domain_handle = irq_domain_alloc_fwnode((phys_addr_t *)acpi_liointc);
++	if (!domain_handle) {
++		pr_err("Unable to allocate domain handle\n");
++		return -ENOMEM;
++	}
++	ret = liointc_init(acpi_liointc->address, acpi_liointc->size,
++			   1, domain_handle, NULL);
++	if (ret == 0)
++		acpi_cascade_irqdomain_init();
++
++	return ret;
++}
++#endif
 -- 
-2.36.1
-
-
+1.8.3.1
 
