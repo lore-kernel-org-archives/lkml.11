@@ -2,157 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C062C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D036CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240004AbiF0MCX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:02:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56030 "EHLO
+        id S240068AbiF0MCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:02:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239513AbiF0L5s (ORCPT
+        with ESMTP id S239800AbiF0L6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:57:48 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2045.outbound.protection.outlook.com [40.107.94.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152FBBE0E;
-        Mon, 27 Jun 2022 04:53:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EiQp6RSK6Bp5CrUbB+NIMtpZ8WbZ4v3UW4tOW6dSq8Xv1i6SJ3HAPlX8Oc+X8YMSkqlA3tL+byZlNPWYeeJtw6aug3AXQFknZHzWpYGTXdw6AODsschrXYXhvHgQGNOVpQlDYqIVwtJnsYRpSXqVw9mQ4mmeStndQ/mehMttDGoJHB3wO09UJoEUEmaM3ZnZluGqvZhRo4C2To2msEiMGbAN2ZgchDlwGBseLQ10PSgNm68DuNE4rr4PfVoRXctSU51kOVeHgRfLuDMfd1Yds6wqhJ5pFZEF+tj4aTne0d2/c5BXW9GPnsoTR694I1zMQDX8F8D2oMdX9dKUzuqyRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0FAhb/jWOMwJX3RJdhgmcwf1MNNk4DXJwGeLYVsIaeE=;
- b=Not35WzUxiIg3bDruN6FEW7xvzC6WV5wBxmHnbOlTc3GRYqKFDNp2A2eW3Gp0JPFg5sQY9HSK5AQ48cDYYVjnoJqIrbuyLGxdfc/Vqb0VU0D3g5fpjDxGbF4PgrBv6OB8ttIxXHoSPCeqS3PQU88sOwwi3GoQk8kbzhfvg21k89yeY8bl/9ThHfvmyfiWMsDbXWsjy/HYBK9lQ3CLkO3xobFMLK67frpoxRWJcgTiyRoGin4L/GLr+ydF5mU9tbIVa8d9PwugpPK4Zlu8X0olYClpKWqi0vF78pExEbgavL1/kqQT/WifPSUBTuarYEH6ItmhiJiSLnFZyG3uVJOnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0FAhb/jWOMwJX3RJdhgmcwf1MNNk4DXJwGeLYVsIaeE=;
- b=L3EoLTjW80ze6griDse9ckkocIK/aKkTjzCNr5kVLY3+3lTXD7fpXtOgvVr96Ry2SSv50MdRt7qIIMQQ6UQTc8vVqlUF7lXPwAWy7qL4ru7nqRarYZWeJzN94Tal+UcvFjuAcVxKCWDJGNbaCNCMpPTUm2d7PL8RjCEI/2YVhHFxZH1u1cZcM6BYkujiuzv0G/gXZl7tDcxTXwGXwFSTdFGZQlhmXlMQrXnot8dk3NTi1y694DAfM7Da3ooS2Fq0gMzskQH5esSEswXqspcdKVtaCu4/8LVYfiKvCNEBoW5mQpnnyOd1Cc38uvI/Io6z7JinSgv2QM5exB/PxXNM2Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
- BY5PR12MB5015.namprd12.prod.outlook.com (2603:10b6:a03:1db::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16; Mon, 27 Jun
- 2022 11:53:32 +0000
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::190c:967c:2b86:24a8]) by CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::190c:967c:2b86:24a8%4]) with mapi id 15.20.5373.018; Mon, 27 Jun 2022
- 11:53:32 +0000
-Message-ID: <bb1353fa-0c05-76eb-4d88-e43f60dcfec0@nvidia.com>
-Date:   Mon, 27 Jun 2022 12:53:25 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: linux-next: build warning after merge of the tegra tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Colin Cross <ccross@android.com>,
-        Olof Johansson <olof@lixom.net>,
-        Thierry Reding <treding@nvidia.com>
-Cc:     Bitan Biswas <bbiswas@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220627091519.323d5a82@canb.auug.org.au>
-From:   Jon Hunter <jonathanh@nvidia.com>
-In-Reply-To: <20220627091519.323d5a82@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS9PR06CA0551.eurprd06.prod.outlook.com
- (2603:10a6:20b:485::12) To CO6PR12MB5444.namprd12.prod.outlook.com
- (2603:10b6:5:35e::8)
+        Mon, 27 Jun 2022 07:58:20 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0134311452
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:55:35 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id r20so12735133wra.1
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:55:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=8sIN6vSsUYYpOCl8BPvtuJnTvTbzJ4Ss700nnRAaQjg=;
+        b=rwBr0UFu5JbTuq4WL/BnUY16O2/wdr2VARZ8/91q1GOF8SSr3XC85atvHVnX51wn0K
+         6UYOe8TDuvYFj9Skj9FYijw6QBlCCziHbHDqe7HyC719gBsZPFHkJeOtx7I9JfoUkCa1
+         Xei16CRJlJSoPMK6atH2q8eIXxylGoMjxhMoLse6DHANJDG6neJOkslxtegT1V8gFLGg
+         Nh6quPvtuRII90/U7E9Nc0CJYfsSpmfB93kPmV4nKD1TLhzQmUG9BtQPS3e+OImwrOp9
+         HqbNjajk47mKsGwb8hnFw2dI+swBRUbm02PWpp5xCpbwqdlQvtW+OuDP+pob7LHXBmLB
+         foTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=8sIN6vSsUYYpOCl8BPvtuJnTvTbzJ4Ss700nnRAaQjg=;
+        b=p1RunkohYsVVuItpQOZyMA5LazKHrWwKMtsJeHzTVMrd/UlSYWuSqC4+ugwsRCKHmn
+         W0Nj93MGfzlB6bmRVGYjp4CTeBVR85cEuHnaDcOZKTnTDAqpYxJnnjdD5UDfMbY0rQ1n
+         3NTka6zQmAY4tWVCrRJxz/Ji3abyBvGlAVt9lfCUQnIrLoMnIdb9v8B+toPhfR5mSwHs
+         b36WeCtPCwFIP1AfKsojheZZ1beL6Z0mFGsYWjvHRD9nBd9GC2Sp1MJNwxZokGhjZWvr
+         s6iqEAgjGVmjUM6T7C5kDOaLl45ZfiHfNW1YlKOp7x4Z5e+059ZILou2odWVqUc1tBy1
+         v7gg==
+X-Gm-Message-State: AJIora+VbE0YhSe8h/x5OWs/lppeRJUYt/06wb/dkiVRg+C99hKob2Ok
+        4WF9q3Yu57ee852UsxZmMBlTnu0b2JShKA==
+X-Google-Smtp-Source: AGRyM1vHZpp1WVVlzsl/5X3vqmG1LeAcxIlHWf4rfQdA4zn6UxCSthZ1rJYiLf0hYmrwVidOw9PoEQ==
+X-Received: by 2002:a05:6000:168c:b0:218:4523:c975 with SMTP id y12-20020a056000168c00b002184523c975mr11790250wrd.23.1656330933390;
+        Mon, 27 Jun 2022 04:55:33 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id y15-20020a5d4acf000000b0021b9c520953sm10217406wrs.64.2022.06.27.04.55.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 04:55:32 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 12:55:31 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jack Andersen <jackoalan@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/1] mfd: dln2: Automatically detect and fill endpoint
+ pointers
+Message-ID: <Yrmas2AT9fgZ/a0P@google.com>
+References: <20220617182338.32402-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cc87ae4d-e2ba-4b5a-dbc6-08da5833a88d
-X-MS-TrafficTypeDiagnostic: BY5PR12MB5015:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Bj3g+ai+6bd7xeAJQQN4fza/KwQAnO2ZKLchaYF0Xr7UVapCeVDXB0qhuxcQlxUH4aw0Q+swsoy5eprmecdesWR8Ee/p5qU2XJ16izgV8TuVFAA7gpOe5bj8DYQeYauF2eOfouLGRf2VmgC6jI77SkU4Wxqz89xIAW8RjirUoEVWLXbc26p+9mRX6/jwHEbUGhgNZ00J4bUKydpJktirIxDRMwuISkcQ1JIZVbyQC6wLX73IPpCa7DtXy81KKrWn6Lm3e50HqKFeji806HuA0FcuF32T4UTXdFB7bmj9YDOXLaDspYO61nVOafiJtuzSM+riOoFUJF/BaFwYNPqCnKZsRv336o1rqb1YviNzzrH2z6mbmi2IuCDoxcIbKvcUEgqI10JYI0f1yaY7/M9+o7pZY4n364c5JL6GzTGTuvn2TV255ejGz+eCmhS2s7YQZyNtd7JUPdq9h7QrC00ujwmo8WiRFFvzWvOIfb0Bg+z6CrnrdUFAEBaddwcx0FMoeYnuHWkOKs44di+06zTafF5nV2ZAegeq454zo3I4tPn5ch+eWhXYK9odqMF9+3lDpq6pA024zXV2kaK/YfiKDPSMBRVmFcDBd70e/dfA5ujyGtckjVdSFUt4QM7Iols8KI5n0PLmluCjRQ1bV5vtu5Z9HQxvjrE1AG5RyZjAh72oDGgsTbsf4gSzGxQoIruqZTJJcPNcuXo1sODtyMhzifPg06klojbf2ctEDZigxRqhEwzF05l1FZX5sIO/MqwsZ8wSDAfWVi3Z5RmxclK/wkJcX9Fd2gh5jHZHE11G0uPgAlr7Vn7ZNVZvH45QNvUn3vNFvCpT1tpugpT5PUx7UTXPcdiYdNDAWeAWl0/XooHw38IJYDc11A4T6u/jvmHfLzFXWuM++wdHeh02zjB6z95HFmWvcxxJFkGkKOQTf+w=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(396003)(136003)(366004)(39860400002)(6666004)(41300700001)(6486002)(66476007)(6506007)(2616005)(66556008)(8676002)(966005)(26005)(83380400001)(38100700002)(6512007)(86362001)(31686004)(31696002)(478600001)(55236004)(36756003)(4744005)(53546011)(316002)(186003)(54906003)(2906002)(8936002)(110136005)(6636002)(5660300002)(66946007)(4326008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cnEvSE42TkRmSjBtSGc1RysybnRER1RaT2xPdlVybXFnZ243cVpwZmljakRn?=
- =?utf-8?B?VEl2Q3Z3WWxRdmlOZ1RjVitpbHZDU3hVWHdQdkNqMWhQVWYyUDhlUVBtSk9N?=
- =?utf-8?B?cHRVYXdYRTJ5OWhGSXQwSitqVXR2NWpsZXVHdlR3OXFMNCtWemwxL2c5L1or?=
- =?utf-8?B?Mm05b1kyZjdSRTg3QWN5WERPdVZSa1JiemJ5bUhONXgyOFpHMFhGS3FsVkY2?=
- =?utf-8?B?S3BVbjRDWlpyK3h4WkJtSTVySDZGWExtMVVHWklUZkxDSXl3clp1VmJhNkxm?=
- =?utf-8?B?c1N6Sks3UlVNUFNrZ0VqN1dQeWV1UUVrRlNlTFJKT0t5bUlhdVZZY2VDUndH?=
- =?utf-8?B?REsxdi9YSnZ1bExNb2F0RExHVUJTVGpIY1J6T0p3ZVF0OHpzMC9PVUllTmNi?=
- =?utf-8?B?V2xEL0gveE9qZnZRWXVWZlQwY1NRZmpxRUk3elVhUVdMaFhvR2dHM3didWxT?=
- =?utf-8?B?VUE4eGozUE82ZnNudHJTeUZSUFA3bDAxTEtBNi80bDE1QjNCa3Jjb2F4MTlv?=
- =?utf-8?B?UkROaFRURCtPM1pnZWlVdEQ4VnI5d0NCa25zSFZyeUJ4Z0pHUWtXK3lVUGdv?=
- =?utf-8?B?L3R6VHBrREpaaWRHZ0pJNEN4bU84T1UwcnRvVFJCNktoNXB3NC9jZEQ0RlBm?=
- =?utf-8?B?OUpHYm1pdlR1d3lVQlo2VHJnUVJ2eVJFYjBhR0l1cVBhYmluWUQ1Vi9maDln?=
- =?utf-8?B?QWhqMjZrekwwS3E4cW1NR2hpRnB4eUVUL2VvbHNFaDVKeG1SRWp0UXd0TWZz?=
- =?utf-8?B?RU9Qb0xSeThuTUdQQnJ0QXZ1VzZtMyt5dTBSV2EzSi8wMUtrenJraXliOVNY?=
- =?utf-8?B?RzVGY3hmanZRUzFlSE0zYW1Cd3EwREFteFFnNTNMYnk1RTRjS0w3bVVHSk15?=
- =?utf-8?B?ZUdhZUZZcFZtRTRDSWZ2ODFqeWIzSDAxSXBTRlozK0lpUWtKUFphTWJlbzhx?=
- =?utf-8?B?UjN4dmIwOWx2UDBCek5jVzBHTGJTV01VOExWcVZtUm9LUHdaT3hyQzRKOHBI?=
- =?utf-8?B?UFh1MG1UUUVvSjJneUxHOEoyMGtnNUEyZnR0NUIwZHQ3L2djZmNsRVIyeGhz?=
- =?utf-8?B?OGRad1c5WjRLb1hxRHFTc3ZqWFoyRzREOGdrQ3F5anBrZDFLcVRZUHU0czZv?=
- =?utf-8?B?UnRjNGFrMDdiRUROSXhlLzVWelhFVitmWDE0b1pndjN0WXQyZXJEck1ER0xZ?=
- =?utf-8?B?Qlk3RFBudjl4aUlCTkI5YjIwUmZHSTlJaDY1Q2p2bjhuSis2TWtjZG5LcWNK?=
- =?utf-8?B?TllFWGFIcGR6c2JIa043TzdxSTRkblVBQy9TaGcwU1A5UXhkMFQvYytwUmp6?=
- =?utf-8?B?WkRJWkpUNDFUdGV0TytuNGRZcDFHM0lRNVRyWlpmYnQxZUQwUmtWTUdLb3ph?=
- =?utf-8?B?R3VkUkhETTJqM0JqSFN0UndPbFNmTXkzSnNRNkkzTFFNR2xOTFE2c1FzZzZU?=
- =?utf-8?B?aTZMa0Y5eTBKR2lONERpNXRwUTkxK3ZmV3d3U0Q3bnVvMUsyTmZncGpwMkxt?=
- =?utf-8?B?dlI0YU1YMVdTQXBJSXRrTWRtV3RORm9pSHZENHgrZDA0Sk9zUDRVMUpvOFp3?=
- =?utf-8?B?MEhkNkFHOHVDSlFieCs2aWxnTEFjem9ZMXVZQ1QzajQ4Nkl5YkdTbnExOTBS?=
- =?utf-8?B?enMrYlVPSnl2bkx2Yk9EUkJhcEk0amQ1ZWRUWTZ0bnR4dkZ6cXZnZW1rNTJh?=
- =?utf-8?B?MHhBMjhqK0x3QTBLSHNLd1piVm1UZ3RtdlVZZ21YTDMwYXRxMHJzUGJwOVcx?=
- =?utf-8?B?cWpnSGI3QnhQanhQZVpiclptMTlnSnREYTltL3lLWVFiaTFQSjQwN0ZJeW1N?=
- =?utf-8?B?NE5kVWl5VmlKTEhEbXlKNlA0ZUFZQkR2REUyN3pMaGhCZkFYSUFrTjJ6NG9l?=
- =?utf-8?B?Wnk4bjRKTGxLSVZZMHcxLzdjZEdMbjB5ZXY2YWZOd0h2U0o2SnVHYUo2WFlu?=
- =?utf-8?B?TC9rUmo1YXFEcWJlOFBCTjUzNzBldEhxMkQ1UFdyaUtNYnUvSkJ5Ym53c0Rv?=
- =?utf-8?B?RHhNOWNBM3pxaVlTMTZLb2Z4MzI3aWF1cU13SEsyTTdjWm9FNlprNmRlUC9a?=
- =?utf-8?B?NjVBZVFGUWV3ZEZ1ZWw1MjVJZ0p4SkgrQnNRaDN2TXlCTVU0c1ZXcU1VQkFw?=
- =?utf-8?B?WThvYk1JSk9MMTFJbExMSFJ4czdtdHgzaklCTXMxQWZsZ25DWjVhbUtJTEl6?=
- =?utf-8?B?Vmc9PQ==?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cc87ae4d-e2ba-4b5a-dbc6-08da5833a88d
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2022 11:53:32.3604
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wK42kwtxb7HbE5/55ZtKlQv/yk3tJLHYdqEx7l/urgw9Q9kLPDwlV73/Wj1eVo6SjnbhZ1+l2mNv9GRV7d3efg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB5015
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220617182338.32402-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+On Fri, 17 Jun 2022, Andy Shevchenko wrote:
 
-On 27/06/2022 00:15, Stephen Rothwell wrote:
-> Hi all,
+> The usb_find_common_endpoints() finds and fills the endpoints
+> in accordance with their types. Use it to automatically detect
+> and fill endpoint pointers.
 > 
-> After merging the tegra tree, today's linux-next build (arm
-> multi_v7_defconfig) produced this warning:
-> 
-> In file included from drivers/soc/tegra/fuse/fuse-tegra.c:7:
-> include/linux/device.h:136:33: warning: 'dev_attr_production' defined but not used [-Wunused-variable]
->    136 |         struct device_attribute dev_attr_##_name = __ATTR_RO(_name)
->        |                                 ^~~~~~~~~
-> drivers/soc/tegra/fuse/fuse-tegra.c:441:8: note: in expansion of macro 'DEVICE_ATTR_RO'
->    441 | static DEVICE_ATTR_RO(production);
->        |        ^~~~~~~~~~~~~~
-> 
-> Introduced by commit
-> 
->    2258fe488a20 ("soc/tegra: fuse: Expose Tegra production status")
->
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/mfd/dln2.c | 17 ++++-------------
+>  1 file changed, 4 insertions(+), 13 deletions(-)
 
-
-Thanks for reporting. I have sent an updated patch to fix this [0].
-
-Cheers
-Jon
-
-[0] 
-https://lore.kernel.org/linux-tegra/20220627114119.110825-1-jonathanh@nvidia.com/T/#u
+Applied, thanks.
 
 -- 
-nvpublic
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
