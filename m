@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E276C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE83CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237302AbiF0Lnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:43:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34890 "EHLO
+        id S237340AbiF0Lno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:43:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236874AbiF0Lle (ORCPT
+        with ESMTP id S237055AbiF0Llx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:41:34 -0400
+        Mon, 27 Jun 2022 07:41:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC03BD110;
-        Mon, 27 Jun 2022 04:36:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03580D12F;
+        Mon, 27 Jun 2022 04:36:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DAE2B81123;
-        Mon, 27 Jun 2022 11:36:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEDEAC3411D;
-        Mon, 27 Jun 2022 11:35:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2C4EB81122;
+        Mon, 27 Jun 2022 11:36:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E05AFC3411D;
+        Mon, 27 Jun 2022 11:36:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329760;
-        bh=vz1h5OMLWpWAZLkaKT/60WGVx/L9y5HB7yfD7b9RAzk=;
+        s=korg; t=1656329763;
+        bh=Qn4E7U58e6by5qc0Mt0UQ4m6Ji0r7WUBtJf/l9mKkUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2dZqbT2DdngQz/fK/ZytrUbsuEDwjY0ht+Bcde3TJauvnZzHSR1bxvTyiFqom6v2+
-         8zhDSqZ3fMolW4uXxPMpbq+8vurrsS+zxqzpDCBGR7nPc7TbSlcsyw7guBf8ywR/8F
-         2bQ8tUdBmNPDlm5rnEdhOSRRDhFMLq0C44wMkVAg=
+        b=RXfcwmDDHDE+tX4AiWumxtIziHHrydGOBPqIhdwimwowMOEGNh+TXIJ8Ns7G3OBQI
+         KybEV9K2J7QgSchPty6qBsNjRT2s8zWj0c+i6yF0lqaQxDc9aAX9O4rkYgqP8BW1w5
+         8W67N474yWoc7kU2z6aBILEXKGLMFE+EnGfTY4/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Yannick Brosseau <yannick.brosseau@gmail.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 106/135] iio: adc: stm32: Fix ADCs iteration in irq handler
-Date:   Mon, 27 Jun 2022 13:21:53 +0200
-Message-Id: <20220627111941.230955576@linuxfoundation.org>
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 080/135] iio: mma8452: fix probe fail when device tree compatible is used.
+Date:   Mon, 27 Jun 2022 13:21:27 +0200
+Message-Id: <20220627111940.481938303@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,79 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yannick Brosseau <yannick.brosseau@gmail.com>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-commit d2214cca4d3eadc74eac9e30301ec7cad5355f00 upstream.
+[ Upstream commit fe18894930a025617114aa8ca0adbf94d5bffe89 ]
 
-The irq handler was only checking the mask for the first ADCs in the case of the
-F4 and H7 generation, since it was iterating up to the num_irq value. This patch add
-the maximum number of ADC in the common register, which map to the number of entries of
-eoc_msk and ovr_msk in stm32_adc_common_regs. This allow the handler to check all ADCs in
-that module.
+Correct the logic for the probe. First check of_match_table, if
+not meet, then check i2c_driver.id_table. If both not meet, then
+return fail.
 
-Tested on a STM32F429NIH6.
-
-Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
-Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
-Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Link: https://lore.kernel.org/r/20220516203939.3498673-2-yannick.brosseau@gmail.com
-Cc: <Stable@vger.kernel.org>
+Fixes: a47ac019e7e8 ("iio: mma8452: Fix probe failing when an i2c_device_id is used")
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Link: https://lore.kernel.org/r/1650876060-17577-1-git-send-email-haibo.chen@nxp.com
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/stm32-adc-core.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/iio/accel/mma8452.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
---- a/drivers/iio/adc/stm32-adc-core.c
-+++ b/drivers/iio/adc/stm32-adc-core.c
-@@ -64,6 +64,7 @@ struct stm32_adc_priv;
-  * @max_clk_rate_hz: maximum analog clock rate (Hz, from datasheet)
-  * @has_syscfg: SYSCFG capability flags
-  * @num_irqs:	number of interrupt lines
-+ * @num_adcs:   maximum number of ADC instances in the common registers
-  */
- struct stm32_adc_priv_cfg {
- 	const struct stm32_adc_common_regs *regs;
-@@ -71,6 +72,7 @@ struct stm32_adc_priv_cfg {
- 	u32 max_clk_rate_hz;
- 	unsigned int has_syscfg;
- 	unsigned int num_irqs;
-+	unsigned int num_adcs;
- };
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 21a99467f364..40faf09f5d87 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -1539,11 +1539,13 @@ static int mma8452_probe(struct i2c_client *client,
+ 	mutex_init(&data->lock);
  
- /**
-@@ -352,7 +354,7 @@ static void stm32_adc_irq_handler(struct
- 	 * before invoking the interrupt handler (e.g. call ISR only for
- 	 * IRQ-enabled ADCs).
- 	 */
--	for (i = 0; i < priv->cfg->num_irqs; i++) {
-+	for (i = 0; i < priv->cfg->num_adcs; i++) {
- 		if ((status & priv->cfg->regs->eoc_msk[i] &&
- 		     stm32_adc_eoc_enabled(priv, i)) ||
- 		     (status & priv->cfg->regs->ovr_msk[i]))
-@@ -796,6 +798,7 @@ static const struct stm32_adc_priv_cfg s
- 	.clk_sel = stm32f4_adc_clk_sel,
- 	.max_clk_rate_hz = 36000000,
- 	.num_irqs = 1,
-+	.num_adcs = 3,
- };
+ 	data->chip_info = device_get_match_data(&client->dev);
+-	if (!data->chip_info && id) {
+-		data->chip_info = &mma_chip_info_table[id->driver_data];
+-	} else {
+-		dev_err(&client->dev, "unknown device model\n");
+-		return -ENODEV;
++	if (!data->chip_info) {
++		if (id) {
++			data->chip_info = &mma_chip_info_table[id->driver_data];
++		} else {
++			dev_err(&client->dev, "unknown device model\n");
++			return -ENODEV;
++		}
+ 	}
  
- static const struct stm32_adc_priv_cfg stm32h7_adc_priv_cfg = {
-@@ -804,6 +807,7 @@ static const struct stm32_adc_priv_cfg s
- 	.max_clk_rate_hz = 36000000,
- 	.has_syscfg = HAS_VBOOSTER,
- 	.num_irqs = 1,
-+	.num_adcs = 2,
- };
- 
- static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
-@@ -812,6 +816,7 @@ static const struct stm32_adc_priv_cfg s
- 	.max_clk_rate_hz = 36000000,
- 	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
- 	.num_irqs = 2,
-+	.num_adcs = 2,
- };
- 
- static const struct of_device_id stm32_adc_of_match[] = {
+ 	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
+-- 
+2.35.1
+
 
 
