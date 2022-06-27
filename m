@@ -2,139 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D46C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED9DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233622AbiF0Iyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 04:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
+        id S233179AbiF0Izh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 04:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiF0Iyh (ORCPT
+        with ESMTP id S233055AbiF0Izd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 04:54:37 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02E8632F
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:54:35 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1656320073;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=lYtRoPZU94l44IB7XMhlqGu/BmFm++kHBnUT6UzlKII=;
-        b=ip2dno0gIC8N4gE5uN1e0jQX5Ld4LQfqQZurE8gIF3U/cjtCMfAfSH3j5kdGpMPj2hSsHE
-        o2vz9AOZjXnFl2NgY8w4DdfxH6dFSb5RPqXYQNT47xo95fu9EYd/8e4C21MLqpghHQK038
-        RQF0uGFptbdfHx3xFwZ34Rcq2PpZgSA=
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     cai.huoqing@linux.dev
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drm: Remove the unused param "struct drm_buddy *mm"
-Date:   Mon, 27 Jun 2022 16:54:04 +0800
-Message-Id: <20220627085405.221435-1-cai.huoqing@linux.dev>
+        Mon, 27 Jun 2022 04:55:33 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA496372
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:55:31 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id e40so11989704eda.2
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=RsBoiseaTkJc51iVjuUsait0HqgvtgtMrYkH57RHGCU=;
+        b=skhj6rL+UZnb3uqF9ljVTdtpJi84kWTrupgEdBvRS3QgaOVnezJVrkAGrGgv6lwF1/
+         3d+Cf7kpB4c6T3MDM1IHVWRw4zKkP5ErkBe5MiyNhOb3VHcLptGsyxMN86lyIkSPfLZ6
+         8lbuEjmq4yaQwnRR9fvPslm2+S20+4kxiGjZwpc5HTiLopSQPYwhe2WUmzi5Hdz+E5cL
+         gnhymObz/v31wdKPoKOsXoWXi99z7gzGLL6WwNDHZO+rx1vx9go6Z0/ebUX3FH4kM5JR
+         MAt9z+4m9z7+EVx/bFKLzfIMBbG6Bva2+NVmJO7WBVSc1PcdLs+t9Tx5QU8lIiLWXGJ+
+         LUrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RsBoiseaTkJc51iVjuUsait0HqgvtgtMrYkH57RHGCU=;
+        b=cxVU3O+CPrK/fekkyzhE+0H6b4dwD9wdW9dN18PG40db3vqKm1pkYnwxk/FPSwjjBQ
+         BqQrL655/2hDyzh14sm8OicAx1rn1g19gYIXFt2jGOn9L8IKffTEsWp/uUnJgCJNA2mx
+         vCw6wo5VkCSbYcK8ObSeQnawHnOCSatcHf0y22qKBupR08vWpTpyDsF/db6o/dOjoTww
+         92drgptVmRS5NUraLT0Ytmymvbm0MZWQ718SmsmYJCLlLwAO5bbNk7AZVGO0n5RH7UUL
+         oLvC2f6JROwgVgBWjgUvm/lCXs1LSlcOZfHlCVge4ZrsmsF0DVDruLuek8veG8ZdoKVI
+         z+KA==
+X-Gm-Message-State: AJIora+H5wTlFZhRw4SrOiz3RyQBXS4jR4IPA723nIMnfsieqpuo+Ids
+        L++zLumnaC0dWCWj5IBiGMwA97hvG85TgQ==
+X-Google-Smtp-Source: AGRyM1uHTpdt+MsqhWdxTZPyIYF7oRz48lzwDRSQCGhJKEvO+cfipqWJDMQS+cbwyV3uuOPXNkhmjA==
+X-Received: by 2002:a05:6402:452:b0:434:a373:f9f8 with SMTP id p18-20020a056402045200b00434a373f9f8mr15706814edw.290.1656320130078;
+        Mon, 27 Jun 2022 01:55:30 -0700 (PDT)
+Received: from [192.168.0.247] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id bg6-20020a170906a04600b00722e31fcf42sm4768843ejb.184.2022.06.27.01.55.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 01:55:29 -0700 (PDT)
+Message-ID: <cd6fb785-50d4-8945-b7bc-951856f1c5ae@linaro.org>
+Date:   Mon, 27 Jun 2022 10:55:28 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/5] ARM: dts: exynos: align SDHCI node name with dtschema
+Content-Language: en-US
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        'Ulf Hansson' <ulf.hansson@linaro.org>,
+        'Rob Herring' <robh+dt@kernel.org>,
+        'Krzysztof Kozlowski' <krzysztof.kozlowski+dt@linaro.org>,
+        'Jaehoon Chung' <jh80.chung@samsung.com>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+References: <20220626120342.38851-1-krzysztof.kozlowski@linaro.org>
+ <CGME20220626120350epcas5p25a98e0669eeb11ce7959ace0f3634926@epcas5p2.samsung.com>
+ <20220626120342.38851-2-krzysztof.kozlowski@linaro.org>
+ <000a01d889c5$adb3bd30$091b3790$@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <000a01d889c5$adb3bd30$091b3790$@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the param "struct drm_buddy *mm" which is unused in
-the function drm_block_alloc()/drm_block_free().
+On 27/06/2022 03:31, Alim Akhtar wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@linaro.org]
+>> Sent: Sunday, June 26, 2022 5:34 PM
+>> To: Ulf Hansson <ulf.hansson@linaro.org>; Rob Herring
+>> <robh+dt@kernel.org>; Krzysztof Kozlowski
+>> <krzysztof.kozlowski+dt@linaro.org>; Alim Akhtar
+>> <alim.akhtar@samsung.com>; Jaehoon Chung <jh80.chung@samsung.com>;
+>> linux-mmc@vger.kernel.org; devicetree@vger.kernel.org; linux-
+>> kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
+>> samsung-soc@vger.kernel.org
+>> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> Subject: [PATCH 1/5] ARM: dts: exynos: align SDHCI node name with
+>> dtschema
+>>
+>> The node names should be generic and DT schema expects "mmc".
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> ---
+> 
+>  (for patch 1 ~ 4)
+> 
+> Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
 
-Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
----
- drivers/gpu/drm/drm_buddy.c | 25 +++++++++++--------------
- 1 file changed, 11 insertions(+), 14 deletions(-)
+Tooling does not handle such cases.
 
-diff --git a/drivers/gpu/drm/drm_buddy.c b/drivers/gpu/drm/drm_buddy.c
-index 11bb59399471..192c8b99fb43 100644
---- a/drivers/gpu/drm/drm_buddy.c
-+++ b/drivers/gpu/drm/drm_buddy.c
-@@ -11,10 +11,8 @@
- 
- static struct kmem_cache *slab_blocks;
- 
--static struct drm_buddy_block *drm_block_alloc(struct drm_buddy *mm,
--					       struct drm_buddy_block *parent,
--					       unsigned int order,
--					       u64 offset)
-+static struct drm_buddy_block *
-+drm_block_alloc(struct drm_buddy_block *parent, unsigned int order, u64 offset)
- {
- 	struct drm_buddy_block *block;
- 
-@@ -32,8 +30,7 @@ static struct drm_buddy_block *drm_block_alloc(struct drm_buddy *mm,
- 	return block;
- }
- 
--static void drm_block_free(struct drm_buddy *mm,
--			   struct drm_buddy_block *block)
-+static void drm_block_free(struct drm_buddy_block *block)
- {
- 	kmem_cache_free(slab_blocks, block);
- }
-@@ -131,7 +128,7 @@ int drm_buddy_init(struct drm_buddy *mm, u64 size, u64 chunk_size)
- 		root_size = rounddown_pow_of_two(size);
- 		order = ilog2(root_size) - ilog2(chunk_size);
- 
--		root = drm_block_alloc(mm, NULL, order, offset);
-+		root = drm_block_alloc(NULL, order, offset);
- 		if (!root)
- 			goto out_free_roots;
- 
-@@ -151,7 +148,7 @@ int drm_buddy_init(struct drm_buddy *mm, u64 size, u64 chunk_size)
- 
- out_free_roots:
- 	while (i--)
--		drm_block_free(mm, mm->roots[i]);
-+		drm_block_free(mm->roots[i]);
- 	kfree(mm->roots);
- out_free_list:
- 	kfree(mm->free_list);
-@@ -172,7 +169,7 @@ void drm_buddy_fini(struct drm_buddy *mm)
- 
- 	for (i = 0; i < mm->n_roots; ++i) {
- 		WARN_ON(!drm_buddy_block_is_free(mm->roots[i]));
--		drm_block_free(mm, mm->roots[i]);
-+		drm_block_free(mm->roots[i]);
- 	}
- 
- 	WARN_ON(mm->avail != mm->size);
-@@ -191,14 +188,14 @@ static int split_block(struct drm_buddy *mm,
- 	BUG_ON(!drm_buddy_block_is_free(block));
- 	BUG_ON(!drm_buddy_block_order(block));
- 
--	block->left = drm_block_alloc(mm, block, block_order, offset);
-+	block->left = drm_block_alloc(block, block_order, offset);
- 	if (!block->left)
- 		return -ENOMEM;
- 
--	block->right = drm_block_alloc(mm, block, block_order,
-+	block->right = drm_block_alloc(block, block_order,
- 				       offset + (mm->chunk_size << block_order));
- 	if (!block->right) {
--		drm_block_free(mm, block->left);
-+		drm_block_free(block->left);
- 		return -ENOMEM;
- 	}
- 
-@@ -257,8 +254,8 @@ static void __drm_buddy_free(struct drm_buddy *mm,
- 
- 		list_del(&buddy->link);
- 
--		drm_block_free(mm, block);
--		drm_block_free(mm, buddy);
-+		drm_block_free(block);
-+		drm_block_free(buddy);
- 
- 		block = parent;
- 	}
--- 
-2.25.1
-
+Best regards,
+Krzysztof
