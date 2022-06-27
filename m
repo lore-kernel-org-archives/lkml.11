@@ -2,67 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFEEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236698AbiF0LjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58502 "EHLO
+        id S236718AbiF0LjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236475AbiF0Lhe (ORCPT
+        with ESMTP id S236474AbiF0Lhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:37:34 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB21132
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:33:12 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id n14-20020a056e021bae00b002d92c91da8aso5534888ili.15
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:33:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=r74xeVThUWO/LSsITiSIjgYPJgIfQdHJyOxtqSL9wTk=;
-        b=2CvJQpU30PZwf2rU+CKtpWDUGD4PjeZsv9uQvK7gGe5GaHsrBdy8Cp9YXtat5TUOHg
-         h0MMdmawJNeCCW8/K2yq4tftmgEhWmdDZ7KPXWixzLPtLzudXq4UgG2IRYTM+MQIfh5M
-         J3l46x2MgNC6o2mv7ZZWO3w0scUCuyxGSafGbWNTDzaM3OzYE+wMJ5wRq+K1/kRCHIKn
-         xEg2u1vM7MkQFuSuhno3X8Yy2QlrlwemlCexrmufnlRgz9EIGwbnqSDGQcIBdv6Ukyx0
-         Hf1UguwhMBCjH9LkLGpfGgzISvC2Bm3DQ6OU4yXLs5WexRqE6e7ezd8ZFUtxTOrGs9OW
-         zK1w==
-X-Gm-Message-State: AJIora8M0MzIwZzpDg9mA8oE/AeR3akX3aGhYoXw7yLEFUcn63mGFz/J
-        aQpfekrhZgsr911fZSpu6KukYxLZwdg/Im6iH453xt8MTVwv
-X-Google-Smtp-Source: AGRyM1tsVe0ETMcrRl7sA/aI/qKL3BgLMLs+jKmmH2MHKhwhhdA8r0+XBjLUHyIHxb+4w16oEXyqavGNKbHsFbpvsdPxZyUwt0yH
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FEBFB7;
+        Mon, 27 Jun 2022 04:33:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8D45B80E6F;
+        Mon, 27 Jun 2022 11:33:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49601C3411D;
+        Mon, 27 Jun 2022 11:33:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656329587;
+        bh=ANm7NZ3p20kcA1xNI5TBb7Uyk/XbUVFrE8pqixiN7l8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EaJxsCVha1uciM2P1AiDU8m1M2NQ1PhnEDQqX4t0niQU8RXEFmSRai2FJYgKYzOrE
+         mpsdSYiHQhFo1U/DjA9d3Ai+3CEmD264I6H8uyH2gVKixvv6xkmjU7QxrycFcVGQJb
+         TfWgdXvDL3XGlxqlgQmsMIuaI/Mt5D6xdb7YS60M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+47af19f3307fc9c5c82e@syzkaller.appspotmail.com,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Hoang Le <hoang.h.le@dektech.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 049/135] tipc: fix use-after-free Read in tipc_named_reinit
+Date:   Mon, 27 Jun 2022 13:20:56 +0200
+Message-Id: <20220627111939.582820168@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
+References: <20220627111938.151743692@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:5:b0:339:e628:b96c with SMTP id
- z5-20020a056638000500b00339e628b96cmr7782418jao.203.1656329591485; Mon, 27
- Jun 2022 04:33:11 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 04:33:11 -0700
-In-Reply-To: <20220627104113.933-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ee810005e26c4817@google.com>
-Subject: Re: [syzbot] WARNING in binder_alloc_vma_close
-From:   syzbot <syzbot+da54fa8d793ca89c741f@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+[ Upstream commit 911600bf5a5e84bfda4d33ee32acc75ecf6159f0 ]
 
-Reported-and-tested-by: syzbot+da54fa8d793ca89c741f@syzkaller.appspotmail.com
+syzbot found the following issue on:
+==================================================================
+BUG: KASAN: use-after-free in tipc_named_reinit+0x94f/0x9b0
+net/tipc/name_distr.c:413
+Read of size 8 at addr ffff88805299a000 by task kworker/1:9/23764
 
-Tested on:
+CPU: 1 PID: 23764 Comm: kworker/1:9 Not tainted
+5.18.0-rc4-syzkaller-00878-g17d49e6e8012 #0
+Hardware name: Google Compute Engine/Google Compute Engine,
+BIOS Google 01/01/2011
+Workqueue: events tipc_net_finalize_work
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495
+mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ tipc_named_reinit+0x94f/0x9b0 net/tipc/name_distr.c:413
+ tipc_net_finalize+0x234/0x3d0 net/tipc/net.c:138
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+ </TASK>
+[...]
+==================================================================
 
-commit:         08897940 Add linux-next specific files for 20220623
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=16ecb94c080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=fb185a52c6ad0a8e
-dashboard link: https://syzkaller.appspot.com/bug?extid=da54fa8d793ca89c741f
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=134bd9e4080000
+In the commit
+d966ddcc3821 ("tipc: fix a deadlock when flushing scheduled work"),
+the cancel_work_sync() function just to make sure ONLY the work
+tipc_net_finalize_work() is executing/pending on any CPU completed before
+tipc namespace is destroyed through tipc_exit_net(). But this function
+is not guaranteed the work is the last queued. So, the destroyed instance
+may be accessed in the work which will try to enqueue later.
 
-Note: testing is done by a robot and is best-effort only.
+In order to completely fix, we re-order the calling of cancel_work_sync()
+to make sure the work tipc_net_finalize_work() was last queued and it
+must be completed by calling cancel_work_sync().
+
+Reported-by: syzbot+47af19f3307fc9c5c82e@syzkaller.appspotmail.com
+Fixes: d966ddcc3821 ("tipc: fix a deadlock when flushing scheduled work")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/tipc/core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/tipc/core.c b/net/tipc/core.c
+index 3f4542e0f065..434e70eabe08 100644
+--- a/net/tipc/core.c
++++ b/net/tipc/core.c
+@@ -109,10 +109,9 @@ static void __net_exit tipc_exit_net(struct net *net)
+ 	struct tipc_net *tn = tipc_net(net);
+ 
+ 	tipc_detach_loopback(net);
++	tipc_net_stop(net);
+ 	/* Make sure the tipc_net_finalize_work() finished */
+ 	cancel_work_sync(&tn->work);
+-	tipc_net_stop(net);
+-
+ 	tipc_bcast_stop(net);
+ 	tipc_nametbl_stop(net);
+ 	tipc_sk_rht_destroy(net);
+-- 
+2.35.1
+
+
+
