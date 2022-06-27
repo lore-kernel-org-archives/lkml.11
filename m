@@ -2,277 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E738C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51216C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238978AbiF0QLk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44760 "EHLO
+        id S239036AbiF0QMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238999AbiF0QLg (ORCPT
+        with ESMTP id S238999AbiF0QME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:11:36 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB2114030;
-        Mon, 27 Jun 2022 09:11:35 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id o43so15424895qvo.4;
-        Mon, 27 Jun 2022 09:11:35 -0700 (PDT)
+        Mon, 27 Jun 2022 12:12:04 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDD8140D2
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:11:59 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id x138so6782826pfc.3
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:11:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1NJPIKLHbTXa2vM0EDGBoEmGuf1QI+UV3bnJ53gNgN0=;
-        b=FwDVRUobbeBHofANfiLj/fi4gmO87yzwYXdiiNOWE21/FOGckt+Ry8v68EaZ5bwAvS
-         1A9DzKKTqT3Qp7IOz2ZRvaTrg8m/Z73qh+2A/Z9f2FnwOq99fRE5hhqYxvkRsSDI2TF3
-         Qpcwgwsq8s9lRU8Jbx6IUHvrTb2CfMGZxI5kA9s0fZK6A2rGhiLLm0A1LC44huF5Xxuq
-         ops80Y11sU1l6sN11FnvSk60ZtyB58ZcBSqU1016mvyROa2WgnzU73r+ujMt06605chL
-         Bv/P+GrwpKklCv5ithhqopuqGcp/J2MuEYfkUMMTgMkQOYKli8W7zK+mbll1KYK6cvu+
-         10IA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=QSB6tq8B5cwtKotfoR7RizrMhJVAHRxsw0c1BjDvvhU=;
+        b=i1hJ5DeEmoJYw2l4WQ8n43hSRbva2Sb4StNNmtaZWKUsIcFH7+qAbQMp95fEXhcdKL
+         y2QDy7UFUTWaaRaWuHHxxG0zmJfziSuXNLxsdvh0W+P981Pk6b+yEhvfsZqUOsbB2wmF
+         dgXa+OntMLCe3PgtwnD3GwuXDHmFyJeinJwad8oDdW48lXs2TC45pgkyaYLSAHUfCMrK
+         WpDDRsewu0tHaECxeW7/Z9fsfCnMdh6aai60ucHX/wo3FpVMfdY+BdOycO6Ih8eZZXlW
+         xMa0RGitHiz1KRfr/pQKku02BnSNVWiAtnZigz55uWUaLzYOEnTdqly3qcaQUxhBryBu
+         44Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1NJPIKLHbTXa2vM0EDGBoEmGuf1QI+UV3bnJ53gNgN0=;
-        b=X/fHVHXC2eZQppsMVxpHYqknf78YAZ8uTFUrfDc58gFVkn4HMqEW5boc75xAKrEccT
-         SWINeuL3d45rQIv3g3XYA72TjzpoXqdmCUoFng1C4c+e+Q/dRkmSkyov0rgaxaSwSZUc
-         ZDKAmOysqLuSYXA6Su2V2iopVunnk8miOQSD0J8VH4CWnV3ctoRkyGiSQ2XWQOhYQcb9
-         DAZXp0YsopuPQC1Lscx7GtPOBhq7gEh4BnC30wL5QeTj2lRujvMjM533L6MUj4RZpOrv
-         Gh0j2C+mNDeiZAgrYNkcqvR8adp3UAWMsOkyUJ/9L0upEF1dF9Zpo5SerfIFgwqctdX2
-         30OA==
-X-Gm-Message-State: AJIora8vNkUh8wiL4zlMMnbfZ5LDvFBLL1u1t1t+lHeAVrHJ1C/pd06r
-        ikN5YZcH2Y+KfLWulwbHGFk=
-X-Google-Smtp-Source: AGRyM1v61ZWMRpoNeMWg3mhp2g7soeAFuYG/4efOwpPRH+BiBWWYjGVfw6kRAp9hlKTpat2BSi/YGg==
-X-Received: by 2002:ac8:5b03:0:b0:317:c6f3:c61d with SMTP id m3-20020ac85b03000000b00317c6f3c61dmr9629431qtw.196.1656346294461;
-        Mon, 27 Jun 2022 09:11:34 -0700 (PDT)
-Received: from [10.4.10.38] (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
-        by smtp.gmail.com with ESMTPSA id s11-20020a05620a29cb00b006af271aad37sm3337702qkp.72.2022.06.27.09.11.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 09:11:33 -0700 (PDT)
-Message-ID: <c8f13238-c927-4aab-e54d-3a1a5c031877@gmail.com>
-Date:   Mon, 27 Jun 2022 12:11:31 -0400
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QSB6tq8B5cwtKotfoR7RizrMhJVAHRxsw0c1BjDvvhU=;
+        b=HE5nJtICSGRiZz3gjYtnqEkV94twcqWWNOdATtKnG2Tp2f7+DehF27i41EWb2Hcq22
+         Pit3vIQX4SzPCGzteblFB4HUIKW3WaWlWl1ovYoc+thisiJRcVC14M0M33M7i7sOawUZ
+         D0UVc+yGBS7FJ4ytT6QCIv2FDQbp0xoNG6Igejj4W0SHK0N+sZTOqd2/CXuNyuLkzFvo
+         OcSlgjSybX8J2LbFfmP6f4agL8f6PCbvQ578fUtZK5aMEO0RDvuzXbpRBfKd31DmAZG9
+         Gq7dNiso8M3Nn2j2NdF3KFzpy2F9QUYz30ZGfr2b2MzIoZ44ZnHo3FcphNYW96iIvkAx
+         bcwA==
+X-Gm-Message-State: AJIora/J2/HqRlpYJgSHhyX/cT5NZWuv4XEUq5SC5taIh/VCZm+Hf2ss
+        B7APwZJRyY7/Tn9kwOdG9uu2BlxZxxpB+A==
+X-Google-Smtp-Source: AGRyM1s/pLm96R1iZU+IkUHBDnPQBfn+/TP68BwerIAfBOBnIss7A/K8cEUKr+Vra3JLYWh1gB6zSw==
+X-Received: by 2002:a63:8f13:0:b0:40c:f042:13a8 with SMTP id n19-20020a638f13000000b0040cf04213a8mr13708678pgd.619.1656346318584;
+        Mon, 27 Jun 2022 09:11:58 -0700 (PDT)
+Received: from google.com (55.212.185.35.bc.googleusercontent.com. [35.185.212.55])
+        by smtp.gmail.com with ESMTPSA id q11-20020a170902dacb00b001635b86a790sm7568586plx.44.2022.06.27.09.11.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 09:11:57 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 09:11:54 -0700
+From:   Zach O'Keefe <zokeefe@google.com>
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        syzbot <syzbot+4d875b4d2e2b60bae9b4@syzkaller.appspotmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: [syzbot] KASAN: null-ptr-deref Read in hugepage_vma_check
+Message-ID: <YrnWykdEI4N1ONMx@google.com>
+References: <0000000000003189f305e19f5d3e@google.com>
+ <20220617165256.b5b9b257b30bc1dbb21fc8c6@linux-foundation.org>
+ <Yq0Y0B1XGNIbCveO@casper.infradead.org>
+ <CAHbLzkofHiQiRU3QBmK3Tr9xozSt1EFtT4hCLh5w_Mcspm35Hg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 08/13] clk: imx: Update pllv3 to support i.MXRT1170
-Content-Language: en-US
-To:     Abel Vesa <abel.vesa@linaro.org>
-Cc:     linux-imx@nxp.com, robh+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, aisheng.dong@nxp.com,
-        stefan@agner.ch, linus.walleij@linaro.org,
-        daniel.lezcano@linaro.org, tglx@linutronix.de, olof@lixom.net,
-        linux@armlinux.org.uk, abel.vesa@nxp.com, dev@lynxeye.de,
-        marcel.ziswiler@toradex.com, tharvey@gateworks.com,
-        leoyang.li@nxp.com, sebastian.reichel@collabora.com,
-        cniedermaier@dh-electronics.com, clin@suse.com,
-        giulio.benetti@benettiengineering.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org
-References: <20220626064523.3683775-1-Mr.Bossman075@gmail.com>
- <20220626064523.3683775-9-Mr.Bossman075@gmail.com>
- <YrmxdaSqHnEg28uG@linaro.org>
-From:   Jesse Taube <mr.bossman075@gmail.com>
-In-Reply-To: <YrmxdaSqHnEg28uG@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHbLzkofHiQiRU3QBmK3Tr9xozSt1EFtT4hCLh5w_Mcspm35Hg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 6/27/22 09:32, Abel Vesa wrote:
-> On 22-06-26 02:45:18, Jesse Taube wrote:
->> The i.MXRT1170 has a pll that has the multiplier bits inverted and
->> cannot be changed add IMX_PLLV3_GENERICV2.
->>
->> The i.MXRT1170 also has the lock bit moved as well as the
->> power bit inverted the power bit also is in different locations on each
->> pll control register.
->>
->> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
->> ---
->> V1 -> V2:
->>   - Nothing done
->> V2 -> V3:
->>   - Nothing done
->> V3 -> V4:
->>   - Nothing done
->> ---
->>   drivers/clk/imx/clk-pllv3.c | 57 +++++++++++++++++++++++++++++++++++--
->>   drivers/clk/imx/clk.h       |  4 +++
->>   2 files changed, 59 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/clk/imx/clk-pllv3.c b/drivers/clk/imx/clk-pllv3.c
->> index eea32f87c60a..740412ea2f7e 100644
->> --- a/drivers/clk/imx/clk-pllv3.c
->> +++ b/drivers/clk/imx/clk-pllv3.c
->> @@ -23,6 +23,7 @@
->>
->>   #define BM_PLL_POWER		(0x1 << 12)
->>   #define BM_PLL_LOCK		(0x1 << 31)
->> +#define BM_PLL_LOCK_V2		(0x1 << 29)
->>   #define IMX7_ENET_PLL_POWER	(0x1 << 5)
->>   #define IMX7_DDR_PLL_POWER	(0x1 << 20)
->>
->> @@ -34,6 +35,7 @@
->>    * @base:	 base address of PLL registers
->>    * @power_bit:	 pll power bit mask
->>    * @powerup_set: set power_bit to power up the PLL
->> + * @lock_bit:	 pll lock bit mask
->>    * @div_mask:	 mask of divider bits
->>    * @div_shift:	 shift of divider bits
->>    * @ref_clock:	reference clock rate
->> @@ -48,6 +50,7 @@ struct clk_pllv3 {
->>   	void __iomem	*base;
->>   	u32		power_bit;
->>   	bool		powerup_set;
->> +	u32		lock_bit;
->>   	u32		div_mask;
->>   	u32		div_shift;
->>   	unsigned long	ref_clock;
->> @@ -65,7 +68,7 @@ static int clk_pllv3_wait_lock(struct clk_pllv3 *pll)
->>   	if ((pll->powerup_set && !val) || (!pll->powerup_set && val))
->>   		return 0;
->>
->> -	return readl_relaxed_poll_timeout(pll->base, val, val & BM_PLL_LOCK,
->> +	return readl_relaxed_poll_timeout(pll->base, val, val & pll->lock_bit,
->>   					  500, PLL_LOCK_TIMEOUT);
->>   }
->>
->> @@ -101,7 +104,7 @@ static int clk_pllv3_is_prepared(struct clk_hw *hw)
->>   {
->>   	struct clk_pllv3 *pll = to_clk_pllv3(hw);
->>
->> -	if (readl_relaxed(pll->base) & BM_PLL_LOCK)
->> +	if (readl_relaxed(pll->base) & pll->lock_bit)
->>   		return 1;
->>
->>   	return 0;
->> @@ -155,6 +158,39 @@ static const struct clk_ops clk_pllv3_ops = {
->>   	.set_rate	= clk_pllv3_set_rate,
->>   };
->>
->> +static int clk_pllv3_genericv2_set_rate(struct clk_hw *hw, unsigned long rate,
->> +		unsigned long parent_rate)
->> +{
->> +	struct clk_pllv3 *pll = to_clk_pllv3(hw);
->> +	u32 val, div;
->> +
->> +	div = (readl_relaxed(pll->base) >> pll->div_shift) & pll->div_mask;
->> +	val = (div == 0) ? parent_rate * 22 : parent_rate * 20;
->> +
->> +	if (rate == val)
->> +		return 0;
->> +
->> +	return -EINVAL;
->> +}
->> +
->> +static unsigned long clk_pllv3_genericv2_recalc_rate(struct clk_hw *hw,
->> +					   unsigned long parent_rate)
->> +{
->> +	struct clk_pllv3 *pll = to_clk_pllv3(hw);
->> +	u32 div = (readl_relaxed(pll->base) >> pll->div_shift)  & pll->div_mask;
->> +
->> +	return (div == 0) ? parent_rate * 22 : parent_rate * 20;
->> +}
->> +
->> +static const struct clk_ops clk_pllv3_genericv2_ops = {
->> +	.prepare	= clk_pllv3_prepare,
->> +	.unprepare	= clk_pllv3_unprepare,
->> +	.is_prepared	= clk_pllv3_is_prepared,
->> +	.recalc_rate	= clk_pllv3_genericv2_recalc_rate,
->> +	.round_rate	= clk_pllv3_round_rate,
->> +	.set_rate	= clk_pllv3_genericv2_set_rate,
->> +};
->> +
->>   static unsigned long clk_pllv3_sys_recalc_rate(struct clk_hw *hw,
->>   					       unsigned long parent_rate)
->>   {
->> @@ -407,6 +443,13 @@ static const struct clk_ops clk_pllv3_enet_ops = {
->>   	.recalc_rate	= clk_pllv3_enet_recalc_rate,
->>   };
->>
->> +void imx_clk_hw_pll3_powerbit(struct clk_hw *hw, u8 shift)
->> +{
->> +	struct clk_pllv3 *pll = to_clk_pllv3(hw);
->> +
->> +	pll->power_bit = shift;
->> +}
->> +
+On 17 Jun 17:33, Yang Shi wrote:
+> On Fri, Jun 17, 2022 at 5:14 PM Matthew Wilcox <willy@infradead.org> wrote:
+> >
+> > On Fri, Jun 17, 2022 at 04:52:56PM -0700, Andrew Morton wrote:
+> > > On Fri, 17 Jun 2022 00:04:23 -0700 syzbot <syzbot+4d875b4d2e2b60bae9b4@syzkaller.appspotmail.com> wrote:
+> > >
+> > > > Hello,
+> > > >
+> > > > syzbot found the following issue on:
+> > > >
+> > > > HEAD commit:    c6d7e3b385f1 Add linux-next specific files for 20220616
+> > > > git tree:       linux-next
+> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=10d9fb1bf00000
+> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=9d495405e4a98620
+> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=4d875b4d2e2b60bae9b4
+> > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > >
+> > > > Unfortunately, I don't have any reproducer for this issue yet.
+> > > >
+> > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > > Reported-by: syzbot+4d875b4d2e2b60bae9b4@syzkaller.appspotmail.com
+> > > >
+> > > > ==================================================================
+> > > > BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:71 [inline]
+> > > > BUG: KASAN: null-ptr-deref in test_bit include/asm-generic/bitops/instrumented-non-atomic.h:134 [inline]
+> > > > BUG: KASAN: null-ptr-deref in hugepage_vma_check+0x8e/0x750 mm/huge_memory.c:82
+> > > > Read of size 8 at addr 00000000000005a8 by task syz-executor.5/21978
+> > >
+> > > vma->vm_mm is NULL in show_smap->hugepage_vma_check().
+> > >
+> > > Perhaps m_start() should be checking the mm after taking
+> > > mmap_read_lock() instead of before?
+> > >
+> > > Matthew, you mucked with it last ;) Can you please take a look?
+> >
+> > I think this is Yang Shi's fault.  The last patch in that series which
+> > touches this area does:
+> >
+> >         seq_printf(m, "THPeligible:    %d\n",
+> > -                  hugepage_vma_check(vma, vma->vm_flags, true));
+> > +                  hugepage_vma_check(vma, vma->vm_flags, true, false));
+> >
+> > and hugepage_vma_check() does:
+> >
+> >         if ((vm_flags & VM_NOHUGEPAGE) ||
+> >             test_bit(MMF_DISABLE_THP, &vma->vm_mm->flags))
+> >                 return false;
+> >
+> > Before those patches, it calls transparent_hugepage_active() which
+> > does not (afaict) touch vma->vm_mm.
 > 
-> I can see why you need this, but I think the approach is not quite
-> right.
-
-I wasn't sure if modifying the function like that was appropriate for 
-this, but sense it is I will do like you said.
-
-> I suggest we rename the imx_clk_hw_pllv3 to __imx_clk_hw_pllv3 and add
-> the power_bit parameter to it (and set it accordingly inside).
+> No, transparent_hugepage_active() also could touch vma->vm_mm. The
+> above code was transhuge_vma_enabled() called by
+> transparent_hugepage_active() before my patch, my patch just
+> open-coded it.
 > 
-> Then we should do the following in imx/clk.h:
+> But hugepage_vma_check() does check vma in different order from
+> transparent_hugepage_active(), so the old code may not reach it at
+> all.
 > 
-> #define imx_clk_hw_pllv3(name, parent_names, num_parents, parent,	\
-> 				bypass1, bypass2, base, flags)		\
-> 	__imx_clk_hw_pllv3(name, parent_names, num_parents, parent,	\
-> 				bypass1, bypass2, base, flags, BM_PLL_POWER)
-
-One problem BM_PLL_POWER will have to be in imx/clk.h, but then it will 
-be the only macro like it in the file, is line 9 ok for it.
-I could also make a function instead of a macro.
-
-thanks,
-Jesse Taube
-> And then, the i.MXRT1170 can use the __imx_clk_hw_pllv3 and pass the
-> right power_bit shift.
+> And I don't think the mm could go away since it is pinned, but the
+> returned vma may not belong to this mm, for example, gate vma which
+> doesn't have a mm. Its size is PAGE_SIZE, so the old code returns
+> earlier before touching mm.
 > 
->>   struct clk_hw *imx_clk_hw_pllv3(enum imx_pllv3_type type, const char *name,
->>   			  const char *parent_name, void __iomem *base,
->>   			  u32 div_mask)
->> @@ -422,10 +465,20 @@ struct clk_hw *imx_clk_hw_pllv3(enum imx_pllv3_type type, const char *name,
->>   		return ERR_PTR(-ENOMEM);
->>
->>   	pll->power_bit = BM_PLL_POWER;
->> +	pll->lock_bit = BM_PLL_LOCK;
->>   	pll->num_offset = PLL_NUM_OFFSET;
->>   	pll->denom_offset = PLL_DENOM_OFFSET;
->>
->>   	switch (type) {
->> +	case IMX_PLLV3_GENERICV2:
->> +		pll->lock_bit = BM_PLL_LOCK_V2;
->> +		pll->powerup_set = true;
->> +		ops = &clk_pllv3_genericv2_ops;
->> +		break;
->> +	case IMX_PLLV3_SYSV2:
->> +		pll->lock_bit = BM_PLL_LOCK_V2;
->> +		pll->powerup_set = true;
->> +		fallthrough;
->>   	case IMX_PLLV3_SYS:
->>   		ops = &clk_pllv3_sys_ops;
->>   		break;
->> diff --git a/drivers/clk/imx/clk.h b/drivers/clk/imx/clk.h
->> index 5061a06468df..31e017248602 100644
->> --- a/drivers/clk/imx/clk.h
->> +++ b/drivers/clk/imx/clk.h
->> @@ -242,6 +242,8 @@ struct clk_hw *imx_clk_hw_sscg_pll(const char *name,
->>
->>   enum imx_pllv3_type {
->>   	IMX_PLLV3_GENERIC,
->> +	IMX_PLLV3_GENERICV2,
->> +	IMX_PLLV3_SYSV2,
->>   	IMX_PLLV3_SYS,
->>   	IMX_PLLV3_USB,
->>   	IMX_PLLV3_USB_VF610,
->> @@ -253,6 +255,8 @@ enum imx_pllv3_type {
->>   	IMX_PLLV3_AV_IMX7,
->>   };
->>
->> +void imx_clk_hw_pll3_powerbit(struct clk_hw *hw, u8 shift);
->> +
->>   struct clk_hw *imx_clk_hw_pllv3(enum imx_pllv3_type type, const char *name,
->>   		const char *parent_name, void __iomem *base, u32 div_mask);
->>
->> --
->> 2.36.1
->>
+> One possible solution is to move vma size check before touching mm, like:
+> 
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index 2e2a8b5bc567..1a9f15a89091 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -73,6 +73,16 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
+>                         unsigned long vm_flags,
+>                         bool smaps, bool in_pf)
+>  {
+> +       /*
+> +        * Check alignment for file vma and size for both file and anon vma.
+> +        *
+> +        * Skip the check for page fault. Huge fault does the check in fault
+> +        * handlers. And this check is not suitable for huge PUD fault.
+> +        */
+> +       if (!in_pf &&
+> +           !transhuge_vma_suitable(vma, (vma->vm_end - HPAGE_PMD_SIZE)))
+> +               return false;
+> +
+>         /*
+>          * Explicitly disabled through madvise or prctl, or some
+>          * architectures may disable THP for some mappings, for
+> @@ -99,16 +109,6 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
+>         if (vm_flags & VM_NO_KHUGEPAGED)
+>                 return false;
+> 
+> -       /*
+> -        * Check alignment for file vma and size for both file and anon vma.
+> -        *
+> -        * Skip the check for page fault. Huge fault does the check in fault
+> -        * handlers. And this check is not suitable for huge PUD fault.
+> -        */
+> -       if (!in_pf &&
+> -           !transhuge_vma_suitable(vma, (vma->vm_end - HPAGE_PMD_SIZE)))
+> -               return false;
+> -
+>         /*
+>          * Enabled via shmem mount options or sysfs settings.
+>          * Must be done before hugepage flags check since shmem has its
+> 
+> Or we may have to check gate vma explicitly.
+>
+
+I think this is already fixed already with Andrew's fix in mm-unstable:
+
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index df04c0057271..fbe02815c41a 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -73,6 +73,9 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
+                        unsigned long vm_flags,
+                        bool smaps)
+ {
++       if (!vma->vm_mm)
++               return false;
++
+        if (!transhuge_vma_enabled(vma, vm_flags))
+                return false;
+
+Which isn't included in the tree testing here. IMHO this is cleaner than messing
+with an already subtle ordering.
+
+
+> >
+> > I haven't been paying attention to that patch series, so I don't have
+> > a constructive suggestion for how to fix.
+> >
+> > > > CPU: 0 PID: 21978 Comm: syz-executor.5 Not tainted 5.19.0-rc2-next-20220616-syzkaller #0
+> > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > > Call Trace:
+> > > >  <TASK>
+> > > >  __dump_stack lib/dump_stack.c:88 [inline]
+> > > >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> > > >  kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+> > > >  check_region_inline mm/kasan/generic.c:183 [inline]
+> > > >  kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+> > > >  instrument_atomic_read include/linux/instrumented.h:71 [inline]
+> > > >  test_bit include/asm-generic/bitops/instrumented-non-atomic.h:134 [inline]
+> > > >  hugepage_vma_check+0x8e/0x750 mm/huge_memory.c:82
+> > > >  show_smap+0x1c6/0x470 fs/proc/task_mmu.c:866
+> > > >  traverse.part.0+0xcf/0x5f0 fs/seq_file.c:111
+> > > >  traverse fs/seq_file.c:101 [inline]
+> > > >  seq_read_iter+0x90f/0x1280 fs/seq_file.c:195
+> > > >  seq_read+0x337/0x4b0 fs/seq_file.c:162
+> > > >  do_loop_readv_writev fs/read_write.c:763 [inline]
+> > > >  do_loop_readv_writev fs/read_write.c:750 [inline]
+> > > >  do_iter_read+0x4f8/0x750 fs/read_write.c:805
+> > > >  vfs_readv+0xe5/0x150 fs/read_write.c:923
+> > > >  do_preadv fs/read_write.c:1015 [inline]
+> > > >  __do_sys_preadv fs/read_write.c:1065 [inline]
+> > > >  __se_sys_preadv fs/read_write.c:1060 [inline]
+> > > >  __x64_sys_preadv+0x22b/0x310 fs/read_write.c:1060
+> > > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > > >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> > > >  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> > > > RIP: 0033:0x7f5c1d889109
+> > > > Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> > > > RSP: 002b:00007f5c1ea69168 EFLAGS: 00000246 ORIG_RAX: 0000000000000127
+> > > > RAX: ffffffffffffffda RBX: 00007f5c1d99bf60 RCX: 00007f5c1d889109
+> > > > RDX: 0000000000000001 RSI: 00000000200006c0 RDI: 0000000000000005
+> > > > RBP: 00007f5c1d8e305d R08: 0000000000000000 R09: 0000000000000000
+> > > > R10: 00000000fffffffe R11: 0000000000000246 R12: 0000000000000000
+> > > > R13: 00007ffd8514b43f R14: 00007f5c1ea69300 R15: 0000000000022000
+> > > >  </TASK>
+> > > > ==================================================================
+> > > >
+> > > >
+> > > > ---
+> > > > This report is generated by a bot. It may contain errors.
+> > > > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > > > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > > >
+> > > > syzbot will keep track of this issue. See:
+> > > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> 
