@@ -2,92 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E959C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02998C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239263AbiF0Lzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
+        id S238780AbiF0Lzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238596AbiF0Lss (ORCPT
+        with ESMTP id S238594AbiF0Lss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:48:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BA6CE8;
-        Mon, 27 Jun 2022 04:42:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C263661150;
-        Mon, 27 Jun 2022 11:42:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCB24C3411D;
-        Mon, 27 Jun 2022 11:42:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330159;
-        bh=UKbEqA3Zv9VXTEGzuMe35zysRCOL+NKUWHwYEp7etj0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pbpM9DLGMqko/fE9RCxb8+oyuZtIxoSvu0XJNk2nB8/jkWmz1kT4hiD3An08FXf/E
-         X60RfqVZe2RvmxqptwMzY302zuvZbTN2D609T/gZgLBkL14XlztTDkUgmeo36DDas6
-         yaHfH65t5/HDHMiipapPMCyG8JXb3RcYhV0PBOY8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Hauser <jahau@rocketmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 105/181] iio: magnetometer: yas530: Fix memchr_inv() misuse
-Date:   Mon, 27 Jun 2022 13:21:18 +0200
-Message-Id: <20220627111947.743858212@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
-References: <20220627111944.553492442@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E20CE33
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:42:33 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id sb34so18493861ejc.11
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:42:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=U96yknaouPbBJnn6hQmbtloh8lKJEQa8m942bJHa948=;
+        b=gR09IPhQCrv3LwR2L7BZnlde8fwVSTkEfqgZYCg+h1/8OnDr3nZee0MNthTw6HlGrY
+         2AQrJ0g+oPw8+luhOr0iDZuRW0ybwzVsyCnlXbiaED7GgzAcjvqlGB3nmH6OXcDPAscz
+         tW+tnXzlhE8BHKI0oYgKTq+r//qbVVvmJMk1DZsl3RTTp6OK6s5/HrwEi9XzrVNUKZsF
+         byyfBDxPRQwrDuZpkIhu114h7eljFiRRKBQWHoRACyC/PbjHheqf4037fa429yoPP/ob
+         SOVHl11OyPz56nCmN7dnP0jEk58sZhsKLu5xM21ssBip7ookihOyAU34qcO0jLMc5O4d
+         Seuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=U96yknaouPbBJnn6hQmbtloh8lKJEQa8m942bJHa948=;
+        b=kTQpqjjtDEs0IIq7Wyru8H1hW62WGXwnuCxc5gOUL1rtVubyPEwnvPsy5cAS5Ydbna
+         r97uy5/Y2+h3X1lXGuhprYA1aQnCpxh7akviuXY8pT1J7SumW+Q3xFlgsEkxy7uLLgBR
+         0juNRTghUevZ3EOD24S7JruKDyiQF3xO8YqzIrM2JdbIC84Vh02/BXFmMfloaG1yeMCg
+         c9EDx+qkWL8mlpOlhb9MKq3u0DfcMnQC42QnecqXxFZfERlTJOwDlhg7eJkgGAhMMQq7
+         7WNYOXAkyCMcQpjoSIj1hxGJHes1b20YQ86XMuuINqXAC3c0HCD9JVoYTq8YP6rqFKf3
+         qIiA==
+X-Gm-Message-State: AJIora+Wj/hDVWcaAft0cn4bKnLDELTAECvaiTXPtSSBMvcCYqO838Ky
+        dfCNSATOoXUWl+teKlJ5xwdBrw==
+X-Google-Smtp-Source: AGRyM1u2TvQPgd533Q8/sOg471TCJvIlg4REDbqbfTzwcOpw2EpWH6A0ulTqXsYQiaAvbj9MCmB8aw==
+X-Received: by 2002:a17:907:3f82:b0:726:3732:961c with SMTP id hr2-20020a1709073f8200b007263732961cmr12757395ejc.727.1656330151600;
+        Mon, 27 Jun 2022 04:42:31 -0700 (PDT)
+Received: from linaro.org ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id x10-20020a170906298a00b00722e8f4b459sm4984948eje.93.2022.06.27.04.42.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 04:42:31 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 14:42:29 +0300
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        kernel-team@android.com, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 13/17] driver core: Use device's fwnode to check if it
+ is waiting for suppliers
+Message-ID: <YrmXpcU1NTYW6T/n@linaro.org>
+References: <20201121020232.908850-1-saravanak@google.com>
+ <20201121020232.908850-14-saravanak@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201121020232.908850-14-saravanak@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+On 20-11-20 18:02:28, Saravana Kannan wrote:
+> To check if a device is still waiting for its supplier devices to be
+> added, we used to check if the devices is in a global
+> waiting_for_suppliers list. Since the global list will be deleted in
+> subsequent patches, this patch stops using this check.
+>
+> Instead, this patch uses a more device specific check. It checks if the
+> device's fwnode has any fwnode links that haven't been converted to
+> device links yet.
+>
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
+> ---
+>  drivers/base/core.c | 18 ++++++++----------
+>  1 file changed, 8 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/base/core.c b/drivers/base/core.c
+> index 395dece1c83a..1873cecb0cc4 100644
+> --- a/drivers/base/core.c
+> +++ b/drivers/base/core.c
+> @@ -51,6 +51,7 @@ static DEFINE_MUTEX(wfs_lock);
+>  static LIST_HEAD(deferred_sync);
+>  static unsigned int defer_sync_state_count = 1;
+>  static DEFINE_MUTEX(fwnode_link_lock);
+> +static bool fw_devlink_is_permissive(void);
+>
+>  /**
+>   * fwnode_link_add - Create a link between two fwnode_handles.
+> @@ -995,13 +996,13 @@ int device_links_check_suppliers(struct device *dev)
+>  	 * Device waiting for supplier to become available is not allowed to
+>  	 * probe.
+>  	 */
+> -	mutex_lock(&wfs_lock);
+> -	if (!list_empty(&dev->links.needs_suppliers) &&
+> -	    dev->links.need_for_probe) {
+> -		mutex_unlock(&wfs_lock);
+> +	mutex_lock(&fwnode_link_lock);
+> +	if (dev->fwnode && !list_empty(&dev->fwnode->suppliers) &&
+> +	    !fw_devlink_is_permissive()) {
+> +		mutex_unlock(&fwnode_link_lock);
 
-[ Upstream commit bb52d3691db8cf24cea049235223f3599778f264 ]
+Hi Saravana,
 
-The call to check if the calibration is all zeroes is doing
-it wrong: memchr_inv() returns NULL if the the calibration
-contains all zeroes, but the check is for != NULL.
+First of, sorry for going back to this.
 
-Fix it up. It's probably not an urgent fix because the inner
-check for BIT(7) in data[13] will save us. But fix it.
+There is a scenario where this check will not work and probably should
+work. It goes like this:
 
-Fixes: de8860b1ed47 ("iio: magnetometer: Add driver for Yamaha YAS530")
-Reported-by: Jakob Hauser <jahau@rocketmail.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220501195029.151852-1-linus.walleij@linaro.org
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/magnetometer/yamaha-yas530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+A clock controller is not allowed to probe because it uses a clock from a child device of a
+consumer, like so:
 
-diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-index 9ff7b0e56cf6..b2bc637150bf 100644
---- a/drivers/iio/magnetometer/yamaha-yas530.c
-+++ b/drivers/iio/magnetometer/yamaha-yas530.c
-@@ -639,7 +639,7 @@ static int yas532_get_calibration_data(struct yas5xx *yas5xx)
- 	dev_dbg(yas5xx->dev, "calibration data: %*ph\n", 14, data);
- 
- 	/* Sanity check, is this all zeroes? */
--	if (memchr_inv(data, 0x00, 13)) {
-+	if (memchr_inv(data, 0x00, 13) == NULL) {
- 		if (!(data[13] & BIT(7)))
- 			dev_warn(yas5xx->dev, "calibration is blank!\n");
- 	}
--- 
-2.35.1
+	dispcc: clock-controller@af00000 {
+        	clocks = <&dsi0_phy 0>;
+	};
+
+	mdss: mdss@ae00000 {
+		clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>;
+
+		dsi0_phy: dsi-phy@ae94400 {
+        		clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
+		};
+	};
+
+This is a real scenario actually, but I stripped it down to the essentials.
+
+So, the dsi0_phy will be "device_add'ed" (through of_platform_populate) by the mdss probe.
+The mdss will probe defer waiting for the DISP_CC_MDSS_MDP_CLK, while
+the dispcc will probe defer waiting for the dsi0_phy (supplier).
+
+Basically, this 'supplier availability check' does not work when a supplier might
+be populated by a consumer of the device that is currently trying to probe.
 
 
+Abel
 
+
+>  		return -EPROBE_DEFER;
+>  	}
+> -	mutex_unlock(&wfs_lock);
+> +	mutex_unlock(&fwnode_link_lock);
+>
+>  	device_links_write_lock();
+>
+> @@ -1167,10 +1168,7 @@ static ssize_t waiting_for_supplier_show(struct device *dev,
+>  	bool val;
+>
+>  	device_lock(dev);
+> -	mutex_lock(&wfs_lock);
+> -	val = !list_empty(&dev->links.needs_suppliers)
+> -	      && dev->links.need_for_probe;
+> -	mutex_unlock(&wfs_lock);
+> +	val = !list_empty(&dev->fwnode->suppliers);
+>  	device_unlock(dev);
+>  	return sysfs_emit(buf, "%u\n", val);
+>  }
+> @@ -2202,7 +2200,7 @@ static int device_add_attrs(struct device *dev)
+>  			goto err_remove_dev_groups;
+>  	}
+>
+> -	if (fw_devlink_flags && !fw_devlink_is_permissive()) {
+> +	if (fw_devlink_flags && !fw_devlink_is_permissive() && dev->fwnode) {
+>  		error = device_create_file(dev, &dev_attr_waiting_for_supplier);
+>  		if (error)
+>  			goto err_remove_dev_online;
+> --
+> 2.29.2.454.gaff20da3a2-goog
+>
+>
