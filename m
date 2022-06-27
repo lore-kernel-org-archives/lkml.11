@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DF6FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234776AbiF0LYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
+        id S234801AbiF0LYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234702AbiF0LY2 (ORCPT
+        with ESMTP id S234755AbiF0LYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:24:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711A7656D;
-        Mon, 27 Jun 2022 04:24:27 -0700 (PDT)
+        Mon, 27 Jun 2022 07:24:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24AC657B;
+        Mon, 27 Jun 2022 04:24:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BD82B81123;
-        Mon, 27 Jun 2022 11:24:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 837B5C341C8;
-        Mon, 27 Jun 2022 11:24:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 558A161459;
+        Mon, 27 Jun 2022 11:24:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B789C341C8;
+        Mon, 27 Jun 2022 11:24:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329064;
-        bh=NOyy/dtXYTY8dGXlloy+KHbFwq/CK32Uh4q32B604/o=;
+        s=korg; t=1656329067;
+        bh=BBNZBFjJwrEdh9Peihh/gaT5Od9+ds1Xs18BWqghi7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aYkOo8Uec9bUfwYVTSmSRTsH93FoJiiAZopWi/aNf0ZsgcuRO+wQnmX6I3RZLQ3zP
-         mvS+B3TfvpkyC9hfAwi3y9hK5qjTmhbh/mT0F9V8ex5IDIR3KUjU8j6QvG5TnSqYUF
-         hXrSyNI+saTC161kF8dziqlo5yhlpF9lJfKj4L8g=
+        b=DiR9m991qP54z9Igy1lWvGppPysk413uUKbnZ+7IoWUJU+FMyqkvgn40ij1eG0xFk
+         YRnlrAsfS92vVCSPi74GW9NlSMZmwf15U/91YOdriFitE9WlmNxlAt4R01xdM05Mhw
+         f0wc+lRjvl3G/FFVBaHh1iv5F5mSYnRDJ4JyE34E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
+        stable@vger.kernel.org, Kuogee Hsieh <khsieh@codeaurora.org>,
         Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 037/102] drm/msm/dp: check core_initialized before disable interrupts at dp_display_unbind()
-Date:   Mon, 27 Jun 2022 13:20:48 +0200
-Message-Id: <20220627111934.564232490@linuxfoundation.org>
+Subject: [PATCH 5.10 038/102] drm/msm/dp: fixes wrong connection state caused by failure of link train
+Date:   Mon, 27 Jun 2022 13:20:49 +0200
+Message-Id: <20220627111934.595780784@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -50,66 +49,198 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Kuogee Hsieh <khsieh@codeaurora.org>
 
-[ Upstream commit d80c3ba0ac247791a4ed7a0cd865a64906c8906a ]
+[ Upstream commit 62671d2ef24bca1e2e1709a59a5bfb5c423cdc8e ]
 
-During msm initialize phase, dp_display_unbind() will be called to undo
-initializations had been done by dp_display_bind() previously if there is
-error happen at msm_drm_bind. In this case, core_initialized flag had to
-be check to make sure clocks is on before update DP controller register
-to disable HPD interrupts. Otherwise system will crash due to below NOC
-fatal error.
+Connection state is not set correctly happen when either failure of link
+train due to cable unplugged in the middle of aux channel reading or
+cable plugged in while in suspended state. This patch fixes these problems.
+This patch also replace ST_SUSPEND_PENDING with ST_DISPLAY_OFF.
 
-QTISECLIB [01f01a7ad]CNOC2 ERROR: ERRLOG0_LOW = 0x00061007
-QTISECLIB [01f01a7ad]GEM_NOC ERROR: ERRLOG0_LOW = 0x00001007
-QTISECLIB [01f0371a0]CNOC2 ERROR: ERRLOG0_HIGH = 0x00000003
-QTISECLIB [01f055297]GEM_NOC ERROR: ERRLOG0_HIGH = 0x00000003
-QTISECLIB [01f072beb]CNOC2 ERROR: ERRLOG1_LOW = 0x00000024
-QTISECLIB [01f0914b8]GEM_NOC ERROR: ERRLOG1_LOW = 0x00000042
-QTISECLIB [01f0ae639]CNOC2 ERROR: ERRLOG1_HIGH = 0x00004002
-QTISECLIB [01f0cc73f]GEM_NOC ERROR: ERRLOG1_HIGH = 0x00004002
-QTISECLIB [01f0ea092]CNOC2 ERROR: ERRLOG2_LOW = 0x0009020c
-QTISECLIB [01f10895f]GEM_NOC ERROR: ERRLOG2_LOW = 0x0ae9020c
-QTISECLIB [01f125ae1]CNOC2 ERROR: ERRLOG2_HIGH = 0x00000000
-QTISECLIB [01f143be7]GEM_NOC ERROR: ERRLOG2_HIGH = 0x00000000
-QTISECLIB [01f16153a]CNOC2 ERROR: ERRLOG3_LOW = 0x00000000
-QTISECLIB [01f17fe07]GEM_NOC ERROR: ERRLOG3_LOW = 0x00000000
-QTISECLIB [01f19cf89]CNOC2 ERROR: ERRLOG3_HIGH = 0x00000000
-QTISECLIB [01f1bb08e]GEM_NOC ERROR: ERRLOG3_HIGH = 0x00000000
-QTISECLIB [01f1d8a31]CNOC2 ERROR: SBM1 FAULTINSTATUS0_LOW = 0x00000002
-QTISECLIB [01f1f72a4]GEM_NOC ERROR: SBM0 FAULTINSTATUS0_LOW = 0x00000001
-QTISECLIB [01f21a217]CNOC3 ERROR: ERRLOG0_LOW = 0x00000006
-QTISECLIB [01f23dfd3]NOC error fatal
+Changes in V2:
+-- Add more information to commit message.
 
-changes in v2:
--- drop the first patch (drm/msm: enable msm irq after all initializations are done successfully at msm_drm_init()) since the problem had been fixed by other patch
+Changes in V3:
+-- change base
 
-Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/488387/
-Link: https://lore.kernel.org/r/1654538139-7450-1-git-send-email-quic_khsieh@quicinc.com
+Changes in V4:
+-- add Fixes tag
+
+Signed-off-by: Kuogee Hsieh <khsieh@codeaurora.org>
 Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/dp/dp_display.c | 42 ++++++++++++++---------------
+ drivers/gpu/drm/msm/dp/dp_panel.c   |  5 ++++
+ 2 files changed, 25 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index ebd05678a27b..47bdddb860e5 100644
+index 47bdddb860e5..4b18ab71ae59 100644
 --- a/drivers/gpu/drm/msm/dp/dp_display.c
 +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -268,7 +268,8 @@ static void dp_display_unbind(struct device *dev, struct device *master,
+@@ -45,7 +45,7 @@ enum {
+ 	ST_CONNECT_PENDING,
+ 	ST_CONNECTED,
+ 	ST_DISCONNECT_PENDING,
+-	ST_SUSPEND_PENDING,
++	ST_DISPLAY_OFF,
+ 	ST_SUSPENDED,
+ };
+ 
+@@ -531,7 +531,7 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
+ 	mutex_lock(&dp->event_mutex);
+ 
+ 	state =  dp->hpd_state;
+-	if (state == ST_SUSPEND_PENDING) {
++	if (state == ST_DISPLAY_OFF || state == ST_SUSPENDED) {
+ 		mutex_unlock(&dp->event_mutex);
+ 		return 0;
+ 	}
+@@ -553,14 +553,14 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
+ 	hpd->hpd_high = 1;
+ 
+ 	ret = dp_display_usbpd_configure_cb(&dp->pdev->dev);
+-	if (ret) {	/* failed */
++	if (ret) {	/* link train failed */
+ 		hpd->hpd_high = 0;
+ 		dp->hpd_state = ST_DISCONNECTED;
++	} else {
++		/* start sentinel checking in case of missing uevent */
++		dp_add_event(dp, EV_CONNECT_PENDING_TIMEOUT, 0, tout);
  	}
  
- 	/* disable all HPD interrupts */
--	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
-+	if (dp->core_initialized)
-+		dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
+-	/* start sanity checking */
+-	dp_add_event(dp, EV_CONNECT_PENDING_TIMEOUT, 0, tout);
+-
+ 	mutex_unlock(&dp->event_mutex);
  
- 	kthread_stop(dp->ev_tsk);
+ 	/* uevent will complete connection part */
+@@ -612,11 +612,6 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 	mutex_lock(&dp->event_mutex);
  
+ 	state = dp->hpd_state;
+-	if (state == ST_SUSPEND_PENDING) {
+-		mutex_unlock(&dp->event_mutex);
+-		return 0;
+-	}
+-
+ 	if (state == ST_DISCONNECT_PENDING || state == ST_DISCONNECTED) {
+ 		mutex_unlock(&dp->event_mutex);
+ 		return 0;
+@@ -643,7 +638,7 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 	 */
+ 	dp_display_usbpd_disconnect_cb(&dp->pdev->dev);
+ 
+-	/* start sanity checking */
++	/* start sentinel checking in case of missing uevent */
+ 	dp_add_event(dp, EV_DISCONNECT_PENDING_TIMEOUT, 0, DP_TIMEOUT_5_SECOND);
+ 
+ 	/* signal the disconnect event early to ensure proper teardown */
+@@ -682,7 +677,7 @@ static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
+ 
+ 	/* irq_hpd can happen at either connected or disconnected state */
+ 	state =  dp->hpd_state;
+-	if (state == ST_SUSPEND_PENDING) {
++	if (state == ST_DISPLAY_OFF) {
+ 		mutex_unlock(&dp->event_mutex);
+ 		return 0;
+ 	}
+@@ -1119,7 +1114,7 @@ static irqreturn_t dp_display_irq_handler(int irq, void *dev_id)
+ 		}
+ 
+ 		if (hpd_isr_status & DP_DP_IRQ_HPD_INT_MASK) {
+-			/* delete connect pending event first */
++			/* stop sentinel connect pending checking */
+ 			dp_del_event(dp, EV_CONNECT_PENDING_TIMEOUT);
+ 			dp_add_event(dp, EV_IRQ_HPD_INT, 0, 0);
+ 		}
+@@ -1252,13 +1247,10 @@ static int dp_pm_resume(struct device *dev)
+ 
+ 	status = dp_catalog_hpd_get_state_status(dp->catalog);
+ 
+-	if (status) {
++	if (status)
+ 		dp->dp_display.is_connected = true;
+-	} else {
++	else
+ 		dp->dp_display.is_connected = false;
+-		/* make sure next resume host_init be called */
+-		dp->core_initialized = false;
+-	}
+ 
+ 	mutex_unlock(&dp->event_mutex);
+ 
+@@ -1280,6 +1272,9 @@ static int dp_pm_suspend(struct device *dev)
+ 
+ 	dp->hpd_state = ST_SUSPENDED;
+ 
++	/* host_init will be called at pm_resume */
++	dp->core_initialized = false;
++
+ 	mutex_unlock(&dp->event_mutex);
+ 
+ 	return 0;
+@@ -1412,6 +1407,7 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 
+ 	mutex_lock(&dp_display->event_mutex);
+ 
++	/* stop sentinel checking */
+ 	dp_del_event(dp_display, EV_CONNECT_PENDING_TIMEOUT);
+ 
+ 	rc = dp_display_set_mode(dp, &dp_display->dp_mode);
+@@ -1430,7 +1426,7 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 
+ 	state =  dp_display->hpd_state;
+ 
+-	if (state == ST_SUSPEND_PENDING)
++	if (state == ST_DISPLAY_OFF)
+ 		dp_display_host_init(dp_display);
+ 
+ 	dp_display_enable(dp_display, 0);
+@@ -1442,7 +1438,8 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 		dp_display_unprepare(dp);
+ 	}
+ 
+-	if (state == ST_SUSPEND_PENDING)
++	/* manual kick off plug event to train link */
++	if (state == ST_DISPLAY_OFF)
+ 		dp_add_event(dp_display, EV_IRQ_HPD_INT, 0, 0);
+ 
+ 	/* completed connection */
+@@ -1474,6 +1471,7 @@ int msm_dp_display_disable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 
+ 	mutex_lock(&dp_display->event_mutex);
+ 
++	/* stop sentinel checking */
+ 	dp_del_event(dp_display, EV_DISCONNECT_PENDING_TIMEOUT);
+ 
+ 	dp_display_disable(dp_display, 0);
+@@ -1487,7 +1485,7 @@ int msm_dp_display_disable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 		/* completed disconnection */
+ 		dp_display->hpd_state = ST_DISCONNECTED;
+ 	} else {
+-		dp_display->hpd_state = ST_SUSPEND_PENDING;
++		dp_display->hpd_state = ST_DISPLAY_OFF;
+ 	}
+ 
+ 	mutex_unlock(&dp_display->event_mutex);
+diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
+index 2768d1d306f0..550871ba6e5a 100644
+--- a/drivers/gpu/drm/msm/dp/dp_panel.c
++++ b/drivers/gpu/drm/msm/dp/dp_panel.c
+@@ -196,6 +196,11 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
+ 					      &panel->aux->ddc);
+ 	if (!dp_panel->edid) {
+ 		DRM_ERROR("panel edid read failed\n");
++		/* check edid read fail is due to unplug */
++		if (!dp_catalog_hpd_get_state_status(panel->catalog)) {
++			rc = -ETIMEDOUT;
++			goto end;
++		}
+ 
+ 		/* fail safe edid */
+ 		mutex_lock(&connector->dev->mode_config.mutex);
 -- 
 2.35.1
 
