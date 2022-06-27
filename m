@@ -2,75 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15432CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 003B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239072AbiF0LxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
+        id S238905AbiF0Lws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238467AbiF0Lsa (ORCPT
+        with ESMTP id S238419AbiF0LsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:30 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747A8101CD
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:41:42 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id g20-20020a17090a579400b001ed52939d72so3703928pji.4
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:41:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Te7Bn8Ps7JLUBbyJF7xQc/CqErZW/fxCMAa/7Pn2yJM=;
-        b=qr4/FdoUOLjao3iROoOoGGqQLYxyZk8N4KJeqcyLsA/aLFlDP6ADm5eaypCcTYBSPk
-         GcR+tSWPRyMynemMo89OuGlPYzYpgQIHwbmoyJaRizq6YzIOsAuY+bM2Wpybp9byYCmN
-         +wNEEA5+2h5HYgBSBLlNI94gyV3xriVzK/Nn9y2v5RtzU8sUu02OS1wByd8UypL52h3v
-         dhJ+N+/WL1OqQwhpFa+NOYZjGSWAs5q/5iXcyDb07X8QqV+Vqe83pmqp65flZ7qD0k3L
-         gUZocr93jSt/REJ8P7inp/EIoXZx8zAjRt4RHyT4rRZXyK1SuSaVkqIkuVzYcfn2pT7n
-         Ksow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Te7Bn8Ps7JLUBbyJF7xQc/CqErZW/fxCMAa/7Pn2yJM=;
-        b=jNFCZ7NwzIfD6wHcDofLteyQgMst59ZeXkctxoVgehWv3TaNJxpq117QLn5CWD9MYh
-         CTJxetPPdh/ilt9JebaeCVK2jf+DrduiPxpQRUjIVJkbJNbjS10OTmEZIDe2Ae08VtPE
-         CCqF27QCtGxNvs694ldTlKlSNqyMHi6gl0uwOT9zJ8o/5Qde9qQ7qSUp1BZv2bJsgaE9
-         nREx99GdKhZENN6YlMKneln78kbxhdZKe5z60g2sl9aUfrdAdwWZlvzwLehE/lG/+w/T
-         kngwoPVkXgrmHmT1JZdTXvB8GRtW+10iBPmaS9tkCUi1Ai4oEq9U/8ttkC2QV7iZAENC
-         u8BQ==
-X-Gm-Message-State: AJIora9m0eARoK3G2PRhOT2CwOF2axb+QA6UFbv8HhtzOSVE7SwJZxHt
-        68FNrIQ1eO3j6091GeRPLk4=
-X-Google-Smtp-Source: AGRyM1tez5E2FyjPLs5PGhg40qU0H0E3SQlD0MFHWrBuezbgs9Ad5uO//+4+CT6fA8NmPaeVeHiALg==
-X-Received: by 2002:a17:90a:6809:b0:1ec:c213:56c8 with SMTP id p9-20020a17090a680900b001ecc21356c8mr20399771pjj.82.1656330101753;
-        Mon, 27 Jun 2022 04:41:41 -0700 (PDT)
-Received: from desktop-hypoxic.kamiya.io ([42.120.103.58])
-        by smtp.gmail.com with ESMTPSA id q2-20020a170902f34200b0016a2a8c7e8fsm6974942ple.143.2022.06.27.04.41.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 04:41:41 -0700 (PDT)
-From:   Yangxi Xiang <xyangxi5@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Igor Matheus Andrade Torrente <igormtorrente@gmail.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        nick black <dankamongmen@gmail.com>
-Subject: Re: [PATCH] vt: fix memory overlapping when deleting chars in the buffer
-Date:   Mon, 27 Jun 2022 19:40:16 +0800
-Message-Id: <20220627114016.11114-1-xyangxi5@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <YrmPi/D4dZAySgll@kroah.com>
-References: <YrmPi/D4dZAySgll@kroah.com>
+        Mon, 27 Jun 2022 07:48:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94232101C1;
+        Mon, 27 Jun 2022 04:41:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B925B81126;
+        Mon, 27 Jun 2022 11:41:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DE56C3411D;
+        Mon, 27 Jun 2022 11:41:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656330078;
+        bh=0sZqkdqtCra6Zro9JUssCMtJzNRrN0Q9FYW9SkAAj4w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=P+gkwiXyVUMPmh4uG+OX8HoKGJTVUAq4++jJwTaQ0VTSG9QZqFUU/Q1bxL+Td+iDg
+         d1Mt4vUT1BNuoozJWHMBp9lQJyanrJL1J56ljcdD0JgOlBSi5LDgz3ZzmdEqvpl8MV
+         2kN1JR4Ev95BPL5WGvOR/LFgchldeAMix03ZRk5c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 075/181] net/tls: fix tls_sk_proto_close executed repeatedly
+Date:   Mon, 27 Jun 2022 13:20:48 +0200
+Message-Id: <20220627111946.738369250@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
+References: <20220627111944.553492442@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> And what commit id does this fix, or has it always been broken?
+From: Ziyang Xuan <william.xuanziyang@huawei.com>
 
-It fixes the commit 81732c3 (tty vt: Fix line garbage in virtual
-console on command line edition). The line buffer is not always
-broken, because the memcpy utilized the hardware acceleration, whose
-result is not deterministic. I fix this issue by replacing the
-scr_memcpyw with scr_memmovew used in insert_char, and preserving the
-memcpy optimization when the buffers are not overlapping.
+[ Upstream commit 69135c572d1f84261a6de2a1268513a7e71753e2 ]
 
-Yangxi Xiang
+After setting the sock ktls, update ctx->sk_proto to sock->sk_prot by
+tls_update(), so now ctx->sk_proto->close is tls_sk_proto_close(). When
+close the sock, tls_sk_proto_close() is called for sock->sk_prot->close
+is tls_sk_proto_close(). But ctx->sk_proto->close() will be executed later
+in tls_sk_proto_close(). Thus tls_sk_proto_close() executed repeatedly
+occurred. That will trigger the following bug.
+
+=================================================================
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+RIP: 0010:tls_sk_proto_close+0xd8/0xaf0 net/tls/tls_main.c:306
+Call Trace:
+ <TASK>
+ tls_sk_proto_close+0x356/0xaf0 net/tls/tls_main.c:329
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:428
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1365
+
+Updating a proto which is same with sock->sk_prot is incorrect. Add proto
+and sock->sk_prot equality check at the head of tls_update() to fix it.
+
+Fixes: 95fa145479fb ("bpf: sockmap/tls, close can race with map free")
+Reported-by: syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/tls/tls_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 7b2b0e7ffee4..fc60bef83f90 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -873,6 +873,9 @@ static void tls_update(struct sock *sk, struct proto *p,
+ {
+ 	struct tls_context *ctx;
+ 
++	if (sk->sk_prot == p)
++		return;
++
+ 	ctx = tls_get_ctx(sk);
+ 	if (likely(ctx)) {
+ 		ctx->sk_write_space = write_space;
+-- 
+2.35.1
+
+
+
