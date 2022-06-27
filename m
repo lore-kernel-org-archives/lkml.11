@@ -2,100 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E534BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C553ACCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:46:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236208AbiF0Nq2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49508 "EHLO
+        id S236221AbiF0Nq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233224AbiF0Nq0 (ORCPT
+        with ESMTP id S236207AbiF0Nq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:46:26 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612005FE6
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:46:25 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id k129so4060405wme.0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:46:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=LGnjZjMgNQjjpT6vk/yU6tWzkORqa0MTnCOvzva+faY=;
-        b=XS5NG7d9dhRv3vfxHj+NNSuqz724i7KVRnYtrArOwbFU4ye6nmTf7wFDnK5Pr4F6w2
-         TD/x3vhC1x11KbeSWVkDvuNjYlOF8hffkJW+ekq2av3v0rJmMKfCQduLgXYM2wTYA0a0
-         BXSCMRPhuHXYQK9IjhYLTOlII/dY+6tAqJxwLy/QGj7OrelMwJq66W1AnRZlL3RdVFU7
-         qpGCJRYDv1/gPgmSlAgOKSP9HKHyZjGXzPXbhhI3jkDyBVEUsAx9yAx6/y0vYhRFnJ6h
-         6MD7YEO9iLSsYPGBzpIlP7mNqJYfrjphmYmNIlM0JLy4EdqabdtTUW7DRNAFtynNaThP
-         /zcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=LGnjZjMgNQjjpT6vk/yU6tWzkORqa0MTnCOvzva+faY=;
-        b=vHoD3L4UFDb0ZqriLx4xBKvJZ/0udQlmh8XGFOLFFST3gEl35uDYbl68zNDhf8SKoQ
-         sOKOidr5fR0HdTmTqSDiCOdp0PhVrKAFPEkaSQ+Y7VxK6dledZrtUIvqgOy40ejgWx32
-         j5Vq1eFJ0vyr0CeUR1uBUt/6BHubENQ7K2DkctyJA9FK95OISV4fG89S+EULFZNqHWpP
-         GOJM39fPqJAVZqKpxmb/mS6YnwR6atcOwup74X9Nmdsl6/RUjfrqzbh55BXhFSPrSA4X
-         iACwLAGWczzCGiP/dyOFwiNC/0ZJUD0FZz4X0DVnkbD6p23kv8KCLrJQxZc9LG0cwnxQ
-         /UKw==
-X-Gm-Message-State: AJIora/DyxJKZDK07IXKoDdTPT+Wvp7HKkMwEepoEokt5b+NITQ5QD4k
-        GedGLLFLnomKbQNcJiImG7CBEY35rgszGA==
-X-Google-Smtp-Source: AGRyM1u78796Z4LX2iHZSPEgvOHod7hz5vFvKKcOt2cEsXGqXyuV1i4kybJSIjWJFmLQo4lfZDpx4g==
-X-Received: by 2002:a7b:c8d2:0:b0:3a0:2fd0:177 with SMTP id f18-20020a7bc8d2000000b003a02fd00177mr20174364wml.23.1656337583949;
-        Mon, 27 Jun 2022 06:46:23 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id e16-20020a5d4e90000000b0021b91d1ddbfsm10360253wru.21.2022.06.27.06.46.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:46:23 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 14:46:21 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 9/9] mfd: intel_soc_pmic_crc: Update the copyright year
-Message-ID: <Yrm0rXd2ok8bJkTm@google.com>
-References: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
- <20220616182524.7956-9-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        Mon, 27 Jun 2022 09:46:27 -0400
+X-Greylist: delayed 581 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 06:46:27 PDT
+Received: from mail.schwermer.no (mail.schwermer.no [49.12.228.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0B45FE6
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:46:26 -0700 (PDT)
+X-Virus-Scanned: Yes
+From:   Sven Schwermer <sven@svenschwermer.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svenschwermer.de;
+        s=mail; t=1656337003;
+        bh=MdvDeolfGEI+XD+m0bExOjxknYBsPePR2vr4zCgI4uE=;
+        h=From:To:Cc:Subject:In-Reply-To:References;
+        b=u1FzuNABNwE1tKB6IJ/XSJOodrU7Ik1wajPzvIyIrNphF2NZ7FJetnKyJGLIQZULR
+         yYkPZZn+h2UofZKG4ZDMQvdPs/7Pr5Xxd49sFpeyMmOCOgze/cWJOz5Mm1vIKB2FwX
+         cRTLey4JqRAcneqw37/42DXb3HrsRTBeUscFE7TsV72ypoVAPvCmejihJqN6/9a1+U
+         ijmTxmh0OtMrofVwcLQkJOtVEtwMKRBNxVmgsiCo3AnK4OARZP2K+mSAaAQcRWXd47
+         TKasI1IZnmSWFiMcgGsi595HhpJLIlBSZoPH+kzq5jv/UMJheIWXWzSW5qL/TnDPs5
+         DYdMSO5IMjm+Q==
+To:     linux-usb@vger.kernel.org, oliver@neukum.org
+Cc:     Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND v2 2/2] net: usb: cdc_ether: Add Fibocom MA510 modem
+Date:   Mon, 27 Jun 2022 15:36:20 +0200
+Message-Id: <20220627133620.272716-2-sven@svenschwermer.de>
+In-Reply-To: <20220627133620.272716-1-sven@svenschwermer.de>
+References: <20220627133620.272716-1-sven@svenschwermer.de>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220616182524.7956-9-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022, Andy Shevchenko wrote:
+From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
 
-> Update the copyright year to be 2012-2014, 2022.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/mfd/intel_soc_pmic_crc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_crc.c
-> index bb3cc1a808f0..0e5aae7ae9ad 100644
-> --- a/drivers/mfd/intel_soc_pmic_crc.c
-> +++ b/drivers/mfd/intel_soc_pmic_crc.c
-> @@ -2,7 +2,7 @@
->  /*
->   * Device access for Crystal Cove PMIC
->   *
-> - * Copyright (C) 2012-2014 Intel Corporation. All rights reserved.
-> + * Copyright (C) 2012-2014, 2022 Intel Corporation. All rights reserved.
+Since this is a modem device enumerating as an Ethernet adapter, we need
+to whitelist it as a WWAN device which tells userspace that this device
+requires setup (via AT commands) before it can be used.
 
-Same question as before.
+The MA510 modem has 3 USB configurations that are configurable via the AT
+command AT+GTUSBMODE={30,31,32} which make the modem enumerate with the
+following interfaces, respectively:
 
-What happens between these dates?
+30: Diag + QDSS + Modem + RMNET
+31: Diag + Modem + AT + ECM
+32: Modem + AT + ECM
 
->   * Author: Yang, Bin <bin.yang@intel.com>
->   * Author: Zhu, Lejun <lejun.zhu@linux.intel.com>
+Detailed descriptions of the ECM-mode USB configurations follow:
 
++GTUSBMODE: 31
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#= 99 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2cb7 ProdID=0106 Rev= 0.00
+S:  Manufacturer=Fibocom MA510 Modem
+S:  Product=Fibocom MA510 Modem
+S:  SerialNumber=55e2695b
+C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
+A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=82(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+E:  Ad=84(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+E:  Ad=86(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
++GTUSBMODE: 32
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=100 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2cb7 ProdID=010a Rev= 0.00
+S:  Manufacturer=Fibocom MA510 Modem
+S:  Product=Fibocom MA510 Modem
+S:  SerialNumber=55e2695b
+C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+A:  FirstIf#= 2 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+I:  If#= 3 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+I:* If#= 3 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
+Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+---
+ drivers/net/usb/cdc_ether.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index d165df1ad6d6..90685f5da91c 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -1006,6 +1006,18 @@ static const struct usb_device_id	products[] = {
+ 				      USB_CDC_SUBCLASS_ETHERNET,
+ 				      USB_CDC_PROTO_NONE),
+ 	.driver_info = (unsigned long)&wwan_info,
++}, {
++	/* Fibocom MA510 (ECM mode; +GTUSBMODE=31) */
++	USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x0106, USB_CLASS_COMM,
++				      USB_CDC_SUBCLASS_ETHERNET,
++				      USB_CDC_PROTO_NONE),
++	.driver_info = (unsigned long)&wwan_info,
++}, {
++	/* Fibocom MA510 (ECM mode; +GTUSBMODE=32) */
++	USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x010a, USB_CLASS_COMM,
++				      USB_CDC_SUBCLASS_ETHERNET,
++				      USB_CDC_PROTO_NONE),
++	.driver_info = (unsigned long)&wwan_info,
+ }, {
+ 	USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ETHERNET,
+ 			USB_CDC_PROTO_NONE),
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.36.1
+
