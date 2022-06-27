@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4021FCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E768CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238807AbiF0Lyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
+        id S238884AbiF0Lyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238479AbiF0Lsa (ORCPT
+        with ESMTP id S238483AbiF0Lsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35E5101CC;
-        Mon, 27 Jun 2022 04:41:46 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204B0BF59;
+        Mon, 27 Jun 2022 04:41:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D82CB81144;
-        Mon, 27 Jun 2022 11:41:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00658C3411D;
-        Mon, 27 Jun 2022 11:41:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B217861192;
+        Mon, 27 Jun 2022 11:41:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFED4C3411D;
+        Mon, 27 Jun 2022 11:41:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330104;
-        bh=kCwdNzqMem6ihDmySz6U2kWUQrGOpG+87jgLRiwTaSE=;
+        s=korg; t=1656330110;
+        bh=viIllrMNqwwOM5W6eSKdS3DEUhpKz86OL8D4zf+4BfI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bn94/jzRm2jBhbEGf4eAAORjvJOssJ3MnWqOQqEOnUMzxRZwX1n8XLW+TRiHHYSrJ
-         TPvJ4fwCQGsFCPUrFb7fzPSvYOI/cT4DUW/YzibAe9tM/GfjXeIhMQ6bfkRN3pMD6m
-         JoMjx2/HYT297asB53+ncrcJzJZa9e8HFDb7vE8E=
+        b=2E4BoDJiX8qJpb265i0hmGLhkyNic70+faB43q2GtmVJX2sw8i+6kNi7GtXb2tPwJ
+         JXUGWCIYso8yxuvm4Eg48b/Dx9dxsRuyG7iiWe5Ev5sdF+XkEB6X+HChbdqfbmSbJK
+         ak/cuqPJrzuVZgJsu+qLNxB3lKQwADdi7Ad1q47I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 084/181] block: pop cached rq before potentially blocking rq_qos_throttle()
-Date:   Mon, 27 Jun 2022 13:20:57 +0200
-Message-Id: <20220627111946.996652252@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marcin Szycik <marcin.szycik@linux.intel.com>,
+        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 085/181] ice: ignore protocol field in GTP offload
+Date:   Mon, 27 Jun 2022 13:20:58 +0200
+Message-Id: <20220627111947.025128170@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -48,56 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Marcin Szycik <marcin.szycik@linux.intel.com>
 
-[ Upstream commit 2645672ffe21f0a1c139bfbc05ad30fd4e4f2583 ]
+[ Upstream commit d4ea6f6373ef56d1d795a24f1f5874f4a6019199 ]
 
-If rq_qos_throttle() ends up blocking, then we will have invalidated and
-flushed our current plug. Since blk_mq_get_cached_request() hasn't
-popped the cached request off the plug list just yet, we end holding a
-pointer to a request that is no longer valid. This insta-crashes with
-rq->mq_hctx being NULL in the validity checks just after.
+Commit 34a897758efe ("ice: Add support for inner etype in switchdev")
+added the ability to match on inner ethertype. A side effect of that change
+is that it is now impossible to add some filters for protocols which do not
+contain inner ethtype field. tc requires the protocol field to be specified
+when providing certain other options, e.g. src_ip. This is a problem in
+case of GTP - when user wants to specify e.g. src_ip, they also need to
+specify protocol in tc command (otherwise tc fails with: Illegal "src_ip").
+Because GTP is a tunnel, the protocol field is treated as inner protocol.
+GTP does not contain inner ethtype field and the filter cannot be added.
 
-Pop the request off the cached list before doing rq_qos_throttle() to
-avoid using a potentially stale request.
+To fix this, ignore the ethertype field in case of GTP filters.
 
-Fixes: 0a5aa8d161d1 ("block: fix blk_mq_attempt_bio_merge and rq_qos_throttle protection")
-Reported-by: Dylan Yudaken <dylany@fb.com>
-Tested-by: Dylan Yudaken <dylany@fb.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 9a225f81f540 ("ice: Support GTP-U and GTP-C offload in switchdev")
+Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 631fb87b4976..37caa73bff89 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -2777,15 +2777,20 @@ static inline struct request *blk_mq_get_cached_request(struct request_queue *q,
- 		return NULL;
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+index 3acd9f921c44..734bfa121e24 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -994,7 +994,9 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
+ 		n_proto_key = ntohs(match.key->n_proto);
+ 		n_proto_mask = ntohs(match.mask->n_proto);
  
--	rq_qos_throttle(q, *bio);
--
- 	if (blk_mq_get_hctx_type((*bio)->bi_opf) != rq->mq_hctx->type)
- 		return NULL;
- 	if (op_is_flush(rq->cmd_flags) != op_is_flush((*bio)->bi_opf))
- 		return NULL;
- 
--	rq->cmd_flags = (*bio)->bi_opf;
-+	/*
-+	 * If any qos ->throttle() end up blocking, we will have flushed the
-+	 * plug and hence killed the cached_rq list as well. Pop this entry
-+	 * before we throttle.
-+	 */
- 	plug->cached_rq = rq_list_next(rq);
-+	rq_qos_throttle(q, *bio);
-+
-+	rq->cmd_flags = (*bio)->bi_opf;
- 	INIT_LIST_HEAD(&rq->queuelist);
- 	return rq;
- }
+-		if (n_proto_key == ETH_P_ALL || n_proto_key == 0) {
++		if (n_proto_key == ETH_P_ALL || n_proto_key == 0 ||
++		    fltr->tunnel_type == TNL_GTPU ||
++		    fltr->tunnel_type == TNL_GTPC) {
+ 			n_proto_key = 0;
+ 			n_proto_mask = 0;
+ 		} else {
 -- 
 2.35.1
 
