@@ -2,130 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF06C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1117C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238008AbiF0PZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 11:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40802 "EHLO
+        id S238219AbiF0P1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 11:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238014AbiF0PZd (ORCPT
+        with ESMTP id S238076AbiF0P1p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 11:25:33 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7993718B29;
-        Mon, 27 Jun 2022 08:25:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656343532; x=1687879532;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xJP9OefAMxCTgdzZDCaOuKXFij4QIj41i5jxXMS1AdM=;
-  b=f+F119vY0+Oa3b+eLjeAwSBqKVjPEWXrHqBv6amHvJPB4/H1Kn/2k3Zh
-   hopZmpI/JyDcOMxE7OoyZdVNZFW5Bf9xiVO0BjTZP/m3d7l1zBd3dD0Z+
-   fBLQj5Q/KmkEKaCKmb9mSHOMmE765RCvNQA1OIUsyhw7XPyZdrjIv0pB9
-   eOPq3CBIsj0KypMKzc76MTyRfFNo2digNiMOiHI2+70WiJf1LOk1HXYf1
-   gQ29WwDOaoaOu/B1PT/GvnkZuzmOpPlm24jTax0eS7qPUU8dkUgUvOAX2
-   7tofhsMkbcEHKBhD1JW4kqgYl7m/L24q3k4LaTbSfrjN6nMSqrcReG/VU
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279013691"
-X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
-   d="scan'208";a="279013691"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 08:13:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
-   d="scan'208";a="766731304"
-Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
-  by orsmga005.jf.intel.com with ESMTP; 27 Jun 2022 08:12:58 -0700
-Date:   Mon, 27 Jun 2022 23:12:58 +0800
-From:   Feng Tang <feng.tang@intel.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>, Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-Message-ID: <20220627151258.GB20878@shbuild999.sh.intel.com>
-References: <20220623185730.25b88096@kernel.org>
- <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
- <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
- <20220624070656.GE79500@shbuild999.sh.intel.com>
- <20220624144358.lqt2ffjdry6p5u4d@google.com>
- <20220625023642.GA40868@shbuild999.sh.intel.com>
- <20220627023812.GA29314@shbuild999.sh.intel.com>
- <CANn89i+6NPujMyiQxriZRt6vhv6hNrAntXxi1uOhJ0SSqnJ47w@mail.gmail.com>
- <20220627123415.GA32052@shbuild999.sh.intel.com>
- <CALvZod7i_=7bNZR-LAXBPXJFxj-1KBuYs+rmG0iABAE1T90BPg@mail.gmail.com>
+        Mon, 27 Jun 2022 11:27:45 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C482B18E2D;
+        Mon, 27 Jun 2022 08:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.uk; i=@amazon.co.uk; q=dns/txt;
+  s=amazon201209; t=1656343663; x=1687879663;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version:subject;
+  bh=YEgapIC6vw4gM3xTcvv8zbRwoB5EdirAlDgdpfFvDmI=;
+  b=HWYTG1vAw/a/bCVys46MZt4O6f8JZZ+GB+GZKhEyjKqKqD426hp6pPNO
+   PyGs21h3uZ2lZI88AiJ6EuBAvgEf9l9hgZQH0Xok9cSAc9qdyyyyMM6XA
+   PPFk1NA7Ghgv8Uav1vGxqAHo1zvk7d1YE+kFM/BT4fV3tVY0DYupT2g8e
+   M=;
+X-IronPort-AV: E=Sophos;i="5.92,226,1650931200"; 
+   d="scan'208";a="1028517709"
+Subject: RE: [PATCH v4] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
+ if present
+Thread-Topic: [PATCH v4] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
+ if present
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-c275e159.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 27 Jun 2022 15:23:55 +0000
+Received: from EX13D32EUC004.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-c275e159.us-west-2.amazon.com (Postfix) with ESMTPS id 6A41C814F0;
+        Mon, 27 Jun 2022 15:23:55 +0000 (UTC)
+Received: from EX13D32EUC003.ant.amazon.com (10.43.164.24) by
+ EX13D32EUC004.ant.amazon.com (10.43.164.121) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Mon, 27 Jun 2022 15:23:54 +0000
+Received: from EX13D32EUC003.ant.amazon.com ([10.43.164.24]) by
+ EX13D32EUC003.ant.amazon.com ([10.43.164.24]) with mapi id 15.00.1497.036;
+ Mon, 27 Jun 2022 15:23:54 +0000
+From:   "Durrant, Paul" <pdurrant@amazon.co.uk>
+To:     Sean Christopherson <seanjc@google.com>
+CC:     "x86@kernel.org" <x86@kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        "Paolo Bonzini" <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        "Joerg Roedel" <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Thread-Index: AQHYhkt9PlSgQj3r2kG3c5Kzi5Ybkq1jZe+AgAAAylA=
+Date:   Mon, 27 Jun 2022 15:23:54 +0000
+Message-ID: <91a4b01e8d9b4b3c9ed43614810e75ce@EX13D32EUC003.ant.amazon.com>
+References: <20220622151728.13622-1-pdurrant@amazon.com>
+ <YrnKc6RoqDM/At3T@google.com>
+In-Reply-To: <YrnKc6RoqDM/At3T@google.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.192]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALvZod7i_=7bNZR-LAXBPXJFxj-1KBuYs+rmG0iABAE1T90BPg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 07:52:55AM -0700, Shakeel Butt wrote:
-> On Mon, Jun 27, 2022 at 5:34 AM Feng Tang <feng.tang@intel.com> wrote:
-> > Yes, 1% is just around noise level for a microbenchmark.
+> -----Original Message-----
+> From: Sean Christopherson <seanjc@google.com>
+> Sent: 27 June 2022 16:19
+> To: Durrant, Paul <pdurrant@amazon.co.uk>
+> Cc: x86@kernel.org; kvm@vger.kernel.org; linux-kernel@vger.kernel.org; Da=
+vid Woodhouse
+> <dwmw2@infradead.org>; Paolo Bonzini <pbonzini@redhat.com>; Vitaly Kuznet=
+sov <vkuznets@redhat.com>;
+> Wanpeng Li <wanpengli@tencent.com>; Jim Mattson <jmattson@google.com>; Jo=
+erg Roedel <joro@8bytes.org>;
+> Thomas Gleixner <tglx@linutronix.de>; Ingo Molnar <mingo@redhat.com>; Bor=
+islav Petkov <bp@alien8.de>;
+> Dave Hansen <dave.hansen@linux.intel.com>; H. Peter Anvin <hpa@zytor.com>
+> Subject: RE: [EXTERNAL][PATCH v4] KVM: x86/xen: Update Xen CPUID Leaf 4 (=
+tsc info) sub-leaves, if
+> present
+>=20
+> CAUTION: This email originated from outside of the organization. Do not c=
+lick links or open
+> attachments unless you can confirm the sender and know the content is saf=
+e.
+>=20
+>=20
+>=20
+> On Wed, Jun 22, 2022, Paul Durrant wrote:
+> > The scaling information in subleaf 1 should match the values set by KVM=
+ in
+> > the 'vcpu_info' sub-structure 'time_info' (a.k.a. pvclock_vcpu_time_inf=
+o)
+> > which is shared with the guest, but is not directly available to the VM=
+M.
+> > The offset values are not set since a TSC offset is already applied.
+> > The TSC frequency should also be set in sub-leaf 2.
 > >
-> > I went check the original test data of Oliver's report, the tests was
-> > run 6 rounds and the performance data is pretty stable (0Day's report
-> > will show any std deviation bigger than 2%)
-> >
-> > The test platform is a 4 sockets 72C/144T machine, and I run the
-> > same job (nr_tasks = 25% * nr_cpus) on one CascadeLake AP (4 nodes)
-> > and one Icelake 2 sockets platform, and saw 75% and 53% regresson on
-> > them.
-> >
-> > In the first email, there is a file named 'reproduce', it shows the
-> > basic test process:
-> >
-> > "
-> >   use 'performane' cpufre  governor for all CPUs
-> >
-> >   netserver -4 -D
-> >   modprobe sctp
-> >   netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-> >   netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-> >   netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-> >   (repeat 36 times in total)
-> >   ...
-> >
-> > "
-> >
-> > Which starts 36 (25% of nr_cpus) netperf clients. And the clients number
-> > also matters, I tried to increase the client number from 36 to 72(50%),
-> > and the regression is changed from 69.4% to 73.7%
-> >
-> 
-> Am I understanding correctly that this 69.4% (or 73.7%) regression is
-> with cgroup v2?
+> > Cache pointers to the sub-leaves when CPUID is updated by the VMM and
+> > populate the relevant information prior to entering the guest.
+>=20
+> All of my comments about the code still apply.
+>=20
+> https://lore.kernel.org/all/YrMqtHzNSean+qkh@google.com
+>=20
 
-Yes.
+Apologies. Not sure how I missed them; I'll send a response shortly.
 
-> Eric did the experiments on v2 but on real hardware where the
-> performance impact was negligible.
-> 
-> BTW do you see similar regression for tcp as well or just sctp?
+> > Signed-off-by: Paul Durrant <pdurrant@amazon.com>
+> > ---
+> > Cc: David Woodhouse <dwmw2@infradead.org>
+>=20
+> Cc: can go in the changelog, it's helpful info to carry with the commit a=
+s it
+> documents who was made aware of the patch, e.g. show who may have had a c=
+ance to
+> object/review.
+>=20
+> >
+> > v2:
+> >  - Make sure sub-leaf pointers are NULLed if the time leaf is removed
+> >
+> > v3:
+> >  - Add leaf limit check in kvm_xen_set_cpuid()
+> >
+> > v4:
+> >  - Update commit comment
+>=20
+> Please start with the most recent verison and work backardwards, that way=
+ reviewers
+> can quickly see the delta for _this_ version.  I.e.
+>=20
+>=20
+> v4:
+>=20
+> v3:
+>=20
+> v2:
+>=20
+> v1:
 
-Yes, I run TCP_SENDFILE case with 'send_size'==10K, it hits a
-70%+ regressioin. 
+Ok.
 
-Thanks,
-Feng
+  Paul
+
