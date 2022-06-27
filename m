@@ -2,154 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8989C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B634C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240344AbiF0Tki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        id S240436AbiF0TlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231765AbiF0Tkf (ORCPT
+        with ESMTP id S238708AbiF0TlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 15:40:35 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2069.outbound.protection.outlook.com [40.107.21.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1562815A27;
-        Mon, 27 Jun 2022 12:40:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lz3zQV9TPcMXfDmpjQ9Pu0E+upYtc347huEzj6j+Y/KxhxUaT0TqLAcmE6XOkZOsgpk/uNknr2BrmEhOcijc5YMIwWqxnSTFDmjnOHTjGnWCo3dapAp0ZDRHfcqC+NbZZPxQaLuNy8eGwt4Xp7QPZBcqbcUFg+K0SDc5uWcfagBP2vW3tQNsW8adTPqfGm2CKfgx/mTktVzjJPbNeAkOLUNoCcJfE14CiLcJxUe3vTJ2qqtsHHbsohv4qhkdCdLKL2z6iRisOwTexrpVEN3d9ixnyy9lxCjeoG05nc+zEMkDDpkgYlJpbLOU1NyJao1PeJfmGwOkz9dtOnrx3X64Gw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jQ0NdlynsJ/Q02qrRa0Yf30IESLNZcAJIQj7uUlJmas=;
- b=eoDwMNIQtQP1gk2Fl9Z2GVbraBILZVObGb6ob8b++EkmUJgFoT8+Y3g2Ii1f85BafQ6/jnjfOUNxRAdhOElDR76ZtkZNUHNFJKEW4LL3JKsZOrfDJVIxFshyQQfwvizkh7MWIwAINGDsHe5T0SiyPN8LnlUXjiPaNXDXUeAqmBEcoZs1QWca2LZso+NjzLFAVes8cb8Z3qqYxEwpUEbgispaLEdIuNsAWq17kNkxxEfPIfeYmWaDGqAwAMCQ/+TpcSQm3jqSm6jRid04XSwVnygXZTRYtTljtlLxmd/amDTL+lawZjaOfJBJYqSI8Y8EtAtAuC2yiLLEqH6wuzxpZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jQ0NdlynsJ/Q02qrRa0Yf30IESLNZcAJIQj7uUlJmas=;
- b=i7m1WORlB9YOAxIxQAu4BsCeeoEf8EFA9JWaJEN0p5he6B1c/eTRCUFJ/Bjc3uh/72YN67E8V7pgpYp4leT+DVcFYacZFaSMZlQtGwwppuuwLGfGulQHYvNmaifPVZCbkGrJs1ILHaml70zAlBkBfGsW3VtDn2qx7Hkm9PJMo6M=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB6PR0401MB2535.eurprd04.prod.outlook.com (2603:10a6:4:34::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Mon, 27 Jun
- 2022 19:40:31 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::94fe:9cbe:247b:47ea]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::94fe:9cbe:247b:47ea%7]) with mapi id 15.20.5373.018; Mon, 27 Jun 2022
- 19:40:31 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Walle <michael@walle.cc>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Richie Pearn <richard.pearn@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 4/4] net: dsa: felix: drop oversized frames with
- tc-taprio instead of hanging the port
-Thread-Topic: [PATCH net-next 4/4] net: dsa: felix: drop oversized frames with
- tc-taprio instead of hanging the port
-Thread-Index: AQHYiVUMDrzfbWhGTUGNTUf+r0GzEa1jmdQAgAAPBgA=
-Date:   Mon, 27 Jun 2022 19:40:31 +0000
-Message-ID: <20220627194030.uyaygut2n2sjywni@skbuf>
-References: <20220626120505.2369600-1-vladimir.oltean@nxp.com>
- <20220626120505.2369600-5-vladimir.oltean@nxp.com>
- <20220627114644.6c2c163b@kernel.org>
-In-Reply-To: <20220627114644.6c2c163b@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b6160460-c5f9-44f3-7c29-08da5874e541
-x-ms-traffictypediagnostic: DB6PR0401MB2535:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: j5iAjpB2/ML+3PQO4a+WfgRU1+FgXDhsBVrhQ3Nbqr6JTnlY+AGeEebUtpFxeX5rmcF/RrC1p8m9hkz9fUFgpjsl9Sfk+n6MqiI99+DAY71ewkfeXhVlGtkIQkYsNY1ovb1L3d3I2jB0M3hz7n+a9jmy1vJqTD9eW7gfjp54xBPalpFGtl4x//+dDwq0Vr0r76m7lzX+FA+6VH8Usgs/bWcQhIg0xrOyxIPea1QTqhAy9tgTnmtFdo7Ljirv9dBnZeIkOSUdgZpxYkIfNUz2LQOShg31kEx0tGRx0WhAP1Bx0PbjEERQ/JVvckxb8ui9or5CmN0R1Amb/5+Z8ct8ZpHb4A8EAObpdoN+eFiJhLNhfpK0gVKLwD+6phb20CxXxfiJO/ZQFD3vbUxBe5dt/52VdIDaYx7+KjKYthW3bQ0A3pKZllUBOESErWytt7TAIwg2Z9veRWfBJzb++Znv/g3EpUpg3ih3rTyF2jIVMp7WtynLsgo2hOTvd6BJaUn38cT6Yho3xKYCY/1mNZ4ivMar1ZUCWixPMv0RO0naHFH4d2JB+v9EBceXd+NC0oiFjcfQXbI/WXLKWpsavlLkqEuwLxdknQj9j8GKiE0JxAdlsQ7fNlB3pTz7FpFUXWlgDsPrGn8OejSdR0IsN3hspZzGVWwfN1Y7RCxUnWF3J80tAEllwBfG/gwB69rBpLbSaDuXPV3NkYEEiA6qHz2eEU4x5hUy/BClcAR/xADxd5Tx6e4+ECPK+3YQJto65qUCwuATmtZLWpd5tkZen/EWOJtquO/OihIDlWS/CVzFCoA=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(38070700005)(26005)(122000001)(91956017)(71200400001)(7416002)(6916009)(54906003)(5660300002)(41300700001)(76116006)(9686003)(64756008)(66446008)(2906002)(6512007)(44832011)(6506007)(478600001)(1076003)(8936002)(86362001)(83380400001)(38100700002)(186003)(33716001)(66556008)(8676002)(4326008)(66946007)(316002)(6486002)(66476007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9RiEqZlP20Xf6j9gr23ZWe4MlmylLLQ+J/tyCRwKUKKlS+Z0MveRMwekfiSv?=
- =?us-ascii?Q?sV+1MbK3GmpTrJKkEDl72qQT08SlDeBinNSNJzmcy1xc1YbSpuhMqn00KH2B?=
- =?us-ascii?Q?XKZKDOzmM4S5+S/rwyaV88kQvaDTP4BgxlBB1geytrMs7j+8S/i9Rmp7z0xP?=
- =?us-ascii?Q?ijn1+z/VW5JICTvsB/jMLBHujJ65Vq6zxheu9Y4dNi/QYy7L3XuStWCtH0z5?=
- =?us-ascii?Q?ifaSB4d+rKdvd+eIrGKBlp34nqBfOWMF/fDRNDP5vWEd/dRELB8WnZ/WHIWB?=
- =?us-ascii?Q?DRA+lEGaOPyew4C+EmC0VBq6cpr+vk011IaxIQkL6QKufoC4XvvzyK8kKHT1?=
- =?us-ascii?Q?mK/34WT6QT0/EDKvWg5iaxOMRHoIjefQBWWlVfB9UcjMinFrgI6rpq6kxaFL?=
- =?us-ascii?Q?VBG1eJTWhNe28V5bomE1bYJ7ttz1/u2VumEZFgYZR8JRBO+KAHdDZspUjIZm?=
- =?us-ascii?Q?iL31N22kWJYcXh+3RZg0yiD+3iXPpQ04Aw3igkuppRqym1iKlUY7gWQU6rp9?=
- =?us-ascii?Q?CPtm8YpJf/3wDu79sv3hkmRo4Hkkeb6sgKDJ8+siebo1AlJP6sTEMGZABT28?=
- =?us-ascii?Q?05uM+Mlf4HoabpPhfmMYBuIkbnHCIUJYuC6q2eHKcCMF7P+rZbS1wqMO+hhr?=
- =?us-ascii?Q?5pXVD2M/ntmSE90AeXooen2b8kgy1OAuK1t5TJISAms00SCeTQf20mAXiuBK?=
- =?us-ascii?Q?XRk4KlEYD/4YWwPEY+6gPXM85IOYVNDaW7Mo7YRr2LM1vYMaNFljD3NS15ey?=
- =?us-ascii?Q?RUENHca3KiQ1LiSyDe1d5DURoqOQfL8VQ7lNQ26dSO1DoJq2ne6fcRzTxNmy?=
- =?us-ascii?Q?N9t/GWcfRaGGQ+Fpgo7FVuMd7g9tiffUojOMWWN3/crKItAT7s4Nbi1T5Bth?=
- =?us-ascii?Q?t7CEfcB3i1Do+/hAakBNPeYgcWGhe1V6vLQcnZ8Jxdgihh2DiKkmGjD8EBXi?=
- =?us-ascii?Q?+ZaZbgZipfmqIKWCfHyfaHqJOqrS6I9JlzpwLcqwdyF34Yg+VsKg5AYix+Uz?=
- =?us-ascii?Q?YLSpLxXy4h4+nHosCVkZfkMILGEJaGUG96hxIR3SzET6FZu7+OOUdp0vtg3r?=
- =?us-ascii?Q?aUHBei7L8/H5/Tpqtd474+uVO3tQyvanQP2t8nKh4prJsNhUOyJKKVEL37IR?=
- =?us-ascii?Q?GRNEJPMFfihQCyvyuvqXiIt4+Hw3ic+MJqcjX82HrxGbU4f8mGPBKnmnY2Yu?=
- =?us-ascii?Q?iCglzZ+lPZOfg+9wYxP45jQnJXHwB40fI/sKilB6scmxRfeNckVk0Mi7Bzfz?=
- =?us-ascii?Q?mjEgVVZLTHBoNKQyVIU3iTahvEUSuVnQNPzAb7eZP0hWVdKpHG0Gf/gUOpTC?=
- =?us-ascii?Q?phrk5ciSL2hOHn7zC3fWpElq5g+j0USg0c1CL0I3Jil1GAC47XdGmZBQPM/a?=
- =?us-ascii?Q?BNCswGJ6nBsCpEs333ZI5XngAr+T67tta/RfeR1NzG8nk03R6yKpmlEffyTu?=
- =?us-ascii?Q?tZbkA2IoXO2R2VAWuJ4OcUY28EaaCv826H0Y3suVsbWGU/ImcYuxhY4DJ7tm?=
- =?us-ascii?Q?lDwTtFfPD75xF5bGYrLPR0ymO7d7aboHpDim9jjdr/sl0VtVMC41ENeADcd2?=
- =?us-ascii?Q?jio5CCNtGkLj0rQXnlc73UCdQN/fZSm+lt23Cx9oOte4kEdn2gOvflJcsiAp?=
- =?us-ascii?Q?/g=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <432ADA23FDC5A3459DFB82BA0F2C6E23@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Mon, 27 Jun 2022 15:41:18 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4B51705A
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:41:16 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id u12-20020a05600c210c00b003a02b16d2b8so6261771wml.2
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:41:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod.ie; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QIsRfhdQMUkP3ryaWA3tv1Mq4oyLE45ECuiu3trpN00=;
+        b=B9k2d87DXty7I8E8LE+438emVeZlup2sIzCEsaWM1/EJIZIIppoNtZkCPt2B28TvB1
+         fdKtH1VPlJ16WyEMx1xIBZTokOGXYXJAfUsriSAw/CpgnU/+PGc/DWxZ7qOcSPbfaeGR
+         rM1s3NrexWkt4JIzMD25YQaH95anZDeTxbULdV8w7TEGkH8RBATcyyLwr/sjLesRwRcy
+         0U9RvCUP+tg6PUtyUgz0XndXRLxU9I3XVPAehNBfQE275chl7nDU8XSSIbYZ6ThnJBeb
+         RD/AeP34/mdXcNfB37IJm17xr1DNsnhqVVkZHleXi5mgtiwiFAN6khWnFjFTaYy47kFf
+         W8iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QIsRfhdQMUkP3ryaWA3tv1Mq4oyLE45ECuiu3trpN00=;
+        b=oVQmqTKuC1nBhgdUaGfeWX+GCswPgs945LNddVIuH8QZ9hwCx7U6Km+HpBjH8Hszyf
+         TVa2uqqxyhA+R4w8jtuzjflH4XGZ5jtNc4mPBJ4r7EP0sabSoHERtkIgHn58fxPjldAL
+         aZElou5Z4PGeJn4JgA/en+4ZC5Yrn12hVHMHISA/fXq//1XjApW0bgN9G54psyNaIgxa
+         6z2mRA/U3TC+3coiNzFCYjPAV/EQATQcFI29WhklLwW4Chc/tnKATGKIjlyUTbMJ2Cbn
+         BneVZK4cdf37ZlUWmFajIp+NcevmjcKR1xe19g40FavKIRXo9iku7f3pQzJB5n06OsPP
+         a9UQ==
+X-Gm-Message-State: AJIora8AYzFZjeGwHpYn3KthCtzutlM5kJfivMjDEkpD8MeEJCOZqRLu
+        z0lsETi8WsrR41o4SbndJRAmVw==
+X-Google-Smtp-Source: AGRyM1tvTVBKfByGAdgX8FjccMcjonG0JFKRVmUJw6/qO5b6Hes7fhYw0GHyt2p7jd1AwDC9JUm25Q==
+X-Received: by 2002:a05:600c:4f15:b0:39c:7eaf:97e7 with SMTP id l21-20020a05600c4f1500b0039c7eaf97e7mr22218520wmq.199.1656358875365;
+        Mon, 27 Jun 2022 12:41:15 -0700 (PDT)
+Received: from henark71.. ([51.37.234.167])
+        by smtp.gmail.com with ESMTPSA id e9-20020a5d4e89000000b0021a3a87fda9sm11428047wru.47.2022.06.27.12.41.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 12:41:14 -0700 (PDT)
+From:   Conor Dooley <mail@conchuod.ie>
+To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Dillon Min <dillon.minfei@gmail.com>,
+        Heng Sia <jee.heng.sia@intel.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH v2 00/16] Canaan devicetree fixes
+Date:   Mon, 27 Jun 2022 20:39:48 +0100
+Message-Id: <20220627194003.2395484-1-mail@conchuod.ie>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6160460-c5f9-44f3-7c29-08da5874e541
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2022 19:40:31.1602
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MKKrMihKlyqInvmhquSYVWj3ihwI6NhClqwTrf8gJQSH+ddJJpzEOSt9RHxszEMp3ydLOdPNPQ2hlJbZ2MISFQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2535
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 11:46:44AM -0700, Jakub Kicinski wrote:
-> On Sun, 26 Jun 2022 15:05:05 +0300 Vladimir Oltean wrote:
-> > When a frame is dropped due to a queue system oversize condition, the
-> > counter that increments is the generic "drop_tail" in ethtool -S, even
-> > if this isn't a tail drop as the rest (i.e. the controlling watermarks
-> > don't count these frames, as can be seen in "devlink sb occupancy show
-> > pci/0000:00:00.5 sb 0"). So the hardware counter is unspecific
-> > regarding the drop reason.
->=20
-> I had mixed feelings about the stats, as I usually do, but I don't
-> recall if I sent that email. Are you at least counting the drop_tail
-> into one of the standard tx error / drop stats so admins will notice?
+From: Conor Dooley <conor.dooley@microchip.com>
 
-Sorry for being unclear, fact is, I had even forgot this small detail
-between testing and writing the commit message...
+Hey all,
+This series should rid us of dtbs_check errors for the RISC-V Canaan k210
+based boards. To make keeping it that way a little easier, I changed the
+Canaan devicetree Makefile so that it would build all of the devicetrees
+in the directory if SOC_CANAAN.
 
-The switch, being a switch, will not 'drop' the packet per se, it will
-still try to forward it towards the ports it can. It will only drop it
-and record it as such if it couldn't forward it towards any port (i.e.
-if we're in a 2-port bridge and there isn't any learned FDB entry, it
-will still flood it towards the CPU).
-Because of that, the "drop_tail" counter is incremented on the _ingress_
-port. Good luck counting that into a tx_errors counter :)=
+I *DO NOT* have any Canaan hardware so I have not tested any of this in
+action. Since I sent v1, I tried to buy some since it's cheap - but could
+out of the limited stockists none seemed to want to deliver to Ireland :(
+I based the series on next-20220617.
+
+For the bindings, I am never sure about which of {unevaluated,additional}
+Properties is correct to use, but the if statements in the binding didn't
+work with additional so I used unevaluated...
+
+@Mark, for your ASoC binding I was not sure about the properties that I
+made depend on the compatible, but I looked in tree and was not able to
+find other users to contradict what's in the Canaan devicetrees nor did
+I get that much help from their docs.
+
+@Serge, I dropped your R-b since I changed the enum.
+
+@Rob, <N days ago>'s removal of ilitek,ili9341.txt is moved to ths series
+since I was editing the dt-schema binding anyway.
+
+Thanks,
+Conor.
+
+Changes since v1:
+- I added a new dt node & compatible for the SRAM memory controller due
+  Damien's wish to preserve the inter-op with U-Boot.
+- The dw-apb-ssi binding now uses the default rx/tx widths
+- A new patch fixes bus {ranges,reg} warnings
+- Rearranged the patches in a slightly more logical order
+
+Conor Dooley (16):
+  dt-bindings: display: convert ilitek,ili9341.txt to dt-schema
+  dt-bindings: display: panel: allow ilitek,ili9341 in isolation
+  ASoC: dt-bindings: convert designware-i2s to dt-schema
+  spi: dt-bindings: dw-apb-ssi: update spi-{r,t}x-bus-width
+  dt-bindings: dma: add Canaan k210 to Synopsys DesignWare DMA
+  dt-bindings: timer: add Canaan k210 to Synopsys DesignWare timer
+  dt-bindings: memory-controllers: add canaan k210 sram controller
+  riscv: dts: canaan: fix the k210's memory node.
+  riscv: dts: canaan: add a specific compatible for k210's dma
+  riscv: dts: canaan: add a specific compatible for k210's timers
+  riscv: dts: canaan: fix mmc node names
+  riscv: dts: canaan: fix kd233 display spi frequency
+  riscv: dts: canaan: use custom compatible for k210 i2s
+  riscv: dts: canaan: remove spi-max-frequency from controllers
+  riscv: dts: canaan: fix bus {ranges,reg} warnings
+  riscv: dts: canaan: build all devicetress if SOC_CANAAN
+
+ .../bindings/display/ilitek,ili9341.txt       | 27 ------
+ .../display/panel/ilitek,ili9341.yaml         | 60 ++++++++----
+ .../bindings/dma/snps,dw-axi-dmac.yaml        | 35 +++++--
+ .../memory-controllers/canaan,k210-sram.yaml  | 53 +++++++++++
+ .../bindings/sound/designware-i2s.txt         | 35 -------
+ .../bindings/sound/snps,designware-i2s.yaml   | 93 +++++++++++++++++++
+ .../bindings/spi/snps,dw-apb-ssi.yaml         |  6 --
+ .../bindings/timer/snps,dw-apb-timer.yaml     | 28 ++++--
+ arch/riscv/boot/dts/canaan/Makefile           | 10 +-
+ arch/riscv/boot/dts/canaan/canaan_kd233.dts   |  4 +-
+ arch/riscv/boot/dts/canaan/k210.dtsi          | 38 ++++----
+ .../riscv/boot/dts/canaan/sipeed_maix_bit.dts |  2 +-
+ .../boot/dts/canaan/sipeed_maix_dock.dts      |  2 +-
+ arch/riscv/boot/dts/canaan/sipeed_maix_go.dts |  2 +-
+ .../boot/dts/canaan/sipeed_maixduino.dts      |  2 +-
+ 15 files changed, 269 insertions(+), 128 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/display/ilitek,ili9341.txt
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/canaan,k210-sram.yaml
+ delete mode 100644 Documentation/devicetree/bindings/sound/designware-i2s.txt
+ create mode 100644 Documentation/devicetree/bindings/sound/snps,designware-i2s.yaml
+
+-- 
+2.36.1
+
