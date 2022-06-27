@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236010AbiF0LfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
+        id S236023AbiF0LfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236247AbiF0Lda (ORCPT
+        with ESMTP id S236275AbiF0Ldd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:33:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11355D119;
-        Mon, 27 Jun 2022 04:30:43 -0700 (PDT)
+        Mon, 27 Jun 2022 07:33:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960D3D12F;
+        Mon, 27 Jun 2022 04:30:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9046561355;
-        Mon, 27 Jun 2022 11:30:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B93DC3411D;
-        Mon, 27 Jun 2022 11:30:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 487CEB8111B;
+        Mon, 27 Jun 2022 11:30:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A19F7C3411D;
+        Mon, 27 Jun 2022 11:30:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329442;
-        bh=NGrFpnGNy+UhulDZSNrnYduBOQTEXJrXmxA3Afg3+7g=;
+        s=korg; t=1656329445;
+        bh=Y8/7DRUh+lZjPlYwIbH/DiRIh4q8KDZY8gKG2Qs2WwE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g4SkJgiGRXXWGAe4hAKmoo0L8gkqfqVGqfy37QsQGJUojIGWhlaIGyP9eM5bmpeL5
-         9yHMPg0YjmWv9oEMoh7aBDTEZe942zgeH2r51IZcIUc/nFq6X7VTHH4BvBlyo1FKCE
-         mWstepnwD1Ksodo9meXaAR3Wmyq0Q2DAEdLeDhqQ=
+        b=1jKsxoaWqNfQNtXQXq0/T//P49T0wsReCRKKqCev5L9N+xA/tg0/T2MADVpOH0CM2
+         gb3Hb1F1fI1dlWCyRPLEIHWtCZfk89IreynzKHLvmPz6yfuDoe8/AkELQn3L2+Tx4A
+         x9M8q2KDJC/b1vY0aBhiG+zXErOPp6aOWvXJAuOs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.4 47/60] xtensa: Fix refcount leak bug in time.c
-Date:   Mon, 27 Jun 2022 13:21:58 +0200
-Message-Id: <20220627111929.073062554@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        John David Anglin <dave.anglin@bell.net>
+Subject: [PATCH 5.4 48/60] parisc: Enable ARCH_HAS_STRICT_MODULE_RWX
+Date:   Mon, 27 Jun 2022 13:21:59 +0200
+Message-Id: <20220627111929.102264306@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -48,32 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Helge Deller <deller@gmx.de>
 
-commit a0117dc956429f2ede17b323046e1968d1849150 upstream.
+commit 0a1355db36718178becd2bfe728a023933d73123 upstream.
 
-In calibrate_ccount(), of_find_compatible_node() will return a node
-pointer with refcount incremented. We should use of_node_put() when
-it is not used anymore.
+Fix a boot crash on a c8000 machine as reported by Dave.  Basically it changes
+patch_map() to return an alias mapping to the to-be-patched code in order to
+prevent writing to write-protected memory.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Liang He <windhl@126.com>
-Message-Id: <20220617124432.4049006-1-windhl@126.com>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Suggested-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org   # v5.2+
+Link: https://lore.kernel.org/all/e8ec39e8-25f8-e6b4-b7ed-4cb23efc756e@bell.net/
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/kernel/time.c |    1 +
+ arch/parisc/Kconfig |    1 +
  1 file changed, 1 insertion(+)
 
---- a/arch/xtensa/kernel/time.c
-+++ b/arch/xtensa/kernel/time.c
-@@ -160,6 +160,7 @@ static void __init calibrate_ccount(void
- 	cpu = of_find_compatible_node(NULL, NULL, "cdns,xtensa-cpu");
- 	if (cpu) {
- 		clk = of_clk_get(cpu, 0);
-+		of_node_put(cpu);
- 		if (!IS_ERR(clk)) {
- 			ccount_freq = clk_get_rate(clk);
- 			return;
+--- a/arch/parisc/Kconfig
++++ b/arch/parisc/Kconfig
+@@ -11,6 +11,7 @@ config PARISC
+ 	select ARCH_WANT_FRAME_POINTERS
+ 	select ARCH_HAS_ELF_RANDOMIZE
+ 	select ARCH_HAS_STRICT_KERNEL_RWX
++	select ARCH_HAS_STRICT_MODULE_RWX
+ 	select ARCH_HAS_UBSAN_SANITIZE_ALL
+ 	select ARCH_NO_SG_CHAIN
+ 	select ARCH_SUPPORTS_MEMORY_FAILURE
 
 
