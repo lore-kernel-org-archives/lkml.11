@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A989C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A826DCCA473
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237139AbiF0Lm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
+        id S237193AbiF0Lmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236849AbiF0Lj5 (ORCPT
+        with ESMTP id S236871AbiF0LkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:39:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E35DBE05;
-        Mon, 27 Jun 2022 04:35:20 -0700 (PDT)
+        Mon, 27 Jun 2022 07:40:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6AE0BF49;
+        Mon, 27 Jun 2022 04:35:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E908C60DB5;
-        Mon, 27 Jun 2022 11:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2BABC3411D;
-        Mon, 27 Jun 2022 11:35:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EC36B8111C;
+        Mon, 27 Jun 2022 11:35:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C3CC341CB;
+        Mon, 27 Jun 2022 11:35:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329719;
-        bh=E9OVjCRFyV4VdwxiJQ10BHfsuMgdr3aG9OmgwR+lTLU=;
+        s=korg; t=1656329725;
+        bh=BNLFPZpsAc5Nj2RvB66h6RKzrBanhSoyZjQoghUykW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yAPjOcThiQiuN1O2O68c/qkSX7ClcgJQKo8sFmla4guIl9FcLULaNHbjrlYA3i6uZ
-         NqzXxYoep6RoFmBYPW9b+xYVZ7lA8xqVHutXbTR9oapcFEL3DwwLcZzV76TM11jAGl
-         fWoPNT3loMUcHpZsQT08L4eeVZ4TwlKFPCAcaWZk=
+        b=y78m9MJqcjbXz+xIiF+pZMIoUPtS6B+12dnhPsizQiyVlTzJcLUTZqRQcry89VE08
+         3XSlbnPtGZ5UQNf+IwltT2RQlGHtwmqNKeGFOQ0NtZ+939sQv2NJyDlSuM6PpRmZwB
+         8cs82p1gUGOsJm7ABQ/dIvrcv9F0D2R2LFgSOE10=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 093/135] btrfs: fix deadlock with fsync+fiemap+transaction commit
-Date:   Mon, 27 Jun 2022 13:21:40 +0200
-Message-Id: <20220627111940.857424772@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.15 095/135] iio:humidity:hts221: rearrange iio trigger get and register
+Date:   Mon, 27 Jun 2022 13:21:42 +0200
+Message-Id: <20220627111940.914424368@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -49,133 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Dmitry Rokosov <DDRokosov@sberdevices.ru>
 
-commit bf7ba8ee759b7b7a34787ddd8dc3f190a3d7fa24 upstream.
+commit 10b9c2c33ac706face458feab8965f11743c98c0 upstream.
 
-We are hitting the following deadlock in production occasionally
+IIO trigger interface function iio_trigger_get() should be called after
+iio_trigger_register() (or its devm analogue) strictly, because of
+iio_trigger_get() acquires module refcnt based on the trigger->owner
+pointer, which is initialized inside iio_trigger_register() to
+THIS_MODULE.
+If this call order is wrong, the next iio_trigger_put() (from sysfs
+callback or "delete module" path) will dereference "default" module
+refcnt, which is incorrect behaviour.
 
-Task 1		Task 2		Task 3		Task 4		Task 5
-		fsync(A)
-		 start trans
-						start commit
-				falloc(A)
-				 lock 5m-10m
-				 start trans
-				  wait for commit
-fiemap(A)
- lock 0-10m
-  wait for 5m-10m
-   (have 0-5m locked)
-
-		 have btrfs_need_log_full_commit
-		  !full_sync
-		  wait_ordered_extents
-								finish_ordered_io(A)
-								lock 0-5m
-								DEADLOCK
-
-We have an existing dependency of file extent lock -> transaction.
-However in fsync if we tried to do the fast logging, but then had to
-fall back to committing the transaction, we will be forced to call
-btrfs_wait_ordered_range() to make sure all of our extents are updated.
-
-This creates a dependency of transaction -> file extent lock, because
-btrfs_finish_ordered_io() will need to take the file extent lock in
-order to run the ordered extents.
-
-Fix this by stopping the transaction if we have to do the full commit
-and we attempted to do the fast logging.  Then attach to the transaction
-and commit it if we need to.
-
-CC: stable@vger.kernel.org # 5.15+
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: e4a70e3e7d84 ("iio: humidity: add support to hts221 rh/temp combo device")
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220524181150.9240-6-ddrokosov@sberdevices.ru
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/file.c |   67 +++++++++++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 52 insertions(+), 15 deletions(-)
+ drivers/iio/humidity/hts221_buffer.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -2337,25 +2337,62 @@ int btrfs_sync_file(struct file *file, l
- 	 */
- 	btrfs_inode_unlock(inode, BTRFS_ILOCK_MMAP);
+--- a/drivers/iio/humidity/hts221_buffer.c
++++ b/drivers/iio/humidity/hts221_buffer.c
+@@ -135,9 +135,12 @@ int hts221_allocate_trigger(struct iio_d
  
--	if (ret != BTRFS_NO_LOG_SYNC) {
-+	if (ret == BTRFS_NO_LOG_SYNC) {
-+		ret = btrfs_end_transaction(trans);
-+		goto out;
-+	}
+ 	iio_trigger_set_drvdata(hw->trig, iio_dev);
+ 	hw->trig->ops = &hts221_trigger_ops;
 +
-+	/* We successfully logged the inode, attempt to sync the log. */
-+	if (!ret) {
-+		ret = btrfs_sync_log(trans, root, &ctx);
- 		if (!ret) {
--			ret = btrfs_sync_log(trans, root, &ctx);
--			if (!ret) {
--				ret = btrfs_end_transaction(trans);
--				goto out;
--			}
-+			ret = btrfs_end_transaction(trans);
-+			goto out;
- 		}
--		if (!full_sync) {
--			ret = btrfs_wait_ordered_range(inode, start, len);
--			if (ret) {
--				btrfs_end_transaction(trans);
--				goto out;
--			}
--		}
--		ret = btrfs_commit_transaction(trans);
--	} else {
-+	}
++	err = devm_iio_trigger_register(hw->dev, hw->trig);
 +
-+	/*
-+	 * At this point we need to commit the transaction because we had
-+	 * btrfs_need_log_full_commit() or some other error.
-+	 *
-+	 * If we didn't do a full sync we have to stop the trans handle, wait on
-+	 * the ordered extents, start it again and commit the transaction.  If
-+	 * we attempt to wait on the ordered extents here we could deadlock with
-+	 * something like fallocate() that is holding the extent lock trying to
-+	 * start a transaction while some other thread is trying to commit the
-+	 * transaction while we (fsync) are currently holding the transaction
-+	 * open.
-+	 */
-+	if (!full_sync) {
- 		ret = btrfs_end_transaction(trans);
-+		if (ret)
-+			goto out;
-+		ret = btrfs_wait_ordered_range(inode, start, len);
-+		if (ret)
-+			goto out;
-+
-+		/*
-+		 * This is safe to use here because we're only interested in
-+		 * making sure the transaction that had the ordered extents is
-+		 * committed.  We aren't waiting on anything past this point,
-+		 * we're purely getting the transaction and committing it.
-+		 */
-+		trans = btrfs_attach_transaction_barrier(root);
-+		if (IS_ERR(trans)) {
-+			ret = PTR_ERR(trans);
-+
-+			/*
-+			 * We committed the transaction and there's no currently
-+			 * running transaction, this means everything we care
-+			 * about made it to disk and we are done.
-+			 */
-+			if (ret == -ENOENT)
-+				ret = 0;
-+			goto out;
-+		}
- 	}
-+
-+	ret = btrfs_commit_transaction(trans);
- out:
- 	ASSERT(list_empty(&ctx.list));
- 	err = file_check_and_advance_wb_err(file);
+ 	iio_dev->trig = iio_trigger_get(hw->trig);
+ 
+-	return devm_iio_trigger_register(hw->dev, hw->trig);
++	return err;
+ }
+ 
+ static int hts221_buffer_preenable(struct iio_dev *iio_dev)
 
 
