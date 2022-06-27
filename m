@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2ADC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A848BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234600AbiF0Llk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
+        id S237033AbiF0Lln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236687AbiF0Lhw (ORCPT
+        with ESMTP id S236726AbiF0Lh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:52 -0400
+        Mon, 27 Jun 2022 07:37:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E788EB4B1;
-        Mon, 27 Jun 2022 04:34:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991A0B77;
+        Mon, 27 Jun 2022 04:34:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A80EDB81123;
-        Mon, 27 Jun 2022 11:34:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB21EC3411D;
-        Mon, 27 Jun 2022 11:34:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57ED1B81125;
+        Mon, 27 Jun 2022 11:34:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B62DCC341C7;
+        Mon, 27 Jun 2022 11:34:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329675;
-        bh=qmI3PqT2124o3z+qcI7qRD+yNh0AzZCX1HZJF35pEdI=;
+        s=korg; t=1656329684;
+        bh=+MTcTGLmL1ls4vYJq1txutHe5T3fDX/u5MDCemtlDP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FAK8nc+dJV4M1WSmzmUZsAT5rSvZpr7qtY3JLli0J25Z3nzhHuO8QAFEisFPuu0LT
-         b4sXfYrycN5yxDPZXJP23xM4FKgd1RgJ8tx+2gcoveIW/5tWIOvSKQqDSrY9AW8EQX
-         NEWexyLilkht25OX34K3qcoAN5CJIVGtaw5yIHC0=
+        b=ZkT3xCU7vN/C0GGDwiSHWgZnNA1CaykjIDA8lcKH1hE0q03NFzXhwozxu6uqfbS6J
+         JmkU5TXgthMKZHqV3mI1iY5zA/CRD+pZVf33pssYRl4H92fvBzHJC2ynqq1XP5KoFm
+         2XodhZeWmfG6ecvt4qhiXQmxzAl5X2GkISq89U2s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 075/135] sock: redo the psock vs ULP protection check
-Date:   Mon, 27 Jun 2022 13:21:22 +0200
-Message-Id: <20220627111940.337879163@linuxfoundation.org>
+Subject: [PATCH 5.15 040/135] drm/msm: use for_each_sgtable_sg to iterate over scatterlist
+Date:   Mon, 27 Jun 2022 13:20:47 +0200
+Message-Id: <20220627111939.321456081@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,96 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Jonathan Marek <jonathan@marek.ca>
 
-[ Upstream commit e34a07c0ae3906f97eb18df50902e2a01c1015b6 ]
+[ Upstream commit 62b5e322fb6cc5a5a91fdeba0e4e57e75d9f4387 ]
 
-Commit 8a59f9d1e3d4 ("sock: Introduce sk->sk_prot->psock_update_sk_prot()")
-has moved the inet_csk_has_ulp(sk) check from sk_psock_init() to
-the new tcp_bpf_update_proto() function. I'm guessing that this
-was done to allow creating psocks for non-inet sockets.
+The dma_map_sgtable() call (used to invalidate cache) overwrites sgt->nents
+with 1, so msm_iommu_pagetable_map maps only the first physical segment.
 
-Unfortunately the destruction path for psock includes the ULP
-unwind, so we need to fail the sk_psock_init() itself.
-Otherwise if ULP is already present we'll notice that later,
-and call tcp_update_ulp() with the sk_proto of the ULP
-itself, which will most likely result in the ULP looping
-its callbacks.
+To fix this problem use for_each_sgtable_sg(), which uses orig_nents.
 
-Fixes: 8a59f9d1e3d4 ("sock: Introduce sk->sk_prot->psock_update_sk_prot()")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: John Fastabend <john.fastabend@gmail.com>
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
-Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
-Link: https://lore.kernel.org/r/20220620191353.1184629-2-kuba@kernel.org
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: b145c6e65eb0 ("drm/msm: Add support to create a local pagetable")
+Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+Link: https://lore.kernel.org/r/20220613221019.11399-1-jonathan@marek.ca
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/inet_sock.h | 5 +++++
- net/core/skmsg.c        | 5 +++++
- net/ipv4/tcp_bpf.c      | 3 ---
- net/tls/tls_main.c      | 2 ++
- 4 files changed, 12 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/msm_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
-index 9e1111f5915b..d81b7f85819e 100644
---- a/include/net/inet_sock.h
-+++ b/include/net/inet_sock.h
-@@ -252,6 +252,11 @@ struct inet_sock {
- #define IP_CMSG_CHECKSUM	BIT(7)
- #define IP_CMSG_RECVFRAGSIZE	BIT(8)
+diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+index bcaddbba564d..a54ed354578b 100644
+--- a/drivers/gpu/drm/msm/msm_iommu.c
++++ b/drivers/gpu/drm/msm/msm_iommu.c
+@@ -58,7 +58,7 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+ 	u64 addr = iova;
+ 	unsigned int i;
  
-+static inline bool sk_is_inet(struct sock *sk)
-+{
-+	return sk->sk_family == AF_INET || sk->sk_family == AF_INET6;
-+}
-+
- /**
-  * sk_to_full_sk - Access to a full socket
-  * @sk: pointer to a socket
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index cc381165ea08..ede0af308f40 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -695,6 +695,11 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
+-	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
++	for_each_sgtable_sg(sgt, sg, i) {
+ 		size_t size = sg->length;
+ 		phys_addr_t phys = sg_phys(sg);
  
- 	write_lock_bh(&sk->sk_callback_lock);
- 
-+	if (sk_is_inet(sk) && inet_csk_has_ulp(sk)) {
-+		psock = ERR_PTR(-EINVAL);
-+		goto out;
-+	}
-+
- 	if (sk->sk_user_data) {
- 		psock = ERR_PTR(-EBUSY);
- 		goto out;
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 1cdcb4df0eb7..2c597a4e429a 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -612,9 +612,6 @@ int tcp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore)
- 		return 0;
- 	}
- 
--	if (inet_csk_has_ulp(sk))
--		return -EINVAL;
--
- 	if (sk->sk_family == AF_INET6) {
- 		if (tcp_bpf_assert_proto_ops(psock->sk_proto))
- 			return -EINVAL;
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 9aac9c60d786..62b1c5e32bbd 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -790,6 +790,8 @@ static void tls_update(struct sock *sk, struct proto *p,
- {
- 	struct tls_context *ctx;
- 
-+	WARN_ON_ONCE(sk->sk_prot == p);
-+
- 	ctx = tls_get_ctx(sk);
- 	if (likely(ctx)) {
- 		ctx->sk_write_space = write_space;
 -- 
 2.35.1
 
