@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B906C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E86C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237591AbiF0Lo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42478 "EHLO
+        id S237618AbiF0LpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237389AbiF0Lmr (ORCPT
+        with ESMTP id S237408AbiF0Lmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:47 -0400
+        Mon, 27 Jun 2022 07:42:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE07E6B;
-        Mon, 27 Jun 2022 04:37:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9006EB8;
+        Mon, 27 Jun 2022 04:37:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FC35B8111B;
-        Mon, 27 Jun 2022 11:37:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66189C3411D;
-        Mon, 27 Jun 2022 11:37:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90385B8111B;
+        Mon, 27 Jun 2022 11:37:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB74C3411D;
+        Mon, 27 Jun 2022 11:37:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329835;
-        bh=A5UBWaCrl/qkluSIKGtZTc8F6JYpzds5b08cBXNIoF0=;
+        s=korg; t=1656329841;
+        bh=bqRXFxor9G/w/qz5p3HqTcjfA3BWyqfO3Up8XN+Lo7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SaaXK+5N0qe9mdMR3BvbYcVSHxWYEd3JxLe19LL40Ge2v6zT6XPyECMMneIMJujp8
-         xFxsQj4z71Zuw3bh2SDZDEPBtOAWB7pEgSOJE+RGPuf7BEY4YNogx3Uc2ekiFJ/GYc
-         SEaTVeqi2wXvZZHFql84R/lXn8MqD3ydtS6BfQLk=
+        b=P0gAQzC0vubjXg3/o/9FSq3BFik1NXC5x8r+mo3OUJX7+XPBfCj20kGsvMjEprPYx
+         AelnNjWQzVH/iWg5lA0+1v/VqRtQc0H056002LBhB+MC22FWMNeqPwYmZFMg9hpaIj
+         z8uYXb35sKAwlyhuNsz/v9+P7ddgTkWkVjVHyPO4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Tom Zanussi <tzanussi@gmail.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.15 132/135] perf build-id: Fix caching files with a wrong build ID
-Date:   Mon, 27 Jun 2022 13:22:19 +0200
-Message-Id: <20220627111941.981608747@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 5.15 134/135] kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS (2nd attempt)
+Date:   Mon, 27 Jun 2022 13:22:21 +0200
+Message-Id: <20220627111942.038354765@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,103 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-commit ab66fdace8581ef3b4e7cf5381a168ed4058d779 upstream.
+commit 53632ba87d9f302a8d97a11ec2f4f4eec7bb75ea upstream.
 
-Build ID events associate a file name with a build ID.  However, when
-using perf inject, there is no guarantee that the file on the current
-machine at the current time has that build ID. Fix by comparing the
-build IDs and skip adding to the cache if they are different.
+If CONFIG_TRIM_UNUSED_KSYMS is enabled and the kernel is built from
+a pristine state, the vmlinux is linked twice.
 
-Example:
+Commit 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for
+CONFIG_TRIM_UNUSED_KSYMS") explains why this happens, but it did not fix
+the issue at all.
 
-  $ echo "int main() {return 0;}" > prog.c
-  $ gcc -o prog prog.c
-  $ perf record --buildid-all ./prog
-  [ perf record: Woken up 1 times to write data ]
-  [ perf record: Captured and wrote 0.019 MB perf.data ]
-  $ file-buildid() { file $1 | awk -F= '{print $2}' | awk -F, '{print $1}' ; }
-  $ file-buildid prog
-  444ad9be165d8058a48ce2ffb4e9f55854a3293e
-  $ file-buildid ~/.debug/$(pwd)/prog/444ad9be165d8058a48ce2ffb4e9f55854a3293e/elf
-  444ad9be165d8058a48ce2ffb4e9f55854a3293e
-  $ echo "int main() {return 1;}" > prog.c
-  $ gcc -o prog prog.c
-  $ file-buildid prog
-  885524d5aaa24008a3e2b06caa3ea95d013c0fc5
+Now I realized I had applied a wrong patch.
 
-Before:
+In v1 patch [1], the autoksyms_recursive target correctly recurses to
+"$(MAKE) -f $(srctree)/Makefile autoksyms_recursive".
 
-  $ perf buildid-cache --purge $(pwd)/prog
-  $ perf inject -i perf.data -o junk
-  $ file-buildid ~/.debug/$(pwd)/prog/444ad9be165d8058a48ce2ffb4e9f55854a3293e/elf
-  885524d5aaa24008a3e2b06caa3ea95d013c0fc5
-  $
+In v2 patch [2], I accidentally dropped the diff line, and it recurses to
+"$(MAKE) -f $(srctree)/Makefile vmlinux".
 
-After:
+Restore the code I intended in v1.
 
-  $ perf buildid-cache --purge $(pwd)/prog
-  $ perf inject -i perf.data -o junk
-  $ file-buildid ~/.debug/$(pwd)/prog/444ad9be165d8058a48ce2ffb4e9f55854a3293e/elf
+[1]: https://lore.kernel.org/linux-kbuild/1521045861-22418-8-git-send-email-yamada.masahiro@socionext.com/
+[2]: https://lore.kernel.org/linux-kbuild/1521166725-24157-8-git-send-email-yamada.masahiro@socionext.com/
 
-  $
-
-Fixes: 454c407ec17a0c63 ("perf: add perf-inject builtin")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Tom Zanussi <tzanussi@gmail.com>
-Link: https://lore.kernel.org/r/20220621125144.5623-1-adrian.hunter@intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/build-id.c |   28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/perf/util/build-id.c
-+++ b/tools/perf/util/build-id.c
-@@ -872,6 +872,30 @@ out_free:
- 	return err;
- }
+--- a/Makefile
++++ b/Makefile
+@@ -1163,7 +1163,7 @@ KBUILD_MODULES := 1
  
-+static int filename__read_build_id_ns(const char *filename,
-+				      struct build_id *bid,
-+				      struct nsinfo *nsi)
-+{
-+	struct nscookie nsc;
-+	int ret;
-+
-+	nsinfo__mountns_enter(nsi, &nsc);
-+	ret = filename__read_build_id(filename, bid);
-+	nsinfo__mountns_exit(&nsc);
-+
-+	return ret;
-+}
-+
-+static bool dso__build_id_mismatch(struct dso *dso, const char *name)
-+{
-+	struct build_id bid;
-+
-+	if (filename__read_build_id_ns(name, &bid, dso->nsinfo) < 0)
-+		return false;
-+
-+	return !dso__build_id_equal(dso, &bid);
-+}
-+
- static int dso__cache_build_id(struct dso *dso, struct machine *machine,
- 			       void *priv __maybe_unused)
- {
-@@ -886,6 +910,10 @@ static int dso__cache_build_id(struct ds
- 		is_kallsyms = true;
- 		name = machine->mmap_name;
- 	}
-+
-+	if (!is_kallsyms && dso__build_id_mismatch(dso, name))
-+		return 0;
-+
- 	return build_id_cache__add_b(&dso->bid, name, dso->nsinfo,
- 				     is_kallsyms, is_vdso);
- }
+ autoksyms_recursive: descend modules.order
+ 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/adjust_autoksyms.sh \
+-	  "$(MAKE) -f $(srctree)/Makefile vmlinux"
++	  "$(MAKE) -f $(srctree)/Makefile autoksyms_recursive"
+ endif
+ 
+ autoksyms_h := $(if $(CONFIG_TRIM_UNUSED_KSYMS), include/generated/autoksyms.h)
 
 
