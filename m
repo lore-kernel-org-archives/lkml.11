@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43BADC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30143C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241957AbiF0V61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59832 "EHLO
+        id S242111AbiF0V6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241428AbiF0VzK (ORCPT
+        with ESMTP id S241435AbiF0VzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:55:10 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BFB6332;
-        Mon, 27 Jun 2022 14:54:58 -0700 (PDT)
+        Mon, 27 Jun 2022 17:55:11 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9D56330;
+        Mon, 27 Jun 2022 14:54:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366898; x=1687902898;
+  t=1656366899; x=1687902899;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tyjTv6Pj07vg3EU6zQKqvLE1RD7lHcTTEeGjBabiGlY=;
-  b=VcPwh/r+2d33jBoAAxbWJ+NRTJo9TVIKzS2J2bmLzmrciemu7lulOZKz
-   Xe2XE+phqXcqGYjcKartdhPHTxRmXLRgTNDrRnYsKxiHWwwWz5uXF0Iiy
-   KCgWr9VqF5lqsGRTZJbweimVp2uVUVSKdmTgLxPPx8+LdEVCvR/LGBH9/
-   m+Ra9Lq0J7ZzmVWUK/jy6Rgp+PDfdfnH+5HGfyTAhG0it9zeeJ4Bu/Ffa
-   VDD2QgRrW1rpUQfd4VgbvG1Equ+0JoM6/pBX6s/KleqUYJ8NWtDAXYnPg
-   qOnEraGtYUm4zSgssCYZnQfxPy7KCubmp2gs9/SU+nkPOsLmkFKqBoYHT
+  bh=aIudZd3USQowTJaovq/Lv5Tlgdhp2EQL5ZZ1g16g3i0=;
+  b=K8NLMQhsQqfF7u3VCyT/x32jhuobtXbsyjvTbtoJHaAdJZxgnl5x1TVd
+   25WPwf8hEuRKEWP5Um9gE/X+1UMZOLH0Nby2SeO6H+v1Z3CNS5WujO5L0
+   a667vGLzUSybBcq7ZUt37e8oNhRq7bQPfZRGImSfCauGojUjHcMSC0abH
+   /GqeVLJT2q13XmJCFCdl2m7GN/vSA5+tdHP0nID8hRUjNj3IVVxZRmHyL
+   nxbzEaKU7i/Y+ps+IqugFbFOtDX3Ap/Ay4xJwBxlZsxVxDVUTuxWYwaYs
+   s/cqCmRA+qi+Dc1heRMPNCi+lGPwssnrojT2DIriAxVEPLjJWxLG0/B1M
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609559"
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116100"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281609559"
+   d="scan'208";a="279116100"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:53 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:57 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863574"
+   d="scan'208";a="657863637"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:53 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:57 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 043/102] KVM: x86/mmu: Focibly use TDP MMU for TDX
-Date:   Mon, 27 Jun 2022 14:53:35 -0700
-Message-Id: <c198d2be26aa9a041176826cf86b51a337427783.1656366338.git.isaku.yamahata@intel.com>
+Subject: [PATCH v7 062/102] [MARKER] The start of TDX KVM patch series: TD vcpu enter/exit
+Date:   Mon, 27 Jun 2022 14:53:54 -0700
+Message-Id: <00c9d7be1fb93ea2865a08fa0a9c9fada4ea7890.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -55,35 +55,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-In this patch series, TDX supports only TDP MMU and doesn't support legacy
-MMU.  Forcibly use TDP MMU for TDX irrelevant of kernel parameter to
-disable TDP MMU.
+This empty commit is to mark the start of patch series of TD vcpu
+enter/exit.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ Documentation/virt/kvm/intel-tdx-layer-status.rst | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 82f1bfac7ee6..7eb41b176d1e 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -18,8 +18,13 @@ int kvm_mmu_init_tdp_mmu(struct kvm *kvm)
- {
- 	struct workqueue_struct *wq;
+diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+index 53897312699f..b51e8e6b1541 100644
+--- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
++++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+@@ -12,6 +12,7 @@ What qemu can do
+ - Qemu can create/destroy guest of TDX vm type.
+ - Qemu can create/destroy vcpu of TDX vm type.
+ - Qemu can populate initial guest memory image.
++- Qemu can finalize guest TD.
  
--	if (!tdp_enabled || !READ_ONCE(tdp_mmu_enabled))
--		return 0;
-+	/*
-+	 *  Because TDX supports only TDP MMU, forcibly use TDP MMU in the case
-+	 *  of TDX.
-+	 */
-+	if (kvm->arch.vm_type != KVM_X86_TDX_VM &&
-+		(!tdp_enabled || !READ_ONCE(tdp_mmu_enabled)))
-+		return false;
+ Patch Layer status
+ ------------------
+@@ -21,8 +22,8 @@ Patch Layer status
+ * TD VM creation/destruction:           Applied
+ * TD vcpu creation/destruction:         Applied
+ * TDX EPT violation:                    Applied
+-* TD finalization:                      Applying
+-* TD vcpu enter/exit:                   Not yet
++* TD finalization:                      Applied
++* TD vcpu enter/exit:                   Applying
+ * TD vcpu interrupts/exit/hypercall:    Not yet
  
- 	wq = alloc_workqueue("kvm", WQ_UNBOUND|WQ_MEM_RECLAIM|WQ_CPU_INTENSIVE, 0);
- 	if (!wq)
+ * KVM MMU GPA shared bits:              Applied
 -- 
 2.25.1
 
