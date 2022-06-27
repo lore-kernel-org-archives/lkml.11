@@ -2,138 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA1AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:05:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E994C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:09:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240896AbiF0VFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49316 "EHLO
+        id S239759AbiF0VJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239752AbiF0VFR (ORCPT
+        with ESMTP id S231589AbiF0VJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:05:17 -0400
-Received: from mail-io1-f43.google.com (mail-io1-f43.google.com [209.85.166.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CA3BE21;
-        Mon, 27 Jun 2022 14:05:16 -0700 (PDT)
-Received: by mail-io1-f43.google.com with SMTP id h85so10946819iof.4;
-        Mon, 27 Jun 2022 14:05:16 -0700 (PDT)
+        Mon, 27 Jun 2022 17:09:26 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A44D1E61
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 14:09:25 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id a2so18770833lfg.5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 14:09:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+swm2aR4k5sh3YX3jWcBe4STb31+XEBdKQilBqyzaG8=;
+        b=OPWLUIKbB4Y3o6eeIleWV1rQB0nu4NANmi/ChXofR+u07PJcf63EjrcaVD8WFHeSWE
+         K7BgJsjBWvCAIDHd3d7Qpd+28/twGLYrbZGS63VwC8HfHZurG6OCGyyyi86V4ASOc+mu
+         pzqHp/dJjivcGRqAogYWGJi7QoC6L1EQ5+LHRcXeUkDWUHvEs9O1Ubcdxyxr8PA9XyjI
+         c/F6KPfDTrNsNLGQ5Phb4jC9+WnHgi0V1hqNCXgObIaain0K3R5h+63uVjRmiCH3iGij
+         PNKQclMfkzxsDjro/izGRmKLSK9rptsi4lHn6EX89VHsIToLg5uGtc99NcsaHKZm8Xuv
+         kg1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2Vz+PIAaZ/qnk8nyNJa+zdscW6Bv7pgzaLQ1N3O646A=;
-        b=fb8+D+yNUn8PFpbBCK2tOaynmaUkCmyisKNHU4wp+0l44GMrZnA7sk1Hug7FPbXsK3
-         GWxs+eggF3HrzBOwaBq/s72HDMIluF7IJZrXgcx71gA17A0919tc7feK+nJeuyeVTED9
-         cDHwgChUeF3Ylgf9Dsos807/ggRLqbbnFJ0/AwP/m9udsfELHX+ZmticY7VwsM68v4gi
-         /aYm0ZiutyUcOTIw4ck2xAxI3yIaUYE2QLxrPAgMkWzgu2lwZd8h2nqJqKJ1a2sMhYxs
-         yGv9WlwcjssVaocue43u0fPKQ+82Yhr9zBwkrb6QxbWjRc/VIcbkTT0EdAkrP9bD+ZOu
-         CMcA==
-X-Gm-Message-State: AJIora8mpLQAoOl33sgcqS6iWOfQCRD4KfAX61v8AhE/rkrL7cf0WX5K
-        Q4TE5MNIEsyykEtKRkZWJA==
-X-Google-Smtp-Source: AGRyM1vd1hXiT92FmmZEOLGUlOXC2cFf/xqKvRpLsJL6tDRsS+f6gzt0eb8Fg2+4cpBZmPRJbrsmGQ==
-X-Received: by 2002:a05:6638:25c8:b0:332:198c:dbf6 with SMTP id u8-20020a05663825c800b00332198cdbf6mr8908919jat.52.1656363915770;
-        Mon, 27 Jun 2022 14:05:15 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id a13-20020a927f0d000000b002d8f50441absm4934985ild.10.2022.06.27.14.05.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 14:05:15 -0700 (PDT)
-Received: (nullmailer pid 2956189 invoked by uid 1000);
-        Mon, 27 Jun 2022 21:05:12 -0000
-Date:   Mon, 27 Jun 2022 15:05:12 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Pin-Yen Lin <treapking@chromium.org>,
-        Allen Chen <allen.chen@ite.com.tw>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>, Robert Foss <robert.foss@linaro.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: Re: [PATCH v5 7/9] drm/bridge: it6505: Register number of Type C
- switches
-Message-ID: <20220627210512.GB2905757-robh@kernel.org>
-References: <20220622173605.1168416-1-pmalani@chromium.org>
- <20220622173605.1168416-8-pmalani@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+swm2aR4k5sh3YX3jWcBe4STb31+XEBdKQilBqyzaG8=;
+        b=6Ab1+9HTlttuD9OIRec5GaiGOOmyeQa6+0/pmZTh0SvxCNtXJ/ipYZyx4XS9Q+eLud
+         45L4Gb6dL73bYbD2bA/Tv2kJJCksWICN2e/96Whnd9/XiQqsmKlkstlO5NGQn6Hnf2Os
+         69cBmeK4uXLtO2G2Z5sVU893BJL4GbQIQagT0ZU/QwIdZq3NBNaJnnMDVt3JCVXNBgYn
+         rUqHQObn2pLJIGhOOQh0Q28GO8C/SKaApSlY3iKLJFa5TzYQ2btSIIfsx17/VOuged6C
+         xkg5g0b5PfbAiJtxrxc6s1BIj54ZnhWPSd4IaXjJhuV0JyLOsy8V/OXjrdIY6sLcpgAi
+         OBBg==
+X-Gm-Message-State: AJIora9WXuHp2Pc1GT2xUTA5HhjsA6hEvhmJy39EyCovYidg4hcvR01R
+        Q1KTjzYSLeWg0AblE3E4O1PcaXWh2qXk32ruwchd0g==
+X-Google-Smtp-Source: AGRyM1sND3JnuSvyboTunC/f7GbcmxFhxxncvjNSJRMmz91aVLp/+RtW9ienklRrhBf9uLmDz0Vd9qOdwx12S+wvy3k=
+X-Received: by 2002:a05:6512:1693:b0:474:35c:8c11 with SMTP id
+ bu19-20020a056512169300b00474035c8c11mr9287580lfb.19.1656364163891; Mon, 27
+ Jun 2022 14:09:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622173605.1168416-8-pmalani@chromium.org>
+References: <20220627192434.2306065-1-cmllamas@google.com> <20220627194753.2309523-1-cmllamas@google.com>
+In-Reply-To: <20220627194753.2309523-1-cmllamas@google.com>
+From:   Todd Kjos <tkjos@google.com>
+Date:   Mon, 27 Jun 2022 14:09:12 -0700
+Message-ID: <CAHRSSEwVq0Jhf2v1NY4LUr7hTJXuU904BU1XMOdA-fB0uXfUqA@mail.gmail.com>
+Subject: Re: [PATCH v2] MAINTAINERS: update Android driver maintainers
+To:     Carlos Llamas <cmllamas@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        linux-kernel@vger.kernel.org, kernel-team@android.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 05:34:36PM +0000, Prashant Malani wrote:
-> From: Pin-Yen Lin <treapking@chromium.org>
-> 
-> Parse the "switches" node, if available, and count and store the number
-> of Type-C switches within it. The extcon registration is still
-> supported, but we don't expect both extcon and typec-switch be
-> registered at the same time.
-> 
-> This patch sets a foundation for the actual registering of Type-C
-> switches with the Type-C connector class framework.
-> 
-> Signed-off-by: Pin-Yen Lin <treapking@chromium.org>
-> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+On Mon, Jun 27, 2022 at 12:48 PM Carlos Llamas <cmllamas@google.com> wrote:
+>
+> I've been contributing patches for binder{,fs} targeting fixes as well
+> as new functionality. I've also helped reviewing some of the incoming
+> changes. As such I'd like to be added to the maintainers list for the
+> Android drivers. Note I'm also dropping Hridya's name from the list as
+> she has now moved to a different role.
+>
+> Signed-off-by: Carlos Llamas <cmllamas@google.com>
+
+Acked-by: Todd Kjos <tkjos@google.com>
+
 > ---
-> 
-> v5 is the first version for this patch.
-> 
->  drivers/gpu/drm/bridge/ite-it6505.c | 34 +++++++++++++++++++++++++----
->  1 file changed, 30 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
-> index 4b673c4792d7..b259f9f367f6 100644
-> --- a/drivers/gpu/drm/bridge/ite-it6505.c
-> +++ b/drivers/gpu/drm/bridge/ite-it6505.c
-> @@ -452,6 +452,7 @@ struct it6505 {
->  	struct delayed_work delayed_audio;
->  	struct it6505_audio_data audio;
->  	struct dentry *debugfs;
-> +	int num_typec_switches;
->  
->  	/* it6505 driver hold option */
->  	bool enable_drv_hold;
-> @@ -3229,13 +3230,28 @@ static void it6505_shutdown(struct i2c_client *client)
->  		it6505_lane_off(it6505);
->  }
->  
-> +static int it6505_register_typec_switches(struct device *device, struct it6505 *it6505)
-> +{
-> +	struct device_node *of;
-> +
-> +	of = of_get_child_by_name(device->of_node, "switches");
-> +	if (!of)
-> +		return -ENODEV;
-> +
-> +	it6505->num_typec_switches = of_get_child_count(of);
-> +	if (it6505->num_typec_switches <= 0)
-> +		return -ENODEV;
-> +
-> +	return 0;
-> +}
-
-Not that I expect this to remain, but you have the same function in 2 
-files. That's a clear sign this belongs in a helper.
-
-Rob
+> v1->v2: Use the google account instead of personal email.
+>
+>  MAINTAINERS | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index fe5daf141501..081f1dc17871 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1329,7 +1329,7 @@ M:        Todd Kjos <tkjos@android.com>
+>  M:     Martijn Coenen <maco@android.com>
+>  M:     Joel Fernandes <joel@joelfernandes.org>
+>  M:     Christian Brauner <christian@brauner.io>
+> -M:     Hridya Valsaraju <hridya@google.com>
+> +M:     Carlos Llamas <cmllamas@google.com>
+>  M:     Suren Baghdasaryan <surenb@google.com>
+>  L:     linux-kernel@vger.kernel.org
+>  S:     Supported
+> --
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
