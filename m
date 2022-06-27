@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E798AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1CC1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236857AbiF0LkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
+        id S236869AbiF0LkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236569AbiF0Lhl (ORCPT
+        with ESMTP id S236495AbiF0Lhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A73E65AE;
-        Mon, 27 Jun 2022 04:34:06 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F7C28F;
+        Mon, 27 Jun 2022 04:33:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ACC1608D4;
-        Mon, 27 Jun 2022 11:34:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EF24C3411D;
-        Mon, 27 Jun 2022 11:34:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44F85609D0;
+        Mon, 27 Jun 2022 11:33:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB24FC341C7;
+        Mon, 27 Jun 2022 11:33:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329645;
-        bh=U+Rg92FEYewgN3rsnB9jAB+CU0+j+dvaLs9T3nZDteI=;
+        s=korg; t=1656329612;
+        bh=d83IYfUoSCwlimeO40t3MmhOsYVKQ9De0jR/4Cmakr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kpTrSelTdcUlvBsGWBtp6qLra53hxk0diGxpCeCY7beZmUoZfvCZeZcKJQLQ4uBiA
-         eu9np83NlAAhHEyqcuIiiCeZqPed5GhL4BqahYXjnUHzg+6BU2xB6Kxj544FizVYmh
-         47HkEK9o17aa8eCYC6puLjrXC11ButYDjl1RhjsM=
+        b=ZdIKYUlyYu5IkcXzGRNnfMYZ1lO8rNJ5KJPp7V8PMzHuQ5XTmdbYpxnkJYmB4pRlP
+         FAoAcUN4rjoHCib5C557nSir1hlgemUswW2BCArR2xWFTjysASoNPQjS7NoSE+BkDp
+         76Jaba1jEBvhuOsMaX4xJqCnvNu0vsOIwRSNyqFk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julien Grall <jgrall@amazon.com>,
-        Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 066/135] x86/xen: Remove undefined behavior in setup_features()
-Date:   Mon, 27 Jun 2022 13:21:13 +0200
-Message-Id: <20220627111940.074135015@linuxfoundation.org>
+Subject: [PATCH 5.15 056/135] drm/msm/dp: Drop now unused hpd_high member
+Date:   Mon, 27 Jun 2022 13:21:03 +0200
+Message-Id: <20220627111939.784309520@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -49,35 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julien Grall <jgrall@amazon.com>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-[ Upstream commit ecb6237fa397b7b810d798ad19322eca466dbab1 ]
+[ Upstream commit fabae667b1263216be53e0230cd3966a9a1963a4 ]
 
-1 << 31 is undefined. So switch to 1U << 31.
+Since '8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon
+Chipsets")' the hpd_high member of struct dp_usbpd has been write-only.
 
-Fixes: 5ead97c84fa7 ("xen: Core Xen implementation")
-Signed-off-by: Julien Grall <jgrall@amazon.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220617103037.57828-1-julien@xen.org
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Let's clean up the code a little bit by removing the writes as well.
+
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/20211106172246.2597431-1-bjorn.andersson@linaro.org
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/features.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/dp/dp_display.c | 6 ------
+ drivers/gpu/drm/msm/dp/dp_hpd.c     | 2 --
+ drivers/gpu/drm/msm/dp/dp_hpd.h     | 2 --
+ 3 files changed, 10 deletions(-)
 
-diff --git a/drivers/xen/features.c b/drivers/xen/features.c
-index 7b591443833c..87f1828d40d5 100644
---- a/drivers/xen/features.c
-+++ b/drivers/xen/features.c
-@@ -42,7 +42,7 @@ void xen_setup_features(void)
- 		if (HYPERVISOR_xen_version(XENVER_get_features, &fi) < 0)
- 			break;
- 		for (j = 0; j < 32; j++)
--			xen_features[i * 32 + j] = !!(fi.submap & 1<<j);
-+			xen_features[i * 32 + j] = !!(fi.submap & 1U << j);
- 	}
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 8b51a5cc3eb8..a66ee63253a3 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -547,11 +547,8 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
  
- 	if (xen_pv_domain()) {
+ 	dp->hpd_state = ST_CONNECT_PENDING;
+ 
+-	hpd->hpd_high = 1;
+-
+ 	ret = dp_display_usbpd_configure_cb(&dp->pdev->dev);
+ 	if (ret) {	/* link train failed */
+-		hpd->hpd_high = 0;
+ 		dp->hpd_state = ST_DISCONNECTED;
+ 
+ 		if (ret == -ECONNRESET) { /* cable unplugged */
+@@ -628,7 +625,6 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 		/* triggered by irq_hdp with sink_count = 0 */
+ 		if (dp->link->sink_count == 0) {
+ 			dp_ctrl_off_phy(dp->ctrl);
+-			hpd->hpd_high = 0;
+ 			dp->core_initialized = false;
+ 		}
+ 		mutex_unlock(&dp->event_mutex);
+@@ -652,8 +648,6 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 	/* disable HPD plug interrupts */
+ 	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, false);
+ 
+-	hpd->hpd_high = 0;
+-
+ 	/*
+ 	 * We don't need separate work for disconnect as
+ 	 * connect/attention interrupts are disabled
+diff --git a/drivers/gpu/drm/msm/dp/dp_hpd.c b/drivers/gpu/drm/msm/dp/dp_hpd.c
+index e1c90fa47411..db98a1d431eb 100644
+--- a/drivers/gpu/drm/msm/dp/dp_hpd.c
++++ b/drivers/gpu/drm/msm/dp/dp_hpd.c
+@@ -32,8 +32,6 @@ int dp_hpd_connect(struct dp_usbpd *dp_usbpd, bool hpd)
+ 	hpd_priv = container_of(dp_usbpd, struct dp_hpd_private,
+ 					dp_usbpd);
+ 
+-	dp_usbpd->hpd_high = hpd;
+-
+ 	if (!hpd_priv->dp_cb || !hpd_priv->dp_cb->configure
+ 				|| !hpd_priv->dp_cb->disconnect) {
+ 		pr_err("hpd dp_cb not initialized\n");
+diff --git a/drivers/gpu/drm/msm/dp/dp_hpd.h b/drivers/gpu/drm/msm/dp/dp_hpd.h
+index 5bc5bb64680f..8feec5aa5027 100644
+--- a/drivers/gpu/drm/msm/dp/dp_hpd.h
++++ b/drivers/gpu/drm/msm/dp/dp_hpd.h
+@@ -26,7 +26,6 @@ enum plug_orientation {
+  * @multi_func: multi-function preferred
+  * @usb_config_req: request to switch to usb
+  * @exit_dp_mode: request exit from displayport mode
+- * @hpd_high: Hot Plug Detect signal is high.
+  * @hpd_irq: Change in the status since last message
+  * @alt_mode_cfg_done: bool to specify alt mode status
+  * @debug_en: bool to specify debug mode
+@@ -39,7 +38,6 @@ struct dp_usbpd {
+ 	bool multi_func;
+ 	bool usb_config_req;
+ 	bool exit_dp_mode;
+-	bool hpd_high;
+ 	bool hpd_irq;
+ 	bool alt_mode_cfg_done;
+ 	bool debug_en;
 -- 
 2.35.1
 
