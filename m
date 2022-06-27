@@ -2,150 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 872ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F4AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234845AbiF0LZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
+        id S235010AbiF0L0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234887AbiF0LZP (ORCPT
+        with ESMTP id S234832AbiF0LZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:25:15 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE9A8659E
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:25:05 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id l2so7786495pjf.1
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:25:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=D2+1y0LCJVkrfpHsQlRGxEvdnIAFt/zhTxrdy/ouAhU=;
-        b=FRaInAGaTCaXwvPDQiOiybyVs1ZTq7aqp376IA6xTXMeo48fL1QiC0oNsa5/HetL55
-         9HUHwrtKWYZ1Pn3nxng6Lr66Ut1zka2dTP94nT+yTufd+icL2WJ59mHZ/iaNZK4dkxE7
-         7+g5zJGUIdsmMd22pGGmiLmu4Xk3PdkamGcOk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=D2+1y0LCJVkrfpHsQlRGxEvdnIAFt/zhTxrdy/ouAhU=;
-        b=PdcnPR7BQE1bo4oeMpwGFsFceaLqtZ+ULs215ceHj9Ktjog9PyaH2FU0mOQC2QzcEB
-         Cz66Y75/u38RWli+NqqxhF9bxQrx+Fv7Y6+ClqPLIDAOmBXzC1sr6E+hj7gUKYyyc+lb
-         B4TENhGKvvoejoenwWW0Tc8zlGLgbQb1jP1pVYGAgU+QG+zEMKMstUfCixybDi6T3I5g
-         6xm9OhvD9MTfo5XJ9yYhV24hzgRcnXYh4CIniQRJZ49s7K8kQYXAbnaYLsScHb2deFrH
-         CaHpktsTjzaTjhj0E/U90cZgoz7G7UwKFHO4xJT/LVDmyz55zT/rkoudEKnE+Be5reAL
-         0gHQ==
-X-Gm-Message-State: AJIora+a2wRr0HiaAo7JVSbJyFB3rBZSYB+onOTjWOeFETnSNH7q14PO
-        y+Daw8YraQ47yGOFSg9Nd6jDKg==
-X-Google-Smtp-Source: AGRyM1vq1tIU8x5lkBrW/7ilQI/Txpt0kSZaL6oXEJkTV+khkTTmLOcOfrxjLLVXkYCHw9PaRKrIdA==
-X-Received: by 2002:a17:902:c2c6:b0:168:d8ce:90b2 with SMTP id c6-20020a170902c2c600b00168d8ce90b2mr14451592pla.110.1656329105228;
-        Mon, 27 Jun 2022 04:25:05 -0700 (PDT)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:2dc1:c31b:b5ed:f3aa])
-        by smtp.gmail.com with ESMTPSA id lj4-20020a17090b344400b001ece32cbec9sm9246889pjb.24.2022.06.27.04.25.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 04:25:04 -0700 (PDT)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Chen-Yu Tsai <wenst@chromium.org>, linux-media@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>
-Subject: [PATCH 3/4] media: mediatek: vcodec: dec: Fix resolution clamping in TRY_FMT
-Date:   Mon, 27 Jun 2022 19:24:01 +0800
-Message-Id: <20220627112402.2332046-4-wenst@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220627112402.2332046-1-wenst@chromium.org>
-References: <20220627112402.2332046-1-wenst@chromium.org>
+        Mon, 27 Jun 2022 07:25:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EBC65C1;
+        Mon, 27 Jun 2022 04:25:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9068661497;
+        Mon, 27 Jun 2022 11:25:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FB76C341D3;
+        Mon, 27 Jun 2022 11:25:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656329107;
+        bh=8MbN9/l8r4l07VQsymiCOiUg9CkoZNTexzO2dpr8eNA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tQH9WABqyGJLNUMveD1Ci4WkzrMNVkTbb/6IxFG85mPTdR/7UqshXJTHFI5dSKJyH
+         yojuV+UpHvL4qWFCSCvt8aDIpTMTKJpFE3qg4soQxWdK7+iirevYViSsGer0xG9LyG
+         HhZ/AVa7vXgVuXF9egupMww4pCfO+9mITNE0Wz/I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 053/102] Revert "net/tls: fix tls_sk_proto_close executed repeatedly"
+Date:   Mon, 27 Jun 2022 13:21:04 +0200
+Message-Id: <20220627111935.046120109@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
+References: <20220627111933.455024953@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit b018be06f3c7 ("media: mediatek: vcodec: Read max resolution
-from dec_capability"), TRY_FMT clamps the resolution to the maximum
-that was previously set either by default 1080p or the limit set by a
-previous S_FMT call. This does not make sense when doing TRY_FMT for
-the output side, which may have different capabilities.
+From: Jakub Kicinski <kuba@kernel.org>
 
-Instead, for the output side, find the maximum resolution based on the
-pixel format requested. For the capture side, continue to use the
-maximum resolution set by default or by a previous S_FMT call.
+[ Upstream commit 1b205d948fbb06a7613d87dcea0ff5fd8a08ed91 ]
 
-The maximum resolution is found from the list of per-format frame
-sizes, so the patch "media: mediatek: vcodec: dec: Fix 4K frame size
-enumeration" is needed.
+This reverts commit 69135c572d1f84261a6de2a1268513a7e71753e2.
 
-Fixes: b018be06f3c7 ("media: mediatek: vcodec: Read max resolution from dec_capability")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+This commit was just papering over the issue, ULP should not
+get ->update() called with its own sk_prot. Each ULP would
+need to add this check.
+
+Fixes: 69135c572d1f ("net/tls: fix tls_sk_proto_close executed repeatedly")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/r/20220620191353.1184629-1-kuba@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../platform/mediatek/vcodec/mtk_vcodec_dec.c | 28 +++++++++++++++----
- 1 file changed, 22 insertions(+), 6 deletions(-)
+ net/tls/tls_main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-index f1b82d4c5be5..ea951cb3b927 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-@@ -282,13 +282,29 @@ static int vidioc_try_fmt(struct mtk_vcodec_ctx *ctx, struct v4l2_format *f,
- 			  const struct mtk_video_fmt *fmt)
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 9492528f5852..58d22d6b86ae 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -787,9 +787,6 @@ static void tls_update(struct sock *sk, struct proto *p,
  {
- 	struct v4l2_pix_format_mplane *pix_fmt_mp = &f->fmt.pix_mp;
-+	const struct mtk_vcodec_dec_pdata *dec_pdata = ctx->dev->vdec_pdata;
-+	unsigned int max_width, max_height;
-+	int i;
-+
-+	if (V4L2_TYPE_IS_OUTPUT(f->type)) {
-+		max_width = MTK_VDEC_MAX_W;
-+		max_height = MTK_VDEC_MAX_H;
-+		for (i = 0; i < *dec_pdata->num_framesizes; ++i)
-+			if (f->fmt.pix_mp.pixelformat == dec_pdata->vdec_framesizes[i].fourcc) {
-+				max_width = dec_pdata->vdec_framesizes[i].stepwise.max_width;
-+				max_height = dec_pdata->vdec_framesizes[i].stepwise.max_height;
-+			}
-+	} else {
-+		max_width = ctx->max_width;
-+		max_height = ctx->max_height;
-+	}
+ 	struct tls_context *ctx;
  
- 	pix_fmt_mp->field = V4L2_FIELD_NONE;
- 
- 	pix_fmt_mp->width =
--		clamp(pix_fmt_mp->width, MTK_VDEC_MIN_W, ctx->max_width);
-+		clamp(pix_fmt_mp->width, MTK_VDEC_MIN_W, max_width);
- 	pix_fmt_mp->height =
--		clamp(pix_fmt_mp->height, MTK_VDEC_MIN_H, ctx->max_height);
-+		clamp(pix_fmt_mp->height, MTK_VDEC_MIN_H, max_height);
- 
- 	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
- 		pix_fmt_mp->num_planes = 1;
-@@ -306,16 +322,16 @@ static int vidioc_try_fmt(struct mtk_vcodec_ctx *ctx, struct v4l2_format *f,
- 		tmp_h = pix_fmt_mp->height;
- 		v4l_bound_align_image(&pix_fmt_mp->width,
- 					MTK_VDEC_MIN_W,
--					ctx->max_width, 6,
-+					max_width, 6,
- 					&pix_fmt_mp->height,
- 					MTK_VDEC_MIN_H,
--					ctx->max_height, 6, 9);
-+					max_height, 6, 9);
- 
- 		if (pix_fmt_mp->width < tmp_w &&
--			(pix_fmt_mp->width + 64) <= ctx->max_width)
-+			(pix_fmt_mp->width + 64) <= max_width)
- 			pix_fmt_mp->width += 64;
- 		if (pix_fmt_mp->height < tmp_h &&
--			(pix_fmt_mp->height + 64) <= ctx->max_height)
-+			(pix_fmt_mp->height + 64) <= max_height)
- 			pix_fmt_mp->height += 64;
- 
- 		mtk_v4l2_debug(0,
+-	if (sk->sk_prot == p)
+-		return;
+-
+ 	ctx = tls_get_ctx(sk);
+ 	if (likely(ctx)) {
+ 		ctx->sk_write_space = write_space;
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
+2.35.1
+
+
 
