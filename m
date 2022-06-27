@@ -2,53 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CFF6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239303AbiF0L7b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50048 "EHLO
+        id S239322AbiF0L7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238773AbiF0Lwg (ORCPT
+        with ESMTP id S238753AbiF0Lwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:36 -0400
+        Mon, 27 Jun 2022 07:52:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D773DE82;
-        Mon, 27 Jun 2022 04:45:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E43B872;
+        Mon, 27 Jun 2022 04:45:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECA86610A0;
-        Mon, 27 Jun 2022 11:45:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D03F4C341C7;
-        Mon, 27 Jun 2022 11:45:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 294EF612A5;
+        Mon, 27 Jun 2022 11:45:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35AE8C341C7;
+        Mon, 27 Jun 2022 11:45:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330335;
-        bh=qQsK/KFw7+vQ8Q7idBFmYFRhYdTXO8Kc12ms4xSFZYs=;
+        s=korg; t=1656330329;
+        bh=QM0AfxK4IuaFTjGiDZn/JFX8f2kV59KHfY0gtwTQpUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2EYLagDGa7OH7gUFFFY5N0jba1VjObtIORYr2o6l4ZrsSYZDM/drbW0D7wbF8wXuc
-         wf7EleAYKz/f+RoxfBaJYrED77OHzCkyVoNLVuTR/7aBtPOeKqMhQanj4TryxsCjKi
-         REKlAUKqeWBKGxLGHwDTmCs6Qoq2/MzjN848cgIA=
+        b=Ze+6jw2Ej3FDdV84xkESm7U+VJmHFano19WjozSh1+WNSxbVtt0GJZ3zf60+r6d2O
+         MphOsdL6R/VdhGMXQzvI+0oAu9JIBkEs8e23g/tYvKAuA0RTLNkhzoOqNtBDJgrXM8
+         49CRacjWQR2AlmIR1gHP4uDZ9MKibxUnXVrlmgBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marcelo Tosatti <mtosatti@redhat.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Michael Larabel <Michael@MichaelLarabel.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Minchan Kim <minchan@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 162/181] mm: lru_cache_disable: use synchronize_rcu_expedited
-Date:   Mon, 27 Jun 2022 13:22:15 +0200
-Message-Id: <20220627111949.383620931@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.18 134/181] iio:accel:bma180: rearrange iio trigger get and register
+Date:   Mon, 27 Jun 2022 13:21:47 +0200
+Message-Id: <20220627111948.574719741@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -60,57 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcelo Tosatti <mtosatti@redhat.com>
+From: Dmitry Rokosov <DDRokosov@sberdevices.ru>
 
-commit 31733463372e8d88ea54bfa1e35178aad9b2ffd2 upstream.
+commit e5f3205b04d7f95a2ef43bce4b454a7f264d6923 upstream.
 
-commit ff042f4a9b050 ("mm: lru_cache_disable: replace work queue
-synchronization with synchronize_rcu") replaced lru_cache_disable's usage
-of work queues with synchronize_rcu.
+IIO trigger interface function iio_trigger_get() should be called after
+iio_trigger_register() (or its devm analogue) strictly, because of
+iio_trigger_get() acquires module refcnt based on the trigger->owner
+pointer, which is initialized inside iio_trigger_register() to
+THIS_MODULE.
+If this call order is wrong, the next iio_trigger_put() (from sysfs
+callback or "delete module" path) will dereference "default" module
+refcnt, which is incorrect behaviour.
 
-Some users reported large performance regressions due to this commit, for
-example:
-https://lore.kernel.org/all/20220521234616.GO1790663@paulmck-ThinkPad-P17-Gen-1/T/
-
-Switching to synchronize_rcu_expedited fixes the problem.
-
-Link: https://lkml.kernel.org/r/YpToHCmnx/HEcVyR@fuller.cnet
-Fixes: ff042f4a9b050 ("mm: lru_cache_disable: replace work queue synchronization with synchronize_rcu")
-Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-Tested-by: Michael Larabel <Michael@MichaelLarabel.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Mel Gorman <mgorman@techsingularity.net>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Paul E. McKenney <paulmck@kernel.org>
-Cc: Phil Elwell <phil@raspberrypi.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 0668a4e4d297 ("iio: accel: bma180: Fix indio_dev->trig assignment")
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220524181150.9240-2-ddrokosov@sberdevices.ru
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/swap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/accel/bma180.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/mm/swap.c b/mm/swap.c
-index f3922a96b2e9..034bb24879a3 100644
---- a/mm/swap.c
-+++ b/mm/swap.c
-@@ -881,7 +881,7 @@ void lru_cache_disable(void)
- 	 * lru_disable_count = 0 will have exited the critical
- 	 * section when synchronize_rcu() returns.
- 	 */
--	synchronize_rcu();
-+	synchronize_rcu_expedited();
- #ifdef CONFIG_SMP
- 	__lru_add_drain_all(true);
- #else
--- 
-2.36.1
-
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -1006,11 +1006,12 @@ static int bma180_probe(struct i2c_clien
+ 
+ 		data->trig->ops = &bma180_trigger_ops;
+ 		iio_trigger_set_drvdata(data->trig, indio_dev);
+-		indio_dev->trig = iio_trigger_get(data->trig);
+ 
+ 		ret = iio_trigger_register(data->trig);
+ 		if (ret)
+ 			goto err_trigger_free;
++
++		indio_dev->trig = iio_trigger_get(data->trig);
+ 	}
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
 
 
