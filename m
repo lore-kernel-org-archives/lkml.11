@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19724C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B23C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235153AbiF0L2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
+        id S235361AbiF0L2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235219AbiF0L1Y (ORCPT
+        with ESMTP id S235018AbiF0L0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:27:24 -0400
+        Mon, 27 Jun 2022 07:26:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774D59585;
-        Mon, 27 Jun 2022 04:27:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A0A65AC;
+        Mon, 27 Jun 2022 04:26:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15050614C8;
-        Mon, 27 Jun 2022 11:27:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21A84C3411D;
-        Mon, 27 Jun 2022 11:27:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65251614AE;
+        Mon, 27 Jun 2022 11:26:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 741EEC3411D;
+        Mon, 27 Jun 2022 11:26:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329223;
-        bh=OOi6JiC4hHGgym1taXsN4xlgN6UDOKMGxg2GFNAwFLA=;
+        s=korg; t=1656329202;
+        bh=6MGD7FQmuZqCGtpyq5/mysob2juBKQYP6BIpYM70IIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nxrw6CsK40Yn8mXyFdv3Bf4rU1tlT53r5JGW/R3nkyo6IgtGGaV/ulohMa/zK90sw
-         lOJjoAavZSZO4cOCFU5Ni/igCYdUCxGBvGMySTdG6sK6xB7vNlGWZ861fBVpms7hhX
-         tRQG7qsQ/nForlQIJk06WDkBdS971UHwQdFJw1RE=
+        b=0in/TjXJkga8IB3edrrKBu/llSYVBq6LwFQYp2WttquAo9nEcwJxOx5LYwPjkxMC/
+         xJkhFblRMUFpgxRRegeCYkmKtacqUe1vMLyQW4tfd5tIi+3PGbJn6CrsrL/8xWsRx8
+         7aUVVEtMWvCYmkzuAScJRS7DaP/QTKTeZ8osakps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org,
+        Yannick Brosseau <yannick.brosseau@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 084/102] iio: adc: adi-axi-adc: Fix refcount leak in adi_axi_adc_attach_client
-Date:   Mon, 27 Jun 2022 13:21:35 +0200
-Message-Id: <20220627111935.958757066@linuxfoundation.org>
+Subject: [PATCH 5.10 082/102] iio: adc: stm32: Fix IRQs on STM32F4 by removing custom spurious IRQs message
+Date:   Mon, 27 Jun 2022 13:21:33 +0200
+Message-Id: <20220627111935.900652709@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -49,45 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Yannick Brosseau <yannick.brosseau@gmail.com>
 
-commit ada7b0c0dedafd7d059115adf49e48acba3153a8 upstream.
+commit 99bded02dae5e1e2312813506c41dc8db2fb656c upstream.
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The check for spurious IRQs introduced in 695e2f5c289bb assumed that the bits
+in the control and status registers are aligned. This is true for the H7 and MP1
+version, but not the F4. The interrupt was then never handled on the F4.
 
-Fixes: ef04070692a2 ("iio: adc: adi-axi-adc: add support for AXI ADC IP core")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220524074517.45268-1-linmq006@gmail.com
+Instead of increasing the complexity of the comparison and check each bit specifically,
+we remove this check completely and rely on the generic handler for spurious IRQs.
+
+Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
+Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220516203939.3498673-3-yannick.brosseau@gmail.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/adi-axi-adc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/adc/stm32-adc.c |   10 ----------
+ 1 file changed, 10 deletions(-)
 
---- a/drivers/iio/adc/adi-axi-adc.c
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -334,16 +334,19 @@ static struct adi_axi_adc_client *adi_ax
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -1265,7 +1265,6 @@ static irqreturn_t stm32_adc_threaded_is
+ 	struct stm32_adc *adc = iio_priv(indio_dev);
+ 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
+ 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
+-	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
  
- 		if (!try_module_get(cl->dev->driver->owner)) {
- 			mutex_unlock(&registered_clients_lock);
-+			of_node_put(cln);
- 			return ERR_PTR(-ENODEV);
- 		}
- 
- 		get_device(cl->dev);
- 		cl->info = info;
- 		mutex_unlock(&registered_clients_lock);
-+		of_node_put(cln);
- 		return cl;
+ 	/* Check ovr status right now, as ovr mask should be already disabled */
+ 	if (status & regs->isr_ovr.mask) {
+@@ -1280,11 +1279,6 @@ static irqreturn_t stm32_adc_threaded_is
+ 		return IRQ_HANDLED;
  	}
  
- 	mutex_unlock(&registered_clients_lock);
-+	of_node_put(cln);
- 
- 	return ERR_PTR(-EPROBE_DEFER);
+-	if (!(status & mask))
+-		dev_err_ratelimited(&indio_dev->dev,
+-				    "Unexpected IRQ: IER=0x%08x, ISR=0x%08x\n",
+-				    mask, status);
+-
+ 	return IRQ_NONE;
  }
+ 
+@@ -1294,10 +1288,6 @@ static irqreturn_t stm32_adc_isr(int irq
+ 	struct stm32_adc *adc = iio_priv(indio_dev);
+ 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
+ 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
+-	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
+-
+-	if (!(status & mask))
+-		return IRQ_WAKE_THREAD;
+ 
+ 	if (status & regs->isr_ovr.mask) {
+ 		/*
 
 
