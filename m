@@ -2,88 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B7EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:19:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82692C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236976AbiF0OTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 10:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36914 "EHLO
+        id S237058AbiF0OUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 10:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235267AbiF0OTU (ORCPT
+        with ESMTP id S235267AbiF0OUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 10:19:20 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32379101C2
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:19:19 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id s1so13273102wra.9
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:19:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=OxTd7fdB6orfEASOGRyD2CfOAQhkret3W6VljUETf1M=;
-        b=NS6T8tGOanPvusQZQFpHrG/sAvxIq/6eSzqfUCeEANZuMeuKbKRTbN/Y1X9f+r88kE
-         wMNLhqG07GbwEMIL40+N/ZdQYoDhstEKrtRX7X4dWcZfAq4t20zltTrWwDcLfGUE1NWx
-         LfQwWfxqij3zklxD8ItxmvIAMQt0uknsoxQemqhQGilZOjBZmJlk+spsx2uMNvg5+ArS
-         J4XH3Hy8088/nd7FxJQoDH40PI1ClLYHLOce7wD/FU10P7VA/3rkWS4cd9zkJ74DeJMx
-         87ajY7eH+5iJfUNym1nmiCMwbXMs3vOzdA/zRWOFDT3Xs2mHnnkyHX0oRO0eT8FB7v6K
-         XBSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=OxTd7fdB6orfEASOGRyD2CfOAQhkret3W6VljUETf1M=;
-        b=fpGuDckCQGSyrMwWQ9r5B7W6h2Cya54cmRjFU5EFr6HPA8c4oUB9PJhUoi64vTZX7y
-         2/Al5Qf7qmmnZBoDtiNMDh9lOmd3oxMh2Et7vDhSkyL6+gII7z2PmgSqrEPU9PgiH9qT
-         2L5tMzPL2E9Od5FWapGnN9PTejKLEeHJvyUUVRW0MzWU8auWegsYoIQtoqSfZO7tgxZY
-         XGW0w+KHmge0Dq3zUnFbCaRpmAa2OMgs5tsqwsUfYFYvAHtKeIB5zX4YqBxI93abwtPt
-         OF9ZwP17ljgwBqCQ99LWrWAo2Chz/AdeYkvXbMH8U+nvq+lJ4Vyndm77miCME4yTvFW7
-         eMow==
-X-Gm-Message-State: AJIora/iec3eHIL2BHEvOBTHmszbA0y/NLMWp4lTASzyk0SRDU4FB27P
-        TKNQhsj53mZ+sHM0nWfC7k2TmQ3C2T+w/A==
-X-Google-Smtp-Source: AGRyM1uN+zaVAdP/+/bAUqfFx2/h0MdRJVlYR9m3wnoKZzjycVN+sYCuBmidtVli+dLsQEubkezMjw==
-X-Received: by 2002:a05:6000:2c6:b0:21b:ad25:9c1b with SMTP id o6-20020a05600002c600b0021bad259c1bmr12966628wry.391.1656339557775;
-        Mon, 27 Jun 2022 07:19:17 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id y12-20020a5d4acc000000b0021b9416fa13sm12041034wrs.90.2022.06.27.07.19.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 07:19:17 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 15:19:15 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Zhang Jiaming <jiaming@nfschina.com>
-Cc:     linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        renyu@nfschina.com
-Subject: Re: [PATCH] mfd: Fix spelling mistake
-Message-ID: <Yrm8Y+ACttPIaGFe@google.com>
-References: <20220623073333.5675-1-jiaming@nfschina.com>
+        Mon, 27 Jun 2022 10:20:42 -0400
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3006D101FD;
+        Mon, 27 Jun 2022 07:20:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+        s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ksIHmlKSMU37+Zo3znbjONqVsnNwDJ3NzqXq/aV3oCA=; b=jj62KECv4psctWkcuf5Ses0v9O
+        o4gDWXoxwTWF2JnaENsSFlJp75IeIDlmm5FwZx42Fw2pSG0sfcWGkibG9WgCLW+5Kj6JRdKKaQoFk
+        KZR6rCtADOL1SnarxSxH1z6+4243ZmmLJwCwkXB7MvYR+/bhJigZ2aPLOEjVSuNc4WzV5I56YDJpA
+        OmR4T5EvR9cd0LzRh7Uk/nF/Up9dbgiegDUl18WVbAalbekxpXZEda2Wf91ywh6iEDwNVsiBxFDQw
+        keUdgXQ791ceVjqTJMgk9vLnOD7OpHX8v3xZIylpmA2monnp5qqUmHCGEcEhXCJaq8E5o1v/7kHPa
+        sCv/S6Lg==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
+        by mail.kapsi.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1o5pbK-003N2J-L8; Mon, 27 Jun 2022 17:20:29 +0300
+From:   Mikko Perttunen <cyndis@kapsi.fi>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Mikko Perttunen <mperttunen@nvidia.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v7/v3 01/22] dt-bindings: host1x: Add iommu-map property
+Date:   Mon, 27 Jun 2022 17:19:47 +0300
+Message-Id: <20220627142008.2072474-2-cyndis@kapsi.fi>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627142008.2072474-1-cyndis@kapsi.fi>
+References: <20220627142008.2072474-1-cyndis@kapsi.fi>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220623073333.5675-1-jiaming@nfschina.com>
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022, Zhang Jiaming wrote:
+From: Mikko Perttunen <mperttunen@nvidia.com>
 
-> Change 'receieved' to 'received'.
-> Change 'recieve' to 'receive'.
-> 
-> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
-> ---
->  include/linux/mfd/ipaq-micro.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Add schema information for specifying context stream IDs. This uses
+the standard iommu-map property.
 
-Patch subjects to mention the sub-device they pertain to.
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+v3:
+* New patch
+v4:
+* Remove memory-contexts subnode.
+---
+ .../bindings/display/tegra/nvidia,tegra20-host1x.yaml        | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-I've fixed this up for you this time.
-
-Applied, thanks.
-
+diff --git a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
+index 4fd513efb0f7..0adeb03b9e3a 100644
+--- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
++++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
+@@ -144,6 +144,11 @@ allOf:
+         reset-names:
+           maxItems: 1
+ 
++        iommu-map:
++          description: Specification of stream IDs available for memory context device
++            use. Should be a mapping of IDs 0..n to IOMMU entries corresponding to
++            usable stream IDs.
++
+       required:
+         - reg-names
+ 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.36.1
+
