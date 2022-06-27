@@ -2,225 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E50AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA54C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232656AbiF0HHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
+        id S232667AbiF0HHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232606AbiF0HHd (ORCPT
+        with ESMTP id S232593AbiF0HHf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:07:33 -0400
-Received: from smtpbg152.qq.com (smtpbg152.qq.com [13.245.186.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C49B5F56
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:07:25 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1656313635t1097dhn
-Received: from localhost.localdomain ( [113.200.76.118])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 27 Jun 2022 15:07:12 +0800 (CST)
-X-QQ-SSF: 01400000002000C0F000C00A0000000
-X-QQ-FEAT: rn/rQ7Qm5gVRl22tQv4a4ovBt7KPV/g0KqIYo54UggIK4wy0x0g2FWaVFsw4R
-        zJXurF/DBaQXV2fTATjlYk01YXo/aMBk+EMke0durBhk9uDVmsgLaHAUkT3cZhGxJkXqERQ
-        91/FDUPGPWBzeHzzSxWGGWohAJYQNYUYfz7rIm/P46kMinHeTnsiu4uWHyZUI4jVtRG62Iu
-        zfbTSPS90SY5pyGSfn1YNy+fqCwSne573uGjRz/uNeff38zgnVsYFijATYCaNTE9Are6zmG
-        2ytaLYGjNRMFIe8L3BBeZOop2AFYY3nWzOFYVfvdzCgFtDw+X83O4aAPc0nXXJzC/8e/iCS
-        o8YxkIzaBAwtrDbIQdC06u9++nMRsxobcQYlqA44pvJXYjKtEw=
-X-QQ-GoodBg: 2
-From:   Guo Hui <guohui@uniontech.com>
-To:     peterz@infradead.org
-Cc:     longman@redhat.com, jgross@suse.com, srivatsa@csail.mit.edu,
-        amakhalov@vmware.com, pv-drivers@vmware.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, will@kernel.org,
-        boqun.feng@gmail.com, virtualization@lists.linux-foundation.org,
-        wangxiaohua@uniontech.com, linux-kernel@vger.kernel.org,
-        Guo Hui <guohui@uniontech.com>
-Subject: [PATCH v3] x86/paravirt: useless assignment instructions cause Unixbench full core   performance degradation
-Date:   Mon, 27 Jun 2022 15:07:03 +0800
-Message-Id: <20220627070703.19922-1-guohui@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <182260a1-0673-b65c-fc33-54548723e0c1@suse.com>
-References: <182260a1-0673-b65c-fc33-54548723e0c1@suse.com>
+        Mon, 27 Jun 2022 03:07:35 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2088.outbound.protection.outlook.com [40.107.113.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACFB5F8C
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:07:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XIXmUYk3bHVAwZl+dqZBT8uHA2jB4SHnMEQaj39Iy3fIokZhP/9EcYHpuezHCJo2nKG0kESxABHmsIXL/pfouPpx0wyTr+SmLo1y8k6MQ4W+GLkQyi4WqZZSV8TMUIQxO/gW2WcjdcCvUAHZRntId53bPXSowJA2TAiyYTCBYA1GQp3SyGc0XH9JlF7L5ye7lp8IuCXfQtDdRgxLVBX7whVg5l38ZDfkD5jqIGw2AYPt5cABdpd9xwcVLO3520pqsI1qMyugqiGzSch0jH6bi4NclZyR8WJc+yIH74OJdNA4x4tQVWj0spi5SXM3QRS0iIVOub7n2xxX7Aj2ZxSgfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=93IJwSQO5voGjUCEIdXobnUR8sy5HPvDR0Um4MIzrlI=;
+ b=arxFv96CXsqAIYATaV1sqwSTAy5YhVl3FDtlWxg11RYC+IGsu0eZ2MKTn7YVA4pLa4ztKLrW3m0Nd40DwXarx1799UWii4ado5BJprSMysMELT7LPaUNSOlSi4lNZwUYqh0uKJ40++eR/RDqCTuMI93bwa39BxgRZhH6k3eKPNbVO77rJin4DZYQ41kQSBI1MPyASza9R7WyFyHvWtT0zgoKL8Bo+u5jdi4hW2DPEU+Bpy1mmo3gsqxm21NKJ1KEAILik3b794/J45/k7BFB+NgWoSUI81hDpVPKsfR23RHHw/yC9cGIH8cIq8G+9Q5QnKP1le8qPvBdcgqg/Zstcw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
+ header.d=nec.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=93IJwSQO5voGjUCEIdXobnUR8sy5HPvDR0Um4MIzrlI=;
+ b=dqeGD4qXDOsThJRaN1T5h66vK7NNv957yQt0eJ+XXNrXMLHzDSYraAvPyv59Qg9bsPbO5KKBkI2Gaf/y5ZQXV+HP0Lrs+1GXNqHDJ9bK/hhvuS4QZ8Hu3b8A4j3f1JHe5UJse/Ifv7foKnoWXeh9C9IEJaPVFOqyC3M2k98fx1M=
+Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com (2603:1096:400:13c::10)
+ by TYAPR01MB3952.jpnprd01.prod.outlook.com (2603:1096:404:c7::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Mon, 27 Jun
+ 2022 07:07:31 +0000
+Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com
+ ([fe80::5d07:3dbc:2b8c:d836]) by TYWPR01MB8591.jpnprd01.prod.outlook.com
+ ([fe80::5d07:3dbc:2b8c:d836%7]) with mapi id 15.20.5373.018; Mon, 27 Jun 2022
+ 07:07:31 +0000
+From:   =?utf-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPo+OAgOebtOS5nyk=?= 
+        <naoya.horiguchi@nec.com>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+CC:     Naoya Horiguchi <nao.horiguchi@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 3/9] mm/hugetlb: make pud_huge() and huge_pud() aware
+ of non-present pud entry
+Thread-Topic: [PATCH v2 3/9] mm/hugetlb: make pud_huge() and huge_pud() aware
+ of non-present pud entry
+Thread-Index: AQHYh1xVdMLvq+UuwkSi6Bx3h6yk0q1fPt6AgAObigA=
+Date:   Mon, 27 Jun 2022 07:07:31 +0000
+Message-ID: <20220627070730.GD2159330@hori.linux.bs1.fc.nec.co.jp>
+References: <20220623235153.2623702-1-naoya.horiguchi@linux.dev>
+ <20220623235153.2623702-4-naoya.horiguchi@linux.dev>
+ <YrZQeWnjQlWSjP3b@monkey>
+In-Reply-To: <YrZQeWnjQlWSjP3b@monkey>
+Accept-Language: ja-JP, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nec.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8b7fe39e-f6d3-4745-220d-08da580bb3db
+x-ms-traffictypediagnostic: TYAPR01MB3952:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: QfDwIbRkEzpdo7csZHvfGeGnXL1Tjpo2vOaxwPVsQE2jxvkFrrqX2b+DsA3RJeW7Pixdzn24jdjRSsQa86rxQMjUu7/vEIRUhiZoTaOYc6/lkMCf2e693SJXU8cY4BNcofk6PA4Q4LyAAp/xPitxS7OAQG1fUnBrRJjOH7t4/OxDBcuLj/kL6JhXy+3M2Hsot6WMxthj2StRPJzRBlr4yGt70q5bJ4EFMDwJCpuSJ6Zky/eQ1vS46f2oZJvc1wxBIkzofvbUoIaiUmt0NeIoaa78yu6obEMuWAg6t4WpNztukSHbEedBwHWwVDrdNyGzQR5aS0eurhEslG+WRXYrtpwhPZc8Vq0swGzxMI5k7aC/MNySE+4A1RPCPKhGzsSKrF2xc5FKrem8ccpFH5PU5/RjXEmKKWZyD8FuGyJf/hb0/4e0oRRWWREvJItS2RqrzhdMYDqay+AsK3sA4Bzj8HpF/6TYjZSggwFTvhf/uw4HiitSg9ZjaMoa2WD9bbtV8F+AweEYa7I4AnAqbVUMkCnrt+aP1rlxdkU9uM5BGHyrDbeopy36EghDYCZyIvg1YmvPqaFPz2lRlbTlClbEYo8L6nD9q9SECMxzVHHphR0SSIaXTs/KaGNX4XuWMEtBhUZv2lr80I0BVDi7v9Yf4HGIoxEQPE/BnJkl4+EyozQvUZxW7APZpedcyfnnxd1y5yJommd8rWnwQBazRVVnd1UmBgvWvxqrFcIlpnR/9V8l7MP+NtSp6Dh86NifEkRcLOLZYzcVssdqGIPiOml7SFLLnEeE9bobY5mHsGnXMFgof4l1iWfM70LTvttoljJm
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWPR01MB8591.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(376002)(39860400002)(396003)(136003)(9686003)(53546011)(41300700001)(8936002)(76116006)(316002)(66476007)(6512007)(82960400001)(6486002)(38070700005)(6506007)(66946007)(1076003)(186003)(66556008)(122000001)(55236004)(85182001)(83380400001)(86362001)(2906002)(8676002)(5660300002)(7416002)(478600001)(71200400001)(54906003)(64756008)(66446008)(6916009)(4326008)(33656002)(38100700002)(26005)(14583001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NFREUzVvbmd6Vy9TQWNXUUN4M2VrblphaDV3cFEwanVxa3B4YnJlb3hoL3NS?=
+ =?utf-8?B?bXQ1QnlGOEt3Y3lFY04yUSs2bVFYMHF0TnB2RVRPZk5RSURIdW9ZV3Y4SGFL?=
+ =?utf-8?B?eWFiNWcyVkFXcFY5U2RLZitzRzdiNWNBT3JrVTJMMjNBbEkwN3pFUXh6Q3da?=
+ =?utf-8?B?b2hXTjdQaEZ3c3BlVWMrdmFFWDFNNjFkU01LZlZNWGxxYzVuTHFqVkVDS1Nr?=
+ =?utf-8?B?bExBMzZMZ082NFROVTQ3Ym43ejRTODdZK2pCRnd4OE1FNW84bTdmdzNPRmhC?=
+ =?utf-8?B?Y3VaellLSlNTakdQV3YvU2lrcTY5QXd3Q1JuTXVpam9kMnQrRk43bnBPN3Jp?=
+ =?utf-8?B?Q2RzcnJha3pLTnQ5LzhVVUUxSGIrTWtXZUVnQmFKNUQ0K0ZLMzRMYnhRaE52?=
+ =?utf-8?B?amg0ZktiSlZWL1FEQUR5OXpaL3l5ZXptZlVwRzZhMVN2SHZmb2kvMDZ2dmh3?=
+ =?utf-8?B?Z21lN21kNXdZVXpVM3JXLzhHWlpISHdZc1lTUzBCNVVyTHBtZkxjWmZJazM4?=
+ =?utf-8?B?cURub01qa05HZjMxRmF4TmwyN0M2SGdsbXNCbE1OVVBsTDJVMHNncmFQVERq?=
+ =?utf-8?B?VHJUZ2FpU1NrMCthWWd6aGY2RnZ3Z0krOVo2cjV2VHNBWHVxbUlLL3FPMVY0?=
+ =?utf-8?B?Z09WMkVSWjVQa0Faa3JWLzR2U29YcWIzR2c4Z3pyVkJDbTRtbEljRENSOUYv?=
+ =?utf-8?B?WWdnM3h3UHBmb3VKS3E5R01MenNaclVheHk5UVVieWFlWGU5YXdKL25pSnJN?=
+ =?utf-8?B?V0dvRFpsUGJON0hlZjNsZXdRT25JS3pVZG5NUzY5YllKZ2FvdFpYMVdTR1ky?=
+ =?utf-8?B?ZDIrNGRZVVpCaWJFZjVSdUJwSXQxb2dTWFlJUzJTNFBMOXdBa29ndXgwanA5?=
+ =?utf-8?B?MlNuL1M0VE1wSmdNRC9lbDdTaU90OWNNSWNITGpEZnJQSTVWL0owRTJENTBh?=
+ =?utf-8?B?ZUJ1aEVwSHlBMFZCbERxUm9vLy83a21WS3VucnI5dGNUdzEzamFFY1BGSUd4?=
+ =?utf-8?B?dGRvUHJmWEtUOWx4Q2NGYjkwQ3lMWWVsdVI1UFh4d1hHUmVnQ1gydksrc0k5?=
+ =?utf-8?B?ZFE0TGdFMnpOZjg4VXNaL2thN1hBdW15MUJzanFKS1JWbFdlc2lteUhLVWNU?=
+ =?utf-8?B?VExacnNETzNnWElhNXpuOE5oVk1hc0pneHMyRm1jVXJjR2Y2YTJLOVlSU0ww?=
+ =?utf-8?B?OW1GZHZ5aHE1YXdHVDVKR1RjTk8yMG8vVkpPdHZpVEtlSVVpcEo4NXFGc0hL?=
+ =?utf-8?B?TTR5eEkyR1Fkcit3dng1akkzZVJiSUU1aFN5ZVFQaGIyKzQ5YnhKOTMzSm8x?=
+ =?utf-8?B?bWtmRWc4eEZsdDBkdElEelphMjdXcHBKbXZQRFVERkY0NGlRSUJmeWRxSHhR?=
+ =?utf-8?B?eWVERHRVRTJ6NXlwRTZVMWx2TDBrT0FBZ2tPVU9qSXlNQXMwc2tNS3pReXpT?=
+ =?utf-8?B?MHVYMWxRVFIyMi8wS3BpL1p6YVhEaS9MYzQxWDQzK2Z1M0J3SCtzVjB5WGhW?=
+ =?utf-8?B?MHdmbkFnRnlZc2Erb01iblBQT2x0OXBka2x3S2FqbUh6cTV4Nm5sRkFaclg4?=
+ =?utf-8?B?K3FicFA2SUlxRitqdkhIQlc3dFFxWDY4dmFnT1FCSE5xZVpVRXJVaXRYZjNU?=
+ =?utf-8?B?TU5MMlAwc1F0UENFbWdnaHFWdGtzcjB5SWd1aldIVEZ3QnRycVAvdEc4aGha?=
+ =?utf-8?B?ZkhaTEhDQXRQd1J4Z0trbGJ1c29qK09rM3RZVVhiczRsTXRUdzJONUVVVnVl?=
+ =?utf-8?B?K1J4OE5hSmU0SXREM2o1NFpRRld1d2ZTSlRTU1l1MWROekw5cXk0c3RsVzIz?=
+ =?utf-8?B?VHl0MzljdXVMRFF2YnpyUXdBNW5lV3FRdWtuRXJIbERqVVpKMmhtZVNIbGI5?=
+ =?utf-8?B?QW40MklUZXdzeXZacnc3NE05UFBaOElRSDg2bzZHUFlOWVM4Z2JINmFJdGFh?=
+ =?utf-8?B?eFhZd2d5ZnNMTGZKL0MzYmE5ZjJ6RkQ1QVB0dUFQcTFJbzdLbUlLaEJZd2FT?=
+ =?utf-8?B?MUREWVhQYjhSVzRiWitrTTZXazdTRWQvS3VTalNESVRCbVdlZUZnS1JpQ0FN?=
+ =?utf-8?B?enFOc0M1SUIyd3B0ZTN2bnZIRk0yeC9PUkRqbUkrZlR2WHNsbmQyUkdwVlE5?=
+ =?utf-8?B?dFpBYS8rZTUxSlhoNFpuQWI1N3dsMFh3dEhrWUhEUUR6OFcyYVk0by9PYXNK?=
+ =?utf-8?B?UHc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7CF292973DFB314AB56DFFB43F3F20B6@jpnprd01.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign9
-X-QQ-Bgrelay: 1
+X-OriginatorOrg: nec.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYWPR01MB8591.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b7fe39e-f6d3-4745-220d-08da580bb3db
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2022 07:07:31.1401
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KCl0IuDhvxtUZKw4EBZgE/9vMW628iOxUfWCWguU6P7sMHaO8BDBem2D4PEZ4Y8W202ta9wd0lT2XYhJER14iw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB3952
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The instructions assigned to the vcpu_is_preempted function parameter
-in the X86 architecture physical machine are redundant instructions,
-causing the multi-core performance of Unixbench to drop by about 4% to 5%.
-The C function is as follows:
-static bool vcpu_is_preempted(long vcpu);
-
-The parameter 'vcpu' in the function osq_lock
-that calls the function vcpu_is_preempted is assigned as follows:
-
-The C code is in the function node_cpu:
-cpu = node->cpu - 1;
-
-The instructions corresponding to the C code are:
-mov 0x14(%rax),%edi
-sub $0x1,%edi
-
-The above instructions are unnecessary
-in the X86 Native operating environment,
-causing high cache-misses and degrading performance.
-
-This patch uses static_key to not execute this instruction
-in the Native runtime environment.
-
-The code is as follows:
-
-DEFINE_STATIC_KEY_FALSE(preempted_key);
-
-static inline int node_cpu(struct optimistic_spin_node *node)
-{
-     int cpu = 0;
-
-     if (!static_branch_unlikely(&preempted_key))
-             cpu = node->cpu - 1;
-
-     return cpu;
-}
-
-The patch effect is as follows two machines,
-Unixbench runs with full core score:
-
-1. Machine configuration:
-Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz
-CPU core: 40
-Memory: 256G
-OS Kernel: 5.19-rc3
-
-Before using the patch:
-System Benchmarks Index Values               BASELINE       RESULT    INDEX
-Dhrystone 2 using register variables         116700.0  948326591.2  81261.9
-Double-Precision Whetstone                       55.0     211986.3  38543.0
-Execl Throughput                                 43.0      43453.2  10105.4
-File Copy 1024 bufsize 2000 maxblocks          3960.0     438936.2   1108.4
-File Copy 256 bufsize 500 maxblocks            1655.0     118197.4    714.2
-File Copy 4096 bufsize 8000 maxblocks          5800.0    1534674.7   2646.0
-Pipe Throughput                               12440.0   46482107.6  37365.0
-Pipe-based Context Switching                   4000.0    1915094.2   4787.7
-Process Creation                                126.0      85442.2   6781.1
-Shell Scripts (1 concurrent)                     42.4      69400.7  16368.1
-Shell Scripts (8 concurrent)                      6.0       8877.2  14795.3
-System Call Overhead                          15000.0    4714906.1   3143.3
-                                                                   ========
-System Benchmarks Index Score                                        7923.3
-
-After using the patch:
-System Benchmarks Index Values               BASELINE       RESULT    INDEX
-Dhrystone 2 using register variables         116700.0  947032915.5  81151.1
-Double-Precision Whetstone                       55.0     211971.2  38540.2
-Execl Throughput                                 43.0      45054.8  10477.9
-File Copy 1024 bufsize 2000 maxblocks          3960.0     515024.9   1300.6
-File Copy 256 bufsize 500 maxblocks            1655.0     146354.6    884.3
-File Copy 4096 bufsize 8000 maxblocks          5800.0    1679995.9   2896.5
-Pipe Throughput                               12440.0   46466394.2  37352.4
-Pipe-based Context Switching                   4000.0    1898221.4   4745.6
-Process Creation                                126.0      85653.1   6797.9
-Shell Scripts (1 concurrent)                     42.4      69437.3  16376.7
-Shell Scripts (8 concurrent)                      6.0       8898.9  14831.4
-System Call Overhead                          15000.0    4658746.7   3105.8
-                                                                   ========
-System Benchmarks Index Score                                        8248.8
-
-2. Machine configuration:
-Hygon C86 7185 32-core Processor
-CPU core: 128
-Memory: 256G
-OS Kernel: 5.19-rc3
-
-Before using the patch:
-System Benchmarks Index Values               BASELINE       RESULT    INDEX
-Dhrystone 2 using register variables         116700.0 2256644068.3 193371.4
-Double-Precision Whetstone                       55.0     438969.9  79812.7
-Execl Throughput                                 43.0      10108.6   2350.8
-File Copy 1024 bufsize 2000 maxblocks          3960.0     275892.8    696.7
-File Copy 256 bufsize 500 maxblocks            1655.0      72082.7    435.5
-File Copy 4096 bufsize 8000 maxblocks          5800.0     925043.4   1594.9
-Pipe Throughput                               12440.0  118905512.5  95583.2
-Pipe-based Context Switching                   4000.0    7820945.7  19552.4
-Process Creation                                126.0      31233.3   2478.8
-Shell Scripts (1 concurrent)                     42.4      49042.8  11566.7
-Shell Scripts (8 concurrent)                      6.0       6656.0  11093.3
-System Call Overhead                          15000.0    6816047.5   4544.0
-                                                                   ========
-System Benchmarks Index Score                                        7756.6
-
-After using the patch:
-System Benchmarks Index Values               BASELINE       RESULT    INDEX
-Dhrystone 2 using register variables         116700.0 2252272929.4 192996.8
-Double-Precision Whetstone                       55.0     451847.2  82154.0
-Execl Throughput                                 43.0      10595.1   2464.0
-File Copy 1024 bufsize 2000 maxblocks          3960.0     301279.3    760.8
-File Copy 256 bufsize 500 maxblocks            1655.0      79291.3    479.1
-File Copy 4096 bufsize 8000 maxblocks          5800.0    1039755.2   1792.7
-Pipe Throughput                               12440.0  118701468.1  95419.2
-Pipe-based Context Switching                   4000.0    8073453.3  20183.6
-Process Creation                                126.0      33440.9   2654.0
-Shell Scripts (1 concurrent)                     42.4      52722.6  12434.6
-Shell Scripts (8 concurrent)                      6.0       7050.4  11750.6
-System Call Overhead                          15000.0    6834371.5   4556.2
-                                                                   ========
-System Benchmarks Index Score                                        8157.8
-
-Signed-off-by: Guo Hui <guohui@uniontech.com>
----
- arch/x86/kernel/paravirt-spinlocks.c | 4 ++++
- kernel/locking/osq_lock.c            | 9 ++++++++-
- 2 files changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/kernel/paravirt-spinlocks.c b/arch/x86/kernel/paravirt-spinlocks.c
-index 9e1ea99ad..7a55f8407 100644
---- a/arch/x86/kernel/paravirt-spinlocks.c
-+++ b/arch/x86/kernel/paravirt-spinlocks.c
-@@ -33,6 +33,8 @@ bool pv_is_native_vcpu_is_preempted(void)
- 		__raw_callee_save___native_vcpu_is_preempted;
- }
- 
-+DECLARE_STATIC_KEY_FALSE(preempted_key);
-+
- void __init paravirt_set_cap(void)
- {
- 	if (!pv_is_native_spin_unlock())
-@@ -40,4 +42,6 @@ void __init paravirt_set_cap(void)
- 
- 	if (!pv_is_native_vcpu_is_preempted())
- 		setup_force_cpu_cap(X86_FEATURE_VCPUPREEMPT);
-+	else
-+		static_branch_enable(&preempted_key);
- }
-diff --git a/kernel/locking/osq_lock.c b/kernel/locking/osq_lock.c
-index d5610ad52..a8798e701 100644
---- a/kernel/locking/osq_lock.c
-+++ b/kernel/locking/osq_lock.c
-@@ -22,9 +22,16 @@ static inline int encode_cpu(int cpu_nr)
- 	return cpu_nr + 1;
- }
- 
-+DEFINE_STATIC_KEY_FALSE(preempted_key);
-+
- static inline int node_cpu(struct optimistic_spin_node *node)
- {
--	return node->cpu - 1;
-+	int cpu = 0;
-+
-+	if (!static_branch_unlikely(&preempted_key))
-+		cpu = node->cpu - 1;
-+
-+	return cpu;
- }
- 
- static inline struct optimistic_spin_node *decode_cpu(int encoded_cpu_val)
--- 
-2.20.1
-
-
-
+T24gRnJpLCBKdW4gMjQsIDIwMjIgYXQgMDU6MDI6MDFQTSAtMDcwMCwgTWlrZSBLcmF2ZXR6IHdy
+b3RlOg0KPiBPbiAwNi8yNC8yMiAwODo1MSwgTmFveWEgSG9yaWd1Y2hpIHdyb3RlOg0KPiA+IEZy
+b206IE5hb3lhIEhvcmlndWNoaSA8bmFveWEuaG9yaWd1Y2hpQG5lYy5jb20+DQo+ID4gDQo+ID4g
+Zm9sbG93X3B1ZF9tYXNrKCkgZG9lcyBub3Qgc3VwcG9ydCBub24tcHJlc2VudCBwdWQgZW50cnkg
+bm93LiAgQXMgbG9uZyBhcw0KPiA+IEkgdGVzdGVkIG9uIHg4Nl82NCBzZXJ2ZXIsIGZvbGxvd19w
+dWRfbWFzaygpIHN0aWxsIHNpbXBseSByZXR1cm5zDQo+ID4gbm9fcGFnZV90YWJsZSgpIGZvciBu
+b24tcHJlc2VudF9wdWRfZW50cnkoKSBkdWUgdG8gcHVkX2JhZCgpLCBzbyBubyBzZXZlcmUNCj4g
+PiB1c2VyLXZpc2libGUgZWZmZWN0IHNob3VsZCBoYXBwZW4uICBCdXQgZ2VuZXJhbGx5IHdlIHNo
+b3VsZCBjYWxsDQo+ID4gZm9sbG93X2h1Z2VfcHVkKCkgZm9yIG5vbi1wcmVzZW50IHB1ZCBlbnRy
+eSBmb3IgMUdCIGh1Z2V0bGIgcGFnZS4NCj4gPiANCj4gPiBVcGRhdGUgcHVkX2h1Z2UoKSBhbmQg
+aHVnZV9wdWQoKSB0byBoYW5kbGUgbm9uLXByZXNlbnQgcHVkIGVudHJpZXMuICBUaGUNCj4gPiBj
+aGFuZ2VzIGFyZSBzaW1pbGFyIHRvIHByZXZpb3VzIHdvcmtzIGZvciBwdWQgZW50cmllcyBjb21t
+aXQgZTY2ZjE3ZmY3MTc3DQo+ID4gKCJtbS9odWdldGxiOiB0YWtlIHBhZ2UgdGFibGUgbG9jayBp
+biBmb2xsb3dfaHVnZV9wbWQoKSIpIGFuZCBjb21taXQNCj4gPiBjYmVmODQ3OGJlZTUgKCJtbS9o
+dWdldGxiOiBwbWRfaHVnZSgpIHJldHVybnMgdHJ1ZSBmb3Igbm9uLXByZXNlbnQgaHVnZXBhZ2Ui
+KS4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBOYW95YSBIb3JpZ3VjaGkgPG5hb3lhLmhvcmln
+dWNoaUBuZWMuY29tPg0KPiA+IC0tLQ0KPiA+ICBhcmNoL3g4Ni9tbS9odWdldGxicGFnZS5jIHwg
+IDMgKystDQo+ID4gIG1tL2h1Z2V0bGIuYyAgICAgICAgICAgICAgfCAyNiArKysrKysrKysrKysr
+KysrKysrKysrKysrLQ0KPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDI3IGluc2VydGlvbnMoKyksIDIg
+ZGVsZXRpb25zKC0pDQo+IA0KPiBUaGFua3MuICBPdmVyYWxsIGxvb2tzIGdvb2Qgd2l0aCB0eXBv
+cyBjb3JyZWN0ZWQgdGhhdCB5b3UgYWxyZWFkeSBub3RpY2VkLg0KPiBPbmUgcXVlc3Rpb24gYmVs
+b3cuDQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL2FyY2gveDg2L21tL2h1Z2V0bGJwYWdlLmMgYi9h
+cmNoL3g4Ni9tbS9odWdldGxicGFnZS5jDQo+ID4gaW5kZXggYTBkMDIzY2I0MjkyLi41ZmI4NmZi
+NDliYTggMTAwNjQ0DQo+ID4gLS0tIGEvYXJjaC94ODYvbW0vaHVnZXRsYnBhZ2UuYw0KPiA+ICsr
+KyBiL2FyY2gveDg2L21tL2h1Z2V0bGJwYWdlLmMNCj4gPiBAQCAtNzAsNyArNzAsOCBAQCBpbnQg
+cG1kX2h1Z2UocG1kX3QgcG1kKQ0KPiA+ICANCj4gPiAgaW50IHB1ZF9odWdlKHB1ZF90IHB1ZCkN
+Cj4gPiAgew0KPiA+IC0JcmV0dXJuICEhKHB1ZF92YWwocHVkKSAmIF9QQUdFX1BTRSk7DQo+ID4g
+KwlyZXR1cm4gIXB1ZF9ub25lKHB1ZCkgJiYNCj4gPiArCQkocHVkX3ZhbChwdWQpICYgKF9QQUdF
+X1BSRVNFTlR8X1BBR0VfUFNFKSkgIT0gX1BBR0VfUFJFU0VOVDsNCj4gPiAgfQ0KPiA+ICAjZW5k
+aWYNCj4gPiAgDQo+ID4gZGlmZiAtLWdpdCBhL21tL2h1Z2V0bGIuYyBiL21tL2h1Z2V0bGIuYw0K
+PiA+IGluZGV4IGY1OWY0M2MwNjYwMS4uYjdhZTVmNzNmM2IyIDEwMDY0NA0KPiA+IC0tLSBhL21t
+L2h1Z2V0bGIuYw0KPiA+ICsrKyBiL21tL2h1Z2V0bGIuYw0KPiA+IEBAIC02OTQ2LDEwICs2OTQ2
+LDM0IEBAIHN0cnVjdCBwYWdlICogX193ZWFrDQo+ID4gIGZvbGxvd19odWdlX3B1ZChzdHJ1Y3Qg
+bW1fc3RydWN0ICptbSwgdW5zaWduZWQgbG9uZyBhZGRyZXNzLA0KPiA+ICAJCXB1ZF90ICpwdWQs
+IGludCBmbGFncykNCj4gPiAgew0KPiA+ICsJc3RydWN0IHBhZ2UgKnBhZ2UgPSBOVUxMOw0KPiA+
+ICsJc3BpbmxvY2tfdCAqcHRsOw0KPiA+ICsJcHRlX3QgcHRlOw0KPiA+ICsNCj4gPiAgCWlmIChm
+bGFncyAmIChGT0xMX0dFVCB8IEZPTExfUElOKSkNCj4gPiAgCQlyZXR1cm4gTlVMTDsNCj4gPiAg
+DQo+ID4gLQlyZXR1cm4gcHRlX3BhZ2UoKihwdGVfdCAqKXB1ZCkgKyAoKGFkZHJlc3MgJiB+UFVE
+X01BU0spID4+IFBBR0VfU0hJRlQpOw0KPiA+ICtyZXRyeToNCj4gPiArCXB0bCA9IGh1Z2VfcHRl
+X2xvY2soaHN0YXRlX3NpemVsb2coUFVEX1NISUZUKSwgbW0sIChwdGVfdCAqKXB1ZCk7DQo+ID4g
+KwlpZiAoIXB1ZF9odWdlKCpwdWQpKQ0KPiA+ICsJCWdvdG8gb3V0Ow0KPiA+ICsJcHRlID0gaHVn
+ZV9wdGVwX2dldCgocHRlX3QgKilwdWQpOw0KPiA+ICsJaWYgKHB0ZV9wcmVzZW50KHB0ZSkpIHsN
+Cj4gPiArCQlwYWdlID0gcHVkX3BhZ2UoKnB1ZCkgKyAoKGFkZHJlc3MgJiB+UFVEX01BU0spID4+
+IFBBR0VfU0hJRlQpOw0KPiA+ICsJCWlmIChXQVJOX09OX09OQ0UoIXRyeV9ncmFiX3BhZ2UocGFn
+ZSwgZmxhZ3MpKSkgew0KPiANCj4gVGhlIGNhbGwgdG8gdHJ5X2dyYWJfcGFnZSgpIHNlZW1zIGEg
+Yml0IHN0cmFuZ2Ugc2luY2UgZmxhZ3Mgd2lsbCBub3QgaW5jbHVkZQ0KPiBGT0xMX0dFVCB8IEZP
+TExfUElOIGFzIHRlc3RlZCBhYm92ZS4gIElzIHRyeV9ncmFiX3BhZ2UoKSBhbHdheXMgZ29pbmcg
+YmUgYQ0KPiBub29wIGhlcmU/DQoNClRoYW5rcywgeW91J3JlIHJpZ2h0LiAgImZsYWdzICYgKEZP
+TExfR0VUIHwgRk9MTF9QSU4pIiBjaGVjayBzaG91bGQgYmUNCnVwZGF0ZWQuICBQcm9iYWJseSBp
+dCdzIHRvIGJlIGFsaWduZWQgdG8gd2hhdCBmb2xsb3dfaHVnZV9wbWQoKSBjaGVja3MgZmlyc3Qu
+DQoNClRoYW5rcywNCk5hb3lhIEhvcmlndWNoaQ0KDQo+IA0KPiAtLSANCj4gTWlrZSBLcmF2ZXR6
+DQo+IA0KPiA+ICsJCQlwYWdlID0gTlVMTDsNCj4gPiArCQkJZ290byBvdXQ7DQo+ID4gKwkJfQ0K
+PiA+ICsJfSBlbHNlIHsNCj4gPiArCQlpZiAoaXNfaHVnZXRsYl9lbnRyeV9taWdyYXRpb24ocHRl
+KSkgew0KPiA+ICsJCQlzcGluX3VubG9jayhwdGwpOw0KPiA+ICsJCQlfX21pZ3JhdGlvbl9lbnRy
+eV93YWl0KG1tLCAocHRlX3QgKilwdWQsIHB0bCk7DQo+ID4gKwkJCWdvdG8gcmV0cnk7DQo+ID4g
+KwkJfQ0KPiA+ICsJfQ0KPiA+ICtvdXQ6DQo+ID4gKwlzcGluX3VubG9jayhwdGwpOw0KPiA+ICsJ
+cmV0dXJuIHBhZ2U7DQo+ID4gIH0NCj4gPiAgDQo+ID4gIHN0cnVjdCBwYWdlICogX193ZWFrDQo+
+ID4gLS0gDQo+ID4gMi4yNS4xDQo+ID4g
