@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30BC6C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B6BCCA489
 	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239897AbiF0L62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
+        id S239925AbiF0L6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238203AbiF0Lvb (ORCPT
+        with ESMTP id S238606AbiF0Lvr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:51:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595E965D3;
-        Mon, 27 Jun 2022 04:44:41 -0700 (PDT)
+        Mon, 27 Jun 2022 07:51:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8000A7662;
+        Mon, 27 Jun 2022 04:44:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB5F0612AC;
-        Mon, 27 Jun 2022 11:44:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B987CC3411D;
-        Mon, 27 Jun 2022 11:44:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B290761274;
+        Mon, 27 Jun 2022 11:44:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8EADC341C7;
+        Mon, 27 Jun 2022 11:44:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330280;
-        bh=WtMZyv1YS+QuA1a3BRnBhNCU85O6xrK2sJtEOq+THBs=;
+        s=korg; t=1656330286;
+        bh=vgvNJrHBHS9C46/WmKV1U9Crcq8Uj+IGHmrgSflbAnM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q5Fj/lD4JXhRAG/4TAZl2+4LCuAcZZ2aycAZzH1cVKR+EwopH5FNLXG+odqOLJRqn
-         1i/+szoWB5iJZktUz7E1uF7A95C01S5g7Y4z5CaoBQGbS9EnohoXH9+kLdtXOxwQae
-         5frE+mq7zqIrwxMMu+vWDrjD57UFkmbX4um3OvO0=
+        b=gw81oxbGIYlDmt+NTLDcTXQdsKG2TicAMBblhQtC5rE50Pz3Fxr0NnOw6tZcSQhsK
+         UFKGYnhv+gt9yfcOs+j9oJuqX2Ne9AlLiPLaPhj9q1GTA0zF4Q1HyxMO11jarhlenb
+         qb/dMQBGVo7LN7tjIAqRndpO9ZYuE8YUtbzoQ8z4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Yannick Brosseau <yannick.brosseau@gmail.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.18 145/181] iio: adc: stm32: Fix IRQs on STM32F4 by removing custom spurious IRQs message
-Date:   Mon, 27 Jun 2022 13:21:58 +0200
-Message-Id: <20220627111948.889519143@linuxfoundation.org>
+Subject: [PATCH 5.18 147/181] iio: adc: axp288: Override TS pin bias current for some models
+Date:   Mon, 27 Jun 2022 13:22:00 +0200
+Message-Id: <20220627111948.947520342@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,60 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yannick Brosseau <yannick.brosseau@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 99bded02dae5e1e2312813506c41dc8db2fb656c upstream.
+commit 048058399f19d43cf21de9f5d36cd8144337d004 upstream.
 
-The check for spurious IRQs introduced in 695e2f5c289bb assumed that the bits
-in the control and status registers are aligned. This is true for the H7 and MP1
-version, but not the F4. The interrupt was then never handled on the F4.
+Since commit 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling") we
+preserve the bias current set by the firmware at boot. This fixes issues
+we were seeing on various models.
 
-Instead of increasing the complexity of the comparison and check each bit specifically,
-we remove this check completely and rely on the generic handler for spurious IRQs.
+Some models like the Nuvision Solo 10 Draw tablet actually need the
+old hardcoded 80ųA bias current for battery temperature monitoring
+to work properly.
 
-Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
-Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
-Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Link: https://lore.kernel.org/r/20220516203939.3498673-3-yannick.brosseau@gmail.com
+Add a quirk entry for the Nuvision Solo 10 Draw to the DMI quirk table
+to restore setting the bias current to 80ųA on this model.
+
+Fixes: 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling")
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215882
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220506095040.21008-1-hdegoede@redhat.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/stm32-adc.c |   10 ----------
- 1 file changed, 10 deletions(-)
+ drivers/iio/adc/axp288_adc.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -1407,7 +1407,6 @@ static irqreturn_t stm32_adc_threaded_is
- 	struct stm32_adc *adc = iio_priv(indio_dev);
- 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
- 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
--	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
+--- a/drivers/iio/adc/axp288_adc.c
++++ b/drivers/iio/adc/axp288_adc.c
+@@ -196,6 +196,14 @@ static const struct dmi_system_id axp288
+ 		},
+ 		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
+ 	},
++	{
++		/* Nuvision Solo 10 Draw */
++		.matches = {
++		  DMI_MATCH(DMI_SYS_VENDOR, "TMAX"),
++		  DMI_MATCH(DMI_PRODUCT_NAME, "TM101W610L"),
++		},
++		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
++	},
+ 	{}
+ };
  
- 	/* Check ovr status right now, as ovr mask should be already disabled */
- 	if (status & regs->isr_ovr.mask) {
-@@ -1422,11 +1421,6 @@ static irqreturn_t stm32_adc_threaded_is
- 		return IRQ_HANDLED;
- 	}
- 
--	if (!(status & mask))
--		dev_err_ratelimited(&indio_dev->dev,
--				    "Unexpected IRQ: IER=0x%08x, ISR=0x%08x\n",
--				    mask, status);
--
- 	return IRQ_NONE;
- }
- 
-@@ -1436,10 +1430,6 @@ static irqreturn_t stm32_adc_isr(int irq
- 	struct stm32_adc *adc = iio_priv(indio_dev);
- 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
- 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
--	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
--
--	if (!(status & mask))
--		return IRQ_WAKE_THREAD;
- 
- 	if (status & regs->isr_ovr.mask) {
- 		/*
 
 
