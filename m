@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E5CCCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9921AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236344AbiF0LiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
+        id S236427AbiF0Li2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235253AbiF0Lg7 (ORCPT
+        with ESMTP id S236394AbiF0LhS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:36:59 -0400
+        Mon, 27 Jun 2022 07:37:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C2A1100;
-        Mon, 27 Jun 2022 04:32:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96100117B;
+        Mon, 27 Jun 2022 04:32:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C31E1B81117;
-        Mon, 27 Jun 2022 11:32:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07B7CC3411D;
-        Mon, 27 Jun 2022 11:32:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43669B81122;
+        Mon, 27 Jun 2022 11:32:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F1DEC3411D;
+        Mon, 27 Jun 2022 11:32:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329533;
-        bh=NqWKPAx54vazXc3qKoDsW40jReYuUC9TIV8zapkZdIQ=;
+        s=korg; t=1656329546;
+        bh=C1/wqgYgCxpQfunZbG3iAU6zRSS67ZmT5VITMFAKjQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=17tw7R1zXt+5L+jCfJopB9gCZHhrGhVNjG/acGSPQeJxPiNHMWZ7qMgnFZaiOXVcH
-         a13/nx6sJAhov6wJjvzfNZa2mgyriSnTD7Kfh2qYW4PLvNLgDmeTmSJ2Ol8VwC3D0L
-         FYyq6LOGNsRypqpiq740nZpVD57aNOKJworcSEUI=
+        b=o1XPC5RoDJ7acSnSL02wwh/pEs/poV8x1kbnMlKkRbOJ1DNMxUkkW4UL24qZlmzCh
+         gp/YEbW0rV3KF8i+diR3oDwGooDUcTkWEXK9KLqzOax88E0TJ5Bpbv11wQIZer7NMw
+         85XIYCgFcpHdjsAABcx/vKyGiXMw+c1RYaBC6J3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 003/135] ALSA: hda/via: Fix missing beep setup
-Date:   Mon, 27 Jun 2022 13:20:10 +0200
-Message-Id: <20220627111938.255103708@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 033/135] drm/msm: Ensure mmap offset is initialized
+Date:   Mon, 27 Jun 2022 13:20:40 +0200
+Message-Id: <20220627111939.121134860@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -47,41 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Rob Clark <robdclark@chromium.org>
 
-commit c7807b27d510e5aa53c8a120cfc02c33c24ebb5f upstream.
+[ Upstream commit 036d20726c30267724416e966c9f92db07de8081 ]
 
-Like the previous fix for Conexant codec, the beep_nid has to be set
-up before calling snd_hda_gen_parse_auto_config(); otherwise it'd miss
-the path setup.
+If a GEM object is allocated, and then exported as a dma-buf fd which is
+mmap'd before or without the GEM buffer being directly mmap'd, the
+vma_node could be unitialized.  This leads to a situation where the CPU
+mapping is not correctly torn down in drm_vma_node_unmap().
 
-Fix the call order for addressing the missing beep setup.
-
-Fixes: 0e8f9862493a ("ALSA: hda/via - Simplify control management")
-Cc: <stable@vger.kernel.org>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216152
-Link: https://lore.kernel.org/r/20220620104008.1994-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e5516553999f ("drm: call drm_gem_object_funcs.mmap with fake offset")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220531200857.136547-1-robdclark@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_via.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/msm_drv.c       |  2 +-
+ drivers/gpu/drm/msm/msm_drv.h       |  1 +
+ drivers/gpu/drm/msm/msm_gem_prime.c | 15 +++++++++++++++
+ 3 files changed, 17 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_via.c
-+++ b/sound/pci/hda/patch_via.c
-@@ -520,11 +520,11 @@ static int via_parse_auto_config(struct
- 	if (err < 0)
- 		return err;
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index 9712582886aa..916361c30d77 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -1102,7 +1102,7 @@ static const struct drm_driver msm_driver = {
+ 	.prime_handle_to_fd = drm_gem_prime_handle_to_fd,
+ 	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
+ 	.gem_prime_import_sg_table = msm_gem_prime_import_sg_table,
+-	.gem_prime_mmap     = drm_gem_prime_mmap,
++	.gem_prime_mmap     = msm_gem_prime_mmap,
+ #ifdef CONFIG_DEBUG_FS
+ 	.debugfs_init       = msm_debugfs_init,
+ #endif
+diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
+index c552f0c3890c..bd5132bb9bde 100644
+--- a/drivers/gpu/drm/msm/msm_drv.h
++++ b/drivers/gpu/drm/msm/msm_drv.h
+@@ -298,6 +298,7 @@ unsigned long msm_gem_shrinker_shrink(struct drm_device *dev, unsigned long nr_t
+ void msm_gem_shrinker_init(struct drm_device *dev);
+ void msm_gem_shrinker_cleanup(struct drm_device *dev);
  
--	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
-+	err = auto_parse_beep(codec);
- 	if (err < 0)
- 		return err;
++int msm_gem_prime_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma);
+ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj);
+ int msm_gem_prime_vmap(struct drm_gem_object *obj, struct dma_buf_map *map);
+ void msm_gem_prime_vunmap(struct drm_gem_object *obj, struct dma_buf_map *map);
+diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index 8a2d94bd5df2..02c70a0b2a03 100644
+--- a/drivers/gpu/drm/msm/msm_gem_prime.c
++++ b/drivers/gpu/drm/msm/msm_gem_prime.c
+@@ -11,6 +11,21 @@
+ #include "msm_drv.h"
+ #include "msm_gem.h"
  
--	err = auto_parse_beep(codec);
-+	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
- 	if (err < 0)
- 		return err;
- 
++int msm_gem_prime_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma)
++{
++	int ret;
++
++	/* Ensure the mmap offset is initialized.  We lazily initialize it,
++	 * so if it has not been first mmap'd directly as a GEM object, the
++	 * mmap offset will not be already initialized.
++	 */
++	ret = drm_gem_create_mmap_offset(obj);
++	if (ret)
++		return ret;
++
++	return drm_gem_prime_mmap(obj, vma);
++}
++
+ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
+ {
+ 	struct msm_gem_object *msm_obj = to_msm_bo(obj);
+-- 
+2.35.1
+
 
 
