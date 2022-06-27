@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 259C9CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 311B0CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241644AbiF0V4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
+        id S241660AbiF0V4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241301AbiF0Vy4 (ORCPT
+        with ESMTP id S241303AbiF0Vy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 17:54:56 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2CF630C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42906330;
         Mon, 27 Jun 2022 14:54:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1656366893; x=1687902893;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5Wv/IPFVTRe4jyjKqgjJvRX4XujCf32I2mYt7uAyjxc=;
-  b=Qys/B4J65u7Xl3DEJWo/NloDpnd1qvCos7ATNf1gTOIh5zd3vRDoPoH0
-   XBPt5KWTxnpNkBd75ipZUAGGdiJNCpkyOrO1RbLPi9HM86+nDgIeX5r3F
-   rPYRHZ4bi8OYmF7kQjw5nAslfrgiCMAj3ouarmWwzzb7276z4ipVjvPar
-   DD+BJWJw9GOkMugxLgSBA/Jqnlbv0IgABnKklcrKhz/U0ofxiKwEvCXEW
-   X90c+BQXZv6MHWjh/FJJIg4CJk21gFPYAu4eD5Bw/v2/4W76vzfBghaM8
-   jwVX2ySoZsGelJaoKGtmHRsIKBs9/DXgod/L2EYCp/89xzBZXXgOJc9eu
+  bh=dkyGueQFkeyCNCcuHQ4HyYP9QzPEHcqXig5YrBx0PVE=;
+  b=YyCzyrxPwL3EoZ8sZNaIZzoRi67tUpCu2lsAJy73lULDPO2o6auhr58i
+   UV2jzVzx7dTYSY38xTUCXR845ZIvOELBhOZVtKDs7QlsCM4fmXCNE814p
+   bPlwV7+8C6knSww/1KPogCNNbJCDXsW8ZYX0wCdGGiIlLqT9Egc5C59B3
+   zt26WmorZ0xkOEtn+Rx/s3ZmS4FuwkjpV6u1+JJVhYsUV/Lmj3RpCpxnu
+   au2DEa9adEUAsyyA3EC9CUZUJKSf+uVYmQkukz4ZD8mwn+4djIdJES8Cb
+   +W6ZzPJT1Mj227vycy80n4cFXMbUcHEk5uahsrIyibUtKFWL/3tzjcl6p
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609513"
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609516"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281609513"
+   d="scan'208";a="281609516"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:50 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863490"
+   d="scan'208";a="657863497"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:50 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 018/102] KVM: TDX: Add helper functions to print TDX SEAMCALL error
-Date:   Mon, 27 Jun 2022 14:53:10 -0700
-Message-Id: <d3cad93883534f12a9a83746c9ee5640db3c2bcc.1656366338.git.isaku.yamahata@intel.com>
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+Subject: [PATCH v7 020/102] KVM: TDX: Stub in tdx.h with structs, accessors, and VMCS helpers
+Date:   Mon, 27 Jun 2022 14:53:12 -0700
+Message-Id: <aef333f032a532eaa9b7799dfd2afc2710aa4cf3.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -53,80 +54,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-Add helper functions to print out errors from the TDX module in a uniform
-manner.
+Stub in kvm_tdx, vcpu_tdx, and their various accessors.  TDX defines
+SEAMCALL APIs to access TDX control structures corresponding to the VMX
+VMCS.  Introduce helper accessors to hide its SEAMCALL ABI details.
 
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/Makefile        |  2 +-
- arch/x86/kvm/vmx/tdx_error.c | 22 ++++++++++++++++++++++
- arch/x86/kvm/vmx/tdx_ops.h   |  3 +++
- 3 files changed, 26 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/kvm/vmx/tdx_error.c
+ arch/x86/kvm/vmx/tdx.h | 103 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 101 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
-index e2c05195cb95..f1ad445df505 100644
---- a/arch/x86/kvm/Makefile
-+++ b/arch/x86/kvm/Makefile
-@@ -24,7 +24,7 @@ kvm-$(CONFIG_KVM_XEN)	+= xen.o
- kvm-intel-y		+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
- 			   vmx/evmcs.o vmx/nested.o vmx/posted_intr.o vmx/main.o
- kvm-intel-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
--kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o
-+kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o vmx/tdx_error.o
+diff --git a/arch/x86/kvm/vmx/tdx.h b/arch/x86/kvm/vmx/tdx.h
+index 2f43db5bbefb..f50d37f3fc9c 100644
+--- a/arch/x86/kvm/vmx/tdx.h
++++ b/arch/x86/kvm/vmx/tdx.h
+@@ -3,16 +3,29 @@
+ #define __KVM_X86_TDX_H
  
- kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o svm/sev.o
- 
-diff --git a/arch/x86/kvm/vmx/tdx_error.c b/arch/x86/kvm/vmx/tdx_error.c
-new file mode 100644
-index 000000000000..61ed855d1188
---- /dev/null
-+++ b/arch/x86/kvm/vmx/tdx_error.c
-@@ -0,0 +1,22 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* functions to record TDX SEAMCALL error */
-+
-+#include <linux/kernel.h>
-+#include <linux/bug.h>
+ #ifdef CONFIG_INTEL_TDX_HOST
 +
 +#include "tdx_ops.h"
 +
-+void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out)
-+{
-+	if (!out) {
-+		pr_err_ratelimited("SEAMCALL[%lld] failed: 0x%llx\n",
-+				op, error_code);
-+		return;
-+	}
+ int tdx_module_setup(void);
+ 
++struct tdx_td_page {
++	unsigned long va;
++	hpa_t pa;
++	bool added;
++};
 +
-+	pr_err_ratelimited(
-+		"SEAMCALL[%lld] failed: 0x%llx "
-+		"RCX 0x%llx, RDX 0x%llx, R8 0x%llx, R9 0x%llx, R10 0x%llx, R11 0x%llx\n",
-+		op, error_code,
-+		out->rcx, out->rdx, out->r8, out->r9, out->r10, out->r11);
-+}
-diff --git a/arch/x86/kvm/vmx/tdx_ops.h b/arch/x86/kvm/vmx/tdx_ops.h
-index 85adbf49c277..8cc2f01c509b 100644
---- a/arch/x86/kvm/vmx/tdx_ops.h
-+++ b/arch/x86/kvm/vmx/tdx_ops.h
-@@ -9,12 +9,15 @@
- #include <asm/cacheflush.h>
- #include <asm/asm.h>
- #include <asm/kvm_host.h>
-+#include <asm/tdx.h>
- 
- #include "tdx_errno.h"
- #include "tdx_arch.h"
- 
- #ifdef CONFIG_INTEL_TDX_HOST
- 
-+void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out);
+ struct kvm_tdx {
+ 	struct kvm kvm;
+-	/* TDX specific members follow. */
 +
- static inline u64 tdh_mng_addcx(hpa_t tdr, hpa_t addr)
++	struct tdx_td_page tdr;
++	struct tdx_td_page *tdcs;
+ };
+ 
+ struct vcpu_tdx {
+ 	struct kvm_vcpu	vcpu;
+-	/* TDX specific members follow. */
++
++	struct tdx_td_page tdvpr;
++	struct tdx_td_page *tdvpx;
+ };
+ 
+ static inline bool is_td(struct kvm *kvm)
+@@ -34,6 +47,92 @@ static inline struct vcpu_tdx *to_tdx(struct kvm_vcpu *vcpu)
  {
- 	clflush_cache_range(__va(addr), PAGE_SIZE);
+ 	return container_of(vcpu, struct vcpu_tdx, vcpu);
+ }
++
++static __always_inline void tdvps_vmcs_check(u32 field, u8 bits)
++{
++	BUILD_BUG_ON_MSG(__builtin_constant_p(field) && (field) & 0x1,
++			 "Read/Write to TD VMCS *_HIGH fields not supported");
++
++	BUILD_BUG_ON(bits != 16 && bits != 32 && bits != 64);
++
++	BUILD_BUG_ON_MSG(bits != 64 && __builtin_constant_p(field) &&
++			 (((field) & 0x6000) == 0x2000 ||
++			  ((field) & 0x6000) == 0x6000),
++			 "Invalid TD VMCS access for 64-bit field");
++	BUILD_BUG_ON_MSG(bits != 32 && __builtin_constant_p(field) &&
++			 ((field) & 0x6000) == 0x4000,
++			 "Invalid TD VMCS access for 32-bit field");
++	BUILD_BUG_ON_MSG(bits != 16 && __builtin_constant_p(field) &&
++			 ((field) & 0x6000) == 0x0000,
++			 "Invalid TD VMCS access for 16-bit field");
++}
++
++static __always_inline void tdvps_state_non_arch_check(u64 field, u8 bits) {}
++static __always_inline void tdvps_management_check(u64 field, u8 bits) {}
++
++#define TDX_BUILD_TDVPS_ACCESSORS(bits, uclass, lclass)				\
++static __always_inline u##bits td_##lclass##_read##bits(struct vcpu_tdx *tdx,	\
++							u32 field)		\
++{										\
++	struct tdx_module_output out;						\
++	u64 err;								\
++										\
++	tdvps_##lclass##_check(field, bits);					\
++	err = tdh_vp_rd(tdx->tdvpr.pa, TDVPS_##uclass(field), &out);		\
++	if (unlikely(err)) {							\
++		pr_err("TDH_VP_RD["#uclass".0x%x] failed: 0x%llx\n",		\
++		       field, err);						\
++		return 0;							\
++	}									\
++	return (u##bits)out.r8;							\
++}										\
++static __always_inline void td_##lclass##_write##bits(struct vcpu_tdx *tdx,	\
++						      u32 field, u##bits val)	\
++{										\
++	struct tdx_module_output out;						\
++	u64 err;								\
++										\
++	tdvps_##lclass##_check(field, bits);					\
++	err = tdh_vp_wr(tdx->tdvpr.pa, TDVPS_##uclass(field), val,		\
++		      GENMASK_ULL(bits - 1, 0), &out);				\
++	if (unlikely(err))							\
++		pr_err("TDH_VP_WR["#uclass".0x%x] = 0x%llx failed: 0x%llx\n",	\
++		       field, (u64)val, err);					\
++}										\
++static __always_inline void td_##lclass##_setbit##bits(struct vcpu_tdx *tdx,	\
++						       u32 field, u64 bit)	\
++{										\
++	struct tdx_module_output out;						\
++	u64 err;								\
++										\
++	tdvps_##lclass##_check(field, bits);					\
++	err = tdh_vp_wr(tdx->tdvpr.pa, TDVPS_##uclass(field), bit, bit,		\
++			&out);							\
++	if (unlikely(err))							\
++		pr_err("TDH_VP_WR["#uclass".0x%x] |= 0x%llx failed: 0x%llx\n",	\
++		       field, bit, err);					\
++}										\
++static __always_inline void td_##lclass##_clearbit##bits(struct vcpu_tdx *tdx,	\
++							 u32 field, u64 bit)	\
++{										\
++	struct tdx_module_output out;						\
++	u64 err;								\
++										\
++	tdvps_##lclass##_check(field, bits);					\
++	err = tdh_vp_wr(tdx->tdvpr.pa, TDVPS_##uclass(field), 0, bit,		\
++			&out);							\
++	if (unlikely(err))							\
++		pr_err("TDH_VP_WR["#uclass".0x%x] &= ~0x%llx failed: 0x%llx\n",	\
++		       field, bit,  err);					\
++}
++
++TDX_BUILD_TDVPS_ACCESSORS(16, VMCS, vmcs);
++TDX_BUILD_TDVPS_ACCESSORS(32, VMCS, vmcs);
++TDX_BUILD_TDVPS_ACCESSORS(64, VMCS, vmcs);
++
++TDX_BUILD_TDVPS_ACCESSORS(64, STATE_NON_ARCH, state_non_arch);
++TDX_BUILD_TDVPS_ACCESSORS(8, MANAGEMENT, management);
++
+ #else
+ static inline int tdx_module_setup(void) { return -ENODEV; };
+ 
 -- 
 2.25.1
 
