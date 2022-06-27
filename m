@@ -2,174 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B03C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:37:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 436B1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239522AbiF0QhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35950 "EHLO
+        id S239558AbiF0Qhc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234815AbiF0QhS (ORCPT
+        with ESMTP id S239532AbiF0Qh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:37:18 -0400
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E374C1114B;
-        Mon, 27 Jun 2022 09:37:17 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-3137316bb69so90988597b3.10;
-        Mon, 27 Jun 2022 09:37:17 -0700 (PDT)
+        Mon, 27 Jun 2022 12:37:26 -0400
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D56120AA;
+        Mon, 27 Jun 2022 09:37:24 -0700 (PDT)
+Received: by mail-pj1-f54.google.com with SMTP id i8-20020a17090aee8800b001ecc929d14dso10555760pjz.0;
+        Mon, 27 Jun 2022 09:37:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/8cJy4YWWhfOgGW+zMoAe8mZCw8P609Jt5k6gJA927w=;
-        b=Cwn1H2Vq9sYafq7PTMKVTTBSnoMJbNpHkhdMU0Xkx8gbPCw2V44n4mL/aT6kRgcz+g
-         1ZR+lPQyrLj1yZfCUO/OM0bcJfUhGHAS0PI6TnV9Ppuap9sORGI2Td9LjuMLxDqZo9Wv
-         /hAuvp4fLAiVB5vxZQr8rYspY9atwnf6vHxUZMOsUcwWyE1egYSgLCuECKlVCL18azqI
-         qVx71z+2m0fQKn9jtiNGRcHvh3pKOWeKSA9bJdwXIpRGXpfLbintw4jJLGxfFxxjW21r
-         1bTIB/T1CKjWRnsYVcDGbsgGxgHN1irvyB4CLffWTqlKSiZ0CUETUZYKevIGVjxK+w4q
-         bF5g==
-X-Gm-Message-State: AJIora//f6Y4n7SJ185Fpl7lLZXp3aoMgaq7wm2MxQ1C7wvUsGcwsNAa
-        3CUaIaCg4P8hdIjjokDaJKmsYZD7wTxvYTaBcaD4h9WI
-X-Google-Smtp-Source: AGRyM1usIXDdm9P7SB54q/8t5ltXdx4rqEoeT9ry649tveDiSQ//6tBKU1RbXt9fqmxaCge04BSuTw3NHSIIn0cV4Ho=
-X-Received: by 2002:a81:57d7:0:b0:317:b111:34d5 with SMTP id
- l206-20020a8157d7000000b00317b11134d5mr15951942ywb.7.1656347837101; Mon, 27
- Jun 2022 09:37:17 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=h+CBkZaCUAPsWCF3WoXppHNKCyy0dZJN6jYn++00T3g=;
+        b=7p1fFtmxjpgpdCxfjBHM1/VvTSG6Lpy9043NJpMYFZvwJzsJKlyeMseOTDj9+yFtBO
+         XP8VxNnsyciE6/OHjDc3RAd81A9hgwmtxesSC4opzbmEV9lJmPwSHWxvyNXSK8/9ntIv
+         8T15ZK1PnGHKIaW48WErH/47wJRY8itJXSxsDCC1VDpHcuS3ovEuvnO/i+7dlclnAa5k
+         D9W2ds7N4JRSTbOgdxCjCgW9rPEgI7ew+a7pooShyhtFixgNmJrVOCjR27Iha1SUGGXR
+         xJv+HfCOdoYqcBrLj1lJl5qEnlSY1TVx9L53ibCszzCShfZYqJ6Xc2B8x/FdAqZt/9K1
+         4CFA==
+X-Gm-Message-State: AJIora98faboZt6EoG9xTun9oAE15ZN3Zn5yWNpmiQ9BQ+7BscbWGnxi
+        FfvNNhEUr+B0DwEUrDoA/PE=
+X-Google-Smtp-Source: AGRyM1uxX09PPBW2F2Ve5hEmUYge6i2EYx09NheABWO/DbMTHVZ8M4EiHWU/Ay5mZjKCh3PMVRT2OQ==
+X-Received: by 2002:a17:902:d4c8:b0:16a:480b:b79c with SMTP id o8-20020a170902d4c800b0016a480bb79cmr235609plg.15.1656347843352;
+        Mon, 27 Jun 2022 09:37:23 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:ebc3:3a94:fe74:44f0? ([2620:15c:211:201:ebc3:3a94:fe74:44f0])
+        by smtp.gmail.com with ESMTPSA id v19-20020aa78093000000b0051b693baadcsm7559184pff.205.2022.06.27.09.37.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 09:37:22 -0700 (PDT)
+Message-ID: <ed7e268e-94c5-38b1-286d-e2cb10412334@acm.org>
+Date:   Mon, 27 Jun 2022 09:37:21 -0700
 MIME-Version: 1.0
-References: <20220428142854.1065953-1-gregkh@linuxfoundation.org>
- <20220428155858.GA14614@bhelgaas> <Ymq/W+KcWD9DKQr/@kroah.com>
- <CAJZ5v0hCiO6_deYnUK-5pfqE+fy1XLSUiBvkBgWw2nbqu9ggXA@mail.gmail.com>
- <CAJZ5v0itRry98=7X=NOmituD3VH=GYdY3REtrhx3ubH0wf=ckw@mail.gmail.com> <YrnHrF8WLy4296Z1@kroah.com>
-In-Reply-To: <YrnHrF8WLy4296Z1@kroah.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 27 Jun 2022 18:37:06 +0200
-Message-ID: <CAJZ5v0hfdnRg0EqG2Zcp9=Kjq+P1NC45iudatisVL_G=QjOC+A@mail.gmail.com>
-Subject: Re: [PATCH] PCI/ACPI: do not reference a pci device after it has been released
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        whitehat002 <hackyzh002@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: use-after-free in srpt_enable_tpg()
+Content-Language: en-US
+To:     Mike Christie <michael.christie@oracle.com>
+Cc:     "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <17649b9c-7e42-1625-8bc9-8ad333ab771c@fujitsu.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <17649b9c-7e42-1625-8bc9-8ad333ab771c@fujitsu.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 5:07 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Apr 28, 2022 at 10:30:38PM +0200, Rafael J. Wysocki wrote:
-> > On Thu, Apr 28, 2022 at 10:15 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> > >
-> > > On Thu, Apr 28, 2022 at 6:22 PM Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > > On Thu, Apr 28, 2022 at 10:58:58AM -0500, Bjorn Helgaas wrote:
-> > > > > On Thu, Apr 28, 2022 at 04:28:53PM +0200, Greg Kroah-Hartman wrote:
-> > > > > > In acpi_get_pci_dev(), the debugging message for when a PCI bridge is
-> > > > > > not found uses a pointer to a pci device whose reference has just been
-> > > > > > dropped.  The chance that this really is a device that is now been
-> > > > > > removed from the system is almost impossible to happen, but to be safe,
-> > > > > > let's print out the debugging message based on the acpi root device
-> > > > > > which we do have a valid reference to at the moment.
-> > > > >
-> > > > > This code was added by 497fb54f578e ("ACPI / PCI: Fix NULL pointer
-> > > > > dereference in acpi_get_pci_dev() (rev. 2)").  Not sure if it's worth
-> > > > > a Fixes: tag.
-> > > >
-> > > > Can't hurt, I'll add it for the v2 based on this review.
-> > > >
-> > > > >
-> > > > > acpi_get_pci_dev() is used by only five callers, three of which are
-> > > > > video/backlight related.  I'm always skeptical of one-off interfaces
-> > > > > like this, but I don't know enough to propose any refactoring or other
-> > > > > alternatives.
-> > > > >
-> > > > > I'll leave this for Rafael, but if I were applying I would silently
-> > > > > touch up the subject to match convention:
-> > > > >
-> > > > >   PCI/ACPI: Do not reference PCI device after it has been released
-> > > >
-> > > > Much simpler, thanks.
-> > > >
-> > > > >
-> > > > > > Cc: Bjorn Helgaas <bhelgaas@google.com>
-> > > > > > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> > > > > > Cc: Len Brown <lenb@kernel.org>
-> > > > > > Cc: linux-pci@vger.kernel.org
-> > > > > > Cc: linux-acpi@vger.kernel.org
-> > > > > > Reported-by: whitehat002 <hackyzh002@gmail.com>
-> > > > > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > > > ---
-> > > > > >  drivers/acpi/pci_root.c | 3 ++-
-> > > > > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > > > > >
-> > > > > > diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-> > > > > > index 6f9e75d14808..ecda378dbc09 100644
-> > > > > > --- a/drivers/acpi/pci_root.c
-> > > > > > +++ b/drivers/acpi/pci_root.c
-> > > > > > @@ -303,7 +303,8 @@ struct pci_dev *acpi_get_pci_dev(acpi_handle handle)
-> > > > > >              * case pdev->subordinate will be NULL for the parent.
-> > > > > >              */
-> > > > > >             if (!pbus) {
-> > > > > > -                   dev_dbg(&pdev->dev, "Not a PCI-to-PCI bridge\n");
-> > > > > > +                   dev_dbg(&root->device->dev,
-> > > > > > +                           "dev %d, function %d is not a PCI-to-PCI bridge\n", dev, fn);
-> > > > >
-> > > > > This should use "%02x.%d" to be consistent with the dev_set_name() in
-> > > > > pci_setup_device().
-> > > >
-> > > > Ah, missed that, will change it and send out a new version tomorrow.
-> > >
-> > > I would make the change below (modulo the gmail-induced wthite space
-> > > breakage), though.
-> >
-> > That said ->
-> >
-> > > ---
-> > >  drivers/acpi/pci_root.c |    5 +++--
-> > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > >
-> > > Index: linux-pm/drivers/acpi/pci_root.c
-> > > ===================================================================
-> > > --- linux-pm.orig/drivers/acpi/pci_root.c
-> > > +++ linux-pm/drivers/acpi/pci_root.c
-> > > @@ -295,8 +295,6 @@ struct pci_dev *acpi_get_pci_dev(acpi_ha
-> > >              break;
-> > >
-> > >          pbus = pdev->subordinate;
-> > > -        pci_dev_put(pdev);
-> > > -
-> > >          /*
-> > >           * This function may be called for a non-PCI device that has a
-> > >           * PCI parent (eg. a disk under a PCI SATA controller).  In that
-> > > @@ -304,9 +302,12 @@ struct pci_dev *acpi_get_pci_dev(acpi_ha
-> > >           */
-> > >          if (!pbus) {
-> > >              dev_dbg(&pdev->dev, "Not a PCI-to-PCI bridge\n");
-> > > +            pci_dev_put(pdev);
-> > >              pdev = NULL;
-> > >              break;
-> > >          }
-> > > +
-> > > +        pci_dev_put(pdev);
-> >
-> > -> we are going to use pbus after this and it is pdev->subordinate
-> > which cannot survive without pdev AFAICS.
-> >
-> > Are we not concerned about this case?
->
-> Good point.
->
-> whitehat002, any ideas?  You found this issue but it really looks like
-> it is not anything that can ever be hit, so how far do you want to go to
-> unwind it?
+On 6/27/22 00:09, lizhijian@fujitsu.com wrote:
+> So far, I doubt if the previous defect of configfs mentioned in
+> 9b64f7d0b: "(RDMA/srpt: Postpone HCA removal until after configfs
+> directory removal)" has got a better solution. if not, i have no a
+> clear mechanism to avoid it yet.
+> 
+> feedbacks are very welcome.
+Mike, are you perhaps aware of any plans to add functions to the LIO 
+core for removing tpg and wwn objects?
 
-I have an idea, sorry for the delay here.
+Thanks,
 
-I should be ready to post something tomorrow.
-
-Cheers!
+Bart.
