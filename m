@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9629FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7172DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239336AbiF0L7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52416 "EHLO
+        id S239397AbiF0L7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238794AbiF0Lwi (ORCPT
+        with ESMTP id S238818AbiF0Lwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECF9DE9A;
-        Mon, 27 Jun 2022 04:45:44 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EA0BC02;
+        Mon, 27 Jun 2022 04:45:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B93A9B80D37;
-        Mon, 27 Jun 2022 11:45:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C1BC341CB;
-        Mon, 27 Jun 2022 11:45:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5256F612AE;
+        Mon, 27 Jun 2022 11:45:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61CF4C3411D;
+        Mon, 27 Jun 2022 11:45:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330341;
-        bh=R9WiNoA1Z375yZXr23Z0fc8V/aSxJXUXwDvhAfWi05s=;
+        s=korg; t=1656330349;
+        bh=k6NbGGPYbqPNqNNE4tM28F9irAdaA/11Pf9wsO43kKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1OD2Kf0RgqDMjdY+g1T3GPSXc8J889D5gpltCgVSVr7I4Cw/R3xawokeWkyWA1Ant
-         FDviB1X4/1EoGqn7frmF16hAe/woTd1PcHRI5GEsHmMZ4fQ9rRpYIQ6/xpFje9I1/k
-         O+pe3IKhjkCY+VO024nAYbXFKzRPB8OSsD58O2f8=
+        b=mWL+gX63VjuiOd/5Cx3TGzeBMDplIlomA87T3si9xW1ofMOkBV/umfcck2lJZKvEl
+         y2FjIIRQV0Ur4wI/ooHxZQe9XxuMfV4UYCP9yuO4Z2wX195EOjVLzggsCwrOj3fyie
+         NB4LgB1+fr7g42r/c38pWwUqE5MdCOT+zermKWwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.18 164/181] ARM: dts: imx6qdl: correct PU regulator ramp delay
-Date:   Mon, 27 Jun 2022 13:22:17 +0200
-Message-Id: <20220627111949.442997221@linuxfoundation.org>
+        stable@vger.kernel.org, David Virag <virag.david003@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 5.18 167/181] arm64: dts: exynos: Correct UART clocks on Exynos7885
+Date:   Mon, 27 Jun 2022 13:22:20 +0200
+Message-Id: <20220627111949.528911342@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -48,47 +48,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: David Virag <virag.david003@gmail.com>
 
-commit 93a8ba2a619816d631bd69e9ce2172b4d7a481b8 upstream.
+commit f84d83d8165570380f55f4ce578bfb131a9266c5 upstream.
 
-Contrary to what was believed at the time, the ramp delay of 150us is not
-plenty for the PU LDO with the default step time of 512 pulses of the 24MHz
-clock. Measurements have shown that after enabling the LDO the voltage on
-VDDPU_CAP jumps to ~750mV in the first step and after that the regulator
-executes the normal ramp up as defined by the step size control.
+The clocks in the serial UART nodes were swapped by mistake on
+Exynos7885. This only worked correctly because of a mistake in the clock
+driver which has been fixed. With the fixed clock driver in place, the
+baudrate of the UARTs get miscalculated. Fix this by correcting the
+clocks in the dtsi.
 
-This means it takes the regulator between 360us and 370us to ramp up to
-the nominal 1.15V voltage for this power domain. With the old setting of
-the ramp delay the power up of the PU GPC domain would happen in the middle
-of the regulator ramp with the voltage being at around 900mV. Apparently
-this was enough for most units to properly power up the peripherals in the
-domain and execute the reset. Some units however, fail to power up properly,
-especially when the chip is at a low temperature. In that case any access
-to the GPU registers would yield an incorrect result with no way to recover
-from this situation.
-
-Change the ramp delay to 380us to cover the measured ramp up time with a
-bit of additional slack.
-
-Fixes: 40130d327f72 ("ARM: dts: imx6qdl: Allow disabling the PU regulator, add a enable ramp delay")
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 06874015327b ("arm64: dts: exynos: Add initial device tree support for Exynos7885 SoC")
+Signed-off-by: David Virag <virag.david003@gmail.com>
+Link: https://lore.kernel.org/r/20220526055840.45209-3-virag.david003@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx6qdl.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/exynos/exynos7885.dtsi | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/arch/arm/boot/dts/imx6qdl.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl.dtsi
-@@ -762,7 +762,7 @@
- 					regulator-name = "vddpu";
- 					regulator-min-microvolt = <725000>;
- 					regulator-max-microvolt = <1450000>;
--					regulator-enable-ramp-delay = <150>;
-+					regulator-enable-ramp-delay = <380>;
- 					anatop-reg-offset = <0x140>;
- 					anatop-vol-bit-shift = <9>;
- 					anatop-vol-bit-width = <5>;
+diff --git a/arch/arm64/boot/dts/exynos/exynos7885.dtsi b/arch/arm64/boot/dts/exynos/exynos7885.dtsi
+index 3170661f5b67..9c233c56558c 100644
+--- a/arch/arm64/boot/dts/exynos/exynos7885.dtsi
++++ b/arch/arm64/boot/dts/exynos/exynos7885.dtsi
+@@ -280,8 +280,8 @@ serial_0: serial@13800000 {
+ 			interrupts = <GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&uart0_bus>;
+-			clocks = <&cmu_peri CLK_GOUT_UART0_EXT_UCLK>,
+-				 <&cmu_peri CLK_GOUT_UART0_PCLK>;
++			clocks = <&cmu_peri CLK_GOUT_UART0_PCLK>,
++				 <&cmu_peri CLK_GOUT_UART0_EXT_UCLK>;
+ 			clock-names = "uart", "clk_uart_baud0";
+ 			samsung,uart-fifosize = <64>;
+ 			status = "disabled";
+@@ -293,8 +293,8 @@ serial_1: serial@13810000 {
+ 			interrupts = <GIC_SPI 247 IRQ_TYPE_LEVEL_HIGH>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&uart1_bus>;
+-			clocks = <&cmu_peri CLK_GOUT_UART1_EXT_UCLK>,
+-				 <&cmu_peri CLK_GOUT_UART1_PCLK>;
++			clocks = <&cmu_peri CLK_GOUT_UART1_PCLK>,
++				 <&cmu_peri CLK_GOUT_UART1_EXT_UCLK>;
+ 			clock-names = "uart", "clk_uart_baud0";
+ 			samsung,uart-fifosize = <256>;
+ 			status = "disabled";
+@@ -306,8 +306,8 @@ serial_2: serial@13820000 {
+ 			interrupts = <GIC_SPI 279 IRQ_TYPE_LEVEL_HIGH>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&uart2_bus>;
+-			clocks = <&cmu_peri CLK_GOUT_UART2_EXT_UCLK>,
+-				 <&cmu_peri CLK_GOUT_UART2_PCLK>;
++			clocks = <&cmu_peri CLK_GOUT_UART2_PCLK>,
++				 <&cmu_peri CLK_GOUT_UART2_EXT_UCLK>;
+ 			clock-names = "uart", "clk_uart_baud0";
+ 			samsung,uart-fifosize = <256>;
+ 			status = "disabled";
+-- 
+2.36.1
+
 
 
