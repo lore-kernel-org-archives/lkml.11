@@ -2,75 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32962CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:08:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF09DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238821AbiF0MIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
+        id S239853AbiF0MIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:08:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240480AbiF0MHp (ORCPT
+        with ESMTP id S239731AbiF0MHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 08:07:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E29DEFE;
-        Mon, 27 Jun 2022 05:06:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AB16B81126;
-        Mon, 27 Jun 2022 12:06:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D69B5C3411D;
-        Mon, 27 Jun 2022 12:06:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656331593;
-        bh=NbyhByzCH5/okHi8PrVyh0HR/ISn4xht5nGthfBzx1A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cp3sfI9zfJK8tiLDjFucyDJ1O6N1SLfwDmCJQIj553q3nNVv/+Kl7dcsLauoH3CeY
-         WsHRPuzOODEZLLe5Hck5CmJPwMYljbBYfJTehisItHl4wGlrYi7UwnfAk1c50JXeMZ
-         IOMU8udi15yR7LW3RNYC7UO26S91nxP7BA2/3adY=
-Date:   Mon, 27 Jun 2022 13:54:53 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Starke, Daniel" <daniel.starke@siemens.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 6/9] tty: n_gsm: fix deadlock and link starvation in
- outgoing data path
-Message-ID: <YrmajcyijzquuFui@kroah.com>
-References: <DB9PR10MB5881188AE33199085DAD1460E0B59@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB9PR10MB5881188AE33199085DAD1460E0B59@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+        Mon, 27 Jun 2022 08:07:19 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D244B12A88
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 05:05:18 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id l6so7959829plg.11
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 05:05:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=31piJZFjl6u1ZUS8JijCEBXfXUqiNLSbSjWd4CZM8/0=;
+        b=CHsCH1A4UDMOJj8bUkS3g+NQUhct6E0yIuccrdV2sFFER/sbGdPly03ee4V20i53Y0
+         ZC9n3QT2m+OqlNEZTPFwX+16BAQ5S/GzM6LCz2K1DuEHD5OmuhSRaoEuU5i1FVGNHEAC
+         umebAFJN/oSpCMeUTng+aa45v8NRN82vC8i4jSsf6584W+Cb+Mvtge2jhOwh0SghzrAE
+         VY+IlNk74mJNEq6aNfYTQ8hgpyo1rR0RDjv7MBkl+F11blqODhaECzScM9P8cT28VKiX
+         cD0d7DoQKPkv/4ddNfRqJUyqN1/80HY6NwUHtXWTBOLwT5uYZjkoE7smLV9kkoiAfxR5
+         No9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=31piJZFjl6u1ZUS8JijCEBXfXUqiNLSbSjWd4CZM8/0=;
+        b=0b+iinGi42jwGU58R5H9wLYjzu3qUIs4ab0dt6ox+gxe2WKp3eBAeY+hy8u0vW8DdV
+         2IET3Hi4T3YEhmW1D9kS6n6P4yDps/jsS92NV44Jr4jUMIiaCEhPuXURkPcQOKlAC8wV
+         XjXeICvxgQCnaMdrEJwDYj2Tb+4euHZYq0BGcD8E7mlcZF4ey9hIAt6hssQD0T02s2de
+         W1DKcqsLTyzPz17xE5c9pWe9PzufRuoW0CrEdEDY90IJ3+moZ5m7j2fJHomVJL3RnI/W
+         tQLexz8n2V5OsEkJYCRwVMlqIKZ9TFZi2oXU4w7XedKzBUUpuj4d3ywuX+D6+d6H/Zwi
+         5HYQ==
+X-Gm-Message-State: AJIora9+qfZYav3pk5V3Z/ZtmsDkDs2Kh+UxB6b2uTJt+H6dezRXUou7
+        ZmS0KTZ7qqrjqszIvaY8yb3rb8klgc1DD8J6QgY=
+X-Google-Smtp-Source: AGRyM1tZ5UdceWUidW1fLkGc8FbMreZwYD+v6CRtef0jVtUcEFGbt7pmN61IybFKwTNVuYoMBhvZuw==
+X-Received: by 2002:a17:902:ebd1:b0:162:224f:abbb with SMTP id p17-20020a170902ebd100b00162224fabbbmr14080012plg.160.1656331517944;
+        Mon, 27 Jun 2022 05:05:17 -0700 (PDT)
+Received: from desktop-hypoxic.kamiya.io ([42.120.103.58])
+        by smtp.gmail.com with ESMTPSA id 3-20020a620503000000b00522d206bd04sm7355851pff.178.2022.06.27.05.05.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 05:05:17 -0700 (PDT)
+From:   Yangxi Xiang <xyangxi5@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Yangxi Xiang <xyangxi5@gmail.com>
+Subject: [PATCH] devtmpfs: fix the dangling pointer of global devtmpfsd thread
+Date:   Mon, 27 Jun 2022 20:04:09 +0800
+Message-Id: <20220627120409.11174-1-xyangxi5@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 12:26:27PM +0000, Starke, Daniel wrote:
-> > This is a bit huge for stable backports, especially given that a huge
-> > number of the previous stable backports have totally failed and no one
-> > has submitted new versions.
-> > 
-> > So why is this needed for stable?  Same for all of these in the series...
-> 
-> Given the fact that these are all bug fixes I assumed that these are also
-> relevant for backporting. Maybe only in the more recent stable releases
-> if there are issues with the merges.
-> I do not mind removing the stable kernel reference and keep these changes
-> only for mainline. So please let me know your preference.
-> Should I resubmit the patches without stable reference?
+When the devtmpfs fails to mount, a dangling pointer still remains in
+global. Specifically, the err variable is passed by a pointer to the
+devtmpfsd. When the devtmpfsd exits, it sets the error and completes the
+setup_done. In this situation, the thread pointer is not set to null.
+After the devtmpfsd exited, the devtmpfs can wakes up the destroyed
+devtmpfsd thread by wake_up_process if a device change event comes.
 
-Please read the stable kernel rules for what is, and is not allowed.
-Generally a patch that does:
-	drivers/tty/n_gsm.c | 410 ++++++++++++++++++++++++++++++--------------
-is not allowed.
+Signed-off-by: Yangxi Xiang <xyangxi5@gmail.com>
+---
+ drivers/base/devtmpfs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Please sort by what is stable fixes, and what is not.  Given that you
-don't seem to want to backport patches to older stable kernels when they
-fail to apply, why are any of these needed in stable kernels if the
-older ones are not also going to be merged there?
+diff --git a/drivers/base/devtmpfs.c b/drivers/base/devtmpfs.c
+index 8a3ddbae3b70..e4bffeabf344 100644
+--- a/drivers/base/devtmpfs.c
++++ b/drivers/base/devtmpfs.c
+@@ -482,6 +482,7 @@ int __init devtmpfs_init(void)
+ 	if (err) {
+ 		printk(KERN_ERR "devtmpfs: unable to create devtmpfs %i\n", err);
+ 		unregister_filesystem(&dev_fs_type);
++		thread = NULL;
+ 		return err;
+ 	}
+ 
+-- 
+2.17.1
 
-thanks,
-
-greg k-h
