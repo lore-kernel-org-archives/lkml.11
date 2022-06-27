@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0821EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36672C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235003AbiF0L2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
+        id S235109AbiF0L0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235068AbiF0L1I (ORCPT
+        with ESMTP id S234825AbiF0LZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:27:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9B69FD0;
-        Mon, 27 Jun 2022 04:27:00 -0700 (PDT)
+        Mon, 27 Jun 2022 07:25:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C2765A8;
+        Mon, 27 Jun 2022 04:25:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC786B81120;
-        Mon, 27 Jun 2022 11:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 048E3C341CD;
-        Mon, 27 Jun 2022 11:26:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D47D261366;
+        Mon, 27 Jun 2022 11:25:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC98EC3411D;
+        Mon, 27 Jun 2022 11:25:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329217;
-        bh=R2goq4APyY+obc39ACpCyOTB+wLBbJ7BRREkey3Mw8I=;
+        s=korg; t=1656329136;
+        bh=Dr1tPwRBXZXzKH51dcRtoXnJy+WZCNIc6xKbvhjml14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o6kZfMaxrfxVoSt/Cfnh2yzKVYqRYYYj2Sr6edT8jAnY1Grs84C2YKipbrWNWOs4y
-         cK9eDiThEuL/Pmz0KVBXKrY0j6jg/QtEc1Q4JzGII5/WD+FaAM4+9QSAwSfodn1tLU
-         v72t8DJs8Ay2cZPUkKbKArh8YgAFzrU4KY9N4XE8=
+        b=lYEsFFs2zVn54Z7j0IzRtu8Cl0reglfnE/9w9s7gHJDdbzzlOdY3jExmoQIiozx1v
+         iQL4PGa+ebnLlP4fAc3I4cmAlL5PZhuZ6N8x+V1R7N/n1+CQ1L1PpbpIX2FkLHwFrJ
+         SiwKQ1ftSpcBWtMnE/1r47O7N5/AYUMGEzKM5LGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.10 049/102] ice: ethtool: advertise 1000M speeds properly
-Date:   Mon, 27 Jun 2022 13:21:00 +0200
-Message-Id: <20220627111934.927199535@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 062/102] s390/cpumf: Handle events cycles and instructions identical
+Date:   Mon, 27 Jun 2022 13:21:13 +0200
+Message-Id: <20220627111935.311225486@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -51,84 +50,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Thomas Richter <tmricht@linux.ibm.com>
 
-[ Upstream commit c3d184c83ff4b80167e34edfc3d21df424bf27ff ]
+[ Upstream commit be857b7f77d130dbbd47c91fc35198b040f35865 ]
 
-In current implementation ice_update_phy_type enables all link modes
-for selected speed. This approach doesn't work for 1000M speeds,
-because both copper (1000baseT) and optical (1000baseX) standards
-cannot be enabled at once.
+Events CPU_CYCLES and INSTRUCTIONS can be submitted with two different
+perf_event attribute::type values:
+ - PERF_TYPE_HARDWARE: when invoked via perf tool predefined events name
+   cycles or cpu-cycles or instructions.
+ - pmu->type: when invoked via perf tool event name cpu_cf/CPU_CYLCES/ or
+   cpu_cf/INSTRUCTIONS/. This invocation also selects the PMU to which
+   the event belongs.
+Handle both type of invocations identical for events CPU_CYLCES and
+INSTRUCTIONS. They address the same hardware.
+The result is different when event modifier exclude_kernel is also set.
+Invocation with event modifier for user space event counting fails.
 
-Fix this, by adding the function `ice_set_phy_type_from_speed()`
-for 1000M speeds.
+Output before:
 
-Fixes: 48cb27f2fd18 ("ice: Implement handlers for ethtool PHY/link operations")
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+ # perf stat -e cpum_cf/cpu_cycles/u -- true
+
+ Performance counter stats for 'true':
+
+   <not supported>      cpum_cf/cpu_cycles/u
+
+       0.000761033 seconds time elapsed
+
+       0.000076000 seconds user
+       0.000725000 seconds sys
+
+ #
+
+Output after:
+ # perf stat -e cpum_cf/cpu_cycles/u -- true
+
+ Performance counter stats for 'true':
+
+           349,613      cpum_cf/cpu_cycles/u
+
+       0.000844143 seconds time elapsed
+
+       0.000079000 seconds user
+       0.000800000 seconds sys
+ #
+
+Fixes: 6a82e23f45fe ("s390/cpumf: Adjust registration of s390 PMU device drivers")
+Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
+Acked-by: Sumanth Korikkar <sumanthk@linux.ibm.com>
+[agordeev@linux.ibm.com corrected commit ID of Fixes commit]
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 39 +++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
+ arch/s390/kernel/perf_cpum_cf.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 421fc707f80a..060897eb9cab 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -2174,6 +2174,42 @@ ice_setup_autoneg(struct ice_port_info *p, struct ethtool_link_ksettings *ks,
+diff --git a/arch/s390/kernel/perf_cpum_cf.c b/arch/s390/kernel/perf_cpum_cf.c
+index 0eb1d1cc53a8..dddb32e53db8 100644
+--- a/arch/s390/kernel/perf_cpum_cf.c
++++ b/arch/s390/kernel/perf_cpum_cf.c
+@@ -292,6 +292,26 @@ static int __hw_perf_event_init(struct perf_event *event, unsigned int type)
  	return err;
  }
  
-+/**
-+ * ice_set_phy_type_from_speed - set phy_types based on speeds
-+ * and advertised modes
-+ * @ks: ethtool link ksettings struct
-+ * @phy_type_low: pointer to the lower part of phy_type
-+ * @phy_type_high: pointer to the higher part of phy_type
-+ * @adv_link_speed: targeted link speeds bitmap
++/* Events CPU_CYLCES and INSTRUCTIONS can be submitted with two different
++ * attribute::type values:
++ * - PERF_TYPE_HARDWARE:
++ * - pmu->type:
++ * Handle both type of invocations identical. They address the same hardware.
++ * The result is different when event modifiers exclude_kernel and/or
++ * exclude_user are also set.
 + */
-+static void
-+ice_set_phy_type_from_speed(const struct ethtool_link_ksettings *ks,
-+			    u64 *phy_type_low, u64 *phy_type_high,
-+			    u16 adv_link_speed)
++static int cpumf_pmu_event_type(struct perf_event *event)
 +{
-+	/* Handle 1000M speed in a special way because ice_update_phy_type
-+	 * enables all link modes, but having mixed copper and optical
-+	 * standards is not supported.
-+	 */
-+	adv_link_speed &= ~ICE_AQ_LINK_SPEED_1000MB;
++	u64 ev = event->attr.config;
 +
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseT_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_T |
-+				 ICE_PHY_TYPE_LOW_1G_SGMII;
-+
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseKX_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_KX;
-+
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseX_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_SX |
-+				 ICE_PHY_TYPE_LOW_1000BASE_LX;
-+
-+	ice_update_phy_type(phy_type_low, phy_type_high, adv_link_speed);
++	if (cpumf_generic_events_basic[PERF_COUNT_HW_CPU_CYCLES] == ev ||
++	    cpumf_generic_events_basic[PERF_COUNT_HW_INSTRUCTIONS] == ev ||
++	    cpumf_generic_events_user[PERF_COUNT_HW_CPU_CYCLES] == ev ||
++	    cpumf_generic_events_user[PERF_COUNT_HW_INSTRUCTIONS] == ev)
++		return PERF_TYPE_HARDWARE;
++	return PERF_TYPE_RAW;
 +}
 +
- /**
-  * ice_set_link_ksettings - Set Speed and Duplex
-  * @netdev: network interface device structure
-@@ -2310,7 +2346,8 @@ ice_set_link_ksettings(struct net_device *netdev,
- 		adv_link_speed = curr_link_speed;
+ static int cpumf_pmu_event_init(struct perf_event *event)
+ {
+ 	unsigned int type = event->attr.type;
+@@ -301,7 +321,7 @@ static int cpumf_pmu_event_init(struct perf_event *event)
+ 		err = __hw_perf_event_init(event, type);
+ 	else if (event->pmu->type == type)
+ 		/* Registered as unknown PMU */
+-		err = __hw_perf_event_init(event, PERF_TYPE_RAW);
++		err = __hw_perf_event_init(event, cpumf_pmu_event_type(event));
+ 	else
+ 		return -ENOENT;
  
- 	/* Convert the advertise link speeds to their corresponded PHY_TYPE */
--	ice_update_phy_type(&phy_type_low, &phy_type_high, adv_link_speed);
-+	ice_set_phy_type_from_speed(ks, &phy_type_low, &phy_type_high,
-+				    adv_link_speed);
- 
- 	if (!autoneg_changed && adv_link_speed == curr_link_speed) {
- 		netdev_info(netdev, "Nothing changed, exiting without setting anything.\n");
 -- 
 2.35.1
 
