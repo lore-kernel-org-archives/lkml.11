@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 810B7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234684AbiF0LYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43938 "EHLO
+        id S234692AbiF0LYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234642AbiF0LXs (ORCPT
+        with ESMTP id S234653AbiF0LXw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:23:48 -0400
+        Mon, 27 Jun 2022 07:23:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A608B6465;
-        Mon, 27 Jun 2022 04:23:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0278656C;
+        Mon, 27 Jun 2022 04:23:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 623F3B81125;
-        Mon, 27 Jun 2022 11:23:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B715AC3411D;
-        Mon, 27 Jun 2022 11:23:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A83ADB8111D;
+        Mon, 27 Jun 2022 11:23:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F20D3C3411D;
+        Mon, 27 Jun 2022 11:23:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329025;
-        bh=6g+0kDNDTJ6rzAV6vLpGtfTRgDWoLZS/lo3rJxyabA8=;
+        s=korg; t=1656329028;
+        bh=s2CTaI6UHqs5E2FloxSRNwIUroR1a8kLO48tU7IexVA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dX8E6P9BDtHJlTi9k3NIpJEFq1dSEUUQJYTxOw5+7AGYdqPanj/0myt+VLtCgKmKt
-         UEf9IC+yrO87R+5QXavm8Vra0jyzY/qgNMfehY9wne0h+ARj2llAbghuRflLbf6+Ho
-         p4ocINOiQ0sYCtq7az+yPD1BCECmyI7ylV0Ga3kE=
+        b=VVTjzLzY0EU6PgM019wqYH/1QtOd6yi42O4xOr9/LsNNBbyQiRFrEMy6iOsq5SfUE
+         s+N2jD9aCaqh/4AXSaYSQ3jJV7Ooe6LssR1B0mFOIqo5y6J1Ym4VrEI4Z/nTrAksef
+         FPXGn024xuJ3dAwQJAcZsZRqhpxwwxlP0t7Jo3MM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 025/102] scsi: scsi_debug: Fix zone transition to full condition
-Date:   Mon, 27 Jun 2022 13:20:36 +0200
-Message-Id: <20220627111934.213721698@linuxfoundation.org>
+Subject: [PATCH 5.10 026/102] drm/msm: use for_each_sgtable_sg to iterate over scatterlist
+Date:   Mon, 27 Jun 2022 13:20:37 +0200
+Message-Id: <20220627111934.242551543@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -51,79 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Jonathan Marek <jonathan@marek.ca>
 
-[ Upstream commit 566d3c57eb526f32951af15866086e236ce1fc8a ]
+[ Upstream commit 62b5e322fb6cc5a5a91fdeba0e4e57e75d9f4387 ]
 
-When a write command to a sequential write required or sequential write
-preferred zone result in the zone write pointer reaching the end of the
-zone, the zone condition must be set to full AND the number of implicitly
-or explicitly open zones updated to have a correct accounting for zone
-resources. However, the function zbc_inc_wp() only sets the zone condition
-to full without updating the open zone counters, resulting in a zone state
-machine breakage.
+The dma_map_sgtable() call (used to invalidate cache) overwrites sgt->nents
+with 1, so msm_iommu_pagetable_map maps only the first physical segment.
 
-Introduce the helper function zbc_set_zone_full() and use it in
-zbc_inc_wp() to correctly transition zones to the full condition.
+To fix this problem use for_each_sgtable_sg(), which uses orig_nents.
 
-Link: https://lore.kernel.org/r/20220608011302.92061-1-damien.lemoal@opensource.wdc.com
-Fixes: f0d1cf9378bd ("scsi: scsi_debug: Add ZBC zone commands")
-Reviewed-by: Niklas Cassel <niklas.cassel@wdc.com>
-Acked-by: Douglas Gilbert <dgilbert@interlog.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: b145c6e65eb0 ("drm/msm: Add support to create a local pagetable")
+Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+Link: https://lore.kernel.org/r/20220613221019.11399-1-jonathan@marek.ca
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_debug.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/msm_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/scsi_debug.c b/drivers/scsi/scsi_debug.c
-index 6b00de6b6f0e..5eb959b5f701 100644
---- a/drivers/scsi/scsi_debug.c
-+++ b/drivers/scsi/scsi_debug.c
-@@ -2746,6 +2746,24 @@ static void zbc_open_zone(struct sdebug_dev_info *devip,
- 	}
- }
+diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+index 22ac7c692a81..ecab6287c1c3 100644
+--- a/drivers/gpu/drm/msm/msm_iommu.c
++++ b/drivers/gpu/drm/msm/msm_iommu.c
+@@ -58,7 +58,7 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+ 	u64 addr = iova;
+ 	unsigned int i;
  
-+static inline void zbc_set_zone_full(struct sdebug_dev_info *devip,
-+				     struct sdeb_zone_state *zsp)
-+{
-+	switch (zsp->z_cond) {
-+	case ZC2_IMPLICIT_OPEN:
-+		devip->nr_imp_open--;
-+		break;
-+	case ZC3_EXPLICIT_OPEN:
-+		devip->nr_exp_open--;
-+		break;
-+	default:
-+		WARN_ONCE(true, "Invalid zone %llu condition %x\n",
-+			  zsp->z_start, zsp->z_cond);
-+		break;
-+	}
-+	zsp->z_cond = ZC5_FULL;
-+}
-+
- static void zbc_inc_wp(struct sdebug_dev_info *devip,
- 		       unsigned long long lba, unsigned int num)
- {
-@@ -2758,7 +2776,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
- 	if (zsp->z_type == ZBC_ZONE_TYPE_SWR) {
- 		zsp->z_wp += num;
- 		if (zsp->z_wp >= zend)
--			zsp->z_cond = ZC5_FULL;
-+			zbc_set_zone_full(devip, zsp);
- 		return;
- 	}
+-	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
++	for_each_sgtable_sg(sgt, sg, i) {
+ 		size_t size = sg->length;
+ 		phys_addr_t phys = sg_phys(sg);
  
-@@ -2777,7 +2795,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
- 			n = num;
- 		}
- 		if (zsp->z_wp >= zend)
--			zsp->z_cond = ZC5_FULL;
-+			zbc_set_zone_full(devip, zsp);
- 
- 		num -= n;
- 		lba += n;
 -- 
 2.35.1
 
