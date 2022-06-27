@@ -2,64 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 248E8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D256C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 20:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241006AbiF0UEj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 16:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45714 "EHLO
+        id S241090AbiF0UEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 16:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240997AbiF0UD5 (ORCPT
+        with ESMTP id S240973AbiF0UDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 16:03:57 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E3A1CB24
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:56 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-101b4f9e825so14319019fac.5
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:56 -0700 (PDT)
+        Mon, 27 Jun 2022 16:03:55 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33C21CB23
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:52 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so14262952fac.13
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:03:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7oqCMEdZOFPWtNjZHK0DpD/hkul9N6jiiMvxLAkZPi8=;
-        b=c+TaVHeiDxOdRSm0ioO42BbHne9So3WLc5XJeNOZJ0rlSBJX8kDh46TLhftBwFlbWn
-         HK7QBu4r6BG9KjAVqWRp5xRRFadAYmtOFHuy0jkt9R6fxCbOzRDCaZmwE5lLBVllCWSB
-         hmYTENrkqHis3PiqY8HssRMdCTttNd7AF/LpEcEL2GZL6t71+Rgyt+lXyUCXZVunfKCP
-         UO41Kf+TKuX0racjRt7Tfy9WM2qg13jKk7BS5L3zszXk/YC10PfxRAEPcgFg8aIT2v3R
-         1uJ+4yBWHLu72quE2OmQT+3JmN1rD0mHTn9I/xgHAs//j/ZeP8lnN9guMrGCo5lxCPA9
-         W2zA==
+        bh=zr/71miOpGKhog20TP0jCDwC/vOlvLa7msJCs05sI18=;
+        b=IwisUBbN+ASrCJgfo69Rxxo0VEEFNMfOCTz8jToryKFzQyoMziiy1k66cS5vxubdRx
+         hQvofkfcB28kcQanwUfEs14pPPBb3rX+wWa9i29LGy4Fd1Rb+0WHz0MqH5vmcaKxhOSb
+         W+hl7YwdIDkoC7fnOwbNU/ez2TmFbMlQuOcrLraqMi8fDRadNFHC17s3yWC/zMvQ+O2/
+         +vtZMteEid14WD1ORXMtjNDj5AYj60JrrdqAG95XDD7UL7tRb2aJqzw+bS4hIxGBu0li
+         E7bQU9gVDccu4LCgtfb6KEqLIneqnJAhM8ALJOt5Fqd208NR38LflA2KhIUNYgQi2bUN
+         minQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7oqCMEdZOFPWtNjZHK0DpD/hkul9N6jiiMvxLAkZPi8=;
-        b=B6PNpyYqCvqJDi5XExvAXXvWwlqXl3jcLJTvioaRhsygrh7/jTItgWdHEGKgGYUdqi
-         KhzEz8kjyhEEKfVXY83N19RBhib3HTCwvKqizdBZexNYgrf3eq65nGOZPDHQxpxjHiUw
-         0APRBdJV5qn5ylbPlJark8czinPd2PYHLS5o05K1TYxe4u/34RfHYbezKApumuwophn+
-         S7FiiwILjCJUciqqQhmDuGS11Ivvtgsde5oU1m94deX28mJetdV1jQjOu8eoFgGXr3J9
-         hJ1Ktc2VxdoOAcTRKkIZ6YHr4o5c7YN3e3JzpdyHfY+vmO2l+xlsaByS6P05CQj8EJ5P
-         tEeQ==
-X-Gm-Message-State: AJIora8+qak/j3mxaPRJWDxMIYhfs4qmJOCqPrG5/8GeOYq/PPhU+FUx
-        bIjHRPo6VVgfzgxFMRxmwYAO+dNPNIKmYg==
-X-Google-Smtp-Source: AGRyM1sdW18nt1XKn8B2l/2cRF49xuAu2AWS1n2ZrV4v5duSEyRQaafDGupWeaB+wveruRsG7nA6Hg==
-X-Received: by 2002:a05:6870:5ba6:b0:f1:5840:f38e with SMTP id em38-20020a0568705ba600b000f15840f38emr11148453oab.210.1656360235978;
-        Mon, 27 Jun 2022 13:03:55 -0700 (PDT)
+        bh=zr/71miOpGKhog20TP0jCDwC/vOlvLa7msJCs05sI18=;
+        b=EOfeBK0LqEQ2HTkSxSKXmQEv5S+clP150n61uQtBdatD5P+mqUq3Jo89AThmNbeh93
+         UuFNFRQpKj9SRICYAGMYZZn3UOzpjImLRMpfGB53LJdwdEJKnzWXC13YB8MfGojCd0Dr
+         e7QQc2LwhmOgSnPTIoypJjwXVwUai2il9k0wDG8hyJhPm4TO8d2J2VRHk+hSg9XVAZfs
+         DekO9iIQyndyNUjmtFvjh0a8uIlx51EvPkvxgcFfiR7yqQR5oTk80XIWQoaIxk5Cmi7v
+         fsvOdWdDE90XVQCGQtw0e+T81InYdJ8qtOfsCANjVzPW2K7gJpnD51Nd/NBzJ0ZBI9uM
+         WhzA==
+X-Gm-Message-State: AJIora8v9o9hJxJJcrP9TD2/W25PIRKFCY5UOR4+8lNCmFuHDeQfbykl
+        Tm1kI7HbhRZ+6g4hwnLBKEqu5Q==
+X-Google-Smtp-Source: AGRyM1vD/kgEZjgwPs0to4i2WZxKRjbJaz78WOZQQYkjuwx8IzcI8TCTSCVhuNq4mGb9SKkNPpWWDg==
+X-Received: by 2002:a05:6870:8e1b:b0:108:561a:79be with SMTP id lw27-20020a0568708e1b00b00108561a79bemr10195365oab.243.1656360232259;
+        Mon, 27 Jun 2022 13:03:52 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id m16-20020a4a9510000000b0041bdf977c6dsm6428729ooi.31.2022.06.27.13.03.54
+        by smtp.gmail.com with ESMTPSA id m16-20020a4a9510000000b0041bdf977c6dsm6428729ooi.31.2022.06.27.13.03.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 13:03:54 -0700 (PDT)
+        Mon, 27 Jun 2022 13:03:51 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Andy Gross <agross@kernel.org>, Stephen Boyd <swboyd@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        "Joseph S. Barrera III" <joebar@chromium.org>,
-        patches@lists.linux.dev, Matthias Kaehlcke <mka@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v2] arm64: dts: qcom: Remove duplicate sc7180-trogdor include on lazor/homestar
-Date:   Mon, 27 Jun 2022 15:03:07 -0500
-Message-Id: <165636016347.3080661.3020909807591656315.b4-ty@linaro.org>
+Cc:     Alex Elder <elder@linaro.org>, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, patches@lists.linux.dev,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: Re: (subset) [PATCH] arm64: dts: qcom: sc7180: Remove ipa_fw_mem node on trogdor
+Date:   Mon, 27 Jun 2022 15:03:05 -0500
+Message-Id: <165636016348.3080661.5219140331391727062.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220602190621.1646679-1-swboyd@chromium.org>
-References: <20220602190621.1646679-1-swboyd@chromium.org>
+In-Reply-To: <20220517193307.3034602-1-swboyd@chromium.org>
+References: <20220517193307.3034602-1-swboyd@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -67,24 +66,22 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2 Jun 2022 12:06:21 -0700, Stephen Boyd wrote:
-> The sc7180-trogdor-{lazor,homestar}-*.dtsi files all include
-> sc7180-trogdor.dtsi and sc7180-trogdor-lazor.dtsi or
-> sc7180-trogdor-homestar.dtsi, so including it here in the
-> sc7180-trogdor-{lazor,homestar}.dtsi file means we have a duplicate
-> include after commit 19794489fa24 ("arm64: dts: qcom: Only include
-> sc7180.dtsi in sc7180-trogdor.dtsi"). We include the sc7180-trogdor.dtsi
-> file in a board like sc7180-trogdor-lazor-r1.dts so that we can include
-> the display bridge snippet (e.g. sc7180-trogdor-ti-sn65dsi86.dtsi)
-> instead of making ever increasing variants like
-> sc7180-trogdor-lazor-ti-sn65dsi86.dtsi.
+On Tue, 17 May 2022 12:33:07 -0700, Stephen Boyd wrote:
+> We don't use this carveout on trogdor boards, and having it defined in
+> the sc7180 SoC file causes an overlap message to be printed at boot.
+> 
+>  OF: reserved mem: OVERLAP DETECTED!
+>  memory@86000000 (0x0000000086000000--0x000000008ec00000) overlaps with memory@8b700000 (0x000000008b700000--0x000000008b710000)
+> 
+> Delete the node in the trogdor dtsi file to fix the overlap problem and
+> remove the error message.
 > 
 > [...]
 
 Applied, thanks!
 
-[1/1] arm64: dts: qcom: Remove duplicate sc7180-trogdor include on lazor/homestar
-      commit: 372b2aee97028c75a6e12d205a2e5f0c8626efc6
+[1/1] arm64: dts: qcom: sc7180: Remove ipa_fw_mem node on trogdor
+      commit: e60414644cf3a703e10ed4429c15263095945ffe
 
 Best regards,
 -- 
