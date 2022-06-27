@@ -2,102 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA37C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B98BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239565AbiF0MAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55880 "EHLO
+        id S239581AbiF0MAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238844AbiF0Lwm (ORCPT
+        with ESMTP id S238873AbiF0Lwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF74DE87
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:45:55 -0700 (PDT)
+        Mon, 27 Jun 2022 07:52:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EDCDEF0;
+        Mon, 27 Jun 2022 04:46:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C5A76114D
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 11:45:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E820AC341C7;
-        Mon, 27 Jun 2022 11:45:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656330354;
-        bh=VwADrRZxFk1rx290fAkceHuvRfDBtWvrEJXtxd3r2+M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qo2nk0KSOwfsUGuWeIrmyKqTCUNAZIDAkfFoNw4Ut/1aIDOAkKWq1iK5HF8Gixklm
-         tIpA6xPXFAax0TtCIKCzysoM2W3chXUDd7SU0IfqaZJRKe4oirtcAHGbMDjMkNO8FS
-         34UrMWzSWeZyCuR/EBXumonWH9+Vh69wM6KSUDogqgDgNZTHWGR1eFGAgkRBGwpcfv
-         /MuJ7eBMf/I2PV/pYtzFpbfD8PDee+vkuzTZu9vfob4uzjmz8DihrT0JXV059ItckD
-         SycYYkUBL/OqBIqQDAq5AdevAEnvStSYyiW2W0njPmEYhfWhhvEWEdFdZrbr3AsleN
-         yVf+TLN+wsInQ==
-Date:   Mon, 27 Jun 2022 12:45:49 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        s.nawrocki@samsung.com, jrdr.linux@gmail.com, lgirdwood@gmail.com,
-        alsa-devel@alsa-project.org, patches@opensource.cirrus.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: samsung: s3c24xx-i2s: Fix typo in DAIFMT handling
-Message-ID: <YrmYbZV4mj9d9++t@sirena.org.uk>
-References: <20220627094335.3051210-1-ckeepax@opensource.cirrus.com>
- <803785ef-42b7-647c-9653-702067439ae9@linaro.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFDB3B80DFB;
+        Mon, 27 Jun 2022 11:46:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3378CC3411D;
+        Mon, 27 Jun 2022 11:46:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656330370;
+        bh=0XtH9daK+YtVDvHzZgQYKMzXRKtZ8b7buUfhpDwfnyc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Y1gRgF3HFzGayn1IfPDGA9UZ2xKnh3G1vttiUCRwJQZlVW8XetICLsi8mI6if2n15
+         pAx5jV46Kl00qb62rNsCheZ4iszZ7BjZiQiBhgj+NJtuhnyQ7TWTqt7Nfhu8Asul3h
+         HAkPnSIYuDnr5FsGRdNXPIu0ZuEUPBooMJfOtoCQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 5.18 173/181] modpost: fix section mismatch check for exported init/exit sections
+Date:   Mon, 27 Jun 2022 13:22:26 +0200
+Message-Id: <20220627111949.701269142@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
+References: <20220627111944.553492442@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="cGrbKaug4SaBI0GC"
-Content-Disposition: inline
-In-Reply-To: <803785ef-42b7-647c-9653-702067439ae9@linaro.org>
-X-Cookie: Your supervisor is thinking about you.
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Masahiro Yamada <masahiroy@kernel.org>
 
---cGrbKaug4SaBI0GC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+commit 28438794aba47a27e922857d27b31b74e8559143 upstream.
 
-On Mon, Jun 27, 2022 at 11:49:46AM +0200, Krzysztof Kozlowski wrote:
-> On 27/06/2022 11:43, Charles Keepax wrote:
-> > The conversion of the set_fmt callback to direct clock specification
-> > included a small typo, correct the affected code.
+Since commit f02e8a6596b7 ("module: Sort exported symbols"),
+EXPORT_SYMBOL* is placed in the individual section ___ksymtab(_gpl)+<sym>
+(3 leading underscores instead of 2).
 
-> > Fixes: 91c49199e6d6 ("ASoC: samsung: Update to use set_fmt_new callback")
+Since then, modpost cannot detect the bad combination of EXPORT_SYMBOL
+and __init/__exit.
 
-> Where is this commit from? It's not in next.
+Fix the .fromsec field.
 
-0b491c7c1b2555ef08285fd49a8567f2f9f34ff8 - if you can't find something
-search for the subject, people often get things wrong.
+Fixes: f02e8a6596b7 ("module: Sort exported symbols")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ scripts/mod/modpost.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> You should put such big patchsets in your own repo (e.g. on
-> Github/Gitlab) and feed it to linux-next or at least to LKP.
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1115,7 +1115,7 @@ static const struct sectioncheck section
+ },
+ /* Do not export init/exit functions or data */
+ {
+-	.fromsec = { "__ksymtab*", NULL },
++	.fromsec = { "___ksymtab*", NULL },
+ 	.bad_tosec = { INIT_SECTIONS, EXIT_SECTIONS, NULL },
+ 	.mismatch = EXPORT_TO_INIT_EXIT,
+ 	.symbol_white_list = { DEFAULT_SYMBOL_WHITE_LIST, NULL },
 
-The size of the patch set isn't really relevant here, the same issue can
-apply to anything that can be built in more than one configuration.
-People should of course try to do things that work but equally we
-shouldn't be putting procedural blockers in place, we have integration
-trees for a reason.
 
-> This way you would get build coverage... because it seems the build was
-> missing in your case.
-
-That coverage has apparently also been missing in -next for several
-weeks.
-
---cGrbKaug4SaBI0GC
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmK5mG0ACgkQJNaLcl1U
-h9BVlAf+OdXMLIbXe5mSgKiE3F5jvcMaD820Gt9mVcl9LubefegZsfo7YwlfYblG
-T9PiPgq0pwJOjh2fYmW0ISNuL3KqSgd3PCyOs9BkRCj0ELAtDn15G3UGVtjwEQjH
-h70i8Iy4MbZQu8CZEBen+earhLqXvuqe3dH27eJUyDjSCHzvOq7zkCfeFS6JCXFQ
-02I5/NBZGYC6r71IYGlpgRhMj94/PYKhnvhyfh+1dnVLEC9WD3eAZOB1YRfLDcBk
-jv4XUFP81VyzcGlNbj6K57AMPMGNWFo5R0K5oYPTwUx6ytuSdx/+kAXPIWuG2eLH
-iMgqgebuD6gmWiew3VdW9sJF6uBj8g==
-=G3oz
------END PGP SIGNATURE-----
-
---cGrbKaug4SaBI0GC--
