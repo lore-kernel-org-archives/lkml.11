@@ -2,147 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74895C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4908CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236900AbiF0LnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:43:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
+        id S237044AbiF0Ln0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236393AbiF0LlN (ORCPT
+        with ESMTP id S236843AbiF0LlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:41:13 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FC7CE0
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:35:50 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id be10so12414771oib.7
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:35:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IcWIfXiFNBAIIf3VuJJVlmluTZvQnqEwTI6tiVGeHOM=;
-        b=Ub56wbC9WV2M3ddHHUM7xeZonJ7VAeF0LDiy7Z4RsU+TjJycea+AOZ05VOTl4RaS+p
-         G2XeklteMZpiwaZltwcVORjxcyAlvE8Qo84HdDxwx6n3SHQMlyHOz16XpxkbjxUAyHmf
-         zZLeVDYyVhR7C0AIRbMnEiSIdVeRiOoauNqrkXbvNj4KDhYHi2j+OR9+FTKXzRzN7zxA
-         JSMdnVub+yQPmkQNzpLNr3pc3JVoF5gQRiyCOnVVrlBWCP1ARy/kiaKGm5NBdvqMy3N5
-         S3S3a0EfrJhTZdrgEcqlITyHJ09J1ZR0nt5zlx2DiX6YTxhZ3NkVUPyH3yi24UyCUw1H
-         SvoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IcWIfXiFNBAIIf3VuJJVlmluTZvQnqEwTI6tiVGeHOM=;
-        b=Eb6kWgCPV8WzoUycZwiHs19wwL0fxgka0koF6CLx+XduC6OIb8UGYTKGQ0QFcsyplN
-         SFOmWqDusDHqU713CGv1OyBeTniii8m6YrA0+xCU3EKz0nnOnpb+3kXvx3U0A38nz3If
-         kDL8pquSnyO/haoPxCeCpM1RsCngsvSF9eJkcHk+rrCEj8idbRdWo2kBBPPnFyDqDmRy
-         N4gYrvKP2g9xjK6yik0n8zX+69xT+UOtgUB6ftmtzpyz4TmHKKqRq3AIwcf18vWBAjp0
-         daEp8ysXMaST2UjouEYb36YP/TqGb5z7mQOjx5z25nQ2hwLkYGK5yHJgSpxxf2Uxfu76
-         NxhA==
-X-Gm-Message-State: AJIora8erBTMii5BH7uCvYd+xAc0QI0Bk+3/P12Gk86A05fZlkriQBi3
-        T2r40pC/lsA5/I3ovpVtKiXuFQGxOULcRA==
-X-Google-Smtp-Source: AGRyM1t9MaBMPNc0jNqrU6OWbaNrNp/+ZUE6wvY5inuaYW54e1wCVapZxo6fkOhveZqJLD+BI9khbw==
-X-Received: by 2002:a05:6808:16a7:b0:2f9:39c4:c597 with SMTP id bb39-20020a05680816a700b002f939c4c597mr7685474oib.101.1656329749912;
-        Mon, 27 Jun 2022 04:35:49 -0700 (PDT)
-Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id r10-20020a056808210a00b00325cda1ff8esm5157405oiw.13.2022.06.27.04.35.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 04:35:49 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 07:35:47 -0400
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/5] gpio: Implement and utilize register structures for
- ISA drivers
-Message-ID: <YrmWEwlxyJzj2zmZ@fedora>
-References: <cover.1654525394.git.william.gray@linaro.org>
- <CAMRc=MfoMjFV8EsDeXuHEFjOS2m7r4fW7BqETCDrcjTHVgzDbQ@mail.gmail.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66C0CF7;
+        Mon, 27 Jun 2022 04:35:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EFB6B8111D;
+        Mon, 27 Jun 2022 11:35:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A08BFC3411D;
+        Mon, 27 Jun 2022 11:35:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656329748;
+        bh=BLvnLMXgLtLtIg0HQYpZgnapGsdzbIDCKrw9x/oi710=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xjKXR0+pvPXLEI3z9Igdvt/a14t8X64D3rk03hz4RRn+KjGF12ASwOLEwW4PyeKcO
+         lOG1AoldybClIEinagV3JgF1m1Z1qHUVOXKVgYyjKrnqYac1G4Cvg6rLqYpJ1YTAEd
+         opsfpSS0zOYteeLfPYKSq3oS9/b7Xvtk+evEF/IU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Lars-Peter Clausen <lars@metafoo.de>, Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.15 102/135] iio: trigger: sysfs: fix use-after-free on remove
+Date:   Mon, 27 Jun 2022 13:21:49 +0200
+Message-Id: <20220627111941.116639835@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
+References: <20220627111938.151743692@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qcqNbohE9h+Wv+21"
-Content-Disposition: inline
-In-Reply-To: <CAMRc=MfoMjFV8EsDeXuHEFjOS2m7r4fW7BqETCDrcjTHVgzDbQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
---qcqNbohE9h+Wv+21
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit 78601726d4a59a291acc5a52da1d3a0a6831e4e8 upstream.
 
-On Thu, Jun 09, 2022 at 04:39:41PM +0200, Bartosz Golaszewski wrote:
-> On Mon, Jun 6, 2022 at 4:36 PM William Breathitt Gray
-> <william.gray@linaro.org> wrote:
-> >
-> > The PC104/ISA drivers were updated to use I/O memory accessor calls such
-> > as ioread8()/iowrite8() in a previous patch series [1]. This
-> > patchset is a continuation of the effort to improve the code readability
-> > and reduce magic numbers by implementing and utilizing named register
-> > data structures.
-> >
-> > One of the benefits is that we can now observe more easily similarities
-> > in devices that share similar interfaces; such as the i8255 interfaces
-> > used by the 104-DIO-48E, 104-IDI-48, and GPIO-MM drivers -- as well as
-> > the similar interface used by the 104-IDIO-16 and PCI-IDIO-16 drivers. I
-> > hope to consolidate some of these code blocks in future patchsets.
-> >
-> > [1] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linar=
-o.org/
-> >
-> > William Breathitt Gray (5):
-> >   gpio: 104-dio-48e: Implement and utilize register structures
-> >   gpio: 104-idi-48: Implement and utilize register structures
-> >   gpio: 104-idio-16: Implement and utilize register structures
-> >   gpio: gpio-mm: Implement and utilize register structures
-> >   gpio: ws16c48: Implement and utilize register structures
-> >
-> >  drivers/gpio/gpio-104-dio-48e.c | 157 +++++++++++++++++++++-----------
-> >  drivers/gpio/gpio-104-idi-48.c  | 128 +++++++++++++-------------
-> >  drivers/gpio/gpio-104-idio-16.c |  58 ++++++++----
-> >  drivers/gpio/gpio-gpio-mm.c     | 116 ++++++++++++++---------
-> >  drivers/gpio/gpio-ws16c48.c     | 119 +++++++++++++++++-------
-> >  5 files changed, 366 insertions(+), 212 deletions(-)
-> >
-> >
-> > base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
-> > --
-> > 2.36.1
-> >
->=20
-> Hi William,
->=20
-> Unlike the previous patches which were relatively simple, these seem
-> like there's a lot of space for breakage (even though they're
-> attempting to do a good thing). Have you tested the code on real
-> hardware?
->=20
-> Bart
+Ensure that the irq_work has completed before the trigger is freed.
 
-I have a tester testing the changes for to the 104-IDIO-16 and GPIO-MM
-GPIO drivers on real hardware. I don't have access to the other three
-devices so I've only compile tested and loaded them in a VM to verify;
-I'll send out a request to ACCESIO and WinSystems to see if they have
-engineers willing to test these changes for their respective devices.
+ ==================================================================
+ BUG: KASAN: use-after-free in irq_work_run_list
+ Read of size 8 at addr 0000000064702248 by task python3/25
 
-I've also refactored the code in this patch series to simplify the
-changes in these patches. It should make the changes much easier to
-review so I'll release it in a v2 submission once the series is ready.
+ Call Trace:
+  irq_work_run_list
+  irq_work_tick
+  update_process_times
+  tick_sched_handle
+  tick_sched_timer
+  __hrtimer_run_queues
+  hrtimer_interrupt
 
-William Breathitt Gray
+ Allocated by task 25:
+  kmem_cache_alloc_trace
+  iio_sysfs_trig_add
+  dev_attr_store
+  sysfs_kf_write
+  kernfs_fop_write_iter
+  new_sync_write
+  vfs_write
+  ksys_write
+  sys_write
 
---qcqNbohE9h+Wv+21
-Content-Type: application/pgp-signature; name="signature.asc"
+ Freed by task 25:
+  kfree
+  iio_sysfs_trig_remove
+  dev_attr_store
+  sysfs_kf_write
+  kernfs_fop_write_iter
+  new_sync_write
+  vfs_write
+  ksys_write
+  sys_write
 
------BEGIN PGP SIGNATURE-----
+ ==================================================================
 
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCYrmWEwAKCRC1SFbKvhIj
-K571AP9BVDOeWF1ppEOM7vd/GiJ31qRTdxMzoLs15UZZ0AixOwD/bJ8wxcF6ARpp
-BTlCqZ06OCVeHW2v3UAaoTe2Z7eATQo=
-=tR33
------END PGP SIGNATURE-----
+Fixes: f38bc926d022 ("staging:iio:sysfs-trigger: Use irq_work to properly active trigger")
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+Link: https://lore.kernel.org/r/20220519091925.1053897-1-vincent.whitchurch@axis.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/iio/trigger/iio-trig-sysfs.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---qcqNbohE9h+Wv+21--
+--- a/drivers/iio/trigger/iio-trig-sysfs.c
++++ b/drivers/iio/trigger/iio-trig-sysfs.c
+@@ -195,6 +195,7 @@ static int iio_sysfs_trigger_remove(int
+ 	}
+ 
+ 	iio_trigger_unregister(t->trig);
++	irq_work_sync(&t->work);
+ 	iio_trigger_free(t->trig);
+ 
+ 	list_del(&t->l);
+
+
