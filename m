@@ -2,101 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D50CEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 23:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47377C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 23:19:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241098AbiF0XS7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 19:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
+        id S241545AbiF0XTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 19:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241232AbiF0XRE (ORCPT
+        with ESMTP id S240970AbiF0XRJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 19:17:04 -0400
-Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93548237DD;
-        Mon, 27 Jun 2022 16:17:03 -0700 (PDT)
-Received: by mail-io1-f46.google.com with SMTP id m13so11289896ioj.0;
-        Mon, 27 Jun 2022 16:17:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ch0+XgUThIc/l8CQOuy5NljTuESRwdl/Mc/QQ/GRHwY=;
-        b=pjU7DN1sQJFsGG2xkaentequitCQpPr4TdiKIC8KP91Yzh2S0zfkfheJ15HWFTK7Ti
-         ie7pbz+r3DcvPY8gt7FIwXQTICVzR9te7HIVusBI5cpUp+iz8smL2Vi8JPxWvd0o9ss+
-         BpEtFIZ0Uk73fEtprN1QrEkfLeQ7clhfK1+a0xnInd4KRKuyXIpUL2ZUVdVL5QO4F54o
-         4Rj0C9RThf8P7gMkVaYxGXMe7Hw+CzYFj/b+vxixO6A1V5ivfLRL9AFtWGboGSfLdt1w
-         8N84UlxJIxsaUD3RKFtivBKSg+VnhJnq7sG0Nda0fnvj0Y8NNNsvSQcs4rp0EfkNk+qG
-         0CiA==
-X-Gm-Message-State: AJIora/+dEhUkOmNP3bpVzUeQ1tiLMYvMB8T2IuIl/mznBf6FhmeUjNo
-        FlnMQ2YPTFbGrqRtakH6qw==
-X-Google-Smtp-Source: AGRyM1sQjARQFnKoj25XCNLdCib4jTOupm0g5QOmkXXsBc0eHF5rPc9gxrBwiTwvftgDQ3k5Qq4cZA==
-X-Received: by 2002:a05:6638:190f:b0:339:bc9b:4d90 with SMTP id p15-20020a056638190f00b00339bc9b4d90mr9292586jal.153.1656371822830;
-        Mon, 27 Jun 2022 16:17:02 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id p16-20020a92d690000000b002daa70b6a83sm630571iln.20.2022.06.27.16.17.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 16:17:02 -0700 (PDT)
-Received: (nullmailer pid 3150543 invoked by uid 1000);
-        Mon, 27 Jun 2022 23:17:00 -0000
-Date:   Mon, 27 Jun 2022 17:17:00 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Dillon Min <dillon.minfei@gmail.com>,
-        Heng Sia <jee.heng.sia@intel.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 02/14] dt-bindings: display: panel: allow ilitek,ili9341
- in isolation
-Message-ID: <20220627231700.GA3144115-robh@kernel.org>
-References: <20220618123035.563070-1-mail@conchuod.ie>
- <20220618123035.563070-3-mail@conchuod.ie>
+        Mon, 27 Jun 2022 19:17:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CD6237E9;
+        Mon, 27 Jun 2022 16:17:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED4A96152E;
+        Mon, 27 Jun 2022 23:17:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 030D9C34115;
+        Mon, 27 Jun 2022 23:17:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656371826;
+        bh=xK/0Jo6bbbOr8Su6qSlzhWJlbL3Ou6nGEBskw/gJN6w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Gdjqnp7gzy7ZTPEUKfdbOqeFJEN/O/BYL4VEKBpEKVbwjd09UG9BxxKpVsD1KYeCa
+         i3dcZwhZNPDgzim3GabS0RB16XMcveEZkNr5pnCUs9UbsZDlHFHSVFwIADz/RuhYO1
+         +X6jmug6bGuNwd5qfmumJzvYe7FnpUjEEEC29dYCDyP4/7X6PW7K9ZF4Y7BkA+bUPN
+         v9xiPwa0oN9Be40+n8jRhyukCy76ntvcIQx0/8sNERa+6sCQRST9oB8eb6hwAd9TPD
+         ccPjBGSWynfhc8fEjPnmY1kiUubF+Dbh6sEYH6iAUD7Fy31aa9BsnUA052Wx1MnwYj
+         R9mUu/hA9pOkw==
+Date:   Tue, 28 Jun 2022 02:17:02 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Elvira Khabirova <e.khabirova@omp.ru>,
+        Vitaly Chikunov <vt@altlinux.org>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2 RESEND] pkcs7: support EC-RDSA/streebog in
+ SignerInfo
+Message-ID: <Yro6btp1iF4plBk/@kernel.org>
+References: <20220627092142.21095-1-tianjia.zhang@linux.alibaba.com>
+ <20220627092142.21095-3-tianjia.zhang@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220618123035.563070-3-mail@conchuod.ie>
+In-Reply-To: <20220627092142.21095-3-tianjia.zhang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 01:30:24PM +0100, Conor Dooley wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
+On Mon, Jun 27, 2022 at 05:21:42PM +0800, Tianjia Zhang wrote:
+> From: Elvira Khabirova <e.khabirova@omp.ru>
 > 
-> The dt-binding for the ilitek,ili9341 does not allow it to be used as a
-> compatible in isolation. This generates a warning for the Canaan kd233
-> devicetree:
-> arch/riscv/boot/dts/canaan/canaan_kd233.dtb: panel@0: compatible:0: 'ilitek,ili9341' is not one of ['st,sf-tc240t-9370-t']
->         From schema: Documentation/devicetree/bindings/display/panel/ilitek,ili9341.yaml
-> arch/riscv/boot/dts/canaan/canaan_kd233.dtb: panel@0: compatible: ['ilitek,ili9341'] is too short
->         From schema: Documentation/devicetree/bindings/display/panel/ilitek,ili9341.yaml
-> Allow ilitek,ili9341 to be selected in isolation.
+> Allow using EC-RDSA/streebog in pkcs7 certificates in a similar way
+> to how it's done in the x509 parser.
+> 
+> This is needed e.g. for loading kernel modules signed with EC-RDSA.
+> 
+> Signed-off-by: Elvira Khabirova <e.khabirova@omp.ru>
+> Reviewed-by: Vitaly Chikunov <vt@altlinux.org>
+> Reviewed-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+> ---
+>  crypto/asymmetric_keys/pkcs7_parser.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/crypto/asymmetric_keys/pkcs7_parser.c b/crypto/asymmetric_keys/pkcs7_parser.c
+> index 24e2e4a6d842..277482bb1777 100644
+> --- a/crypto/asymmetric_keys/pkcs7_parser.c
+> +++ b/crypto/asymmetric_keys/pkcs7_parser.c
+> @@ -251,6 +251,12 @@ int pkcs7_sig_note_digest_algo(void *context, size_t hdrlen,
+>  	case OID_sm3:
+>  		ctx->sinfo->sig->hash_algo = "sm3";
+>  		break;
+> +	case OID_gost2012Digest256:
+> +		ctx->sinfo->sig->hash_algo = "streebog256";
+> +		break;
+> +	case OID_gost2012Digest512:
+> +		ctx->sinfo->sig->hash_algo = "streebog512";
+> +		break;
+>  	default:
+>  		printk("Unsupported digest algo: %u\n", ctx->last_oid);
+>  		return -ENOPKG;
+> @@ -284,6 +290,11 @@ int pkcs7_sig_note_pkey_algo(void *context, size_t hdrlen,
+>  		ctx->sinfo->sig->pkey_algo = "sm2";
+>  		ctx->sinfo->sig->encoding = "raw";
+>  		break;
+> +	case OID_gost2012PKey256:
+> +	case OID_gost2012PKey512:
+> +		ctx->sinfo->sig->pkey_algo = "ecrdsa";
+> +		ctx->sinfo->sig->encoding = "raw";
+> +		break;
+>  	default:
+>  		printk("Unsupported pkey algo: %u\n", ctx->last_oid);
+>  		return -ENOPKG;
+> -- 
+> 2.24.3 (Apple Git-128)
+> 
 
-Just because you get a warning doesn't mean it is right. ili9341 is a 
-panel driver IC, not a complete panel. It needs a more specific 
-compatible.
 
-Rob
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 
+BR, Jarkko
