@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF7ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5054C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239055AbiF0Lym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49688 "EHLO
+        id S239078AbiF0Lyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238499AbiF0Lsb (ORCPT
+        with ESMTP id S238502AbiF0Lsc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6C1BF71;
-        Mon, 27 Jun 2022 04:41:58 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854B5C73;
+        Mon, 27 Jun 2022 04:41:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0719B81123;
-        Mon, 27 Jun 2022 11:41:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 495FBC3411D;
-        Mon, 27 Jun 2022 11:41:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16D7261234;
+        Mon, 27 Jun 2022 11:41:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2510BC341CB;
+        Mon, 27 Jun 2022 11:41:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330115;
-        bh=vrv4Yh2blM1vGcsZn1FcTcnNRd6Sdn0BVvm+oncPeZY=;
+        s=korg; t=1656330118;
+        bh=VpWj+S8VyobIWzAtYMHALe6noLPSFdKL2+fOn4VwhAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0DH+xdfg5XdmzaEkjajqdPoGRQTZdFNELlFntAFLUqyA1tweK0/nff3n8jtel7jnY
-         fptJiPAjgWr2H+0RIu0tfyHvFFVmGsiL6nIvzliZNwoPmQIuvzzG4iCi7ggDUdUltb
-         d/bQM6lnbVOEsl93uvaEaKmI1AEhzjhaAkrT1e6U=
+        b=Lb4OchllwpDv66/PmbGESbtP3NDqTK7NaZLRJ3icbCVyYZfznFk/xSre+zqZqYLVD
+         4iE5nRLDOcfrXYcL7qsdg5mzIh/WuOt2m832Vh1i+rVKLtXsSpcNCHJGb3JKZ76o1O
+         Dh7abvHxQ5fEqHPB91BmZo2Cak0zxHSBd/zfukY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.18 087/181] ice: ethtool: advertise 1000M speeds properly
-Date:   Mon, 27 Jun 2022 13:21:00 +0200
-Message-Id: <20220627111947.082274047@linuxfoundation.org>
+        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
+        Jon Maxwell <jmaxwell37@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Curtis Taylor <cutaylor-pub@yahoo.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 050/181] bpf: Fix request_sock leak in sk lookup helpers
+Date:   Mon, 27 Jun 2022 13:20:23 +0200
+Message-Id: <20220627111946.017686385@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,84 +52,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Jon Maxwell <jmaxwell37@gmail.com>
 
-[ Upstream commit c3d184c83ff4b80167e34edfc3d21df424bf27ff ]
+[ Upstream commit 3046a827316c0e55fc563b4fb78c93b9ca5c7c37 ]
 
-In current implementation ice_update_phy_type enables all link modes
-for selected speed. This approach doesn't work for 1000M speeds,
-because both copper (1000baseT) and optical (1000baseX) standards
-cannot be enabled at once.
+A customer reported a request_socket leak in a Calico cloud environment. We
+found that a BPF program was doing a socket lookup with takes a refcnt on
+the socket and that it was finding the request_socket but returning the parent
+LISTEN socket via sk_to_full_sk() without decrementing the child request socket
+1st, resulting in request_sock slab object leak. This patch retains the
+existing behaviour of returning full socks to the caller but it also decrements
+the child request_socket if one is present before doing so to prevent the leak.
 
-Fix this, by adding the function `ice_set_phy_type_from_speed()`
-for 1000M speeds.
+Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
+thanks to Antoine Tenart for the reproducer and patch input.
 
-Fixes: 48cb27f2fd18 ("ice: Implement handlers for ethtool PHY/link operations")
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+v2 of this patch contains, refactor as per Daniel Borkmann's suggestions to
+validate RCU flags on the listen socket so that it balances with bpf_sk_release()
+and update comments as per Martin KaFai Lau's suggestion. One small change to
+Daniels suggestion, put "sk = sk2" under "if (sk2 != sk)" to avoid an extra
+instruction.
+
+Fixes: f7355a6c0497 ("bpf: Check sk_fullsock() before returning from bpf_sk_lookup()")
+Fixes: edbf8c01de5a ("bpf: add skc_lookup_tcp helper")
+Co-developed-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net
+Link: https://lore.kernel.org/bpf/20220615011540.813025-1-jmaxwell37@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 39 +++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
+ net/core/filter.c | 34 ++++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 24cda7e1f916..2a6f30c26592 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -2191,6 +2191,42 @@ ice_setup_autoneg(struct ice_port_info *p, struct ethtool_link_ksettings *ks,
- 	return err;
- }
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 8847316ee20e..af1e77f2f24a 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6506,10 +6506,21 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+ 					   ifindex, proto, netns_id, flags);
  
-+/**
-+ * ice_set_phy_type_from_speed - set phy_types based on speeds
-+ * and advertised modes
-+ * @ks: ethtool link ksettings struct
-+ * @phy_type_low: pointer to the lower part of phy_type
-+ * @phy_type_high: pointer to the higher part of phy_type
-+ * @adv_link_speed: targeted link speeds bitmap
-+ */
-+static void
-+ice_set_phy_type_from_speed(const struct ethtool_link_ksettings *ks,
-+			    u64 *phy_type_low, u64 *phy_type_high,
-+			    u16 adv_link_speed)
-+{
-+	/* Handle 1000M speed in a special way because ice_update_phy_type
-+	 * enables all link modes, but having mixed copper and optical
-+	 * standards is not supported.
-+	 */
-+	adv_link_speed &= ~ICE_AQ_LINK_SPEED_1000MB;
+ 	if (sk) {
+-		sk = sk_to_full_sk(sk);
+-		if (!sk_fullsock(sk)) {
++		struct sock *sk2 = sk_to_full_sk(sk);
 +
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseT_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_T |
-+				 ICE_PHY_TYPE_LOW_1G_SGMII;
-+
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseKX_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_KX;
-+
-+	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
-+						  1000baseX_Full))
-+		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_SX |
-+				 ICE_PHY_TYPE_LOW_1000BASE_LX;
-+
-+	ice_update_phy_type(phy_type_low, phy_type_high, adv_link_speed);
-+}
-+
- /**
-  * ice_set_link_ksettings - Set Speed and Duplex
-  * @netdev: network interface device structure
-@@ -2322,7 +2358,8 @@ ice_set_link_ksettings(struct net_device *netdev,
- 		adv_link_speed = curr_link_speed;
++		/* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk
++		 * sock refcnt is decremented to prevent a request_sock leak.
++		 */
++		if (!sk_fullsock(sk2))
++			sk2 = NULL;
++		if (sk2 != sk) {
+ 			sock_gen_put(sk);
+-			return NULL;
++			/* Ensure there is no need to bump sk2 refcnt */
++			if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
++				WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
++				return NULL;
++			}
++			sk = sk2;
+ 		}
+ 	}
  
- 	/* Convert the advertise link speeds to their corresponded PHY_TYPE */
--	ice_update_phy_type(&phy_type_low, &phy_type_high, adv_link_speed);
-+	ice_set_phy_type_from_speed(ks, &phy_type_low, &phy_type_high,
-+				    adv_link_speed);
+@@ -6543,10 +6554,21 @@ bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+ 					 flags);
  
- 	if (!autoneg_changed && adv_link_speed == curr_link_speed) {
- 		netdev_info(netdev, "Nothing changed, exiting without setting anything.\n");
+ 	if (sk) {
+-		sk = sk_to_full_sk(sk);
+-		if (!sk_fullsock(sk)) {
++		struct sock *sk2 = sk_to_full_sk(sk);
++
++		/* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk
++		 * sock refcnt is decremented to prevent a request_sock leak.
++		 */
++		if (!sk_fullsock(sk2))
++			sk2 = NULL;
++		if (sk2 != sk) {
+ 			sock_gen_put(sk);
+-			return NULL;
++			/* Ensure there is no need to bump sk2 refcnt */
++			if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
++				WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
++				return NULL;
++			}
++			sk = sk2;
+ 		}
+ 	}
+ 
 -- 
 2.35.1
 
