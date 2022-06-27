@@ -2,193 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B62C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 10:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 366D2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 10:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234027AbiF0KIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 06:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
+        id S233418AbiF0KKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 06:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233176AbiF0KIo (ORCPT
+        with ESMTP id S233176AbiF0KKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 06:08:44 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6FA63B9;
-        Mon, 27 Jun 2022 03:08:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1656324523;
-  x=1687860523;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IfH4/auxP0BAKuTQeGybZpgGABQyp48s3Z6um0lD/Hs=;
-  b=fWZ21eVjCbKnjljkJYQjleMbQf4e8TtlglcW8XlUr+q601bze3yiwO17
-   QwqZvYWhAyXbflR3EbzSqJWEDiq8+hBOzdikgi1nqIsnVUx81IJtsiZTr
-   Ko3tqTqY7KauVnfPAvzfy4W+xaDUCQGMr8B2t2LSXM+s/gzjGgK6Zj2y8
-   DVnR6vmquVzzRakwdRTh4znVXVx/XtwoGznUWPhwZhqyARHjyLZ+Ymvtp
-   yBKpEkh6v0HxMGyPCiUw3GQMHEfrKbGF7P+23Qd7UEWUG7wbXpK7hbG/6
-   lKB6TpOxNok7i3rev+zpYojVX5dD1fJoHiEoyoCBP9HgI5EoyFDvSY+jH
-   Q==;
-Date:   Mon, 27 Jun 2022 12:08:40 +0200
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-CC:     kernel <kernel@axis.com>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] mmc: core: Allow speed modes to be adjusted via module
- param
-Message-ID: <20220627100840.GA12705@axis.com>
-References: <20220623080009.1775574-1-vincent.whitchurch@axis.com>
- <CAPDyKFpg9Gs3qOeXWM2A1gSDEKA89i72NoTcF0M_a3jO-AC+dw@mail.gmail.com>
+        Mon, 27 Jun 2022 06:10:36 -0400
+X-Greylist: delayed 559 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 03:10:20 PDT
+Received: from sdore.me (unknown [89.188.170.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D4B63FB
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 03:10:20 -0700 (PDT)
+Received: by sdore.me (Postfix, from userid 1000)
+        id A418587F267; Mon, 27 Jun 2022 13:00:49 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=sdore.me; s=SERV;
+        t=1656324049; bh=PEmRg+vuuONtaTKRgqWSc4D1FyWhpb/ZJOXrIkCPWU0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=cAINQg72O1Y47eMYnaAdCTHAlhdr07ITmt0MLz9SxxTdoPQkNGFh/2pAmFYGq3vjj
+         4g3jnZde5L3CGpiyd9L6I1r3dI3DZMW1aoJ0byFHyzGvjFGyOxduWPCihpDwsgghwP
+         mmRcwd3G4EwBQRpU8SnMVXDzkZchFfhJKbo7rTxc=
+From:   Egor Vorontsov <sdoregor@sdore.me>
+Cc:     Egor Vorontsov <sdoregor@sdore.me>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Jonas Hahnfeld <hahnjo@hahnjo.de>,
+        Brendan Grieve <brendan@grieve.com.au>,
+        William Overton <willovertonuk@gmail.com>,
+        Alexander Tsoy <alexander@tsoy.me>,
+        alsa-devel@alsa-project.org (moderated list:SOUND),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 2/2] ALSA: usb-audio: Add quirk for Fiero SC-01 (fw v1.0.0)
+Date:   Mon, 27 Jun 2022 13:00:35 +0300
+Message-Id: <20220627100041.2861494-2-sdoregor@sdore.me>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220627100041.2861494-1-sdoregor@sdore.me>
+References: <20220627100041.2861494-1-sdoregor@sdore.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAPDyKFpg9Gs3qOeXWM2A1gSDEKA89i72NoTcF0M_a3jO-AC+dw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 03:53:41PM +0200, Ulf Hansson wrote:
-> On Thu, 23 Jun 2022 at 10:00, Vincent Whitchurch
-> <vincent.whitchurch@axis.com> wrote:
-> > During board verification, there is a need to test the various supported
-> > eMMC/SD speed modes.  However, since the framework chooses the best mode
-> > supported by the card and the host controller's caps, this currently
-> > necessitates changing the devicetree for every iteration.
-> >
-> > To make changing the modes easier, allow the various host controller
-> > capabilities to be cleared via a module parameter.  (A per-controller
-> > debugfs wouldn't work since the controller needs to be re-probed to
-> > trigger re-init of cards.  A module parameter is used instead of a
-> 
-> I think we could make use of a per-controller debugfs thing, if used
-> in combination with MMC_CAP_AGGRESSIVE_PM and runtime PM.
-> 
-> As runtime PM also has sysfs interface for each device, we can control
-> runtime PM for the card's device (to trigger re-initialization of the
-> card). In between runtime suspend/resume of the card's device, we
-> should be able to change the supported speed modes, through debug fs.
-> 
-> Would this work for you?
+The patch applies the same quirks used for SC-01 at firmware v1.1.0 to
+the ones running v1.0.0, with respect to hard-coded sample rates.
 
-I got it to work with the below commands and the following patch.  Note
-that:
+I got two more units and successfully tested the patch series with both
+firmwares.
 
-(1) MMC_CAP_AGGRESSIVE_PM also needs to be turned on via debugfs to
-    avoid having to patch the kernel.  The cap is checked on every call
-    to runtime_suspend so it (currently) works to set it without
-    re-probing the host.
+The support is now complete (not accounting ASIO).
 
-(2) I had to call mmc_select_card_type() even if there is an old card
-    since currently it's only called from mmc_decode_ext_csd().
+Signed-off-by: Egor Vorontsov <sdoregor@sdore.me>
+---
+ sound/usb/quirks-table.h | 132 +++++++++++++++++++++++++++++++++++++++
+ sound/usb/quirks.c       |   4 ++
+ 2 files changed, 136 insertions(+)
 
-Also, unlike the module parameter, this can't be set from bootargs, but
-that part is not important for my use case.
-
- root@(none):/sys/kernel/debug/mmc0# grep timing ios
- timing spec:	9 (mmc HS200)
- 
- // Turn on MMC_CAP_AGGRESSIVE_PM and re-trigger runtime suspend
- root@(none):/sys/kernel/debug/mmc0# echo $(($(cat caps) | (1 << 7))) > caps
- root@(none):/sys/kernel/debug/mmc0# echo on > /sys/bus/mmc/devices/mmc0\:0001/power/control
- root@(none):/sys/kernel/debug/mmc0# echo auto > /sys/bus/mmc/devices/mmc0\:0001/power/control
- 
- // MMC_CAP2_HS200_1_8V_SDR
- root@(none):/sys/kernel/debug/mmc0# echo $(($(cat caps2) & ~(1 << 5))) > caps2
- root@(none):/sys/kernel/debug/mmc0# echo on > /sys/bus/mmc/devices/mmc0\:0001/power/control
- root@(none):/sys/kernel/debug/mmc0# grep timing ios
- timing spec:	8 (mmc DDR52)
-
-8<----
-diff --git a/drivers/mmc/core/debugfs.c b/drivers/mmc/core/debugfs.c
-index 3fdbc801e64a..721925300611 100644
---- a/drivers/mmc/core/debugfs.c
-+++ b/drivers/mmc/core/debugfs.c
-@@ -12,9 +12,12 @@
- #include <linux/slab.h>
- #include <linux/stat.h>
- #include <linux/fault-inject.h>
-+#include <linux/time.h>
- 
- #include <linux/mmc/card.h>
- #include <linux/mmc/host.h>
-+#include <linux/mmc/mmc.h>
-+#include <linux/mmc/sd.h>
- 
- #include "core.h"
- #include "card.h"
-@@ -223,6 +226,47 @@ static int mmc_clock_opt_set(void *data, u64 val)
- DEFINE_DEBUGFS_ATTRIBUTE(mmc_clock_fops, mmc_clock_opt_get, mmc_clock_opt_set,
- 	"%llu\n");
- 
-+static int mmc_caps_get(void *data, u64 *val)
+diff --git a/sound/usb/quirks-table.h b/sound/usb/quirks-table.h
+index c61445eb83d8..fdd62139d1ab 100644
+--- a/sound/usb/quirks-table.h
++++ b/sound/usb/quirks-table.h
+@@ -4119,6 +4119,138 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 		}
+ 	}
+ },
 +{
-+	*val = *(u32 *)data;
-+	return 0;
-+}
-+
-+static int mmc_caps_set(void *data, u64 val)
++	/*
++	 * Fiero SC-01 (firmware v1.0.0 @ 48 kHz)
++	 */
++	USB_DEVICE(0x2b53, 0x0023),
++	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
++		.vendor_name = "Fiero",
++		.product_name = "SC-01",
++		.ifnum = QUIRK_ANY_INTERFACE,
++		.type = QUIRK_COMPOSITE,
++		.data = &(const struct snd_usb_audio_quirk[]) {
++			{
++				.ifnum = 0,
++				.type = QUIRK_AUDIO_STANDARD_INTERFACE
++			},
++			/* Playback */
++			{
++				.ifnum = 1,
++				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
++				.data = &(const struct audioformat) {
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
++					.channels = 2,
++					.fmt_bits = 24,
++					.iface = 1,
++					.altsetting = 1,
++					.altset_idx = 1,
++					.endpoint = 0x01,
++					.ep_attr = USB_ENDPOINT_XFER_ISOC |
++						   USB_ENDPOINT_SYNC_ASYNC,
++					.rates = SNDRV_PCM_RATE_48000,
++					.rate_min = 48000,
++					.rate_max = 48000,
++					.nr_rates = 1,
++					.rate_table = (unsigned int[]) { 48000 },
++					.clock = 0x29
++				}
++			},
++			/* Capture */
++			{
++				.ifnum = 2,
++				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
++				.data = &(const struct audioformat) {
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
++					.channels = 2,
++					.fmt_bits = 24,
++					.iface = 2,
++					.altsetting = 1,
++					.altset_idx = 1,
++					.endpoint = 0x82,
++					.ep_attr = USB_ENDPOINT_XFER_ISOC |
++						   USB_ENDPOINT_SYNC_ASYNC |
++						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
++					.rates = SNDRV_PCM_RATE_48000,
++					.rate_min = 48000,
++					.rate_max = 48000,
++					.nr_rates = 1,
++					.rate_table = (unsigned int[]) { 48000 },
++					.clock = 0x29
++				}
++			},
++			{
++				.ifnum = -1
++			}
++		}
++	}
++},
 +{
-+	u32 *caps = data;
-+	u32 diff = *caps ^ val;
-+	u32 allowed = MMC_CAP_AGGRESSIVE_PM |
-+		MMC_CAP_SD_HIGHSPEED |
-+		MMC_CAP_MMC_HIGHSPEED |
-+		MMC_CAP_UHS |
-+		MMC_CAP_DDR;
-+
-+	if (diff & ~allowed)
-+		return -EINVAL;
-+
-+	*caps = val;
-+
-+	return 0;
-+}
-+
-+static int mmc_caps2_set(void *data, u64 val)
-+{
-+	u32 *caps = data;
-+	u32 diff = *caps ^ val;
-+	u32 allowed = MMC_CAP2_HSX00_1_8V | MMC_CAP2_HSX00_1_2V;
-+
-+	if (diff & ~allowed)
-+		return -EINVAL;
-+
-+	*caps = val;
-+
-+	return 0;
-+}
-+
-+DEFINE_DEBUGFS_ATTRIBUTE(mmc_caps_fops, mmc_caps_get, mmc_caps_set, "0x%08llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(mmc_caps2_fops, mmc_caps_get, mmc_caps2_set, "0x%08llx\n");
-+
- void mmc_add_host_debugfs(struct mmc_host *host)
++	/*
++	 * Fiero SC-01 (firmware v1.0.0 @ 96 kHz)
++	 */
++	USB_DEVICE(0x2b53, 0x0024),
++	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
++		.vendor_name = "Fiero",
++		.product_name = "SC-01",
++		.ifnum = QUIRK_ANY_INTERFACE,
++		.type = QUIRK_COMPOSITE,
++		.data = &(const struct snd_usb_audio_quirk[]) {
++			{
++				.ifnum = 0,
++				.type = QUIRK_AUDIO_STANDARD_INTERFACE
++			},
++			/* Playback */
++			{
++				.ifnum = 1,
++				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
++				.data = &(const struct audioformat) {
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
++					.channels = 2,
++					.fmt_bits = 24,
++					.iface = 1,
++					.altsetting = 1,
++					.altset_idx = 1,
++					.endpoint = 0x01,
++					.ep_attr = USB_ENDPOINT_XFER_ISOC |
++						   USB_ENDPOINT_SYNC_ASYNC,
++					.rates = SNDRV_PCM_RATE_96000,
++					.rate_min = 96000,
++					.rate_max = 96000,
++					.nr_rates = 1,
++					.rate_table = (unsigned int[]) { 96000 },
++					.clock = 0x29
++				}
++			},
++			/* Capture */
++			{
++				.ifnum = 2,
++				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
++				.data = &(const struct audioformat) {
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
++					.channels = 2,
++					.fmt_bits = 24,
++					.iface = 2,
++					.altsetting = 1,
++					.altset_idx = 1,
++					.endpoint = 0x82,
++					.ep_attr = USB_ENDPOINT_XFER_ISOC |
++						   USB_ENDPOINT_SYNC_ASYNC |
++						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
++					.rates = SNDRV_PCM_RATE_96000,
++					.rate_min = 96000,
++					.rate_max = 96000,
++					.nr_rates = 1,
++					.rate_table = (unsigned int[]) { 96000 },
++					.clock = 0x29
++				}
++			},
++			{
++				.ifnum = -1
++			}
++		}
++	}
++},
  {
- 	struct dentry *root;
-@@ -231,8 +275,10 @@ void mmc_add_host_debugfs(struct mmc_host *host)
- 	host->debugfs_root = root;
+ 	/*
+ 	 * Fiero SC-01 (firmware v1.1.0)
+diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
+index 81bdd921a279..5ff22cc3d7c1 100644
+--- a/sound/usb/quirks.c
++++ b/sound/usb/quirks.c
+@@ -1908,6 +1908,10 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
+ 		   QUIRK_FLAG_ALIGN_TRANSFER),
+ 	DEVICE_FLG(0x1224, 0x2a25, /* Jieli Technology USB PHY 2.0 */
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
++	DEVICE_FLG(0x2b53, 0x0023, /* Fiero SC-01 (firmware v1.0.0 @ 48 kHz) */
++		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
++	DEVICE_FLG(0x2b53, 0x0024, /* Fiero SC-01 (firmware v1.0.0 @ 96 kHz) */
++		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+ 	DEVICE_FLG(0x2b53, 0x0031, /* Fiero SC-01 (firmware v1.1.0) */
+ 		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
  
- 	debugfs_create_file("ios", S_IRUSR, root, host, &mmc_ios_fops);
--	debugfs_create_x32("caps", S_IRUSR, root, &host->caps);
--	debugfs_create_x32("caps2", S_IRUSR, root, &host->caps2);
-+	debugfs_create_file("caps", S_IRUSR | S_IWUSR, root, &host->caps,
-+			&mmc_caps_fops);
-+	debugfs_create_file("caps2", S_IRUSR | S_IWUSR, root, &host->caps2,
-+			&mmc_caps2_fops);
- 	debugfs_create_file_unsafe("clock", S_IRUSR | S_IWUSR, root, host,
- 				   &mmc_clock_fops);
- 
-diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
-index 89cd48fcec79..c79c26add3da 100644
---- a/drivers/mmc/core/mmc.c
-+++ b/drivers/mmc/core/mmc.c
-@@ -1730,7 +1730,8 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
- 
- 		/* Erase size depends on CSD and Extended CSD */
- 		mmc_set_erase_size(card);
--	}
-+	} else
-+		mmc_select_card_type(card);
- 
- 	/* Enable ERASE_GRP_DEF. This bit is lost after a reset or power off. */
- 	if (card->ext_csd.rev >= 3) {
+-- 
+2.36.1
+
