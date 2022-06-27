@@ -2,189 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF74C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C22C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:41:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232832AbiF0Hko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        id S233060AbiF0HlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233033AbiF0Hkk (ORCPT
+        with ESMTP id S232883AbiF0HlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:40:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2B1D60E0;
-        Mon, 27 Jun 2022 00:40:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61E8CB80F9D;
-        Mon, 27 Jun 2022 07:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3166FC341CB;
-        Mon, 27 Jun 2022 07:40:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656315637;
-        bh=MzjeRwNuJsz8lcgalKEQ4uPa0idcPi8oD5nNWGIpJfE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=VaX5mrEEdE2Z9agLkU0695/N0Do+K7kF7EzotBofAEeAZi3H81+ru7iELCi7+CXud
-         I7sc6MspU0l3UFZ6WiWU8Owcp0WOSW2xzI9iypARvXToBYm/vVtpIyJWtiYf2Mru+y
-         FwkAxPjXWB1ui6WY2lNeo7CZ3yli2jfGTjOVhR2fZOuqt0nFgyNGNIJSQN3GQRxw1I
-         ieVGf6EXs6UgX1ltdxJsmBhvXeUoNUVbQoBIRCsTBqIpxYBI8cmysEiTKfFkrUqkmi
-         pVJXRRGBX2OAvkj97g2ROqu5HI59sS5ykPbmuohM1fFANHeS6HmQGfzQuqDm8gZvVu
-         A6I7kl8DIplEQ==
-Received: by mail-vs1-f44.google.com with SMTP id e7so8125888vsp.13;
-        Mon, 27 Jun 2022 00:40:37 -0700 (PDT)
-X-Gm-Message-State: AJIora8VZG/2DetFAtOv3Z8Cy95+A9cudWuxyApNewGlJi+PlBUeexk1
-        9fVOUXz7bQM3T7S9bvJCsOSZARvMeyhITUi6dq0=
-X-Google-Smtp-Source: AGRyM1u9UMEKzaQ6qY0F+LTaZrCPsaY5ETieZQ4tBTTwNl2TC5aylcJ0FKqZSQCmSwgkYlER6Qj74Jpb2RbFugMABwo=
-X-Received: by 2002:a05:6102:366f:b0:356:352f:9de2 with SMTP id
- bg15-20020a056102366f00b00356352f9de2mr2343073vsb.2.1656315636148; Mon, 27
- Jun 2022 00:40:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220627051257.38543-1-samuel@sholland.org> <20220627051257.38543-2-samuel@sholland.org>
-In-Reply-To: <20220627051257.38543-2-samuel@sholland.org>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Mon, 27 Jun 2022 15:40:25 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTSq1NsBWRCg+kpTbJRwSeE30P9NVB5di6vzi7m2CFRzHw@mail.gmail.com>
-Message-ID: <CAJF2gTSq1NsBWRCg+kpTbJRwSeE30P9NVB5di6vzi7m2CFRzHw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/3] dt-bindings: interrupt-controller: Require trigger
- type for T-HEAD PLIC
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mon, 27 Jun 2022 03:41:17 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1A060D9
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:41:15 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id n1so11693623wrg.12
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 00:41:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=CqHL/4vILcQiCbC55GHosHznhi7ndHOat061Xj3LP1w=;
+        b=s51AxvXVUxgccptGcJORHtpFsIh1e1PBr3+fEAjaO6nmZ1At/EH6wF5COR8owaMMTf
+         buDZi7R3Ms1FrjWTnB6yQPjjwew+6Lwsq6K6I/SItksSascLa+AdXXlybtVIqFQWgFV8
+         PEekxy4hhtcFIOa5S0LMfy/a9SxLfBQs9SYCmVzajM2Z76CUMw5cdzG2dgwsY435r+L3
+         UTb7CqMEAlH3jvTpQu6vIrJpxX9Ei9OvgCcZurJbnq9PNi9jKT5XTe7wSNhm8spV+KnQ
+         26m6SVSPFHHtOvhZ3nsC5LHbZRqfqYMZjt8t4ZnEzNtZZJlz55fBs5coqgWhXHe2Slgr
+         KKbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=CqHL/4vILcQiCbC55GHosHznhi7ndHOat061Xj3LP1w=;
+        b=DmKjvj2CugAlRzmiTX8tcy17nfDaSD8mdLiKcjpRLMoatrPKXb+xVPcClE6BHgmW5r
+         y7t6oDMuYJFUXM4teCahAz6yWmn002Vd6GG1CZaUXIi1PsJi728ThblXDN8WsDUj4E2l
+         EIcYOyPqQU1AexP4a7ye54X2zwjQEkHcmUvHBkqPt0Wii5VfBHPpNN0isqaTS3MGkAYF
+         k7hHdoqp7f4FrXcixUGq087HyyDIXo8+8OCYcp9GLQZ3Up4ni7jzFhCJhQCtOjiewvLS
+         fNlXnKlrh1oyyUghDA9t57103YmV8/78m3a22ChCAq30VCw3fZUlQ+wTcHw6rW5wfHAh
+         vyHw==
+X-Gm-Message-State: AJIora96p0kcONXMhE2bgvfqWgwUmUU5IoYfU5mOmwtaNV98syY6HN7x
+        72rBcfxNANR/fBXIo7pdRtr+QQ==
+X-Google-Smtp-Source: AGRyM1vCBG2shyGHZdzNppy6uA+sfLShipwUSLZ7jvV9OyFesUftdYh1GMMg0pxTA42UFoHNBuXuDw==
+X-Received: by 2002:adf:fdd2:0:b0:21b:a2c1:dcac with SMTP id i18-20020adffdd2000000b0021ba2c1dcacmr11522885wrs.331.1656315673747;
+        Mon, 27 Jun 2022 00:41:13 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id i1-20020adffc01000000b0021b5861eaf7sm9774164wrr.3.2022.06.27.00.41.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 00:41:13 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 08:41:11 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        swboyd@chromium.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Subject: Re: [PATCH V15 6/9] mfd: pm8008: Use i2c_new_dummy_device() API
+Message-ID: <YrlfF+DMlGFsVBdk@google.com>
+References: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1655200111-18357-7-git-send-email-quic_c_skakit@quicinc.com>
+ <YquZRcuRCrdF+Q1z@google.com>
+ <eccbb030-97f7-3a6c-958e-05adcdca6210@quicinc.com>
+ <YrAt6dq6ty9p8d05@google.com>
+ <a11732d6-a9b1-7ead-e89a-564a57a7192b@quicinc.com>
+ <503f1a8b-eadb-d3a6-6e24-d60437f778b6@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <503f1a8b-eadb-d3a6-6e24-d60437f778b6@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 1:13 PM Samuel Holland <samuel@sholland.org> wrote:
->
-> The RISC-V PLIC specification unfortunately allows PLIC implementations
-> to ignore edges seen while an edge-triggered interrupt is being handled:
->
->   Depending on the design of the device and the interrupt handler,
->   in between sending an interrupt request and receiving notice of its
->   handler=E2=80=99s completion, the gateway might either ignore additiona=
-l
->   matching edges or increment a counter of pending interrupts.
->
-> For PLICs with that misfeature, software needs to know the trigger type
-> of each interrupt. This allows it to work around the issue by completing
-> edge-triggered interrupts before handling them. Such a workaround is
-> required to avoid missing any edges.
->
-> The T-HEAD C9xx PLIC is an example of a PLIC with this behavior.
-Actually, C9xx support pulse signals which configed by
-pad_plic_int_cfg_x for SoC vendor:
+On Mon, 27 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
 
-https://github.com/T-head-Semi/openc906/blob/main/C906_RTL_FACTORY/gen_rtl/=
-plic/rtl/plic_int_kid.v
-104: assign int_new_pending =3D pad_plic_int_cfg_x ? int_pulse
-105:
-        : level_int_pending;
+> Hi Lee,
+> 
+> 
+> On 6/20/2022 4:37 PM, Satya Priya Kakitapalli (Temp) wrote:
+> > 
+> > On 6/20/2022 1:50 PM, Lee Jones wrote:
+> > > On Mon, 20 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
+> > > 
+> > > > On 6/17/2022 2:27 AM, Lee Jones wrote:
+> > > > > On Tue, 14 Jun 2022, Satya Priya wrote:
+> > > > > 
+> > > > > > Use i2c_new_dummy_device() to register pm8008-regulator
+> > > > > > client present at a different address space, instead of
+> > > > > > defining a separate DT node. This avoids calling the probe
+> > > > > > twice for the same chip, once for each client pm8008-infra
+> > > > > > and pm8008-regulator.
+> > > > > > 
+> > > > > > As a part of this define pm8008_regmap_init() to do regmap
+> > > > > > init for both the clients and define pm8008_get_regmap() to
+> > > > > > pass the regmap to the regulator driver.
+> > > > > > 
+> > > > > > Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> > > > > > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> > > > > > ---
+> > > > > > Changes in V15:
+> > > > > >    - None.
+> > > > > > 
+> > > > > > Changes in V14:
+> > > > > >    - None.
+> > > > > > 
+> > > > > > Changes in V13:
+> > > > > >    - None.
+> > > > > > 
+> > > > > >    drivers/mfd/qcom-pm8008.c       | 34
+> > > > > > ++++++++++++++++++++++++++++++++--
+> > > > > >    include/linux/mfd/qcom_pm8008.h |  9 +++++++++
+> > > > > >    2 files changed, 41 insertions(+), 2 deletions(-)
+> > > > > >    create mode 100644 include/linux/mfd/qcom_pm8008.h
+> > > > > > 
+> > > > > > diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
+> > > > > > index 569ffd50..55e2a8e 100644
+> > > > > > --- a/drivers/mfd/qcom-pm8008.c
+> > > > > > +++ b/drivers/mfd/qcom-pm8008.c
+> > > > > > @@ -9,6 +9,7 @@
+> > > > > >    #include <linux/interrupt.h>
+> > > > > >    #include <linux/irq.h>
+> > > > > >    #include <linux/irqdomain.h>
+> > > > > > +#include <linux/mfd/qcom_pm8008.h>
+> > > > > >    #include <linux/module.h>
+> > > > > >    #include <linux/of_device.h>
+> > > > > >    #include <linux/of_platform.h>
+> > > > > > @@ -57,6 +58,7 @@ enum {
+> > > > > >    struct pm8008_data {
+> > > > > >        struct device *dev;
+> > > > > > +    struct regmap *regulators_regmap;
+> > > > > >        int irq;
+> > > > > >        struct regmap_irq_chip_data *irq_data;
+> > > > > >    };
+> > > > > > @@ -150,6 +152,12 @@ static struct regmap_config
+> > > > > > qcom_mfd_regmap_cfg = {
+> > > > > >        .max_register    = 0xFFFF,
+> > > > > >    };
+> > > > > > +struct regmap *pm8008_get_regmap(const struct pm8008_data *chip)
+> > > > > > +{
+> > > > > > +    return chip->regulators_regmap;
+> > > > > > +}
+> > > > > > +EXPORT_SYMBOL_GPL(pm8008_get_regmap);
+> > > > > Seems like abstraction for the sake of abstraction.
+> > > > > 
+> > > > > Why not do the dereference inside the regulator driver?
+> > > > To derefer this in the regulator driver, we need to have the
+> > > > pm8008_data
+> > > > struct definition in the qcom_pm8008 header file.
+> > > > 
+> > > > I think it doesn't look great to have only that structure in
+> > > > header and all
+> > > > other structs and enum in the mfd driver.
+> > > Then why pass 'pm8008_data' at all?
+> > 
+> > 
+> > There is one more option, instead of passing the pm8008_data, we could
+> > pass the pdev->dev.parent and get the pm8008 chip data directly in the
+> > pm8008_get_regmap() like below
+> > 
+> > 
+> > struct regmap *pm8008_get_regmap(const struct device *dev)
+> >  {
+> >      const struct pm8008_data *chip = dev_get_drvdata(dev);
+> > 
+> >      return chip->regulators_regmap;
+> > }
+> > EXPORT_SYMBOL_GPL(pm8008_get_regmap);
+> > 
+> > 
+> > By doing this we can avoid having declaration of pm8008_data also in the
+> > header. Please let me know if this looks good.
+> > 
+> 
+> Could you please confirm on this?
+> 
+> > > What's preventing you from passing 'regmap'?
+> > 
+> > 
+> > I didn't get what you meant here, could you please elaborate a bit?
 
-They could put pad_plic_int_cfg_x into the SoC software config
-registers region or bind them to constant values.
+Ah yes.  I authored you a patch, but became distracted. Here:
 
->
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
->
->  .../sifive,plic-1.0.0.yaml                    | 31 ++++++++++++++++---
->  1 file changed, 27 insertions(+), 4 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifiv=
-e,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/=
-sifive,plic-1.0.0.yaml
-> index 27092c6a86c4..3c589cbca851 100644
-> --- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-=
-1.0.0.yaml
-> +++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-=
-1.0.0.yaml
-> @@ -26,9 +26,13 @@ description:
->    with priority below this threshold will not cause the PLIC to raise it=
-s
->    interrupt line leading to the context.
->
-> -  While the PLIC supports both edge-triggered and level-triggered interr=
-upts,
-> -  interrupt handlers are oblivious to this distinction and therefore it =
-is not
-> -  specified in the PLIC device-tree binding.
-> +  The PLIC supports both edge-triggered and level-triggered interrupts. =
-For
-> +  edge-triggered interrupts, the RISC-V PLIC spec allows two responses t=
-o edges
-> +  seen while an interrupt handler is active; the PLIC may either queue t=
-hem or
-> +  ignore them. In the first case, handlers are oblivious to the trigger =
-type, so
-> +  it is not included in the interrupt specifier. In the second case, sof=
-tware
-> +  needs to know the trigger type, so it can reorder the interrupt flow t=
-o avoid
-> +  missing interrupts.
->
->    While the RISC-V ISA doesn't specify a memory layout for the PLIC, the
->    "sifive,plic-1.0.0" device is a concrete implementation of the PLIC th=
-at
-> @@ -65,7 +69,8 @@ properties:
->      const: 0
->
->    '#interrupt-cells':
-> -    const: 1
-> +    minimum: 1
-> +    maximum: 2
->
->    interrupt-controller: true
->
-> @@ -91,6 +96,24 @@ required:
->    - interrupts-extended
->    - riscv,ndev
->
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - thead,c900-plic
-> +
-> +    then:
-> +      properties:
-> +        '#interrupt-cells':
-> +          const: 2
-> +
-> +    else:
-> +      properties:
-> +        '#interrupt-cells':
-> +          const: 1
-> +
->  additionalProperties: false
->
->  examples:
-> --
-> 2.35.1
->
+-----8<--------------------8<-------
 
+From: Lee Jones <lee.jones@linaro.org>
 
---=20
-Best Regards
- Guo Ren
+mfd: pm8008: Remove driver data structure pm8008_data
+    
+Maintaining a local driver data structure that is never shared
+outside of the core device is an unnecessary complexity.  Half of the
+attributes were not used outside of a single function, one of which
+was not used at all.  The remaining 2 are generic and can be passed
+around as required.
+    
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/mfd/qcom-pm8008.c | 53 ++++++++++++++++++-----------------------------
+ 1 file changed, 20 insertions(+), 33 deletions(-)
 
-ML: https://lore.kernel.org/linux-csky/
+diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
+index c472d7f8103c4..4b8ff947762f2 100644
+--- a/drivers/mfd/qcom-pm8008.c
++++ b/drivers/mfd/qcom-pm8008.c
+@@ -54,13 +54,6 @@ enum {
+ 
+ #define PM8008_PERIPH_OFFSET(paddr)	(paddr - PM8008_PERIPH_0_BASE)
+ 
+-struct pm8008_data {
+-	struct device *dev;
+-	struct regmap *regmap;
+-	int irq;
+-	struct regmap_irq_chip_data *irq_data;
+-};
+-
+ static unsigned int p0_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_0_BASE)};
+ static unsigned int p1_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_1_BASE)};
+ static unsigned int p2_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_2_BASE)};
+@@ -150,7 +143,7 @@ static struct regmap_config qcom_mfd_regmap_cfg = {
+ 	.max_register	= 0xFFFF,
+ };
+ 
+-static int pm8008_init(struct pm8008_data *chip)
++static int pm8008_init(struct regmap *regmap)
+ {
+ 	int rc;
+ 
+@@ -160,34 +153,31 @@ static int pm8008_init(struct pm8008_data *chip)
+ 	 * This is required to enable the writing of TYPE registers in
+ 	 * regmap_irq_sync_unlock().
+ 	 */
+-	rc = regmap_write(chip->regmap,
+-			 (PM8008_TEMP_ALARM_ADDR | INT_SET_TYPE_OFFSET),
+-			 BIT(0));
++	rc = regmap_write(regmap, (PM8008_TEMP_ALARM_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
+ 	if (rc)
+ 		return rc;
+ 
+ 	/* Do the same for GPIO1 and GPIO2 peripherals */
+-	rc = regmap_write(chip->regmap,
+-			 (PM8008_GPIO1_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
++	rc = regmap_write(regmap, (PM8008_GPIO1_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
+ 	if (rc)
+ 		return rc;
+ 
+-	rc = regmap_write(chip->regmap,
+-			 (PM8008_GPIO2_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
++	rc = regmap_write(regmap, (PM8008_GPIO2_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
+ 
+ 	return rc;
+ }
+ 
+-static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
++static int pm8008_probe_irq_peripherals(struct device *dev,
++					struct regmap *regmap,
+ 					int client_irq)
+ {
+ 	int rc, i;
+ 	struct regmap_irq_type *type;
+ 	struct regmap_irq_chip_data *irq_data;
+ 
+-	rc = pm8008_init(chip);
++	rc = pm8008_init(regmap);
+ 	if (rc) {
+-		dev_err(chip->dev, "Init failed: %d\n", rc);
++		dev_err(dev, "Init failed: %d\n", rc);
+ 		return rc;
+ 	}
+ 
+@@ -207,10 +197,10 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
+ 				IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW);
+ 	}
+ 
+-	rc = devm_regmap_add_irq_chip(chip->dev, chip->regmap, client_irq,
++	rc = devm_regmap_add_irq_chip(dev, regmap, client_irq,
+ 			IRQF_SHARED, 0, &pm8008_irq_chip, &irq_data);
+ 	if (rc) {
+-		dev_err(chip->dev, "Failed to add IRQ chip: %d\n", rc);
++		dev_err(dev, "Failed to add IRQ chip: %d\n", rc);
+ 		return rc;
+ 	}
+ 
+@@ -220,26 +210,23 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
+ static int pm8008_probe(struct i2c_client *client)
+ {
+ 	int rc;
+-	struct pm8008_data *chip;
+-
+-	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
+-	if (!chip)
+-		return -ENOMEM;
++	struct device *dev;
++	struct regmap *regmap;
+ 
+-	chip->dev = &client->dev;
+-	chip->regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
+-	if (!chip->regmap)
++	dev = &client->dev;
++	regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
++	if (!regmap)
+ 		return -ENODEV;
+ 
+-	i2c_set_clientdata(client, chip);
++	i2c_set_clientdata(client, regmap);
+ 
+-	if (of_property_read_bool(chip->dev->of_node, "interrupt-controller")) {
+-		rc = pm8008_probe_irq_peripherals(chip, client->irq);
++	if (of_property_read_bool(dev->of_node, "interrupt-controller")) {
++		rc = pm8008_probe_irq_peripherals(dev, regmap, client->irq);
+ 		if (rc)
+-			dev_err(chip->dev, "Failed to probe irq periphs: %d\n", rc);
++			dev_err(dev, "Failed to probe irq periphs: %d\n", rc);
+ 	}
+ 
+-	return devm_of_platform_populate(chip->dev);
++	return devm_of_platform_populate(dev);
+ }
+ 
+ static const struct of_device_id pm8008_match[] = {
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
