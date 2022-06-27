@@ -2,44 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1CC1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD20C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236869AbiF0LkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
+        id S236876AbiF0LkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:40:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236495AbiF0Lhf (ORCPT
+        with ESMTP id S236505AbiF0Lhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F7C28F;
-        Mon, 27 Jun 2022 04:33:33 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493EE2C1;
+        Mon, 27 Jun 2022 04:33:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44F85609D0;
-        Mon, 27 Jun 2022 11:33:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB24FC341C7;
-        Mon, 27 Jun 2022 11:33:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F32F1B81125;
+        Mon, 27 Jun 2022 11:33:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 197D1C3411D;
+        Mon, 27 Jun 2022 11:33:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329612;
-        bh=d83IYfUoSCwlimeO40t3MmhOsYVKQ9De0jR/4Cmakr4=;
+        s=korg; t=1656329624;
+        bh=EKjiFdz5wKXQSYJz52RrgGycxoztEmSVeHuuY5EtJzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdIKYUlyYu5IkcXzGRNnfMYZ1lO8rNJ5KJPp7V8PMzHuQ5XTmdbYpxnkJYmB4pRlP
-         FAoAcUN4rjoHCib5C557nSir1hlgemUswW2BCArR2xWFTjysASoNPQjS7NoSE+BkDp
-         76Jaba1jEBvhuOsMaX4xJqCnvNu0vsOIwRSNyqFk=
+        b=DGkl2t6eoFumfYSfN6v38jM55JWdzzR5gTV5+rEYeUUFsy58cK+QKWTfiEU6vY8FK
+         5VzbBqHuvvnngdW4OZqxA0qWVuDrBq7aCG3h3XjShmeRXIE18hIUtSeSVqwXrNAuY5
+         /EBvEqH8+MQUhAZnUElP/04ltQsjVSuSvdsMbMj0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Ali Saidi <alisaidi@amazon.com>,
+        German Gomez <german.gomez@arm.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andrew Kilroy <andrew.kilroy@arm.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        James Clark <james.clark@arm.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Li Huafei <lihuafei1@huawei.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nick Forrington <nick.forrington@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 056/135] drm/msm/dp: Drop now unused hpd_high member
-Date:   Mon, 27 Jun 2022 13:21:03 +0200
-Message-Id: <20220627111939.784309520@linuxfoundation.org>
+Subject: [PATCH 5.15 060/135] perf arm-spe: Dont set data source if its not a memory operation
+Date:   Mon, 27 Jun 2022 13:21:07 +0200
+Message-Id: <20220627111939.899189916@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,92 +66,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Leo Yan <leo.yan@linaro.org>
 
-[ Upstream commit fabae667b1263216be53e0230cd3966a9a1963a4 ]
+[ Upstream commit 51ba539f5bdb5a8cc7b1dedd5e73ac54564a7602 ]
 
-Since '8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon
-Chipsets")' the hpd_high member of struct dp_usbpd has been write-only.
+Except for memory load and store operations, ARM SPE records also can
+support other operation types, bug when set the data source field the
+current code assumes a record is a either load operation or store
+operation, this leads to wrongly synthesize memory samples.
 
-Let's clean up the code a little bit by removing the writes as well.
+This patch strictly checks the record operation type, it only sets data
+source only for the operation types ARM_SPE_LD and ARM_SPE_ST,
+otherwise, returns zero for data source.  Therefore, we can synthesize
+memory samples only when data source is a non-zero value, the function
+arm_spe__is_memory_event() is useless and removed.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Link: https://lore.kernel.org/r/20211106172246.2597431-1-bjorn.andersson@linaro.org
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: e55ed3423c1bb29f ("perf arm-spe: Synthesize memory event")
+Reviewed-by: Ali Saidi <alisaidi@amazon.com>
+Reviewed-by: German Gomez <german.gomez@arm.com>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Tested-by: Ali Saidi <alisaidi@amazon.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: alisaidi@amazon.com
+Cc: Andrew Kilroy <andrew.kilroy@arm.com>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: James Clark <james.clark@arm.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Kajol Jain <kjain@linux.ibm.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Li Huafei <lihuafei1@huawei.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Nick Forrington <nick.forrington@arm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will@kernel.org>
+Link: http://lore.kernel.org/lkml/20220517020326.18580-5-alisaidi@amazon.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 6 ------
- drivers/gpu/drm/msm/dp/dp_hpd.c     | 2 --
- drivers/gpu/drm/msm/dp/dp_hpd.h     | 2 --
- 3 files changed, 10 deletions(-)
+ tools/perf/util/arm-spe.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 8b51a5cc3eb8..a66ee63253a3 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -547,11 +547,8 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
+diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
+index 235549bb28b9..569e1b8ad0ab 100644
+--- a/tools/perf/util/arm-spe.c
++++ b/tools/perf/util/arm-spe.c
+@@ -312,26 +312,16 @@ static int arm_spe__synth_branch_sample(struct arm_spe_queue *speq,
+ 	return arm_spe_deliver_synth_event(spe, speq, event, &sample);
+ }
  
- 	dp->hpd_state = ST_CONNECT_PENDING;
- 
--	hpd->hpd_high = 1;
+-#define SPE_MEM_TYPE	(ARM_SPE_L1D_ACCESS | ARM_SPE_L1D_MISS | \
+-			 ARM_SPE_LLC_ACCESS | ARM_SPE_LLC_MISS | \
+-			 ARM_SPE_REMOTE_ACCESS)
 -
- 	ret = dp_display_usbpd_configure_cb(&dp->pdev->dev);
- 	if (ret) {	/* link train failed */
--		hpd->hpd_high = 0;
- 		dp->hpd_state = ST_DISCONNECTED;
- 
- 		if (ret == -ECONNRESET) { /* cable unplugged */
-@@ -628,7 +625,6 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
- 		/* triggered by irq_hdp with sink_count = 0 */
- 		if (dp->link->sink_count == 0) {
- 			dp_ctrl_off_phy(dp->ctrl);
--			hpd->hpd_high = 0;
- 			dp->core_initialized = false;
- 		}
- 		mutex_unlock(&dp->event_mutex);
-@@ -652,8 +648,6 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
- 	/* disable HPD plug interrupts */
- 	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, false);
- 
--	hpd->hpd_high = 0;
+-static bool arm_spe__is_memory_event(enum arm_spe_sample_type type)
+-{
+-	if (type & SPE_MEM_TYPE)
+-		return true;
 -
- 	/*
- 	 * We don't need separate work for disconnect as
- 	 * connect/attention interrupts are disabled
-diff --git a/drivers/gpu/drm/msm/dp/dp_hpd.c b/drivers/gpu/drm/msm/dp/dp_hpd.c
-index e1c90fa47411..db98a1d431eb 100644
---- a/drivers/gpu/drm/msm/dp/dp_hpd.c
-+++ b/drivers/gpu/drm/msm/dp/dp_hpd.c
-@@ -32,8 +32,6 @@ int dp_hpd_connect(struct dp_usbpd *dp_usbpd, bool hpd)
- 	hpd_priv = container_of(dp_usbpd, struct dp_hpd_private,
- 					dp_usbpd);
- 
--	dp_usbpd->hpd_high = hpd;
+-	return false;
+-}
 -
- 	if (!hpd_priv->dp_cb || !hpd_priv->dp_cb->configure
- 				|| !hpd_priv->dp_cb->disconnect) {
- 		pr_err("hpd dp_cb not initialized\n");
-diff --git a/drivers/gpu/drm/msm/dp/dp_hpd.h b/drivers/gpu/drm/msm/dp/dp_hpd.h
-index 5bc5bb64680f..8feec5aa5027 100644
---- a/drivers/gpu/drm/msm/dp/dp_hpd.h
-+++ b/drivers/gpu/drm/msm/dp/dp_hpd.h
-@@ -26,7 +26,6 @@ enum plug_orientation {
-  * @multi_func: multi-function preferred
-  * @usb_config_req: request to switch to usb
-  * @exit_dp_mode: request exit from displayport mode
-- * @hpd_high: Hot Plug Detect signal is high.
-  * @hpd_irq: Change in the status since last message
-  * @alt_mode_cfg_done: bool to specify alt mode status
-  * @debug_en: bool to specify debug mode
-@@ -39,7 +38,6 @@ struct dp_usbpd {
- 	bool multi_func;
- 	bool usb_config_req;
- 	bool exit_dp_mode;
--	bool hpd_high;
- 	bool hpd_irq;
- 	bool alt_mode_cfg_done;
- 	bool debug_en;
+ static u64 arm_spe__synth_data_source(const struct arm_spe_record *record)
+ {
+ 	union perf_mem_data_src	data_src = { 0 };
+ 
+ 	if (record->op == ARM_SPE_LD)
+ 		data_src.mem_op = PERF_MEM_OP_LOAD;
+-	else
++	else if (record->op == ARM_SPE_ST)
+ 		data_src.mem_op = PERF_MEM_OP_STORE;
++	else
++		return 0;
+ 
+ 	if (record->type & (ARM_SPE_LLC_ACCESS | ARM_SPE_LLC_MISS)) {
+ 		data_src.mem_lvl = PERF_MEM_LVL_L3;
+@@ -435,7 +425,11 @@ static int arm_spe_sample(struct arm_spe_queue *speq)
+ 			return err;
+ 	}
+ 
+-	if (spe->sample_memory && arm_spe__is_memory_event(record->type)) {
++	/*
++	 * When data_src is zero it means the record is not a memory operation,
++	 * skip to synthesize memory sample for this case.
++	 */
++	if (spe->sample_memory && data_src) {
+ 		err = arm_spe__synth_mem_sample(speq, spe->memory_id, data_src);
+ 		if (err)
+ 			return err;
 -- 
 2.35.1
 
