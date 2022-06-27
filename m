@@ -2,94 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 167D0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:02:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5DAEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234633AbiF0NCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
+        id S235016AbiF0NDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234557AbiF0NCA (ORCPT
+        with ESMTP id S234643AbiF0NDV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:02:00 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF2D120A3
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:01:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9CBADCE19A6
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 13:00:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5C9CC341CB;
-        Mon, 27 Jun 2022 13:00:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656334857;
-        bh=hreBI8EgJFm06gBn+LIBkI3qYVbQdetQMsfgmAVbTvc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DcLGnfytx0Fz1gXcLEfUbJS+NsSbmkvSiV1vBZtYodFFjKyugRqV2zK+H4kqnS89j
-         BAL2s1TclOqFwuX8Px9TvtfArm0FafMiUzgAyc0AIT3i6bRmMksDxe16zsuO0RC240
-         WYPaeyxdLrRUP42ajEz/ScYCgeJvmTN/iFQ2SO472YIJDdufJJxVNBRktBDnpdex3G
-         i1aN7CAmV3aBD/5tZcQZr5VOZqd+oSaZ3VGGRRM+Wi5PKO9amyVquoHEyWMXSootJP
-         Osyo3L8mRBgWhnLf8s/3nneh89YiOViJU+5oYn2ggQwBK5i/ylBYhgZSFPGGSBVdJk
-         Az+KS58lj+lQw==
-From:   Will Deacon <will@kernel.org>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        akpm@linux-foundation.org, catalin.marinas@arm.com
-Cc:     kernel-team@android.com, Will Deacon <will@kernel.org>,
-        hch@infradead.org, arnd@arndb.de, linux-mm@kvack.org,
-        anshuman.khandual@arm.com
-Subject: Re: [PATCH v5 0/6] arm64: Cleanup ioremap() and support ioremap_prot()
-Date:   Mon, 27 Jun 2022 14:00:44 +0100
-Message-Id: <165632887130.3614125.5739508840825390970.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220607125027.44946-1-wangkefeng.wang@huawei.com>
-References: <20220607125027.44946-1-wangkefeng.wang@huawei.com>
+        Mon, 27 Jun 2022 09:03:21 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19791E015
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:02:31 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o5oNn-0003x3-Iq; Mon, 27 Jun 2022 15:02:27 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o5oNl-0006mA-Un; Mon, 27 Jun 2022 15:02:25 +0200
+Date:   Mon, 27 Jun 2022 15:02:25 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Anton Lundin <glance@acc.umu.se>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, Lukas Wunner <lukas@wunner.de>
+Subject: Re: [REGRESSION] AX88772 card booted without cable can't receive
+Message-ID: <20220627130225.GA13092@pengutronix.de>
+References: <20220622141638.GE930160@montezuma.acc.umu.se>
+ <20220623063649.GD23685@pengutronix.de>
+ <20220624081706.GB14396@pengutronix.de>
+ <20220627123229.GF930160@montezuma.acc.umu.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220627123229.GF930160@montezuma.acc.umu.se>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 20:50:21 +0800, Kefeng Wang wrote:
-> 1. Enhance generic ioremap to make it more useful.
-> 2. Let's arm64 use GENERIC_IOREMAP to cleanup code.
-> 3. Support HAVE_IOREMAP_PROT on arm64, which enable generic_access_phys(),
->    it is useful when debug(eg, gdb) via access_process_vm device memory
->    infrastructure.
+On Mon, Jun 27, 2022 at 02:32:29PM +0200, Anton Lundin wrote:
+> On 24 June, 2022 - Oleksij Rempel wrote:
 > 
-> v5:
-> - break long lines(> 80 cols), per Christoph Hellwig
-> - move is_vmalloc_addr() check from arm64 into generic ioremap, per
->   Christoph Hellwig
-> - make arm64's ioremap_cache as an inline function, per Christoph
-> - keep changes simple, make ioremap/iounmap_allowed return bool, per
->   Baoquan He
-> - simplify use 'void *' instead of 'void __iomem *' in iounmap, then
->   drop __force annotation
+> > Hi Anton,
+> > 
+> > On Thu, Jun 23, 2022 at 08:36:49AM +0200, Oleksij Rempel wrote:
+> > > Hi Anton,
+> > > 
+> > > Thank you for your report! I'll take a look on it ASAP.
+> > > 
+> > > Regards,
+> > > Oleksij
+> > > 
+> > > On Wed, Jun 22, 2022 at 04:16:38PM +0200, Anton Lundin wrote:
+> > > > Hi.
+> > > > 
+> > > > I've found a issue with a Dlink usb ether adapter, that can't receive
+> > > > anything until it self transmits if it's plugged in while booting, and
+> > > > doesn't have link.
+> > > > 
+> > > > Later when a cable is attached, link is detected but nothing is received
+> > > > either by daemons listening to ip address on that interface, or seen
+> > > > with tcpdump.
+> > > > 
+> > > > The dongle is a:
+> > > > D-Link Corp. DUB-E100 Fast Ethernet Adapter(rev.C1) [ASIX AX88772]
+> > > > 
+> > > > And it's detected at boot as:
+> > > > libphy: Asix MDIO Bus: probed
+> > > > Asix Electronics AX88772C usb-003:004:10: attached PHY driver (mii_bus:phy_addr=usb-003:004:10, irq=POLL)
+> > > > asix 3-10.4:1.0 eth1: register 'asix' at usb-0000:00:14.0-10.4, ASIX AX88772 USB 2.0 Ethernet, <masked-mac>
+> > > > usbcore: registered new interface driver asix
+> > > > 
+> > > > 
+> > > > While in this state, the hardware starts sending pause frames to the
+> > > > network when it has recived a couple of frames, and they look like:
+> > > > 0000   01 80 c2 00 00 01 00 00 00 00 00 00 88 08 00 01
+> > > > 0010   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > > > 0020   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > > > 0030   00 00 00 00 00 00 00 00 00 00 00 00
+> > > > 
+> > > > 0000   01 80 c2 00 00 01 00 00 00 00 00 00 88 08 00 01
+> > > > 0010   ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > > > 0020   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > > > 0030   00 00 00 00 00 00 00 00 00 00 00 00
+> > > > 
+> > > > And these two frames are repeated every couple of seconds.
+> > > > 
+> > > > The card wakes up when something triggers a transmit on that card, and
+> > > > then starts receiving traffic as normal.
+> > > > 
+> > > > I've bisected this issue down to:
+> > > > "net: usb: asix: ax88772: add phylib support" (e532a096be0e)
+> > > > 
+> > > > 
+> > > > Reverting that makes the interface work as normal, even if the machine
+> > > > boots without a cable plugged in.
+> > > > 
+> > > > Another issue found with exactly the same patch is that if it's loaded
+> > > > as a module, then unloaded and loaded again, it fails to initialize the
+> > > > card with:
+> > > > 
+> > > > sysfs: cannot create duplicate filename '/devices/virtual/mdio_bus/usb-003:004'
+> > > > CPU: 0 PID: 3733 Comm: modprobe Tainted: G           O      5.15.10-core_64_preempt #3
+> > > > Hardware name:  <masked-hardware-name>
+> > > > Call Trace:
+> > > >  <TASK>
+> > > >  ? dump_stack_lvl+0x34/0x44
+> > > >  ? sysfs_warn_dup.cold+0x17/0x24
+> > > >  ? sysfs_create_dir_ns+0xbc/0xd0
+> > > >  ? kobject_add_internal+0xa6/0x260
+> > > >  ? kobject_add+0x7e/0xb0
+> > > >  ? preempt_count_add+0x68/0xa0
+> > > >  ? device_add+0x10f/0x8d0
+> > > >  ? dev_set_name+0x53/0x70
+> > > >  ? __mdiobus_register+0xc2/0x350
+> > > >  ? __devm_mdiobus_register+0x64/0xb0
+> > > >  ? ax88772_bind+0x22a/0x340 [asix]
+> > > >  ? usbnet_probe+0x346/0x870
+> > > >  ? usb_match_dynamic_id+0x8f/0xa0
+> > > >  ? usb_probe_interface+0x9b/0x150
+> > > >  ? really_probe.part.0+0x237/0x280
+> > > >  ? __driver_probe_device+0x8c/0xd0
+> > > >  ? driver_probe_device+0x1e/0xe0
+> > > >  ? __driver_attach+0xa8/0x170
+> > > >  ? __device_attach_driver+0xe0/0xe0
+> > > >  ? bus_for_each_dev+0x77/0xc0
+> > > >  ? bus_add_driver+0x10b/0x1c0
+> > > >  ? driver_register+0x8b/0xe0
+> > > >  ? usb_register_driver+0x84/0x120
+> > > >  ? 0xffffffffc06e4000
+> > > >  ? do_one_initcall+0x41/0x1f0
+> > > >  ? kmem_cache_alloc_trace+0x3f/0x1b0
+> > > >  ? do_init_module+0x5c/0x260
+> > > >  ? __do_sys_finit_module+0xa0/0xe0
+> > > >  ? do_syscall_64+0x35/0x80
+> > > >  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > > >  </TASK>
+> > > > kobject_add_internal failed for usb-003:004 with -EEXIST, don't try to register things with the same name in the same directory.
+> > > > libphy: mii_bus usb-003:004 failed to register
+> > > > asix: probe of 3-10.4:1.0 failed with error -22 
+> > > > usbcore: registered new interface driver asix
+> > > > 
+> > > > 
+> > > > Both these issues with "net: usb: asix: ax88772: add phylib support"
+> > > > (e532a096be0e) can be reproduced all the way from when it was introduced
+> > > > to linus current tree.
+> > > > 
+> > > > 
+> > > > I'm sorry to say that I don't know enough about either libphy or asix to
+> > > > figure out what cause the issues can be.
+> > 
+> > It looks like we have here 3 different bugs:
+> > - no rx before tx
+> >   addresses by this patch:
+> >   https://lore.kernel.org/all/20220624075139.3139300-1-o.rempel@pengutronix.de/
+> > - pause frames flood without advertising pause frames support
+> >   addresses by this patch:
+> >   https://lore.kernel.org/all/20220624075139.3139300-2-o.rempel@pengutronix.de/
+> > 
+> >   Can you please test this patches.
 > 
-> [...]
+> I've tested these and after these patches I think these two issues are
+> fixed.
+> 
+> If you'd like you can add:
+> Tested-by: Anton Lundin <glance@acc.umu.se>
 
-Applied to arm64 (for-next/ioremap), thanks!
+Can you please add your Tested-by directly as response to the patches.
+This will reduce some work for maintainers.
 
-[1/6] ARM: mm: kill unused runtime hook arch_iounmap()
-      https://git.kernel.org/arm64/c/d803336abdbc
-[2/6] mm: ioremap: Use more sensibly name in ioremap_prot()
-      https://git.kernel.org/arm64/c/abc5992b9dd0
-[3/6] mm: ioremap: Setup phys_addr of struct vm_struct
-      https://git.kernel.org/arm64/c/a14fff1c0379
-[4/6] mm: ioremap: Add ioremap/iounmap_allowed()
-      https://git.kernel.org/arm64/c/18e780b4e6ab
-[5/6] arm64: mm: Convert to GENERIC_IOREMAP
-      https://git.kernel.org/arm64/c/f23eab0bfaef
-[6/6] arm64: Add HAVE_IOREMAP_PROT support
-      https://git.kernel.org/arm64/c/893dea9ccd08
+> > - not everything is properly cleaned after module unload.
+> > 
+> > The last one i as bit more complicated. Lukas Wunner spend last months to solve
+> > this issues:
+> > https://lore.kernel.org/all/d1c87ebe9fc502bffcd1576e238d685ad08321e4.1655987888.git.lukas@wunner.de/
+> > 
+> 
+> Ok, no worries. If it's already known and fixed in later revisions, I'm
+> fine with that.
 
-Cheers,
+OK,
+
+Thank you for testing.
+
+Regards,
+Oleksij
 -- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
