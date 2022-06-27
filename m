@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C31E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234801AbiF0LYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
+        id S234807AbiF0LYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234755AbiF0LYa (ORCPT
+        with ESMTP id S234728AbiF0LYc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:24:30 -0400
+        Mon, 27 Jun 2022 07:24:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24AC657B;
-        Mon, 27 Jun 2022 04:24:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B02656A;
+        Mon, 27 Jun 2022 04:24:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 558A161459;
-        Mon, 27 Jun 2022 11:24:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B789C341C8;
-        Mon, 27 Jun 2022 11:24:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B2856144F;
+        Mon, 27 Jun 2022 11:24:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61C15C3411D;
+        Mon, 27 Jun 2022 11:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329067;
-        bh=BBNZBFjJwrEdh9Peihh/gaT5Od9+ds1Xs18BWqghi7w=;
+        s=korg; t=1656329070;
+        bh=daUoYr+Eel55TsmrdMO7PyEEJ9lVj/hFlgPrNGdm/gc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DiR9m991qP54z9Igy1lWvGppPysk413uUKbnZ+7IoWUJU+FMyqkvgn40ij1eG0xFk
-         YRnlrAsfS92vVCSPi74GW9NlSMZmwf15U/91YOdriFitE9WlmNxlAt4R01xdM05Mhw
-         f0wc+lRjvl3G/FFVBaHh1iv5F5mSYnRDJ4JyE34E=
+        b=2D8iMZoaB+UE08qVtCodcCQaXCerH9NPAtUjujlNMpphGAA2cNuF8nbWgeobUu1vx
+         2wdnGzt5qJiutZEf/zzKtR8vi5pIpOn3T748/zzJX8bH5XbZMwI8TdAnclKWGRDvby
+         lc/dlfHNU4lfgeH36if0Wp4VTe+YvVgkgGeAk7S8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuogee Hsieh <khsieh@codeaurora.org>,
         Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 038/102] drm/msm/dp: fixes wrong connection state caused by failure of link train
-Date:   Mon, 27 Jun 2022 13:20:49 +0200
-Message-Id: <20220627111934.595780784@linuxfoundation.org>
+Subject: [PATCH 5.10 039/102] drm/msm/dp: deinitialize mainlink if link training failed
+Date:   Mon, 27 Jun 2022 13:20:50 +0200
+Message-Id: <20220627111934.629138484@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -51,196 +51,194 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuogee Hsieh <khsieh@codeaurora.org>
 
-[ Upstream commit 62671d2ef24bca1e2e1709a59a5bfb5c423cdc8e ]
+[ Upstream commit 231a04fcc6cb5b0e5f72c015d36462a17355f925 ]
 
-Connection state is not set correctly happen when either failure of link
-train due to cable unplugged in the middle of aux channel reading or
-cable plugged in while in suspended state. This patch fixes these problems.
-This patch also replace ST_SUSPEND_PENDING with ST_DISPLAY_OFF.
-
-Changes in V2:
--- Add more information to commit message.
-
-Changes in V3:
--- change base
-
-Changes in V4:
--- add Fixes tag
+DP compo phy have to be enable to start link training. When
+link training failed phy need to be disabled so that next
+link traning can be proceed smoothly at next plug in. This
+patch de-initialize mainlink to disable phy if link training
+failed. This prevent system crash due to
+disp_cc_mdss_dp_link_intf_clk stuck at "off" state.  This patch
+also perform checking power_on flag at dp_display_enable() and
+dp_display_disable() to avoid crashing when unplug cable while
+display is off.
 
 Signed-off-by: Kuogee Hsieh <khsieh@codeaurora.org>
 Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 42 ++++++++++++++---------------
- drivers/gpu/drm/msm/dp/dp_panel.c   |  5 ++++
- 2 files changed, 25 insertions(+), 22 deletions(-)
+ drivers/gpu/drm/msm/dp/dp_catalog.c |  2 +-
+ drivers/gpu/drm/msm/dp/dp_catalog.h |  2 +-
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    | 40 +++++++++++++++++++++++++++--
+ drivers/gpu/drm/msm/dp/dp_display.c | 15 ++++++++++-
+ drivers/gpu/drm/msm/dp/dp_panel.c   |  2 +-
+ 5 files changed, 55 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
+index aeca8b2ac5c6..2da6982efdbf 100644
+--- a/drivers/gpu/drm/msm/dp/dp_catalog.c
++++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
+@@ -572,7 +572,7 @@ void dp_catalog_ctrl_hpd_config(struct dp_catalog *dp_catalog)
+ 	dp_write_aux(catalog, REG_DP_DP_HPD_CTRL, DP_DP_HPD_CTRL_HPD_EN);
+ }
+ 
+-u32 dp_catalog_hpd_get_state_status(struct dp_catalog *dp_catalog)
++u32 dp_catalog_link_is_connected(struct dp_catalog *dp_catalog)
+ {
+ 	struct dp_catalog_private *catalog = container_of(dp_catalog,
+ 				struct dp_catalog_private, dp_catalog);
+diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.h b/drivers/gpu/drm/msm/dp/dp_catalog.h
+index 6d257dbebf29..176a9020a520 100644
+--- a/drivers/gpu/drm/msm/dp/dp_catalog.h
++++ b/drivers/gpu/drm/msm/dp/dp_catalog.h
+@@ -97,7 +97,7 @@ void dp_catalog_ctrl_enable_irq(struct dp_catalog *dp_catalog, bool enable);
+ void dp_catalog_hpd_config_intr(struct dp_catalog *dp_catalog,
+ 			u32 intr_mask, bool en);
+ void dp_catalog_ctrl_hpd_config(struct dp_catalog *dp_catalog);
+-u32 dp_catalog_hpd_get_state_status(struct dp_catalog *dp_catalog);
++u32 dp_catalog_link_is_connected(struct dp_catalog *dp_catalog);
+ u32 dp_catalog_hpd_get_intr_status(struct dp_catalog *dp_catalog);
+ void dp_catalog_ctrl_phy_reset(struct dp_catalog *dp_catalog);
+ int dp_catalog_ctrl_update_vx_px(struct dp_catalog *dp_catalog, u8 v_level,
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index c83a1650437d..b9ca844ce2ad 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1460,6 +1460,30 @@ static int dp_ctrl_reinitialize_mainlink(struct dp_ctrl_private *ctrl)
+ 	return ret;
+ }
+ 
++static int dp_ctrl_deinitialize_mainlink(struct dp_ctrl_private *ctrl)
++{
++	struct dp_io *dp_io;
++	struct phy *phy;
++	int ret;
++
++	dp_io = &ctrl->parser->io;
++	phy = dp_io->phy;
++
++	dp_catalog_ctrl_mainlink_ctrl(ctrl->catalog, false);
++
++	dp_catalog_ctrl_reset(ctrl->catalog);
++
++	ret = dp_power_clk_enable(ctrl->power, DP_CTRL_PM, false);
++	if (ret) {
++		DRM_ERROR("Failed to disable link clocks. ret=%d\n", ret);
++	}
++
++	phy_power_off(phy);
++	phy_exit(phy);
++
++	return 0;
++}
++
+ static int dp_ctrl_link_maintenance(struct dp_ctrl_private *ctrl)
+ {
+ 	int ret = 0;
+@@ -1640,8 +1664,7 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
+ 	if (rc)
+ 		return rc;
+ 
+-	while (--link_train_max_retries &&
+-		!atomic_read(&ctrl->dp_ctrl.aborted)) {
++	while (--link_train_max_retries) {
+ 		rc = dp_ctrl_reinitialize_mainlink(ctrl);
+ 		if (rc) {
+ 			DRM_ERROR("Failed to reinitialize mainlink. rc=%d\n",
+@@ -1656,6 +1679,10 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
+ 			break;
+ 		} else if (training_step == DP_TRAINING_1) {
+ 			/* link train_1 failed */
++			if (!dp_catalog_link_is_connected(ctrl->catalog)) {
++				break;
++			}
++
+ 			rc = dp_ctrl_link_rate_down_shift(ctrl);
+ 			if (rc < 0) { /* already in RBR = 1.6G */
+ 				if (cr.lane_0_1 & DP_LANE0_1_CR_DONE) {
+@@ -1675,6 +1702,10 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
+ 			}
+ 		} else if (training_step == DP_TRAINING_2) {
+ 			/* link train_2 failed, lower lane rate */
++			if (!dp_catalog_link_is_connected(ctrl->catalog)) {
++				break;
++			}
++
+ 			rc = dp_ctrl_link_lane_down_shift(ctrl);
+ 			if (rc < 0) {
+ 				/* end with failure */
+@@ -1695,6 +1726,11 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
+ 	 */
+ 	if (rc == 0)  /* link train successfully */
+ 		dp_ctrl_push_idle(dp_ctrl);
++	else  {
++		/* link training failed */
++		dp_ctrl_deinitialize_mainlink(ctrl);
++		rc = -ECONNRESET;
++	}
+ 
+ 	return rc;
+ }
 diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 47bdddb860e5..4b18ab71ae59 100644
+index 4b18ab71ae59..d504cf68283a 100644
 --- a/drivers/gpu/drm/msm/dp/dp_display.c
 +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -45,7 +45,7 @@ enum {
- 	ST_CONNECT_PENDING,
- 	ST_CONNECTED,
- 	ST_DISCONNECT_PENDING,
--	ST_SUSPEND_PENDING,
-+	ST_DISPLAY_OFF,
- 	ST_SUSPENDED,
- };
- 
-@@ -531,7 +531,7 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
- 	mutex_lock(&dp->event_mutex);
- 
- 	state =  dp->hpd_state;
--	if (state == ST_SUSPEND_PENDING) {
-+	if (state == ST_DISPLAY_OFF || state == ST_SUSPENDED) {
- 		mutex_unlock(&dp->event_mutex);
- 		return 0;
- 	}
-@@ -553,14 +553,14 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
- 	hpd->hpd_high = 1;
- 
- 	ret = dp_display_usbpd_configure_cb(&dp->pdev->dev);
--	if (ret) {	/* failed */
-+	if (ret) {	/* link train failed */
+@@ -556,6 +556,11 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
+ 	if (ret) {	/* link train failed */
  		hpd->hpd_high = 0;
  		dp->hpd_state = ST_DISCONNECTED;
-+	} else {
-+		/* start sentinel checking in case of missing uevent */
-+		dp_add_event(dp, EV_CONNECT_PENDING_TIMEOUT, 0, tout);
- 	}
- 
--	/* start sanity checking */
--	dp_add_event(dp, EV_CONNECT_PENDING_TIMEOUT, 0, tout);
--
- 	mutex_unlock(&dp->event_mutex);
- 
- 	/* uevent will complete connection part */
-@@ -612,11 +612,6 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
- 	mutex_lock(&dp->event_mutex);
- 
- 	state = dp->hpd_state;
--	if (state == ST_SUSPEND_PENDING) {
--		mutex_unlock(&dp->event_mutex);
--		return 0;
--	}
--
- 	if (state == ST_DISCONNECT_PENDING || state == ST_DISCONNECTED) {
- 		mutex_unlock(&dp->event_mutex);
- 		return 0;
-@@ -643,7 +638,7 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
- 	 */
- 	dp_display_usbpd_disconnect_cb(&dp->pdev->dev);
- 
--	/* start sanity checking */
-+	/* start sentinel checking in case of missing uevent */
- 	dp_add_event(dp, EV_DISCONNECT_PENDING_TIMEOUT, 0, DP_TIMEOUT_5_SECOND);
- 
- 	/* signal the disconnect event early to ensure proper teardown */
-@@ -682,7 +677,7 @@ static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
- 
- 	/* irq_hpd can happen at either connected or disconnected state */
- 	state =  dp->hpd_state;
--	if (state == ST_SUSPEND_PENDING) {
-+	if (state == ST_DISPLAY_OFF) {
- 		mutex_unlock(&dp->event_mutex);
- 		return 0;
- 	}
-@@ -1119,7 +1114,7 @@ static irqreturn_t dp_display_irq_handler(int irq, void *dev_id)
- 		}
- 
- 		if (hpd_isr_status & DP_DP_IRQ_HPD_INT_MASK) {
--			/* delete connect pending event first */
-+			/* stop sentinel connect pending checking */
- 			dp_del_event(dp, EV_CONNECT_PENDING_TIMEOUT);
- 			dp_add_event(dp, EV_IRQ_HPD_INT, 0, 0);
- 		}
-@@ -1252,13 +1247,10 @@ static int dp_pm_resume(struct device *dev)
- 
- 	status = dp_catalog_hpd_get_state_status(dp->catalog);
- 
--	if (status) {
-+	if (status)
- 		dp->dp_display.is_connected = true;
--	} else {
-+	else
- 		dp->dp_display.is_connected = false;
--		/* make sure next resume host_init be called */
--		dp->core_initialized = false;
--	}
- 
- 	mutex_unlock(&dp->event_mutex);
- 
-@@ -1280,6 +1272,9 @@ static int dp_pm_suspend(struct device *dev)
- 
- 	dp->hpd_state = ST_SUSPENDED;
- 
-+	/* host_init will be called at pm_resume */
-+	dp->core_initialized = false;
 +
- 	mutex_unlock(&dp->event_mutex);
- 
- 	return 0;
-@@ -1412,6 +1407,7 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
- 
- 	mutex_lock(&dp_display->event_mutex);
- 
-+	/* stop sentinel checking */
- 	dp_del_event(dp_display, EV_CONNECT_PENDING_TIMEOUT);
- 
- 	rc = dp_display_set_mode(dp, &dp_display->dp_mode);
-@@ -1430,7 +1426,7 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
- 
- 	state =  dp_display->hpd_state;
- 
--	if (state == ST_SUSPEND_PENDING)
-+	if (state == ST_DISPLAY_OFF)
- 		dp_display_host_init(dp_display);
- 
- 	dp_display_enable(dp_display, 0);
-@@ -1442,7 +1438,8 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
- 		dp_display_unprepare(dp);
- 	}
- 
--	if (state == ST_SUSPEND_PENDING)
-+	/* manual kick off plug event to train link */
-+	if (state == ST_DISPLAY_OFF)
- 		dp_add_event(dp_display, EV_IRQ_HPD_INT, 0, 0);
- 
- 	/* completed connection */
-@@ -1474,6 +1471,7 @@ int msm_dp_display_disable(struct msm_dp *dp, struct drm_encoder *encoder)
- 
- 	mutex_lock(&dp_display->event_mutex);
- 
-+	/* stop sentinel checking */
- 	dp_del_event(dp_display, EV_DISCONNECT_PENDING_TIMEOUT);
- 
- 	dp_display_disable(dp_display, 0);
-@@ -1487,7 +1485,7 @@ int msm_dp_display_disable(struct msm_dp *dp, struct drm_encoder *encoder)
- 		/* completed disconnection */
- 		dp_display->hpd_state = ST_DISCONNECTED;
++		if (ret == -ECONNRESET) { /* cable unplugged */
++			dp->core_initialized = false;
++		}
++
  	} else {
--		dp_display->hpd_state = ST_SUSPEND_PENDING;
-+		dp_display->hpd_state = ST_DISPLAY_OFF;
- 	}
+ 		/* start sentinel checking in case of missing uevent */
+ 		dp_add_event(dp, EV_CONNECT_PENDING_TIMEOUT, 0, tout);
+@@ -827,6 +832,11 @@ static int dp_display_enable(struct dp_display_private *dp, u32 data)
  
- 	mutex_unlock(&dp_display->event_mutex);
+ 	dp_display = g_dp_display;
+ 
++	if (dp_display->power_on) {
++		DRM_DEBUG_DP("Link already setup, return\n");
++		return 0;
++	}
++
+ 	rc = dp_ctrl_on_stream(dp->ctrl);
+ 	if (!rc)
+ 		dp_display->power_on = true;
+@@ -859,6 +869,9 @@ static int dp_display_disable(struct dp_display_private *dp, u32 data)
+ 
+ 	dp_display = g_dp_display;
+ 
++	if (!dp_display->power_on)
++		return 0;
++
+ 	/* wait only if audio was enabled */
+ 	if (dp_display->audio_enabled) {
+ 		/* signal the disconnect event */
+@@ -1245,7 +1258,7 @@ static int dp_pm_resume(struct device *dev)
+ 
+ 	dp_catalog_ctrl_hpd_config(dp->catalog);
+ 
+-	status = dp_catalog_hpd_get_state_status(dp->catalog);
++	status = dp_catalog_link_is_connected(dp->catalog);
+ 
+ 	if (status)
+ 		dp->dp_display.is_connected = true;
 diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
-index 2768d1d306f0..550871ba6e5a 100644
+index 550871ba6e5a..4e8a19114e87 100644
 --- a/drivers/gpu/drm/msm/dp/dp_panel.c
 +++ b/drivers/gpu/drm/msm/dp/dp_panel.c
-@@ -196,6 +196,11 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
- 					      &panel->aux->ddc);
+@@ -197,7 +197,7 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
  	if (!dp_panel->edid) {
  		DRM_ERROR("panel edid read failed\n");
-+		/* check edid read fail is due to unplug */
-+		if (!dp_catalog_hpd_get_state_status(panel->catalog)) {
-+			rc = -ETIMEDOUT;
-+			goto end;
-+		}
- 
- 		/* fail safe edid */
- 		mutex_lock(&connector->dev->mode_config.mutex);
+ 		/* check edid read fail is due to unplug */
+-		if (!dp_catalog_hpd_get_state_status(panel->catalog)) {
++		if (!dp_catalog_link_is_connected(panel->catalog)) {
+ 			rc = -ETIMEDOUT;
+ 			goto end;
+ 		}
 -- 
 2.35.1
 
