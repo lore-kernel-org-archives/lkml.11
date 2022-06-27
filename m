@@ -2,88 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A6F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E41D0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235900AbiF0NX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37144 "EHLO
+        id S236047AbiF0NX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:23:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235232AbiF0NXZ (ORCPT
+        with ESMTP id S234032AbiF0NX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:23:25 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C60D62F3
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:23:24 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id m6-20020a05600c3b0600b003a0489f412cso1400021wms.1
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 06:23:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=imH5PVeh3wR5UpM7EpqvZezB/FkoCboH22AdmqXpTFo=;
-        b=xEIWHES4r9jNHW8smiOte9yLvrmureDa6G02r1PHQOx1RB0775lNWZr7nDao5/ioum
-         Igt4VQM/fGhV4GKnPVgih4WZtR6bGLELhMQHlhB1sqbQ5cDLKNhxLVKgGIZnr3YuVc/S
-         BCngGl2FO0wGnOV2ExLh5uc67kkKVi56/XsQO5qWY3dtP4/cOg8lD0zM2zChuNVZIz2K
-         M9pH5LloAY1ngw1avhV9kRsK+OM8Z3SoGoFBh15JKLEPOZHO06IwFj05eBHcRGroD+Wb
-         /asny5D9Il2KxYTVMJKrAYPi7nubQIY706mYcgf8uUB2Qc56zQGq2jxvpIFwBmWhwOw+
-         kYKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=imH5PVeh3wR5UpM7EpqvZezB/FkoCboH22AdmqXpTFo=;
-        b=fIYhwk3m7CasASTexWsInO0bcc/Avp7P7oJPx8eE1yOx94/OhM4CBPb638/6N34NCP
-         aL3g//RetlR0svLgWHorMne6slA33SfBDRoUMXBZjVRmIi7AXxwYdnX8soxwhf3fMZGL
-         NbPi7oTJpnKsJrTqGeX2tQ2nIZuNnfesjboqr4YARzwA6ezWBe9EGE6NgDkfUNTK1jO0
-         H0bizNOAKiOFQIuXXQxfMv7uk9BSi+7CFR7uMwpuGuderhkpATWSPOlxkQZS+7VzOelS
-         QpNg2ehT3duUaEF0ERxA4v+KLNzdz1q6IQbd9vtkdOe3VQgUUAN0vK3EmM+DLj0Am8Pl
-         Q4AA==
-X-Gm-Message-State: AJIora8UtRGoaPy1HjkEcpPwHkLUjLjR5qEV/ZDkrhRI+vFFP2B/uEsC
-        VB8VMlv8ugSNHf8nFSPSfM86nw==
-X-Google-Smtp-Source: AGRyM1t+0V5h4xi3+83pcFt7usLymYBtDIXaHmLiioPN62N6+5Y/9QfO30iIqQiuQftpFBCLJ8UYbA==
-X-Received: by 2002:a05:600c:3b02:b0:397:5cfb:b849 with SMTP id m2-20020a05600c3b0200b003975cfbb849mr15218541wms.183.1656336202818;
-        Mon, 27 Jun 2022 06:23:22 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id u19-20020a05600c19d300b0039c4f53c4fdsm22391696wmq.45.2022.06.27.06.23.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:23:22 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 14:23:20 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 2/9] mfd: intel_soc_pmic: Move non-Intel Makefile
- entries to their own group
-Message-ID: <YrmvSHO1eUTpscQJ@google.com>
-References: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
- <20220616182524.7956-2-andriy.shevchenko@linux.intel.com>
+        Mon, 27 Jun 2022 09:23:57 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A8E62F3;
+        Mon, 27 Jun 2022 06:23:55 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LWpM65sQ4z9srP;
+        Mon, 27 Jun 2022 21:23:14 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 27 Jun
+ 2022 21:23:53 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>, <willy@infradead.org>
+CC:     <linux-fsdevel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH] filemap: minor cleanup for filemap_write_and_wait_range
+Date:   Mon, 27 Jun 2022 21:23:51 +0800
+Message-ID: <20220627132351.55680-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220616182524.7956-2-andriy.shevchenko@linux.intel.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022, Andy Shevchenko wrote:
+Restructure the logic in filemap_write_and_wait_range to simplify the code
+and make it more consistent with file_write_and_wait_range. No functional
+change intended.
 
-> It looks like a random position for couple of Makefile entries that are
-> disrupting Intel PMIC group. Move them to their own group.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/mfd/Makefile | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/filemap.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-For my own reference (apply this as-is to your sign-off block):
-
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-
+diff --git a/mm/filemap.c b/mm/filemap.c
+index 8ccb868c3d95..b561619cfafe 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -667,7 +667,7 @@ EXPORT_SYMBOL_GPL(filemap_range_has_writeback);
+ int filemap_write_and_wait_range(struct address_space *mapping,
+ 				 loff_t lstart, loff_t lend)
+ {
+-	int err = 0;
++	int err = 0, err2;
+ 
+ 	if (mapping_needs_writeback(mapping)) {
+ 		err = __filemap_fdatawrite_range(mapping, lstart, lend,
+@@ -678,18 +678,12 @@ int filemap_write_and_wait_range(struct address_space *mapping,
+ 		 * But the -EIO is special case, it may indicate the worst
+ 		 * thing (e.g. bug) happened, so we avoid waiting for it.
+ 		 */
+-		if (err != -EIO) {
+-			int err2 = filemap_fdatawait_range(mapping,
+-						lstart, lend);
+-			if (!err)
+-				err = err2;
+-		} else {
+-			/* Clear any previously stored errors */
+-			filemap_check_errors(mapping);
+-		}
+-	} else {
+-		err = filemap_check_errors(mapping);
++		if (err != -EIO)
++			__filemap_fdatawait_range(mapping, lstart, lend);
+ 	}
++	err2 = filemap_check_errors(mapping);
++	if (!err)
++		err = err2;
+ 	return err;
+ }
+ EXPORT_SYMBOL(filemap_write_and_wait_range);
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.23.0
+
