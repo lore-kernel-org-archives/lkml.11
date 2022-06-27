@@ -2,105 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E874C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C5EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:01:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242361AbiF0WBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 18:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59872 "EHLO
+        id S242367AbiF0WB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 18:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240208AbiF0Vzv (ORCPT
+        with ESMTP id S241576AbiF0Vzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:55:51 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C203D14D27;
+        Mon, 27 Jun 2022 17:55:47 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F9713F6D;
         Mon, 27 Jun 2022 14:55:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366907; x=1687902907;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RURQ3udaqrRiQcyGTuHQxfa7/HRWoHgGXC9+BSTk/WE=;
-  b=gYj2w1ECA0jrrqCfYriYZwDxO6DgRWOZMaPd1CInbmn6ZZXvriMU7gwS
-   t8ixX/VQmG3BY9cqpXdxQkoUS8r0nf3AR9Fnf3uQvRIm1MjIUBVm8hzcz
-   Mm+Zz6e/Y4DcwxENGBwduLPn66WhHR6fa1r4rd3tifkcG6KB66mLeZCsi
-   aI9X2C9ez7RFcl4VOyMqVcnalfB7Ty+qRqpdLEEjLNg2ZcK2RmTp/LbQT
-   i44mZlmMMyYoKnAFqPwS8G4dsxzt2neM3uR4VZ2NFuTeSXDhTV4buqhId
-   zxvvGlAwUBRTnEk0ONwsyFQSTuNv/nFJek2S4zeEgDtwFvylKrOkkZcO1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116138"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="279116138"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:01 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863730"
-Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:01 -0700
-From:   isaku.yamahata@intel.com
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 089/102] KVM: TDX: Handle TDX PV CPUID hypercall
-Date:   Mon, 27 Jun 2022 14:54:21 -0700
-Message-Id: <af6eee7d790d7cf461805e45fe007c72e1e04e46.1656366338.git.isaku.yamahata@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
+Received: by mail-lf1-x133.google.com with SMTP id w20so18893392lfa.11;
+        Mon, 27 Jun 2022 14:55:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=F2rE4WiiB56ceX/DgU00bSkUe75l3cXsNOMmf38a5Zs=;
+        b=FEQZCSvyunp3uzDnTXHU3J/w472GKsWStwPmmqVUW3M4BP99nff9fjklYCAHVRzl+l
+         7PdPnItOj7cM3MRIkTh9SYZeCgI860HuNoo0QIqzoGF7nPyBNo87fn1boR9Pp1JAzIJ/
+         q+JiDvehmhxeWN2Gd/gusxeyvN+rP1/yIu3lX0trXcrL4GgpR6enBsApW/oo3wMQY7q9
+         Fwb0vnJ60iHDy91jMTXIicoxCKhW+TwmfcozTcVnc5LaahfYFH6N1f5Qk0Uzdc1nm25J
+         uoTGc0lXxv1te35Psxvd38IaQ3ajm5XnaZKZJ43VPquSrUEPOgTbqT8XLbioBY3VSeSU
+         a1VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=F2rE4WiiB56ceX/DgU00bSkUe75l3cXsNOMmf38a5Zs=;
+        b=SIOGZ70tBkDxm0NdY6Fc1enom4aplr7T1fM0v3tya7Tnb+PISpgb7mptGgUkQX6K5F
+         GJdu0Ib40hF4PsWRi5Brp5MHcFqq2iBqvV/idiAphmcANRSRUkXzf1TCkpdlV3lYTYOh
+         ezSVM0Kqf8YuRk7jhnJ80HRb+ZNb7yNID9X/jDMlo4aZ474Hc8OXT1LqPqMNKfs9Xk+C
+         Nw/pnqtZLzpRMZOZsuouNHycFab/FiokYyR0wOUTeQC3FXL2ZCKbh1nR0HA4xyGA4/h6
+         +kYlIENqRwjSL/yt9ASHpiTFVNepyO2+N/STJqdW18u6GNGb+FiS9XmleNu2roYyC6x3
+         Vm+A==
+X-Gm-Message-State: AJIora9vLBXs7lcYBGYB1vBWP+jq+n12UkNYLPYjkd4ASyYh5JupfIIs
+        aK2An+To5tqBRAcuj6TBIhQ=
+X-Google-Smtp-Source: AGRyM1uL2KKsGpEUiiGMb12gLYw6jj+9Trew1WchHkWhPJ/Yvh3dZrjyPSRGRIj4HHPU4BOHiEr71Q==
+X-Received: by 2002:a05:6512:2356:b0:47f:8756:737b with SMTP id p22-20020a056512235600b0047f8756737bmr9981225lfu.212.1656366905748;
+        Mon, 27 Jun 2022 14:55:05 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id g1-20020a0565123b8100b0047f9d9a4186sm1944482lfv.165.2022.06.27.14.55.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 14:55:05 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 00:55:02 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Alexey Brodkin <abrodkin@synopsys.com>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-usb@vger.kernel.org,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Patrice Chotard <patrice.chotard@st.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-snps-arc@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v9 4/5] arm: dts: stih407-family: Harmonize DWC
+ USB3 DT nodes name
+Message-ID: <20220627215502.4caxt2ebsdi4ue7l@mobilestation>
+References: <20220624141622.7149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220624141622.7149-5-Sergey.Semin@baikalelectronics.ru>
+ <59d8a34a-a211-d00a-2243-6ad51cfa4204@linaro.org>
+ <20220624204524.nveittak6ruksuvq@mobilestation>
+ <8b384f4e-7114-7afb-98d6-af71709525d6@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8b384f4e-7114-7afb-98d6-af71709525d6@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+On Sun, Jun 26, 2022 at 12:42:48PM +0200, Krzysztof Kozlowski wrote:
+> On 24/06/2022 22:45, Serge Semin wrote:
+> > On Fri, Jun 24, 2022 at 07:18:57PM +0200, Krzysztof Kozlowski wrote:
+> >> On 24/06/2022 16:16, Serge Semin wrote:
+> >>> In accordance with the DWC USB3 bindings the corresponding node
+> >>> name is suppose to comply with the Generic USB HCD DT schema, which
+> >>> requires the USB nodes to have the name acceptable by the regexp:
+> >>> "^usb(@.*)?" . Make sure the "snps,dwc3"-compatible nodes are correctly
+> >>> named.
+> >>>
+> >>> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> >>> Acked-by: Krzysztof Kozlowski <krzk@kernel.org>
+> >>> Reviewed-by: Patrice Chotard <patrice.chotard@st.com>
+> >>> ---
+> >>>  arch/arm/boot/dts/stih407-family.dtsi | 2 +-
+> >>>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
+> >>> index 1713f7878117..7ba528315dbe 100644
+> >>> --- a/arch/arm/boot/dts/stih407-family.dtsi
+> >>> +++ b/arch/arm/boot/dts/stih407-family.dtsi
+> >>> @@ -725,7 +725,7 @@ st_dwc3: dwc3@8f94000 {
+> >>>  
+> >>>  			status = "disabled";
+> >>>  
+> >>> -			dwc3: dwc3@9900000 {
+> >>> +			dwc3: usb@9900000 {
+> >>
+> > 
+> >> This does not apply. What tree is it based on?
+> > 
+> > That's weird. The series has been rebased onto the mainline kernel v5.19-rc3.
+> > Do you have the stih407 dtsi fixed on your local repo?
+> 
 
-Wire up TDX PV CPUID hypercall to the KVM backend function.
+> It conflicts with my change:
+> https://lore.kernel.org/all/20220526203632.831039-1-krzysztof.kozlowski@linaro.org/
+> 
+> I'll apply with local fixups.
 
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
----
- arch/x86/kvm/vmx/tdx.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+Ok. Thanks.
 
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index a30be04229d7..96e41602125b 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -947,12 +947,34 @@ static int tdx_emulate_vmcall(struct kvm_vcpu *vcpu)
- 	return 1;
- }
- 
-+static int tdx_emulate_cpuid(struct kvm_vcpu *vcpu)
-+{
-+	u32 eax, ebx, ecx, edx;
-+
-+	/* EAX and ECX for cpuid is stored in R12 and R13. */
-+	eax = tdvmcall_a0_read(vcpu);
-+	ecx = tdvmcall_a1_read(vcpu);
-+
-+	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
-+
-+	tdvmcall_a0_write(vcpu, eax);
-+	tdvmcall_a1_write(vcpu, ebx);
-+	tdvmcall_a2_write(vcpu, ecx);
-+	tdvmcall_a3_write(vcpu, edx);
-+
-+	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
-+
-+	return 1;
-+}
-+
- static int handle_tdvmcall(struct kvm_vcpu *vcpu)
- {
- 	if (tdvmcall_exit_type(vcpu))
- 		return tdx_emulate_vmcall(vcpu);
- 
- 	switch (tdvmcall_leaf(vcpu)) {
-+	case EXIT_REASON_CPUID:
-+		return tdx_emulate_cpuid(vcpu);
- 	default:
- 		break;
- 	}
--- 
-2.25.1
+-Sergey
 
+> 
+> 
+> Best regards,
+> Krzysztof
