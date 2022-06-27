@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1AF4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D1CCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241670AbiF0V5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
+        id S241708AbiF0V5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241370AbiF0Vy6 (ORCPT
+        with ESMTP id S241371AbiF0Vy6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 17:54:58 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE567625E;
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5AE62C7;
         Mon, 27 Jun 2022 14:54:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1656366896; x=1687902896;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=yHcwMDhdHNxS1z+HmPGIPHlVsmRfZFfsT3rl08Yk2/s=;
-  b=aeUneMT5pYQ/8i+F8MEARLOtxbtHcIftfWVYCP2Y1bj0uIN589b6xztP
-   UYqH5BTjegUMer8qOW/J2iwF0ZwWaAjxkfYxLQjwty/gyP61CCZmsVZMB
-   PWTqjCImTz6WmJ4Zpf0isdpyJVMQiSmXpqLV4RpQ625PtjSp0DSxSzz4x
-   ziUwQS0DrmOMLVCILpElMzrmfpvlLljsnCNi4m7tGRwz7YhWnL2TK3GOG
-   wKZsTxQhyCdkNha7dexNUuWl24PIbw3fmjcXcLdXUeXBCXDUI1H03zsrF
-   E2XIxxX6nxIKkobFLA8fooCA/s1orHIpNtFPhRPqIxuNakIQfSeJLzU+9
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609535"
+  bh=TDas0SY5LGuB3YFSoxWratEBm3xzPtHTIHsSA08WIYE=;
+  b=JQuVX8Ode8nRGb8SxjO/ndr4g/XzIpZSwPzkXdtbE3sVtQ6KmvHm3anF
+   M7lIFv3I4uWlmLc3VOjBh1Yj6AfjgWduBz+V9KCNVpkVne3fDCsMb7Kbs
+   HW6jp2t8JDa+ygb1isipPw2VXBiLAfbSTr1TA41VWgwjmRCJnCriTvsVB
+   PiwnjMu/IAiJknGJDOWq8qYpyloqyT0/InlvBZDbfbUtX4XFAOBjbSrhN
+   D5sA97CFzdMPHQt8rqBWtQOjKjjAeAbzr8ngw+4CS+JNsYkjXehXBp9yT
+   DsRPC7ejP9CAEWBkvP2zgOu566wJZW7HK9rZWscpDI33w7yzzgSsZeUAf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116096"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281609535"
+   d="scan'208";a="279116096"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:52 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:56 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863538"
+   d="scan'208";a="657863624"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:52 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:56 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v7 032/102] KVM: x86/mmu: introduce config for PRIVATE KVM MMU
-Date:   Mon, 27 Jun 2022 14:53:24 -0700
-Message-Id: <fa5a472216f0394fab06e2fee29d42fdc1ed33af.1656366338.git.isaku.yamahata@intel.com>
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+Subject: [PATCH v7 058/102] KVM: x86/mmu: Introduce kvm_mmu_map_tdp_page() for use by TDX
+Date:   Mon, 27 Jun 2022 14:53:50 -0700
+Message-Id: <5b00a098e4f7d0c6af1f5c0f3a8ee8c2af703485.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -53,31 +54,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-To Keep the case of non TDX intact, introduce a new config option for
-private KVM MMU support.  At the moment, this is synonym for
-CONFIG_INTEL_TDX_HOST && CONFIG_KVM_INTEL.  The new flag make it clear
-that the config is only for x86 KVM MMU.
+Introduce a helper to directly (pun intended) fault-in a TDP page
+without having to go through the full page fault path.  This allows
+TDX to get the resulting pfn and also allows the RET_PF_* enums to
+stay in mmu.c where they belong.
 
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/Kconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/kvm/mmu.h     |  3 +++
+ arch/x86/kvm/mmu/mmu.c | 39 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 42 insertions(+)
 
-diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
-index e3cbd7706136..5a59abc83179 100644
---- a/arch/x86/kvm/Kconfig
-+++ b/arch/x86/kvm/Kconfig
-@@ -129,4 +129,8 @@ config KVM_XEN
- config KVM_EXTERNAL_WRITE_TRACKING
- 	bool
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index f5edf2e58dba..ee592348ace1 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -163,6 +163,9 @@ static inline void kvm_mmu_load_pgd(struct kvm_vcpu *vcpu)
+ 					  vcpu->arch.mmu->root_role.level);
+ }
  
-+config KVM_MMU_PRIVATE
-+	def_bool y
-+	depends on INTEL_TDX_HOST && KVM_INTEL
++kvm_pfn_t kvm_mmu_map_tdp_page(struct kvm_vcpu *vcpu, gpa_t gpa,
++			       u32 error_code, int max_level);
 +
- endif # VIRTUALIZATION
+ /*
+  * Check if a given access (described through the I/D, W/R and U/S bits of a
+  * page fault error code pfec) causes a permission fault with the given PTE
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index a777a1d4278c..599c81504bea 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -4278,6 +4278,45 @@ int kvm_tdp_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ 	return direct_page_fault(vcpu, fault);
+ }
+ 
++kvm_pfn_t kvm_mmu_map_tdp_page(struct kvm_vcpu *vcpu, gpa_t gpa,
++			       u32 error_code, int max_level)
++{
++	int r;
++	struct kvm_page_fault fault = (struct kvm_page_fault) {
++		.addr = gpa,
++		.error_code = error_code,
++		.exec = error_code & PFERR_FETCH_MASK,
++		.write = error_code & PFERR_WRITE_MASK,
++		.present = error_code & PFERR_PRESENT_MASK,
++		.rsvd = error_code & PFERR_RSVD_MASK,
++		.user = error_code & PFERR_USER_MASK,
++		.prefetch = false,
++		.is_tdp = true,
++		.nx_huge_page_workaround_enabled = is_nx_huge_page_enabled(),
++		.is_private = kvm_is_private_gpa(vcpu->kvm, gpa),
++	};
++
++	if (mmu_topup_memory_caches(vcpu, false))
++		return KVM_PFN_ERR_FAULT;
++
++	/*
++	 * Loop on the page fault path to handle the case where an mmu_notifier
++	 * invalidation triggers RET_PF_RETRY.  In the normal page fault path,
++	 * KVM needs to resume the guest in case the invalidation changed any
++	 * of the page fault properties, i.e. the gpa or error code.  For this
++	 * path, the gpa and error code are fixed by the caller, and the caller
++	 * expects failure if and only if the page fault can't be fixed.
++	 */
++	do {
++		fault.max_level = max_level;
++		fault.req_level = PG_LEVEL_4K;
++		fault.goal_level = PG_LEVEL_4K;
++		r = direct_page_fault(vcpu, &fault);
++	} while (r == RET_PF_RETRY && !is_error_noslot_pfn(fault.pfn));
++	return fault.pfn;
++}
++EXPORT_SYMBOL_GPL(kvm_mmu_map_tdp_page);
++
+ static void nonpaging_init_context(struct kvm_mmu *context)
+ {
+ 	context->page_fault = nonpaging_page_fault;
 -- 
 2.25.1
 
