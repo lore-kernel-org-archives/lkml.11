@@ -2,170 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAAAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:10:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240972AbiF0VKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
+        id S238856AbiF0VLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbiF0VJ7 (ORCPT
+        with ESMTP id S239848AbiF0VLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:09:59 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB54BB4A7
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 14:09:57 -0700 (PDT)
+        Mon, 27 Jun 2022 17:11:53 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD83DF05;
+        Mon, 27 Jun 2022 14:11:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656364197; x=1687900197;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=k0KBPpzGxryM7uyarOJAt/4Vi6g0J5jx85T9jZkMlwo=;
-  b=fjfAMeqIMSWBdvF3R8VAbHvO+rRA+2WH66CCsTa09R+g1FuSGXOOwH8W
-   6/EH2AcV6F/S7iecvg0t61pSKdrDFTQmm66iGknjQE2wK2l2jaPUExDs9
-   zqXn02pEM4Zi5fp4yXWVHg1KXDIcA1936osCVXIviTGlZDWUv7fMc2iYM
-   pnlO8SIxaY12Fl+ahrDb7NNltb62r+GCaBCHH8xRmeNp9OA7JiS3g3Uli
-   tcGbcbFqfHHM4n1HxmhJsLrBAYeUGyFGIqtTrC3kUdjTKw9vsy2tenUNI
-   i658VH1I1jc7NcfUXkb9tF/9FVl9+oMWvS6mwEppUBAd6VGq/0hzQUhoC
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="307041044"
+  t=1656364313; x=1687900313;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=UY4ciCF2PfXCTOF3LZITbZsRaQFQCfpZuDqHJ3No5q8=;
+  b=LmGYzNT9jSBZJKcElBd9xKq7DE2/HBz+4u99kAqiqZ3pC3MbrNEI/MLe
+   EJZB7yEHEu1KLDtNb6Y11Hfpapv7tCNDBox71jDpiPfEA6ADUd43ndJ8R
+   qZmdTLkaxb7RzXXRXK5xaJqUX271CWiakBUIDgQ3ng0VnbicLmlEgxfFs
+   J3Oe1fXYZJdMZU60nOIHTpyD0NUxUXgEJxo3HKTe2CNE+K/Qvv4jsFpkG
+   33Artmu1JiPQtk8vuGmbPhhf83GMmV7MVWD8WT6l1nMFo2VPZuGVc7HMn
+   LR5BC5tYrKDp/JpuHbsRUjs4vKYWYS06j5+Xfla1516BLR+kJTqDYC+/W
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279108531"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="307041044"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:09:53 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="279108531"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:11:52 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657850442"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 27 Jun 2022 14:09:51 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o5vzT-00092T-0B;
-        Mon, 27 Jun 2022 21:09:51 +0000
-Date:   Tue, 28 Jun 2022 05:08:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Isaku Yamahata <isaku.yamahata@intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>
-Subject: [intel-tdx:kvm-upstream-workaround 327/442]
- include/linux/memfile_notifier.h:87:57: error: unknown type name 'flags'
-Message-ID: <202206280512.4xQqv7zC-lkp@intel.com>
+   d="scan'208";a="732480739"
+Received: from jsagoe-mobl1.amr.corp.intel.com (HELO [10.209.12.66]) ([10.209.12.66])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:11:52 -0700
+Message-ID: <7abba0a4-2480-18a1-4d9c-5973bb97b059@intel.com>
+Date:   Mon, 27 Jun 2022 14:10:53 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RFC PATCH v2 0/3] powerpc/pseries: add support for local secure
+ storage called Platform KeyStore(PKS)
+Content-Language: en-US
+To:     Nayna Jain <nayna@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org,
+        linux-fsdevel@vger.kernel.org
+Cc:     linux-efi@vger.kernel.org,
+        linux-security-module <linux-security-module@vger.kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        George Wilson <gcwilson@linux.ibm.com>, gjoyce@ibm.com,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+References: <20220622215648.96723-1-nayna@linux.ibm.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220622215648.96723-1-nayna@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
-head:   8af973ebaf30642129fc1ca63f155a469f9615ed
-commit: 8cb35e95129306dc6d56e230b2f2fec40189a78c [327/442] mm/shmem: Support memfile_notifier
-config: um-x86_64_defconfig (https://download.01.org/0day-ci/archive/20220628/202206280512.4xQqv7zC-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel/tdx/commit/8cb35e95129306dc6d56e230b2f2fec40189a78c
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx kvm-upstream-workaround
-        git checkout 8cb35e95129306dc6d56e230b2f2fec40189a78c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=x86_64 SHELL=/bin/bash
+On 6/22/22 14:56, Nayna Jain wrote:
+> * Renamed PKS driver to PLPKS to avoid naming conflict as mentioned by
+> Dave Hanson.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-Note: the intel-tdx/kvm-upstream-workaround HEAD 8af973ebaf30642129fc1ca63f155a469f9615ed builds fine.
-      It only hurts bisectability.
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/shmem_fs.h:12,
-                    from init/main.c:80:
->> include/linux/memfile_notifier.h:87:57: error: unknown type name 'flags'
-      87 | static int memfile_register_notifier(struct file *file, flags,
-         |                                                         ^~~~~
-   init/main.c:769:20: warning: no previous prototype for 'arch_post_acpi_subsys_init' [-Wmissing-prototypes]
-     769 | void __init __weak arch_post_acpi_subsys_init(void) { }
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   init/main.c:781:20: warning: no previous prototype for 'mem_encrypt_init' [-Wmissing-prototypes]
-     781 | void __init __weak mem_encrypt_init(void) { }
-         |                    ^~~~~~~~~~~~~~~~
-   init/main.c:783:20: warning: no previous prototype for 'poking_init' [-Wmissing-prototypes]
-     783 | void __init __weak poking_init(void) { }
-         |                    ^~~~~~~~~~~
-   In file included from include/linux/shmem_fs.h:12,
-                    from init/main.c:80:
-   include/linux/memfile_notifier.h:93:13: warning: 'memfile_unregister_notifier' defined but not used [-Wunused-function]
-      93 | static void memfile_unregister_notifier(struct memfile_notifier *notifier)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:82:13: warning: 'memfile_notifier_invalidate' defined but not used [-Wunused-function]
-      82 | static void memfile_notifier_invalidate(struct memfile_node *node,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:77:13: warning: 'memfile_notifier_populate' defined but not used [-Wunused-function]
-      77 | static void memfile_notifier_populate(struct memfile_node *node,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:72:12: warning: 'memfile_node_set_flags' defined but not used [-Wunused-function]
-      72 | static int memfile_node_set_flags(struct file *file, unsigned long flags)
-         |            ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:68:13: warning: 'memfile_register_backing_store' defined but not used [-Wunused-function]
-      68 | static void memfile_register_backing_store(struct memfile_backing_store *bs)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/shmem_fs.h:12,
-                    from init/do_mounts.c:20:
->> include/linux/memfile_notifier.h:87:57: error: unknown type name 'flags'
-      87 | static int memfile_register_notifier(struct file *file, flags,
-         |                                                         ^~~~~
-   In file included from include/linux/shmem_fs.h:12,
-                    from init/do_mounts.c:20:
-   include/linux/memfile_notifier.h:93:13: warning: 'memfile_unregister_notifier' defined but not used [-Wunused-function]
-      93 | static void memfile_unregister_notifier(struct memfile_notifier *notifier)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:82:13: warning: 'memfile_notifier_invalidate' defined but not used [-Wunused-function]
-      82 | static void memfile_notifier_invalidate(struct memfile_node *node,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:77:13: warning: 'memfile_notifier_populate' defined but not used [-Wunused-function]
-      77 | static void memfile_notifier_populate(struct memfile_node *node,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:72:12: warning: 'memfile_node_set_flags' defined but not used [-Wunused-function]
-      72 | static int memfile_node_set_flags(struct file *file, unsigned long flags)
-         |            ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:68:13: warning: 'memfile_register_backing_store' defined but not used [-Wunused-function]
-      68 | static void memfile_register_backing_store(struct memfile_backing_store *bs)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/shmem_fs.h:12,
-                    from mm/shmem.c:59:
->> include/linux/memfile_notifier.h:87:57: error: unknown type name 'flags'
-      87 | static int memfile_register_notifier(struct file *file, flags,
-         |                                                         ^~~~~
-   include/linux/memfile_notifier.h:93:13: warning: 'memfile_unregister_notifier' defined but not used [-Wunused-function]
-      93 | static void memfile_unregister_notifier(struct memfile_notifier *notifier)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:72:12: warning: 'memfile_node_set_flags' defined but not used [-Wunused-function]
-      72 | static int memfile_node_set_flags(struct file *file, unsigned long flags)
-         |            ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/memfile_notifier.h:68:13: warning: 'memfile_register_backing_store' defined but not used [-Wunused-function]
-      68 | static void memfile_register_backing_store(struct memfile_backing_store *bs)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/flags +87 include/linux/memfile_notifier.h
-
-0c030fb62c136d Chao Peng 2022-01-12  86  
-0c030fb62c136d Chao Peng 2022-01-12 @87  static int memfile_register_notifier(struct file *file, flags,
-0c030fb62c136d Chao Peng 2022-01-12  88  				     struct memfile_notifier *notifier)
-0c030fb62c136d Chao Peng 2022-01-12  89  {
-0c030fb62c136d Chao Peng 2022-01-12  90  	return -EOPNOTSUPP;
-0c030fb62c136d Chao Peng 2022-01-12  91  }
-0c030fb62c136d Chao Peng 2022-01-12  92  
-
-:::::: The code at line 87 was first introduced by commit
-:::::: 0c030fb62c136d9d0ac4e83e0872134f2a9ea896 mm: Introduce memfile_notifier
-
-:::::: TO: Chao Peng <chao.p.peng@linux.intel.com>
-:::::: CC: Isaku Yamahata <isaku.yamahata@intel.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thank you for doing this!  The new naming looks much less likely to
+cause confusion.
