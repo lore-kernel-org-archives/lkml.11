@@ -2,178 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 103FAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317C6CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232724AbiF0Iqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 04:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40580 "EHLO
+        id S233207AbiF0ItS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 04:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233019AbiF0Iqe (ORCPT
+        with ESMTP id S232615AbiF0ItQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 04:46:34 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4DA6353
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:46:33 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id g4so3983168ybg.9
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:46:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4vsOnIc+C2gY1UVlbVz/JDciMvgYEap1WYGcSJm7nik=;
-        b=izm5TvVaySgpwnEQF9/y67fAWYu9B2xhHcC5MrbsqfKRyBWcvUJOefttP3U8C7H5yK
-         cf/c+G/MDFeL9d3jWR3ZM1W+uRZZqwp2hTAlphjRcQ4y5gzmknF6zrBjrzS5Oq9593TH
-         prMhKu/+/nH//vvJzE+A8myFZw0Vf2YB5togDcAyh2pSj1lg7+NXGygkUac2Pq5BEBXO
-         5+wwtXrzIkpK6w7dEXtmMbM9imlU0I4M6KLt1i3bZoyGQ30Vb87yxIZpNyIgjCBXAtgw
-         DSd6AsFRpnuauM1qBq8q0T/kLZUm8tLjA1oB1Fx/TPENkDLwNudIWg8vpilEWofAkp3b
-         qS3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4vsOnIc+C2gY1UVlbVz/JDciMvgYEap1WYGcSJm7nik=;
-        b=oJLa0ziUJtUmkj0rqLB1KIVnCsymH5FwINwKY/SCsd3wuQwU7D4P+cSXKoEMhlghfo
-         XzwBhh96DBk8A+jPG5KcX8v92JMVgJZGXcN644iw9skrECkhRqr9wEiJO+4T/URCcSna
-         fG0oANLdei9VCXd/Cedrtll6g5qKDV7/95UNnSLAaA5Ce/zjus/8fgYT25b9KmdP5lU7
-         nHdD+X+sKQe85YJl5tKU+dIMgbA+c/eY4XU05ww+SLxfstvm6PehcFQ3Fqj9q3GqojYy
-         ZwGpMbtrDXoBMTyQiY41j0AzwP2wgyGD6518nOebSz/TCSrwdGugIZY6Or7fyX8dXeU+
-         6IfQ==
-X-Gm-Message-State: AJIora8mZIZ+HCkGlwmatWYcC1RxXEvKboCmMNdR8OWfpONx/3gf3dQ8
-        NKvnhM8MwHZuTSEGZKfogLvrPZilKGMEpQzISDh3GQ==
-X-Google-Smtp-Source: AGRyM1tmdR+Xbj5kJ69vq4foOyHTSytqN33Xz6MWmkpMcamFreKrameDkaAL4/75vWqZ0Cye+/NLca9lf7qZmNQ/HPM=
-X-Received: by 2002:a25:6c5:0:b0:669:a17a:2289 with SMTP id
- 188-20020a2506c5000000b00669a17a2289mr12352386ybg.231.1656319592797; Mon, 27
- Jun 2022 01:46:32 -0700 (PDT)
+        Mon, 27 Jun 2022 04:49:16 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02AC06278;
+        Mon, 27 Jun 2022 01:49:15 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id CB5FA6601828;
+        Mon, 27 Jun 2022 09:49:12 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656319754;
+        bh=o4KMjR/ZJMxFhZCtqu5FCmZbc0KpnWFELMON025GNow=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=YEcKuN9F7zr9YHZJ6SYqEkxZ03gQ8MkukZCgHEIgsdT0jrBqRB4H8xzKH2yIUiVix
+         uAwnTIW0oa2ltYINpE6E5EWHfcW4oOXAinDlHd/Wk3VrObMjKuC9vN3CByop4pWHJs
+         +PdewMxVydIslZSVxLsSTpRhzJQR6KvHtcPRvMr5r+mhDd+ZCAEJRBhph4SETfcs+6
+         wqR+2tgzir/S++iNAm6++irP1L0fP99p7p1SPHrnGvAdwK53KGJ2EY9OFGyEHqpudc
+         dD9MzF2c1ffEb8GtoDzj0wWHAQDjK851hRs+TffQlba/Mo7dLBSlDKKV7BzhuZO7ON
+         iu3d7G+wgu69A==
+Message-ID: <9554982a-c48b-e902-2d96-b317c46df698@collabora.com>
+Date:   Mon, 27 Jun 2022 10:49:10 +0200
 MIME-Version: 1.0
-References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
- <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
- <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
- <20220623185730.25b88096@kernel.org> <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
- <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
- <20220624070656.GE79500@shbuild999.sh.intel.com> <20220624144358.lqt2ffjdry6p5u4d@google.com>
- <20220625023642.GA40868@shbuild999.sh.intel.com> <20220627023812.GA29314@shbuild999.sh.intel.com>
-In-Reply-To: <20220627023812.GA29314@shbuild999.sh.intel.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 27 Jun 2022 10:46:21 +0200
-Message-ID: <CANn89i+6NPujMyiQxriZRt6vhv6hNrAntXxi1uOhJ0SSqnJ47w@mail.gmail.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-To:     Feng Tang <feng.tang@intel.com>
-Cc:     Shakeel Butt <shakeelb@google.com>, Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 2/7] dt-bindings: clock: Add MediaTek Helio X10 MT6795
+ clock bindings
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        y.oudjana@protonmail.com, jason-jh.lin@mediatek.com,
+        ck.hu@mediatek.com, fparent@baylibre.com, rex-bc.chen@mediatek.com,
+        tinghan.shen@mediatek.com, chun-jie.chen@mediatek.com,
+        weiyi.lu@mediatek.com, ikjn@chromium.org, miles.chen@mediatek.com,
+        sam.shih@mediatek.com, wenst@chromium.org,
+        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
+        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
+        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
+        kernel@collabora.com, Rob Herring <robh@kernel.org>
+References: <20220624093525.243077-1-angelogioacchino.delregno@collabora.com>
+ <20220624093525.243077-3-angelogioacchino.delregno@collabora.com>
+ <de5a0e6f-411f-0c7b-ae1e-1117a4126d2d@linaro.org>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <de5a0e6f-411f-0c7b-ae1e-1117a4126d2d@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 4:38 AM Feng Tang <feng.tang@intel.com> wrote:
->
-> On Sat, Jun 25, 2022 at 10:36:42AM +0800, Feng Tang wrote:
-> > On Fri, Jun 24, 2022 at 02:43:58PM +0000, Shakeel Butt wrote:
-> > > On Fri, Jun 24, 2022 at 03:06:56PM +0800, Feng Tang wrote:
-> > > > On Thu, Jun 23, 2022 at 11:34:15PM -0700, Shakeel Butt wrote:
-> > > [...]
-> > > > >
-> > > > > Feng, can you please explain the memcg setup on these test machines
-> > > > > and if the tests are run in root or non-root memcg?
-> > > >
-> > > > I don't know the exact setup, Philip/Oliver from 0Day can correct me.
-> > > >
-> > > > I logged into a test box which runs netperf test, and it seems to be
-> > > > cgoup v1 and non-root memcg. The netperf tasks all sit in dir:
-> > > > '/sys/fs/cgroup/memory/system.slice/lkp-bootstrap.service'
-> > > >
-> > >
-> > > Thanks Feng. Can you check the value of memory.kmem.tcp.max_usage_in_bytes
-> > > in /sys/fs/cgroup/memory/system.slice/lkp-bootstrap.service after making
-> > > sure that the netperf test has already run?
-> >
-> > memory.kmem.tcp.max_usage_in_bytes:0
->
-> Sorry, I made a mistake that in the original report from Oliver, it
-> was 'cgroup v2' with a 'debian-11.1' rootfs.
->
-> When you asked about cgroup info, I tried the job on another tbox, and
-> the original 'job.yaml' didn't work, so I kept the 'netperf' test
-> parameters and started a new job which somehow run with a 'debian-10.4'
-> rootfs and acutally run with cgroup v1.
->
-> And as you mentioned cgroup version does make a big difference, that
-> with v1, the regression is reduced to 1% ~ 5% on different generations
-> of test platforms. Eric mentioned they also got regression report,
-> but much smaller one, maybe it's due to the cgroup version?
+Il 25/06/22 22:30, Krzysztof Kozlowski ha scritto:
+> On 24/06/2022 11:35, AngeloGioacchino Del Regno wrote:
+>> Add the bindings for MT6795's clock controller.
+>>
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> Acked-by: Rob Herring <robh@kernel.org>
+>> ---
+>>   include/dt-bindings/clock/mt6795-clk.h | 275 +++++++++++++++++++++++++
+>>   1 file changed, 275 insertions(+)
+>>   create mode 100644 include/dt-bindings/clock/mt6795-clk.h
+>>
+>> diff --git a/include/dt-bindings/clock/mt6795-clk.h b/include/dt-bindings/clock/mt6795-clk.h
+>> new file mode 100644
+>> index 000000000000..9902906ac902
+>> --- /dev/null
+>> +++ b/include/dt-bindings/clock/mt6795-clk.h
+> 
+> Vendor prefix.
+> 
 
-This was using the current net-next tree.
-Used recipe was something like:
+For consistency, I'd really like to keep the filename as it is.
 
-Make sure cgroup2 is mounted or mount it by mount -t cgroup2 none $MOUNT_POINT.
-Enable memory controller by echo +memory > $MOUNT_POINT/cgroup.subtree_control.
-Create a cgroup by mkdir $MOUNT_POINT/job.
-Jump into that cgroup by echo $$ > $MOUNT_POINT/job/cgroup.procs.
+At least in this directory, all of the MediaTek clock bindings
+are using the format mtXXXX-clk.h... and that's not only seen
+in MediaTek, but also in Broadcom, Renesas, RockChip, HiSilicon,
+nVidia, etc.
 
-<Launch tests>
-
-The regression was smaller than 1%, so considered noise compared to
-the benefits of the bug fix.
-
->
-> Thanks,
-> Feng
->
-> > And here is more memcg stats (let me know if you want to check more)
-> >
-> > > If this is non-zero then network memory accounting is enabled and the
-> > > slowdown is expected.
-> >
-> > >From the perf-profile data in original report, both
-> > __sk_mem_raise_allocated() and __sk_mem_reduce_allocated() are called
-> > much more often, which call memcg charge/uncharge functions.
-> >
-> > IIUC, the call chain is:
-> >
-> > __sk_mem_raise_allocated
-> >     sk_memory_allocated_add
-> >     mem_cgroup_charge_skmem
-> >         charge memcg->tcpmem (for cgroup v2)
-> >       try_charge memcg (for v1)
-> >
-> > Also from Eric's one earlier commit log:
-> >
-> > "
-> > net: implement per-cpu reserves for memory_allocated
-> > ...
-> > This means we are going to call sk_memory_allocated_add()
-> > and sk_memory_allocated_sub() more often.
-> > ...
-> > "
-> >
-> > So this slowdown is related to the more calling of charge/uncharge?
-> >
-> > Thanks,
-> > Feng
-> >
-> > > > And the rootfs is a debian based rootfs
-> > > >
-> > > > Thanks,
-> > > > Feng
-> > > >
-> > > >
-> > > > > thanks,
-> > > > > Shakeel
+Thanks,
+Angelo
