@@ -2,96 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7F2CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 032EBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235744AbiF0NbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
+        id S235779AbiF0NbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235469AbiF0NbN (ORCPT
+        with ESMTP id S235720AbiF0NbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:31:13 -0400
-Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A000F6457;
-        Mon, 27 Jun 2022 06:31:12 -0700 (PDT)
-Received: by mail-io1-f41.google.com with SMTP id z191so9525900iof.6;
-        Mon, 27 Jun 2022 06:31:12 -0700 (PDT)
+        Mon, 27 Jun 2022 09:31:15 -0400
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2D86457;
+        Mon, 27 Jun 2022 06:31:14 -0700 (PDT)
+Received: by mail-io1-f52.google.com with SMTP id p128so9567457iof.1;
+        Mon, 27 Jun 2022 06:31:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=gvyNOyKg09RJXU5ec40IlIX3sIrR9XwCvpl1WEk0W1A=;
-        b=Yy3XmkTJ4AuyTeGg+L1n9Um8dBoidfwsPStfg+WFgZhNEd5n0dG3jLpGouzAGBnCou
-         qqW5NsoyMLsLVcG9Ra7fVGLJcAJfjya/nNQQJPdea44VFoLYGWSP86S6J16RRySgohsK
-         3JQmTpnepk5sNItWRdcxhQWGlFoL+Uf6uwFmxXRsM3IKCtSWNTm+TBURveHNJ9VNB8Wx
-         fB6OGE38wedfHvlUKAasn1SpoSzxhIUB+o9o1yJHL8N4+UYPl0EKIaKBmiC2ktKCNsLx
-         vFXiwhyjg1cfovHq0DR+DgsZuaH/BpXEjm5J4Zzk7D52Kh42gfd03KG92CR0n8kbi6pe
-         oV/w==
-X-Gm-Message-State: AJIora8CaVeH1HQAUqqUJZKHLv0HdyC9UbfRsp9ueWgrroNqKaCLAErS
-        VpBpP4J0UvAdEXy9B5xuUQ==
-X-Google-Smtp-Source: AGRyM1sn5cxnWTFDJThm/N0WYIXFSI3CGx3Yy45HDIAoBp2dOs8SX9fD0bX2JUrEW7c9t3fT7UtB8g==
-X-Received: by 2002:a02:c942:0:b0:339:ec11:d04e with SMTP id u2-20020a02c942000000b00339ec11d04emr7739526jao.174.1656336671717;
-        Mon, 27 Jun 2022 06:31:11 -0700 (PDT)
+        bh=QYhUBm2fDCk91Yu6XF3jkA7KmooMdeJ8YT8X3liUnpQ=;
+        b=Sfyohu4QQ/fAryO/zwZnK5jzdVXMqYcVAuZL4ae6Z4/qdjCuYflnuQwG/2cA1aHISW
+         AzuICHovEA+0EtY7lo5LhlOTd3k4UWsmuX68Y4h8alDICJBvlaQKnlyM4aKiflTPlBRY
+         HJJqe2NWSEXWvEjfD/3FijzLSzWq4qDHyXZhu2X4iZdIu6A+dbBWh9mfNc/FNZCB3+Gk
+         lfaD4mcZf+V+yWr5R/qUdB0/ma8pgYn8U7oHyyOElM15lbSnXhmXElya69LxtTO7tDSo
+         mkfIo+mN3sHR6SkMPOpukEoEcnyb/vgE33IC7E+90IeljjSGvpZMp/5mddS/eKmESDYC
+         tcNg==
+X-Gm-Message-State: AJIora8AtCVnc94a2c1D04UNWmQYnNphS37kStvhGzPUVuWcL0l88Cyc
+        excE1ANC//pkAVQPZlZdE88aNnzP2Q==
+X-Google-Smtp-Source: AGRyM1t5LTyR7mVbDtnvxUaO7kFkqXlKaKnkl6jX5y381d5nO3LPJEow6rHeBCy77jwPiTpVZyN44Q==
+X-Received: by 2002:a6b:d309:0:b0:664:716c:d758 with SMTP id s9-20020a6bd309000000b00664716cd758mr6604131iob.157.1656336673455;
+        Mon, 27 Jun 2022 06:31:13 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id n21-20020a6b4115000000b0067554b8e92asm229787ioa.20.2022.06.27.06.31.10
+        by smtp.gmail.com with ESMTPSA id b1-20020a5d8041000000b00674f9fb1531sm5159907ior.30.2022.06.27.06.31.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:31:11 -0700 (PDT)
-Received: (nullmailer pid 2285163 invoked by uid 1000);
+        Mon, 27 Jun 2022 06:31:13 -0700 (PDT)
+Received: (nullmailer pid 2285174 invoked by uid 1000);
         Mon, 27 Jun 2022 13:31:09 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     alexandru.tachici@analog.com
-Cc:     krzysztof.kozlowski+dt@linaro.org, joel@jms.id.au,
-        l.stelmach@samsung.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stephen@networkplumber.org,
-        geert@linux-m68k.org, stefan.wahren@i2se.com, wellslutw@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        gerhard@engleder-embedded.com, devicetree@vger.kernel.org,
-        geert+renesas@glider.be, robh+dt@kernel.org,
-        d.michailidis@fungible.com
-In-Reply-To: <20220624200628.77047-3-alexandru.tachici@analog.com>
-References: <20220624200628.77047-1-alexandru.tachici@analog.com> <20220624200628.77047-3-alexandru.tachici@analog.com>
-Subject: Re: [net-next 2/2] dt-bindings: net: adin1110: Add docs
+To:     Shengjiu Wang <shengjiu.wang@nxp.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        shengjiu.wang@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
+        alsa-devel@alsa-project.org, krzysztof.kozlowski+dt@linaro.org,
+        lgirdwood@gmail.com
+In-Reply-To: <1656294613-27867-1-git-send-email-shengjiu.wang@nxp.com>
+References: <1656294613-27867-1-git-send-email-shengjiu.wang@nxp.com>
+Subject: Re: [PATCH v2] ASoC: dt-bindings: fsl,micfil: Convert format to json-schema
 Date:   Mon, 27 Jun 2022 07:31:09 -0600
-Message-Id: <1656336669.630006.2285162.nullmailer@robh.at.kernel.org>
+Message-Id: <1656336669.670812.2285173.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 24 Jun 2022 23:06:28 +0300, alexandru.tachici@analog.com wrote:
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
+On Mon, 27 Jun 2022 09:50:13 +0800, Shengjiu Wang wrote:
+> Convert the NXP MICFIL binding to DT schema format using json-schema.
 > 
-> Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
-> 
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
 > ---
->  .../devicetree/bindings/net/adi,adin1110.yaml | 127 ++++++++++++++++++
->  1 file changed, 127 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
+> changes in v2
+> - add decription of interrupts.
+> 
+>  .../devicetree/bindings/sound/fsl,micfil.txt  | 33 --------
+>  .../devicetree/bindings/sound/fsl,micfil.yaml | 77 +++++++++++++++++++
+>  2 files changed, 77 insertions(+), 33 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.txt
+>  create mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.yaml
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/net/adi,adin1110.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/net/spi-controller.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: ethernet@0: False schema does not allow {'compatible': ['adi,adin2111'], 'reg': [[0]], 'spi-max-frequency': [[24500000]], 'adi,spi-crc': True, '#address-cells': [[1]], '#size-cells': [[0]], 'interrupts': [[25, 2]], 'mac-address': [[202, 47, 183, 16, 35, 99]], 'phy@0': {'#phy-cells': [[0]], 'compatible': ['ethernet-phy-id0283.bca1'], 'reg': [[0]]}, 'phy@1': {'#phy-cells': [[0]], 'compatible': ['ethernet-phy-id0283.bca1'], 'reg': [[1]]}, '$nodename': ['ethernet@0']}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/adi,adin1110.yaml
+Full log is available here: https://patchwork.ozlabs.org/patch/
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/
+audio-controller@30080000: clock-names: ['ipg_clk', 'ipg_clk_app', 'pll8k', 'pll11k', 'clkext3'] is too long
+	arch/arm64/boot/dts/freescale/imx8mm-beacon-kit.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-data-modul-edm-sbc.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-ddr4-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-emcon-avari.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-icore-mx8mm-ctouch2.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-icore-mx8mm-edimm2.2.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-mx8menlo.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-nitrogen-r2.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-tqma8mqml-mba8mx.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-var-som-symphony.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx-0x.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dahlia.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dev.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dahlia.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dev.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-beacon-kit.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-ddr3l-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-tqma8mqnl-mba8mx.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-var-som-symphony.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-venice-gw7902.dtb
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+audio-controller@30080000: clocks: [[2, 183], [2, 182], [2, 38], [2, 39], [2, 6]] is too long
+	arch/arm64/boot/dts/freescale/imx8mn-beacon-kit.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-ddr3l-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-tqma8mqnl-mba8mx.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-var-som-symphony.dtb
+	arch/arm64/boot/dts/freescale/imx8mn-venice-gw7902.dtb
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+audio-controller@30080000: clocks: [[2, 216], [2, 203], [2, 38], [2, 39], [2, 6]] is too long
+	arch/arm64/boot/dts/freescale/imx8mm-beacon-kit.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-data-modul-edm-sbc.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-ddr4-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-emcon-avari.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-evk.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-icore-mx8mm-ctouch2.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-icore-mx8mm-edimm2.2.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-mx8menlo.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-nitrogen-r2.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-tqma8mqml-mba8mx.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-var-som-symphony.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx-0x.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dahlia.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dev.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dahlia.dtb
+	arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dev.dtb
 
