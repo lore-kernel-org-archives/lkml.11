@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9290CCCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8430CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238862AbiF0Lx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
+        id S238890AbiF0Lx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238352AbiF0LsU (ORCPT
+        with ESMTP id S238373AbiF0LsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:20 -0400
+        Mon, 27 Jun 2022 07:48:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D868FF5BF;
-        Mon, 27 Jun 2022 04:40:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91856FD26;
+        Mon, 27 Jun 2022 04:40:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E39360C16;
-        Mon, 27 Jun 2022 11:40:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F30EC385A2;
-        Mon, 27 Jun 2022 11:40:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2545F611B8;
+        Mon, 27 Jun 2022 11:40:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 354A7C36AE2;
+        Mon, 27 Jun 2022 11:40:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330051;
-        bh=p43v1QQSS/eYXM1SQvebqgA0WDNJeAksylXwSwz473c=;
+        s=korg; t=1656330057;
+        bh=rtkociItVY4GySdFeYnZVICr5i00ah2LEMi002RbqO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0nhjP71QhUe5H6ZGtL9YQjuHPuN04JnHBUb27I3zV2Q1a4rRhj92CHdjIZypbaqVY
-         j3/HB4M1M6LUmF0vOT7sLnfigD6ZpkRu1Gz0EHhqQNqpc7LYB9uwFeT2Cse3BotCmG
-         Ue3J1JUHutBoJ2q/wkkqnUpU3kFCQHzIC9bYijCc=
+        b=rnRCI6fMtiw2tiT3Pyj6w++XBn2nTP9HeT8mlFqXGz/VyXI7wj9L2rnPaZIutl+tn
+         80Ub27oV/fkQ6KTJqJKdDXBE4t4i1eb1smNCPuj3eG4gktUTsyzBcXAJED3k0cmP+N
+         6EdwkC+6xgp/d8kxLHn+gSvs5r9/XS2QoRJgiD0U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 067/181] drm/msm/dp: check core_initialized before disable interrupts at dp_display_unbind()
-Date:   Mon, 27 Jun 2022 13:20:40 +0200
-Message-Id: <20220627111946.507940123@linuxfoundation.org>
+Subject: [PATCH 5.18 069/181] net: phy: at803x: fix NULL pointer dereference on AR9331 PHY
+Date:   Mon, 27 Jun 2022 13:20:42 +0200
+Message-Id: <20220627111946.565417165@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,66 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-[ Upstream commit d80c3ba0ac247791a4ed7a0cd865a64906c8906a ]
+[ Upstream commit 9926de7315be3d606cc011a305ad9adb9e8e14c9 ]
 
-During msm initialize phase, dp_display_unbind() will be called to undo
-initializations had been done by dp_display_bind() previously if there is
-error happen at msm_drm_bind. In this case, core_initialized flag had to
-be check to make sure clocks is on before update DP controller register
-to disable HPD interrupts. Otherwise system will crash due to below NOC
-fatal error.
+Latest kernel will explode on the PHY interrupt config, since it depends
+now on allocated priv. So, run probe to allocate priv to fix it.
 
-QTISECLIB [01f01a7ad]CNOC2 ERROR: ERRLOG0_LOW = 0x00061007
-QTISECLIB [01f01a7ad]GEM_NOC ERROR: ERRLOG0_LOW = 0x00001007
-QTISECLIB [01f0371a0]CNOC2 ERROR: ERRLOG0_HIGH = 0x00000003
-QTISECLIB [01f055297]GEM_NOC ERROR: ERRLOG0_HIGH = 0x00000003
-QTISECLIB [01f072beb]CNOC2 ERROR: ERRLOG1_LOW = 0x00000024
-QTISECLIB [01f0914b8]GEM_NOC ERROR: ERRLOG1_LOW = 0x00000042
-QTISECLIB [01f0ae639]CNOC2 ERROR: ERRLOG1_HIGH = 0x00004002
-QTISECLIB [01f0cc73f]GEM_NOC ERROR: ERRLOG1_HIGH = 0x00004002
-QTISECLIB [01f0ea092]CNOC2 ERROR: ERRLOG2_LOW = 0x0009020c
-QTISECLIB [01f10895f]GEM_NOC ERROR: ERRLOG2_LOW = 0x0ae9020c
-QTISECLIB [01f125ae1]CNOC2 ERROR: ERRLOG2_HIGH = 0x00000000
-QTISECLIB [01f143be7]GEM_NOC ERROR: ERRLOG2_HIGH = 0x00000000
-QTISECLIB [01f16153a]CNOC2 ERROR: ERRLOG3_LOW = 0x00000000
-QTISECLIB [01f17fe07]GEM_NOC ERROR: ERRLOG3_LOW = 0x00000000
-QTISECLIB [01f19cf89]CNOC2 ERROR: ERRLOG3_HIGH = 0x00000000
-QTISECLIB [01f1bb08e]GEM_NOC ERROR: ERRLOG3_HIGH = 0x00000000
-QTISECLIB [01f1d8a31]CNOC2 ERROR: SBM1 FAULTINSTATUS0_LOW = 0x00000002
-QTISECLIB [01f1f72a4]GEM_NOC ERROR: SBM0 FAULTINSTATUS0_LOW = 0x00000001
-QTISECLIB [01f21a217]CNOC3 ERROR: ERRLOG0_LOW = 0x00000006
-QTISECLIB [01f23dfd3]NOC error fatal
+ ar9331_switch ethernet.1:10 lan0 (uninitialized): PHY [!ahb!ethernet@1a000000!mdio!switch@10:00] driver [Qualcomm Atheros AR9331 built-in PHY] (irq=13)
+ CPU 0 Unable to handle kernel paging request at virtual address 0000000a, epc == 8050e8a8, ra == 80504b34
+         ...
+ Call Trace:
+ [<8050e8a8>] at803x_config_intr+0x5c/0xd0
+ [<80504b34>] phy_request_interrupt+0xa8/0xd0
+ [<8050289c>] phylink_bringup_phy+0x2d8/0x3ac
+ [<80502b68>] phylink_fwnode_phy_connect+0x118/0x130
+ [<8074d8ec>] dsa_slave_create+0x270/0x420
+ [<80743b04>] dsa_port_setup+0x12c/0x148
+ [<8074580c>] dsa_register_switch+0xaf0/0xcc0
+ [<80511344>] ar9331_sw_probe+0x370/0x388
+ [<8050cb78>] mdio_probe+0x44/0x70
+ [<804df300>] really_probe+0x200/0x424
+ [<804df7b4>] __driver_probe_device+0x290/0x298
+ [<804df810>] driver_probe_device+0x54/0xe4
+ [<804dfd50>] __device_attach_driver+0xe4/0x130
+ [<804dcb00>] bus_for_each_drv+0xb4/0xd8
+ [<804dfac4>] __device_attach+0x104/0x1a4
+ [<804ddd24>] bus_probe_device+0x48/0xc4
+ [<804deb44>] deferred_probe_work_func+0xf0/0x10c
+ [<800a0ffc>] process_one_work+0x314/0x4d4
+ [<800a17fc>] worker_thread+0x2a4/0x354
+ [<800a9a54>] kthread+0x134/0x13c
+ [<8006306c>] ret_from_kernel_thread+0x14/0x1c
 
-changes in v2:
--- drop the first patch (drm/msm: enable msm irq after all initializations are done successfully at msm_drm_init()) since the problem had been fixed by other patch
+Same Issue would affect some other PHYs (QCA8081, QCA9561), so fix it
+too.
 
-Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/488387/
-Link: https://lore.kernel.org/r/1654538139-7450-1-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: 3265f4218878 ("net: phy: at803x: add fiber support")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/phy/at803x.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 8deb92bddfde..d11c81d8a5db 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -308,7 +308,8 @@ static void dp_display_unbind(struct device *dev, struct device *master,
- 	struct msm_drm_private *priv = dev_get_drvdata(master);
- 
- 	/* disable all HPD interrupts */
--	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
-+	if (dp->core_initialized)
-+		dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
- 
- 	kthread_stop(dp->ev_tsk);
- 
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 6a467e7817a6..59fe356942b5 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -2072,6 +2072,8 @@ static struct phy_driver at803x_driver[] = {
+ 	/* ATHEROS AR9331 */
+ 	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
+ 	.name			= "Qualcomm Atheros AR9331 built-in PHY",
++	.probe			= at803x_probe,
++	.remove			= at803x_remove,
+ 	.suspend		= at803x_suspend,
+ 	.resume			= at803x_resume,
+ 	.flags			= PHY_POLL_CABLE_TEST,
+@@ -2087,6 +2089,8 @@ static struct phy_driver at803x_driver[] = {
+ 	/* Qualcomm Atheros QCA9561 */
+ 	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
+ 	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
++	.probe			= at803x_probe,
++	.remove			= at803x_remove,
+ 	.suspend		= at803x_suspend,
+ 	.resume			= at803x_resume,
+ 	.flags			= PHY_POLL_CABLE_TEST,
+@@ -2151,6 +2155,8 @@ static struct phy_driver at803x_driver[] = {
+ 	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
+ 	.name			= "Qualcomm QCA8081",
+ 	.flags			= PHY_POLL_CABLE_TEST,
++	.probe			= at803x_probe,
++	.remove			= at803x_remove,
+ 	.config_intr		= at803x_config_intr,
+ 	.handle_interrupt	= at803x_handle_interrupt,
+ 	.get_tunable		= at803x_get_tunable,
 -- 
 2.35.1
 
