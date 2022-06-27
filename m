@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46998CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:44:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237083AbiF0LoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        id S237203AbiF0Lo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237293AbiF0Lmk (ORCPT
+        with ESMTP id S237339AbiF0Lmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:40 -0400
+        Mon, 27 Jun 2022 07:42:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC12DF86;
-        Mon, 27 Jun 2022 04:36:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9F8D6C;
+        Mon, 27 Jun 2022 04:36:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59854B81125;
-        Mon, 27 Jun 2022 11:36:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3724C3411D;
-        Mon, 27 Jun 2022 11:36:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57065B81122;
+        Mon, 27 Jun 2022 11:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC32C3411D;
+        Mon, 27 Jun 2022 11:36:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329808;
-        bh=y9i6OcD3+jttfol87JifqvXY8ddQ2O+EJsT5yNM2FLE=;
+        s=korg; t=1656329817;
+        bh=I3QWXVJ9FVedJtIHdTU02ubMeFLjM3USY4KbQkG/yL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oPd4JhhxOU1BvU7WQzb5vQpEvbXV0tNCGfNACqG4RJr/Bfv2J5Rsjcet2eIyDR9hF
-         otGjMWolKk+/HTY4bwg+wqGjQ+RD1crjNWoJh0Kuqj74nbaP+EwS6KCyXFzhGmAA0t
-         mje9OfXMmml2ehl/eMB9OyiG1rRlcbryjid6QV34=
+        b=jGhtzgK0VWA0Im5npXcjCHZGkv8O2z7N7+FGBLgfrfNYrgJk02+dSfZnbLSlPNMqe
+         so4L72khffN9iIR4neJzIBn6dNeeLES6/qI2xf8tdShSmBTQ10Cp9IJsso501u2XBO
+         I+7lmOf4X7kV54cBU4EokzeV9JpEjPhRS2h1ULqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 082/135] iio: adc: vf610: fix conversion mode sysfs node name
-Date:   Mon, 27 Jun 2022 13:21:29 +0200
-Message-Id: <20220627111940.541023583@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Tanveer Alam <tanveer1.alam@intel.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.15 085/135] xhci-pci: Allow host runtime PM as default for Intel Raptor Lake xHCI
+Date:   Mon, 27 Jun 2022 13:21:32 +0200
+Message-Id: <20220627111940.627403211@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -50,35 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baruch Siach <baruch@tkos.co.il>
+From: Tanveer Alam <tanveer1.alam@intel.com>
 
-[ Upstream commit f1a633b15cd5371a2a83f02c513984e51132dd68 ]
+commit 7516da47a349e74de623243a27f9b8a91446bf4f upstream.
 
-The documentation missed the "in_" prefix for this IIO_SHARED_BY_DIR
-entry.
+In the same way as Intel Alder Lake TCSS (Type-C Subsystem) the Raptor
+Lake TCSS xHCI needs to be runtime suspended whenever possible to
+allow the TCSS hardware block to enter D3cold and thus save energy.
 
-Fixes: bf04c1a367e3 ("iio: adc: vf610: implement configurable conversion modes")
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-Acked-by: Haibo Chen <haibo.chen@nxp.com>
-Link: https://lore.kernel.org/r/560dc93fafe5ef7e9a409885fd20b6beac3973d8.1653900626.git.baruch@tkos.co.il
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@kernel.org
+Signed-off-by: Tanveer Alam <tanveer1.alam@intel.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220623111945.1557702-4-mathias.nyman@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/ABI/testing/sysfs-bus-iio-vf610 | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/host/xhci-pci.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610 b/Documentation/ABI/testing/sysfs-bus-iio-vf610
-index 308a6756d3bf..491ead804488 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-vf610
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
-@@ -1,4 +1,4 @@
--What:		/sys/bus/iio/devices/iio:deviceX/conversion_mode
-+What:		/sys/bus/iio/devices/iio:deviceX/in_conversion_mode
- KernelVersion:	4.2
- Contact:	linux-iio@vger.kernel.org
- Description:
--- 
-2.35.1
-
+--- a/drivers/usb/host/xhci-pci.c
++++ b/drivers/usb/host/xhci-pci.c
+@@ -61,6 +61,7 @@
+ #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI		0x461e
+ #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI		0x464e
+ #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI	0x51ed
++#define PCI_DEVICE_ID_INTEL_RAPTOR_LAKE_XHCI		0xa71e
+ 
+ #define PCI_DEVICE_ID_AMD_RENOIR_XHCI			0x1639
+ #define PCI_DEVICE_ID_AMD_PROMONTORYA_4			0x43b9
+@@ -270,7 +271,8 @@ static void xhci_pci_quirks(struct devic
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI ||
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI ||
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI ||
+-	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI))
++	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI ||
++	     pdev->device == PCI_DEVICE_ID_INTEL_RAPTOR_LAKE_XHCI))
+ 		xhci->quirks |= XHCI_DEFAULT_PM_RUNTIME_ALLOW;
+ 
+ 	if (pdev->vendor == PCI_VENDOR_ID_ETRON &&
 
 
