@@ -2,86 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C86D8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A146C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:01:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238690AbiF0MBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54150 "EHLO
+        id S239117AbiF0MBM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238989AbiF0Lw5 (ORCPT
+        with ESMTP id S239008AbiF0Lw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:52:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA1EBC0C;
-        Mon, 27 Jun 2022 04:46:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBB45610A0;
-        Mon, 27 Jun 2022 11:46:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C355C3411D;
-        Mon, 27 Jun 2022 11:46:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330411;
-        bh=w8pEeD49eTpvRe45M7NoRlebckBgfBtMDWOyG0gSJaQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WroO5MbUDC0S6dLsX9wskKrZcvqaF8Rzq5jsfHBneQlHknSwCAoGjaLBAyTxJa+TV
-         43MdzOktBjrZJ+XCXOXDXgHElWQE2t9DjNkNV5GfJBHhHpbYTm56udTO24RzcMTh00
-         Z5n8C2Qaxw2Vov14JMKjFHG0B6IG6JGqpAWcFmGM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Ivan T. Ivanov" <iivanov@suse.de>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 5.18 174/181] ARM: dts: bcm2711-rpi-400: Fix GPIO line names
-Date:   Mon, 27 Jun 2022 13:22:27 +0200
-Message-Id: <20220627111949.729189256@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
-References: <20220627111944.553492442@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 27 Jun 2022 07:52:59 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E53CDF46
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:47:09 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id k22so12667729wrd.6
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:47:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=DNfZf1ALusxNZItYPzLBSfgjkhIQRGT+paZKIzAlEKg=;
+        b=sV0flEb6e8vzBIQcGxl/RLcS74O4Nx86dAcc93mn8FPtVTw4L5J2j0DXwIo4b1jLiO
+         TXHVeiIcfQZLyRgCwf+yZPOodVlfqP7U2xrt+TCXRZ+nxCfubcoofsr285ENaoFYiLrN
+         yo6kSYEVQvXzaisFGfYxVAMk6fdCXNeTqKrUclCUe1cKod1balAyTsQTFW1Sruvgjn3U
+         IFQxkz9S5+LvuuIYFxHS7wfyALzJolDZGfzDPYieb8saBvE7lAZGOy/5K1saLTZBAzr5
+         E/GzyemEfHqv9Eq0lkfWGAuM5iwXChMCfoShbooumaD06p/179duedibRQra51wMX1bb
+         SvJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=DNfZf1ALusxNZItYPzLBSfgjkhIQRGT+paZKIzAlEKg=;
+        b=5gnxPDx0Mp5VAvcS/32VSM30Jp7o0y40/w1pOtbUpMScwcf0Nt3BSOPnxnNBjgl/pf
+         SwwlrfYyKuAZa8Iz2tvg1wc+v5VOkB+BqeoXYDomZ9OvQRkCTKE6zlBdgg81JLAV/LXD
+         jNulAnrHkcbDslKcPJeVGRhsmHuFfpVMvJ2VPUCpUdaypuWk5wnpvyjmnMAxcPmb3Ooz
+         wzqF9a4EFEWSd5/oPucHIVkC8iIN41KsqTccOwnCYqkC7hXfjKgfIh7pEoEx1yeZrXWU
+         MMfSMaurb8k2NFCLFsGZCBPZHfvV7U1K1g/cV2SwEuMpurYkgpluHNMP09EEFo+2+DbO
+         EaQQ==
+X-Gm-Message-State: AJIora9cvNOiGFpasWP//r4Urz2A5FPyh4U34D+ptKOjRie7ydEJE8yB
+        AU2ZXzdqRmUncnkxCTp9R5pd1g==
+X-Google-Smtp-Source: AGRyM1v/Irv5206u/VfQLtfpPzA9fr8PJqMfZhF2phPpC4wOEt4/o9BLlBG0Ze4sOEA0d8pg3/fEhg==
+X-Received: by 2002:a5d:64a3:0:b0:21b:b86f:e9cc with SMTP id m3-20020a5d64a3000000b0021bb86fe9ccmr11701408wrp.156.1656330428099;
+        Mon, 27 Jun 2022 04:47:08 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id t10-20020adfe10a000000b00210320d9fbfsm12218547wrz.18.2022.06.27.04.47.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 04:47:07 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 12:47:05 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, johnson.wang@mediatek.com,
+        hsin-hsiung.wang@mediatek.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] mfd: mt6397: Add basic support for MT6331+MT6332
+ PMIC
+Message-ID: <YrmYuRy2ZgIw21JX@google.com>
+References: <20220617110728.90132-1-angelogioacchino.delregno@collabora.com>
+ <20220617110728.90132-3-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220617110728.90132-3-angelogioacchino.delregno@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+On Fri, 17 Jun 2022, AngeloGioacchino Del Regno wrote:
 
-commit b9b6d4c925604b70d007feb4c77b8cc4c038d2da upstream.
+> Add support for the MT6331 PMIC with MT6332 Companion PMIC, found
+> in MT6795 Helio X10 smartphone platforms.
+> 
+> This combo has support for multiple devices but, for a start,
+> only the following have been implemented:
+> - Regulators (two instances, one in MT6331, one in MT6332)
+> - RTC (MT6331)
+> - Keys (MT6331)
+> - Interrupts (MT6331 also dispatches MT6332's interrupts)
+> 
+> There's more to be implemented, especially for MT6332, which
+> will come at a later stage.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  drivers/mfd/mt6397-core.c            |  47 ++
+>  drivers/mfd/mt6397-irq.c             |   9 +-
+>  include/linux/mfd/mt6331/core.h      |  40 ++
+>  include/linux/mfd/mt6331/registers.h | 584 ++++++++++++++++++++++++
+>  include/linux/mfd/mt6332/core.h      |  65 +++
+>  include/linux/mfd/mt6332/registers.h | 642 +++++++++++++++++++++++++++
+>  include/linux/mfd/mt6397/core.h      |   2 +
+>  7 files changed, 1388 insertions(+), 1 deletion(-)
+>  create mode 100644 include/linux/mfd/mt6331/core.h
+>  create mode 100644 include/linux/mfd/mt6331/registers.h
+>  create mode 100644 include/linux/mfd/mt6332/core.h
+>  create mode 100644 include/linux/mfd/mt6332/registers.h
 
-The GPIO expander line names has been fixed in the vendor tree last year,
-so upstream these changes.
+Does not apply.  Please rebase.
 
-Fixes: 1c701accecf2 ("ARM: dts: Add Raspberry Pi 400 support")
-Reported-by: Ivan T. Ivanov <iivanov@suse.de>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm/boot/dts/bcm2711-rpi-400.dts |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
---- a/arch/arm/boot/dts/bcm2711-rpi-400.dts
-+++ b/arch/arm/boot/dts/bcm2711-rpi-400.dts
-@@ -28,12 +28,12 @@
- &expgpio {
- 	gpio-line-names = "BT_ON",
- 			  "WL_ON",
--			  "",
-+			  "PWR_LED_OFF",
- 			  "GLOBAL_RESET",
- 			  "VDD_SD_IO_SEL",
--			  "CAM_GPIO",
-+			  "GLOBAL_SHUTDOWN",
- 			  "SD_PWR_ON",
--			  "SD_OC_N";
-+			  "SHUTDOWN_REQUEST";
- };
- 
- &genet_mdio {
-
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
