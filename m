@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE6AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7EEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236171AbiF0Ljs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59928 "EHLO
+        id S236842AbiF0Lju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:39:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236516AbiF0Lhh (ORCPT
+        with ESMTP id S236528AbiF0Lhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61700B04;
-        Mon, 27 Jun 2022 04:33:56 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D08B64D1;
+        Mon, 27 Jun 2022 04:33:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24467B81122;
-        Mon, 27 Jun 2022 11:33:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49DF4C341C8;
-        Mon, 27 Jun 2022 11:33:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BF62B8111D;
+        Mon, 27 Jun 2022 11:33:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59CFFC341C7;
+        Mon, 27 Jun 2022 11:33:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329633;
-        bh=E49iyCRj4QbP3/EbZLXLwZp+fDTLfjOcMQvlo3rHagI=;
+        s=korg; t=1656329636;
+        bh=zX/ShIUBNHcR9fNf0IX5Z2WYk4YDcYfU4+kcHHO4VZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kZ01N1CSEp5yk1qcQRSJBr7UN8P59XU4xn9Tu7nTuKepOTCh3vonnUPBSFIzUCg8w
-         gij9RA2ccPKOmHiNp6pcyPhcB1RQYqNNs5/f8ZbdFyO8zV+00lD8xaHuQdu8aZ0y1j
-         VnubhRWojSSV7FKD3AOWjoNRCq/VtJHVKZpMugeA=
+        b=VDC83v6GUrJbsa6YIMGRtBei5x5yOgz2iBbxcmu+/9LfOdoE97IQ6iLxqz31cItCA
+         MVEdg1KwaIYUxfyeCMRblU+Yjvp9eoZj2Npfmqg4h/uH0x6CEdE560O4mzxtIPyWtJ
+         2GTLR5njwSm1KMiVVr3yO/TlxeTu0cYoTT1KJ6n8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, zdi-disclosures@trendmicro.com,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Douglas Anderson <dianders@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 063/135] udmabuf: add back sanity check
-Date:   Mon, 27 Jun 2022 13:21:10 +0200
-Message-Id: <20220627111939.986095750@linuxfoundation.org>
+Subject: [PATCH 5.15 037/135] drm/msm: Switch ordering of runpm put vs devfreq_idle
+Date:   Mon, 27 Jun 2022 13:20:44 +0200
+Message-Id: <20220627111939.235945076@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,40 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gerd Hoffmann <kraxel@redhat.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit 05b252cccb2e5c3f56119d25de684b4f810ba40a ]
+[ Upstream commit 49e477610087a02c3604061b8f3ee3a25a493987 ]
 
-Check vm_fault->pgoff before using it.  When we removed the warning, we
-also removed the check.
+In msm_devfreq_suspend() we cancel idle_work synchronously so that it
+doesn't run after we power of the hw or in the resume path.  But this
+means that we want to ensure that idle_work is not scheduled *after* we
+no longer hold a runpm ref.  So switch the ordering of pm_runtime_put()
+vs msm_devfreq_idle().
 
-Fixes: 7b26e4e2119d ("udmabuf: drop WARN_ON() check.")
-Reported-by: zdi-disclosures@trendmicro.com
-Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+v2. Only move the runpm _put_autosuspend, and not the _mark_last_busy()
+
+Fixes: 9bc95570175a ("drm/msm: Devfreq tuning")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20210927152928.831245-1-robdclark@gmail.com
+Reviewed-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Link: https://lore.kernel.org/r/20220608161334.2140611-1-robdclark@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma-buf/udmabuf.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/msm_gpu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma-buf/udmabuf.c b/drivers/dma-buf/udmabuf.c
-index e7330684d3b8..9631f2fd2faf 100644
---- a/drivers/dma-buf/udmabuf.c
-+++ b/drivers/dma-buf/udmabuf.c
-@@ -32,8 +32,11 @@ static vm_fault_t udmabuf_vm_fault(struct vm_fault *vmf)
- {
- 	struct vm_area_struct *vma = vmf->vma;
- 	struct udmabuf *ubuf = vma->vm_private_data;
-+	pgoff_t pgoff = vmf->pgoff;
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index 2c46cd968ac4..b01d0a521c90 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -658,7 +658,6 @@ static void retire_submit(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+ 	msm_submit_retire(submit);
  
--	vmf->page = ubuf->pages[vmf->pgoff];
-+	if (pgoff >= ubuf->pagecount)
-+		return VM_FAULT_SIGBUS;
-+	vmf->page = ubuf->pages[pgoff];
- 	get_page(vmf->page);
- 	return 0;
+ 	pm_runtime_mark_last_busy(&gpu->pdev->dev);
+-	pm_runtime_put_autosuspend(&gpu->pdev->dev);
+ 
+ 	spin_lock_irqsave(&ring->submit_lock, flags);
+ 	list_del(&submit->node);
+@@ -672,6 +671,8 @@ static void retire_submit(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+ 		msm_devfreq_idle(gpu);
+ 	mutex_unlock(&gpu->active_lock);
+ 
++	pm_runtime_put_autosuspend(&gpu->pdev->dev);
++
+ 	msm_gem_submit_put(submit);
  }
+ 
 -- 
 2.35.1
 
