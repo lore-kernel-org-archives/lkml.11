@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C721BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E361AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236039AbiF0LfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51176 "EHLO
+        id S235643AbiF0LfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:35:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236293AbiF0Lde (ORCPT
+        with ESMTP id S236297AbiF0Lde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:33:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755BEB07;
-        Mon, 27 Jun 2022 04:30:50 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4660DE85;
+        Mon, 27 Jun 2022 04:30:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12B8CB8111B;
-        Mon, 27 Jun 2022 11:30:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6723BC3411D;
-        Mon, 27 Jun 2022 11:30:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38D0F612D8;
+        Mon, 27 Jun 2022 11:30:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47DE0C3411D;
+        Mon, 27 Jun 2022 11:30:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329447;
-        bh=cIyAScn2AhewLmNAPu3c6ZTbqfpYL2Q2tu+IGjIzypI=;
+        s=korg; t=1656329450;
+        bh=kkt3gAkpk4zSt5RnRBLPq4ddCp0djTQjV7HBZwGkRQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ug8OhEzoENU3oxBRayE4+c5iQoCQ4kPWx9VC1DoK0DpZ4/pD/hpwDGFWOg0NcriOY
-         8+Jk/EZMQ3UWKURjGhxWceMna1akm1mg73Cjoqz2zL4z/wUU7PfjXOSOeTHEkZY3ET
-         55QRB12EwsUf0it6xVp20yKSW9h2seg3Su73jbEQ=
+        b=KGobKaAqFvrsExtmcMeKl6MhmHpiLfwOzTOXw/5Z6gtwhCRbWohYJnlU24+1qiP3R
+         eTKx02eS3DWx0u3GUPCzoqOh9B46fl0ZCi8r7rIaZ/BRa58ffhJO5fPt6RnjhXgdtm
+         BOjOr1fQp8s+VfdMHn+e7Haz8pZ4ENsUwUYQ5n10=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Sumit Dubey2 <Sumit.Dubey2@ibm.com>,
+        Sathvika Vasireddy <sathvika@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Nathan Lynch <nathanl@linux.ibm.com>,
         Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.4 49/60] powerpc: Enable execve syscall exit tracepoint
-Date:   Mon, 27 Jun 2022 13:22:00 +0200
-Message-Id: <20220627111929.133760521@linuxfoundation.org>
+Subject: [PATCH 5.4 50/60] powerpc/rtas: Allow ibm,platform-dump RTAS call with null buffer address
+Date:   Mon, 27 Jun 2022 13:22:01 +0200
+Message-Id: <20220627111929.162390729@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -50,58 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Andrew Donnellan <ajd@linux.ibm.com>
 
-commit ec6d0dde71d760aa60316f8d1c9a1b0d99213529 upstream.
+commit 7bc08056a6dabc3a1442216daf527edf61ac24b6 upstream.
 
-On execve[at], we are zero'ing out most of the thread register state
-including gpr[0], which contains the syscall number. Due to this, we
-fail to trigger the syscall exit tracepoint properly. Fix this by
-retaining gpr[0] in the thread register state.
+Add a special case to block_rtas_call() to allow the ibm,platform-dump RTAS
+call through the RTAS filter if the buffer address is 0.
 
-Before this patch:
-  # tail /sys/kernel/debug/tracing/trace
-	       cat-123     [000] .....    61.449351: sys_execve(filename:
-  7fffa6b23448, argv: 7fffa6b233e0, envp: 7fffa6b233f8)
-	       cat-124     [000] .....    62.428481: sys_execve(filename:
-  7fffa6b23448, argv: 7fffa6b233e0, envp: 7fffa6b233f8)
-	      echo-125     [000] .....    65.813702: sys_execve(filename:
-  7fffa6b23378, argv: 7fffa6b233a0, envp: 7fffa6b233b0)
-	      echo-125     [000] .....    65.822214: sys_execveat(fd: 0,
-  filename: 1009ac48, argv: 7ffff65d0c98, envp: 7ffff65d0ca8, flags: 0)
+According to PAPR, ibm,platform-dump is called with a null buffer address
+to notify the platform firmware that processing of a particular dump is
+finished.
 
-After this patch:
-  # tail /sys/kernel/debug/tracing/trace
-	       cat-127     [000] .....   100.416262: sys_execve(filename:
-  7fffa41b3448, argv: 7fffa41b33e0, envp: 7fffa41b33f8)
-	       cat-127     [000] .....   100.418203: sys_execve -> 0x0
-	      echo-128     [000] .....   103.873968: sys_execve(filename:
-  7fffa41b3378, argv: 7fffa41b33a0, envp: 7fffa41b33b0)
-	      echo-128     [000] .....   103.875102: sys_execve -> 0x0
-	      echo-128     [000] .....   103.882097: sys_execveat(fd: 0,
-  filename: 1009ac48, argv: 7fffd10d2148, envp: 7fffd10d2158, flags: 0)
-	      echo-128     [000] .....   103.883225: sys_execveat -> 0x0
+Without this, on a pseries machine with CONFIG_PPC_RTAS_FILTER enabled, an
+application such as rtas_errd that is attempting to retrieve a dump will
+encounter an error at the end of the retrieval process.
 
+Fixes: bd59380c5ba4 ("powerpc/rtas: Restrict RTAS requests from userspace")
 Cc: stable@vger.kernel.org
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Tested-by: Sumit Dubey2 <Sumit.Dubey2@ibm.com>
+Reported-by: Sathvika Vasireddy <sathvika@linux.ibm.com>
+Signed-off-by: Andrew Donnellan <ajd@linux.ibm.com>
+Reviewed-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Reviewed-by: Nathan Lynch <nathanl@linux.ibm.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220609103328.41306-1-naveen.n.rao@linux.vnet.ibm.com
+Link: https://lore.kernel.org/r/20220614134952.156010-1-ajd@linux.ibm.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/process.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kernel/rtas.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -1719,7 +1719,7 @@ void start_thread(struct pt_regs *regs,
- 		tm_reclaim_current(0);
- #endif
+--- a/arch/powerpc/kernel/rtas.c
++++ b/arch/powerpc/kernel/rtas.c
+@@ -988,7 +988,7 @@ static struct rtas_filter rtas_filters[]
+ 	{ "get-time-of-day", -1, -1, -1, -1, -1 },
+ 	{ "ibm,get-vpd", -1, 0, -1, 1, 2 },
+ 	{ "ibm,lpar-perftools", -1, 2, 3, -1, -1 },
+-	{ "ibm,platform-dump", -1, 4, 5, -1, -1 },
++	{ "ibm,platform-dump", -1, 4, 5, -1, -1 },		/* Special cased */
+ 	{ "ibm,read-slot-reset-state", -1, -1, -1, -1, -1 },
+ 	{ "ibm,scan-log-dump", -1, 0, 1, -1, -1 },
+ 	{ "ibm,set-dynamic-indicator", -1, 2, -1, -1, -1 },
+@@ -1035,6 +1035,15 @@ static bool block_rtas_call(int token, i
+ 				size = 1;
  
--	memset(regs->gpr, 0, sizeof(regs->gpr));
-+	memset(&regs->gpr[1], 0, sizeof(regs->gpr) - sizeof(regs->gpr[0]));
- 	regs->ctr = 0;
- 	regs->link = 0;
- 	regs->xer = 0;
+ 			end = base + size - 1;
++
++			/*
++			 * Special case for ibm,platform-dump - NULL buffer
++			 * address is used to indicate end of dump processing
++			 */
++			if (!strcmp(f->name, "ibm,platform-dump") &&
++			    base == 0)
++				return false;
++
+ 			if (!in_rmo_buf(base, end))
+ 				goto err;
+ 		}
 
 
