@@ -2,110 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1259CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:56:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DADC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236376AbiF0O4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 10:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
+        id S236697AbiF0O4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 10:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234416AbiF0O4L (ORCPT
+        with ESMTP id S234416AbiF0O4e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 10:56:11 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id E804B167D2
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:56:09 -0700 (PDT)
-Received: (qmail 121219 invoked by uid 1000); 27 Jun 2022 10:56:09 -0400
-Date:   Mon, 27 Jun 2022 10:56:09 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Paul =?iso-8859-1?Q?Heidekr=FCger?= <Paul.Heidekrueger@in.tum.de>
-Cc:     clang-built-linux <llvm@lists.linux.dev>,
-        linux-toolchains@vger.kernel.org,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Palmer Dabbelt <palmer@dabbelt.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Marco Elver <elver@google.com>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
-        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
-        Martin Fink <martin.fink@in.tum.de>
-Subject: Re: [PATCH RFC] tools/memory-model: Adjust ctrl dependency definition
-Message-ID: <YrnFCSjESpeQdciv@rowland.harvard.edu>
-References: <20220615114330.2573952-1-paul.heidekrueger@in.tum.de>
- <YqnpshlsAHg7Uf9G@rowland.harvard.edu>
- <50B9D7C1-B11D-4583-9814-BFFF2C80D8CA@in.tum.de>
- <YrHUkfDWsexHRUKj@rowland.harvard.edu>
- <04B4DBD6-1262-4905-9E85-9466FC104895@in.tum.de>
+        Mon, 27 Jun 2022 10:56:34 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE9B1704B
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:56:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656341793; x=1687877793;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=bGHVaA7Y+W77422JzIddjRuPoKK0dOVQ9IvZwPkfw9k=;
+  b=gJVfRCyu1pvsU7iG/kuUB0ZUnDpSVgnq+OJU2hfrO2FgPCynHI/BVFh5
+   dLw9U6xW9Es7pjT5wMF3hn3QVyHpTkaO2Ikmlq6ofyRkKH7Zt+3vd/9um
+   Uz96gj6P/fOSjQxx+BI5xGlp4Lm3kSFJ50JMzPjhn+Zc6eaLzTasGEet+
+   LDhg7zw6k1z3ZriI0YptUIvTpFjPZq+66BnprcOBKitoitFXnly+QSK5g
+   TiUs+pKdCLDTIHLFcBmDWlQm+bhBFtKCUiLRflvKaboi3ixlhaoL+nOQK
+   rmdBhJcgq2204P4MJObgmguhZYzPZoTI7Qi4qXLDg0ppDIp5iEW5wMfiq
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="279009416"
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="279009416"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 07:56:33 -0700
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="679608765"
+Received: from noraberg-mobl1.amr.corp.intel.com (HELO [10.209.14.29]) ([10.209.14.29])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 07:56:31 -0700
+Message-ID: <bceec213-4756-474b-6b91-51266e86c25a@linux.intel.com>
+Date:   Mon, 27 Jun 2022 07:56:29 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <04B4DBD6-1262-4905-9E85-9466FC104895@in.tum.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH v8 2/5] x86/tdx: Add TDX Guest event notify interrupt
+ support
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        "Yao, Jiewen" <jiewen.yao@intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        "marcelo.cerri@canonical.com" <marcelo.cerri@canonical.com>,
+        "tim.gardner@canonical.com" <tim.gardner@canonical.com>,
+        "khalid.elmously@canonical.com" <khalid.elmously@canonical.com>,
+        "Cox, Philip" <philip.cox@canonical.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220609025220.2615197-3-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <78873cc1db47ba00a4c01f38290521c1a6072820.camel@intel.com>
+ <efb2cdab-289b-8757-fe5e-5348519b0474@linux.intel.com>
+ <385B219C-4DB2-480C-913C-411AB4D644ED@intel.com>
+ <MW4PR11MB5872E3B775A680678331D6358CB79@MW4PR11MB5872.namprd11.prod.outlook.com>
+ <9c7d99469179340eeecabaf3e9c414fc98900626.camel@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <9c7d99469179340eeecabaf3e9c414fc98900626.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 11:47:43AM +0200, Paul Heidekrüger wrote:
+
+
+On 6/27/22 4:21 AM, Kai Huang wrote:
+> On Sat, 2022-06-25 at 15:35 +1200, Yao, Jiewen wrote:
+>> Thank you, Jun.
+>>
+>> Yes. I confirmed that we will include below change to GHCI.next spec.
+>>
+>> ================
+>> 3.5 TDG.VP.VMCALL<SetupEventNotifyInterrupt>
+>>
+>> From: "The host VMM should use SEAMCALL [TDWRVPS] leaf to inject an interrupt at the requested-interrupt vector into the TD via the posted-interrupt descriptor. "
+>>
+>> To: "The host VMM should use SEAMCALL [TDWRVPS] leaf to inject an interrupt at the requested-interrupt vector into the TD VCPU that executed TDG.VP.VMCALL <SetupEventNotifyInterrupt> via the posted-interrupt descriptor. "
+>>
 > 
-> > On 21. Jun 2022, at 16:24, Alan Stern <stern@rowland.harvard.edu> wrote:
-> > 
-> > On Tue, Jun 21, 2022 at 01:59:27PM +0200, Paul Heidekrüger wrote:
-> >> OK. So, LKMM limits the scope of control dependencies to its arm(s), hence
-> >> there is a control dependency from the last READ_ONCE() before the loop
-> >> exists to the WRITE_ONCE().
-> >> 
-> >> But then what about the following:
-> >> 
-> >>> int *x, *y;
-> >>> 
-> >>> int foo()
-> >>> {
-> >>> 	/* More code */
-> >>> 
-> >>> 	if(READ_ONCE(x))
-> >>> 		return 42;
-> >>> 
-> >>> 	/* More code */
-> >>> 
-> >>> 	WRITE_ONCE(y, 42);
-> >>> 
-> >>> 	/* More code */
-> >>> 
-> >>> 	return 0;
-> >>> }
-> >> 
-> >> The READ_ONCE() determines whether the WRITE_ONCE() will be executed at all,
-> >> but the WRITE_ONCE() doesn't lie in the if condition's arm.
-> > 
-> > So in this case the LKMM would not recognize that there's a control 
-> > dependency, even though it clearly exists.
+> Hi Sathy,
 > 
-> Oh, that's unfortunate.
+> With this change, I don't think we should use system vector anymore.  Instead,
+> we just need one non-migratable IRQ which has a fixed vector on a fixed cpu.
 > 
-> Then I would still argue that the "at all" definition is misleading. This
 
-I agree, and I would welcome a patch improving the definition.  Perhaps 
-something along the lines of what I wrote earlier in this email thread.
+Yes. I will try your suggestion and make necessary changes in next version.
 
-> time in the other direction as I had initially proposed though, as the above
-> example is a case where "at all" holds true, but LKMM doesn't cover it. Or
-> do you think that caveating this in litmus-tests.txt, e.g. via the patch we
-> had recently worked out [1], is enough?
-
-No, the explanation should be improved.
-
-Alan
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
