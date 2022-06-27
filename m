@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4D2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1FBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235661AbiF0LgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56032 "EHLO
+        id S236231AbiF0LgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:36:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235264AbiF0Lds (ORCPT
+        with ESMTP id S235628AbiF0Ld7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:33:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4A8BDE;
-        Mon, 27 Jun 2022 04:31:16 -0700 (PDT)
+        Mon, 27 Jun 2022 07:33:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6039BE6;
+        Mon, 27 Jun 2022 04:31:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14766B8111B;
-        Mon, 27 Jun 2022 11:31:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3768AC3411D;
-        Mon, 27 Jun 2022 11:31:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4181B60920;
+        Mon, 27 Jun 2022 11:31:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4915FC3411D;
+        Mon, 27 Jun 2022 11:31:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329473;
-        bh=1vs+4O73ZkfN8D3Bvz76KHOfCkHKRBezAWm1iAsVk0o=;
+        s=korg; t=1656329476;
+        bh=qVmso/Xeu4w+IvyAtNFsFsv8nDCVZ86jwETqtgL64rc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FLRbh6NnnW//aOSm9+vYtrX+vhevA1huohThrrmNKKc3WBPuAMUf7pGTp1DWURWfI
-         WU4TdMBqT1uSah0tFM0MLFJ0zFI+hoU4TIoxDB/c6iA5yVR+PIRhKwUqiZUJWJxzZP
-         PR6txZVVTY5JTWRv3SKKkPMWe1JNzR9kqBu6Ym4U=
+        b=CtO0B+HjjHDPaYAhwL78ZPfqMNoos9bXVDXyQEfw+rxtNoz0l0XeO/FVMdUiVhv9n
+         /VKeHYq/hBLU24Sn4LrBa8COEE1RsBSsADSNg6Lyxg3LVhMUbglTfpYDJoeE3Gh+zS
+         h4Xx3BoWsMrvICbqTK3l9kgUipQJCh3xuKuPzGHw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Tyler Hicks <tyhicks@linux.microsoft.com>,
         Christian Schoenebeck <linux_oss@crudebyte.com>,
         Dominique Martinet <asmadeus@codewreck.org>
-Subject: [PATCH 5.15 011/135] 9p: Fix refcounting during full path walks for fid lookups
-Date:   Mon, 27 Jun 2022 13:20:18 +0200
-Message-Id: <20220627111938.486779755@linuxfoundation.org>
+Subject: [PATCH 5.15 012/135] 9p: fix fid refcount leak in v9fs_vfs_atomic_open_dotl
+Date:   Mon, 27 Jun 2022 13:20:19 +0200
+Message-Id: <20220627111938.515303174@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -49,103 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyler Hicks <tyhicks@linux.microsoft.com>
+From: Dominique Martinet <asmadeus@codewreck.org>
 
-commit 2a3dcbccd64ba35c045fac92272ff981c4cbef44 upstream.
+commit beca774fc51a9ba8abbc869cf0c3d965ff17cd24 upstream.
 
-Decrement the refcount of the parent dentry's fid after walking
-each path component during a full path walk for a lookup. Failure to do
-so can lead to fids that are not clunked until the filesystem is
-unmounted, as indicated by this warning:
+We need to release directory fid if we fail halfway through open
 
- 9pnet: found fid 3 not clunked
+This fixes fid leaking with xfstests generic 531
 
-The improper refcounting after walking resulted in open(2) returning
--EIO on any directories underneath the mount point when using the virtio
-transport. When using the fd transport, there's no apparent issue until
-the filesytem is unmounted and the warning above is emitted to the logs.
-
-In some cases, the user may not yet be attached to the filesystem and a
-new root fid, associated with the user, is created and attached to the
-root dentry before the full path walk is performed. Increment the new
-root fid's refcount to two in that situation so that it can be safely
-decremented to one after it is used for the walk operation. The new fid
-will still be attached to the root dentry when
-v9fs_fid_lookup_with_uid() returns so a final refcount of one is
-correct/expected.
-
-Link: https://lkml.kernel.org/r/20220527000003.355812-2-tyhicks@linux.microsoft.com
-Link: https://lkml.kernel.org/r/20220612085330.1451496-4-asmadeus@codewreck.org
+Link: https://lkml.kernel.org/r/20220612085330.1451496-2-asmadeus@codewreck.org
 Fixes: 6636b6dcc3db ("9p: add refcount to p9_fid struct")
 Cc: stable@vger.kernel.org
-Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Reported-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Reviewed-by: Tyler Hicks <tyhicks@linux.microsoft.com>
 Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-[Dominique: fix clunking fid multiple times discussed in second link]
 Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/9p/fid.c |   22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+ fs/9p/vfs_inode_dotl.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/9p/fid.c
-+++ b/fs/9p/fid.c
-@@ -151,7 +151,7 @@ static struct p9_fid *v9fs_fid_lookup_wi
- 	const unsigned char **wnames, *uname;
- 	int i, n, l, clone, access;
- 	struct v9fs_session_info *v9ses;
--	struct p9_fid *fid, *old_fid = NULL;
-+	struct p9_fid *fid, *old_fid;
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -276,6 +276,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *
+ 	if (IS_ERR(ofid)) {
+ 		err = PTR_ERR(ofid);
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
++		p9_client_clunk(dfid);
+ 		goto out;
+ 	}
  
- 	v9ses = v9fs_dentry2v9ses(dentry);
- 	access = v9ses->flags & V9FS_ACCESS_MASK;
-@@ -193,13 +193,12 @@ static struct p9_fid *v9fs_fid_lookup_wi
- 		if (IS_ERR(fid))
- 			return fid;
- 
-+		refcount_inc(&fid->count);
- 		v9fs_fid_add(dentry->d_sb->s_root, fid);
+@@ -287,6 +288,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *
+ 	if (err) {
+ 		p9_debug(P9_DEBUG_VFS, "Failed to get acl values in creat %d\n",
+ 			 err);
++		p9_client_clunk(dfid);
+ 		goto error;
  	}
- 	/* If we are root ourself just return that */
--	if (dentry->d_sb->s_root == dentry) {
--		refcount_inc(&fid->count);
-+	if (dentry->d_sb->s_root == dentry)
- 		return fid;
--	}
- 	/*
- 	 * Do a multipath walk with attached root.
- 	 * When walking parent we need to make sure we
-@@ -211,6 +210,7 @@ static struct p9_fid *v9fs_fid_lookup_wi
- 		fid = ERR_PTR(n);
- 		goto err_out;
+ 	err = p9_client_create_dotl(ofid, name, v9fs_open_to_dotl_flags(flags),
+@@ -294,6 +296,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *
+ 	if (err < 0) {
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_open_dotl failed in creat %d\n",
+ 			 err);
++		p9_client_clunk(dfid);
+ 		goto error;
  	}
-+	old_fid = fid;
- 	clone = 1;
- 	i = 0;
- 	while (i < n) {
-@@ -220,19 +220,15 @@ static struct p9_fid *v9fs_fid_lookup_wi
- 		 * walk to ensure none of the patch component change
- 		 */
- 		fid = p9_client_walk(fid, l, &wnames[i], clone);
-+		/* non-cloning walk will return the same fid */
-+		if (fid != old_fid) {
-+			p9_client_clunk(old_fid);
-+			old_fid = fid;
-+		}
- 		if (IS_ERR(fid)) {
--			if (old_fid) {
--				/*
--				 * If we fail, clunk fid which are mapping
--				 * to path component and not the last component
--				 * of the path.
--				 */
--				p9_client_clunk(old_fid);
--			}
- 			kfree(wnames);
- 			goto err_out;
- 		}
--		old_fid = fid;
- 		i += l;
- 		clone = 0;
- 	}
+ 	v9fs_invalidate_inode_attr(dir);
 
 
