@@ -2,176 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:16:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9384CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 19:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239842AbiF0TQm convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 15:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36058 "EHLO
+        id S239317AbiF0TVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 15:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237513AbiF0TQj (ORCPT
+        with ESMTP id S235186AbiF0TVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 15:16:39 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E5A643D
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:16:37 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:36704)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o5uDr-002ZMj-1Q; Mon, 27 Jun 2022 13:16:35 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:57800 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o5uDp-00EjTC-VG; Mon, 27 Jun 2022 13:16:34 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
-        peterz@infradead.org,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>
-References: <YrnEvjcG8tmF3dRV@zx2c4.com>
-        <20220627145716.641185-1-Jason@zx2c4.com>
-Date:   Mon, 27 Jun 2022 14:16:08 -0500
-In-Reply-To: <20220627145716.641185-1-Jason@zx2c4.com> (Jason A. Donenfeld's
-        message of "Mon, 27 Jun 2022 16:57:16 +0200")
-Message-ID: <877d51udc7.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 27 Jun 2022 15:21:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFE73B4A4
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:21:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656357704;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tC29q+aNgStWTf3T1gdIerdLoXO+91zXobwFBrVQGCE=;
+        b=gPx4M8TJvx/mEiLB2c4KD6AoTjRjNnvujb+VfolF5VGZb6uNBHJ+vxEcwoout5Sjwld0j/
+        S7yzSpTWDlV5XMTv6Vo9e0/RgxObf4rNtwshjAmru0mFoaem1JsmBs7UgA5P0t9n+EeIlW
+        EWUVVlxGE9Vf30iqYQn/d0SiUX4mHqU=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-608-nk7xJg4lPfCH3sxDwQLusw-1; Mon, 27 Jun 2022 15:21:39 -0400
+X-MC-Unique: nk7xJg4lPfCH3sxDwQLusw-1
+Received: by mail-il1-f199.google.com with SMTP id x5-20020a923005000000b002d1a91c4d13so6156879ile.4
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 12:21:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=tC29q+aNgStWTf3T1gdIerdLoXO+91zXobwFBrVQGCE=;
+        b=BN+vN5ZR37E5xUvpD2u9QIIxFMcmYTECZ87Itucx0t6kWOQtyuuncRd7KyBHh6RE1W
+         TofIN7v8Qw/25TBClt4A8YjqlCluXlsnV1i3zX1OR/yUcMGRCw6VvLhWh8YOrxxXrPgf
+         EzR3cf3tg4lvhlGHNMitwU9AIj1UQJRJh21CMNHhRBwtpGapfDp1eJ13DHiVAkmsBf0O
+         7LRe/01U1wXdBJxY5EaAuTU9gYQidj+sqm48RHiacuhYvWoK/t4Fjm9Cq7Bw3NQPaZ/d
+         Q6QO2LCl1Dp/q3Qc1WeTHurl6VuXiJSDrQvpjr9s6JCglqhQdhm1i5mjFUmX/6nav0UR
+         wF9A==
+X-Gm-Message-State: AJIora+OCXVNxvSvbEgsqno8K7XOKNX1BzMTPEO3ETTZJZP8oT37p/bo
+        UIKcPFU6/4gPQxzRDrVEAJYySSx/s80LxKqMwK+dfb2A+bIdmewZBAxkWTCcoI451kxOpUfu5Pv
+        QAztbUA2f9la9hIYJf2HmkPqm
+X-Received: by 2002:a5e:c016:0:b0:675:398:4713 with SMTP id u22-20020a5ec016000000b0067503984713mr7609125iol.149.1656357698908;
+        Mon, 27 Jun 2022 12:21:38 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1ugeHJeLAFVVzGHnn/nqnvt4TYEqjk+64UlN9WD7leHiuAGXnJQAVJhcrElur2pHlk/kXOBWA==
+X-Received: by 2002:a5e:c016:0:b0:675:398:4713 with SMTP id u22-20020a5ec016000000b0067503984713mr7609111iol.149.1656357698650;
+        Mon, 27 Jun 2022 12:21:38 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id k6-20020a02cb46000000b00331743a983asm3707166jap.179.2022.06.27.12.21.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 12:21:38 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 13:21:36 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     cohuck@redhat.com, kvm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        jgg@nvidia.com, baolu.lu@linux.intel.com, iommu@lists.linux.dev
+Subject: Re: [PATCH v3 1/2] vfio/type1: Simplify bus_type determination
+Message-ID: <20220627132136.2b902875.alex.williamson@redhat.com>
+In-Reply-To: <194a12d3434d7b38f84fa96503c7664451c8c395.1656092606.git.robin.murphy@arm.com>
+References: <194a12d3434d7b38f84fa96503c7664451c8c395.1656092606.git.robin.murphy@arm.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1o5uDp-00EjTC-VG;;;mid=<877d51udc7.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX18bmgF3preGwA4Fr2372PDG8RnAQBRdNBM=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v2] signal: break out of wait loops on kthread_stop()
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+On Fri, 24 Jun 2022 18:51:44 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-> I was recently surprised to learn that msleep_interruptible(),
-> wait_for_completion_interruptible_timeout(), and related functions
-> simply hung when I called kthread_stop() on kthreads using them. The
-> solution to fixing the case with msleep_interruptible() was more simply
-> to move to schedule_timeout_interruptible(). Why?
->
-> The reason is that msleep_interruptible(), and many functions just like
-> it, has a loop like this:
->
->         while (timeout && !signal_pending(current))
->                 timeout = schedule_timeout_interruptible(timeout);
->
-> The call to kthread_stop() woke up the thread, so schedule_timeout_
-> interruptible() returned early, but because signal_pending() returned
-> true, it went back into another timeout, which was never woken up.
->
-> This wait loop pattern is common to various pieces of code, and I
-> suspect that subtle misuse in a kthread that caused a deadlock in the
-> code I looked at last week is also found elsewhere.
->
-> So this commit causes signal_pending() to return true when
-> kthread_stop() is called. This is already what's done for
-> TIF_NOTIFY_SIGNAL, for these same purposes of breaking out of wait
-> loops, so a similar KTHREAD_SHOULD_STOP check isn't too much
-> different.
-
-Semantically this makes a lot of sense.
-
-Bloating up signal_pending which is mainly called in non-kthread
-contexts is undesirable.
-
-Instead could you modify kthread_stop to call set_notify_signal().
-
-That is exactly what set_notify_signal is there for.  When you don't
-actually have a signal but you want to break out of an interruptible
-loop.  My last round of work in the area decoupled set_notify_signal
-from any other semantics.
-
-
-It would be nice to get everything down so that we only need to test
-TIF_NOTIFY_SIGNAL in signal_pending.  Unfortunately to do that I need
-to do something with task_sigpending, and it hasn't been important
-enough to weed through all of those details yet.
-
-Eric
-
-
-
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Eric W. Biederman <ebiederm@xmission.com>
-> Cc: Toke Høiland-Jørgensen <toke@redhat.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: Johannes Berg <johannes@sipsolutions.net>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Since IOMMU groups are mandatory for drivers to support, it stands to
+> reason that any device which has been successfully added to a group
+> must be on a bus supported by that IOMMU driver, and therefore a domain
+> viable for any device in the group must be viable for all devices in
+> the group. This already has to be the case for the IOMMU API's internal
+> default domain, for instance. Thus even if the group contains devices on
+> different buses, that can only mean that the IOMMU driver actually
+> supports such an odd topology, and so without loss of generality we can
+> expect the bus type of any device in a group to be suitable for IOMMU
+> API calls.
+> 
+> Furthermore, scrutiny reveals a lack of protection for the bus being
+> removed while vfio_iommu_type1_attach_group() is using it; the reference
+> that VFIO holds on the iommu_group ensures that data remains valid, but
+> does not prevent the group's membership changing underfoot.
+> 
+> We can address both concerns by recycling vfio_bus_type() into some
+> superficially similar logic to indirect the IOMMU API calls themselves.
+> Each call is thus protected from races by the IOMMU group's own locking,
+> and we no longer need to hold group-derived pointers beyond that scope.
+> It also gives us an easy path for the IOMMU API's migration of bus-based
+> interfaces to device-based, of which we can already take the first step
+> with device_iommu_capable(). As with domains, any capability must in
+> practice be consistent for devices in a given group - and after all it's
+> still the same capability which was expected to be consistent across an
+> entire bus! - so there's no need for any complicated validation.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  include/linux/kthread.h      | 1 +
->  include/linux/sched/signal.h | 9 +++++++++
->  kernel/kthread.c             | 8 ++++++++
->  3 files changed, 18 insertions(+)
->
-> diff --git a/include/linux/kthread.h b/include/linux/kthread.h
-> index 30e5bec81d2b..7061dde23237 100644
-> --- a/include/linux/kthread.h
-> +++ b/include/linux/kthread.h
-> @@ -87,6 +87,7 @@ void kthread_bind(struct task_struct *k, unsigned int cpu);
->  void kthread_bind_mask(struct task_struct *k, const struct cpumask *mask);
->  int kthread_stop(struct task_struct *k);
->  bool kthread_should_stop(void);
-> +bool __kthread_should_stop(struct task_struct *k);
->  bool kthread_should_park(void);
->  bool __kthread_should_park(struct task_struct *k);
->  bool kthread_freezable_should_stop(bool *was_frozen);
-> diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
-> index cafbe03eed01..08700c65b806 100644
-> --- a/include/linux/sched/signal.h
-> +++ b/include/linux/sched/signal.h
-> @@ -11,6 +11,7 @@
->  #include <linux/refcount.h>
->  #include <linux/posix-timers.h>
->  #include <linux/mm_types.h>
-> +#include <linux/kthread.h>
->  #include <asm/ptrace.h>
->  
->  /*
-> @@ -397,6 +398,14 @@ static inline int signal_pending(struct task_struct *p)
->  	 */
->  	if (unlikely(test_tsk_thread_flag(p, TIF_NOTIFY_SIGNAL)))
->  		return 1;
-> +
-> +	/*
-> +	 * Likewise, KTHREAD_SHOULD_STOP isn't really a signal, but it also
-> +	 * requires the same behavior, lest wait loops go forever.
-> +	 */
-> +	if (unlikely(__kthread_should_stop(p)))
-> +		return 1;
-> +
->  	return task_sigpending(p);
+> 
+> v3: Complete rewrite yet again, and finally it doesn't feel like we're
+> stretching any abstraction boundaries the wrong way, and the diffstat
+> looks right too. I did think about embedding IOMMU_CAP_INTR_REMAP
+> directly in the callback, but decided I like the consistency of minimal
+> generic wrappers. And yes, if the capability isn't supported then it
+> does end up getting tested for the whole group, but meh, it's harmless.
+> 
+>  drivers/vfio/vfio_iommu_type1.c | 42 +++++++++++++++++----------------
+>  1 file changed, 22 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index c13b9290e357..a77ff00c677b 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -1679,18 +1679,6 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+>  	return ret;
 >  }
 >  
-> diff --git a/kernel/kthread.c b/kernel/kthread.c
-> index 3c677918d8f2..80f6ba323060 100644
-> --- a/kernel/kthread.c
-> +++ b/kernel/kthread.c
-> @@ -145,6 +145,14 @@ void free_kthread_struct(struct task_struct *k)
->  	kfree(kthread);
+> -static int vfio_bus_type(struct device *dev, void *data)
+> -{
+> -	struct bus_type **bus = data;
+> -
+> -	if (*bus && *bus != dev->bus)
+> -		return -EINVAL;
+> -
+> -	*bus = dev->bus;
+> -
+> -	return 0;
+> -}
+> -
+>  static int vfio_iommu_replay(struct vfio_iommu *iommu,
+>  			     struct vfio_domain *domain)
+>  {
+> @@ -2153,13 +2141,25 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
+>  	list_splice_tail(iova_copy, iova);
 >  }
 >  
-> +bool __kthread_should_stop(struct task_struct *k)
+
+Any objection if I add the following comment:
+
+/* Redundantly walks non-present capabilities to simplify caller */
+
+Thanks,
+Alex
+
+> +static int vfio_iommu_device_capable(struct device *dev, void *data)
 > +{
-> +	struct kthread *kthread = __to_kthread(k);
-> +
-> +	return kthread && test_bit(KTHREAD_SHOULD_STOP, &kthread->flags);
+> +	return device_iommu_capable(dev, (enum iommu_cap)data);
 > +}
-> +EXPORT_SYMBOL_GPL(__kthread_should_stop);
 > +
->  /**
->   * kthread_should_stop - should this kthread return now?
->   *
+> +static int vfio_iommu_domain_alloc(struct device *dev, void *data)
+> +{
+> +	struct iommu_domain **domain = data;
+> +
+> +	*domain = iommu_domain_alloc(dev->bus);
+> +	return 1; /* Don't iterate */
+> +}
+> +
+>  static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  		struct iommu_group *iommu_group, enum vfio_group_type type)
+>  {
+>  	struct vfio_iommu *iommu = iommu_data;
+>  	struct vfio_iommu_group *group;
+>  	struct vfio_domain *domain, *d;
+> -	struct bus_type *bus = NULL;
+>  	bool resv_msi, msi_remap;
+>  	phys_addr_t resv_msi_base = 0;
+>  	struct iommu_domain_geometry *geo;
+> @@ -2192,18 +2192,19 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  		goto out_unlock;
+>  	}
+>  
+> -	/* Determine bus_type in order to allocate a domain */
+> -	ret = iommu_group_for_each_dev(iommu_group, &bus, vfio_bus_type);
+> -	if (ret)
+> -		goto out_free_group;
+> -
+>  	ret = -ENOMEM;
+>  	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+>  	if (!domain)
+>  		goto out_free_group;
+>  
+> +	/*
+> +	 * Going via the iommu_group iterator avoids races, and trivially gives
+> +	 * us a representative device for the IOMMU API call. We don't actually
+> +	 * want to iterate beyond the first device (if any).
+> +	 */
+>  	ret = -EIO;
+> -	domain->domain = iommu_domain_alloc(bus);
+> +	iommu_group_for_each_dev(iommu_group, &domain->domain,
+> +				 vfio_iommu_domain_alloc);
+>  	if (!domain->domain)
+>  		goto out_free_domain;
+>  
+> @@ -2258,7 +2259,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  	list_add(&group->next, &domain->group_list);
+>  
+>  	msi_remap = irq_domain_check_msi_remap() ||
+> -		    iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
+> +		    iommu_group_for_each_dev(iommu_group, (void *)IOMMU_CAP_INTR_REMAP,
+> +					     vfio_iommu_device_capable);
+>  
+>  	if (!allow_unsafe_interrupts && !msi_remap) {
+>  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
+
