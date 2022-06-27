@@ -2,88 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F70C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54B7FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:54:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238001AbiF0Ox6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 10:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34246 "EHLO
+        id S237631AbiF0OyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 10:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237920AbiF0OxC (ORCPT
+        with ESMTP id S238003AbiF0OxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 10:53:02 -0400
-Received: from m151.mail.126.com (m151.mail.126.com [220.181.15.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07763140FE
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:52:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=lO5E1
-        iVju2S4FFAAYHenXYqOGz9bc9aUBgCSHMh99PY=; b=OvutJ4gGnxODPgZb2jn13
-        98rgBV+mscbe6Y+aNES7S1PFVKO8NDgfUGAm2q0pOa/zia0h0LCTupPFzagDo1KY
-        pqHEaP/ssNlVV083CZB5snUGBC4QVDzpR6N+dbCkB1qRMmwlmjrsydUpzWPr+TJb
-        cXt4evHZG4dTYDeuMACDuA=
-Received: from windhl$126.com ( [123.112.70.164] ) by ajax-webmail-wmsvr1
- (Coremail) ; Mon, 27 Jun 2022 22:51:38 +0800 (CST)
-X-Originating-IP: [123.112.70.164]
-Date:   Mon, 27 Jun 2022 22:51:38 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     "Greg KH" <gregkh@linuxfoundation.org>
-Cc:     broonie@kernel.org, ckeepax@opensource.cirrus.com,
-        michal.simek@xilinx.com, abhyuday.godhasara@xilinx.com,
-        simont@opensource.cirrus.com, ronak.jain@xilinx.com,
-        peng.fan@nxp.com, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] firmware: Hold a reference for
- of_find_compatible_node()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <Yrm6JztPuqYmKlKF@kroah.com>
-References: <20220621032625.4078445-1-windhl@126.com>
- <Yrm6JztPuqYmKlKF@kroah.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        Mon, 27 Jun 2022 10:53:08 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D908BBC1D
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:53:06 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id v126so5172965pgv.11
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:53:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w4nnCuaaqVKXnI7zfu4XEe/EidzYbOyoiaXDjkUN60I=;
+        b=gM2IEHiWITi7+4u4kxy5XXhdNF32YfAWT9wfPYpqKED+86BqP0njb8qUgEGsh9TRYl
+         FRgvQrSgG3jwRpHz/uynTtwGUcE/VoJkOuXWiry7nkDqDl2zZnQnFn3X5plbLx3+56e4
+         hC0V9xPTZ2U0O8Y2L8ACjYHGOIzt7S5t8FpBOYyrGUe0ZInCXT+oy7CDYYs4Sf2DvCNY
+         /KqagQAvzNqW1Eh3DsFCZ96+/e2yMMrqBvrtESk0Lw5VH/OFNxJ6iHniPwWMHoDSuUmt
+         CAb+Lssqwd8d5t2N1o+ikpuuiFm7ysYla8g2bWw1dyswpjy7jf+F/+zei0aPAiIRJoaM
+         cDSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w4nnCuaaqVKXnI7zfu4XEe/EidzYbOyoiaXDjkUN60I=;
+        b=WTPg1GohzQC1idCoW7Y4idAOA3lm3iq1QHEyBgFoC1ZnirMAwNaouQMn1LWn0vRP4I
+         R6B/RApvQqbq11zWZ6CtY3U0a8C616SmO5e2eA3FncWZTNJQMAhSwioYKyHd9mRnRip3
+         beW+ZLNeNU3WsnIn8TDueG1izymEDg3N+CQEAw0aLabgQr0Jy7JZR8inYeFM7oaA2qeR
+         S1jr2yb7ri+8IlKh7q86R2+Gj8fxNyOekMOPzU2bDtXU3p5e4c93MEt4FsLoROsx8hRZ
+         vM5RV9JRXZXl7ptineeKTFDvN6tzvvZ49K8dP/QRYJgoGIfwFg0ULB3EF/INc+kZ8qQi
+         t0Jw==
+X-Gm-Message-State: AJIora+xTlOWZWAzQxOnsCPAqPaayGymznbm+sVft/cAWlETmGy+Zfy4
+        IWjcthudRWcdA6hn8SWFiBXxPB5S0349i8Q5MP2kXQ==
+X-Google-Smtp-Source: AGRyM1vzP61WGqfu7fwvpR2g3YBsLeDPE49vmrsIKi0PKEuVDFQCZdthzssP0xkUNMYVlYw/hBLgJOeoW+fBSDeuNHo=
+X-Received: by 2002:a63:6cc8:0:b0:40d:e553:f200 with SMTP id
+ h191-20020a636cc8000000b0040de553f200mr6417592pgc.166.1656341586171; Mon, 27
+ Jun 2022 07:53:06 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <578840ee.438c.181a5a58c00.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AcqowABXWbH7w7li8cUcAA--.20186W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi3BstF1pED0GQJQAAsY
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+References: <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
+ <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
+ <20220623185730.25b88096@kernel.org> <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
+ <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
+ <20220624070656.GE79500@shbuild999.sh.intel.com> <20220624144358.lqt2ffjdry6p5u4d@google.com>
+ <20220625023642.GA40868@shbuild999.sh.intel.com> <20220627023812.GA29314@shbuild999.sh.intel.com>
+ <CANn89i+6NPujMyiQxriZRt6vhv6hNrAntXxi1uOhJ0SSqnJ47w@mail.gmail.com> <20220627123415.GA32052@shbuild999.sh.intel.com>
+In-Reply-To: <20220627123415.GA32052@shbuild999.sh.intel.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Mon, 27 Jun 2022 07:52:55 -0700
+Message-ID: <CALvZod7i_=7bNZR-LAXBPXJFxj-1KBuYs+rmG0iABAE1T90BPg@mail.gmail.com>
+Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
+To:     Feng Tang <feng.tang@intel.com>
+Cc:     Eric Dumazet <edumazet@google.com>, Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgpBdCAyMDIyLTA2LTI3IDIyOjA5OjQzLCAiR3JlZyBLSCIgPGdyZWdraEBsaW51eGZvdW5kYXRp
-b24ub3JnPiB3cm90ZToKPk9uIFR1ZSwgSnVuIDIxLCAyMDIyIGF0IDExOjI2OjI1QU0gKzA4MDAs
-IExpYW5nIEhlIHdyb3RlOgo+PiBJbiBvZl9yZWdpc3Rlcl90cnVzdGVkX2ZvdW5kYXRpb25zKCks
-IHdlIG5lZWQgdG8gaG9sZCB0aGUgcmVmZXJlbmNlCj4+IHJldHVybmVkIGJ5IG9mX2ZpbmRfY29t
-cGF0aWJsZV9ub2RlKCkgYW5kIHRoZW4gdXNlIGl0IHRvIGNhbGwKPj4gb2Zfbm9kZV9wdXQoKSBm
-b3IgcmVmY291bnQgYmFsYW5jZS4KPj4gCj4+IFNpZ25lZC1vZmYtYnk6IExpYW5nIEhlIDx3aW5k
-aGxAMTI2LmNvbT4KPj4gLS0tCj4+ICBpbmNsdWRlL2xpbnV4L2Zpcm13YXJlL3RydXN0ZWRfZm91
-bmRhdGlvbnMuaCB8IDggKysrKysrLS0KPj4gIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMo
-KyksIDIgZGVsZXRpb25zKC0pCj4+IAo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9maXJt
-d2FyZS90cnVzdGVkX2ZvdW5kYXRpb25zLmggYi9pbmNsdWRlL2xpbnV4L2Zpcm13YXJlL3RydXN0
-ZWRfZm91bmRhdGlvbnMuaAo+PiBpbmRleCBiZTU5ODRiZGE1OTIuLjM5OTQ3MWMyZjFjNyAxMDA2
-NDQKPj4gLS0tIGEvaW5jbHVkZS9saW51eC9maXJtd2FyZS90cnVzdGVkX2ZvdW5kYXRpb25zLmgK
-Pj4gKysrIGIvaW5jbHVkZS9saW51eC9maXJtd2FyZS90cnVzdGVkX2ZvdW5kYXRpb25zLmgKPj4g
-QEAgLTcxLDEyICs3MSwxNiBAQCBzdGF0aWMgaW5saW5lIHZvaWQgcmVnaXN0ZXJfdHJ1c3RlZF9m
-b3VuZGF0aW9ucygKPj4gIAo+PiAgc3RhdGljIGlubGluZSB2b2lkIG9mX3JlZ2lzdGVyX3RydXN0
-ZWRfZm91bmRhdGlvbnModm9pZCkKPj4gIHsKPj4gKwlzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wID0g
-b2ZfZmluZF9jb21wYXRpYmxlX25vZGUoTlVMTCwgTlVMTCwgInRsbSx0cnVzdGVkLWZvdW5kYXRp
-b25zIik7Cj4+ICsKPj4gKwlvZl9ub2RlX3B1dChucCk7Cj4+ICsJaWYgKCFucCkKPgo+V2hpbGUg
-dGhpcyBpcyB0ZWNobmljYWxseSBjb3JyZWN0LCB5b3UgYXJlIG5vdyBjaGVja2luZyB0byBzZWUg
-aWYgdGhpcwo+cG9pbnRzIHRvIGEgbWVtb3J5IGxvY2F0aW9uIHRoYXQgeW91IG5vIGxvbmdlciBr
-bm93IHdoYXQgaXQgcmVhbGx5Cj5iZWxvbmdzIHRvLiAgQyB3aWxsIGxldCB5b3UgZG8gdGhpcywg
-YnV0IGl0IG1pZ2h0IGJlIG5pY2VyIHRvIGZpeCBpdCB1cAo+cHJvcGVybHkgc28gaXQgZG9lc24n
-dCBsb29rIGxpa2UgdGhpcy4KPgo+dGhhbmtzLAo+Cj5ncmVnIGstaAoKSGmjrEdyZWcgS0ijrAoK
-VGhhbmtzIHZlcnkgbXVjaCBmb3IgeW91ciBlZmZvcnQgdG8gcmV2aWV3IG15IHBhdGNoLgoKSW4g
-ZmFjdCwgSSBoYXZlIHJlcG9ydGVkIGEgY29tbWl0IGZvciB0aGlzIGtpbmQgb2YgJ2NoZWNrLWFm
-dGVyLXB1dCcgY29kaW5nIHN0eWxlOgpodHRwczovL2xvcmUua2VybmVsLm9yZy9hbGwvMjAyMjA2
-MTcxMTI2MzYuNDA0MTY3MS0xLXdpbmRobEAxMjYuY29tLwoKQnV0IEkgaGF2ZSBiZWVuIHRvbGQg
-dG8ga2VlcCBzdWNoIHN0eWxlIGFuZCBJIHRoaW5rIHRoZSBleHBsYW5hdGlvbiBpcyBhbHNvIHJl
-YXNvbmFibGUuClNvIHdoZW4gSSBtYWtlIHRoaXMgcGF0Y2gsIEkgYW0gaW5kZWVkIGNvbmZ1c2Vk
-IHdoYXQgSSBzaG91bGQgd3JpdGUuCgpGaW5hbGx5LCBJIHRoaW5rIGl0IGlzIGJldHRlciB0byBi
-ZSBjb25zaXN0ZW50IHdpdGggY3VycmVudCBjb2Rpbmcgc3R5bGUgc28KSSBjaG9zZSB0aGlzICdj
-aGVjay1hZnRlci1wdXQnIHN0eWxlLgoKQnV0IGlmIHlvdSB0aGluayBpdCBpcyBiZXR0ZXIgdG8g
-dXNlIGEgbm9ybWFsIG9yZGVyLCBpLmUuLCBjaGVjay10aGVuLXB1dCwKSSBhbSwgb2YgY2F1c2Us
-IHZlcnkgaGFwcHkgdG8gc2VuZCBhIG5ldyBwYXRjaCBmb3IgdGhpcyBidWcgYW5kIEkgd2lsbAph
-bHNvIGtlZXAgdG8gdXNlIHRoaXMgY29kaW5nIHN0eWxlIGluIGZ1dHVyZS4KClRoYW5rcyBhZ2Fp
-bi4KCkxpYW5nIAoK
+On Mon, Jun 27, 2022 at 5:34 AM Feng Tang <feng.tang@intel.com> wrote:
+>
+> On Mon, Jun 27, 2022 at 10:46:21AM +0200, Eric Dumazet wrote:
+> > On Mon, Jun 27, 2022 at 4:38 AM Feng Tang <feng.tang@intel.com> wrote:
+> [snip]
+> > > > >
+> > > > > Thanks Feng. Can you check the value of memory.kmem.tcp.max_usage_in_bytes
+> > > > > in /sys/fs/cgroup/memory/system.slice/lkp-bootstrap.service after making
+> > > > > sure that the netperf test has already run?
+> > > >
+> > > > memory.kmem.tcp.max_usage_in_bytes:0
+> > >
+> > > Sorry, I made a mistake that in the original report from Oliver, it
+> > > was 'cgroup v2' with a 'debian-11.1' rootfs.
+> > >
+> > > When you asked about cgroup info, I tried the job on another tbox, and
+> > > the original 'job.yaml' didn't work, so I kept the 'netperf' test
+> > > parameters and started a new job which somehow run with a 'debian-10.4'
+> > > rootfs and acutally run with cgroup v1.
+> > >
+> > > And as you mentioned cgroup version does make a big difference, that
+> > > with v1, the regression is reduced to 1% ~ 5% on different generations
+> > > of test platforms. Eric mentioned they also got regression report,
+> > > but much smaller one, maybe it's due to the cgroup version?
+> >
+> > This was using the current net-next tree.
+> > Used recipe was something like:
+> >
+> > Make sure cgroup2 is mounted or mount it by mount -t cgroup2 none $MOUNT_POINT.
+> > Enable memory controller by echo +memory > $MOUNT_POINT/cgroup.subtree_control.
+> > Create a cgroup by mkdir $MOUNT_POINT/job.
+> > Jump into that cgroup by echo $$ > $MOUNT_POINT/job/cgroup.procs.
+> >
+> > <Launch tests>
+> >
+> > The regression was smaller than 1%, so considered noise compared to
+> > the benefits of the bug fix.
+>
+> Yes, 1% is just around noise level for a microbenchmark.
+>
+> I went check the original test data of Oliver's report, the tests was
+> run 6 rounds and the performance data is pretty stable (0Day's report
+> will show any std deviation bigger than 2%)
+>
+> The test platform is a 4 sockets 72C/144T machine, and I run the
+> same job (nr_tasks = 25% * nr_cpus) on one CascadeLake AP (4 nodes)
+> and one Icelake 2 sockets platform, and saw 75% and 53% regresson on
+> them.
+>
+> In the first email, there is a file named 'reproduce', it shows the
+> basic test process:
+>
+> "
+>   use 'performane' cpufre  governor for all CPUs
+>
+>   netserver -4 -D
+>   modprobe sctp
+>   netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
+>   netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
+>   netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
+>   (repeat 36 times in total)
+>   ...
+>
+> "
+>
+> Which starts 36 (25% of nr_cpus) netperf clients. And the clients number
+> also matters, I tried to increase the client number from 36 to 72(50%),
+> and the regression is changed from 69.4% to 73.7%
+>
+
+Am I understanding correctly that this 69.4% (or 73.7%) regression is
+with cgroup v2?
+
+Eric did the experiments on v2 but on real hardware where the
+performance impact was negligible.
+
+BTW do you see similar regression for tcp as well or just sctp?
