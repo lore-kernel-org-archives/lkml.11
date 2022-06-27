@@ -2,105 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03736C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B199C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 14:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236998AbiF0OyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 10:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        id S234766AbiF0Oye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 10:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235197AbiF0OyR (ORCPT
+        with ESMTP id S235197AbiF0Oya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 10:54:17 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id C053915839
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 07:54:15 -0700 (PDT)
-Received: (qmail 121138 invoked by uid 1000); 27 Jun 2022 10:54:14 -0400
-Date:   Mon, 27 Jun 2022 10:54:14 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Neal Liu <neal_liu@aspeedtech.com>
-Cc:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Roger Quadros <roger.quadros@nokia.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Wesley Cheng <quic_wcheng@quicinc.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>
-Subject: Re: [PATCH v2] usb: gadget: f_mass_storage: Make CD-ROM emulation
- works with Windows OS
-Message-ID: <YrnEli0fdOERpIXe@rowland.harvard.edu>
-References: <20220624021916.318067-1-neal_liu@aspeedtech.com>
- <YrXJss4cTtfenu90@rowland.harvard.edu>
- <HK0PR06MB320272ACB1CA4ADFF8DDABC080B99@HK0PR06MB3202.apcprd06.prod.outlook.com>
+        Mon, 27 Jun 2022 10:54:30 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26FFF140E6;
+        Mon, 27 Jun 2022 07:52:50 -0700 (PDT)
+Received: from [192.168.100.8] (unknown [112.20.112.134])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxb906xLliVxxgAA--.6409S3;
+        Mon, 27 Jun 2022 22:52:43 +0800 (CST)
+Message-ID: <5b6be487-13ab-835a-fac3-768700421754@loongson.cn>
+Date:   Mon, 27 Jun 2022 22:52:43 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <HK0PR06MB320272ACB1CA4ADFF8DDABC080B99@HK0PR06MB3202.apcprd06.prod.outlook.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 05/20] docs: zh_CN/devicetree: fix typos
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Alex Shi <alexs@kernel.org>,
+        Huilong Deng <denghuilong@cdjrlc.com>,
+        linux-kernel@vger.kernel.org
+References: <cover.1656234456.git.mchehab@kernel.org>
+ <b4ca010ef223ab9cb76e8caa0a3cde734e0b6b2f.1656234456.git.mchehab@kernel.org>
+From:   YanTeng Si <siyanteng@loongson.cn>
+In-Reply-To: <b4ca010ef223ab9cb76e8caa0a3cde734e0b6b2f.1656234456.git.mchehab@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9Dxb906xLliVxxgAA--.6409S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxCF17Ar4DGr4kCFWUtw4xWFg_yoW5Xw18pF
+        92kFyxWF1Svr17W397WF4UGF4xJ3Wxuw45GF1UJw1FgFs8JryFyr9rt3yqg3W7Xr1xWay5
+        XF4rKryFkr4vyF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvYb7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4
+        A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
+        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMc
+        vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwCYjI0SjxkI62AI1cAE67vIY487MxkI
+        ecxEwVAFwVW5XwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
+        02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_
+        Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
+        CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r4j6FyUMIIF0xvEx4A2jsIE14v2
+        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07
+        j0ksgUUUUU=
+X-CM-SenderInfo: pvl1t0pwhqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 02:56:40AM +0000, Neal Liu wrote:
-> > On Fri, Jun 24, 2022 at 10:19:16AM +0800, Neal Liu wrote:
-> > > Add read TOC with format 1 to support CD-ROM emulation with Windows
-> > > OS.
-> > > This patch is tested on Windows OS Server 2019.
-> > >
-> > > Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-> > > ---
-> > >  drivers/usb/gadget/function/f_mass_storage.c | 5 +++--
-> > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/usb/gadget/function/f_mass_storage.c
-> > > b/drivers/usb/gadget/function/f_mass_storage.c
-> > > index 3a77bca0ebe1..9edf76c22605 100644
-> > > --- a/drivers/usb/gadget/function/f_mass_storage.c
-> > > +++ b/drivers/usb/gadget/function/f_mass_storage.c
-> > > @@ -1209,7 +1209,8 @@ static int do_read_toc(struct fsg_common
-> > > *common, struct fsg_buffhd *bh)
-> > >
-> > >  	switch (format) {
-> > >  	case 0:
-> > > -		/* Formatted TOC */
-> > > +	case 1:
-> > > +		/* Formatted TOC, Session info */
-> > 
-> > This comment is a little misleading.  0 is formatted TOC, and 1 is
-> > multi-session info.  The way you wrote it, it looks like the comment applies to
-> > both formats.  Do it like this:
-> > 
-> > 	case 0:		/* Formatted TOC */
-> > 	case 1:		/* Multi-session info */
-> > 
-> 
-> Okay, looks more clear. I'll fix it in next patch.
-> 
-> > >  		len = 4 + 2*8;		/* 4 byte header + 2 descriptors */
-> > >  		memset(buf, 0, len);
-> > >  		buf[1] = len - 2;	/* TOC Length excludes length field */
-> > 
-> > It looks like you ignored one of the problems I pointed out in my earlier email:
-> > 
-> > > When format is 1, the driver is supposed to ignore the start_track
-> > > value.  Your patch does not do this.
-> > 
-> > Please fix this.
-> > 
-> 
-> Do you mean ignore the "start_track > 1" above?
 
-Yes, that's what I mean.
+在 2022/6/26 17:10, Mauro Carvalho Chehab 写道:
+> The devicetree directory was using wrong case:
+>
+> 	Devicetree/ -> devicetree/
+>
+> Fixes: a17b0169f29b ("docs/zh_CN: add devicetree index translation")
+> Fixes: c56481299df3 ("docs/zh_CN: add devicetree usage-model translation")
+> Fixes: 09d4466d3f3c ("docs/zh_CN: add devicetree of_unittest translation")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-> Do this check only for format 0? Or format 0 & 2?
+Acked-by: Yanteng Si<siyanteng@loongson.cn>
 
-According to the MMC spec, the Track/Session Number is ignored for 
-format 1.  For format 0 it is valid as a Track Number, and for format 2 
-it is valid as a Session Number.  Therefore it should be checked for 
-formats 0 and 2 but not for format 1.
+Thanks,
+Yanteng
 
-Alan Stern
+> ---
+>
+> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+> See [PATCH v2 00/20] at: https://lore.kernel.org/all/cover.1656234456.git.mchehab@kernel.org/
+>
+>   Documentation/translations/zh_CN/devicetree/index.rst       | 2 +-
+>   Documentation/translations/zh_CN/devicetree/of_unittest.rst | 2 +-
+>   Documentation/translations/zh_CN/devicetree/usage-model.rst | 2 +-
+>   3 files changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/Documentation/translations/zh_CN/devicetree/index.rst b/Documentation/translations/zh_CN/devicetree/index.rst
+> index 23d0b6fccd58..3fc355fe0037 100644
+> --- a/Documentation/translations/zh_CN/devicetree/index.rst
+> +++ b/Documentation/translations/zh_CN/devicetree/index.rst
+> @@ -1,7 +1,7 @@
+>   .. SPDX-License-Identifier: GPL-2.0
+>   .. include:: ../disclaimer-zh_CN.rst
+>   
+> -:Original: Documentation/Devicetree/index.rst
+> +:Original: Documentation/devicetree/index.rst
+>   
+>   :翻译:
+>   
+> diff --git a/Documentation/translations/zh_CN/devicetree/of_unittest.rst b/Documentation/translations/zh_CN/devicetree/of_unittest.rst
+> index abd94e771ef8..11eb08ca8866 100644
+> --- a/Documentation/translations/zh_CN/devicetree/of_unittest.rst
+> +++ b/Documentation/translations/zh_CN/devicetree/of_unittest.rst
+> @@ -1,7 +1,7 @@
+>   .. SPDX-License-Identifier: GPL-2.0
+>   .. include:: ../disclaimer-zh_CN.rst
+>   
+> -:Original: Documentation/Devicetree/of_unittest.rst
+> +:Original: Documentation/devicetree/of_unittest.rst
+>   
+>   :翻译:
+>   
+> diff --git a/Documentation/translations/zh_CN/devicetree/usage-model.rst b/Documentation/translations/zh_CN/devicetree/usage-model.rst
+> index accdc33475a0..c6aee82c7e6e 100644
+> --- a/Documentation/translations/zh_CN/devicetree/usage-model.rst
+> +++ b/Documentation/translations/zh_CN/devicetree/usage-model.rst
+> @@ -1,7 +1,7 @@
+>   .. SPDX-License-Identifier: GPL-2.0
+>   .. include:: ../disclaimer-zh_CN.rst
+>   
+> -:Original: Documentation/Devicetree/usage-model.rst
+> +:Original: Documentation/devicetree/usage-model.rst
+>   
+>   :翻译:
+>   
+
