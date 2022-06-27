@@ -2,138 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770D2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A624C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 08:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232603AbiF0IOu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 04:14:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46688 "EHLO
+        id S232618AbiF0IQy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 04:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232354AbiF0IOn (ORCPT
+        with ESMTP id S230155AbiF0IQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 04:14:43 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366BB6265;
-        Mon, 27 Jun 2022 01:14:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656317681; x=1687853681;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=qY1j80KT3SlS5urOwaGuqpU9KZ42BFvHtfekqn6Y8R4=;
-  b=BbtMdfkvvcj9+uE425RBTGcYnO2MTIbz4bPKmvYkgs4hmDuyx5K+fV8K
-   Q+d6yjpeG3xwcZrhIbl3zHSO8OpSZZHpGOcKmtPSWO6w6SOCo57Tn98I8
-   hyqWUdNvXe+QbMo24oqcbXro6Isl1sr7/QBcaWUFcGNebAFwrfh8FVwwm
-   p2qZT9JDnQpkodv9xSXitVKRiFjvtj4Bd54uj2XHRIVR29kFGUwyd7woK
-   YpXsRWazp97jv523cpr+PqPEohxOGMNK64aoEWuySS58BtMlNDGGcBSvG
-   zb5G5i1/oZlNZgXwdpSPj5x3x9VfCW3m9t5BucSpsdziDHb3iqjH7S0fl
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="367709141"
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="367709141"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 01:14:41 -0700
-X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
-   d="scan'208";a="646328063"
-Received: from gretavix-mobl3.amr.corp.intel.com ([10.249.43.78])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 01:14:37 -0700
-Date:   Mon, 27 Jun 2022 11:14:34 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 7/8] serial: ar933x: Remove redundant assignment in
- rs485_config
-In-Reply-To: <df19d91d-371b-f0e9-e37c-2bde00d2b840@gmx.de>
-Message-ID: <033c8d2-3f2e-afe6-2e98-14a61c872b4b@linux.intel.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-8-LinoSanfilippo@gmx.de> <f7beef4-c422-cae3-8e22-8652b407434@linux.intel.com> <df19d91d-371b-f0e9-e37c-2bde00d2b840@gmx.de>
+        Mon, 27 Jun 2022 04:16:52 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395E1626D
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 01:16:50 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LWgX16K3ZzkWtn;
+        Mon, 27 Jun 2022 16:15:29 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 27 Jun 2022 16:16:33 +0800
+CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <bristot@redhat.com>,
+        <prime.zeng@huawei.com>, <jonathan.cameron@huawei.com>,
+        <ego@linux.vnet.ibm.com>, <srikar@linux.vnet.ibm.com>,
+        <linuxarm@huawei.com>, <21cnbao@gmail.com>,
+        <guodong.xu@linaro.org>, <hesham.almatary@huawei.com>,
+        <john.garry@huawei.com>, <shenyang39@huawei.com>
+Subject: Re: [PATCH v4 2/2] sched/fair: Scan cluster before scanning LLC in
+ wake-up path
+To:     Abel Wu <wuyun.abel@bytedance.com>,
+        Yicong Yang <yangyicong@hisilicon.com>, <peterz@infradead.org>,
+        <mingo@redhat.com>, <juri.lelli@redhat.com>,
+        <vincent.guittot@linaro.org>, <tim.c.chen@linux.intel.com>,
+        <gautham.shenoy@amd.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220609120622.47724-1-yangyicong@hisilicon.com>
+ <20220609120622.47724-3-yangyicong@hisilicon.com>
+ <9cf43b10-85a2-1a83-057f-c43be339265e@bytedance.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <3105c9d4-9707-e9a3-47e5-c63095fa46e2@huawei.com>
+Date:   Mon, 27 Jun 2022 16:16:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-658645688-1656317683=:1622"
+In-Reply-To: <9cf43b10-85a2-1a83-057f-c43be339265e@bytedance.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-658645688-1656317683=:1622
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-
-On Sun, 26 Jun 2022, Lino Sanfilippo wrote:
-
-> On 25.06.22 at 12:14, Ilpo Järvinen wrote:
-> > On Wed, 22 Jun 2022, Lino Sanfilippo wrote:
-> >
-> >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> >>
-> >> In uart_set_rs485_config() the serial core already assigns the passed
-> >> serial_rs485 struct to the uart port.
-> >>
-> >> So remove the assignment in the drivers rs485_config() function to avoid
-> >> redundancy.
-> >>
-> >> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> >> ---
-> >>  drivers/tty/serial/ar933x_uart.c | 1 -
-> >>  1 file changed, 1 deletion(-)
-> >>
-> >> diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
-> >> index ab2c5b2a1ce8..857e010d01dc 100644
-> >> --- a/drivers/tty/serial/ar933x_uart.c
-> >> +++ b/drivers/tty/serial/ar933x_uart.c
-> >> @@ -591,7 +591,6 @@ static int ar933x_config_rs485(struct uart_port *port,
-> >>  		dev_err(port->dev, "RS485 needs rts-gpio\n");
-> >>  		return 1;
-> >>  	}
-> >> -	port->rs485 = *rs485conf;
-> >>  	return 0;
-> >>  }
-> >
-> > Hmm, I realize that for some reason I missed cleaning up this particular
-> > driver after introducing the serial_rs485 sanitization. It shouldn't need
-> > that preceeding if block either because ar933x_no_rs485 gets applied if
-> > there's no rts_gpiod so the core clears SER_RS485_ENABLED.
+On 2022/6/26 20:13, Abel Wu wrote:
 > 
-> I think we still need that "if" in case that RS485 was not enabled at driver
-> startup (no rs485-enabled-at-boot-time) and no RTS GPIO was defined but then
-> RS485 is enabled via TIOCSRS485.
+> On 6/9/22 8:06 PM, Yicong Yang Wrote:
+>> From: Barry Song <song.bao.hua@hisilicon.com>
+>>
+>> For platforms having clusters like Kunpeng920, CPUs within the same cluster
+>> have lower latency when synchronizing and accessing shared resources like
+>> cache. Thus, this patch tries to find an idle cpu within the cluster of the
+>> target CPU before scanning the whole LLC to gain lower latency.
+>>
+>> Note neither Kunpeng920 nor x86 Jacobsville supports SMT, so this patch
+>> doesn't consider SMT for this moment.
+>>
+>> Testing has been done on Kunpeng920 by pinning tasks to one numa and two
+>> numa. On Kunpeng920, Each numa has 8 clusters and each cluster has 4 CPUs.
+>>
+>> With this patch, We noticed enhancement on tbench within one numa or cross
+>> two numa.
+>>
+>> On numa 0:
+>>                              5.19-rc1                patched
+>> Hmean     1        350.27 (   0.00%)      406.88 *  16.16%*
+>> Hmean     2        702.01 (   0.00%)      808.22 *  15.13%*
+>> Hmean     4       1405.14 (   0.00%)     1614.34 *  14.89%*
+>> Hmean     8       2830.53 (   0.00%)     3169.02 *  11.96%*
+>> Hmean     16      5597.95 (   0.00%)     6224.20 *  11.19%*
+>> Hmean     32     10537.38 (   0.00%)    10524.97 *  -0.12%*
+>> Hmean     64      8366.04 (   0.00%)     8437.41 *   0.85%*
+>> Hmean     128     7060.87 (   0.00%)     7150.25 *   1.27%*
+>>
+>> On numa 0-1:
+>>                              5.19-rc1                patched
+>> Hmean     1        346.11 (   0.00%)      408.47 *  18.02%*
+>> Hmean     2        693.34 (   0.00%)      805.78 *  16.22%*
+>> Hmean     4       1384.96 (   0.00%)     1602.49 *  15.71%*
+>> Hmean     8       2699.45 (   0.00%)     3069.98 *  13.73%*
+>> Hmean     16      5327.11 (   0.00%)     5688.19 *   6.78%*
+>> Hmean     32     10019.10 (   0.00%)    11862.56 *  18.40%*
+>> Hmean     64     13850.57 (   0.00%)    17748.54 *  28.14%*
+>> Hmean     128    12498.25 (   0.00%)    15541.59 *  24.35%*
+>> Hmean     256    11195.77 (   0.00%)    13854.06 *  23.74%*
+>>
+>> Tested-by: Yicong Yang <yangyicong@hisilicon.com>
+>> Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
+>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+>> ---
+>>   kernel/sched/fair.c | 44 +++++++++++++++++++++++++++++++++++++++++---
+>>   1 file changed, 41 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+>> index 77b2048a9326..6d173e196ad3 100644
+>> --- a/kernel/sched/fair.c
+>> +++ b/kernel/sched/fair.c
+>> @@ -6327,6 +6327,40 @@ static inline int select_idle_smt(struct task_struct *p, struct sched_domain *sd
+>>     #endif /* CONFIG_SCHED_SMT */
+>>   +#ifdef CONFIG_SCHED_CLUSTER
+>> +/*
+>> + * Scan the cluster domain for idle CPUs and clear cluster cpumask after scanning
+>> + */
+>> +static inline int scan_cluster(struct task_struct *p, struct cpumask *cpus,
+>> +                   int target, int *nr)
+>> +{
+>> +    struct sched_domain *sd = rcu_dereference(per_cpu(sd_cluster, target));
+>> +    int cpu, idle_cpu;
+>> +
+>> +    /* TODO: Support SMT system with cluster topology */
+>> +    if (!sched_smt_active() && sd) {
+>> +        for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
+>> +            if (!--*nr)
+>> +                break;
 > 
-> Maybe in ar933x_uart_probe()
+> return -1;
+> :)
 > 
-> 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
-> 	    !up->rts_gpiod) {
-> 		dev_err(&pdev->dev, "lacking rts-gpio, disabling RS485\n");
-> 		port->rs485.flags &= ~SER_RS485_ENABLED;
-> 		port->rs485_supported = &ar933x_no_rs485;
-> 	}
-> 
-> should rather be
 
-I think it would be better (and what I should have done while moving the 
-check there in the first place but I missed it). In addition, however, it 
-would be useful to not print unnecessarily:
-
-> 	if (!up->rts_gpiod) {
-
-if (port->rs485.flags & SER_RS485_ENABLED) {
-
-> 		dev_err(&pdev->dev, "lacking rts-gpio, disabling RS485\n");
-> 		port->rs485.flags &= ~SER_RS485_ENABLED;
-
-}
-
-> 		port->rs485_supported = &ar933x_no_rs485;
-> 	}
-
--- 
- i.
-
---8323329-658645688-1656317683=:1622--
+thanks for the comment. If we've run out of nr the select_idle_cpu() will stop scanning as well,
+so it's unnecessary to clear the mask of cluster cpus and just return.
