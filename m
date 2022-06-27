@@ -2,82 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF619C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1C7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 06:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232363AbiF0GPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 02:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
+        id S232366AbiF0GPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 02:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbiF0GPI (ORCPT
+        with ESMTP id S231913AbiF0GPi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 02:15:08 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70B8C2718;
-        Sun, 26 Jun 2022 23:15:04 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxH9_lSrlisbNfAA--.12536S2;
-        Mon, 27 Jun 2022 14:15:01 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        Mon, 27 Jun 2022 02:15:38 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D522AE8
+        for <linux-kernel@vger.kernel.org>; Sun, 26 Jun 2022 23:15:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R931e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VHTNMzH_1656310531;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VHTNMzH_1656310531)
+          by smtp.aliyun-inc.com;
+          Mon, 27 Jun 2022 14:15:33 +0800
+Date:   Mon, 27 Jun 2022 14:15:31 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Yue Hu <zbestahu@gmail.com>, Yuwen Chen <chenyuwen1@meizu.com>
+Cc:     xiang@kernel.org, linux-erofs@lists.ozlabs.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] MIPS: Loongson64: Fix section mismatch warning
-Date:   Mon, 27 Jun 2022 14:15:01 +0800
-Message-Id: <1656310501-29355-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9DxH9_lSrlisbNfAA--.12536S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Xr4UCF45CF4ruFW3GF43GFg_yoW8Jr1xpa
-        y8Aw1DWr4UKr4kJF1fCry8Z34xJFyrWFZ3A39rCryDW39rur95Zr1xCF4rZFyDtF4FyF4r
-        XF1fGrs5u3W8A37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r
-        xl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-        6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr
-        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8
-        AwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r
-        1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij
-        64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr
-        0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
-        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUUyxRDUUUU
-        U==
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+Subject: Re: [PATCH] erofs: Wake up all waiters after z_erofs_lzma_head ready.
+Message-ID: <YrlLA5kDpprL0klA@B-P7TQMD6M-0146.local>
+References: <20220625145000.2720-1-chenyuwen1@meizu.com>
+ <20220627135754.00000999.zbestahu@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220627135754.00000999.zbestahu@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-prom_init_numa_memory() is annotated __init and not used by any module,
-thus don't export it.
+On Mon, Jun 27, 2022 at 01:57:54PM +0800, Yue Hu wrote:
+> On Sat, 25 Jun 2022 22:50:00 +0800
+> Yuwen Chen <chenyuwen1@meizu.com> wrote:
+> 
 
-Remove not needed EXPORT_SYMBOL for prom_init_numa_memory() to fix the
-following section mismatch warning:
+...
 
-  LD      vmlinux.o
-  MODPOST vmlinux.symvers
-WARNING: modpost: vmlinux.o(___ksymtab+prom_init_numa_memory+0x0): Section mismatch in reference
-from the variable __ksymtab_prom_init_numa_memory to the function .init.text:prom_init_numa_memory()
-The symbol prom_init_numa_memory is exported and annotated __init
-Fix this by removing the __init annotation of prom_init_numa_memory or drop the export.
+> > 
+> > Signed-off-by: Yuwen Chen <chenyuwen1@meizu.com>
+> > ---
+> >  fs/erofs/decompressor_lzma.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/fs/erofs/decompressor_lzma.c b/fs/erofs/decompressor_lzma.c
+> > index 05a3063cf2bc..5e59b3f523eb 100644
+> > --- a/fs/erofs/decompressor_lzma.c
+> > +++ b/fs/erofs/decompressor_lzma.c
+> > @@ -143,6 +143,7 @@ int z_erofs_load_lzma_config(struct super_block *sb,
+> >  	DBG_BUGON(z_erofs_lzma_head);
+> >  	z_erofs_lzma_head = head;
+> >  	spin_unlock(&z_erofs_lzma_lock);
+> > +	wake_up_all(&z_erofs_lzma_wq);
+> >  
+> >  	z_erofs_lzma_max_dictsize = dict_size;
+> >  	mutex_unlock(&lzma_resize_mutex);
+> 
+> Please do not end the summary line(title) with a period.
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- arch/mips/loongson64/numa.c | 1 -
- 1 file changed, 1 deletion(-)
+Okay, that is a good point, also it'd be better to de-capitalize the 'W'
+in "Wake" since they are common practices for kernel patches.
 
-diff --git a/arch/mips/loongson64/numa.c b/arch/mips/loongson64/numa.c
-index 69a5331..8f61e93 100644
---- a/arch/mips/loongson64/numa.c
-+++ b/arch/mips/loongson64/numa.c
-@@ -196,7 +196,6 @@ void __init prom_init_numa_memory(void)
- 	pr_info("CP0_PageGrain: CP0 5.1 (0x%x)\n", read_c0_pagegrain());
- 	prom_meminit();
- }
--EXPORT_SYMBOL(prom_init_numa_memory);
- 
- pg_data_t * __init arch_alloc_nodedata(int nid)
- {
--- 
-2.1.0
+If it's convenient to you to send another version, please go with my
+r-v-b tag.
 
+Thanks,
+Gao Xiang
