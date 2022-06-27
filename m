@@ -2,69 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C142EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B3EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 09:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234025AbiF0Jaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 05:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
+        id S232738AbiF0JbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 05:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233634AbiF0Jaw (ORCPT
+        with ESMTP id S233023AbiF0JbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 05:30:52 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E04125DB
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:30:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=IokvEg/kIxjdCTozh/TqGPoHY64HoI20u+uoITAFI+4=; b=oV7q+l4Rua4HzPC6b1q5Btq6wY
-        BI5So1sA7UW9Nn2pxg0Yja6EZdZH69RNGRVbk+rve17K9JyEaRJHpZabTCPOewiopvWKXJdThI8Jy
-        tKwuxq2Zq7A8pHhAzHApV7F0WxT/FWnT2AIbn0pB7B+B3NfLOdSMv2ph1jp1iwqofgetvI0C4Nghd
-        HgdvDH/K/2bgcJLVwvZCAiVVCgsLna9F8SpbWIO052Rry94x5fKBuJP00zaw9e/yNCxoGayknXwUT
-        ruo01fc8FRSUvp1Ra3a78LGoWG9leNDfB7r6uaIX7cEqUTYklW4GPI7Z9B7PUKOTc4oSu9jqCqwds
-        4qL0IpWA==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o5l4X-00BEZD-Hr; Mon, 27 Jun 2022 09:30:21 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id F132F30045A;
-        Mon, 27 Jun 2022 11:30:18 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id DB8F020C57C6B; Mon, 27 Jun 2022 11:30:18 +0200 (CEST)
-Date:   Mon, 27 Jun 2022 11:30:18 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Guo Hui <guohui@uniontech.com>
-Cc:     longman@redhat.com, jgross@suse.com, srivatsa@csail.mit.edu,
-        amakhalov@vmware.com, pv-drivers@vmware.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, will@kernel.org,
-        boqun.feng@gmail.com, virtualization@lists.linux-foundation.org,
-        wangxiaohua@uniontech.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] x86/paravirt: useless assignment instructions cause
- Unixbench full core performance degradation
-Message-ID: <Yrl4qoXcVj9Y6Cpa@hirez.programming.kicks-ass.net>
-References: <f6b68466-968c-4a91-655a-23970280a072@redhat.com>
- <20220627021350.25714-1-guohui@uniontech.com>
- <YrlhGqqce0NCQ6hi@hirez.programming.kicks-ass.net>
- <3c020577-2045-fa12-9e33-65ece10bda30@uniontech.com>
+        Mon, 27 Jun 2022 05:31:05 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CD725DB
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:31:03 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id k22so12138990wrd.6
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 02:31:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=H8y304HP3NlXSOokRObqerrM0iiWlabzlmfKtvJse0s=;
+        b=Kml6u4hIRPvTgl+T0C4EwQA5t2dcaFv/08c7rYoqjmkW55GqYf3/sZ2JPPtWku9PbX
+         Ngs+9uvbvnwlxtYO5mZd/23SdpkoaCYB+qtpxmQDSMNnSA/x8JKRGIkHlEEAVZLQzE1y
+         lBQ2Nk74+vDTTjUjQOsPWM6u9lchiD/3TVJm6mBozW+7g9D5C1pF057zeTuzoJIrPjtd
+         K/791paTxuvcpa/p53a/BW7PKIDMGrIYGwvLCSZ+oDXcf6xf1iRDAixFTjsmr4agMUTG
+         uXUzGTClz8esy0GSrpZ9T02EKe20FmNSY+Iwh1+KOSGlu1Yug022rwdgXZr+tTR8sqn9
+         b9VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=H8y304HP3NlXSOokRObqerrM0iiWlabzlmfKtvJse0s=;
+        b=Q8MLD8dDmCBmwTGqjk7deY6ZbwgmPUSjU00I1jdJip5QxbxoVjhEM1AgN+XY8zeHIV
+         a6WtDkkbw3QOz8kYJ+zcfBOguJ7Q3/XMMMaq2YcAfIjQPLfpBN/KN6AK7TZ5lOTQOe7v
+         exvk/2NPG25dhZdNyGQKjhNNEkbtzgtHL8LZlkVbroKQjbtxnviOU3jX2S6h8ohvkDlN
+         cITMutV+yqTw1PThvLextdyAB8o9dGDQIcVXagCuUFn1mSOlAeh81vd7pGGUQ8NthGu5
+         YS9jGlKZoQgOH0qdam6KaIGH8ra8RKs8I9hukiQWyzEQ4bCCx6a72b8K6DGx6kKM8Nxj
+         I2Rw==
+X-Gm-Message-State: AJIora+HHyJbfsThX+NWmBD0Ya3zzL1pWRy+9OvR1sB7jlwFThqZrN3v
+        2S+xirx2KluAncw1fYCEx7VjdA==
+X-Google-Smtp-Source: AGRyM1uS2eYhMjze/AGC4C3IZdKBZ74QEvXPzodxaUs1Io7u823rxUPzkoeeUcanecBM5tjOSqEaqQ==
+X-Received: by 2002:a5d:50d0:0:b0:21b:978f:e54 with SMTP id f16-20020a5d50d0000000b0021b978f0e54mr11865553wrt.612.1656322262271;
+        Mon, 27 Jun 2022 02:31:02 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id y10-20020a1c4b0a000000b0039c587342d8sm16971415wma.3.2022.06.27.02.31.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 02:31:01 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 10:31:00 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 10/11] mfd: intel_soc_pmic_bxtwc: Drop unneeded casting
+Message-ID: <Yrl41EqRfyctZmKQ@google.com>
+References: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
+ <20220616165823.4919-10-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <3c020577-2045-fa12-9e33-65ece10bda30@uniontech.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220616165823.4919-10-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 05:18:02PM +0800, Guo Hui wrote:
-> Ok thanks Peter, your suggestion is very good, I will modify my patch as you
-> suggested.
+On Thu, 16 Jun 2022, Andy Shevchenko wrote:
 
-Because it messes up the order in which people normally read text.
-Why is top-posting such a bad thing?
-Top-posting.
-What is the most annoying thing in e-mail?
+> The casting from size_t to ssize_t is not needed in addr_store(),
+> drop it.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/mfd/intel_soc_pmic_bxtwc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+For my own reference (apply this as-is to your sign-off block):
+
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
