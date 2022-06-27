@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A8CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E78CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237710AbiF0Ls7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
+        id S237745AbiF0LtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237460AbiF0Lpo (ORCPT
+        with ESMTP id S237367AbiF0LrF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:45:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D955DFA6;
-        Mon, 27 Jun 2022 04:39:08 -0700 (PDT)
+        Mon, 27 Jun 2022 07:47:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB50DFCE;
+        Mon, 27 Jun 2022 04:39:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7036D60C16;
-        Mon, 27 Jun 2022 11:39:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 619A8C3411D;
-        Mon, 27 Jun 2022 11:39:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F487B81123;
+        Mon, 27 Jun 2022 11:39:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 789AFC3411D;
+        Mon, 27 Jun 2022 11:39:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329946;
-        bh=PP2PMJVLn3A28UGkaTPM3Bqpt/0AYPq+7znq3zswsO8=;
+        s=korg; t=1656329949;
+        bh=8ia3nNOVzZ5UNhPme1mGfZzE7vviwrDh22cP1FO2jrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gVeZ6waVrOs3wT5I3GbXt/ovU2bOOvSYSKy7uZ98jHrM27aSn9fjMAEURH7DwIqI6
-         XKtIyadqwrL8NKhp/nWRGDS9F6mLvJP8O25KBPmqSMCVHMn3JzlLQJCslFmaoVtT1l
-         G1y9m1CbXGOQi92dFYK7wUzp6RDhim+mylMpBPVE=
+        b=SM5WAtnwXv9bpFBOVqerrKgs6LsY+UGNO3xbuXfiZVLTxHdmYS7u5WVUsuCAXTkE1
+         RJKvrey8oIoXkegGORIhLlNnE1N1qTy2vzg7KmaXVFtfc+vUi1Fb/tzK/V2Teg6Gnu
+         1or4RXuIAQUo7w4IjT+FietGwIflkLQHb2iDRYdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 005/181] ALSA: hda: Fix discovery of i915 graphics PCI device
-Date:   Mon, 27 Jun 2022 13:19:38 +0200
-Message-Id: <20220627111944.715840860@linuxfoundation.org>
+        stable@vger.kernel.org, Yonghong Song <yhs@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.18 032/181] tracing/kprobes: Check whether get_kretprobe() returns NULL in kretprobe_dispatcher()
+Date:   Mon, 27 Jun 2022 13:20:05 +0200
+Message-Id: <20220627111945.494369505@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,70 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-commit 36a38c53b4ee51b90566f8f44a613601eb31a10e upstream.
+commit cc72b72073ac982a954d3b43519ca1c28f03c27c upstream.
 
-It's been reported that the recent fix for skipping the
-component-binding with D-GPU caused a regression on some systems; it
-resulted in the completely missing component binding with i915 GPU.
+There is a small chance that get_kretprobe(ri) returns NULL in
+kretprobe_dispatcher() when another CPU unregisters the kretprobe
+right after __kretprobe_trampoline_handler().
 
-The problem was the use of pci_get_class() function.  It matches with
-the full PCI class bits, while we want to match only partially the PCI
-base class bits.  So, when a system has an i915 graphics device with
-the PCI class 0380, it won't hit because we're looking for only the
-PCI class 0300.
+To avoid this issue, kretprobe_dispatcher() checks the get_kretprobe()
+return value again. And if it is NULL, it returns soon because that
+kretprobe is under unregistering process.
 
-This patch fixes i915_gfx_present() to look up each PCI device and
-match with PCI base class explicitly instead of pci_get_class().
+This issue has been introduced when the kretprobe is decoupled
+from the struct kretprobe_instance by commit d741bf41d7c7
+("kprobes: Remove kretprobe hash"). Before that commit, the
+struct kretprob_instance::rp directly points the kretprobe
+and it is never be NULL.
 
-Fixes: c9db8a30d9f0 ("ALSA: hda/i915 - skip acomp init if no matching display")
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Tested-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Cc: <stable@vger.kernel.org>
-Link: https://bugzilla.opensuse.org/show_bug.cgi?id=1200611
-Link: https://lore.kernel.org/r/87bkunztec.wl-tiwai@suse.de
-Link: https://lore.kernel.org/r/20220621120044.11573-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Link: https://lkml.kernel.org/r/165366693881.797669.16926184644089588731.stgit@devnote2
+
+Reported-by: Yonghong Song <yhs@fb.com>
+Fixes: d741bf41d7c7 ("kprobes: Remove kretprobe hash")
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: bpf <bpf@vger.kernel.org>
+Cc: Kernel Team <kernel-team@fb.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/hda/hdac_i915.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ kernel/trace/trace_kprobe.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/sound/hda/hdac_i915.c b/sound/hda/hdac_i915.c
-index 3f35972e1cf7..161a9711cd63 100644
---- a/sound/hda/hdac_i915.c
-+++ b/sound/hda/hdac_i915.c
-@@ -119,21 +119,18 @@ static int i915_component_master_match(struct device *dev, int subcomponent,
- /* check whether Intel graphics is present and reachable */
- static int i915_gfx_present(struct pci_dev *hdac_pci)
+--- a/kernel/trace/trace_kprobe.c
++++ b/kernel/trace/trace_kprobe.c
+@@ -1718,8 +1718,17 @@ static int
+ kretprobe_dispatcher(struct kretprobe_instance *ri, struct pt_regs *regs)
  {
--	unsigned int class = PCI_BASE_CLASS_DISPLAY << 16;
- 	struct pci_dev *display_dev = NULL;
--	bool match = false;
+ 	struct kretprobe *rp = get_kretprobe(ri);
+-	struct trace_kprobe *tk = container_of(rp, struct trace_kprobe, rp);
++	struct trace_kprobe *tk;
  
--	do {
--		display_dev = pci_get_class(class, display_dev);
--
--		if (display_dev && display_dev->vendor == PCI_VENDOR_ID_INTEL &&
-+	for_each_pci_dev(display_dev) {
-+		if (display_dev->vendor == PCI_VENDOR_ID_INTEL &&
-+		    (display_dev->class >> 16) == PCI_BASE_CLASS_DISPLAY &&
- 		    connectivity_check(display_dev, hdac_pci)) {
- 			pci_dev_put(display_dev);
--			match = true;
-+			return true;
- 		}
--	} while (!match && display_dev);
-+	}
++	/*
++	 * There is a small chance that get_kretprobe(ri) returns NULL when
++	 * the kretprobe is unregister on another CPU between kretprobe's
++	 * trampoline_handler and this function.
++	 */
++	if (unlikely(!rp))
++		return 0;
++
++	tk = container_of(rp, struct trace_kprobe, rp);
+ 	raw_cpu_inc(*tk->nhit);
  
--	return match;
-+	return false;
- }
- 
- /**
--- 
-2.36.1
-
+ 	if (trace_probe_test_flag(&tk->tp, TP_FLAG_TRACE))
 
 
