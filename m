@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E86C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:45:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F2FFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237618AbiF0LpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42742 "EHLO
+        id S236750AbiF0LpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237408AbiF0Lmt (ORCPT
+        with ESMTP id S237424AbiF0Lmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9006EB8;
-        Mon, 27 Jun 2022 04:37:23 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B2D2B11;
+        Mon, 27 Jun 2022 04:37:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90385B8111B;
-        Mon, 27 Jun 2022 11:37:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB74C3411D;
-        Mon, 27 Jun 2022 11:37:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCCD060C98;
+        Mon, 27 Jun 2022 11:37:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE169C3411D;
+        Mon, 27 Jun 2022 11:37:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329841;
-        bh=bqRXFxor9G/w/qz5p3HqTcjfA3BWyqfO3Up8XN+Lo7w=;
+        s=korg; t=1656329859;
+        bh=ysNOEvu3zGd1TifXXdMtyPRCM21reTJXO7MAoKCElac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P0gAQzC0vubjXg3/o/9FSq3BFik1NXC5x8r+mo3OUJX7+XPBfCj20kGsvMjEprPYx
-         AelnNjWQzVH/iWg5lA0+1v/VqRtQc0H056002LBhB+MC22FWMNeqPwYmZFMg9hpaIj
-         z8uYXb35sKAwlyhuNsz/v9+P7ddgTkWkVjVHyPO4=
+        b=I9gmxhigOpB8fFW3tqWKCnSbfDasZ0DaSjMg2Itbu4im3nj7TxPTuHwC2wBzV7MbC
+         OnWb4d97IUI5VV6tQ4JEIKuZgLeRf3s5+JqTiKBlKXgywgs/BeJCuvdeGLQIU+PM2I
+         CLuO71kZ8BOdFLCippOM5Yel5BUhxauMM7hnnpl4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 5.15 134/135] kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS (2nd attempt)
-Date:   Mon, 27 Jun 2022 13:22:21 +0200
-Message-Id: <20220627111942.038354765@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.15 126/135] ARM: Fix refcount leak in axxia_boot_secondary
+Date:   Mon, 27 Jun 2022 13:22:13 +0200
+Message-Id: <20220627111941.809985501@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -49,49 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 53632ba87d9f302a8d97a11ec2f4f4eec7bb75ea upstream.
+commit 7c7ff68daa93d8c4cdea482da4f2429c0398fcde upstream.
 
-If CONFIG_TRIM_UNUSED_KSYMS is enabled and the kernel is built from
-a pristine state, the vmlinux is linked twice.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Commit 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for
-CONFIG_TRIM_UNUSED_KSYMS") explains why this happens, but it did not fix
-the issue at all.
-
-Now I realized I had applied a wrong patch.
-
-In v1 patch [1], the autoksyms_recursive target correctly recurses to
-"$(MAKE) -f $(srctree)/Makefile autoksyms_recursive".
-
-In v2 patch [2], I accidentally dropped the diff line, and it recurses to
-"$(MAKE) -f $(srctree)/Makefile vmlinux".
-
-Restore the code I intended in v1.
-
-[1]: https://lore.kernel.org/linux-kbuild/1521045861-22418-8-git-send-email-yamada.masahiro@socionext.com/
-[2]: https://lore.kernel.org/linux-kbuild/1521166725-24157-8-git-send-email-yamada.masahiro@socionext.com/
-
-Fixes: 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Tested-by: Sami Tolvanen <samitolvanen@google.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fixes: 1d22924e1c4e ("ARM: Add platform support for LSI AXM55xx SoC")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220601090548.47616-1-linmq006@gmail.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-axxia/platsmp.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/Makefile
-+++ b/Makefile
-@@ -1163,7 +1163,7 @@ KBUILD_MODULES := 1
+--- a/arch/arm/mach-axxia/platsmp.c
++++ b/arch/arm/mach-axxia/platsmp.c
+@@ -39,6 +39,7 @@ static int axxia_boot_secondary(unsigned
+ 		return -ENOENT;
  
- autoksyms_recursive: descend modules.order
- 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/adjust_autoksyms.sh \
--	  "$(MAKE) -f $(srctree)/Makefile vmlinux"
-+	  "$(MAKE) -f $(srctree)/Makefile autoksyms_recursive"
- endif
+ 	syscon = of_iomap(syscon_np, 0);
++	of_node_put(syscon_np);
+ 	if (!syscon)
+ 		return -ENOMEM;
  
- autoksyms_h := $(if $(CONFIG_TRIM_UNUSED_KSYMS), include/generated/autoksyms.h)
 
 
