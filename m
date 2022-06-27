@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F40C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B92DCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbiF0L1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
+        id S235190AbiF0L1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234867AbiF0L0V (ORCPT
+        with ESMTP id S235063AbiF0L0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:26:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87E6959F;
-        Mon, 27 Jun 2022 04:26:01 -0700 (PDT)
+        Mon, 27 Jun 2022 07:26:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E6665BE;
+        Mon, 27 Jun 2022 04:26:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A1FD61460;
-        Mon, 27 Jun 2022 11:26:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 334DAC341CE;
-        Mon, 27 Jun 2022 11:26:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3021061460;
+        Mon, 27 Jun 2022 11:26:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40315C3411D;
+        Mon, 27 Jun 2022 11:26:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329160;
-        bh=mnlmFhlBhAnytYcq6cbd2riKVfryEK43KZQadNNdEQU=;
+        s=korg; t=1656329163;
+        bh=MyDSI5RUebNDIc5u5vx4kaFMCJtuhYAwDkFKp5L7JuE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Awf4EMKAB0JhmDhm3zDGEEZZKei1RixWQdWBAhf19b6pHwRqNfhLJYDiAYoGJis9d
-         pjbAmwN1YBkwoiXsd1p4EwER5kuMtxkiHBlnSTAywMim+g4rSj1tHpg37DERdNQiuz
-         1vjyW1ZMtwSfD1OwUHGmjxookMAkKCphcSKauH3I=
+        b=d5JJdAIE7YA8JUFj/zsMsk1gpGN/i74G6uMLF0GUEkTxE4WpPmfzy16V4jA7+LV7f
+         35p7/aJK62ClvScaqqXfOlJrewNm6PTX4ZQsUByLGs6pZLmh0XNJqBsd5zAvlh2Cp1
+         InM4Pognj6urpRgvlZkPmpUNRPg5gMMSO0NU8+k8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 043/102] net/tls: fix tls_sk_proto_close executed repeatedly
-Date:   Mon, 27 Jun 2022 13:20:54 +0200
-Message-Id: <20220627111934.749726236@linuxfoundation.org>
+        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@gmail.com>,
+        Alan Stern <stern@rowland.harvard.edu>
+Subject: [PATCH 5.10 070/102] USB: gadget: Fix double-free bug in raw_gadget driver
+Date:   Mon, 27 Jun 2022 13:21:21 +0200
+Message-Id: <20220627111935.546709684@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -51,55 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ziyang Xuan <william.xuanziyang@huawei.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-[ Upstream commit 69135c572d1f84261a6de2a1268513a7e71753e2 ]
+commit 90bc2af24638659da56397ff835f3c95a948f991 upstream.
 
-After setting the sock ktls, update ctx->sk_proto to sock->sk_prot by
-tls_update(), so now ctx->sk_proto->close is tls_sk_proto_close(). When
-close the sock, tls_sk_proto_close() is called for sock->sk_prot->close
-is tls_sk_proto_close(). But ctx->sk_proto->close() will be executed later
-in tls_sk_proto_close(). Thus tls_sk_proto_close() executed repeatedly
-occurred. That will trigger the following bug.
+Re-reading a recently merged fix to the raw_gadget driver showed that
+it inadvertently introduced a double-free bug in a failure pathway.
+If raw_ioctl_init() encounters an error after the driver ID number has
+been allocated, it deallocates the ID number before returning.  But
+when dev_free() runs later on, it will then try to deallocate the ID
+number a second time.
 
-=================================================================
-KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-RIP: 0010:tls_sk_proto_close+0xd8/0xaf0 net/tls/tls_main.c:306
-Call Trace:
- <TASK>
- tls_sk_proto_close+0x356/0xaf0 net/tls/tls_main.c:329
- inet_release+0x12e/0x280 net/ipv4/af_inet.c:428
- __sock_release+0xcd/0x280 net/socket.c:650
- sock_close+0x18/0x20 net/socket.c:1365
+Closely related to this issue is another error in the recent fix: The
+ID number is stored in the raw_dev structure before the code checks to
+see whether the structure has already been initialized, in which case
+the new ID number would overwrite the earlier value.
 
-Updating a proto which is same with sock->sk_prot is incorrect. Add proto
-and sock->sk_prot equality check at the head of tls_update() to fix it.
+The solution to both bugs is to keep the new ID number in a local
+variable, and store it in the raw_dev structure only after the check
+for prior initialization.  No errors can occur after that point, so
+the double-free will never happen.
 
-Fixes: 95fa145479fb ("bpf: sockmap/tls, close can race with map free")
-Reported-by: syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: f2d8c2606825 ("usb: gadget: Fix non-unique driver names in raw-gadget driver")
+CC: Andrey Konovalov <andreyknvl@gmail.com>
+CC: <stable@vger.kernel.org>
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YrMrRw5AyIZghN0v@rowland.harvard.edu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tls/tls_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/gadget/legacy/raw_gadget.c |   13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 58d22d6b86ae..9492528f5852 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -787,6 +787,9 @@ static void tls_update(struct sock *sk, struct proto *p,
+--- a/drivers/usb/gadget/legacy/raw_gadget.c
++++ b/drivers/usb/gadget/legacy/raw_gadget.c
+@@ -429,6 +429,7 @@ out_put:
+ static int raw_ioctl_init(struct raw_dev *dev, unsigned long value)
  {
- 	struct tls_context *ctx;
+ 	int ret = 0;
++	int driver_id_number;
+ 	struct usb_raw_init arg;
+ 	char *udc_driver_name;
+ 	char *udc_device_name;
+@@ -451,10 +452,9 @@ static int raw_ioctl_init(struct raw_dev
+ 		return -EINVAL;
+ 	}
  
-+	if (sk->sk_prot == p)
-+		return;
-+
- 	ctx = tls_get_ctx(sk);
- 	if (likely(ctx)) {
- 		ctx->sk_write_space = write_space;
--- 
-2.35.1
-
+-	ret = ida_alloc(&driver_id_numbers, GFP_KERNEL);
+-	if (ret < 0)
+-		return ret;
+-	dev->driver_id_number = ret;
++	driver_id_number = ida_alloc(&driver_id_numbers, GFP_KERNEL);
++	if (driver_id_number < 0)
++		return driver_id_number;
+ 
+ 	driver_driver_name = kmalloc(DRIVER_DRIVER_NAME_LENGTH_MAX, GFP_KERNEL);
+ 	if (!driver_driver_name) {
+@@ -462,7 +462,7 @@ static int raw_ioctl_init(struct raw_dev
+ 		goto out_free_driver_id_number;
+ 	}
+ 	snprintf(driver_driver_name, DRIVER_DRIVER_NAME_LENGTH_MAX,
+-				DRIVER_NAME ".%d", dev->driver_id_number);
++				DRIVER_NAME ".%d", driver_id_number);
+ 
+ 	udc_driver_name = kmalloc(UDC_NAME_LENGTH_MAX, GFP_KERNEL);
+ 	if (!udc_driver_name) {
+@@ -506,6 +506,7 @@ static int raw_ioctl_init(struct raw_dev
+ 	dev->driver.driver.name = driver_driver_name;
+ 	dev->driver.udc_name = udc_device_name;
+ 	dev->driver.match_existing_only = 1;
++	dev->driver_id_number = driver_id_number;
+ 
+ 	dev->state = STATE_DEV_INITIALIZED;
+ 	spin_unlock_irqrestore(&dev->lock, flags);
+@@ -520,7 +521,7 @@ out_free_udc_driver_name:
+ out_free_driver_driver_name:
+ 	kfree(driver_driver_name);
+ out_free_driver_id_number:
+-	ida_free(&driver_id_numbers, dev->driver_id_number);
++	ida_free(&driver_id_numbers, driver_id_number);
+ 	return ret;
+ }
+ 
 
 
