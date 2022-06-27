@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C09C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19724C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234860AbiF0L20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
+        id S235153AbiF0L2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235195AbiF0L1L (ORCPT
+        with ESMTP id S235219AbiF0L1Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:27:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88AB99FD9;
-        Mon, 27 Jun 2022 04:27:01 -0700 (PDT)
+        Mon, 27 Jun 2022 07:27:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774D59585;
+        Mon, 27 Jun 2022 04:27:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24688614C8;
-        Mon, 27 Jun 2022 11:27:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF92C385A9;
-        Mon, 27 Jun 2022 11:26:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15050614C8;
+        Mon, 27 Jun 2022 11:27:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21A84C3411D;
+        Mon, 27 Jun 2022 11:27:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329220;
-        bh=t6YNsAmuGSN6G8yIXFXw38LmA8/sEUriDb7d86ArpoQ=;
+        s=korg; t=1656329223;
+        bh=OOi6JiC4hHGgym1taXsN4xlgN6UDOKMGxg2GFNAwFLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1zJzIXbhC9Kf5CGpvpDr1D6LifgpIXQMbz1+aVA26fEUs2HXHVghDioxfBrz8Czae
-         KPu3tEUvmqOsENd9bDMPMCAdx9+T2q6ACxkHpa9wuRQ+rciX0Sh2R3gRo+st2riEJV
-         9NW13uI3EBFo3gAZB26w3wZ0Pzh2mMyhQa7SSR4k=
+        b=Nxrw6CsK40Yn8mXyFdv3Bf4rU1tlT53r5JGW/R3nkyo6IgtGGaV/ulohMa/zK90sw
+         lOJjoAavZSZO4cOCFU5Ni/igCYdUCxGBvGMySTdG6sK6xB7vNlGWZ861fBVpms7hhX
+         tRQG7qsQ/nForlQIJk06WDkBdS971UHwQdFJw1RE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <khsieh@codeaurora.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 040/102] drm/msm/dp: promote irq_hpd handle to handle link training correctly
-Date:   Mon, 27 Jun 2022 13:20:51 +0200
-Message-Id: <20220627111934.660299951@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.10 084/102] iio: adc: adi-axi-adc: Fix refcount leak in adi_axi_adc_attach_client
+Date:   Mon, 27 Jun 2022 13:21:35 +0200
+Message-Id: <20220627111935.958757066@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -49,78 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <khsieh@codeaurora.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 26b8d66a399e625f3aa2c02ccbab1bff2e00040c ]
+commit ada7b0c0dedafd7d059115adf49e48acba3153a8 upstream.
 
-Some dongles require link training done at irq_hpd request instead
-of plugin request. This patch promote irq_hpd handler to handle link
-training and setup hpd_state correctly.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Signed-off-by: Kuogee Hsieh <khsieh@codeaurora.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ef04070692a2 ("iio: adc: adi-axi-adc: add support for AXI ADC IP core")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220524074517.45268-1-linmq006@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+ drivers/iio/adc/adi-axi-adc.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index d504cf68283a..f1f777baa2c4 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -476,10 +476,9 @@ static int dp_display_handle_irq_hpd(struct dp_display_private *dp)
- 	sink_request = dp->link->sink_request;
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -334,16 +334,19 @@ static struct adi_axi_adc_client *adi_ax
  
- 	if (sink_request & DS_PORT_STATUS_CHANGED) {
--		dp_add_event(dp, EV_USER_NOTIFICATION, false, 0);
- 		if (dp_display_is_sink_count_zero(dp)) {
- 			DRM_DEBUG_DP("sink count is zero, nothing to do\n");
--			return 0;
-+			return -ENOTCONN;
+ 		if (!try_module_get(cl->dev->driver->owner)) {
+ 			mutex_unlock(&registered_clients_lock);
++			of_node_put(cln);
+ 			return ERR_PTR(-ENODEV);
  		}
  
- 		return dp_display_process_hpd_high(dp);
-@@ -496,7 +495,9 @@ static int dp_display_handle_irq_hpd(struct dp_display_private *dp)
- static int dp_display_usbpd_attention_cb(struct device *dev)
- {
- 	int rc = 0;
-+	u32 sink_request;
- 	struct dp_display_private *dp;
-+	struct dp_usbpd *hpd;
- 
- 	if (!dev) {
- 		DRM_ERROR("invalid dev\n");
-@@ -510,10 +511,26 @@ static int dp_display_usbpd_attention_cb(struct device *dev)
- 		return -ENODEV;
+ 		get_device(cl->dev);
+ 		cl->info = info;
+ 		mutex_unlock(&registered_clients_lock);
++		of_node_put(cln);
+ 		return cl;
  	}
  
-+	hpd = dp->usbpd;
-+
- 	/* check for any test request issued by sink */
- 	rc = dp_link_process_request(dp->link);
--	if (!rc)
--		dp_display_handle_irq_hpd(dp);
-+	if (!rc) {
-+		sink_request = dp->link->sink_request;
-+		if (sink_request & DS_PORT_STATUS_CHANGED) {
-+			/* same as unplugged */
-+			hpd->hpd_high = 0;
-+			dp->hpd_state = ST_DISCONNECT_PENDING;
-+			dp_add_event(dp, EV_USER_NOTIFICATION, false, 0);
-+		}
-+
-+		rc = dp_display_handle_irq_hpd(dp);
-+
-+		if (!rc && (sink_request & DS_PORT_STATUS_CHANGED)) {
-+			hpd->hpd_high = 1;
-+			dp->hpd_state = ST_CONNECT_PENDING;
-+		}
-+	}
+ 	mutex_unlock(&registered_clients_lock);
++	of_node_put(cln);
  
- 	return rc;
+ 	return ERR_PTR(-EPROBE_DEFER);
  }
--- 
-2.35.1
-
 
 
