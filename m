@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEECAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF11C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 21:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241870AbiF0V6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 17:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59354 "EHLO
+        id S241939AbiF0V6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 17:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241426AbiF0VzK (ORCPT
+        with ESMTP id S241429AbiF0VzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 17:55:10 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5F864DA;
-        Mon, 27 Jun 2022 14:54:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B991C6326;
+        Mon, 27 Jun 2022 14:54:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366897; x=1687902897;
+  t=1656366898; x=1687902898;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GceQwT7f2Dr4epTMxHX2Ah64EI/4O0gxsG+G77DQUAw=;
-  b=Lj55I9PsyRNEPdbuOukjUmIfqw2IpjTzuLqoIpP8q5YQ0wUqW+cGP/UI
-   +Ggs/qrMKPMK9vm+Xstf7RE1VfmF+sUlIybq87Dp24nEWBWwdlJXGly46
-   rW/4iusZ7F7mCSG5hEnn/yQ2r5DBjgf4mmpOzK0czPq15oCHAQc9/6j5+
-   OmFZAFQQb2Bge/sKfUJVcu5Tja5KAPOKuEcaaTMxfDfI2OlCqiQTol4Kr
-   Tmm4dALCWWF6yJ2wfI9vDeSrIiGBGeAVsaY9+KMoQDh6ijQkXcwPcd4QJ
-   p9Y7Ykz4paFpruL4UabAGfTLEymiC/Btc1yP3pxgBcb5b9LqLhYf4cpmf
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609553"
+  bh=9+zynqxUnbt7L2tmrykvNHmz+Wt/xr8Fj4lA+9l+hKk=;
+  b=GTshIsVXG/uRrjQyEBklKUdkUpM+a70v4j1US2GXah0W6Kwpfj023yU0
+   ew2MCcuJ6n1WY8u//TMh0LSsc2it/Jw0gRisSQD7iCq98VyCUpWmhZyXk
+   TMUgCRNyhMpeXjUBAATC8XQpINqgPUWBLC60gXP2DMvv/tr1sGNlyJETZ
+   b74uPHTols/gUTxMFunU+WBm0ymbVBRKc5pJoNx5eom9qad108ffoYwu1
+   LJC3X+asaUHyKrcLMZNSiYv+YGfRhCyATb4N/ZBCXkwpgZFrQXSiRAL4z
+   zd3/97j5Mr8jjpGUPDn1irV+8SmfgZaexgxGn4rfMt+6J/HqL0aemsm44
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609557"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281609553"
+   d="scan'208";a="281609557"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:53 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863564"
+   d="scan'208";a="657863571"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:53 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>
-Subject: [PATCH v7 040/102] KVM: x86/mmu: Zap only leaf SPTEs for deleted/moved memslot for private mmu
-Date:   Mon, 27 Jun 2022 14:53:32 -0700
-Message-Id: <27acc4b2957e1297640d1d8b2a43f7c08e3885d5.1656366338.git.isaku.yamahata@intel.com>
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH v7 042/102] [MARKER] The start of TDX KVM patch series: KVM TDP MMU hooks
+Date:   Mon, 27 Jun 2022 14:53:34 -0700
+Message-Id: <082bd1d5a2c99f9a5313be51790410b66280cd94.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -54,73 +53,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-For kvm mmu that has shared bit mask, zap only leaf SPTEs when
-deleting/moving a memslot.  The existing kvm_mmu_zap_memslot() depends on
-role.invalid with read lock of mmu_lock so that other vcpu can operate on
-kvm mmu concurrently. Mark the root page table invalid, unlink it from page
-table pointer of CPU, process the page table.  It doesn't work for private
-page table to unlink the root page table because it requires all SPTE entry
-to be non-present.  Instead, with write-lock of mmu_lock and zap only leaf
-SPTEs for kvm mmu with shared bit mask.
+This empty commit is to mark the start of patch series of KVM TDP MMU
+hooks.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 35 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 34 insertions(+), 1 deletion(-)
+ Documentation/virt/kvm/intel-tdx-layer-status.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 80d7c7709af3..c517c7bca105 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -5854,11 +5854,44 @@ static bool kvm_has_zapped_obsolete_pages(struct kvm *kvm)
- 	return unlikely(!list_empty_careful(&kvm->arch.zapped_obsolete_pages));
- }
+diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+index df003d2ed89e..d5cace00c433 100644
+--- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
++++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+@@ -25,6 +25,6 @@ Patch Layer status
+ * TD vcpu interrupts/exit/hypercall:    Not yet
  
-+static void kvm_mmu_zap_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
-+{
-+	bool flush = false;
-+
-+	write_lock(&kvm->mmu_lock);
-+
-+	/*
-+	 * Zapping non-leaf SPTEs, a.k.a. not-last SPTEs, isn't required, worst
-+	 * case scenario we'll have unused shadow pages lying around until they
-+	 * are recycled due to age or when the VM is destroyed.
-+	 */
-+	if (is_tdp_mmu_enabled(kvm)) {
-+		struct kvm_gfn_range range = {
-+		      .slot = slot,
-+		      .start = slot->base_gfn,
-+		      .end = slot->base_gfn + slot->npages,
-+		      .may_block = false,
-+		};
-+
-+		flush = kvm_tdp_mmu_unmap_gfn_range(kvm, &range, flush);
-+	} else {
-+		flush = slot_handle_level(kvm, slot, kvm_zap_rmapp, PG_LEVEL_4K,
-+					  KVM_MAX_HUGEPAGE_LEVEL, true);
-+	}
-+	if (flush)
-+		kvm_flush_remote_tlbs(kvm);
-+
-+	write_unlock(&kvm->mmu_lock);
-+}
-+
- static void kvm_mmu_invalidate_zap_pages_in_memslot(struct kvm *kvm,
- 			struct kvm_memory_slot *slot,
- 			struct kvm_page_track_notifier_node *node)
- {
--	kvm_mmu_zap_all_fast(kvm);
-+	if (kvm_gfn_shared_mask(kvm))
-+		kvm_mmu_zap_memslot(kvm, slot);
-+	else
-+		kvm_mmu_zap_all_fast(kvm);
- }
- 
- int kvm_mmu_init_vm(struct kvm *kvm)
+ * KVM MMU GPA shared bits:              Applied
+-* KVM TDP refactoring for TDX:          Applying
+-* KVM TDP MMU hooks:                    Not yet
++* KVM TDP refactoring for TDX:          Applied
++* KVM TDP MMU hooks:                    Applying
+ * KVM TDP MMU MapGPA:                   Not yet
 -- 
 2.25.1
 
