@@ -2,187 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A31C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:56:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A3CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237963AbiF0P4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 11:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
+        id S237858AbiF0P5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 11:57:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237456AbiF0P4t (ORCPT
+        with ESMTP id S235477AbiF0P5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 11:56:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7331AE;
-        Mon, 27 Jun 2022 08:56:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 437666162F;
-        Mon, 27 Jun 2022 15:56:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EADAC3411D;
-        Mon, 27 Jun 2022 15:56:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656345407;
-        bh=0uKIHk5NAfqiC1sw9PWOYGqU8fOKFZ6Vg6CrIR19Zgk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hZHHtIFw51nNpjsX7K/dxIQcTbD2G+uJd1OfO3hGMoQGBgPQxqvCUqglpOJ+0Miq1
-         /K9FJ6bviXkg8wvG9kV6dx2lv8AS20+9aO0WKX6mGy4sWw4nEM0sKNiC1vw1oXz0S8
-         MZC45o3icMlBflLrxfR5pKEh6xshNAP+BJb5XnUEKnHgz3Eq1HkDflYfMJKH94Uv9/
-         pInFmw9bADF7m9RkzBOUbRJioaLOLLZd5TIE004Mec+oRIdJki75A6bh0/lDJXQQ5a
-         H6/cA13NJWiimkA6z33xsWtpyYowiwfMSH4XGy7/ueH8+uOhaRdVFplx04Sh009dWU
-         0kV3+gimxBa0w==
-Date:   Mon, 27 Jun 2022 17:56:39 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Frederick Lawler <fred@cloudflare.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Casey Schaufler <casey@schaufler-ca.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com
-Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
-Message-ID: <20220627155639.b5jky27loen3ydrz@wittgenstein>
-References: <20220621233939.993579-1-fred@cloudflare.com>
- <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
- <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com>
- <CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com>
- <20220627121137.cnmctlxxtcgzwrws@wittgenstein>
- <b7c23d54-d196-98d1-8187-605f6d4dca4d@cloudflare.com>
+        Mon, 27 Jun 2022 11:57:17 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E124D79;
+        Mon, 27 Jun 2022 08:57:17 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id p14so9417390pfh.6;
+        Mon, 27 Jun 2022 08:57:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q7ZSEV4LTD7LAEM2Qop9QWeKPyT8Eo98shgP/WcfAJM=;
+        b=TD25yDZjhKN9TW36xDeM7TC/WXolSNS4MNswQEtngcUO1oXtqBPpHKRVemyWExAlFW
+         TqyvvXlQnhbGsHE73jVzf9Y9myNUkq+LmwxSgmvbIrAkTKRE8ajBfNydza4Fe1PWDCGo
+         XN9lsNhRoOlrS3Twls6Nfrj9RBXQIGwY5DmVwoSfnp2Ara+fYn8fsBgPHgdzCdEMq0mO
+         UMFJ0JsZO9r/GyZxyRU76iYGgF/7rl0zwXLixDbWPgyWOQ63wjrZwwnOr3K1Jnv7a9PF
+         QKEiklV9Wc5SFJuofCme726CpZgab0fToWe4ZqGpSUmTSEqY0DkQgIKX3LCCrRr03tgp
+         bLGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q7ZSEV4LTD7LAEM2Qop9QWeKPyT8Eo98shgP/WcfAJM=;
+        b=aM5eFQd+hGMVAWRlr5jUU/6dHIi/lKYY2f1TbZCQ9FgwVpEnbEzCVASW1CbbN2oHcb
+         tzkvgeywhHPPgWBCdHQr4PxLPmDoS7f5vFZZUQ7w1gIEekeqfe1VaLtlU2B2nU+Om/hf
+         37oy2FZu2tTV9R/J0fxJHXjY3YjohGveXmFoYJoLkbrf1zMT9wjA79Z7cKiJ+WQnTbCL
+         gltOnsOevi1aOM85ANDSTQTh1ZTy6FWaCAsGju2Eun5G+3zCP0HUKdZvT+1cU4t7lly3
+         MEMyQyz5FZtDqOVmxWQwVzqZh6bF77EcjGIHU7DPIziNqyzBVhE8Gk44OelcCHdpxZpM
+         k1fA==
+X-Gm-Message-State: AJIora+NVseYGC0rXIHiYew8l/iGA56gXJaJC3X4JT2GKelcnTsBG+vv
+        a3uYz7ZW1E/OTyd7gt8g69Wle+sxRXxqDg==
+X-Google-Smtp-Source: AGRyM1v0/J58YZ3w/3MSk7WzTC+fbEwFJrbTeOxEdqpHzith/X6cEbp8QvXyQ3UyKtR/zcQ/eIEfuw==
+X-Received: by 2002:a05:6a00:1a0c:b0:523:1a23:957f with SMTP id g12-20020a056a001a0c00b005231a23957fmr15619816pfv.45.1656345436401;
+        Mon, 27 Jun 2022 08:57:16 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:26dc:1818:7133:85db])
+        by smtp.gmail.com with ESMTPSA id h4-20020a056a001a4400b005252e524d1csm7499932pfv.211.2022.06.27.08.57.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 08:57:15 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-next@vger.kernel.org, ntb@lists.linux.dev,
+        Alexander Fomichev <a.fomichev@yadro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Jon Mason <jdmason@kudzu.us>, Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH] drivers/ntb/test: avoid 64-bit modulus operation
+Date:   Mon, 27 Jun 2022 08:57:10 -0700
+Message-Id: <20220627155710.2067032-1-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <b7c23d54-d196-98d1-8187-605f6d4dca4d@cloudflare.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 10:51:48AM -0500, Frederick Lawler wrote:
-> On 6/27/22 7:11 AM, Christian Brauner wrote:
-> > On Thu, Jun 23, 2022 at 11:21:37PM -0400, Paul Moore wrote:
-> > > On Wed, Jun 22, 2022 at 10:24 AM Frederick Lawler <fred@cloudflare.com> wrote:
-> > > > On 6/21/22 7:19 PM, Casey Schaufler wrote:
-> > > > > On 6/21/2022 4:39 PM, Frederick Lawler wrote:
-> > > > > > While creating a LSM BPF MAC policy to block user namespace creation, we
-> > > > > > used the LSM cred_prepare hook because that is the closest hook to
-> > > > > > prevent
-> > > > > > a call to create_user_ns().
-> > > > > > 
-> > > > > > The calls look something like this:
-> > > > > > 
-> > > > > >       cred = prepare_creds()
-> > > > > >           security_prepare_creds()
-> > > > > >               call_int_hook(cred_prepare, ...
-> > > > > >       if (cred)
-> > > > > >           create_user_ns(cred)
-> > > > > > 
-> > > > > > We noticed that error codes were not propagated from this hook and
-> > > > > > introduced a patch [1] to propagate those errors.
-> > > > > > 
-> > > > > > The discussion notes that security_prepare_creds()
-> > > > > > is not appropriate for MAC policies, and instead the hook is
-> > > > > > meant for LSM authors to prepare credentials for mutation. [2]
-> > > > > > 
-> > > > > > Ultimately, we concluded that a better course of action is to introduce
-> > > > > > a new security hook for LSM authors. [3]
-> > > > > > 
-> > > > > > This patch set first introduces a new security_create_user_ns() function
-> > > > > > and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
-> > > > > 
-> > > > > Why restrict this hook to user namespaces? It seems that an LSM that
-> > > > > chooses to preform controls on user namespaces may want to do so for
-> > > > > network namespaces as well.
-> > > > 
-> > > > IIRC, CLONE_NEWUSER is the only namespace flag that does not require
-> > > > CAP_SYS_ADMIN. There is a security use case to prevent this namespace
-> > > > from being created within an unprivileged environment. I'm not opposed
-> > > > to a more generic hook, but I don't currently have a use case to block
-> > > > any others. We can also say the same is true for the other namespaces:
-> > > > add this generic security function to these too.
-> > > > 
-> > > > I'm curious what others think about this too.
-> > > 
-> > > While user namespaces are obviously one of the more significant
-> > > namespaces from a security perspective, I do think it seems reasonable
-> > > that the LSMs could benefit from additional namespace creation hooks.
-> > > However, I don't think we need to do all of them at once, starting
-> > > with a userns hook seems okay to me.
-> > > 
-> > > I also think that using the same LSM hook as an access control point
-> > > for all of the different namespaces would be a mistake.  At the very
-> > 
-> > Agreed. >
-> > > least we would need to pass a flag or some form of context to the hook
-> > > to indicate which new namespace(s) are being requested and I fear that
-> > > is a problem waiting to happen.  That isn't to say someone couldn't
-> > > mistakenly call the security_create_user_ns(...) from the mount
-> > > namespace code, but I suspect that is much easier to identify as wrong
-> > > than the equivalent security_create_ns(USER, ...).
-> > 
-> > Yeah, I think that's a pretty unlikely scenario.
-> > 
-> > > 
-> > > We also should acknowledge that while in most cases the current task's
-> > > credentials are probably sufficient to make any LSM access control
-> > > decisions around namespace creation, it's possible that for some
-> > > namespaces we would need to pass additional, namespace specific info
-> > > to the LSM.  With a shared LSM hook this could become rather awkward.
-> > 
-> > Agreed.
-> > 
-> > > 
-> > > > > Also, the hook seems backwards. You should
-> > > > > decide if the creation of the namespace is allowed before you create it.
-> > > > > Passing the new namespace to a function that checks to see creating a
-> > > > > namespace is allowed doesn't make a lot off sense.
-> > > > 
-> > > > I think having more context to a security hook is a good thing.
-> > > 
-> > > This is one of the reasons why I usually like to see at least one LSM
-> > > implementation to go along with every new/modified hook.  The
-> > > implementation forces you to think about what information is necessary
-> > > to perform a basic access control decision; sometimes it isn't always
-> > > obvious until you have to write the access control :)
-> > 
-> > I spoke to Frederick at length during LSS and as I've been given to
-> > understand there's a eBPF program that would immediately use this new
-> > hook. Now I don't want to get into the whole "Is the eBPF LSM hook
-> > infrastructure an LSM" but I think we can let this count as a legitimate
-> > first user of this hook/code.
-> > 
-> > > 
-> > > [aside: If you would like to explore the SELinux implementation let me
-> > > know, I'm happy to work with you on this.  I suspect Casey and the
-> > > other LSM maintainers would also be willing to do the same for their
-> > > LSMs.]
-> > > 
-> 
-> I can take a shot at making a SELinux implementation, but the question
-> becomes: is that for v2 or a later patch? I don't think the implementation
-> for SELinux would be too complicated (i.e. make a call to avc_has_perm()?)
-> but, testing and revisions might take a bit longer.
-> 
-> > > In this particular case I think the calling task's credentials are
-> > > generally all that is needed.  You mention that the newly created
-> > 
-> > Agreed.
-> > 
-> > > namespace would be helpful, so I'll ask: what info in the new ns do
-> > > you believe would be helpful in making an access decision about its
-> > > creation?
-> > > 
-> 
-> In the other thread [1], there was mention of xattr mapping support. As I
-> understand Caseys response to this thread [2], that feature is no longer
-> requested for this hook.
+Redefine RESCHEDULE_RATIO to a closest power of 2 so that the following
+code in the perf_run_latency
 
-I think that is an orthogonal problem at least wrt to this hook.
+	/* Avoid processor soft lock-ups */
+	if (!(pthr->tries % RESCHEDULE_RATIO))
+		schedule();
 
-> 
-> Users can still access the older parent ns from the passed in cred, but I
-> was thinking of handling the transition point here. There's probably more
-> suitable hooks for that case.
+doesn't do 64-bit modulus operation.
+This fixes the following build failures on 32-bit architectures visible
+in linux-next:
 
-Yes.
+  ERROR: modpost: "__umoddi3" [drivers/ntb/test/ntb_perf.ko] undefined!
+
+Fixes: dc150dfb081f ("ntb_perf: extend with burst latency measurement")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+---
+ drivers/ntb/test/ntb_perf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/ntb/test/ntb_perf.c b/drivers/ntb/test/ntb_perf.c
+index 23e154bd41b9..536fab0030f3 100644
+--- a/drivers/ntb/test/ntb_perf.c
++++ b/drivers/ntb/test/ntb_perf.c
+@@ -126,7 +126,7 @@ MODULE_DESCRIPTION("PCIe NTB Performance Measurement Tool");
+ #define PERF_BUF_LEN 1024
+ 
+ #define LAT_MIN_TRIES	20
+-#define RESCHEDULE_RATIO	10000
++#define RESCHEDULE_RATIO	8192 /* power of 2, to avoid actual division */
+ 
+ static unsigned long max_mw_size;
+ module_param(max_mw_size, ulong, 0644);
+-- 
+2.30.2
+
