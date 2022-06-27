@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97371C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2629FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238400AbiF0LzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:55:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
+        id S239174AbiF0LzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238554AbiF0Lsp (ORCPT
+        with ESMTP id S238562AbiF0Lsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC90C101E2;
-        Mon, 27 Jun 2022 04:42:13 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 944FE101FA;
+        Mon, 27 Jun 2022 04:42:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F7856120F;
-        Mon, 27 Jun 2022 11:42:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B652C3411D;
-        Mon, 27 Jun 2022 11:42:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12CDA61208;
+        Mon, 27 Jun 2022 11:42:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27290C3411D;
+        Mon, 27 Jun 2022 11:42:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330132;
-        bh=FYaoYojNg2Ks/W0fzjugy1DmD1KBhOnAMSpztY8eezo=;
+        s=korg; t=1656330141;
+        bh=Ovg5KfB61gT914x/8BIG61Aa3Dqe0xiyAs4tQvKXrZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YiCE8S+QeLGa+Apj7UT7vzvpOCZWz1xocCu9hy/lUg2S1OQtyW8V+rzkzViaTVbbF
-         toXm68chkyZla3DQGggaA1bI2LL57OO22rFFIgBdxBarYqawAwNb1mkzkvlLf84BZT
-         dZDpyDa2Fa7clMr7KdbskxkDZ31sCDeLnIIXcPJI=
+        b=UTMagV/1B473pk7V174topPJNhaiFx/jb+NASVaRTAnIYQlbBO3ncMsXVbIxgliaz
+         vaRdFWWnOMWdgT7D4UMB5NrrFnZNvRrSMv0g5s93hhNNHcLiExBpIkA4QYrTkkeT1M
+         4aFKJOkHuArgTDYtRIi4DMVDjAIJUT9uMB7qrK5Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Pankaj Raghav <p.raghav@samsung.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 045/181] scsi: scsi_debug: Fix zone transition to full condition
-Date:   Mon, 27 Jun 2022 13:20:18 +0200
-Message-Id: <20220627111945.868643663@linuxfoundation.org>
+Subject: [PATCH 5.18 099/181] nvme: move the Samsung X5 quirk entry to the core quirks
+Date:   Mon, 27 Jun 2022 13:21:12 +0200
+Message-Id: <20220627111947.566413521@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,79 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 566d3c57eb526f32951af15866086e236ce1fc8a ]
+[ Upstream commit e6487833182a8a0187f0292aca542fc163ccd03e ]
 
-When a write command to a sequential write required or sequential write
-preferred zone result in the zone write pointer reaching the end of the
-zone, the zone condition must be set to full AND the number of implicitly
-or explicitly open zones updated to have a correct accounting for zone
-resources. However, the function zbc_inc_wp() only sets the zone condition
-to full without updating the open zone counters, resulting in a zone state
-machine breakage.
+This device shares the PCI ID with the Samsung 970 Evo Plus that
+does not need or want the quirks.  Move the the quirk entry to the
+core table based on the model number instead.
 
-Introduce the helper function zbc_set_zone_full() and use it in
-zbc_inc_wp() to correctly transition zones to the full condition.
-
-Link: https://lore.kernel.org/r/20220608011302.92061-1-damien.lemoal@opensource.wdc.com
-Fixes: f0d1cf9378bd ("scsi: scsi_debug: Add ZBC zone commands")
-Reviewed-by: Niklas Cassel <niklas.cassel@wdc.com>
-Acked-by: Douglas Gilbert <dgilbert@interlog.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: bc360b0b1611 ("nvme-pci: add quirks for Samsung X5 SSDs")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Pankaj Raghav <p.raghav@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_debug.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ drivers/nvme/host/core.c | 14 ++++++++++++++
+ drivers/nvme/host/pci.c  |  4 ----
+ 2 files changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/scsi_debug.c b/drivers/scsi/scsi_debug.c
-index 592a290e6cfa..6cdd67f2a08e 100644
---- a/drivers/scsi/scsi_debug.c
-+++ b/drivers/scsi/scsi_debug.c
-@@ -2788,6 +2788,24 @@ static void zbc_open_zone(struct sdebug_dev_info *devip,
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 1ea85c88d795..a2862a56fadc 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -2487,6 +2487,20 @@ static const struct nvme_core_quirk_entry core_quirks[] = {
+ 		.vid = 0x1e0f,
+ 		.mn = "KCD6XVUL6T40",
+ 		.quirks = NVME_QUIRK_NO_APST,
++	},
++	{
++		/*
++		 * The external Samsung X5 SSD fails initialization without a
++		 * delay before checking if it is ready and has a whole set of
++		 * other problems.  To make this even more interesting, it
++		 * shares the PCI ID with internal Samsung 970 Evo Plus that
++		 * does not need or want these quirks.
++		 */
++		.vid = 0x144d,
++		.mn = "Samsung Portable SSD X5",
++		.quirks = NVME_QUIRK_DELAY_BEFORE_CHK_RDY |
++			  NVME_QUIRK_NO_DEEPEST_PS |
++			  NVME_QUIRK_IGNORE_DEV_SUBNQN,
  	}
- }
+ };
  
-+static inline void zbc_set_zone_full(struct sdebug_dev_info *devip,
-+				     struct sdeb_zone_state *zsp)
-+{
-+	switch (zsp->z_cond) {
-+	case ZC2_IMPLICIT_OPEN:
-+		devip->nr_imp_open--;
-+		break;
-+	case ZC3_EXPLICIT_OPEN:
-+		devip->nr_exp_open--;
-+		break;
-+	default:
-+		WARN_ONCE(true, "Invalid zone %llu condition %x\n",
-+			  zsp->z_start, zsp->z_cond);
-+		break;
-+	}
-+	zsp->z_cond = ZC5_FULL;
-+}
-+
- static void zbc_inc_wp(struct sdebug_dev_info *devip,
- 		       unsigned long long lba, unsigned int num)
- {
-@@ -2800,7 +2818,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
- 	if (zsp->z_type == ZBC_ZONE_TYPE_SWR) {
- 		zsp->z_wp += num;
- 		if (zsp->z_wp >= zend)
--			zsp->z_cond = ZC5_FULL;
-+			zbc_set_zone_full(devip, zsp);
- 		return;
- 	}
- 
-@@ -2819,7 +2837,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
- 			n = num;
- 		}
- 		if (zsp->z_wp >= zend)
--			zsp->z_cond = ZC5_FULL;
-+			zbc_set_zone_full(devip, zsp);
- 
- 		num -= n;
- 		lba += n;
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 17aeb7d5c485..ddea0fb90c28 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3475,10 +3475,6 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_128_BYTES_SQES |
+ 				NVME_QUIRK_SHARED_TAGS |
+ 				NVME_QUIRK_SKIP_CID_GEN },
+-	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
+-		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
+-				NVME_QUIRK_NO_DEEPEST_PS |
+-				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ 0, }
+ };
 -- 
 2.35.1
 
