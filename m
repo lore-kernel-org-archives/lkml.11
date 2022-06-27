@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 330D2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:46:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F675C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237849AbiF0Lq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42442 "EHLO
+        id S237856AbiF0LrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237199AbiF0Lmd (ORCPT
+        with ESMTP id S237327AbiF0Lmn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:33 -0400
+        Mon, 27 Jun 2022 07:42:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2082FDF15;
-        Mon, 27 Jun 2022 04:36:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDA2D5A;
+        Mon, 27 Jun 2022 04:36:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB122B8111C;
-        Mon, 27 Jun 2022 11:36:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55482C341C7;
-        Mon, 27 Jun 2022 11:36:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D33FB8111E;
+        Mon, 27 Jun 2022 11:36:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AE23C3411D;
+        Mon, 27 Jun 2022 11:36:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329789;
-        bh=PalIoX5naWrh/vs8WCxofd6uQD0HhrIyss029FosdZY=;
+        s=korg; t=1656329813;
+        bh=TcHc6ly3RnIaoYHfj4FYHbIuRRaerYtPooK/T4HWDNg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cOQqwrLdAOkOPLui3qoAhte1296D8YYiaSQzQdqUtPEx0HBEHM6ztGzf6i5YeHUBd
-         U6raisZ28QtRsLwYw0YSXHeoIOEQsNrzn0hxLwZQLPnCY6BBLQvgxA6dTQN6BnSkb6
-         EDcN8iZb2ruLwBiR0Ff2ovPCFOOywsQqdZkOs2Gk=
+        b=iD4txPJ7n/WoD7i8wvUDlNqAPwtB6hWsQhEsPM1oRddcym008hQS47TLcXfPH4L9A
+         7ogH/okLPuntUqUjw/ZZQ7MeNu1C8gihbryiJukPa/PCiEC3zjWWwfVJZwJSrOQHZ4
+         WozU/lUMjGuxYhVO9LrISQ9+jVrEh8VDX2ZQr/DA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        John David Anglin <dave.anglin@bell.net>
-Subject: [PATCH 5.15 115/135] parisc: Enable ARCH_HAS_STRICT_MODULE_RWX
-Date:   Mon, 27 Jun 2022 13:22:02 +0200
-Message-Id: <20220627111941.490346629@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.15 084/135] xhci: turn off port power in shutdown
+Date:   Mon, 27 Jun 2022 13:21:31 +0200
+Message-Id: <20220627111940.598796004@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -48,32 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Mathias Nyman <mathias.nyman@linux.intel.com>
 
-commit 0a1355db36718178becd2bfe728a023933d73123 upstream.
+commit 83810f84ecf11dfc5a9414a8b762c3501b328185 upstream.
 
-Fix a boot crash on a c8000 machine as reported by Dave.  Basically it changes
-patch_map() to return an alias mapping to the to-be-patched code in order to
-prevent writing to write-protected memory.
+If ports are not turned off in shutdown then runtime suspended
+self-powered USB devices may survive in U3 link state over S5.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Suggested-by: John David Anglin <dave.anglin@bell.net>
-Cc: stable@vger.kernel.org   # v5.2+
-Link: https://lore.kernel.org/all/e8ec39e8-25f8-e6b4-b7ed-4cb23efc756e@bell.net/
+During subsequent boot, if firmware sends an IPC command to program
+the port in DISCONNECT state, it will time out, causing significant
+delay in the boot time.
+
+Turning off roothub port power is also recommended in xhci
+specification 4.19.4 "Port Power" in the additional note.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220623111945.1557702-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/host/xhci-hub.c |    2 +-
+ drivers/usb/host/xhci.c     |   15 +++++++++++++--
+ drivers/usb/host/xhci.h     |    2 ++
+ 3 files changed, 16 insertions(+), 3 deletions(-)
 
---- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -9,6 +9,7 @@ config PARISC
- 	select ARCH_WANT_FRAME_POINTERS
- 	select ARCH_HAS_ELF_RANDOMIZE
- 	select ARCH_HAS_STRICT_KERNEL_RWX
-+	select ARCH_HAS_STRICT_MODULE_RWX
- 	select ARCH_HAS_UBSAN_SANITIZE_ALL
- 	select ARCH_NO_SG_CHAIN
- 	select ARCH_SUPPORTS_HUGETLBFS if PA20
+--- a/drivers/usb/host/xhci-hub.c
++++ b/drivers/usb/host/xhci-hub.c
+@@ -652,7 +652,7 @@ struct xhci_hub *xhci_get_rhub(struct us
+  * It will release and re-aquire the lock while calling ACPI
+  * method.
+  */
+-static void xhci_set_port_power(struct xhci_hcd *xhci, struct usb_hcd *hcd,
++void xhci_set_port_power(struct xhci_hcd *xhci, struct usb_hcd *hcd,
+ 				u16 index, bool on, unsigned long *flags)
+ 	__must_hold(&xhci->lock)
+ {
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -774,6 +774,8 @@ static void xhci_stop(struct usb_hcd *hc
+ void xhci_shutdown(struct usb_hcd *hcd)
+ {
+ 	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
++	unsigned long flags;
++	int i;
+ 
+ 	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
+ 		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
+@@ -789,12 +791,21 @@ void xhci_shutdown(struct usb_hcd *hcd)
+ 		del_timer_sync(&xhci->shared_hcd->rh_timer);
+ 	}
+ 
+-	spin_lock_irq(&xhci->lock);
++	spin_lock_irqsave(&xhci->lock, flags);
+ 	xhci_halt(xhci);
++
++	/* Power off USB2 ports*/
++	for (i = 0; i < xhci->usb2_rhub.num_ports; i++)
++		xhci_set_port_power(xhci, xhci->main_hcd, i, false, &flags);
++
++	/* Power off USB3 ports*/
++	for (i = 0; i < xhci->usb3_rhub.num_ports; i++)
++		xhci_set_port_power(xhci, xhci->shared_hcd, i, false, &flags);
++
+ 	/* Workaround for spurious wakeups at shutdown with HSW */
+ 	if (xhci->quirks & XHCI_SPURIOUS_WAKEUP)
+ 		xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+-	spin_unlock_irq(&xhci->lock);
++	spin_unlock_irqrestore(&xhci->lock, flags);
+ 
+ 	xhci_cleanup_msix(xhci);
+ 
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -2174,6 +2174,8 @@ int xhci_hub_control(struct usb_hcd *hcd
+ int xhci_hub_status_data(struct usb_hcd *hcd, char *buf);
+ int xhci_find_raw_port_number(struct usb_hcd *hcd, int port1);
+ struct xhci_hub *xhci_get_rhub(struct usb_hcd *hcd);
++void xhci_set_port_power(struct xhci_hcd *xhci, struct usb_hcd *hcd, u16 index,
++			 bool on, unsigned long *flags);
+ 
+ void xhci_hc_died(struct xhci_hcd *xhci);
+ 
 
 
