@@ -2,98 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF05C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 23:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E545C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 23:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242203AbiF0XAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 19:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35882 "EHLO
+        id S242273AbiF0XBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 19:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241243AbiF0XAQ (ORCPT
+        with ESMTP id S235179AbiF0XBC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 19:00:16 -0400
-Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B9120F61;
-        Mon, 27 Jun 2022 16:00:15 -0700 (PDT)
-Received: by mail-il1-f172.google.com with SMTP id p9so6749546ilj.7;
-        Mon, 27 Jun 2022 16:00:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BBFolvCCjJnxhxohRNSfL/AQrqOPHqKgSw2LBcN2NnQ=;
-        b=bfXVza1My8NSlUM8fMnH6rlEd9095RBvJGqKsD3Zsdz7rTOiJnG252FT3Sb/axL2E1
-         cHTl+aYPFp1SNDQZ79q/9KrLR+p9sndPKTqGIup2ydW+V02jbfongpRrmXx8ENLS4mJX
-         UXAVwVviNmomi0kmLf/qNF+iKR46jlnAMlNQxomIuBW8UFtK7nhAtfBdaS627M1KdopS
-         xqSfRf+57ma3Z8tHl6DljT5HQbtiNsQMtK66X46s15KUPRzyupoTB4rdTn2cdQdLNhmu
-         bR94PUVvOqY4TUyaEffV8Xr3x4sDAta0ybSrJC/b55lV//7JLUEUj9HaTJ6mjtS2/mHs
-         YysQ==
-X-Gm-Message-State: AJIora+Yhm21t4Q9bqmh40J4StOcbHE0IldgvsqGTP3tAVuV90qX8tA4
-        2bnHhiiSFVT/MbdvomkViw==
-X-Google-Smtp-Source: AGRyM1s3mDmWtHR9KacZ3brBzVulekXmlkOSi7niZLvqZ3o/vbqhjQZ0fgaGh7zEyYExAh29I7iuRQ==
-X-Received: by 2002:a05:6e02:154d:b0:2da:9539:3093 with SMTP id j13-20020a056e02154d00b002da95393093mr4813252ilu.131.1656370814723;
-        Mon, 27 Jun 2022 16:00:14 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id u18-20020a92ccd2000000b002d8d813892csm5083745ilq.8.2022.06.27.16.00.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 16:00:14 -0700 (PDT)
-Received: (nullmailer pid 3126600 invoked by uid 1000);
-        Mon, 27 Jun 2022 23:00:12 -0000
-Date:   Mon, 27 Jun 2022 17:00:12 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Shengjiu Wang <shengjiu.wang@nxp.com>
-Cc:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
-        krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 6/7] ASoC: dt-bindings: fsl-sai: Add new property to
- configure dataline
-Message-ID: <20220627230012.GA3122063-robh@kernel.org>
-References: <1655451877-16382-1-git-send-email-shengjiu.wang@nxp.com>
- <1655451877-16382-7-git-send-email-shengjiu.wang@nxp.com>
+        Mon, 27 Jun 2022 19:01:02 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0677C2126B
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 16:01:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656370862; x=1687906862;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LZ2Z6Mud2kHMPs5zp5nnFkCNGZcbtPNzvKWYSxz61aw=;
+  b=XV1wRIXUzIRJKxdN4Q+jnAlsrCu6gifVYsqLzB70iYICqxShYws9YlIF
+   sO7366CUVtAPvEtVss4CLT7TJip38E07reBTxLS5nlvzPC0a3jXH+x+ty
+   RG/KtMrukpFY32AhsZnqVPf7fgD2h8DRV1LMePbk1otLFJID2KDJ/92vT
+   C9oUdTHV56tkSMKnYpLDLCLYslm7onHajLcX3sYh16vibB8U60UbVgQ7q
+   E53kRyj0RYDiT10wTG/P3+povC1M9r1RT6gddlKPpXVl3tzyNWDzNf266
+   856762J1bZFzqxKMIMLcMWNADCte1OEOnYwQNHwkU1nt4mDycU1LhJ/v6
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279126924"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="279126924"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 16:01:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="646635990"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 27 Jun 2022 16:00:59 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o5xj0-0009Aw-JD;
+        Mon, 27 Jun 2022 23:00:58 +0000
+Date:   Tue, 28 Jun 2022 07:00:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [alobakin:xdp_hints 5/52] net/bpf/prog_ops.c:693:6: error:
+ redefinition of 'bpf_xdp_sock_is_valid_access'
+Message-ID: <202206280654.HfCop1BC-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1655451877-16382-7-git-send-email-shengjiu.wang@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 03:44:36PM +0800, Shengjiu Wang wrote:
-> "fsl,dataline" is added to configure the dataline of SAI.
-> It has 3 value for each configuration, first one means the type:
-> I2S(1) or PDM(2), second one is dataline mask for 'rx', third one is
-> dataline mask for 'tx'. for example:
-> 
-> fsl,dataline = <1 0xff 0xff 2 0xff 0x11>,
-> 
-> it means I2S type rx mask is 0xff, tx mask is 0xff, PDM type
-> rx mask is 0xff, tx mask is 0x11 (dataline 1 and 4 enabled).
-> 
-> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-> ---
->  Documentation/devicetree/bindings/sound/fsl-sai.txt | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/sound/fsl-sai.txt b/Documentation/devicetree/bindings/sound/fsl-sai.txt
-> index c71c5861d787..4c66e6a1a533 100644
-> --- a/Documentation/devicetree/bindings/sound/fsl-sai.txt
-> +++ b/Documentation/devicetree/bindings/sound/fsl-sai.txt
-> @@ -49,6 +49,14 @@ Required properties:
->  			  receive data by following their own bit clocks and
->  			  frame sync clocks separately.
->  
-> +  - fsl,dataline        : configure the dataline. it has 3 value for each configuration
-> +                          first one means the type: I2S(1) or PDM(2)
-> +                          second one is dataline mask for 'rx'
-> +                          third one is dataline mask for 'tx'.
-> +                          for example: fsl,dataline = <1 0xff 0xff 2 0xff 0x11>;
-> +                          it means I2S type rx mask is 0xff, tx mask is 0xff, PDM type
-> +                          rx mask is 0xff, tx mask is 0x11 (dataline 1 and 4 enabled).
+tree:   https://github.com/alobakin/linux xdp_hints
+head:   bb2e21053c861694b01175cc7057b0ab05db75a9
+commit: 9d29d62a53069847d538390eab0b7c8fcefdd178 [5/52] net, xdp: decouple XDP code from the core networking code
+config: xtensa-randconfig-r024-20220627 (https://download.01.org/0day-ci/archive/20220628/202206280654.HfCop1BC-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/alobakin/linux/commit/9d29d62a53069847d538390eab0b7c8fcefdd178
+        git remote add alobakin https://github.com/alobakin/linux
+        git fetch --no-tags alobakin xdp_hints
+        git checkout 9d29d62a53069847d538390eab0b7c8fcefdd178
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash net/bpf/
 
-You mean 0 and 4 enabled? Or 1 and 4?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-How many 3 cell entries can you have?
+All errors (new ones prefixed by >>):
 
-Rob
+>> net/bpf/prog_ops.c:693:6: error: redefinition of 'bpf_xdp_sock_is_valid_access'
+     693 | bool bpf_xdp_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/net/xdp_sock.h:9,
+                    from net/bpf/prog_ops.c:5:
+   include/linux/bpf.h:2459:20: note: previous definition of 'bpf_xdp_sock_is_valid_access' with type 'bool(int,  int,  enum bpf_access_type,  struct bpf_insn_access_aux *)' {aka '_Bool(int,  int,  enum bpf_access_type,  struct bpf_insn_access_aux *)'}
+    2459 | static inline bool bpf_xdp_sock_is_valid_access(int off, int size,
+         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> net/bpf/prog_ops.c:708:5: error: redefinition of 'bpf_xdp_sock_convert_ctx_access'
+     708 | u32 bpf_xdp_sock_convert_ctx_access(enum bpf_access_type type,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/net/xdp_sock.h:9,
+                    from net/bpf/prog_ops.c:5:
+   include/linux/bpf.h:2466:19: note: previous definition of 'bpf_xdp_sock_convert_ctx_access' with type 'u32(enum bpf_access_type,  const struct bpf_insn *, struct bpf_insn *, struct bpf_prog *, u32 *)' {aka 'unsigned int(enum bpf_access_type,  const struct bpf_insn *, struct bpf_insn *, struct bpf_prog *, unsigned int *)'}
+    2466 | static inline u32 bpf_xdp_sock_convert_ctx_access(enum bpf_access_type type,
+         |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/bpf_xdp_sock_is_valid_access +693 net/bpf/prog_ops.c
+
+   692	
+ > 693	bool bpf_xdp_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+   694					  struct bpf_insn_access_aux *info)
+   695	{
+   696		if (off < 0 || off >= offsetofend(struct bpf_xdp_sock, queue_id))
+   697			return false;
+   698	
+   699		if (off % size != 0)
+   700			return false;
+   701	
+   702		switch (off) {
+   703		default:
+   704			return size == sizeof(__u32);
+   705		}
+   706	}
+   707	
+ > 708	u32 bpf_xdp_sock_convert_ctx_access(enum bpf_access_type type,
+   709					    const struct bpf_insn *si,
+   710					    struct bpf_insn *insn_buf,
+   711					    struct bpf_prog *prog, u32 *target_size)
+   712	{
+   713		struct bpf_insn *insn = insn_buf;
+   714	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
