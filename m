@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3CF2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:51:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B228CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238577AbiF0Lvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:51:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
+        id S238314AbiF0Lvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238307AbiF0LsP (ORCPT
+        with ESMTP id S238294AbiF0LsN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D7EBE18;
-        Mon, 27 Jun 2022 04:40:24 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB41BE11;
+        Mon, 27 Jun 2022 04:40:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 597CAB81131;
-        Mon, 27 Jun 2022 11:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B79FFC3411D;
-        Mon, 27 Jun 2022 11:40:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 722DB6116D;
+        Mon, 27 Jun 2022 11:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 840AAC3411D;
+        Mon, 27 Jun 2022 11:40:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330022;
-        bh=InO1qyewBGSJED7hj3a0yvwG8y5y7l7Yk35cE3JajY0=;
+        s=korg; t=1656330015;
+        bh=Xor3HCIQgPPTgGQZTK87IPF4nyQEx5tohD35dHjWbPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CXI4Z6Ui1ixrEA/qfnrZ/53XFUiupzwz5CtuePguRNj1XKUHGQUBG31/N0imgnc2L
-         hn3tP9jn/L1zHG+OEoeKWCCJys3nI2p8BA1ELOEXRJvsE3/C553eBq3WsMNKkMx/dD
-         NZcaK0fcBzzO9S7gTCCS6KXBuQPpl4xo+zFDhxoU=
+        b=LtQDA3Nc9kqFVRGH+DNyKIMgyoTN91re+cGw5TFxlCP5ds5HcXYv4nVeVvtzsKtf9
+         J8yiaRt4VWaOrD1n2+IiigDC5RRm8KwAnN5gRNCUU5wZG4K6SvDUIurT2ZKeqdOkGK
+         7hPkCYaiSmlnsXC7DSWLPCEOAYpwDsUiB+iJv/rY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Toppins <jtoppins@redhat.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 058/181] veth: Add updating of trans_start
-Date:   Mon, 27 Jun 2022 13:20:31 +0200
-Message-Id: <20220627111946.248994237@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 056/181] KVM: arm64: Prevent kmemleak from accessing pKVM memory
+Date:   Mon, 27 Jun 2022 13:20:29 +0200
+Message-Id: <20220627111946.191359304@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,58 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jay Vosburgh <jay.vosburgh@canonical.com>
+From: Quentin Perret <qperret@google.com>
 
-[ Upstream commit e66e257a5d8368d9c0ba13d4630f474436533e8b ]
+[ Upstream commit 56961c6331463cce2d84d0f973177a517fb33a82 ]
 
-Since commit 21a75f0915dd ("bonding: Fix ARP monitor validation"),
-the bonding ARP / ND link monitors depend on the trans_start time to
-determine link availability.  NETIF_F_LLTX drivers must update trans_start
-directly, which veth does not do.  This prevents use of the ARP or ND link
-monitors with veth interfaces in a bond.
+Commit a7259df76702 ("memblock: make memblock_find_in_range method
+private") changed the API using which memory is reserved for the pKVM
+hypervisor. However, memblock_phys_alloc() differs from the original API in
+terms of kmemleak semantics -- the old one didn't report the reserved
+regions to kmemleak while the new one does. Unfortunately, when protected
+KVM is enabled, all kernel accesses to pKVM-private memory result in a
+fatal exception, which can now happen because of kmemleak scans:
 
-	Resolve this by having veth_xmit update the trans_start time.
+$ echo scan > /sys/kernel/debug/kmemleak
+[   34.991354] kvm [304]: nVHE hyp BUG at: [<ffff800008fa3750>] __kvm_nvhe_handle_host_mem_abort+0x270/0x290!
+[   34.991580] kvm [304]: Hyp Offset: 0xfffe8be807e00000
+[   34.991813] Kernel panic - not syncing: HYP panic:
+[   34.991813] PS:600003c9 PC:0000f418011a3750 ESR:00000000f2000800
+[   34.991813] FAR:ffff000439200000 HPFAR:0000000004792000 PAR:0000000000000000
+[   34.991813] VCPU:0000000000000000
+[   34.993660] CPU: 0 PID: 304 Comm: bash Not tainted 5.19.0-rc2 #102
+[   34.994059] Hardware name: linux,dummy-virt (DT)
+[   34.994452] Call trace:
+[   34.994641]  dump_backtrace.part.0+0xcc/0xe0
+[   34.994932]  show_stack+0x18/0x6c
+[   34.995094]  dump_stack_lvl+0x68/0x84
+[   34.995276]  dump_stack+0x18/0x34
+[   34.995484]  panic+0x16c/0x354
+[   34.995673]  __hyp_pgtable_total_pages+0x0/0x60
+[   34.995933]  scan_block+0x74/0x12c
+[   34.996129]  scan_gray_list+0xd8/0x19c
+[   34.996332]  kmemleak_scan+0x2c8/0x580
+[   34.996535]  kmemleak_write+0x340/0x4a0
+[   34.996744]  full_proxy_write+0x60/0xbc
+[   34.996967]  vfs_write+0xc4/0x2b0
+[   34.997136]  ksys_write+0x68/0xf4
+[   34.997311]  __arm64_sys_write+0x20/0x2c
+[   34.997532]  invoke_syscall+0x48/0x114
+[   34.997779]  el0_svc_common.constprop.0+0x44/0xec
+[   34.998029]  do_el0_svc+0x2c/0xc0
+[   34.998205]  el0_svc+0x2c/0x84
+[   34.998421]  el0t_64_sync_handler+0xf4/0x100
+[   34.998653]  el0t_64_sync+0x18c/0x190
+[   34.999252] SMP: stopping secondary CPUs
+[   35.000034] Kernel Offset: disabled
+[   35.000261] CPU features: 0x800,00007831,00001086
+[   35.000642] Memory Limit: none
+[   35.001329] ---[ end Kernel panic - not syncing: HYP panic:
+[   35.001329] PS:600003c9 PC:0000f418011a3750 ESR:00000000f2000800
+[   35.001329] FAR:ffff000439200000 HPFAR:0000000004792000 PAR:0000000000000000
+[   35.001329] VCPU:0000000000000000 ]---
 
-Reported-by: Jonathan Toppins <jtoppins@redhat.com>
-Tested-by: Jonathan Toppins <jtoppins@redhat.com>
-Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Fixes: 21a75f0915dd ("bonding: Fix ARP monitor validation")
-Link: https://lore.kernel.org/netdev/b2fd4147-8f50-bebd-963a-1a3e8d1d9715@redhat.com/
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix this by explicitly excluding the hypervisor's memory pool from
+kmemleak like we already do for the hyp BSS.
+
+Cc: Mike Rapoport <rppt@kernel.org>
+Fixes: a7259df76702 ("memblock: make memblock_find_in_range method private")
+Signed-off-by: Quentin Perret <qperret@google.com>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220616161135.3997786-1-qperret@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/veth.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/kvm/arm.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index eb0121a64d6d..1d1dea07d932 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -312,6 +312,7 @@ static bool veth_skb_is_eligible_for_gro(const struct net_device *dev,
- static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
-+	struct netdev_queue *queue = NULL;
- 	struct veth_rq *rq = NULL;
- 	struct net_device *rcv;
- 	int length = skb->len;
-@@ -329,6 +330,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
- 	rxq = skb_get_queue_mapping(skb);
- 	if (rxq < rcv->real_num_rx_queues) {
- 		rq = &rcv_priv->rq[rxq];
-+		queue = netdev_get_tx_queue(dev, rxq);
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index a66d83540c15..f88919a793ad 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -2011,11 +2011,11 @@ static int finalize_hyp_mode(void)
+ 		return 0;
  
- 		/* The napi pointer is available when an XDP program is
- 		 * attached or when GRO is enabled
-@@ -340,6 +342,8 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	/*
+-	 * Exclude HYP BSS from kmemleak so that it doesn't get peeked
+-	 * at, which would end badly once the section is inaccessible.
+-	 * None of other sections should ever be introspected.
++	 * Exclude HYP sections from kmemleak so that they don't get peeked
++	 * at, which would end badly once inaccessible.
+ 	 */
+ 	kmemleak_free_part(__hyp_bss_start, __hyp_bss_end - __hyp_bss_start);
++	kmemleak_free_part(__va(hyp_mem_base), hyp_mem_size);
+ 	return pkvm_drop_host_privileges();
+ }
  
- 	skb_tx_timestamp(skb);
- 	if (likely(veth_forward_skb(rcv, skb, rq, use_napi) == NET_RX_SUCCESS)) {
-+		if (queue)
-+			txq_trans_cond_update(queue);
- 		if (!use_napi)
- 			dev_lstats_add(dev, length);
- 	} else {
 -- 
 2.35.1
 
