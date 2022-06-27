@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D63EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF23C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237659AbiF0LrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
+        id S237886AbiF0LrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237467AbiF0Lmx (ORCPT
+        with ESMTP id S237497AbiF0Lm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:42:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F6DF67;
-        Mon, 27 Jun 2022 04:38:19 -0700 (PDT)
+        Mon, 27 Jun 2022 07:42:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECAAE10CD;
+        Mon, 27 Jun 2022 04:38:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 370126114D;
-        Mon, 27 Jun 2022 11:38:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4864FC341C8;
-        Mon, 27 Jun 2022 11:38:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B13D1B8111B;
+        Mon, 27 Jun 2022 11:38:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F066C3411D;
+        Mon, 27 Jun 2022 11:38:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329898;
-        bh=TiybJzSVz8izLkFtpH1FLS4k+JLx8oS7oe9r0JDSkBQ=;
+        s=korg; t=1656329904;
+        bh=o/oKP+PClE6ic2Rr0Q5Dzsw99u0cmJEBX6BfIJmBu2g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IT+7hB30Lh3/VD/YHoC6cDlMXvDa6aKX/7eVUWV7mriJzVApdqFAlgAA2xlR52v20
-         fr4oAU23gC4n4MSgYFWWmAaUEJvpxPTxG6VBTJLbbDJa67cVV5+1znM4aD30yrHIdZ
-         pfc0bTVumWRngx/YQ6+zDnuJOFgZY6vsudk14i/o=
+        b=oWGWATtzQnpacVmBOS1EKg3Hma/v0qdnSvJXN3NDSjM73bUdNHC0YsVHgsE71VguD
+         FCUTnbX/AJuoneyyL7sq8cy7nr1KyifXkc3fJsEPdkLxD6xqBOX7KzfGKOGuONGWQI
+         ImRBOu5gojHGBfKNyde8gqddu9tBJK6bGx9e0mxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Dominique Martinet <asmadeus@codewreck.org>
-Subject: [PATCH 5.18 017/181] 9p: fix EBADF errors in cached mode
-Date:   Mon, 27 Jun 2022 13:19:50 +0200
-Message-Id: <20220627111945.062546213@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.18 019/181] btrfs: prevent remounting to v1 space cache for subpage mount
+Date:   Mon, 27 Jun 2022 13:19:52 +0200
+Message-Id: <20220627111945.120948579@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,55 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominique Martinet <asmadeus@codewreck.org>
+From: Qu Wenruo <wqu@suse.com>
 
-commit b0017602fdf6bd3f344dd49eaee8b6ffeed6dbac upstream.
+commit 0591f04036218d572d54349ea8c7914ad9c82b2b upstream.
 
-cached operations sometimes need to do invalid operations (e.g. read
-on a write only file)
-Historic fscache had added a "writeback fid", a special handle opened
-RW as root, for this. The conversion to new fscache missed that bit.
+Upstream commit 9f73f1aef98b ("btrfs: force v2 space cache usage for
+subpage mount") forces subpage mount to use v2 cache, to avoid
+deprecated v1 cache which doesn't support subpage properly.
 
-This commit reinstates a slightly lesser variant of the original code
-that uses the writeback fid for partial pages backfills if the regular
-user fid had been open as WRONLY, and thus would lack read permissions.
+But there is a loophole that user can still remount to v1 cache.
 
-Link: https://lkml.kernel.org/r/20220614033802.1606738-1-asmadeus@codewreck.org
-Fixes: eb497943fa21 ("9p: Convert to using the netfs helper lib to do reads and caching")
-Cc: stable@vger.kernel.org
-Cc: David Howells <dhowells@redhat.com>
-Reported-By: Christian Schoenebeck <linux_oss@crudebyte.com>
-Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-Tested-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+The existing check will only give users a warning, but does not really
+prevent to do the remount.
+
+Although remounting to v1 will not cause any problems since the v1 cache
+will always be marked invalid when mounted with a different page size,
+it's still better to prevent v1 cache at all for subpage mounts.
+
+Fixes: 9f73f1aef98b ("btrfs: force v2 space cache usage for subpage mount")
+CC: stable@vger.kernel.org # 5.15+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/9p/vfs_addr.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ fs/btrfs/super.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/fs/9p/vfs_addr.c
-+++ b/fs/9p/vfs_addr.c
-@@ -58,8 +58,21 @@ static void v9fs_issue_read(struct netfs
-  */
- static int v9fs_init_request(struct netfs_io_request *rreq, struct file *file)
- {
-+	struct inode *inode = file_inode(file);
-+	struct v9fs_inode *v9inode = V9FS_I(inode);
- 	struct p9_fid *fid = file->private_data;
+--- a/fs/btrfs/super.c
++++ b/fs/btrfs/super.c
+@@ -1986,6 +1986,14 @@ static int btrfs_remount(struct super_bl
+ 	if (ret)
+ 		goto restore;
  
-+	BUG_ON(!fid);
-+
-+	/* we might need to read from a fid that was opened write-only
-+	 * for read-modify-write of page cache, use the writeback fid
-+	 * for that */
-+	if (rreq->origin == NETFS_READ_FOR_WRITE &&
-+			(fid->mode & O_ACCMODE) == O_WRONLY) {
-+		fid = v9inode->writeback_fid;
-+		BUG_ON(!fid);
++	/* V1 cache is not supported for subpage mount. */
++	if (fs_info->sectorsize < PAGE_SIZE && btrfs_test_opt(fs_info, SPACE_CACHE)) {
++		btrfs_warn(fs_info,
++	"v1 space cache is not supported for page size %lu with sectorsize %u",
++			   PAGE_SIZE, fs_info->sectorsize);
++		ret = -EINVAL;
++		goto restore;
 +	}
-+
- 	refcount_inc(&fid->count);
- 	rreq->netfs_priv = fid;
- 	return 0;
+ 	btrfs_remount_begin(fs_info, old_opts, *flags);
+ 	btrfs_resize_thread_pool(fs_info,
+ 		fs_info->thread_pool_size, old_thread_pool_size);
 
 
