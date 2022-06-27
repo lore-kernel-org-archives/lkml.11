@@ -2,164 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E766AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D071C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 15:39:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238847AbiF0Pgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 11:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
+        id S238448AbiF0PjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 11:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238756AbiF0Pfw (ORCPT
+        with ESMTP id S238399AbiF0PjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 11:35:52 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475EC1AD88
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:35:45 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25RF6Qip004248;
-        Mon, 27 Jun 2022 15:35:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=3tfjcfA1umXJ4zRA8k81/Dm9rb1xlzZ/FzN7iv+qR7k=;
- b=i4DAl4iToA77Ek7S+1qQWoVgwOooNicJZmnXoz+PYNZ3i5BBiezgII4hIBEmqazgasOv
- znFq47ecF9kYvVDmw7BdYRJv9BWI7JLZS6Nqreyqap56NPFIZOqnX/FrVh+c2AuLffjd
- qGvp6047lzshP827GB/9UrCLFjlUWDi9cvCCdgEcoTBrDhnb6lnk0T85qHVql7kHFoB7
- aSy8KrY44ndOyARXfxnE3T2M2hslErbYSxA4VZqxs5NEA/s50mVCPzS5Bv5c1C6ULt1b
- /hqfe0QnEng7ysiz0vXisXqPDUJ8c1UEq1ZrVg32yE7s0/bNgayd3JZzjEdGdWLmQsX3 zA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyeht9q5v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jun 2022 15:35:12 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25RFKerq003707;
-        Mon, 27 Jun 2022 15:35:12 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyeht9q3s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jun 2022 15:35:12 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25RFYjZJ004307;
-        Mon, 27 Jun 2022 15:35:09 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3gwt08u55t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jun 2022 15:35:09 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25RFZEwo28574032
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 Jun 2022 15:35:14 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 41C2BA405F;
-        Mon, 27 Jun 2022 15:35:07 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 286D1A405B;
-        Mon, 27 Jun 2022 15:35:03 +0000 (GMT)
-Received: from [9.43.63.124] (unknown [9.43.63.124])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 27 Jun 2022 15:35:02 +0000 (GMT)
-Message-ID: <92eae2ef-f9b6-019a-5a8e-728cdd9bbbc0@linux.vnet.ibm.com>
-Date:   Mon, 27 Jun 2022 21:05:02 +0530
+        Mon, 27 Jun 2022 11:39:12 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C007B11A29
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:39:11 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id p31so15257665qvp.5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 08:39:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tGHpc9v4ZCMNdJ9NQhZJ5H1k92hYzQTSlPYYZud8X1I=;
+        b=xQWAPBTTIhVQhksDJ8SQhq5YkJ3JB9vPfTqgFFG4CUdhMwxCpNu4R1/LfEULM/n21+
+         zkKghcQb6PoQa4YcXy79yo1wMwSc0r2BidbBAbJ1NwK9fG2czyhRIkU9+Adq2+SSBHyd
+         uX2Vg/8xEDsJ5t9PVo6VJuEAVcgLkMxoI3uY1OiVlPjJCHquDTKk+iRxYrSWqv1nuQBP
+         9S0qCMpuT224v6otYJUuTPaBDSZtAZy/4ZT/OdbyiusYywVLClseH5V8HKF2Imzm0tsg
+         0DQdBJcoq5mgBAbioB2WOcG8YtYYKQLElCxgZ0ed2N+UFCRXmmYZaBRhv3ZSZQa4WPmo
+         6EaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tGHpc9v4ZCMNdJ9NQhZJ5H1k92hYzQTSlPYYZud8X1I=;
+        b=m+e6Yn2hhlbYLIjGfl3cvqC8YjA2mekRL8HzQL2srFlon4LPSbltbHYh/b2V46MC6c
+         njS8jpL2N6GF7iBWTGBbH9z2plQDad/z8OeOWrVdCt/fXgH5jOhi4Xm2KvRuRtH8RPN8
+         IpsvMVTQEtVwe6ydx85HYaLBtzWXklxR69WiW/ghywdw0hSDdPcA/Z8BTfcrd6kuR5h8
+         w/Wqst4IHVcoiAhICGHYzKPv1Q2imsvepC48L1PVN3DZiJvn5OS+cgxfO5bPdbheVpDX
+         FG7vjG6eqYEgK09aKN+Z9yP0bHoGbH96zAlV7+QOcBN0UmBnSeM1VYbLggA9CbEVQcv5
+         B5fw==
+X-Gm-Message-State: AJIora9MS+F9bd2w8/IqdHafQqmEOvSVd3chzIyJsFU5Mp0KrbGVg74m
+        iKyypIKeBnh2Wls03Q8M2/KNX8c+adtdVGfWSoyzkQ==
+X-Google-Smtp-Source: AGRyM1uU6Dx/UDeMD3519ioenI9SxoOtfqH7zR2iki7/D0bO2iset7jb3RERavSGfQgMto8/UpwFn/xIj0aB0434K00=
+X-Received: by 2002:ac8:5c96:0:b0:31a:c19a:7da1 with SMTP id
+ r22-20020ac85c96000000b0031ac19a7da1mr3219570qta.62.1656344350582; Mon, 27
+ Jun 2022 08:39:10 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
-Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Sathvika Vasireddy <sv@linux.ibm.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Cc:     "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "paulus@samba.org" <paulus@samba.org>
-References: <20220624183238.388144-1-sv@linux.ibm.com>
- <20220624183238.388144-12-sv@linux.ibm.com>
- <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
-From:   Sathvika Vasireddy <sv@linux.vnet.ibm.com>
-In-Reply-To: <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 4KBnhyse84Bsf1tf-lv6ToDA5RguKz1x
-X-Proofpoint-ORIG-GUID: DRBNFF3yOeqTv-LmNDmfHMb205HicYjd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-27_06,2022-06-24_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=974 adultscore=0
- suspectscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
- malwarescore=0 phishscore=0 spamscore=0 impostorscore=0 clxscore=1015
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206270067
+References: <1656090912-18074-1-git-send-email-quic_khsieh@quicinc.com>
+ <66ff4642-f268-f5b0-7e28-b196368c508a@quicinc.com> <5cf094cf-343a-82d7-91c4-1284683f9748@quicinc.com>
+ <CAA8EJprqq=vxXT2DmEWii_Ajx2UbkHRexPTT58xFcWkBa_D5hA@mail.gmail.com>
+ <26263c16-8cbc-ccca-6081-7eba14635d73@quicinc.com> <CAA8EJpqEoXXA=eKGHRGuQ3VOHnmEShY8u_SMZ6WFWORCFhFcrw@mail.gmail.com>
+ <8445f93a-00f0-64af-5650-07f2bc487742@quicinc.com> <CAA8EJpqB2KPyvFehK9WRGgiVnqvD24cz5BcHsw8a5PQ2Vs1oKA@mail.gmail.com>
+ <CAA8EJppZdyutyNBG+OFinickQoDxg0i4GwbaNQubo_LSRWNh4w@mail.gmail.com>
+ <1a2e7574-8f78-d48e-a189-020ffcd39f60@quicinc.com> <CAE-0n52L1fvvpEH56+HD_UXuV61tMvhh8Qjp781bW9tTKRQymw@mail.gmail.com>
+ <9b197183-5306-bf19-0195-2dc1bb72c33b@quicinc.com>
+In-Reply-To: <9b197183-5306-bf19-0195-2dc1bb72c33b@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Mon, 27 Jun 2022 18:38:58 +0300
+Message-ID: <CAA8EJppnELtjmOp+Yp7rbrrjf9UixBb82Uvfyg9ofcq+EqaOnw@mail.gmail.com>
+Subject: Re: [PATCH v1 2/3] drm/msm/dp: decoupling dp->id out of dp
+ controller_id at scxxxx_dp_cfg table
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>, agross@kernel.org,
+        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
+        dianders@chromium.org, dri-devel@lists.freedesktop.org,
+        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org,
+        quic_aravindh@quicinc.com, quic_sbillaka@quicinc.com,
+        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 27 Jun 2022 at 18:33, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
+>
+>
+> On 6/24/2022 6:15 PM, Stephen Boyd wrote:
+> > Quoting Kuogee Hsieh (2022-06-24 18:02:50)
+> >> On 6/24/2022 5:46 PM, Dmitry Baryshkov wrote:
+> >>> On Sat, 25 Jun 2022 at 03:28, Dmitry Baryshkov
+> >>> <dmitry.baryshkov@linaro.org> wrote:
+> >>>> On Sat, 25 Jun 2022 at 03:23, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
+> >>>>> On 6/24/2022 5:21 PM, Dmitry Baryshkov wrote:
+> >>>>>> On Sat, 25 Jun 2022 at 03:19, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
+> >>>>>>> How can I have eDP call dpu_encoder_init() before DP calls with
+> >>>>>>> _dpu_kms_initialize_displayport()?
+> >>>>>> Why do you want to do it? They are two different encoders.
+> >>>>> eDP is primary display which in normal case should be bring up first if
+> >>>>> DP is also presented.
+> >>>> I do not like the concept of primary display. It is the user, who must
+> >>>> decide which display is primary to him. I have seen people using just
+> >>>> external monitors and ignoring built-in eDP completely.from
+> >>>> Also, why does the bring up order matters here? What do you gain by
+> >>>> bringing up eDP before the DP?
+> >>> I should probably rephrase my question to be more clear. How does
+> >>> changing the order of DP vs eDP bringup help you 'to fix screen
+> >>> corruption'.
+> >> it did fix the primary display correction issue if edp go first and i do
+> >> not know the root cause yet.
+> >>
+> >> We are still investigating it.
+> >>
+> >> However I do think currently msm_dp_config sc7280_dp_cfg has issues need
+> >> be addressed.
+> >>
+> > What issues exist with sc7280_dp_cfg? It looks correct to me.
+>
+>
+> If we are going to bring up a new chipset with edp as primary only, i am
+> not sure the below configuration will work?
+>
+> > static const struct msm_dp_config sc7280_dp_cfg = {
+> >          .descs = (const struct msm_dp_desc[]) {
+> >                  [MSM_DP_CONTROLLER_1] = { .io_start = 0x0aea0000, .connector_type = DRM_MODE_CONNECTOR_eDP, .wide_bus_en = true },
+> >          },
+> >          .num_descs = 1,
+> > };
 
-On 25/06/22 12:16, Christophe Leroy wrote:
->
-> Le 24/06/2022 à 20:32, Sathvika Vasireddy a écrit :
->> objtool is throwing *unannotated intra-function call*
->> warnings with a few instructions that are marked
->> unreachable. Remove unreachable() from WARN_ON()
->> to fix these warnings, as the codegen remains same
->> with and without unreachable() in WARN_ON().
-> Did you try the two exemples described in commit 1e688dd2a3d6
-> ("powerpc/bug: Provide better flexibility to WARN_ON/__WARN_FLAGS() with
-> asm goto") ?
->
-> Without your patch:
->
-> 00000640 <test>:
->    640:	81 23 00 84 	lwz     r9,132(r3)
->    644:	71 29 40 00 	andi.   r9,r9,16384
->    648:	40 82 00 0c 	bne     654 <test+0x14>
->    64c:	80 63 00 0c 	lwz     r3,12(r3)
->    650:	4e 80 00 20 	blr
->    654:	0f e0 00 00 	twui    r0,0
->
-> 00000658 <test9w>:
->    658:	2c 04 00 00 	cmpwi   r4,0
->    65c:	41 82 00 0c 	beq     668 <test9w+0x10>
->    660:	7c 63 23 96 	divwu   r3,r3,r4
->    664:	4e 80 00 20 	blr
->    668:	0f e0 00 00 	twui    r0,0
->    66c:	38 60 00 00 	li      r3,0
->    670:	4e 80 00 20 	blr
->
->
-> With your patch:
->
-> 00000640 <test>:
->    640:	81 23 00 84 	lwz     r9,132(r3)
->    644:	71 29 40 00 	andi.   r9,r9,16384
->    648:	40 82 00 0c 	bne     654 <test+0x14>
->    64c:	80 63 00 0c 	lwz     r3,12(r3)
->    650:	4e 80 00 20 	blr
->    654:	0f e0 00 00 	twui    r0,0
->    658:	4b ff ff f4 	b       64c <test+0xc>		<==
->
-> 0000065c <test9w>:
->    65c:	2c 04 00 00 	cmpwi   r4,0
->    660:	41 82 00 0c 	beq     66c <test9w+0x10>
->    664:	7c 63 23 96 	divwu   r3,r3,r4
->    668:	4e 80 00 20 	blr
->    66c:	0f e0 00 00 	twui    r0,0
->    670:	38 60 00 00 	li      r3,0			<==
->    674:	4e 80 00 20 	blr				<==
->    678:	38 60 00 00 	li      r3,0
->    67c:	4e 80 00 20 	blr
->
-The builtin variant of unreachable (__builtin_unreachable()) works.
+As I wrote in one of the comments, there is an issue with num_descs
+being not obvious (in your example it should be 2, not 1). I thought
+about dropping it and looping until the MSM_DP_CONTROLLER_COUNT, but
+this would result in other kinds of hard-to-catch issues. Let me muse
+about it.
 
-How about using that instead of unreachable() ?
-
-
-- Sathvika
-
+-- 
+With best wishes
+Dmitry
