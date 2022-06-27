@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA6F9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 060ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238857AbiF0L4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
+        id S238948AbiF0L4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238600AbiF0Lsu (ORCPT
+        with ESMTP id S237061AbiF0Lsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:48:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B2AD51;
-        Mon, 27 Jun 2022 04:42:56 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE871D60;
+        Mon, 27 Jun 2022 04:42:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5724FB80D32;
-        Mon, 27 Jun 2022 11:42:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7447C3411D;
-        Mon, 27 Jun 2022 11:42:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A3DFB80E32;
+        Mon, 27 Jun 2022 11:42:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E01C3411D;
+        Mon, 27 Jun 2022 11:42:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330174;
-        bh=J7cTMdkCM5oMYi/ifmTPBuUGMJ5bnPmv/FfH5KlXHTo=;
+        s=korg; t=1656330168;
+        bh=iw43diHJtN+Vp2gXJ7OHL4Zzhj+a3l8VTeGf8BfgsPk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DrJDHgKa8uORRr9fWZNDg2a10Ij8go8gmpVErn6xpsqUoHlIqG+khBeVUn9JKO/yY
-         taIaw3qU0whgZ+vhDiS0Pe65K/epDrMxwhFwlZqLZQoIfFfVvMNcul96PGRPfhUDrL
-         lJXEvH67c5UM3YYthi/52Odh95+XnFh/lCe3eQNk=
+        b=PHxldZ4cio8tYH+ZgsIbTVrKmcP0OxsfdQr+fJEj2aqvHt6l/fFEOPzzB8bHvi7ZV
+         lAWruDPlfthmGVREY8p3Fkn6loCj/40IGF8MoQ87lMtDPLABDI/8QZBeXRuJYbGqu4
+         3/q3+KvCwtyk954XrzuqSxZYbRjO7dff7pUlYmMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Hao Xu <howeyxu@tencent.com>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org,
+        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 109/181] io_uring: fix req->apoll_events
-Date:   Mon, 27 Jun 2022 13:21:22 +0200
-Message-Id: <20220627111947.860146768@linuxfoundation.org>
+Subject: [PATCH 5.18 090/181] regmap-irq: Fix a bug in regmap_irq_enable() for type_in_mask chips
+Date:   Mon, 27 Jun 2022 13:21:03 +0200
+Message-Id: <20220627111947.169713407@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -49,79 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-[ Upstream commit aacf2f9f382c91df73f33317e28a4c34c8038986 ]
+[ Upstream commit 485037ae9a095491beb7f893c909a76cc4f9d1e7 ]
 
-apoll_events should be set once in the beginning of poll arming just as
-poll->events and not change after. However, currently io_uring resets it
-on each __io_poll_execute() for no clear reason. There is also a place
-in __io_arm_poll_handler() where we add EPOLLONESHOT to downgrade a
-multishot, but forget to do the same thing with ->apoll_events, which is
-buggy.
+When enabling a type_in_mask irq, the type_buf contents must be
+AND'd with the mask of the IRQ we're enabling to avoid enabling
+other IRQs by accident, which can happen if several type_in_mask
+irqs share a mask register.
 
-Fixes: 81459350d581e ("io_uring: cache req->apoll->events in req->cflags")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Reviewed-by: Hao Xu <howeyxu@tencent.com>
-Link: https://lore.kernel.org/r/0aef40399ba75b1a4d2c2e85e6e8fd93c02fc6e4.1655814213.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: bc998a730367 ("regmap: irq: handle HW using separate rising/falling edge interrupts")
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Link: https://lore.kernel.org/r/20220620200644.1961936-2-aidanmacdonald.0x0@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/base/regmap/regmap-irq.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 1070d22a1c2b..38ecea726254 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5984,7 +5984,8 @@ static void io_apoll_task_func(struct io_kiocb *req, bool *locked)
- 		io_req_complete_failed(req, ret);
- }
+diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
+index 400c7412a7dc..4f785bc7981c 100644
+--- a/drivers/base/regmap/regmap-irq.c
++++ b/drivers/base/regmap/regmap-irq.c
+@@ -252,6 +252,7 @@ static void regmap_irq_enable(struct irq_data *data)
+ 	struct regmap_irq_chip_data *d = irq_data_get_irq_chip_data(data);
+ 	struct regmap *map = d->map;
+ 	const struct regmap_irq *irq_data = irq_to_regmap_irq(d, data->hwirq);
++	unsigned int reg = irq_data->reg_offset / map->reg_stride;
+ 	unsigned int mask, type;
  
--static void __io_poll_execute(struct io_kiocb *req, int mask, __poll_t events)
-+static void __io_poll_execute(struct io_kiocb *req, int mask,
-+			      __poll_t __maybe_unused events)
- {
- 	req->result = mask;
- 	/*
-@@ -5993,7 +5994,6 @@ static void __io_poll_execute(struct io_kiocb *req, int mask, __poll_t events)
- 	 * CPU. We want to avoid pulling in req->apoll->events for that
- 	 * case.
+ 	type = irq_data->type.type_falling_val | irq_data->type.type_rising_val;
+@@ -268,14 +269,14 @@ static void regmap_irq_enable(struct irq_data *data)
+ 	 * at the corresponding offset in regmap_irq_set_type().
  	 */
--	req->apoll_events = events;
- 	if (req->opcode == IORING_OP_POLL_ADD)
- 		req->io_task_work.func = io_poll_task_func;
+ 	if (d->chip->type_in_mask && type)
+-		mask = d->type_buf[irq_data->reg_offset / map->reg_stride];
++		mask = d->type_buf[reg] & irq_data->mask;
  	else
-@@ -6143,6 +6143,8 @@ static int __io_arm_poll_handler(struct io_kiocb *req,
- 	io_init_poll_iocb(poll, mask, io_poll_wake);
- 	poll->file = req->file;
+ 		mask = irq_data->mask;
  
-+	req->apoll_events = poll->events;
-+
- 	ipt->pt._key = mask;
- 	ipt->req = req;
- 	ipt->error = 0;
-@@ -6173,8 +6175,10 @@ static int __io_arm_poll_handler(struct io_kiocb *req,
+ 	if (d->chip->clear_on_unmask)
+ 		d->clear_status = true;
  
- 	if (mask) {
- 		/* can't multishot if failed, just queue the event we've got */
--		if (unlikely(ipt->error || !ipt->nr_entries))
-+		if (unlikely(ipt->error || !ipt->nr_entries)) {
- 			poll->events |= EPOLLONESHOT;
-+			req->apoll_events |= EPOLLONESHOT;
-+		}
- 		__io_poll_execute(req, mask, poll->events);
- 		return 0;
- 	}
-@@ -6387,7 +6391,7 @@ static int io_poll_add_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe
- 		return -EINVAL;
- 
- 	io_req_set_refcount(req);
--	req->apoll_events = poll->events = io_poll_parse_events(sqe, flags);
-+	poll->events = io_poll_parse_events(sqe, flags);
- 	return 0;
+-	d->mask_buf[irq_data->reg_offset / map->reg_stride] &= ~mask;
++	d->mask_buf[reg] &= ~mask;
  }
  
+ static void regmap_irq_disable(struct irq_data *data)
 -- 
 2.35.1
 
