@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 239BBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1649BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236764AbiF0Lj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:39:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
+        id S236774AbiF0Ljb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236491AbiF0Lhf (ORCPT
+        with ESMTP id S236493AbiF0Lhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:37:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3227428E;
-        Mon, 27 Jun 2022 04:33:24 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0DE285;
+        Mon, 27 Jun 2022 04:33:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C399C609D0;
-        Mon, 27 Jun 2022 11:33:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88273C3411D;
-        Mon, 27 Jun 2022 11:33:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BED48609D0;
+        Mon, 27 Jun 2022 11:33:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E52C3411D;
+        Mon, 27 Jun 2022 11:33:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329603;
-        bh=wzRgcUUicdNbJvqPsdmDmco70kK+s770X+3oBxpih3A=;
+        s=korg; t=1656329606;
+        bh=Y/a88P4m1PWYShhzeRp5acZdPyFluwgg93mj+dAxSeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LXcruiE2XyOw3bbSS19h6DGjWCTDvAHCJDOz1yvsxwC/1LHmkv7dlqJN9eUGpwwa4
-         odgal72VlzRw0Pus8D160NvwMkIWHRT7JHA6ct23PWLItsaT3DlzVuVRikgETCYQq6
-         wlTlSuIF9iCQqnPTSG+qH5P6ywgXxqTaCnE+CkDY=
+        b=UmBSLypyGnlKBDiPLZbrgMwr9kB0Tc+2Dcge8g2GQNOl2xFoI3cFajllfJ6oRIL1o
+         sB5wcL53t0C1Lpq4Gx8LwGHmTXAaEhCDP+aQnq2jM0WKmIqkJwdtnqN13yKaR58DT8
+         JRHvyWpYtpbyJMlJLHtFonCfm8Q5qc2dEYihDYqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 036/135] scsi: scsi_debug: Fix zone transition to full condition
-Date:   Mon, 27 Jun 2022 13:20:43 +0200
-Message-Id: <20220627111939.207028712@linuxfoundation.org>
+Subject: [PATCH 5.15 054/135] drm/msm/mdp4: Fix refcount leak in mdp4_modeset_init_intf
+Date:   Mon, 27 Jun 2022 13:21:01 +0200
+Message-Id: <20220627111939.727067876@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,79 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 566d3c57eb526f32951af15866086e236ce1fc8a ]
+[ Upstream commit b9cc4598607cb7f7eae5c75fc1e3209cd52ff5e0 ]
 
-When a write command to a sequential write required or sequential write
-preferred zone result in the zone write pointer reaching the end of the
-zone, the zone condition must be set to full AND the number of implicitly
-or explicitly open zones updated to have a correct accounting for zone
-resources. However, the function zbc_inc_wp() only sets the zone condition
-to full without updating the open zone counters, resulting in a zone state
-machine breakage.
+of_graph_get_remote_node() returns remote device node pointer with
+refcount incremented, we should use of_node_put() on it
+when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Introduce the helper function zbc_set_zone_full() and use it in
-zbc_inc_wp() to correctly transition zones to the full condition.
-
-Link: https://lore.kernel.org/r/20220608011302.92061-1-damien.lemoal@opensource.wdc.com
-Fixes: f0d1cf9378bd ("scsi: scsi_debug: Add ZBC zone commands")
-Reviewed-by: Niklas Cassel <niklas.cassel@wdc.com>
-Acked-by: Douglas Gilbert <dgilbert@interlog.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 86418f90a4c1 ("drm: convert drivers to use of_graph_get_remote_node")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Patchwork: https://patchwork.freedesktop.org/patch/488473/
+Link: https://lore.kernel.org/r/20220607110841.53889-1-linmq006@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_debug.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/scsi/scsi_debug.c b/drivers/scsi/scsi_debug.c
-index cfeadd5f61f1..747e1cbb7ec9 100644
---- a/drivers/scsi/scsi_debug.c
-+++ b/drivers/scsi/scsi_debug.c
-@@ -2747,6 +2747,24 @@ static void zbc_open_zone(struct sdebug_dev_info *devip,
- 	}
- }
- 
-+static inline void zbc_set_zone_full(struct sdebug_dev_info *devip,
-+				     struct sdeb_zone_state *zsp)
-+{
-+	switch (zsp->z_cond) {
-+	case ZC2_IMPLICIT_OPEN:
-+		devip->nr_imp_open--;
-+		break;
-+	case ZC3_EXPLICIT_OPEN:
-+		devip->nr_exp_open--;
-+		break;
-+	default:
-+		WARN_ONCE(true, "Invalid zone %llu condition %x\n",
-+			  zsp->z_start, zsp->z_cond);
-+		break;
-+	}
-+	zsp->z_cond = ZC5_FULL;
-+}
-+
- static void zbc_inc_wp(struct sdebug_dev_info *devip,
- 		       unsigned long long lba, unsigned int num)
- {
-@@ -2759,7 +2777,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
- 	if (zsp->z_type == ZBC_ZONE_TYPE_SWR) {
- 		zsp->z_wp += num;
- 		if (zsp->z_wp >= zend)
--			zsp->z_cond = ZC5_FULL;
-+			zbc_set_zone_full(devip, zsp);
- 		return;
- 	}
- 
-@@ -2778,7 +2796,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
- 			n = num;
+diff --git a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
+index cdcaf470f148..97ae68182f3e 100644
+--- a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
++++ b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
+@@ -223,6 +223,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
+ 		encoder = mdp4_lcdc_encoder_init(dev, panel_node);
+ 		if (IS_ERR(encoder)) {
+ 			DRM_DEV_ERROR(dev->dev, "failed to construct LCDC encoder\n");
++			of_node_put(panel_node);
+ 			return PTR_ERR(encoder);
  		}
- 		if (zsp->z_wp >= zend)
--			zsp->z_cond = ZC5_FULL;
-+			zbc_set_zone_full(devip, zsp);
  
- 		num -= n;
- 		lba += n;
+@@ -232,6 +233,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
+ 		connector = mdp4_lvds_connector_init(dev, panel_node, encoder);
+ 		if (IS_ERR(connector)) {
+ 			DRM_DEV_ERROR(dev->dev, "failed to initialize LVDS connector\n");
++			of_node_put(panel_node);
+ 			return PTR_ERR(connector);
+ 		}
+ 
 -- 
 2.35.1
 
