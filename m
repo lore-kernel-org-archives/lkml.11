@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF62CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F40C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235059AbiF0L1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
+        id S235180AbiF0L1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235046AbiF0L0T (ORCPT
+        with ESMTP id S234867AbiF0L0V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:26:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374729596;
-        Mon, 27 Jun 2022 04:26:00 -0700 (PDT)
+        Mon, 27 Jun 2022 07:26:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87E6959F;
+        Mon, 27 Jun 2022 04:26:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0D89B8111D;
-        Mon, 27 Jun 2022 11:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34659C36AE3;
-        Mon, 27 Jun 2022 11:25:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A1FD61460;
+        Mon, 27 Jun 2022 11:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 334DAC341CE;
+        Mon, 27 Jun 2022 11:26:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329157;
-        bh=Q0FmSk22MmWXOfGKpxWgp2HAFWb7+eU4+VutdiOFmyY=;
+        s=korg; t=1656329160;
+        bh=mnlmFhlBhAnytYcq6cbd2riKVfryEK43KZQadNNdEQU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c1Qbag4JeQ8YaCFu6BcQPY6ysv2kU7FE+v8T6bBTwkPFzOqBh6TGiKK0IrTLB7Ard
-         qkDVidhaGDuMV9lqbeOYGLDRrB8HYfiDx4YaZKUO+lpkPVWiAvbg57HYLuykLGri1v
-         WOyKTpFFlzEMxaGW5m81QiZUVPEX0U71CwhDb/wQ=
+        b=Awf4EMKAB0JhmDhm3zDGEEZZKei1RixWQdWBAhf19b6pHwRqNfhLJYDiAYoGJis9d
+         pjbAmwN1YBkwoiXsd1p4EwER5kuMtxkiHBlnSTAywMim+g4rSj1tHpg37DERdNQiuz
+         1vjyW1ZMtwSfD1OwUHGmjxookMAkKCphcSKauH3I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@gmail.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        syzbot+02b16343704b3af1667e@syzkaller.appspotmail.com
-Subject: [PATCH 5.10 069/102] usb: gadget: Fix non-unique driver names in raw-gadget driver
-Date:   Mon, 27 Jun 2022 13:21:20 +0200
-Message-Id: <20220627111935.517601450@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 043/102] net/tls: fix tls_sk_proto_close executed repeatedly
+Date:   Mon, 27 Jun 2022 13:20:54 +0200
+Message-Id: <20220627111934.749726236@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111933.455024953@linuxfoundation.org>
 References: <20220627111933.455024953@linuxfoundation.org>
@@ -50,192 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Ziyang Xuan <william.xuanziyang@huawei.com>
 
-commit f2d8c2606825317b77db1f9ba0fc26ef26160b30 upstream.
+[ Upstream commit 69135c572d1f84261a6de2a1268513a7e71753e2 ]
 
-In a report for a separate bug (which has already been fixed by commit
-5f0b5f4d50fa "usb: gadget: fix race when gadget driver register via
-ioctl") in the raw-gadget driver, the syzbot console log included
-error messages caused by attempted registration of a new driver with
-the same name as an existing driver:
+After setting the sock ktls, update ctx->sk_proto to sock->sk_prot by
+tls_update(), so now ctx->sk_proto->close is tls_sk_proto_close(). When
+close the sock, tls_sk_proto_close() is called for sock->sk_prot->close
+is tls_sk_proto_close(). But ctx->sk_proto->close() will be executed later
+in tls_sk_proto_close(). Thus tls_sk_proto_close() executed repeatedly
+occurred. That will trigger the following bug.
 
-> kobject_add_internal failed for raw-gadget with -EEXIST, don't try to register things with the same name in the same directory.
-> UDC core: USB Raw Gadget: driver registration failed: -17
-> misc raw-gadget: fail, usb_gadget_register_driver returned -17
+=================================================================
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+RIP: 0010:tls_sk_proto_close+0xd8/0xaf0 net/tls/tls_main.c:306
+Call Trace:
+ <TASK>
+ tls_sk_proto_close+0x356/0xaf0 net/tls/tls_main.c:329
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:428
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1365
 
-These errors arise because raw_gadget.c registers a separate UDC
-driver for each of the UDC instances it creates, but these drivers all
-have the same name: "raw-gadget".  Until recently this wasn't a
-problem, but when the "gadget" bus was added and UDC drivers were
-registered on this bus, it became possible for name conflicts to cause
-the registrations to fail.  The reason is simply that the bus code in
-the driver core uses the driver name as a sysfs directory name (e.g.,
-/sys/bus/gadget/drivers/raw-gadget/), and you can't create two
-directories with the same pathname.
+Updating a proto which is same with sock->sk_prot is incorrect. Add proto
+and sock->sk_prot equality check at the head of tls_update() to fix it.
 
-To fix this problem, the driver names used by raw-gadget are made
-distinct by appending a unique ID number: "raw-gadget.N", with a
-different value of N for each driver instance.  And to avoid the
-proliferation of error handling code in the raw_ioctl_init() routine,
-the error return paths are refactored into the common pattern (goto
-statements leading to cleanup code at the end of the routine).
-
-Link: https://lore.kernel.org/all/0000000000008c664105dffae2eb@google.com/
-Fixes: fc274c1e9973 "USB: gadget: Add a new bus for gadgets"
-CC: Andrey Konovalov <andreyknvl@gmail.com>
-CC: <stable@vger.kernel.org>
-Reported-and-tested-by: syzbot+02b16343704b3af1667e@syzkaller.appspotmail.com
-Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
-Acked-by: Hillf Danton <hdanton@sina.com>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YqdG32w+3h8c1s7z@rowland.harvard.edu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 95fa145479fb ("bpf: sockmap/tls, close can race with map free")
+Reported-by: syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/legacy/raw_gadget.c |   62 ++++++++++++++++++++++++---------
- 1 file changed, 46 insertions(+), 16 deletions(-)
+ net/tls/tls_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/usb/gadget/legacy/raw_gadget.c
-+++ b/drivers/usb/gadget/legacy/raw_gadget.c
-@@ -10,6 +10,7 @@
- #include <linux/ctype.h>
- #include <linux/debugfs.h>
- #include <linux/delay.h>
-+#include <linux/idr.h>
- #include <linux/kref.h>
- #include <linux/miscdevice.h>
- #include <linux/module.h>
-@@ -35,6 +36,9 @@ MODULE_LICENSE("GPL");
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 58d22d6b86ae..9492528f5852 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -787,6 +787,9 @@ static void tls_update(struct sock *sk, struct proto *p,
+ {
+ 	struct tls_context *ctx;
  
- /*----------------------------------------------------------------------*/
- 
-+static DEFINE_IDA(driver_id_numbers);
-+#define DRIVER_DRIVER_NAME_LENGTH_MAX	32
++	if (sk->sk_prot == p)
++		return;
 +
- #define RAW_EVENT_QUEUE_SIZE	16
- 
- struct raw_event_queue {
-@@ -160,6 +164,9 @@ struct raw_dev {
- 	/* Reference to misc device: */
- 	struct device			*dev;
- 
-+	/* Make driver names unique */
-+	int				driver_id_number;
-+
- 	/* Protected by lock: */
- 	enum dev_state			state;
- 	bool				gadget_registered;
-@@ -188,6 +195,7 @@ static struct raw_dev *dev_new(void)
- 	spin_lock_init(&dev->lock);
- 	init_completion(&dev->ep0_done);
- 	raw_event_queue_init(&dev->queue);
-+	dev->driver_id_number = -1;
- 	return dev;
- }
- 
-@@ -198,6 +206,9 @@ static void dev_free(struct kref *kref)
- 
- 	kfree(dev->udc_name);
- 	kfree(dev->driver.udc_name);
-+	kfree(dev->driver.driver.name);
-+	if (dev->driver_id_number >= 0)
-+		ida_free(&driver_id_numbers, dev->driver_id_number);
- 	if (dev->req) {
- 		if (dev->ep0_urb_queued)
- 			usb_ep_dequeue(dev->gadget->ep0, dev->req);
-@@ -421,6 +432,7 @@ static int raw_ioctl_init(struct raw_dev
- 	struct usb_raw_init arg;
- 	char *udc_driver_name;
- 	char *udc_device_name;
-+	char *driver_driver_name;
- 	unsigned long flags;
- 
- 	if (copy_from_user(&arg, (void __user *)value, sizeof(arg)))
-@@ -439,36 +451,44 @@ static int raw_ioctl_init(struct raw_dev
- 		return -EINVAL;
- 	}
- 
-+	ret = ida_alloc(&driver_id_numbers, GFP_KERNEL);
-+	if (ret < 0)
-+		return ret;
-+	dev->driver_id_number = ret;
-+
-+	driver_driver_name = kmalloc(DRIVER_DRIVER_NAME_LENGTH_MAX, GFP_KERNEL);
-+	if (!driver_driver_name) {
-+		ret = -ENOMEM;
-+		goto out_free_driver_id_number;
-+	}
-+	snprintf(driver_driver_name, DRIVER_DRIVER_NAME_LENGTH_MAX,
-+				DRIVER_NAME ".%d", dev->driver_id_number);
-+
- 	udc_driver_name = kmalloc(UDC_NAME_LENGTH_MAX, GFP_KERNEL);
--	if (!udc_driver_name)
--		return -ENOMEM;
-+	if (!udc_driver_name) {
-+		ret = -ENOMEM;
-+		goto out_free_driver_driver_name;
-+	}
- 	ret = strscpy(udc_driver_name, &arg.driver_name[0],
- 				UDC_NAME_LENGTH_MAX);
--	if (ret < 0) {
--		kfree(udc_driver_name);
--		return ret;
--	}
-+	if (ret < 0)
-+		goto out_free_udc_driver_name;
- 	ret = 0;
- 
- 	udc_device_name = kmalloc(UDC_NAME_LENGTH_MAX, GFP_KERNEL);
- 	if (!udc_device_name) {
--		kfree(udc_driver_name);
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto out_free_udc_driver_name;
- 	}
- 	ret = strscpy(udc_device_name, &arg.device_name[0],
- 				UDC_NAME_LENGTH_MAX);
--	if (ret < 0) {
--		kfree(udc_driver_name);
--		kfree(udc_device_name);
--		return ret;
--	}
-+	if (ret < 0)
-+		goto out_free_udc_device_name;
- 	ret = 0;
- 
- 	spin_lock_irqsave(&dev->lock, flags);
- 	if (dev->state != STATE_DEV_OPENED) {
- 		dev_dbg(dev->dev, "fail, device is not opened\n");
--		kfree(udc_driver_name);
--		kfree(udc_device_name);
- 		ret = -EINVAL;
- 		goto out_unlock;
- 	}
-@@ -483,14 +503,24 @@ static int raw_ioctl_init(struct raw_dev
- 	dev->driver.suspend = gadget_suspend;
- 	dev->driver.resume = gadget_resume;
- 	dev->driver.reset = gadget_reset;
--	dev->driver.driver.name = DRIVER_NAME;
-+	dev->driver.driver.name = driver_driver_name;
- 	dev->driver.udc_name = udc_device_name;
- 	dev->driver.match_existing_only = 1;
- 
- 	dev->state = STATE_DEV_INITIALIZED;
-+	spin_unlock_irqrestore(&dev->lock, flags);
-+	return ret;
- 
- out_unlock:
- 	spin_unlock_irqrestore(&dev->lock, flags);
-+out_free_udc_device_name:
-+	kfree(udc_device_name);
-+out_free_udc_driver_name:
-+	kfree(udc_driver_name);
-+out_free_driver_driver_name:
-+	kfree(driver_driver_name);
-+out_free_driver_id_number:
-+	ida_free(&driver_id_numbers, dev->driver_id_number);
- 	return ret;
- }
- 
+ 	ctx = tls_get_ctx(sk);
+ 	if (likely(ctx)) {
+ 		ctx->sk_write_space = write_space;
+-- 
+2.35.1
+
 
 
