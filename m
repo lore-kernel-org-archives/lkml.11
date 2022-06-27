@@ -2,91 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CE6CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F258AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 07:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232560AbiF0HGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 03:06:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53224 "EHLO
+        id S232591AbiF0HHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 03:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230439AbiF0HGp (ORCPT
+        with ESMTP id S232594AbiF0HHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 03:06:45 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF3E5F7E;
-        Mon, 27 Jun 2022 00:06:44 -0700 (PDT)
-Received: from [192.168.10.6] (unknown [39.45.206.71])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1D09D6601826;
-        Mon, 27 Jun 2022 08:06:40 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656313603;
-        bh=Z/LXL4E5/3LOVmaswq+5SAltlEypjsxTl3skxq9i7gI=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=eMJ5PcCF0uV60I848qRMPOi+VmW3JuLmS63Epy69cjv3OWF14upH354lTVs046V9C
-         o9ToL3nClu6KJ+G9SSLQ7kwdW0K86+jLdOnf+6bW2xcA3+ik9E9vLoSImSCtl312+6
-         hdi83Sz+wmSVnRNG+7l88lGQc1pb2l5h/VTpFuxkAmIrLx0QHfBBu1oMNdsyg3pWai
-         TEQOQJ7jplQQNmV9tT6iUJl6dR6gdJSDM1nSb11n0XFuaF1/r2WATa87aIy9B5lPtZ
-         KVi5wXp1QMimHKzY00Uac+lVTIvtM+l9If14+Lyq3xTHGGoNXf/d7DbAcNrEN5786g
-         im95gOg+BLH/A==
-Message-ID: <519c813b-0bf1-636b-df90-890e07d2ea4d@collabora.com>
-Date:   Mon, 27 Jun 2022 12:06:36 +0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Cc:     usama.anjum@collabora.com, Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        KERNEL SELFTEST FRAMEWORK <linux-kselftest@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "kernelci@groups.io" <kernelci@groups.io>
-Subject: Re: [Bug Report] - kselftest build fails if output directory is first
- level sub-directory
-Content-Language: en-US
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-References: <c25d7ea7-4f72-4a2b-d8c3-d317e64fcbbb@collabora.com>
- <CAK7LNATL4nMmKgrjS8meavnpn=HisD30QxuPUKDqtWWgbGcSZw@mail.gmail.com>
- <a9470bfc-bddc-6aa6-0043-d49eb57611fe@linuxfoundation.org>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <a9470bfc-bddc-6aa6-0043-d49eb57611fe@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 27 Jun 2022 03:07:17 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D0C265FAC;
+        Mon, 27 Jun 2022 00:07:15 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxr9giV7lijrtfAA--.5371S2;
+        Mon, 27 Jun 2022 15:07:14 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] MIPS: Loongson64: Fix section mismatch warning
+Date:   Mon, 27 Jun 2022 15:07:13 +0800
+Message-Id: <1656313633-1713-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9Dxr9giV7lijrtfAA--.5371S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7tFW7CFWDGF1UXr18Cw45Wrg_yoW8GF18pa
+        yrCw1DWr4UKr4kAF1fCry8Z34xJa4rWFs3A3y7CryDW39ru3sYvr1IkF4rZFyDtr4Fya1r
+        XFn3Grs5u3W8C37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4x
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjVc_3UUUU
+        U==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->> This problem starts from the bad design of the kselftest framework.
->> I did some research before. I think I can fix the root cause but
->> currently I do not have enough time to do it.
->>
->>
->> KBUILD_ABS_SRCTREE is a user-interface to request
->> Kbuild to use the absolute path.
->> If it is forced in the top Makefile, users have no way to
->> negate it.
->> It is true that using the absolute path is a quick work-around
->> because you do not need to care about the current working directory.
->>
->> If you insist on it,  just go ahead.  It is just two line changes.
->> Once the issue is fixed in a better way, your patch can be reverted
->> easily.
->>
-> Why don't we work on fixing it the wright way? I would rather go that
-> route than using short rem fixes.
-> 
-> Usama, would you be interested in working on a proper fix as recommended
-> by Masahiro?
-I've made another attempt:
-https://lore.kernel.org/lkml/20220627070214.432390-1-usama.anjum@collabora.com/
+prom_init_numa_memory() is annotated __init and not used by any module,
+thus don't export it.
 
-> 
-> thanks,
-> -- Shuah
+Remove not needed EXPORT_SYMBOL for prom_init_numa_memory() to fix the
+following section mismatch warning:
 
+  LD      vmlinux.o
+  MODPOST vmlinux.symvers
+WARNING: modpost: vmlinux.o(___ksymtab+prom_init_numa_memory+0x0): Section mismatch in reference
+from the variable __ksymtab_prom_init_numa_memory to the function .init.text:prom_init_numa_memory()
+The symbol prom_init_numa_memory is exported and annotated __init
+Fix this by removing the __init annotation of prom_init_numa_memory or drop the export.
+
+This is build on Linux 5.19-rc4.
+
+Fixes: 6fbde6b492df ("MIPS: Loongson64: Move files to the top-level directory")
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+
+v2: update the commit message and add Fixes tag
+
+ arch/mips/loongson64/numa.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/mips/loongson64/numa.c b/arch/mips/loongson64/numa.c
+index 69a5331..8f61e93 100644
+--- a/arch/mips/loongson64/numa.c
++++ b/arch/mips/loongson64/numa.c
+@@ -196,7 +196,6 @@ void __init prom_init_numa_memory(void)
+ 	pr_info("CP0_PageGrain: CP0 5.1 (0x%x)\n", read_c0_pagegrain());
+ 	prom_meminit();
+ }
+-EXPORT_SYMBOL(prom_init_numa_memory);
+ 
+ pg_data_t * __init arch_alloc_nodedata(int nid)
+ {
 -- 
-Muhammad Usama Anjum
+2.1.0
+
