@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1293EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB836C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 22:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242318AbiF0WAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 18:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60132 "EHLO
+        id S242163AbiF0WA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 18:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241503AbiF0Vz3 (ORCPT
+        with ESMTP id S241277AbiF0Vzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 17:55:29 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73287653;
-        Mon, 27 Jun 2022 14:55:00 -0700 (PDT)
+        Mon, 27 Jun 2022 17:55:47 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA79EE23;
+        Mon, 27 Jun 2022 14:55:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656366900; x=1687902900;
+  t=1656366906; x=1687902906;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=n6xdGXgko3qssnAtpOHHstiwmTRj8Y+7DoJb5FezlHE=;
-  b=aM132hcvoJQJ2F7Ier0P0+TLdgY6LtHys7kqXBAfiIiI25bK2VdvZYv0
-   ts5A+MK321jJqM5Dk6LYHDC2Avpm+hsAIIqI7W7Jyd+4AVRwWqjZWLF9k
-   w4N5272kx5cWUAJpFgBQ6Mhm5cSoSnIKFmvQGfemoL1b7fuydDBxSLpde
-   4hooSAxL+3u26TdPPB6RlcteiMR/ihpDe6fjBSHspxWMv0WtgMtMNiKgh
-   hQjUHWwlBYHI6VyT1gNKtHEr1WCJTLhg3XOa53aQFhYJxUOMLGOLOVxEV
-   vN5GuiftdQ7Vqmne9tvWKxG4h8DJHH422BeM1Cwfora6NcCHb67CGKoPu
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281609575"
+  bh=2/Dje2E1ZRmHrZQYNFsrfScZEUoGOIHniDqDwUJYkck=;
+  b=YtXm0yS+v0zyg6xqZrc7sCHAfTB1klGJVaWjnmqt4nq5bPeREh3kWLMP
+   i6f4sk3kooXtrMgacjMtV0Eiqsz2nA0ZZH6MwujYQvH8PzdrVBXS23Kl/
+   3rp10Pd8qibBaaB0TgIoL+55/zhuv/niVf+Y/NGGXG0qWcoF8rx2NNk30
+   2chZfajnrsKsOQZxoOI0szNRdOKIRARwvlQSJPoeQ2o67gfFd5UARdjhE
+   slhCsMVoG8ZHS2QoSKiOTT9ICBjTCBGtv+TXTe7Owl0lE2mb0fCPKz60l
+   xQ9jzmzLGQ8AHC0PMqEz7iLsMN652ufztanDv5EK76UjwZKxzNc0JB3cA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279116128"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281609575"
+   d="scan'208";a="279116128"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:55 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:00 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="657863598"
+   d="scan'208";a="657863702"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:54:55 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 14:55:00 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <sean.j.christopherson@intel.com>
-Subject: [PATCH v7 050/102] KVM: VMX: Split out guts of EPT violation to common/exposed function
-Date:   Mon, 27 Jun 2022 14:53:42 -0700
-Message-Id: <5202bef37eb1d9683891f29ccba182bbdceafca4.1656366338.git.isaku.yamahata@intel.com>
+Subject: [PATCH v7 081/102] KVM: VMX: Move NMI/exception handler to common helper
+Date:   Mon, 27 Jun 2022 14:54:13 -0700
+Message-Id: <2c9fa7ee0336486c3f01ae41161fabc12cf5b25b.1656366338.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1656366337.git.isaku.yamahata@intel.com>
 References: <cover.1656366337.git.isaku.yamahata@intel.com>
@@ -56,126 +56,228 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-The difference of TDX EPT violation is how to retrieve information, GPA,
-and exit qualification.  To share the code to handle EPT violation, split
-out the guts of EPT violation handler so that VMX/TDX exit handler can call
-it after retrieving GPA and exit qualification.
+TDX mostly handles NMI/exception exit mostly the same to VMX case.  The
+difference is how to retrieve exit qualification.  To share the code with
+TDX, move NMI/exception to a common header, common.h.
 
 Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/vmx/common.h | 33 +++++++++++++++++++++++++++++++++
- arch/x86/kvm/vmx/vmx.c    | 32 ++++++--------------------------
- 2 files changed, 39 insertions(+), 26 deletions(-)
- create mode 100644 arch/x86/kvm/vmx/common.h
+ arch/x86/kvm/vmx/common.h | 70 ++++++++++++++++++++++++++++++++++
+ arch/x86/kvm/vmx/vmx.c    | 79 ++++-----------------------------------
+ 2 files changed, 78 insertions(+), 71 deletions(-)
 
 diff --git a/arch/x86/kvm/vmx/common.h b/arch/x86/kvm/vmx/common.h
-new file mode 100644
-index 000000000000..235908f3e044
---- /dev/null
+index 1522e9e6851b..fd5ed3c0f894 100644
+--- a/arch/x86/kvm/vmx/common.h
 +++ b/arch/x86/kvm/vmx/common.h
-@@ -0,0 +1,33 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef __KVM_X86_VMX_COMMON_H
-+#define __KVM_X86_VMX_COMMON_H
+@@ -4,8 +4,78 @@
+ 
+ #include <linux/kvm_host.h>
+ 
++#include <asm/traps.h>
 +
-+#include <linux/kvm_host.h>
+ #include "posted_intr.h"
+ #include "mmu.h"
++#include "vmcs.h"
++#include "x86.h"
 +
-+#include "mmu.h"
++extern unsigned long vmx_host_idt_base;
++void vmx_do_interrupt_nmi_irqoff(unsigned long entry);
 +
-+static inline int __vmx_handle_ept_violation(struct kvm_vcpu *vcpu, gpa_t gpa,
-+					     unsigned long exit_qualification)
++static inline void vmx_handle_interrupt_nmi_irqoff(struct kvm_vcpu *vcpu,
++					       unsigned long entry)
 +{
-+	u64 error_code;
++       bool is_nmi = entry == (unsigned long)asm_exc_nmi_noist;
 +
-+	/* Is it a read fault? */
-+	error_code = (exit_qualification & EPT_VIOLATION_ACC_READ)
-+		     ? PFERR_USER_MASK : 0;
-+	/* Is it a write fault? */
-+	error_code |= (exit_qualification & EPT_VIOLATION_ACC_WRITE)
-+		      ? PFERR_WRITE_MASK : 0;
-+	/* Is it a fetch fault? */
-+	error_code |= (exit_qualification & EPT_VIOLATION_ACC_INSTR)
-+		      ? PFERR_FETCH_MASK : 0;
-+	/* ept page table entry is present? */
-+	error_code |= (exit_qualification & EPT_VIOLATION_RWX_MASK)
-+		      ? PFERR_PRESENT_MASK : 0;
-+
-+	error_code |= (exit_qualification & EPT_VIOLATION_GVA_TRANSLATED) != 0 ?
-+	       PFERR_GUEST_FINAL_MASK : PFERR_GUEST_PAGE_MASK;
-+
-+	return kvm_mmu_page_fault(vcpu, gpa, error_code, NULL, 0);
++       kvm_before_interrupt(vcpu, is_nmi ? KVM_HANDLING_NMI : KVM_HANDLING_IRQ);
++       vmx_do_interrupt_nmi_irqoff(entry);
++       kvm_after_interrupt(vcpu);
 +}
 +
-+#endif /* __KVM_X86_VMX_COMMON_H */
++static inline void vmx_handle_nm_fault_irqoff(struct kvm_vcpu *vcpu)
++{
++	/*
++	 * Save xfd_err to guest_fpu before interrupt is enabled, so the
++	 * MSR value is not clobbered by the host activity before the guest
++	 * has chance to consume it.
++	 *
++	 * Do not blindly read xfd_err here, since this exception might
++	 * be caused by L1 interception on a platform which doesn't
++	 * support xfd at all.
++	 *
++	 * Do it conditionally upon guest_fpu::xfd. xfd_err matters
++	 * only when xfd contains a non-zero value.
++	 *
++	 * Queuing exception is done in vmx_handle_exit. See comment there.
++	 */
++	if (vcpu->arch.guest_fpu.fpstate->xfd)
++		rdmsrl(MSR_IA32_XFD_ERR, vcpu->arch.guest_fpu.xfd_err);
++}
++
++static inline void vmx_handle_exception_nmi_irqoff(struct kvm_vcpu *vcpu,
++						   u32 intr_info)
++{
++	const unsigned long nmi_entry = (unsigned long)asm_exc_nmi_noist;
++
++	/* if exit due to PF check for async PF */
++	if (is_page_fault(intr_info))
++		vcpu->arch.apf.host_apf_flags = kvm_read_and_reset_apf_flags();
++	/* if exit due to NM, handle before interrupts are enabled */
++	else if (is_nm_fault(intr_info))
++		vmx_handle_nm_fault_irqoff(vcpu);
++	/* Handle machine checks before interrupts are enabled */
++	else if (is_machine_check(intr_info))
++		kvm_machine_check();
++	/* We need to handle NMIs before interrupts are enabled */
++	else if (is_nmi(intr_info))
++		vmx_handle_interrupt_nmi_irqoff(vcpu, nmi_entry);
++}
++
++static inline void vmx_handle_external_interrupt_irqoff(struct kvm_vcpu *vcpu,
++							u32 intr_info)
++{
++	unsigned int vector = intr_info & INTR_INFO_VECTOR_MASK;
++	gate_desc *desc = (gate_desc *)vmx_host_idt_base + vector;
++
++	if (KVM_BUG(!is_external_intr(intr_info), vcpu->kvm,
++	    "KVM: unexpected VM-Exit interrupt info: 0x%x", intr_info))
++		return;
++
++	vmx_handle_interrupt_nmi_irqoff(vcpu, gate_offset(desc));
++	vcpu->arch.at_instruction_boundary = true;
++}
+ 
+ static inline int __vmx_handle_ept_violation(struct kvm_vcpu *vcpu, gpa_t gpa,
+ 					     unsigned long exit_qualification)
 diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index e3d304b14df0..2f1dc06aec3c 100644
+index ccc245fbe0a1..5c5580ab98d3 100644
 --- a/arch/x86/kvm/vmx/vmx.c
 +++ b/arch/x86/kvm/vmx/vmx.c
-@@ -50,6 +50,7 @@
- #include <asm/vmx.h>
- 
- #include "capabilities.h"
-+#include "common.h"
- #include "cpuid.h"
- #include "evmcs.h"
- #include "hyperv.h"
-@@ -5578,11 +5579,10 @@ static int handle_task_switch(struct kvm_vcpu *vcpu)
- 
- static int handle_ept_violation(struct kvm_vcpu *vcpu)
- {
--	unsigned long exit_qualification;
--	gpa_t gpa;
--	u64 error_code;
-+	unsigned long exit_qualification = vmx_get_exit_qual(vcpu);
-+	gpa_t gpa = vmcs_read64(GUEST_PHYSICAL_ADDRESS);
- 
--	exit_qualification = vmx_get_exit_qual(vcpu);
-+	trace_kvm_page_fault(gpa, exit_qualification);
- 
- 	/*
- 	 * EPT violation happened while executing iret from NMI,
-@@ -5591,29 +5591,9 @@ static int handle_ept_violation(struct kvm_vcpu *vcpu)
- 	 * AAK134, BY25.
- 	 */
- 	if (!(to_vmx(vcpu)->idt_vectoring_info & VECTORING_INFO_VALID_MASK) &&
--			enable_vnmi &&
--			(exit_qualification & INTR_INFO_UNBLOCK_NMI))
-+	    enable_vnmi && (exit_qualification & INTR_INFO_UNBLOCK_NMI))
- 		vmcs_set_bits(GUEST_INTERRUPTIBILITY_INFO, GUEST_INTR_STATE_NMI);
- 
--	gpa = vmcs_read64(GUEST_PHYSICAL_ADDRESS);
--	trace_kvm_page_fault(gpa, exit_qualification);
--
--	/* Is it a read fault? */
--	error_code = (exit_qualification & EPT_VIOLATION_ACC_READ)
--		     ? PFERR_USER_MASK : 0;
--	/* Is it a write fault? */
--	error_code |= (exit_qualification & EPT_VIOLATION_ACC_WRITE)
--		      ? PFERR_WRITE_MASK : 0;
--	/* Is it a fetch fault? */
--	error_code |= (exit_qualification & EPT_VIOLATION_ACC_INSTR)
--		      ? PFERR_FETCH_MASK : 0;
--	/* ept page table entry is present? */
--	error_code |= (exit_qualification & EPT_VIOLATION_RWX_MASK)
--		      ? PFERR_PRESENT_MASK : 0;
--
--	error_code |= (exit_qualification & EPT_VIOLATION_GVA_TRANSLATED) != 0 ?
--	       PFERR_GUEST_FINAL_MASK : PFERR_GUEST_PAGE_MASK;
--
- 	vcpu->arch.exit_qualification = exit_qualification;
- 
- 	/*
-@@ -5627,7 +5607,7 @@ static int handle_ept_violation(struct kvm_vcpu *vcpu)
- 	if (unlikely(allow_smaller_maxphyaddr && kvm_vcpu_is_illegal_gpa(vcpu, gpa)))
- 		return kvm_emulate_instruction(vcpu, 0);
- 
--	return kvm_mmu_page_fault(vcpu, gpa, error_code, NULL, 0);
-+	return __vmx_handle_ept_violation(vcpu, gpa, exit_qualification);
+@@ -468,7 +468,7 @@ static inline void vmx_segment_cache_clear(struct vcpu_vmx *vmx)
+ 	vmx->segment_cache.bitmask = 0;
  }
  
- static int handle_ept_misconfig(struct kvm_vcpu *vcpu)
+-static unsigned long host_idt_base;
++unsigned long vmx_host_idt_base;
+ 
+ #if IS_ENABLED(CONFIG_HYPERV)
+ static bool __read_mostly enlightened_vmcs = true;
+@@ -4125,7 +4125,7 @@ void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
+ 	vmcs_write16(HOST_SS_SELECTOR, __KERNEL_DS);  /* 22.2.4 */
+ 	vmcs_write16(HOST_TR_SELECTOR, GDT_ENTRY_TSS*8);  /* 22.2.4 */
+ 
+-	vmcs_writel(HOST_IDTR_BASE, host_idt_base);   /* 22.2.4 */
++	vmcs_writel(HOST_IDTR_BASE, vmx_host_idt_base);   /* 22.2.4 */
+ 
+ 	vmcs_writel(HOST_RIP, (unsigned long)vmx_vmexit); /* 22.2.5 */
+ 
+@@ -4970,10 +4970,10 @@ static int handle_exception_nmi(struct kvm_vcpu *vcpu)
+ 	intr_info = vmx_get_intr_info(vcpu);
+ 
+ 	if (is_machine_check(intr_info) || is_nmi(intr_info))
+-		return 1; /* handled by handle_exception_nmi_irqoff() */
++		return 1; /* handled by vmx_handle_exception_nmi_irqoff() */
+ 
+ 	/*
+-	 * Queue the exception here instead of in handle_nm_fault_irqoff().
++	 * Queue the exception here instead of in vmx_handle_nm_fault_irqoff().
+ 	 * This ensures the nested_vmx check is not skipped so vmexit can
+ 	 * be reflected to L1 (when it intercepts #NM) before reaching this
+ 	 * point.
+@@ -6645,70 +6645,6 @@ void vmx_load_eoi_exitmap(struct kvm_vcpu *vcpu, u64 *eoi_exit_bitmap)
+ 	vmcs_write64(EOI_EXIT_BITMAP3, eoi_exit_bitmap[3]);
+ }
+ 
+-void vmx_do_interrupt_nmi_irqoff(unsigned long entry);
+-
+-static void handle_interrupt_nmi_irqoff(struct kvm_vcpu *vcpu,
+-					unsigned long entry)
+-{
+-	bool is_nmi = entry == (unsigned long)asm_exc_nmi_noist;
+-
+-	kvm_before_interrupt(vcpu, is_nmi ? KVM_HANDLING_NMI : KVM_HANDLING_IRQ);
+-	vmx_do_interrupt_nmi_irqoff(entry);
+-	kvm_after_interrupt(vcpu);
+-}
+-
+-static void handle_nm_fault_irqoff(struct kvm_vcpu *vcpu)
+-{
+-	/*
+-	 * Save xfd_err to guest_fpu before interrupt is enabled, so the
+-	 * MSR value is not clobbered by the host activity before the guest
+-	 * has chance to consume it.
+-	 *
+-	 * Do not blindly read xfd_err here, since this exception might
+-	 * be caused by L1 interception on a platform which doesn't
+-	 * support xfd at all.
+-	 *
+-	 * Do it conditionally upon guest_fpu::xfd. xfd_err matters
+-	 * only when xfd contains a non-zero value.
+-	 *
+-	 * Queuing exception is done in vmx_handle_exit. See comment there.
+-	 */
+-	if (vcpu->arch.guest_fpu.fpstate->xfd)
+-		rdmsrl(MSR_IA32_XFD_ERR, vcpu->arch.guest_fpu.xfd_err);
+-}
+-
+-static void handle_exception_nmi_irqoff(struct kvm_vcpu *vcpu, u32 intr_info)
+-{
+-	const unsigned long nmi_entry = (unsigned long)asm_exc_nmi_noist;
+-
+-	/* if exit due to PF check for async PF */
+-	if (is_page_fault(intr_info))
+-		vcpu->arch.apf.host_apf_flags = kvm_read_and_reset_apf_flags();
+-	/* if exit due to NM, handle before interrupts are enabled */
+-	else if (is_nm_fault(intr_info))
+-		handle_nm_fault_irqoff(vcpu);
+-	/* Handle machine checks before interrupts are enabled */
+-	else if (is_machine_check(intr_info))
+-		kvm_machine_check();
+-	/* We need to handle NMIs before interrupts are enabled */
+-	else if (is_nmi(intr_info))
+-		handle_interrupt_nmi_irqoff(vcpu, nmi_entry);
+-}
+-
+-static void handle_external_interrupt_irqoff(struct kvm_vcpu *vcpu,
+-					     u32 intr_info)
+-{
+-	unsigned int vector = intr_info & INTR_INFO_VECTOR_MASK;
+-	gate_desc *desc = (gate_desc *)host_idt_base + vector;
+-
+-	if (KVM_BUG(!is_external_intr(intr_info), vcpu->kvm,
+-	    "KVM: unexpected VM-Exit interrupt info: 0x%x", intr_info))
+-		return;
+-
+-	handle_interrupt_nmi_irqoff(vcpu, gate_offset(desc));
+-	vcpu->arch.at_instruction_boundary = true;
+-}
+-
+ void vmx_handle_exit_irqoff(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+@@ -6717,9 +6653,10 @@ void vmx_handle_exit_irqoff(struct kvm_vcpu *vcpu)
+ 		return;
+ 
+ 	if (vmx->exit_reason.basic == EXIT_REASON_EXTERNAL_INTERRUPT)
+-		handle_external_interrupt_irqoff(vcpu, vmx_get_intr_info(vcpu));
++		vmx_handle_external_interrupt_irqoff(vcpu,
++						     vmx_get_intr_info(vcpu));
+ 	else if (vmx->exit_reason.basic == EXIT_REASON_EXCEPTION_NMI)
+-		handle_exception_nmi_irqoff(vcpu, vmx_get_intr_info(vcpu));
++		vmx_handle_exception_nmi_irqoff(vcpu, vmx_get_intr_info(vcpu));
+ }
+ 
+ /*
+@@ -7980,7 +7917,7 @@ __init int vmx_hardware_setup(void)
+ 	int r;
+ 
+ 	store_idt(&dt);
+-	host_idt_base = dt.address;
++	vmx_host_idt_base = dt.address;
+ 
+ 	vmx_setup_user_return_msrs();
+ 
 -- 
 2.25.1
 
