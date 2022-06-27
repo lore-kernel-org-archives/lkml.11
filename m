@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9960C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B137C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 12:00:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239716AbiF0MAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:00:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55814 "EHLO
+        id S239725AbiF0MAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238941AbiF0Lwv (ORCPT
+        with ESMTP id S238942AbiF0Lwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 07:52:51 -0400
 Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7ABF0BC0D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7ACB4DF20
         for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:46:35 -0700 (PDT)
 Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx39kNl7liP_FfAA--.6156S11;
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx39kNl7liP_FfAA--.6156S9;
         Mon, 27 Jun 2022 19:40:03 +0800 (CST)
 From:   Jianmin Lv <lvjianmin@loongson.cn>
 To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
@@ -24,16 +24,16 @@ Cc:     linux-kernel@vger.kernel.org, Hanjun Guo <guohanjun@huawei.com>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Jiaxun Yang <jiaxun.yang@flygoat.com>,
         Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V13 09/13] irqchip/loongson-liointc: Add ACPI init support
-Date:   Mon, 27 Jun 2022 19:39:53 +0800
-Message-Id: <1656329997-20524-10-git-send-email-lvjianmin@loongson.cn>
+Subject: [PATCH V13 07/13] irqchip/loongson-pch-msi: Add ACPI init support
+Date:   Mon, 27 Jun 2022 19:39:51 +0800
+Message-Id: <1656329997-20524-8-git-send-email-lvjianmin@loongson.cn>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
 References: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
-X-CM-TRANSID: AQAAf9Dx39kNl7liP_FfAA--.6156S11
-X-Coremail-Antispam: 1UD129KBjvJXoW3KryfuFy3Jry8Aw48tFyxZrb_yoWkGFyrpF
-        W8A34qqr45GFy7WrWvyFs8Za4ayw1Y9FsrXayfCas7AanrX3s5CF1ruFnFkF43C3yrWFWa
-        vF4rta18GF45Aa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID: AQAAf9Dx39kNl7liP_FfAA--.6156S9
+X-Coremail-Antispam: 1UD129KBjvJXoWfXr1rKw17KFyUAr1DJw1fJFb_yoWDZw4UpF
+        W3Z39Fqr48J3yUWrWvka1DXrWayFySkF42qa1fG3WftrsFyr9YgF18JF129F1YyrWUGF13
+        Zw4xta1UuF4DAa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
         9KBjDU0xBIdaVrnRJUUUvj1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
         w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
         IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
@@ -58,353 +58,341 @@ We are preparing to add new Loongson (based on LoongArch, not compatible
 with old MIPS-based Loongson) support. LoongArch use ACPI other than DT
 as its boot protocol, so add ACPI init support.
 
-LIOINTC stands for "Legacy I/O Interrupts" that described in Section
-11.1 of "Loongson 3A5000 Processor Reference Manual". For more
-information please refer Documentation/loongarch/irq-chip-model.rst.
+PCH-PIC/PCH-MSI stands for "Interrupt Controller" that described in
+Section 5 of "Loongson 7A1000 Bridge User Manual". For more information
+please refer Documentation/loongarch/irq-chip-model.rst.
+
+For systems with two chipsets, there are two related msi irqdomains,
+each of which has the same node id as its parent irqdomain. So we
+use a structure to mantain the relation of node and it's parent
+irqdomain as pch irqdomin, and add a pci_segment field to it for
+matching the pci segment of a pci device when setting msi irqdomain
+for the device.
+
+struct acpi_vector_group {
+        int node;
+        int pci_segment;
+        struct irq_domain *parent;
+};
+
+The field 'pci_segment' and 'node' are initialized from MCFG, and
+the parent irqdomain will set field 'parent' by matching same
+'node'.
 
 Co-developed-by: Jianmin Lv <lvjianmin@loongson.cn>
 Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
 Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
 ---
- arch/loongarch/include/asm/irq.h       |   4 +-
- arch/loongarch/kernel/irq.c            |   1 -
- drivers/irqchip/irq-loongson-liointc.c | 227 ++++++++++++++++++++++-----------
- 3 files changed, 154 insertions(+), 78 deletions(-)
+ arch/loongarch/include/asm/irq.h       |   7 +-
+ arch/loongarch/kernel/irq.c            |  30 ++++++-
+ drivers/irqchip/irq-loongson-pch-msi.c | 147 +++++++++++++++++++++++----------
+ 3 files changed, 138 insertions(+), 46 deletions(-)
 
 diff --git a/arch/loongarch/include/asm/irq.h b/arch/loongarch/include/asm/irq.h
-index e1e9e04..fbd2bc9 100644
+index a444dc6..367aa44 100644
 --- a/arch/loongarch/include/asm/irq.h
 +++ b/arch/loongarch/include/asm/irq.h
-@@ -105,7 +105,7 @@ static inline void eiointc_enable(void)
+@@ -50,9 +50,11 @@ static inline bool on_irq_stack(int cpu, unsigned long sp)
  
- struct irq_domain *loongarch_cpu_irq_init(void);
+ struct acpi_vector_group {
+ 	int node;
++	int pci_segment;
+ 	struct irq_domain *parent;
+ };
+ extern struct acpi_vector_group pch_group[MAX_IO_PICS];
++extern struct acpi_vector_group msi_group[MAX_IO_PICS];
  
--struct irq_domain *liointc_acpi_init(struct irq_domain *parent,
-+int liointc_acpi_init(struct irq_domain *parent,
- 					struct acpi_madt_lio_pic *acpi_liointc);
- struct irq_domain *eiointc_acpi_init(struct irq_domain *parent,
- 					struct acpi_madt_eio_pic *acpi_eiointc);
-@@ -126,7 +126,7 @@ int pch_lpc_acpi_init(struct irq_domain *parent,
- extern struct acpi_madt_bio_pic *acpi_pchpic[MAX_IO_PICS];
+ #define CORES_PER_EIO_NODE	4
  
+@@ -112,9 +114,8 @@ struct irq_domain *htvec_acpi_init(struct irq_domain *parent,
+ 					struct acpi_madt_ht_pic *acpi_htvec);
+ int pch_lpc_acpi_init(struct irq_domain *parent,
+ 					struct acpi_madt_lpc_pic *acpi_pchlpc);
+-struct irq_domain *pch_msi_acpi_init(struct irq_domain *parent,
+-					struct acpi_madt_msi_pic *acpi_pchmsi);
+ int find_pch_pic(u32 gsi);
++struct fwnode_handle *get_pch_msi_handle(int pci_segment);
+ 
+ extern struct acpi_madt_lio_pic *acpi_liointc;
+ extern struct acpi_madt_eio_pic *acpi_eiointc[MAX_IO_PICS];
+@@ -127,7 +128,7 @@ struct irq_domain *pch_msi_acpi_init(struct irq_domain *parent,
  extern struct irq_domain *cpu_domain;
--extern struct irq_domain *liointc_domain;
-+extern struct fwnode_handle *liointc_handle;
+ extern struct irq_domain *liointc_domain;
  extern struct fwnode_handle *pch_lpc_handle;
- extern struct fwnode_handle *pch_msi_handle[MAX_IO_PICS];
+-extern struct irq_domain *pch_msi_domain[MAX_IO_PICS];
++extern struct fwnode_handle *pch_msi_handle[MAX_IO_PICS];
  extern struct fwnode_handle *pch_pic_handle[MAX_IO_PICS];
+ 
+ extern irqreturn_t loongson3_ipi_interrupt(int irq, void *dev);
 diff --git a/arch/loongarch/kernel/irq.c b/arch/loongarch/kernel/irq.c
-index 82bc6c7..5695826 100644
+index f2115be..82bc6c7 100644
 --- a/arch/loongarch/kernel/irq.c
 +++ b/arch/loongarch/kernel/irq.c
-@@ -26,7 +26,6 @@
- EXPORT_PER_CPU_SYMBOL(irq_stat);
+@@ -27,8 +27,8 @@
  
  struct irq_domain *cpu_domain;
--struct irq_domain *liointc_domain;
+ struct irq_domain *liointc_domain;
+-struct irq_domain *pch_msi_domain[MAX_IO_PICS];
  struct acpi_vector_group pch_group[MAX_IO_PICS];
- struct acpi_vector_group msi_group[MAX_IO_PICS];
++struct acpi_vector_group msi_group[MAX_IO_PICS];
  
-diff --git a/drivers/irqchip/irq-loongson-liointc.c b/drivers/irqchip/irq-loongson-liointc.c
-index 8d05d8b..f690155 100644
---- a/drivers/irqchip/irq-loongson-liointc.c
-+++ b/drivers/irqchip/irq-loongson-liointc.c
-@@ -23,7 +23,7 @@
- #endif
- 
- #define LIOINTC_CHIP_IRQ	32
--#define LIOINTC_NUM_PARENT 4
-+#define LIOINTC_NUM_PARENT	4
- #define LIOINTC_NUM_CORES	4
- 
- #define LIOINTC_INTC_CHIP_START	0x20
-@@ -51,6 +51,7 @@ struct liointc_handler_data {
- };
- 
- struct liointc_priv {
-+	struct fwnode_handle		*domain_handle;
- 	struct irq_chip_generic		*gc;
- 	struct liointc_handler_data	handler[LIOINTC_NUM_PARENT];
- 	void __iomem			*core_isr[LIOINTC_NUM_CORES];
-@@ -58,6 +59,8 @@ struct liointc_priv {
- 	bool				has_lpc_irq_errata;
- };
- 
-+struct fwnode_handle *liointc_handle;
-+
- static void liointc_chained_handle_irq(struct irq_desc *desc)
- {
- 	struct liointc_handler_data *handler = irq_desc_get_handler_data(desc);
-@@ -153,97 +156,83 @@ static void liointc_resume(struct irq_chip_generic *gc)
- 	irq_gc_unlock_irqrestore(gc, flags);
+ /*
+  * 'what should we do if we get a hw irq event on an illegal vector'.
+@@ -55,6 +55,33 @@ int arch_show_interrupts(struct seq_file *p, int prec)
+ 	return 0;
  }
  
--static const char * const parent_names[] = {"int0", "int1", "int2", "int3"};
--static const char * const core_reg_names[] = {"isr0", "isr1", "isr2", "isr3"};
-+static int parent_irq[LIOINTC_NUM_PARENT];
-+static u32 parent_int_map[LIOINTC_NUM_PARENT];
-+static const char *const parent_names[] = {"int0", "int1", "int2", "int3"};
-+static const char *const core_reg_names[] = {"isr0", "isr1", "isr2", "isr3"};
- 
--static void __iomem *liointc_get_reg_byname(struct device_node *node,
--						const char *name)
-+static int liointc_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
-+			     const u32 *intspec, unsigned int intsize,
-+			     unsigned long *out_hwirq, unsigned int *out_type)
- {
--	int index = of_property_match_string(node, "reg-names", name);
--
--	if (index < 0)
--		return NULL;
--
--	return of_iomap(node, index);
-+	if (WARN_ON(intsize < 1))
++static int early_pci_mcfg_parse(struct acpi_table_header *header)
++{
++	struct acpi_table_mcfg *mcfg;
++	struct acpi_mcfg_allocation *mptr;
++	int i, n;
++
++	if (header->length < sizeof(struct acpi_table_mcfg))
 +		return -EINVAL;
-+	*out_hwirq = intspec[0] - GSI_MIN_CPU_IRQ;
-+	*out_type = IRQ_TYPE_NONE;
++
++	n = (header->length - sizeof(struct acpi_table_mcfg)) /
++					sizeof(struct acpi_mcfg_allocation);
++	mcfg = (struct acpi_table_mcfg *)header;
++	mptr = (struct acpi_mcfg_allocation *) &mcfg[1];
++
++	for (i = 0; i < n; i++, mptr++) {
++		msi_group[i].pci_segment = mptr->pci_segment;
++		msi_group[i].node = (mptr->address >> 44) & 0xf;
++	}
++
 +	return 0;
++}
++
++void __init init_msi_parent_group(void)
++{
++	acpi_table_parse(ACPI_SIG_MCFG, early_pci_mcfg_parse);
++}
++
+ void __init init_IRQ(void)
+ {
+ 	int i;
+@@ -68,6 +95,7 @@ void __init init_IRQ(void)
+ 	clear_csr_ecfg(ECFG0_IM);
+ 	clear_csr_estat(ESTATF_IP);
+ 
++	init_msi_parent_group();
+ 	irqchip_init();
+ #ifdef CONFIG_SMP
+ 	ipi_irq = EXCCODE_IPI - EXCCODE_INT_START;
+diff --git a/drivers/irqchip/irq-loongson-pch-msi.c b/drivers/irqchip/irq-loongson-pch-msi.c
+index e3801c4..5db4a68 100644
+--- a/drivers/irqchip/irq-loongson-pch-msi.c
++++ b/drivers/irqchip/irq-loongson-pch-msi.c
+@@ -15,14 +15,30 @@
+ #include <linux/pci.h>
+ #include <linux/slab.h>
+ 
++static int nr_pics;
++
+ struct pch_msi_data {
+ 	struct mutex	msi_map_lock;
+ 	phys_addr_t	doorbell;
+ 	u32		irq_first;	/* The vector number that MSIs starts */
+ 	u32		num_irqs;	/* The number of vectors for MSIs */
+ 	unsigned long	*msi_map;
++	struct fwnode_handle *domain_handle;
+ };
+ 
++static struct pch_msi_data *pch_msi_priv[2];
++
++struct fwnode_handle *get_pch_msi_handle(int pci_segment)
++{
++	int i;
++
++	for (i = 0; i < MAX_IO_PICS; i++) {
++		if (msi_group[i].pci_segment == pci_segment)
++			return pch_msi_priv[i]->domain_handle;
++	}
++	return NULL;
++}
++
+ static void pch_msi_mask_msi_irq(struct irq_data *d)
+ {
+ 	pci_msi_mask_irq(d);
+@@ -154,12 +170,14 @@ static void pch_msi_middle_domain_free(struct irq_domain *domain,
+ };
+ 
+ static int pch_msi_init_domains(struct pch_msi_data *priv,
+-				struct device_node *node,
+-				struct irq_domain *parent)
++				struct irq_domain *parent,
++				struct fwnode_handle *domain_handle)
+ {
+ 	struct irq_domain *middle_domain, *msi_domain;
+ 
+-	middle_domain = irq_domain_create_linear(of_node_to_fwnode(node),
++	priv->domain_handle = domain_handle;
++
++	middle_domain = irq_domain_create_linear(priv->domain_handle,
+ 						priv->num_irqs,
+ 						&pch_msi_middle_domain_ops,
+ 						priv);
+@@ -171,7 +189,7 @@ static int pch_msi_init_domains(struct pch_msi_data *priv,
+ 	middle_domain->parent = parent;
+ 	irq_domain_update_bus_token(middle_domain, DOMAIN_BUS_NEXUS);
+ 
+-	msi_domain = pci_msi_create_irq_domain(of_node_to_fwnode(node),
++	msi_domain = pci_msi_create_irq_domain(priv->domain_handle,
+ 					       &pch_msi_domain_info,
+ 					       middle_domain);
+ 	if (!msi_domain) {
+@@ -183,19 +201,11 @@ static int pch_msi_init_domains(struct pch_msi_data *priv,
+ 	return 0;
  }
  
--static int __init liointc_of_init(struct device_node *node,
--				  struct device_node *parent)
-+const struct irq_domain_ops acpi_irq_gc_ops = {
-+	.map	= irq_map_generic_chip,
-+	.unmap  = irq_unmap_generic_chip,
-+	.xlate	= liointc_domain_xlate,
-+};
-+
-+static int liointc_init(phys_addr_t addr, unsigned long size, int revision,
-+		struct fwnode_handle *domain_handle, struct device_node *node)
+-static int pch_msi_init(struct device_node *node,
+-			    struct device_node *parent)
++static int pch_msi_init(phys_addr_t msg_address, int irq_base, int irq_count,
++			struct irq_domain *parent_domain, struct fwnode_handle *domain_handle)
  {
-+	int i, err;
-+	void __iomem *base;
-+	struct irq_chip_type *ct;
- 	struct irq_chip_generic *gc;
- 	struct irq_domain *domain;
--	struct irq_chip_type *ct;
- 	struct liointc_priv *priv;
--	void __iomem *base;
--	u32 of_parent_int_map[LIOINTC_NUM_PARENT];
--	int parent_irq[LIOINTC_NUM_PARENT];
--	bool have_parent = FALSE;
--	int sz, i, err = 0;
+-	struct pch_msi_data *priv;
+-	struct irq_domain *parent_domain;
+-	struct resource res;
+ 	int ret;
+-
+-	parent_domain = irq_find_host(parent);
+-	if (!parent_domain) {
+-		pr_err("Failed to find the parent domain\n");
+-		return -ENXIO;
+-	}
++	struct pch_msi_data *priv;
  
  	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
  	if (!priv)
- 		return -ENOMEM;
+@@ -203,48 +213,101 @@ static int pch_msi_init(struct device_node *node,
  
--	if (of_device_is_compatible(node, "loongson,liointc-2.0")) {
--		base = liointc_get_reg_byname(node, "main");
--		if (!base) {
--			err = -ENODEV;
--			goto out_free_priv;
--		}
-+	base = ioremap(addr, size);
-+	if (!base)
-+		goto out_free_priv;
+ 	mutex_init(&priv->msi_map_lock);
  
--		for (i = 0; i < LIOINTC_NUM_CORES; i++)
--			priv->core_isr[i] = liointc_get_reg_byname(node, core_reg_names[i]);
--		if (!priv->core_isr[0]) {
--			err = -ENODEV;
--			goto out_iounmap_base;
--		}
--	} else {
--		base = of_iomap(node, 0);
--		if (!base) {
--			err = -ENODEV;
--			goto out_free_priv;
--		}
-+	priv->domain_handle = domain_handle;
- 
--		for (i = 0; i < LIOINTC_NUM_CORES; i++)
--			priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS;
+-	ret = of_address_to_resource(node, 0, &res);
+-	if (ret) {
+-		pr_err("Failed to allocate resource\n");
+-		goto err_priv;
 -	}
-+	for (i = 0; i < LIOINTC_NUM_CORES; i++)
-+		priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS;
- 
--	for (i = 0; i < LIOINTC_NUM_PARENT; i++) {
--		parent_irq[i] = of_irq_get_byname(node, parent_names[i]);
--		if (parent_irq[i] > 0)
--			have_parent = TRUE;
+-
+-	priv->doorbell = res.start;
+-
+-	if (of_property_read_u32(node, "loongson,msi-base-vec",
+-				&priv->irq_first)) {
+-		pr_err("Unable to parse MSI vec base\n");
+-		ret = -EINVAL;
+-		goto err_priv;
 -	}
--	if (!have_parent) {
--		err = -ENODEV;
--		goto out_iounmap_isr;
+-
+-	if (of_property_read_u32(node, "loongson,msi-num-vecs",
+-				&priv->num_irqs)) {
+-		pr_err("Unable to parse MSI vec number\n");
+-		ret = -EINVAL;
+-		goto err_priv;
 -	}
-+	for (i = 0; i < LIOINTC_NUM_PARENT; i++)
-+		priv->handler[i].parent_int_map = parent_int_map[i];
++	priv->doorbell = msg_address;
++	priv->irq_first = irq_base;
++	priv->num_irqs = irq_count;
  
--	sz = of_property_read_variable_u32_array(node,
--						"loongson,parent_int_map",
--						&of_parent_int_map[0],
--						LIOINTC_NUM_PARENT,
--						LIOINTC_NUM_PARENT);
--	if (sz < 4) {
--		pr_err("loongson-liointc: No parent_int_map\n");
--		err = -ENODEV;
--		goto out_iounmap_isr;
+ 	priv->msi_map = bitmap_zalloc(priv->num_irqs, GFP_KERNEL);
+-	if (!priv->msi_map) {
+-		ret = -ENOMEM;
++	if (!priv->msi_map)
+ 		goto err_priv;
 -	}
-+#ifdef CONFIG_OF
-+	if (revision > 1) {
-+		for (i = 0; i < LIOINTC_NUM_CORES; i++) {
-+			int index = of_property_match_string(node,
-+					"reg-names", core_reg_names[i]);
  
--	for (i = 0; i < LIOINTC_NUM_PARENT; i++)
--		priv->handler[i].parent_int_map = of_parent_int_map[i];
-+			if (index < 0)
-+				return -EINVAL;
-+
-+			priv->core_isr[i] = of_iomap(node, index);
-+		}
-+	}
-+#endif
+ 	pr_debug("Registering %d MSIs, starting at %d\n",
+ 		 priv->num_irqs, priv->irq_first);
  
- 	/* Setup IRQ domain */
--	domain = irq_domain_add_linear(node, 32,
-+	if (!node)
-+		domain = irq_domain_create_linear(domain_handle, LIOINTC_CHIP_IRQ,
-+					&acpi_irq_gc_ops, priv);
-+	else
-+		domain = irq_domain_create_linear(domain_handle, LIOINTC_CHIP_IRQ,
- 					&irq_generic_chip_ops, priv);
- 	if (!domain) {
- 		pr_err("loongson-liointc: cannot add IRQ domain\n");
--		err = -EINVAL;
--		goto out_iounmap_isr;
-+		goto out_iounmap;
- 	}
+-	ret = pch_msi_init_domains(priv, node, parent_domain);
++	ret = pch_msi_init_domains(priv, parent_domain, domain_handle);
+ 	if (ret)
+ 		goto err_map;
  
--	err = irq_alloc_domain_generic_chips(domain, 32, 1,
--					node->full_name, handle_level_irq,
--					IRQ_NOPROBE, 0, 0);
-+	err = irq_alloc_domain_generic_chips(domain, LIOINTC_CHIP_IRQ, 1,
-+					(node ? node->full_name : "LIOINTC"),
-+					handle_level_irq, 0, IRQ_NOPROBE, 0);
- 	if (err) {
- 		pr_err("loongson-liointc: unable to register IRQ domain\n");
- 		goto out_free_domain;
-@@ -299,24 +288,112 @@ static int __init liointc_of_init(struct device_node *node,
- 				liointc_chained_handle_irq, &priv->handler[i]);
- 	}
- 
-+	liointc_handle = domain_handle;
++	pch_msi_priv[nr_pics++] = priv;
  	return 0;
  
- out_free_domain:
- 	irq_domain_remove(domain);
--out_iounmap_isr:
--	for (i = 0; i < LIOINTC_NUM_CORES; i++) {
--		if (!priv->core_isr[i])
--			continue;
--		iounmap(priv->core_isr[i]);
--	}
--out_iounmap_base:
-+out_iounmap:
- 	iounmap(base);
- out_free_priv:
+ err_map:
+ 	bitmap_free(priv->msi_map);
+ err_priv:
  	kfree(priv);
- 
--	return err;
-+	return -EINVAL;
-+}
+-	return ret;
 +
++	return -EINVAL;
+ }
+ 
+-IRQCHIP_DECLARE(pch_msi, "loongson,pch-msi-1.0", pch_msi_init);
 +#ifdef CONFIG_OF
 +
-+static int __init liointc_of_init(struct device_node *node,
-+				  struct device_node *parent)
++static int pch_msi_of_init(struct device_node *node, struct device_node *parent)
 +{
-+	bool have_parent = FALSE;
-+	int sz, i, index, revision, err = 0;
++	int err;
++	int irq_base, irq_count;
 +	struct resource res;
++	struct irq_domain *parent_domain;
 +
-+	if (!of_device_is_compatible(node, "loongson,liointc-2.0")) {
-+		index = 0;
-+		revision = 1;
-+	} else {
-+		index = of_property_match_string(node, "reg-names", "main");
-+		revision = 2;
++	parent_domain = irq_find_host(parent);
++	if (!parent_domain) {
++		pr_err("Failed to find the parent domain\n");
++		return -ENXIO;
 +	}
 +
-+	if (of_address_to_resource(node, index, &res))
++	if (of_address_to_resource(node, 0, &res)) {
++		pr_err("Failed to allocate resource\n");
 +		return -EINVAL;
-+
-+	for (i = 0; i < LIOINTC_NUM_PARENT; i++) {
-+		parent_irq[i] = of_irq_get_byname(node, parent_names[i]);
-+		if (parent_irq[i] > 0)
-+			have_parent = TRUE;
-+	}
-+	if (!have_parent)
-+		return -ENODEV;
-+
-+	sz = of_property_read_variable_u32_array(node,
-+						"loongson,parent_int_map",
-+						&parent_int_map[0],
-+						LIOINTC_NUM_PARENT,
-+						LIOINTC_NUM_PARENT);
-+	if (sz < 4) {
-+		pr_err("loongson-liointc: No parent_int_map\n");
-+		return -ENODEV;
 +	}
 +
-+	err = liointc_init(res.start, resource_size(&res),
-+			revision, of_node_to_fwnode(node), node);
++	if (of_property_read_u32(node, "loongson,msi-base-vec", &irq_base)) {
++		pr_err("Unable to parse MSI vec base\n");
++		return -EINVAL;
++	}
++
++	if (of_property_read_u32(node, "loongson,msi-num-vecs", &irq_count)) {
++		pr_err("Unable to parse MSI vec number\n");
++		return -EINVAL;
++	}
++
++	err = pch_msi_init(res.start, irq_base, irq_count, parent_domain, of_node_to_fwnode(node));
 +	if (err < 0)
 +		return err;
 +
 +	return 0;
- }
- 
- IRQCHIP_DECLARE(loongson_liointc_1_0, "loongson,liointc-1.0", liointc_of_init);
- IRQCHIP_DECLARE(loongson_liointc_1_0a, "loongson,liointc-1.0a", liointc_of_init);
- IRQCHIP_DECLARE(loongson_liointc_2_0, "loongson,liointc-2.0", liointc_of_init);
++}
++
++IRQCHIP_DECLARE(pch_msi, "loongson,pch-msi-1.0", pch_msi_of_init);
 +
 +#endif
 +
 +#ifdef CONFIG_ACPI
-+static int __init
-+htintc_parse_madt(union acpi_subtable_headers *header,
-+		       const unsigned long end)
++int __init pch_msi_init_irqdomain(struct irq_domain *parent,
++					struct acpi_madt_msi_pic *acpi_pchmsi)
 +{
-+	struct acpi_madt_ht_pic *htintc_entry = (struct acpi_madt_ht_pic *)header;
-+	struct irq_domain *parent = irq_find_matching_fwnode(liointc_handle, DOMAIN_BUS_ANY);
-+
-+	return htvec_acpi_init(parent, htintc_entry);
-+}
-+
-+static int __init acpi_cascade_irqdomain_init(void)
-+{
-+	acpi_table_parse_madt(ACPI_MADT_TYPE_HT_PIC,
-+			      htintc_parse_madt, 0);
-+	return 0;
-+}
-+int __init liointc_acpi_init(struct irq_domain *parent, struct acpi_madt_lio_pic *acpi_liointc)
-+{
-+	int ret;
 +	struct fwnode_handle *domain_handle;
 +
-+	if (!acpi_liointc)
++	if (!acpi_pchmsi)
 +		return -EINVAL;
 +
-+	parent_int_map[0] = acpi_liointc->cascade_map[0];
-+	parent_int_map[1] = acpi_liointc->cascade_map[1];
++	domain_handle = irq_domain_alloc_fwnode((phys_addr_t *)acpi_pchmsi);
 +
-+	parent_irq[0] = irq_create_mapping(parent, acpi_liointc->cascade[0]);
-+	parent_irq[1] = irq_create_mapping(parent, acpi_liointc->cascade[1]);
-+
-+	domain_handle = irq_domain_alloc_fwnode((phys_addr_t *)acpi_liointc);
-+	if (!domain_handle) {
-+		pr_err("Unable to allocate domain handle\n");
-+		return -ENOMEM;
-+	}
-+	ret = liointc_init(acpi_liointc->address, acpi_liointc->size,
-+			   1, domain_handle, NULL);
-+	if (ret == 0)
-+		acpi_cascade_irqdomain_init();
-+
-+	return ret;
++	return pch_msi_init(acpi_pchmsi->msg_address, acpi_pchmsi->start,
++				acpi_pchmsi->count, parent, domain_handle);
 +}
++static int __init msiintc_parse_madt(union acpi_subtable_headers *header,
++		       const unsigned long end)
++{
++	struct acpi_madt_msi_pic *pch_msi_entry = (struct acpi_madt_msi_pic *)header;
++
++	return pch_msi_init_irqdomain(msi_group[nr_pics].parent, pch_msi_entry);
++}
++
++static int __init pch_msi_acpi_init(void)
++{
++	acpi_table_parse_madt(ACPI_MADT_TYPE_MSI_PIC,
++			      msiintc_parse_madt, 0);
++
++	return 0;
++}
++early_initcall(pch_msi_acpi_init);
 +#endif
 -- 
 1.8.3.1
