@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF0CCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 313CAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235392AbiF0LcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
+        id S234949AbiF0LcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235555AbiF0Lbr (ORCPT
+        with ESMTP id S235569AbiF0Lbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:31:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C70010CD;
-        Mon, 27 Jun 2022 04:29:06 -0700 (PDT)
+        Mon, 27 Jun 2022 07:31:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C28F1106;
+        Mon, 27 Jun 2022 04:29:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0E90B8111B;
-        Mon, 27 Jun 2022 11:29:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE6E0C3411D;
-        Mon, 27 Jun 2022 11:29:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7988614EC;
+        Mon, 27 Jun 2022 11:29:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E34A8C341C8;
+        Mon, 27 Jun 2022 11:29:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329343;
-        bh=SpUk5xopBVEJbsXDCPPzUrXYRKodP1EeLbPsa/mnV5c=;
+        s=korg; t=1656329346;
+        bh=nNlTjBxA5nd4i3KBDtgYY2oKAdkO4zFbe5ZgGJlmHII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NAxAvQQc17HlJe5D1b1fxOQtfwrdnFzpCMxqCikoGmBCl8BGahtYbiowninu4ynjB
-         LW0sh99vFJsb52KYSjcWfVy77orzlaoDfoMLnaMjP03Nj+0V6r8hPypjAKbiYzu/fy
-         9Ozt6noYLDIu9UND0KKY/D9nkrOlDgN9kzxRaCPQ=
+        b=csFzvCv8uDz3d8GjQWpLmYy6tBD2lANdewHzkFYltAT2eEpo4WhAbGF7+QiJvHZ2E
+         26WoIw11QbI1lMM1xU6aSOpY7Wj1ajA/uEgT695aH3OOIpcSFi7Sh6lHa/ehqUBWgF
+         SacISkhqkWCvFofCP/5yitnlQmVgYB8pYo3lDCpE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 27/60] afs: Fix dynamic root getattr
-Date:   Mon, 27 Jun 2022 13:21:38 +0200
-Message-Id: <20220627111928.485967575@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.4 28/60] ice: ethtool: advertise 1000M speeds properly
+Date:   Mon, 27 Jun 2022 13:21:39 +0200
+Message-Id: <20220627111928.515000449@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111927.641837068@linuxfoundation.org>
 References: <20220627111927.641837068@linuxfoundation.org>
@@ -51,57 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
 
-[ Upstream commit cb78d1b5efffe4cf97e16766329dd7358aed3deb ]
+[ Upstream commit c3d184c83ff4b80167e34edfc3d21df424bf27ff ]
 
-The recent patch to make afs_getattr consult the server didn't account
-for the pseudo-inodes employed by the dynamic root-type afs superblock
-not having a volume or a server to access, and thus an oops occurs if
-such a directory is stat'd.
+In current implementation ice_update_phy_type enables all link modes
+for selected speed. This approach doesn't work for 1000M speeds,
+because both copper (1000baseT) and optical (1000baseX) standards
+cannot be enabled at once.
 
-Fix this by checking to see if the vnode->volume pointer actually points
-anywhere before following it in afs_getattr().
+Fix this, by adding the function `ice_set_phy_type_from_speed()`
+for 1000M speeds.
 
-This can be tested by stat'ing a directory in /afs.  It may be
-sufficient just to do "ls /afs" and the oops looks something like:
-
-        BUG: kernel NULL pointer dereference, address: 0000000000000020
-        ...
-        RIP: 0010:afs_getattr+0x8b/0x14b
-        ...
-        Call Trace:
-         <TASK>
-         vfs_statx+0x79/0xf5
-         vfs_fstatat+0x49/0x62
-
-Fixes: 2aeb8c86d499 ("afs: Fix afs_getattr() to refetch file status if callback break occurred")
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: https://lore.kernel.org/r/165408450783.1031787.7941404776393751186.stgit@warthog.procyon.org.uk/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 48cb27f2fd18 ("ice: Implement handlers for ethtool PHY/link operations")
+Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/inode.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 39 +++++++++++++++++++-
+ 1 file changed, 38 insertions(+), 1 deletion(-)
 
-diff --git a/fs/afs/inode.c b/fs/afs/inode.c
-index 90eac3ec01cb..622363af4c1b 100644
---- a/fs/afs/inode.c
-+++ b/fs/afs/inode.c
-@@ -739,7 +739,8 @@ int afs_getattr(const struct path *path, struct kstat *stat,
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index fc9ff985a62b..b297a3ca22fc 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -2337,6 +2337,42 @@ ice_setup_autoneg(struct ice_port_info *p, struct ethtool_link_ksettings *ks,
+ 	return err;
+ }
  
- 	_enter("{ ino=%lu v=%u }", inode->i_ino, inode->i_generation);
++/**
++ * ice_set_phy_type_from_speed - set phy_types based on speeds
++ * and advertised modes
++ * @ks: ethtool link ksettings struct
++ * @phy_type_low: pointer to the lower part of phy_type
++ * @phy_type_high: pointer to the higher part of phy_type
++ * @adv_link_speed: targeted link speeds bitmap
++ */
++static void
++ice_set_phy_type_from_speed(const struct ethtool_link_ksettings *ks,
++			    u64 *phy_type_low, u64 *phy_type_high,
++			    u16 adv_link_speed)
++{
++	/* Handle 1000M speed in a special way because ice_update_phy_type
++	 * enables all link modes, but having mixed copper and optical
++	 * standards is not supported.
++	 */
++	adv_link_speed &= ~ICE_AQ_LINK_SPEED_1000MB;
++
++	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
++						  1000baseT_Full))
++		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_T |
++				 ICE_PHY_TYPE_LOW_1G_SGMII;
++
++	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
++						  1000baseKX_Full))
++		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_KX;
++
++	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
++						  1000baseX_Full))
++		*phy_type_low |= ICE_PHY_TYPE_LOW_1000BASE_SX |
++				 ICE_PHY_TYPE_LOW_1000BASE_LX;
++
++	ice_update_phy_type(phy_type_low, phy_type_high, adv_link_speed);
++}
++
+ /**
+  * ice_set_link_ksettings - Set Speed and Duplex
+  * @netdev: network interface device structure
+@@ -2472,7 +2508,8 @@ ice_set_link_ksettings(struct net_device *netdev,
+ 		adv_link_speed = curr_link_speed;
  
--	if (!(query_flags & AT_STATX_DONT_SYNC) &&
-+	if (vnode->volume &&
-+	    !(query_flags & AT_STATX_DONT_SYNC) &&
- 	    !test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
- 		key = afs_request_key(vnode->volume->cell);
- 		if (IS_ERR(key))
+ 	/* Convert the advertise link speeds to their corresponded PHY_TYPE */
+-	ice_update_phy_type(&phy_type_low, &phy_type_high, adv_link_speed);
++	ice_set_phy_type_from_speed(ks, &phy_type_low, &phy_type_high,
++				    adv_link_speed);
+ 
+ 	if (!autoneg_changed && adv_link_speed == curr_link_speed) {
+ 		netdev_info(netdev, "Nothing changed, exiting without setting anything.\n");
 -- 
 2.35.1
 
