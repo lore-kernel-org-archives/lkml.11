@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C69C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F425C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:54:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238962AbiF0LyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
+        id S238731AbiF0Lwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238431AbiF0Ls0 (ORCPT
+        with ESMTP id S238402AbiF0LsY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A6DBE5;
-        Mon, 27 Jun 2022 04:41:28 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB125C19;
+        Mon, 27 Jun 2022 04:41:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6ED3C61150;
-        Mon, 27 Jun 2022 11:41:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7846BC3411D;
-        Mon, 27 Jun 2022 11:41:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8EE2CB81134;
+        Mon, 27 Jun 2022 11:41:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E437AC341C7;
+        Mon, 27 Jun 2022 11:41:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330086;
-        bh=4iS3yIV4a+2i40s0BOVe8M5NXjklo6bssC1oiYORHgU=;
+        s=korg; t=1656330069;
+        bh=FrKv/fYisOYImlCmHvguXRljYQWRRY7Ecyt+PcKsa6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bm/ChJPifYpwhtkBv/+7D+akcXHG1kp1H4lQWiswKg80AJ8J9gGHiTsPBUgIovg1P
-         qWK9qSLYYn/fVS42tYrVQj/5H/B4VKHiusf4EpZ9oPvGq0zNUWO29GsIEqXv8DhjXV
-         SPISBH2gyYZugqfiMQT6Z+hUO1BjKbwLR+Bma0lM=
+        b=y69VIK3g/2ygs0nuEPJgX5bo/Cbjnd01E8d9C8sRAt0lkgOlMjg5+56l5X4QTA0Ph
+         TTyTkW+epdCswgIZaNNFP7FjbGHzmz0JJRkInPgqzR3ZG9/PajxPHoAnazQmR7p41w
+         MaDzr55rzNDHlLA6DoaJBohM3RpJXzVNR0wGVEog=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Garver <eric@garver.life>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Riccardo Paolo Bestetti <pbl@bestov.io>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 078/181] netfilter: nf_dup_netdev: do not push mac header a second time
-Date:   Mon, 27 Jun 2022 13:20:51 +0200
-Message-Id: <20220627111946.823982964@linuxfoundation.org>
+Subject: [PATCH 5.18 073/181] ipv4: fix bind address validity regression tests
+Date:   Mon, 27 Jun 2022 13:20:46 +0200
+Message-Id: <20220627111946.681083536@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -50,73 +49,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Riccardo Paolo Bestetti <pbl@bestov.io>
 
-[ Upstream commit 574a5b85dc3b9ab672ff3fba0ee020f927960648 ]
+[ Upstream commit 313c502fa3b3494159cb8f18d4a6444d06c5c9a5 ]
 
-Eric reports skb_under_panic when using dup/fwd via bond+egress hook.
-Before pushing mac header, we should make sure that we're called from
-ingress to put back what was pulled earlier.
+Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
+introduces support for binding to nonlocal addresses, as well as some
+basic test coverage for some of the related cases.
 
-In egress case, the MAC header is already there; we should leave skb
-alone.
+Commit b4a028c4d031 ("ipv4: ping: fix bind address validity check")
+fixes a regression which incorrectly removed some checks for bind
+address validation. In addition, it introduces regression tests for
+those specific checks. However, those regression tests are defective, in
+that they perform the tests using an incorrect combination of bind
+flags. As a result, those tests fail when they should succeed.
 
-While at it be more careful here: skb might have been altered and
-headroom reduced, so add a skb_cow() before so that headroom is
-increased if necessary.
+This commit introduces additional regression tests for nonlocal binding
+and fixes the defective regression tests. It also introduces new
+set_sysctl calls for the ipv4_bind test group, as to perform the ICMP
+binding tests it is necessary to allow ICMP socket creation by setting
+the net.ipv4.ping_group_range knob.
 
-nf_do_netdev_egress() assumes skb ownership (it normally ends with
-a call to dev_queue_xmit), so we must free the packet on error.
-
-Fixes: f87b9464d152 ("netfilter: nft_fwd_netdev: Support egress hook")
-Reported-by: Eric Garver <eric@garver.life>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: b4a028c4d031 ("ipv4: ping: fix bind address validity check")
+Reported-by: Riccardo Paolo Bestetti <pbl@bestov.io>
+Signed-off-by: Riccardo Paolo Bestetti <pbl@bestov.io>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_dup_netdev.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ tools/testing/selftests/net/fcnal-test.sh | 36 +++++++++++++++++------
+ 1 file changed, 27 insertions(+), 9 deletions(-)
 
-diff --git a/net/netfilter/nf_dup_netdev.c b/net/netfilter/nf_dup_netdev.c
-index 7873bd1389c3..13b7f6a66086 100644
---- a/net/netfilter/nf_dup_netdev.c
-+++ b/net/netfilter/nf_dup_netdev.c
-@@ -13,10 +13,16 @@
- #include <net/netfilter/nf_tables_offload.h>
- #include <net/netfilter/nf_dup_netdev.h>
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 75223b63e3c8..03b586760164 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -1800,24 +1800,32 @@ ipv4_addr_bind_novrf()
+ 	done
  
--static void nf_do_netdev_egress(struct sk_buff *skb, struct net_device *dev)
-+static void nf_do_netdev_egress(struct sk_buff *skb, struct net_device *dev,
-+				enum nf_dev_hooks hook)
- {
--	if (skb_mac_header_was_set(skb))
-+	if (hook == NF_NETDEV_INGRESS && skb_mac_header_was_set(skb)) {
-+		if (skb_cow_head(skb, skb->mac_len)) {
-+			kfree_skb(skb);
-+			return;
-+		}
- 		skb_push(skb, skb->mac_len);
-+	}
+ 	#
+-	# raw socket with nonlocal bind
++	# tests for nonlocal bind
+ 	#
+ 	a=${NL_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${NSA_DEV} -b
+-	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after device bind"
++	run_cmd nettest -s -R -f -l ${a} -b
++	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address"
++
++	log_start
++	run_cmd nettest -s -f -l ${a} -b
++	log_test_addr ${a} $? 0 "TCP socket bind to nonlocal address"
++
++	log_start
++	run_cmd nettest -s -D -P icmp -f -l ${a} -b
++	log_test_addr ${a} $? 0 "ICMP socket bind to nonlocal address"
  
- 	skb->dev = dev;
- 	skb_clear_tstamp(skb);
-@@ -33,7 +39,7 @@ void nf_fwd_netdev_egress(const struct nft_pktinfo *pkt, int oif)
- 		return;
- 	}
+ 	#
+ 	# check that ICMP sockets cannot bind to broadcast and multicast addresses
+ 	#
+ 	a=${BCAST_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -l ${a} -b
++	run_cmd nettest -s -D -P icmp -l ${a} -b
+ 	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address"
  
--	nf_do_netdev_egress(pkt->skb, dev);
-+	nf_do_netdev_egress(pkt->skb, dev, nft_hook(pkt));
+ 	a=${MCAST_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -f -l ${a} -b
++	run_cmd nettest -s -D -P icmp -l ${a} -b
+ 	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address"
+ 
+ 	#
+@@ -1870,24 +1878,32 @@ ipv4_addr_bind_vrf()
+ 	log_test_addr ${a} $? 1 "Raw socket bind to out of scope address after VRF bind"
+ 
+ 	#
+-	# raw socket with nonlocal bind
++	# tests for nonlocal bind
+ 	#
+ 	a=${NL_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
++	run_cmd nettest -s -R -f -l ${a} -I ${VRF} -b
+ 	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after VRF bind"
+ 
++	log_start
++	run_cmd nettest -s -f -l ${a} -I ${VRF} -b
++	log_test_addr ${a} $? 0 "TCP socket bind to nonlocal address after VRF bind"
++
++	log_start
++	run_cmd nettest -s -D -P icmp -f -l ${a} -I ${VRF} -b
++	log_test_addr ${a} $? 0 "ICMP socket bind to nonlocal address after VRF bind"
++
+ 	#
+ 	# check that ICMP sockets cannot bind to broadcast and multicast addresses
+ 	#
+ 	a=${BCAST_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -l ${a} -I ${VRF} -b
++	run_cmd nettest -s -D -P icmp -l ${a} -I ${VRF} -b
+ 	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address after VRF bind"
+ 
+ 	a=${MCAST_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
++	run_cmd nettest -s -D -P icmp -l ${a} -I ${VRF} -b
+ 	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address after VRF bind"
+ 
+ 	#
+@@ -1922,10 +1938,12 @@ ipv4_addr_bind()
+ 
+ 	log_subsection "No VRF"
+ 	setup
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
+ 	ipv4_addr_bind_novrf
+ 
+ 	log_subsection "With VRF"
+ 	setup "yes"
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
+ 	ipv4_addr_bind_vrf
  }
- EXPORT_SYMBOL_GPL(nf_fwd_netdev_egress);
- 
-@@ -48,7 +54,7 @@ void nf_dup_netdev_egress(const struct nft_pktinfo *pkt, int oif)
- 
- 	skb = skb_clone(pkt->skb, GFP_ATOMIC);
- 	if (skb)
--		nf_do_netdev_egress(skb, dev);
-+		nf_do_netdev_egress(skb, dev, nft_hook(pkt));
- }
- EXPORT_SYMBOL_GPL(nf_dup_netdev_egress);
  
 -- 
 2.35.1
