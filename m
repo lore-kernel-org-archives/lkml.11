@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5463C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:55:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA15C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239275AbiF0Lzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
+        id S238800AbiF0Lz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235058AbiF0Lst (ORCPT
+        with ESMTP id S237522AbiF0Lsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6608CE24;
-        Mon, 27 Jun 2022 04:42:43 -0700 (PDT)
+        Mon, 27 Jun 2022 07:48:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDFE6D101;
+        Mon, 27 Jun 2022 04:42:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 427F061150;
-        Mon, 27 Jun 2022 11:42:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19040C3411D;
-        Mon, 27 Jun 2022 11:42:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B54CB80DFB;
+        Mon, 27 Jun 2022 11:42:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AD51C3411D;
+        Mon, 27 Jun 2022 11:42:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330162;
-        bh=0RKTv9fuvUiLZVQytPZUbFdJe6SPlFWii9zeU+xcIr4=;
+        s=korg; t=1656330165;
+        bh=y9i6OcD3+jttfol87JifqvXY8ddQ2O+EJsT5yNM2FLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0eIOhIxI2eGczTApe9sKE2hgzhLZOrjRiBTrshWHEyQOfO+uC16me2Hrjtv+FWr+M
-         n8YkwQ9Ub6CMz5SceCKpI0v23sqktSkaZqA0mNNKXSPJHCfS2dgTOjO9HHhtmVqcv/
-         km/EoEaFreMvxT3t5bDLeWqCwUguT0K7yQKDxXG0=
+        b=WufM1Qbk6fb+iMnwDko1j8ScAf15e5hd1ZCGXz3ZyMTUyJ4KhgGehB5xxfMmKQWDn
+         3Dupv9j3Y9Nbpcyjgj8XknzKelCU3ez/e4E8CdNZ3qVl3AijNcgjWMdSCtU6GOMLpR
+         3aNeef+r7ar13nMGtykdPuQZwUNLokBoFE0Fyphg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Michal Simek <michal.simek@amd.com>,
+        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
+        Haibo Chen <haibo.chen@nxp.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 106/181] iio: adc: xilinx-ams: fix return error variable
-Date:   Mon, 27 Jun 2022 13:21:19 +0200
-Message-Id: <20220627111947.773092324@linuxfoundation.org>
+Subject: [PATCH 5.18 107/181] iio: adc: vf610: fix conversion mode sysfs node name
+Date:   Mon, 27 Jun 2022 13:21:20 +0200
+Message-Id: <20220627111947.801393935@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 References: <20220627111944.553492442@linuxfoundation.org>
@@ -51,35 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit f8ef475aa069cd72e9e7bdb2d60dc6a89e2bafad ]
+[ Upstream commit f1a633b15cd5371a2a83f02c513984e51132dd68 ]
 
-Return irq instead of ret which always equals to zero here.
+The documentation missed the "in_" prefix for this IIO_SHARED_BY_DIR
+entry.
 
-Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Michal Simek <michal.simek@amd.com>
+Fixes: bf04c1a367e3 ("iio: adc: vf610: implement configurable conversion modes")
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Acked-by: Haibo Chen <haibo.chen@nxp.com>
+Link: https://lore.kernel.org/r/560dc93fafe5ef7e9a409885fd20b6beac3973d8.1653900626.git.baruch@tkos.co.il
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/xilinx-ams.c | 2 +-
+ Documentation/ABI/testing/sysfs-bus-iio-vf610 | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
-index a55396c1f8b2..a7687706012d 100644
---- a/drivers/iio/adc/xilinx-ams.c
-+++ b/drivers/iio/adc/xilinx-ams.c
-@@ -1409,7 +1409,7 @@ static int ams_probe(struct platform_device *pdev)
- 
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0)
--		return ret;
-+		return irq;
- 
- 	ret = devm_request_irq(&pdev->dev, irq, &ams_irq, 0, "ams-irq",
- 			       indio_dev);
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610 b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+index 308a6756d3bf..491ead804488 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-vf610
++++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+@@ -1,4 +1,4 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/conversion_mode
++What:		/sys/bus/iio/devices/iio:deviceX/in_conversion_mode
+ KernelVersion:	4.2
+ Contact:	linux-iio@vger.kernel.org
+ Description:
 -- 
 2.35.1
 
