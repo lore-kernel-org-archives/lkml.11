@@ -2,119 +2,348 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A772C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:50:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9408C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:50:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238220AbiF0Lug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45234 "EHLO
+        id S238232AbiF0Lui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238242AbiF0LsK (ORCPT
+        with ESMTP id S238260AbiF0LsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:48:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F02BCB3;
-        Mon, 27 Jun 2022 04:40:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1F0761189;
-        Mon, 27 Jun 2022 11:40:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD900C341CB;
-        Mon, 27 Jun 2022 11:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656330007;
-        bh=bvE7pUXu9UZetb17AyI0bAhjaGK3GCkKQJQrvyIq5Dg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xu5dEthc0MNdykgUbwuw9QGo1c/tDn+oMEgnTUc6gHXZY3A2QiiFPQvLq4g3qr28P
-         57DjSXyzSuDW3gdTmfzebyIoXjuOLBiBbWlJeyEdIVzqbxZeA8Bh7YMwRqr9o47Frv
-         HISM72uy5a9w9SqTFWutje0LC+eJ+eOTOODkMXWQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
-        Ron Economos <re@w6rz.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 002/181] random: quiet urandom warning ratelimit suppression message
-Date:   Mon, 27 Jun 2022 13:19:35 +0200
-Message-Id: <20220627111944.629481911@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
-References: <20220627111944.553492442@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 27 Jun 2022 07:48:11 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E85C3F585
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 04:40:10 -0700 (PDT)
+Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx39kNl7liP_FfAA--.6156S7;
+        Mon, 27 Jun 2022 19:40:02 +0800 (CST)
+From:   Jianmin Lv <lvjianmin@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V13 05/13] irqchip: Add Loongson PCH LPC controller support
+Date:   Mon, 27 Jun 2022 19:39:49 +0800
+Message-Id: <1656329997-20524-6-git-send-email-lvjianmin@loongson.cn>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
+References: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
+X-CM-TRANSID: AQAAf9Dx39kNl7liP_FfAA--.6156S7
+X-Coremail-Antispam: 1UD129KBjvJXoW3JFW8Ww4xuF1kCF1UGry3urg_yoWfAw1fpF
+        W3Z3y7Xr4UXF4jqr1kCa1UZrW3J3s3Kayjkan3Ga43Jr9rZryvkF1vvFnruFs8AF43KFWa
+        vF45tFy8uF1UA3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkE1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCF
+        04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
+        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1l
+        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxV
+        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j
+        6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHU
+        DUUUUU=
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Huacai Chen <chenhuacai@loongson.cn>
 
-commit c01d4d0a82b71857be7449380338bc53dde2da92 upstream.
+PCH-LPC stands for "LPC Interrupts" that described in Section 24.3 of
+"Loongson 7A1000 Bridge User Manual". For more information please refer
+Documentation/loongarch/irq-chip-model.rst.
 
-random.c ratelimits how much it warns about uninitialized urandom reads
-using __ratelimit(). When the RNG is finally initialized, it prints the
-number of missed messages due to ratelimiting.
-
-It has been this way since that functionality was introduced back in
-2018. Recently, cc1e127bfa95 ("random: remove ratelimiting for in-kernel
-unseeded randomness") put a bit more stress on the urandom ratelimiting,
-which teased out a bug in the implementation.
-
-Specifically, when under pressure, __ratelimit() will print its own
-message and reset the count back to 0, making the final message at the
-end less useful. Secondly, it does so as a pr_warn(), which apparently
-is undesirable for people's CI.
-
-Fortunately, __ratelimit() has the RATELIMIT_MSG_ON_RELEASE flag exactly
-for this purpose, so we set the flag.
-
-Fixes: 4e00b339e264 ("random: rate limit unseeded randomness warnings")
-Cc: stable@vger.kernel.org
-Reported-by: Jon Hunter <jonathanh@nvidia.com>
-Reported-by: Ron Economos <re@w6rz.net>
-Tested-by: Ron Economos <re@w6rz.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Co-developed-by: Jianmin Lv <lvjianmin@loongson.cn>
+Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
 ---
- drivers/char/random.c           |    2 +-
- include/linux/ratelimit_types.h |   12 ++++++++----
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ arch/loongarch/include/asm/irq.h       |   4 +-
+ arch/loongarch/kernel/irq.c            |   1 -
+ drivers/irqchip/Kconfig                |   8 ++
+ drivers/irqchip/Makefile               |   1 +
+ drivers/irqchip/irq-loongson-pch-lpc.c | 203 +++++++++++++++++++++++++++++++++
+ 5 files changed, 214 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/irqchip/irq-loongson-pch-lpc.c
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -87,7 +87,7 @@ static RAW_NOTIFIER_HEAD(random_ready_ch
+diff --git a/arch/loongarch/include/asm/irq.h b/arch/loongarch/include/asm/irq.h
+index ace3ea6..48c0ce4 100644
+--- a/arch/loongarch/include/asm/irq.h
++++ b/arch/loongarch/include/asm/irq.h
+@@ -104,7 +104,7 @@ struct irq_domain *eiointc_acpi_init(struct irq_domain *parent,
  
- /* Control how we warn userspace. */
- static struct ratelimit_state urandom_warning =
--	RATELIMIT_STATE_INIT("warn_urandom_randomness", HZ, 3);
-+	RATELIMIT_STATE_INIT_FLAGS("urandom_warning", HZ, 3, RATELIMIT_MSG_ON_RELEASE);
- static int ratelimit_disable __read_mostly =
- 	IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM);
- module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
---- a/include/linux/ratelimit_types.h
-+++ b/include/linux/ratelimit_types.h
-@@ -23,12 +23,16 @@ struct ratelimit_state {
- 	unsigned long	flags;
- };
+ struct irq_domain *htvec_acpi_init(struct irq_domain *parent,
+ 					struct acpi_madt_ht_pic *acpi_htvec);
+-struct irq_domain *pch_lpc_acpi_init(struct irq_domain *parent,
++int pch_lpc_acpi_init(struct irq_domain *parent,
+ 					struct acpi_madt_lpc_pic *acpi_pchlpc);
+ struct irq_domain *pch_msi_acpi_init(struct irq_domain *parent,
+ 					struct acpi_madt_msi_pic *acpi_pchmsi);
+@@ -121,7 +121,7 @@ struct irq_domain *pch_pic_acpi_init(struct irq_domain *parent,
  
--#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) {		\
--		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),	\
--		.interval	= interval_init,			\
--		.burst		= burst_init,				\
-+#define RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, flags_init) { \
-+		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),		  \
-+		.interval	= interval_init,				  \
-+		.burst		= burst_init,					  \
-+		.flags		= flags_init,					  \
- 	}
+ extern struct irq_domain *cpu_domain;
+ extern struct irq_domain *liointc_domain;
+-extern struct irq_domain *pch_lpc_domain;
++extern struct fwnode_handle *pch_lpc_handle;
+ extern struct irq_domain *pch_msi_domain[MAX_IO_PICS];
+ extern struct irq_domain *pch_pic_domain[MAX_IO_PICS];
  
-+#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) \
-+	RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, 0)
+diff --git a/arch/loongarch/kernel/irq.c b/arch/loongarch/kernel/irq.c
+index b34b8d7..07d6059 100644
+--- a/arch/loongarch/kernel/irq.c
++++ b/arch/loongarch/kernel/irq.c
+@@ -27,7 +27,6 @@
+ 
+ struct irq_domain *cpu_domain;
+ struct irq_domain *liointc_domain;
+-struct irq_domain *pch_lpc_domain;
+ struct irq_domain *pch_msi_domain[MAX_IO_PICS];
+ struct irq_domain *pch_pic_domain[MAX_IO_PICS];
+ 
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 1f23a6b..c1d527f 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -591,6 +591,14 @@ config LOONGSON_PCH_MSI
+ 	help
+ 	  Support for the Loongson PCH MSI Controller.
+ 
++config LOONGSON_PCH_LPC
++	bool "Loongson PCH LPC Controller"
++	depends on MACH_LOONGSON64
++	default (MACH_LOONGSON64 && LOONGARCH)
++	select IRQ_DOMAIN_HIERARCHY
++	help
++	  Support for the Loongson PCH LPC Controller.
 +
- #define RATELIMIT_STATE_INIT_DISABLED					\
- 	RATELIMIT_STATE_INIT(ratelimit_state, 0, DEFAULT_RATELIMIT_BURST)
- 
-
+ config MST_IRQ
+ 	bool "MStar Interrupt Controller"
+ 	depends on ARCH_MEDIATEK || ARCH_MSTARV7 || COMPILE_TEST
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index 5b67450..242b8b3 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -108,6 +108,7 @@ obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
+ obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
+ obj-$(CONFIG_LOONGSON_PCH_PIC)		+= irq-loongson-pch-pic.o
+ obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
++obj-$(CONFIG_LOONGSON_PCH_LPC)		+= irq-loongson-pch-lpc.o
+ obj-$(CONFIG_MST_IRQ)			+= irq-mst-intc.o
+ obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
+ obj-$(CONFIG_MACH_REALTEK_RTL)		+= irq-realtek-rtl.o
+diff --git a/drivers/irqchip/irq-loongson-pch-lpc.c b/drivers/irqchip/irq-loongson-pch-lpc.c
+new file mode 100644
+index 0000000..7e4d89a
+--- /dev/null
++++ b/drivers/irqchip/irq-loongson-pch-lpc.c
+@@ -0,0 +1,203 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Loongson LPC Interrupt Controller support
++ *
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++
++#define pr_fmt(fmt) "lpc: " fmt
++
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/irqchip.h>
++#include <linux/irqchip/chained_irq.h>
++#include <linux/irqdomain.h>
++#include <linux/kernel.h>
++
++/* Registers */
++#define LPC_INT_CTL		0x00
++#define LPC_INT_ENA		0x04
++#define LPC_INT_STS		0x08
++#define LPC_INT_CLR		0x0c
++#define LPC_INT_POL		0x10
++#define LPC_COUNT		16
++
++struct pch_lpc {
++	void __iomem		*base;
++	struct irq_domain	*lpc_domain;
++	raw_spinlock_t		lpc_lock;
++	u32			saved_reg_ctl;
++	u32			saved_reg_ena;
++	u32			saved_reg_pol;
++};
++
++struct fwnode_handle *pch_lpc_handle;
++
++static void ack_lpc_irq(struct irq_data *d)
++{
++	unsigned long flags;
++	struct pch_lpc *priv = d->domain->host_data;
++
++	raw_spin_lock_irqsave(&priv->lpc_lock, flags);
++	writel(0x1 << d->hwirq, priv->base + LPC_INT_CLR);
++	raw_spin_unlock_irqrestore(&priv->lpc_lock, flags);
++}
++static void mask_lpc_irq(struct irq_data *d)
++{
++	unsigned long flags;
++	struct pch_lpc *priv = d->domain->host_data;
++
++	raw_spin_lock_irqsave(&priv->lpc_lock, flags);
++	writel(readl(priv->base + LPC_INT_ENA) & (~(0x1 << (d->hwirq))),
++			priv->base + LPC_INT_ENA);
++	raw_spin_unlock_irqrestore(&priv->lpc_lock, flags);
++}
++
++static void unmask_lpc_irq(struct irq_data *d)
++{
++	unsigned long flags;
++	struct pch_lpc *priv = d->domain->host_data;
++
++	raw_spin_lock_irqsave(&priv->lpc_lock, flags);
++	writel(readl(priv->base + LPC_INT_ENA) | (0x1 << (d->hwirq)),
++			priv->base + LPC_INT_ENA);
++	raw_spin_unlock_irqrestore(&priv->lpc_lock, flags);
++}
++
++static int lpc_set_type(struct irq_data *d, unsigned int type)
++{
++	u32 val;
++	u32 mask = 0x1 << (d->hwirq);
++	struct pch_lpc *priv = d->domain->host_data;
++
++	if (!(type & IRQ_TYPE_LEVEL_MASK))
++		return 0;
++
++	val = readl(priv->base + LPC_INT_POL);
++
++	if (type == IRQ_TYPE_LEVEL_HIGH)
++		val |= mask;
++	else
++		val &= ~mask;
++
++	writel(val, priv->base + LPC_INT_POL);
++
++	return 0;
++}
++
++static struct irq_chip pch_lpc_irq_chip = {
++	.name			= "PCH LPC",
++	.irq_mask		= mask_lpc_irq,
++	.irq_unmask		= unmask_lpc_irq,
++	.irq_ack		= ack_lpc_irq,
++	.irq_set_type		= lpc_set_type,
++	.flags			= IRQCHIP_SKIP_SET_WAKE,
++};
++
++static void lpc_irq_dispatch(struct irq_desc *desc)
++{
++	u32 pending, bit, virq;
++	struct irq_chip *chip = irq_desc_get_chip(desc);
++	struct pch_lpc *priv = irq_desc_get_handler_data(desc);
++
++	chained_irq_enter(chip, desc);
++
++	pending = readl(priv->base + LPC_INT_ENA);
++	pending &= readl(priv->base + LPC_INT_STS);
++	if (!pending)
++		spurious_interrupt();
++
++	while (pending) {
++		bit = __ffs(pending);
++		virq = irq_linear_revmap(priv->lpc_domain, bit);
++
++		generic_handle_irq(bit);
++		pending &= ~BIT(bit);
++	}
++	chained_irq_exit(chip, desc);
++}
++
++static int pch_lpc_map(struct irq_domain *d, unsigned int irq,
++			irq_hw_number_t hw)
++{
++	irq_set_chip_and_handler(irq, &pch_lpc_irq_chip, handle_level_irq);
++	return 0;
++}
++
++static const struct irq_domain_ops pch_lpc_domain_ops = {
++	.map 		= pch_lpc_map,
++	.translate	= irq_domain_translate_twocell,
++};
++
++static void pch_lpc_reset(struct pch_lpc *priv)
++{
++	/* Enable the LPC interrupt, bit31: en  bit30: edge */
++	writel(0x80000000, priv->base + LPC_INT_CTL);
++	writel(0, priv->base + LPC_INT_ENA);
++	/* Clear all 18-bit interrpt bit */
++	writel(0x3ffff, priv->base + LPC_INT_CLR);
++}
++
++static int pch_lpc_disabled(struct pch_lpc *priv)
++{
++	return (readl(priv->base + LPC_INT_ENA) == 0xffffffff) &&
++			(readl(priv->base + LPC_INT_STS) == 0xffffffff);
++}
++
++int __init pch_lpc_acpi_init(struct irq_domain *parent,
++					struct acpi_madt_lpc_pic *acpi_pchlpc)
++{
++	int parent_irq;
++	struct pch_lpc *priv;
++	struct irq_fwspec fwspec;
++	struct fwnode_handle *irq_handle;
++
++	if (!acpi_pchlpc)
++		return -EINVAL;
++
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	raw_spin_lock_init(&priv->lpc_lock);
++
++	priv->base = ioremap(acpi_pchlpc->address, acpi_pchlpc->size);
++	if (!priv->base)
++		goto free_priv;
++
++	if (pch_lpc_disabled(priv)) {
++		pr_err("Failed to get LPC status\n");
++		goto iounmap_base;
++	}
++
++	irq_handle = irq_domain_alloc_named_fwnode("lpcintc");
++	if (!irq_handle) {
++		pr_err("Unable to allocate domain handle\n");
++		goto iounmap_base;
++	}
++
++	priv->lpc_domain = irq_domain_create_linear(irq_handle, LPC_COUNT,
++					&pch_lpc_domain_ops, priv);
++	if (!priv->lpc_domain) {
++		pr_err("Failed to create IRQ domain\n");
++		goto iounmap_base;
++	}
++	pch_lpc_reset(priv);
++
++	fwspec.fwnode = parent->fwnode;
++	fwspec.param[0] = acpi_pchlpc->cascade;
++	fwspec.param[1] = IRQ_TYPE_LEVEL_HIGH;
++	fwspec.param_count = 2;
++	parent_irq = irq_create_fwspec_mapping(&fwspec);
++	irq_set_chained_handler_and_data(parent_irq, lpc_irq_dispatch, priv);
++
++	pch_lpc_handle = irq_handle;
++	return 0;
++
++iounmap_base:
++	iounmap(priv->base);
++free_priv:
++	kfree(priv);
++
++	return -ENOMEM;
++}
+-- 
+1.8.3.1
 
