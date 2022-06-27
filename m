@@ -2,253 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51216C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:12:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FEA7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 16:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239036AbiF0QMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 12:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
+        id S239060AbiF0QNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 12:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238999AbiF0QME (ORCPT
+        with ESMTP id S239062AbiF0QNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 12:12:04 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDD8140D2
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:11:59 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id x138so6782826pfc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:11:59 -0700 (PDT)
+        Mon, 27 Jun 2022 12:13:07 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64331186E5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:13:06 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id v14so13772568wra.5
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 09:13:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QSB6tq8B5cwtKotfoR7RizrMhJVAHRxsw0c1BjDvvhU=;
-        b=i1hJ5DeEmoJYw2l4WQ8n43hSRbva2Sb4StNNmtaZWKUsIcFH7+qAbQMp95fEXhcdKL
-         y2QDy7UFUTWaaRaWuHHxxG0zmJfziSuXNLxsdvh0W+P981Pk6b+yEhvfsZqUOsbB2wmF
-         dgXa+OntMLCe3PgtwnD3GwuXDHmFyJeinJwad8oDdW48lXs2TC45pgkyaYLSAHUfCMrK
-         WpDDRsewu0tHaECxeW7/Z9fsfCnMdh6aai60ucHX/wo3FpVMfdY+BdOycO6Ih8eZZXlW
-         xMa0RGitHiz1KRfr/pQKku02BnSNVWiAtnZigz55uWUaLzYOEnTdqly3qcaQUxhBryBu
-         44Ag==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a1MrvTqvIfFE1DLoz9CdoV+in2eBMF3sxgIBKiM8yW0=;
+        b=X0jT9IRbNuMsEB2h6kzvXBPWXj3PZPi9jw4O/kxTUHEEbnWqpIwWAXp/uzrWWwJokF
+         1a+xWXnWj9BpwJVTioz9vlBTfgCV0OaZa3A4mB3OkYIoTiA3gq1D+/3Ls1XMbx8qqxh+
+         sCBPnzXK840axQpy5puDpRQwb9A76eWEFs2gx50Ij9UNxcaxF4S9/UCLB/Fg/4q5q5Fu
+         wzGtafHvH3ij0sF6lVpY5pkOBNjMacJFbwSe2ciodINrT3FBQE50fJYOU++k1a6NQrMf
+         C81ozLGk5IP1/Km49RYUB2+zLRdF8KYwHATagfovqaL5s3h0zMS3NJ/0y3/ESYczS8iR
+         MyCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QSB6tq8B5cwtKotfoR7RizrMhJVAHRxsw0c1BjDvvhU=;
-        b=HE5nJtICSGRiZz3gjYtnqEkV94twcqWWNOdATtKnG2Tp2f7+DehF27i41EWb2Hcq22
-         Pit3vIQX4SzPCGzteblFB4HUIKW3WaWlWl1ovYoc+thisiJRcVC14M0M33M7i7sOawUZ
-         D0UVc+yGBS7FJ4ytT6QCIv2FDQbp0xoNG6Igejj4W0SHK0N+sZTOqd2/CXuNyuLkzFvo
-         OcSlgjSybX8J2LbFfmP6f4agL8f6PCbvQ578fUtZK5aMEO0RDvuzXbpRBfKd31DmAZG9
-         Gq7dNiso8M3Nn2j2NdF3KFzpy2F9QUYz30ZGfr2b2MzIoZ44ZnHo3FcphNYW96iIvkAx
-         bcwA==
-X-Gm-Message-State: AJIora/J2/HqRlpYJgSHhyX/cT5NZWuv4XEUq5SC5taIh/VCZm+Hf2ss
-        B7APwZJRyY7/Tn9kwOdG9uu2BlxZxxpB+A==
-X-Google-Smtp-Source: AGRyM1s/pLm96R1iZU+IkUHBDnPQBfn+/TP68BwerIAfBOBnIss7A/K8cEUKr+Vra3JLYWh1gB6zSw==
-X-Received: by 2002:a63:8f13:0:b0:40c:f042:13a8 with SMTP id n19-20020a638f13000000b0040cf04213a8mr13708678pgd.619.1656346318584;
-        Mon, 27 Jun 2022 09:11:58 -0700 (PDT)
-Received: from google.com (55.212.185.35.bc.googleusercontent.com. [35.185.212.55])
-        by smtp.gmail.com with ESMTPSA id q11-20020a170902dacb00b001635b86a790sm7568586plx.44.2022.06.27.09.11.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a1MrvTqvIfFE1DLoz9CdoV+in2eBMF3sxgIBKiM8yW0=;
+        b=MsXTjuUPw3eB9Z/f0xbBqPBcvyG6zpH0k7Z2yESl5fTowd+t1rrCid2HdUxniNKtYA
+         C68+sYsjiHBCJRZmrKiHUo3SuQpn3/lckBjGQyiYEE1dN1D6kNNRc3J1Qwr8oCpYvjKP
+         JlefHy9O0I8n8R0m8XxNKNQ7pr3hzDaSGtA7g1HcUsGk16uOBPexiI0lOpJS5nawslHv
+         WrKtxPpTMCPP3cbPrvPzFApDYgvg0X8l5JlHiFBziHUotYhh+CCLfkROxDJP00wMqcBv
+         Nc7RZ2saI/OWgN0/qKqChyj3cP9am/Hf/Z5C9E1RyTD3334/W/s5eHGp8gtFehFytsnp
+         SpGA==
+X-Gm-Message-State: AJIora8qZqRHAx3hCMUPRy/B8cC8Lb2oXZKGXHqe+15b5RMiXjRkpdEL
+        o0GHsQm8KStWcg+AdJANaCg=
+X-Google-Smtp-Source: AGRyM1tsz/6f8R32H0yygTzWN6cFTNY3UxpMEIk0ImSTAxspk5+RlVigYHyWlWlVC6VPVcTLxE1oSQ==
+X-Received: by 2002:a5d:6c6b:0:b0:1ea:77ea:dde8 with SMTP id r11-20020a5d6c6b000000b001ea77eadde8mr13474056wrz.690.1656346384844;
+        Mon, 27 Jun 2022 09:13:04 -0700 (PDT)
+Received: from localhost.localdomain ([94.73.36.128])
+        by smtp.gmail.com with ESMTPSA id c7-20020adffb47000000b0021b9504cc83sm10883600wrs.31.2022.06.27.09.13.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 09:11:57 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 09:11:54 -0700
-From:   Zach O'Keefe <zokeefe@google.com>
-To:     Yang Shi <shy828301@gmail.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        syzbot <syzbot+4d875b4d2e2b60bae9b4@syzkaller.appspotmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: [syzbot] KASAN: null-ptr-deref Read in hugepage_vma_check
-Message-ID: <YrnWykdEI4N1ONMx@google.com>
-References: <0000000000003189f305e19f5d3e@google.com>
- <20220617165256.b5b9b257b30bc1dbb21fc8c6@linux-foundation.org>
- <Yq0Y0B1XGNIbCveO@casper.infradead.org>
- <CAHbLzkofHiQiRU3QBmK3Tr9xozSt1EFtT4hCLh5w_Mcspm35Hg@mail.gmail.com>
+        Mon, 27 Jun 2022 09:13:04 -0700 (PDT)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     javierm@redhat.com
+Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
+        mripard@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        maarten.lankhorst@linux.intel.com, jani.nikula@linux.intel.com,
+        maira.canal@usp.br, isabbasso@riseup.net, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, dri-devel@lists.freedesktop.org,
+        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH 0/4] KUnit tests for RGB565 conversion
+Date:   Mon, 27 Jun 2022 18:11:28 +0200
+Message-Id: <20220627161132.33256-1-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHbLzkofHiQiRU3QBmK3Tr9xozSt1EFtT4hCLh5w_Mcspm35Hg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17 Jun 17:33, Yang Shi wrote:
-> On Fri, Jun 17, 2022 at 5:14 PM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Fri, Jun 17, 2022 at 04:52:56PM -0700, Andrew Morton wrote:
-> > > On Fri, 17 Jun 2022 00:04:23 -0700 syzbot <syzbot+4d875b4d2e2b60bae9b4@syzkaller.appspotmail.com> wrote:
-> > >
-> > > > Hello,
-> > > >
-> > > > syzbot found the following issue on:
-> > > >
-> > > > HEAD commit:    c6d7e3b385f1 Add linux-next specific files for 20220616
-> > > > git tree:       linux-next
-> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=10d9fb1bf00000
-> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=9d495405e4a98620
-> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=4d875b4d2e2b60bae9b4
-> > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > >
-> > > > Unfortunately, I don't have any reproducer for this issue yet.
-> > > >
-> > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > > Reported-by: syzbot+4d875b4d2e2b60bae9b4@syzkaller.appspotmail.com
-> > > >
-> > > > ==================================================================
-> > > > BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:71 [inline]
-> > > > BUG: KASAN: null-ptr-deref in test_bit include/asm-generic/bitops/instrumented-non-atomic.h:134 [inline]
-> > > > BUG: KASAN: null-ptr-deref in hugepage_vma_check+0x8e/0x750 mm/huge_memory.c:82
-> > > > Read of size 8 at addr 00000000000005a8 by task syz-executor.5/21978
-> > >
-> > > vma->vm_mm is NULL in show_smap->hugepage_vma_check().
-> > >
-> > > Perhaps m_start() should be checking the mm after taking
-> > > mmap_read_lock() instead of before?
-> > >
-> > > Matthew, you mucked with it last ;) Can you please take a look?
-> >
-> > I think this is Yang Shi's fault.  The last patch in that series which
-> > touches this area does:
-> >
-> >         seq_printf(m, "THPeligible:    %d\n",
-> > -                  hugepage_vma_check(vma, vma->vm_flags, true));
-> > +                  hugepage_vma_check(vma, vma->vm_flags, true, false));
-> >
-> > and hugepage_vma_check() does:
-> >
-> >         if ((vm_flags & VM_NOHUGEPAGE) ||
-> >             test_bit(MMF_DISABLE_THP, &vma->vm_mm->flags))
-> >                 return false;
-> >
-> > Before those patches, it calls transparent_hugepage_active() which
-> > does not (afaict) touch vma->vm_mm.
-> 
-> No, transparent_hugepage_active() also could touch vma->vm_mm. The
-> above code was transhuge_vma_enabled() called by
-> transparent_hugepage_active() before my patch, my patch just
-> open-coded it.
-> 
-> But hugepage_vma_check() does check vma in different order from
-> transparent_hugepage_active(), so the old code may not reach it at
-> all.
-> 
-> And I don't think the mm could go away since it is pinned, but the
-> returned vma may not belong to this mm, for example, gate vma which
-> doesn't have a mm. Its size is PAGE_SIZE, so the old code returns
-> earlier before touching mm.
-> 
-> One possible solution is to move vma size check before touching mm, like:
-> 
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index 2e2a8b5bc567..1a9f15a89091 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-> @@ -73,6 +73,16 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
->                         unsigned long vm_flags,
->                         bool smaps, bool in_pf)
->  {
-> +       /*
-> +        * Check alignment for file vma and size for both file and anon vma.
-> +        *
-> +        * Skip the check for page fault. Huge fault does the check in fault
-> +        * handlers. And this check is not suitable for huge PUD fault.
-> +        */
-> +       if (!in_pf &&
-> +           !transhuge_vma_suitable(vma, (vma->vm_end - HPAGE_PMD_SIZE)))
-> +               return false;
-> +
->         /*
->          * Explicitly disabled through madvise or prctl, or some
->          * architectures may disable THP for some mappings, for
-> @@ -99,16 +109,6 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
->         if (vm_flags & VM_NO_KHUGEPAGED)
->                 return false;
-> 
-> -       /*
-> -        * Check alignment for file vma and size for both file and anon vma.
-> -        *
-> -        * Skip the check for page fault. Huge fault does the check in fault
-> -        * handlers. And this check is not suitable for huge PUD fault.
-> -        */
-> -       if (!in_pf &&
-> -           !transhuge_vma_suitable(vma, (vma->vm_end - HPAGE_PMD_SIZE)))
-> -               return false;
-> -
->         /*
->          * Enabled via shmem mount options or sysfs settings.
->          * Must be done before hugepage flags check since shmem has its
-> 
-> Or we may have to check gate vma explicitly.
->
+Hello everyone,
 
-I think this is already fixed already with Andrew's fix in mm-unstable:
+This series is a follow up of the XRGB8888 to RGB332 conversion KUnit tests.
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index df04c0057271..fbe02815c41a 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -73,6 +73,9 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
-                        unsigned long vm_flags,
-                        bool smaps)
- {
-+       if (!vma->vm_mm)
-+               return false;
-+
-        if (!transhuge_vma_enabled(vma, vm_flags))
-                return false;
+The first 3 patches refactor the existing test to make them agnostic of the target format and add support for "swab".
 
-Which isn't included in the tree testing here. IMHO this is cleaner than messing
-with an already subtle ordering.
+The last patch adds the RGB565 conversion values, and shows how more formats will be easily added in the future.
+
+Thank you very much in advance for your feedback,
+José Expósito
+
+José Expósito (4):
+  drm/format-helper: Rename test cases to make them more generic
+  drm/format-helper: Transform tests to be agnostic of target format
+  drm/format-helper: Add support for conversion functions with swab
+  drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb565()
+
+ .../gpu/drm/tests/drm_format_helper_test.c    | 231 +++++++++++++++---
+ 1 file changed, 196 insertions(+), 35 deletions(-)
 
 
-> >
-> > I haven't been paying attention to that patch series, so I don't have
-> > a constructive suggestion for how to fix.
-> >
-> > > > CPU: 0 PID: 21978 Comm: syz-executor.5 Not tainted 5.19.0-rc2-next-20220616-syzkaller #0
-> > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > > > Call Trace:
-> > > >  <TASK>
-> > > >  __dump_stack lib/dump_stack.c:88 [inline]
-> > > >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-> > > >  kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
-> > > >  check_region_inline mm/kasan/generic.c:183 [inline]
-> > > >  kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
-> > > >  instrument_atomic_read include/linux/instrumented.h:71 [inline]
-> > > >  test_bit include/asm-generic/bitops/instrumented-non-atomic.h:134 [inline]
-> > > >  hugepage_vma_check+0x8e/0x750 mm/huge_memory.c:82
-> > > >  show_smap+0x1c6/0x470 fs/proc/task_mmu.c:866
-> > > >  traverse.part.0+0xcf/0x5f0 fs/seq_file.c:111
-> > > >  traverse fs/seq_file.c:101 [inline]
-> > > >  seq_read_iter+0x90f/0x1280 fs/seq_file.c:195
-> > > >  seq_read+0x337/0x4b0 fs/seq_file.c:162
-> > > >  do_loop_readv_writev fs/read_write.c:763 [inline]
-> > > >  do_loop_readv_writev fs/read_write.c:750 [inline]
-> > > >  do_iter_read+0x4f8/0x750 fs/read_write.c:805
-> > > >  vfs_readv+0xe5/0x150 fs/read_write.c:923
-> > > >  do_preadv fs/read_write.c:1015 [inline]
-> > > >  __do_sys_preadv fs/read_write.c:1065 [inline]
-> > > >  __se_sys_preadv fs/read_write.c:1060 [inline]
-> > > >  __x64_sys_preadv+0x22b/0x310 fs/read_write.c:1060
-> > > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > > >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> > > >  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> > > > RIP: 0033:0x7f5c1d889109
-> > > > Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> > > > RSP: 002b:00007f5c1ea69168 EFLAGS: 00000246 ORIG_RAX: 0000000000000127
-> > > > RAX: ffffffffffffffda RBX: 00007f5c1d99bf60 RCX: 00007f5c1d889109
-> > > > RDX: 0000000000000001 RSI: 00000000200006c0 RDI: 0000000000000005
-> > > > RBP: 00007f5c1d8e305d R08: 0000000000000000 R09: 0000000000000000
-> > > > R10: 00000000fffffffe R11: 0000000000000246 R12: 0000000000000000
-> > > > R13: 00007ffd8514b43f R14: 00007f5c1ea69300 R15: 0000000000022000
-> > > >  </TASK>
-> > > > ==================================================================
-> > > >
-> > > >
-> > > > ---
-> > > > This report is generated by a bot. It may contain errors.
-> > > > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > > > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> > > >
-> > > > syzbot will keep track of this issue. See:
-> > > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> 
+base-commit: 6fde8eec71796f3534f0c274066862829813b21f
+prerequisite-patch-id: 8a16f4c8004d6161035eaea275c8eafaa0ac927e
+prerequisite-patch-id: 53fded2a49e6212b546db76ec52563a683752e65
+prerequisite-patch-id: 294b0ca27a6ee57096c8f097c0572336b8a2d583
+prerequisite-patch-id: 5e05bfc5287d16c207bfc616b2776ad72eb4ab29
+prerequisite-patch-id: e94560be85dffb62a5b3cf58d1f0fc3d278ad806
+prerequisite-patch-id: a471df39c7b32c69dd2b138a7d0af015ea42e00a
+-- 
+2.25.1
+
