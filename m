@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C21C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 239BBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236751AbiF0LjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
+        id S236764AbiF0Lj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236464AbiF0Lhd (ORCPT
+        with ESMTP id S236491AbiF0Lhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:37:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CABE7639B;
-        Mon, 27 Jun 2022 04:33:02 -0700 (PDT)
+        Mon, 27 Jun 2022 07:37:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3227428E;
+        Mon, 27 Jun 2022 04:33:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49FFC60920;
-        Mon, 27 Jun 2022 11:33:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 586ACC3411D;
-        Mon, 27 Jun 2022 11:33:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C399C609D0;
+        Mon, 27 Jun 2022 11:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88273C3411D;
+        Mon, 27 Jun 2022 11:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329581;
-        bh=VjrW0YBVZnN90T39YspyWl6ZPPln3YcYOmG1ArTMSVE=;
+        s=korg; t=1656329603;
+        bh=wzRgcUUicdNbJvqPsdmDmco70kK+s770X+3oBxpih3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H1GyUUaZaySG04ti4h4yvJPgud8SrkenQDAuLv9pHoa7jx/RILx8v1VEEQDBMFU0X
-         XQAhEgcdQqYbyhFozqhgkVNjykNaw8zXQQ/i2cb3o9kWddkQ1DHjqS3NNrd7vcaBWU
-         qRgKrle2ABYDGKHXvMbOPySLGkHJxl5KBMMJIrZ4=
+        b=LXcruiE2XyOw3bbSS19h6DGjWCTDvAHCJDOz1yvsxwC/1LHmkv7dlqJN9eUGpwwa4
+         odgal72VlzRw0Pus8D160NvwMkIWHRT7JHA6ct23PWLItsaT3DlzVuVRikgETCYQq6
+         wlTlSuIF9iCQqnPTSG+qH5P6ywgXxqTaCnE+CkDY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pei Zhang <pezhang@redhat.com>,
-        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
+        Douglas Gilbert <dgilbert@interlog.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 047/135] net: Write lock dev_base_lock without disabling bottom halves.
-Date:   Mon, 27 Jun 2022 13:20:54 +0200
-Message-Id: <20220627111939.525398874@linuxfoundation.org>
+Subject: [PATCH 5.15 036/135] scsi: scsi_debug: Fix zone transition to full condition
+Date:   Mon, 27 Jun 2022 13:20:43 +0200
+Message-Id: <20220627111939.207028712@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -51,167 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit fd888e85fe6b661e78044dddfec0be5271afa626 ]
+[ Upstream commit 566d3c57eb526f32951af15866086e236ce1fc8a ]
 
-The writer acquires dev_base_lock with disabled bottom halves.
-The reader can acquire dev_base_lock without disabling bottom halves
-because there is no writer in softirq context.
+When a write command to a sequential write required or sequential write
+preferred zone result in the zone write pointer reaching the end of the
+zone, the zone condition must be set to full AND the number of implicitly
+or explicitly open zones updated to have a correct accounting for zone
+resources. However, the function zbc_inc_wp() only sets the zone condition
+to full without updating the open zone counters, resulting in a zone state
+machine breakage.
 
-On PREEMPT_RT the softirqs are preemptible and local_bh_disable() acts
-as a lock to ensure that resources, that are protected by disabling
-bottom halves, remain protected.
-This leads to a circular locking dependency if the lock acquired with
-disabled bottom halves (as in write_lock_bh()) and somewhere else with
-enabled bottom halves (as by read_lock() in netstat_show()) followed by
-disabling bottom halves (cxgb_get_stats() -> t4_wr_mbox_meat_timeout()
--> spin_lock_bh()). This is the reverse locking order.
+Introduce the helper function zbc_set_zone_full() and use it in
+zbc_inc_wp() to correctly transition zones to the full condition.
 
-All read_lock() invocation are from sysfs callback which are not invoked
-from softirq context. Therefore there is no need to disable bottom
-halves while acquiring a write lock.
-
-Acquire the write lock of dev_base_lock without disabling bottom halves.
-
-Reported-by: Pei Zhang <pezhang@redhat.com>
-Reported-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220608011302.92061-1-damien.lemoal@opensource.wdc.com
+Fixes: f0d1cf9378bd ("scsi: scsi_debug: Add ZBC zone commands")
+Reviewed-by: Niklas Cassel <niklas.cassel@wdc.com>
+Acked-by: Douglas Gilbert <dgilbert@interlog.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c        | 16 ++++++++--------
- net/core/link_watch.c |  4 ++--
- net/core/rtnetlink.c  |  8 ++++----
- net/hsr/hsr_device.c  |  6 +++---
- 4 files changed, 17 insertions(+), 17 deletions(-)
+ drivers/scsi/scsi_debug.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b9731b267d07..860fc6a98373 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -365,12 +365,12 @@ static void list_netdevice(struct net_device *dev)
- 
- 	ASSERT_RTNL();
- 
--	write_lock_bh(&dev_base_lock);
-+	write_lock(&dev_base_lock);
- 	list_add_tail_rcu(&dev->dev_list, &net->dev_base_head);
- 	netdev_name_node_add(net, dev->name_node);
- 	hlist_add_head_rcu(&dev->index_hlist,
- 			   dev_index_hash(net, dev->ifindex));
--	write_unlock_bh(&dev_base_lock);
-+	write_unlock(&dev_base_lock);
- 
- 	dev_base_seq_inc(net);
- }
-@@ -383,11 +383,11 @@ static void unlist_netdevice(struct net_device *dev)
- 	ASSERT_RTNL();
- 
- 	/* Unlink dev from the device chain */
--	write_lock_bh(&dev_base_lock);
-+	write_lock(&dev_base_lock);
- 	list_del_rcu(&dev->dev_list);
- 	netdev_name_node_del(dev->name_node);
- 	hlist_del_rcu(&dev->index_hlist);
--	write_unlock_bh(&dev_base_lock);
-+	write_unlock(&dev_base_lock);
- 
- 	dev_base_seq_inc(dev_net(dev));
- }
-@@ -1266,15 +1266,15 @@ int dev_change_name(struct net_device *dev, const char *newname)
- 
- 	netdev_adjacent_rename_links(dev, oldname);
- 
--	write_lock_bh(&dev_base_lock);
-+	write_lock(&dev_base_lock);
- 	netdev_name_node_del(dev->name_node);
--	write_unlock_bh(&dev_base_lock);
-+	write_unlock(&dev_base_lock);
- 
- 	synchronize_rcu();
- 
--	write_lock_bh(&dev_base_lock);
-+	write_lock(&dev_base_lock);
- 	netdev_name_node_add(net, dev->name_node);
--	write_unlock_bh(&dev_base_lock);
-+	write_unlock(&dev_base_lock);
- 
- 	ret = call_netdevice_notifiers(NETDEV_CHANGENAME, dev);
- 	ret = notifier_to_errno(ret);
-diff --git a/net/core/link_watch.c b/net/core/link_watch.c
-index 1a455847da54..9599afd0862d 100644
---- a/net/core/link_watch.c
-+++ b/net/core/link_watch.c
-@@ -55,7 +55,7 @@ static void rfc2863_policy(struct net_device *dev)
- 	if (operstate == dev->operstate)
- 		return;
- 
--	write_lock_bh(&dev_base_lock);
-+	write_lock(&dev_base_lock);
- 
- 	switch(dev->link_mode) {
- 	case IF_LINK_MODE_TESTING:
-@@ -74,7 +74,7 @@ static void rfc2863_policy(struct net_device *dev)
- 
- 	dev->operstate = operstate;
- 
--	write_unlock_bh(&dev_base_lock);
-+	write_unlock(&dev_base_lock);
- }
- 
- 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 9c0e8ccf9bc5..8c85e93daa73 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -842,9 +842,9 @@ static void set_operstate(struct net_device *dev, unsigned char transition)
- 	}
- 
- 	if (dev->operstate != operstate) {
--		write_lock_bh(&dev_base_lock);
-+		write_lock(&dev_base_lock);
- 		dev->operstate = operstate;
--		write_unlock_bh(&dev_base_lock);
-+		write_unlock(&dev_base_lock);
- 		netdev_state_change(dev);
+diff --git a/drivers/scsi/scsi_debug.c b/drivers/scsi/scsi_debug.c
+index cfeadd5f61f1..747e1cbb7ec9 100644
+--- a/drivers/scsi/scsi_debug.c
++++ b/drivers/scsi/scsi_debug.c
+@@ -2747,6 +2747,24 @@ static void zbc_open_zone(struct sdebug_dev_info *devip,
  	}
  }
-@@ -2781,11 +2781,11 @@ static int do_setlink(const struct sk_buff *skb,
- 	if (tb[IFLA_LINKMODE]) {
- 		unsigned char value = nla_get_u8(tb[IFLA_LINKMODE]);
  
--		write_lock_bh(&dev_base_lock);
-+		write_lock(&dev_base_lock);
- 		if (dev->link_mode ^ value)
- 			status |= DO_SETLINK_NOTIFY;
- 		dev->link_mode = value;
--		write_unlock_bh(&dev_base_lock);
-+		write_unlock(&dev_base_lock);
- 	}
- 
- 	if (tb[IFLA_VFINFO_LIST]) {
-diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-index 26c32407f029..ea7b96e296ef 100644
---- a/net/hsr/hsr_device.c
-+++ b/net/hsr/hsr_device.c
-@@ -30,13 +30,13 @@ static bool is_slave_up(struct net_device *dev)
- 
- static void __hsr_set_operstate(struct net_device *dev, int transition)
++static inline void zbc_set_zone_full(struct sdebug_dev_info *devip,
++				     struct sdeb_zone_state *zsp)
++{
++	switch (zsp->z_cond) {
++	case ZC2_IMPLICIT_OPEN:
++		devip->nr_imp_open--;
++		break;
++	case ZC3_EXPLICIT_OPEN:
++		devip->nr_exp_open--;
++		break;
++	default:
++		WARN_ONCE(true, "Invalid zone %llu condition %x\n",
++			  zsp->z_start, zsp->z_cond);
++		break;
++	}
++	zsp->z_cond = ZC5_FULL;
++}
++
+ static void zbc_inc_wp(struct sdebug_dev_info *devip,
+ 		       unsigned long long lba, unsigned int num)
  {
--	write_lock_bh(&dev_base_lock);
-+	write_lock(&dev_base_lock);
- 	if (dev->operstate != transition) {
- 		dev->operstate = transition;
--		write_unlock_bh(&dev_base_lock);
-+		write_unlock(&dev_base_lock);
- 		netdev_state_change(dev);
- 	} else {
--		write_unlock_bh(&dev_base_lock);
-+		write_unlock(&dev_base_lock);
+@@ -2759,7 +2777,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
+ 	if (zsp->z_type == ZBC_ZONE_TYPE_SWR) {
+ 		zsp->z_wp += num;
+ 		if (zsp->z_wp >= zend)
+-			zsp->z_cond = ZC5_FULL;
++			zbc_set_zone_full(devip, zsp);
+ 		return;
  	}
- }
  
+@@ -2778,7 +2796,7 @@ static void zbc_inc_wp(struct sdebug_dev_info *devip,
+ 			n = num;
+ 		}
+ 		if (zsp->z_wp >= zend)
+-			zsp->z_cond = ZC5_FULL;
++			zbc_set_zone_full(devip, zsp);
+ 
+ 		num -= n;
+ 		lba += n;
 -- 
 2.35.1
 
