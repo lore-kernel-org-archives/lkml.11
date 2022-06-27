@@ -2,96 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:31:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2ECCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 13:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235929AbiF0Nbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 09:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41502 "EHLO
+        id S235892AbiF0Nbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:31:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232282AbiF0NbU (ORCPT
+        with ESMTP id S235866AbiF0Nba (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 09:31:20 -0400
-Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9571B6457;
-        Mon, 27 Jun 2022 06:31:19 -0700 (PDT)
-Received: by mail-il1-f174.google.com with SMTP id a16so6020032ilr.6;
-        Mon, 27 Jun 2022 06:31:19 -0700 (PDT)
+        Mon, 27 Jun 2022 09:31:30 -0400
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA0164E4;
+        Mon, 27 Jun 2022 06:31:24 -0700 (PDT)
+Received: by mail-io1-f49.google.com with SMTP id h85so9547976iof.4;
+        Mon, 27 Jun 2022 06:31:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=e0YdyNDNHfoLjY/B6VaUfC4jZi5UF0V29yd+MqAfjd8=;
-        b=68AL9koxtSs/3HjE85mIUsFg5/A0Hn+SdL+g9iUkKPuwLPZL+sdoFzQv/2v+DFV4uw
-         SJ3yJzv7U1A7v2yXvb5eWLOJOYnbjq7bMekNJJ6JGzGrAuZNt0Xw542+xBkCrWwNeo2y
-         pHYudGulZ/Q/tWdeFICes1RvS/8Y7KTlCVI01lFfvUoL9DWdcQDJo+ZOE2n2ufStGsnK
-         JJ6ErdLAjWKscog5pkUKP7Pbvc8LKhu+vmzjmZOYvgrL7PlAtTwJMwwnBeAHGPYaUlLX
-         FMxyfSQr3oL5YYPvaBHoYBVhP0USVJUQ+IR1nucq71jTzWNueu/3HvxMZ9jlDA3wdDuv
-         OWag==
-X-Gm-Message-State: AJIora/2fz1BX9A8rGOud+aaAKEAXa7k02ucj143atu1X7IE8UBltHpg
-        bklP2tpKCF9uw1bApiA0Wg==
-X-Google-Smtp-Source: AGRyM1vEEEhnghUvEvoMNkCRM2MJy0M56TmHGYSJhVoccPP4WQGcqcvf8lzrpCi+otOX48sba38IeQ==
-X-Received: by 2002:a92:c743:0:b0:2da:a849:511b with SMTP id y3-20020a92c743000000b002daa849511bmr124717ilp.109.1656336678835;
-        Mon, 27 Jun 2022 06:31:18 -0700 (PDT)
+        bh=YBApyAZhryutkj1N0CgYhNXY1+WXUhBmjXDtALNVzOI=;
+        b=hCMvud/6mKxaJaYNG9R4UASuCTNtbY1pl/kUT8ZykgYNwOOgqh4ItVXsGpNB1hsKa6
+         sE3i8w4bmWA4hNWpsNofNyJuNoucj/z4MTCvevOyRytpI33SQfLrYBpGrN74Yg9nBsh4
+         Ot8qWBumWj8rdkfGCuA9NR9u5YqQZQmhhGAHdPoDvDpfaqzZRtYwFincFUbtBP9thpFA
+         REuGgRmQbvSkkwziQ1ayCKBzmpRb4OUhhfzblhhUxgl7mtaArhSFRgZiv5Nn19EuXtGG
+         ntILoFrPLAPfd5T2AW08M43fQz9g1m26Qz/biNonPF5oSeugMECaRoA2A0OB+GBXI04L
+         y5sA==
+X-Gm-Message-State: AJIora8hbRmjW31LblXkop6IR8KEInYQfQM0Fz31Hq/tBzF6QFT62xKU
+        ylherlwi5vim/SynW2ex3Efrzestpg==
+X-Google-Smtp-Source: AGRyM1smbEVZ88IdJlCAbanipzttn6crpX6AL3iQCbRbOLHyD61OgJYhYskFjkrchfE0bQdfdtAKcg==
+X-Received: by 2002:a5d:9ac4:0:b0:674:fca5:62db with SMTP id x4-20020a5d9ac4000000b00674fca562dbmr6517964ion.177.1656336683456;
+        Mon, 27 Jun 2022 06:31:23 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id v28-20020a02b09c000000b0032e0851ea0fsm4794533jah.10.2022.06.27.06.31.17
+        by smtp.gmail.com with ESMTPSA id d18-20020a056602185200b00669e1a9588esm5299273ioi.43.2022.06.27.06.31.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:31:18 -0700 (PDT)
-Received: (nullmailer pid 2285172 invoked by uid 1000);
+        Mon, 27 Jun 2022 06:31:23 -0700 (PDT)
+Received: (nullmailer pid 2285166 invoked by uid 1000);
         Mon, 27 Jun 2022 13:31:09 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Cc:     linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        p.zabel@pengutronix.de, granquet@baylibre.com,
-        angelogioacchino.delregno@collabora.com,
-        devicetree@vger.kernel.org, matthias.bgg@gmail.com,
-        dri-devel@lists.freedesktop.org, chunkuang.hu@kernel.org,
-        airlied@linux.ie, linux-fbdev@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        daniel@ffwll.ch, msp@baylibre.com, wenst@chromium.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com, deller@gmx.de,
-        tzimmermann@suse.de, ck.hu@mediatek.com,
-        linux-arm-kernel@lists.infradead.org, mripard@kernel.org,
-        jitao.shi@mediatek.com
-In-Reply-To: <20220627080341.5087-2-rex-bc.chen@mediatek.com>
-References: <20220627080341.5087-1-rex-bc.chen@mediatek.com> <20220627080341.5087-2-rex-bc.chen@mediatek.com>
-Subject: Re: [PATCH v12 01/10] dt-bindings: mediatek,dp: Add Display Port binding
+To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-amarula@amarulasolutions.com,
+        Daniel Scally <djrscally@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        quentin.schulz@theobroma-systems.com, linuxfancy@googlegroups.com
+In-Reply-To: <20220624230307.3066530-8-tommaso.merciai@amarulasolutions.com>
+References: <20220624230307.3066530-1-tommaso.merciai@amarulasolutions.com> <20220624230307.3066530-8-tommaso.merciai@amarulasolutions.com>
+Subject: Re: [PATCH 7/7] media: dt-bindings: ov5693: document YAML binding
 Date:   Mon, 27 Jun 2022 07:31:09 -0600
-Message-Id: <1656336669.663950.2285171.nullmailer@robh.at.kernel.org>
+Message-Id: <1656336669.640985.2285165.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 27 Jun 2022 16:03:32 +0800, Bo-Chen Chen wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
+On Sat, 25 Jun 2022 01:03:07 +0200, Tommaso Merciai wrote:
+> This patch adds documentation of device tree in YAML schema for the
+> OV5693 CMOS image sensor from Omnivision
 > 
-> This controller is present on several mediatek hardware. Currently
-> mt8195 and mt8395 have this controller without a functional difference,
-> so only one compatible field is added.
-> 
-> The controller can have two forms, as a normal display port and as an
-> embedded display port.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> [Bo-Chen: Fix reviewers' comment]
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
 > ---
->  .../display/mediatek/mediatek,dp.yaml         | 108 ++++++++++++++++++
->  1 file changed, 108 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
+>  .../bindings/media/i2c/ovti,ov5693.yaml       | 123 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 124 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
+./Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml:123:7: [error] no new line character at the end of file (new-line-at-end-of-file)
 
 dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.example.dtb: dp_tx@1c600000: data-lanes: [[0, 1, 2, 3]] is not of type 'object'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.example.dtb: dp_tx@1c600000: data-lanes: [[0, 1, 2, 3]] is not of type 'object'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
 
 doc reference errors (make refcheckdocs):
 
