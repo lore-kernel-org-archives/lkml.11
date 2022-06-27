@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FBEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C39C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 27 Jun 2022 11:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236312AbiF0Lgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 07:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
+        id S236322AbiF0Lgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 07:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236129AbiF0Lfk (ORCPT
+        with ESMTP id S236162AbiF0Lfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 07:35:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96FDADF12;
-        Mon, 27 Jun 2022 04:31:41 -0700 (PDT)
+        Mon, 27 Jun 2022 07:35:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC4FDF2C;
+        Mon, 27 Jun 2022 04:31:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34106608D4;
-        Mon, 27 Jun 2022 11:31:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C26C3411D;
-        Mon, 27 Jun 2022 11:31:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C7B6608D4;
+        Mon, 27 Jun 2022 11:31:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E977C3411D;
+        Mon, 27 Jun 2022 11:31:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656329500;
-        bh=Dofcmi+hdhw1/cNl7/QLeE8tyR3IXblze26vcC06QdQ=;
+        s=korg; t=1656329503;
+        bh=8clhaSAfuZTxz/QqpTKUQouDi75NGvcuMYXwgJ064h0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pxWyG4HZhNM8eOtdpf0G3MBp1kRB2xN5Y2TJ+4Npfq9GiBNBZG6GYK53NaapJP8Dx
-         /CsI3P0uI6Ojf2BNUC8Z4aZn6NkkZR/2xqBawXj2ogxwQHMSKlQlgcYaIBxjdFUjRH
-         uck1hc7QvHvdKVeVa7raAVHz+3jCE8mAacUc9t3I=
+        b=pxAPOBNFNrS18HuXU2OcriDlWETjqKBHHJ3Ba9sVtyZxHs7jhyMcY+9rT/1waIGOa
+         JjqNHwb6/Xz+rcwRe7lhhbT44hfOX2vOKpnph5Z6TPoIT9hth8AsYy9Jc+TcTbS451
+         baghCGVU1hbKx87JlmvyWPCinDyzT92u7DRL2Llk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
-        Ron Economos <re@w6rz.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 002/135] random: quiet urandom warning ratelimit suppression message
-Date:   Mon, 27 Jun 2022 13:20:09 +0200
-Message-Id: <20220627111938.226725029@linuxfoundation.org>
+        stable@vger.kernel.org, Mengqi Zhang <mengqi.zhang@mediatek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.15 020/135] mmc: mediatek: wait dma stop bit reset to 0
+Date:   Mon, 27 Jun 2022 13:20:27 +0200
+Message-Id: <20220627111938.748422500@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220627111938.151743692@linuxfoundation.org>
 References: <20220627111938.151743692@linuxfoundation.org>
@@ -49,72 +48,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Mengqi Zhang <mengqi.zhang@mediatek.com>
 
-commit c01d4d0a82b71857be7449380338bc53dde2da92 upstream.
+commit 89bcd9a64b849380ef57e3032b307574e48db524 upstream.
 
-random.c ratelimits how much it warns about uninitialized urandom reads
-using __ratelimit(). When the RNG is finally initialized, it prints the
-number of missed messages due to ratelimiting.
+MediaTek IP requires that after dma stop, it need to wait this dma stop
+bit auto-reset to 0. When bus is in high loading state, it will take a
+while for the dma stop complete. If there is no waiting operation here,
+when program runs to clear fifo and reset, bus will hang.
 
-It has been this way since that functionality was introduced back in
-2018. Recently, cc1e127bfa95 ("random: remove ratelimiting for in-kernel
-unseeded randomness") put a bit more stress on the urandom ratelimiting,
-which teased out a bug in the implementation.
+In addition, there should be no return in msdc_data_xfer_next() if
+there is data need be transferred, because no matter what error occurs
+here, it should continue to excute to the following mmc_request_done.
+Otherwise the core layer may wait complete forever.
 
-Specifically, when under pressure, __ratelimit() will print its own
-message and reset the count back to 0, making the final message at the
-end less useful. Secondly, it does so as a pr_warn(), which apparently
-is undesirable for people's CI.
-
-Fortunately, __ratelimit() has the RATELIMIT_MSG_ON_RELEASE flag exactly
-for this purpose, so we set the flag.
-
-Fixes: 4e00b339e264 ("random: rate limit unseeded randomness warnings")
+Signed-off-by: Mengqi Zhang <mengqi.zhang@mediatek.com>
 Cc: stable@vger.kernel.org
-Reported-by: Jon Hunter <jonathanh@nvidia.com>
-Reported-by: Ron Economos <re@w6rz.net>
-Tested-by: Ron Economos <re@w6rz.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Link: https://lore.kernel.org/r/20220609112239.18911-1-mengqi.zhang@mediatek.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c           |    2 +-
- include/linux/ratelimit_types.h |   12 ++++++++----
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ drivers/mmc/host/mtk-sd.c |   20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -88,7 +88,7 @@ static RAW_NOTIFIER_HEAD(random_ready_ch
+--- a/drivers/mmc/host/mtk-sd.c
++++ b/drivers/mmc/host/mtk-sd.c
+@@ -1355,7 +1355,7 @@ static void msdc_data_xfer_next(struct m
+ 		msdc_request_done(host, mrq);
+ }
  
- /* Control how we warn userspace. */
- static struct ratelimit_state urandom_warning =
--	RATELIMIT_STATE_INIT("warn_urandom_randomness", HZ, 3);
-+	RATELIMIT_STATE_INIT_FLAGS("urandom_warning", HZ, 3, RATELIMIT_MSG_ON_RELEASE);
- static int ratelimit_disable __read_mostly =
- 	IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM);
- module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
---- a/include/linux/ratelimit_types.h
-+++ b/include/linux/ratelimit_types.h
-@@ -23,12 +23,16 @@ struct ratelimit_state {
- 	unsigned long	flags;
- };
+-static bool msdc_data_xfer_done(struct msdc_host *host, u32 events,
++static void msdc_data_xfer_done(struct msdc_host *host, u32 events,
+ 				struct mmc_request *mrq, struct mmc_data *data)
+ {
+ 	struct mmc_command *stop;
+@@ -1375,7 +1375,7 @@ static bool msdc_data_xfer_done(struct m
+ 	spin_unlock_irqrestore(&host->lock, flags);
  
--#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) {		\
--		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),	\
--		.interval	= interval_init,			\
--		.burst		= burst_init,				\
-+#define RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, flags_init) { \
-+		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),		  \
-+		.interval	= interval_init,				  \
-+		.burst		= burst_init,					  \
-+		.flags		= flags_init,					  \
- 	}
+ 	if (done)
+-		return true;
++		return;
+ 	stop = data->stop;
  
-+#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) \
-+	RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, 0)
+ 	if (check_data || (stop && stop->error)) {
+@@ -1384,12 +1384,15 @@ static bool msdc_data_xfer_done(struct m
+ 		sdr_set_field(host->base + MSDC_DMA_CTRL, MSDC_DMA_CTRL_STOP,
+ 				1);
+ 
++		ret = readl_poll_timeout_atomic(host->base + MSDC_DMA_CTRL, val,
++						!(val & MSDC_DMA_CTRL_STOP), 1, 20000);
++		if (ret)
++			dev_dbg(host->dev, "DMA stop timed out\n");
 +
- #define RATELIMIT_STATE_INIT_DISABLED					\
- 	RATELIMIT_STATE_INIT(ratelimit_state, 0, DEFAULT_RATELIMIT_BURST)
+ 		ret = readl_poll_timeout_atomic(host->base + MSDC_DMA_CFG, val,
+ 						!(val & MSDC_DMA_CFG_STS), 1, 20000);
+-		if (ret) {
+-			dev_dbg(host->dev, "DMA stop timed out\n");
+-			return false;
+-		}
++		if (ret)
++			dev_dbg(host->dev, "DMA inactive timed out\n");
  
+ 		sdr_clr_bits(host->base + MSDC_INTEN, data_ints_mask);
+ 		dev_dbg(host->dev, "DMA stop\n");
+@@ -1414,9 +1417,7 @@ static bool msdc_data_xfer_done(struct m
+ 		}
+ 
+ 		msdc_data_xfer_next(host, mrq);
+-		done = true;
+ 	}
+-	return done;
+ }
+ 
+ static void msdc_set_buswidth(struct msdc_host *host, u32 width)
+@@ -2347,6 +2348,9 @@ static void msdc_cqe_disable(struct mmc_
+ 	if (recovery) {
+ 		sdr_set_field(host->base + MSDC_DMA_CTRL,
+ 			      MSDC_DMA_CTRL_STOP, 1);
++		if (WARN_ON(readl_poll_timeout(host->base + MSDC_DMA_CTRL, val,
++			!(val & MSDC_DMA_CTRL_STOP), 1, 3000)))
++			return;
+ 		if (WARN_ON(readl_poll_timeout(host->base + MSDC_DMA_CFG, val,
+ 			!(val & MSDC_DMA_CFG_STS), 1, 3000)))
+ 			return;
 
 
