@@ -2,100 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D651BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4435EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiF1JXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47826 "EHLO
+        id S1344168AbiF1JXL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 05:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344236AbiF1JWi (ORCPT
+        with ESMTP id S1344222AbiF1JWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:22:38 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591611D314;
-        Tue, 28 Jun 2022 02:22:37 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n10so10587417plp.0;
-        Tue, 28 Jun 2022 02:22:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=/RPscv3+8g8rx4jXo23oMEeXPiuNo7BXGYwm+0AjXxs=;
-        b=To1tuJ6ezfSPRvfvYleOSb9lKKOhueWfZvhziXTEgCM9PUQE9mQ/xhT/GQKDwAx3+K
-         VCwO+26BUmVeT7tjCm709OpoNluVA5TQnQMiEBOnZWK6u0h7/2MQKkzXLs/QTBPtLd+t
-         uaEv/5/AD3aMBX+7rY78FIuqtsaMYfGOxtLmBiFL7mE3st9gwwEYdkaho0GnDCcCS+C6
-         4iEp8WxQDcPWTMDrt/QPMRtV+Nsnq3jb5UHhTTcpJedWllF567kplSbpUcwnVLjnZnAa
-         /5C8nTucMrmiuELtf9puqfjdHfigFReLoMkmJ6zo4PcDCEvdsypTDDGCHRq1camco5J+
-         ++lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=/RPscv3+8g8rx4jXo23oMEeXPiuNo7BXGYwm+0AjXxs=;
-        b=u82EjJlCCIcvKHmEVtCSWd6+mXAy1iqPxgQKMvYluUpYtFi6PmtvolOQkWCxY0vAI/
-         YLUBlP6gIc7FhqO0M2PvcG5v9I/YgpjXtLbXOqXwgnVLyq6cBbzB0/9uZTpR+Mgnpdew
-         zE3fu/dshLAm9jjiXIFIB5RvpFhgFGP8btvfa5jjIRxlZ+FhFSyGtpcFL1Nn0RHYIU8o
-         hOpMWqyKfPxXsaHQt0oUnIA2D7p6+Kr2kJZOSzvk8/yReIsJuWaenPf/kMJbGFq4Duc+
-         pGn3IQBNgeFWg06r9jBvEPhNlLwu/jT42or8Oy1tpYrpR8M77HmuTlf8QYSB5AfVHm1v
-         ZVsA==
-X-Gm-Message-State: AJIora/RqHoZziuODpDtdhb1mxlvzz0+/MGni9AIjxSRm3i0vIJR5nBV
-        ffN1UlIVP5BEM/ErWQxRBxU=
-X-Google-Smtp-Source: AGRyM1uO4shhe2Mc2XBAl9CUgG5Vgh4gk8x1TLLyeTMM88uYJk5piLi8VUIAziOH8v19ngumbUBM/A==
-X-Received: by 2002:a17:90b:1e0e:b0:1ec:b2a6:c9d0 with SMTP id pg14-20020a17090b1e0e00b001ecb2a6c9d0mr26659992pjb.230.1656408156659;
-        Tue, 28 Jun 2022 02:22:36 -0700 (PDT)
-Received: from localhost ([121.167.227.144])
-        by smtp.gmail.com with ESMTPSA id p9-20020a1709026b8900b0016372486febsm8688757plk.297.2022.06.28.02.22.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 02:22:36 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 28 Jun 2022 18:22:33 +0900
-From:   Tejun Heo <tj@kernel.org>
-To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-Cc:     Vasily Averin <vvs@openvz.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Muchun Song <songmuchun@bytedance.com>, cgroups@vger.kernel.org
-Subject: Re: [PATCH cgroup] cgroup: set the correct return code if hierarchy
- limits are reached
-Message-ID: <YrrIWe/nn5hoVyu9@mtj.duckdns.org>
-References: <186d5b5b-a082-3814-9963-bf57dfe08511@openvz.org>
- <d8a9e9c6-856e-1502-95ac-abf9700ff568@openvz.org>
- <YrpO9CUDt8hpUprr@castle>
- <17916824-ba97-68ba-8166-9402d5f4440c@openvz.org>
- <20220628091648.GA12249@blackbody.suse.cz>
+        Tue, 28 Jun 2022 05:22:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE321D312
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:22:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B16BAB81D35
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:22:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC9BC341C8
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:22:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656408152;
+        bh=3fbAja5rgkL66KWqFwLeSPX7PtzuMg9ParfKCMJhJIs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=g1r5mkW2vYRcZzhzH2VK3cluxMtV3yqSPy+KCwH012YWscYHhjH2txvBh6HJzL+lj
+         CyKAebiRMqxhsVdRkojRHbDgdXfd2VHrLKPRgI5QnpdiMDR4JU2bx0zZN5Bic8DrsL
+         ZYG18GY7AYvCDvGCuWoeVHhGTDG1lSJFySyaXYv3ASoobRdmq+WQO61SewXhDr5QKi
+         fO9cU+MxfYrh6I/f3B40xlFIvxRlsLmX2mPt32BJrfXL+cnYL8UhZoFQoRqYRVe7dd
+         zZVCQT7eiXhaKq8IePOJTpfhGHO8iZ4NDYmDUwMUJW9IOp4K1t9wYvwMcgtON0Sc2W
+         +gOQ30xWW05Jg==
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-3176d94c236so110556287b3.3
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:22:32 -0700 (PDT)
+X-Gm-Message-State: AJIora+IAyc1/OnuSXz/espcH3ffr5tqqQyERUiI0GVsVcJFHN36OYSs
+        sZIq70neFWZVaWeOppkg7g984o8ImIyrVdmxFPI=
+X-Google-Smtp-Source: AGRyM1sZrqmcbcXuTCWvdobNXGoySg+7item504Pp4yhySAckI/c+nCDgC+RLzYpHsxXndVcVAg1Fb5Oial7Fgowi+A=
+X-Received: by 2002:a81:9286:0:b0:317:d78b:fa41 with SMTP id
+ j128-20020a819286000000b00317d78bfa41mr19620872ywg.46.1656408151422; Tue, 28
+ Jun 2022 02:22:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220628091648.GA12249@blackbody.suse.cz>
+References: <20220627202620.961350-1-ogabbay@kernel.org> <20220627202620.961350-12-ogabbay@kernel.org>
+ <YrqhaBuzY/GkQXHx@kroah.com> <CAFCwf13eVS4iETpdgRp72KoNw-X5h1Japf=pNQ-8MdQcJ4h8WQ@mail.gmail.com>
+ <YrrF4/kSbs+25BUR@kroah.com>
+In-Reply-To: <YrrF4/kSbs+25BUR@kroah.com>
+From:   Oded Gabbay <ogabbay@kernel.org>
+Date:   Tue, 28 Jun 2022 12:22:05 +0300
+X-Gmail-Original-Message-ID: <CAFCwf13RNEyZh-FkXo5h7YXx62wrZEoEd344ihjv5VO3ZpnQkQ@mail.gmail.com>
+Message-ID: <CAFCwf13RNEyZh-FkXo5h7YXx62wrZEoEd344ihjv5VO3ZpnQkQ@mail.gmail.com>
+Subject: Re: [PATCH 11/12] habanalabs/gaudi2: add tpm attestation info uapi
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        Dani Liberman <dliberman@habana.ai>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 11:16:48AM +0200, Michal Koutný wrote:
-> The mkdir(2) manpage doesn't list EAGAIN at all. ENOSPC makes better
-> sense here. (And I suspect the dependency on this particular value won't
-> be very wide spread.)
+On Tue, Jun 28, 2022 at 12:12 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Jun 28, 2022 at 11:51:48AM +0300, Oded Gabbay wrote:
+> > On Tue, Jun 28, 2022 at 9:36 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Mon, Jun 27, 2022 at 11:26:19PM +0300, Oded Gabbay wrote:
+> > > > From: Dani Liberman <dliberman@habana.ai>
+> > > >
+> > > > User will provide a nonce via the ioctl, and will retrieve
+> > > > attestation data of the boot from the tpm, generated using given
+> > > > nonce.
+> > >
+> > > Why not use the normal TPM api instead of a new/custom one?  Or is this
+> > > not a "normal" TPM device?  If not, you should say what it really is.
+> > >
+> > > thanks,
+> > >
+> > > greg k-h
+> >
+> > Honestly, I'm not that knowledgeable about it. It is hidden behind our
+> > firmware code. We just provide a communication method between the
+> > userspace and the firmware, as the userspace can't interact directly
+> > with the f/w. i.e. The driver is a transparent tunnel, it doesn't
+> > interact with registers of the TPM device itself. The "real" driver is
+> > in our firmware.
+> >
+> > So basically we just got definitions from the f/w how to fetch the
+> > data from them and how to expose it to the user and that's it.
+> >
+> > What to do in this case ? Is this considered a "real" TPM ? I imagine
+> > I won't be able to connect to a standard tpm driver in the kernel as
+> > the h/w is not exposed to me.
+>
+> How is this hardware designed?  Is the TPM in here supposed to be a
+> real TPM for userspace to use?  Or is this just a random hardware thing
+> that you use to validate your device somehow and is not supposed to be a
+> normal TPM as per the specification?
+We will go talk to our h/w people to find out and I'll get back to you
+about that.
+In the meantime, I will remove this patch from the series so it won't
+hold up the entire
+support.
 
-Given how we use these system calls as triggers for random kernel
-operations, I don't think adhering to posix standard is necessary or
-possible. Using an error code which isn't listed in the man page isn't
-particularly high in the list of discrepancies.
-
-Again, I'm not against changing it but I'd like to see better
-rationales. On one side, we have "it's been this way for a long time
-and there's nothing particularly broken about it". I'm not sure the
-arguments we have for the other side is strong enough yet.
-
-Thanks.
-
--- 
-tejun
+Thanks,
+Oded
+>
+> thanks,
+>
+> greg k-h
