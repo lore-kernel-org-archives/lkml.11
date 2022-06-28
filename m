@@ -2,125 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 901A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15062CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245527AbiF1HuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45240 "EHLO
+        id S245558AbiF1HuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241378AbiF1HuJ (ORCPT
+        with ESMTP id S245504AbiF1HuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:50:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF66510EC;
-        Tue, 28 Jun 2022 00:50:08 -0700 (PDT)
+        Tue, 28 Jun 2022 03:50:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D8010E9;
+        Tue, 28 Jun 2022 00:50:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63A2860ED0;
-        Tue, 28 Jun 2022 07:50:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B077C3411D;
-        Tue, 28 Jun 2022 07:50:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63ABEB81D1A;
+        Tue, 28 Jun 2022 07:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADAFC341CB;
+        Tue, 28 Jun 2022 07:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656402607;
-        bh=B5QIhlbtzECgsRE8EI6Zyf1MuzRiNeg87KIBkcQ7vvU=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=uBEY+beYn2AWAxOKCmPu7Pw+1xiYKV0VUre/0qN+Me1NzxYbEo4V+U01T42wdCMI2
-         WivFZE+tGZfl6IKsIFAq+uYSROpIolPF3O3nTjazZoFrk4OwzcxhNWb6hNNvkPCxS2
-         J5T6rJacKk8KDTCbtObsfVOJvPOWH1mt46cTO8gwDSmFfsSkp17r+UA3T8w6tKJqrh
-         qwOPiU13V6z4mQ0/nVbvioRI97P3N8PkTwC6Qqc9JRKDG31aAChLd6BB/ZoSxr7vFM
-         qRWlRyJj9U2irA7pLgXYlRkgzTGt2lgM88LF87u6XLMU8cXD2torMVXCgR0JOkagI1
-         vo0IK3sEeZTsA==
-Message-ID: <ea40fecd-a16f-4ded-a062-21b097d67230@kernel.org>
-Date:   Tue, 28 Jun 2022 15:50:04 +0800
+        s=k20201202; t=1656402610;
+        bh=aiD3eMLrH2Ct0Gn+1sj9Q8L9OK8u7ri0bzVNBJui2/g=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=K2YlmC8OHj3tZ17D96mYJnkccAezcnkshoerIQn1fiR0c78PH5mvlCTiEtc37AcIp
+         LOoJ1sqeGgNecsBAvuV64L4FNuIh8ZhVeAFYYRFc3crhP8EWgbBfw88Rgr6x4K1PIL
+         ZTReQbxfNkplNYqBkYgYdTGWSuFgdmQA0HMAnDo88Eln82O0N5jAAXMK15jgeIRLZe
+         GGVEM0i24SwkkyjO4EW6T3f6cV7LzTiYuC2PNDA+l0UdHEiW7IArtdH/hf6Kmnx7Am
+         MAGrb9lMEHzAb6UqBNGDqAODw6jXIDrCVw3WpK+7cLGq63iZWhotGVibhjOyKIqDWp
+         35IfsH4mrbEMQ==
+Received: by mail-lf1-f49.google.com with SMTP id z13so20722462lfj.13;
+        Tue, 28 Jun 2022 00:50:10 -0700 (PDT)
+X-Gm-Message-State: AJIora9Uxot0yiNZOu7wXUhBQGKlfk93/ufH7s/tiB39SIwZK5bImJk1
+        pkIG5um0bcwtr63TUBD0mKQdSSex6WSsOU/xgJA=
+X-Google-Smtp-Source: AGRyM1sS/4PxpYsRaP0D/aDfyv/NiyzYYJeulsRgvdP/7s7GSqjC8O+SpUPkZf1xLvQHfA5qDk0npmnH9xOLnp2nN8Y=
+X-Received: by 2002:a05:6512:e83:b0:47f:635c:3369 with SMTP id
+ bi3-20020a0565120e8300b0047f635c3369mr10406750lfb.659.1656402608055; Tue, 28
+ Jun 2022 00:50:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [f2fs-dev] [PATCH 1/3 v2] f2fs: attach inline_data after setting
- compression
-Content-Language: en-US
-From:   Chao Yu <chao@kernel.org>
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Cc:     stable@vger.kernel.org
-References: <20220617223106.3517374-1-jaegeuk@kernel.org>
- <YrNJBMGpjPdtwVY+@google.com>
- <f3484c66-bb5e-b4d6-fc43-95a73c280f1d@kernel.org>
-In-Reply-To: <f3484c66-bb5e-b4d6-fc43-95a73c280f1d@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220520195028.1347426-1-gpiccoli@igalia.com> <d3dd4f45-1d50-2164-447b-d4f27ac6e133@igalia.com>
+In-Reply-To: <d3dd4f45-1d50-2164-447b-d4f27ac6e133@igalia.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 28 Jun 2022 09:49:56 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXFDqhvE3R4ckD32ftkb66CjHZcGPCF0OsX6bev2MmnorA@mail.gmail.com>
+Message-ID: <CAMj1kXFDqhvE3R4ckD32ftkb66CjHZcGPCF0OsX6bev2MmnorA@mail.gmail.com>
+Subject: Re: [PATCH 0/2] UEFI panic notification mechanism
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel-dev@igalia.com, kernel@gpiccoli.net,
+        Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        Kees Cook <keescook@chromium.org>,
+        Matt Fleming <matt@codeblueprint.co.uk>,
+        Matthew Garrett <matthew.garrett@nebula.com>,
+        Tony Luck <tony.luck@intel.com>,
+        linux-efi <linux-efi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/28 15:46, Chao Yu wrote:
-> On 2022/6/23 0:53, Jaegeuk Kim wrote:
->> This fixes the below corruption.
->>
->> [345393.335389] F2FS-fs (vdb): sanity_check_inode: inode (ino=6d0, mode=33206) should not have inline_data, run fsck to fix
->>
->> Cc: <stable@vger.kernel.org>
->> Fixes: 677a82b44ebf ("f2fs: fix to do sanity check for inline inode")
->> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
->> ---
->>   fs/f2fs/namei.c | 17 +++++++++++------
->>   1 file changed, 11 insertions(+), 6 deletions(-)
->>
->> diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
->> index c549acb52ac4..bf00d5057abb 100644
->> --- a/fs/f2fs/namei.c
->> +++ b/fs/f2fs/namei.c
->> @@ -89,8 +89,6 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
->>       if (test_opt(sbi, INLINE_XATTR))
->>           set_inode_flag(inode, FI_INLINE_XATTR);
->> -    if (test_opt(sbi, INLINE_DATA) && f2fs_may_inline_data(inode))
->> -        set_inode_flag(inode, FI_INLINE_DATA);
->>       if (f2fs_may_inline_dentry(inode))
->>           set_inode_flag(inode, FI_INLINE_DENTRY);
->> @@ -107,10 +105,6 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
->>       f2fs_init_extent_tree(inode, NULL);
->> -    stat_inc_inline_xattr(inode);
->> -    stat_inc_inline_inode(inode);
->> -    stat_inc_inline_dir(inode);
->> -
->>       F2FS_I(inode)->i_flags =
->>           f2fs_mask_flags(mode, F2FS_I(dir)->i_flags & F2FS_FL_INHERITED);
->> @@ -127,6 +121,14 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
->>               set_compress_context(inode);
->>       }
->> +    /* Should enable inline_data after compression set */
->> +    if (test_opt(sbi, INLINE_DATA) && f2fs_may_inline_data(inode))
->> +        set_inode_flag(inode, FI_INLINE_DATA);
->> +
->> +    stat_inc_inline_xattr(inode);
->> +    stat_inc_inline_inode(inode);
->> +    stat_inc_inline_dir(inode);
->> +
->>       f2fs_set_inode_flags(inode);
->>       trace_f2fs_new_inode(inode, 0);
->> @@ -325,6 +327,9 @@ static void set_compress_inode(struct f2fs_sb_info *sbi, struct inode *inode,
->>           if (!is_extension_exist(name, ext[i], false))
->>               continue;
->> +        /* Do not use inline_data with compression */
->> +        stat_dec_inline_inode(inode);
->> +        clear_inode_flag(inode, FI_INLINE_DATA);
-> 
-> It looks we don't need to dirty inode if there is no inline_data flag.
+On Thu, 2 Jun 2022 at 19:40, Guilherme G. Piccoli <gpiccoli@igalia.com> wrote:
+>
+> Hi Ard, apologies for annoying!
+>
 
-Oh, it looks set_compress_context() will dirty inode anyway.... :P
+No worries, just very busy :-)
 
-Thanks,
+> Just a friendly ping asking if you have any opinions about these patches.
+>
 
-> 
-> Thanks,
-> 
->>           set_compress_context(inode);
->>           return;
->>       }
-> 
-> 
-> _______________________________________________
-> Linux-f2fs-devel mailing list
-> Linux-f2fs-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/linux-f2fs-devel
+Honestly, I'm not sure I see the value of this. You want to 'notify
+the UEFI firmware' but the firmware doesn't really care about these
+variables, only your bespoke tooling does. EFI pstore captures far
+more data, so if you just wipe /sys/fs/pstore after each clean boot,
+you already have all the data you need, no?
+
+Also, I'm in the process of removing the public efivar_entry_xxx() API
+- please look at the efi/next tree for a peek. This is related to your
+point 3), i.e., the efivar layer is a disaster in terms of consistency
+between different observers of the EFI variable store. Switching to
+efivar_set_variable() [the new API] should fix that.
