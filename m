@@ -2,207 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D847C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242697AbiF1HZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
+        id S242520AbiF1H0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242568AbiF1HZi (ORCPT
+        with ESMTP id S242524AbiF1H0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:25:38 -0400
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C684F2CE2F;
-        Tue, 28 Jun 2022 00:25:35 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 25S7PDr0009602;
-        Tue, 28 Jun 2022 16:25:14 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 25S7PDr0009602
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1656401115;
-        bh=eLjAiVxuGvO6AzWFnOFJI+C+QcXzQ40aD2WDoOMylOo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fVTQn4EnvDBVZS0FLVGRzFY+R2/L/OWZz6Fe/S9B6zhRK8n6MQmJoBsIV9TwpONeB
-         HvDz+HuxaeDU1+IUDE5INxS90LD5NJt6icxiFhpvIRhRANtlIWORuXbp/pE/LTMfZU
-         5AGBCuJrZYxPoFl9Xhwl57lj/SAlTOwQgbszYOdjjIlOcWMwrtoHNubeCOmYLjuCAc
-         qmP536XTz+5bomt598YJqcDNmQFiYzcR/+/mW4DE8b+HcvaoS8IKjhtOlFAD6gfI9K
-         qXUgnzDhhAi7SFvfe2FD/2vdVVrOtgKkECrP9vnov+Yt5CFoz8vN0LTAQv3pxLSgJ7
-         7+9sCRPilbpFg==
-X-Nifty-SrcIP: [209.85.221.53]
-Received: by mail-wr1-f53.google.com with SMTP id s1so16266703wra.9;
-        Tue, 28 Jun 2022 00:25:14 -0700 (PDT)
-X-Gm-Message-State: AJIora+PCCmiwMBfCMQnsCtQpZk1lawz2MrJ5TOjsVQCS00zLhKPF8EN
-        t4LAnOm1J5z/K3kBywvmqKaJURn0IEQjwG9/A+Y=
-X-Google-Smtp-Source: AGRyM1uZt0JBBIngefTOq5ciOXsKG9KrTWDDKK7vu9jmcRu4wRqqpeYUcz2ffXtsi6U5Y2sLFFuZqSTom9sFhummQ8w=
-X-Received: by 2002:adf:d1ea:0:b0:21b:a6cb:fcf6 with SMTP id
- g10-20020adfd1ea000000b0021ba6cbfcf6mr15985029wrd.477.1656401112927; Tue, 28
- Jun 2022 00:25:12 -0700 (PDT)
+        Tue, 28 Jun 2022 03:26:15 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEAF42CE34
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:26:14 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id v38so10033973ybi.3
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:26:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uto9EobkP0WojhVEjYvx1l88xfjdKMI1uMfZ8YaCROA=;
+        b=Zz5NixJh4HJgTIb06YIHJ94O3w+bu9++8ykqNoJ7fswmaU/CogyoQemUpL4HQKbb+T
+         OjCOIAz+3l61bxJ8zkx+mJy6EMi5jYAZBRKouXO+BOaVx8WI3bfDtV/swlON6xZv3KZ/
+         Ca9+015+kkJZet6dOzqR5WKm8DlC+YRoxXM0+wUiFg8/WL6qY66oR7vtgflo6KcNqVKy
+         DQUUBLXDPBoe7+xd7Z9s/J2f7wMYzeugSjDgEN+8EQX1nPKQ3GXQPB147XgA4aw6EBVV
+         IOJVgDbdIJa5R+XxWlyqMoJwJkSrMcFOXfOSiFtfdR5nygSGOn8iSl7+E4/y2LFaikdG
+         fl0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uto9EobkP0WojhVEjYvx1l88xfjdKMI1uMfZ8YaCROA=;
+        b=67p4riKIb/3g9bXR6Ntq1qjTrQsiTwUDogj1RetiM6QvY2ayBGaVT+L3K+JUDiFRvD
+         6r8hwqHyIllg2Oc/ChaRgkFRNjTfi9x+t3oJxqJ3capL2A8/8050G8XrNIyIiM4g0Nvn
+         3l7uhaexP3OdnzbySf8MR+UP9EpKkw68i3zEj5wTocmCJceKP1AjFHx6HiFNfJR/Tzfh
+         cF3ZjrFnaBazgcZe8PMovYQNVfAU+C8zc1vkHw+qYdGgXFkWS9CJoqxs/8yjfyNmOPwu
+         Fj1a4wVQJoSgM1uatWLL1r4TBYIq9Mof60Rmp1wSHHPUvkAuPQVnATWriyv1+AaZanhG
+         rZRw==
+X-Gm-Message-State: AJIora9yI7BOdfQiNvBaPpeFqJF85ZWldbLu+PkE40/+Fux1QlFFy5fO
+        tmhG+IHcW2Cb8Bg+eAGa9vO853ZOx+33vg6G4V1e5tSNzn8=
+X-Google-Smtp-Source: AGRyM1tZja++4yw/IpQxXTZiryi9L5L9Yt0HSZ5XaTnNZlRVpDGyOYTD7gaikjK7+HID7PVRqz/St568tOu+kmjg+pQ=
+X-Received: by 2002:a25:3497:0:b0:66c:c013:4bea with SMTP id
+ b145-20020a253497000000b0066cc0134beamr10903346yba.625.1656401173876; Tue, 28
+ Jun 2022 00:26:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAABZP2wCsXG=qaZ68OwDDPA=uG-4Wb-e6WxMNuHNbJTZ1ruenA@mail.gmail.com>
-In-Reply-To: <CAABZP2wCsXG=qaZ68OwDDPA=uG-4Wb-e6WxMNuHNbJTZ1ruenA@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 28 Jun 2022 16:24:28 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATNo74bcp6F08iiYjbMrnNeQWsOSys5vYfG88jjpU-kZQ@mail.gmail.com>
-Message-ID: <CAK7LNATNo74bcp6F08iiYjbMrnNeQWsOSys5vYfG88jjpU-kZQ@mail.gmail.com>
-Subject: Re: Possible problem in check-local-export during the kernel build
- process (RCU torture)
-To:     Zhouyi Zhou <zhouzhouyi@gmail.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        rcu <rcu@vger.kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
+References: <20220623111937.6491-1-yee.lee@mediatek.com> <20220623111937.6491-2-yee.lee@mediatek.com>
+ <CANpmjNN-jsZoVmJWD2Dz6O3_YVjy0av6e0iD-+OYXpik1LbLvg@mail.gmail.com>
+ <bdfd039fbde06113071f773ae6d5635ff4664e2c.camel@mediatek.com>
+ <CANpmjNPfkFjUteMCDzUSPmTKbpnSfjmWqp9ft8vb-v=B8eeRKw@mail.gmail.com> <9c6fcb1c178a923f2406466a3f9f2345e4e7a1c1.camel@mediatek.com>
+In-Reply-To: <9c6fcb1c178a923f2406466a3f9f2345e4e7a1c1.camel@mediatek.com>
+From:   Marco Elver <elver@google.com>
+Date:   Tue, 28 Jun 2022 09:25:37 +0200
+Message-ID: <CANpmjNOADG3UqC+6aGEmfh5kzaiaqjGTFieUonC=_XwOophJ+g@mail.gmail.com>
+Subject: Re: [PATCH 1/1] mm: kfence: skip kmemleak alloc in kfence_pool
+To:     Yee Lee <yee.lee@mediatek.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:KFENCE" <kasan-dev@googlegroups.com>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>, catalin.marinas@arm.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 9:55 AM Zhouyi Zhou <zhouzhouyi@gmail.com> wrote:
+On Tue, 28 Jun 2022 at 08:41, Yee Lee <yee.lee@mediatek.com> wrote:
 >
-> Dear Masahiro:
+> On Fri, 2022-06-24 at 10:28 +0200, Marco Elver wrote:
 >
-> 1. The cause of the problem
-> When I am doing RCU torture test:
->
-> #git clone https://kernel.source.codeaurora.cn/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
-> #cd linux-rcu
-> #git checkout remotes/origin/pmladek.2022.06.15a
-> #./tools/testing/selftests/rcutorture/bin/torture.sh
->
-> The kernel building report error something in both Dell PowerEdge R720
-> and Thinkpad T14 (Amd).
->
-> For example:
-> /mnt/rcu/linux-rcu/tools/testing/selftests/rcutorture/res/2022.06.27-10.42.37-torture#
-> find . -name Make.out|xargs grep Error
-> ./results-rcutorture-kasan/RUDE01/Make.out:make[2]: ***
-> [scripts/Makefile.build:257: kernel/trace/power-traces.o] Error 255
-
-
-check-local-export stopped using the process substitution.
-Seet this commit:
-
-
-commit da4288b95baa1c7c9aa8a476f58b37eb238745b0
-Author: Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed Jun 8 10:11:00 2022 +0900
-
-    scripts/check-local-export: avoid 'wait $!' for process substitution
-
-
-
-
-You are debugging the stale Kbuild code.
-
-If your main interest is RCU torture,
-please narrow it down to a standalone script,
-not the entire Kbuild.
-
-
-
-
-
-
-
-
-
->
-> 2. I trace the problem to check-local-export
-> I add some echo statement in Makefile.build
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index 1f01ac65c0cd..0d48a2d3efff 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -227,13 +227,21 @@ cmd_check_local_export =
-> $(srctree)/scripts/check-local-export $@
->
->  define rule_cc_o_c
->         $(call cmd_and_fixdep,cc_o_c)
-> +       echo "after fixdep $$? $<"
->         $(call cmd,gen_ksymdeps)
-> +       echo "after gen_ksymdeps $$? $<"
->         $(call cmd,check_local_export)
-> +       echo "after check_local_export $$? $<"
->         $(call cmd,checksrc)
-> +       echo "after checksrc $$? $<"
->         $(call cmd,checkdoc)
-> +       echo "after checkdoc $$? $<"
->         $(call cmd,gen_objtooldep)
-> +       echo "after gen_objtooldep $$? $<"
->         $(call cmd,gen_symversions_c)
-> +       echo "after gen_symversions $$? $<"
->         $(call cmd,record_mcount)
-> +       echo "after record_mcount $$? $<"
->  endef
->
-> Then I rerun the torture.sh
->
-> The result show it is check_local_export did not continue in all failed builds.
->
-> 3. I trace into wait statement in check-local-export
-> diff --git a/scripts/check-local-export b/scripts/check-local-export
-> index da745e2743b7..d35477d95bdc 100755
-> --- a/scripts/check-local-export
-> +++ b/scripts/check-local-export
-> @@ -12,7 +12,7 @@ declare -A symbol_types
->  declare -a export_symbols
->
->  exit_code=0
-> -
-> +echo "check-local-export L15 ${0} ${1}"
->  while read value type name
->  do
->         # Skip the line if the number of fields is less than 3.
-> @@ -50,9 +50,10 @@ do
->         #   done < <(${NM} --quiet ${1})
->  done < <(${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } )
->
-> +echo "check-local-export L53 ${0} ${1}"
->  # Catch error in the process substitution
->  wait $!
-> -
-> +echo "check-local-export L56 ${0} ${1} $! $?"
->  for name in "${export_symbols[@]}"
->  do
->         # nm(3) says "If lowercase, the symbol is usually local"
-> @@ -61,5 +62,9 @@ do
->                 exit_code=1
->         fi
->  done
-> -
-> +if [ ${exit_code} -ne 0 ] ; then
-> +    echo "Zhouyi Zhou"
-> +    echo ${exit_code}
-> +fi
-> +echo "check-local-export L69 $? ${exit_code}"
->  exit ${exit_code}
->
-> Then I rerun the torture.sh
->
-> The result show it is wait $! in all failed builds because in all failed cases,
-> there is L53, but no L56
->
-> 4. I look into source code of wait command
-> #wget http://ftp.gnu.org/gnu/bash/bash-5.0.tar.gz
-> #tar zxf tar zxf bash-5.0.tar.gz
-> I found that there are QUIT statements in realization of function wait_for
->
-> 5. My Guess
-> wait statement in check-local-export may cause bash to quit
-> I am very interested in this problem, but I am a rookie, I am very
-> glad to proceed the investigation with your further directions.
->
-> Sorry to have brought you so much trouble.
+> On Fri, 24 Jun 2022 at 10:20, 'Yee Lee' via kasan-dev
+> <kasan-dev@googlegroups.com> wrote:
 >
 >
-> Kind Regard
-> Thank you very much
-> Zhouyi
+> On Thu, 2022-06-23 at 13:59 +0200, Marco Elver wrote:
+>
+> On Thu, 23 Jun 2022 at 13:20, yee.lee via kasan-dev
+> <kasan-dev@googlegroups.com> wrote:
+>
+>
+> From: Yee Lee <yee.lee@mediatek.com>
+>
+> Use MEMBLOCK_ALLOC_NOLEAKTRACE to skip kmemleak registration when
+> the kfence pool is allocated from memblock. And the kmemleak_free
+> later can be removed too.
+>
+>
+> Is this purely meant to be a cleanup and non-functional change?
+>
+> Signed-off-by: Yee Lee <yee.lee@mediatek.com>
+>
+> ---
+>  mm/kfence/core.c | 18 ++++++++----------
+>  1 file changed, 8 insertions(+), 10 deletions(-)
+>
+> diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+> index 4e7cd4c8e687..0d33d83f5244 100644
+> --- a/mm/kfence/core.c
+> +++ b/mm/kfence/core.c
+> @@ -600,14 +600,6 @@ static unsigned long kfence_init_pool(void)
+>                 addr += 2 * PAGE_SIZE;
+>         }
+>
+> -       /*
+> -        * The pool is live and will never be deallocated from this
+> point on.
+> -        * Remove the pool object from the kmemleak object tree, as
+> it would
+> -        * otherwise overlap with allocations returned by
+> kfence_alloc(), which
+> -        * are registered with kmemleak through the slab post-alloc
+> hook.
+> -        */
+> -       kmemleak_free(__kfence_pool);
+>
+>
+> This appears to only be a non-functional change if the pool is
+> allocated early. If the pool is allocated late using page-alloc, then
+> there'll not be a kmemleak_free() on that memory and we'll have the
+> same problem.
+>
+>
+> Do you mean the kzalloc(slab_is_available) in memblock_allc()? That
+> implies that MEMBLOCK_ALLOC_NOLEAKTRACE has no guarantee skipping
+> kmemleak_alloc from this. (Maybe add it?)
+>
+>
+> No, if KFENCE is initialized through kfence_init_late() ->
+> kfence_init_pool_late() -> kfence_init_pool().
+>
+> Thanks for the information.
+>
+> But as I known, page-alloc does not request kmemleak areas.
+> So the current kfence_pool_init_late() would cause another kmemleak warning on unknown freeing.
+>
+> Reproducing test: (kfence late enable + kmemleak debug on)
+>
+> / # echo 500 > /sys/module/kfence/parameters/sample_interval
+> [  153.433518] kmemleak: Freeing unknown object at 0xffff0000c0600000
+> [  153.433804] CPU: 0 PID: 100 Comm: sh Not tainted 5.19.0-rc3-74069-gde5c208d533a-dirty #1
+> [  153.434027] Hardware name: linux,dummy-virt (DT)
+> [  153.434265] Call trace:
+> [  153.434331]  dump_backtrace+0xdc/0xfc
+> [  153.434962]  show_stack+0x18/0x24
+> [  153.435106]  dump_stack_lvl+0x64/0x7c
+> [  153.435232]  dump_stack+0x18/0x38
+> [  153.435347]  kmemleak_free+0x184/0x1c8
+> [  153.435462]  kfence_init_pool+0x16c/0x194
+> [  153.435587]  param_set_sample_interval+0xe0/0x1c4
+> [  153.435694]  param_attr_store+0x98/0xf4
+> [  153.435804]  module_attr_store+0x24/0x3c
+> [  153.435910]  sysfs_kf_write+0x3c/0x50
+> ...(skip)
+> [  153.444496] kfence: initialized - using 524288 bytes for 63 objects at 0x00000000a3236b01-0x00000000901655d3
+> / #
+>
+> Hence, now there are two issues to solve.
+> (1) (The original)To prevent the undesired kmemleak scanning on the kfence pool. As Cataline's suggestion, we can just apply kmemleak_ignore_phys instead of free it at all.
+> ref: https://lore.kernel.org/linux-mm/YrWPg3xIHbm9bFxP@arm.com/
+>
+> (2) The late-allocated kfence pool doesn't need to go through kmemleak_free. We can relocate the opeartion to kfence_init_pool_early() to seperate them.
+> That is, kfence_init_pool_early(memblock) has it and kfence_init_pool_late(page alloc) does not.
+>
+> The draft is like the following.
 
+Looks reasonable - feel free to send v2.
 
-
--- 
-Best Regards
-Masahiro Yamada
+Thanks,
+-- Marco
