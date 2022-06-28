@@ -2,84 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E022CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:36:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344947AbiF1KfL (ORCPT
+        id S1344956AbiF1Kgy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 06:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38362 "EHLO
+        Tue, 28 Jun 2022 06:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344938AbiF1KfI (ORCPT
+        with ESMTP id S230259AbiF1Kgt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 06:35:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6E1313BE;
-        Tue, 28 Jun 2022 03:35:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8E9CB81DC6;
-        Tue, 28 Jun 2022 10:35:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14493C3411D;
-        Tue, 28 Jun 2022 10:35:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656412505;
-        bh=nmAD0wkHPJj75POEBn9llYxTmYYIW9jt0N+pB+TZRr8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gCuKjyAePOHhaAZuR1nGo64rN/yFJfZuXyujuEeQcmipVVCnq4LwDzmvO5gAov5Js
-         ievamH+VFSXlKJuzRUeKZktjFPCwKxt/k/CDRKkmY8u5q3MAqQUp7CWuSXM1U4XHbX
-         2zUxEVRTz3lNNXpP1FDgDR0B1KYo0TgixLRbyfiK0gh05hZcM/fx4czGqbIgQZDocW
-         KwZVnYNjcr2PfNUT3YxH9aZpAj3e81t5PZsXOySBi/PzrSIPI20g1wxX9f0AaHXPvI
-         1qGito6O0MAb+xw32lKEnd6PR4lSVZz5KaXv89Mg+Wgf8m9lmRPrQAdgmnMOoUoWwQ
-         L8f75Gs3AOuGA==
-Date:   Tue, 28 Jun 2022 11:35:00 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 18/22] regulator: fix a kernel-doc warning
-Message-ID: <YrrZVDUXzHNtvLNi@sirena.org.uk>
-References: <cover.1656409369.git.mchehab@kernel.org>
- <15efc16e878aa327aa2769023bcdf959a795f41d.1656409369.git.mchehab@kernel.org>
+        Tue, 28 Jun 2022 06:36:49 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E63531534
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 03:36:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656412609; x=1687948609;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qd/+wbTOOfSyyP0NkU7Hz763nXunyVjpMef36WY5hLM=;
+  b=b83MlFJN/8s0iRFZ6uNq0CR1DPQH6Pt/XQekjjJ2PPC29Jd1dVR/BOG+
+   yOJvf57IsFvsG22+RPCCmryuz+IRGtcTLmAgDlPVbMeZcoOJQtGAE75Sm
+   8MRah7SS4v0I2tpXo+9uDQZKFxYxEuD4MzF3t9qQ4YBa7OD2CMZ0DpIEF
+   Pw3saz5xv+iDGjgcnpsV/5B8EZcvzmgVii/YG2UTSMkTZoQK8iU/jtCxM
+   VEfKap54IFDjycVTInZWmOJdov9e+JkYG41jCEz9XDVPmHr7L30F7XC0s
+   tMR+gJTgRdEo0nCCAHTpjlz945idDHUgnju9EKv/867ALNRTrIeNPW0Dm
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281742886"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="281742886"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:36:48 -0700
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="617143863"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:36:47 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o68aK-000wj9-Ry;
+        Tue, 28 Jun 2022 13:36:44 +0300
+Date:   Tue, 28 Jun 2022 13:36:44 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 11/11] mfd: intel_soc_pmic_bxtwc: Fix spelling in the
+ comment
+Message-ID: <YrrZvEOiiwCo0Xsm@smile.fi.intel.com>
+References: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
+ <20220616165823.4919-11-andriy.shevchenko@linux.intel.com>
+ <Yrl5XZOgD8abd+Qm@google.com>
+ <YrrL+Mil/B1Gh5VN@smile.fi.intel.com>
+ <YrrQT8rxDFuAdzt5@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6l3VTahVwLIvYoL/"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <15efc16e878aa327aa2769023bcdf959a795f41d.1656409369.git.mchehab@kernel.org>
-X-Cookie: I like your SNOOPY POSTER!!
+In-Reply-To: <YrrQT8rxDFuAdzt5@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 28, 2022 at 10:56:31AM +0100, Lee Jones wrote:
+> On Tue, 28 Jun 2022, Andy Shevchenko wrote:
+> > On Mon, Jun 27, 2022 at 10:33:17AM +0100, Lee Jones wrote:
+> > > On Thu, 16 Jun 2022, Andy Shevchenko wrote:
+> > 
+> > > > -	 * There is known hw bug. Upon reset BIT 5 of register
+> > > > +	 * There is known HW bug. Upon reset BIT 5 of register
+> > > 
+> > > You may as well fix the grammar while you're at it.
+> > 
+> > Any suggestion from a native speaker? I can propose a few changes, but I'm
+> > totally unsure.
+> 
+> No massive changes, just:
+> 
+> * There is a known H/W bug. Upon reset, BIT 5 of register
+>            -       ---                -
+> 
+> > > >  	 * BXTWC_CHGR_LVL1_IRQ is 0 which is the expected value. However,
+> > > >  	 * later it's set to 1(masked) automatically by hardware. So we
+> > > > -	 * have the software workaround here to unmaksed it in order to let
+> > > > -	 * charger interrutp work.
+> > > > +	 * have the software workaround here to unmasked it in order to let
+> > > > +	 * charger interrupt work.
+> 
+> * place a software workaround here to unmask it again in order to re-enable
+>   -------                             ------    -----             ---------
+> 
+> * the charger interrupt.
+>   ---
+> 
+> Something like that.  Feel free to adapt it further as you see fit.
 
---6l3VTahVwLIvYoL/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Thank you, Lee, I will do as suggested!
 
-On Tue, Jun 28, 2022 at 10:46:22AM +0100, Mauro Carvalho Chehab wrote:
-> document n_ramp_values field at struct regulator_desc, in order
-> to solve this warning:
+-- 
+With Best Regards,
+Andy Shevchenko
 
-This is patch 18 of a series for which I don't have a cover letter or
-anything.  What's the story with dependencies here?
 
---6l3VTahVwLIvYoL/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmK62VQACgkQJNaLcl1U
-h9D7MAf/TDKw+iaQTVZC0yWj0l7aunVFuGoLANysHVQ0y72uxSOnR29paCHQmsGA
-u5p2SUYFsJM0pik355wg9S3uE8S5tWQCsjeYu9UBHab6MR8wB2ePuJuVaHzIVFHc
-3WR48A9NsuSpsKaj1OswKQ1xrXlrtebr8wi1sJ9YnfS9WsPV4ZA1f5YnQ2tBncrY
-ZAOlULXRQSsnmOVAjxUIOymOs7/AVJVtr7//18YJ4kFOSIsM9tB1xWBY9oVCXMqQ
-LqsR57hMckpIttFK54qtiVoHX/vyGyvGbglzdvA/xU84FO+30JkvajYLDTPGuNFE
-zzxixyd5RmedfZLFM3I8ZPPLVPJt7g==
-=lBOH
------END PGP SIGNATURE-----
-
---6l3VTahVwLIvYoL/--
