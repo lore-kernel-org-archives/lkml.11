@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51DD8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EB9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233436AbiF1TBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55756 "EHLO
+        id S232253AbiF1TBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:01:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234142AbiF1TAX (ORCPT
+        with ESMTP id S234018AbiF1TAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:00:23 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E65BDF5B;
-        Tue, 28 Jun 2022 11:59:59 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id e40so18931024eda.2;
-        Tue, 28 Jun 2022 11:59:59 -0700 (PDT)
+        Tue, 28 Jun 2022 15:00:22 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE5DBF6C;
+        Tue, 28 Jun 2022 11:59:57 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id cf14so18904716edb.8;
+        Tue, 28 Jun 2022 11:59:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mNAl7aHtaBa/r+OrmETRXcPT/IbWKen65cbhqfyTMuk=;
-        b=XzGizqos91CZ9HG5E3teB1nM0p5c7P2MErQhLJ8zGkP2eOQmvAmUunoTYuOetkQ62u
-         w924Z+ChBUqErhBkJR1TBK3i2PhiqeDLtnN3ynk7AJxNPWIo84QYgUROay5gWXjlNGit
-         DLBDrNJj29XtDocUxRtEY9+LLBzdfxfs0Pxx89KSjGfjjPiKNpq8EiaVQV+r/MvxGMxx
-         d5mIybokNy+uat9yBdbYYIhPz0QrCUb8cyJDW1FqMHbQ/51egrIUL25WMTTtb1CLB3/o
-         w7x6a/+sgSZSu0Fwx2qU5Z26j6AshHGYiRWxrBMm+Rf2zBDaxc3JB3RNQ9g/20jVQbsm
-         sQQQ==
+        bh=p79o1VsFDo3cqk77y+g7Vo/BbqY9LUCoOrOtB7thWXc=;
+        b=kCuOg+JnsMVf2GKgp0FVpXjiZvxoJtJjry8oHlX2MssbI32rWwy5pOqbpWYl/RBv6n
+         SdIUM9aZMrfxqcmVo3UCUY+52jLzD74eKkpiFxVYWBhEWKVl+0w1wMPJmIpJ7krtoHbL
+         TAyV1MeBFVt/N3btF3lTG4qTgKw5Zinm3LfEqhuo9j8lcleifwMs29AyBkX7WPwKZOAI
+         mx7xIIzJmuUEkc0NXSCSdCGg7uFnG3nZkfr+3lVNxcog3UlZ87R/loFGtMw5Wai+9OLn
+         PSTmDIOfX5Zpv/71WkQHg9hOOmyEoGBqhvqDSovCuTCkB4nO94D/w7am3C/Hs1m/prj+
+         WBig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mNAl7aHtaBa/r+OrmETRXcPT/IbWKen65cbhqfyTMuk=;
-        b=nvv30mqo6HepTc/8Uj4KCWnS9+ZCRfhz79n2UztOIQGKgk/FEX/XrOk+2oTMbeKhPP
-         F9aMTnHEq0+dZ4xDlugyRyiXqZ6ok6jsjbFRN0MRw8AxQvwvCQpWa/uzExZNq44luxb0
-         8YPcM7OeLtZivtqOhOEhcwDnRorCoiukaYtfNV12WujkpogCO+cGfqck9wWFJOUcj3x0
-         8EdcUQndVjADYtm2CSvHoj2Ki5vmFC6Zd5tOYB6d7drnP87UI9Wy5ptW2a0U4/Rzm9Uu
-         QPpEWmrHGjcK/GDR3z3+oHK3TTgzsH8glzO36MzjSsiZRV1LUlIdPM7HSNd+1UnlzoBc
-         EXIA==
-X-Gm-Message-State: AJIora+gCiAO1diPGvoEdj3CfC2T+ary6Mnnc/EvNNuCvKOW/r67UbVU
-        p7D0vI2Y2EXf/TcLnexK0xLM7gaJKlIqGQ==
-X-Google-Smtp-Source: AGRyM1ur8kgCpV+3tyFwUj7TgowpM1DSKOSUF/XBNgpKQ89Sb0McR6iQywly0THS8KpazclC+9QQWw==
-X-Received: by 2002:a05:6402:448c:b0:435:9dcc:b8a5 with SMTP id er12-20020a056402448c00b004359dccb8a5mr24677698edb.287.1656442798496;
-        Tue, 28 Jun 2022 11:59:58 -0700 (PDT)
+        bh=p79o1VsFDo3cqk77y+g7Vo/BbqY9LUCoOrOtB7thWXc=;
+        b=cXSv/acy3B54tgSvwe1Fai5TrefZeuxVD9ENeBVg/5pQjsJH0jGZeZMtjKh8ten/Bt
+         Lj7q3YveqplpK9RScHQFevMYraIWyQMZ462toCe5l1cUz/orraMo0tRdy451IKXbYpCp
+         z6oESamH3sWkrTOr0QrOYvYssknLhwWhLDipsuQ8Ay+8OS+qIfgGU48pN2T6qrlnmaUi
+         o+pjwqf8ZABUMY9JRIJ+j55lQ2gXbXROLk7GDA/bsn7RfnXuI8b3pTeyANVHCnzCF4Vw
+         92768xtB21MgKiRvp3jj4xXbLUr/ONe47efdcrlqpbLPKVY/jelNZlXocfCBJz4o3WIE
+         6NAw==
+X-Gm-Message-State: AJIora/2EdHjeYKCDj6uMfdolqizCsYvDuIK/vV8qRoRclo0TpvqeUvb
+        FLARH2930BVq2EXgFD2U8FXhFFmGyrbHxg==
+X-Google-Smtp-Source: AGRyM1sfveaW9Z0wUTJdyiH4ioJG+ffU6P3nXYR1U35Urv1GNQ5nJo6QrTpR64WlJRJWKdj/slZAPw==
+X-Received: by 2002:a05:6402:5306:b0:437:8bbd:b313 with SMTP id eo6-20020a056402530600b004378bbdb313mr16741610edb.123.1656442796044;
+        Tue, 28 Jun 2022 11:59:56 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.11.59.57
+        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.11.59.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 11:59:58 -0700 (PDT)
+        Tue, 28 Jun 2022 11:59:55 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC net-next v3 05/29] net: bvec specific path in zerocopy_sg_from_iter
-Date:   Tue, 28 Jun 2022 19:56:27 +0100
-Message-Id: <5143111391e771dc97237e2a5e6a74223ef8f15f.1653992701.git.asml.silence@gmail.com>
+Subject: [RFC net-next v3 03/29] skbuff: add SKBFL_DONT_ORPHAN flag
+Date:   Tue, 28 Jun 2022 19:56:25 +0100
+Message-Id: <1def15f02ef8bcfe9fd80a4accd3c5af57675179.1653992701.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1653992701.git.asml.silence@gmail.com>
 References: <cover.1653992701.git.asml.silence@gmail.com>
@@ -69,77 +69,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an bvec specialised and optimised path in zerocopy_sg_from_iter.
-It'll be used later for {get,put}_page() optimisations.
+We don't want to list every single ubuf_info callback in
+skb_orphan_frags(), add a flag controlling the behaviour.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/core/datagram.c | 47 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ include/linux/skbuff.h | 8 +++++---
+ net/core/skbuff.c      | 2 +-
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/datagram.c b/net/core/datagram.c
-index 50f4faeea76c..5237cb533bb4 100644
---- a/net/core/datagram.c
-+++ b/net/core/datagram.c
-@@ -613,11 +613,58 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
- }
- EXPORT_SYMBOL(skb_copy_datagram_from_iter);
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index da96f0d3e753..eead3527bdaf 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -686,10 +686,13 @@ enum {
+ 	 * charged to the kernel memory.
+ 	 */
+ 	SKBFL_PURE_ZEROCOPY = BIT(2),
++
++	SKBFL_DONT_ORPHAN = BIT(3),
+ };
  
-+static int __zerocopy_sg_from_bvec(struct sock *sk, struct sk_buff *skb,
-+				   struct iov_iter *from, size_t length)
-+{
-+	int frag = skb_shinfo(skb)->nr_frags;
-+	int ret = 0;
-+	struct bvec_iter bi;
-+	ssize_t copied = 0;
-+	unsigned long truesize = 0;
-+
-+	bi.bi_size = min(from->count, length);
-+	bi.bi_bvec_done = from->iov_offset;
-+	bi.bi_idx = 0;
-+
-+	while (bi.bi_size && frag < MAX_SKB_FRAGS) {
-+		struct bio_vec v = mp_bvec_iter_bvec(from->bvec, bi);
-+
-+		copied += v.bv_len;
-+		truesize += PAGE_ALIGN(v.bv_len + v.bv_offset);
-+		get_page(v.bv_page);
-+		skb_fill_page_desc(skb, frag++, v.bv_page, v.bv_offset, v.bv_len);
-+		bvec_iter_advance_single(from->bvec, &bi, v.bv_len);
-+	}
-+	if (bi.bi_size)
-+		ret = -EMSGSIZE;
-+
-+	from->bvec += bi.bi_idx;
-+	from->nr_segs -= bi.bi_idx;
-+	from->count = bi.bi_size;
-+	from->iov_offset = bi.bi_bvec_done;
-+
-+	skb->data_len += copied;
-+	skb->len += copied;
-+	skb->truesize += truesize;
-+
-+	if (sk && sk->sk_type == SOCK_STREAM) {
-+		sk_wmem_queued_add(sk, truesize);
-+		if (!skb_zcopy_pure(skb))
-+			sk_mem_charge(sk, truesize);
-+	} else {
-+		refcount_add(truesize, &skb->sk->sk_wmem_alloc);
-+	}
-+	return ret;
-+}
-+
- int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
- 			    struct iov_iter *from, size_t length)
+ #define SKBFL_ZEROCOPY_FRAG	(SKBFL_ZEROCOPY_ENABLE | SKBFL_SHARED_FRAG)
+-#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY)
++#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY | \
++				 SKBFL_DONT_ORPHAN)
+ 
+ /*
+  * The callback notifies userspace to release buffers when skb DMA is done in
+@@ -3175,8 +3178,7 @@ static inline int skb_orphan_frags(struct sk_buff *skb, gfp_t gfp_mask)
  {
- 	int frag = skb_shinfo(skb)->nr_frags;
+ 	if (likely(!skb_zcopy(skb)))
+ 		return 0;
+-	if (!skb_zcopy_is_nouarg(skb) &&
+-	    skb_uarg(skb)->callback == msg_zerocopy_callback)
++	if (skb_shinfo(skb)->flags & SKBFL_DONT_ORPHAN)
+ 		return 0;
+ 	return skb_copy_ubufs(skb, gfp_mask);
+ }
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5b3559cb1d82..5b35791064d1 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1193,7 +1193,7 @@ static struct ubuf_info *msg_zerocopy_alloc(struct sock *sk, size_t size)
+ 	uarg->len = 1;
+ 	uarg->bytelen = size;
+ 	uarg->zerocopy = 1;
+-	uarg->flags = SKBFL_ZEROCOPY_FRAG;
++	uarg->flags = SKBFL_ZEROCOPY_FRAG | SKBFL_DONT_ORPHAN;
+ 	refcount_set(&uarg->refcnt, 1);
+ 	sock_hold(sk);
  
-+	if (iov_iter_is_bvec(from))
-+		return __zerocopy_sg_from_bvec(sk, skb, from, length);
-+
- 	while (length && iov_iter_count(from)) {
- 		struct page *pages[MAX_SKB_FRAGS];
- 		struct page *last_head = NULL;
 -- 
 2.36.1
 
