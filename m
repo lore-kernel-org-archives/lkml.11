@@ -2,82 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A55F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABF2CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbiF1U5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 16:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
+        id S231164AbiF1VAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 17:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiF1U5f (ORCPT
+        with ESMTP id S229509AbiF1VAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 16:57:35 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0CA3914A
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:57:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656449854; x=1687985854;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7EASrP8TbY4kZA/ihQpkN/hTKwuF8+QdZ2zKsCBhPAU=;
-  b=j5Rj1oFVVoPbGCjXbOgP7jtoqD1Wl90QCMzTdRzCwTQjuMds2BClAbQd
-   ySQ+TVY1x46jx7zkeMuDsDp7PvJ2MZmrEIAKrApqr+u15EZax+oNb3u7o
-   fU4jHpxABzclJ/cz1Q3X3pPrHkw+HDsUlrXEqdTX2mKi0cDxIZDSE/29n
-   WC0T2lMD+nU2xhcDmPR7KSWlV6F5UnyOHpUBkis55OQbx6MJMwMT2JYd4
-   N0LYPLKlr0yg3Mpi5sFSMti2X/PHBqNzLuCk6At3CnAEGPfdEFu/bi/e9
-   cE4416zQA5ZIxtk5cg+IHEArrufAi3agMxzMZjzfCd7KGbxRgSLXWf8yM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="270608858"
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="270608858"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 13:57:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="588003216"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 28 Jun 2022 13:57:32 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o6IH6-000Ace-7z;
-        Tue, 28 Jun 2022 20:57:32 +0000
-Date:   Wed, 29 Jun 2022 04:56:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [zx2c4:master 9/10] ERROR: modpost: "wake_up_state"
- [drivers/char/hw_random/rng-core.ko] undefined!
-Message-ID: <202206290411.mqUgqNBX-lkp@intel.com>
+        Tue, 28 Jun 2022 17:00:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD59381A9;
+        Tue, 28 Jun 2022 14:00:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3FCDB82048;
+        Tue, 28 Jun 2022 21:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 734C5C341CA;
+        Tue, 28 Jun 2022 21:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656450014;
+        bh=gHzT6F/edl+As3rF8zbKdZdULO58PiwHR//I1JE8aes=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JirHjzc+URxAcD1GXOuYXAGb3d2L/UjgzMEvI6eWnnNhmLZfM4iwxcCrc6pT8CBcC
+         s8pslBsAPj9Sq3E8vsXVbHrp6bi58/PIg0oReN5mIHAwkHSD3Acjcykz2Ierqw3JJy
+         ff/bhvsnB0kcTQH5AyzeHfh3TCP0T+wb+LAzNna4eabBKgob14Poye01C780iSlU51
+         Ft25yDXUvowuMNvrsJOl2Dv4pTvBSotgwSM4609+QHGihTEtzHV7HzGG/NlekvaT13
+         hvzg0AeNFhHM6/bQC4tjwJatsP+kKlIbog8pD7ydaM0X/J4kWuC9DtvtQ7z8hMfPHs
+         YaByI26LzPRhA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 54A78E49BBA;
+        Tue, 28 Jun 2022 21:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v3 1/1] xsk: clear page contiguity bit when unmapping pool
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165645001434.24528.16734258366303906334.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Jun 2022 21:00:14 +0000
+References: <20220628091848.534803-1-ivan.malov@oktetlabs.ru>
+In-Reply-To: <20220628091848.534803-1-ivan.malov@oktetlabs.ru>
+To:     Ivan Malov <ivan.malov@oktetlabs.ru>
+Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        netdev@vger.kernel.org, andrew.rybchenko@oktetlabs.ru,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bjorn@kernel.org, maciej.fijalkowski@intel.com,
+        jonathan.lemon@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        maximmi@mellanox.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/linux.git master
-head:   9b3548a2475866d26bdeee84d62eecf1bc94d22a
-commit: 78223ae64136d911588115c6c317a31305100ce4 [9/10] ath9k: let sleep be interrupted when unregistering hwrng
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220629/202206290411.mqUgqNBX-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/linux.git/commit/?id=78223ae64136d911588115c6c317a31305100ce4
-        git remote add zx2c4 https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/linux.git
-        git fetch --no-tags zx2c4 master
-        git checkout 78223ae64136d911588115c6c317a31305100ce4
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+Hello:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This patch was applied to bpf/bpf.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+On Tue, 28 Jun 2022 12:18:48 +0300 you wrote:
+> When a XSK pool gets mapped, xp_check_dma_contiguity() adds bit 0x1
+> to pages' DMA addresses that go in ascending order and at 4K stride.
+> The problem is that the bit does not get cleared before doing unmap.
+> As a result, a lot of warnings from iommu_dma_unmap_page() are seen
+> in dmesg, which indicates that lookups by iommu_iova_to_phys() fail.
+> 
+> Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+> Signed-off-by: Ivan Malov <ivan.malov@oktetlabs.ru>
+> 
+> [...]
 
->> ERROR: modpost: "wake_up_state" [drivers/char/hw_random/rng-core.ko] undefined!
+Here is the summary with links:
+  - [net,v3,1/1] xsk: clear page contiguity bit when unmapping pool
+    https://git.kernel.org/bpf/bpf/c/512d1999b8e9
 
+You are awesome, thank you!
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
