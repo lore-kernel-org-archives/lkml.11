@@ -2,188 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ACD5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E32C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:46:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344004AbiF1Ipz (ORCPT
+        id S1344033AbiF1IqC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
+        Tue, 28 Jun 2022 04:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243737AbiF1Ipp (ORCPT
+        with ESMTP id S1343939AbiF1Ipu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:45:45 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DE492D1FA
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:45:17 -0700 (PDT)
-Received: from [10.20.42.19] (unknown [10.20.42.19])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxf9iRv7piQUJhAA--.10467S3;
-        Tue, 28 Jun 2022 16:45:06 +0800 (CST)
-Subject: Re: [PATCH V12 01/10] APCI: irq: Add support for multiple GSI domains
-To:     Hanjun Guo <guohanjun@huawei.com>, Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-References: <1655273250-23495-1-git-send-email-lvjianmin@loongson.cn>
- <1655273250-23495-2-git-send-email-lvjianmin@loongson.cn>
- <87k09ipfe2.wl-maz@kernel.org>
- <0247b7d5-aca9-5db1-e712-4783ee672110@loongson.cn>
- <87fsk2p8b5.wl-maz@kernel.org>
- <ae3e0bc7-67c3-8f05-d3ba-98cab9b75117@huawei.com>
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-Message-ID: <80e06104-718f-01b5-91ce-a51c7151dde8@loongson.cn>
-Date:   Tue, 28 Jun 2022 16:45:05 +0800
-User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Tue, 28 Jun 2022 04:45:50 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC742DD59;
+        Tue, 28 Jun 2022 01:45:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656405923; x=1687941923;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bo/E4btYumeo3V4vdBSaofslPgRUpYOLcJoSzJYvuOw=;
+  b=mO+UnOxjweyJOku9mOjjaQz5ktbSwuUX3XYnQskfurZBDaZ63xHXPZzb
+   A0GohAg28UJt3VmDOEf6NfdVg9slENEyKcnKRSQ0W2tAaBXZPN6tb06qZ
+   lWd6Fr3APjb8ICiuBxELxW1ryk5W6LGVAQBb8QfUt2hOMcDvPkWe1UvaT
+   yPZVx6rdaEpGyYxIncspuX1noAMwGhnVoKHHyVvv8TRGfVvJcO8FFmcqo
+   ELTHCvX4Kx5NBrFkY4JK+G8ELzhOtORgEURR+Qbx1UFl85+4gey7oEURZ
+   Hl2r3xVZ2KAA/PZPgQ+K4L75/nNPryXNBlbA4HTA049iRNcV+dinv5Qox
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270426298"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="270426298"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:45:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="540417688"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 28 Jun 2022 01:45:19 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o66qV-0009mQ-8m;
+        Tue, 28 Jun 2022 08:45:19 +0000
+Date:   Tue, 28 Jun 2022 16:44:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Casey Schaufler <casey@schaufler-ca.com>,
+        casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, casey@schaufler-ca.com,
+        linux-audit@redhat.com, keescook@chromium.org,
+        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
+        paul@paul-moore.com, stephen.smalley.work@gmail.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v37 18/33] LSM: Use lsmcontext in
+ security_dentry_init_security
+Message-ID: <202206281633.LuFVQ9tq-lkp@intel.com>
+References: <20220628005611.13106-19-casey@schaufler-ca.com>
 MIME-Version: 1.0
-In-Reply-To: <ae3e0bc7-67c3-8f05-d3ba-98cab9b75117@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9Dxf9iRv7piQUJhAA--.10467S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxGryfAF1DGrW5Xr43uF17KFg_yoW7JF15pF
-        WktF15ArWUJr10qr10ga1YgFyakr1Uta48Xr1rJa47Aw4qgF1SgF47Xryj9FyDJr4rCr4j
-        qr15tFZ7uFnrArJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9j1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrw
-        ACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE-syl
-        42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW5Wr1UJr1l4I8I3I0E4IkC6x0Yz7
-        v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
-        1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
-        AIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0D
-        MIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvf
-        C2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220628005611.13106-19-casey@schaufler-ca.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Casey,
+
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on pcmoore-audit/next]
+[also build test ERROR on pcmoore-selinux/next linus/master v5.19-rc4 next-20220627]
+[cannot apply to jmorris-security/next-testing]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220628-095614
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git next
+config: x86_64-randconfig-r022-20220627 (https://download.01.org/0day-ci/archive/20220628/202206281633.LuFVQ9tq-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/c930a07cebde69363d3633fba8bd4cac46dd1520
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220628-095614
+        git checkout c930a07cebde69363d3633fba8bd4cac46dd1520
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   security/security.c: In function 'security_setprocattr':
+>> security/security.c:2319:45: error: 'lsm_slotlist' undeclared (first use in this function); did you mean 'lsm_slot'?
+    2319 |                         if (!strcmp(termed, lsm_slotlist[slot]->lsm)) {
+         |                                             ^~~~~~~~~~~~
+         |                                             lsm_slot
+   security/security.c:2319:45: note: each undeclared identifier is reported only once for each function it appears in
+   security/security.c:2285:21: warning: variable 'slotname' set but not used [-Wunused-but-set-variable]
+    2285 |         const char *slotname;
+         |                     ^~~~~~~~
+   At top level:
+   security/security.c:763:12: warning: 'lsm_sock_alloc' defined but not used [-Wunused-function]
+     763 | static int lsm_sock_alloc(struct sock *sock, gfp_t priority)
+         |            ^~~~~~~~~~~~~~
 
 
-On 2022/6/28 下午3:42, Hanjun Guo wrote:
-> On 2022/6/18 18:36, Marc Zyngier wrote:
-> [...]
->>>>> --- a/drivers/acpi/irq.c
->>>>> +++ b/drivers/acpi/irq.c
->>>>> @@ -12,7 +12,7 @@
->>>>>      enum acpi_irq_model_id acpi_irq_model;
->>>>>    -static struct fwnode_handle *acpi_gsi_domain_id;
->>>>> +static struct fwnode_handle *(*acpi_get_gsi_domain_id)(u32 gsi);
->>>>>      /**
->>>>>     * acpi_gsi_to_irq() - Retrieve the linux irq number for a given 
->>>>> GSI
->>>>> @@ -26,10 +26,7 @@
->>>>>     */
->>>>>    int acpi_gsi_to_irq(u32 gsi, unsigned int *irq)
->>>>>    {
->>>>> -    struct irq_domain *d = 
->>>>> irq_find_matching_fwnode(acpi_gsi_domain_id,
->>>>> -                            DOMAIN_BUS_ANY);
->>>>> -
->>>>> -    *irq = irq_find_mapping(d, gsi);
->>>>> +    *irq = acpi_register_gsi(NULL, gsi, -1, -1);
->>>>
->>>> What is this?
->>>>
->>>> - This wasn't part of my initial patch, and randomly changing patches
->>>>     without mentioning it isn't acceptable
->>>>
->>>> - you *cannot* trigger a registration here, as this isn't what the API
->>>>     advertises
->>>>
->>>> - what makes you think that passing random values (NULL, -1... )to
->>>>     acpi_register_gsi() is an acceptable thing to do?
->>>>
->>>> The original patch had:
->>>>
->>>> @@ -26,8 +26,10 @@ static struct fwnode_handle *acpi_gsi_domain_id;
->>>>      */
->>>>     int acpi_gsi_to_irq(u32 gsi, unsigned int *irq)
->>>>     {
->>>> -    struct irq_domain *d = 
->>>> irq_find_matching_fwnode(acpi_gsi_domain_id,
->>>> -                            DOMAIN_BUS_ANY);
->>>> +    struct irq_domain *d;
->>>> +
->>>> +    d = irq_find_matching_fwnode(acpi_get_gsi_domain_id(gsi),
->>>> +                     DOMAIN_BUS_ANY);
->>>>           *irq = irq_find_mapping(d, gsi);
->>>>         /*
->>>>
->>>> and I don't think it needs anything else. If something breaks, let's
->>>> discuss it, but don't abuse the API nor the fact that I usually don't
->>>> review my own patches to sneak things in...
->>>>
->>>
->>> Sorry, Marc, I don't know how to communicate with you for my change
->>> here before submitting the patch, maybe I should mention it in the
->>> patch commit or code.
->>
->> It should at least be discussed first, like you are doing it here.
->>
->>> When I use the patch, I found that acpi_gsi_to_irq in driver/acpi/irq.c
->>> only handle existed mapping and will return -EINVAL if mapping not
->>> found. When I test on my machine, a calling stack is as following:
->>>
->>>
->>> acpi_bus_init
->>> ->acpi_enable_subsystem
->>>    ->acpi_ev_install_xrupt_handlers
->>>      ->acpi_ev_install_sci_handler
->>>        ->acpi_os_install_interrupt_handler
->>>          ->acpi_gsi_to_irq
->>>
->>>
->>> the acpi_gsi_to_irq returned -EINVAL because of no mapping found. I
->>> looked into acpi_gsi_to_irq of x86, acpi_register_gsi is called in it
->>> so that new mapping for gsi is created if no mapping is found.
->>
->> So it looks like we have a discrepancy between the x86 and ARM on that
->> front.
->>
->> Lorenzo, Hanjun, can you please have a look at this and shed some
->> light on what the expected behaviour is? It looks like we never
->> encountered an issue with this on arm64, which tends to indicate that
->> we don't usually use the above path.
-> 
-> Sorry for the late reply, I just noticed this tomorrow.
-> 
-> As you said, we never encountered Jianmin's issue on ARM64 hardware,
-> for the call stack which Jianmin shows, acpi_ev_install_xrupt_handlers()
-> is only called for non-reduced ACPI hardware, but ARM64 is always
-> defined as reduced ACPI hardware in the ACPI spec, from the first
-> supported version of ACPI spec for ARM.
-> 
-> Jianmin, is the LoongArch using the redunced hardware mode in ACPI?
-> if it's using SCI interrupt, I think not, correct me if I'm wrong.
-> 
+vim +2319 security/security.c
 
-Thanks for your reply, Hanjun, LoongArch uses non-reduced ACPI hardware,
-so SCI interrupt is used, which is different from ARM using reduced 
-hardware.
+20510f2f4e2dab James Morris    2007-10-16  2266  
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2267  /**
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2268   * security_setprocattr - Set process attributes via /proc
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2269   * @lsm: name of module involved, or NULL
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2270   * @name: name of the attribute
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2271   * @value: value to set the attribute to
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2272   * @size: size of the value
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2273   *
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2274   * Set the process attribute for the specified security module
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2275   * to the specified value. Note that this can only be used to set
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2276   * the process attributes for the current, or "self" process.
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2277   * The /proc code has already done this check.
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2278   *
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2279   * Returns 0 on success, an appropriate code otherwise.
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2280   */
+6d9c939dbe4d0b Casey Schaufler 2018-09-21  2281  int security_setprocattr(const char *lsm, const char *name, void *value,
+6d9c939dbe4d0b Casey Schaufler 2018-09-21  2282  			 size_t size)
+20510f2f4e2dab James Morris    2007-10-16  2283  {
+6d9c939dbe4d0b Casey Schaufler 2018-09-21  2284  	struct security_hook_list *hp;
+c930a07cebde69 Casey Schaufler 2022-06-27  2285  	const char *slotname;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2286  	char *termed;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2287  	char *copy;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2288  	int *ilsm = current->security;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2289  	int rc = -EINVAL;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2290  	int slot = 0;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2291  
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2292  	if (!strcmp(name, "interface_lsm")) {
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2293  		/*
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2294  		 * Change the "interface_lsm" value only if all the security
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2295  		 * modules that support setting a procattr allow it.
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2296  		 * It is assumed that all such security modules will be
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2297  		 * cooperative.
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2298  		 */
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2299  		if (size == 0)
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2300  			return -EINVAL;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2301  
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2302  		hlist_for_each_entry(hp, &security_hook_heads.setprocattr,
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2303  				     list) {
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2304  			rc = hp->hook.setprocattr(name, value, size);
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2305  			if (rc < 0 && rc != LSM_RET_DEFAULT(setprocattr))
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2306  				return rc;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2307  		}
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2308  
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2309  		rc = -EINVAL;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2310  
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2311  		copy = kmemdup_nul(value, size, GFP_KERNEL);
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2312  		if (copy == NULL)
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2313  			return -ENOMEM;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2314  
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2315  		termed = strsep(&copy, " \n");
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2316  
+c930a07cebde69 Casey Schaufler 2022-06-27  2317  		for (slot = 0; slot < lsm_slot; slot++) {
+c930a07cebde69 Casey Schaufler 2022-06-27  2318  			slotname = lsm_slot_to_name(slot);
+a87b0b9fe463f0 Casey Schaufler 2022-06-27 @2319  			if (!strcmp(termed, lsm_slotlist[slot]->lsm)) {
+c930a07cebde69 Casey Schaufler 2022-06-27  2320  				*ilsm = slot;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2321  				rc = size;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2322  				break;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2323  			}
+c930a07cebde69 Casey Schaufler 2022-06-27  2324  		}
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2325  
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2326  		kfree(termed);
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2327  		return rc;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2328  	}
+6d9c939dbe4d0b Casey Schaufler 2018-09-21  2329  
+6d9c939dbe4d0b Casey Schaufler 2018-09-21  2330  	hlist_for_each_entry(hp, &security_hook_heads.setprocattr, list) {
+ac35545bc102bf Casey Schaufler 2022-06-27  2331  		if (lsm != NULL && strcmp(lsm, hp->lsmid->lsm))
+6d9c939dbe4d0b Casey Schaufler 2018-09-21  2332  			continue;
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2333  		if (lsm == NULL && *ilsm != LSMBLOB_INVALID &&
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2334  		    *ilsm != hp->lsmid->slot)
+a87b0b9fe463f0 Casey Schaufler 2022-06-27  2335  			continue;
+6d9c939dbe4d0b Casey Schaufler 2018-09-21  2336  		return hp->hook.setprocattr(name, value, size);
+6d9c939dbe4d0b Casey Schaufler 2018-09-21  2337  	}
+98e828a0650f34 KP Singh        2020-03-29  2338  	return LSM_RET_DEFAULT(setprocattr);
+20510f2f4e2dab James Morris    2007-10-16  2339  }
+20510f2f4e2dab James Morris    2007-10-16  2340  
 
->>
->>> I looked into generic acpi_register_gsi, the existed mapping will be
->>> checked first by calling irq_find_mapping, so I think calling
->>> acpi_register_gsi in acpi_gsi_to_irq can address the problem.
->>>
->>> But you're right, I'm wrong that I passed random value of -1 to
->>> acpi_register_gsi. I don't find a right way to address the problem
->>> without changing acpi_gsi_to_irq. I'll continue to work for the
->>> problem.
->>
->> At the very least, this should be indirected so that the existing
->> behaviour isn't affected, no matter how badly broken arm64 may or may
->> not be here. Please have a look at the patch below that should help
->> you with this.
-> 
-> Looks good to me, I will review and test the v13 patch set.
-> 
-> Thanks
-> Hanjun
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
