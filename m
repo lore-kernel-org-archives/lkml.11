@@ -2,163 +2,355 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB16C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242399AbiF1HYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55578 "EHLO
+        id S242457AbiF1HZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbiF1HYA (ORCPT
+        with ESMTP id S229653AbiF1HY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:24:00 -0400
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ECF2CCB5
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:23:59 -0700 (PDT)
-Received: by mail-qv1-f53.google.com with SMTP id p31so18807075qvp.5
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:23:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k2rxzJ0m2+KTfhV/auXcP+l+48yjXUELQK7ZtTv6xyU=;
-        b=tuWbHzuOXf+V0jscGZYet6AO2cDiU1kdSJvQGrpgon1mlT1vggkRdGQTkddUINALkK
-         X4USxAwXNDX/TBrGZ2/zcstRHMS6aa9Kcit4l9I4P6S0lGnOlbDC92KlUQSqbWYa1pqw
-         mRI1XzvMpSTSOftzpTjBoRggvp9UHfdG6G3w3M1acLCIVvfE8bcDrfb4ROHMRi/bZMLO
-         zRJpWhsKBEinn56b8wPFpXx9EZ5S/tSrEirSK7SPm7/EAxbtZU7b5CF5gWYmPX6nzAc7
-         cdRIwsBOyTYIwErDfACD/QkOvfDND0EGWJb3UHY9AGS9wMfbW5GKobUUXCpSM2VUIFiv
-         GCyQ==
-X-Gm-Message-State: AJIora9TJVBI/i3qRl4Hm8CqPj2baju8DknGptDJFIFwaJBl/zYpifX4
-        zuvtEHu2TDBh14S5tnXDJ0RMWP8GSGtymA==
-X-Google-Smtp-Source: AGRyM1sM5X/QKDkeTKQgbCB39F3JjPJ3P+xucOtAveRKzyRLIYsSEtCIc9wwLlewcg+J3TEls0EIOQ==
-X-Received: by 2002:ad4:5fcd:0:b0:470:3e9c:6274 with SMTP id jq13-20020ad45fcd000000b004703e9c6274mr2540785qvb.104.1656401038667;
-        Tue, 28 Jun 2022 00:23:58 -0700 (PDT)
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
-        by smtp.gmail.com with ESMTPSA id s7-20020a05620a254700b006a65c58db99sm10729903qko.64.2022.06.28.00.23.58
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 00:23:58 -0700 (PDT)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-317710edb9dso108062577b3.0
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:23:58 -0700 (PDT)
-X-Received: by 2002:a81:a092:0:b0:318:5c89:a935 with SMTP id
- x140-20020a81a092000000b003185c89a935mr20749995ywg.383.1656401038063; Tue, 28
- Jun 2022 00:23:58 -0700 (PDT)
+        Tue, 28 Jun 2022 03:24:58 -0400
+Received: from meesny.iki.fi (meesny.iki.fi [IPv6:2001:67c:2b0:1c1::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1617D2CCB5
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:24:57 -0700 (PDT)
+Received: from darkstar.musicnaut.iki.fi (85-76-48-211-nat.elisa-mobile.fi [85.76.48.211])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: aaro.koskinen)
+        by meesny.iki.fi (Postfix) with ESMTPSA id DF5E820093;
+        Tue, 28 Jun 2022 10:24:52 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+        t=1656401093;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type;
+        bh=iFaQS2VyLMAPPXHYcemADy1NqRMYS42uiQUFNL56HE4=;
+        b=KZ0UG/YHoWR2MASiBWgxT37sa6tK7qX3Vfrf9Hxi3k6Umd0Wnm3nZLvBZiRpxOvO6Dtq3n
+        +7TEK3kKDS/iUyx1YSjGyp4PoLy/uKQAeRdX1k5Zz5Feo85mjLs2AERdks9jmNvlIV6WBA
+        9MnTgOFPGNt5tKYNa3vGKi3ordBDr9M=
+Date:   Tue, 28 Jun 2022 10:24:51 +0300
+From:   Aaro Koskinen <aaro.koskinen@iki.fi>
+To:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH] pstore: ramoops: allow to have multiple user space
+ message logs
+Message-ID: <20220628072451.GC3601@darkstar.musicnaut.iki.fi>
 MIME-Version: 1.0
-References: <20220628021802.4102976-1-yangyingliang@huawei.com>
-In-Reply-To: <20220628021802.4102976-1-yangyingliang@huawei.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 28 Jun 2022 09:23:45 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVjtSk9DX9_OpZfma4RuU7yfz==1C6NOPy7ZmecsyYiuQ@mail.gmail.com>
-Message-ID: <CAMuHMdVjtSk9DX9_OpZfma4RuU7yfz==1C6NOPy7ZmecsyYiuQ@mail.gmail.com>
-Subject: Re: [PATCH -next] m68k: virt: platform: fix missing
- platform_device_unregister() on error in virt_platform_init()
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Laurent Vivier <laurent@vivier.eu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=meesny; t=1656401093;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type;
+        bh=iFaQS2VyLMAPPXHYcemADy1NqRMYS42uiQUFNL56HE4=;
+        b=U+T3HdMYRclo1rBK1xB1GqKR1ixUoglOLLMDFsRF1i0QEfm+LES2kulZpJhZCRhC4mfI7y
+        VxaZLvk0b2pRqQ5/CGD1f3xz10yWZar/anCeqqvpSnenLjQXGqrwGX73aqecJG/LpEDmb+
+        3vfSWy3loHVIu1dapGwuEm6Y/c/P/UU=
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=aaro.koskinen smtp.mailfrom=aaro.koskinen@iki.fi
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1656401093; a=rsa-sha256; cv=none;
+        b=LKWxMQWli2MIRfZG+e6cNhAKOxbCA4P6MeKqDCQ3pVtD804+mF+5dBHR1SGxMi/ioWesNK
+        6BhK0J1uXXuSxRSdkoGtlnab0mBKEfdVwx7EKe4WxSi5IfTOaXDXtIAbGfoupktxxB6VkJ
+        jobD00ynqQInRLdIwzRE8PnP4/eh8RM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yang,
+From: Aaro Koskinen <aaro.koskinen@nokia.com>
 
-On Tue, Jun 28, 2022 at 4:08 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
-> Add the missing platform_device_unregister() before return
-> from virt_platform_init() in the error handling case.
->
-> Fixes: 05d51e42df06 ("m68k: Introduce a virtual m68k machine")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Allow to have multiple user space message logs by dividing the pmsg buffer
+into multiple areas. This is useful when there are e.g. two loggers and
+interleaved logs are not desired.
 
-Thanks for your patch!
+Signed-off-by: Aaro Koskinen <aaro.koskinen@nokia.com>
+Signed-off-by: Aaro Koskinen <aaro.koskinen@iki.fi>
+---
+ .../bindings/reserved-memory/ramoops.yaml     |  5 ++
+ fs/pstore/internal.h                          |  4 +-
+ fs/pstore/platform.c                          |  2 +-
+ fs/pstore/pmsg.c                              | 17 ++++---
+ fs/pstore/ram.c                               | 48 ++++++++++++++-----
+ include/linux/pstore.h                        |  3 ++
+ include/linux/pstore_ram.h                    |  1 +
+ 7 files changed, 59 insertions(+), 21 deletions(-)
 
-> --- a/arch/m68k/virt/platform.c
-> +++ b/arch/m68k/virt/platform.c
-> @@ -35,8 +30,10 @@ static int __init virt_platform_init(void)
->                 DEFINE_RES_MEM(virt_bi_data.rtc.mmio + 0x1000, 0x1000),
->                 DEFINE_RES_IRQ(virt_bi_data.rtc.irq + 1),
->         };
-> -       struct platform_device *pdev;
-> +       struct platform_device *pdev1, *pdev2;
-> +       struct platform_device *pdevs[VIRTIO_BUS_NB];
->         unsigned int i;
-> +       int ret = 0;
->
->         if (!MACH_IS_VIRT)
->                 return -ENODEV;
-> @@ -44,29 +41,40 @@ static int __init virt_platform_init(void)
->         /* We need this to have DMA'able memory provided to goldfish-tty */
->         min_low_pfn = 0;
->
-> -       pdev = platform_device_register_simple("goldfish_tty",
-> -                                              PLATFORM_DEVID_NONE,
-> -                                              goldfish_tty_res,
-> -                                              ARRAY_SIZE(goldfish_tty_res));
-> -       if (IS_ERR(pdev))
-> -               return PTR_ERR(pdev);
-> +       pdev1 = platform_device_register_simple("goldfish_tty",
-> +                                               PLATFORM_DEVID_NONE,
-> +                                               goldfish_tty_res,
-> +                                               ARRAY_SIZE(goldfish_tty_res));
-> +       if (IS_ERR(pdev1))
-> +               return PTR_ERR(pdev1);
->
-> -       pdev = platform_device_register_simple("goldfish_rtc",
-> -                                              PLATFORM_DEVID_NONE,
-> -                                              goldfish_rtc_res,
-> -                                              ARRAY_SIZE(goldfish_rtc_res));
-> -       if (IS_ERR(pdev))
-> -               return PTR_ERR(pdev);
-> +       pdev2 = platform_device_register_simple("goldfish_rtc",
-> +                                               PLATFORM_DEVID_NONE,
-> +                                               goldfish_rtc_res,
-> +                                               ARRAY_SIZE(goldfish_rtc_res));
-> +       if (IS_ERR(pdev2)) {
-> +               ret = PTR_ERR(pdev2);
-> +               goto err_unregister_tty;
-> +       }
->
->         for (i = 0; i < VIRTIO_BUS_NB; i++) {
-> -               int err;
-> -
-> -               err = virt_virtio_init(i);
-> -               if (err)
-> -                       return err;
-> +               pdevs[i] = virt_virtio_init(i);
-> +               if (IS_ERR(pdevs[i])) {
-> +                       ret = PTR_ERR(pdevs[i]);
-> +                       goto err_unregister_rtc_virtio;
-> +               }
->         }
->
->         return 0;
-> +
-> +err_unregister_rtc_virtio:
-> +       for (--i; (int)i >= 0; i--)
-> +               platform_device_unregister(pdevs[i]);
-
-I think you can easily avoid the cast ("casts are evil"):
-
-    while (i > 0)
-            platform_device_unregister(pdevs[--i]);
-
-> +       platform_device_unregister(pdev2);
-> +err_unregister_tty:
-> +       platform_device_unregister(pdev1);
-> +
-> +       return ret;
->  }
->
->  arch_initcall(virt_platform_init);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/Documentation/devicetree/bindings/reserved-memory/ramoops.yaml b/Documentation/devicetree/bindings/reserved-memory/ramoops.yaml
+index 0391871cf44d..42ddb0a37120 100644
+--- a/Documentation/devicetree/bindings/reserved-memory/ramoops.yaml
++++ b/Documentation/devicetree/bindings/reserved-memory/ramoops.yaml
+@@ -61,6 +61,11 @@ properties:
+     description: size in bytes of log buffer reserved for userspace messages
+     default: 0
+ 
++  pmsg-count:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: divide the userspace log buffer into this many areas
++    default: 1
++
+   mem-type:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     description: if present, sets the type of mapping is to be used to map the reserved region.
+diff --git a/fs/pstore/internal.h b/fs/pstore/internal.h
+index 801d6c0b170c..8acdd6344f47 100644
+--- a/fs/pstore/internal.h
++++ b/fs/pstore/internal.h
+@@ -26,10 +26,10 @@ pstore_ftrace_combine_log(char **dest_log, size_t *dest_log_size,
+ #endif
+ 
+ #ifdef CONFIG_PSTORE_PMSG
+-extern void pstore_register_pmsg(void);
++extern void pstore_register_pmsg(int max_id);
+ extern void pstore_unregister_pmsg(void);
+ #else
+-static inline void pstore_register_pmsg(void) {}
++static inline void pstore_register_pmsg(int max_id) {}
+ static inline void pstore_unregister_pmsg(void) {}
+ #endif
+ 
+diff --git a/fs/pstore/platform.c b/fs/pstore/platform.c
+index e26162f102ff..ce3a063db551 100644
+--- a/fs/pstore/platform.c
++++ b/fs/pstore/platform.c
+@@ -608,7 +608,7 @@ int pstore_register(struct pstore_info *psi)
+ 	if (psi->flags & PSTORE_FLAGS_FTRACE)
+ 		pstore_register_ftrace();
+ 	if (psi->flags & PSTORE_FLAGS_PMSG)
+-		pstore_register_pmsg();
++		pstore_register_pmsg(psi->max_id);
+ 
+ 	/* Start watching for new records, if desired. */
+ 	pstore_timer_kick();
+diff --git a/fs/pstore/pmsg.c b/fs/pstore/pmsg.c
+index d8542ec2f38c..13c0f1714624 100644
+--- a/fs/pstore/pmsg.c
++++ b/fs/pstore/pmsg.c
+@@ -23,6 +23,7 @@ static ssize_t write_pmsg(struct file *file, const char __user *buf,
+ 	pstore_record_init(&record, psinfo);
+ 	record.type = PSTORE_TYPE_PMSG;
+ 	record.size = count;
++	record.id   = iminor(file->f_inode);
+ 
+ 	/* check outside lock, page in any data. write_user also checks */
+ 	if (!access_ok(buf, count))
+@@ -53,9 +54,10 @@ static char *pmsg_devnode(struct device *dev, umode_t *mode)
+ 	return NULL;
+ }
+ 
+-void pstore_register_pmsg(void)
++void pstore_register_pmsg(int max_id)
+ {
+ 	struct device *pmsg_device;
++	int i;
+ 
+ 	pmsg_major = register_chrdev(0, PMSG_NAME, &pmsg_fops);
+ 	if (pmsg_major < 0) {
+@@ -70,11 +72,14 @@ void pstore_register_pmsg(void)
+ 	}
+ 	pmsg_class->devnode = pmsg_devnode;
+ 
+-	pmsg_device = device_create(pmsg_class, NULL, MKDEV(pmsg_major, 0),
+-					NULL, "%s%d", PMSG_NAME, 0);
+-	if (IS_ERR(pmsg_device)) {
+-		pr_err("failed to create device\n");
+-		goto err_device;
++	for (i = 0; i <= max_id; i++) {
++		pmsg_device = device_create(pmsg_class, NULL,
++					    MKDEV(pmsg_major, i), NULL, "%s%d",
++					    PMSG_NAME, i);
++		if (IS_ERR(pmsg_device)) {
++			pr_err("failed to create device\n");
++			goto err_device;
++		}
+ 	}
+ 	return;
+ 
+diff --git a/fs/pstore/ram.c b/fs/pstore/ram.c
+index fefe3d391d3a..8ed2c90a26a6 100644
+--- a/fs/pstore/ram.c
++++ b/fs/pstore/ram.c
+@@ -41,7 +41,11 @@ MODULE_PARM_DESC(ftrace_size, "size of ftrace log");
+ 
+ static ulong ramoops_pmsg_size = MIN_MEM_SIZE;
+ module_param_named(pmsg_size, ramoops_pmsg_size, ulong, 0400);
+-MODULE_PARM_DESC(pmsg_size, "size of user space message log");
++MODULE_PARM_DESC(pmsg_size, "total size of user space message logs");
++
++static uint ramoops_pmsg_count = 1;
++module_param_named(pmsg_count, ramoops_pmsg_count, int, 0400);
++MODULE_PARM_DESC(pmsg_count, "number of user space message logs");
+ 
+ static unsigned long long mem_address;
+ module_param_hw(mem_address, ullong, other, 0400);
+@@ -79,7 +83,7 @@ struct ramoops_context {
+ 	struct persistent_ram_zone **dprzs;	/* Oops dump zones */
+ 	struct persistent_ram_zone *cprz;	/* Console zone */
+ 	struct persistent_ram_zone **fprzs;	/* Ftrace zones */
+-	struct persistent_ram_zone *mprz;	/* PMSG zone */
++	struct persistent_ram_zone **mprzs;	/* PMSG zones */
+ 	phys_addr_t phys_addr;
+ 	unsigned long size;
+ 	unsigned int memtype;
+@@ -96,6 +100,7 @@ struct ramoops_context {
+ 	unsigned int console_read_cnt;
+ 	unsigned int max_ftrace_cnt;
+ 	unsigned int ftrace_read_cnt;
++	unsigned int max_pmsg_cnt;
+ 	unsigned int pmsg_read_cnt;
+ 	struct pstore_info pstore;
+ };
+@@ -210,8 +215,12 @@ static ssize_t ramoops_pstore_read(struct pstore_record *record)
+ 	if (!prz_ok(prz) && !cxt->console_read_cnt++)
+ 		prz = ramoops_get_next_prz(&cxt->cprz, 0 /* single */, record);
+ 
+-	if (!prz_ok(prz) && !cxt->pmsg_read_cnt++)
+-		prz = ramoops_get_next_prz(&cxt->mprz, 0 /* single */, record);
++	while (cxt->pmsg_read_cnt < cxt->max_pmsg_cnt && !prz) {
++		prz = ramoops_get_next_prz(cxt->mprzs, cxt->pmsg_read_cnt++,
++					   record);
++		if (!prz_ok(prz))
++			continue;
++	}
+ 
+ 	/* ftrace is last since it may want to dynamically allocate memory. */
+ 	if (!prz_ok(prz)) {
+@@ -395,9 +404,10 @@ static int notrace ramoops_pstore_write_user(struct pstore_record *record,
+ 	if (record->type == PSTORE_TYPE_PMSG) {
+ 		struct ramoops_context *cxt = record->psi->data;
+ 
+-		if (!cxt->mprz)
++		if (record->id >= cxt->max_pmsg_cnt)
+ 			return -ENOMEM;
+-		return persistent_ram_write_user(cxt->mprz, buf, record->size);
++		return persistent_ram_write_user(cxt->mprzs[record->id], buf,
++						 record->size);
+ 	}
+ 
+ 	return -EINVAL;
+@@ -423,7 +433,9 @@ static int ramoops_pstore_erase(struct pstore_record *record)
+ 		prz = cxt->fprzs[record->id];
+ 		break;
+ 	case PSTORE_TYPE_PMSG:
+-		prz = cxt->mprz;
++		if (record->id >= cxt->max_pmsg_cnt)
++			return -EINVAL;
++		prz = cxt->mprzs[record->id];
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -467,6 +479,14 @@ static void ramoops_free_przs(struct ramoops_context *cxt)
+ 		kfree(cxt->fprzs);
+ 		cxt->max_ftrace_cnt = 0;
+ 	}
++
++	/* Free pmsg PRZs */
++	if (cxt->mprzs) {
++		for (i = 0; i < cxt->max_pmsg_cnt; i++)
++			persistent_ram_free(cxt->mprzs[i]);
++		kfree(cxt->mprzs);
++		cxt->max_pmsg_cnt = 0;
++	}
+ }
+ 
+ static int ramoops_init_przs(const char *name,
+@@ -675,6 +695,7 @@ static int ramoops_parse_dt(struct platform_device *pdev,
+ 	parse_u32("console-size", pdata->console_size, 0);
+ 	parse_u32("ftrace-size", pdata->ftrace_size, 0);
+ 	parse_u32("pmsg-size", pdata->pmsg_size, 0);
++	parse_u32("pmsg-count", pdata->pmsg_count, 1);
+ 	parse_u32("ecc-size", pdata->ecc_info.ecc_size, 0);
+ 	parse_u32("flags", pdata->flags, 0);
+ 	parse_u32("max-reason", pdata->max_reason, pdata->max_reason);
+@@ -790,10 +811,11 @@ static int ramoops_probe(struct platform_device *pdev)
+ 	if (err)
+ 		goto fail_init_fprz;
+ 
+-	err = ramoops_init_prz("pmsg", dev, cxt, &cxt->mprz, &paddr,
+-				cxt->pmsg_size, 0);
++	err = ramoops_init_przs("pmsg", dev, cxt, &cxt->mprzs, &paddr,
++				cxt->pmsg_size, -1, &pdata->pmsg_count, 0, 0);
+ 	if (err)
+ 		goto fail_init_mprz;
++	cxt->max_pmsg_cnt = pdata->pmsg_count;
+ 
+ 	cxt->pstore.data = cxt;
+ 	/*
+@@ -811,8 +833,10 @@ static int ramoops_probe(struct platform_device *pdev)
+ 		cxt->pstore.flags |= PSTORE_FLAGS_CONSOLE;
+ 	if (cxt->max_ftrace_cnt)
+ 		cxt->pstore.flags |= PSTORE_FLAGS_FTRACE;
+-	if (cxt->pmsg_size)
++	if (cxt->pmsg_size) {
+ 		cxt->pstore.flags |= PSTORE_FLAGS_PMSG;
++		cxt->pstore.max_id = cxt->max_pmsg_cnt - 1;
++	}
+ 
+ 	/*
+ 	 * Since bufsize is only used for dmesg crash dumps, it
+@@ -845,6 +869,7 @@ static int ramoops_probe(struct platform_device *pdev)
+ 	ramoops_max_reason = pdata->max_reason;
+ 	ramoops_console_size = pdata->console_size;
+ 	ramoops_pmsg_size = pdata->pmsg_size;
++	ramoops_pmsg_count = pdata->pmsg_count;
+ 	ramoops_ftrace_size = pdata->ftrace_size;
+ 
+ 	pr_info("using 0x%lx@0x%llx, ecc: %d\n",
+@@ -857,7 +882,6 @@ static int ramoops_probe(struct platform_device *pdev)
+ 	kfree(cxt->pstore.buf);
+ fail_clear:
+ 	cxt->pstore.bufsize = 0;
+-	persistent_ram_free(cxt->mprz);
+ fail_init_mprz:
+ fail_init_fprz:
+ 	persistent_ram_free(cxt->cprz);
+@@ -876,7 +900,6 @@ static int ramoops_remove(struct platform_device *pdev)
+ 	kfree(cxt->pstore.buf);
+ 	cxt->pstore.bufsize = 0;
+ 
+-	persistent_ram_free(cxt->mprz);
+ 	persistent_ram_free(cxt->cprz);
+ 	ramoops_free_przs(cxt);
+ 
+@@ -925,6 +948,7 @@ static void __init ramoops_register_dummy(void)
+ 	pdata.console_size = ramoops_console_size;
+ 	pdata.ftrace_size = ramoops_ftrace_size;
+ 	pdata.pmsg_size = ramoops_pmsg_size;
++	pdata.pmsg_count = ramoops_pmsg_count;
+ 	/* If "max_reason" is set, its value has priority over "dump_oops". */
+ 	if (ramoops_max_reason >= 0)
+ 		pdata.max_reason = ramoops_max_reason;
+diff --git a/include/linux/pstore.h b/include/linux/pstore.h
+index e97a8188f0fd..9713a055def9 100644
+--- a/include/linux/pstore.h
++++ b/include/linux/pstore.h
+@@ -102,6 +102,8 @@ struct pstore_record {
+  *		printk.always_kmsg_dump boot param" (which is either
+  *		KMSG_DUMP_OOPS when false, or KMSG_DUMP_MAX when
+  *		true); see printk.always_kmsg_dump for more details.
++ * @max_id:	Used when PSTORE_FLAGS_PMSG is set. Contains the maximum
++ *		identifer of different pmsg buffers.
+  * @data:	backend-private pointer passed back during callbacks
+  *
+  * Callbacks:
+@@ -186,6 +188,7 @@ struct pstore_info {
+ 
+ 	int		flags;
+ 	int		max_reason;
++	unsigned int	max_id;
+ 	void		*data;
+ 
+ 	int		(*open)(struct pstore_info *psi);
+diff --git a/include/linux/pstore_ram.h b/include/linux/pstore_ram.h
+index 9f16afec7290..2fa403235bee 100644
+--- a/include/linux/pstore_ram.h
++++ b/include/linux/pstore_ram.h
+@@ -133,6 +133,7 @@ struct ramoops_platform_data {
+ 	unsigned long	console_size;
+ 	unsigned long	ftrace_size;
+ 	unsigned long	pmsg_size;
++	unsigned int	pmsg_count;
+ 	int		max_reason;
+ 	u32		flags;
+ 	struct persistent_ram_ecc_info ecc_info;
+-- 
