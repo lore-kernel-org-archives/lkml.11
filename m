@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A91B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D81C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:32:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245317AbiF1CcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
+        id S245323AbiF1CcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244678AbiF1C1q (ORCPT
+        with ESMTP id S244691AbiF1C1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:46 -0400
+        Mon, 27 Jun 2022 22:27:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C729A11817;
-        Mon, 27 Jun 2022 19:25:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861AD25E9B;
+        Mon, 27 Jun 2022 19:25:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C2F9B81C1C;
-        Tue, 28 Jun 2022 02:25:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72AFEC341CD;
-        Tue, 28 Jun 2022 02:25:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 412C5B81C0E;
+        Tue, 28 Jun 2022 02:25:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDDAC385A2;
+        Tue, 28 Jun 2022 02:25:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383122;
-        bh=AXOpLtmygDQSaGsn8bHuAaZY/nOQEAeexroHpfGGBtE=;
+        s=k20201202; t=1656383128;
+        bh=2GFNxfbfgJwBO/JnDWPtSFfZrOQJgMiGWEiqxbP9VBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lhlCC3m24Nzai1QTCZGhKrjbjodvbdMVyFyI9gUyKu1fHNVW9mozBabqF53DrPivO
-         MyPUFxY7MTM+GvFKuVSNX0Yq9Jz/3yszBgigtEmFWHVlqSppwPrzkH05c11uS3gyY/
-         XaWomj+dnoXQ4U8iV0VBWr/xihw0xsnx4wO0nURM56N68rQSNGPXAQGJv135M9SeDs
-         fQ1wARLMnF+gbEb7VCWBytZyK2BrQkrWMylxIZqdMZnSp4Wwl2FgPSRgEO+N8bq9Eg
-         EskKqLSxTP3EbzQsNj/MQnRZSnIh9MZWfJccovS0iTxL1HaOMGD/CxxQICndTabLZs
-         tEkh8lj7Cs98Q==
+        b=oCVAx/ooXyf4V8T35kLlEm8ae+HDlkmZEgl+apevAkvxdC5e8PI44tuZhtX+q8xNI
+         GdBQqdLDldVqcCfw7pWTtmlADDw2UFMl/SLYymwMINd0P0YyT4hmtfweQCyEoafckX
+         1KupPN5bez3jkTetlb6y8ST9VyvxUK7xYkvFwCkQV6qO4WphF9H+RpBBby7vu6kOcf
+         1OgIbuupuTf1ZJzomEuNzdKa5ObaeHjEYyarrwUgmA4VC/6fykbdho6sHmBmtcZGLb
+         aRu3HQ/F25fFSiNcfnbMRJZ9dyWrYCYue7/Tp7OgUQ2/jf6DNKavuAMaW4SVf52ODN
+         n76ARRJg5nJGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/22] spi: cadence: Detect transmit FIFO depth
-Date:   Mon, 27 Jun 2022 22:24:57 -0400
-Message-Id: <20220628022518.596687-2-sashal@kernel.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>, Melissa Wen <mwen@igalia.com>,
+        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
+        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.19 05/22] drm/vc4: crtc: Move the BO handling out of common page-flip callback
+Date:   Mon, 27 Jun 2022 22:25:00 -0400
+Message-Id: <20220628022518.596687-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022518.596687-1-sashal@kernel.org>
 References: <20220628022518.596687-1-sashal@kernel.org>
@@ -51,115 +52,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 7b40322f7183a92c4303457528ae7cda571c60b9 ]
+[ Upstream commit 4d12c36fb73b5c49fe2f95d06515fd9846010fd2 ]
 
-The depth of the transmit FIFO for the Cadence SPI controller is currently
-hardcoded to 128. But the depth is a synthesis configuration parameter of
-the core and can vary between different SoCs.
+We'll soon introduce another completion callback source that won't need
+to use the BO reference counting, so let's move it around to create a
+function we will be able to share between both callbacks.
 
-If the configured FIFO size is less than 128 the driver will busy loop in
-the cdns_spi_fill_tx_fifo() function waiting for FIFO space to become
-available.
-
-Depending on the length and speed of the transfer it can spin for a
-significant amount of time. The cdns_spi_fill_tx_fifo() function is called
-from the drivers interrupt handler, so it can leave interrupts disabled for
-a prolonged amount of time.
-
-In addition the read FIFO will also overflow and data will be discarded.
-
-To avoid this detect the actual size of the FIFO and use that rather than
-the hardcoded value.
-
-To detect the FIFO size the FIFO threshold register is used. The register
-is sized so that it can hold FIFO size - 1 as its maximum value. Bits that
-are not needed to hold the threshold value will always read 0. By writing
-0xffff to the register and then reading back the value in the register we
-get the FIFO size.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Link: https://lore.kernel.org/r/20220527091143.3780378-1-lars@metafoo.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Melissa Wen <mwen@igalia.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220610115149.964394-11-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-cadence.c | 27 +++++++++++++++++++++++----
- 1 file changed, 23 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/vc4/vc4_crtc.c | 34 ++++++++++++++++++++--------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/spi/spi-cadence.c b/drivers/spi/spi-cadence.c
-index ea7ba502c1eb..405f4fdbc42c 100644
---- a/drivers/spi/spi-cadence.c
-+++ b/drivers/spi/spi-cadence.c
-@@ -97,9 +97,6 @@
- #define CDNS_SPI_ER_ENABLE	0x00000001 /* SPI Enable Bit Mask */
- #define CDNS_SPI_ER_DISABLE	0x0 /* SPI Disable Bit Mask */
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index 9152d4d9c5d7..c85af9f54e0d 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -851,21 +851,8 @@ vc4_async_page_flip_complete(struct vc4_async_flip_state *flip_state)
+ 	drm_crtc_vblank_put(crtc);
+ 	drm_framebuffer_put(flip_state->fb);
  
--/* SPI FIFO depth in bytes */
--#define CDNS_SPI_FIFO_DEPTH	128
+-	/* Decrement the BO usecnt in order to keep the inc/dec calls balanced
+-	 * when the planes are updated through the async update path.
+-	 * FIXME: we should move to generic async-page-flip when it's
+-	 * available, so that we can get rid of this hand-made cleanup_fb()
+-	 * logic.
+-	 */
+-	if (flip_state->old_fb) {
+-		struct drm_gem_cma_object *cma_bo;
+-		struct vc4_bo *bo;
 -
- /* Default number of chip select lines */
- #define CDNS_SPI_DEFAULT_NUM_CS		4
+-		cma_bo = drm_fb_cma_get_gem_obj(flip_state->old_fb, 0);
+-		bo = to_vc4_bo(&cma_bo->base);
+-		vc4_bo_dec_usecnt(bo);
++	if (flip_state->old_fb)
+ 		drm_framebuffer_put(flip_state->old_fb);
+-	}
  
-@@ -115,6 +112,7 @@
-  * @rx_bytes:		Number of bytes requested
-  * @dev_busy:		Device busy flag
-  * @is_decoded_cs:	Flag for decoder property set or not
-+ * @tx_fifo_depth:	Depth of the TX FIFO
-  */
- struct cdns_spi {
- 	void __iomem *regs;
-@@ -128,6 +126,7 @@ struct cdns_spi {
- 	int rx_bytes;
- 	u8 dev_busy;
- 	u32 is_decoded_cs;
-+	unsigned int tx_fifo_depth;
- };
+ 	kfree(flip_state);
  
- struct cdns_spi_device_data {
-@@ -313,7 +312,7 @@ static void cdns_spi_fill_tx_fifo(struct cdns_spi *xspi)
+@@ -876,8 +863,27 @@ static void vc4_async_page_flip_seqno_complete(struct vc4_seqno_cb *cb)
  {
- 	unsigned long trans_cnt = 0;
+ 	struct vc4_async_flip_state *flip_state =
+ 		container_of(cb, struct vc4_async_flip_state, cb.seqno);
++	struct vc4_bo *bo = NULL;
++
++	if (flip_state->old_fb) {
++		struct drm_gem_cma_object *cma_bo =
++			drm_fb_cma_get_gem_obj(flip_state->old_fb, 0);
++		bo = to_vc4_bo(&cma_bo->base);
++	}
  
--	while ((trans_cnt < CDNS_SPI_FIFO_DEPTH) &&
-+	while ((trans_cnt < xspi->tx_fifo_depth) &&
- 	       (xspi->tx_bytes > 0)) {
- 
- 		/* When xspi in busy condition, bytes may send failed,
-@@ -534,6 +533,24 @@ static void cdns_spi_cleanup(struct spi_device *spi)
- 
+ 	vc4_async_page_flip_complete(flip_state);
++
++	/*
++	 * Decrement the BO usecnt in order to keep the inc/dec
++	 * calls balanced when the planes are updated through
++	 * the async update path.
++	 *
++	 * FIXME: we should move to generic async-page-flip when
++	 * it's available, so that we can get rid of this
++	 * hand-made cleanup_fb() logic.
++	 */
++	if (bo)
++		vc4_bo_dec_usecnt(bo);
  }
  
-+/**
-+ * cdns_spi_detect_fifo_depth - Detect the FIFO depth of the hardware
-+ * @xspi:	Pointer to the cdns_spi structure
-+ *
-+ * The depth of the TX FIFO is a synthesis configuration parameter of the SPI
-+ * IP. The FIFO threshold register is sized so that its maximum value can be the
-+ * FIFO size - 1. This is used to detect the size of the FIFO.
-+ */
-+static void cdns_spi_detect_fifo_depth(struct cdns_spi *xspi)
-+{
-+	/* The MSBs will get truncated giving us the size of the FIFO */
-+	cdns_spi_write(xspi, CDNS_SPI_THLD, 0xffff);
-+	xspi->tx_fifo_depth = cdns_spi_read(xspi, CDNS_SPI_THLD) + 1;
-+
-+	/* Reset to default */
-+	cdns_spi_write(xspi, CDNS_SPI_THLD, 0x1);
-+}
-+
- /**
-  * cdns_spi_probe - Probe method for the SPI driver
-  * @pdev:	Pointer to the platform_device structure
-@@ -608,6 +625,8 @@ static int cdns_spi_probe(struct platform_device *pdev)
- 	if (ret < 0)
- 		xspi->is_decoded_cs = 0;
- 
-+	cdns_spi_detect_fifo_depth(xspi);
-+
- 	/* SPI controller initializations */
- 	cdns_spi_init_hw(xspi);
- 
+ /* Implements async (non-vblank-synced) page flips.
 -- 
 2.35.1
 
