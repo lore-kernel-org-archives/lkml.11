@@ -2,138 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 656C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 336E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiF1VgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 17:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
+        id S229955AbiF1ViO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 17:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiF1VgR (ORCPT
+        with ESMTP id S229880AbiF1ViN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 17:36:17 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3D12ED69;
-        Tue, 28 Jun 2022 14:36:15 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id n8so5448738eda.0;
-        Tue, 28 Jun 2022 14:36:15 -0700 (PDT)
+        Tue, 28 Jun 2022 17:38:13 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B00B7B;
+        Tue, 28 Jun 2022 14:38:10 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id 68so13393957pgb.10;
+        Tue, 28 Jun 2022 14:38:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HUL3dhmazHACLWg3Jqji+i1NZvZ2c9MkkehxgzHYnVo=;
-        b=LnQ9zYXKPe1cHsHner0sFmNa+CG2mooABLHzHPnG37uphSLEvIijDwftPXJ/8zhoUL
-         4UBB93mISsMj1X4pSTIDhAqwW+03KqzSdqgyUBNgX3ooqDGbh9RxUh/q5GS19pcBt33s
-         Te7lWmiBrsbBXZWNLuKamC6ZKm99bAXkSu3MF9XdB4ED0aVjPT6hv/jEts794NVkmQtG
-         E8wyWTEDACK7jRIVI2Gn0FlaUd7e1Ls+WoXeY0DIDz82GuNQc0J9ETNCOefAy/ndaQsr
-         2ZX2mKd0L39oiJlg6/ryprq2+TUQx24Kdx0FuTOgRuFFRLgfKJmWOQdpDTC7zdbygdFW
-         qEGw==
+        bh=WjW+6GW3ETFm2JU8jE79XhUoTv6z3/GSxYftllUP/xs=;
+        b=Hl4POJee6IPPulGeCkhFVzmaewHFoLW/+/aEoDQjxUpbODhZ1oymIgaTqZ81qNcby5
+         tayUWDYOl9MImX18J8dQD7IqMr+zmUU1bqZHU+pNimB587Iq3zDvd9733Lpd08PJ3ZqN
+         hCcDuWiBdimpZlnAS7LXz+VIQLfHxUzeRmXR/DhhOL+83rGT7oCb0qCs+I3LD5qbJUOY
+         Z7gwLbNztnnB2BuHaZLhgR2hoazBRvaRufJfP7NUdv99H5O/s5nLD+ERJ1SZjBEJ5o3/
+         g1yNYiH51zSIYiit2licB5Pp4Mw6FaB2n5sZmRFysJGeMTkqmhnQmnjN1azWYVr/4Saz
+         dDKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=HUL3dhmazHACLWg3Jqji+i1NZvZ2c9MkkehxgzHYnVo=;
-        b=DCuJWRs4lalSho49UBGXhswU30w6DK32JsUjOb9Igw5+JhiEptzpWGJZJzgko/TfvM
-         ZeJPbUO1Slx5OHZ5SkLqRqo73O55IUZweOTONBNKyEy/iiFyV6GivxqYxqyqkW1CRPbK
-         E1IaUU6nLqU0W2b90aSf7RDVlwjvA3X4zflu6rfKwvQc12oCRFJI8Rv+GcxVaV0aOBx6
-         u0WlYBHaI/i5YjSnJPyqNNJjzYGj6d3SvWL1iTnoSDgL2sUUTMCaoMv+PuEyu8pI2CE+
-         SWIHpZo6/qwn9XXilunKLTFIT6o1sMY+iG4JSEPGI252z9QAsbSp9FmyYTsHTcA4HeNi
-         OyHQ==
-X-Gm-Message-State: AJIora8lbqpvgSVnAVX0qTq5kTQ5kfn8VnAiSWeri4/NsqaPE0KnAcSM
-        q+ok3FnIO2bO4Yw1mFh5ucg=
-X-Google-Smtp-Source: AGRyM1vpHdR+++4F6Rzrttu7QmIXX746plknU+annn8p6oKDODgOjJeco4YhMOrhhevHCXQCd1MXQg==
-X-Received: by 2002:a05:6402:d05:b0:425:b5c8:faeb with SMTP id eb5-20020a0564020d0500b00425b5c8faebmr74752edb.273.1656452174287;
-        Tue, 28 Jun 2022 14:36:14 -0700 (PDT)
-Received: from [192.168.8.198] (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id lu4-20020a170906fac400b006fec69696a0sm6817919ejb.220.2022.06.28.14.36.13
+        bh=WjW+6GW3ETFm2JU8jE79XhUoTv6z3/GSxYftllUP/xs=;
+        b=f2wa68tdcB1EJBEBD9egwCf85hVewX+aAvW4ic7N5atk2Y15nx8sE0dCnEggoImUph
+         UjeA5Qfo75sW+NdsIvD9EHY9LD7i1VxY+Ojou7YfMvG2CGetEeDnYKAQylQ6ONDUc8CX
+         nbfZRfwBbxEK5r8i14BoG4fvuGEU5bMN3B4woW2aXc3VjoB4sCGFN+S+RGdMmwxl9QCk
+         T5Z1mG2Uzd5zpoAD2StT+ybn1l4KKokkT+3GQAEMoMhYCbr6uonCTgq5NdFMFJ8GGKEq
+         9uR6NOA9lVo3XdNVRVo4rAye2EcpdnkDRkUAdsP10atJSo+BPCDRgkJEtZZyriPg9Sfv
+         gLXw==
+X-Gm-Message-State: AJIora/blAk/JCjNaQ5M0dMbtnRj2u0RFEYAl/dBeDoUIFyelW2w7+KR
+        zuezxLizQmQ4McYE2EMiO+k=
+X-Google-Smtp-Source: AGRyM1sFO6YgYAr9GnaRe8/Ve8aBPD9B79jMLNzzxljl0q+mxUt4Mwk0qg0QIVqzTJY3FgSvSPWrFw==
+X-Received: by 2002:a63:3545:0:b0:40c:95f7:d114 with SMTP id c66-20020a633545000000b0040c95f7d114mr5443pga.150.1656452290295;
+        Tue, 28 Jun 2022 14:38:10 -0700 (PDT)
+Received: from ?IPV6:2001:df0:0:200c:75aa:d6ca:4354:6033? ([2001:df0:0:200c:75aa:d6ca:4354:6033])
+        by smtp.gmail.com with ESMTPSA id b8-20020a170902650800b00168a651316csm9770467plk.270.2022.06.28.14.38.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 14:36:13 -0700 (PDT)
-Message-ID: <c84bdaec-3691-de84-95a5-d600e4b7ac2f@gmail.com>
-Date:   Tue, 28 Jun 2022 22:33:10 +0100
+        Tue, 28 Jun 2022 14:38:09 -0700 (PDT)
+Message-ID: <b1edec96-ccb2-49d6-323b-1abc0dc37a50@gmail.com>
+Date:   Wed, 29 Jun 2022 09:38:00 +1200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RFC net-next v3 05/29] net: bvec specific path in
- zerocopy_sg_from_iter
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
 Content-Language: en-US
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        scsi <linux-scsi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1653992701.git.asml.silence@gmail.com>
- <5143111391e771dc97237e2a5e6a74223ef8f15f.1653992701.git.asml.silence@gmail.com>
- <YrtfMr+waxp37ru9@ZenIV>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <YrtfMr+waxp37ru9@ZenIV>
+        Christoph Hellwig <hch@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        Khalid Aziz <khalid@gonehiking.org>,
+        "Maciej W . Rozycki" <macro@orcam.me.uk>,
+        Matt Wang <wwentao@vmware.com>,
+        Miquel van Smoorenburg <mikevs@xs4all.net>,
+        Mark Salyzyn <salyzyn@android.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Denis Efremov <efremov@linux.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-4-arnd@kernel.org>
+ <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+ <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
+ <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
+ <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
+ <CAK8P3a1ivqYB38c_QTjG8e85ZBnCB6HEa-6LR1HDc8shG1Pwmw@mail.gmail.com>
+From:   Michael Schmitz <schmitzmic@gmail.com>
+In-Reply-To: <CAK8P3a1ivqYB38c_QTjG8e85ZBnCB6HEa-6LR1HDc8shG1Pwmw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/28/22 21:06, Al Viro wrote:
-> On Tue, Jun 28, 2022 at 07:56:27PM +0100, Pavel Begunkov wrote:
->> Add an bvec specialised and optimised path in zerocopy_sg_from_iter.
->> It'll be used later for {get,put}_page() optimisations.
-> 
-> If you need a variant that would not grab page references for ITER_BVEC
-> (and presumably other non-userland ones), the natural thing to do would
+Hi Arnd,
 
-I don't see other iter types interesting in this context
+On 28/06/22 19:08, Arnd Bergmann wrote:
+> On Tue, Jun 28, 2022 at 5:25 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
+>> Am 28.06.2022 um 09:12 schrieb Michael Schmitz:
+>>
+>> Leaving the bounce buffer handling in place, and taking a few other
+>> liberties - this is what converting the easiest case (a3000 SCSI) might
+>> look like. Any obvious mistakes? The mvme147 driver would be very
+>> similar to handle (after conversion to a platform device).
+>>
+>> The driver allocates bounce buffers using kmalloc if it hits an
+>> unaligned data buffer - can such buffers still even happen these days?
+>> If I understand dma_map_single() correctly, the resulting dma handle
+>> would be equally misaligned?
+>>
+>> To allocate a bounce buffer, would it be OK to use dma_alloc_coherent()
+>> even though AFAIU memory used for DMA buffers generally isn't consistent
+>> on m68k?
+> I think it makes sense to skip the bounce buffering as you do here:
+> the only standardized way we have for integrating that part is to
+> use the swiotlb infrastructure, but as you mentioned earlier that
+> part is probably too resource-heavy here for Amiga.
+OK, leaving the old custom logic in place allows to convert the 24 bit 
+DMA drivers more easily.
+>
+> I see two other problems with your patch though:
+>
+> a) you still duplicate the cache handling: the cache_clear()/cache_push()
+> is supposed to already be done by dma_map_single() when the device
+> is not cache-coherent.
 
-> be to provide just such a primitive, wouldn't it?
+That's one of the 'liberties' I alluded to. The reason I left these in 
+is that I'm none too certain what device feature the DMA API uses to 
+decide a device isn't cache-coherent. If it's dev->coherent_dma_mask, 
+the way I set up the device in the a3000 driver should leave the 
+coherent mask unchanged. For the Zorro drivers, devices are set up to 
+use the same storage to store normal and coherent masks - something we 
+most likely want to change. I need to think about the ramifications of 
+that.
 
-A helper returning a page array sounds like overshot and waste of cycles
-considering that it copies one bvec into another, and especially since
-iov_iter_get_pages() parses only the first struct bio_vec and so returns
-only 1 page at a time.
+Note that zorro_esp.c uses dma_sync_single_for_device() and uses a 32 
+bit coherent DMA mask which does work OK. I might  ask Adrian to test a 
+change to only set dev->dma_mask, and drop the 
+dma_sync_single_for_device() calls if there's any doubt on this aspect.
 
-I can actually use for_each_bvec(), but still leaves updating the iter
-from bvec_iter.
+> b) The bounce buffer is never mapped here, instead you have the
+> virt_to_phys() here, which is not the same. I think you need to map
+> the pointer that actually gets passed down to the device after deciding
+> to use a bouce buffer or not.
 
-> The fun question here is by which paths ITER_BVEC can be passed to that
-> function and which all of them are currently guaranteed to hold the
-> underlying pages pinned...
+I hadn't realized that I can map the bounce buffer just as it's done for 
+the SCp data buffer. Should have been obvious, but I'm still learning 
+about the DMA API.
 
-It's the other way around, not all ITER_BVEC are managed but all users
-asking to use managed frags (i.e. io_uring) should keep pages pinned and
-provide ITER_BVEC. It's opt-in, both for users and protocols.
+I've updated the patch now, will re-send as part of a complete series 
+once done.
 
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -66,9 +66,16 @@ struct msghdr {
-  	};
-  	bool		msg_control_is_user : 1;
-  	bool		msg_get_inq : 1;/* return INQ after receive */
-+	/*
-+	 * The data pages are pinned and won't be released before ->msg_ubuf
-+	 * is released. ->msg_iter should point to a bvec and ->msg_ubuf has
-+	 * to be non-NULL.
-+	 */
-+	bool		msg_managed_data : 1;
-  	unsigned int	msg_flags;	/* flags on received message */
-  	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
-  	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
-+	struct ubuf_info *msg_ubuf;
-  };
+Cheers,
 
-The user sets ->msg_managed_data, then protocols find it and set
-SKBFL_MANAGED_FRAG_REFS. If either of the steps didn't happen the
-feature is not used.
-The ->msg_managed_data part makes io_uring the only user, and io_uring
-ensures pages are pinned.
+     Michael
 
 
-> And AFAICS you quietly assume that only ITER_BVEC ones will ever have that
-> "managed" flag of your set.  Or am I misreading the next patch in the
-> series?
-
-I hope a comment just above ->msg_managed_data should count as not quiet.
-
--- 
-Pavel Begunkov
+>
+>       Arnd
