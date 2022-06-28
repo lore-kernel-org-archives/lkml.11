@@ -2,501 +2,681 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99043C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07210C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343573AbiF1LAK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        id S245504AbiF1LAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 07:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231682AbiF1LAI (ORCPT
+        with ESMTP id S1345131AbiF1LAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:00:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EF5C1F63E
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:00:06 -0700 (PDT)
+        Tue, 28 Jun 2022 07:00:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07BFA1F63E
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB162B81DBA
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 11:00:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B3C7C3411D;
-        Tue, 28 Jun 2022 11:00:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A1D161994
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 11:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21BB1C3411D;
+        Tue, 28 Jun 2022 11:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656414003;
-        bh=9d4xyAa6YD4y5IMEAUFSYY776V/1c1wZm9maJCdy3d0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=P/BFOrRjJ1acWzudoyeb58nh1hxyKh3TQ1tN3dfRuqaGiahqDVNjs31P9WWc3EBgs
-         7ZaVjls65cdSq3z5uLP/jUy4kAy31fSi0h369GhBKhKh7/ucd2S8163IO6gw4Rc8Gu
-         nE3ksYtjfnm3GF8WJkEgXIyfSGeIkeOBKs+tOoK68rDGeBFmiQBgv2l4aPjLmuOneH
-         6E1DCK2EanbqWUrigzh7eKBTFVy7+frL7SATZq0u7kjcpy0zfknKxx6Vzb2+fvqxKX
-         HDSc0PJFr9AMF0oy/xwu0dzB6+geBjBZ7EXEKZ20MmDGWZ3X4LUCqXSeXztM5soEHb
-         CIkYI+eliNTLQ==
+        s=k20201202; t=1656414009;
+        bh=sN+w6GRXk1wmAEaHd4DywL78NFmlLelH5c2Qi1ZFdps=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qlczs0c7Hsrmwli9KLr4k/Cgc8w08idhGXP1lWarJqS/xuXRytRvXw52fgJTM9+Kn
+         yMapXjD/AUWHJcvRo6WZlw8bLpuSqEVcYaFLHl53SZIToLVHFwg6LVBrVPy8NynG5j
+         GaMH2w/JZjCbab/pYg1/Z94DAXBlmb9SfJ2tXQ4SYH5Vv2NUn5kACUFngcVDSZ6FF7
+         w0HjukL2mo5RhD//xg+cBEDv79D8KgUPy1F6+Vhg7LqTpWa8pcF0P5/lEEEHjnqD9I
+         NnjUGqkpbXX8uuuVLxbo5CH5AQ97KloFkr/lb+1lnUVxzinwCU504TG4zpzc97ysM0
+         wNCixPgnKnQwg==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gregkh@linuxfoundation.org
-Subject: [PATCH v2 00/12] Adding Gaudi2 ASIC support to habanalabs driver
-Date:   Tue, 28 Jun 2022 13:59:46 +0300
-Message-Id: <20220628105958.1254875-1-ogabbay@kernel.org>
+Subject: [PATCH v2 02/12] uapi: habanalabs: add gaudi2 defines
+Date:   Tue, 28 Jun 2022 13:59:48 +0300
+Message-Id: <20220628105958.1254875-3-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220628105958.1254875-1-ogabbay@kernel.org>
+References: <20220628105958.1254875-1-ogabbay@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm sending the v2 of this patch-set after fixing some comments from Greg.
+Add the new defines for GAUDI2 uapi interface.
 
-Changes to each patch are detailed in the relevant patches.
+It includes the following:
+1. Enums of engines and PLLs.
+2. New information in the info IOCTL that is retrieved by the driver.
+3. Update comments regarding the CB/CS/wait for CS ioctls.
+4. New fields in the debug IOCTL for configuring the profiler for
+   Gaudi2.
 
-Patch 6 was added to remove obsolete elements from the device structure.
+There is no new IOCTL.
 
-Patch 11 in the 1st patch-set, the TPM patch, was removed due to some points
-that Greg raised and I need to investigate and come back with answers.
+Some of the changes are also relevant for Greco (which will be
+upstreamed later this year). When ever it says "Greco and onwards",
+it means it is also for Gaudi2.
 
-Original cover-letter:
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+---
+Changes in v2:
+ - Remove all TPM-related defines and structures
 
-This patch-set adds support for initializing and sending workloads to
-habanalabs next-gen deep-learning training accelerator ASIC, called Gaudi2.
+ include/uapi/misc/habanalabs.h | 455 +++++++++++++++++++++++++++++++--
+ 1 file changed, 435 insertions(+), 20 deletions(-)
 
-The Gaudi2 ASIC is based on the same architecture as the Gaudi ASIC and
-therefore, the driver's common code is applicable to it with only a few
-changes. Almost all of the code included in this patch-set is the
-ASIC-depedent code which is different per ASIC.
-
-The patches details are as follows:
-
-- Patch 1 adds the necessary registers header files. I took great care of
-  reducing this amount to minimum.
-
-- Patch 2 adds the Gaudi2 definitions to the uapi file.
-
-- Patch 3 adds the bulk of the Gaudi2 asic-specific code.
-
-- Patches 4-6 modify the existing code to initialize the new asic-specific
-  functions and properties and to remove unused elements.
-
-- Patch 7 adds a generic security module that will be used by Gaudi2, and
-  future ASICs, to initialize the security mechanisms of the device in a
-  common way.
-
-- Patches 8-11 add various features of Gaudi2 in asic-specific and common code.
-
-- Patch 12 enables the Gaudi2 code in the driver.
-
-More details on Gaudi2 Hardware can be found here:
-https://habana.ai/wp-content/uploads/pdf/2022/gaudi2-whitepaper.pdf
-
-We have already uploaded the updated LLVM compiler for our TPC engine to:
-https://github.com/HabanaAI/tpc_llvm/tree/v1.1.0
-
-And we are currently working on updating the open-source SynapseAI Core to
-submit workloads to Gaudi2 via the driver.
-
-Thanks,
-Oded
-
-Benjamin Dotan (1):
-  habanalabs/gaudi2: add gaudi2 profiler module
-
-Moti Haimovski (1):
-  habanalabs: add gaudi2 MMU support
-
-Oded Gabbay (8):
-  habanalabs/gaudi2: add asic registers header files
-  uapi: habanalabs: add gaudi2 defines
-  habanalabs: add gaudi2 asic-specific code
-  habanalabs: add unsupported functions
-  habanalabs: initialize new asic properties
-  habanalabs: remove obsolete device variables used for testing
-  habanalabs: add gaudi2 wait-for-CS support
-  habanalabs: enable gaudi2 code in driver
-
-Ofir Bitton (2):
-  habanalabs: add generic security module
-  habanalabs/gaudi2: add gaudi2 security module
-
- .../ABI/testing/debugfs-driver-habanalabs     |    11 +-
- drivers/misc/habanalabs/Makefile              |     3 +
- drivers/misc/habanalabs/common/Makefile       |     3 +-
- .../habanalabs/common/command_submission.c    |   123 +-
- drivers/misc/habanalabs/common/context.c      |     3 +
- drivers/misc/habanalabs/common/debugfs.c      |   120 +-
- drivers/misc/habanalabs/common/decoder.c      |   133 +
- drivers/misc/habanalabs/common/device.c       |    69 +-
- drivers/misc/habanalabs/common/firmware_if.c  |    26 +
- drivers/misc/habanalabs/common/habanalabs.h   |   446 +-
- .../misc/habanalabs/common/habanalabs_drv.c   |    69 +-
- .../misc/habanalabs/common/habanalabs_ioctl.c |    25 +-
- drivers/misc/habanalabs/common/hw_queue.c     |    10 +
- drivers/misc/habanalabs/common/irq.c          |   139 +-
- drivers/misc/habanalabs/common/memory.c       |    21 +-
- drivers/misc/habanalabs/common/mmu/Makefile   |     3 +-
- drivers/misc/habanalabs/common/mmu/mmu.c      |   496 +-
- .../misc/habanalabs/common/mmu/mmu_v2_hr.c    |   399 +
- drivers/misc/habanalabs/common/pci/pci.c      |    38 +-
- drivers/misc/habanalabs/common/security.c     |   600 +
- drivers/misc/habanalabs/common/sysfs.c        |     6 +
- drivers/misc/habanalabs/gaudi/gaudi.c         |   172 +-
- drivers/misc/habanalabs/gaudi2/Makefile       |     4 +
- drivers/misc/habanalabs/gaudi2/gaudi2.c       |  9775 ++++
- drivers/misc/habanalabs/gaudi2/gaudi2P.h      |   536 +
- .../misc/habanalabs/gaudi2/gaudi2_coresight.c |  2722 +
- .../habanalabs/gaudi2/gaudi2_coresight_regs.h |  1063 +
- drivers/misc/habanalabs/gaudi2/gaudi2_masks.h |   135 +
- .../misc/habanalabs/gaudi2/gaudi2_security.c  |  3849 ++
- drivers/misc/habanalabs/goya/goya.c           |    26 +-
- .../misc/habanalabs/include/common/cpucp_if.h |   294 +-
- .../habanalabs/include/common/hl_boot_if.h    |     7 +
- .../gaudi2/arc/gaudi2_arc_common_packets.h    |   213 +
- .../asic_reg/arc_farm_arc0_acp_eng_regs.h     |   567 +
- .../gaudi2/asic_reg/arc_farm_arc0_aux_masks.h |   819 +
- .../gaudi2/asic_reg/arc_farm_arc0_aux_regs.h  |   591 +
- .../arc_farm_arc0_dup_eng_axuser_regs.h       |    61 +
- .../asic_reg/arc_farm_arc0_dup_eng_regs.h     |   575 +
- .../asic_reg/arc_farm_kdma_ctx_axuser_masks.h |   135 +
- .../asic_reg/arc_farm_kdma_ctx_axuser_regs.h  |    61 +
- .../gaudi2/asic_reg/arc_farm_kdma_ctx_masks.h |   221 +
- .../gaudi2/asic_reg/arc_farm_kdma_ctx_regs.h  |    95 +
- .../asic_reg/arc_farm_kdma_kdma_cgm_regs.h    |    29 +
- .../gaudi2/asic_reg/arc_farm_kdma_masks.h     |   415 +
- .../gaudi2/asic_reg/arc_farm_kdma_regs.h      |   157 +
- .../include/gaudi2/asic_reg/cpu_if_regs.h     |   777 +
- .../gaudi2/asic_reg/dcore0_dec0_cmd_masks.h   |   229 +
- .../gaudi2/asic_reg/dcore0_dec0_cmd_regs.h    |    85 +
- .../dcore0_edma0_core_ctx_axuser_regs.h       |    61 +
- .../asic_reg/dcore0_edma0_core_ctx_regs.h     |    95 +
- .../gaudi2/asic_reg/dcore0_edma0_core_masks.h |   415 +
- .../gaudi2/asic_reg/dcore0_edma0_core_regs.h  |   157 +
- .../asic_reg/dcore0_edma0_qm_arc_aux_regs.h   |   591 +
- .../dcore0_edma0_qm_axuser_nonsecured_regs.h  |    61 +
- .../asic_reg/dcore0_edma0_qm_cgm_regs.h       |    29 +
- .../gaudi2/asic_reg/dcore0_edma0_qm_masks.h   |  1165 +
- .../gaudi2/asic_reg/dcore0_edma0_qm_regs.h    |  1057 +
- .../dcore0_edma1_core_ctx_axuser_regs.h       |    61 +
- .../dcore0_edma1_qm_axuser_nonsecured_regs.h  |    61 +
- .../gaudi2/asic_reg/dcore0_hmmu0_mmu_masks.h  |   294 +
- .../gaudi2/asic_reg/dcore0_hmmu0_mmu_regs.h   |   237 +
- .../gaudi2/asic_reg/dcore0_hmmu0_stlb_masks.h |   348 +
- .../gaudi2/asic_reg/dcore0_hmmu0_stlb_regs.h  |   141 +
- .../gaudi2/asic_reg/dcore0_mme_acc_regs.h     |    73 +
- ...0_mme_ctrl_lo_arch_agu_cout0_master_regs.h |    33 +
- ...e0_mme_ctrl_lo_arch_agu_cout0_slave_regs.h |    33 +
- ...0_mme_ctrl_lo_arch_agu_cout1_master_regs.h |    33 +
- ...e0_mme_ctrl_lo_arch_agu_cout1_slave_regs.h |    33 +
- ...re0_mme_ctrl_lo_arch_agu_in0_master_regs.h |    33 +
- ...ore0_mme_ctrl_lo_arch_agu_in0_slave_regs.h |    33 +
- ...re0_mme_ctrl_lo_arch_agu_in1_master_regs.h |    33 +
- ...ore0_mme_ctrl_lo_arch_agu_in1_slave_regs.h |    33 +
- ...re0_mme_ctrl_lo_arch_agu_in2_master_regs.h |    33 +
- ...ore0_mme_ctrl_lo_arch_agu_in2_slave_regs.h |    33 +
- ...re0_mme_ctrl_lo_arch_agu_in3_master_regs.h |    33 +
- ...ore0_mme_ctrl_lo_arch_agu_in3_slave_regs.h |    33 +
- ...re0_mme_ctrl_lo_arch_agu_in4_master_regs.h |    33 +
- ...ore0_mme_ctrl_lo_arch_agu_in4_slave_regs.h |    33 +
- .../dcore0_mme_ctrl_lo_arch_base_addr_regs.h  |    39 +
- ...re0_mme_ctrl_lo_arch_non_tensor_end_regs.h |    73 +
- ...0_mme_ctrl_lo_arch_non_tensor_start_regs.h |    35 +
- .../dcore0_mme_ctrl_lo_arch_tensor_a_regs.h   |    67 +
- .../dcore0_mme_ctrl_lo_arch_tensor_b_regs.h   |    67 +
- ...dcore0_mme_ctrl_lo_arch_tensor_cout_regs.h |    67 +
- .../asic_reg/dcore0_mme_ctrl_lo_masks.h       |   468 +
- .../dcore0_mme_ctrl_lo_mme_axuser_regs.h      |    61 +
- .../gaudi2/asic_reg/dcore0_mme_ctrl_lo_regs.h |   163 +
- .../asic_reg/dcore0_mme_qm_arc_acp_eng_regs.h |   567 +
- .../asic_reg/dcore0_mme_qm_arc_aux_regs.h     |   591 +
- .../dcore0_mme_qm_arc_dup_eng_axuser_regs.h   |    61 +
- .../asic_reg/dcore0_mme_qm_arc_dup_eng_regs.h |   575 +
- .../dcore0_mme_qm_axuser_nonsecured_regs.h    |    61 +
- .../dcore0_mme_qm_axuser_secured_regs.h       |    61 +
- .../gaudi2/asic_reg/dcore0_mme_qm_cgm_regs.h  |    29 +
- .../gaudi2/asic_reg/dcore0_mme_qm_regs.h      |  1057 +
- .../gaudi2/asic_reg/dcore0_mme_sbte0_masks.h  |   107 +
- .../dcore0_mme_sbte0_mstr_if_axuser_regs.h    |    61 +
- .../dcore0_mme_wb0_mstr_if_axuser_regs.h      |    61 +
- .../gaudi2/asic_reg/dcore0_rtr0_ctrl_regs.h   |   291 +
- .../dcore0_rtr0_mstr_if_rr_prvt_hbw_regs.h    |   213 +
- .../dcore0_rtr0_mstr_if_rr_prvt_lbw_regs.h    |   189 +
- .../dcore0_rtr0_mstr_if_rr_shrd_hbw_regs.h    |   213 +
- .../dcore0_rtr0_mstr_if_rr_shrd_lbw_regs.h    |   189 +
- .../asic_reg/dcore0_sync_mngr_glbl_masks.h    |   135 +
- .../asic_reg/dcore0_sync_mngr_glbl_regs.h     |  1203 +
- .../dcore0_sync_mngr_mstr_if_axuser_masks.h   |   135 +
- .../dcore0_sync_mngr_mstr_if_axuser_regs.h    |    61 +
- .../asic_reg/dcore0_sync_mngr_objs_masks.h    |    87 +
- .../asic_reg/dcore0_sync_mngr_objs_regs.h     | 43543 +++++++++++++++
- .../asic_reg/dcore0_tpc0_cfg_axuser_regs.h    |    61 +
- .../asic_reg/dcore0_tpc0_cfg_kernel_regs.h    |   129 +
- .../dcore0_tpc0_cfg_kernel_tensor_0_regs.h    |    63 +
- .../gaudi2/asic_reg/dcore0_tpc0_cfg_masks.h   |   509 +
- .../gaudi2/asic_reg/dcore0_tpc0_cfg_qm_regs.h |   129 +
- .../dcore0_tpc0_cfg_qm_sync_object_regs.h     |    27 +
- .../dcore0_tpc0_cfg_qm_tensor_0_regs.h        |    63 +
- .../gaudi2/asic_reg/dcore0_tpc0_cfg_regs.h    |   229 +
- .../asic_reg/dcore0_tpc0_cfg_special_regs.h   |   185 +
- .../asic_reg/dcore0_tpc0_eml_busmon_0_regs.h  |   163 +
- .../asic_reg/dcore0_tpc0_eml_etf_regs.h       |   113 +
- .../asic_reg/dcore0_tpc0_eml_funnel_regs.h    |    75 +
- .../asic_reg/dcore0_tpc0_eml_spmu_regs.h      |   151 +
- .../asic_reg/dcore0_tpc0_eml_stm_regs.h       |   131 +
- .../asic_reg/dcore0_tpc0_qm_arc_aux_regs.h    |   591 +
- .../dcore0_tpc0_qm_axuser_nonsecured_regs.h   |    61 +
- .../gaudi2/asic_reg/dcore0_tpc0_qm_cgm_regs.h |    29 +
- .../gaudi2/asic_reg/dcore0_tpc0_qm_regs.h     |  1057 +
- .../dcore0_vdec0_brdg_ctrl_axuser_dec_regs.h  |    61 +
- ...0_vdec0_brdg_ctrl_axuser_msix_abnrm_regs.h |    61 +
- ...re0_vdec0_brdg_ctrl_axuser_msix_l2c_regs.h |    61 +
- ...re0_vdec0_brdg_ctrl_axuser_msix_nrm_regs.h |    61 +
- ...re0_vdec0_brdg_ctrl_axuser_msix_vcd_regs.h |    61 +
- .../asic_reg/dcore0_vdec0_brdg_ctrl_masks.h   |   581 +
- .../asic_reg/dcore0_vdec0_brdg_ctrl_regs.h    |   245 +
- .../asic_reg/dcore0_vdec0_ctrl_special_regs.h |   185 +
- .../gaudi2/asic_reg/dcore1_mme_ctrl_lo_regs.h |   163 +
- .../gaudi2/asic_reg/dcore3_mme_ctrl_lo_regs.h |   163 +
- .../asic_reg/gaudi2_blocks_linux_driver.h     | 45067 ++++++++++++++++
- .../include/gaudi2/asic_reg/gaudi2_regs.h     |   544 +
- .../gaudi2/asic_reg/nic0_qm0_cgm_regs.h       |    29 +
- .../include/gaudi2/asic_reg/nic0_qm0_regs.h   |  1057 +
- .../gaudi2/asic_reg/nic0_qm_arc_aux0_regs.h   |   591 +
- .../include/gaudi2/asic_reg/nic0_qpc0_regs.h  |   905 +
- .../nic0_umr0_0_completion_queue_ci_1_regs.h  |    27 +
- .../nic0_umr0_0_unsecure_doorbell0_regs.h     |    31 +
- .../include/gaudi2/asic_reg/pcie_aux_regs.h   |   293 +
- .../include/gaudi2/asic_reg/pcie_dbi_regs.h   |   422 +
- .../gaudi2/asic_reg/pcie_dec0_cmd_masks.h     |   229 +
- .../gaudi2/asic_reg/pcie_dec0_cmd_regs.h      |    85 +
- .../pcie_vdec0_brdg_ctrl_axuser_dec_regs.h    |    61 +
- ...e_vdec0_brdg_ctrl_axuser_msix_abnrm_regs.h |    61 +
- ...cie_vdec0_brdg_ctrl_axuser_msix_l2c_regs.h |    61 +
- ...cie_vdec0_brdg_ctrl_axuser_msix_nrm_regs.h |    61 +
- ...cie_vdec0_brdg_ctrl_axuser_msix_vcd_regs.h |    61 +
- .../asic_reg/pcie_vdec0_brdg_ctrl_masks.h     |   580 +
- .../asic_reg/pcie_vdec0_brdg_ctrl_regs.h      |   245 +
- .../asic_reg/pcie_vdec0_ctrl_special_regs.h   |   185 +
- .../include/gaudi2/asic_reg/pcie_wrap_regs.h  |   601 +
- .../asic_reg/pdma0_core_ctx_axuser_regs.h     |    61 +
- .../gaudi2/asic_reg/pdma0_core_ctx_regs.h     |    95 +
- .../gaudi2/asic_reg/pdma0_core_masks.h        |   415 +
- .../include/gaudi2/asic_reg/pdma0_core_regs.h |   157 +
- .../asic_reg/pdma0_core_special_masks.h       |   135 +
- .../gaudi2/asic_reg/pdma0_qm_arc_aux_regs.h   |   591 +
- .../pdma0_qm_axuser_nonsecured_regs.h         |    61 +
- .../asic_reg/pdma0_qm_axuser_secured_regs.h   |    61 +
- .../gaudi2/asic_reg/pdma0_qm_cgm_regs.h       |    29 +
- .../include/gaudi2/asic_reg/pdma0_qm_masks.h  |  1165 +
- .../include/gaudi2/asic_reg/pdma0_qm_regs.h   |  1057 +
- .../asic_reg/pdma1_core_ctx_axuser_regs.h     |    61 +
- .../pdma1_qm_axuser_nonsecured_regs.h         |    61 +
- .../gaudi2/asic_reg/pmmu_hbw_stlb_masks.h     |   334 +
- .../gaudi2/asic_reg/pmmu_hbw_stlb_regs.h      |   141 +
- .../include/gaudi2/asic_reg/pmmu_pif_regs.h   |   135 +
- .../include/gaudi2/asic_reg/psoc_etr_masks.h  |   311 +
- .../include/gaudi2/asic_reg/psoc_etr_regs.h   |   115 +
- .../gaudi2/asic_reg/psoc_global_conf_masks.h  |  1406 +
- .../gaudi2/asic_reg/psoc_global_conf_regs.h   |  1337 +
- .../gaudi2/asic_reg/psoc_reset_conf_masks.h   |  2321 +
- .../gaudi2/asic_reg/psoc_reset_conf_regs.h    |   989 +
- .../gaudi2/asic_reg/psoc_timestamp_regs.h     |    57 +
- .../include/gaudi2/asic_reg/rot0_desc_regs.h  |   155 +
- .../include/gaudi2/asic_reg/rot0_masks.h      |   313 +
- .../gaudi2/asic_reg/rot0_qm_arc_aux_regs.h    |   591 +
- .../asic_reg/rot0_qm_axuser_nonsecured_regs.h |    61 +
- .../gaudi2/asic_reg/rot0_qm_cgm_regs.h        |    29 +
- .../include/gaudi2/asic_reg/rot0_qm_regs.h    |  1057 +
- .../include/gaudi2/asic_reg/rot0_regs.h       |   111 +
- .../gaudi2/asic_reg/xbar_edge_0_regs.h        |   199 +
- .../include/gaudi2/asic_reg/xbar_mid_0_regs.h |   199 +
- .../misc/habanalabs/include/gaudi2/gaudi2.h   |   120 +
- .../include/gaudi2/gaudi2_async_events.h      |   963 +
- .../gaudi2/gaudi2_async_ids_map_extended.h    |  2668 +
- .../include/gaudi2/gaudi2_async_virt_events.h |    57 +
- .../include/gaudi2/gaudi2_coresight.h         |   984 +
- .../habanalabs/include/gaudi2/gaudi2_fw_if.h  |    99 +
- .../include/gaudi2/gaudi2_packets.h           |   197 +
- .../include/gaudi2/gaudi2_reg_map.h           |    59 +
- .../include/hw_ip/mmu/mmu_general.h           |    14 +-
- .../habanalabs/include/hw_ip/mmu/mmu_v2_0.h   |    51 +
- include/uapi/misc/habanalabs.h                |   455 +-
- 201 files changed, 157843 insertions(+), 432 deletions(-)
- create mode 100644 drivers/misc/habanalabs/common/decoder.c
- create mode 100644 drivers/misc/habanalabs/common/mmu/mmu_v2_hr.c
- create mode 100644 drivers/misc/habanalabs/common/security.c
- create mode 100644 drivers/misc/habanalabs/gaudi2/Makefile
- create mode 100644 drivers/misc/habanalabs/gaudi2/gaudi2.c
- create mode 100644 drivers/misc/habanalabs/gaudi2/gaudi2P.h
- create mode 100644 drivers/misc/habanalabs/gaudi2/gaudi2_coresight.c
- create mode 100644 drivers/misc/habanalabs/gaudi2/gaudi2_coresight_regs.h
- create mode 100644 drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
- create mode 100644 drivers/misc/habanalabs/gaudi2/gaudi2_security.c
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/arc/gaudi2_arc_common_packets.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_arc0_acp_eng_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_arc0_aux_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_arc0_aux_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_arc0_dup_eng_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_arc0_dup_eng_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_kdma_ctx_axuser_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_kdma_ctx_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_kdma_ctx_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_kdma_ctx_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_kdma_kdma_cgm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_kdma_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/arc_farm_kdma_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/cpu_if_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_dec0_cmd_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_dec0_cmd_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma0_core_ctx_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma0_core_ctx_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma0_core_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma0_core_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma0_qm_arc_aux_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma0_qm_axuser_nonsecured_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma0_qm_cgm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma0_qm_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma0_qm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma1_core_ctx_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_edma1_qm_axuser_nonsecured_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_hmmu0_mmu_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_hmmu0_mmu_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_hmmu0_stlb_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_hmmu0_stlb_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_acc_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_cout0_master_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_cout0_slave_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_cout1_master_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_cout1_slave_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in0_master_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in0_slave_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in1_master_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in1_slave_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in2_master_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in2_slave_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in3_master_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in3_slave_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in4_master_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in4_slave_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_base_addr_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_non_tensor_end_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_non_tensor_start_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_tensor_a_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_tensor_b_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_tensor_cout_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_mme_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_qm_arc_acp_eng_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_qm_arc_aux_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_qm_arc_dup_eng_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_qm_arc_dup_eng_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_qm_axuser_nonsecured_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_qm_axuser_secured_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_qm_cgm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_qm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_sbte0_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_sbte0_mstr_if_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_mme_wb0_mstr_if_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_rtr0_ctrl_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_rtr0_mstr_if_rr_prvt_hbw_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_rtr0_mstr_if_rr_prvt_lbw_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_rtr0_mstr_if_rr_shrd_hbw_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_rtr0_mstr_if_rr_shrd_lbw_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_sync_mngr_glbl_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_sync_mngr_glbl_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_sync_mngr_mstr_if_axuser_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_sync_mngr_mstr_if_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_sync_mngr_objs_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_sync_mngr_objs_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_kernel_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_kernel_tensor_0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_qm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_qm_sync_object_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_qm_tensor_0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_special_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_eml_busmon_0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_eml_etf_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_eml_funnel_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_eml_spmu_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_eml_stm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_qm_arc_aux_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_qm_axuser_nonsecured_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_qm_cgm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_qm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_vdec0_brdg_ctrl_axuser_dec_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_vdec0_brdg_ctrl_axuser_msix_abnrm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_vdec0_brdg_ctrl_axuser_msix_l2c_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_vdec0_brdg_ctrl_axuser_msix_nrm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_vdec0_brdg_ctrl_axuser_msix_vcd_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_vdec0_brdg_ctrl_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_vdec0_brdg_ctrl_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore0_vdec0_ctrl_special_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore1_mme_ctrl_lo_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/dcore3_mme_ctrl_lo_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_blocks_linux_driver.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/nic0_qm0_cgm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/nic0_qm0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/nic0_qm_arc_aux0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/nic0_qpc0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/nic0_umr0_0_completion_queue_ci_1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/nic0_umr0_0_unsecure_doorbell0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_aux_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_dbi_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_dec0_cmd_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_dec0_cmd_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_vdec0_brdg_ctrl_axuser_dec_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_vdec0_brdg_ctrl_axuser_msix_abnrm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_vdec0_brdg_ctrl_axuser_msix_l2c_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_vdec0_brdg_ctrl_axuser_msix_nrm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_vdec0_brdg_ctrl_axuser_msix_vcd_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_vdec0_brdg_ctrl_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_vdec0_brdg_ctrl_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_vdec0_ctrl_special_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pcie_wrap_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_core_ctx_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_core_ctx_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_core_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_core_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_core_special_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_qm_arc_aux_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_qm_axuser_nonsecured_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_qm_axuser_secured_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_qm_cgm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_qm_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma0_qm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma1_core_ctx_axuser_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pdma1_qm_axuser_nonsecured_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pmmu_hbw_stlb_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pmmu_hbw_stlb_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/pmmu_pif_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/psoc_etr_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/psoc_etr_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/psoc_global_conf_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/psoc_global_conf_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/psoc_reset_conf_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/psoc_reset_conf_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/psoc_timestamp_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/rot0_desc_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/rot0_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/rot0_qm_arc_aux_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/rot0_qm_axuser_nonsecured_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/rot0_qm_cgm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/rot0_qm_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/rot0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/xbar_edge_0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/asic_reg/xbar_mid_0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/gaudi2.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/gaudi2_async_events.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/gaudi2_async_ids_map_extended.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/gaudi2_async_virt_events.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/gaudi2_coresight.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/gaudi2_fw_if.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/gaudi2_packets.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi2/gaudi2_reg_map.h
- create mode 100644 drivers/misc/habanalabs/include/hw_ip/mmu/mmu_v2_0.h
-
+diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
+index 41a0fa345e4e..77b89c537ee8 100644
+--- a/include/uapi/misc/habanalabs.h
++++ b/include/uapi/misc/habanalabs.h
+@@ -184,6 +184,285 @@ enum gaudi_queue_id {
+ 	GAUDI_QUEUE_ID_SIZE
+ };
+ 
++/*
++ * In GAUDI2 we have two modes of operation in regard to queues:
++ * 1. Legacy mode, where each QMAN exposes 4 streams to the user
++ * 2. F/W mode, where we use F/W to schedule the JOBS to the different queues.
++ *
++ * When in legacy mode, the user sends the queue id per JOB according to
++ * enum gaudi2_queue_id below.
++ *
++ * When in F/W mode, the user sends a stream id per Command Submission. The
++ * stream id is a running number from 0 up to (N-1), where N is the number
++ * of streams the F/W exposes and is passed to the user in
++ * struct hl_info_hw_ip_info
++ */
++
++enum gaudi2_queue_id {
++	GAUDI2_QUEUE_ID_PDMA_0_0 = 0,
++	GAUDI2_QUEUE_ID_PDMA_0_1 = 1,
++	GAUDI2_QUEUE_ID_PDMA_0_2 = 2,
++	GAUDI2_QUEUE_ID_PDMA_0_3 = 3,
++	GAUDI2_QUEUE_ID_PDMA_1_0 = 4,
++	GAUDI2_QUEUE_ID_PDMA_1_1 = 5,
++	GAUDI2_QUEUE_ID_PDMA_1_2 = 6,
++	GAUDI2_QUEUE_ID_PDMA_1_3 = 7,
++	GAUDI2_QUEUE_ID_DCORE0_EDMA_0_0 = 8,
++	GAUDI2_QUEUE_ID_DCORE0_EDMA_0_1 = 9,
++	GAUDI2_QUEUE_ID_DCORE0_EDMA_0_2 = 10,
++	GAUDI2_QUEUE_ID_DCORE0_EDMA_0_3 = 11,
++	GAUDI2_QUEUE_ID_DCORE0_EDMA_1_0 = 12,
++	GAUDI2_QUEUE_ID_DCORE0_EDMA_1_1 = 13,
++	GAUDI2_QUEUE_ID_DCORE0_EDMA_1_2 = 14,
++	GAUDI2_QUEUE_ID_DCORE0_EDMA_1_3 = 15,
++	GAUDI2_QUEUE_ID_DCORE0_MME_0_0 = 16,
++	GAUDI2_QUEUE_ID_DCORE0_MME_0_1 = 17,
++	GAUDI2_QUEUE_ID_DCORE0_MME_0_2 = 18,
++	GAUDI2_QUEUE_ID_DCORE0_MME_0_3 = 19,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_0_0 = 20,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_0_1 = 21,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_0_2 = 22,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_0_3 = 23,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_1_0 = 24,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_1_1 = 25,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_1_2 = 26,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_1_3 = 27,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_2_0 = 28,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_2_1 = 29,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_2_2 = 30,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_2_3 = 31,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_3_0 = 32,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_3_1 = 33,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_3_2 = 34,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_3_3 = 35,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_4_0 = 36,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_4_1 = 37,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_4_2 = 38,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_4_3 = 39,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_5_0 = 40,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_5_1 = 41,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_5_2 = 42,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_5_3 = 43,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_6_0 = 44,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_6_1 = 45,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_6_2 = 46,
++	GAUDI2_QUEUE_ID_DCORE0_TPC_6_3 = 47,
++	GAUDI2_QUEUE_ID_DCORE1_EDMA_0_0 = 48,
++	GAUDI2_QUEUE_ID_DCORE1_EDMA_0_1 = 49,
++	GAUDI2_QUEUE_ID_DCORE1_EDMA_0_2 = 50,
++	GAUDI2_QUEUE_ID_DCORE1_EDMA_0_3 = 51,
++	GAUDI2_QUEUE_ID_DCORE1_EDMA_1_0 = 52,
++	GAUDI2_QUEUE_ID_DCORE1_EDMA_1_1 = 53,
++	GAUDI2_QUEUE_ID_DCORE1_EDMA_1_2 = 54,
++	GAUDI2_QUEUE_ID_DCORE1_EDMA_1_3 = 55,
++	GAUDI2_QUEUE_ID_DCORE1_MME_0_0 = 56,
++	GAUDI2_QUEUE_ID_DCORE1_MME_0_1 = 57,
++	GAUDI2_QUEUE_ID_DCORE1_MME_0_2 = 58,
++	GAUDI2_QUEUE_ID_DCORE1_MME_0_3 = 59,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_0_0 = 60,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_0_1 = 61,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_0_2 = 62,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_0_3 = 63,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_1_0 = 64,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_1_1 = 65,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_1_2 = 66,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_1_3 = 67,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_2_0 = 68,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_2_1 = 69,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_2_2 = 70,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_2_3 = 71,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_3_0 = 72,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_3_1 = 73,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_3_2 = 74,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_3_3 = 75,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_4_0 = 76,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_4_1 = 77,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_4_2 = 78,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_4_3 = 79,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_5_0 = 80,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_5_1 = 81,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_5_2 = 82,
++	GAUDI2_QUEUE_ID_DCORE1_TPC_5_3 = 83,
++	GAUDI2_QUEUE_ID_DCORE2_EDMA_0_0 = 84,
++	GAUDI2_QUEUE_ID_DCORE2_EDMA_0_1 = 85,
++	GAUDI2_QUEUE_ID_DCORE2_EDMA_0_2 = 86,
++	GAUDI2_QUEUE_ID_DCORE2_EDMA_0_3 = 87,
++	GAUDI2_QUEUE_ID_DCORE2_EDMA_1_0 = 88,
++	GAUDI2_QUEUE_ID_DCORE2_EDMA_1_1 = 89,
++	GAUDI2_QUEUE_ID_DCORE2_EDMA_1_2 = 90,
++	GAUDI2_QUEUE_ID_DCORE2_EDMA_1_3 = 91,
++	GAUDI2_QUEUE_ID_DCORE2_MME_0_0 = 92,
++	GAUDI2_QUEUE_ID_DCORE2_MME_0_1 = 93,
++	GAUDI2_QUEUE_ID_DCORE2_MME_0_2 = 94,
++	GAUDI2_QUEUE_ID_DCORE2_MME_0_3 = 95,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_0_0 = 96,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_0_1 = 97,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_0_2 = 98,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_0_3 = 99,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_1_0 = 100,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_1_1 = 101,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_1_2 = 102,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_1_3 = 103,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_2_0 = 104,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_2_1 = 105,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_2_2 = 106,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_2_3 = 107,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_3_0 = 108,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_3_1 = 109,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_3_2 = 110,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_3_3 = 111,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_4_0 = 112,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_4_1 = 113,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_4_2 = 114,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_4_3 = 115,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_5_0 = 116,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_5_1 = 117,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_5_2 = 118,
++	GAUDI2_QUEUE_ID_DCORE2_TPC_5_3 = 119,
++	GAUDI2_QUEUE_ID_DCORE3_EDMA_0_0 = 120,
++	GAUDI2_QUEUE_ID_DCORE3_EDMA_0_1 = 121,
++	GAUDI2_QUEUE_ID_DCORE3_EDMA_0_2 = 122,
++	GAUDI2_QUEUE_ID_DCORE3_EDMA_0_3 = 123,
++	GAUDI2_QUEUE_ID_DCORE3_EDMA_1_0 = 124,
++	GAUDI2_QUEUE_ID_DCORE3_EDMA_1_1 = 125,
++	GAUDI2_QUEUE_ID_DCORE3_EDMA_1_2 = 126,
++	GAUDI2_QUEUE_ID_DCORE3_EDMA_1_3 = 127,
++	GAUDI2_QUEUE_ID_DCORE3_MME_0_0 = 128,
++	GAUDI2_QUEUE_ID_DCORE3_MME_0_1 = 129,
++	GAUDI2_QUEUE_ID_DCORE3_MME_0_2 = 130,
++	GAUDI2_QUEUE_ID_DCORE3_MME_0_3 = 131,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_0_0 = 132,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_0_1 = 133,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_0_2 = 134,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_0_3 = 135,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_1_0 = 136,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_1_1 = 137,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_1_2 = 138,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_1_3 = 139,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_2_0 = 140,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_2_1 = 141,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_2_2 = 142,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_2_3 = 143,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_3_0 = 144,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_3_1 = 145,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_3_2 = 146,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_3_3 = 147,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_4_0 = 148,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_4_1 = 149,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_4_2 = 150,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_4_3 = 151,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_5_0 = 152,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_5_1 = 153,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_5_2 = 154,
++	GAUDI2_QUEUE_ID_DCORE3_TPC_5_3 = 155,
++	GAUDI2_QUEUE_ID_NIC_0_0 = 156,
++	GAUDI2_QUEUE_ID_NIC_0_1 = 157,
++	GAUDI2_QUEUE_ID_NIC_0_2 = 158,
++	GAUDI2_QUEUE_ID_NIC_0_3 = 159,
++	GAUDI2_QUEUE_ID_NIC_1_0 = 160,
++	GAUDI2_QUEUE_ID_NIC_1_1 = 161,
++	GAUDI2_QUEUE_ID_NIC_1_2 = 162,
++	GAUDI2_QUEUE_ID_NIC_1_3 = 163,
++	GAUDI2_QUEUE_ID_NIC_2_0 = 164,
++	GAUDI2_QUEUE_ID_NIC_2_1 = 165,
++	GAUDI2_QUEUE_ID_NIC_2_2 = 166,
++	GAUDI2_QUEUE_ID_NIC_2_3 = 167,
++	GAUDI2_QUEUE_ID_NIC_3_0 = 168,
++	GAUDI2_QUEUE_ID_NIC_3_1 = 169,
++	GAUDI2_QUEUE_ID_NIC_3_2 = 170,
++	GAUDI2_QUEUE_ID_NIC_3_3 = 171,
++	GAUDI2_QUEUE_ID_NIC_4_0 = 172,
++	GAUDI2_QUEUE_ID_NIC_4_1 = 173,
++	GAUDI2_QUEUE_ID_NIC_4_2 = 174,
++	GAUDI2_QUEUE_ID_NIC_4_3 = 175,
++	GAUDI2_QUEUE_ID_NIC_5_0 = 176,
++	GAUDI2_QUEUE_ID_NIC_5_1 = 177,
++	GAUDI2_QUEUE_ID_NIC_5_2 = 178,
++	GAUDI2_QUEUE_ID_NIC_5_3 = 179,
++	GAUDI2_QUEUE_ID_NIC_6_0 = 180,
++	GAUDI2_QUEUE_ID_NIC_6_1 = 181,
++	GAUDI2_QUEUE_ID_NIC_6_2 = 182,
++	GAUDI2_QUEUE_ID_NIC_6_3 = 183,
++	GAUDI2_QUEUE_ID_NIC_7_0 = 184,
++	GAUDI2_QUEUE_ID_NIC_7_1 = 185,
++	GAUDI2_QUEUE_ID_NIC_7_2 = 186,
++	GAUDI2_QUEUE_ID_NIC_7_3 = 187,
++	GAUDI2_QUEUE_ID_NIC_8_0 = 188,
++	GAUDI2_QUEUE_ID_NIC_8_1 = 189,
++	GAUDI2_QUEUE_ID_NIC_8_2 = 190,
++	GAUDI2_QUEUE_ID_NIC_8_3 = 191,
++	GAUDI2_QUEUE_ID_NIC_9_0 = 192,
++	GAUDI2_QUEUE_ID_NIC_9_1 = 193,
++	GAUDI2_QUEUE_ID_NIC_9_2 = 194,
++	GAUDI2_QUEUE_ID_NIC_9_3 = 195,
++	GAUDI2_QUEUE_ID_NIC_10_0 = 196,
++	GAUDI2_QUEUE_ID_NIC_10_1 = 197,
++	GAUDI2_QUEUE_ID_NIC_10_2 = 198,
++	GAUDI2_QUEUE_ID_NIC_10_3 = 199,
++	GAUDI2_QUEUE_ID_NIC_11_0 = 200,
++	GAUDI2_QUEUE_ID_NIC_11_1 = 201,
++	GAUDI2_QUEUE_ID_NIC_11_2 = 202,
++	GAUDI2_QUEUE_ID_NIC_11_3 = 203,
++	GAUDI2_QUEUE_ID_NIC_12_0 = 204,
++	GAUDI2_QUEUE_ID_NIC_12_1 = 205,
++	GAUDI2_QUEUE_ID_NIC_12_2 = 206,
++	GAUDI2_QUEUE_ID_NIC_12_3 = 207,
++	GAUDI2_QUEUE_ID_NIC_13_0 = 208,
++	GAUDI2_QUEUE_ID_NIC_13_1 = 209,
++	GAUDI2_QUEUE_ID_NIC_13_2 = 210,
++	GAUDI2_QUEUE_ID_NIC_13_3 = 211,
++	GAUDI2_QUEUE_ID_NIC_14_0 = 212,
++	GAUDI2_QUEUE_ID_NIC_14_1 = 213,
++	GAUDI2_QUEUE_ID_NIC_14_2 = 214,
++	GAUDI2_QUEUE_ID_NIC_14_3 = 215,
++	GAUDI2_QUEUE_ID_NIC_15_0 = 216,
++	GAUDI2_QUEUE_ID_NIC_15_1 = 217,
++	GAUDI2_QUEUE_ID_NIC_15_2 = 218,
++	GAUDI2_QUEUE_ID_NIC_15_3 = 219,
++	GAUDI2_QUEUE_ID_NIC_16_0 = 220,
++	GAUDI2_QUEUE_ID_NIC_16_1 = 221,
++	GAUDI2_QUEUE_ID_NIC_16_2 = 222,
++	GAUDI2_QUEUE_ID_NIC_16_3 = 223,
++	GAUDI2_QUEUE_ID_NIC_17_0 = 224,
++	GAUDI2_QUEUE_ID_NIC_17_1 = 225,
++	GAUDI2_QUEUE_ID_NIC_17_2 = 226,
++	GAUDI2_QUEUE_ID_NIC_17_3 = 227,
++	GAUDI2_QUEUE_ID_NIC_18_0 = 228,
++	GAUDI2_QUEUE_ID_NIC_18_1 = 229,
++	GAUDI2_QUEUE_ID_NIC_18_2 = 230,
++	GAUDI2_QUEUE_ID_NIC_18_3 = 231,
++	GAUDI2_QUEUE_ID_NIC_19_0 = 232,
++	GAUDI2_QUEUE_ID_NIC_19_1 = 233,
++	GAUDI2_QUEUE_ID_NIC_19_2 = 234,
++	GAUDI2_QUEUE_ID_NIC_19_3 = 235,
++	GAUDI2_QUEUE_ID_NIC_20_0 = 236,
++	GAUDI2_QUEUE_ID_NIC_20_1 = 237,
++	GAUDI2_QUEUE_ID_NIC_20_2 = 238,
++	GAUDI2_QUEUE_ID_NIC_20_3 = 239,
++	GAUDI2_QUEUE_ID_NIC_21_0 = 240,
++	GAUDI2_QUEUE_ID_NIC_21_1 = 241,
++	GAUDI2_QUEUE_ID_NIC_21_2 = 242,
++	GAUDI2_QUEUE_ID_NIC_21_3 = 243,
++	GAUDI2_QUEUE_ID_NIC_22_0 = 244,
++	GAUDI2_QUEUE_ID_NIC_22_1 = 245,
++	GAUDI2_QUEUE_ID_NIC_22_2 = 246,
++	GAUDI2_QUEUE_ID_NIC_22_3 = 247,
++	GAUDI2_QUEUE_ID_NIC_23_0 = 248,
++	GAUDI2_QUEUE_ID_NIC_23_1 = 249,
++	GAUDI2_QUEUE_ID_NIC_23_2 = 250,
++	GAUDI2_QUEUE_ID_NIC_23_3 = 251,
++	GAUDI2_QUEUE_ID_ROT_0_0 = 252,
++	GAUDI2_QUEUE_ID_ROT_0_1 = 253,
++	GAUDI2_QUEUE_ID_ROT_0_2 = 254,
++	GAUDI2_QUEUE_ID_ROT_0_3 = 255,
++	GAUDI2_QUEUE_ID_ROT_1_0 = 256,
++	GAUDI2_QUEUE_ID_ROT_1_1 = 257,
++	GAUDI2_QUEUE_ID_ROT_1_2 = 258,
++	GAUDI2_QUEUE_ID_ROT_1_3 = 259,
++	GAUDI2_QUEUE_ID_CPU_PQ = 260,
++	GAUDI2_QUEUE_ID_SIZE
++};
++
+ /*
+  * Engine Numbering
+  *
+@@ -242,6 +521,85 @@ enum gaudi_engine_id {
+ 	GAUDI_ENGINE_ID_SIZE
+ };
+ 
++enum gaudi2_engine_id {
++	GAUDI2_DCORE0_ENGINE_ID_EDMA_0 = 0,
++	GAUDI2_DCORE0_ENGINE_ID_EDMA_1,
++	GAUDI2_DCORE0_ENGINE_ID_MME,
++	GAUDI2_DCORE0_ENGINE_ID_TPC_0,
++	GAUDI2_DCORE0_ENGINE_ID_TPC_1,
++	GAUDI2_DCORE0_ENGINE_ID_TPC_2,
++	GAUDI2_DCORE0_ENGINE_ID_TPC_3,
++	GAUDI2_DCORE0_ENGINE_ID_TPC_4,
++	GAUDI2_DCORE0_ENGINE_ID_TPC_5,
++	GAUDI2_DCORE0_ENGINE_ID_DEC_0,
++	GAUDI2_DCORE0_ENGINE_ID_DEC_1,
++	GAUDI2_DCORE1_ENGINE_ID_EDMA_0,
++	GAUDI2_DCORE1_ENGINE_ID_EDMA_1,
++	GAUDI2_DCORE1_ENGINE_ID_MME,
++	GAUDI2_DCORE1_ENGINE_ID_TPC_0,
++	GAUDI2_DCORE1_ENGINE_ID_TPC_1,
++	GAUDI2_DCORE1_ENGINE_ID_TPC_2,
++	GAUDI2_DCORE1_ENGINE_ID_TPC_3,
++	GAUDI2_DCORE1_ENGINE_ID_TPC_4,
++	GAUDI2_DCORE1_ENGINE_ID_TPC_5,
++	GAUDI2_DCORE1_ENGINE_ID_DEC_0,
++	GAUDI2_DCORE1_ENGINE_ID_DEC_1,
++	GAUDI2_DCORE2_ENGINE_ID_EDMA_0,
++	GAUDI2_DCORE2_ENGINE_ID_EDMA_1,
++	GAUDI2_DCORE2_ENGINE_ID_MME,
++	GAUDI2_DCORE2_ENGINE_ID_TPC_0,
++	GAUDI2_DCORE2_ENGINE_ID_TPC_1,
++	GAUDI2_DCORE2_ENGINE_ID_TPC_2,
++	GAUDI2_DCORE2_ENGINE_ID_TPC_3,
++	GAUDI2_DCORE2_ENGINE_ID_TPC_4,
++	GAUDI2_DCORE2_ENGINE_ID_TPC_5,
++	GAUDI2_DCORE2_ENGINE_ID_DEC_0,
++	GAUDI2_DCORE2_ENGINE_ID_DEC_1,
++	GAUDI2_DCORE3_ENGINE_ID_EDMA_0,
++	GAUDI2_DCORE3_ENGINE_ID_EDMA_1,
++	GAUDI2_DCORE3_ENGINE_ID_MME,
++	GAUDI2_DCORE3_ENGINE_ID_TPC_0,
++	GAUDI2_DCORE3_ENGINE_ID_TPC_1,
++	GAUDI2_DCORE3_ENGINE_ID_TPC_2,
++	GAUDI2_DCORE3_ENGINE_ID_TPC_3,
++	GAUDI2_DCORE3_ENGINE_ID_TPC_4,
++	GAUDI2_DCORE3_ENGINE_ID_TPC_5,
++	GAUDI2_DCORE3_ENGINE_ID_DEC_0,
++	GAUDI2_DCORE3_ENGINE_ID_DEC_1,
++	GAUDI2_DCORE0_ENGINE_ID_TPC_6,
++	GAUDI2_ENGINE_ID_PDMA_0,
++	GAUDI2_ENGINE_ID_PDMA_1,
++	GAUDI2_ENGINE_ID_ROT_0,
++	GAUDI2_ENGINE_ID_ROT_1,
++	GAUDI2_PCIE_ENGINE_ID_DEC_0,
++	GAUDI2_PCIE_ENGINE_ID_DEC_1,
++	GAUDI2_ENGINE_ID_NIC0_0,
++	GAUDI2_ENGINE_ID_NIC0_1,
++	GAUDI2_ENGINE_ID_NIC1_0,
++	GAUDI2_ENGINE_ID_NIC1_1,
++	GAUDI2_ENGINE_ID_NIC2_0,
++	GAUDI2_ENGINE_ID_NIC2_1,
++	GAUDI2_ENGINE_ID_NIC3_0,
++	GAUDI2_ENGINE_ID_NIC3_1,
++	GAUDI2_ENGINE_ID_NIC4_0,
++	GAUDI2_ENGINE_ID_NIC4_1,
++	GAUDI2_ENGINE_ID_NIC5_0,
++	GAUDI2_ENGINE_ID_NIC5_1,
++	GAUDI2_ENGINE_ID_NIC6_0,
++	GAUDI2_ENGINE_ID_NIC6_1,
++	GAUDI2_ENGINE_ID_NIC7_0,
++	GAUDI2_ENGINE_ID_NIC7_1,
++	GAUDI2_ENGINE_ID_NIC8_0,
++	GAUDI2_ENGINE_ID_NIC8_1,
++	GAUDI2_ENGINE_ID_NIC9_0,
++	GAUDI2_ENGINE_ID_NIC9_1,
++	GAUDI2_ENGINE_ID_NIC10_0,
++	GAUDI2_ENGINE_ID_NIC10_1,
++	GAUDI2_ENGINE_ID_NIC11_0,
++	GAUDI2_ENGINE_ID_NIC11_1,
++	GAUDI2_ENGINE_ID_SIZE
++};
++
+ /*
+  * ASIC specific PLL index
+  *
+@@ -275,6 +633,22 @@ enum hl_gaudi_pll_index {
+ 	HL_GAUDI_PLL_MAX
+ };
+ 
++enum hl_gaudi2_pll_index {
++	HL_GAUDI2_CPU_PLL = 0,
++	HL_GAUDI2_PCI_PLL,
++	HL_GAUDI2_SRAM_PLL,
++	HL_GAUDI2_HBM_PLL,
++	HL_GAUDI2_NIC_PLL,
++	HL_GAUDI2_DMA_PLL,
++	HL_GAUDI2_MESH_PLL,
++	HL_GAUDI2_MME_PLL,
++	HL_GAUDI2_TPC_PLL,
++	HL_GAUDI2_IF_PLL,
++	HL_GAUDI2_VID_PLL,
++	HL_GAUDI2_MSS_PLL,
++	HL_GAUDI2_PLL_MAX
++};
++
+ /**
+  * enum hl_goya_dma_direction - Direction of DMA operation inside a LIN_DMA packet that is
+  *                              submitted to the GOYA's DMA QMAN. This attribute is not relevant
+@@ -326,7 +700,8 @@ enum hl_server_type {
+ 	HL_SERVER_GAUDI_HLS1 = 1,
+ 	HL_SERVER_GAUDI_HLS1H = 2,
+ 	HL_SERVER_GAUDI_TYPE1 = 3,
+-	HL_SERVER_GAUDI_TYPE2 = 4
++	HL_SERVER_GAUDI_TYPE2 = 4,
++	HL_SERVER_GAUDI2_HLS2 = 5
+ };
+ 
+ /* Opcode for management ioctl
+@@ -428,8 +803,10 @@ enum hl_server_type {
+  * @device_id: PCI device ID of the ASIC.
+  * @module_id: Module ID of the ASIC for mezzanine cards in servers
+  *             (From OCP spec).
++ * @decoder_enabled_mask: Bit-mask that represents which decoders are enabled.
+  * @first_available_interrupt_id: The first available interrupt ID for the user
+  *                                to be used when it works with user interrupts.
++ *                                Relevant for Gaudi2 and later.
+  * @server_type: Server type that the Gaudi ASIC is currently installed in.
+  *               The value is according to enum hl_server_type
+  * @cpld_version: CPLD version on the board.
+@@ -441,9 +818,15 @@ enum hl_server_type {
+  * @tpc_enabled_mask: Bit-mask that represents which TPCs are enabled. Relevant
+  *                    for Goya/Gaudi only.
+  * @dram_enabled: Whether the DRAM is enabled.
++ * @mme_master_slave_mode: Indicate whether the MME is working in master/slave
++ *                         configuration. Relevant for Greco and later.
+  * @cpucp_version: The CPUCP f/w version.
+  * @card_name: The card name as passed by the f/w.
++ * @tpc_enabled_mask_ext: Bit-mask that represents which TPCs are enabled.
++ *                        Relevant for Greco and later.
+  * @dram_page_size: The DRAM physical page size.
++ * @edma_enabled_mask: Bit-mask that represents which EDMAs are enabled.
++ *                     Relevant for Gaudi2 and later.
+  * @number_of_user_interrupts: The number of interrupts that are available to the userspace
+  *                             application to use. Relevant for Gaudi2 and later.
+  * @device_mem_alloc_default_page_size: default page size used in device memory allocation.
+@@ -456,7 +839,7 @@ struct hl_info_hw_ip_info {
+ 	__u32 num_of_events;
+ 	__u32 device_id;
+ 	__u32 module_id;
+-	__u32 reserved;
++	__u32 decoder_enabled_mask;
+ 	__u16 first_available_interrupt_id;
+ 	__u16 server_type;
+ 	__u32 cpld_version;
+@@ -466,12 +849,13 @@ struct hl_info_hw_ip_info {
+ 	__u32 psoc_pci_pll_div_factor;
+ 	__u8 tpc_enabled_mask;
+ 	__u8 dram_enabled;
+-	__u8 pad[2];
++	__u8 reserved;
++	__u8 mme_master_slave_mode;
+ 	__u8 cpucp_version[HL_INFO_VERSION_MAX_LEN];
+ 	__u8 card_name[HL_INFO_CARD_NAME_MAX_LEN];
+-	__u64 reserved2;
++	__u64 tpc_enabled_mask_ext;
+ 	__u64 dram_page_size;
+-	__u32 reserved3;
++	__u32 edma_enabled_mask;
+ 	__u16 number_of_user_interrupts;
+ 	__u16 pad2;
+ 	__u64 reserved4;
+@@ -821,16 +1205,16 @@ union hl_cb_args {
+ /* HL_CS_CHUNK_FLAGS_ values
+  *
+  * HL_CS_CHUNK_FLAGS_USER_ALLOC_CB:
+- *      Indicates if the CB was allocated and mapped by userspace.
+- *      User allocated CB is a command buffer allocated by the user, via malloc
+- *      (or similar). After allocating the CB, the user invokes “memory ioctl”
+- *      to map the user memory into a device virtual address. The user provides
+- *      this address via the cb_handle field. The interface provides the
+- *      ability to create a large CBs, Which aren’t limited to
+- *      “HL_MAX_CB_SIZE”. Therefore, it increases the PCI-DMA queues
+- *      throughput. This CB allocation method also reduces the use of Linux
+- *      DMA-able memory pool. Which are limited and used by other Linux
+- *      sub-systems.
++ *      Indicates if the CB was allocated and mapped by userspace
++ *      (relevant to greco and above). User allocated CB is a command buffer,
++ *      allocated by the user, via malloc (or similar). After allocating the
++ *      CB, the user invokes - “memory ioctl” to map the user memory into a
++ *      device virtual address. The user provides this address via the
++ *      cb_handle field. The interface provides the ability to create a
++ *      large CBs, Which aren’t limited to “HL_MAX_CB_SIZE”. Therefore, it
++ *      increases the PCI-DMA queues throughput. This CB allocation method
++ *      also reduces the use of Linux DMA-able memory pool. Which are limited
++ *      and used by other Linux sub-systems.
+  */
+ #define HL_CS_CHUNK_FLAGS_USER_ALLOC_CB 0x1
+ 
+@@ -840,12 +1224,17 @@ union hl_cb_args {
+  */
+ struct hl_cs_chunk {
+ 	union {
+-		/* For external queue, this represents a Handle of CB on the
++		/* Goya/Gaudi:
++		 * For external queue, this represents a Handle of CB on the
+ 		 * Host.
+ 		 * For internal queue in Goya, this represents an SRAM or
+ 		 * a DRAM address of the internal CB. In Gaudi, this might also
+ 		 * represent a mapped host address of the CB.
+ 		 *
++		 * Greco onwards:
++		 * For H/W queue, this represents either a Handle of CB on the
++		 * Host, or an SRAM, a DRAM, or a mapped host address of the CB.
++		 *
+ 		 * A mapped host address is in the device address space, after
+ 		 * a host address was mapped by the device MMU.
+ 		 */
+@@ -910,11 +1299,12 @@ struct hl_cs_chunk {
+ 	__u32 pad[10];
+ };
+ 
+-/* SIGNAL and WAIT/COLLECTIVE_WAIT flags are mutually exclusive */
++/* SIGNAL/WAIT/COLLECTIVE_WAIT flags are mutually exclusive */
+ #define HL_CS_FLAGS_FORCE_RESTORE		0x1
+ #define HL_CS_FLAGS_SIGNAL			0x2
+ #define HL_CS_FLAGS_WAIT			0x4
+ #define HL_CS_FLAGS_COLLECTIVE_WAIT		0x8
++
+ #define HL_CS_FLAGS_TIMESTAMP			0x20
+ #define HL_CS_FLAGS_STAGED_SUBMISSION		0x40
+ #define HL_CS_FLAGS_STAGED_SUBMISSION_FIRST	0x80
+@@ -1174,14 +1564,19 @@ union hl_wait_cs_args {
+ 
+ /* Opcode to allocate device memory */
+ #define HL_MEM_OP_ALLOC			0
++
+ /* Opcode to free previously allocated device memory */
+ #define HL_MEM_OP_FREE			1
++
+ /* Opcode to map host and device memory */
+ #define HL_MEM_OP_MAP			2
++
+ /* Opcode to unmap previously mapped host and device memory */
+ #define HL_MEM_OP_UNMAP			3
++
+ /* Opcode to map a hw block */
+ #define HL_MEM_OP_MAP_BLOCK		4
++
+ /* Opcode to create DMA-BUF object for an existing device memory allocation
+  * and to export an FD of that DMA-BUF back to the caller
+  */
+@@ -1400,7 +1795,16 @@ struct hl_debug_params_bmon {
+ 
+ 	/* Trace source ID */
+ 	__u32 id;
+-	__u32 pad;
++
++	/* Control register */
++	__u32 control;
++
++	/* Two more address ranges that the user can request to filter */
++	__u64 start_addr2;
++	__u64 end_addr2;
++
++	__u64 start_addr3;
++	__u64 end_addr3;
+ };
+ 
+ struct hl_debug_params_spmu {
+@@ -1409,7 +1813,11 @@ struct hl_debug_params_spmu {
+ 
+ 	/* Number of event types selection */
+ 	__u32 event_types_num;
+-	__u32 pad;
++
++	/* TRC configuration register values */
++	__u32 pmtrc_val;
++	__u32 trc_ctrl_host_val;
++	__u32 trc_en_host_val;
+ };
+ 
+ /* Opcode for ETR component */
+@@ -1524,16 +1932,23 @@ struct hl_debug_args {
+  * (or if its the first CS for this context). The user can also order the
+  * driver to run the "restore" phase explicitly
+  *
++ * Goya/Gaudi:
+  * There are two types of queues - external and internal. External queues
+  * are DMA queues which transfer data from/to the Host. All other queues are
+  * internal. The driver will get completion notifications from the device only
+  * on JOBS which are enqueued in the external queues.
+  *
++ * Greco onwards:
++ * There is a single type of queue for all types of engines, either DMA engines
++ * for transfers from/to the host or inside the device, or compute engines.
++ * The driver will get completion notifications from the device for all queues.
++ *
+  * For jobs on external queues, the user needs to create command buffers
+  * through the CB ioctl and give the CB's handle to the CS ioctl. For jobs on
+  * internal queues, the user needs to prepare a "command buffer" with packets
+  * on either the device SRAM/DRAM or the host, and give the device address of
+  * that buffer to the CS ioctl.
++ * For jobs on H/W queues both options of command buffers are valid.
+  *
+  * This IOCTL is asynchronous in regard to the actual execution of the CS. This
+  * means it returns immediately after ALL the JOBS were enqueued on their
+@@ -1542,7 +1957,7 @@ struct hl_debug_args {
+  *
+  * Upon successful enqueue, the IOCTL returns a sequence number which the user
+  * can use with the "Wait for CS" IOCTL to check whether the handle's CS
+- * external JOBS have been completed. Note that if the CS has internal JOBS
++ * non-internal JOBS have been completed. Note that if the CS has internal JOBS
+  * which can execute AFTER the external JOBS have finished, the driver might
+  * report that the CS has finished executing BEFORE the internal JOBS have
+  * actually finished executing.
 -- 
 2.25.1
 
