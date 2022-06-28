@@ -2,242 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8022C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F18C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346395AbiF1N2W (ORCPT
+        id S1346448AbiF1N3N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
+        Tue, 28 Jun 2022 09:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346562AbiF1N1s (ORCPT
+        with ESMTP id S1346604AbiF1N1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:27:48 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335D5F48
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:26:46 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id g4so10651810ybg.9
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:26:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x1PdxBEhFalOAWbRKx82ZqW3VRMTFx8BscKp2q1d2zQ=;
-        b=NSkLxKlthFbbgopUImR7ZEIlHMMGztOCr3eD8q6PfMTXQl90ybYLzrlC0esbBqD5A3
-         1eYGscmtoONhp+O98Nmy0wRr5R452GQUTTxKa15lfN40VYs9hZSHzOY7Iw6NgdP/ATGC
-         p5az4xcNgLdFIr/j7gTVQbnvxMeRoNuNLhXPDVCKwd2c9FpLL57NLN6U+SKVk8P5ZqmG
-         z06IOUN+yKa/LsvLBZqxSsPsNh1+oLZiSmevfaZTY0zwZT3tVAPpA+XG4pxsyRuqFPe6
-         RTtrf5yU6Jl1aPl5OV9wec7CYw4cmdy5iba0ki/sYJckiSZf80tgQm97CyTxyDK7H9mh
-         FVfA==
+        Tue, 28 Jun 2022 09:27:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D677110E
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:27:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656422827;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3WbsWEZ/mNVf4IIjW1g8i/pcRIWzNJLpjYPpewMPXV8=;
+        b=NTEcwwhjYJPFPRLrj5SuQ/LagvE1vcvkezLs0jrtMUVFjsZ7I7y/SmiaQ5YAuDVzrf0Ga/
+        GjSjyhfUFjEJNRiJmwbJvz/bandYmJgst0RkyhZXCWcpCpuT38/VfJgCqwgWygqXyXCadS
+        IKFypir84i3IDcGK4TsXtoRDEGzAUC4=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-670-_7XemAgLNJizz3vs5Vgq4g-1; Tue, 28 Jun 2022 09:27:06 -0400
+X-MC-Unique: _7XemAgLNJizz3vs5Vgq4g-1
+Received: by mail-qk1-f198.google.com with SMTP id i124-20020a37b882000000b006af41a43f76so3984561qkf.6
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:27:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=x1PdxBEhFalOAWbRKx82ZqW3VRMTFx8BscKp2q1d2zQ=;
-        b=mQEJ4mQiO7BrxIdBcBREUd/QXZIB6MZSy56sysSxrZhJbuCAs6GKR+n/Z+yDXygeCt
-         TDey2OPh7mU6ffFV8WadFsYGWQFyH8AsUihHMukMyDG2Z3+kkT7TxihzjZmhSmx9S7xZ
-         bGm2d55h8s79UYNL8DVY66icfQt/ntM/XO/WKt/U8i5LsbO1bUNhPpeTaFJB+DYMmaWI
-         U6QQxyPz0GIadfTX8RpMU1lyMQEHhdF8+rHvBAj2x2nU9NM1szBpuVftmjgbgeg0gjDz
-         qZV8xNr1n4xuxwaIlBYr29ywvj6lucUDC6mu+ifR5O2kZ2kYFzFbzIbVg7DvEVnuYspB
-         LsYw==
-X-Gm-Message-State: AJIora8USKztZv0TrgN+cXl0BCMHaqO7tNYRqEQ19Q22q/1t6f9OuR3x
-        Clw/Dp78ePBBU8fOrO8kWZhRPLXoPJ4aXC1qV4LLew==
-X-Google-Smtp-Source: AGRyM1uFLXgRLqXAUoOqJZMzCqxQhJrcnevmfJz6sq3en7AEn2uog+RxKnMuRlH/uclo0B3Xdh3mvjZbp0X+fsNH/8E=
-X-Received: by 2002:a25:cc56:0:b0:66c:d0f6:2f0e with SMTP id
- l83-20020a25cc56000000b0066cd0f62f0emr11356145ybf.168.1656422805211; Tue, 28
- Jun 2022 06:26:45 -0700 (PDT)
+        bh=3WbsWEZ/mNVf4IIjW1g8i/pcRIWzNJLpjYPpewMPXV8=;
+        b=lt0Bwgf6t/KJpiOgExkg92Jhn9Cg4owKbpBMl8G+gDLE6R2sP20wKOqQUMap13pQ69
+         HXgS22X5hovs3QU9exNYhm4fPmzMabuZCGEDN+C7Rc1Q7ZQeyqC/FY6m7d0K1I5pbQpj
+         HfiAckEPP8flQVBAwZapvbXit1BPXCr2UIcXBuBJG7ZzxYvGzjicVkU9TZJuJ/zyGNbG
+         V2lRQJ5LlFJLzwL3wYmbg2THTKeJmon6gk9xXQCJV6dFrneDuRKWncZzGeFHt4eRuEkx
+         7MRpwA6PhNopSWrM2utdIfskmRyya+lxWviSbpwMt+dHB4tKgzXFCNXB5uT7KzZ1Iyzs
+         FQ9g==
+X-Gm-Message-State: AJIora87VCSCfqsmG4iSXOtcLD4bjzUgJ5E+PdVMaHX7iAfIJZjy8uLN
+        I/mzMjJIBsLdZnHsP5ee9aS3rDoj6sNLPNUv6etxdf+SGfVHyYSxwLQhPlaCnUv+Gd9gG9RwGnD
+        BA1WGCYpvF4Kz5w5W/T7VlslqznCgkFEp5geHVk9z
+X-Received: by 2002:a05:620a:4723:b0:6af:46a2:8531 with SMTP id bs35-20020a05620a472300b006af46a28531mr4202363qkb.177.1656422825510;
+        Tue, 28 Jun 2022 06:27:05 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tsWzlpf+KpXIDtDj3F+am63Ss3bkIPFmCxv2A+xlePARaj83XrP5hyjd8iOe/scwK2BxF/7To24Jkd7nVCV6s=
+X-Received: by 2002:a05:620a:4723:b0:6af:46a2:8531 with SMTP id
+ bs35-20020a05620a472300b006af46a28531mr4202346qkb.177.1656422825275; Tue, 28
+ Jun 2022 06:27:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220628095833.2579903-1-elver@google.com> <20220628095833.2579903-2-elver@google.com>
- <CACT4Y+brMfpe1_T5eaki8YLRVeCsFqJ6WbUCAe2+ALNTT=By0w@mail.gmail.com>
-In-Reply-To: <CACT4Y+brMfpe1_T5eaki8YLRVeCsFqJ6WbUCAe2+ALNTT=By0w@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Tue, 28 Jun 2022 15:26:09 +0200
-Message-ID: <CANpmjNPYMSWOFa5mG9HZnjZUGg7DhGDcLN2dsATZFZh1y5C36Q@mail.gmail.com>
-Subject: Re: [PATCH v2 01/13] perf/hw_breakpoint: Add KUnit test for
- constraints accounting
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, linux-perf-users@vger.kernel.org,
-        x86@kernel.org, linux-sh@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
+References: <CAK-6q+hd-L54cqOiFNuufS2_VF5XS0R8cjQL7es8921+2u3uwQ@mail.gmail.com>
+ <20220627184232.tjfuzeir57l3h5ll@mail> <CAK-6q+haOfQD8_N6pEm80BTrUXwaj07ZBcXP-EBHftpTVEc1XQ@mail.gmail.com>
+ <CAK-6q+g795MwPvUGxWXTE+s-TfJnbh2wf=Udb1k7r6ru-4FTMQ@mail.gmail.com> <20220628085821.kn3jjrviyprgai4w@mail>
+In-Reply-To: <20220628085821.kn3jjrviyprgai4w@mail>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Tue, 28 Jun 2022 09:26:54 -0400
+Message-ID: <CAK-6q+h2syRtu1+7tv7ZQB98z62bn7vSeMX4b3uV6Oi+WxKsVA@mail.gmail.com>
+Subject: Re: sparse warnings related to kref_put_lock() and refcount_dec_and_lock()
+To:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+Cc:     jacob.e.keller@intel.com, akpm@linux-foundation.org,
+        thunder.leizhen@huawei.com, linux-sparse@vger.kernel.org,
+        cluster-devel <cluster-devel@redhat.com>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 at 14:53, Dmitry Vyukov <dvyukov@google.com> wrote:
->
->  On Tue, 28 Jun 2022 at 11:59, Marco Elver <elver@google.com> wrote:
-> >
-> > Add KUnit test for hw_breakpoint constraints accounting, with various
-> > interesting mixes of breakpoint targets (some care was taken to catch
-> > interesting corner cases via bug-injection).
-> >
-> > The test cannot be built as a module because it requires access to
-> > hw_breakpoint_slots(), which is not inlinable or exported on all
-> > architectures.
-> >
-> > Signed-off-by: Marco Elver <elver@google.com>
-> > ---
-> > v2:
-> > * New patch.
-> > ---
-> >  kernel/events/Makefile             |   1 +
-> >  kernel/events/hw_breakpoint_test.c | 321 +++++++++++++++++++++++++++++
-> >  lib/Kconfig.debug                  |  10 +
-> >  3 files changed, 332 insertions(+)
-> >  create mode 100644 kernel/events/hw_breakpoint_test.c
-> >
-> > diff --git a/kernel/events/Makefile b/kernel/events/Makefile
-> > index 8591c180b52b..91a62f566743 100644
-> > --- a/kernel/events/Makefile
-> > +++ b/kernel/events/Makefile
-> > @@ -2,4 +2,5 @@
-> >  obj-y := core.o ring_buffer.o callchain.o
-> >
-> >  obj-$(CONFIG_HAVE_HW_BREAKPOINT) += hw_breakpoint.o
-> > +obj-$(CONFIG_HW_BREAKPOINT_KUNIT_TEST) += hw_breakpoint_test.o
-> >  obj-$(CONFIG_UPROBES) += uprobes.o
-> > diff --git a/kernel/events/hw_breakpoint_test.c b/kernel/events/hw_breakpoint_test.c
-> > new file mode 100644
-> > index 000000000000..747a0249a606
-> > --- /dev/null
-> > +++ b/kernel/events/hw_breakpoint_test.c
-> > @@ -0,0 +1,321 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * KUnit test for hw_breakpoint constraints accounting logic.
-> > + *
-> > + * Copyright (C) 2022, Google LLC.
-> > + */
-> > +
-> > +#include <kunit/test.h>
-> > +#include <linux/cpumask.h>
-> > +#include <linux/hw_breakpoint.h>
-> > +#include <linux/kthread.h>
-> > +#include <linux/perf_event.h>
-> > +#include <asm/hw_breakpoint.h>
-> > +
-> > +#define TEST_REQUIRES_BP_SLOTS(test, slots)                                            \
-> > +       do {                                                                            \
-> > +               if ((slots) > get_test_bp_slots()) {                                    \
-> > +                       kunit_skip((test), "Requires breakpoint slots: %d > %d", slots, \
-> > +                                  get_test_bp_slots());                                \
-> > +               }                                                                       \
-> > +       } while (0)
-> > +
-> > +#define TEST_EXPECT_NOSPC(expr) KUNIT_EXPECT_EQ(test, -ENOSPC, PTR_ERR(expr))
-> > +
-> > +#define MAX_TEST_BREAKPOINTS 512
-> > +
-> > +static char break_vars[MAX_TEST_BREAKPOINTS];
-> > +static struct perf_event *test_bps[MAX_TEST_BREAKPOINTS];
-> > +static struct task_struct *__other_task;
-> > +
-> > +static struct perf_event *register_test_bp(int cpu, struct task_struct *tsk, int idx)
-> > +{
-> > +       struct perf_event_attr attr = {};
-> > +
-> > +       if (WARN_ON(idx < 0 || idx >= MAX_TEST_BREAKPOINTS))
-> > +               return NULL;
-> > +
-> > +       hw_breakpoint_init(&attr);
-> > +       attr.bp_addr = (unsigned long)&break_vars[idx];
-> > +       attr.bp_len = HW_BREAKPOINT_LEN_1;
-> > +       attr.bp_type = HW_BREAKPOINT_RW;
-> > +       return perf_event_create_kernel_counter(&attr, cpu, tsk, NULL, NULL);
-> > +}
-> > +
-> > +static void unregister_test_bp(struct perf_event **bp)
-> > +{
-> > +       if (WARN_ON(IS_ERR(*bp)))
-> > +               return;
-> > +       if (WARN_ON(!*bp))
-> > +               return;
-> > +       unregister_hw_breakpoint(*bp);
-> > +       *bp = NULL;
-> > +}
-> > +
-> > +static int get_test_bp_slots(void)
-> > +{
-> > +       static int slots;
->
-> Why is this function needed? Is hw_breakpoint_slots() very slow?
+Hi Luc,
 
-It seems non-trivial on some architectures (e.g.
-arch/arm64/kernel/hw_breakpoint.c). Also the reason why
-hw_breakpoint.c itself caches it, so I decided to follow the same
-because it's called very often in the tests.
-
-> > +
-> > +       if (!slots)
-> > +               slots = hw_breakpoint_slots(TYPE_DATA);
-> > +
-> > +       return slots;
-> > +}
-> > +
-> > +static void fill_one_bp_slot(struct kunit *test, int *id, int cpu, struct task_struct *tsk)
-> > +{
-> > +       struct perf_event *bp = register_test_bp(cpu, tsk, *id);
-> > +
-> > +       KUNIT_ASSERT_NOT_NULL(test, bp);
-> > +       KUNIT_ASSERT_FALSE(test, IS_ERR(bp));
-> > +       KUNIT_ASSERT_NULL(test, test_bps[*id]);
-> > +       test_bps[(*id)++] = bp;
-> > +}
-> > +
-> > +/*
-> > + * Fills up the given @cpu/@tsk with breakpoints, only leaving @skip slots free.
-> > + *
-> > + * Returns true if this can be called again, continuing at @id.
-> > + */
-> > +static bool fill_bp_slots(struct kunit *test, int *id, int cpu, struct task_struct *tsk, int skip)
-> > +{
-> > +       for (int i = 0; i < get_test_bp_slots() - skip; ++i)
-> > +               fill_one_bp_slot(test, id, cpu, tsk);
-> > +
-> > +       return *id + get_test_bp_slots() <= MAX_TEST_BREAKPOINTS;
-> > +}
-> > +
-> > +static int dummy_kthread(void *arg)
-> > +{
-> > +       return 0;
-> > +}
-> > +
-> > +static struct task_struct *get_other_task(struct kunit *test)
-> > +{
-> > +       struct task_struct *tsk;
-> > +
-> > +       if (__other_task)
-> > +               return __other_task;
-> > +
-> > +       tsk = kthread_create(dummy_kthread, NULL, "hw_breakpoint_dummy_task");
-> > +       KUNIT_ASSERT_FALSE(test, IS_ERR(tsk));
-> > +       __other_task = tsk;
-> > +       return __other_task;
-> > +}
-> > +
-> > +static int get_other_cpu(void)
-> > +{
-> > +       int cpu;
-> > +
-> > +       for_each_online_cpu(cpu) {
-> > +               if (cpu != raw_smp_processor_id())
+On Tue, Jun 28, 2022 at 4:58 AM Luc Van Oostenryck
+<luc.vanoostenryck@gmail.com> wrote:
 >
-> Are we guaranteed to not be rescheduled in the middle of a test?
-> If not, can't get_other_cpu() return the same CPU that was returned by
-> raw_smp_processor_id() earlier in the test?
+> On Mon, Jun 27, 2022 at 09:06:43PM -0400, Alexander Aring wrote:
+> > >
+> > > If we change the refcount code to _never_ calling unlock() for the
+> > > specific lock, then all those foo_and_lock_bar() functions can be
+> > > annotated with "__acquires()". This should also end in the same code?
+> >
+> > sorry, this will not work because of the first condition of "if
+> > (refcount_dec_not_one(r))" which will never hold the lock if true...
+> > that's what the optimization is all about. However, maybe somebody has
+> > another idea...
+>
+> I would certainly not recommend this but ...
+> if it's OK to cheat and lie then you can do:
+> +       bool refcount_dec_and_lock(refcount_t *r, spinlock_t *lock) __acquires(lock);
+> +
+>         bool refcount_dec_and_lock(refcount_t *r, spinlock_t *lock)
+>         {
+> -               if (refcount_dec_not_one(r))
+> -                       return false;
+> +               if (refcount_dec_not_one(r)) {
+> +                       __acquire(lock);
+> +                       return false;
+> +               }
+>
+>                 spin_lock(lock);
+>                 if (!refcount_dec_and_test(r)) {
+>                         spin_unlock(lock);
+> +                       __acquire(lock);
+>                         return false;
+>                 }
+>
+>                 return true;
+>         }
+>
+> In other word, pretend that the lock is always taken but ...
+> 1) it's ugly
+> 2) it's lying and can be confusing
+> 3) now all the users of this function will have an imbalance problem
+>    (but they probably already have one since refcount_dec_and_lock()
+>     is not annotated).
+>
+> What is needed is some kind of annotation for conditional locks.
+> I've tried a few time and in itself it was working but in most
+> cases the usage pattern was so that there was a imbalance anyway.
+>
 
-Yes, good point. I think I'll change it to just not use
-raw_smp_processor_id() and instead have get_test_cpu(int num) and it
-tries to find the 'num' online CPU. In the tests I'll just use CPU
-#num 0 and 1.
+may we can add something like __may_acquires() in the sense of
+ignoring imbalances for the specific lock. This will not check
+anything and probably ends in the same, but at least will stop
+dropping warnings... my alternative would be to add a #ifdef
+__CHECKER__ around my lock unlock().
+
+Maybe just for now as no better option exists to validate such code
+during compile time _at the moment_?
+
+- Alex
+
