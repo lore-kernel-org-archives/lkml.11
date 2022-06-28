@@ -2,221 +2,448 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 742E4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69237C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233330AbiF1Q7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 12:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
+        id S232949AbiF1Q7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 12:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237758AbiF1Q7A (ORCPT
+        with ESMTP id S237273AbiF1Q6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 12:59:00 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9693EC0;
-        Tue, 28 Jun 2022 09:58:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656435539; x=1687971539;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=KourgPet7es5Jm2jxp5d3VhP1vL/qRXjRi9KWZ65knk=;
-  b=bA+0rWohQE6ADwb1+MBZkYwmyuYV2R4/eLKv1hL6M7sWS9csR5uUGePG
-   6j5y9CqpIfhN8MPfEG2fAi3BlSUimjHTXxC/xMyk3Mf7ZMz9QPi8v89vC
-   7kqOJIdk7XOuXigRfH6Qyygxcd49E/qWRuLBwYDnICrj0BBdMJxO0tY2Q
-   mMfyjiqEwgIIBtyGDgq1Xmr9lzu3YZVOWPGQ4kR6K/XsHzY4HrE4Trmpc
-   5tfx4wcukmi4bwoazqD3DQgwi9507n+lMow4nEMUn2E3RJN1Pw9+wHPW/
-   y+zyj8m/DpvPWMW3ak0pQXKDuuo8aTyvjRZfw+0iQrhLEPsAkRrvsAQyq
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343485034"
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="343485034"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 09:58:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="587934833"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by orsmga007.jf.intel.com with ESMTP; 28 Jun 2022 09:58:49 -0700
-Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 28 Jun 2022 09:58:48 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 28 Jun 2022 09:58:48 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 28 Jun 2022 09:58:48 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UXkbVy0bePPMF5tKL/eO9pnLTEnZW0m6NiYXpgbze9+ShuwFXrQWsIIkE5sAvAoTu4ApcQ2wneAFEaOfIsCPayHlolYNXcCFR29uwDSjNK+VTnPKP9Ypr8V0q/iZD5cnKP+lbalyGHDmrAwocEg9f/Y1aRS5x9IoV7tZnm64uhQcDDyaa393CaZMux082e0XaP/hlXCiRgG7lR+y1eLXfSB50VbwT63gMN08Qv32HmZ6piGleDIsSjP3U73LThKH2C2j0Z0Wj8Lmk09zgD21GXZGNDiFSmZgqNcn1R5hNMLvtGsHiQwNUklzVSrxo7VO+jzEVNbHAQlv8kCPCgL19Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4Uy0iwdwqeVEcTTrpDLioU955NYy9bxMphYBC1JgXCY=;
- b=F++/n0DcwMADpDf27yBerzunxDpdZwxzMMD6HKKMVxacPdyJefIrVOSx4N3tQWmW1Z7laOjCQ8n+Dfy/zBmptcIc2lnWKXCVzV8+NHcncjTuFkkc6WCp3qzwFFn2RmCKnOZxEp/nNLW4SkaYf0d+Ei5CaRiCIlaO/0a5arXUL5CLZH8fr8ohOkG8yXI91xHnKnhVNUUMeS7Tx5zwU9QhISwKPVQCrsFfx9RmnDbkg1JKvreFYYjQ5VvQi+FLJfYjALNTHtBP2nmmKehfu6OJSbCpQ3tLdqEc2xwhcdwgVFQc53eTDMi5UzamTZkaV1VwonblV+dOg5O9Y2sTfYkZfw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB6311.namprd11.prod.outlook.com (2603:10b6:8:a6::21) by
- BL0PR11MB3444.namprd11.prod.outlook.com (2603:10b6:208:6f::29) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5373.17; Tue, 28 Jun 2022 16:58:46 +0000
-Received: from DM4PR11MB6311.namprd11.prod.outlook.com
- ([fe80::e912:6a38:4502:f207]) by DM4PR11MB6311.namprd11.prod.outlook.com
- ([fe80::e912:6a38:4502:f207%5]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 16:58:46 +0000
-Date:   Tue, 28 Jun 2022 09:58:39 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-CC:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Li, Ming" <ming4.li@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        "Dave Jiang" <dave.jiang@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH V12 3/9] PCI: Create PCIe library functions in support of
- DOE mailboxes.
-Message-ID: <YrszP+S3XLpmZL3n@iweiny-desk3>
-References: <20220628041527.742333-1-ira.weiny@intel.com>
- <20220628041527.742333-4-ira.weiny@intel.com>
- <20220628153848.00007818@Huawei.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220628153848.00007818@Huawei.com>
-X-ClientProxiedBy: BYAPR07CA0030.namprd07.prod.outlook.com
- (2603:10b6:a02:bc::43) To DM4PR11MB6311.namprd11.prod.outlook.com
- (2603:10b6:8:a6::21)
+        Tue, 28 Jun 2022 12:58:42 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D392E313;
+        Tue, 28 Jun 2022 09:58:40 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SG0PTv004591;
+        Tue, 28 Jun 2022 16:58:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=+7F3xWBRf8B0IWhYhsOB6ixDVzchtNAgJuEjyMCzmq8=;
+ b=tEq2IQXjROI934bb87ruI5mYcB1x7UsvM38XOi8LRqLFyHc+DcM/A6db6YQ/GmOmnXRc
+ zg80zn0y9cb3u59T5LaL74s1GH5mea12ziqKfgbN4NHBFnuyMbD8O7k5R9NA/qq8VHb6
+ s1AjhiHL7lNA3LK1WWPXj+9FIbQMtzPROhCkn9aNCxmNP1RYFfgFbboQHYGIA+TZ33Kb
+ 0vMzBnJ1QIx7ba7hE3P+Nle2kZc0PPug+Dk63k3Pv1B0HjIzJzsy5GWecMGTrwsvuojB
+ u1cQGq2SmJ5Eiz1Zrg9Ftk2VVuCGQFclPh0Kt0VMttBUmODROEXF2pdVNuuKm4bNBSeS vw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h04snst7v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 16:58:30 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SGfcfQ030955;
+        Tue, 28 Jun 2022 16:58:30 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h04snst7g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 16:58:29 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SGpwjT014763;
+        Tue, 28 Jun 2022 16:58:28 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma03wdc.us.ibm.com with ESMTP id 3gwt09es8f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 16:58:28 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SGwRa034865534
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jun 2022 16:58:27 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 873107805C;
+        Tue, 28 Jun 2022 16:58:27 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D456978067;
+        Tue, 28 Jun 2022 16:58:26 +0000 (GMT)
+Received: from sbct-3.pok.ibm.com (unknown [9.47.158.153])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 28 Jun 2022 16:58:26 +0000 (GMT)
+From:   Stefan Berger <stefanb@linux.ibm.com>
+To:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     nayna@linux.ibm.com, nasastry@in.ibm.com, mpe@ellerman.id.au,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Eric Biederman <ebiederm@xmission.com>
+Subject: [PATCH v3 3/3] tpm/kexec: Duplicate TPM measurement log in of-tree for kexec
+Date:   Tue, 28 Jun 2022 12:58:20 -0400
+Message-Id: <20220628165820.883222-4-stefanb@linux.ibm.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220628165820.883222-1-stefanb@linux.ibm.com>
+References: <20220628165820.883222-1-stefanb@linux.ibm.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 984f5437-a999-4458-6d2d-08da59277724
-X-MS-TrafficTypeDiagnostic: BL0PR11MB3444:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: C6TS9eAQLQk6S96fEhTGYvl41KNxUbY3DLltdkcXwEYUqQscsJlzrST2ym+u9zmev5soeDx8XoLjPSApDpXMeA1vaqvml6G4Hz4uyYUN9Mg1y/Yxp5xgvpX9hploq0l0Xl/+hCaDD7+P5M+wCU6QtNn9Fhz08spx/Owsyy9oFiaijbo8QXh0ZYPlxPqFWIm3K/YztQCoW5Hqe8jJbFs4akmLhHdQ17DkFRyty+lanBDAa5aToGzTr8iL7w6kO1pcMDc9l2jQdcIFpnEXXhEbSXst1yY8abqgkXUDNR6NGhoCq+Jic+J9sOAjT7YOhooQMRceXGJxEILiqHNPGyfy5X5i3cN7exbl1exPLF/7rxAakn14oUrk6yvwSvFkuNSHSzXAzlBRspEhGwrxSwZfSDbsRid7JSRuyEZVN8deMhlVbBWqGBxtG6+SeDlmCHJ3ED+AwniKLviMQgSHsqXJrSGr87WtJq4OfmnZhgagRLl/pMqZahQiuBTt8FSB3+0sbq3vMNcJy8z6RIUKOg3qxmWGVjLix9ef1TvfYW6OkgwkiHrdVrXLdnGiAf6NxG5S0bHwB0tg+t5jtinCt4Jus8qvS62/j/DUNf337Uv0AELlErGPxMQG1ie9RL5B5xD6ye1O21CwBf1fDDvHXbzU7+L4HvD5IMtwsrDgqP3ZFmkUK528XzMGD37kbzVw4/ctHsn3iHOePTYFRGh1ILw0FUE6aLv4Xrxq0ySz156tfS9TBjCAtshrSnmijS/H2K5uSUtIUDxGxlso6mjLTsPCQM6yMc9mHwMswL+L0gMRHS0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6311.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(376002)(346002)(39860400002)(136003)(396003)(366004)(83380400001)(6666004)(15650500001)(6486002)(66946007)(186003)(5660300002)(316002)(478600001)(6916009)(33716001)(66476007)(86362001)(38100700002)(9686003)(54906003)(44832011)(66556008)(2906002)(8936002)(41300700001)(6512007)(82960400001)(4326008)(8676002)(6506007)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oLJqZRffZsSz4R4DM7D5ADl3InZUZKebp2IR/+fhJQtqARKDwivG8vNIxqGV?=
- =?us-ascii?Q?ZhyKEyWd+dCHhfXBKoPp08dbeCdc5UAZvWwJcVtxG/5niHKXlCSwwxcuLKjx?=
- =?us-ascii?Q?uuwZ8VDjmg5Hu3Bz23eXb3oZ8Ta2DSAjGZ9VJ5f7E1KoY0FCMIADLAGn2Owp?=
- =?us-ascii?Q?PuI0YNp5sW6pvUS5VEQ+yufV9MCZe0KONSZmaRaHpr513SQ1mWyxeBHnXwjk?=
- =?us-ascii?Q?ITMQ6CGL6v/LHX32iIODNxN9RQEPUA+9Ni94HJcRNeQoZPBQtpB+0Y6Sj5O1?=
- =?us-ascii?Q?PM4UjG5gJ1Vty1Iej8DCvEUzXiNv8UltHt/ohzhPNGmJ0KL6Y+UFYywHp3e/?=
- =?us-ascii?Q?NCTXGvai5TbTG7cWu6p9ogcqWcyF4TQt+6+DrZTbZ8ZyhaPQJE5sYEWs35Ti?=
- =?us-ascii?Q?/VUX2P/mZmmcqkYRRLhrx5YEvwiKRvDByg2z4eYWd+01NI9mk94Ijdguwi4O?=
- =?us-ascii?Q?aGRWiAWjPOqY7LW6nSshf368TD+c0QdPaJUsIsqgx8KTzxD5SlQZzHMx+YhI?=
- =?us-ascii?Q?4YX3VOwN1fpnFpkaV9mXqmKFezFoX3gm5BiO0otAOt/PSw+qUeTZRBc8i/IU?=
- =?us-ascii?Q?JC9umX2/lGpuORhUjECxAt6PvwuKhvH0k2LbeOOBIGky+pIpb5l3jrEqdczU?=
- =?us-ascii?Q?6uIdiMnGcu0kf0U6jdxOa0dbmjR/kEKBjO3z5Ce2ehSUhVvNoFm/Gt9ZFVaj?=
- =?us-ascii?Q?9rA0eeDCymfNs6M7JWRIMheWC9c8sTUbqutJXovMporv66Ep/nypnTNh/z+4?=
- =?us-ascii?Q?TXpHDElm5gGM9n5lzP2aL3EWJdn4D8p5O66ur8Y2bl5fTSvEpdF7CrHqSnR2?=
- =?us-ascii?Q?/RdCVcuK0XB1kb3G2w9Ow5GHg6EintvJN9KUvjhyB6h2XMyAqEehxzDHOnOB?=
- =?us-ascii?Q?fAl3XP7qnl6Ja0YpRNHEgP/V9EMTXKnZIt7LdHqJpfA+Zx/ppL9T3qcsB7fP?=
- =?us-ascii?Q?mtG768VkvQ2wEje27AZI7Vw2B24yMbz0gf4BlbBeK4h51cGDSKBbqTTJ1Rip?=
- =?us-ascii?Q?e6bqGhLbZpJp/+P7dy6mH4mzmFBujjw+mAKfgPidpCg30VQrOmvLnwADn8Pf?=
- =?us-ascii?Q?YXJzccGi44FHi8mIjqKi9bcWS7qnU2wjOlm1AMYLqhrHh2kIzpbs0dlaKl6c?=
- =?us-ascii?Q?JXNgLAxLitafMrYXsHTzRgodAjv7mBuWFmxXAUSN/CBSdlMBybcDgK5NSUk9?=
- =?us-ascii?Q?ATqnMTyk43cNa8mgnELowrD181Ba17TRs2LVuXkrTzqGk6CoYQWwI4nPQ/fi?=
- =?us-ascii?Q?4G1AosnK40mIPiOu8rHgDV/4KWXIRFDivWeqdUiJeYFOrvl0/Yjc8o26ix5c?=
- =?us-ascii?Q?4DX6BhcNAVPLqv9YUQiu2RUmMLERY30WRxED7/6vY7zCB1YLcWSK1U7lOG/E?=
- =?us-ascii?Q?CcGYTSjWAd2tX1lIHyMRrr1seqBoyRs3ebqN78kEBnO9zoe9iqjE6eRC266k?=
- =?us-ascii?Q?W88ZxJOx2Oee7oFVkRFkjUi8KOqtKS5FLYzkYYubTQ68rEQw+JC6TP+wGVUj?=
- =?us-ascii?Q?pZK+ZLVAfmOkkfTrTJINaMsOps26tM42Mz5AwX7cTEnX5IhSsPO18r6aHV7K?=
- =?us-ascii?Q?3tg5h1Glmkh90fIqtUGGUma4i3KFX0MQthDT0GH/b1jO8ezmvyH0mEBymEAn?=
- =?us-ascii?Q?HxZUnJkYV6WOBOq+QrLQO9tiPTiqtiLdzY5sCitMVdFK?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 984f5437-a999-4458-6d2d-08da59277724
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6311.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 16:58:46.5081
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1/MwO6me5y2Ntkg5eDA1BtF0aQ2McabF4ht6Q8VcFT3pdW2vcv6qEZelasrqxDEOIFielKH75VzoMMvcfEe0Yg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR11MB3444
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: oE9WDvVRQQZppXbITIv4it_SrsXaxzYe
+X-Proofpoint-ORIG-GUID: 1G906ff4H4FOWtU-mRDlHI0WJDEF4jQB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-28_09,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ bulkscore=0 spamscore=0 lowpriorityscore=0 suspectscore=0 adultscore=0
+ impostorscore=0 mlxlogscore=999 mlxscore=0 priorityscore=1501
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206280065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 03:38:48PM +0100, Jonathan Cameron wrote:
-> On Mon, 27 Jun 2022 21:15:21 -0700
-> ira.weiny@intel.com wrote:
-> 
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > 
-> > Introduced in a PCIe r6.0, sec 6.30, DOE provides a config space based
-> > mailbox with standard protocol discovery.  Each mailbox is accessed
-> > through a DOE Extended Capability.
-> > 
-> > Each DOE mailbox must support the DOE discovery protocol in addition to
-> > any number of additional protocols.
-> > 
-> > Define core PCIe functionality to manage a single PCIe DOE mailbox at a
-> > defined config space offset.  Functionality includes iterating,
-> > creating, query of supported protocol, and task submission.  Destruction
-> > of the mailboxes is device managed.
-> > 
-> > If interrupts are desired, the interrupt number can be queried and
-> > passed to the create function.  Passing a negative value disables
-> > interrupts for that mailbox.  It is the caller's responsibility to ensure
-> > enough interrupt vectors are allocated.
-> > 
-> > Cc: "Li, Ming" <ming4.li@intel.com>
-> > Cc: Bjorn Helgaas <helgaas@kernel.org>
-> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Co-developed-by: Ira Weiny <ira.weiny@intel.com>
-> > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-> 
-> +static void *pci_doe_xa_entry(u16 vid, u8 prot)
-> +{
-> +	return (void *)(((unsigned long)vid << 16) | prot);
-> +}
-> ...
-> 
-> > +static int pci_doe_cache_protocols(struct pci_doe_mb *doe_mb)
-> > +{
-> > +	u8 index = 0;
-> > +	u8 xa_idx = 0;
-> > +
-> > +	do {
-> > +		int rc;
-> > +		u16 vid;
-> > +		u8 prot;
-> > +
-> > +		rc = pci_doe_discovery(doe_mb, &index, &vid, &prot);
-> > +		if (rc)
-> > +			return rc;
-> > +
-> > +		pci_dbg(doe_mb->pdev,
-> > +			"[%x] Found protocol %d vid: %x prot: %x\n",
-> > +			doe_mb->cap_offset, xa_idx, vid, prot);
-> > +
-> > +		rc = xa_insert(&doe_mb->prots, xa_idx++,
-> > +			       pci_doe_xa_entry(vid, prot), GFP_KERNEL);
-> 
-> I'm not that familiar with xarray, but the docs suggest that you have
-> to use xa_mk_value() to store an integer directly into it.
+The memory area of the TPM measurement log is currently not properly
+duplicated for carrying it across kexec when an Open Firmware
+Devicetree is used. Therefore, the contents of the log get corrupted.
+Fix this for the kexec_file_load() syscall by allocating a buffer and
+copying the contents of the existing log into it. The new buffer is
+preserved across the kexec and a pointer to it is available when the new
+kernel is started. To achieve this, store the allocated buffer's address
+in the flattened device tree (fdt) under the name linux,tpm-kexec-buffer
+and search for this entry early in the kernel startup before the TPM
+subsystem starts up. Adjust the pointer in the of-tree stored under
+linux,sml-base to point to this buffer holding the preserved log. The TPM
+driver can then read the base address from this entry when making the log
+available.
 
-Indeed I missed that.  Thanks.
-Ira
+Use postcore_initcall() to call the function to restore the buffer even if
+the TPM subsystem or driver are not used. This allows the buffer to be
+carried across the next kexec without involvement of the TPM subsystem
+and ensures a valid buffer pointed to by the of-tree.
 
-> 
-> > +		if (rc)
-> > +			return -ENOMEM;
-> > +	} while (index);
-> > +
-> > +	return 0;
-> > +}
-> > +
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: Eric Biederman <ebiederm@xmission.com>
+---
+ drivers/of/kexec.c    | 198 +++++++++++++++++++++++++++++++++++++++++-
+ include/linux/kexec.h |   6 ++
+ include/linux/of.h    |   8 +-
+ kernel/kexec_file.c   |   6 ++
+ 4 files changed, 216 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+index 601ea9727b0e..efc428b951db 100644
+--- a/drivers/of/kexec.c
++++ b/drivers/of/kexec.c
+@@ -18,6 +18,7 @@
+ #include <linux/random.h>
+ #include <linux/slab.h>
+ #include <linux/types.h>
++#include <linux/tpm.h>
+ 
+ #define RNG_SEED_SIZE		128
+ 
+@@ -220,7 +221,6 @@ static void remove_ima_buffer(void *fdt, int chosen_node)
+ 	remove_buffer(fdt, chosen_node, "linux,ima-kexec-buffer");
+ }
+ 
+-#ifdef CONFIG_IMA_KEXEC
+ static int setup_buffer(void *fdt, int chosen_node, const char *name,
+ 			uint64_t addr, uint64_t size)
+ {
+@@ -242,6 +242,7 @@ static int setup_buffer(void *fdt, int chosen_node, const char *name,
+ 
+ }
+ 
++#ifdef CONFIG_IMA_KEXEC
+ /**
+  * setup_ima_buffer - add IMA buffer information to the fdt
+  * @image:		kexec image being loaded.
+@@ -274,6 +275,198 @@ static inline int setup_ima_buffer(const struct kimage *image, void *fdt,
+ }
+ #endif /* CONFIG_IMA_KEXEC */
+ 
++/**
++ * tpm_get_kexec_buffer - get TPM log buffer from the previous kernel
++ * @phyaddr:	On successful return, set to physical address of buffer
++ * @size:	On successful return, set to the buffer size.
++ *
++ * Return: 0 on success, negative errno on error.
++ */
++static int tpm_get_kexec_buffer(void **phyaddr, size_t *size)
++{
++	int ret;
++	unsigned long tmp_addr;
++	size_t tmp_size;
++
++	ret = get_kexec_buffer("linux,tpm-kexec-buffer", &tmp_addr, &tmp_size);
++	if (ret)
++		return ret;
++
++	*phyaddr = (void *)tmp_addr;
++	*size = tmp_size;
++
++	return 0;
++}
++
++/**
++ * tpm_of_remove_kexec_buffer - remove the linux,tpm-kexec-buffer node
++ */
++static int tpm_of_remove_kexec_buffer(void)
++{
++	struct property *prop;
++
++	prop = of_find_property(of_chosen, "linux,tpm-kexec-buffer", NULL);
++	if (!prop)
++		return -ENOENT;
++
++	return of_remove_property(of_chosen, prop);
++}
++
++/**
++ * remove_tpm_buffer - remove the TPM log buffer property and reservation from @fdt
++ *
++ * @fdt: Flattened Device Tree to update
++ * @chosen_node: Offset to the chosen node in the device tree
++ *
++ * The TPM log measurement buffer is of no use to a subsequent kernel, so we always
++ * remove it from the device tree.
++ */
++static void remove_tpm_buffer(void *fdt, int chosen_node)
++{
++	if (!IS_ENABLED(CONFIG_PPC64))
++		return;
++
++	remove_buffer(fdt, chosen_node, "linux,tpm-kexec-buffer");
++}
++
++/**
++ * setup_tpm_buffer - add TPM measurement log buffer information to the fdt
++ * @image:		kexec image being loaded.
++ * @fdt:		Flattened device tree for the next kernel.
++ * @chosen_node:	Offset to the chosen node.
++ *
++ * Return: 0 on success, or negative errno on error.
++ */
++static int setup_tpm_buffer(const struct kimage *image, void *fdt,
++			    int chosen_node)
++{
++	if (!IS_ENABLED(CONFIG_PPC64))
++		return 0;
++
++	return setup_buffer(fdt, chosen_node, "linux,tpm-kexec-buffer",
++			    image->tpm_buffer_addr, image->tpm_buffer_size);
++}
++
++void tpm_add_kexec_buffer(struct kimage *image)
++{
++	struct kexec_buf kbuf = { .image = image, .buf_align = 1,
++				  .buf_min = 0, .buf_max = ULONG_MAX,
++				  .top_down = true };
++	struct device_node *np;
++	void *buffer;
++	u32 size;
++	u64 base;
++	int ret;
++
++	if (!IS_ENABLED(CONFIG_PPC64))
++		return;
++
++	np = of_find_node_by_name(NULL, "vtpm");
++	if (!np)
++		return;
++
++	if (of_tpm_get_sml_parameters(np, &base, &size) < 0)
++		return;
++
++	buffer = vmalloc(size);
++	if (!buffer)
++		return;
++	memcpy(buffer, __va(base), size);
++
++	kbuf.buffer = buffer;
++	kbuf.bufsz = size;
++	kbuf.memsz = size;
++	ret = kexec_add_buffer(&kbuf);
++	if (ret) {
++		pr_err("Error passing over kexec TPM measurement log buffer: %d\n",
++		       ret);
++		return;
++	}
++
++	image->tpm_buffer = buffer;
++	image->tpm_buffer_addr = kbuf.mem;
++	image->tpm_buffer_size = size;
++}
++
++/**
++ * tpm_post_kexec - Make stored TPM log buffer available in of-tree
++ */
++static int __init tpm_post_kexec(void)
++{
++	struct property *newprop;
++	struct device_node *np;
++	void *phyaddr;
++	size_t size;
++	u32 oflogsize;
++	u64 unused;
++	int ret;
++
++	if (!IS_ENABLED(CONFIG_PPC64))
++		return 0;
++
++	ret = tpm_get_kexec_buffer(&phyaddr, &size);
++	if (ret)
++		return 0;
++
++	/*
++	 * If any one of the following steps fails then the next kexec will
++	 * cause issues due to linux,sml-base pointing to a stale buffer.
++	 */
++	np = of_find_node_by_name(NULL, "vtpm");
++	if (!np)
++		goto err_free_memblock;
++
++	/* logsize must not have changed */
++	if (of_tpm_get_sml_parameters(np, &unused, &oflogsize) < 0)
++		goto err_free_memblock;
++	if (oflogsize != size)
++		goto err_free_memblock;
++
++	/* replace linux,sml-base with new physical address of buffer */
++	ret = -ENOMEM;
++	newprop = kzalloc(sizeof(*newprop), GFP_KERNEL);
++	if (!newprop)
++		goto err_free_memblock;
++
++	newprop->name = kstrdup("linux,sml-base", GFP_KERNEL);
++	if (!newprop->name)
++		goto err_free_newprop;
++
++	newprop->length = sizeof(phyaddr);
++
++	newprop->value = kmalloc(sizeof(u64), GFP_KERNEL);
++	if (!newprop->value)
++		goto err_free_newprop_struct;
++
++	if (of_property_match_string(np, "compatible", "IBM,vtpm") < 0 &&
++	    of_property_match_string(np, "compatible", "IBM,vtpm20") < 0) {
++		ret = -ENODEV;
++		goto err_free_newprop_struct;
++	} else {
++		*(u64 *)newprop->value = (u64)phyaddr;
++	}
++
++	ret = of_update_property(np, newprop);
++	if (ret) {
++		pr_err("Could not update linux,sml-base with new address");
++		goto err_free_newprop_struct;
++	}
++
++	goto exit;
++
++err_free_newprop_struct:
++	kfree(newprop->name);
++err_free_newprop:
++	kfree(newprop);
++err_free_memblock:
++	memblock_phys_free((phys_addr_t)phyaddr, size);
++exit:
++	tpm_of_remove_kexec_buffer();
++
++	return ret;
++}
++postcore_initcall(tpm_post_kexec);
++
+ /*
+  * of_kexec_alloc_and_setup_fdt - Alloc and setup a new Flattened Device Tree
+  *
+@@ -463,6 +656,9 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
+ 	remove_ima_buffer(fdt, chosen_node);
+ 	ret = setup_ima_buffer(image, fdt, fdt_path_offset(fdt, "/chosen"));
+ 
++	remove_tpm_buffer(fdt, chosen_node);
++	ret = setup_tpm_buffer(image, fdt, fdt_path_offset(fdt, "/chosen"));
++
+ out:
+ 	if (ret) {
+ 		kvfree(fdt);
+diff --git a/include/linux/kexec.h b/include/linux/kexec.h
+index 58d1b58a971e..a0fd7ac0398c 100644
+--- a/include/linux/kexec.h
++++ b/include/linux/kexec.h
+@@ -319,6 +319,12 @@ struct kimage {
+ 	void *elf_headers;
+ 	unsigned long elf_headers_sz;
+ 	unsigned long elf_load_addr;
++
++	/* Virtual address of TPM log buffer for kexec syscall */
++	void *tpm_buffer;
++
++	phys_addr_t tpm_buffer_addr;
++	size_t tpm_buffer_size;
+ };
+ 
+ /* kexec interface functions */
+diff --git a/include/linux/of.h b/include/linux/of.h
+index 04971e85fbc9..a86e07b58f26 100644
+--- a/include/linux/of.h
++++ b/include/linux/of.h
+@@ -100,6 +100,8 @@ struct of_reconfig_data {
+ 	struct property		*old_prop;
+ };
+ 
++struct kimage;
++
+ /* initialize a node */
+ extern struct kobj_type of_node_ktype;
+ extern const struct fwnode_operations of_fwnode_ops;
+@@ -436,13 +438,13 @@ int of_map_id(struct device_node *np, u32 id,
+ 
+ phys_addr_t of_dma_get_max_cpu_address(struct device_node *np);
+ 
+-struct kimage;
+ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
+ 				   unsigned long initrd_load_addr,
+ 				   unsigned long initrd_len,
+ 				   const char *cmdline, size_t extra_fdt_size);
+ int ima_get_kexec_buffer(void **addr, size_t *size);
+ int ima_free_kexec_buffer(void);
++void tpm_add_kexec_buffer(struct kimage *image);
+ #else /* CONFIG_OF */
+ 
+ static inline void of_core_init(void)
+@@ -844,6 +846,10 @@ static inline phys_addr_t of_dma_get_max_cpu_address(struct device_node *np)
+ 	return PHYS_ADDR_MAX;
+ }
+ 
++static inline void tpm_add_kexec_buffer(struct kimage *image)
++{
++}
++
+ #define of_match_ptr(_ptr)	NULL
+ #define of_match_node(_matches, _node)	NULL
+ #endif /* CONFIG_OF */
+diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
+index 8347fc158d2b..3f58d044939b 100644
+--- a/kernel/kexec_file.c
++++ b/kernel/kexec_file.c
+@@ -27,6 +27,7 @@
+ #include <linux/kernel_read_file.h>
+ #include <linux/syscalls.h>
+ #include <linux/vmalloc.h>
++#include <linux/of.h>
+ #include "kexec_internal.h"
+ 
+ static int kexec_calculate_store_digests(struct kimage *image);
+@@ -171,6 +172,9 @@ void kimage_file_post_load_cleanup(struct kimage *image)
+ 	image->ima_buffer = NULL;
+ #endif /* CONFIG_IMA_KEXEC */
+ 
++	vfree(image->tpm_buffer);
++	image->tpm_buffer = NULL;
++
+ 	/* See if architecture has anything to cleanup post load */
+ 	arch_kimage_file_post_load_cleanup(image);
+ 
+@@ -277,6 +281,8 @@ kimage_file_prepare_segments(struct kimage *image, int kernel_fd, int initrd_fd,
+ 
+ 	/* IMA needs to pass the measurement list to the next kernel. */
+ 	ima_add_kexec_buffer(image);
++	/* Pass the TPM measurement log to next kernel */
++	tpm_add_kexec_buffer(image);
+ 
+ 	/* Call arch image load handlers */
+ 	ldata = arch_kexec_kernel_image_load(image);
+-- 
+2.35.1
+
