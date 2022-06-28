@@ -2,97 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD14C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347920AbiF1PeX (ORCPT
+        id S1347862AbiF1Pek (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
+        Tue, 28 Jun 2022 11:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347897AbiF1PeT (ORCPT
+        with ESMTP id S1347929AbiF1Peb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:34:19 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015732C656
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:34:18 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SAsNkX030341;
+        Tue, 28 Jun 2022 11:34:31 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03092CCB9
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:34:27 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SAPO2I011111;
         Tue, 28 Jun 2022 10:34:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=qyhaVfHovcvNFUdPfDSz8auM/k6b9qsac5a7Z/E95V4=;
- b=UJqV8ldOTGgfeQEjFYWJ47AqgEe9XvT33xyITVNJSRFRa4C90Ys1AGdMG0thCDuacLRo
- h+BcUhP6rv6/zhNS6hFqZSinFFUDDWNY665PtwBUam505dgSufanKawtUfZ3yy61k/3A
- mZNHS/C0AIjjNaHSMB0afmjcgf2yunMy+PPq4/ykY+0CR/08jLvELDpWJcfaySaJbj+Q
- D1EY0UF1nXk/ANbSk9t4j/XriHJvTr49fBLUMv3Ur6EByM4ywaOZr/rq6KH57Pfk3ev2
- MTO49/olZpCpJ9LP6wguenitfcD32AwBaYSokVuSJ6pHqYs11KW+CAvqxf+Kwa8VXfNc aQ== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gwxsq437w-2
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PODMain02222019;
+ bh=h+s9sft2OOTYhSCEtjVTTS2VSJSR6LqopQ6K+pEwIRY=;
+ b=AtplLyi05zdDxYYYLThPcpN9i8Bxhxt9LTFfnKSl0gxy/sLXiWTZlmkuB+yAnR1A0Viy
+ +s7OsIWVwHcxpVuXhwXT2evs5nVF1C1ndRt4eIKdjJQ8AZn7mNRQxwdVNX3hJ8WU5QHc
+ +2ShX/kkaIWRFteDwDyurQ0DFUuNCZGdAgjSntSEBuyf9SlSBvCSro3POnbh9HLvKsBG
+ AV2Ns5MwOiYYRBXphznOorzHWLIw6NRvoDUYjA9ZRMIwooo+TKsTb4RRzgrn8qnJXdFL
+ UjMf9nG4zDe6iZ/aE0kK5g4zEDBp8QOVkn5cqcNmdzF044Fl8KSk6rdimubCvGRwAFzy 5Q== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gwys2mat2-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Tue, 28 Jun 2022 10:34:11 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 28 Jun
  2022 16:34:09 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
  Transport; Tue, 28 Jun 2022 16:34:09 +0100
 Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 4F36A11D1;
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 46FF72A1;
         Tue, 28 Jun 2022 15:34:09 +0000 (UTC)
 From:   Charles Keepax <ckeepax@opensource.cirrus.com>
 To:     <broonie@kernel.org>
 CC:     <lgirdwood@gmail.com>, <alsa-devel@alsa-project.org>,
         <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 3/4] ASoC: cs47l92: Fix event generation for OUT1 demux
-Date:   Tue, 28 Jun 2022 16:34:08 +0100
-Message-ID: <20220628153409.3266932-3-ckeepax@opensource.cirrus.com>
+Subject: [PATCH 1/4] ASoC: wm5102: Fix event generation for output compensation
+Date:   Tue, 28 Jun 2022 16:34:06 +0100
+Message-ID: <20220628153409.3266932-1-ckeepax@opensource.cirrus.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220628153409.3266932-1-ckeepax@opensource.cirrus.com>
-References: <20220628153409.3266932-1-ckeepax@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: BDhhhikloElbRkz4LhSBnEMk8uGmNTpk
-X-Proofpoint-ORIG-GUID: BDhhhikloElbRkz4LhSBnEMk8uGmNTpk
+X-Proofpoint-ORIG-GUID: JDtivHhNZ4rrKEk9EKjZzAiA3ElKlLOK
+X-Proofpoint-GUID: JDtivHhNZ4rrKEk9EKjZzAiA3ElKlLOK
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cs47l92_put_demux returns the value of snd_soc_dapm_mux_update_power,
-which returns a 1 if a path was found for the kcontrol. This is
-obviously different to the expected return a 1 if the control
-was updated value. This results in spurious notifications to
-user-space. Update the handling to only return a 1 when the value is
-changed.
+The output compensation controls always returns zero regardless of if
+the control value was updated. This results in missing notifications
+to user-space of the control change. Update the handling to return 1
+when the value is changed.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 ---
- sound/soc/codecs/cs47l92.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ sound/soc/codecs/wm5102.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/cs47l92.c b/sound/soc/codecs/cs47l92.c
-index a1b8dcdb9f7b7..444026b7d54b3 100644
---- a/sound/soc/codecs/cs47l92.c
-+++ b/sound/soc/codecs/cs47l92.c
-@@ -119,7 +119,13 @@ static int cs47l92_put_demux(struct snd_kcontrol *kcontrol,
- end:
- 	snd_soc_dapm_mutex_unlock(dapm);
+diff --git a/sound/soc/codecs/wm5102.c b/sound/soc/codecs/wm5102.c
+index da2f8998df87a..b034df47a5ef1 100644
+--- a/sound/soc/codecs/wm5102.c
++++ b/sound/soc/codecs/wm5102.c
+@@ -680,12 +680,17 @@ static int wm5102_out_comp_coeff_put(struct snd_kcontrol *kcontrol,
+ {
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct arizona *arizona = dev_get_drvdata(component->dev->parent);
++	uint16_t dac_comp_coeff = get_unaligned_be16(ucontrol->value.bytes.data);
++	int ret = 0;
  
--	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	if (ret < 0) {
-+		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
-+		return ret;
+ 	mutex_lock(&arizona->dac_comp_lock);
+-	arizona->dac_comp_coeff = get_unaligned_be16(ucontrol->value.bytes.data);
++	if (arizona->dac_comp_coeff != dac_comp_coeff) {
++		arizona->dac_comp_coeff = dac_comp_coeff;
++		ret = 1;
 +	}
-+
-+	return change;
+ 	mutex_unlock(&arizona->dac_comp_lock);
+ 
+-	return 0;
++	return ret;
  }
  
- static SOC_ENUM_SINGLE_DECL(cs47l92_outdemux_enum,
+ static int wm5102_out_comp_switch_get(struct snd_kcontrol *kcontrol,
+@@ -706,12 +711,20 @@ static int wm5102_out_comp_switch_put(struct snd_kcontrol *kcontrol,
+ {
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct arizona *arizona = dev_get_drvdata(component->dev->parent);
++	struct soc_mixer_control *mc = (struct soc_mixer_control *)kcontrol->private_value;
++	int ret = 0;
++
++	if (ucontrol->value.integer.value[0] > mc->max)
++		return -EINVAL;
+ 
+ 	mutex_lock(&arizona->dac_comp_lock);
+-	arizona->dac_comp_enabled = ucontrol->value.integer.value[0];
++	if (arizona->dac_comp_enabled != ucontrol->value.integer.value[0]) {
++		arizona->dac_comp_enabled = ucontrol->value.integer.value[0];
++		ret = 1;
++	}
+ 	mutex_unlock(&arizona->dac_comp_lock);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static const char * const wm5102_osr_text[] = {
 -- 
 2.30.2
 
