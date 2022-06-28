@@ -2,262 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:24:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D62FAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344258AbiF1JYa (ORCPT
+        id S1344178AbiF1JYj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
+        Tue, 28 Jun 2022 05:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344169AbiF1JYN (ORCPT
+        with ESMTP id S1344218AbiF1JYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:24:13 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5AB522BCE
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:24:01 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id h192so11654957pgc.4
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:24:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GadOaB9//lTjsftcfvLcU7ls1fHJ0eHs1kLHSyAzf48=;
-        b=uIFwED43iTWw2M0vHEtBVjPF4wMne05WSqqCpyGzzgJLiqgFVBC/FT3uZs1BH9nB5S
-         kGPj5F2xAffSLbTN2oXrNvLXriMHlfrgsaPFtIMaE4Ijx+PtwYPFp4BocQwa83WBLKPp
-         f3NB8knmejgYe9/DZmjhsykYjXKjvnZP3IztFkPQYBe+H0EYJagTFTo3umMnRLQLhEDA
-         4fmKWjUQQ9ngNa/3AOmAwok+bglel39uGX2XC/z8S+QcvVUqQHHZH9gGYhU2qrEW6RZM
-         CjltfcgaPlT26E83vT0NpmSuUDzm4yZKIybjVhj2dCTGTOn3HWxHFPt6L5iKjj6JRlxR
-         /0oA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GadOaB9//lTjsftcfvLcU7ls1fHJ0eHs1kLHSyAzf48=;
-        b=CGR9yOrZmMX5a3cylZrbpAKqfp78bHD5fgY3IuiQn2VABn6jRf9fW8Xbn/Wg/f9F4i
-         FgDhfiTpuq3Sd6NOiBoxSEMgTH7oFZkKbXtf8IUxKbQxtWdQuo1wSu+N4957MZSOf/ch
-         loYjmf1hch6Qj2TLwzB1tvCbn8dPxfFRy+bNU+H8xyfbR5TVKNtQnjEUvyPZzKwRpTgI
-         jA1WXuZJEpR3ykZNpdQOQ8Va3+Tvsuzb8bXOUo9gHAZf6tJQ73LO6XYTGIfNoSbDDc+P
-         owMgAayGLU7lgbJLHYfr2rxv6J2ZeeoqPBRZ0JzAvq8+0Dtla/h3O8zoVrAgdeI6DjxZ
-         j93g==
-X-Gm-Message-State: AJIora9FZl8Ug8+bc/26SHxYNARkQXhnkEawD7u+4qAJWfBvpjTN1zFl
-        TIUBVPOcknXN3Ds+XGFJkSF3Fg==
-X-Google-Smtp-Source: AGRyM1t6Ppx0XVD1JhEmnFdJgiMDcffWiFZvh9iTr4GrrpCCd/kYZfZVd3D5Pitcc4s9IFx/XV7BaQ==
-X-Received: by 2002:a63:904b:0:b0:40d:1d01:39aa with SMTP id a72-20020a63904b000000b0040d1d0139aamr16508254pge.68.1656408241430;
-        Tue, 28 Jun 2022 02:24:01 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id mm9-20020a17090b358900b001ec729d4f08sm8780463pjb.54.2022.06.28.02.23.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 02:24:01 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     mike.kravetz@oracle.com, david@redhat.com,
-        akpm@linux-foundation.org, corbet@lwn.net
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, duanxiongchun@bytedance.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        Oscar Salvador <osalvador@suse.de>
-Subject: [PATCH v2 3/8] mm: hugetlb_vmemmap: introduce the name HVO
-Date:   Tue, 28 Jun 2022 17:22:30 +0800
-Message-Id: <20220628092235.91270-4-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
-In-Reply-To: <20220628092235.91270-1-songmuchun@bytedance.com>
-References: <20220628092235.91270-1-songmuchun@bytedance.com>
+        Tue, 28 Jun 2022 05:24:15 -0400
+Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607F42496A
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:24:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=MIME-Version:Message-Id:Date:Subject:From:
+        Content-Type; bh=K9eCtLlHPuGIMT0syoANbcmOKfOt8OVhC2sSkmVBNcI=; b=Ua4dWG2+2mbF
+        VXiI4O8z2Flh0/lj3cU08yH2KqYV7FJDKRi7kYOPqKWEYRtYAlarQ09JuNDRUG15CELEEvP0qekjF
+        td+6FKWPVkJmyRmU2LAQO/ptL6GUCc44lLTe8D5m4wxBBxoa2CPrP3fmDY0mbraNKjnsdiY81ROq6
+        m7aAQ=;
+Received: from [192.168.16.236] (helo=vzdev.sw.ru)
+        by relay.virtuozzo.com with esmtp (Exim 4.94.2)
+        (envelope-from <alexander.atanasov@virtuozzo.com>)
+        id 1o67Qu-007YQ1-9B; Tue, 28 Jun 2022 11:22:56 +0200
+From:   Alexander Atanasov <alexander.atanasov@virtuozzo.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     kernel@openvz.org,
+        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/1] Create debugfs file with virtio balloon usage information
+Date:   Tue, 28 Jun 2022 09:23:24 +0000
+Message-Id: <20220628092324.23656-1-alexander.atanasov@virtuozzo.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220627163714-mutt-send-email-mst@kernel.org>
+References: <20220627163714-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It it inconvenient to mention the feature of optimizing vmemmap pages associated
-with HugeTLB pages when communicating with others since there is no specific or
-abbreviated name for it when it is first introduced.  Let us give it a name HVO
-(HugeTLB Vmemmap Optimization) from now.
+Allow the guest to know how much it is ballooned by the host.
+It is useful when debugging out of memory conditions.
 
-This commit also updates the document about "hugetlb_free_vmemmap" by the way
-discussed in thread [1].
+When host gets back memory from the guest it is accounted
+as used memory in the guest but the guest have no way to know
+how much it is actually ballooned.
 
-Link: https://lore.kernel.org/all/21aae898-d54d-cc4b-a11f-1bb7fddcfffa@redhat.com/ [1]
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt |  7 ++++---
- Documentation/admin-guide/mm/hugetlbpage.rst    |  4 ++--
- Documentation/admin-guide/mm/memory-hotplug.rst |  4 ++--
- Documentation/admin-guide/sysctl/vm.rst         |  3 +--
- Documentation/vm/vmemmap_dedup.rst              |  2 ++
- fs/Kconfig                                      | 12 +++++-------
- include/linux/page-flags.h                      |  3 +--
- mm/hugetlb_vmemmap.c                            |  8 ++++----
- mm/hugetlb_vmemmap.h                            |  4 ++--
- 9 files changed, 23 insertions(+), 24 deletions(-)
+ drivers/virtio/virtio_balloon.c | 78 +++++++++++++++++++++++++++++++++
+ 1 file changed, 78 insertions(+)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 578eb9ef1089..1e30e826041d 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1725,12 +1725,13 @@
- 	hugetlb_free_vmemmap=
- 			[KNL] Reguires CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 			enabled.
-+			Control if HugeTLB Vmemmap Optimization (HVO) is enabled.
- 			Allows heavy hugetlb users to free up some more
- 			memory (7 * PAGE_SIZE for each 2MB hugetlb page).
--			Format: { [oO][Nn]/Y/y/1 | [oO][Ff]/N/n/0 (default) }
-+			Format: { on | off (default) }
+V2:
+ - fixed coding style
+ - removed pretty print
+V3:
+ - removed dublicate of features
+ - comment about balooned_pages more clear
+ - convert host pages to balloon pages
+
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+index b9737da6c4dd..65964afd4f13 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -10,6 +10,7 @@
+ #include <linux/virtio_balloon.h>
+ #include <linux/swap.h>
+ #include <linux/workqueue.h>
++#include <linux/debugfs.h>
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
+@@ -731,6 +732,78 @@ static void report_free_page_func(struct work_struct *work)
+ 	}
+ }
  
--			[oO][Nn]/Y/y/1: enable the feature
--			[oO][Ff]/N/n/0: disable the feature
-+			on: enable HVO
-+			off: disable HVO
- 
- 			Built with CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON=y,
- 			the default is on.
-diff --git a/Documentation/admin-guide/mm/hugetlbpage.rst b/Documentation/admin-guide/mm/hugetlbpage.rst
-index a90330d0a837..8e2727dc18d4 100644
---- a/Documentation/admin-guide/mm/hugetlbpage.rst
-+++ b/Documentation/admin-guide/mm/hugetlbpage.rst
-@@ -164,8 +164,8 @@ default_hugepagesz
- 	will all result in 256 2M huge pages being allocated.  Valid default
- 	huge page size is architecture dependent.
- hugetlb_free_vmemmap
--	When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set, this enables optimizing
--	unused vmemmap pages associated with each HugeTLB page.
-+	When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set, this enables HugeTLB
-+	Vmemmap Optimization (HVO).
- 
- When multiple huge page sizes are supported, ``/proc/sys/vm/nr_hugepages``
- indicates the current number of pre-allocated huge pages of the default size.
-diff --git a/Documentation/admin-guide/mm/memory-hotplug.rst b/Documentation/admin-guide/mm/memory-hotplug.rst
-index 0f56ecd8ac05..a3c9e8ad8fa0 100644
---- a/Documentation/admin-guide/mm/memory-hotplug.rst
-+++ b/Documentation/admin-guide/mm/memory-hotplug.rst
-@@ -653,8 +653,8 @@ block might fail:
- - Concurrent activity that operates on the same physical memory area, such as
-   allocating gigantic pages, can result in temporary offlining failures.
- 
--- Out of memory when dissolving huge pages, especially when freeing unused
--  vmemmap pages associated with each hugetlb page is enabled.
-+- Out of memory when dissolving huge pages, especially when HugeTLB Vmemmap
-+  Optimization (HVO) is enabled.
- 
-   Offlining code may be able to migrate huge page contents, but may not be able
-   to dissolve the source huge page because it fails allocating (unmovable) pages
-diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
-index e3a952d1fd35..f15099eaaf36 100644
---- a/Documentation/admin-guide/sysctl/vm.rst
-+++ b/Documentation/admin-guide/sysctl/vm.rst
-@@ -569,8 +569,7 @@ This knob is not available when the size of 'struct page' (a structure defined
- in include/linux/mm_types.h) is not power of two (an unusual system config could
- result in this).
- 
--Enable (set to 1) or disable (set to 0) the feature of optimizing vmemmap pages
--associated with each HugeTLB page.
-+Enable (set to 1) or disable (set to 0) HugeTLB Vmemmap Optimization (HVO).
- 
- Once enabled, the vmemmap pages of subsequent allocation of HugeTLB pages from
- buddy allocator will be optimized (7 pages per 2MB HugeTLB page and 4095 pages
-diff --git a/Documentation/vm/vmemmap_dedup.rst b/Documentation/vm/vmemmap_dedup.rst
-index c9c495f62d12..7d7a161aa364 100644
---- a/Documentation/vm/vmemmap_dedup.rst
-+++ b/Documentation/vm/vmemmap_dedup.rst
-@@ -7,6 +7,8 @@ A vmemmap diet for HugeTLB and Device DAX
- HugeTLB
- =======
- 
-+This section is to explain how HugeTLB Vmemmap Optimization (HVO) works.
++/*
++ * DEBUGFS Interface
++ */
++#ifdef CONFIG_DEBUG_FS
 +
- The struct page structures (page structs) are used to describe a physical
- page frame. By default, there is a one-to-one mapping from a page frame to
- it's corresponding page struct.
-diff --git a/fs/Kconfig b/fs/Kconfig
-index 5976eb33535f..a547307c1ae8 100644
---- a/fs/Kconfig
-+++ b/fs/Kconfig
-@@ -247,8 +247,7 @@ config HUGETLB_PAGE
- 
- #
- # Select this config option from the architecture Kconfig, if it is preferred
--# to enable the feature of minimizing overhead of struct page associated with
--# each HugeTLB page.
-+# to enable the feature of HugeTLB Vmemmap Optimization (HVO).
- #
- config ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 	bool
-@@ -259,14 +258,13 @@ config HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 	depends on SPARSEMEM_VMEMMAP
- 
- config HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON
--	bool "Default optimizing vmemmap pages of HugeTLB to on"
-+	bool "HugeTLB Vmemmap Optimization (HVO) defaults to on"
- 	default n
- 	depends on HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 	help
--	  When using HUGETLB_PAGE_OPTIMIZE_VMEMMAP, the optimizing unused vmemmap
--	  pages associated with each HugeTLB page is default off. Say Y here
--	  to enable optimizing vmemmap pages of HugeTLB by default. It can then
--	  be disabled on the command line via hugetlb_free_vmemmap=off.
-+	  The HugeTLB VmemmapvOptimization (HVO) defaults to off. Say Y here to
-+	  enable HVO by default. It can be disabled via hugetlb_free_vmemmap=off
-+	  (boot command line) or hugetlb_optimize_vmemmap (sysctl).
- 
- config MEMFD_CREATE
- 	def_bool TMPFS || HUGETLBFS
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index b44cc24d7496..78ed46ae6ee5 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -208,8 +208,7 @@ enum pageflags {
- DECLARE_STATIC_KEY_FALSE(hugetlb_optimize_vmemmap_key);
- 
++#define guest_to_balloon_pages(i) ((i)*VIRTIO_BALLOON_PAGES_PER_PAGE)
++
++/**
++ * virtio_balloon_debug_show - shows statistics of balloon operations.
++ * @f: pointer to the &struct seq_file.
++ * @offset: ignored.
++ *
++ * Provides the statistics that can be accessed in virtio-balloon in the debugfs.
++ *
++ * Return: zero on success or an error code.
++ */
++
++static int virtio_balloon_debug_show(struct seq_file *f, void *offset)
++{
++	struct virtio_balloon *b = f->private;
++	u32 num_pages;
++	struct sysinfo i;
++
++	si_meminfo(&i);
++
++	seq_printf(f, "%-22s: %d\n", "page_size", 4096);
++
++	virtio_cread_le(b->vdev, struct virtio_balloon_config, actual,
++			&num_pages);
++	/*
++	 * Pages allocated by host from the guest memory.
++	 * Host inflates the balloon to get more memory.
++	 * Guest needs to deflate the balloon to get more memory.
++	 */
++	seq_printf(f, "%-22s: %u\n", "ballooned_pages", num_pages);
++
++	/* Total Memory for the guest from host */
++	seq_printf(f, "%-22s: %lu\n", "total_pages",
++			guest_to_balloon_pages(i.totalram));
++
++	/* Current memory for the guest */
++	seq_printf(f, "%-22s: %lu\n", "current_pages",
++			guest_to_balloon_pages(i.totalram) - num_pages);
++
++	return 0;
++}
++
++DEFINE_SHOW_ATTRIBUTE(virtio_balloon_debug);
++
++static void  virtio_balloon_debugfs_init(struct virtio_balloon *b)
++{
++	debugfs_create_file("virtio-balloon", 0444, NULL, b,
++			    &virtio_balloon_debug_fops);
++}
++
++static void  virtio_balloon_debugfs_exit(struct virtio_balloon *b)
++{
++	debugfs_remove(debugfs_lookup("virtio-balloon", NULL));
++}
++
++#else
++
++static inline void virtio_balloon_debugfs_init(struct virtio_balloon *b)
++{
++}
++
++static inline void virtio_balloon_debugfs_exit(struct virtio_balloon *b)
++{
++}
++
++#endif	/* CONFIG_DEBUG_FS */
++
+ #ifdef CONFIG_BALLOON_COMPACTION
  /*
-- * If the feature of optimizing vmemmap pages associated with each HugeTLB
-- * page is enabled, the head vmemmap page frame is reused and all of the tail
-+ * If HVO is enabled, the head vmemmap page frame is reused and all of the tail
-  * vmemmap addresses map to the head vmemmap page frame (furture details can
-  * refer to the figure at the head of the mm/hugetlb_vmemmap.c).  In other
-  * words, there are more than one page struct with PG_head associated with each
-diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-index 0c2f15a35d62..7161f86a43a6 100644
---- a/mm/hugetlb_vmemmap.c
-+++ b/mm/hugetlb_vmemmap.c
-@@ -1,8 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-- * Optimize vmemmap pages associated with HugeTLB
-+ * HugeTLB Vmemmap Optimization (HVO)
-  *
-- * Copyright (c) 2020, Bytedance. All rights reserved.
-+ * Copyright (c) 2020, ByteDance. All rights reserved.
-  *
-  *     Author: Muchun Song <songmuchun@bytedance.com>
-  *
-@@ -156,8 +156,8 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
+  * virtballoon_migratepage - perform the balloon page migration on behalf of
+@@ -1019,6 +1092,9 @@ static int virtballoon_probe(struct virtio_device *vdev)
  
- 	/*
- 	 * There are only (RESERVE_VMEMMAP_SIZE / sizeof(struct page)) struct
--	 * page structs that can be used when CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP,
--	 * so add a BUILD_BUG_ON to catch invalid usage of the tail struct page.
-+	 * page structs that can be used when HVO is enabled, add a BUILD_BUG_ON
-+	 * to catch invalid usage of the tail page structs.
- 	 */
- 	BUILD_BUG_ON(__NR_USED_SUBPAGE >=
- 		     RESERVE_VMEMMAP_SIZE / sizeof(struct page));
-diff --git a/mm/hugetlb_vmemmap.h b/mm/hugetlb_vmemmap.h
-index 109b0a53b6fe..ba66fadad9fc 100644
---- a/mm/hugetlb_vmemmap.h
-+++ b/mm/hugetlb_vmemmap.h
-@@ -1,8 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-- * Optimize vmemmap pages associated with HugeTLB
-+ * HugeTLB Vmemmap Optimization (HVO)
-  *
-- * Copyright (c) 2020, Bytedance. All rights reserved.
-+ * Copyright (c) 2020, ByteDance. All rights reserved.
-  *
-  *     Author: Muchun Song <songmuchun@bytedance.com>
-  */
+ 	if (towards_target(vb))
+ 		virtballoon_changed(vdev);
++
++	virtio_balloon_debugfs_init(vb);
++
+ 	return 0;
+ 
+ out_unregister_oom:
+@@ -1065,6 +1141,8 @@ static void virtballoon_remove(struct virtio_device *vdev)
+ {
+ 	struct virtio_balloon *vb = vdev->priv;
+ 
++	virtio_balloon_debugfs_exit(vb);
++
+ 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
+ 		page_reporting_unregister(&vb->pr_dev_info);
+ 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
 -- 
-2.11.0
+2.25.1
 
