@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A85DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 968ACCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347665AbiF1PCt (ORCPT
+        id S1347683AbiF1PCw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
+        Tue, 28 Jun 2022 11:02:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347631AbiF1PCq (ORCPT
+        with ESMTP id S1347670AbiF1PCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:02:46 -0400
+        Tue, 28 Jun 2022 11:02:47 -0400
 Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4053D33E3B
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:46 -0700 (PDT)
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SBFqAN023892
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:46 -0700
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7094E33E3C
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:47 -0700 (PDT)
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SAE7ZG013208
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:47 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=/R5f40SX0myY+sLsV9T01ncFIwUnVx4ToYywqLxN6Ws=;
- b=nAmkmqYcEnu6uf8RChzrghN6IZgh+xpBiH/buD1YNVUMEa+yV/kZt21audq0wyzLI2Wa
- SA0G56fqKIuuDXji0ryQ8f3qg9zbr/mdZr9IhIXKNRj+Nuvsd16DBJ1u/9TDwlbUxlzZ
- Zs0yocp8KDIYQ6MXftU0nA52/ZvaUbkzA1Y= 
+ bh=htEEzCcE4766+UwdC1leFCQGb+BeCyqpCEFz/0YnVKE=;
+ b=CDx4QR6emayqwiddP+de7/TmBe6lA0yOj4AW7JjXjypzFlQGOZkBWukq8CeAJfeeSDnV
+ iB4hdJZUxAqklfngOqnBVYpD/FrvUAWgZ7HaBFEghtP63VmUHqhHTWx8nbStHBj7tMNY
+ +SiHDFqyRbMRwnMDXLZokCDJqqcsprMTpT4= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h00m4hcef-1
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gyxx31y7r-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:45 -0700
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:47 -0700
 Received: from twshared25107.07.ash9.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Tue, 28 Jun 2022 08:02:44 -0700
+ 15.1.2375.28; Tue, 28 Jun 2022 08:02:45 -0700
 Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
-        id 95F71244BBC5; Tue, 28 Jun 2022 08:02:37 -0700 (PDT)
+        id EF0E8244BBD3; Tue, 28 Jun 2022 08:02:37 -0700 (PDT)
 From:   Dylan Yudaken <dylany@fb.com>
 To:     Jens Axboe <axboe@kernel.dk>,
         Pavel Begunkov <asml.silence@gmail.com>,
         <io-uring@vger.kernel.org>
 CC:     <Kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
         Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH for-next 1/8] io_uring: allow 0 length for buffer select
-Date:   Tue, 28 Jun 2022 08:02:21 -0700
-Message-ID: <20220628150228.1379645-2-dylany@fb.com>
+Subject: [PATCH for-next 4/8] io_uring: recycle buffers on error
+Date:   Tue, 28 Jun 2022 08:02:24 -0700
+Message-ID: <20220628150228.1379645-5-dylany@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220628150228.1379645-1-dylany@fb.com>
 References: <20220628150228.1379645-1-dylany@fb.com>
@@ -52,8 +52,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: nCYkD1oo6UivWb4TbMBbILC_jGyXCyjH
-X-Proofpoint-GUID: nCYkD1oo6UivWb4TbMBbILC_jGyXCyjH
+X-Proofpoint-GUID: HeckgzlDznf4h7Kc37CQmZxyi2t16Ykx
+X-Proofpoint-ORIG-GUID: HeckgzlDznf4h7Kc37CQmZxyi2t16Ykx
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-06-28_08,2022-06-28_01,2022-06-22_01
@@ -61,37 +61,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If user gives 0 for length, we can set it from the available buffer size.
+Rather than passing an error back to the user with a buffer attached,
+recycle the buffer immediately.
 
 Signed-off-by: Dylan Yudaken <dylany@fb.com>
 ---
- io_uring/kbuf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ io_uring/net.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/io_uring/kbuf.c b/io_uring/kbuf.c
-index 8e4f1e8aaf4a..4ed5102461bf 100644
---- a/io_uring/kbuf.c
-+++ b/io_uring/kbuf.c
-@@ -115,7 +115,7 @@ static void __user *io_provided_buffer_select(struct =
-io_kiocb *req, size_t *len,
-=20
- 		kbuf =3D list_first_entry(&bl->buf_list, struct io_buffer, list);
- 		list_del(&kbuf->list);
--		if (*len > kbuf->len)
-+		if (*len =3D=3D 0 || *len > kbuf->len)
- 			*len =3D kbuf->len;
- 		req->flags |=3D REQ_F_BUFFER_SELECTED;
- 		req->kbuf =3D kbuf;
-@@ -145,7 +145,7 @@ static void __user *io_ring_buffer_select(struct io_k=
-iocb *req, size_t *len,
- 		buf =3D page_address(bl->buf_pages[index]);
- 		buf +=3D off;
+diff --git a/io_uring/net.c b/io_uring/net.c
+index 5e84f7ab92a3..0268c4603f5d 100644
+--- a/io_uring/net.c
++++ b/io_uring/net.c
+@@ -481,10 +481,13 @@ int io_recvmsg(struct io_kiocb *req, unsigned int i=
+ssue_flags)
+ 	if (kmsg->free_iov)
+ 		kfree(kmsg->free_iov);
+ 	req->flags &=3D ~REQ_F_NEED_CLEANUP;
+-	if (ret >=3D 0)
++	if (ret > 0)
+ 		ret +=3D sr->done_io;
+ 	else if (sr->done_io)
+ 		ret =3D sr->done_io;
++	else
++		io_kbuf_recycle(req, issue_flags);
++
+ 	cflags =3D io_put_kbuf(req, issue_flags);
+ 	if (kmsg->msg.msg_inq)
+ 		cflags |=3D IORING_CQE_F_SOCK_NONEMPTY;
+@@ -557,10 +560,13 @@ int io_recv(struct io_kiocb *req, unsigned int issu=
+e_flags)
+ 		req_set_fail(req);
  	}
--	if (*len > buf->len)
-+	if (*len =3D=3D 0 || *len > buf->len)
- 		*len =3D buf->len;
- 	req->flags |=3D REQ_F_BUFFER_RING;
- 	req->buf_list =3D bl;
+=20
+-	if (ret >=3D 0)
++	if (ret > 0)
+ 		ret +=3D sr->done_io;
+ 	else if (sr->done_io)
+ 		ret =3D sr->done_io;
++	else
++		io_kbuf_recycle(req, issue_flags);
++
+ 	cflags =3D io_put_kbuf(req, issue_flags);
+ 	if (msg.msg_inq)
+ 		cflags |=3D IORING_CQE_F_SOCK_NONEMPTY;
 --=20
 2.30.2
 
