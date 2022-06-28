@@ -2,116 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 100F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D673EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344902AbiF1LSy (ORCPT
+        id S1344981AbiF1LTk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:18:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45090 "EHLO
+        Tue, 28 Jun 2022 07:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345454AbiF1LSJ (ORCPT
+        with ESMTP id S1344678AbiF1LTi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:18:09 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E0CCFA;
-        Tue, 28 Jun 2022 04:18:08 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SBENMi030294;
-        Tue, 28 Jun 2022 11:18:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=s2tecT5NkWFR+AMcnuSlYE3BxfjRsEHcAzcdT3QzzNM=;
- b=FeM0WobmYtaJyjr3LVJxjXVGgsJxFC6iFORNiujKvBAOh3V+3/uLD3ga/NPgREJkYzVv
- ImbgFVmGzhhqQlXGk09PQvyIevIWGy48N1Lp649yBh8A9H57g1OYLBbthjeeaQ6riHx1
- FY+Ou4apVFhkNqw1YnzvepDycEAVZL28d/5Qo2ayxsY2ZzD8PIPnPIEmNKHf2VRZgGfl
- 8RjKyuX6qMNiCBie9lln5h6Ngguga1Y10vOgdjXVVaQJPEM0pGN7jlyg1r6qx94s1NOH
- BPGlLdtHobmADOumCP6oAYuM59vEsNmyrGRFIZiZdmT7+dB1X6wQ3Dj83LmzmTdcbuYX Bw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h00kb832u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 11:18:05 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SBGLrW006925;
-        Tue, 28 Jun 2022 11:18:05 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h00kb8329-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 11:18:05 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SB54EX005702;
-        Tue, 28 Jun 2022 11:18:03 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 3gwt08vqn5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 11:18:03 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SBI0lC22348222
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jun 2022 11:18:00 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 46E7FAE045;
-        Tue, 28 Jun 2022 11:18:00 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A5B2DAE051;
-        Tue, 28 Jun 2022 11:17:58 +0000 (GMT)
-Received: from [9.171.41.104] (unknown [9.171.41.104])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 28 Jun 2022 11:17:58 +0000 (GMT)
-Message-ID: <3bde716c-0432-cf2d-6057-2d60fb86c3e8@linux.ibm.com>
-Date:   Tue, 28 Jun 2022 13:22:26 +0200
+        Tue, 28 Jun 2022 07:19:38 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76AF2DD7A
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:19:36 -0700 (PDT)
+Received: from mail-yb1-f175.google.com ([209.85.219.175]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1M1YxX-1o3g9F3xoR-0032se for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022
+ 13:19:35 +0200
+Received: by mail-yb1-f175.google.com with SMTP id p136so15448025ybg.4
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:19:34 -0700 (PDT)
+X-Gm-Message-State: AJIora/Kp8cQA41EcruH7lCvZZ9v0K/Yi3bCrOIRF0MjdrBJHh1Ckqah
+        gsGQ+gcg/hDJRfQKBzj4lykG8umpULNmuikLRu4=
+X-Google-Smtp-Source: AGRyM1uhkOooiDFNPC514SJWx//rgkt+35tUOqAOt1VbBGUV2jW1wsrJtZpO2droMDkfCWDr+wp0TbWz076KcvudEek=
+X-Received: by 2002:a25:8b8b:0:b0:669:b37d:f9cd with SMTP id
+ j11-20020a258b8b000000b00669b37df9cdmr19090584ybl.394.1656415173804; Tue, 28
+ Jun 2022 04:19:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v9 17/21] vfio-pci/zdev: add open/close device hooks
-Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220606203325.110625-1-mjrosato@linux.ibm.com>
- <20220606203325.110625-18-mjrosato@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20220606203325.110625-18-mjrosato@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 8XOJy1_v7XTjGRREvuJ48lgxv2DAmHpF
-X-Proofpoint-GUID: 8qh8hc_BBG9W-qQwYiAmmiYNSVUfNtXd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-28_06,2022-06-24_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 mlxlogscore=999 malwarescore=0 suspectscore=0
- phishscore=0 clxscore=1015 priorityscore=1501 impostorscore=0 spamscore=0
- mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206280046
+References: <YrrQOifFIiISf/3g@hirez.programming.kicks-ass.net>
+In-Reply-To: <YrrQOifFIiISf/3g@hirez.programming.kicks-ass.net>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 28 Jun 2022 13:19:17 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2XfzQo6emT4pXXxAjWewdP2LiAe2fOskFf-0suSmBJQQ@mail.gmail.com>
+Message-ID: <CAK8P3a2XfzQo6emT4pXXxAjWewdP2LiAe2fOskFf-0suSmBJQQ@mail.gmail.com>
+Subject: Re: [RFC][PATCH] kconfig: Add implicit CONFIG_ prefix to IS_ENABLED()
+ and co
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>, mmarek@suse.cz,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Arnd Bergmann <arnd@arndb.de>, Mike Rapoport <rppt@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:cBETAGnTRQ/TX1LlyQsKtaaP8J5J3ZIVcTiJQZfaDQA6UJLYG43
+ Be0Sqg9X9DLoxA2RhVcKP/WC2kXSTFgXI9Jy66W6XJv7WLXQAU92yaQxuHacNbrlSr9uqOK
+ QZ/QcksKabYKbXinIVwWGRq2M+8BWhUtUC/zj5BtHwFxBTWiJ+1gOOypA2uu2NY32fJvCjp
+ eRsMqEDKfwkVXIdv4lgQQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:wXgPbWiIbxc=:CoUUJ6nWbtp9yKa8733xYp
+ px4zrjC5tJJdr3WofEM11qmAe9CtucHRNG0ts/aRgubnJD0kyOY9RNwpj4F/hUNZM/qoU7DyB
+ rSGX5+mqwztV3IAR3lXTwWgccUjlkUNXdwjpc0yF+vEh5RtBMsAFdVOlLO2Kzh5FPpjq34nVF
+ +g7GqiczSahEHpSrQ25YYDj1r0sZRSGm1XyA5tF3SGZ+nAcI77rk9KIX8ZkUYaEWBSJOzlyiv
+ HZlgwdcbzsS2zeI0zewgZdxZAl0OAcpp6svjBz7gD/4N5rW3K8H3083T8ZZuA1u9TDzblog6g
+ dat/47hPldv+GURMasJCZCGGD0wpIqQIs4dIBE7SvhCdammy7iUrV+l0cT5Lw+T1AXjbekI/O
+ n70fh7MalEWwuRoKFaN9IqZCnviXrPCq0LzxaTRCxSbrsGNp56lp+gNAsXeA9XX6iKQ6bBKP0
+ K4/U8a+ZbCbzxfjhEi+18XdZoy25xw2ZxGFmsQJ0FFPyAcP+yL4194vUS79k7WafEDdStyMkq
+ YJthJCH881rhTAYqMhOh0qWDGAzZBezsDeVuJTtc3xV9QVAdjmKHHrV6O9/pK3NBZ5Qk3ucIO
+ Bu4Cdodek8GDIH/4mWirdPH/J+qzKSvazXZy9T95est5NoT75tum0I4pURQfjGMELwVsXR4UZ
+ FAZG3wyy79xGLJBohH99QPsiRHMKjC1STVHk81B85NBQMpPmrAjmlvQ+q0qia5VxYcrknEqGV
+ to7obyZdbimwJQ7r8gJ+Fd+77M5OFm5RbQcvZA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 28, 2022 at 11:56 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> Since IS_ENABLED() (and friends) are clearly meant to be used on
+> CONFIG_foo symbols and IS_ENABLED(CONFIG_ is so long and almost an
+> tautology, allow the more compact usage of: IS_ENABLED(foo).
+>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
+I'd prefer to keep the more verbose usage, mainly because it makes it easier
+to grep for a symbol. If today you do 'git grep CONFIG_PM_SLEEP', you find
+all instances in Makefile, in #ifdef and in IS_ENABLED(), though not the
+references in Kconfig language, which leave out the prefix.
 
-On 6/6/22 22:33, Matthew Rosato wrote:
-> During vfio-pci open_device, pass the KVM associated with the vfio group
-> (if one exists).  This is needed in order to pass a special indicator
-> (GISA) to firmware to allow zPCI interpretation facilities to be used
-> for only the specific KVM associated with the vfio-pci device.  During
-> vfio-pci close_device, unregister the notifier.
-> 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+If we remove the prefix for IS_ENABLED(), the same grep fails to get
+all the results, while searching for the substring without the CONFIG_
+prefix can end up finding false-positives by finding longer strings (e.g.
+CONFIG_DEBUG_STACKOVERFLOW vs
+CONFIG_HAVE_DEBUG_STACKOVERFLOW).
 
-
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
-
--- 
-Pierre Morel
-IBM Lab Boeblingen
+       Arnd
