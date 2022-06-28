@@ -2,132 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB24C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 771F3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344712AbiF1LsA (ORCPT
+        id S1344614AbiF1LsF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:48:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37814 "EHLO
+        Tue, 28 Jun 2022 07:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345170AbiF1LrU (ORCPT
+        with ESMTP id S1345344AbiF1LrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:47:20 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFBD2F671;
-        Tue, 28 Jun 2022 04:45:35 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id j21so21839488lfe.1;
-        Tue, 28 Jun 2022 04:45:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=X0xzQqH5KpRMLY9+PVHhyVujx5g/6WCMMJw5Qqi65jI=;
-        b=jnUdvSPOBJDAxP48Ljv06+Y4FUAIZkOkrCXTaSImmvJPsVoCitqk5nFbdXtgIq3M3R
-         VjFQU6sZcciMIQQVEAu10glcOPPmsj5/wyMjNeH2EBqrWKf/A7znwAzQ6eYUOpFFegAP
-         ++U/w9iDQu/vkSWCjwLQglsCuLfZpRheX9NIRY6JbrhBemsoEJe4bOPSrff4GH6ZHJEg
-         AoGVaDnufkKYVoPwmGbZfQ91c4eVW1ITqXJxjF1pjqB28TQKFZBXNSEJNkC5IA5BPIWX
-         2S9GJ7toPEKNRC5fiBJni5fJXoo6cdor3quwS62vP6tuZzH9FrApvwljwOQJ0q05LZ/r
-         hgFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=X0xzQqH5KpRMLY9+PVHhyVujx5g/6WCMMJw5Qqi65jI=;
-        b=lGIbvuzpp49hFTHn8Tc2e+9YpIWoxDFVOKlE421EA9+RQL8YBn0PJsi/v13qq5uQ2t
-         tKVyn71cnKwEYLoh29V1Vaj/8TAoNuphMsopz4mpDAaTt3CiOS8G5tf+s1wcCPkbZ1wD
-         yVhtXEBDukI/sSK7x9avQ0LJIvIEbYlFoyZ/j8CXhj0ix+dFU2rzpEnir8+faM15SNxV
-         3JovM7HKlgb+x76zh19EKeqJiKjqln9+k6sLKPCh7YwtEp/Tpt6pv3ToX7SAm0tmKegJ
-         RFVt6obWXL6X9DjF8SaBVe/EzESF47sLOYbI5yNie2gM7Bgr5Fb+FAR+MmeV14W3KwnC
-         27wg==
-X-Gm-Message-State: AJIora+46X9uTTD5jKAGyV7KGIEYK8lPWQMgw0dQih2yMZydIXFQLX34
-        niVWGY0/lXQ7T01geMnbAlY=
-X-Google-Smtp-Source: AGRyM1spQ+83X4VvzEzhO/24k4ObYmu1Fz0thJaux2DJZYh2Ch0uRYrTaVTArCzlAn0D6n+92ksugQ==
-X-Received: by 2002:a05:6512:3b2c:b0:47f:6fc2:a9de with SMTP id f44-20020a0565123b2c00b0047f6fc2a9demr12523314lfv.352.1656416733846;
-        Tue, 28 Jun 2022 04:45:33 -0700 (PDT)
-Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id k20-20020a2ea274000000b0025a8c1b5fe2sm1787142ljm.17.2022.06.28.04.45.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 04:45:33 -0700 (PDT)
-From:   Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
-Date:   Tue, 28 Jun 2022 13:45:31 +0200
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
-Subject: Re: [PATCH v2 1/1] rcu/kvfree: Update KFREE_DRAIN_JIFFIES interval
-Message-ID: <Yrrp2044RY6amuLo@pc638.lan>
-References: <20220627195353.1575285-1-urezki@gmail.com>
- <20220627213126.GO1790663@paulmck-ThinkPad-P17-Gen-1>
+        Tue, 28 Jun 2022 07:47:24 -0400
+Received: from forward501j.mail.yandex.net (forward501j.mail.yandex.net [IPv6:2a02:6b8:0:801:2::111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708E031502
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:46:41 -0700 (PDT)
+Received: from vla1-5c8ce23a551e.qloud-c.yandex.net (vla1-5c8ce23a551e.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:400d:0:640:5c8c:e23a])
+        by forward501j.mail.yandex.net (Yandex) with ESMTP id B233A6231D1;
+        Tue, 28 Jun 2022 14:46:39 +0300 (MSK)
+Received: from vla3-178a3f795968.qloud-c.yandex.net (vla3-178a3f795968.qloud-c.yandex.net [2a02:6b8:c15:2584:0:640:178a:3f79])
+        by vla1-5c8ce23a551e.qloud-c.yandex.net (mxback/Yandex) with ESMTP id Z9x1a00j1O-kbfO9vfl;
+        Tue, 28 Jun 2022 14:46:39 +0300
+X-Yandex-Fwd: 2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1656416799;
+        bh=Fj1CfjmfGHqlANTgIcu8cPsR6XcA+gZqUzEuWcIko50=;
+        h=In-Reply-To:References:Date:Subject:Cc:To:From:Message-Id;
+        b=Iyo0QB+ECzkswea2YaWHcoTNqLb//6FNK9SFNAfsu89FF6hglDxS0NDB3vY6rqhPN
+         Q5ZTt2JRerQs7m2c+7/MzTIRUJE3DM/K/tu844WsXJMBcJvwv8FRwtbegry+9Xd1ke
+         p3Dt/rtXxuct1+9xXwKrxt9lyV48dvMUbqvFuGck=
+Authentication-Results: vla1-5c8ce23a551e.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
+Received: by vla3-178a3f795968.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id s5dKAuvn1y-kZMCIGGq;
+        Tue, 28 Jun 2022 14:46:36 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+From:   Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     linux@yadro.com, Genevieve Chan <genevieve.chan@starfivetech.com>,
+        =?UTF-8?q?Jo=C3=A3o=20M=C3=A1rio=20Domingos?= 
+        <joao.mario@tecnico.ulisboa.pt>,
+        Nikita Shubin <n.shubin@yadro.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 1/4] drivers/perf: riscv_pmu_sbi: perf format
+Date:   Tue, 28 Jun 2022 14:45:55 +0300
+Message-Id: <20220628114625.166665-2-nikita.shubin@maquefel.me>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220628114625.166665-1-nikita.shubin@maquefel.me>
+References: <20220628114625.166665-1-nikita.shubin@maquefel.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627213126.GO1790663@paulmck-ThinkPad-P17-Gen-1>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Mon, Jun 27, 2022 at 09:53:53PM +0200, Uladzislau Rezki (Sony) wrote:
-> > Currently the monitor work is scheduled with a fixed interval that
-> > is HZ/20 or each 50 milliseconds. The drawback of such approach is
-> > a low utilization of page slot in some scenarios. The page can store
-> > up to 512 records. For example on Android system it can look like:
-> 
-> I was looking at queuing this one, but we need a bit more data.  In
-> the meantime, here is my wordsmithing of the above paragraph:
-> 
-> Currently the monitor work is scheduled with a fixed interval of HZ/20,
-> which is roughly 50 milliseconds. The drawback of this approach is
-> low utilization of the 512 page slots in scenarios with infrequence
-> kvfree_rcu() calls.  For example on an Android system:
-> 
-Good i will update with your changes :)
+From: Nikita Shubin <n.shubin@yadro.com>
 
-> > <snip>
-> >   kworker/3:0-13872   [003] .... 11286.007048: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=1
-> >   kworker/3:0-13872   [003] .... 11286.015638: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=2
-> >   kworker/1:2-20434   [001] .... 11286.051230: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=1
-> >   kworker/1:2-20434   [001] .... 11286.059322: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=2
-> >   kworker/0:1-20052   [000] .... 11286.095295: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=2
-> >   kworker/0:1-20052   [000] .... 11286.103418: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=1
-> >   kworker/2:3-14372   [002] .... 11286.135155: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=2
-> >   kworker/2:3-14372   [002] .... 11286.135198: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=1
-> >   kworker/1:2-20434   [001] .... 11286.155377: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=5
-> >   kworker/2:3-14372   [002] .... 11286.167181: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=5
-> >   kworker/1:2-20434   [001] .... 11286.179202: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000008ef95e14 nr_records=1
-> >   kworker/2:3-14372   [002] .... 11286.187398: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000c597d297 nr_records=6
-> >   kworker/3:0-13872   [003] .... 11286.187445: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000050bf92e2 nr_records=3
-> >   kworker/1:2-20434   [001] .... 11286.198975: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=4
-> >   kworker/1:2-20434   [001] .... 11286.207203: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=4
-> > <snip>
-> > 
-> > where a page only carries few records to reclaim a memory. In order
-> > to improve batching and make utilization more efficient the patch sets
-> > a drain interval to 1 second as default one. When a flood is detected
-> > an interval is adjusted in a way that a reclaim work is re-scheduled
-> > on a next timer jiffy.
-> 
-> And of the above paragraph:
-> 
-> Out of 512 slots, in all cases, fewer than 10 were actually used.
-> In order to improve batching and make utilization more efficient this
-> commit sets a drain interval to a fixed 1-second interval. Floods are
-> detected when a page fills quickly, and in that case, the reclaim work
-> is re-scheduled for the next scheduling-clock tick (jiffy).
-> 
-Same here, will apply this.
+Update driver to export formatting and event information to sysfs so it
+can be used by the perf user space tools with the syntaxes:
 
-> ---
-> 
-> But what we need now is a trace like the one above showing higher utilization
-> of the pages.  Could you please supply this?
-> 
-Yep, i will add traces to show that utilization becomes better what is
-actually expectable.
+perf stat -e cpu/event=0x05
+perf stat -e cpu/event=0x05,firmware=0x1/
 
---
-Uladzislau Rezki
+63-bit is used to distinguish hardware events from firmware. Firmware
+events are defined by "RISC-V Supervisor Binary Interface
+Specification".
+
+perf stat -e cpu/event=0x05,firmware=0x1/
+
+is equivalent to
+
+perf stat -e r8000000000000005
+
+Inspired-by: João Mário Domingos <joao.mario@tecnico.ulisboa.pt>
+Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
+Link: https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc
+---
+v4->v5:
+- format config is now 48-bit wide
+- simply use "config:63"
+---
+ drivers/perf/riscv_pmu_sbi.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
+index dca3537a8dcc..a2a22e35d6ed 100644
+--- a/drivers/perf/riscv_pmu_sbi.c
++++ b/drivers/perf/riscv_pmu_sbi.c
+@@ -21,6 +21,25 @@
+ #include <asm/sbi.h>
+ #include <asm/hwcap.h>
+ 
++PMU_FORMAT_ATTR(event, "config:0-47");
++PMU_FORMAT_ATTR(firmware, "config:63");
++
++static struct attribute *riscv_arch_formats_attr[] = {
++	&format_attr_event.attr,
++	&format_attr_firmware.attr,
++	NULL,
++};
++
++static struct attribute_group riscv_pmu_format_group = {
++	.name = "format",
++	.attrs = riscv_arch_formats_attr,
++};
++
++static const struct attribute_group *riscv_pmu_attr_groups[] = {
++	&riscv_pmu_format_group,
++	NULL,
++};
++
+ union sbi_pmu_ctr_info {
+ 	unsigned long value;
+ 	struct {
+@@ -720,6 +739,7 @@ static int pmu_sbi_device_probe(struct platform_device *pdev)
+ 		pmu->pmu.capabilities |= PERF_PMU_CAP_NO_INTERRUPT;
+ 		pmu->pmu.capabilities |= PERF_PMU_CAP_NO_EXCLUDE;
+ 	}
++	pmu->pmu.attr_groups = riscv_pmu_attr_groups;
+ 	pmu->num_counters = num_counters;
+ 	pmu->ctr_start = pmu_sbi_ctr_start;
+ 	pmu->ctr_stop = pmu_sbi_ctr_stop;
+-- 
+2.30.2
+
