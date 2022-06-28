@@ -2,207 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B361C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 04:49:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF3AAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 04:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbiF1EtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 00:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40076 "EHLO
+        id S244395AbiF1Etc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 00:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243952AbiF1EtR (ORCPT
+        with ESMTP id S229758AbiF1Et1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 00:49:17 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2093.outbound.protection.outlook.com [40.107.244.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326D6DF27;
-        Mon, 27 Jun 2022 21:49:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mZcSkJdGC0K/2mYdKJidteAxfUzV6+A/NKUlEeLTiqGvKrr/OYxU74ZpJfyRydZrHI8gl1ZiDX1XhpZds0ZmFa/D+k+1fPKnDDKSR++3HWYGfaKP+GxxHbbQu/v4jjyOOit0IsbaTYf6l8LT6OXBnwyQJIgUlHAoL9gWrNO2zrC8YMYc/EHhJ5GTIe7NuQlbcIYMyymM7PatgkFmo8xYtQxMA86Nk9WzkeLcvJC1JuQlrEHq1NYt6YDmMl9xz5UCCTkQLE2Xboha1ZKao2LnsT0r0Q8PlVaKkC1wI8H2SWwz/xsLuOyDFPcreu8Cw3NtXMUaCrr7/GUTi4TLmc8MVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3AE8IR/Q35SjIum4hi0AsFqvQnEf1l/8fXca+rNHjMk=;
- b=EUpyI+qtv9dZBIDHZxhux4wmxwh/8fI5MnqhRh6uC7/fkpYByBcU8uP57z3f//jHs9dsBMcCiJ9Gt74rgwz0Iu9lgupud3XrhHjJ0jryftgpj7R6eIM/yP7fG0b0hDF5m7/GFJdYeBI/fW8GGyZYeaD5bdbhD34F6otSqFsf3nUeJaOutT+hdDwlxneQT7F3Yy9ib653/5/46pUQAG8Px2/V5/Ag03CptjHbxy+Eao9jZ2sZpiJYPj5AO6zpNleZecGMzB01MOcXMaoFhYtQyWo8euxnwk8MHOs67EWNHNb47RVat5hQVXs5wIfKSJM73iS5L4NsYYUbDeLfoJak5Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
- header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3AE8IR/Q35SjIum4hi0AsFqvQnEf1l/8fXca+rNHjMk=;
- b=FoABGHQMjVfWqoeyiteGucn2cOnzMLQ6Hs/v1orfCI46BY0OwlEys2GZ4argCsblKVs1abyHmHJmjQsDKoN9W7uWLbzdrpmO/pON9jS+O3uMTZ2h6WbY2lpIeUMFJR8IASDZZvSQf+1qoogDbFgGcWx3QnTxGdZXK4hwafwixcQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=analogixsemi.com;
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
- by DM6PR04MB5724.namprd04.prod.outlook.com (2603:10b6:5:163::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Tue, 28 Jun
- 2022 04:49:14 +0000
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::ec96:5112:c2d5:9377]) by BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::ec96:5112:c2d5:9377%8]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 04:49:14 +0000
-From:   Xin Ji <xji@analogixsemi.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Xin Ji <xji@analogixsemi.com>
-Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
-        jli@analogixsemi.com, Rob Herring <robh@kernel.org>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v12 2/3] dt-bindings: usb: Add analogix anx7411 PD binding
-Date:   Tue, 28 Jun 2022 12:48:41 +0800
-Message-Id: <20220628044843.2257885-2-xji@analogixsemi.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220628044843.2257885-1-xji@analogixsemi.com>
-References: <20220628044843.2257885-1-xji@analogixsemi.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TYCPR01CA0020.jpnprd01.prod.outlook.com (2603:1096:405::32)
- To BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
+        Tue, 28 Jun 2022 00:49:27 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1964ADF27
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 21:49:26 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o63A4-0006mF-MN; Tue, 28 Jun 2022 06:49:16 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o63A1-0003gZ-By; Tue, 28 Jun 2022 06:49:13 +0200
+Date:   Tue, 28 Jun 2022 06:49:13 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Anton Lundin <glance@acc.umu.se>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Lukas Wunner <lukas@wunner.de>
+Subject: Re: [PATCH net v1 1/2] net: asix: fix "can't send until first packet
+ is send" issue
+Message-ID: <20220628044913.GB13092@pengutronix.de>
+References: <20220624075139.3139300-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 718e378b-cb21-45e1-3cf6-08da58c18ccb
-X-MS-TrafficTypeDiagnostic: DM6PR04MB5724:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: axX8QMpjG9V9yrO5eMvomVfAfHwkhGa58grDR+5CSH2CUTevT12RwK5548esqbKF0xMZO+gY5vTWplkxm8Hx74AtaT0Mqb1eFG7lLpwR5a5ZYwwm9PIH0Fjo8jQXV5eG+cDhy6yRM7bFxUmFVUf0ZuXV39yuYnYnWmZkcDSjfolGGwWma0XuqkWAeEXCjfAYJrWIV+AZ2HnKbolL9dqEGdmAfpwOmVAVUWxoiOgpy1qsCduaWXt/gr+cea9L6JqGBQ0tnMqE1Vsn3ujXdGpKr8Gyfd0TVp/PtSnRQ/r/AkJSxH4B3oSDyPD4fsE1FpIvnmIeQI3n1w2qXI1+DH31YGjifS5/kxuJPd39IgfymfLkSFNbiTb4TZu5ZP6pOAimQT4IjNeQ7vaA+yOQ7/YCOtFS+0VVpjY7kjah2GwlR1rysTs9pw2m5XgDGVtsNR/3gYqmQP33rbzlxlF/PpBT4tkod7KrDIVB7j4nTEWLWEmjFtYYjqeNa/tYAZZaT32p6tXpMMWi3jiaw9aq40nowmwV1ymiFR1oSh8PvUlGweHpDIHRn7JghorDpGp+ahsPFfUmaRjPkyI9AP/iG5TtxKHeVeqIt0hBDLYU5kwLAkrr8NWsNjbJeqO0wDOLM9MCf8i30NoJK6EdN41BPtxqdpJaxSvsP29VF9KZA9Ibb+rmuQ0+Km2xGIbidxH32T0S4gD4+8Mi0QF9+qkZmSLYTZk/x3EIQ4hoKq09spqQViO5MD1793JNd77aOADzzahrz1wx0Ohf6Lpr5SxsuhkFSkVhgOQBNYZIPBP+Ujn8Jnsm6ahWmewVQlsnEu04SE+Wj7cl+66qg/7XZZSQuR4jhA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(366004)(39840400004)(376002)(346002)(7049001)(6512007)(66556008)(52116002)(66946007)(316002)(66476007)(110136005)(8676002)(4326008)(26005)(6486002)(5660300002)(55236004)(38350700002)(8936002)(86362001)(2616005)(6506007)(38100700002)(2906002)(1076003)(6666004)(186003)(478600001)(36756003)(41300700001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?O4cAHgvXNcwpLkD8e4It1PQZ4iS1EDCGoI09t1PF5FFuDxKF/4zEJuHoxXUe?=
- =?us-ascii?Q?cpf2BKufN78VmRGmsrGH0aSwLu7hhENDcgOLzNCGrQU36LrTX9NM5wU0nEbA?=
- =?us-ascii?Q?36EDJK5OxjqzAN90Dygg/sAZho3xkXDgT0Ry9Qpn830a7/PbvZC6/O3cV4Nv?=
- =?us-ascii?Q?/fRMU5ElEaW83WyTHQgBMUr/jZ4oym7qwj/YiywJ63owpNeNAQgLxLdOgoup?=
- =?us-ascii?Q?NmsZeJDn7Y0wSZFtrVuSwJJ4lXkRdUQ+2H0R+vvW0YpCm+m/z8KgU7Ryx5jB?=
- =?us-ascii?Q?Aw3FQtEYf9hliOv3G93V7L0zI8BrLBHcRLmhzzat2MqgmavlD/LN8YWhhjak?=
- =?us-ascii?Q?Ji6Q7esPpFVkIFfQXsPQNUqFMOHouxEYgbRaZussT6WgWOoRRqGT73f1MMzw?=
- =?us-ascii?Q?3oDN+oLlU2ai9NmQR+njkFqV5+0vxrg7YpqnPw44xvhVt6tVVWlT5nYt/Wml?=
- =?us-ascii?Q?kummp/bhD1RPxjebgPApnqxOoZIW0W5c96JGKwdxtDUlk2dSjpoRfikQxHEF?=
- =?us-ascii?Q?85WHqM7MAIso2y7emz3n8qbX8VC71g7kWm1mveHk73frbTeX8Un6KOms6n6U?=
- =?us-ascii?Q?Rcvm+c8PoI08i54x9csYdqExzWtMbWMFCs82WAlUxNcU1bYmY/ty2TNp5J04?=
- =?us-ascii?Q?gSXS70XdMET6ASw1xr0xKPR2gj4qMYuxw8VUGmrPeUrfpsMJRoPc/1TsGfpz?=
- =?us-ascii?Q?iasrl/DkLnx6ndXZUTV/siFiy08l/wRaUG33hGO/EZlhp71nSFaqa7TtEPdv?=
- =?us-ascii?Q?atjXo0s1nCb2S6RWgMcA5oeMkSEdA+nC8CNKGb7XKxhfFVmU/vlrT1hFMQb9?=
- =?us-ascii?Q?clhIgPvURcFo4K2k3DD3m14jTdIz/0aSJJiEyZkiCBrSsHzcakwxXtx3KcqX?=
- =?us-ascii?Q?4RxrdMRtTehsC+JMVevfzFcv10w7HR8AijcFNyZO0CgPsjfhPonLVGGo0FUm?=
- =?us-ascii?Q?6S41oGZ+qtVpaYMmxANSB8XLq2ZO99jwF9XwQxZGjYU7DtsetVn8wTsSaB6D?=
- =?us-ascii?Q?DnPik+P+4AbOJLKief+OlL2IckrAeZZGhFb8NjawMS+UcWF4JJ9jIwnLJE8X?=
- =?us-ascii?Q?Cg8faK99U5ZMAMUQLA8o3oQ7QtM1Cd0jEznmR3mJ+O2qlSXOpGXgFgvwI2jL?=
- =?us-ascii?Q?NV68SODEAoFAT9Gg6b1mZQ5c2i3A4xqkgWAqnGlzIeKDEZCtBxycwgziUihP?=
- =?us-ascii?Q?8gRxnv0+PTrug1Ev1x3XktSORr3xFVeZmQ/fJtE4VYIMhi3vPAV4H7tf9vGy?=
- =?us-ascii?Q?mk3K32GMuV1OkKGeqsG6GDcwzugJ6HBt1y4EA3f3AA5GAtODaLvq77h5Sm8N?=
- =?us-ascii?Q?G3JGgvlvjbVgmImvCx4CakQZTYZxVudaPlO7V3v0EdcImD6IbBurkevWDkub?=
- =?us-ascii?Q?GlaAzAtCvhVtj8G3BTCd9npou3vkQjQhajzeXl5tfQqERUcSe5fRd5+2t2qT?=
- =?us-ascii?Q?Md1oXOhyY/4iIeQrpVmttFGJRIhw+sP7gLJIJlWE5yyh21Vz4vGK3A0Twe82?=
- =?us-ascii?Q?gLP4B0u4O45RJ7dW63nb3fAzNa4v8pXbvu6zExDViYiyY+JCAZRURXKdsHZ3?=
- =?us-ascii?Q?PCK0bJs3BKHl4IPk8IbkK1fjBf5sNhcI0basSsLW?=
-X-OriginatorOrg: analogixsemi.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 718e378b-cb21-45e1-3cf6-08da58c18ccb
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 04:49:14.1970
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: olWFXjHSc+khPlR76TFod8OSKiGfuYKAeMkdRtBzz6lnjg9uoo9H3oq5iIbg1e9MzofbA1BO9Js9YJonn750zQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR04MB5724
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220624075139.3139300-1-o.rempel@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add analogix PD chip anx7411 device binding
+On Fri, Jun 24, 2022 at 09:51:38AM +0200, Oleksij Rempel wrote:
+> If cable is attached after probe sequence, the usbnet framework would
+> not automatically start processing RX packets except at least one
+> packet was transmitted.
+> 
+> On systems with any kind of address auto configuration this issue was
+> not detected, because some packets are send immediately after link state
+> is changed to "running".
+> 
+> With this patch we will notify usbnet about link status change provided by the
+> PHYlib.
+> 
+> Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
+> Reported-by: Anton Lundin <glance@acc.umu.se>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Xin Ji <xji@analogixsemi.com>
----
- .../bindings/usb/analogix,anx7411.yaml        | 76 +++++++++++++++++++
- 1 file changed, 76 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
+In different mail thread Anton reported as tested.
+Tested-by: Anton Lundin <glance@acc.umu.se>
 
-diff --git a/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
-new file mode 100644
-index 000000000000..c5c6d5a9dc17
---- /dev/null
-+++ b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/usb/analogix,anx7411.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Analogix ANX7411 Type-C controller bindings
-+
-+maintainers:
-+  - Xin Ji <xji@analogixsemi.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - analogix,anx7411
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  connector:
-+    type: object
-+
-+    allOf:
-+      - $ref: ../connector/usb-connector.yaml
-+
-+    properties:
-+      compatible:
-+        const: usb-c-connector
-+
-+      power-role: true
-+
-+      data-role: true
-+
-+      try-power-role: true
-+
-+    required:
-+      - compatible
-+
-+required:
-+  - compatible
-+  - reg
-+  - connector
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c1 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        typec: anx7411@2C {
-+            compatible = "analogix,anx7411";
-+            reg = <0x2C>;
-+            interrupts = <8 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-parent = <&gpio0>;
-+
-+            typec_con: connector {
-+                compatible = "usb-c-connector";
-+                power-role = "dual";
-+                data-role = "dual";
-+                try-power-role = "source";
-+
-+                port {
-+                    typec_con_ep: endpoint {
-+                        remote-endpoint = <&usbotg_hs_ep>;
-+                    };
-+                };
-+            };
-+        };
-+    };
-+...
+> ---
+>  drivers/net/usb/asix_common.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+> index 632fa6c1d5e3..b4a1b7abcfc9 100644
+> --- a/drivers/net/usb/asix_common.c
+> +++ b/drivers/net/usb/asix_common.c
+> @@ -431,6 +431,7 @@ void asix_adjust_link(struct net_device *netdev)
+>  
+>  	asix_write_medium_mode(dev, mode, 0);
+>  	phy_print_status(phydev);
+> +	usbnet_link_change(dev, phydev->link, 0);
+>  }
+>  
+>  int asix_write_gpio(struct usbnet *dev, u16 value, int sleep, int in_pm)
+> -- 
+> 2.30.2
+> 
+> 
+
 -- 
-2.25.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
