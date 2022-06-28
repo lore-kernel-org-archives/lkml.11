@@ -2,118 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88EC4CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7030C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347221AbiF1OiC (ORCPT
+        id S1346995AbiF1Oip (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 10:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
+        Tue, 28 Jun 2022 10:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346842AbiF1OiB (ORCPT
+        with ESMTP id S231555AbiF1Oin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 10:38:01 -0400
+        Tue, 28 Jun 2022 10:38:43 -0400
 Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668992DD70;
-        Tue, 28 Jun 2022 07:38:00 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id mf9so26337414ejb.0;
-        Tue, 28 Jun 2022 07:38:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53FE2873F;
+        Tue, 28 Jun 2022 07:38:42 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id ge10so26212567ejb.7;
+        Tue, 28 Jun 2022 07:38:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8hQk/b0dG+ocD4kJkrdVLcqXI9aTRhPcr2tzOyCb7mk=;
-        b=FftgfCRZNOFK3Y04oOXzjZwBv01ZPqBAsXGdkky+kO4cE8jNkzJjWL1lyBbv5cCMzt
-         8ZHo7aDVBL4WTzIKpcJFig+44I2dHAu4WuZE2hWqbj43Oy9+kz8VZRWuxIAC1IVWr7r+
-         7UVFPFEvmhpI+l8mWNF7XiuJKkzRo8CIEcU60klYX480FgZciwWg/mQsXS2iLpsukq1V
-         8LC6NWfqzLKNmrE1prgCNsO9NdbH6n5xqJV7Ty70dkNZNbGOraGm3unIOTuvrQCWoh1l
-         ZQbMrtIhZYzd3Ha5wSzQC8ZMAS6ZQInJTuZ9miKlPSmiuiOFX58iU+qS0nwHu6FHEvYZ
-         h+aA==
+        bh=d2IvGKvL7xHbKgdp4YNJ7+ySjxu0hJFiVWDS9pQpBNk=;
+        b=EcBgKNzJYFcIXq77mC+QLh+Q55CV5PEEkCt6SGuIjlr8nNlTqUUyaWmbT2G7JdgDGo
+         uqmNvpq2WUhMBOjfHI6TWd2ppwa1SVtYuqKl5UIpiFbVZm942d9kd0oD9QbD3YVgoCSD
+         SFlhn29XBVtI//iLY2i1cuSBVYvwyYNunt2R3uw/l8S9q86k09viSPZME21XQ1zy4y86
+         Q2WY8QDQlqDnZzIyRjRL1iqIdTAZ6A8Zuu3Uzbis9dyTr9jetyFvOTdzy0Rpznj+FNyN
+         RV0y4x/2Byy5dYiaMqeCNu9OaDND630skNeHGfq3IZid5ej14diTDvF7wEaiBx0s8oeS
+         kkyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8hQk/b0dG+ocD4kJkrdVLcqXI9aTRhPcr2tzOyCb7mk=;
-        b=MrrNMXEansr9S42JfGAMV9IFmIuL5gzFkUv1K4wTVCvKMqO9ft6iEAG7MB+61/WFE8
-         0Eo2ohHiwTuoU7Yj6LQJPHcZjJK73RPY6EdRlP+vQWSsYHb8ZTd2CFdF67ps41o+17Si
-         y/Y3d66YMAeuuz6ThIKlHoavQWlk8TBZzLz5bnSsOBhQtYFWmY1XlrpCdjfbn8Fmv6o1
-         63ZQ6oWqy3qTLlWmQ85MBwEWsjhZvBN+4V953AwYJzYjxBjEhhvbhY4XHDIGcL5VGpwM
-         JCrjOu653LsA7LpqDlWwY83soyV/9xhGm2rB+uVvN0fZRbhZ+GjadWe9+zCvgTYc3+Ho
-         p+jA==
-X-Gm-Message-State: AJIora9dtcEdMGwEPGmx3JVB2cokwHZaFbjUUegBIVh198XyRRveI58s
-        xEZe5K1SMKWlPhoX8BQ2rK7Rs8EUax9NiPvlbGGIsG6s
-X-Google-Smtp-Source: AGRyM1sjewq/YDh9ewRpgbEn647mcNCTsFzlz2ApXt/lWtI5R9O39yhXZpkP6sUScjKV7B7HZKEprynWngvkhAfQV4M=
-X-Received: by 2002:a17:907:a40f:b0:726:a8f5:1031 with SMTP id
- sg15-20020a170907a40f00b00726a8f51031mr9317125ejc.185.1656427078995; Tue, 28
- Jun 2022 07:37:58 -0700 (PDT)
+        bh=d2IvGKvL7xHbKgdp4YNJ7+ySjxu0hJFiVWDS9pQpBNk=;
+        b=Gz6oiZG5isWe0innBdRZ4KldIunvG5BR0pQnILW+2NQda/iqM2pRHWclUAWJ8GPT6G
+         4qxilQhpVYpY4ssch/5s3koDQx0gwsR8yfm4e/4IXKj3by0JAUQoazALXkB9r4ZqU8kT
+         Ay1JGSQRtm8VkK3xtJl3F0rcudlgyr71rBa4WOmH/euKnVI25f3QOduwxUq7UdketmBK
+         FzeHrzOtA7F7hdPThIlWUUKBFlrA2Zdmx1CY8XeTMrAGgkatIXkPJpIBqRRz4UrvsbJZ
+         ELzp1wc5ZQdDi0Ouh9hcgGxOGayjNXlIvTNCXe3Jt9NNgreECXpFbDITZdrVbNrBln0Z
+         Ja0w==
+X-Gm-Message-State: AJIora9E1+rWLCNTPpv7ESl61TmMNNMfIGHvS0l/3QFBB/vt6DU1MxUL
+        5tRSGpcfjkxviEXxCxd8reF9DLKmZkq2z4K3YCs=
+X-Google-Smtp-Source: AGRyM1shI3TGX5wshjkJFJrz2mDXSYu4lQcGDUhsZNRYOYlP5MHGbzWtZvb2qfxNCOMOmPZt2NzdiNV9hBqFxBUlu9E=
+X-Received: by 2002:a17:907:94cf:b0:726:c81a:f30e with SMTP id
+ dn15-20020a17090794cf00b00726c81af30emr5834374ejc.451.1656427121388; Tue, 28
+ Jun 2022 07:38:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1656409369.git.mchehab@kernel.org> <ac8ece934af1145bc16531b9f10d69c76216cb66.1656409369.git.mchehab@kernel.org>
-In-Reply-To: <ac8ece934af1145bc16531b9f10d69c76216cb66.1656409369.git.mchehab@kernel.org>
+References: <cover.1656409369.git.mchehab@kernel.org> <3aee446a0e396fe3f338f270746939f6e803a4de.1656409369.git.mchehab@kernel.org>
+In-Reply-To: <3aee446a0e396fe3f338f270746939f6e803a4de.1656409369.git.mchehab@kernel.org>
 From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 28 Jun 2022 10:37:47 -0400
-Message-ID: <CADnq5_OxGq_rBr5-n16-5aHhG1WPDhTDjPAgMjMkWw-fG4o=8A@mail.gmail.com>
-Subject: Re: [PATCH 10/22] drm: amdgpu: amdgpu_device.c: fix a kernel-doc markup
+Date:   Tue, 28 Jun 2022 10:38:29 -0400
+Message-ID: <CADnq5_OJ=-hNo=Tx1L70sa4hyRx8YD=RMMJ0uEx4QegXDofkJw@mail.gmail.com>
+Subject: Re: [PATCH 11/22] drm: amd: amd_shared.h: Add missing doc for PP_GFX_DCS_MASK
 To:     Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
         Evan Quan <evan.quan@amd.com>,
-        Guchun Chen <guchun.chen@amd.com>,
+        David Zhang <dingchen.zhang@amd.com>,
         Jonathan Corbet <corbet@lwn.net>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Somalapuram Amaranath <Amaranath.Somalapuram@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Kenneth Feng <kenneth.feng@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>, Zhan Liu <zhan.liu@amd.com>,
         LKML <linux-kernel@vger.kernel.org>,
         amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>,
         David Airlie <airlied@linux.ie>,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
         Maling list - DRI developers 
         <dri-devel@lists.freedesktop.org>, Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Wang <kevin1.wang@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
-        Lang Yu <lang.yu@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+        Harry Wentland <harry.wentland@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Hawking Zhang <Hawking.Zhang@amd.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Applied.  Thanks!
+
 On Tue, Jun 28, 2022 at 5:46 AM Mauro Carvalho Chehab
 <mchehab@kernel.org> wrote:
 >
-> The function was renamed without renaming also kernel-doc markup:
->         drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:5095: warning: expecting prototype for amdgpu_device_gpu_recover_imp(). Prototype was for amdgpu_device_gpu_recover() instead
+> This symbol is missing documentation:
 >
+>         drivers/gpu/drm/amd/include/amd_shared.h:224: warning: Enum value 'PP_GFX_DCS_MASK' not described in enum 'PP_FEATURE_MASK'
+>
+> Document it.
+>
+> Fixes: 680602d6c2d6 ("drm/amd/pm: enable DCS")
 > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-
-I actually sent out the same patch a few days ago, however, the code
-has since changed with Andrey's recent GPU reset series and the patch
-is no longer applicable.
-
-Thanks,
-
-Alex
-
-
 > ---
 >
 > To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 > See [PATCH 00/22] at: https://lore.kernel.org/all/cover.1656409369.git.mchehab@kernel.org/
 >
->  drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/gpu/drm/amd/include/amd_shared.h | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-> index 9d6418bb963e..6d74767591e7 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-> @@ -5079,7 +5079,7 @@ static inline void amdggpu_device_stop_pedning_resets(struct amdgpu_device *adev
->
->
->  /**
-> - * amdgpu_device_gpu_recover_imp - reset the asic and recover scheduler
-> + * amdgpu_device_gpu_recover - reset the asic and recover scheduler
+> diff --git a/drivers/gpu/drm/amd/include/amd_shared.h b/drivers/gpu/drm/amd/include/amd_shared.h
+> index bcdf7453a403..2e02a6fc1717 100644
+> --- a/drivers/gpu/drm/amd/include/amd_shared.h
+> +++ b/drivers/gpu/drm/amd/include/amd_shared.h
+> @@ -193,6 +193,7 @@ enum amd_powergating_state {
+>   * @PP_ACG_MASK: Adaptive clock generator.
+>   * @PP_STUTTER_MODE: Stutter mode.
+>   * @PP_AVFS_MASK: Adaptive voltage and frequency scaling.
+> + * @PP_GFX_DCS_MASK: GFX Async DCS.
 >   *
->   * @adev: amdgpu_device pointer
->   * @job: which job trigger hang
+>   * To override these settings on boot, append amdgpu.ppfeaturemask=<mask> to
+>   * the kernel's command line parameters. This is usually done through a system's
 > --
 > 2.36.1
 >
