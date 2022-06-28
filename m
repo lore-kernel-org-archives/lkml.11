@@ -2,135 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F76C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 01:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4BE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 01:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243020AbiF1BRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 21:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
+        id S243116AbiF1BVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 21:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241093AbiF1BRH (ORCPT
+        with ESMTP id S240999AbiF1BVF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 21:17:07 -0400
-Received: from sonic302-26.consmr.mail.ne1.yahoo.com (sonic302-26.consmr.mail.ne1.yahoo.com [66.163.186.152])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E9822BD1
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 18:17:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1656379025; bh=ZdG4xpFqsU+bajALxcF2VlnWGR52G82iCMkdVTc2osE=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=aQqENFqDKiIjusmJdO1dPjKaNLnGBnUwe49kFxwaFK6ffWAElWmFS9Ltb8glOEyerFNMmWqxQT8RLwQioV4XVddc0YYisckcKkSZFpTabpgPPt5iXvTj/hIbe7f5CKHUudTK+mZysfHZAn1Hh/ZZPUjPAs5YKwgVnVhrxsKOmokjz6KHxT/so7j9v5xI2PYDR/u4BhEfg3SOe4yWVQsngBAnq/LT+VHm4oz579DrE+C8ryLBZULybnpwQPfhesoTyVOAaa2d01r2gmP9wXb0Hc0kMc8f8bMX9LVe5p3uE7CYGrVIeZvjxkvssKMrynfeT0NF1JA/FWzt8JnhlIzNZQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1656379025; bh=BnocZkrCMlnPpcI7bRWVONAkAFgvhD00MmVMzPoMYx2=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=UCo8YMjCI1hzPwCZdrJMCos57//QRTY9pBOfovM9eq13EDMDOT3fK+YjkmvOWaiBprgwQVLfeatf7mg9tgmHC8Z406r1Ow8va9q1LAjUxeMh7JNwoN/ZYRS+6AdMjIyLgirRNvuQk4FtHwrGqbkIz0D9fLi0aedg6v4LcbEaWGExE8ocrZoAqt6yqCLY59hTzcEvBmLqMkWL3S8ocww2ejfJdkoO/+MMPswajXZsFLJetbOn5MscIHTdVvtlGEyMtlnpB3NKSYoOewF5Or+0c8ks5ALQ0wqzENj3ihK5CkN0DuV5ONU3mj4loyeEsbuAVWFjdUg/vrWmz0riKHUB0g==
-X-YMail-OSG: 6j1tcUcVM1mY2pNz0kc_UTsA6EKFHKdzu_9v.DMblyd0JwQA4uua4O37jDB_3yy
- ATeycsio_CKScXnjbPqwxNIQ3__ihPR74kRXInix43UqGeNZO2gC0H7sI530PkdCpYBCvdM5yuIK
- f4fdCnOyZMyHqLV7RKm2w9mYY7CRN06uTomOnP38BrpqJr4T16g0eGrHdU2yWAeQm47vEI6tvuDm
- tmsjW9zLYPNvtcFSP2RXu4zdaJ3YyE8kJaO6gGE2QbnJ1_gWOB_h39PWUum_7GrlxMZk37eYCfz9
- UEeeidfvGSDJneVDTA7Z4v98e9qZyM1z6qceJ0YOYcpxw4XMKnJY.KGq_jCFwEACR17FPA_4IeFE
- EUeC4F13p5HscqkpsA0jImYJSu_ELaPEFuvOMWP0h68eIHjWN1SSL1dDo4DIssIoblVmOT2A4VMx
- dCsUIjBgyUBQcspekNYJjleJM90xXfmt5qWUWEDsEyZ40whVka9bk8L2WjA7Vo.iJjZExosssV96
- ESnP_NsxxB4FVziVhWtS4w5Q8DqLmslmXHfV9O8wA4c1DcybhZhg26aK57c0rvPnkOf4pJ3pJ29S
- C8XBiO2C_YZxJ5k.IvPUEMmVibsNNB9KlSwleER2zjQbtnAgfBvGFXckvqQYYfFk2pLIRkyjYl23
- MbOZvigxoWfoX.OsRz24EEr3gnvElahfvWKMgVvk1bfIQVndOgJrFQJDduToYyPqyC7nzXWHxPHD
- czXsmAWMNAI7CAlFcZEzsBgLh6c7xcQe.MTCkAWryzHW5OZrSzATA3x9Dq.CH0nI_0TXy8zWCvv6
- GpC8KEkz2BajPVcIc.rGvOqXp5f0KJBL4ppw9MIL0wSX._CUq2nG0DhSzeakbOzMf2VQwp8Mo.oD
- sDZ6mjNPzLnq7b_0NuUDynVOeFugRkcvrIp4n0yuEtRklIw7tGddRu8A8hVJJMPlV6Z2GHrh8UnK
- rTV6lioHGMpG0CL7cFWAtu8akMiDJ4BjYiREW0jMHMisQGGVw6.MpWHy3A2JrLpT0.jOOi2kZG3S
- O6kBleAfb13cTuUT66N.Z_5DIhKhWpEp.jlBe6m6xvtp62gzULlldwax_kSFMvCnpFiyF3W11JCs
- h.FC.rDaiT58olhbuwc00hUJ6rusKLyCU0b2P5dTRnRREUzvt.vr..jMApU.Mp9suDVYMjDnR3oi
- 52GKHddLGQQsxI8tDwVFR_TTE5iwaBdk8W0T_baeRVzSWsca1eclrpXNfY_Fydjnu5H.ALE1_MnD
- Caz74gAdJBGOR6QDz65G9gCRWQulpC0F_x9H0tjnPTKbyOaWUtgMnvG.Ww1umbnZDrQia1TCwe45
- VDPbmt5kePhEPu7MYlCgIpeqKMnl3JxAwUOM1lwpzygZbOqRBNPy0LEycGYS7mbOAPmTh8N3QSpQ
- 8tqY9GvpLNCT7PRvRGhAPiYhYHaGH6ISohRsjd1mpS9zzYWtyvVEOjnoZhox482m3dZzpb3pvO1V
- mOdKlELV6GIvBC_ryxbooMMFGueLdIsJiOivAr71hjQE8Qdj73FCqoUsnSU45XbbZwCvYhVKtg4Y
- rCHNx56ahlxJWQc9C1gZYfr0XNAFHa9FBeWD6RYljhXlnV7Ycp9oxHW4zLVjC2udolfbOGy5wXen
- 5TcyLzy4VDN7vw8YwwOmkELvHNncgU0O3y9OZs.9syGQRW050us7wSwKLzygc3Fz.M8aUv7MJ6y0
- 5r1KUkR8kKVsM64KigKPwLeK7nNoMayg4svzeovGzf0Mi3EfsrOwADWBAgDyRzOk39HCBELFp9mK
- q8fMZsu_xQBL.5DAnuXEvpVzyh18h.1.jMsh27.J8UX7i3Rlp3luG60KuphuhoTOsA34kWzKWrIC
- SJFD0tYYBkKlXiDri9KGsgYqjkKdBxdHHM7vzKN9riRU85qRF2df.zWv59xDlvl6Tp8uXQ3jS._D
- 6ZHlwjML6K16hglU7S.ZZtSU4FduUMdtmEQG72bwJePibT9DWq0jgnGd0mzhbsGGDEc9FT8ETu.U
- 2tOidP.nkyQaCtjgQXwpi.q3.RRmjLlvcJTscWSv2ZqGHzaSnTB4JJp6UPVLTAUgewHawWiXzW89
- Z0Wfa1FAid.P3zOKpLqk3PjLJTTZawCf0iUBC1iHFCxFZ2gCCsfnPflohCvBlULRNO9.5zTPA6a7
- xwlYPaB4r4cCmUDubRJ9X0HEH3HjBirzJmTzVjOeHVFMFoiFYrHC.MRUs8hr822jjqVYQfc7B9G0
- 3BkEY1drcIIP03opXGTAKJTHZiF_0zMjx.vJdrQ0rNsaG2GuCqkWVp85xwuM-
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic302.consmr.mail.ne1.yahoo.com with HTTP; Tue, 28 Jun 2022 01:17:05 +0000
-Received: by hermes--production-bf1-7f5f59bd5b-9k855 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 9cbde2a328acbc97554c754593bf0b6d;
-          Tue, 28 Jun 2022 01:17:01 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
-        keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v37 33/33] AppArmor: Remove the exclusive flag
-Date:   Mon, 27 Jun 2022 17:56:11 -0700
-Message-Id: <20220628005611.13106-34-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220628005611.13106-1-casey@schaufler-ca.com>
-References: <20220628005611.13106-1-casey@schaufler-ca.com>
+        Mon, 27 Jun 2022 21:21:05 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809BB1CFE0;
+        Mon, 27 Jun 2022 18:21:04 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id x20so4097661plx.6;
+        Mon, 27 Jun 2022 18:21:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/OM7p2xmgcLKvrCC4aR5bM7KnQIk44Oxh3ZTj61eUw0=;
+        b=hb270D/YuXBN9rdMINPybXWvsxPWW54PdpujAxfPoZTib4Dc4NiJwZAEKXtbSkyNcq
+         uEK5RgTrKHhASICLGIuE2Nxs+PFwlcKOKe2YJWfwoIQhAaUfmU2NLaTVnSvKYg3ESioo
+         mO0Ri4+NYsV6jDkgsUNJa36AdmUVvHZxzaaPuJFL/yMeCW8n1DrC+iR/l1/atePvzqJM
+         Ct/xfrNfbOL3ZWiLnXAtfj4iIvTukb9WsZWC86NAEFnnIr/JtmZDaWzhs54f6eLCXsZf
+         3J9dWwYwxvocO6cN3BOgFuVzR4LSn0S2bhWSV25QUaWRrEtbotWgwObsrbejhQdhjTY1
+         DmsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/OM7p2xmgcLKvrCC4aR5bM7KnQIk44Oxh3ZTj61eUw0=;
+        b=fP8Qm3wSyJNX14KdmMCGgrDuJaTi3kt9OXQ+w4XQFLXoOVAVW1hbIlPfCRXKzfc9Y+
+         6np1iQUzoRl5kRuR5h5/H5VKNsYCFdyJNkDwvXGuq/AqIErboUERMykri2+qLYbnGPJ1
+         9Sw+xZmWcVCyAxjwt7eY3Ja/8Jyfxp8jSiGTk5SLeuSxQCmkttjEB5Kklm8DiVDOEy4K
+         g9hojLKiALDO8nxd+Q4tTwQvliZGFSbMBzrmxbY/k7ZXkG7g7aeY5opKMC25FXEAonbm
+         TTyULqyJNZBa1EMWrtF6zVJ/8vy21QtRrVqYcS0tk0sMxPbdsvBk/V5z6LH9X3oFihyR
+         CorQ==
+X-Gm-Message-State: AJIora9JHGXJ8CDb61xBXPmeicFW7Cm4wvTxYZxbhqbpvtEyGfG7ocfy
+        syGkd5yN+M3kd5zkKLuBEepO5ZJjrro=
+X-Google-Smtp-Source: AGRyM1vtFKI769HEoE3iMPmPbjYiqTEoKyKL1RWA//bv2hGcT8xrkpnuRlfL7sT7pu6CN8L7XwHjJQ==
+X-Received: by 2002:a17:90b:4b0e:b0:1ec:dd93:5113 with SMTP id lx14-20020a17090b4b0e00b001ecdd935113mr23734613pjb.12.1656379263107;
+        Mon, 27 Jun 2022 18:21:03 -0700 (PDT)
+Received: from [192.168.43.80] (subs28-116-206-12-39.three.co.id. [116.206.12.39])
+        by smtp.gmail.com with ESMTPSA id 21-20020aa79115000000b0050dc7628171sm7884690pfh.75.2022.06.27.18.20.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 18:21:02 -0700 (PDT)
+Message-ID: <bd2957f4-3793-d876-8b1f-1dbb9cf160d1@gmail.com>
+Date:   Tue, 28 Jun 2022 08:20:56 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH 06/11] docs: process: remove outdated
+ submitting-drivers.rst
+Content-Language: en-US
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Hu Haowen <src.res@email.cn>, linux-doc@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net
+Cc:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220627151819.22694-1-lukas.bulwahn@gmail.com>
+ <20220627151819.22694-7-lukas.bulwahn@gmail.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220627151819.22694-7-lukas.bulwahn@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the inclusion of the interface LSM process attribute
-mechanism AppArmor no longer needs to be treated as an
-"exclusive" security module. Remove the flag that indicates
-it is exclusive. Remove the stub getpeersec_dgram AppArmor
-hook as it has no effect in the single LSM case and
-interferes in the multiple LSM case.
+On 6/27/22 22:18, Lukas Bulwahn wrote:
+>  There are numerous sources of information on Linux kernel development and
+>  related topics.  First among those will always be the Documentation
+> -directory found in the kernel source distribution.  The top-level :ref:`process/howto.rst <process_howto>`
+> -file is an important starting point; :ref:`process/submitting-patches.rst <submittingpatches>`
+> -and :ref:`process/submitting-drivers.rst  <submittingdrivers>`
+> -are also something which all kernel developers should
+> -read.  Many internal kernel APIs are documented using the kerneldoc
+> -mechanism; "make htmldocs" or "make pdfdocs" can be used to generate those
+> -documents in HTML or PDF format (though the version of TeX shipped by some
+> -distributions runs into internal limits and fails to process the documents
+> -properly).
+> +directory found in the kernel source distribution.  Start with the
+> +top-level :ref:`process/howto.rst <process_howto>`; also read
+> +:ref:`process/submitting-patches.rst <submittingpatches>`. Many internal
+> +kernel APIs are documented using the kerneldoc mechanism; "make htmldocs"
+> +or "make pdfdocs" can be used to generate those documents in HTML or PDF
+> +format (though the version of TeX shipped by some distributions runs into
+> +internal limits and fails to process the documents properly).
+>
 
-Acked-by: Stephen Smalley <stephen.smalley.work@gmail.com>
-Acked-by: John Johansen <john.johansen@canonical.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
----
- security/apparmor/lsm.c | 20 +-------------------
- 1 file changed, 1 insertion(+), 19 deletions(-)
+Did you mean "beware that TeX distribution version as shipped by distributions
+may fail to properly generate the documents"? I have never tried pdfdocs,
+since the dependency requirement can be huge (hundreds of MB needed to
+download packages), so I can't tell whether the phrase is relevant.
+ 
+> -  :ref:`Documentation/process/submitting-patches.rst <submittingpatches>` and :ref:`Documentation/process/submitting-drivers.rst <submittingdrivers>`
+> -    These files describe in explicit detail how to successfully create
+> +  :ref:`Documentation/process/submitting-patches.rst <submittingpatches>`
+> +    This file describes in explicit detail how to successfully create
+>      and send a patch, including (but not limited to):
+>  
 
-diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index 1fdb885facbb..1d742d864e0b 100644
---- a/security/apparmor/lsm.c
-+++ b/security/apparmor/lsm.c
-@@ -1165,22 +1165,6 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
- 	return error;
- }
- 
--/**
-- * apparmor_socket_getpeersec_dgram - get security label of packet
-- * @sock: the peer socket
-- * @skb: packet data
-- * @secid: pointer to where to put the secid of the packet
-- *
-- * Sets the netlabel socket state on sk from parent
-- */
--static int apparmor_socket_getpeersec_dgram(struct socket *sock,
--					    struct sk_buff *skb, u32 *secid)
--
--{
--	/* TODO: requires secid support */
--	return -ENOPROTOOPT;
--}
--
- /**
-  * apparmor_sock_graft - Initialize newly created socket
-  * @sk: child sock
-@@ -1284,8 +1268,6 @@ static struct security_hook_list apparmor_hooks[] __lsm_ro_after_init = {
- #endif
- 	LSM_HOOK_INIT(socket_getpeersec_stream,
- 		      apparmor_socket_getpeersec_stream),
--	LSM_HOOK_INIT(socket_getpeersec_dgram,
--		      apparmor_socket_getpeersec_dgram),
- 	LSM_HOOK_INIT(sock_graft, apparmor_sock_graft),
- #ifdef CONFIG_NETWORK_SECMARK
- 	LSM_HOOK_INIT(inet_conn_request, apparmor_inet_conn_request),
-@@ -1939,7 +1921,7 @@ static int __init apparmor_init(void)
- 
- DEFINE_LSM(apparmor) = {
- 	.name = "apparmor",
--	.flags = LSM_FLAG_LEGACY_MAJOR | LSM_FLAG_EXCLUSIVE,
-+	.flags = LSM_FLAG_LEGACY_MAJOR,
- 	.enabled = &apparmor_enabled,
- 	.blobs = &apparmor_blob_sizes,
- 	.init = apparmor_init,
+Maybe "This document" instead of file?
+
+> @@ -12,9 +12,8 @@ This document contains a large number of suggestions in a relatively terse
+>  format.  For detailed information on how the kernel development process
+>  works, see Documentation/process/development-process.rst. Also, read
+>  Documentation/process/submit-checklist.rst
+> -for a list of items to check before submitting code.  If you are submitting
+> -a driver, also read Documentation/process/submitting-drivers.rst; for device
+> -tree binding patches, read
+> +for a list of items to check before submitting code.
+> +For device tree binding patches, read
+>  Documentation/devicetree/bindings/submitting-patches.rst.
+
+The hunk above is OK.
+
 -- 
-2.36.1
-
+An old man doll... just what I always wanted! - Clara
