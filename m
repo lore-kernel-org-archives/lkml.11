@@ -2,124 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23362C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02769C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230173AbiF1VCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 17:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
+        id S229814AbiF1VD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 17:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiF1VCs (ORCPT
+        with ESMTP id S229928AbiF1VDt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 17:02:48 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA433393DF;
-        Tue, 28 Jun 2022 14:02:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656450167; x=1687986167;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=wZ/uTrA3bjyScAuweu7zLmoZX9qpUo9vDnaXIZOrcKs=;
-  b=g/hIDkwQ47/ktR4JtVBeDbfARqwRF65lQARKj80eJ5VAxnH0SgZqp+oZ
-   nvlldvupjNiBnGTKYD6WcePml9afjzxsKMdBQqe39anVH2vB003Ck2CQQ
-   FALbnT0JGXqXmW8tKZzlBJeCxe1MnZqWl9g3Cdb5wFWMindOOaxwSB8O8
-   tb5g2eAtZulxPZBXMtsI945Tbnn6exfI6447FQB9aztnASKNVYKNLcqIa
-   aR2z0C70TwmlimuFwtCcysTH7SORkaToHefCYln1CEEVU+Cgc4u7Mu59Z
-   GXXhc9Ro0y0Yi6ebauijHAIXtKZ5UcHGC8ayaOnMNByXlYgAC2IiEH5Kw
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="368160480"
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="368160480"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 14:02:47 -0700
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="588004851"
-Received: from staibmic-mobl1.amr.corp.intel.com (HELO [10.209.67.166]) ([10.209.67.166])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 14:02:46 -0700
-Message-ID: <6934b82d-db12-8a17-7dea-7bcbd4fe8566@intel.com>
-Date:   Tue, 28 Jun 2022 14:01:40 -0700
+        Tue, 28 Jun 2022 17:03:49 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7689637AA5;
+        Tue, 28 Jun 2022 14:03:48 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id jb13so12159069plb.9;
+        Tue, 28 Jun 2022 14:03:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LLK2uhNNvPadjp2Oh/1lKQPTCLeKdmpKaTeJ3RDCHv0=;
+        b=Plf/V32RTHjAIcY0bkPGhJbIRr6v2P2QgRVB8+7eP0P4RsyHw26WFtNVMjh4450VSL
+         X8EowJeUAPv65bojUQi/l4q/mcLgIz1TUZop7B8mMf4UYeSMN97O5PhtCWd4P5KjohDY
+         ALLie3yLHIm0bsPU/TnBkkd6JuMbBayFBbZiLBvLd2yar7+HLEz7eMmp19DAOWF3IuTH
+         PHvtCurN4N9bl0vEQmQzWlMPAd2VaDMz3hbsjPHd4Xm7SbhJbAT/RBX6xYjOUAqBtWrm
+         FLKt/ZIKzNjI8UX/5SZnYKO15W+v0GW/s3+FFXv5IZLkJGau9LvwFj0fBmt76ie2MA/E
+         v/wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LLK2uhNNvPadjp2Oh/1lKQPTCLeKdmpKaTeJ3RDCHv0=;
+        b=2XuBkufW7ABofm0k0+5GHe6sz1vwTD+OqtBKfEromgYkgGSi8+LM7IehH7F7IPUgff
+         UUcFGjXVSEEG7KHFXa7dXtn9J1D7U3KrXksC5+J/cMAsKbU47b162WqESlA0yOjJTxFj
+         PU6MZ/aWHN69pSAFhyQdmvuOZZjAeYVJ5myvWUHkqx+EiclNMXj1QD5PZlq5n/1ss1xZ
+         S6J5KBbEivUt5MXuEvKOhXi3+0KmAkjopKy9laWz9ISJVe0fka3GepGqqkoVl+VaiYGV
+         sbptlbLhplAU1h/Kyx7J3rNAG/RdcJxMaiqKiXz/tMpYYaqvcirRcDwVxBubz5xqukvD
+         fZdA==
+X-Gm-Message-State: AJIora9Q18JI4dVlroX3gmRGQhyzHHHYWJNmOXhrMLdgVV7/3qxDDkAf
+        FPBno+2a+DeFScrpmU2TUMk=
+X-Google-Smtp-Source: AGRyM1s3Nd/my/4+QoWL+yZMzu+YZKCug56iAjfd8RAtHTbgADBf9oHlpjvJ/8KE0n/2rDkR0+nsiw==
+X-Received: by 2002:a17:90a:1485:b0:1ec:788e:a053 with SMTP id k5-20020a17090a148500b001ec788ea053mr1707919pja.16.1656450227992;
+        Tue, 28 Jun 2022 14:03:47 -0700 (PDT)
+Received: from ?IPV6:2001:df0:0:200c:75aa:d6ca:4354:6033? ([2001:df0:0:200c:75aa:d6ca:4354:6033])
+        by smtp.gmail.com with ESMTPSA id a14-20020aa795ae000000b005259d99ccffsm6254097pfk.8.2022.06.28.14.03.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 14:03:47 -0700 (PDT)
+Message-ID: <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
+Date:   Wed, 29 Jun 2022 09:03:37 +1200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v5 0/6] Add hardware prefetch control driver for A64FX and
- x86
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
 Content-Language: en-US
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     "tarumizu.kohei@fujitsu.com" <tarumizu.kohei@fujitsu.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "lenb@kernel.org" <lenb@kernel.org>,
-        "mchehab+huawei@kernel.org" <mchehab+huawei@kernel.org>,
-        "eugenis@google.com" <eugenis@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "pcc@google.com" <pcc@google.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "marcos@orca.pet" <marcos@orca.pet>,
-        "marcan@marcan.st" <marcan@marcan.st>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "conor.dooley@microchip.com" <conor.dooley@microchip.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "ast@kernel.org" <ast@kernel.org>,
-        "peter.chen@kernel.org" <peter.chen@kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        Paolo Valente <paolo.valente@unimore.it>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
- <YqNCDrqcp9t8HlUJ@kroah.com>
- <OSBPR01MB203749DA00C7BEE5741AFEB980AA9@OSBPR01MB2037.jpnprd01.prod.outlook.com>
- <YqiAY689pOJbHKUd@kroah.com>
- <TY2PR01MB20426C7822E46B2E8B2525FB80AF9@TY2PR01MB2042.jpnprd01.prod.outlook.com>
- <CACRpkdaV8+06gzxi3ou4+nxa28R5Rhzg+KJ8HWh4gyK4AkoC9g@mail.gmail.com>
- <086370dd-281f-5ac6-3a0f-f1b80500c668@intel.com>
- <CACRpkdYTNuszctk=stB+RLr5kKwhR2ebF2MJCYQwMwYYPPReLg@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <CACRpkdYTNuszctk=stB+RLr5kKwhR2ebF2MJCYQwMwYYPPReLg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>, scsi <linux-scsi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        Khalid Aziz <khalid@gonehiking.org>,
+        "Maciej W . Rozycki" <macro@orcam.me.uk>,
+        Matt Wang <wwentao@vmware.com>,
+        Miquel van Smoorenburg <mikevs@xs4all.net>,
+        Mark Salyzyn <salyzyn@android.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Denis Efremov <efremov@linux.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-4-arnd@kernel.org>
+ <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+ <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
+ <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
+ <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
+ <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
+From:   Michael Schmitz <schmitzmic@gmail.com>
+In-Reply-To: <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/28/22 13:20, Linus Walleij wrote:
-> On Tue, Jun 28, 2022 at 5:47 PM Dave Hansen <dave.hansen@intel.com> wrote:
->> On 6/27/22 02:36, Linus Walleij wrote:
->>> The right way to solve this is to make the Linux kernel contain the
->>> necessary heuristics to identify which tasks and thus cores need this
->>> to improve efficiency and then apply it automatically.
+Hi Geert,
+
+On 28/06/22 19:03, Geert Uytterhoeven wrote:
+>
+>> Leaving the bounce buffer handling in place, and taking a few other
+>> liberties - this is what converting the easiest case (a3000 SCSI) might
+>> look like. Any obvious mistakes? The mvme147 driver would be very
+>> similar to handle (after conversion to a platform device).
+> Thanks, looks reasonable.
+Thanks, I'll take care of Arnd's comments and post a corrected version 
+later.
+>> The driver allocates bounce buffers using kmalloc if it hits an
+>> unaligned data buffer - can such buffers still even happen these days?
+> No idea.
+Hmmm - I think I'll stick a WARN_ONCE() in there so we know whether this 
+code path is still being used.
+>
+>> If I understand dma_map_single() correctly, the resulting dma handle
+>> would be equally misaligned?
 >>
->> I agree in theory.  But, I also want a pony in theory.
+>> To allocate a bounce buffer, would it be OK to use dma_alloc_coherent()
+>> even though AFAIU memory used for DMA buffers generally isn't consistent
+>> on m68k?
 >>
->> Any suggestions for how to do this in the real world?
-> 
-> Well if the knobs are exposed to userspace, how do people using
-> these knobs know when to turn them? A profiler? perf? All that
-> data is available to the kernel too.
+>> Thinking ahead to the other two Amiga drivers - I wonder whether
+>> allocating a static bounce buffer or a DMA pool at driver init is likely
+>> to succeed if the kernel runs from the low 16 MB RAM chunk? It certainly
+>> won't succeed if the kernel runs from a higher memory address, so the
+>> present bounce buffer logic around amiga_chip_alloc() might still need
+>> to be used here.
+>>
+>> Leaves the question whether converting the gvp11 and a2091 drivers is
+>> actually worth it, if bounce buffers still have to be handled explicitly.
+> A2091 should be straight-forward, as A3000 is basically A2091 on the
+> motherboard (comparing the two drivers, looks like someone's been
+> sprinkling mb()s over the A3000 driver).
 
-They run their fortran app.  Change the MSRs.  Run it again.  See if it
-simulated the nuclear weapon blast any faster or slower.  Rinse.  Repeat.
+Yep, and at least the ones in the dma_setup() function are there for no 
+reason (the compiler won't reorder stores around the cache flush calls, 
+I hope?).
 
-One thing that is missing from the changelog and cover letter here: On
-x86, there's a 'wrmsr(1)' tool.  That took pokes at Model Specific
-Registers (MSRs) via the /dev/cpu/X/msr interface.  That interface is a
-very, very thinly-veiled wrapper around the WRMSR (WRite MSR) instruction.
+Just leaves the 24 bit DMA mask there (and likely need for bounce buffers).
 
-In other words, on x86, our current interface allows userspace programs
-to arbitrarily poke at our most sensitive hardware configuration
-registers.  One of the most common reasons users have reported doing
-this (we have pr_warn()ings about it) is controlling the prefetch hardware.
+> I don't have any of these SCSI host adapters (not counting the A590
+> (~A2091) expansion of the old A500, which is not Linux-capable, and
+>   hasn't been powered on for 20 years).
 
-This interface would take a good chunk of the x86 wrmsr(1) audience and
-convert them over to a less dangerous interface.  That's a win on x86.
-We don't even *remotely* have line-of-sight for a generic solution for
-the kernel to figure out a single "best" value for these registers.
+I wonder whether kullervo has survived - that one was an A3000. Should 
+have gone to Adrian a few years ago...
+
+Cheers,
+
+     Michael
+
+
+>
+> Gr{oetje,eeting}s,
+>
+>                          Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                  -- Linus Torvalds
