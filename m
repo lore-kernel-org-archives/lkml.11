@@ -2,144 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52030CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E86C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345044AbiF1Kzd (ORCPT
+        id S1345062AbiF1K4R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 06:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53276 "EHLO
+        Tue, 28 Jun 2022 06:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231682AbiF1Kzc (ORCPT
+        with ESMTP id S231682AbiF1K4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 06:55:32 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E51031939;
-        Tue, 28 Jun 2022 03:55:31 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25S9mvee030323;
-        Tue, 28 Jun 2022 10:55:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=cuh2ZQnoMInqJAzyup+RfWxxZ7oeCbu+JXFC0qMA7RY=;
- b=RhPmtVddx6G8RI/bMjJpOzmAGLH5+WBAVylQMwzIccbU6dZhUcoSthOSMoObhBX7RWkc
- Vw1UIKFzS6U3Sxy3q7RaB69y20T/J+tzdnGC3ZElK1bW4msTm+xf9xsH8owvxoVb2p4B
- POq/gJi+7JV/wCiMIUwgMbxgL8TEbysFWPXZFJd4hPQ9UYY86cOSOrlIP3E/7d+Sm4JL
- b+UnKWaw6aTJFHUB4a5imNGDUPJPinzSA49ywq3xCjjh0R6Z9/ZDDA9CknJUH6YOs75e
- lUkbA9PiXeYAl5TPipOyyBevCat7GhwzJ6rc+HznS9t+N6oCumk1tSEW+A+XEdIjfUXD rQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyybh9u8e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 10:55:30 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25S9pqBw002972;
-        Tue, 28 Jun 2022 10:55:30 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyybh9u7u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 10:55:30 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SAqhVK006671;
-        Tue, 28 Jun 2022 10:55:28 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3gwt08ug6a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 10:55:28 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SAtPxJ13566250
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jun 2022 10:55:25 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 02DBCAE04D;
-        Tue, 28 Jun 2022 10:55:25 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 47B45AE045;
-        Tue, 28 Jun 2022 10:55:24 +0000 (GMT)
-Received: from [9.171.41.104] (unknown [9.171.41.104])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 28 Jun 2022 10:55:24 +0000 (GMT)
-Message-ID: <c5129b4a-b662-7643-2031-941da75e1e20@linux.ibm.com>
-Date:   Tue, 28 Jun 2022 12:59:52 +0200
+        Tue, 28 Jun 2022 06:56:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E5F31DC0;
+        Tue, 28 Jun 2022 03:56:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2084D6172D;
+        Tue, 28 Jun 2022 10:56:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DEDDC341CA;
+        Tue, 28 Jun 2022 10:56:13 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DZ4i0nqt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656413770;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vK9AHD5OsxUNDkkwqCV5llgm1F9isE9MtKI9yy29+5M=;
+        b=DZ4i0nqtGDy3D3eNEtBOkOITJm2P60GTinJ3J43dv/ToqFx8EqrNqGwKSRwWbt4Rz/X/Em
+        QgxyyLjX6FiHV1eRVGtPiPXsKT4qbws4f3jLxIV1DJ+f2ZgCK8txp/tOZ2WQ1+TeXVnvm8
+        UTGX0QHeTfT29sVEcfD7wDYIIfIfTP8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 241a822b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 28 Jun 2022 10:56:10 +0000 (UTC)
+Received: by mail-io1-f48.google.com with SMTP id a10so12417351ioe.9;
+        Tue, 28 Jun 2022 03:56:09 -0700 (PDT)
+X-Gm-Message-State: AJIora9gDcTSzrWqICFpZ2cuznhZPHQLDOW+NaVcE7RR7Y7T8rgHHjU8
+        cdfsnLN+uauUc6pOhnzJ1eBUPXrFequTBamgWqQ=
+X-Google-Smtp-Source: AGRyM1t1lmY6/wZwNnHsBU7eO6ZSHnyC2xKUI1N/qkeGSZu6YPuMt2fPDxGqx/QQBe7oXrTCXeuktwWPo+DE6JnMShQ=
+X-Received: by 2002:a02:8568:0:b0:339:c51c:867 with SMTP id
+ g95-20020a028568000000b00339c51c0867mr10752625jai.170.1656413768767; Tue, 28
+ Jun 2022 03:56:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v10 2/3] KVM: s390: guest support for topology function
-Content-Language: en-US
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
-        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
-        seiden@linux.ibm.com, nrb@linux.ibm.com
-References: <20220620125437.37122-1-pmorel@linux.ibm.com>
- <20220620125437.37122-3-pmorel@linux.ibm.com>
- <207a01aa-d92c-4a17-7b2f-aed59da4ce09@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <207a01aa-d92c-4a17-7b2f-aed59da4ce09@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: PiSIzzJc2JbIVRMdEkfK9b5gMUYQF7wx
-X-Proofpoint-GUID: g-O0L7XBKId20wioDZDLeo-m7nTqehtf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-28_05,2022-06-24_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 malwarescore=0 priorityscore=1501 impostorscore=0
- spamscore=0 phishscore=0 mlxscore=0 mlxlogscore=999 suspectscore=0
- clxscore=1015 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206280044
+References: <20220627113749.564132-1-Jason@zx2c4.com> <20220627120735.611821-1-Jason@zx2c4.com>
+ <87y1xib8pv.fsf@toke.dk> <CAO+Okf5r-rVVqwYiCHXEt_jh0StmVoUikqYfSn7y3QpGZMR3Vg@mail.gmail.com>
+ <CAHmME9o4m5MNvDtQUc3OiYLVzNgk3u2i0EF4NhNV4uifZZLJ3g@mail.gmail.com>
+ <CAHmME9prgW60P+CO1JSdf5o1hBh8JtciBxcYm25ZO6oTCkwkxg@mail.gmail.com> <YrrdTcRCKBt15HLz@gondor.apana.org.au>
+In-Reply-To: <YrrdTcRCKBt15HLz@gondor.apana.org.au>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 28 Jun 2022 12:55:57 +0200
+X-Gmail-Original-Message-ID: <CAHmME9qm49R6i8Y9LpQXPuxEoTZx2nFSizxX-VEH6UDfLEji1g@mail.gmail.com>
+Message-ID: <CAHmME9qm49R6i8Y9LpQXPuxEoTZx2nFSizxX-VEH6UDfLEji1g@mail.gmail.com>
+Subject: Re: [PATCH v6] ath9k: sleep for less time when unregistering hwrng
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Gregory Erwin <gregerwin256@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Rui Salvaterra <rsalvaterra@gmail.com>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Herbert,
 
+On Tue, Jun 28, 2022 at 12:52 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> On Tue, Jun 28, 2022 at 12:48:50PM +0200, Jason A. Donenfeld wrote:
+> >
+> > $ curl https://lore.kernel.org/lkml/20220627104955.534013-1-Jason@zx2c4.com/raw
+> > | git am
+> >
+> > That one, if you want to give it a spin and see if that 5-6s is back
+> > to ~1s or less.
+>
+> Whatever caused kthread_should_stop to return true should have
+> woken the thread and caused schedule_timeout to return.
+>
+> If it's not waking the thread up then we should find out why.
+>
+> Oh wait you're checking kthread_should_stop before the schedule
+> call instead of afterwards, that would do it.
 
-On 6/28/22 10:59, Janis Schoetterl-Glausch wrote:
-> On 6/20/22 14:54, Pierre Morel wrote:
->> We report a topology change to the guest for any CPU hotplug.
->>
->> The reporting to the guest is done using the Multiprocessor
->> Topology-Change-Report (MTCR) bit of the utility entry in the guest's
->> SCA which will be cleared during the interpretation of PTF.
->>
->> On every vCPU creation we set the MCTR bit to let the guest know the
->> next time he uses the PTF with command 2 instruction that the
->> topology changed and that he should use the STSI(15.1.x) instruction
->> to get the topology details.
->>
->> STSI(15.1.x) gives information on the CPU configuration topology.
->> Let's accept the interception of STSI with the function code 15 and
->> let the userland part of the hypervisor handle it when userland
->> support the CPU Topology facility.
->>
->> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
->> ---
->>   arch/s390/include/asm/kvm_host.h | 11 ++++++++---
->>   arch/s390/kvm/kvm-s390.c         | 27 ++++++++++++++++++++++++++-
->>   arch/s390/kvm/priv.c             | 15 +++++++++++----
->>   arch/s390/kvm/vsie.c             |  3 +++
->>   4 files changed, 48 insertions(+), 8 deletions(-)
->>
-> [...]
-> 
->> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->> index 8fcb56141689..95b96019ca8e 100644
->> --- a/arch/s390/kvm/kvm-s390.c
->> +++ b/arch/s390/kvm/kvm-s390.c
->> @@ -1691,6 +1691,25 @@ static int kvm_s390_get_cpu_model(struct kvm *kvm, struct kvm_device_attr *attr)
->>   	return ret;
->>   }
->>
->> +/**
->> + * kvm_s390_sca_set_mtcr
-> 
-> I wonder if there is a better name, kvm_s390_report_topology_change maybe?
+Oh, that's a really good observation, thank you! I'll send a patch
+that does it right. I have to check kthread_should_stop() before,
+because the wake up might have been consumed by a sleep inside of the
+hwrng ->read_data() function, causing it to return early. So we have
+to check it before going to sleep again. And after, I need to be
+checking the return value of schedule_timeout_interruptible(), which
+I'm not in this latest. So v+1 coming up.
 
-OK, for me, with a good name I can suppress a comment.
+By the way, this thread might interest you:
+https://lore.kernel.org/lkml/20220627145716.641185-1-Jason@zx2c4.com/
 
-
--- 
-Pierre Morel
-IBM Lab Boeblingen
+Jason
