@@ -2,234 +2,670 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A64C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:44:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09302C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:44:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346791AbiF1NoH (ORCPT
+        id S1346798AbiF1No3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47922 "EHLO
+        Tue, 28 Jun 2022 09:44:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346734AbiF1Nnx (ORCPT
+        with ESMTP id S1346755AbiF1NoY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:43:53 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58C91E3DF;
-        Tue, 28 Jun 2022 06:43:47 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXQjj5pRbzdZt9;
-        Tue, 28 Jun 2022 21:41:29 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 21:43:45 +0800
-Received: from huawei.com (10.175.112.208) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
- 2022 21:43:44 +0800
-From:   Guo Mengqi <guomengqi3@huawei.com>
-To:     <alexs@kernel.org>, <siyanteng@loongson.cn>, <corbet@lwn.net>,
-        <bobwxc@email.cn>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <xuqiang36@huawei.com>, <guomengqi3@huawei.com>
-Subject: [PATCH -next] docs/zh_CN: add vm transhuge translation
-Date:   Tue, 28 Jun 2022 21:37:42 +0800
-Message-ID: <20220628133742.91966-1-guomengqi3@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 28 Jun 2022 09:44:24 -0400
+Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052BE23172
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:44:22 -0700 (PDT)
+X-QQ-mid: bizesmtp64t1656423839tkdhbeya
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 28 Jun 2022 21:43:52 +0800 (CST)
+X-QQ-SSF: 01400000002000G0S000C00A0000000
+X-QQ-FEAT: JRmPfD6HWhxvhx+AxRTpRMSO0a3Xm5Y47NTnxjDMAmQLYl07HLxMSf5awd4SE
+        RIf7ES1pECbis4SFQvbeMStZRlMgckxukk/087No6MJIf4uLxdrk2CUrWqxgT8EM4h11vvQ
+        nJeQV/QZHLhb55VUSehn8p/HyMRuWNqjwjjeDXymiOPw7OWleqc0azb7q5+2fgalM0tm5jA
+        fhuan2v2qymO29KXt2Pw+f6wcVxtdk8vq6GLlRwYcP5c7cRaQl+2R00h3dmgLy9dLMule8f
+        ME+jvtqgb9I6Cj34d47mkXbMnAe+SCxl+BHG+x4wJBfU+ZBJAolQ5pEmPwlLP2uvujhEYoH
+        OU3Io7xM6CQpMrCmJAXRfUkE+JCl21u2CEOIscm0f8hQi71AqvFjtjQzMWI1g==
+X-QQ-GoodBg: 2
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     stable@vger.kernel.org, tony0620emma@gmail.com,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guo-Feng Fan <vincent_fann@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH 5.10 v2 1/3] commit 5d6651fe8583 ("rtw88: 8821c: support RFE type2 wifi NIC")
+Date:   Tue, 28 Jun 2022 21:43:49 +0800
+Message-Id: <20220628134351.4182-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign9
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Translate .../vm/transhuge.rst into Chinese.
+From: Guo-Feng Fan <vincent_fann@realtek.com>
 
-Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+RFE type2 is a new NIC which has one RF antenna shares with BT.
+Update phy parameter to verstion V57 to allow initial procedure
+to load extra AGC table for sharing antenna NIC.
+
+Signed-off-by: Guo-Feng Fan <vincent_fann@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210202055012.8296-4-pkshih@realtek.com
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- Documentation/translations/zh_CN/vm/index.rst |   2 +-
- .../translations/zh_CN/vm/transhuge.rst       | 151 ++++++++++++++++++
- 2 files changed, 152 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/translations/zh_CN/vm/transhuge.rst
+ drivers/net/wireless/realtek/rtw88/main.c     |   2 +
+ drivers/net/wireless/realtek/rtw88/main.h     |   7 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c |  47 +++
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h |  14 +
+ .../wireless/realtek/rtw88/rtw8821c_table.c   | 397 ++++++++++++++++++
+ .../wireless/realtek/rtw88/rtw8821c_table.h   |   1 +
+ 6 files changed, 468 insertions(+)
 
-diff --git a/Documentation/translations/zh_CN/vm/index.rst b/Documentation/translations/zh_CN/vm/index.rst
-index c77a56553845..2d82b15b272b 100644
---- a/Documentation/translations/zh_CN/vm/index.rst
-+++ b/Documentation/translations/zh_CN/vm/index.rst
-@@ -59,11 +59,11 @@ Linux内存管理文档
-    vmalloced-kernel-stacks
-    z3fold
-    zsmalloc
-+   transhuge
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 2ef1416899f0..c09d2a8b51dd 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1551,6 +1551,8 @@ static int rtw_chip_board_info_setup(struct rtw_dev *rtwdev)
+ 	rtw_phy_setup_phy_cond(rtwdev, 0);
  
- TODOLIST:
- * arch_pgtable_helpers
- * free_page_reporting
- * hugetlbfs_reserv
- * slub
--* transhuge
- * unevictable-lru
-diff --git a/Documentation/translations/zh_CN/vm/transhuge.rst b/Documentation/translations/zh_CN/vm/transhuge.rst
-new file mode 100644
-index 000000000000..a7bed8b13a47
---- /dev/null
-+++ b/Documentation/translations/zh_CN/vm/transhuge.rst
-@@ -0,0 +1,151 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+.. include:: ../disclaimer-zh_CN.rst
+ 	rtw_phy_init_tx_power(rtwdev);
++	if (rfe_def->agc_btg_tbl)
++		rtw_load_table(rtwdev, rfe_def->agc_btg_tbl);
+ 	rtw_load_table(rtwdev, rfe_def->phy_pg_tbl);
+ 	rtw_load_table(rtwdev, rfe_def->txpwr_lmt_tbl);
+ 	rtw_phy_tx_power_by_rate_config(hal);
+diff --git a/drivers/net/wireless/realtek/rtw88/main.h b/drivers/net/wireless/realtek/rtw88/main.h
+index 8ba0b0824ae9..7769cad3f731 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -1041,6 +1041,7 @@ enum rtw_rfe_fem {
+ struct rtw_rfe_def {
+ 	const struct rtw_table *phy_pg_tbl;
+ 	const struct rtw_table *txpwr_lmt_tbl;
++	const struct rtw_table *agc_btg_tbl;
+ };
+ 
+ #define RTW_DEF_RFE(chip, bb_pg, pwrlmt) {				  \
+@@ -1048,6 +1049,12 @@ struct rtw_rfe_def {
+ 	.txpwr_lmt_tbl = &rtw ## chip ## _txpwr_lmt_type ## pwrlmt ## _tbl, \
+ 	}
+ 
++#define RTW_DEF_RFE_EXT(chip, bb_pg, pwrlmt, btg) {			  \
++	.phy_pg_tbl = &rtw ## chip ## _bb_pg_type ## bb_pg ## _tbl,	  \
++	.txpwr_lmt_tbl = &rtw ## chip ## _txpwr_lmt_type ## pwrlmt ## _tbl, \
++	.agc_btg_tbl = &rtw ## chip ## _agc_btg_type ## btg ## _tbl, \
++	}
 +
-+:Original: Documentation/vm/transhuge.rst
+ #define RTW_PWR_TRK_5G_1		0
+ #define RTW_PWR_TRK_5G_2		1
+ #define RTW_PWR_TRK_5G_3		2
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+index f9615f76f173..4514c4e8ee58 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -21,6 +21,13 @@ static void rtw8821ce_efuse_parsing(struct rtw_efuse *efuse,
+ 	ether_addr_copy(efuse->addr, map->e.mac_addr);
+ }
+ 
++enum rtw8821ce_rf_set {
++	SWITCH_TO_BTG,
++	SWITCH_TO_WLG,
++	SWITCH_TO_WLA,
++	SWITCH_TO_BT,
++};
 +
-+:翻译:
+ static int rtw8821c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+ {
+ 	struct rtw_efuse *efuse = &rtwdev->efuse;
+@@ -224,6 +231,40 @@ static void rtw8821c_cfg_ldo25(struct rtw_dev *rtwdev, bool enable)
+ 	rtw_write8(rtwdev, REG_LDO_EFUSE_CTRL + 3, ldo_pwr);
+ }
+ 
++static void rtw8821c_switch_rf_set(struct rtw_dev *rtwdev, u8 rf_set)
++{
++	u32 reg;
 +
-+ 郭梦琪 Guo Mengqi <guomengqi3@huawei.com>
++	rtw_write32_set(rtwdev, REG_DMEM_CTRL, BIT_WL_RST);
++	rtw_write32_set(rtwdev, REG_SYS_CTRL, BIT_FEN_EN);
 +
-+:校译:
++	reg = rtw_read32(rtwdev, REG_RFECTL);
++	switch (rf_set) {
++	case SWITCH_TO_BTG:
++		reg |= B_BTG_SWITCH;
++		reg &= ~(B_CTRL_SWITCH | B_WL_SWITCH | B_WLG_SWITCH |
++			 B_WLA_SWITCH);
++		rtw_write32_mask(rtwdev, REG_ENRXCCA, MASKBYTE2, BTG_CCA);
++		rtw_write32_mask(rtwdev, REG_ENTXCCK, MASKLWORD, BTG_LNA);
++		break;
++	case SWITCH_TO_WLG:
++		reg |= B_WL_SWITCH | B_WLG_SWITCH;
++		reg &= ~(B_BTG_SWITCH | B_CTRL_SWITCH | B_WLA_SWITCH);
++		rtw_write32_mask(rtwdev, REG_ENRXCCA, MASKBYTE2, WLG_CCA);
++		rtw_write32_mask(rtwdev, REG_ENTXCCK, MASKLWORD, WLG_LNA);
++		break;
++	case SWITCH_TO_WLA:
++		reg |= B_WL_SWITCH | B_WLA_SWITCH;
++		reg &= ~(B_BTG_SWITCH | B_CTRL_SWITCH | B_WLG_SWITCH);
++		break;
++	case SWITCH_TO_BT:
++	default:
++		break;
++	}
 +
-+==============
-+透明大页机制
-+==============
++	rtw_write32(rtwdev, REG_RFECTL, reg);
++}
 +
-+本文档描述透明大页（THP）的设计理念，以及它是如何与内存管理系统其他部分交互的。
+ static void rtw8821c_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
+ {
+ 	u32 rf_reg18;
+@@ -257,9 +298,14 @@ static void rtw8821c_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
+ 	}
+ 
+ 	if (channel <= 14) {
++		if (rtwdev->efuse.rfe_option == 0)
++			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLG);
++		else if (rtwdev->efuse.rfe_option == 2)
++			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_BTG);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(6), 0x1);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, 0x64, 0xf, 0xf);
+ 	} else {
++		rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLA);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(6), 0x0);
+ 	}
+ 
+@@ -1410,6 +1456,7 @@ static const struct rtw_intf_phy_para_table phy_para_table_8821c = {
+ 
+ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
+ 	[0] = RTW_DEF_RFE(8821c, 0, 0),
++	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+ };
+ 
+ static struct rtw_hw_reg rtw8821c_dig[] = {
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+index 8d1e8ff71d7e..b8d6b1b29387 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+@@ -173,6 +173,8 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define GET_PHY_STAT_P1_RXSNR_B(phy_stat)                                      \
+ 	le32_get_bits(*((__le32 *)(phy_stat) + 0x06), GENMASK(15, 8))
+ 
++#define REG_SYS_CTRL	0x000
++#define BIT_FEN_EN	BIT(26)
+ #define REG_INIRTS_RATE_SEL 0x0480
+ #define REG_HTSTFWT	0x800
+ #define REG_RXPSEL	0x808
+@@ -204,6 +206,11 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define REG_FA_CCK	0xa5c
+ #define REG_RXDESC	0xa2c
+ #define REG_ENTXCCK	0xa80
++#define BTG_LNA		0xfc84
++#define WLG_LNA		0x7532
++#define REG_ENRXCCA	0xa84
++#define BTG_CCA		0x0e
++#define WLG_CCA		0x12
+ #define REG_PWRTH2	0xaa8
+ #define REG_CSRATIO	0xaaa
+ #define REG_TXFILTER	0xaac
+@@ -217,6 +224,11 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define REG_RFESEL0	0xcb0
+ #define REG_RFESEL8	0xcb4
+ #define REG_RFECTL	0xcb8
++#define B_BTG_SWITCH	BIT(16)
++#define B_CTRL_SWITCH	BIT(18)
++#define B_WL_SWITCH	(BIT(20) | BIT(22))
++#define B_WLG_SWITCH	BIT(21)
++#define B_WLA_SWITCH	BIT(23)
+ #define REG_RFEINV	0xcbc
+ #define REG_AGCTR_B	0xe08
+ #define REG_RXIGI_B	0xe50
+@@ -227,6 +239,8 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define REG_CCA_OFDM	0xf08
+ #define REG_FA_OFDM	0xf48
+ #define REG_CCA_CCK	0xfcc
++#define REG_DMEM_CTRL	0x1080
++#define BIT_WL_RST	BIT(16)
+ #define REG_ANTWT	0x1904
+ #define REG_IQKFAILMSK	0x1bf0
+ #define BIT_MASK_R_RFE_SEL_15	GENMASK(31, 28)
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c_table.c b/drivers/net/wireless/realtek/rtw88/rtw8821c_table.c
+index 970f903f7dc7..8e8915c5c498 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c_table.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c_table.c
+@@ -1342,6 +1342,399 @@ static const u32 rtw8821c_agc[] = {
+ 
+ RTW_DECL_TABLE_PHY_COND(rtw8821c_agc, rtw_phy_cfg_agc);
+ 
++static const u32 rtw8821c_agc_btg_type2[] = {
++	0x80001004,	0x00000000,	0x40000000,	0x00000000,
++	0x81C, 0xFF000013,
++	0x81C, 0xFE020013,
++	0x81C, 0xFD040013,
++	0x81C, 0xFC060013,
++	0x81C, 0xFB080013,
++	0x81C, 0xFA0A0013,
++	0x81C, 0xF90C0013,
++	0x81C, 0xF80E0013,
++	0x81C, 0xF7100013,
++	0x81C, 0xF6120013,
++	0x81C, 0xF5140013,
++	0x81C, 0xF4160013,
++	0x81C, 0xF3180013,
++	0x81C, 0xF21A0013,
++	0x81C, 0xF11C0013,
++	0x81C, 0xF01E0013,
++	0x81C, 0xEF200013,
++	0x81C, 0xEE220013,
++	0x81C, 0xED240013,
++	0x81C, 0xEC260013,
++	0x81C, 0xEB280013,
++	0x81C, 0xEA2A0013,
++	0x81C, 0xE92C0013,
++	0x81C, 0xE82E0013,
++	0x81C, 0xE7300013,
++	0x81C, 0x8B320013,
++	0x81C, 0x8A340013,
++	0x81C, 0x89360013,
++	0x81C, 0x88380013,
++	0x81C, 0x873A0013,
++	0x81C, 0x863C0013,
++	0x81C, 0x853E0013,
++	0x81C, 0x84400013,
++	0x81C, 0x83420013,
++	0x81C, 0x82440013,
++	0x81C, 0x81460013,
++	0x81C, 0x08480013,
++	0x81C, 0x074A0013,
++	0x81C, 0x064C0013,
++	0x81C, 0x054E0013,
++	0x81C, 0x04500013,
++	0x81C, 0x03520013,
++	0x81C, 0x88540003,
++	0x81C, 0x87560003,
++	0x81C, 0x86580003,
++	0x81C, 0x855A0003,
++	0x81C, 0x845C0003,
++	0x81C, 0x835E0003,
++	0x81C, 0x82600003,
++	0x81C, 0x81620003,
++	0x81C, 0x07640003,
++	0x81C, 0x06660003,
++	0x81C, 0x05680003,
++	0x81C, 0x046A0003,
++	0x81C, 0x036C0003,
++	0x81C, 0x026E0003,
++	0x81C, 0x01700003,
++	0x81C, 0x01720003,
++	0x81C, 0x01740003,
++	0x81C, 0x01760003,
++	0x81C, 0x01780003,
++	0x81C, 0x017A0003,
++	0x81C, 0x017C0003,
++	0x81C, 0x017E0003,
++	0x81C, 0xFF000813,
++	0x81C, 0xFE020813,
++	0x81C, 0xFD040813,
++	0x81C, 0xFC060813,
++	0x81C, 0xFB080813,
++	0x81C, 0xFA0A0813,
++	0x81C, 0xF90C0813,
++	0x81C, 0xF80E0813,
++	0x81C, 0xF7100813,
++	0x81C, 0xF6120813,
++	0x81C, 0xF5140813,
++	0x81C, 0xF4160813,
++	0x81C, 0xF3180813,
++	0x81C, 0xF21A0813,
++	0x81C, 0xF11C0813,
++	0x81C, 0x941E0813,
++	0x81C, 0x93200813,
++	0x81C, 0x92220813,
++	0x81C, 0x91240813,
++	0x81C, 0x90260813,
++	0x81C, 0x8F280813,
++	0x81C, 0x8E2A0813,
++	0x81C, 0x8D2C0813,
++	0x81C, 0x8C2E0813,
++	0x81C, 0x8B300813,
++	0x81C, 0x8A320813,
++	0x81C, 0x89340813,
++	0x81C, 0x88360813,
++	0x81C, 0x87380813,
++	0x81C, 0x863A0813,
++	0x81C, 0x853C0813,
++	0x81C, 0x843E0813,
++	0x81C, 0x83400813,
++	0x81C, 0x82420813,
++	0x81C, 0x81440813,
++	0x81C, 0x07460813,
++	0x81C, 0x06480813,
++	0x81C, 0x054A0813,
++	0x81C, 0x044C0813,
++	0x81C, 0x034E0813,
++	0x81C, 0x02500813,
++	0x81C, 0x01520813,
++	0x81C, 0x88540803,
++	0x81C, 0x87560803,
++	0x81C, 0x86580803,
++	0x81C, 0x855A0803,
++	0x81C, 0x845C0803,
++	0x81C, 0x835E0803,
++	0x81C, 0x82600803,
++	0x81C, 0x81620803,
++	0x81C, 0x07640803,
++	0x81C, 0x06660803,
++	0x81C, 0x05680803,
++	0x81C, 0x046A0803,
++	0x81C, 0x036C0803,
++	0x81C, 0x026E0803,
++	0x81C, 0x01700803,
++	0x81C, 0x01720803,
++	0x81C, 0x01740803,
++	0x81C, 0x01760803,
++	0x81C, 0x01780803,
++	0x81C, 0x017A0803,
++	0x81C, 0x017C0803,
++	0x81C, 0x017E0803,
++	0x90001005,	0x00000000,	0x40000000,	0x00000000,
++	0x81C, 0xFF000013,
++	0x81C, 0xFE020013,
++	0x81C, 0xFD040013,
++	0x81C, 0xFC060013,
++	0x81C, 0xFB080013,
++	0x81C, 0xFA0A0013,
++	0x81C, 0xF90C0013,
++	0x81C, 0xF80E0013,
++	0x81C, 0xF7100013,
++	0x81C, 0xF6120013,
++	0x81C, 0xF5140013,
++	0x81C, 0xF4160013,
++	0x81C, 0xF3180013,
++	0x81C, 0xF21A0013,
++	0x81C, 0xF11C0013,
++	0x81C, 0xF01E0013,
++	0x81C, 0xEF200013,
++	0x81C, 0xEE220013,
++	0x81C, 0xED240013,
++	0x81C, 0xEC260013,
++	0x81C, 0xEB280013,
++	0x81C, 0xEA2A0013,
++	0x81C, 0xE92C0013,
++	0x81C, 0xE82E0013,
++	0x81C, 0xE7300013,
++	0x81C, 0x8B320013,
++	0x81C, 0x8A340013,
++	0x81C, 0x89360013,
++	0x81C, 0x88380013,
++	0x81C, 0x873A0013,
++	0x81C, 0x863C0013,
++	0x81C, 0x853E0013,
++	0x81C, 0x84400013,
++	0x81C, 0x83420013,
++	0x81C, 0x82440013,
++	0x81C, 0x81460013,
++	0x81C, 0x08480013,
++	0x81C, 0x074A0013,
++	0x81C, 0x064C0013,
++	0x81C, 0x054E0013,
++	0x81C, 0x04500013,
++	0x81C, 0x03520013,
++	0x81C, 0x88540003,
++	0x81C, 0x87560003,
++	0x81C, 0x86580003,
++	0x81C, 0x855A0003,
++	0x81C, 0x845C0003,
++	0x81C, 0x835E0003,
++	0x81C, 0x82600003,
++	0x81C, 0x81620003,
++	0x81C, 0x07640003,
++	0x81C, 0x06660003,
++	0x81C, 0x05680003,
++	0x81C, 0x046A0003,
++	0x81C, 0x036C0003,
++	0x81C, 0x026E0003,
++	0x81C, 0x01700003,
++	0x81C, 0x01720003,
++	0x81C, 0x01740003,
++	0x81C, 0x01760003,
++	0x81C, 0x01780003,
++	0x81C, 0x017A0003,
++	0x81C, 0x017C0003,
++	0x81C, 0x017E0003,
++	0x81C, 0xFF000813,
++	0x81C, 0xFE020813,
++	0x81C, 0xFD040813,
++	0x81C, 0xFC060813,
++	0x81C, 0xFB080813,
++	0x81C, 0xFA0A0813,
++	0x81C, 0xF90C0813,
++	0x81C, 0xF80E0813,
++	0x81C, 0xF7100813,
++	0x81C, 0xF6120813,
++	0x81C, 0xF5140813,
++	0x81C, 0xF4160813,
++	0x81C, 0xF3180813,
++	0x81C, 0xF21A0813,
++	0x81C, 0xF11C0813,
++	0x81C, 0x941E0813,
++	0x81C, 0x93200813,
++	0x81C, 0x92220813,
++	0x81C, 0x91240813,
++	0x81C, 0x90260813,
++	0x81C, 0x8F280813,
++	0x81C, 0x8E2A0813,
++	0x81C, 0x8D2C0813,
++	0x81C, 0x8C2E0813,
++	0x81C, 0x8B300813,
++	0x81C, 0x8A320813,
++	0x81C, 0x89340813,
++	0x81C, 0x88360813,
++	0x81C, 0x87380813,
++	0x81C, 0x863A0813,
++	0x81C, 0x853C0813,
++	0x81C, 0x843E0813,
++	0x81C, 0x83400813,
++	0x81C, 0x82420813,
++	0x81C, 0x81440813,
++	0x81C, 0x07460813,
++	0x81C, 0x06480813,
++	0x81C, 0x054A0813,
++	0x81C, 0x044C0813,
++	0x81C, 0x034E0813,
++	0x81C, 0x02500813,
++	0x81C, 0x01520813,
++	0x81C, 0x88540803,
++	0x81C, 0x87560803,
++	0x81C, 0x86580803,
++	0x81C, 0x855A0803,
++	0x81C, 0x845C0803,
++	0x81C, 0x835E0803,
++	0x81C, 0x82600803,
++	0x81C, 0x81620803,
++	0x81C, 0x07640803,
++	0x81C, 0x06660803,
++	0x81C, 0x05680803,
++	0x81C, 0x046A0803,
++	0x81C, 0x036C0803,
++	0x81C, 0x026E0803,
++	0x81C, 0x01700803,
++	0x81C, 0x01720803,
++	0x81C, 0x01740803,
++	0x81C, 0x01760803,
++	0x81C, 0x01780803,
++	0x81C, 0x017A0803,
++	0x81C, 0x017C0803,
++	0x81C, 0x017E0803,
++	0xA0000000,	0x00000000,
++	0x81C, 0xFF000013,
++	0x81C, 0xFE020013,
++	0x81C, 0xFD040013,
++	0x81C, 0xFC060013,
++	0x81C, 0xFB080013,
++	0x81C, 0xFA0A0013,
++	0x81C, 0xF90C0013,
++	0x81C, 0xF80E0013,
++	0x81C, 0xF7100013,
++	0x81C, 0xF6120013,
++	0x81C, 0xF5140013,
++	0x81C, 0xF4160013,
++	0x81C, 0xF3180013,
++	0x81C, 0xF21A0013,
++	0x81C, 0xF11C0013,
++	0x81C, 0xF01E0013,
++	0x81C, 0xEF200013,
++	0x81C, 0xEE220013,
++	0x81C, 0xED240013,
++	0x81C, 0xEC260013,
++	0x81C, 0xEB280013,
++	0x81C, 0xEA2A0013,
++	0x81C, 0xE92C0013,
++	0x81C, 0xE82E0013,
++	0x81C, 0xE7300013,
++	0x81C, 0x8A320013,
++	0x81C, 0x89340013,
++	0x81C, 0x88360013,
++	0x81C, 0x87380013,
++	0x81C, 0x863A0013,
++	0x81C, 0x853C0013,
++	0x81C, 0x843E0013,
++	0x81C, 0x83400013,
++	0x81C, 0x82420013,
++	0x81C, 0x81440013,
++	0x81C, 0x07460013,
++	0x81C, 0x06480013,
++	0x81C, 0x054A0013,
++	0x81C, 0x044C0013,
++	0x81C, 0x034E0013,
++	0x81C, 0x02500013,
++	0x81C, 0x01520013,
++	0x81C, 0x88540003,
++	0x81C, 0x87560003,
++	0x81C, 0x86580003,
++	0x81C, 0x855A0003,
++	0x81C, 0x845C0003,
++	0x81C, 0x835E0003,
++	0x81C, 0x82600003,
++	0x81C, 0x81620003,
++	0x81C, 0x07640003,
++	0x81C, 0x06660003,
++	0x81C, 0x05680003,
++	0x81C, 0x046A0003,
++	0x81C, 0x036C0003,
++	0x81C, 0x026E0003,
++	0x81C, 0x01700003,
++	0x81C, 0x01720003,
++	0x81C, 0x01740003,
++	0x81C, 0x01760003,
++	0x81C, 0x01780003,
++	0x81C, 0x017A0003,
++	0x81C, 0x017C0003,
++	0x81C, 0x017E0003,
++	0x81C, 0xFF000813,
++	0x81C, 0xFE020813,
++	0x81C, 0xFD040813,
++	0x81C, 0xFC060813,
++	0x81C, 0xFB080813,
++	0x81C, 0xFA0A0813,
++	0x81C, 0xF90C0813,
++	0x81C, 0xF80E0813,
++	0x81C, 0xF7100813,
++	0x81C, 0xF6120813,
++	0x81C, 0xF5140813,
++	0x81C, 0xF4160813,
++	0x81C, 0xF3180813,
++	0x81C, 0xF21A0813,
++	0x81C, 0xF11C0813,
++	0x81C, 0x961E0813,
++	0x81C, 0x95200813,
++	0x81C, 0x94220813,
++	0x81C, 0x93240813,
++	0x81C, 0x92260813,
++	0x81C, 0x91280813,
++	0x81C, 0x8F2A0813,
++	0x81C, 0x8E2C0813,
++	0x81C, 0x8D2E0813,
++	0x81C, 0x8C300813,
++	0x81C, 0x8B320813,
++	0x81C, 0x8A340813,
++	0x81C, 0x89360813,
++	0x81C, 0x88380813,
++	0x81C, 0x873A0813,
++	0x81C, 0x863C0813,
++	0x81C, 0x853E0813,
++	0x81C, 0x84400813,
++	0x81C, 0x83420813,
++	0x81C, 0x82440813,
++	0x81C, 0x08460813,
++	0x81C, 0x07480813,
++	0x81C, 0x064A0813,
++	0x81C, 0x054C0813,
++	0x81C, 0x044E0813,
++	0x81C, 0x03500813,
++	0x81C, 0x02520813,
++	0x81C, 0x89540803,
++	0x81C, 0x88560803,
++	0x81C, 0x87580803,
++	0x81C, 0x865A0803,
++	0x81C, 0x855C0803,
++	0x81C, 0x845E0803,
++	0x81C, 0x83600803,
++	0x81C, 0x82620803,
++	0x81C, 0x07640803,
++	0x81C, 0x06660803,
++	0x81C, 0x05680803,
++	0x81C, 0x046A0803,
++	0x81C, 0x036C0803,
++	0x81C, 0x026E0803,
++	0x81C, 0x01700803,
++	0x81C, 0x01720803,
++	0x81C, 0x01740803,
++	0x81C, 0x01760803,
++	0x81C, 0x01780803,
++	0x81C, 0x017A0803,
++	0x81C, 0x017C0803,
++	0x81C, 0x017E0803,
++	0xB0000000,	0x00000000,
++};
 +
-+设计原则
-+========
++RTW_DECL_TABLE_PHY_COND(rtw8821c_agc_btg_type2, rtw_phy_cfg_agc);
 +
-+- “优雅fallback”：有些mm组件不了解透明大页的存在，它们的回退方法是将PMD页表项
-+  拆分成PTE页表项。必要时还需要拆分透明大页。这样就可以在常规大小的页或页表项上
-+  继续工作。
-+
-+- 如果内存碎片化导致大页分配失败，则分配常规页作为替代放入原vma中，此期间不应
-+  产生任何失败或明显延迟，不要引起用户态的注意。
-+
-+- 如果一些进程退出后释放了空余的大页（不论在伙伴系统还是在VM），由常规页支持的
-+  guest物理内存应该自动重新申请为大页。(通过khugepaged进程)
-+
-+- 透明大页不需要预留内存，而是尽可能使用已经存在的大页。（唯为避免不可移动的页
-+  将整个内存碎片化，唯一可能的预留是在kernelcore=的设置中。不过这个调整并不仅
-+  针对透明大页，而对内核中所有动态的多级页面申请都通用。）
-+
-+get_user_pages和follow_page
-+===========================
-+
-+不论对单个大页还是hugetlbfs，使用get_user_pages和follow_page时，返回的会是首页或
-+尾页。大多数情况下调用get_user_page功能的人不关心页的大小，只关心页的真实物理
-+地址以及暂时的pin页，好在I/O结束后将页释放。但在驱动中，在某些情况下有可能访问
-+尾页的page_struct（如检查page->mapping字段），这时应该转而检查首页。一旦首页或者
-+尾页被引用，大页就不能再被拆分了。
-+
-+.. note::
-+   以上限制不是针对GUP API新增，而是为了与在hugetlbfs中保持一致。这样如果驱动
-+   能在hugetlbfs中使用GUP，就能够切换到透明大页机制支持的GUP。
-+
-+优雅fallback
-+============
-+
-+为查页表流程增加大页支持只需添加split_huge_pmd(vma, pmd,
-+addr)即可。其中pmd为pmd_offset返回值。要为代码添加透明大页支持很简单，搜索
-+"pmd_offset"并将split_huge_pmd添加到所有返回的pmd后面。这短短一行的fallback函数
-+很巧妙，为我们省去了额外的适配代码（通常会很长或者很复杂）。
-+
-+如果你需要在没有页表的情况下处理一个大页，可以使用split_huge_page(page)把它拆分
-+成小页。linux VM就是通过这种方式将大页换出。如果页面被pin住了，split_huge_page
-+就会失败。
-+
-+例子：添加一行代码使mremap.c支持透明大页::
-+
-+        diff --git a/mm/mremap.c b/mm/mremap.c
-+        --- a/mm/mremap.c
-+        +++ b/mm/mremap.c
-+        @@ -41,6 +41,7 @@ static pmd_t *get_old_pmd(struct mm_stru
-+                return NULL;
-+
-+                pmd = pmd_offset(pud, addr);
-+        +       split_huge_pmd(vma, pmd, addr);
-+                if (pmd_none_or_clear_bad(pmd))
-+                    return NULL;
-+
-+大页支持中的锁使用
-+==================
-+
-+我们希望尽可能多的代码能原生支持透明大页，因为调用split_huge_page()和
-+split_huge_pmd()还是有开销的。
-+
-+要让查页表操作变得能处理huge pmd，只需对pmd_offset返回的pmd调用
-+pmd_trans_huge()。一定要持有mmap_lock读锁，以避免khugepaged在此期间申请新的
-+大页pmd（khugepaged collapse_huge_page会持有mmap_lock写锁而非anon_vma lock）。
-+如果pmd_trans_huge返回false，那就回到原来的流程。如果pmd_trans_huge返回true，
-+就需要先持有页表锁(pmd_lock())，然后再调一次pmd_trans_huge. 持页表锁是为了防止
-+大页pmd被转换成小页（split_huge_pmd可以跟查页表操作同时进行）。如果第二次
-+pmd_trans_huge返回false,那就释放页表锁，依然回到原有流程。如果返回true，就可以
-+继续处理huge pmd和hugepage了。处理完毕，再释放页表锁。
-+
-+引用计数和透明大页
-+==================
-+
-+THP的计数跟其他复合页的计数大致相同：
-+
-+ - get_page()/put_page()和GUP都在首页上进行计数（修改head page->_refcount）
-+
-+ - 尾页的_refcount永远是0. get_page_unless_zero()永远无法get到尾页。
-+
-+ - map/unmap特定PTE entry时，增减的是复合页中相应子页的_mapcount.
-+
-+ - map/unmap整个复合页时，增减的是compound_mapcount属性。该属性保存在第一个
-+   尾页中。对于文件中的大页，还要增加所有子页中的_mapcount，这样是为了在检测
-+   子页的解映射时不需考虑竞争问题。
-+
-+PageDoubleMap() 表明大页 *可能* 被映射为了PTE.
-+
-+对匿名页，PageDoubleMap()也表示所有子页的_mapcount都偏移了1.
-+在页被同时映射为了PMD和PTE的情况下，这个额外的引用可以避免子页解映射时的竞争。
-+
-+这个优化也可以追踪每个子页mapcount所带来的性能开销。另一种解决方法是在每次
-+map/unmap整个复合页时更改所有子页的_mapcount.
-+
-+对于匿名页，如果页面的PMD在首次被拆分时同时还具有PMD映射，则设置PG_double_map;
-+当compound_mapcount值降为0时，取消设置。
-+
-+对于映射到文件的页，在其首次映射PTE时，设置PG_double_map; 在页面从页缓存
-+page cache中移除时，取消设置。
-+
-+split_huge_page中，在清除page struct中所有PG_head/tail位之前，需要先将首页中的
-+引用计数refcount分发到所有其他尾页中。页表项PTE占用的引用计数很好处理，但剩下的
-+引用计数来源难以确定（如通过get_user_pages的pin页）。如果大页被pin住，
-+split_huge_page()会失败。页的引用计数必须等于所有子页mapcount之和再加一（因为
-+split_huge_page的调用者也必须对首页持有一个引用）。
-+
-+对匿名页，split_huge_page用页表项迁移（migration
-+entries）保持来page->_refcount和page->_mapcount稳定。对文件页，直接解映射就好。
-+
-+这套机制对物理内存扫描（physical memory scanners）也安全，scanner唯一合法引用页
-+的途径就是get_page_unless_zero().
-+
-+没调atomic_add()时，所有尾页的_refcount都为0. 这时scanner无法获取尾页的引用。
-+调了atomic_add()后，我们也不在乎页的_refcount是多少了。只要知道应该从首页的引用
-+计数减去多少即可。
-+
-+对首页进行get_page_unless_zero()是可以成功的。此时引用计数的再分配非常明了：
-+引用计数将会留在首页中。
-+
-+split_huge_pmd()对引用计数没有任何限制，在任何时候都可以拆分PMD，而且永远不会
-+失败。
-+
-+局部unmap和deferred_split_huge_page()函数
-+==========================================
-+
-+透明大页通过munmap()或其他方式解映射时，并不会立即释放内存。在page_remove_rmap()
-+中检查透明大页的某个子页是否已经还在使用，并将透明大页加入一个预备队列，当内存
-+使用需求变大时，把透明大页拆分，释放已经不用的子页。
-+
-+如果检测到局部unmap，由于处在锁中，无法拆页。而且在很多情况下，透明大页会跨VMA,
-+这时会在exit(2)中进行局部unmap，这时拆页效果适得其反。
-+
-+deferred_split_huge_page函数就是用来进行上文所说的将页排队以预备后续的拆分。真正
-+的拆页操作是通过内存压力导致的shrinker函数来触发。
-+
+ static const u32 rtw8821c_bb[] = {
+ 	0x800, 0x9020D010,
+ 	0x804, 0x80018180,
+@@ -1394,7 +1787,11 @@ static const u32 rtw8821c_bb[] = {
+ 	0x8C0, 0xFFE04020,
+ 	0x8C4, 0x47C00000,
+ 	0x8C8, 0x00025165,
++	0x82000400,	0x00000000,	0x40000000,	0x00000000,
++	0x8CC, 0x08190492,
++	0xA0000000,	0x00000000,
+ 	0x8CC, 0x08188492,
++	0xB0000000,	0x00000000,
+ 	0x8D0, 0x0000B800,
+ 	0x8D4, 0x860308A0,
+ 	0x8D8, 0x290B5612,
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c_table.h b/drivers/net/wireless/realtek/rtw88/rtw8821c_table.h
+index 5ea8b4fc7fba..cda98f5c4a01 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c_table.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c_table.h
+@@ -7,6 +7,7 @@
+ 
+ extern const struct rtw_table rtw8821c_mac_tbl;
+ extern const struct rtw_table rtw8821c_agc_tbl;
++extern const struct rtw_table rtw8821c_agc_btg_type2_tbl;
+ extern const struct rtw_table rtw8821c_bb_tbl;
+ extern const struct rtw_table rtw8821c_bb_pg_type0_tbl;
+ extern const struct rtw_table rtw8821c_rf_a_tbl;
 -- 
-2.17.1
+2.20.1
+
+
 
