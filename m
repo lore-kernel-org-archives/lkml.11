@@ -2,45 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A38DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5948C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244300AbiF1CYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33322 "EHLO
+        id S244145AbiF1CYi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244084AbiF1CW7 (ORCPT
+        with ESMTP id S244121AbiF1CXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:22:59 -0400
+        Mon, 27 Jun 2022 22:23:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96C81EC45;
-        Mon, 27 Jun 2022 19:22:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19BF24BC1;
+        Mon, 27 Jun 2022 19:22:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52D64617E3;
-        Tue, 28 Jun 2022 02:22:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBAE9C34115;
-        Tue, 28 Jun 2022 02:22:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BC36617D4;
+        Tue, 28 Jun 2022 02:22:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8839C34115;
+        Tue, 28 Jun 2022 02:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382936;
-        bh=MrooapUMKALcR8HFD5baYxrzv3HsapBTLZUysWkl8/0=;
+        s=k20201202; t=1656382951;
+        bh=uhhm1hQwl9GEenymTrnKlp8FI+WMSqOom27CaC4a0TE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eheTpNBOaFMUmfr5sQMMp8Zy/2V7K3R8h8l0UmG87FB2cQt0xcnERAcdWUSl2ua5l
-         KZLa8uGtIglCsNu+7fyCIca9XWcY3crqFbpzep4rQFi1aVa/69Bs/FbK5prCv55Xch
-         BDQrqH1rjAhYTPRVFD1f9EG6dyrxtB13MO56AORzYboLPqwnkw5pMY49cqb9kRrdpJ
-         IPku6L9awe7RTIrZrmP4rUFenH1r2vHDXzvSQVEWv0qfyrAGyClZH/aUhbtzVMgsPA
-         tYqACGvND+m43speoLSgT5Oyxz/xXUITGEgpfnwWmv1gUNRX1tdjxjYFM75cGSNwtX
-         EqK4Mtv/kc2yQ==
+        b=FytOubyi8kx1X0BhRQZaPpcIwxEJbmswkAWLVcDvV+dxXkWi3K4i6sq29f4BQ753J
+         wbetYaIc/W68lo2CjBXvQ1mC1zajx/YhH1ZhHRKmSj4Cymr9cwEtDtGYZIWWoh+vng
+         1LlIQjHyRBdQWQTQGZlsNqxySNEOflWliZa+1ADt6Vi0Fib0JZB4UoOQf3rs/TWl3G
+         NmRvPxnuuJ3qf1c/tU4B1jIbZiPtJjgovuILtdH23+NKZXDHy/XNIR7dT3qzH+/7iB
+         CRsUyjZRKqOe5l60y4LTQ/mca5JXZ5EKRdG/nT71fOvUJcwkzdve3M8rr1a/6nnAgn
+         GZjPnnT0FFiFQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
-        xkernel.wang@foxmail.com, linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 31/41] mips: lantiq: xway: Fix refcount leak bug in sysctrl
-Date:   Mon, 27 Jun 2022 22:20:50 -0400
-Message-Id: <20220628022100.595243-31-sashal@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, llvm@lists.linux.dev,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, leon@kernel.org,
+        jiri@nvidia.com, olteanv@gmail.com, simon.horman@corigine.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 37/41] hinic: Replace memcpy() with direct assignment
+Date:   Mon, 27 Jun 2022 22:20:56 -0400
+Message-Id: <20220628022100.595243-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022100.595243-1-sashal@kernel.org>
 References: <20220628022100.595243-1-sashal@kernel.org>
@@ -52,36 +58,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 76695592711ef1e215cc24ed3e1cd857d7fc3098 ]
+[ Upstream commit 1e70212e031528918066a631c9fdccda93a1ffaa ]
 
-In ltq_soc_init(), of_find_compatible_node() will return a node
-pointer with refcount incremented. We should use of_node_put() when
-it is not used anymore.
+Under CONFIG_FORTIFY_SOURCE=y and CONFIG_UBSAN_BOUNDS=y, Clang is bugged
+here for calculating the size of the destination buffer (0x10 instead of
+0x14). This copy is a fixed size (sizeof(struct fw_section_info_st)), with
+the source and dest being struct fw_section_info_st, so the memcpy should
+be safe, assuming the index is within bounds, which is UBSAN_BOUNDS's
+responsibility to figure out.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Avoid the whole thing and just do a direct assignment. This results in
+no change to the executable code.
+
+[This is a duplicate of commit 2c0ab32b73cf ("hinic: Replace memcpy()
+ with direct assignment") which was applied to net-next.]
+
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Tom Rix <trix@redhat.com>
+Cc: llvm@lists.linux.dev
+Link: https://github.com/ClangBuiltLinux/linux/issues/1592
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org> # build
+Link: https://lore.kernel.org/r/20220616052312.292861-1-keescook@chromium.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/lantiq/xway/sysctrl.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/huawei/hinic/hinic_devlink.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
-index 084f6caba5f2..d444a1b98a72 100644
---- a/arch/mips/lantiq/xway/sysctrl.c
-+++ b/arch/mips/lantiq/xway/sysctrl.c
-@@ -441,6 +441,10 @@ void __init ltq_soc_init(void)
- 			of_address_to_resource(np_ebu, 0, &res_ebu))
- 		panic("Failed to get core resources");
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+index 6e11ee339f12..92d4e0039565 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+@@ -43,9 +43,7 @@ static bool check_image_valid(struct hinic_devlink_priv *priv, const u8 *buf,
  
-+	of_node_put(np_pmu);
-+	of_node_put(np_cgu);
-+	of_node_put(np_ebu);
-+
- 	if (!request_mem_region(res_pmu.start, resource_size(&res_pmu),
- 				res_pmu.name) ||
- 		!request_mem_region(res_cgu.start, resource_size(&res_cgu),
+ 	for (i = 0; i < fw_image->fw_info.fw_section_cnt; i++) {
+ 		len += fw_image->fw_section_info[i].fw_section_len;
+-		memcpy(&host_image->image_section_info[i],
+-		       &fw_image->fw_section_info[i],
+-		       sizeof(struct fw_section_info_st));
++		host_image->image_section_info[i] = fw_image->fw_section_info[i];
+ 	}
+ 
+ 	if (len != fw_image->fw_len ||
 -- 
 2.35.1
 
