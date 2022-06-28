@@ -2,105 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC10C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1624C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347260AbiF1PXy (ORCPT
+        id S1347865AbiF1PYA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        Tue, 28 Jun 2022 11:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347840AbiF1PXv (ORCPT
+        with ESMTP id S1348061AbiF1PXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:23:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2439427FD7;
-        Tue, 28 Jun 2022 08:23:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4561B81EB0;
-        Tue, 28 Jun 2022 15:23:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9736EC3411D;
-        Tue, 28 Jun 2022 15:23:47 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="iEiH28Go"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656429825;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=i7kqdjIR171pSbvH2lGZ2vQhHvcvnOwMVzW1AX6PeZ0=;
-        b=iEiH28GosiLiJnxavcGnyk5NieqsY7gvnZPBI0szZq5U9CMyoJ/2Y4rM7qnyOQGr99TMBX
-        L/f0Z/ndT7cY8lH03tAa4Xbg+9Utf9TovHh0lVQFf++q2+u3N3EEsQJHRtIx0l66cxH/vt
-        2iqJgyznkhYCwmhtJcFL7CI54Bh6d1Q=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 20f3a433 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 28 Jun 2022 15:23:45 +0000 (UTC)
-Date:   Tue, 28 Jun 2022 17:23:39 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     krzysztof.kozlowski@linaro.org, robh@kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Kees Cook <keescook@chromium.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Will Deacon <will@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH] dt-bindings: chosen: document rng-seed property
-Message-ID: <Yrsc+50Y2UX1wlYH@zx2c4.com>
-References: <20220627152107.645860-1-Jason@zx2c4.com>
- <CAJMQK-jGsobw7i4NjQ4oezA0rU03ECs_nY=Txr6TgsHFu2jXhg@mail.gmail.com>
+        Tue, 28 Jun 2022 11:23:12 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C800F11813;
+        Tue, 28 Jun 2022 08:23:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656429792; x=1687965792;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=RvWriGxvnrfUaWIbEbAZdoDVUWgEkiJx6GnkqCbaZDY=;
+  b=QBjdLJo+7UZRf03Otov9uV/sTTmY7x7QdIef/CY3FIGDn5ioht6ui3n0
+   DqTN693nXz0GAODn73KuIoX7pLGlD6+9ZTC/lHQOwJIf7dE0fagCuah33
+   PHTgKv1H7BufZsD8oVF9+azv6WVSRn2GP/ul2ACjZDnMOFjmlsuvodr65
+   I=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 28 Jun 2022 08:23:11 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 08:23:10 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 28 Jun 2022 08:22:50 -0700
+Received: from [10.110.113.167] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 28 Jun
+ 2022 08:22:48 -0700
+Message-ID: <ba89c17a-bf8d-0eda-d975-26e88d43e0aa@quicinc.com>
+Date:   Tue, 28 Jun 2022 08:22:47 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAJMQK-jGsobw7i4NjQ4oezA0rU03ECs_nY=Txr6TgsHFu2jXhg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v1 2/3] drm/msm/dp: decoupling dp->id out of dp
+ controller_id at scxxxx_dp_cfg table
+Content-Language: en-US
+To:     Doug Anderson <dianders@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Daniel Vetter" <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "Rob Clark" <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Vinod Koul <vkoul@kernel.org>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <1656090912-18074-1-git-send-email-quic_khsieh@quicinc.com>
+ <CAE-0n52RW+UFJ=hqMWjwR8qvEbww7QjzPW1nhL3Atd97QXAnYw@mail.gmail.com>
+ <007ea4c9-9701-f4ab-3278-5d36bf2018c4@quicinc.com>
+ <CAE-0n53kNCK0ajHfY2WQr5HEQZtZSBLnhfbTuZwaUNEOZhsKPg@mail.gmail.com>
+ <fa7f8bf1-33cd-5515-0143-6596df2bd740@quicinc.com>
+ <CAE-0n51g-EVsC-i9=sJV-ySa8VnE+yT7cg=b-TNMi9+3uBiOVA@mail.gmail.com>
+ <326912ff-9771-0711-366d-79acd436908b@quicinc.com>
+ <CAE-0n51qrdrFtSr0vRwgYkMgSZfnzQuinaUROQsp30QoDchWQA@mail.gmail.com>
+ <0ff3d6a3-dc5c-7c77-f8a1-6c4f6c1a3215@quicinc.com>
+ <CAE-0n515hMKqQ+Vj1Sg54PpwkbWMYJ77QN+y+KZNBWymjhpWKw@mail.gmail.com>
+ <66ff4642-f268-f5b0-7e28-b196368c508a@quicinc.com>
+ <5cf094cf-343a-82d7-91c4-1284683f9748@quicinc.com>
+ <CAA8EJprqq=vxXT2DmEWii_Ajx2UbkHRexPTT58xFcWkBa_D5hA@mail.gmail.com>
+ <6523e533-960b-d148-0f87-2ad327a3ac3b@quicinc.com>
+ <CAA8EJprQBnZAc-2AxXD8cV_qMoKrusNa+VSHW9Kw-xKS_ZWAkg@mail.gmail.com>
+ <CAD=FV=WvNrfYaUgbDayxU0wJUbZbgwVMWjeyTjtd+Sqcvj=e2A@mail.gmail.com>
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+In-Reply-To: <CAD=FV=WvNrfYaUgbDayxU0wJUbZbgwVMWjeyTjtd+Sqcvj=e2A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hsin-Yi,
 
-On Tue, Jun 28, 2022 at 11:39:38AM +0800, Hsin-Yi Wang wrote:
-> On Mon, Jun 27, 2022 at 11:21 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> >
-> > Document the /chosen/rng-seed property, which has existed for quite some
-> > time but without an entry in this file.
-> >
-> > Fixes: 428826f5358c ("fdt: add support for rng-seed")
-> > Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> > ---
-> It's currently documented in
-> https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/chosen.yaml
-> 
-> https://lore.kernel.org/lkml/CAL_Jsq+uSdk9YNbUW35yjN3q8-3FDobrxHmBpy=4RKmCfnB0KQ@mail.gmail.com/
+On 6/27/2022 4:20 PM, Doug Anderson wrote:
+> Hi,
+>
+> On Sat, Jun 25, 2022 at 1:48 AM Dmitry Baryshkov
+> <dmitry.baryshkov@linaro.org> wrote:
+>> On Sat, 25 Jun 2022 at 04:23, Abhinav Kumar <quic_abhinavk@quicinc.com> wrote:
+>>> On 6/24/2022 5:11 PM, Dmitry Baryshkov wrote:
+>>>> On Sat, 25 Jun 2022 at 03:03, Abhinav Kumar <quic_abhinavk@quicinc.com> wrote:
+>>>>> On 6/24/2022 4:56 PM, Kuogee Hsieh wrote:
+>>>>> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c
+>>>>> b/drivers/gpu/drm/msm/dp/dp_display.c
+>>>>> index dcd80c8a794c..7816e82452ca 100644
+>>>>> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+>>>>> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+>>>>> @@ -140,8 +140,8 @@ static const struct msm_dp_config sc7180_dp_cfg = {
+>>>>>
+>>>>>     static const struct msm_dp_config sc7280_dp_cfg = {
+>>>>>            .descs = (const struct msm_dp_desc[]) {
+>>>>> -               [MSM_DP_CONTROLLER_0] = { .io_start = 0x0ae90000,
+>>>>> .connector_type = DRM_MODE_CONNECTOR_DisplayPort, .wide_bus_en = true },
+>>>>>                    [MSM_DP_CONTROLLER_1] = { .io_start = 0x0aea0000,
+>>>>> .connector_type = DRM_MODE_CONNECTOR_eDP, .wide_bus_en = true },
+>>>>> +               [MSM_DP_CONTROLLER_0] = { .io_start = 0x0ae90000,
+>>>>> .connector_type = DRM_MODE_CONNECTOR_DisplayPort, .wide_bus_en = true },
+>>>>>            },
+>>>>>            .num_descs = 2,
+>>>>>     };
+>>>>>
+>>>>>
+>>>>> The reason order is important is because  in this function below, even
+>>>>> though it matches the address to find which one to use it loops through
+>>>>> the array and so the value of *id will change depending on which one is
+>>>>> located where.
+>>>>>
+>>>>> static const struct msm_dp_desc *dp_display_get_desc(struct
+>>>>> platform_device *pdev,
+>>>>>                                 unsigned int *id)
+>>>>> {
+>>>>>        const struct msm_dp_config *cfg = of_device_get_match_data(&pdev->dev);
+>>>>>        struct resource *res;
+>>>>>        int i;
+>>>>>
+>>>>>        res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>        if (!res)
+>>>>>            return NULL;
+>>>>>
+>>>>>        for (i = 0; i < cfg->num_descs; i++) {
+>>>>>            if (cfg->descs[i].io_start == res->start) {
+>>>>>                *id = i;
+>>>> The id is set to the index of the corresponding DP instance in the
+>>>> descs array, which is MSM_DP_CONTROLLER_n. Correct up to now.
+>>> Right, this is where I misunderstood his explanation.
+>>>
+>>> Even if we swap the order, but retain the index correctly it will still
+>>> work today.
+>>>
+>>> Hes not sure of the root-cause of why turning on the primary display
+>>> first fixes the issue.
+>>>
+>>> I think till we root-cause that, lets put this on hold.
+>> Agreed. Let's find the root cause.
+> FWIW, I was poking a little bit about the glitch that Kuogee was
+> trying to fix here. Through a bunch of hacky heuristics I think the
+> dpu_hw_ctl_trigger_flush_v1() is the function that "causes" the
+> corruption. Specifically I managed to do something like:
+>
+> if (hacky_heuristic)
+>    pr_info("About to call flush\n);
+>    mdelay(2000);
+> }
+> ctl->ops.trigger_flush(ctl)
+> if (hacky_heuristic)
+>    pr_info("Finished calling flush\n);
+>    mdelay(2000);
+>    pr_info("Finished calling flush delay done\n);
+> }
 
-Well, let's see. That email says:
+flush bit need to up update at real time.
 
-> Already documented here[1]. I've been meaning to delete chosen.txt so
-> that's a bit more obvious.
-> 
-> I realize it's a bit harder to find what's documented where. Long term
-> we'd like to generate documentation from the schema and integrate as
-> part of the spec. Short term, it would be quite trivial to make a 'am
-> I documented' utility.
+otherwise unexpected side effects will happen.
 
-That sounds reasonable. But when was that email written? April 2, 2020.
-That's 817 days ago.
+i try same thing, but I got fence timeout error.
 
-So I call BS on this being a continued justification for rejecting this
-patch (which apparently was submitted by Florian over two years ago
-too). Rob clearly hasn't followed through. So please apply this patch so
-that chosen.txt remains maintained.
+Anyway, I had submit new patch to fix corruption issue.
 
-Later if he moves forward with his plan, then no harm done, since the
-file will be deleted anyway.
+Thanks for your efforts and helps.
 
-Sometimes it's best to reassess things based on the reality of the
-situation, you know?
-
-Jason
+> I then watched my display and reproduced the problem. When I saw the
+> problem I looked over at the console and saw "Finished calling flush"
+> was the last thing printed.
+>
+> I don't know if this helps much. Presumably we're flushing a bunch of
+> previous operations so whatever we had queued up probably matters
+> more, but maybe it'll give a clue?
+>
+>
+> Other notes FWIW:
+>
+> * If you increase the amount of time of the glitching, you can
+> actually see that we are glitching both the internal and external
+> displays.
+>
+> * You can actually make the glitch stay on the screen "permanently" by
+> unplugging the external display while the internal screen is off. I
+> don't know why it doesn't always happen, but it seems to happen often
+> enough. Presumably if someone knew the display controller well they
+> could try to figure out what state it was in and debug the problem.
+>
+>
+> -Doug
