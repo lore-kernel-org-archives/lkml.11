@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9ABFCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF8ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240857AbiF1CbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40784 "EHLO
+        id S244996AbiF1CbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243042AbiF1C1L (ORCPT
+        with ESMTP id S244548AbiF1C1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B23524F0C;
-        Mon, 27 Jun 2022 19:24:40 -0700 (PDT)
+        Mon, 27 Jun 2022 22:27:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F175325C4D;
+        Mon, 27 Jun 2022 19:24:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD578617A6;
-        Tue, 28 Jun 2022 02:24:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 166C7C341CC;
-        Tue, 28 Jun 2022 02:24:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DFD161853;
+        Tue, 28 Jun 2022 02:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E24D6C341CA;
+        Tue, 28 Jun 2022 02:24:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383079;
-        bh=TFlHdgNdgdIB6wbPqInLVg9UzcNtIiE8X/fdYpv3fmA=;
+        s=k20201202; t=1656383088;
+        bh=Kqi3E0HjV/M/rUHNNJDAxMFwMxUuQgRy5Fn4G8zuY/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EffcpxaM5tQc8s4K8Ep4g5WsBP+OLA93iC2ISHGZrcrTMYPzNX3uWQeX61gkn+1g0
-         suVKInzdCXsI16bu0oKTD+M6nEPvc9pG6A87H3hE/EWDaZRzeLJ3rxiUq7uFuG72yw
-         Ms3zAalA78NQzG3v3UDkkgLf+I8jNfiSdKj2MkGO/d4XmAInYxVFKojw+gN3Snv4dR
-         T97vm8QkZLs/MlVogQFxC37kq+EMHPag4rGwHyH1v2TYSMVZSUhlGcD+yCxbbMBec3
-         eIk1PjJPFgZHRIjUIAKjruSdiGoiFmfnuCKyqH2+MxipJgmW6anMs149uFTbdcb3iG
-         bfYzDVyuqS/cA==
+        b=G1rapj8TbhPkB2BZAY1Mtu18fnlkg+ylqHBazgwT6nS8ii2nufMKJFVVgZWrSeXaB
+         uGyFj3521afEiD0yasQ3vOxyHX9wuAYkVAoQLwctbqyVZ5SItb35mXQUzCXsuvLg7k
+         /3mMU26qu2XP+W9WfEBj6hvEETfVXpaGWlw1JQl+Rt5GIeaiDL5obzdhgEQ1M7+kcz
+         5HZOdaLisa13M2vD1BxK4BdpBcAIbI0bv5WxNjFyYNtmeAvPrWXxKiZ+plSmpvvB+Q
+         Isf1aCdTfELgFlHPhbEAssDfw1V/MPPVz2q/5kynEEPhWcGsD5BUaT7siktTfJQvV/
+         v/jITPq6fAC5Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, aneesh.kumar@linux.ibm.com,
-        rafael.j.wysocki@intel.com, jlu.hpw@foxmail.com,
-        Julia.Lawall@inria.fr, nick.child@ibm.com, adobriyan@gmail.com,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 10/27] powerpc/prom_init: Fix build failure with GCC_PLUGIN_STRUCTLEAK_BYREF_ALL and KASAN
-Date:   Mon, 27 Jun 2022 22:23:56 -0400
-Message-Id: <20220628022413.596341-10-sashal@kernel.org>
+Cc:     Hyunwoo Kim <imv4bel@gmail.com>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>, yangyingliang@huawei.com,
+        yang.lee@linux.alibaba.com, cai.huoqing@linux.dev,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 13/27] video: fbdev: pxa3xx-gcu: Fix integer overflow in pxa3xx_gcu_write
+Date:   Mon, 27 Jun 2022 22:23:59 -0400
+Message-Id: <20220628022413.596341-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022413.596341-1-sashal@kernel.org>
 References: <20220628022413.596341-1-sashal@kernel.org>
@@ -54,44 +52,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Hyunwoo Kim <imv4bel@gmail.com>
 
-[ Upstream commit ca5dabcff1df6bc8c413922b5fa63cc602858803 ]
+[ Upstream commit a09d2d00af53b43c6f11e6ab3cb58443c2cac8a7 ]
 
-When CONFIG_KASAN is selected, we expect prom_init to use __memset()
-because it is too early to use memset().
+In pxa3xx_gcu_write, a count parameter of type size_t is passed to words of
+type int.  Then, copy_from_user() may cause a heap overflow because it is used
+as the third argument of copy_from_user().
 
-But with CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL, the compiler adds calls
-to memset() to clear objects on stack, hence the following failure:
-
-	  PROMCHK arch/powerpc/kernel/prom_init_check
-	Error: External symbol 'memset' referenced from prom_init.c
-	make[2]: *** [arch/powerpc/kernel/Makefile:204 : arch/powerpc/kernel/prom_init_check] Erreur 1
-
-prom_find_machine_type() is called from prom_init() and is called only
-once, so lets put compat[] in BSS instead of stack to avoid that.
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/3802811f7cf94f730be44688539c01bba3a3b5c0.1654875808.git.christophe.leroy@csgroup.eu
+Signed-off-by: Hyunwoo Kim <imv4bel@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/prom_init.c | 2 +-
+ drivers/video/fbdev/pxa3xx-gcu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/prom_init.c b/arch/powerpc/kernel/prom_init.c
-index 7f4e2c031a9a..0391b3225970 100644
---- a/arch/powerpc/kernel/prom_init.c
-+++ b/arch/powerpc/kernel/prom_init.c
-@@ -2237,7 +2237,7 @@ static void __init prom_init_stdout(void)
+diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
+index 7c4694d70dac..15162b37f302 100644
+--- a/drivers/video/fbdev/pxa3xx-gcu.c
++++ b/drivers/video/fbdev/pxa3xx-gcu.c
+@@ -382,7 +382,7 @@ pxa3xx_gcu_write(struct file *file, const char *buff,
+ 	struct pxa3xx_gcu_batch	*buffer;
+ 	struct pxa3xx_gcu_priv *priv = to_pxa3xx_gcu_priv(file);
  
- static int __init prom_find_machine_type(void)
- {
--	char compat[256];
-+	static char compat[256] __prombss;
- 	int len, i = 0;
- #ifdef CONFIG_PPC64
- 	phandle rtas;
+-	int words = count / 4;
++	size_t words = count / 4;
+ 
+ 	/* Does not need to be atomic. There's a lock in user space,
+ 	 * but anyhow, this is just for statistics. */
 -- 
 2.35.1
 
