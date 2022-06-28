@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E76C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D164C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244586AbiF1C3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39700 "EHLO
+        id S243254AbiF1C3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244083AbiF1CZj (ORCPT
+        with ESMTP id S244427AbiF1C0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:25:39 -0400
+        Mon, 27 Jun 2022 22:26:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D21252BF;
-        Mon, 27 Jun 2022 19:23:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6ED255A0;
+        Mon, 27 Jun 2022 19:24:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FE24B81C14;
-        Tue, 28 Jun 2022 02:23:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88748C341CB;
-        Tue, 28 Jun 2022 02:23:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFC0DB81C17;
+        Tue, 28 Jun 2022 02:24:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A854DC341CB;
+        Tue, 28 Jun 2022 02:24:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383037;
-        bh=u/OmmJrbPomTGGxnT0BWo8ksrOMaidBoHOBCX2uQ6So=;
+        s=k20201202; t=1656383043;
+        bh=5e7JyayC3qycLLc+5mmA4i9WttRILWlgqRQ1TvvpG7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QJF0eqOcnGOZIdgpVeUez4WzrsWZlroyJomXGPFzbxmUWftjdNGHjHQ0lkqDnO/le
-         unmiZpGaU8TiE4kQODECFX29l70OHZEUXzxMSZazcyW9zFr93aXIdlQO5U85SOcIRA
-         nN4nokKzxuu5AZaP/wPeFlCIkSs50FZvNZCMD3LMhcKlhGS8nDdOhmmofknHxB6WW2
-         7uoTTlyIqA8ikcy66FtX2so3IrYdwZOjJZ1FK70eaJ3vn/WnHjbV3SyoT7rnFSs+8v
-         O7BvrDsjVlZA5LDcuzZ6wLZ0B9BBBMjsqs4e0GGotMU9N21ExivFSDl0U+9E41S2he
-         /Hf/Us3omr69g==
+        b=VZcHTbJnH6CZ8bv7lMEL/Kp203Bzbf2k/qhG7R79xQXCX2xTuvcjViescxa/wd7Lm
+         qdsfiIwPtJ4798mY1pI9YHdXTxlvkd66QwKA3zzwuxPf2SBcvHtv1E1rI7/PHX6oX0
+         QC7tjBxBE2hZ3xEX01FPjDDKgInEC49foSieRenuCyMDpsNRkr8OrXcAvhNXZLIzJ8
+         2a+tt0IY2jfQkuYQ9nF7/nkmt9NxgHJuT4GTEiodxBw4qluU2XRb9QUm46S7s8bZ7b
+         SX9u2e+iNQm7LcbGKDnEA7KFC4xjkUINrGJgt7xkDaZLkbp/NTtoQRnFpJfxIlqYG5
+         8a0DSqTzkKNYA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>, mripard@kernel.org,
-        wens@csie.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 28/34] drm/sun4i: Add DMA mask and segment size
-Date:   Mon, 27 Jun 2022 22:22:35 -0400
-Message-Id: <20220628022241.595835-28-sashal@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, llvm@lists.linux.dev,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, jiri@nvidia.com,
+        leon@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 30/34] hinic: Replace memcpy() with direct assignment
+Date:   Mon, 27 Jun 2022 22:22:37 -0400
+Message-Id: <20220628022241.595835-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022241.595835-1-sashal@kernel.org>
 References: <20220628022241.595835-1-sashal@kernel.org>
@@ -55,91 +57,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit f5aa16807aa4f99293044944590dde81364f434f ]
+[ Upstream commit 1e70212e031528918066a631c9fdccda93a1ffaa ]
 
-Kernel occasionally complains that there is mismatch in segment size
-when trying to render HW decoded videos and rendering them directly with
-sun4i DRM driver. Following message can be observed on H6 SoC:
+Under CONFIG_FORTIFY_SOURCE=y and CONFIG_UBSAN_BOUNDS=y, Clang is bugged
+here for calculating the size of the destination buffer (0x10 instead of
+0x14). This copy is a fixed size (sizeof(struct fw_section_info_st)), with
+the source and dest being struct fw_section_info_st, so the memcpy should
+be safe, assuming the index is within bounds, which is UBSAN_BOUNDS's
+responsibility to figure out.
 
-[  184.298308] ------------[ cut here ]------------
-[  184.298326] DMA-API: sun4i-drm display-engine: mapping sg segment longer than device claims to support [len=6144000] [max=65536]
-[  184.298364] WARNING: CPU: 1 PID: 382 at kernel/dma/debug.c:1162 debug_dma_map_sg+0x2b0/0x350
-[  184.322997] CPU: 1 PID: 382 Comm: ffmpeg Not tainted 5.19.0-rc1+ #1331
-[  184.329533] Hardware name: Tanix TX6 (DT)
-[  184.333544] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  184.340512] pc : debug_dma_map_sg+0x2b0/0x350
-[  184.344882] lr : debug_dma_map_sg+0x2b0/0x350
-[  184.349250] sp : ffff800009f33a50
-[  184.352567] x29: ffff800009f33a50 x28: 0000000000010000 x27: ffff000001b86c00
-[  184.359725] x26: ffffffffffffffff x25: ffff000005d8cc80 x24: 0000000000000000
-[  184.366879] x23: ffff80000939ab18 x22: 0000000000000001 x21: 0000000000000001
-[  184.374031] x20: 0000000000000000 x19: ffff0000018a7410 x18: ffffffffffffffff
-[  184.381186] x17: 0000000000000000 x16: 0000000000000000 x15: ffffffffffffffff
-[  184.388338] x14: 0000000000000001 x13: ffff800009534e86 x12: 6f70707573206f74
-[  184.395493] x11: 20736d69616c6320 x10: 000000000000000a x9 : 0000000000010000
-[  184.402647] x8 : ffff8000093b6d40 x7 : ffff800009f33850 x6 : 000000000000000c
-[  184.409800] x5 : ffff0000bf997940 x4 : 0000000000000000 x3 : 0000000000000027
-[  184.416953] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff000003960e80
-[  184.424106] Call trace:
-[  184.426556]  debug_dma_map_sg+0x2b0/0x350
-[  184.430580]  __dma_map_sg_attrs+0xa0/0x110
-[  184.434687]  dma_map_sgtable+0x28/0x4c
-[  184.438447]  vb2_dc_dmabuf_ops_map+0x60/0xcc
-[  184.442729]  __map_dma_buf+0x2c/0xd4
-[  184.446321]  dma_buf_map_attachment+0xa0/0x130
-[  184.450777]  drm_gem_prime_import_dev+0x7c/0x18c
-[  184.455410]  drm_gem_prime_fd_to_handle+0x1b8/0x214
-[  184.460300]  drm_prime_fd_to_handle_ioctl+0x2c/0x40
-[  184.465190]  drm_ioctl_kernel+0xc4/0x174
-[  184.469123]  drm_ioctl+0x204/0x420
-[  184.472534]  __arm64_sys_ioctl+0xac/0xf0
-[  184.476474]  invoke_syscall+0x48/0x114
-[  184.480240]  el0_svc_common.constprop.0+0x44/0xec
-[  184.484956]  do_el0_svc+0x2c/0xc0
-[  184.488283]  el0_svc+0x2c/0x84
-[  184.491354]  el0t_64_sync_handler+0x11c/0x150
-[  184.495723]  el0t_64_sync+0x18c/0x190
-[  184.499397] ---[ end trace 0000000000000000 ]---
+Avoid the whole thing and just do a direct assignment. This results in
+no change to the executable code.
 
-Fix that by setting DMA mask and segment size.
+[This is a duplicate of commit 2c0ab32b73cf ("hinic: Replace memcpy()
+ with direct assignment") which was applied to net-next.]
 
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220620181333.650301-1-jernej.skrabec@gmail.com
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Tom Rix <trix@redhat.com>
+Cc: llvm@lists.linux.dev
+Link: https://github.com/ClangBuiltLinux/linux/issues/1592
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org> # build
+Link: https://lore.kernel.org/r/20220616052312.292861-1-keescook@chromium.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sun4i/sun4i_drv.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/ethernet/huawei/hinic/hinic_devlink.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
-index 29861fc81b35..65e72510a9a1 100644
---- a/drivers/gpu/drm/sun4i/sun4i_drv.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
-@@ -7,6 +7,7 @@
-  */
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+index 2630d667f393..b5b95177f11f 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+@@ -43,9 +43,7 @@ static bool check_image_valid(struct hinic_devlink_priv *priv, const u8 *buf,
  
- #include <linux/component.h>
-+#include <linux/dma-mapping.h>
- #include <linux/kfifo.h>
- #include <linux/module.h>
- #include <linux/of_graph.h>
-@@ -374,6 +375,13 @@ static int sun4i_drv_probe(struct platform_device *pdev)
+ 	for (i = 0; i < fw_image->fw_info.fw_section_cnt; i++) {
+ 		len += fw_image->fw_section_info[i].fw_section_len;
+-		memcpy(&host_image->image_section_info[i],
+-		       &fw_image->fw_section_info[i],
+-		       sizeof(struct fw_section_info_st));
++		host_image->image_section_info[i] = fw_image->fw_section_info[i];
+ 	}
  
- 	INIT_KFIFO(list.fifo);
- 
-+	/*
-+	 * DE2 and DE3 cores actually supports 40-bit addresses, but
-+	 * driver does not.
-+	 */
-+	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-+	dma_set_max_seg_size(&pdev->dev, UINT_MAX);
-+
- 	for (i = 0;; i++) {
- 		struct device_node *pipeline = of_parse_phandle(np,
- 								"allwinner,pipelines",
+ 	if (len != fw_image->fw_len ||
 -- 
 2.35.1
 
