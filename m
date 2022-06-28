@@ -2,85 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15062CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43111C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:51:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245558AbiF1HuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45260 "EHLO
+        id S245594AbiF1Hu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245504AbiF1HuN (ORCPT
+        with ESMTP id S245504AbiF1Hu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:50:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D8010E9;
-        Tue, 28 Jun 2022 00:50:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63ABEB81D1A;
-        Tue, 28 Jun 2022 07:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADAFC341CB;
-        Tue, 28 Jun 2022 07:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656402610;
-        bh=aiD3eMLrH2Ct0Gn+1sj9Q8L9OK8u7ri0bzVNBJui2/g=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=K2YlmC8OHj3tZ17D96mYJnkccAezcnkshoerIQn1fiR0c78PH5mvlCTiEtc37AcIp
-         LOoJ1sqeGgNecsBAvuV64L4FNuIh8ZhVeAFYYRFc3crhP8EWgbBfw88Rgr6x4K1PIL
-         ZTReQbxfNkplNYqBkYgYdTGWSuFgdmQA0HMAnDo88Eln82O0N5jAAXMK15jgeIRLZe
-         GGVEM0i24SwkkyjO4EW6T3f6cV7LzTiYuC2PNDA+l0UdHEiW7IArtdH/hf6Kmnx7Am
-         MAGrb9lMEHzAb6UqBNGDqAODw6jXIDrCVw3WpK+7cLGq63iZWhotGVibhjOyKIqDWp
-         35IfsH4mrbEMQ==
-Received: by mail-lf1-f49.google.com with SMTP id z13so20722462lfj.13;
-        Tue, 28 Jun 2022 00:50:10 -0700 (PDT)
-X-Gm-Message-State: AJIora9Uxot0yiNZOu7wXUhBQGKlfk93/ufH7s/tiB39SIwZK5bImJk1
-        pkIG5um0bcwtr63TUBD0mKQdSSex6WSsOU/xgJA=
-X-Google-Smtp-Source: AGRyM1sS/4PxpYsRaP0D/aDfyv/NiyzYYJeulsRgvdP/7s7GSqjC8O+SpUPkZf1xLvQHfA5qDk0npmnH9xOLnp2nN8Y=
-X-Received: by 2002:a05:6512:e83:b0:47f:635c:3369 with SMTP id
- bi3-20020a0565120e8300b0047f635c3369mr10406750lfb.659.1656402608055; Tue, 28
- Jun 2022 00:50:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220520195028.1347426-1-gpiccoli@igalia.com> <d3dd4f45-1d50-2164-447b-d4f27ac6e133@igalia.com>
-In-Reply-To: <d3dd4f45-1d50-2164-447b-d4f27ac6e133@igalia.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 28 Jun 2022 09:49:56 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFDqhvE3R4ckD32ftkb66CjHZcGPCF0OsX6bev2MmnorA@mail.gmail.com>
-Message-ID: <CAMj1kXFDqhvE3R4ckD32ftkb66CjHZcGPCF0OsX6bev2MmnorA@mail.gmail.com>
-Subject: Re: [PATCH 0/2] UEFI panic notification mechanism
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel-dev@igalia.com, kernel@gpiccoli.net,
-        Anton Vorontsov <anton@enomsg.org>,
-        Colin Cross <ccross@android.com>,
-        Kees Cook <keescook@chromium.org>,
-        Matt Fleming <matt@codeblueprint.co.uk>,
-        Matthew Garrett <matthew.garrett@nebula.com>,
-        Tony Luck <tony.luck@intel.com>,
-        linux-efi <linux-efi@vger.kernel.org>
+        Tue, 28 Jun 2022 03:50:56 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A0210EC
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:50:55 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1o65zg-0003iD-3b; Tue, 28 Jun 2022 09:50:44 +0200
+Message-ID: <897594cde5f294f9d5e96917bce1ac751338d0aa.camel@pengutronix.de>
+Subject: Re: [PATCH net v1 1/2] net: asix: fix "can't send until first
+ packet is send" issue
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Anton Lundin <glance@acc.umu.se>, Lukas Wunner <lukas@wunner.de>,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        netdev@vger.kernel.org
+Date:   Tue, 28 Jun 2022 09:50:42 +0200
+In-Reply-To: <20220628044913.GB13092@pengutronix.de>
+References: <20220624075139.3139300-1-o.rempel@pengutronix.de>
+         <20220628044913.GB13092@pengutronix.de>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2 Jun 2022 at 19:40, Guilherme G. Piccoli <gpiccoli@igalia.com> wrote:
->
-> Hi Ard, apologies for annoying!
->
+Hi Oleksij,
 
-No worries, just very busy :-)
+subject of this patch looks strange. It should probably read "can't
+receive until first packet is sent".
 
-> Just a friendly ping asking if you have any opinions about these patches.
->
+Regards,
+Lucas
 
-Honestly, I'm not sure I see the value of this. You want to 'notify
-the UEFI firmware' but the firmware doesn't really care about these
-variables, only your bespoke tooling does. EFI pstore captures far
-more data, so if you just wipe /sys/fs/pstore after each clean boot,
-you already have all the data you need, no?
+Am Dienstag, dem 28.06.2022 um 06:49 +0200 schrieb Oleksij Rempel:
+> On Fri, Jun 24, 2022 at 09:51:38AM +0200, Oleksij Rempel wrote:
+> > If cable is attached after probe sequence, the usbnet framework would
+> > not automatically start processing RX packets except at least one
+> > packet was transmitted.
+> > 
+> > On systems with any kind of address auto configuration this issue was
+> > not detected, because some packets are send immediately after link state
+> > is changed to "running".
+> > 
+> > With this patch we will notify usbnet about link status change provided by the
+> > PHYlib.
+> > 
+> > Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
+> > Reported-by: Anton Lundin <glance@acc.umu.se>
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> 
+> In different mail thread Anton reported as tested.
+> Tested-by: Anton Lundin <glance@acc.umu.se>
+> 
+> > ---
+> >  drivers/net/usb/asix_common.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+> > index 632fa6c1d5e3..b4a1b7abcfc9 100644
+> > --- a/drivers/net/usb/asix_common.c
+> > +++ b/drivers/net/usb/asix_common.c
+> > @@ -431,6 +431,7 @@ void asix_adjust_link(struct net_device *netdev)
+> >  
+> >  	asix_write_medium_mode(dev, mode, 0);
+> >  	phy_print_status(phydev);
+> > +	usbnet_link_change(dev, phydev->link, 0);
+> >  }
+> >  
+> >  int asix_write_gpio(struct usbnet *dev, u16 value, int sleep, int in_pm)
+> > -- 
+> > 2.30.2
+> > 
+> > 
+> 
 
-Also, I'm in the process of removing the public efivar_entry_xxx() API
-- please look at the efi/next tree for a peek. This is related to your
-point 3), i.e., the efivar layer is a disaster in terms of consistency
-between different observers of the EFI variable store. Switching to
-efivar_set_variable() [the new API] should fix that.
+
