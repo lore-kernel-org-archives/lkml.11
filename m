@@ -2,121 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD10FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A93C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346067AbiF1NML (ORCPT
+        id S1344832AbiF1NNT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:12:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
+        Tue, 28 Jun 2022 09:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239676AbiF1NME (ORCPT
+        with ESMTP id S1346135AbiF1NNQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:12:04 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090AD2C64F
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:12:03 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id c205so11963809pfc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:12:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=XoYbPu8ODNB+aCWUy44nZWPrpPoZ1GysfeORk/lUgLM=;
-        b=XHLhZaEaqR9QT3n72jGC4B9CTYQLGgvSgK5FeBhATU//AaDLwb/uPmare7UUzHCmyF
-         8ZxmzjQIv1VJYF3kxIJep8D0Wy/rX0Hfu83UHtsKjrWxH+xmjazgwoZPmqITisW1cvy9
-         10gJwkCBPRYXhEK6qhlHZ9IbtS69KMgFFx8HOg9mjACyNRf/BheHQuwwsckrz3gdq9qY
-         WL6HAvO2pym4fY1/bGmqCNe9LLscw6dtJsZUcVJz9dmRGm42zTVZBz429hn66jOMcMzY
-         0cEFS13T5IEjTOkOwH/jOXyhEGOwVm0+m7UAOSsjV4QUZONQ1N6gWLTU7S12gm5E5lHC
-         UbqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=XoYbPu8ODNB+aCWUy44nZWPrpPoZ1GysfeORk/lUgLM=;
-        b=NBIM3Q8HSEnEAuLsgoV0TnwmDPkakMm5pUdLjv/kcZXamlQOwmghcicDbmnYTdITNO
-         fEc9tuuencD+imMJJKl/56wh1t2kwGNkvaz8BgWHySfk/nIMew29HjxQJiAl1PolcFjp
-         /eZhUmjdR54YC1nTJPfoN0WZIRgp59GFzBbtYLvOdvBVPiel6bKFDYaGyNnOKuXYNiLJ
-         /tPKHz/jCgFjUDuKy5MLmJH3CS3USC05xdoabWPFi/JeNZhlEh7S3OydxhLHzs/2DpEb
-         OZH6jIsZA3vvSjJt8kYA0UDs976q2lSpjkVprn0A8Av8n39hyNBvgu24djXw8Xqq6sV3
-         ZG9g==
-X-Gm-Message-State: AJIora9PvoKTjCs1zXqlW6Jby0UhuK3bZFvl3CyIWAXOKxFoByQ4Bp3O
-        olPvIl52A9QkrALWb/WVB3q4sA==
-X-Google-Smtp-Source: AGRyM1v+C2N+0M6g5SN7PpJOGUDCyzzebuVob89bSW99C05vbsm8/cBqbUwRKRC138wRQjE3ZfHSvQ==
-X-Received: by 2002:a63:4d5:0:b0:40d:77fd:cff8 with SMTP id 204-20020a6304d5000000b0040d77fdcff8mr17449254pge.361.1656421922420;
-        Tue, 28 Jun 2022 06:12:02 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id d9-20020a170902654900b0016357fd0fd1sm9354401pln.69.2022.06.28.06.12.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 06:12:02 -0700 (PDT)
-Message-ID: <7dc3a545-8fa5-e540-7c64-00b61c4bef13@kernel.dk>
-Date:   Tue, 28 Jun 2022 07:12:01 -0600
+        Tue, 28 Jun 2022 09:13:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CFF2DE9;
+        Tue, 28 Jun 2022 06:13:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEFD7B81C17;
+        Tue, 28 Jun 2022 13:13:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C67DC3411D;
+        Tue, 28 Jun 2022 13:13:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656421992;
+        bh=4eKNwqdZK49mQlTSa+RWBkwQceYFaWoD0AZOMcDGfwc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QI5tlgkIbQxYmpWougp5ACh8YyMFUfre5qjg6JwanHdkf+c87sKdm7kaVz4VYofS3
+         r3L/F2LEWZ5oDHUI4588xSUtamLhvwRuk8s4GZbrF3001lg0kRM0pOox4JzgeZ5Wys
+         uxvihfHN5UzdJeYw7Q9UzbT/s9OvrN8dyNzpNigz5rUOm33bBf/bqgteVfG5oBWrEi
+         Oo5NHUDnJbZHq083rdjVGmVT4t7oky0Lz0apuWC+JC9oNsvWsRLgORnDiuZX9wf+fX
+         m52jdnxdL+CoDhVBejevRYm0jYs6TuEYC0JbEsQ+UNBMev1Zfc0euyGqKGCAA7cR0Z
+         1fNAQzgJhSr3A==
+Date:   Tue, 28 Jun 2022 15:13:04 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Ralph Corderoy <ralph@inputplus.co.uk>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Nate Karstens <nate.karstens@garmin.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Laight <David.Laight@aculab.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Changli Gao <xiaosuo@gmail.com>
+Subject: Re: [PATCH v2] Implement close-on-fork
+Message-ID: <20220628131304.gbiqqxamg6pmvsxf@wittgenstein>
+References: <20200515152321.9280-1-nate.karstens@garmin.com>
+ <20220618114111.61EC71F981@orac.inputplus.co.uk>
+ <Yq4qIxh5QnhQZ0SJ@casper.infradead.org>
+ <20220619104228.A9789201F7@orac.inputplus.co.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-From:   Jens Axboe <axboe@kernel.dk>
-Subject: Re: [PATCH AUTOSEL 5.18 37/53] io_uring: fix merge error in checking
- send/recv addr2 flags
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>, Sasha Levin <sashal@kernel.org>,
-        io-uring <io-uring@vger.kernel.org>
-References: <20220628021839.594423-1-sashal@kernel.org>
- <20220628021839.594423-37-sashal@kernel.org>
-Content-Language: en-US
-In-Reply-To: <20220628021839.594423-37-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220619104228.A9789201F7@orac.inputplus.co.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 8:20 PM Sasha Levin <sashal@kernel.org> wrote:
->
-> From: Jens Axboe <axboe@kernel.dk>
->
-> [ Upstream commit b60cac14bb3c88cff2a7088d9095b01a80938c41 ]
->
-> With the dropping of the IOPOLL checking in the per-opcode handlers,
-> we inadvertently left two checks in the recv/recvmsg and send/sendmsg
-> prep handlers for the same thing, and one of them includes addr2 which
-> holds the flags for these opcodes.
->
-> Fix it up and kill the redundant checks.
->
-> Signed-off-by: Jens Axboe <axboe@kernel.dk>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  fs/io_uring.c | 4 ----
->  1 file changed, 4 deletions(-)
->
-> diff --git a/fs/io_uring.c b/fs/io_uring.c
-> index 725c59c734f1..9eb20f8865ac 100644
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -5252,8 +5252,6 @@ static int io_sendmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
->
->         if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
->                 return -EINVAL;
-> -       if (unlikely(sqe->addr2 || sqe->file_index))
-> -               return -EINVAL;
->
->         sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
->         sr->len = READ_ONCE(sqe->len);
-> @@ -5465,8 +5463,6 @@ static int io_recvmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
->
->         if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
->                 return -EINVAL;
-> -       if (unlikely(sqe->addr2 || sqe->file_index))
-> -               return -EINVAL;
->
->         sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
->         sr->len = READ_ONCE(sqe->len);
+On Sun, Jun 19, 2022 at 11:42:28AM +0100, Ralph Corderoy wrote:
+> Hi Matthew, thanks for replying.
+> 
+> > > The need for O_CLOFORK might be made more clear by looking at a
+> > > long-standing Go issue, i.e. unrelated to system(3), which was started
+> > > in 2017 by Russ Cox when he summed up the current race-condition
+> > > behaviour of trying to execve(2) a newly created file:
+> > > https://github.com/golang/go/issues/22315.
+> >
+> > The problem is that people advocating for O_CLOFORK understand its
+> > value, but not its cost.  Other google employees have a system which
+> > has literally millions of file descriptors in a single process.
+> > Having to maintain this extra state per-fd is a cost they don't want
+> > to pay (and have been quite vocal about earlier in this thread).
+> 
+> So do you agree the userspace issue is best solved by *_CLOFORK and the
+> problem is how to implement *_CLOFORK at an acceptable cost?
+> 
+> OTOH David Laight was making suggestions on moving the load to the
+> fork/exec path earlier in the thread, but OTOH Al Viro mentioned a
+> ‘portable solution’, though that could have been to a specific issue
+> rather than the more general case.
+> 
+> How would you recommend approaching an acceptable cost is progressed?
+> Iterate on patch versions?  Open a bugzilla.kernel.org for central
+> tracking and linking from the other projects?  ..?
 
-This doesn't look right, and cannot be as the problem was added with a
-5.19 merge issue. Please drop this patch from 5.18-stable, thanks.
+Quoting from that go thread
 
--- 
-Jens Axboe
+"If the OS had a "close all fds above x", we could use that. (I don't know of any that do, but it sure would help.)"
 
+So why can't this be solved with:
+close_range(fd_first, fd_last, CLOSE_RANGE_CLOEXEC | CLOSE_RANGE_UNSHARE)?
+e.g.
+close_range(100, ~0U, CLOSE_RANGE_CLOEXEC | CLOSE_RANGE_UNSHARE)?
+
+https://man7.org/linux/man-pages/man2/close_range.2.html
