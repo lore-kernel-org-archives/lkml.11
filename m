@@ -2,101 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D11D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 353CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344296AbiF1JeC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
+        id S238765AbiF1JiS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 05:38:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344277AbiF1JeB (ORCPT
+        with ESMTP id S234605AbiF1JiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:34:01 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF1C22B3E
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:33:59 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id h9-20020a17090a648900b001ecb8596e43so12043008pjj.5
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:33:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=GUy30TgrzVti2QWW1xO5cUga7m8+kuFp9faoxd/6OQw=;
-        b=MSJzcLAq9eygHcRSlyOU7XMEWQRr5cBRQXh0q+ebDcJfSoRJdwjyn4gKCjfXKm6te5
-         1uWMEhNgNvruuZX4CNfZEeo/XyaVgBe7uNJcP7Qq786hZX5KdqbeNuAcDAy4App+D4bn
-         dhvGRG7tVFTWGRlhnLXghzC8GI4SrSpiW0JHCbMg5f5ZABVSF50CVsiolhKVpLzEkFuU
-         HQdLtnX0fv/xqcTQbCzMV9LJIgRuyGJREV6ENHTYHa9o27WDH0BtZHz2Hv07qnjAjOfn
-         6UGTRCtmTl4XdpubBhun0TcX0vI6eaxpw+VXD6zm2lCC3H84C9nS0jYDsDZZHYT3RSNw
-         PbfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=GUy30TgrzVti2QWW1xO5cUga7m8+kuFp9faoxd/6OQw=;
-        b=H/SWvLHeiWAr1aWx4qb/dUHH7m6xSag8f0Q6XHP528EDbGGja+i38hkz/1r9nqqvKg
-         TcmkODBoM9+45ByJFoZNycPVK2kFFdFyfqxatprkrjUVLmj2WFtSADhV+MI4nj4I+5gQ
-         fNbSj03/70ST9Zr4bO7nAHgsYVa113LiPMvg4IhROgk/F1FQ3yMneFODsKPxzf0mlG+1
-         TQsJ3tqMQrke18X/RfQUCra6dI811wmz/VX5ggd1BzMceu2DQcVQoeIgdfa6eztrrWWl
-         6Y93XEfgTerFYv9SKd3J4ERtOXfIeRUt7y3GDURZFM8PbsUsjOxfPErFMwNHbbULPmZM
-         urAQ==
-X-Gm-Message-State: AJIora+RIvW8B0UOpjgcZZaX0n4sappakZDQewPeD0cF0BDyN7sJEB0M
-        C4YFCCSMBf3wsXydJNqoQ7oDunFrtoVE8dx6
-X-Google-Smtp-Source: AGRyM1vrJ5dkEr7Gi0TbasFvechHWE7eC+bOTSpq1v1sMTu+2URrgmJ01TYTJ4UgADlOhORaB+hV3A==
-X-Received: by 2002:a17:90b:380c:b0:1ed:2071:e6b with SMTP id mq12-20020a17090b380c00b001ed20710e6bmr21107479pjb.82.1656408839196;
-        Tue, 28 Jun 2022 02:33:59 -0700 (PDT)
-Received: from desktop-hypoxic.kamiya.io ([42.120.103.58])
-        by smtp.gmail.com with ESMTPSA id e17-20020aa798d1000000b00525496442ccsm8931271pfm.216.2022.06.28.02.33.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 02:33:58 -0700 (PDT)
-From:   Yangxi Xiang <xyangxi5@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Igor Matheus Andrade Torrente <igormtorrente@gmail.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        nick black <dankamongmen@gmail.com>,
-        Yangxi Xiang <xyangxi5@gmail.com>
-Subject: [PATCH v3] vt: fix memory overlapping when deleting chars in the buffer
-Date:   Tue, 28 Jun 2022 17:33:22 +0800
-Message-Id: <20220628093322.5688-1-xyangxi5@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 28 Jun 2022 05:38:14 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2CEA130A;
+        Tue, 28 Jun 2022 02:38:11 -0700 (PDT)
+IronPort-Data: =?us-ascii?q?A9a23=3AwEfiD6BZ9qbamxVW/9Phw5YqxClBgxIJ4g17XOL?=
+ =?us-ascii?q?fVwLtgmtzhmMEnGIcWD+DM/mCazb1cttxbNzn80IEsJCAx9UxeLYW3SszFioV8?=
+ =?us-ascii?q?6IpJjg4wn/YZnrUdouaJK5ex512huLocYZkHhcwmj/3auK79SMkjPnRLlbBILW?=
+ =?us-ascii?q?s1h5ZFFYMpBgJ2UoLd94R2uaEsPDha++/kYqaT/73ZDdJ7wVJ3lc8sMpvnv/AU?=
+ =?us-ascii?q?MPa41v0tnRmDRxCUcS3e3M9VPrzLonpR5f0rxU9IwK0ewrD5OnREmLx9BFrBM6?=
+ =?us-ascii?q?nk6rgbwsBRbu60Qqm0yIQAvb9xEMZ4HFaPqUTbZLwbW9TiieJntJwwdNlu4GyS?=
+ =?us-ascii?q?BsyI+vHn+F1vxxwSnsgYvMeo+ebSZS4mYnJp6HcSFPi3/VnDUceOYwe5/YyBD8?=
+ =?us-ascii?q?e9rofMj9lRhKOheiexLO9V/kqh84masLsOes3v3h60TDfS+4rXZ3ZWKjMzdhC1?=
+ =?us-ascii?q?Tw0i4ZFGvO2T84Ybyd/KRfNeRtCPn8JB58k2uSlnH/yd3tfsl39ja425XXDiRd?=
+ =?us-ascii?q?6y7nFLtXYYJqJSN9Tk0LeoXjJl1kVqDly2Me3kGLDqyzzwLSU236TZW7bL5Xgn?=
+ =?us-ascii?q?tYCvbFZ7jZ75MUqaGaG?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A99DtYKvfHESOGhJj5wy2oRmQ7skD7NV00zEX?=
+ =?us-ascii?q?/kB9WHVpmszxra+TdYcgpGfJYVEqKQgdcLG7Sc+9qBznhPxICOUqXYtKGTOW31?=
+ =?us-ascii?q?dAT7sSibcKoQeQeBEWn9Q1vcwLHpSWSuefMbEQt6fHCWeDf+rIjOP3lZxAm92u?=
+ =?us-ascii?q?s0tFfEV7bb169QdlBkK+Gk1yfgNPAp00D/Onl7B6jgvlaXIKdd66G3VAe+DCou?=
+ =?us-ascii?q?fAnJXgbQVDKAUg7GC1/E6VwY+/Ax6FxQ0fTj8K5b8j9FLOmwv/6r7mk9zT8G6m?=
+ =?us-ascii?q?61Pu?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="126760304"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 28 Jun 2022 17:38:09 +0800
+Received: from G08CNEXMBPEKD06.g08.fujitsu.local (unknown [10.167.33.206])
+        by cn.fujitsu.com (Postfix) with ESMTP id 1A6BE4D68A24;
+        Tue, 28 Jun 2022 17:38:07 +0800 (CST)
+Received: from G08CNEXCHPEKD08.g08.fujitsu.local (10.167.33.83) by
+ G08CNEXMBPEKD06.g08.fujitsu.local (10.167.33.206) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Tue, 28 Jun 2022 17:38:06 +0800
+Received: from [192.168.122.212] (10.167.226.45) by
+ G08CNEXCHPEKD08.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Tue, 28 Jun 2022 17:38:07 +0800
+To:     <fthain@linux-m68k.org>
+CC:     <jejb@linux.ibm.com>, <linux-kernel@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <lizhijian@fujitsu.com>,
+        <martin.petersen@oracle.com>
+References: <9831381e-f9c7-f7af-e6da-a757a76f34@linux-m68k.org>
+Subject: Re: [PATCH] scsi: Enlarge log buffer length to 256
+From:   "Li, Zhijian" <lizhijian@fujitsu.com>
+Message-ID: <6cbb4340-abc2-d902-7ae6-0ae169a97132@fujitsu.com>
+Date:   Tue, 28 Jun 2022 17:38:06 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.1.1
+MIME-Version: 1.0
+In-Reply-To: <9831381e-f9c7-f7af-e6da-a757a76f34@linux-m68k.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-yoursite-MailScanner-ID: 1A6BE4D68A24.AEE54
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A memory overlapping copy occurs when deleting a long line. This memory
-overlapping copy can cause data corruption when scr_memcpyw is optimized
-to memcpy because memcpy does not ensure its behavior if the destination
-buffer overlaps with the source buffer. The line buffer is not always
-broken, because the memcpy utilizes the hardware acceleration, whose
-result is not deterministic.
 
-Fix this problem by using replacing the scr_memcpyw with scr_memmovew.
+Sorry for the late reply. (Strange! this reply didn't arrive to my mailbox)
 
-Fixes: 81732c3b2fed ("Fix line garbage in virtual console")
-Signed-off-by: Yangxi Xiang <xyangxi5@gmail.com>
----
-Changes since v2:
+> On Fri, 24 Jun 2022, Li Zhijian wrote:
+>
+> > scsi_report_sense() is possble to print messages exceeding 128 bytes: > [ 475.156955] sd 9:0:0:0: Warning! Received an indication that the 
+> LUN assignments on this target have changed. The Linux SCSI layer does 
+> not automatical > > Signed-off-by: Li Zhijian <lizhijian@fujitsu.com> 
+> > --- > drivers/scsi/scsi_logging.c | 2 +- > 1 file changed, 1 
+> insertion(+), 1 deletion(-) > > diff --git 
+> a/drivers/scsi/scsi_logging.c b/drivers/scsi/scsi_logging.c > index 
+> b02af340c2d3..edc3fe8c7e0f 100644 > --- a/drivers/scsi/scsi_logging.c 
+> > +++ b/drivers/scsi/scsi_logging.c > @@ -17,7 +17,7 @@ > > static 
+> char *scsi_log_reserve_buffer(size_t *len) > { > - *len = 128; > + 
+> *len = 256; > return kmalloc(*len, GFP_ATOMIC); > } >
+> Perhaps it's better to waste fewer words (both kinds). E.g.
+Yes, it's an option. if no objection, i will apply your suggestion in 
+24h later. hahaha :)
 
-- add more information about this bug and which commit id this fixes
-- use scr_memmovew() in both overlapping and not overlapping case.
----
- drivers/tty/vt/vt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks
+Zhijian
 
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index f8c87c4d7399..dfc1f4b445f3 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -855,7 +855,7 @@ static void delete_char(struct vc_data *vc, unsigned int nr)
- 	unsigned short *p = (unsigned short *) vc->vc_pos;
- 
- 	vc_uniscr_delete(vc, nr);
--	scr_memcpyw(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
-+	scr_memmovew(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
- 	scr_memsetw(p + vc->vc_cols - vc->state.x - nr, vc->vc_video_erase_char,
- 			nr * 2);
- 	vc->vc_need_wrap = 0;
--- 
-2.17.1
+
+>
+> diff --git a/drivers/scsi/scsi_error.c b/drivers/scsi/scsi_error.c 
+> index 49ef864df581..e7283bf23db3 100644 --- 
+> a/drivers/scsi/scsi_error.c +++ b/drivers/scsi/scsi_error.c @@ -463,13 
+> +463,11 @@ static void scsi_report_sense(struct scsi_device *sdev,   			evt_type = SDEV_EVT_LUN_CHANGE_REPORTED;
+>   			scsi_report_lun_change(sdev);
+>   			sdev_printk(KERN_WARNING, sdev,
+> - "Warning! Received an indication that the "   				    "LUN assignments on this target have "
+>   				    "changed. The Linux SCSI layer does not "
+>   				    "automatically remap LUN assignments.\n");
+>   		} else if (sshdr->asc == 0x3f)
+>   			sdev_printk(KERN_WARNING, sdev,
+> - "Warning! Received an indication that the "   				    "operating parameters on this target have "
+>   				    "changed. The Linux SCSI layer does not "
+>   				    "automatically adjust these parameters.\n");
+
+
 
