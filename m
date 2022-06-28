@@ -2,221 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A6B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE921C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232228AbiF1TuY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
+        id S229907AbiF1Tu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbiF1TuF (ORCPT
+        with ESMTP id S229627AbiF1Tum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:50:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93FB93983A
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:47:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656445620;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qQJqzWxMD2wYGMO4NMh8exaYIYOycnFf9yiMWqcQgzM=;
-        b=Mr3jUlP046l0dtKzQ0pjf3rsT8HF5g6YVmtLqkKQrLb1QgBvqOoVfzmwHwlfXkP5u4Oxl2
-        JLGrSeeh/wYapRTCzo2+KlT3Mt4SjmOvWTabmsNXuHaJKUhJS1iTsp1hew35/OF3RC8ZOF
-        nElS00BQT0T9NrQyI2z09wptDtlVJhw=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-554-C6pFdYvaNIai7lW7jwQTjQ-1; Tue, 28 Jun 2022 15:46:59 -0400
-X-MC-Unique: C6pFdYvaNIai7lW7jwQTjQ-1
-Received: by mail-io1-f69.google.com with SMTP id u25-20020a6b4919000000b006729aaa1b68so7768219iob.21
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:46:58 -0700 (PDT)
+        Tue, 28 Jun 2022 15:50:42 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4004B31368
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:48:24 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id g4so12467977ybg.9
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:48:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YHXkpPXpFGHDlkGftgH4HXkL2OlNnjfvXug8uoS7Fl0=;
+        b=l0E1A0S5TJAdUvK/62+NNXFIajM3Sz1ign/Kl1cu5JyW6CIaA3WPeq0slPouEW5RQV
+         /8p62aOOxBZxOGw6Dv1T6u05mzKkylM378WT8lA141aXNqaarFcQ5Be6fPlHefoVMPO0
+         0478dk+Se/fCVhA/h3iNGvq3rRizWBN2g8Pjc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qQJqzWxMD2wYGMO4NMh8exaYIYOycnFf9yiMWqcQgzM=;
-        b=pc5ruWO41WFbSmarPHodXTmL6Lx/+SOcdUq7jV3HJjt8Xuai7qyVSJPfDRBXyBnWmI
-         kXVSmyY4N0GNv8CoiYuEYwe42M8rQHmjELkFGEPfcvHwWrJ6W4roYZu30thohJ8dTHUU
-         zH3WrJR8M7tYDDm1G7bV0Z80jY0DTyitSmh0mLI35IPaCPwtGD3U0BzgwzXi19AFD6t0
-         XVkTVFQII3oUj3vX/osmAIY/RrP21321VR2R3kIK9Vpq8Xe0wStbBYibNv7X/vE0idJk
-         lRkDvhYt8/fdvM0NZGIAV/tdQe44rZpw054Bzz/gkNmctSpc+fEzR+j2Wr4aNnMKIeUN
-         a5Yw==
-X-Gm-Message-State: AJIora8Gni58nX3QPQHQEj67YGmAe7IitQFUSpS0kZJjC4w71ovSKj8+
-        Dwha6MaF4BLMpvP3zBxiGkGVBiIcnjo0t42HJVxylA2d1xqZMpqXVkoBlVQxfxQuCQOk6SLCuV7
-        SQ7CHeDvN4ih4vmcFpPVDIVOt
-X-Received: by 2002:a05:6e02:1749:b0:2da:9a89:3961 with SMTP id y9-20020a056e02174900b002da9a893961mr5843178ill.258.1656445618259;
-        Tue, 28 Jun 2022 12:46:58 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1v2hBFdLGw2ehMsPWTL/s3RLgYsTwLehZi2x21Zstq8Dxrz20PQ+CSwQBynhMOdy324UJkxFQ==
-X-Received: by 2002:a05:6e02:1749:b0:2da:9a89:3961 with SMTP id y9-20020a056e02174900b002da9a893961mr5843158ill.258.1656445617974;
-        Tue, 28 Jun 2022 12:46:57 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id s9-20020a92cc09000000b002d1c94b7143sm5993039ilp.39.2022.06.28.12.46.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 12:46:57 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 15:46:55 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Linux MM Mailing List <linux-mm@kvack.org>,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [PATCH 2/4] kvm: Merge "atomic" and "write" in
- __gfn_to_pfn_memslot()
-Message-ID: <Yrtar+i2X0YjmD/F@xz-m1.local>
-References: <20220622213656.81546-1-peterx@redhat.com>
- <20220622213656.81546-3-peterx@redhat.com>
- <c047c213-252b-4a0b-9720-070307962d23@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YHXkpPXpFGHDlkGftgH4HXkL2OlNnjfvXug8uoS7Fl0=;
+        b=FkujN7GbGbiYqiLUhPaA3rVh3Yu4LzXHmwsnk7XgRxiC/ocy5YYxprAniP99pgHOfl
+         Y9ZbolVN/ViDw/2q68CjtVwGRXwePG7Y+Mj2HXEO2nw8tymQgx6QMgFxHYdeBAB/2xwk
+         o8RELIQBCxUy8ke26xGQmVbb77axHs9sx4LLot/8vqsP1wYcCGva3dZRksb1FoL4k+Z8
+         d7O7UwEye1//3jUP4F7/FCbUrm53uTHjw0WQYMEtD/Pye3zc4oiY7n8bmzfYrdMOEzpO
+         k/snOjvp0/ASr5a7683xZ9zyx9uXC7uA2K+gZ0KwCPIP7ZRF1fuHG47VBbz6WUT4N6sm
+         HgzA==
+X-Gm-Message-State: AJIora8+A6rduTu2LionI5eY14I5vWH5hHvpDGSXlTd+expOBhEIRf8e
+        k/bdx3P146udgKt/x5LtCfkL7jHu259hkjfMxLyuEQ==
+X-Google-Smtp-Source: AGRyM1srjCp28XBoQQO/p2NofxTCtxHZShc55UMxj4amOOUEmonQqY88CRzmE+TqGnV1wCssUZZtegMQ3CbuPE4Mbsk=
+X-Received: by 2002:a25:bcc:0:b0:66c:b80a:2d5 with SMTP id 195-20020a250bcc000000b0066cb80a02d5mr15517865ybl.196.1656445703313;
+ Tue, 28 Jun 2022 12:48:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <c047c213-252b-4a0b-9720-070307962d23@nvidia.com>
+References: <20220622173605.1168416-1-pmalani@chromium.org>
+ <20220622173605.1168416-6-pmalani@chromium.org> <CAE-0n517BB8YbN5AZG6M3ZrZGOJDV=+t0R9d8wD+gVqO1aD1Xg@mail.gmail.com>
+In-Reply-To: <CAE-0n517BB8YbN5AZG6M3ZrZGOJDV=+t0R9d8wD+gVqO1aD1Xg@mail.gmail.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Tue, 28 Jun 2022 12:48:11 -0700
+Message-ID: <CACeCKafR8hFke_tc2=1VGDNF-CFrZoAG1aUKuxGJG-6pd37hbg@mail.gmail.com>
+Subject: Re: [PATCH v5 5/9] drm/bridge: anx7625: Add typec_mux_set callback function
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Pin-Yen Lin <treapking@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Allen Chen <allen.chen@ite.com.tw>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 07:17:09PM -0700, John Hubbard wrote:
-> On 6/22/22 14:36, Peter Xu wrote:
-> > Merge two boolean parameters into a bitmask flag called kvm_gtp_flag_t for
-> > __gfn_to_pfn_memslot().  This cleans the parameter lists, and also prepare
-> > for new boolean to be added to __gfn_to_pfn_memslot().
-> > 
-> > Signed-off-by: Peter Xu <peterx@redhat.com>
-> > ---
-> >   arch/arm64/kvm/mmu.c                   |  5 ++--
-> >   arch/powerpc/kvm/book3s_64_mmu_hv.c    |  5 ++--
-> >   arch/powerpc/kvm/book3s_64_mmu_radix.c |  5 ++--
-> >   arch/x86/kvm/mmu/mmu.c                 | 10 +++----
-> >   include/linux/kvm_host.h               |  9 ++++++-
-> >   virt/kvm/kvm_main.c                    | 37 +++++++++++++++-----------
-> >   virt/kvm/kvm_mm.h                      |  6 +++--
-> >   virt/kvm/pfncache.c                    |  2 +-
-> >   8 files changed, 49 insertions(+), 30 deletions(-)
-> > 
-> > diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
-> > index f5651a05b6a8..ce1edb512b4e 100644
-> > --- a/arch/arm64/kvm/mmu.c
-> > +++ b/arch/arm64/kvm/mmu.c
-> > @@ -1204,8 +1204,9 @@ static int user_mem_abort(struct kvm_vcpu *vcpu, phys_addr_t fault_ipa,
-> >   	 */
-> >   	smp_rmb();
-> > -	pfn = __gfn_to_pfn_memslot(memslot, gfn, false, NULL,
-> > -				   write_fault, &writable, NULL);
-> > +	pfn = __gfn_to_pfn_memslot(memslot, gfn,
-> > +				   write_fault ? KVM_GTP_WRITE : 0,
-> > +				   NULL, &writable, NULL);
-> >   	if (pfn == KVM_PFN_ERR_HWPOISON) {
-> >   		kvm_send_hwpoison_signal(hva, vma_shift);
-> >   		return 0;
-> > diff --git a/arch/powerpc/kvm/book3s_64_mmu_hv.c b/arch/powerpc/kvm/book3s_64_mmu_hv.c
-> > index 514fd45c1994..e2769d58dd87 100644
-> > --- a/arch/powerpc/kvm/book3s_64_mmu_hv.c
-> > +++ b/arch/powerpc/kvm/book3s_64_mmu_hv.c
-> > @@ -598,8 +598,9 @@ int kvmppc_book3s_hv_page_fault(struct kvm_vcpu *vcpu,
-> >   		write_ok = true;
-> >   	} else {
-> >   		/* Call KVM generic code to do the slow-path check */
-> > -		pfn = __gfn_to_pfn_memslot(memslot, gfn, false, NULL,
-> > -					   writing, &write_ok, NULL);
-> > +		pfn = __gfn_to_pfn_memslot(memslot, gfn,
-> > +					   writing ? KVM_GTP_WRITE : 0,
-> > +					   NULL, &write_ok, NULL);
-> >   		if (is_error_noslot_pfn(pfn))
-> >   			return -EFAULT;
-> >   		page = NULL;
-> > diff --git a/arch/powerpc/kvm/book3s_64_mmu_radix.c b/arch/powerpc/kvm/book3s_64_mmu_radix.c
-> > index 42851c32ff3b..232b17c75b83 100644
-> > --- a/arch/powerpc/kvm/book3s_64_mmu_radix.c
-> > +++ b/arch/powerpc/kvm/book3s_64_mmu_radix.c
-> > @@ -845,8 +845,9 @@ int kvmppc_book3s_instantiate_page(struct kvm_vcpu *vcpu,
-> >   		unsigned long pfn;
-> >   		/* Call KVM generic code to do the slow-path check */
-> > -		pfn = __gfn_to_pfn_memslot(memslot, gfn, false, NULL,
-> > -					   writing, upgrade_p, NULL);
-> > +		pfn = __gfn_to_pfn_memslot(memslot, gfn,
-> > +					   writing ? KVM_GTP_WRITE : 0,
-> > +					   NULL, upgrade_p, NULL);
-> >   		if (is_error_noslot_pfn(pfn))
-> >   			return -EFAULT;
-> >   		page = NULL;
-> > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> > index f4653688fa6d..e92f1ab63d6a 100644
-> > --- a/arch/x86/kvm/mmu/mmu.c
-> > +++ b/arch/x86/kvm/mmu/mmu.c
-> > @@ -3968,6 +3968,7 @@ void kvm_arch_async_page_ready(struct kvm_vcpu *vcpu, struct kvm_async_pf *work)
-> >   static int kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
-> >   {
-> > +	kvm_gtp_flag_t flags = fault->write ? KVM_GTP_WRITE : 0;
-> >   	struct kvm_memory_slot *slot = fault->slot;
-> >   	bool async;
-> > @@ -3999,8 +4000,8 @@ static int kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
-> >   	}
-> >   	async = false;
-> > -	fault->pfn = __gfn_to_pfn_memslot(slot, fault->gfn, false, &async,
-> > -					  fault->write, &fault->map_writable,
-> > +	fault->pfn = __gfn_to_pfn_memslot(slot, fault->gfn, flags,
-> > +					  &async, &fault->map_writable,
-> >   					  &fault->hva);
-> >   	if (!async)
-> >   		return RET_PF_CONTINUE; /* *pfn has correct page already */
-> > @@ -4016,9 +4017,8 @@ static int kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
-> >   		}
-> >   	}
-> > -	fault->pfn = __gfn_to_pfn_memslot(slot, fault->gfn, false, NULL,
-> > -					  fault->write, &fault->map_writable,
-> > -					  &fault->hva);
-> > +	fault->pfn = __gfn_to_pfn_memslot(slot, fault->gfn, flags, NULL,
-> > +					  &fault->map_writable, &fault->hva);
-> 
-> The flags arg does improve the situation, yes.
+On Tue, Jun 28, 2022 at 12:25 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Quoting Prashant Malani (2022-06-22 10:34:34)
+> > From: Pin-Yen Lin <treapking@chromium.org>
+> >
+> > Add the callback function when the driver receives state
+> > changes of the Type-C port. The callback function configures the
+> > crosspoint switch of the anx7625 bridge chip, which can change the
+> > output pins of the signals according to the port state.
+>
+> Can this be combined with the previous two patches? They really don't
+> stand alone because the previous two patches are adding stubs that are
+> filled out later.
 
-Thanks for supporting a flag's existance. :)
+I split it out for ease of reviewing, but sure, I will combine it if
+there is a v6.
 
-I'd say ultimately it could be a personal preference thing when the struct
-comes.
-
-> 
-> >   	return RET_PF_CONTINUE;
-> >   }
-> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> > index c20f2d55840c..b646b6fcaec6 100644
-> > --- a/include/linux/kvm_host.h
-> > +++ b/include/linux/kvm_host.h
-> > @@ -1146,8 +1146,15 @@ kvm_pfn_t gfn_to_pfn_prot(struct kvm *kvm, gfn_t gfn, bool write_fault,
-> >   		      bool *writable);
-> >   kvm_pfn_t gfn_to_pfn_memslot(const struct kvm_memory_slot *slot, gfn_t gfn);
-> >   kvm_pfn_t gfn_to_pfn_memslot_atomic(const struct kvm_memory_slot *slot, gfn_t gfn);
+>
+> > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > index bd21f159b973..5992fc8beeeb 100644
+> > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > @@ -15,6 +15,7 @@
+> >  #include <linux/regulator/consumer.h>
+> >  #include <linux/slab.h>
+> >  #include <linux/types.h>
+> > +#include <linux/usb/typec_dp.h>
+> >  #include <linux/usb/typec_mux.h>
+> >  #include <linux/workqueue.h>
+> >
+> > @@ -2582,9 +2583,64 @@ static void anx7625_runtime_disable(void *data)
+> >         pm_runtime_disable(data);
+> >  }
+> >
+> > +static void anx7625_set_crosspoint_switch(struct anx7625_data *ctx,
+> > +                                         enum typec_orientation orientation)
+> > +{
+> > +       if (orientation == TYPEC_ORIENTATION_NORMAL) {
+> > +               anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_0,
+> > +                                 SW_SEL1_SSRX_RX1 | SW_SEL1_DPTX0_RX2);
+> > +               anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_1,
+> > +                                 SW_SEL2_SSTX_TX1 | SW_SEL2_DPTX1_TX2);
+> > +       } else if (orientation == TYPEC_ORIENTATION_REVERSE) {
+> > +               anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_0,
+> > +                                 SW_SEL1_SSRX_RX2 | SW_SEL1_DPTX0_RX1);
+> > +               anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_1,
+> > +                                 SW_SEL2_SSTX_TX2 | SW_SEL2_DPTX1_TX1);
+> > +       }
+> > +}
 > > +
-> > +/* gfn_to_pfn (gtp) flags */
-> > +typedef unsigned int __bitwise kvm_gtp_flag_t;
-> 
-> A minor naming problem: GTP and especially gtp_flags is way too close
-> to gfp_flags. It will make people either wonder if it's a typo, or
-> worse, *assume* that it's a typo. :)
+> > +static void anx7625_typec_two_ports_update(struct anx7625_data *ctx)
+> > +{
+> > +       if (ctx->typec_ports[0].dp_connected && ctx->typec_ports[1].dp_connected)
+> > +               /* Both ports available, do nothing to retain the current one. */
+> > +               return;
+> > +       else if (ctx->typec_ports[0].dp_connected)
+> > +               anx7625_set_crosspoint_switch(ctx, TYPEC_ORIENTATION_NORMAL);
+> > +       else if (ctx->typec_ports[1].dp_connected)
+> > +               anx7625_set_crosspoint_switch(ctx, TYPEC_ORIENTATION_REVERSE);
+> > +}
+> > +
+> >  static int anx7625_typec_mux_set(struct typec_mux_dev *mux,
+> >                                  struct typec_mux_state *state)
+> >  {
+> > +       struct anx7625_port_data *data = typec_mux_get_drvdata(mux);
+> > +       struct anx7625_data *ctx = data->ctx;
+> > +       struct device *dev = &ctx->client->dev;
+> > +       bool new_dp_connected, old_dp_connected;
+> > +
+> > +       if (ctx->num_typec_switches == 1)
+>
+> How do we handle the case where the usb-c-connector is directly
+> connected to the RX1/TX1 and RX2/TX2 pins? This device would be an
+> orientation (normal/reverse) and mode switch (usb/dp) in that scenario,
+> but this code is written in a way that the orientation switch isn't
+> going to flip the crosspoint switch for the different pin assignments.
 
-I'd try to argu with "I prefixed it with kvm_", but oh well.. yes they're a
-bit close :)
+If all 4 SS lanes are connected to 1 usb-c-connector; there would be
+just 1 "typec-switch" node.
+In that case, the DT would only specify it as an "orientation-switch"
+and register
+an orientation-switch with the Type-C framework. The orientation switch would
+pretty much do what the mode-switch callback does here (configuring
+the crosspoint
+switch).
+One could also register a "mode-switch" there but it wouldn't do
+anything (all 4 lanes are already
+connected so there is nothing to re-route in the crosspoint switch).
+Hence the above "if" check.
 
-> 
-> Yes, "read the code", but if you can come up with a better TLA than GTP
-> here, let's consider using it.
+Unfortunately, I don't have hardware which connects all 4 SS lanes
+from 1 Type-C port
+to the anx7625, so I didn't add the orientation switch handling to the
+driver (since I have no way of verifying it).
 
-Could I ask what's TLA?  Any suggestions on the abbrev, btw?
+Regarding DP alt-mode pin assignments : I think anx7625 will only support Pin D
+(only 2 lane DP, no 4 lane DP).
 
-> 
-> Overall, the change looks like an improvement, even though
-> 
->     write_fault ? KVM_GTP_WRITE : 0
-> 
-> is not wonderful. But improving *that* leads to a a big pile of diffs
-> that are rather beyond the scope here.
+BR,
 
-Thanks,
-
--- 
-Peter Xu
-
+-Prashant
