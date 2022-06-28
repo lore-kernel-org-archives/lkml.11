@@ -2,139 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7211C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADEB2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245019AbiF1JEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
+        id S245660AbiF1JES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 05:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241106AbiF1JEC (ORCPT
+        with ESMTP id S236978AbiF1JEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:04:02 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF5912628;
-        Tue, 28 Jun 2022 02:04:01 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25S8rufq022609;
-        Tue, 28 Jun 2022 09:04:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : to : cc : from : subject : content-type :
- content-transfer-encoding; s=pp1;
- bh=EJGVXcpSjcj2Rfl0CfzF9RguZzjarCzVFCxQ9X1hCYA=;
- b=hpBIKYse59AYbk67PIxoVLV0X8SH144AOjWgED1Hpa318cMB1MwMfGTRf3oa9M1NizLZ
- C1DpGpSImybohGoVjjgLH+usLZ6sDhFJE1eDTw40VPfZmduESxJTlv1ckLX1sCWqlNCS
- /0SMWMA7MqR7MD8I8EVfPWBC5BHko3oJ43td32WE/epnnpKn7S5b/hzZsOJUHkns0NlG
- h4VLyZ9gv02rxlvX2HjJ1F4jJvrWRuyXj6uYt0kfY/kvoN+gB2F8Qjx79CTh5pg8pzQT
- rPi33MhEo9M6Bf8vye/ovlpq6ylZLcndXdnY/3WXXkVK5zYSZVmA/7J4QC6RaeXWQIXH 2g== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyxhk87we-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 09:04:00 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25S8nxWt017280;
-        Tue, 28 Jun 2022 09:03:59 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma03wdc.us.ibm.com with ESMTP id 3gwt09c4y5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 09:03:59 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25S93xOq37945742
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jun 2022 09:03:59 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 55B22124052;
-        Tue, 28 Jun 2022 09:03:59 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F282F124053;
-        Tue, 28 Jun 2022 09:03:56 +0000 (GMT)
-Received: from [9.43.77.224] (unknown [9.43.77.224])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 28 Jun 2022 09:03:56 +0000 (GMT)
-Message-ID: <3c38b723-40e6-ded9-5a3b-7b442a3f65d8@linux.vnet.ibm.com>
-Date:   Tue, 28 Jun 2022 14:33:55 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org, linux-block@vger.kernel.org
-Cc:     abdhalee@linux.vnet.ibm.com, sachinp@linux.vnet.com,
-        mputtash@linux.vnet.com
-From:   Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>
-Subject: [linux-next] [[5.19.0-rc4-next-20220627] WARNING during reboot to
- linux-next kernel
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: _pt95T9ALtjXM3taInJZXnEO77dkQKhw
-X-Proofpoint-GUID: _pt95T9ALtjXM3taInJZXnEO77dkQKhw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-27_09,2022-06-24_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- phishscore=0 mlxscore=0 malwarescore=0 spamscore=0 mlxlogscore=738
- priorityscore=1501 lowpriorityscore=0 suspectscore=0 adultscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206280037
+        Tue, 28 Jun 2022 05:04:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C35612602
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:04:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34B62B81D35
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:04:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1C78C3411D;
+        Tue, 28 Jun 2022 09:04:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656407052;
+        bh=K2miiS575tpvxZbz8gGejBUn5dzqpXWlRAknqHKFO/Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SVJh/3WVAckTF73Ll3+ve2i9KFMvuai9I5BMfgGT5Iqi23a8+0Dhd7Z8J8N+2Kxfx
+         wdmQ4sg+dUvPveDAy9zE13k+ji75g03E4cU0tQ/HKoD0FawVK7gmVwTOs9XQy9pFTC
+         D1LgWj6I4RnePSkcDRsMGyts8qpaU0vUp76w/ZzeyLeeFeh54ENQyL2Uqwa+du08hN
+         IKLNccOSpRqoBHwyDZnrA7dJWAqrYhmuYxx7s6+HGPK+uy5lbv+Em7uU3QneAJ56lv
+         /R/N0ho1DTLjB8r6Apsj91WS+c9IDJdkkrxSVZO0hPxGUbyU4Is0AoT7Of/TYrLFjP
+         moISXmEaPXWFQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o676o-003ihy-Bu;
+        Tue, 28 Jun 2022 10:04:10 +0100
+Date:   Tue, 28 Jun 2022 10:02:09 +0100
+Message-ID: <875ykl2mb2.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc:     <paulmck@kernel.org>, <frederic@kernel.org>,
+        <josh@joshtriplett.org>, <rostedt@goodmis.org>,
+        <mathieu.desnoyers@efficios.com>, <jiangshanlai@gmail.com>,
+        <joel@joelfernandes.org>, <linux-kernel@vger.kernel.org>,
+        <zhangfei.gao@foxmail.com>, <boqun.feng@gmail.com>,
+        <urezki@gmail.com>, <shameerali.kolothum.thodi@huawei.com>,
+        <pbonzini@redhat.com>, <mtosatti@redhat.com>,
+        <eric.auger@redhat.com>, <chenxiang66@hisilicon.com>
+Subject: Re: [PATCH] srcu: Reduce blocking agressiveness of expedited grace periods further
+In-Reply-To: <20220627123706.20187-1-quic_neeraju@quicinc.com>
+References: <20220627123706.20187-1-quic_neeraju@quicinc.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: quic_neeraju@quicinc.com, paulmck@kernel.org, frederic@kernel.org, josh@joshtriplett.org, rostedt@goodmis.org, mathieu.desnoyers@efficios.com, jiangshanlai@gmail.com, joel@joelfernandes.org, linux-kernel@vger.kernel.org, zhangfei.gao@foxmail.com, boqun.feng@gmail.com, urezki@gmail.com, shameerali.kolothum.thodi@huawei.com, pbonzini@redhat.com, mtosatti@redhat.com, eric.auger@redhat.com, chenxiang66@hisilicon.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greetings,
+On Mon, 27 Jun 2022 13:37:06 +0100,
+Neeraj Upadhyay <quic_neeraju@quicinc.com> wrote:
+>=20
+> Commit 640a7d37c3f4 ("srcu: Block less aggressively for expedited
+> grace periods") highlights a problem where aggressively blocking
+> SRCU expedited grace periods, as was introduced in commit
+> 282d8998e997 ("srcu: Prevent expedited GPs and blocking readers
+> from consuming CPU"), introduces ~2 minutes delay to the overall
+> ~3.5 minutes boot time, when starting VMs with "-bios QEMU_EFI.fd"
+> cmdline on qemu, which results in very high rate of memslots
+> add/remove, which causes > ~6000 synchronize_srcu() calls for
+> kvm->srcu SRCU instance.
+>=20
+> Below table captures the experiments done by Zhangfei Gao, Shameer,
+> to measure the boottime impact with various values of non-sleeping
+> per phase counts, with HZ_250 and preemption enabled:
+>=20
+> +=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80+
+> | SRCU_MAX_NODELAY_PHASE   | Boot time (s)  |
+> +=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80+
+> | 100                      | 30.053         |
+> | 150                      | 25.151         |
+> | 200                      | 20.704         |
+> | 250                      | 15.748         |
+> | 500                      | 11.401         |
+> | 1000                     | 11.443         |
+> | 10000                    | 11.258         |
+> | 1000000                  | 11.154         |
+> +=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80+
+>=20
+> Analysis on the experiment results showed improved boot time
+> with non blocking delays close to one jiffy duration. This
+> was also seen when number of per-phase iterations were scaled
+> to one jiffy.
+>=20
+> So, this change scales per-grace-period phase number of non-sleeping
+> polls, soiuch that, non-sleeping polls are done for one jiffy. In addition
+> to this, srcu_get_delay() call in srcu_gp_end(), which is used to calcula=
+te
+> the delay used for scheduling callbacks, is replaced with the check for
+> expedited grace period. This is done, to schedule cbs for completed exped=
+ited
+> grace periods immediately, which results in improved boot time seen in
+> experiments.
+>=20
+> In addition to the changes to default per phase delays, this change
+> adds 3 new kernel parameters - srcutree.srcu_max_nodelay,
+> srcutree.srcu_max_nodelay_phase, srcutree.srcu_retry_check_delay.
+> This allows users to configure the srcu grace period scanning delays,
+> depending on their system configuration requirements.
+>=20
+> Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
 
-[linux-next] [[5.19.0-rc4-next-20220627] WARNING during reboot to 
-linux-next kernel
+I've given this a go on one of my test platforms (the one I noticed
+the issue on the first place), and found that the initial part of the
+EFI boot under KVM (pointlessly wiping the emulated flash) went down
+to 1m7s from 3m50s (HZ=3D250).
 
---- Call Traces ---
-[    1.788574] ------------[ cut here ]------------
-[    1.788577] alg: self-tests for rsa-generic (rsa) failed (rc=-22)
-[    1.788586] WARNING: CPU: 9 PID: 218 at crypto/testmgr.c:5774 
-alg_test+0x438/0x880
-[    1.788598] Modules linked in:
-[    1.788603] CPU: 9 PID: 218 Comm: cryptomgr_test Not tainted 
-5.19.0-rc4-next-20220627-autotest #1
-[    1.788609] NIP:  c00000000062e078 LR: c00000000062e074 CTR: 
-c00000000075e020
-[    1.788614] REGS: c00000000e733980 TRAP: 0700   Not tainted 
-(5.19.0-rc4-next-20220627-autotest)
-[    1.788620] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 
-28008822  XER: 20040005
-[    1.788632] CFAR: c00000000014f244 IRQMASK: 0
-[    1.788632] GPR00: c00000000062e074 c00000000e733c20 c000000002a12000 
-0000000000000035
-[    1.788632] GPR04: 00000000ffff7fff c00000000e7339e0 c00000000e7339d8 
-0000000000000000
-[    1.788632] GPR08: c000000002826b78 0000000000000000 c000000002566a50 
-c0000000028e6bb8
-[    1.788632] GPR12: 0000000000008000 c00000000fff3280 c00000000018b6d8 
-c00000000d640080
-[    1.788632] GPR16: 0000000000000000 0000000000000000 0000000000000000 
-0000000000000000
-[    1.788632] GPR20: 0000000000000000 0000000000000000 0000000000000000 
-0000000000000000
-[    1.788632] GPR24: c000000000da49e8 0000000000000000 c000000050630480 
-0000000000000400
-[    1.788632] GPR28: c000000050630400 000000000000000d c000000002cd33d8 
-ffffffffffffffea
-[    1.788691] NIP [c00000000062e078] alg_test+0x438/0x880
-[    1.788696] LR [c00000000062e074] alg_test+0x434/0x880
-[    1.788701] Call Trace:
-[    1.788704] [c00000000e733c20] [c00000000062e074] 
-alg_test+0x434/0x880 (unreliable)
-[    1.788712] [c00000000e733d90] [c00000000062c040] 
-cryptomgr_test+0x40/0x70
-[    1.788718] [c00000000e733dc0] [c00000000018b7f4] kthread+0x124/0x130
-[    1.788726] [c00000000e733e10] [c00000000000ce54] 
-ret_from_kernel_thread+0x5c/0x64
-[    1.788733] Instruction dump:
-[    1.788736] 409e02e4 3d22002c 892913fd 2f890000 409e02d4 3c62fe63 
-7f45d378 7f84e378
-[    1.788746] 7fe6fb78 3863fa90 4bb2116d 60000000 <0fe00000> fa2100f8 
-fa410100 fa610108
-[    1.788757] ---[ end trace 0000000000000000 ]---
--- 
+Clearly a massive improvement, but still a far cry from the original
+~40s (yes, this box is utter crap -- which is why I use it).
 
+Anyway:
 
-Regards,
-Tasmiya Nalatwad
-IBM Linux Technology Center
+Tested-by: Marc Zyngier <maz@kernel.org>
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
