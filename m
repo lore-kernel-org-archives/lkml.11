@@ -2,142 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8DCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC38CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348180AbiF1PQf (ORCPT
+        id S1347644AbiF1PRM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49586 "EHLO
+        Tue, 28 Jun 2022 11:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348200AbiF1PP6 (ORCPT
+        with ESMTP id S240708AbiF1PRK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:15:58 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE304326D9
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:15:56 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id u12-20020a05600c210c00b003a02b16d2b8so7793424wml.2
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:15:56 -0700 (PDT)
+        Tue, 28 Jun 2022 11:17:10 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1169631536
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:17:08 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id r18so10187273edb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:17:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rK0qJO7Dh7n2l25BJgf7UBZiynAmtJpBCfoCvPDnO4w=;
-        b=xRSQt6foeVbB30dhdwxyxqUnzVkRBbvKhGtLjmke8wzbj+crJfxtcFXiQ7zPGjJpt1
-         0oWyDsu7++7KvLMMAUW9tdRn6NrHmHMI62yUC+ILerhLEEPaKq+e3Dasz8bfX0pyNPoq
-         uefb0bHKVv6Zwbju4SLfJcGR1MfIX0/UZis2RqCw69N6iMNIcSLvRRjcFafRmQDb1+C7
-         i3rWHPhysbmNQiwHsbEdoXyDej698nOA+5XVU1hEz0EY1jWRM9stCTkz4c4VozoUjSL7
-         +tx72X5+4ATOmANEAEULLh4FfJ20xTg4poFCslTnvxFJbcfW+zX9VhwsKfhmnj2CnrP+
-         xVnQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=aSy4S6OkwU5Fk+1ynDZhkvWk4BHGx0AAK4bKb1Eq7Iw=;
+        b=aF1qoIqXU4mpquNkBwAfdWtJ+lDlwzsxizK1Yn65wbp/x+wE5PeMa3TztoOwBlO9V5
+         6ByMG5HEzbblW3i7YC1W7CuYl7kOXXaLv+9uL9RwkaGz6tLWfuSbrhCVWqYgbUxUyOXk
+         8dbeU6uydZlsr7Nqfv6+wXexrLVRawzM3aW7OchfnL8R8b1XhH23Msm3o4wOhiqFIEqC
+         ah5luGE1x5j/BuE2PxSU+KsQqVxJ3NTdS/6I8xvELHNev4ekIdhmWRJkP/Hdf4xQWekw
+         yyjTNh+i439N/mDdNyC7TMFU9cniWlPVfg2DO3YfXZyTWYDeiz9bWyBKfHZftQAJ/Qc5
+         90Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rK0qJO7Dh7n2l25BJgf7UBZiynAmtJpBCfoCvPDnO4w=;
-        b=1qbstU/5x3JBbXbAMJp54FyRTAksw+OhLGf/X3VMxVyzTgd8diy/GU26jdIhKKh2VC
-         VHU9DSLrsfgS6p0QLz3Gm+sB74Vsqyckj+PFlVhp/zoM0RRCjNfbaTxQkTVHOsnprC8v
-         DX5YF1hLT9hlphd3GqvObrWoEH6FH5V4z/54Bnk5vwzvGLJ3MhLjxc82T9vGUZhsH/L8
-         WXrrhIhtvl4Wt9j9rlWHRXS637EaMHXAYmy4+69YF4b4thcYPvXkAVvN1EkiAdgOW/lT
-         hO6kKj6Lh6ruEcPI5hT2uNI00tYrAT7ifJ6+TaHz0kkzwSklkgl4NFSsBB9T0R5dw713
-         zE3g==
-X-Gm-Message-State: AJIora9fvuHkB4jjyKi29sPFdy1K4TWWkBUotTw6JInYFK7l4uMDvDNJ
-        6FtxvWPbVQQ2KxhE9nf0mgXV7mhgi+R4wbj3
-X-Google-Smtp-Source: AGRyM1uWG6ktrbOE3BNKs0s25HDywKOhd7I0UvloEYVw1p//zHLTRdlDoRXER6oW+GWf5kX+u9L+Cg==
-X-Received: by 2002:a05:600c:a03:b0:39e:4f0c:938c with SMTP id z3-20020a05600c0a0300b0039e4f0c938cmr92194wmp.145.1656429355425;
-        Tue, 28 Jun 2022 08:15:55 -0700 (PDT)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id f18-20020a7bc8d2000000b0039c747a1e8fsm21258152wml.7.2022.06.28.08.15.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 08:15:54 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 16:15:52 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Tom Rix <trix@redhat.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kbuild@vger.kernel.org, llvm@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] Enable clang tools for kernels build using gcc
-Message-ID: <20220628151552.zkbvof7fyu3wtjqe@maple.lan>
-References: <20220628122741.93641-1-daniel.thompson@linaro.org>
- <0478d832-d902-69ed-7c1c-4f19d942cddf@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=aSy4S6OkwU5Fk+1ynDZhkvWk4BHGx0AAK4bKb1Eq7Iw=;
+        b=QmxufNbE7Z6vIpSV5qY1doDl7lDpnJnWiwmAT7cHFAUUWzJmYIXgEVXaGQHl0mTKfJ
+         Zp+6Nkk5WJTBp7/mPwaP2Cb51DhZLsy2EwY05HGAE6X1Bpd3pXytb8rRynwJd+UWJVKP
+         uusKW1jT70ZRe0U8U5Q8/h3IqiOdHfdXVIiJ75eockKZ+BL4NMqUYZBYWsDRVAFc/hb1
+         ioh3cz87UDmMhQQ41cCXzNWFF2WSF2pKhNLySkcU0PZHcSJY9HQOMzlcuo1AjRvZ/pYr
+         EptZEjmXF1m3gqQHa+1shQaT7584rBshDTEU8SgmwzeqSvPuTHxHYEKwIqYgdRAKTmaE
+         jzww==
+X-Gm-Message-State: AJIora+PNFjs++UHtjW+RDyPOoLLVU6pE8Ky7nhtF9RpQuiqxEUxMLTD
+        B8nGF82GpdjG+Qf2fexbfxfLV5fIdzsRGQ==
+X-Google-Smtp-Source: AGRyM1unDm6ZbuLpiudtxj55d4HB8KbGOWrH02RP85j/krqr1kifT1DKAYZtE1ZzPvcI52TyTgt0Yg==
+X-Received: by 2002:a05:6402:4302:b0:437:7990:992e with SMTP id m2-20020a056402430200b004377990992emr19557861edc.194.1656429426555;
+        Tue, 28 Jun 2022 08:17:06 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id g3-20020a1709061c8300b0070759e37183sm6542987ejh.59.2022.06.28.08.17.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 08:17:06 -0700 (PDT)
+Message-ID: <f9eb6d94-c451-0c9f-f123-2f1324f68b68@linaro.org>
+Date:   Tue, 28 Jun 2022 17:17:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0478d832-d902-69ed-7c1c-4f19d942cddf@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: fwnode_for_each_child_node() and OF backend discrepancy
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+References: <4e1d5db9dea68d82c94336a1d6aac404@walle.cc>
+ <Yrrhs3D++V79/4Jk@smile.fi.intel.com>
+ <f17d3ecfecf4491dd15b1fa092205f3f@walle.cc>
+ <CAHp75Vd6e3WwHPfyL=GP=vsoWhwGXadwQziiRRwfHPfjkX2eFg@mail.gmail.com>
+ <2f2d7685e0e43194270a310034004970@walle.cc>
+ <CAHp75VcANMjxgS6S24Zh+mz66usb6LBnQk-ENvU9JHSXXsG1DA@mail.gmail.com>
+ <9e58f421c27121977d11381530757a6e@walle.cc>
+ <3ab8afab-b6b7-46aa-06d4-6740cee422d7@linaro.org>
+ <288f56ba9cfad46354203b7698babe91@walle.cc>
+ <daaddbd5-1cd4-d3ce-869a-249bdd8aecb9@linaro.org>
+ <96f40ae6abf76af3b643b1e1c60d1d9f@walle.cc>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <96f40ae6abf76af3b643b1e1c60d1d9f@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 06:19:09AM -0700, Tom Rix wrote:
-> The limitations of the compilation db are not limited to the kernel.
+On 28/06/2022 17:09, Michael Walle wrote:
+>> It's bad also from another reason - the DT node was explicitly 
+>> disabled,
+>> but you perform some operation on actual hardware representing this
+>> node. I would assume that a disabled DT node means it is not
+>> operational, e.g. hardware not present or missing clocks, so you should
+>> not treat it as another meaning - power down/unused.
 > 
-> Why shouldn't the change be made in the llvm project ?
+> Mh. Assume a SoC with an integrated ethernet switch. Some ports
+> are externally connected, some don't. I'd think they should be disabled,
+> no? Until now, all bindings I know, treat them as disabled. But OTOH
+> you still need to do some configurations on them, like disable port
+> forwarding, disable them or whatever. So the hardware is present, but
+> it is not connected to anything.
 
-I'd rather answer the question why should it be in the kernel ;-).
-That's somewhat easier to answer because the kernel does have some
-unusual properties:
+I see your point and the meaning is okay... except that drivers don't
+touch disabled nodes. If a device (with some address space) is disabled,
+you do not write there "please be power off". Here the case is a bit
+different, because I think ports do not have their own address space.
+Yet it contradicts the logic - something is disabled in DT and you
+expect to perform actual operations on it.
 
-1. It makes heavy use of kernel command line options, especially
-   when compared to most user space components where the default
-   compiler flags are something very simple ("-g -O2" plus include
-   directories).
-
-2. The kernel provides it's own tooling to generate the compilation
-   database. For example, if tools like codechecker added features to
-   their front end to mitigate this problem[1] the kernel wouldn't
-   benefit from them anyway.
-
-3. Rules like `make clang-analyzer` generate *and* consume the
-   compilation database in a single pass. That makes it impossible to
-   run fixup tools between generating the database and consuming
-   it.
-
-However going back to the original question:
-> Why shouldn't the change be made in the llvm project ?
-
-clang can (and probably will) learn about some of the newer gcc options
-over time. However that doesn't actually help much since all that
-achieves is a game of whack-a-mole where clang has to constantly play
-catch up or the tooling will break.
-
-Some other aspects could be added to the various different projects that
-use the compilation database that would improve things (better automatic
-handling of --target for example). That sort of change should still
-peacefully coexist with an approach based on gen_compile_commands.json
-though.
-
-
-Daniel.
-
-
-[1] Currently they don't workaround it automatically. They just imply
-    that you may have to "fine tune" compile_commands.json after
-    generating it:
-    https://codechecker.readthedocs.io/en/latest/usage/#step-7-fine-tune-analysis-configuration
-
-
-> On 6/28/22 5:27 AM, Daniel Thompson wrote:
-> > This patch set makes it possible to use clang based tools, such as
-> > the clangd completion engine, regardless of our choice of compiler
-> > for the actual kernel build.
-> > 
-> > Most of the fine details are included in the patch header for the
-> > first patch (since we'd like them to appear in the kernel history so
-> > they can help future archaeologists).
-> > 
-> > Daniel Thompson (2):
-> >    clang-tools: Generate clang compatible output even with gcc builds
-> >    Makefile: Enable clang-tidy and clang-analyzer for gcc builds
-> > 
-> >   Makefile                                    | 11 ++--
-> >   scripts/clang-tools/gen_compile_commands.py | 71 ++++++++++++++++++++-
-> >   2 files changed, 74 insertions(+), 8 deletions(-)
-> > 
-> > 
-> > base-commit: a111daf0c53ae91e71fd2bfe7497862d14132e3e
-> > --
-> > 2.35.1
-> > 
 > 
+>>> But it works,
+>>> as long as no ports are disabled and all ports are described in the
+>>> device tree. But I have device trees where some are disabled.
+>>
+>> I am not sure if I follow this. You have devices which
+>> 1. have unused ports, but all DT nodes are available/okay,
+>> 2. have unused ports, which are in DT status=disabled?
+>>
+>> Doesn't case 2 break the bindings? If so, we don't care about such
+>> out-of-tree users. We cannot support all of possible weird combinations
+>> in out-of-tree DTS files...
+> 
+> Case 1 is invalid I think.
+> 
+> How does case 2 break the binding? It breaks the driver, yes. But not
+> the binding.
+
+The binding asks to describe all the ports, not describe and disable them.
+
+> I agree on the out-of-tree argument, *but* isn't that
+> what the binding is for, that out-of-tree device trees gonna work as
+> long as they follow the binding? And I don't see where it dictates that 
+> all
+> nodes must be enabled; nor that it must either be 2 or 8 children nodes.
+
+True, that's not specific, but as with any incomplete hardware
+description in DTS, the binding cannot guarantee you
+backwards-compatibility.
+
+The hardware should be described fully in DTS and bindings expect that
+as well.
+
+> 
+>>> I assume, you cannot read the hardware itself to get the number of
+>>> physical ports; and we have the compatible "microchip,lan966x-switch",
+>>> which is the generic one, so it could be the LAN9668 (with 8 ports)
+>>> or the LAN9662 (with 2 ports).
+>>
+>> I'll keep that argument for future when I see again patches adding such
+>> wildcard compatible. :) I had to discuss with some folks...
+>>
+>> Although the compatible difference does not have to be important here,
+>> because one could say the 9662 and 9668 programming model is exaclty 
+>> the
+>> same and they differ by number of ports. This number of ports can be a
+>> dedicated property or counted from the children (if they were all
+>> available).
+> 
+> Mh. Rob was always in favor of dedicated compatible strings. And I
+> think there are also subtle differences. Eg. the LAN9662 has some kind
+> of accelerating engine, if I'm not mistaken.
+> 
+> So what do you prefer:
+> 
+>    compatible = "microchip,lan9668";
+> and
+>    compatible = "microchip,lan9662";
+
+This one.
+
+> 
+> or
+> 
+>    compatible = "microchip,lan966x";
+>    microchip,num-phys-ports = <8>;
+> and
+>    compatible = "microchip,lan966x";
+>    microchip,num-phys-ports = <2>;
+>    microchip,accelerating-engine;
+>    ..
+> 
+> The argument here was always, we don't want too much properties if
+> it can be deduced by the compatible string.
+> 
+>>> We somehow have to retain backwards
+>>> compatibility. Thus my idea was to at least make the handling slightly
+>>> better and count *any* child nodes. So it doesn't fall apart with
+>>> disabled
+>>> nodes. Then introduce proper compatible strings
+>>> "microchip,lan9668-switch"
+>>> and use that to hardcode the num_phys_ports to 8. But there will be
+>>> device trees with microchip,lan966x-switch out there, which we do want
+>>> to support.
+>>>
+>>> I see the following options:
+>>>   (1) just don't care and get rid of the "microchip,lan966x-switch"
+>>>       compatible
+>>>   (2) quick fix for the older kernels by counting all the nodes and
+>>>       proper fix for the newer kernels with dedicated compatibles
+>>>   (3) no fix for older kernels, introduce new compatibles for new
+>>>       kernels
+>>
+>> I propose this one. I would not care about out-of-tree DTSes which
+>> decided to disable random stuff and expect things working. :)
+> 
+> I'd argue, that is the usual case for all the switch bindings I
+> know of; not some unusual config. E.g. the SoC dtsi disables all
+> ports by default and only the ones which are actually connected
+> by the board are then enabled in the board dts, see
+> arch/arm/boot/dts/lan966x.dtsi
+> arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
+> 
+> That being said, I don't care too much about the older kernels.
+> So I'm fine with (3).
+
+
+Best regards,
+Krzysztof
