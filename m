@@ -2,221 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5DDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 23:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 915E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 23:49:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231393AbiF1Xrp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 19:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58498 "EHLO
+        id S230482AbiF1XtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 19:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231244AbiF1Xrj (ORCPT
+        with ESMTP id S229450AbiF1XtV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 19:47:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9131387AD
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 16:47:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67E37B8210E
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 23:47:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13242C341C8;
-        Tue, 28 Jun 2022 23:47:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656460056;
-        bh=53mXwbi49s8zWq2OJGvJkwTI8FumVuSeqxQjgBaYmYc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mVnK5DLhNZXPdhOP/lPSu8JBsgAPIoA0nfQtGaRY18xGxY/z2Ho6QarvDVd1TC/qL
-         cM5pid4KDdMZCjnfhrE4AAfe3Hwm4qL4JNFXJK6VBV27ABq0ByG8/cHjDUi/jSci2g
-         mp4v/U0OvL9J145lyd0YxSNRrH34/MOFoeMVqAfIuAydkr8ZSYc11oJW53dfaiL2Pc
-         zxFtywvX2KUGgb0iVJhptT0rlRpvhJBWizUIvz+Ub19x9KcUMFryHNLaXOWXEskaYL
-         gtlRp0kM1eByncAnSIJktR7GPSUVgtED5a/OlKitIVQMQOvRqTesZ1CY1VMP2GX4VL
-         HS1pIAdzRHKkw==
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Cc:     Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 1/3] f2fs: enforce single zone capacity
-Date:   Tue, 28 Jun 2022 16:47:31 -0700
-Message-Id: <20220628234733.3330502-1-jaegeuk@kernel.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+        Tue, 28 Jun 2022 19:49:21 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4311538D9B;
+        Tue, 28 Jun 2022 16:49:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656460160; x=1687996160;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=abqB8hsx2CRn5C6rESUaaRHsxya0aF2DV3aNj32CTmI=;
+  b=HsYs0ddBNizdTeDhPvMflWgCL7HXrH4XYfBWagBHIagrbSeAZs2/tVwG
+   zGGQkK32uY8S70fF5ugBZHgdpB2J8iJ3LxQxTQwKLjyFv4LmnaWfFY7ob
+   sV0V66YXl2/lNdwvdidOtTTbTHKCGY791lLX2O2x9bC0i1SXN4QolQroj
+   ZT6YZuKK2v+Zp7BSIDzVsvfGWW1i2IH4nMNBGlku+sbs2PGyzVmrDxQqT
+   GARvdWfIVnsErQvfa4xLO2D4LJRNgI8dfglDLlI+ZELzTIXFnOcUzV660
+   0mslW2bjJaFxOi5yYLu5r85iSmC56eE6rpPYgaHFq+LoC4uiAibj7Wgby
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282971528"
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="282971528"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 16:49:19 -0700
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="917374680"
+Received: from gregantx-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.119.76])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 16:49:16 -0700
+Message-ID: <ceb320a00eebd29d2031b94b6123ff31ba74c313.camel@intel.com>
+Subject: Re: [PATCH v5 03/22] cc_platform: Add new attribute to prevent ACPI
+ memory hotplug
+From:   Kai Huang <kai.huang@intel.com>
+To:     Igor Mammedov <imammedo@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kvm-devel <kvm@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Len Brown <len.brown@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Rafael Wysocki <rafael.j.wysocki@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        isaku.yamahata@intel.com, Tom Lendacky <thomas.lendacky@amd.com>
+Date:   Wed, 29 Jun 2022 11:49:14 +1200
+In-Reply-To: <20220628140112.661154cf@redhat.com>
+References: <cover.1655894131.git.kai.huang@intel.com>
+         <87dc19c47bad73509359c8e1e3a81d51d1681e4c.1655894131.git.kai.huang@intel.com>
+         <CAJZ5v0jEJNdmkidvcOiRn+OVt01D5095t+nyXaJHKsqEAOvcBQ@mail.gmail.com>
+         <20220628140112.661154cf@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to simplify the complicated per-zone capacity, let's support
-only one capacity for entire zoned device.
+On Tue, 2022-06-28 at 14:01 +0200, Igor Mammedov wrote:
+> On Wed, 22 Jun 2022 13:45:01 +0200
+> "Rafael J. Wysocki" <rafael@kernel.org> wrote:
+>=20
+> > On Wed, Jun 22, 2022 at 1:16 PM Kai Huang <kai.huang@intel.com> wrote:
+> > >=20
+> > > Platforms with confidential computing technology may not support ACPI
+> > > memory hotplug when such technology is enabled by the BIOS.  Examples
+> > > include Intel platforms which support Intel Trust Domain Extensions
+> > > (TDX).
+> > >=20
+> > > If the kernel ever receives ACPI memory hotplug event, it is likely a
+> > > BIOS bug.  For ACPI memory hot-add, the kernel should speak out this =
+is
+> > > a BIOS bug and reject the new memory.  For hot-removal, for simplicit=
+y
+> > > just assume the kernel cannot continue to work normally, and just BUG=
+().
+> > >=20
+> > > Add a new attribute CC_ATTR_ACPI_MEMORY_HOTPLUG_DISABLED to indicate =
+the
+> > > platform doesn't support ACPI memory hotplug, so that kernel can hand=
+le
+> > > ACPI memory hotplug events for such platform.
+> > >=20
+> > > In acpi_memory_device_{add|remove}(), add early check against this
+> > > attribute and handle accordingly if it is set.
+> > >=20
+> > > Signed-off-by: Kai Huang <kai.huang@intel.com>
+> > > ---
+> > >  drivers/acpi/acpi_memhotplug.c | 23 +++++++++++++++++++++++
+> > >  include/linux/cc_platform.h    | 10 ++++++++++
+> > >  2 files changed, 33 insertions(+)
+> > >=20
+> > > diff --git a/drivers/acpi/acpi_memhotplug.c b/drivers/acpi/acpi_memho=
+tplug.c
+> > > index 24f662d8bd39..94d6354ea453 100644
+> > > --- a/drivers/acpi/acpi_memhotplug.c
+> > > +++ b/drivers/acpi/acpi_memhotplug.c
+> > > @@ -15,6 +15,7 @@
+> > >  #include <linux/acpi.h>
+> > >  #include <linux/memory.h>
+> > >  #include <linux/memory_hotplug.h>
+> > > +#include <linux/cc_platform.h>
+> > >=20
+> > >  #include "internal.h"
+> > >=20
+> > > @@ -291,6 +292,17 @@ static int acpi_memory_device_add(struct acpi_de=
+vice *device,
+> > >         if (!device)
+> > >                 return -EINVAL;
+> > >=20
+> > > +       /*
+> > > +        * If the confidential computing platform doesn't support ACP=
+I
+> > > +        * memory hotplug, the BIOS should never deliver such event t=
+o
+> > > +        * the kernel.  Report ACPI CPU hot-add as a BIOS bug and ign=
+ore
+> > > +        * the memory device.
+> > > +        */
+> > > +       if (cc_platform_has(c)) { =20
+> >=20
+> > Same comment as for the acpi_processor driver: this will affect the
+> > initialization too and it would be cleaner to reset the
+> > .hotplug.enabled flag of the scan handler.
+>=20
+> with QEMU, it is likely broken when memory is added as
+>   '-device pc-dimm'
+> on CLI since it's advertised only as device node in DSDT.
+>=20
+>=20
 
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
----
- fs/f2fs/f2fs.h    |  2 +-
- fs/f2fs/segment.c | 19 ++++++-------------
- fs/f2fs/segment.h |  3 +++
- fs/f2fs/super.c   | 33 ++++++++++++---------------------
- 4 files changed, 22 insertions(+), 35 deletions(-)
+Hi Rafael,  Igor,
 
-diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-index c9a31934b948..1d97d06e0d87 100644
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -1235,7 +1235,6 @@ struct f2fs_dev_info {
- #ifdef CONFIG_BLK_DEV_ZONED
- 	unsigned int nr_blkz;		/* Total number of zones */
- 	unsigned long *blkz_seq;	/* Bitmap indicating sequential zones */
--	block_t *zone_capacity_blocks;  /* Array of zone capacity in blks */
- #endif
- };
- 
-@@ -1673,6 +1672,7 @@ struct f2fs_sb_info {
- 	unsigned int meta_ino_num;		/* meta inode number*/
- 	unsigned int log_blocks_per_seg;	/* log2 blocks per segment */
- 	unsigned int blocks_per_seg;		/* blocks per segment */
-+	unsigned int unusable_blocks_per_sec;	/* unusable blocks per section */
- 	unsigned int segs_per_sec;		/* segments per section */
- 	unsigned int secs_per_zone;		/* sections per zone */
- 	unsigned int total_sections;		/* total section count */
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 874c1b9c41a2..447b03579049 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -4895,7 +4895,7 @@ static unsigned int get_zone_idx(struct f2fs_sb_info *sbi, unsigned int secno,
- static inline unsigned int f2fs_usable_zone_segs_in_sec(
- 		struct f2fs_sb_info *sbi, unsigned int segno)
- {
--	unsigned int dev_idx, zone_idx, unusable_segs_in_sec;
-+	unsigned int dev_idx, zone_idx;
- 
- 	dev_idx = f2fs_target_device_index(sbi, START_BLOCK(sbi, segno));
- 	zone_idx = get_zone_idx(sbi, GET_SEC_FROM_SEG(sbi, segno), dev_idx);
-@@ -4904,18 +4904,12 @@ static inline unsigned int f2fs_usable_zone_segs_in_sec(
- 	if (is_conv_zone(sbi, zone_idx, dev_idx))
- 		return sbi->segs_per_sec;
- 
--	/*
--	 * If the zone_capacity_blocks array is NULL, then zone capacity
--	 * is equal to the zone size for all zones
--	 */
--	if (!FDEV(dev_idx).zone_capacity_blocks)
-+	if (!sbi->unusable_blocks_per_sec)
- 		return sbi->segs_per_sec;
- 
- 	/* Get the segment count beyond zone capacity block */
--	unusable_segs_in_sec = (sbi->blocks_per_blkz -
--				FDEV(dev_idx).zone_capacity_blocks[zone_idx]) >>
--				sbi->log_blocks_per_seg;
--	return sbi->segs_per_sec - unusable_segs_in_sec;
-+	return sbi->segs_per_sec - (sbi->unusable_blocks_per_sec >>
-+						sbi->log_blocks_per_seg);
- }
- 
- /*
-@@ -4944,12 +4938,11 @@ static inline unsigned int f2fs_usable_zone_blks_in_seg(
- 	if (is_conv_zone(sbi, zone_idx, dev_idx))
- 		return sbi->blocks_per_seg;
- 
--	if (!FDEV(dev_idx).zone_capacity_blocks)
-+	if (!sbi->unusable_blocks_per_sec)
- 		return sbi->blocks_per_seg;
- 
- 	sec_start_blkaddr = START_BLOCK(sbi, GET_SEG_FROM_SEC(sbi, secno));
--	sec_cap_blkaddr = sec_start_blkaddr +
--				FDEV(dev_idx).zone_capacity_blocks[zone_idx];
-+	sec_cap_blkaddr = sec_start_blkaddr + CAP_BLKS_PER_SEC(sbi);
- 
- 	/*
- 	 * If segment starts before zone capacity and spans beyond
-diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
-index 3f277dfcb131..813a892cd979 100644
---- a/fs/f2fs/segment.h
-+++ b/fs/f2fs/segment.h
-@@ -101,6 +101,9 @@ static inline void sanity_check_seg_type(struct f2fs_sb_info *sbi,
- 		GET_SEGNO_FROM_SEG0(sbi, blk_addr)))
- #define BLKS_PER_SEC(sbi)					\
- 	((sbi)->segs_per_sec * (sbi)->blocks_per_seg)
-+#define CAP_BLKS_PER_SEC(sbi)					\
-+	((sbi)->segs_per_sec * (sbi)->blocks_per_seg -		\
-+	 (sbi)->unusable_blocks_per_sec)
- #define GET_SEC_FROM_SEG(sbi, segno)				\
- 	(((segno) == -1) ? -1: (segno) / (sbi)->segs_per_sec)
- #define GET_SEG_FROM_SEC(sbi, secno)				\
-diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-index cf9cf24f9b56..faf9a767d05a 100644
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -1522,7 +1522,6 @@ static void destroy_device_list(struct f2fs_sb_info *sbi)
- 		blkdev_put(FDEV(i).bdev, FMODE_EXCL);
- #ifdef CONFIG_BLK_DEV_ZONED
- 		kvfree(FDEV(i).blkz_seq);
--		kfree(FDEV(i).zone_capacity_blocks);
- #endif
- 	}
- 	kvfree(sbi->devs);
-@@ -3673,24 +3672,29 @@ static int init_percpu_info(struct f2fs_sb_info *sbi)
- #ifdef CONFIG_BLK_DEV_ZONED
- 
- struct f2fs_report_zones_args {
-+	struct f2fs_sb_info *sbi;
- 	struct f2fs_dev_info *dev;
--	bool zone_cap_mismatch;
- };
- 
- static int f2fs_report_zone_cb(struct blk_zone *zone, unsigned int idx,
- 			      void *data)
- {
- 	struct f2fs_report_zones_args *rz_args = data;
-+	block_t unusable_blocks = (zone->len - zone->capacity) >>
-+					F2FS_LOG_SECTORS_PER_BLOCK;
- 
- 	if (zone->type == BLK_ZONE_TYPE_CONVENTIONAL)
- 		return 0;
- 
- 	set_bit(idx, rz_args->dev->blkz_seq);
--	rz_args->dev->zone_capacity_blocks[idx] = zone->capacity >>
--						F2FS_LOG_SECTORS_PER_BLOCK;
--	if (zone->len != zone->capacity && !rz_args->zone_cap_mismatch)
--		rz_args->zone_cap_mismatch = true;
--
-+	if (!rz_args->sbi->unusable_blocks_per_sec) {
-+		rz_args->sbi->unusable_blocks_per_sec = unusable_blocks;
-+		return 0;
-+	}
-+	if (rz_args->sbi->unusable_blocks_per_sec != unusable_blocks) {
-+		f2fs_err(rz_args->sbi, "F2FS supports single zone capacity\n");
-+		return -EINVAL;
-+	}
- 	return 0;
- }
- 
-@@ -3731,26 +3735,13 @@ static int init_blkz_info(struct f2fs_sb_info *sbi, int devi)
- 	if (!FDEV(devi).blkz_seq)
- 		return -ENOMEM;
- 
--	/* Get block zones type and zone-capacity */
--	FDEV(devi).zone_capacity_blocks = f2fs_kzalloc(sbi,
--					FDEV(devi).nr_blkz * sizeof(block_t),
--					GFP_KERNEL);
--	if (!FDEV(devi).zone_capacity_blocks)
--		return -ENOMEM;
--
-+	rep_zone_arg.sbi = sbi;
- 	rep_zone_arg.dev = &FDEV(devi);
--	rep_zone_arg.zone_cap_mismatch = false;
- 
- 	ret = blkdev_report_zones(bdev, 0, BLK_ALL_ZONES, f2fs_report_zone_cb,
- 				  &rep_zone_arg);
- 	if (ret < 0)
- 		return ret;
--
--	if (!rep_zone_arg.zone_cap_mismatch) {
--		kfree(FDEV(devi).zone_capacity_blocks);
--		FDEV(devi).zone_capacity_blocks = NULL;
--	}
--
- 	return 0;
- }
- #endif
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+On my test machine, the acpi_memory_device_add() is not called for system
+memory.  It probably because my machine doesn't have memory device in ACPI.
+
+I don't know whether we can have any memory device in ACPI if such memory i=
+s
+present during boot?  Any comments here?
+
+And CC_ATTR_ACPI_MEMORY_HOTPLUG_DISABLED is only true on TDX bare-metal sys=
+tem,
+but cannot be true in Qemu guest.  But yes if this flag ever becomes true i=
+n
+guest, then I think we may have problem here.  I will do more study around =
+ACPI.
+Thanks for comments!
+
+--=20
+Thanks,
+-Kai
+
 
