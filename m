@@ -2,93 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31CD1CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C80CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230072AbiF1Vcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 17:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42048 "EHLO
+        id S231338AbiF1Vcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 17:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230498AbiF1Vce (ORCPT
+        with ESMTP id S230282AbiF1Vci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 17:32:34 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63783AA7B;
-        Tue, 28 Jun 2022 14:32:33 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id i67-20020a1c3b46000000b003a03567d5e9so8577696wma.1;
-        Tue, 28 Jun 2022 14:32:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e5o0RO1o3C2mILdamTa9jqoyqij/R5DqmgtFxZkmgvw=;
-        b=Drpq6Jf622qVqtSLedzPOxD+wUODaRpZDIhCGppz8csCq4zAI7/cEo1l672ZkxgTiz
-         YoF/6VKbiIbYc+3WgO/Hh3s0s4ALEIWGkghEKPMvsArtenCrct2kCP7bAn9eTGSFxEA1
-         9EYgOhbwxfVvUd4ZbR9pV9aQNwB6gVWNFn2uUbtjFbw/2stSok1f69wjN5iv2tDs+/QU
-         aJgwskEzDZ2tZBJztzeQ4qosRs6qWbr5ZmrdDl2se1KJ8o57R/5syVElbhUm6ra5KKo5
-         OW/QsLaif+Hrkyq4BwcswkLzw3l7uJRc9bPDr54UwEwdAQ/UGUOtJX1IUDh/ilF4AcwH
-         1gPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e5o0RO1o3C2mILdamTa9jqoyqij/R5DqmgtFxZkmgvw=;
-        b=6WEulTvATxQWYdhnQTrzdxas3xV0odx12xQpVeHEZW9EtOy/ELAVIljEO8IDBBMYLN
-         GTacmdebRZs+w7lhd57SoBHVppJR2YzR19gs/qXZ9B/mbwlUpX10UY4rSUNgy2ySzWhr
-         qaLXbfrEbdZOajptuJzsF+IG6iT16GkGPNplbhedXx/X21cczuzdKhIr5cl2MMptDdKw
-         rO2hCBzf+hU/46kB6Xrsy4JxX/zuonM/4FzxUyuSY+eDW8p96u4/VL+Jm8VbexQMH0c/
-         DZ0lnOnydl9e05zP+KsLYOriS6xY/DK/XsywiTTpiqpPNe/yAjbBvriV4XaSrz1XLTJc
-         GdDA==
-X-Gm-Message-State: AJIora+Cv2fmoQYca0NkGxIdkebCV3BmWVGqEl+jNYJTD+RT/cX6cQ0A
-        MAXB7qA2iSZXCcjh85DDUoRqseJsbRyrMb8MCxM=
-X-Google-Smtp-Source: AGRyM1vhq0vdwiaKnwcWI+wpOY5hAe08ANlKQlH12nQAhOH/I4LRm+G9d+QWw/hSUh+0Zs1ozUM7xQ==
-X-Received: by 2002:a05:600c:3c8a:b0:3a0:4ad8:d3c4 with SMTP id bg10-20020a05600c3c8a00b003a04ad8d3c4mr1816767wmb.43.1656451952303;
-        Tue, 28 Jun 2022 14:32:32 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id h5-20020a5d4305000000b00210bac248c8sm14672384wrq.11.2022.06.28.14.32.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 14:32:31 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Steve French <sfrench@samba.org>, linux-cifs@vger.kernel.org,
-        samba-technical@lists.samba.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] cifs: remove redundant initialization to variable mnt_sign_enabled
-Date:   Tue, 28 Jun 2022 22:32:29 +0100
-Message-Id: <20220628213229.354032-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Tue, 28 Jun 2022 17:32:38 -0400
+X-Greylist: delayed 331 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 28 Jun 2022 14:32:36 PDT
+Received: from pio-pvt-msa1.bahnhof.se (pio-pvt-msa1.bahnhof.se [79.136.2.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A783AA7A;
+        Tue, 28 Jun 2022 14:32:36 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by pio-pvt-msa1.bahnhof.se (Postfix) with ESMTP id 919EB3FD63;
+        Tue, 28 Jun 2022 23:27:03 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at bahnhof.se
+Authentication-Results: pio-pvt-msa1.bahnhof.se (amavisd-new);
+        dkim=pass (1024-bit key) header.d=shipmail.org
+Received: from pio-pvt-msa1.bahnhof.se ([127.0.0.1])
+        by localhost (pio-pvt-msa1.bahnhof.se [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Dc2aFG-pVafs; Tue, 28 Jun 2022 23:27:02 +0200 (CEST)
+Received: by pio-pvt-msa1.bahnhof.se (Postfix) with ESMTPA id AEB693FDAA;
+        Tue, 28 Jun 2022 23:26:58 +0200 (CEST)
+Received: from [192.168.0.209] (h-155-4-205-35.A357.priv.bahnhof.se [155.4.205.35])
+        by mail1.shipmail.org (Postfix) with ESMTPSA id 9AA06360156;
+        Tue, 28 Jun 2022 23:26:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=shipmail.org; s=mail;
+        t=1656451618; bh=ytcDsDZId1FXW7EIkS2vLuiS9VYbZskPayG7B85WlHM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=X+B+WnRob8hg5hOiIRj9AvbJ5diUA33ARcN993ZZQPEzHdlHsiKt8+qlYRCgjTyfG
+         ps+3/ZqSvyJeQdOXk/lQcIjKzkTFOGguhtbYDHn/RqNQYZuDiHB+kWuEW/Pt1GiM1j
+         Xu8V0jFNaU6WQL+FCf5BhdHiO2jnqOkkwTPYPEpw=
+Message-ID: <90fe74f6-a622-e4ae-3004-6f1bc1790247@shipmail.org>
+Date:   Tue, 28 Jun 2022 23:26:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v6 14/22] dma-buf: Introduce new locking convention
+Content-Language: en-US
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Qiang Yu <yuq825@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc:     intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org,
+        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
+        linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        kernel@collabora.com, linux-media@vger.kernel.org
+References: <20220526235040.678984-1-dmitry.osipenko@collabora.com>
+ <20220526235040.678984-15-dmitry.osipenko@collabora.com>
+ <0a02a31d-a256-4ca4-0e35-e2ea1868a8ae@amd.com>
+ <e6e17c52-43c2-064b-500e-325bb3ba3b2c@collabora.com>
+ <02e7946b-34ca-b48e-1ba6-e7b63740a2d9@amd.com>
+ <7372dd1b-06f7-5336-4738-15f9b4d4d4b3@collabora.com>
+From:   =?UTF-8?Q?Thomas_Hellstr=c3=b6m_=28Intel=29?= 
+        <thomas_os@shipmail.org>
+In-Reply-To: <7372dd1b-06f7-5336-4738-15f9b4d4d4b3@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Variable mnt_sign_enabled is being initialized with a value that
-is never read, it is being reassigned later on with a different
-value. The initialization is redundant and can be removed.
 
-Cleans up clang scan-build warning:
-fs/cifs/cifssmb.c:465:7: warning: Value stored to 'mnt_sign_enabled
- during its initialization is never read
+On 5/30/22 15:57, Dmitry Osipenko wrote:
+> On 5/30/22 16:41, Christian König wrote:
+>> Hi Dmitry,
+>>
+>> Am 30.05.22 um 15:26 schrieb Dmitry Osipenko:
+>>> Hello Christian,
+>>>
+>>> On 5/30/22 09:50, Christian König wrote:
+>>>> Hi Dmitry,
+>>>>
+>>>> First of all please separate out this patch from the rest of the series,
+>>>> since this is a complex separate structural change.
+>>> I assume all the patches will go via the DRM tree in the end since the
+>>> rest of the DRM patches in this series depend on this dma-buf change.
+>>> But I see that separation may ease reviewing of the dma-buf changes, so
+>>> let's try it.
+>> That sounds like you are underestimating a bit how much trouble this
+>> will be.
+>>
+>>>> I have tried this before and failed because catching all the locks in
+>>>> the right code paths are very tricky. So expect some fallout from this
+>>>> and make sure the kernel test robot and CI systems are clean.
+>>> Sure, I'll fix up all the reported things in the next iteration.
+>>>
+>>> BTW, have you ever posted yours version of the patch? Will be great if
+>>> we could compare the changed code paths.
+>> No, I never even finished creating it after realizing how much work it
+>> would be.
+>>
+>>>>> This patch introduces new locking convention for dma-buf users. From
+>>>>> now
+>>>>> on all dma-buf importers are responsible for holding dma-buf
+>>>>> reservation
+>>>>> lock around operations performed over dma-bufs.
+>>>>>
+>>>>> This patch implements the new dma-buf locking convention by:
+>>>>>
+>>>>>      1. Making dma-buf API functions to take the reservation lock.
+>>>>>
+>>>>>      2. Adding new locked variants of the dma-buf API functions for
+>>>>> drivers
+>>>>>         that need to manage imported dma-bufs under the held lock.
+>>>> Instead of adding new locked variants please mark all variants which
+>>>> expect to be called without a lock with an _unlocked postfix.
+>>>>
+>>>> This should make it easier to remove those in a follow up patch set and
+>>>> then fully move the locking into the importer.
+>>> Do we really want to move all the locks to the importers? Seems the
+>>> majority of drivers should be happy with the dma-buf helpers handling
+>>> the locking for them.
+>> Yes, I clearly think so.
+>>
+>>>>>      3. Converting all drivers to the new locking scheme.
+>>>> I have strong doubts that you got all of them. At least radeon and
+>>>> nouveau should grab the reservation lock in their ->attach callbacks
+>>>> somehow.
+>>> Radeon and Nouveau use gem_prime_import_sg_table() and they take resv
+>>> lock already, seems they should be okay (?)
+>> You are looking at the wrong side. You need to fix the export code path,
+>> not the import ones.
+>>
+>> See for example attach on radeon works like this
+>> drm_gem_map_attach->drm_gem_pin->radeon_gem_prime_pin->radeon_bo_reserve->ttm_bo_reserve->dma_resv_lock.
+> Yeah, I was looking at the both sides, but missed this one.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- fs/cifs/cifssmb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Also i915 will run into trouble with attach. In particular since i915 
+starts a full ww transaction in its attach callback to be able to lock 
+other objects if migration is needed. I think i915 CI would catch this 
+in a selftest.
 
-diff --git a/fs/cifs/cifssmb.c b/fs/cifs/cifssmb.c
-index 6371b9eebdad..9ed21752f2df 100644
---- a/fs/cifs/cifssmb.c
-+++ b/fs/cifs/cifssmb.c
-@@ -462,7 +462,7 @@ cifs_enable_signing(struct TCP_Server_Info *server, bool mnt_sign_required)
- {
- 	bool srv_sign_required = server->sec_mode & server->vals->signing_required;
- 	bool srv_sign_enabled = server->sec_mode & server->vals->signing_enabled;
--	bool mnt_sign_enabled = global_secflags & CIFSSEC_MAY_SIGN;
-+	bool mnt_sign_enabled;
- 
- 	/*
- 	 * Is signing required by mnt options? If not then check
--- 
-2.35.3
+Perhaps it's worthwile to take a step back and figure out, if the 
+importer is required to lock, which callbacks might need a ww acquire 
+context?
 
+(And off-topic, Since we do a lot of fancy stuff under dma-resv locks 
+including waiting for fences and other locks, IMO taking these locks 
+uninterruptible should ring a warning bell)
+
+/Thomas
+
+>
+>> Same for nouveau and probably a few other exporters as well. That will
+>> certainly cause a deadlock if you don't fix it.
+>>
+>> I strongly suggest to do this step by step, first attach/detach and then
+>> the rest.
+> Thank you very much for the suggestions. I'll implement them in the next
+> version.
+>
