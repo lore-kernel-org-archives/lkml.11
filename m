@@ -2,57 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83CEECCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:47:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344443AbiF1JrU (ORCPT
+        id S1344460AbiF1JrZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        Tue, 28 Jun 2022 05:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344309AbiF1Jqf (ORCPT
+        with ESMTP id S1344310AbiF1Jqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 05:46:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970AC25C69;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786E925C5C;
         Tue, 28 Jun 2022 02:46:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1191D617EF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C787B81D91;
         Tue, 28 Jun 2022 09:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 580D6C36AEB;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B33FC341CF;
         Tue, 28 Jun 2022 09:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656409590;
-        bh=wOl3phQK/9dc8MhyVGH3zTw/kzoObzt1n8crGoupegI=;
+        bh=ahdzpqYwi4rLbemhWXEKhNIrYuQYS6uMQzIKxHuMXDI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QKNOLdAgIvkT4X0FxaygrM4yibUdjhAvTqPQ7kO0iAvmvgn5XbUyygCIqqD65Udur
-         2Yp+3vwpX2T1jnC3bnFmc4NnrFvGW1dhmdZpRY9X5u6JM16c4kRrbiwlNqfBLyb0+v
-         aDH/wA7eZkZK/MoozW1Cff+MhD6xPlpvYkpxTlP4iXHEAFPBZQKGk2bWPNYoCv2hmS
-         gsvnqrBBvgyAxpAKjkZjv///VTxm7CJmQVps6auaZ2cmSrgA3RWh5XwiO/GqswQqco
-         cBU2zfjCd8YBGkqcYtWPnq1VrSO4aZLhwAvOjW5xwOw0dPqPJ+bxUx6mVDckPmV8ZA
-         WpV1EUUkQuaUw==
+        b=QZezjzuKXXhgx44O2x6Iw9Zlvv+iyQpkIIikfCvEF04mzxQzxUmZ2pQ2lB1c40Yjm
+         CSx2AhNwnfnTAq/7DFWRNer1u9QpCcZOnbQ5AMTmndeDI92/NvdP5nRinbDBed3L40
+         GhhJtO4SZUHv7Sjr23/dUinep0hVB1mXT+yX8Q3sjLOqyZznWW1e+x3zjAEjY1NfTF
+         MYtbwNf1xh/wLXQ6+Xi3yWfFBKrBb6E8YTZyGQ1+isbvaa4tYLFTsrjmTWjSn96bio
+         Z7GrwsrEp5X+wsOJy1cRGubqbSXH2jTZ5MVqJtJhB5jSLaNna7iojFuEeL+GiiJIIi
+         apcptWz+9DvPA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o67nf-005HFX-Tp;
+        id 1o67nf-005HF7-PD;
         Tue, 28 Jun 2022 10:46:27 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Marco Elver <elver@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        dri-devel@lists.freedesktop.org, kasan-dev@googlegroups.com,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org
-Subject: [PATCH 14/22] kfence: fix a kernel-doc parameter
-Date:   Tue, 28 Jun 2022 10:46:18 +0100
-Message-Id: <687a2e724020d135bc7dfef0ec9010a00ecc0a3a.1656409369.git.mchehab@kernel.org>
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: [PATCH 08/22] devfreq: shut up kernel-doc warnings
+Date:   Tue, 28 Jun 2022 10:46:12 +0100
+Message-Id: <6a15081e17d78e914526c315d5bb53ea575edf90.1656409369.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656409369.git.mchehab@kernel.org>
 References: <cover.1656409369.git.mchehab@kernel.org>
@@ -62,11 +58,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel-doc markup is missing the slab pointer description:
+There are 4 warnings there:
+	drivers/devfreq/devfreq.c:707: warning: Function parameter or member 'val' not described in 'qos_min_notifier_call'
+	drivers/devfreq/devfreq.c:707: warning: Function parameter or member 'ptr' not described in 'qos_min_notifier_call'
+	drivers/devfreq/devfreq.c:717: warning: Function parameter or member 'val' not described in 'qos_max_notifier_call'
+	drivers/devfreq/devfreq.c:717: warning: Function parameter or member 'ptr' not described in 'qos_max_notifier_call'
 
-	include/linux/kfence.h:221: warning: Function parameter or member 'slab' not described in '__kfence_obj_info'
-
-Document it.
+It turns that neither val nor ptr are actually used on those
+function, so document as such.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -74,21 +73,31 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/22] at: https://lore.kernel.org/all/cover.1656409369.git.mchehab@kernel.org/
 
- include/linux/kfence.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/devfreq/devfreq.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/linux/kfence.h b/include/linux/kfence.h
-index 726857a4b680..9c242f4e9fab 100644
---- a/include/linux/kfence.h
-+++ b/include/linux/kfence.h
-@@ -210,6 +210,7 @@ struct kmem_obj_info;
-  * __kfence_obj_info() - fill kmem_obj_info struct
-  * @kpp: kmem_obj_info to be filled
-  * @object: the object
-+ * @slab: pointer to slab
-  *
-  * Return:
-  * * false - not a KFENCE object
+diff --git a/drivers/devfreq/devfreq.c b/drivers/devfreq/devfreq.c
+index 01474daf4548..3020855d8400 100644
+--- a/drivers/devfreq/devfreq.c
++++ b/drivers/devfreq/devfreq.c
+@@ -700,6 +700,8 @@ static int qos_notifier_call(struct devfreq *devfreq)
+ /**
+  * qos_min_notifier_call() - Callback for QoS min_freq changes.
+  * @nb:		Should be devfreq->nb_min
++ * @val:	not used
++ * @ptr:	not used
+  */
+ static int qos_min_notifier_call(struct notifier_block *nb,
+ 					 unsigned long val, void *ptr)
+@@ -710,6 +712,8 @@ static int qos_min_notifier_call(struct notifier_block *nb,
+ /**
+  * qos_max_notifier_call() - Callback for QoS max_freq changes.
+  * @nb:		Should be devfreq->nb_max
++ * @val:	not used
++ * @ptr:	not used
+  */
+ static int qos_max_notifier_call(struct notifier_block *nb,
+ 					 unsigned long val, void *ptr)
 -- 
 2.36.1
 
