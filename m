@@ -2,115 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B6ADC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7D8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243105AbiF1IbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
+        id S245475AbiF1IbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245258AbiF1IbB (ORCPT
+        with ESMTP id S245396AbiF1IbK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:31:01 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B033626AC5
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:31:00 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 9so11506959pgd.7
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:31:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2TpQEUwBlGb88p4IGzi7coXlKXR6VM/Rxu7edgxZRdk=;
-        b=aDHAR+gThE7DCHiMc4w+Xv3mkdu4rkVcgXPF4v+8X8PUvOGiD8/v36X1k4A6RW/uNs
-         Wcs/s0KQGad+czgeUL1BFEdgFXjpzIGT9VHf1J3Btmuqn5TWE1SO9k3Ub1Cuj2wPXdjP
-         oiHmgyW3Mo1xkPaGmn+cEOLw9ylL/C2D5qGfZNSwOS4wUGIXKAQsYoRB3mscXSt9hez0
-         6DsC1Mnw75dCIc/sU+YFSvQTk+9Ik1HJc+8FpUxpk7njKXZhvdr8dGLt8h34iV3XUKkz
-         zAJL1cMHV+FtKiGWoDgKggTNoEugbHIL95tfX/HdtkUF9FBTCUSyWxKu+o8Z230rCi/n
-         5IJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2TpQEUwBlGb88p4IGzi7coXlKXR6VM/Rxu7edgxZRdk=;
-        b=eLHF4dUEi3xxAJb83BRIqH/r4q0BCJY+yYt3l/krF5ZGbpZPu1t3sBro47hIzXk1ia
-         F9+e4Vt10hbg8BxkgTDAD/egwms9xUdtM64ykUHVkfGUsOFxdqsU+eyY4r853RJ/p2BI
-         9SiAGAtKbSkqkPfqWFmwMuYUYyKHOfBe/bZxox1rWoGngwK8Z+jh385g/TtI5Sq6/yFw
-         uqaxJHZ8st4q7KfEiNQ7P2YZwoGgJCqwpez95Lb+j4TVmXp+rSeTJPbtxkvvzOadcNLv
-         XL7q1kqKhL14vCs+wKzLNX7tEML3GwbbJdi7/NVlkoB4p3geW7YhgKSb0iMlRFg64KA6
-         mbkA==
-X-Gm-Message-State: AJIora8bA6KshoyomLay/4bOzltRFHvZI+EeBPEYNfXxE0HJW7FqlMnZ
-        bAHDid4pjQCqJjM6iBr3WHs=
-X-Google-Smtp-Source: AGRyM1t7VQLkR1oO3Z/OyJLVwJsR2RoJKs4ViIJTiEBeq57yqGnKG7zKU0eZOc74hdIrVGHSNEbuIg==
-X-Received: by 2002:a05:6a00:1489:b0:525:b83f:b32f with SMTP id v9-20020a056a00148900b00525b83fb32fmr3542633pfu.25.1656405059955;
-        Tue, 28 Jun 2022 01:30:59 -0700 (PDT)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id u9-20020a170902e5c900b0016760c06b76sm250708plf.194.2022.06.28.01.30.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 01:30:59 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 17:30:57 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Openrisc <openrisc@lists.librecores.org>,
-        Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH] irqchip: or1k-pic: Undefine mask_ack for level triggered
- hardware
-Message-ID: <Yrq8QaYRfcnRJcKP@antec>
-References: <20220628012854.681220-1-shorne@gmail.com>
- <877d512o0a.wl-maz@kernel.org>
+        Tue, 28 Jun 2022 04:31:10 -0400
+Received: from relay.uni-heidelberg.de (relay.uni-heidelberg.de [129.206.100.212])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CE926540
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:31:08 -0700 (PDT)
+X-IPAS-Result: =?us-ascii?q?A2DBBQCEu7piffxkzoFagliDJYFXlBABAQEGjHGHH4ong?=
+ =?us-ascii?q?gcBAQEBAQEBAQEJLxMEAQFAig8nNgcOAQIEAQEBAQMCAwEBAQEBAQMBAQYBA?=
+ =?us-ascii?q?QEBAQcEFAEBIzwnhWgNhkMGJwsBRhBRVxmCeAIBAQKCZAEDMK4uMoEBhloBg?=
+ =?us-ascii?q?T+BZYE9iVmFH4FAgRCBSIM1hAuBBoVuBJoGCgMJBAcFRhcSTjEhAkULHAEIB?=
+ =?us-ascii?q?gYHAQgBBQgoBAIBAQEGBRgUAQMBARMSBRMMBygKEgISDAobBwcDCwUyDQIOB?=
+ =?us-ascii?q?wEBDA8BAg8DAQIRAQcCCRIIBg8rCAMBAQMBBwECAgMgCwIDFgkHCAIBAgUCA?=
+ =?us-ascii?q?gEDDwEIChwSEBQCBA0EHgkCCAECGR4sBwICBA4DIx8ICwoDDgMEAwEQAhgHA?=
+ =?us-ascii?q?gEVAQUCBAgEAQMGAwgVGQENJwQHAxICDQEGAQIGAQEFBQEDGAgDFAMFAQIIA?=
+ =?us-ascii?q?xYHAQIhBQomCQQNAwEiGwIDAwEEGwoCAQICBRYFAgEBAgMCBhUGAgI/LxEdD?=
+ =?us-ascii?q?QgECAQJEhwjAQIMAQQBAgcvBQQtAgEBHgQFAQUPAggBARYCBgQDAgIDAQECA?=
+ =?us-ascii?q?RYCEAgCCCcXBxMzGQEFNxQODwEDBggZHCIHCQcFBhYDDBUpHikFBxESGw8ED?=
+ =?us-ascii?q?Q0KNCAWJAEBDgUDARIZEQ4HFApTJiEVEAYBKxYDBAEDAwIGGgECAyICEgsJF?=
+ =?us-ascii?q?QIELQUBIh0Zm0oBgQ1Ol3uLDqBTB4NREAGLEJUmhUWRHQKSAJZwonGETzWBM?=
+ =?us-ascii?q?wJAgUxNI4M4CUgZD5dUhR5zOwIGCwEBAwmMOYJIAQE?=
+IronPort-Data: A9a23:Q+yrlaxjgot6gQYK1mh6t+etxirEfRIJ4+MujC+fZmUNrF6WrkVTz
+ GYfCmmFb//fZjahf493O4mw80lUupTWzIM3SgBrqlhgHilAwSbnLY3EcR2gYX/6wu4v7q5Dx
+ 59DAjUVBJlsFhcwnj/0bv656yMUOZigHtIQMsacUsxKbVIiGX1JZS5LwbZj2NY224jhWmthh
+ PuryyHhEA79s9JLGj9Mg06zgEsHUCPa4W5wUvQWPJinjXeG/5UnJMt3yZKZdxMUdrJp8tuSH
+ I4v+l0ZElTxpH/BAvv9+lryn9ZjrrT6ZWBigVIOM0Sub4QrSiEais4G2PQghUh/qjzKh/NLj
+ 993jZmzThYVE5TctdpDTEwNe81+FfUuFL7vJHG+tZTKiVDAcj7szvRiAUU8MJcXvOp6aY1M3
+ aVCeXZXNk7F3rruhujmEIGAhex6RCXvFJgUunVt1SnUF949XY3PBbjM5JpY0TY8i8REEOzRI
+ cYUAdZqRE2ePkAWZg5KU/rSms+jl1TjTAF6kmu/rKMG+XX09B12jODUZY+9ltuiHpkLwhzB/
+ goq5V/RHRMBM8CW4TWA+3OowOTImEvTV5gfG7643vprhkCDyGsODhEfSVq8p7++kEHWc9ZeL
+ VEEvzEypKcz8kODStjmQwb+pH+Cow5aV9dOe8U0sxqGyuzb4hqxAXUYSjlGa5ots8pebTgr0
+ EKZ2tDkHzpitJWLRn+HsLSZtzW/PW4SN2BqWMMfZQ4M4t27+ccuiBOKTttiHKOxhNDvFnf8z
+ lhmsRTSmZ0yhI0T9J/892r/hjGrt6Tkdx4Y2FvICzfNAhxCWKapYImh6F7+5PlGLZqEQlTpg
+ JTis5bHhAzpJczd/BFhUNnhD5n1tqrcaGK0bUpHT8dxr23FF2uLINgIiAySMnuFJe4oVFcFi
+ mfztAJd6ZtZMWGlBUOcS9zgUp5ypUQMPf7sWv3SK+XltoJtaAKC9ix0aiatM43FlUEtlflmf
+ 4qdcIOsAHcWBKBtwSC5AesQuVPK+szc7T2DLXwY5035uVZ7WJJzYetaWLdpRrtohJ5oWC2Pr
+ 75i2zKikn2zqtHWbCjN6pI0JlsXN3U9Dp2eg5UJK7DYf1Y4Qj9/UKa5LVYdl2pNwfU9egDgo
+ C3VZ6Ok4ASu7ZE6AV/SOy09Me2HsWhX/SlrbUTAwmpEK1B4Pdjztv5HH3fGVbMq8PN+wLZpS
+ fgbdt+bA+heAjLK5ysad5qVkWCRXEvDuO56BAL7O2JXV8A7GGT0FirMJFaHGN8mUnHq76PTY
+ tSIimvmfHb0b14yUJuJMKP/lAjZULp0sLsaYnYk6+J7IC3EmLWG4QSr5hPrC6ng8Sn++wY=
+IronPort-HdrOrdr: A9a23:z/KNfq8m18YpnA8M7zVuk+DPI+orL9Y04lQ7vn2ZLiY0TiX4ra
+ GTdZEgvnXJYVkqKRMdcK+7Scy9qB/nmKKdgrN+AV7BZniEhILAFugL0WKI+VLd8kPFmtK13J
+ 0QF5RDNA==
+X-IronPort-Anti-Spam-Filtered: true
+Received: from mail01.uni-heidelberg.de ([129.206.100.252])
+  by relay.uni-heidelberg.de with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Jun 2022 10:31:08 +0200
+Received: from localhost (ip-037-209-006-204.um11.pools.vodafone-ip.de [37.209.6.204])
+        (Authenticated sender: ln194)
+        by mail01.uni-heidelberg.de (Postfix) with ESMTPSA id D7C19300084F1;
+        Tue, 28 Jun 2022 10:31:06 +0200 (CEST)
+From:   Felix Schlepper <f3sch.git@outlook.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        wjsota@gmail.com, Felix Schlepper <f3sch.git@outlook.com>
+Subject: [PATCH 2/7] Staging: rtl8192e: Added spaces around binary operators
+Date:   Tue, 28 Jun 2022 10:30:51 +0200
+Message-Id: <627de456888fe0b665a04078081abc0418f4aba0.1656402464.git.f3sch.git@outlook.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1656402464.git.f3sch.git@outlook.com>
+References: <cover.1656402464.git.f3sch.git@outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <877d512o0a.wl-maz@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 09:25:25AM +0100, Marc Zyngier wrote:
-> On Tue, 28 Jun 2022 02:28:54 +0100,
-> Stafford Horne <shorne@gmail.com> wrote:
-> > 
-> > The mask_ack operation clears the interrupt by writing to the PICSR
-> > register.  This we don't want for level triggered interrupt because
-> > it does not actually clear the interrupt on the source hardware.
-> > 
-> > This was causing issues in qemu with multi core setups where
-> > interrupts would continue to fire even though they had been cleared in
-> > PICSR.
-> > 
-> > Just remove the mask_ack operation.
-> > 
-> > Signed-off-by: Stafford Horne <shorne@gmail.com>
-> > ---
-> > Note,
-> > 
-> > I currently have this queued with openrisc fixes for 5.19-rcX.  If this is ok
-> > with the IRQ maintainers I would like to have this merged via the OpenRISC
-> > queue.
-> > 
-> >  drivers/irqchip/irq-or1k-pic.c | 1 -
-> >  1 file changed, 1 deletion(-)
-> > 
-> > diff --git a/drivers/irqchip/irq-or1k-pic.c b/drivers/irqchip/irq-or1k-pic.c
-> > index 49b47e787644..f289ccd95291 100644
-> > --- a/drivers/irqchip/irq-or1k-pic.c
-> > +++ b/drivers/irqchip/irq-or1k-pic.c
-> > @@ -66,7 +66,6 @@ static struct or1k_pic_dev or1k_pic_level = {
-> >  		.name = "or1k-PIC-level",
-> >  		.irq_unmask = or1k_pic_unmask,
-> >  		.irq_mask = or1k_pic_mask,
-> > -		.irq_mask_ack = or1k_pic_mask_ack,
-> >  	},
-> >  	.handle = handle_level_irq,
-> >  	.flags = IRQ_LEVEL | IRQ_NOPROBE,
-> 
-> Acked-by: Marc Zyngier <maz@kernel.org>
-> 
-> Feel free to take this via your tree.
+This addresses two issues raised by checkpatch.pl:
 
-Thanks,
+     $ ./scripts/checkpatch.pl --terse -f drivers/staging/rtl8192e/rtllib_wx.c
+     CHECK: spaces preferred around that '&' (ctx:VxV)
+     CHECK: spaces preferred around that '<<' (ctx:VxV)
 
--Stafford
+Signed-off-by: Felix Schlepper <f3sch.git@outlook.com>
+---
+ drivers/staging/rtl8192e/rtllib_wx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/rtl8192e/rtllib_wx.c b/drivers/staging/rtl8192e/rtllib_wx.c
+index 3b81a3395527..7bd1e829ff7e 100644
+--- a/drivers/staging/rtl8192e/rtllib_wx.c
++++ b/drivers/staging/rtl8192e/rtllib_wx.c
+@@ -74,7 +74,7 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
+ 	/* Add the protocol name */
+ 	iwe.cmd = SIOCGIWNAME;
+ 	for (i = 0; i < ARRAY_SIZE(rtllib_modes); i++) {
+-		if (network->mode&(1<<i)) {
++		if (network->mode & (1 << i)) {
+ 			sprintf(pname, rtllib_modes[i].mode_string,
+ 				rtllib_modes[i].mode_size);
+ 			pname += rtllib_modes[i].mode_size;
+-- 
+2.36.1
+
