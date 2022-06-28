@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C1BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF67CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235908AbiF1QrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 12:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
+        id S232816AbiF1Qr0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 12:47:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235451AbiF1QpQ (ORCPT
+        with ESMTP id S232518AbiF1QpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 12:45:16 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082C3CD0
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:43:38 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id w24so13108222pjg.5
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:43:38 -0700 (PDT)
+        Tue, 28 Jun 2022 12:45:18 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0163F02
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:43:41 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id z14so12765050pgh.0
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:43:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=azmnwrMZHeA43DXmKhCm4zPb23uVlcqIUzKv3vZ1enM=;
-        b=VEIxru17lcuOuYj/wzDNdKtINKZiWHVSR/fs7E0U+9JLY0FO1AIfDKNwEVxBDQjtgP
-         AhqsmYmQkiM/ms1cr0Kds0nCLlNnGV6CV17SXhwBzJp1WQubQB96+cMA3aJPWTjxYox9
-         Ya32xyXswU0zrugBcK3mdqN+zYnS3nmO3hxrY=
+        bh=CigKiZg0uMYJOja2S1ioYAwjFvjzwsvhihcuBCgrFS0=;
+        b=BfUSo+JSGYR/osbm80GN5qp4PwENlBR5AgI8OaU/4sEH594hZXjUgzJp7klOPj6+gg
+         VHq9DnqGr2Qi9ZexfpZOmywueR8UM8UbCjsQ22brWP/phqhNhlVmCyHsWeYVrdA0QZ4T
+         Nfwu2BibR7zRMSP6dCqhBj4Rsh/OgQ4dSllGc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=azmnwrMZHeA43DXmKhCm4zPb23uVlcqIUzKv3vZ1enM=;
-        b=00gN+w0HvPcAcDU1gtMWgH62ViKt8/WltzaMU+ZtiYDqGFPyWFG32IaXAAePnYahIh
-         1MGB400ki503xdQXnh7oYmKw6Rrh+z2rJebTSz007VP+S9wm/FEPfMBbYOyoZUNb7JQj
-         Mq+eHU9ZBg/2RaATGp5Iw5VRbEWDsAauK32z1H4npz5ad4YBt7AT6wHUGwLws+t4SNHS
-         snhUg2plbJX2UjOFVV6uxGJieIpKGHLOUm6nyx5q1ENzAO6Wc/ytlZC+tl053LwAp5G8
-         rOnr36GIVCAgM/NrSxIViQ4InXlA3WhNZnzymzMRLmgXfmwJQhXI40Qr/8clhyd/1TG0
-         8dUQ==
-X-Gm-Message-State: AJIora8dmb1YiGH1Vw3VYfMShAMiYsNLWLZ6Oif5wQdYqfB7kdY3sFql
-        DUfxnVtT8k0tLf1Ab1yLJHJwMRhmUMBnGtKm
-X-Google-Smtp-Source: AGRyM1tWrlBnsos2hlXFF4uKAUuU3CbAxk9xkRu1NCbcdZHGOD/XpIT81diha3B5BBuJS8MFUpPhCg==
-X-Received: by 2002:a17:902:ef92:b0:16a:1ef1:22db with SMTP id iz18-20020a170902ef9200b0016a1ef122dbmr4481302plb.2.1656434617347;
-        Tue, 28 Jun 2022 09:43:37 -0700 (PDT)
+        bh=CigKiZg0uMYJOja2S1ioYAwjFvjzwsvhihcuBCgrFS0=;
+        b=Lf0u0dF1Cna52x7m/GJirDrwWOvaxSwo4wqrVtX8YLQGLJwpjXpDSighLzJZu16n69
+         y+YizCa5aCYJ7KUaHG8ynxju843+UyWoq4cvyZcO+b9c2tD+RwbZBCFbF7coPjxBinSz
+         PVKQ4w4Z1ZLfxiXbFBP0vBZUHIXEw2vws5EN3HKOkJy3u3B7Nn5HKxXb9Wx57flGDK0g
+         ZDELDH9iZa+yGfaubkzoTTipEXtqMbx64Ff+3NbQN7o+REt78D7P5JW07tZJJtLgcEsW
+         OEql2HlL82hz2YqV7zy3ni7Tqs0sXdNE1wjKV1Mb//23C/E/J+6zEnApex1FCDxlyV+P
+         rZcw==
+X-Gm-Message-State: AJIora8PYXYQG+NrGe0fWl2gQ4icQZMgiaUMfkIjWBe0zRiJeTFPgwGJ
+        XV4B2XNcV6fOi+iJLv6SL1wsUA==
+X-Google-Smtp-Source: AGRyM1uNdejCd65WOzIt0ueML3WG9HUWGUiNllUk+OIAnoHBv+m+SWGXPG0YwH/Yp9G4680cQYjACA==
+X-Received: by 2002:a05:6a00:2292:b0:525:6c57:8dd5 with SMTP id f18-20020a056a00229200b005256c578dd5mr4445514pfe.17.1656434621014;
+        Tue, 28 Jun 2022 09:43:41 -0700 (PDT)
 Received: from rahul_yocto_ubuntu18.ibn.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id mn9-20020a17090b188900b001ec9d45776bsm38248pjb.42.2022.06.28.09.43.34
+        by smtp.gmail.com with ESMTPSA id mn9-20020a17090b188900b001ec9d45776bsm38248pjb.42.2022.06.28.09.43.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 09:43:36 -0700 (PDT)
+        Tue, 28 Jun 2022 09:43:40 -0700 (PDT)
 From:   Vikas Gupta <vikas.gupta@broadcom.com>
 To:     jiri@nvidia.com, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -51,108 +51,135 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         stephen@networkplumber.org, edumazet@google.com,
         michael.chan@broadcom.com, andrew.gospodarek@broadcom.com,
         Vikas Gupta <vikas.gupta@broadcom.com>
-Subject: [PATCH net-next v1 2/3] bnxt_en: refactor NVM APIs
-Date:   Tue, 28 Jun 2022 22:12:40 +0530
-Message-Id: <20220628164241.44360-3-vikas.gupta@broadcom.com>
+Subject: [PATCH net-next v1 3/3] bnxt_en: implement callbacks for devlink selftests
+Date:   Tue, 28 Jun 2022 22:12:41 +0530
+Message-Id: <20220628164241.44360-4-vikas.gupta@broadcom.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220628164241.44360-1-vikas.gupta@broadcom.com>
 References: <20220628164241.44360-1-vikas.gupta@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000fba6a405e284bcac"
+        boundary="00000000000033fb6705e284bd70"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000fba6a405e284bcac
+--00000000000033fb6705e284bd70
 
-modify declaration for NVM APIs so that they can be
-used with devlink and ethtool both.
+Add callbacks
+=============
+.selftests_show: populates flash test name.
+.selftests_run: implements a flash selftest.
 
 Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 24 +++++++++----------
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h | 12 ++++++++++
- 2 files changed, 24 insertions(+), 12 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 66 +++++++++++++++++++
+ 1 file changed, 66 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 7191e5d74208..87eb5362ad70 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2176,14 +2176,14 @@ static void bnxt_print_admin_err(struct bnxt *bp)
- 	netdev_info(bp->dev, "PF does not have admin privileges to flash or reset the device\n");
- }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 3528ce9849e6..232e9b1ff1a9 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -20,6 +20,8 @@
+ #include "bnxt_ulp.h"
+ #include "bnxt_ptp.h"
+ #include "bnxt_coredump.h"
++#include "bnxt_nvm_defs.h"
++#include "bnxt_ethtool.h"
  
--static int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
--				u16 ext, u16 *index, u32 *item_length,
--				u32 *data_length);
-+int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
-+			 u16 ext, u16 *index, u32 *item_length,
-+			 u32 *data_length);
- 
--static int bnxt_flash_nvram(struct net_device *dev, u16 dir_type,
--			    u16 dir_ordinal, u16 dir_ext, u16 dir_attr,
--			    u32 dir_item_len, const u8 *data,
--			    size_t data_len)
-+int bnxt_flash_nvram(struct net_device *dev, u16 dir_type,
-+		     u16 dir_ordinal, u16 dir_ext, u16 dir_attr,
-+		     u32 dir_item_len, const u8 *data,
-+		     size_t data_len)
+ static void __bnxt_fw_recover(struct bnxt *bp)
  {
- 	struct bnxt *bp = netdev_priv(dev);
- 	struct hwrm_nvm_write_input *req;
-@@ -2836,8 +2836,8 @@ static int bnxt_get_nvram_directory(struct net_device *dev, u32 len, u8 *data)
+@@ -610,6 +612,67 @@ static int bnxt_dl_reload_up(struct devlink *dl, enum devlink_reload_action acti
  	return rc;
  }
  
--static int bnxt_get_nvram_item(struct net_device *dev, u32 index, u32 offset,
--			       u32 length, u8 *data)
-+int bnxt_get_nvram_item(struct net_device *dev, u32 index, u32 offset,
-+			u32 length, u8 *data)
- {
- 	struct bnxt *bp = netdev_priv(dev);
- 	int rc;
-@@ -2871,9 +2871,9 @@ static int bnxt_get_nvram_item(struct net_device *dev, u32 index, u32 offset,
- 	return rc;
++static bool bnxt_nvm_test(struct bnxt *bp, struct netlink_ext_ack *extack)
++{
++	u32 datalen;
++	u16 index;
++	u8 *buf;
++
++	if (bnxt_find_nvram_item(bp->dev, BNX_DIR_TYPE_VPD,
++				 BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE,
++				 &index, NULL, &datalen) || !datalen) {
++		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd entry error");
++		return false;
++	}
++
++	buf = kzalloc(datalen, GFP_KERNEL);
++	if (!buf) {
++		NL_SET_ERR_MSG_MOD(extack, "not sufficient memory for nvm test");
++		return false;
++	}
++
++	if (bnxt_get_nvram_item(bp->dev, index, 0, datalen, buf)) {
++		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd read error");
++		goto err;
++	}
++
++	if (bnxt_flash_nvram(bp->dev, BNX_DIR_TYPE_VPD, BNX_DIR_ORDINAL_FIRST,
++			     BNX_DIR_EXT_NONE, 0, 0, buf, datalen)) {
++		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd write error");
++		goto err;
++	}
++
++	return true;
++
++err:
++	kfree(buf);
++	return false;
++}
++
++static int bnxt_dl_selftests_show(struct devlink *dl, struct sk_buff *msg,
++				  struct netlink_ext_ack *extack)
++{
++	return devlink_selftest_name_put(msg, DEVLINK_SELFTEST_FLASH_TEST_NAME);
++}
++
++static int bnxt_dl_selftests_run(struct devlink *dl, struct sk_buff *msg,
++				 u32 test_mask, struct netlink_ext_ack *extack)
++{
++	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
++	struct devlink_selftest_exec_info test;
++	int rc;
++
++	if (test_mask & DEVLINK_SELFTEST_FLASH) {
++		test.name = DEVLINK_SELFTEST_FLASH_TEST_NAME;
++		test.result = bnxt_nvm_test(bp, extack);
++		rc = devlink_selftest_result_put(msg, &test);
++		if (rc)
++			return rc;
++	}
++
++	return 0;
++}
++
+ static const struct devlink_ops bnxt_dl_ops = {
+ #ifdef CONFIG_BNXT_SRIOV
+ 	.eswitch_mode_set = bnxt_dl_eswitch_mode_set,
+@@ -622,6 +685,8 @@ static const struct devlink_ops bnxt_dl_ops = {
+ 	.reload_limits	  = BIT(DEVLINK_RELOAD_LIMIT_NO_RESET),
+ 	.reload_down	  = bnxt_dl_reload_down,
+ 	.reload_up	  = bnxt_dl_reload_up,
++	.selftests_show	  = bnxt_dl_selftests_show,
++	.selftests_run	  = bnxt_dl_selftests_run,
+ };
+ 
+ static const struct devlink_ops bnxt_vf_dl_ops;
+@@ -1091,6 +1156,7 @@ static int bnxt_dl_nvm_param_set(struct devlink *dl, u32 id,
+ 	return bnxt_hwrm_nvm_req(bp, id, req, &ctx->val);
  }
  
--static int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
--				u16 ext, u16 *index, u32 *item_length,
--				u32 *data_length)
-+int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
-+			 u16 ext, u16 *index, u32 *item_length,
-+			 u32 *data_length)
- {
- 	struct hwrm_nvm_find_dir_entry_output *output;
- 	struct hwrm_nvm_find_dir_entry_input *req;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
-index a59284215e78..a8ecef8ab82c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
-@@ -58,5 +58,17 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- int bnxt_get_pkginfo(struct net_device *dev, char *ver, int size);
- void bnxt_ethtool_init(struct bnxt *bp);
- void bnxt_ethtool_free(struct bnxt *bp);
-+int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
-+			 u16 ext, u16 *index, u32 *item_length,
-+			 u32 *data_length);
-+int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
-+			 u16 ext, u16 *index, u32 *item_length,
-+			 u32 *data_length);
-+int bnxt_flash_nvram(struct net_device *dev, u16 dir_type,
-+		     u16 dir_ordinal, u16 dir_ext, u16 dir_attr,
-+		     u32 dir_item_len, const u8 *data,
-+		     size_t data_len);
-+int bnxt_get_nvram_item(struct net_device *dev, u32 index, u32 offset,
-+			u32 length, u8 *data);
- 
- #endif
++
+ static int bnxt_dl_msix_validate(struct devlink *dl, u32 id,
+ 				 union devlink_param_value val,
+ 				 struct netlink_ext_ack *extack)
 -- 
 2.31.1
 
 
---000000000000fba6a405e284bcac
+--00000000000033fb6705e284bd70
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -223,13 +250,13 @@ QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
 PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
 ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
 bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIChy1m/MG2rd7tLtfQn0MOUiEkdR32mZmp/r
-aCubfblkMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDYyODE2
-NDMzN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPJx+IWLo7m8fllyvW+aVQnDo1nE9LPrJMuF
+pEuPTCGUMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDYyODE2
+NDM0MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
 AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQAgVhf6WSeGSIiblQS3hiKK0wTJvhpxqLs/1e5duSh+fn4kXhKQqIWD
-MZjaftv5uyzju63Y32YLg/k/NiStD+SOn939ujHZe6ilw7t/sFtnSBpS1TZmSSLH8NhJUwfFDti+
-7QMCg+qkxlSUKCIvI9+DWMaDI+WSOOiW6666BTUwd6dibC8PBM0TKrrhdi+qc/gmrcxFYx1T8Ea7
-MGbK4MIWCgm1xPfmqaDnDYq4VmgqvLDwTm5JowsZigibxUI6l3HxUhY5V2MYjdI9/0iYXDaaNjc0
-EQYs9n0yboBZgI7khsmfWiMwuheaH6z6bzpeki8FCzEFoQXBnUwdRN0xUl84
---000000000000fba6a405e284bcac--
+BgkqhkiG9w0BAQEFAASCAQC0VU6ZMMC1UfIQJptX7hO8JkCrCHSSSD8q7ccAJU5giOaJLt1N5i73
+Hrk/E6kyQcnINffLCmPH+uiPK7d3Bv+K7JjHSZqn6l3mCIusd42kgUNKejADnxO03/C71+c/pCBn
+nrIxLGKXQt3kVtlS3ouwynzPVLY0qBtzmAeOP5RqaMUJZq6xJnmE7KX7Sw2rhMtDe2kzlGcN1xl7
+Z/W1DpJpMmxwPOH4TIF7ajS+UfXhowLCLTNLv1rv2qpFIZbVGFqY7ZhMhMcjTxp2IbIZFn7Cv0kf
+jtFuYBCCcz7/z+c52+VgVehRgcMf0vsVg6FFCHHbSxSe2AVPX9pcaqrUiW2r
+--00000000000033fb6705e284bd70--
