@@ -2,204 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6046CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E111C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343896AbiF1IkU (ORCPT
+        id S1343967AbiF1Ikn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
+        Tue, 28 Jun 2022 04:40:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343897AbiF1IkR (ORCPT
+        with ESMTP id S245625AbiF1Ikl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:40:17 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517E227CFB;
-        Tue, 28 Jun 2022 01:40:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656405616; x=1687941616;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HyBPeVMcLYtcvySQ5xAMJcjvoa1PQDR0FQGJvt+N3Cg=;
-  b=eHSjZ60BEZoNF04AQi7pQundgrx6z28TxcC+mH8Pr4DwEfb9ssg6q3PB
-   /tpfL3xqT1TCIK5TvViPsnSM1Cozvkp6LGmIpfIzYeDbqUIXU1IFVMhE7
-   oKcy5ASEcLiEmCTW4UUndKWiTRZhFvDczUUiwfyilUQglqQrfoTFmoEGN
-   zY2OLlrAA4IXnOFd2W+6ku/T+ktxnce3HO53O7uMv6vaggey/C0YKwqF0
-   HUD5dpjhIVvFe07ShOt8KAQzaC+x8eqhybHaylZ1beOx1rvpKk4bTp0z9
-   R9TshbNU1WxNZkREOITFNhrUj958iBH6jMglCGTEfFGrnP2LMHeAy9Gog
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="307156649"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="307156649"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:40:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="658045495"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga004.fm.intel.com with ESMTP; 28 Jun 2022 01:40:12 -0700
-Date:   Tue, 28 Jun 2022 16:31:58 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Nava kishore Manne <nava.manne@xilinx.com>
-Cc:     michal.simek@xilinx.com, hao.wu@intel.com, trix@redhat.com,
-        mdf@kernel.org, gregkh@linuxfoundation.org, ronak.jain@xilinx.com,
-        rajan.vaja@xilinx.com, abhyuday.godhasara@xilinx.com,
-        piyush.mehta@xilinx.com, harsha.harsha@xilinx.com,
-        lakshmi.sai.krishna.potthuri@xilinx.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, git@xilinx.com
-Subject: Re: [PATCH v2 1/3] fpga: manager: change status api prototype, don't
- use older
-Message-ID: <20220628083158.GA2442728@yilunxu-OptiPlex-7050>
-References: <20220621092833.1057408-1-nava.manne@xilinx.com>
- <20220621092833.1057408-2-nava.manne@xilinx.com>
+        Tue, 28 Jun 2022 04:40:41 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83B6275D9
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:40:39 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id 189so6413429wmz.2
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:40:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6Lbg8hiePwmdtMf2MTesLuQh0S2jMkJ7x67kCBoWQYs=;
+        b=SEMOuACQA6Q/qb4zYaJeeMbmMF7IcRiJVg8XjLeUCRu6lwKjgSK+F6XnBY0TXROVY+
+         YgblATFVUzeZewhX/CvRo3PwPk5IoNrCnFkcpOJsGcTFfNre5QlrWTnW9q6wEVE4YiJO
+         JvAnbym9Iru1+wrjQKYeuMxBROiriUeD9Q2XIWc290P+Nh4/0Sh5SVtyS5eI9f7RBsHG
+         sH7zcpqYXSfgFyb+uyQ4WigPMs9fhp65KC6K6uF7eTDjLNP9nOEc832aMtsH4VzcvHbZ
+         5FirQa8xaZZ7Sr1DIdCjmo98WfcnRsKy4bwO3UAqh6diNmkavuLtGRiwH21HvJ7h/HfH
+         zStg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6Lbg8hiePwmdtMf2MTesLuQh0S2jMkJ7x67kCBoWQYs=;
+        b=JjiACbOKQRWgQakBz+YUv2EnXa7NdDXIMhDFgYN/9mjoyRiRLMh8J3yJyj2JMr0wQN
+         Z8qSDImN2EyVimBHYqwQ5lTd3UYIg0Jg94mYqBilq3XJy3nLsGP+pQTfeHQsENywOxkF
+         BkQNW0La3tmnQYE3EFT2W7lFY51q4rnwsEUZVGa+1xnT//rvuh0yhgAD9bj4zxyOiJ+x
+         WTsv+t0kAO3KUg2q3CV6g03KNrATBylHqjsWJ+V0XMwSVre9gIT0bVJ5LaGc1xnaODcx
+         jld+KL7pMeTcA6vyB62gV3PMx6xQ/dL/eb2Vsop/TXQGjw/5qRwce1fDOdfgOCyw9NHB
+         pFFg==
+X-Gm-Message-State: AJIora9MAE0i3EM5+MJhAMDtIXxqso5sLSWZS86bF/kMf9GevJIHOaVk
+        S03uhsRwpheNErGiWNbdx7g/BA==
+X-Google-Smtp-Source: AGRyM1sYiMX+mQzc6XVbuNuqmR0VfukA/5oXQkaUF29OpnEqJM08oWyRgjHvCHqmSVSo8Qpou5On0Q==
+X-Received: by 2002:a05:600c:3553:b0:3a0:519b:4b96 with SMTP id i19-20020a05600c355300b003a0519b4b96mr3067246wmq.61.1656405638275;
+        Tue, 28 Jun 2022 01:40:38 -0700 (PDT)
+Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.googlemail.com with ESMTPSA id ay14-20020a5d6f0e000000b0021b91ec8f6esm13037026wrb.67.2022.06.28.01.40.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 01:40:37 -0700 (PDT)
+Message-ID: <f4b13249-abe8-080f-4d36-24ef67d4fb62@linaro.org>
+Date:   Tue, 28 Jun 2022 10:40:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621092833.1057408-2-nava.manne@xilinx.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 3/3] thermal/drivers/u8500: Remove the get_trend function
+Content-Language: en-US
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, rafael@kernel.org
+References: <20220616202537.303655-1-daniel.lezcano@linaro.org>
+ <20220616202537.303655-3-daniel.lezcano@linaro.org>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220616202537.303655-3-daniel.lezcano@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 02:58:31PM +0530, Nava kishore Manne wrote:
-> Different vendors have different error sets defined by Hardware.
-> If we always define the new bits when we cannot find an exact 1:1
-> mapping in the core the 64 bits would soon be used out. Also, it's
-> hard to understand the mixture of different error sets.
+
+Adding Linus who is missing in the recipient list.
+
+
+On 16/06/2022 22:25, Daniel Lezcano wrote:
+> The get_trend function relies on the interrupt to set the raising or
+> dropping trend. However the interpolated temperature is already giving
+> the temperature information to the thermal framework which is able to
+> deduce the trend.
 > 
-> To address these issues updated the status interface to handle the
-> vendor-specific messages in a generic way. With the updated status
-> interface the vendor-specific driver files can independently handle
-> the error messages.
-
-I think we don't have to provide the vendor specific HW errors in a
-generic way, maybe the vendor specific drivers could handle them by its
-own device attributes.
-
-Since the output value set of the interface is specific to each driver,
-users should still interpret them in specific manners. So doesn't see
-much value for a class interface.
-
-Thanks,
-Yilun
-
+> Remove the trend code.
 > 
-> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 > ---
-> Changes for v2:
->               - New patch.
+>   drivers/thermal/db8500_thermal.c | 26 ++++----------------------
+>   1 file changed, 4 insertions(+), 22 deletions(-)
 > 
->  drivers/fpga/dfl-fme-mgr.c    | 20 ++++++++++----------
->  drivers/fpga/fpga-mgr.c       | 24 +++++-------------------
->  include/linux/fpga/fpga-mgr.h |  2 +-
->  3 files changed, 16 insertions(+), 30 deletions(-)
-> 
-> diff --git a/drivers/fpga/dfl-fme-mgr.c b/drivers/fpga/dfl-fme-mgr.c
-> index af0785783b52..5a8e6a41c85c 100644
-> --- a/drivers/fpga/dfl-fme-mgr.c
-> +++ b/drivers/fpga/dfl-fme-mgr.c
-> @@ -72,22 +72,22 @@ struct fme_mgr_priv {
->  	u64 pr_error;
->  };
->  
-> -static u64 pr_error_to_mgr_status(u64 err)
-> +static ssize_t pr_error_to_mgr_status(u64 err, char *buf)
->  {
-> -	u64 status = 0;
-> +	ssize_t len = 0;
->  
->  	if (err & FME_PR_ERR_OPERATION_ERR)
-> -		status |= FPGA_MGR_STATUS_OPERATION_ERR;
-> +		len += sprintf(buf + len, "reconfig operation error\n");
->  	if (err & FME_PR_ERR_CRC_ERR)
-> -		status |= FPGA_MGR_STATUS_CRC_ERR;
-> +		len += sprintf(buf + len, "reconfig CRC error\n");
->  	if (err & FME_PR_ERR_INCOMPATIBLE_BS)
-> -		status |= FPGA_MGR_STATUS_INCOMPATIBLE_IMAGE_ERR;
-> +		len += sprintf(buf + len, "reconfig incompatible image\n");
->  	if (err & FME_PR_ERR_PROTOCOL_ERR)
-> -		status |= FPGA_MGR_STATUS_IP_PROTOCOL_ERR;
-> +		len += sprintf(buf + len, "reconfig IP protocol error\n");
->  	if (err & FME_PR_ERR_FIFO_OVERFLOW)
-> -		status |= FPGA_MGR_STATUS_FIFO_OVERFLOW_ERR;
-> +		len += sprintf(buf + len, "reconfig fifo overflow error\n");
->  
-> -	return status;
-> +	return len;
->  }
->  
->  static u64 fme_mgr_pr_error_handle(void __iomem *fme_pr)
-> @@ -252,11 +252,11 @@ static int fme_mgr_write_complete(struct fpga_manager *mgr,
->  	return 0;
->  }
->  
-> -static u64 fme_mgr_status(struct fpga_manager *mgr)
-> +static ssize_t fme_mgr_status(struct fpga_manager *mgr, char *buf)
->  {
->  	struct fme_mgr_priv *priv = mgr->priv;
->  
-> -	return pr_error_to_mgr_status(priv->pr_error);
-> +	return pr_error_to_mgr_status(priv->pr_error, buf);
->  }
->  
->  static const struct fpga_manager_ops fme_mgr_ops = {
-> diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-> index 08dc85fcd511..ae8de13a482e 100644
-> --- a/drivers/fpga/fpga-mgr.c
-> +++ b/drivers/fpga/fpga-mgr.c
-> @@ -38,10 +38,11 @@ static inline enum fpga_mgr_states fpga_mgr_state(struct fpga_manager *mgr)
->  	return FPGA_MGR_STATE_UNKNOWN;
->  }
->  
-> -static inline u64 fpga_mgr_status(struct fpga_manager *mgr)
-> +static inline ssize_t fpga_mgr_status(struct fpga_manager *mgr, char *buf)
->  {
->  	if (mgr->mops->status)
-> -		return mgr->mops->status(mgr);
-> +		return mgr->mops->status(mgr, buf);
-> +
->  	return 0;
->  }
->  
-> @@ -460,23 +461,8 @@ static ssize_t status_show(struct device *dev,
->  			   struct device_attribute *attr, char *buf)
->  {
->  	struct fpga_manager *mgr = to_fpga_manager(dev);
-> -	u64 status;
-> -	int len = 0;
+> diff --git a/drivers/thermal/db8500_thermal.c b/drivers/thermal/db8500_thermal.c
+> index 21d4d6e6409a..ed40cfd9ab7d 100644
+> --- a/drivers/thermal/db8500_thermal.c
+> +++ b/drivers/thermal/db8500_thermal.c
+> @@ -53,7 +53,6 @@ static const unsigned long db8500_thermal_points[] = {
+>   
+>   struct db8500_thermal_zone {
+>   	struct thermal_zone_device *tz;
+> -	enum thermal_trend trend;
+>   	unsigned long interpolated_temp;
+>   	unsigned int cur_index;
+>   };
+> @@ -73,24 +72,12 @@ static int db8500_thermal_get_temp(void *data, int *temp)
+>   	return 0;
+>   }
+>   
+> -/* Callback to get temperature changing trend */
+> -static int db8500_thermal_get_trend(void *data, int trip, enum thermal_trend *trend)
+> -{
+> -	struct db8500_thermal_zone *th = data;
 > -
-> -	status = fpga_mgr_status(mgr);
+> -	*trend = th->trend;
 > -
-> -	if (status & FPGA_MGR_STATUS_OPERATION_ERR)
-> -		len += sprintf(buf + len, "reconfig operation error\n");
-> -	if (status & FPGA_MGR_STATUS_CRC_ERR)
-> -		len += sprintf(buf + len, "reconfig CRC error\n");
-> -	if (status & FPGA_MGR_STATUS_INCOMPATIBLE_IMAGE_ERR)
-> -		len += sprintf(buf + len, "reconfig incompatible image\n");
-> -	if (status & FPGA_MGR_STATUS_IP_PROTOCOL_ERR)
-> -		len += sprintf(buf + len, "reconfig IP protocol error\n");
-> -	if (status & FPGA_MGR_STATUS_FIFO_OVERFLOW_ERR)
-> -		len += sprintf(buf + len, "reconfig fifo overflow error\n");
+> -	return 0;
+> -}
 > -
-> -	return len;
-> +
-> +	return fpga_mgr_status(mgr, buf);
->  }
->  
->  static DEVICE_ATTR_RO(name);
-> diff --git a/include/linux/fpga/fpga-mgr.h b/include/linux/fpga/fpga-mgr.h
-> index 0f9468771bb9..42c24426fb7f 100644
-> --- a/include/linux/fpga/fpga-mgr.h
-> +++ b/include/linux/fpga/fpga-mgr.h
-> @@ -154,7 +154,7 @@ struct fpga_manager_info {
->  struct fpga_manager_ops {
->  	size_t initial_header_size;
->  	enum fpga_mgr_states (*state)(struct fpga_manager *mgr);
-> -	u64 (*status)(struct fpga_manager *mgr);
-> +	ssize_t (*status)(struct fpga_manager *mgr, char *buf);
->  	int (*write_init)(struct fpga_manager *mgr,
->  			  struct fpga_image_info *info,
->  			  const char *buf, size_t count);
-> -- 
-> 2.25.1
+>   static struct thermal_zone_of_device_ops thdev_ops = {
+>   	.get_temp = db8500_thermal_get_temp,
+> -	.get_trend = db8500_thermal_get_trend,
+>   };
+>   
+>   static void db8500_thermal_update_config(struct db8500_thermal_zone *th,
+>   					 unsigned int idx,
+> -					 enum thermal_trend trend,
+>   					 unsigned long next_low,
+>   					 unsigned long next_high)
+>   {
+> @@ -98,7 +85,6 @@ static void db8500_thermal_update_config(struct db8500_thermal_zone *th,
+>   
+>   	th->cur_index = idx;
+>   	th->interpolated_temp = (next_low + next_high)/2;
+> -	th->trend = trend;
+>   
+>   	/*
+>   	 * The PRCMU accept absolute temperatures in celsius so divide
+> @@ -127,8 +113,7 @@ static irqreturn_t prcmu_low_irq_handler(int irq, void *irq_data)
+>   	}
+>   	idx -= 1;
+>   
+> -	db8500_thermal_update_config(th, idx, THERMAL_TREND_DROPPING,
+> -				     next_low, next_high);
+> +	db8500_thermal_update_config(th, idx, next_low, next_high);
+>   	dev_dbg(&th->tz->device,
+>   		"PRCMU set max %ld, min %ld\n", next_high, next_low);
+>   
+> @@ -149,8 +134,7 @@ static irqreturn_t prcmu_high_irq_handler(int irq, void *irq_data)
+>   		next_low = db8500_thermal_points[idx];
+>   		idx += 1;
+>   
+> -		db8500_thermal_update_config(th, idx, THERMAL_TREND_RAISING,
+> -					     next_low, next_high);
+> +		db8500_thermal_update_config(th, idx, next_low, next_high);
+>   
+>   		dev_dbg(&th->tz->device,
+>   			"PRCMU set max %ld, min %ld\n", next_high, next_low);
+> @@ -210,8 +194,7 @@ static int db8500_thermal_probe(struct platform_device *pdev)
+>   	dev_info(dev, "thermal zone sensor registered\n");
+>   
+>   	/* Start measuring at the lowest point */
+> -	db8500_thermal_update_config(th, 0, THERMAL_TREND_STABLE,
+> -				     PRCMU_DEFAULT_LOW_TEMP,
+> +	db8500_thermal_update_config(th, 0, PRCMU_DEFAULT_LOW_TEMP,
+>   				     db8500_thermal_points[0]);
+>   
+>   	platform_set_drvdata(pdev, th);
+> @@ -232,8 +215,7 @@ static int db8500_thermal_resume(struct platform_device *pdev)
+>   	struct db8500_thermal_zone *th = platform_get_drvdata(pdev);
+>   
+>   	/* Resume and start measuring at the lowest point */
+> -	db8500_thermal_update_config(th, 0, THERMAL_TREND_STABLE,
+> -				     PRCMU_DEFAULT_LOW_TEMP,
+> +	db8500_thermal_update_config(th, 0, PRCMU_DEFAULT_LOW_TEMP,
+>   				     db8500_thermal_points[0]);
+>   
+>   	return 0;
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
