@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 670DDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFBFBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346132AbiF1NSe (ORCPT
+        id S1346142AbiF1NSl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:18:34 -0400
+        Tue, 28 Jun 2022 09:18:41 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346411AbiF1NRk (ORCPT
+        with ESMTP id S1346237AbiF1NQy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:17:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07599313A9
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:17:29 -0700 (PDT)
+        Tue, 28 Jun 2022 09:16:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3CC2313A0
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:16:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A25F61772
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:17:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C051C341CC;
-        Tue, 28 Jun 2022 13:17:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58E0AB81E17
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:16:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4717FC341CB;
+        Tue, 28 Jun 2022 13:16:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656422247;
-        bh=GgoA+KTaobxvrIr1skYIfZk8c1kGwM4o4PI2umUy7P8=;
+        s=k20201202; t=1656422209;
+        bh=tnqPqA2oD4BjlAaPLdbcLMOT3lL0ZYNCbAEtnt8Wmq0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ggbaPVz4fbByCER/v4byXHqU22KKiJKft3P243IYc+J+mu2Kh+q9XE4CrDnCHI01Z
-         EeTqC4AAycwU1+H8uqk2GCa9Vw2CKVm7yXe6975TY//9nShxrwWuO/RO1oJRYMM2vt
-         fz399zoaRtFEKwiab84lcORIqQoYlN3LG0va61DVWqSw3AZ2o+2dMYmqqtnBHFCs4/
-         DWLQcc71rKLfU9Pfa4UXvPoN42CJtipE5kA0JGYCo2tT8AqM91vF33vJqVMZDeJgQt
-         EDqpRXsZfQCFI1+bBgRARyvEQu2BGJyh/WLWVRm5CnfutuTm+wxRGiiVp+c8hZW1hO
-         +8BhigwWHnWkA==
+        b=LXHd/SzIaLQsYL2YUaMPnCxLWhRwMXCtgofzrgt3ZNIewoQG3LEMnZyLXhA4xj3yI
+         5iPhVMrh/poyGnRX+hX/q9PWM3Ad4Lc23SvUMOm+/pBZvhmQ9mV5LlAiSwQaSIAfr8
+         XEyDHURWnP3Z+cq2tjSSpY6U8VsHO+zY1ou7W8wC+L5DvHVCXmlcbw10NY3DSdU1rh
+         DhVWPEagcqB0+pWbWHmZLuUNQfbDvqrWdEaSNf+DBegsIMMaSdZvJwvbX+K4FEbSQY
+         GVgQbmMij7qVi0t+7p8owovaz6OZ/rATlk+EMmvfdfVqgjMXsXcIfcsStlSV79YuVR
+         s+QTUEOdDEUig==
 From:   Frederic Weisbecker <frederic@kernel.org>
 To:     "Paul E . McKenney" <paulmck@kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
@@ -54,9 +54,9 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         Paul Gortmaker <paul.gortmaker@windriver.com>,
         Uladzislau Rezki <uladzislau.rezki@sony.com>,
         Joel Fernandes <joel@joelfernandes.org>
-Subject: [PATCH 14/20] rcu/context_tracking: Move dynticks_nmi_nesting to context tracking
-Date:   Tue, 28 Jun 2022 15:16:13 +0200
-Message-Id: <20220628131619.2109651-15-frederic@kernel.org>
+Subject: [PATCH 05/20] context_tracking: Rename context_tracking_enter/exit() to ct_user_enter/exit()
+Date:   Tue, 28 Jun 2022 15:16:04 +0200
+Message-Id: <20220628131619.2109651-6-frederic@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220628131619.2109651-1-frederic@kernel.org>
 References: <20220628131619.2109651-1-frederic@kernel.org>
@@ -66,9 +66,11 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The RCU eqs tracking is going to be performed by the context tracking
-subsystem. The related nesting counters thus need to be moved to the
-context tracking structure.
+context_tracking_enter() and context_tracking_exit() have confusing
+names that don't explain the fact they are referring to user/guest state.
+
+Use more self-explanatory names and shrink to the new context tracking
+prefix instead.
 
 Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
 Cc: Peter Zijlstra <peterz@infradead.org>
@@ -88,267 +90,103 @@ Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
 Tested-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
 ---
- include/linux/context_tracking_state.h | 16 +++++++++
- kernel/context_tracking.c              |  1 +
- kernel/rcu/rcu.h                       |  4 ---
- kernel/rcu/tree.c                      | 48 +++++++++++---------------
- kernel/rcu/tree.h                      |  1 -
- kernel/rcu/tree_stall.h                |  2 +-
- 6 files changed, 39 insertions(+), 33 deletions(-)
+ include/linux/context_tracking.h | 13 +++++++------
+ kernel/context_tracking.c        | 12 ++++++------
+ 2 files changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/include/linux/context_tracking_state.h b/include/linux/context_tracking_state.h
-index 13a4a9d1ec7e..5f11e3d2d85a 100644
---- a/include/linux/context_tracking_state.h
-+++ b/include/linux/context_tracking_state.h
-@@ -13,6 +13,9 @@ enum ctx_state {
- 	CONTEXT_GUEST,
- };
+diff --git a/include/linux/context_tracking.h b/include/linux/context_tracking.h
+index 69532cd18f72..7a5f04ae1758 100644
+--- a/include/linux/context_tracking.h
++++ b/include/linux/context_tracking.h
+@@ -17,21 +17,22 @@ extern void context_tracking_cpu_set(int cpu);
+ extern void __ct_user_enter(enum ctx_state state);
+ extern void __ct_user_exit(enum ctx_state state);
  
-+/* Offset to allow distinguishing irq vs. task-based idle entry/exit. */
-+#define DYNTICK_IRQ_NONIDLE	((LONG_MAX / 2) + 1)
+-extern void context_tracking_enter(enum ctx_state state);
+-extern void context_tracking_exit(enum ctx_state state);
++extern void ct_user_enter(enum ctx_state state);
++extern void ct_user_exit(enum ctx_state state);
 +
- struct context_tracking {
- #ifdef CONFIG_CONTEXT_TRACKING_USER
- 	/*
-@@ -28,6 +31,7 @@ struct context_tracking {
- #ifdef CONFIG_CONTEXT_TRACKING_IDLE
- 	atomic_t dynticks;		/* Even value for idle, else odd. */
- 	long dynticks_nesting;		/* Track process nesting level. */
-+	long dynticks_nmi_nesting;	/* Track irq/NMI nesting level. */
- #endif
- };
+ extern void user_enter_callable(void);
+ extern void user_exit_callable(void);
  
-@@ -66,6 +70,18 @@ static __always_inline long ct_dynticks_nesting_cpu(int cpu)
+ static inline void user_enter(void)
+ {
+ 	if (context_tracking_enabled())
+-		context_tracking_enter(CONTEXT_USER);
++		ct_user_enter(CONTEXT_USER);
  
- 	return ct->dynticks_nesting;
  }
-+
-+static __always_inline long ct_dynticks_nmi_nesting(void)
-+{
-+	return __this_cpu_read(context_tracking.dynticks_nmi_nesting);
-+}
-+
-+static __always_inline long ct_dynticks_nmi_nesting_cpu(int cpu)
-+{
-+	struct context_tracking *ct = per_cpu_ptr(&context_tracking, cpu);
-+
-+	return ct->dynticks_nmi_nesting;
-+}
- #endif /* #ifdef CONFIG_CONTEXT_TRACKING_IDLE */
+ static inline void user_exit(void)
+ {
+ 	if (context_tracking_enabled())
+-		context_tracking_exit(CONTEXT_USER);
++		ct_user_exit(CONTEXT_USER);
+ }
  
- #ifdef CONFIG_CONTEXT_TRACKING_USER
+ /* Called with interrupts disabled.  */
+@@ -57,7 +58,7 @@ static inline enum ctx_state exception_enter(void)
+ 
+ 	prev_ctx = this_cpu_read(context_tracking.state);
+ 	if (prev_ctx != CONTEXT_KERNEL)
+-		context_tracking_exit(prev_ctx);
++		ct_user_exit(prev_ctx);
+ 
+ 	return prev_ctx;
+ }
+@@ -67,7 +68,7 @@ static inline void exception_exit(enum ctx_state prev_ctx)
+ 	if (!IS_ENABLED(CONFIG_HAVE_CONTEXT_TRACKING_OFFSTACK) &&
+ 	    context_tracking_enabled()) {
+ 		if (prev_ctx != CONTEXT_KERNEL)
+-			context_tracking_enter(prev_ctx);
++			ct_user_enter(prev_ctx);
+ 	}
+ }
+ 
 diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index dfefe04400f8..7c3033e9a518 100644
+index 8f7dd5799bda..590c920ad57f 100644
 --- a/kernel/context_tracking.c
 +++ b/kernel/context_tracking.c
-@@ -26,6 +26,7 @@
- DEFINE_PER_CPU(struct context_tracking, context_tracking) = {
- #ifdef CONFIG_CONTEXT_TRACKING_IDLE
- 	.dynticks_nesting = 1,
-+	.dynticks_nmi_nesting = DYNTICK_IRQ_NONIDLE,
- 	.dynticks = ATOMIC_INIT(1),
- #endif
- };
-diff --git a/kernel/rcu/rcu.h b/kernel/rcu/rcu.h
-index 4916077119f3..7b4a88deff9a 100644
---- a/kernel/rcu/rcu.h
-+++ b/kernel/rcu/rcu.h
-@@ -12,10 +12,6 @@
- 
- #include <trace/events/rcu.h>
- 
--/* Offset to allow distinguishing irq vs. task-based idle entry/exit. */
--#define DYNTICK_IRQ_NONIDLE	((LONG_MAX / 2) + 1)
--
--
- /*
-  * Grace-period counter management.
+@@ -112,7 +112,7 @@ EXPORT_SYMBOL_GPL(__ct_user_enter);
+  * or context_tracking_guest_enter(). It should be the arch entry code
+  * responsibility to call into context tracking with IRQs disabled.
   */
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index f6bf328bb9cf..006939b29e82 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -75,7 +75,6 @@
- /* Data structures. */
+-void context_tracking_enter(enum ctx_state state)
++void ct_user_enter(enum ctx_state state)
+ {
+ 	unsigned long flags;
  
- static DEFINE_PER_CPU_SHARED_ALIGNED(struct rcu_data, rcu_data) = {
--	.dynticks_nmi_nesting = DYNTICK_IRQ_NONIDLE,
- #ifdef CONFIG_RCU_NOCB_CPU
- 	.cblist.flags = SEGCBLIST_RCU_CORE,
- #endif
-@@ -437,11 +436,11 @@ static int rcu_is_cpu_rrupt_from_idle(void)
- 	/* Check for counter underflows */
- 	RCU_LOCKDEP_WARN(ct_dynticks_nesting() < 0,
- 			 "RCU dynticks_nesting counter underflow!");
--	RCU_LOCKDEP_WARN(__this_cpu_read(rcu_data.dynticks_nmi_nesting) <= 0,
-+	RCU_LOCKDEP_WARN(ct_dynticks_nmi_nesting() <= 0,
- 			 "RCU dynticks_nmi_nesting counter underflow/zero!");
+@@ -131,8 +131,8 @@ void context_tracking_enter(enum ctx_state state)
+ 	__ct_user_enter(state);
+ 	local_irq_restore(flags);
+ }
+-NOKPROBE_SYMBOL(context_tracking_enter);
+-EXPORT_SYMBOL_GPL(context_tracking_enter);
++NOKPROBE_SYMBOL(ct_user_enter);
++EXPORT_SYMBOL_GPL(ct_user_enter);
  
- 	/* Are we at first interrupt nesting level? */
--	nesting = __this_cpu_read(rcu_data.dynticks_nmi_nesting);
-+	nesting = ct_dynticks_nmi_nesting();
- 	if (nesting > 1)
- 		return false;
- 
-@@ -612,11 +611,10 @@ EXPORT_SYMBOL_GPL(rcutorture_get_gp_data);
+ /**
+  * user_enter_callable() - Unfortunate ASM callable version of user_enter() for
+@@ -197,7 +197,7 @@ EXPORT_SYMBOL_GPL(__ct_user_exit);
+  * or context_tracking_guest_exit(). It should be the arch entry code
+  * responsibility to call into context tracking with IRQs disabled.
   */
- static noinstr void rcu_eqs_enter(bool user)
+-void context_tracking_exit(enum ctx_state state)
++void ct_user_exit(enum ctx_state state)
  {
--	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
- 	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
+ 	unsigned long flags;
  
--	WARN_ON_ONCE(rdp->dynticks_nmi_nesting != DYNTICK_IRQ_NONIDLE);
--	WRITE_ONCE(rdp->dynticks_nmi_nesting, 0);
-+	WARN_ON_ONCE(ct_dynticks_nmi_nesting() != DYNTICK_IRQ_NONIDLE);
-+	WRITE_ONCE(ct->dynticks_nmi_nesting, 0);
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) &&
- 		     ct_dynticks_nesting() == 0);
- 	if (ct_dynticks_nesting() != 1) {
-@@ -734,7 +732,7 @@ noinstr void rcu_user_enter(void)
-  * rcu_nmi_exit - inform RCU of exit from NMI context
-  *
-  * If we are returning from the outermost NMI handler that interrupted an
-- * RCU-idle period, update ct->dynticks and rdp->dynticks_nmi_nesting
-+ * RCU-idle period, update ct->dynticks and ct->dynticks_nmi_nesting
-  * to let the RCU grace-period handling know that the CPU is back to
-  * being RCU-idle.
-  *
-@@ -744,7 +742,6 @@ noinstr void rcu_user_enter(void)
- noinstr void rcu_nmi_exit(void)
- {
- 	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
--	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
- 
- 	instrumentation_begin();
- 	/*
-@@ -752,25 +749,25 @@ noinstr void rcu_nmi_exit(void)
- 	 * (We are exiting an NMI handler, so RCU better be paying attention
- 	 * to us!)
- 	 */
--	WARN_ON_ONCE(rdp->dynticks_nmi_nesting <= 0);
-+	WARN_ON_ONCE(ct_dynticks_nmi_nesting() <= 0);
- 	WARN_ON_ONCE(rcu_dynticks_curr_cpu_in_eqs());
- 
- 	/*
- 	 * If the nesting level is not 1, the CPU wasn't RCU-idle, so
- 	 * leave it in non-RCU-idle state.
- 	 */
--	if (rdp->dynticks_nmi_nesting != 1) {
--		trace_rcu_dyntick(TPS("--="), rdp->dynticks_nmi_nesting, rdp->dynticks_nmi_nesting - 2,
-+	if (ct_dynticks_nmi_nesting() != 1) {
-+		trace_rcu_dyntick(TPS("--="), ct_dynticks_nmi_nesting(), ct_dynticks_nmi_nesting() - 2,
- 				  ct_dynticks());
--		WRITE_ONCE(rdp->dynticks_nmi_nesting, /* No store tearing. */
--			   rdp->dynticks_nmi_nesting - 2);
-+		WRITE_ONCE(ct->dynticks_nmi_nesting, /* No store tearing. */
-+			   ct_dynticks_nmi_nesting() - 2);
- 		instrumentation_end();
- 		return;
- 	}
- 
- 	/* This NMI interrupted an RCU-idle CPU, restore RCU-idleness. */
--	trace_rcu_dyntick(TPS("Startirq"), rdp->dynticks_nmi_nesting, 0, ct_dynticks());
--	WRITE_ONCE(rdp->dynticks_nmi_nesting, 0); /* Avoid store tearing. */
-+	trace_rcu_dyntick(TPS("Startirq"), ct_dynticks_nmi_nesting(), 0, ct_dynticks());
-+	WRITE_ONCE(ct->dynticks_nmi_nesting, 0); /* Avoid store tearing. */
- 
- 	// instrumentation for the noinstr rcu_dynticks_eqs_enter()
- 	instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
-@@ -794,7 +791,7 @@ void rcu_irq_exit_check_preempt(void)
- 
- 	RCU_LOCKDEP_WARN(ct_dynticks_nesting() <= 0,
- 			 "RCU dynticks_nesting counter underflow/zero!");
--	RCU_LOCKDEP_WARN(__this_cpu_read(rcu_data.dynticks_nmi_nesting) !=
-+	RCU_LOCKDEP_WARN(ct_dynticks_nmi_nesting() !=
- 			 DYNTICK_IRQ_NONIDLE,
- 			 "Bad RCU  dynticks_nmi_nesting counter\n");
- 	RCU_LOCKDEP_WARN(rcu_dynticks_curr_cpu_in_eqs(),
-@@ -813,11 +810,9 @@ void rcu_irq_exit_check_preempt(void)
- static void noinstr rcu_eqs_exit(bool user)
- {
- 	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
--	struct rcu_data *rdp;
- 	long oldval;
- 
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !raw_irqs_disabled());
--	rdp = this_cpu_ptr(&rcu_data);
- 	oldval = ct_dynticks_nesting();
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && oldval < 0);
- 	if (oldval) {
-@@ -837,8 +832,8 @@ static void noinstr rcu_eqs_exit(bool user)
- 	trace_rcu_dyntick(TPS("End"), ct_dynticks_nesting(), 1, ct_dynticks());
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
- 	WRITE_ONCE(ct->dynticks_nesting, 1);
--	WARN_ON_ONCE(rdp->dynticks_nmi_nesting);
--	WRITE_ONCE(rdp->dynticks_nmi_nesting, DYNTICK_IRQ_NONIDLE);
-+	WARN_ON_ONCE(ct_dynticks_nmi_nesting());
-+	WRITE_ONCE(ct->dynticks_nmi_nesting, DYNTICK_IRQ_NONIDLE);
- 	instrumentation_end();
+@@ -208,8 +208,8 @@ void context_tracking_exit(enum ctx_state state)
+ 	__ct_user_exit(state);
+ 	local_irq_restore(flags);
  }
+-NOKPROBE_SYMBOL(context_tracking_exit);
+-EXPORT_SYMBOL_GPL(context_tracking_exit);
++NOKPROBE_SYMBOL(ct_user_exit);
++EXPORT_SYMBOL_GPL(ct_user_exit);
  
-@@ -941,7 +936,7 @@ void __rcu_irq_enter_check_tick(void)
-  * rcu_nmi_enter - inform RCU of entry to NMI context
-  *
-  * If the CPU was idle from RCU's viewpoint, update ct->dynticks and
-- * rdp->dynticks_nmi_nesting to let the RCU grace-period handling know
-+ * ct->dynticks_nmi_nesting to let the RCU grace-period handling know
-  * that the CPU is active.  This implementation permits nested NMIs, as
-  * long as the nesting level does not overflow an int.  (You will probably
-  * run out of stack space first.)
-@@ -952,11 +947,10 @@ void __rcu_irq_enter_check_tick(void)
- noinstr void rcu_nmi_enter(void)
- {
- 	long incby = 2;
--	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
- 	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
- 
- 	/* Complain about underflow. */
--	WARN_ON_ONCE(rdp->dynticks_nmi_nesting < 0);
-+	WARN_ON_ONCE(ct_dynticks_nmi_nesting() < 0);
- 
- 	/*
- 	 * If idle from RCU viewpoint, atomically increment ->dynticks
-@@ -990,11 +984,11 @@ noinstr void rcu_nmi_enter(void)
- 	}
- 
- 	trace_rcu_dyntick(incby == 1 ? TPS("Endirq") : TPS("++="),
--			  rdp->dynticks_nmi_nesting,
--			  rdp->dynticks_nmi_nesting + incby, ct_dynticks());
-+			  ct_dynticks_nmi_nesting(),
-+			  ct_dynticks_nmi_nesting() + incby, ct_dynticks());
- 	instrumentation_end();
--	WRITE_ONCE(rdp->dynticks_nmi_nesting, /* Prevent store tearing. */
--		   rdp->dynticks_nmi_nesting + incby);
-+	WRITE_ONCE(ct->dynticks_nmi_nesting, /* Prevent store tearing. */
-+		   ct_dynticks_nmi_nesting() + incby);
- 	barrier();
- }
- 
-diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
-index 650ff3cf0121..72dbf8512ce7 100644
---- a/kernel/rcu/tree.h
-+++ b/kernel/rcu/tree.h
-@@ -187,7 +187,6 @@ struct rcu_data {
- 
- 	/* 3) dynticks interface. */
- 	int dynticks_snap;		/* Per-GP tracking for dynticks. */
--	long dynticks_nmi_nesting;	/* Track irq/NMI nesting level. */
- 	bool rcu_need_heavy_qs;		/* GP old, so heavy quiescent state! */
- 	bool rcu_urgent_qs;		/* GP old need light quiescent state. */
- 	bool rcu_forced_tick;		/* Forced tick to provide QS. */
-diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
-index a9c82254b6c6..2683ce0a7c72 100644
---- a/kernel/rcu/tree_stall.h
-+++ b/kernel/rcu/tree_stall.h
-@@ -479,7 +479,7 @@ static void print_cpu_stall_info(int cpu)
- 				"!."[!delta],
- 	       ticks_value, ticks_title,
- 	       rcu_dynticks_snap(cpu) & 0xfff,
--	       ct_dynticks_nesting_cpu(cpu), rdp->dynticks_nmi_nesting,
-+	       ct_dynticks_nesting_cpu(cpu), ct_dynticks_nmi_nesting_cpu(cpu),
- 	       rdp->softirq_snap, kstat_softirqs_cpu(RCU_SOFTIRQ, cpu),
- 	       data_race(rcu_state.n_force_qs) - rcu_state.n_force_qs_gpstart,
- 	       rcuc_starved ? buf : "",
+ /**
+  * user_exit_callable() - Unfortunate ASM callable version of user_exit() for
 -- 
 2.25.1
 
