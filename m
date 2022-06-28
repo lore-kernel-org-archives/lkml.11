@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245293AbiF1Cby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
+        id S245299AbiF1Cb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244634AbiF1C1e (ORCPT
+        with ESMTP id S244656AbiF1C1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9ABEA1;
-        Mon, 27 Jun 2022 19:25:10 -0700 (PDT)
+        Mon, 27 Jun 2022 22:27:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DCAC31;
+        Mon, 27 Jun 2022 19:25:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76CD2B81C0A;
-        Tue, 28 Jun 2022 02:25:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3425C34115;
-        Tue, 28 Jun 2022 02:25:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF89B61753;
+        Tue, 28 Jun 2022 02:25:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FCFDC34115;
+        Tue, 28 Jun 2022 02:25:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383108;
-        bh=Dt9FdlLN4dsC+qbMZmU4nqJat4W4rFaFCtqxdukN34k=;
+        s=k20201202; t=1656383114;
+        bh=fuSloeFz2lT+mUR13yFai2fyTADedPdYS+ySKdSNBlk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oBWEnvfRPO8ZfEeVNrD4I68Y3vUhfoovSPDNymrHDpsz0PpWQWH40loNBEmK2Skbb
-         jAGfKURe3Q8KMNOaM8h6ODM42y2LFGYDfndjNb3zOFIsy/8ENhIJPdG0+B99jCDbtY
-         QbUNkWIoGDzL4RZT+nxnC7T0+0jg63mCnrJzz+Gvsn46e6MkvMSgwsy/GmyxTTvuKy
-         lnouuKhXVSKUXOGaNCNS/sma7j3AL2Q8kR+1I7d3IA8AZGwFgARNLr5fsrOWKMHmDe
-         7ls8CoIT1icI2sjJRpmJmQ2Ck2ktJM2LO9Hnm+0DRulSWK1BnWTXZ5JVoeI86HgABB
-         d76QEZqK4F4Wg==
+        b=mg6zpcl/YtuagmmzSBn/AtrIsJZev9fkL4seNgYnKKRQAD6kHD7wdyZGP+zpGNcU9
+         25xm4jpoGfPamfdLNHizy7puxufVy0YRIht5/8nKyK7YPSh6rVV1WWjQyvvwo1/oon
+         lNBnrpCx/LlUoK4qPtf2Qb9+i2SM/iXBkJHbj1Vi0cal1F3ki+8rv8omWDyRY+kebI
+         VGjkwdbjZdek17TtnLWkVVOEHdDpaUkDpAHTe+6Fmi2qK+NREfWwDFFFvGt+YGdEIX
+         VJ8/A3ST6wmLhM+SK0mN8Y3TnJVy9opO6ddji3YReoPdm2lSsFvn3dU1H0i9sGGLo2
+         pvCgKpm0ksrNw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>, mripard@kernel.org,
-        wens@csie.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.4 23/27] drm/sun4i: Add DMA mask and segment size
-Date:   Mon, 27 Jun 2022 22:24:09 -0400
-Message-Id: <20220628022413.596341-23-sashal@kernel.org>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Felix.Kuehling@amd.com, nirmoy.das@amd.com, jonathan.kim@amd.com,
+        kevin1.wang@amd.com, zackr@vmware.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 25/27] drm/amdgpu: Adjust logic around GTT size (v3)
+Date:   Mon, 27 Jun 2022 22:24:11 -0400
+Message-Id: <20220628022413.596341-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022413.596341-1-sashal@kernel.org>
 References: <20220628022413.596341-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,91 +56,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit f5aa16807aa4f99293044944590dde81364f434f ]
+[ Upstream commit f15345a377c6ea9c7cc74f079616af8856aff37f ]
 
-Kernel occasionally complains that there is mismatch in segment size
-when trying to render HW decoded videos and rendering them directly with
-sun4i DRM driver. Following message can be observed on H6 SoC:
+Certain GL unit tests for large textures can cause problems
+with the OOM killer since there is no way to link this memory
+to a process.  This was originally mitigated (but not necessarily
+eliminated) by limiting the GTT size.  The problem is this limit
+is often too low for many modern games so just make the limit 1/2
+of system memory. The OOM accounting needs to be addressed, but
+we shouldn't prevent common 3D applications from being usable
+just to potentially mitigate that corner case.
 
-[  184.298308] ------------[ cut here ]------------
-[  184.298326] DMA-API: sun4i-drm display-engine: mapping sg segment longer than device claims to support [len=6144000] [max=65536]
-[  184.298364] WARNING: CPU: 1 PID: 382 at kernel/dma/debug.c:1162 debug_dma_map_sg+0x2b0/0x350
-[  184.322997] CPU: 1 PID: 382 Comm: ffmpeg Not tainted 5.19.0-rc1+ #1331
-[  184.329533] Hardware name: Tanix TX6 (DT)
-[  184.333544] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  184.340512] pc : debug_dma_map_sg+0x2b0/0x350
-[  184.344882] lr : debug_dma_map_sg+0x2b0/0x350
-[  184.349250] sp : ffff800009f33a50
-[  184.352567] x29: ffff800009f33a50 x28: 0000000000010000 x27: ffff000001b86c00
-[  184.359725] x26: ffffffffffffffff x25: ffff000005d8cc80 x24: 0000000000000000
-[  184.366879] x23: ffff80000939ab18 x22: 0000000000000001 x21: 0000000000000001
-[  184.374031] x20: 0000000000000000 x19: ffff0000018a7410 x18: ffffffffffffffff
-[  184.381186] x17: 0000000000000000 x16: 0000000000000000 x15: ffffffffffffffff
-[  184.388338] x14: 0000000000000001 x13: ffff800009534e86 x12: 6f70707573206f74
-[  184.395493] x11: 20736d69616c6320 x10: 000000000000000a x9 : 0000000000010000
-[  184.402647] x8 : ffff8000093b6d40 x7 : ffff800009f33850 x6 : 000000000000000c
-[  184.409800] x5 : ffff0000bf997940 x4 : 0000000000000000 x3 : 0000000000000027
-[  184.416953] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff000003960e80
-[  184.424106] Call trace:
-[  184.426556]  debug_dma_map_sg+0x2b0/0x350
-[  184.430580]  __dma_map_sg_attrs+0xa0/0x110
-[  184.434687]  dma_map_sgtable+0x28/0x4c
-[  184.438447]  vb2_dc_dmabuf_ops_map+0x60/0xcc
-[  184.442729]  __map_dma_buf+0x2c/0xd4
-[  184.446321]  dma_buf_map_attachment+0xa0/0x130
-[  184.450777]  drm_gem_prime_import_dev+0x7c/0x18c
-[  184.455410]  drm_gem_prime_fd_to_handle+0x1b8/0x214
-[  184.460300]  drm_prime_fd_to_handle_ioctl+0x2c/0x40
-[  184.465190]  drm_ioctl_kernel+0xc4/0x174
-[  184.469123]  drm_ioctl+0x204/0x420
-[  184.472534]  __arm64_sys_ioctl+0xac/0xf0
-[  184.476474]  invoke_syscall+0x48/0x114
-[  184.480240]  el0_svc_common.constprop.0+0x44/0xec
-[  184.484956]  do_el0_svc+0x2c/0xc0
-[  184.488283]  el0_svc+0x2c/0x84
-[  184.491354]  el0t_64_sync_handler+0x11c/0x150
-[  184.495723]  el0t_64_sync+0x18c/0x190
-[  184.499397] ---[ end trace 0000000000000000 ]---
+Set default GTT size to max(3G, 1/2 of system ram) by default.
 
-Fix that by setting DMA mask and segment size.
+v2: drop previous logic and default to 3/4 of ram
+v3: default to half of ram to align with ttm
+v4: fix spelling in comment (Kent)
 
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220620181333.650301-1-jernej.skrabec@gmail.com
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1942
+Reviewed-by: Marek Olšák <marek.olsak@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sun4i/sun4i_drv.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
-index 5b54eff12cc0..4ae8a33b4479 100644
---- a/drivers/gpu/drm/sun4i/sun4i_drv.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
-@@ -7,6 +7,7 @@
-  */
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+index 870dd78d5a21..e70b33f3f363 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+@@ -1749,18 +1749,26 @@ int amdgpu_ttm_init(struct amdgpu_device *adev)
+ 	DRM_INFO("amdgpu: %uM of VRAM memory ready\n",
+ 		 (unsigned) (adev->gmc.real_vram_size / (1024 * 1024)));
  
- #include <linux/component.h>
-+#include <linux/dma-mapping.h>
- #include <linux/kfifo.h>
- #include <linux/module.h>
- #include <linux/of_graph.h>
-@@ -354,6 +355,13 @@ static int sun4i_drv_probe(struct platform_device *pdev)
+-	/* Compute GTT size, either bsaed on 3/4th the size of RAM size
++	/* Compute GTT size, either based on 1/2 the size of RAM size
+ 	 * or whatever the user passed on module init */
+ 	if (amdgpu_gtt_size == -1) {
+ 		struct sysinfo si;
  
- 	INIT_KFIFO(list.fifo);
+ 		si_meminfo(&si);
+-		gtt_size = min(max((AMDGPU_DEFAULT_GTT_SIZE_MB << 20),
+-			       adev->gmc.mc_vram_size),
+-			       ((uint64_t)si.totalram * si.mem_unit * 3/4));
+-	}
+-	else
++		/* Certain GL unit tests for large textures can cause problems
++		 * with the OOM killer since there is no way to link this memory
++		 * to a process.  This was originally mitigated (but not necessarily
++		 * eliminated) by limiting the GTT size.  The problem is this limit
++		 * is often too low for many modern games so just make the limit 1/2
++		 * of system memory which aligns with TTM. The OOM accounting needs
++		 * to be addressed, but we shouldn't prevent common 3D applications
++		 * from being usable just to potentially mitigate that corner case.
++		 */
++		gtt_size = max((AMDGPU_DEFAULT_GTT_SIZE_MB << 20),
++			       (u64)si.totalram * si.mem_unit / 2);
++	} else {
+ 		gtt_size = (uint64_t)amdgpu_gtt_size << 20;
++	}
  
-+	/*
-+	 * DE2 and DE3 cores actually supports 40-bit addresses, but
-+	 * driver does not.
-+	 */
-+	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-+	dma_set_max_seg_size(&pdev->dev, UINT_MAX);
-+
- 	for (i = 0;; i++) {
- 		struct device_node *pipeline = of_parse_phandle(np,
- 								"allwinner,pipelines",
+ 	/* Initialize GTT memory pool */
+ 	r = ttm_bo_init_mm(&adev->mman.bdev, TTM_PL_TT, gtt_size >> PAGE_SHIFT);
 -- 
 2.35.1
 
