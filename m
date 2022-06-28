@@ -2,53 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 965D0CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77695CCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245751AbiF1CdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40554 "EHLO
+        id S245721AbiF1CdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244773AbiF1C17 (ORCPT
+        with ESMTP id S244748AbiF1C1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E872610B;
-        Mon, 27 Jun 2022 19:26:15 -0700 (PDT)
+        Mon, 27 Jun 2022 22:27:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6228BB3;
+        Mon, 27 Jun 2022 19:26:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1625B81C00;
-        Tue, 28 Jun 2022 02:26:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEBD5C341CC;
-        Tue, 28 Jun 2022 02:26:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4192C61753;
+        Tue, 28 Jun 2022 02:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB1E3C341CA;
+        Tue, 28 Jun 2022 02:25:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383172;
-        bh=ptZUL1nkkf4uKm85SgdBZGLGysVXez9VzASn1Xx4EBU=;
+        s=k20201202; t=1656383160;
+        bh=7Qc7EGfD+hK4Oi74T/mMmKThV6rGCOJe2WCheaRzp1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nvoW7Q48c4nefPIiL0QaolqwzA+LtREhpCDsQ1TcuGSp1OI1WQhaBu2VnqLs1SEG8
-         X5KCo/qIjzE7mhEmFuid0+Yd4nqdSWHHAek0auy9fL1P8kvqnN7uKXIG/Wr1UDjptK
-         rsFD392MT3UpV8nLK8I0g104NVCde1dVvZUX9P5OjJvJcWHgY3JjVOJL3MMO/eN5Ss
-         43lKd+4oqM2A4qq/OTeRY/8iKfZu1be7wYSB6QkxMj4Nv/pjtgou+CaIuUHkNmVrpm
-         OhLfA0CSEdTS2KQMlwNEdyq0u7BVp1JRTTjhijBZ0Pir4rIv8wMbVwJefmjNq39JcC
-         R0GUIKFtFbIVw==
+        b=f8hWLN+iPDob97TGDpZf2grBNhXvf0F52u2YJ7HtHNHK1lMJIEVwCIhXGXE11AhZJ
+         BfwyiQrF1yNF3kwgOtk2gW9+Jqy+CD5o6YBOemxixt8rt22EQoEXuMvvrmLsrGAwUp
+         HvQMC0AsxQVIKzRrp9kmhnAHehPiWa12CEj7ZdDEloTkIyzWJ9j09f57CQlocUdlAw
+         iBuhJOcbrxZR0lKmrjWbA9Wkty4XkxRTg3qB+hYmQ9eljPoHv4rMngRqGXqPIF6rnj
+         E3O9wNV3jpQ4S7Wxpl4CBpzEgLVclbcjpsYHIGF2IQUGMStPWOLzdiP3mBzclXrnZD
+         O2eXGHlX75zLw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Felix.Kuehling@amd.com, nirmoy.das@amd.com, jonathan.kim@amd.com,
-        kevin1.wang@amd.com, zackr@vmware.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.19 21/22] drm/amdgpu: Adjust logic around GTT size (v3)
-Date:   Mon, 27 Jun 2022 22:25:16 -0400
-Message-Id: <20220628022518.596687-21-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
+        xkernel.wang@foxmail.com, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 17/22] mips: lantiq: xway: Fix refcount leak bug in sysctrl
+Date:   Mon, 27 Jun 2022 22:25:12 -0400
+Message-Id: <20220628022518.596687-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022518.596687-1-sashal@kernel.org>
 References: <20220628022518.596687-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,70 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit f15345a377c6ea9c7cc74f079616af8856aff37f ]
+[ Upstream commit 76695592711ef1e215cc24ed3e1cd857d7fc3098 ]
 
-Certain GL unit tests for large textures can cause problems
-with the OOM killer since there is no way to link this memory
-to a process.  This was originally mitigated (but not necessarily
-eliminated) by limiting the GTT size.  The problem is this limit
-is often too low for many modern games so just make the limit 1/2
-of system memory. The OOM accounting needs to be addressed, but
-we shouldn't prevent common 3D applications from being usable
-just to potentially mitigate that corner case.
+In ltq_soc_init(), of_find_compatible_node() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
-Set default GTT size to max(3G, 1/2 of system ram) by default.
-
-v2: drop previous logic and default to 3/4 of ram
-v3: default to half of ram to align with ttm
-v4: fix spelling in comment (Kent)
-
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1942
-Reviewed-by: Marek Olšák <marek.olsak@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ arch/mips/lantiq/xway/sysctrl.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-index 50807d621eca..7018873324d0 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-@@ -1782,18 +1782,26 @@ int amdgpu_ttm_init(struct amdgpu_device *adev)
- 	DRM_INFO("amdgpu: %uM of VRAM memory ready\n",
- 		 (unsigned) (adev->gmc.real_vram_size / (1024 * 1024)));
+diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
+index 293ebb833659..833a6b4f8383 100644
+--- a/arch/mips/lantiq/xway/sysctrl.c
++++ b/arch/mips/lantiq/xway/sysctrl.c
+@@ -439,6 +439,10 @@ void __init ltq_soc_init(void)
+ 			of_address_to_resource(np_ebu, 0, &res_ebu))
+ 		panic("Failed to get core resources");
  
--	/* Compute GTT size, either bsaed on 3/4th the size of RAM size
-+	/* Compute GTT size, either based on 1/2 the size of RAM size
- 	 * or whatever the user passed on module init */
- 	if (amdgpu_gtt_size == -1) {
- 		struct sysinfo si;
- 
- 		si_meminfo(&si);
--		gtt_size = min(max((AMDGPU_DEFAULT_GTT_SIZE_MB << 20),
--			       adev->gmc.mc_vram_size),
--			       ((uint64_t)si.totalram * si.mem_unit * 3/4));
--	}
--	else
-+		/* Certain GL unit tests for large textures can cause problems
-+		 * with the OOM killer since there is no way to link this memory
-+		 * to a process.  This was originally mitigated (but not necessarily
-+		 * eliminated) by limiting the GTT size.  The problem is this limit
-+		 * is often too low for many modern games so just make the limit 1/2
-+		 * of system memory which aligns with TTM. The OOM accounting needs
-+		 * to be addressed, but we shouldn't prevent common 3D applications
-+		 * from being usable just to potentially mitigate that corner case.
-+		 */
-+		gtt_size = max((AMDGPU_DEFAULT_GTT_SIZE_MB << 20),
-+			       (u64)si.totalram * si.mem_unit / 2);
-+	} else {
- 		gtt_size = (uint64_t)amdgpu_gtt_size << 20;
-+	}
- 
- 	/* Initialize GTT memory pool */
- 	r = ttm_bo_init_mm(&adev->mman.bdev, TTM_PL_TT, gtt_size >> PAGE_SHIFT);
++	of_node_put(np_pmu);
++	of_node_put(np_cgu);
++	of_node_put(np_ebu);
++
+ 	if (!request_mem_region(res_pmu.start, resource_size(&res_pmu),
+ 				res_pmu.name) ||
+ 		!request_mem_region(res_cgu.start, resource_size(&res_cgu),
 -- 
 2.35.1
 
