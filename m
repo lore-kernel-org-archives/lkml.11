@@ -2,139 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D263DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 490E0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbiF1Von (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 17:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
+        id S229974AbiF1VpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 17:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiF1Voi (ORCPT
+        with ESMTP id S229880AbiF1VpK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 17:44:38 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002041B7A4
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 14:44:37 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id g4so6519585pgc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 14:44:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:user-agent:mime-version;
-        bh=TeO0t0DJhH40WIl7Vbgx7DQrmpnWJwpLVnwQgvva4x4=;
-        b=KRkasxtHfuIGPlHfbWQTNG6foYVaYvPaKcOtI5HwDb2AOGP7QItQDDgNuopHUcga/H
-         OLf3n7av5mB6vG9RPPSkTqynn5wLyvhrtQS9++zeNZuevyPFQD0RwmgxznqgJYXz333S
-         jQot788JZnFFWnlMI++YSrPWVDDzrb+ohqODSWw6L7NVl6WNVfu6vMAYtbp6Abrdhpu8
-         9kjd8KOy0/0MlZPBJsAZffSgFNZ5fhnFu+W6TPIIJq2TXYo81qIcGwAvW/pLktIHUB2u
-         lzXRGaYqB/abn1lCCnC1zz8aLBgvoom000fBXqmyXUxtTEVEyLr9vHshwXQ8zomi9ECx
-         BZew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:user-agent
-         :mime-version;
-        bh=TeO0t0DJhH40WIl7Vbgx7DQrmpnWJwpLVnwQgvva4x4=;
-        b=oJBvQV+E3AsHY9iB4g/kbdvFmG2ti6+vyuG55SnMmkF5oY7r+A0jiQ9DgAPLARgtdk
-         R+TVIy7K/UyvUY+J1LO/5iwnVTn8f0799/NdZrNOySXu1Su5zYMBbbxgvRhH3WmCt4dy
-         G0dGKnFrZy5NUG9sRwE4yWDnXpEFDvDejMy+kxNz3NGLBiMD5oTMmbDKVgx9ALC9mFhZ
-         AmhMtZJFCcmYKWkQBW0Z8xbeC0/ezel8iD4h8pzLNoo+uZ0I9WdDBee9zBk30YHl4/to
-         yddj7q+X5bZALkdo1ZJuRr9gWO9B1btmVQAgg4EIMrvZ1mNDh8/SBEjgqzk5g8FQ34aR
-         Ml0Q==
-X-Gm-Message-State: AJIora/FlBYKtazE48OU/MQZYohObtF+6ydZ/3ZjfLk6qoYePF0fLM3m
-        lha7Yjnel2f4cmEtShi99fSXSA==
-X-Google-Smtp-Source: AGRyM1uLeOu44xplLd/CxLafuzCbkEBJZa98R3umT6BodvfxtgAAPRjzUEEW1sZM3M9/DYscE9bl+A==
-X-Received: by 2002:a05:6a00:218c:b0:525:5236:74c with SMTP id h12-20020a056a00218c00b005255236074cmr6938808pfi.44.1656452677380;
-        Tue, 28 Jun 2022 14:44:37 -0700 (PDT)
-Received: from bsegall-glaptop.localhost (c-67-188-112-16.hsd1.ca.comcast.net. [67.188.112.16])
-        by smtp.gmail.com with ESMTPSA id g4-20020a655944000000b003fe4da67980sm9692585pgu.68.2022.06.28.14.44.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 14:44:35 -0700 (PDT)
-From:   Benjamin Segall <bsegall@google.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [RESEND RFC PATCH] epoll: autoremove wakers even more aggressively
-Date:   Wed, 15 Jun 2022 14:24:23 -0700
-Message-ID: <xm26fsjotqda.fsf@google.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        Tue, 28 Jun 2022 17:45:10 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974861F2C7;
+        Tue, 28 Jun 2022 14:45:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656452709; x=1687988709;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=oci42jBjowKb2PtIPS0q3kH3KK7UDnCP2KqGOPaNJL0=;
+  b=fVMjOSgXeO8tQIOaJ9t8WGIXjeaq8XwCAKv33athvDOgYP8flgpA26X9
+   rARveAt8oEkKoZR7Q5ioyCqICPbLC4HrFoh5kZbFK3skSFr58qlSorZfW
+   6BpiRtDCKhIf4juIG5n3/x656L6dT5AluLmc6NtkjPgSagfIoFINCDUHz
+   SjgzZWjYzTP2o/kxlP8s7X2JUYiOvDYaw2CGf8A7KtMlHil36xqU+shrI
+   VmKadoPWHK5z024Rlky7fLGrzoc/y4bZK9Rbag1pYVe80Y2RuMsZRLJoX
+   FAz9vaeagGCGSiMFC5fNTyGrNu3KofRRhJ5+88mAkci/BJsuNaJQctCMt
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="345849910"
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="345849910"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 14:45:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="732914865"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 28 Jun 2022 14:45:07 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 589A6CE; Wed, 29 Jun 2022 00:45:13 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v1 1/1] serial: 8250_dw: Drop PM ifdeffery
+Date:   Wed, 29 Jun 2022 00:45:11 +0300
+Message-Id: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a process is killed or otherwise exits while having active network
-connections and many threads waiting on epoll_wait, the threads will all
-be woken immediately, but not removed from ep->wq. Then when network
-traffic scans ep->wq in wake_up, every wakeup attempt will fail, and
-will not remove the entries from the list.
+Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting dw8250_pm_ops
+to use new PM macros.
 
-This means that the cost of the wakeup attempt is far higher than usual,
-does not decrease, and this also competes with the dying threads trying
-to actually make progress and remove themselves from the wq.
-
-Handle this by removing visited epoll wq entries unconditionally, rather
-than only when the wakeup succeeds - the structure of ep_poll means that
-the only potential loss is the timed_out->eavail heuristic, which now
-can race and result in a redundant ep_send_events attempt. (But only
-when incoming data and a timeout actually race, not on every timeout)
-
-Signed-off-by: Ben Segall <bsegall@google.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- fs/eventpoll.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/tty/serial/8250/8250_dw.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-index e2daa940ebce..8b56b94e2f56 100644
---- a/fs/eventpoll.c
-+++ b/fs/eventpoll.c
-@@ -1745,10 +1745,25 @@ static struct timespec64 *ep_timeout_to_timespec(struct timespec64 *to, long ms)
- 	ktime_get_ts64(&now);
- 	*to = timespec64_add_safe(now, *to);
- 	return to;
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index f71428c85562..adcc869352b1 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -691,7 +691,6 @@ static int dw8250_remove(struct platform_device *pdev)
+ 	return 0;
  }
  
-+/*
-+ * autoremove_wake_function, but remove even on failure to wake up, because we
-+ * know that default_wake_function/ttwu will only fail if the thread is already
-+ * woken, and in that case the ep_poll loop will remove the entry anyways, not
-+ * try to reuse it.
-+ */
-+static int ep_autoremove_wake_function(struct wait_queue_entry *wq_entry,
-+				       unsigned int mode, int sync, void *key)
-+{
-+	int ret = default_wake_function(wq_entry, mode, sync, key);
-+
-+	list_del_init(&wq_entry->entry);
-+	return ret;
-+}
-+
- /**
-  * ep_poll - Retrieves ready events, and delivers them to the caller-supplied
-  *           event buffer.
-  *
-  * @ep: Pointer to the eventpoll context.
-@@ -1826,12 +1841,19 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
- 		 * chance to harvest new event. Otherwise wakeup can be
- 		 * lost. This is also good performance-wise, because on
- 		 * normal wakeup path no need to call __remove_wait_queue()
- 		 * explicitly, thus ep->lock is not taken, which halts the
- 		 * event delivery.
-+		 *
-+		 * In fact, we now use an even more aggressive function that
-+		 * unconditionally removes, because we don't reuse the wait
-+		 * entry between loop iterations. This lets us also avoid the
-+		 * performance issue if a process is killed, causing all of its
-+		 * threads to wake up without being removed normally.
- 		 */
- 		init_wait(&wait);
-+		wait.func = ep_autoremove_wake_function;
+-#ifdef CONFIG_PM_SLEEP
+ static int dw8250_suspend(struct device *dev)
+ {
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
+@@ -709,9 +708,7 @@ static int dw8250_resume(struct device *dev)
  
- 		write_lock_irq(&ep->lock);
- 		/*
- 		 * Barrierless variant, waitqueue_active() is called under
- 		 * the same lock on wakeup ep_poll_callback() side, so it
+ 	return 0;
+ }
+-#endif /* CONFIG_PM_SLEEP */
+ 
+-#ifdef CONFIG_PM
+ static int dw8250_runtime_suspend(struct device *dev)
+ {
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
+@@ -733,11 +730,10 @@ static int dw8250_runtime_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+ static const struct dev_pm_ops dw8250_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
+-	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
++	SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
++	RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
+ };
+ 
+ static const struct dw8250_platform_data dw8250_dw_apb = {
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.35.1
 
