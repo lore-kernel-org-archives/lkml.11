@@ -2,226 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB4FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 23:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFEA4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 23:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbiF1Xfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 19:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50484 "EHLO
+        id S229800AbiF1Xkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 19:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiF1Xfm (ORCPT
+        with ESMTP id S229450AbiF1Xkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 19:35:42 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C0E39179;
-        Tue, 28 Jun 2022 16:35:40 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id e2so19769684edv.3;
-        Tue, 28 Jun 2022 16:35:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kl62yh9fcFGqVyYLNjMbcUjr7j+88ktEAbLSuJ6L1KY=;
-        b=M6u8xP/isYO4zwe1vwxJwWsp4YrBRQw2N343gV4jBw2i/29+NTYiAMrPcgFlC+b5uV
-         TOYjMeUjdf3jen1z9w7Ivo9JGpHRKUa4zP92JDjV3JLQZOGmXmLTqeeqk6DspIXeW38P
-         Qzf0ZFmhnmXObPKJd9AoBQCs/hwBPeeM4uxRyLQXcpEK/2DZ91pVTxDOllTwv4QG6Xn/
-         wb1xtfzJwLrwJfPP1Fdf/02hjRokHf2olFFpBd+Z4sfh1/4F/SvRfYanxkpu8E/Z8RMm
-         xaXKZT5i7eAnMB0AacjCr63cU8bNTuKBegH4MtldDwTa9/1lZT8SiUXRKaEbM/GGzJPN
-         dSBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kl62yh9fcFGqVyYLNjMbcUjr7j+88ktEAbLSuJ6L1KY=;
-        b=2Ty03sKf0Az3VqWZZh1Oml6q4fPlNg61iFus1PfUkhOq5+pDlhpj5Qc07ABPvfkFGm
-         13YjCeHimrIevY+7OmadvW1bec3dihwLOiz+DdYxqyxETRxD0DmpsTfe1OTxArVDWES+
-         JwzeV/xGA0EJAbfTXPX8IeoNXohsfU0oCWAHjedhAdu0ys6n5nVIaGvzBBuXG7TocVFY
-         sgR9cSDJJA62zSimAD2XEeAkbzcou5fIp1JCm9XZdzkkzxl60zrwhb488KRZDqDKwrfN
-         /sy85Yx3YRtayCce/42vVC4NyNYdE/WnerQDCU863wzYhhNVuBcbp/jij8F+qb3vfAC6
-         3iaQ==
-X-Gm-Message-State: AJIora9HxE0ZvEG72YBH3dc0usL6YZLxx8Av898O0SvcVVXyj+l7KrXb
-        0VJjjKV2Jbrp13JT2L0jtHNHynDbFi+YBzyBMDE=
-X-Google-Smtp-Source: AGRyM1t5umLiHjcwLID87ouxNCjRvmkitFjy0Lz5f0X/cd77dmmK/oDjS+pai03X+fSYzgFMpV5cmMDAtNqQnwyE6i0=
-X-Received: by 2002:a05:6402:42c6:b0:435:dc4b:1bb2 with SMTP id
- i6-20020a05640242c600b00435dc4b1bb2mr602470edc.355.1656459339402; Tue, 28 Jun
- 2022 16:35:39 -0700 (PDT)
+        Tue, 28 Jun 2022 19:40:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E877B33A0C
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 16:40:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7736461B76
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 23:40:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28B65C341C8;
+        Tue, 28 Jun 2022 23:40:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656459649;
+        bh=7nIWwuteCtLL/7qZso59iVjJhUGGVyjf9VgBjFYUDkI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Psow3Oswi0EHugLEe52mJmeGzxbU7wKaNhIE/6NdJpD0FUh7Exs465CiQSgU3daYV
+         REznHzpYhzehwyHMeQdqzVROVOKrRCqAZIJqVLhZziCCteHo7ZjmyVOakNa8EuC8Gk
+         NamG9aqmvRYk+Qm5YBNgPBP6slb2rLniG2I3O1JPxXgsnzDvPid8Z4Yzs4t9j8ArFT
+         dRur1a7xhVR5KYMfbfsWK9GC0sGagaLLqeigIHP3hB7qo1sBn6Fx/MxghBnJH++XI7
+         cXUrxKu0ZIR+Dbi685UnKUmLI7GNngfzbrnL0utdC5Y7L7ZXhhU8js8+WzwW/WCev1
+         kxqa1LfzWFw7w==
+Message-ID: <53d41f54-28ad-023c-537f-281cc2c40ae9@kernel.org>
+Date:   Tue, 28 Jun 2022 16:40:48 -0700
 MIME-Version: 1.0
-References: <CAABZP2wCsXG=qaZ68OwDDPA=uG-4Wb-e6WxMNuHNbJTZ1ruenA@mail.gmail.com>
- <CAK7LNATNo74bcp6F08iiYjbMrnNeQWsOSys5vYfG88jjpU-kZQ@mail.gmail.com>
-In-Reply-To: <CAK7LNATNo74bcp6F08iiYjbMrnNeQWsOSys5vYfG88jjpU-kZQ@mail.gmail.com>
-From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
-Date:   Wed, 29 Jun 2022 07:35:27 +0800
-Message-ID: <CAABZP2y0ScFKftLJsyi9qP16ezpSMy1UxoDmWp1mDktCxJkh1A@mail.gmail.com>
-Subject: Re: Possible problem in check-local-export during the kernel build
- process (RCU torture)
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        rcu <rcu@vger.kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCHv3 5/8] x86/uaccess: Provide untagged_addr() and remove
+ tags before address check
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+ <20220610143527.22974-6-kirill.shutemov@linux.intel.com>
+From:   Andy Lutomirski <luto@kernel.org>
+In-Reply-To: <20220610143527.22974-6-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 3:25 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Tue, Jun 28, 2022 at 9:55 AM Zhouyi Zhou <zhouzhouyi@gmail.com> wrote:
-> >
-> > Dear Masahiro:
-> >
-> > 1. The cause of the problem
-> > When I am doing RCU torture test:
-> >
-> > #git clone https://kernel.source.codeaurora.cn/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
-> > #cd linux-rcu
-> > #git checkout remotes/origin/pmladek.2022.06.15a
-> > #./tools/testing/selftests/rcutorture/bin/torture.sh
-> >
-> > The kernel building report error something in both Dell PowerEdge R720
-> > and Thinkpad T14 (Amd).
-> >
-> > For example:
-> > /mnt/rcu/linux-rcu/tools/testing/selftests/rcutorture/res/2022.06.27-10.42.37-torture#
-> > find . -name Make.out|xargs grep Error
-> > ./results-rcutorture-kasan/RUDE01/Make.out:make[2]: ***
-> > [scripts/Makefile.build:257: kernel/trace/power-traces.o] Error 255
->
->
-> check-local-export stopped using the process substitution.
-> Seet this commit:
->
->
-> commit da4288b95baa1c7c9aa8a476f58b37eb238745b0
-> Author: Masahiro Yamada <masahiroy@kernel.org>
-> Date:   Wed Jun 8 10:11:00 2022 +0900
->
->     scripts/check-local-export: avoid 'wait $!' for process substitution
->
->
->
->
-> You are debugging the stale Kbuild code.
-Thank Masahiro for your help
-I patched da4288b95baa1c7c9aa8a476f58b37eb238745b0 to
-pmladek.2022.06.15a branch of linux-rcu, after 13 hours' RCU torture
-test,
-all the testcases are built successfully!
+On 6/10/22 07:35, Kirill A. Shutemov wrote:
+> untagged_addr() is a helper used by the core-mm to strip tag bits and
+> get the address to the canonical shape. In only handles userspace
+> addresses. The untagging mask is stored in mmu_context and will be set
+> on enabling LAM for the process.
+> 
+> The tags must not be included into check whether it's okay to access the
+> userspace address.
+> 
+> Strip tags in access_ok().
 
-Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
->
-> If your main interest is RCU torture,
-> please narrow it down to a standalone script,
-> not the entire Kbuild.
-OK and Thank you and Paul both for your guidance and encouragement ;-)
->
->
->
->
->
->
->
->
->
-> >
-> > 2. I trace the problem to check-local-export
-> > I add some echo statement in Makefile.build
-> > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> > index 1f01ac65c0cd..0d48a2d3efff 100644
-> > --- a/scripts/Makefile.build
-> > +++ b/scripts/Makefile.build
-> > @@ -227,13 +227,21 @@ cmd_check_local_export =
-> > $(srctree)/scripts/check-local-export $@
-> >
-> >  define rule_cc_o_c
-> >         $(call cmd_and_fixdep,cc_o_c)
-> > +       echo "after fixdep $$? $<"
-> >         $(call cmd,gen_ksymdeps)
-> > +       echo "after gen_ksymdeps $$? $<"
-> >         $(call cmd,check_local_export)
-> > +       echo "after check_local_export $$? $<"
-> >         $(call cmd,checksrc)
-> > +       echo "after checksrc $$? $<"
-> >         $(call cmd,checkdoc)
-> > +       echo "after checkdoc $$? $<"
-> >         $(call cmd,gen_objtooldep)
-> > +       echo "after gen_objtooldep $$? $<"
-> >         $(call cmd,gen_symversions_c)
-> > +       echo "after gen_symversions $$? $<"
-> >         $(call cmd,record_mcount)
-> > +       echo "after record_mcount $$? $<"
-> >  endef
-> >
-> > Then I rerun the torture.sh
-> >
-> > The result show it is check_local_export did not continue in all failed builds.
-> >
-> > 3. I trace into wait statement in check-local-export
-> > diff --git a/scripts/check-local-export b/scripts/check-local-export
-> > index da745e2743b7..d35477d95bdc 100755
-> > --- a/scripts/check-local-export
-> > +++ b/scripts/check-local-export
-> > @@ -12,7 +12,7 @@ declare -A symbol_types
-> >  declare -a export_symbols
-> >
-> >  exit_code=0
-> > -
-> > +echo "check-local-export L15 ${0} ${1}"
-> >  while read value type name
-> >  do
-> >         # Skip the line if the number of fields is less than 3.
-> > @@ -50,9 +50,10 @@ do
-> >         #   done < <(${NM} --quiet ${1})
-> >  done < <(${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } )
-> >
-> > +echo "check-local-export L53 ${0} ${1}"
-> >  # Catch error in the process substitution
-> >  wait $!
-> > -
-> > +echo "check-local-export L56 ${0} ${1} $! $?"
-> >  for name in "${export_symbols[@]}"
-> >  do
-> >         # nm(3) says "If lowercase, the symbol is usually local"
-> > @@ -61,5 +62,9 @@ do
-> >                 exit_code=1
-> >         fi
-> >  done
-> > -
-> > +if [ ${exit_code} -ne 0 ] ; then
-> > +    echo "Zhouyi Zhou"
-> > +    echo ${exit_code}
-> > +fi
-> > +echo "check-local-export L69 $? ${exit_code}"
-> >  exit ${exit_code}
-> >
-> > Then I rerun the torture.sh
-> >
-> > The result show it is wait $! in all failed builds because in all failed cases,
-> > there is L53, but no L56
-> >
-> > 4. I look into source code of wait command
-> > #wget http://ftp.gnu.org/gnu/bash/bash-5.0.tar.gz
-> > #tar zxf tar zxf bash-5.0.tar.gz
-> > I found that there are QUIT statements in realization of function wait_for
-> >
-> > 5. My Guess
-> > wait statement in check-local-export may cause bash to quit
-> > I am very interested in this problem, but I am a rookie, I am very
-> > glad to proceed the investigation with your further directions.
-> >
-> > Sorry to have brought you so much trouble.
-> >
-> >
-> > Kind Regard
-> > Thank you very much
-> > Zhouyi
->
->
->
-> --
-> Best Regards
-> Masahiro Yamada
-Best Regards
-Zhouyi
+What is the intended behavior for an access that spans a tag boundary?
+
+Also, at the risk of a potentially silly question, why do we need to 
+strip the tag before access_ok()?  With LAM, every valid tagged user 
+address is also a valid untagged address, right?  (There is no 
+particular need to enforce the actual value of TASK_SIZE_MAX on 
+*access*, just on mmap.)
+
+IOW, wouldn't it be sufficient, and probably better than what we have 
+now, to just check that the entire range has the high bit clear?
+
+--Andy
