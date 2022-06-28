@@ -2,93 +2,384 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B00D7CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1F8CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343530AbiF1Gep (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
+        id S245629AbiF1Ges (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 02:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245712AbiF1GeC (ORCPT
+        with ESMTP id S245723AbiF1GeD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:34:02 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7288DF6A;
-        Mon, 27 Jun 2022 23:34:00 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25S6XnhV075706;
-        Tue, 28 Jun 2022 01:33:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1656398029;
-        bh=gQpauwvT+3IQ8TE9iAJyxTmOdu5H7mkPZ8142Alt/ZQ=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=CcedCWVNtcXPfdTNMyDG/eZ3M3lIqIfACq25+4HoyA/5yjJdWG99LBrDnLMdYpz57
-         RRojxX1Ec3PV5Gl/B2hMWOaJrl2wSahEHyYhciFrmNcmnW2zqjge6q8iJGCMigsCXy
-         ZQxwbWSMN/tpoM2rEN7GZcIgGqicjP+dPFlLbJ4k=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25S6Xnhk036982
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 28 Jun 2022 01:33:49 -0500
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 28
- Jun 2022 01:33:48 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 28 Jun 2022 01:33:48 -0500
-Received: from [172.24.145.182] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25S6XjNn026376;
-        Tue, 28 Jun 2022 01:33:46 -0500
-Message-ID: <894d0c03-487b-40fc-5634-5b1a78b48701@ti.com>
-Date:   Tue, 28 Jun 2022 12:03:45 +0530
+        Tue, 28 Jun 2022 02:34:03 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95C129581
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:33:57 -0700 (PDT)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(20103:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Tue, 28 Jun 2022 14:27:01 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     sboyd@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        mturquette@baylibre.com, linux@armlinux.org.uk, arnd@arndb.de,
+        olof@lixom.net, soc@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Qin Jian <qinjian@cqplus1.com>, Marc Zyngier <maz@kernel.org>
+Subject: [PATCH v20 08/11] irqchip: Add Sunplus SP7021 interrupt controller driver
+Date:   Tue, 28 Jun 2022 14:26:48 +0800
+Message-Id: <357c96f60293ac308453e20c2e53278a0cfb1a96.1656396767.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1656396767.git.qinjian@cqplus1.com>
+References: <cover.1656396767.git.qinjian@cqplus1.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] arm64: dts: ti: k3-j721s2-main: Enable crypto accelerator
-Content-Language: en-US
-To:     Jayesh Choudhary <j-choudhary@ti.com>, <devicetree@vger.kernel.org>
-CC:     <nm@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220628054518.350717-1-j-choudhary@ti.com>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-In-Reply-To: <20220628054518.350717-1-j-choudhary@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Add interrupt controller driver for Sunplus SP7021 SoC.
 
-On 28/06/22 11:15, Jayesh Choudhary wrote:
-> +	main_crypto: crypto@4e00000 {
-> +		compatible = "ti,j721e-sa2ul";
-> +		reg = <0x00 0x4e00000 0x00 0x1200>;
-> +		power-domains = <&k3_pds 297 TI_SCI_PD_SHARED>;
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		ranges = <0x00 0x04e00000 0x00 0x04e00000 0x00 0x30000>;
-> +
-> +		dmas = <&main_udmap 0xca40>, <&main_udmap 0x4a40>,
-> +				<&main_udmap 0x4a41>;
-> +		dma-names = "tx", "rx1", "rx2";
+This is the interrupt controller in P-chip which collects all interrupt
+sources in P-chip and routes them to parent interrupt controller in C-chip.
 
+Acked-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+---
+ MAINTAINERS                       |   3 -
+ drivers/irqchip/Kconfig           |   9 +
+ drivers/irqchip/Makefile          |   1 +
+ drivers/irqchip/irq-sp7021-intc.c | 278 ++++++++++++++++++++++++++++++
+ 4 files changed, 288 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/irqchip/irq-sp7021-intc.c
 
-> +		dma-coherent;
-
-
-Crytpo device itself is not dma-coherent as it can never be bus master.
-Its the DMAengine that does data movement and the buffers are to be
-mapped to dmaengine provider. So this property should be dropped
-
-> +	};
-> +
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ca11740e8..a3eeb3a5a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2834,9 +2834,6 @@ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+ F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+-F:	arch/arm/boot/dts/sunplus-sp7021*.dts*
+-F:	arch/arm/configs/sp7021_*defconfig
+-F:	arch/arm/mach-sunplus/
+ F:	drivers/clk/clk-sp7021.c
+ F:	drivers/irqchip/irq-sp7021-intc.c
+ F:	drivers/reset/reset-sunplus.c
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 1f23a6be7..4dd4f2108 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -627,4 +627,13 @@ config MCHP_EIC
+ 	help
+ 	  Support for Microchip External Interrupt Controller.
+ 
++config SUNPLUS_SP7021_INTC
++	bool "Sunplus SP7021 interrupt controller" if COMPILE_TEST
++	default SOC_SP7021
++	help
++	  Support for the Sunplus SP7021 Interrupt Controller IP core.
++	  SP7021 SoC has 2 Chips: C-Chip & P-Chip. This is used as a
++	  chained controller, routing all interrupt source in P-Chip to
++	  the primary controller on C-Chip.
++
+ endmenu
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index 5b67450a9..cb12a1526 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -115,3 +115,4 @@ obj-$(CONFIG_WPCM450_AIC)		+= irq-wpcm450-aic.o
+ obj-$(CONFIG_IRQ_IDT3243X)		+= irq-idt3243x.o
+ obj-$(CONFIG_APPLE_AIC)			+= irq-apple-aic.o
+ obj-$(CONFIG_MCHP_EIC)			+= irq-mchp-eic.o
++obj-$(CONFIG_SUNPLUS_SP7021_INTC)	+= irq-sp7021-intc.o
+diff --git a/drivers/irqchip/irq-sp7021-intc.c b/drivers/irqchip/irq-sp7021-intc.c
+new file mode 100644
+index 000000000..bed78d1de
+--- /dev/null
++++ b/drivers/irqchip/irq-sp7021-intc.c
+@@ -0,0 +1,278 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Copyright (C) Sunplus Technology Co., Ltd.
++ *       All rights reserved.
++ */
++#include <linux/irq.h>
++#include <linux/irqdomain.h>
++#include <linux/io.h>
++#include <linux/irqchip.h>
++#include <linux/irqchip/chained_irq.h>
++#include <linux/of_address.h>
++#include <linux/of_irq.h>
++
++#define SP_INTC_HWIRQ_MIN	0
++#define SP_INTC_HWIRQ_MAX	223
++
++#define SP_INTC_NR_IRQS		(SP_INTC_HWIRQ_MAX - SP_INTC_HWIRQ_MIN + 1)
++#define SP_INTC_NR_GROUPS	DIV_ROUND_UP(SP_INTC_NR_IRQS, 32)
++#define SP_INTC_REG_SIZE	(SP_INTC_NR_GROUPS * 4)
++
++/* REG_GROUP_0 regs */
++#define REG_INTR_TYPE		(sp_intc.g0)
++#define REG_INTR_POLARITY	(REG_INTR_TYPE     + SP_INTC_REG_SIZE)
++#define REG_INTR_PRIORITY	(REG_INTR_POLARITY + SP_INTC_REG_SIZE)
++#define REG_INTR_MASK		(REG_INTR_PRIORITY + SP_INTC_REG_SIZE)
++
++/* REG_GROUP_1 regs */
++#define REG_INTR_CLEAR		(sp_intc.g1)
++#define REG_MASKED_EXT1		(REG_INTR_CLEAR    + SP_INTC_REG_SIZE)
++#define REG_MASKED_EXT0		(REG_MASKED_EXT1   + SP_INTC_REG_SIZE)
++#define REG_INTR_GROUP		(REG_INTR_CLEAR    + 31 * 4)
++
++#define GROUP_MASK		(BIT(SP_INTC_NR_GROUPS) - 1)
++#define GROUP_SHIFT_EXT1	(0)
++#define GROUP_SHIFT_EXT0	(8)
++
++/*
++ * When GPIO_INT0~7 set to edge trigger, doesn't work properly.
++ * WORKAROUND: change it to level trigger, and toggle the polarity
++ * at ACK/Handler to make the HW work.
++ */
++#define GPIO_INT0_HWIRQ		120
++#define GPIO_INT7_HWIRQ		127
++#define IS_GPIO_INT(irq)					\
++({								\
++	u32 i = irq;						\
++	(i >= GPIO_INT0_HWIRQ) && (i <= GPIO_INT7_HWIRQ);	\
++})
++
++/* index of states */
++enum {
++	_IS_EDGE = 0,
++	_IS_LOW,
++	_IS_ACTIVE
++};
++
++#define STATE_BIT(irq, idx)		(((irq) - GPIO_INT0_HWIRQ) * 3 + (idx))
++#define ASSIGN_STATE(irq, idx, v)	assign_bit(STATE_BIT(irq, idx), sp_intc.states, v)
++#define TEST_STATE(irq, idx)		test_bit(STATE_BIT(irq, idx), sp_intc.states)
++
++static struct sp_intctl {
++	/*
++	 * REG_GROUP_0: include type/polarity/priority/mask regs.
++	 * REG_GROUP_1: include clear/masked_ext0/masked_ext1/group regs.
++	 */
++	void __iomem *g0; // REG_GROUP_0 base
++	void __iomem *g1; // REG_GROUP_1 base
++
++	struct irq_domain *domain;
++	raw_spinlock_t lock;
++
++	/*
++	 * store GPIO_INT states
++	 * each interrupt has 3 states: is_edge, is_low, is_active
++	 */
++	DECLARE_BITMAP(states, (GPIO_INT7_HWIRQ - GPIO_INT0_HWIRQ + 1) * 3);
++} sp_intc;
++
++static struct irq_chip sp_intc_chip;
++
++static void sp_intc_assign_bit(u32 hwirq, void __iomem *base, bool value)
++{
++	u32 offset, mask;
++	unsigned long flags;
++	void __iomem *reg;
++
++	offset = (hwirq / 32) * 4;
++	reg = base + offset;
++
++	raw_spin_lock_irqsave(&sp_intc.lock, flags);
++	mask = readl_relaxed(reg);
++	if (value)
++		mask |= BIT(hwirq % 32);
++	else
++		mask &= ~BIT(hwirq % 32);
++	writel_relaxed(mask, reg);
++	raw_spin_unlock_irqrestore(&sp_intc.lock, flags);
++}
++
++static void sp_intc_ack_irq(struct irq_data *d)
++{
++	u32 hwirq = d->hwirq;
++
++	if (unlikely(IS_GPIO_INT(hwirq) && TEST_STATE(hwirq, _IS_EDGE))) { // WORKAROUND
++		sp_intc_assign_bit(hwirq, REG_INTR_POLARITY, !TEST_STATE(hwirq, _IS_LOW));
++		ASSIGN_STATE(hwirq, _IS_ACTIVE, true);
++	}
++
++	sp_intc_assign_bit(hwirq, REG_INTR_CLEAR, 1);
++}
++
++static void sp_intc_mask_irq(struct irq_data *d)
++{
++	sp_intc_assign_bit(d->hwirq, REG_INTR_MASK, 0);
++}
++
++static void sp_intc_unmask_irq(struct irq_data *d)
++{
++	sp_intc_assign_bit(d->hwirq, REG_INTR_MASK, 1);
++}
++
++static int sp_intc_set_type(struct irq_data *d, unsigned int type)
++{
++	u32 hwirq = d->hwirq;
++	bool is_edge = !(type & IRQ_TYPE_LEVEL_MASK);
++	bool is_low = (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_EDGE_FALLING);
++
++	irq_set_handler_locked(d, is_edge ? handle_edge_irq : handle_level_irq);
++
++	if (unlikely(IS_GPIO_INT(hwirq) && is_edge)) { // WORKAROUND
++		/* store states */
++		ASSIGN_STATE(hwirq, _IS_EDGE, is_edge);
++		ASSIGN_STATE(hwirq, _IS_LOW, is_low);
++		ASSIGN_STATE(hwirq, _IS_ACTIVE, false);
++		/* change to level */
++		is_edge = false;
++	}
++
++	sp_intc_assign_bit(hwirq, REG_INTR_TYPE, is_edge);
++	sp_intc_assign_bit(hwirq, REG_INTR_POLARITY, is_low);
++
++	return 0;
++}
++
++static int sp_intc_get_ext_irq(int ext_num)
++{
++	void __iomem *base = ext_num ? REG_MASKED_EXT1 : REG_MASKED_EXT0;
++	u32 shift = ext_num ? GROUP_SHIFT_EXT1 : GROUP_SHIFT_EXT0;
++	u32 groups;
++	u32 pending_group;
++	u32 group;
++	u32 pending_irq;
++
++	groups = readl_relaxed(REG_INTR_GROUP);
++	pending_group = (groups >> shift) & GROUP_MASK;
++	if (!pending_group)
++		return -1;
++
++	group = fls(pending_group) - 1;
++	pending_irq = readl_relaxed(base + group * 4);
++	if (!pending_irq)
++		return -1;
++
++	return (group * 32) + fls(pending_irq) - 1;
++}
++
++static void sp_intc_handle_ext_cascaded(struct irq_desc *desc)
++{
++	struct irq_chip *chip = irq_desc_get_chip(desc);
++	int ext_num = (uintptr_t)irq_desc_get_handler_data(desc);
++	int hwirq;
++
++	chained_irq_enter(chip, desc);
++
++	while ((hwirq = sp_intc_get_ext_irq(ext_num)) >= 0) {
++		if (unlikely(IS_GPIO_INT(hwirq) && TEST_STATE(hwirq, _IS_ACTIVE))) { // WORKAROUND
++			ASSIGN_STATE(hwirq, _IS_ACTIVE, false);
++			sp_intc_assign_bit(hwirq, REG_INTR_POLARITY, TEST_STATE(hwirq, _IS_LOW));
++		} else {
++			generic_handle_domain_irq(sp_intc.domain, hwirq);
++		}
++	}
++
++	chained_irq_exit(chip, desc);
++}
++
++static struct irq_chip sp_intc_chip = {
++	.name = "sp_intc",
++	.irq_ack = sp_intc_ack_irq,
++	.irq_mask = sp_intc_mask_irq,
++	.irq_unmask = sp_intc_unmask_irq,
++	.irq_set_type = sp_intc_set_type,
++};
++
++static int sp_intc_irq_domain_map(struct irq_domain *domain,
++				  unsigned int irq, irq_hw_number_t hwirq)
++{
++	irq_set_chip_and_handler(irq, &sp_intc_chip, handle_level_irq);
++	irq_set_chip_data(irq, &sp_intc_chip);
++	irq_set_noprobe(irq);
++
++	return 0;
++}
++
++static const struct irq_domain_ops sp_intc_dm_ops = {
++	.xlate = irq_domain_xlate_twocell,
++	.map = sp_intc_irq_domain_map,
++};
++
++static int sp_intc_irq_map(struct device_node *node, int i)
++{
++	unsigned int irq;
++
++	irq = irq_of_parse_and_map(node, i);
++	if (!irq)
++		return -ENOENT;
++
++	irq_set_chained_handler_and_data(irq, sp_intc_handle_ext_cascaded, (void *)(uintptr_t)i);
++
++	return 0;
++}
++
++static int __init sp_intc_init_dt(struct device_node *node, struct device_node *parent)
++{
++	int i, ret;
++
++	sp_intc.g0 = of_iomap(node, 0);
++	if (!sp_intc.g0)
++		return -ENXIO;
++
++	sp_intc.g1 = of_iomap(node, 1);
++	if (!sp_intc.g1) {
++		ret = -ENXIO;
++		goto out_unmap0;
++	}
++
++	ret = sp_intc_irq_map(node, 0); // EXT_INT0
++	if (ret)
++		goto out_unmap1;
++
++	ret = sp_intc_irq_map(node, 1); // EXT_INT1
++	if (ret)
++		goto out_unmap1;
++
++	/* initial regs */
++	for (i = 0; i < SP_INTC_NR_GROUPS; i++) {
++		/* all mask */
++		writel_relaxed(0, REG_INTR_MASK + i * 4);
++		/* all edge */
++		writel_relaxed(~0, REG_INTR_TYPE + i * 4);
++		/* all high-active */
++		writel_relaxed(0, REG_INTR_POLARITY + i * 4);
++		/* all EXT_INT0 */
++		writel_relaxed(~0, REG_INTR_PRIORITY + i * 4);
++		/* all clear */
++		writel_relaxed(~0, REG_INTR_CLEAR + i * 4);
++	}
++
++	sp_intc.domain = irq_domain_add_linear(node, SP_INTC_NR_IRQS,
++					       &sp_intc_dm_ops, &sp_intc);
++	if (!sp_intc.domain) {
++		ret = -ENOMEM;
++		goto out_unmap1;
++	}
++
++	raw_spin_lock_init(&sp_intc.lock);
++
++	return 0;
++
++out_unmap1:
++	iounmap(sp_intc.g1);
++out_unmap0:
++	iounmap(sp_intc.g0);
++
++	return ret;
++}
++
++IRQCHIP_DECLARE(sp_intc, "sunplus,sp7021-intc", sp_intc_init_dt);
 -- 
-Regards
-Vignesh
+2.33.1
+
