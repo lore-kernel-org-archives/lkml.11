@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63BBEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D252C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242370AbiF1HJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
+        id S241000AbiF1HJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237019AbiF1HJP (ORCPT
+        with ESMTP id S229919AbiF1HJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:09:15 -0400
+        Tue, 28 Jun 2022 03:09:16 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591E49FDD;
-        Tue, 28 Jun 2022 00:09:14 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 07:09:10 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B248BB489;
+        Tue, 28 Jun 2022 00:09:15 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 07:09:13 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1656400152;
+        s=2020; t=1656400154;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MVeGRpc3zhspEbz6qIypSvGemS1lRtd39QVDZpmieXg=;
-        b=27nXETW3BDguJUxEIk45jCyvqUjABnAJM3vwHiqCaidLjTAjylXqtOJy2IG+o/5q8jBa8T
-        IwpW7OMu+WuRg9nQd/b96fzAujwSEw03l45YBN3Q1QJWk3e0ec0Y+4H3iCYRNQEt8i1eaa
-        IP5MkPI1p+I8JRA6+rZOPdziH+iN5a7eqTLZnNCMdVnuPfmYBRpv2Fh2o6vje+rNt0yPsS
-        f2jTZNWkP46bAY5goTl0bL7VwLgQ5H76/VyBHZa2KPjenz5uEboja/bR/x4dfiOFe85oxy
-        vZt77QvGY2gXylQM8YTa3kn9ycZwt6uLLtIcJfxo+kHSm5W6NgxLNR1B0L+Axg==
+        bh=QsmjqaZFfqc+ta7xvXRtpXGQex6GuKf+433cr2vZofs=;
+        b=4fP+VM6rVKHTKxdRFw3s2L+ikvHiDuwWnsjaLXUrlHI1psY5eN8ti7wRReOKMim9VUZb+e
+        Jh3ATVC+4/q8dQxeOcL1zHjLQjh88aZJrd2tkmoOGK79fir5B4LaPY1fwiJjbb5KsNSKGw
+        5GD1V39eACssbIYA53MCVrJDCRnVx+U5df+2AOawdTcnOgCRr/0Mi0yRi4rv1XwJ+arHOz
+        N2uPI4MOU7NZDnCg2sj47C5Q9C9GHYCx6tlr8UbnImbU07Yihji9gqtDm3p+IKLMm986X8
+        HOt0Vg0yFDScp9L0WGjIUy4by7llMTH/8er7xac4ezJNSFBuDuLzb9fceL4Hsw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1656400152;
+        s=2020e; t=1656400154;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MVeGRpc3zhspEbz6qIypSvGemS1lRtd39QVDZpmieXg=;
-        b=kfVt+QHhow/WoxNyLEJEq+OeNMF7rvE/sbWcM/kkHBHOWe2GVHc3LfeEg7A3NawoJk/nHY
-        ulCvH4JLyWvx5XDA==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+        bh=QsmjqaZFfqc+ta7xvXRtpXGQex6GuKf+433cr2vZofs=;
+        b=FKhjYIfD3g5vhMvYu2u99EtDjrWdWB4MrnJklAczg+Mefd/09tnPciVDj2WH4Tf19dwGny
+        ObhxbLIy/QI5XlDQ==
+From:   "tip-bot2 for Ard Biesheuvel" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: locking/core] locking/lockdep: Fix lockdep_init_map_*() confusion
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+Subject: [tip: locking/core] jump_label: mips: move module NOP patching into arch code
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <YqyEDtoan20K0CVD@worktop.programming.kicks-ass.net>
-References: <YqyEDtoan20K0CVD@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220615154142.1574619-3-ardb@kernel.org>
+References: <20220615154142.1574619-3-ardb@kernel.org>
 MIME-Version: 1.0
-Message-ID: <165640015096.4207.1534716601746682191.tip-bot2@tip-bot2>
+Message-ID: <165640015317.4207.8002350045283771396.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -60,100 +61,194 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the locking/core branch of tip:
 
-Commit-ID:     eae6d58d67d9739be5f7ae2dbead1d0ef6528243
-Gitweb:        https://git.kernel.org/tip/eae6d58d67d9739be5f7ae2dbead1d0ef6528243
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Fri, 17 Jun 2022 15:26:06 +02:00
+Commit-ID:     fdfd42892f311e2b3695852036e5be23661dc590
+Gitweb:        https://git.kernel.org/tip/fdfd42892f311e2b3695852036e5be23661dc590
+Author:        Ard Biesheuvel <ardb@kernel.org>
+AuthorDate:    Wed, 15 Jun 2022 17:41:41 +02:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 24 Jun 2022 09:48:56 +02:00
+CommitterDate: Fri, 24 Jun 2022 09:48:55 +02:00
 
-locking/lockdep: Fix lockdep_init_map_*() confusion
+jump_label: mips: move module NOP patching into arch code
 
-Commit dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t") added yet
-another lockdep_init_map_*() variant, but forgot to update all the
-existing users of the most complicated version.
+MIPS is the only remaining architecture that needs to patch jump label
+NOP encodings to initialize them at load time. So let's move the module
+patching part of that from generic code into arch/mips, and drop it from
+the others.
 
-This could lead to a loss of lock_type and hence an incorrect report.
-Given the relative rarity of both local_lock and these annotations,
-this is unlikely to happen in practise, still, best fix things.
-
-Fixes: dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/YqyEDtoan20K0CVD@worktop.programming.kicks-ass.net
+Link: https://lore.kernel.org/r/20220615154142.1574619-3-ardb@kernel.org
 ---
- include/linux/lockdep.h  | 30 +++++++++++++++++-------------
- kernel/locking/lockdep.c |  7 ++++---
- 2 files changed, 21 insertions(+), 16 deletions(-)
+ arch/mips/kernel/jump_label.c | 19 +++++++++++++++++++
+ arch/mips/kernel/module.c     |  5 +++--
+ arch/s390/kernel/module.c     |  1 -
+ arch/sparc/kernel/module.c    |  3 ---
+ arch/x86/kernel/module.c      |  3 ---
+ include/linux/jump_label.h    |  7 +------
+ kernel/jump_label.c           | 27 +--------------------------
+ 7 files changed, 24 insertions(+), 41 deletions(-)
 
-diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index b6829b9..1f1099d 100644
---- a/include/linux/lockdep.h
-+++ b/include/linux/lockdep.h
-@@ -188,7 +188,7 @@ static inline void
- lockdep_init_map_waits(struct lockdep_map *lock, const char *name,
- 		       struct lock_class_key *key, int subclass, u8 inner, u8 outer)
- {
--	lockdep_init_map_type(lock, name, key, subclass, inner, LD_WAIT_INV, LD_LOCK_NORMAL);
-+	lockdep_init_map_type(lock, name, key, subclass, inner, outer, LD_LOCK_NORMAL);
+diff --git a/arch/mips/kernel/jump_label.c b/arch/mips/kernel/jump_label.c
+index 662c8db..71a882c 100644
+--- a/arch/mips/kernel/jump_label.c
++++ b/arch/mips/kernel/jump_label.c
+@@ -88,3 +88,22 @@ void arch_jump_label_transform(struct jump_entry *e,
+ 
+ 	mutex_unlock(&text_mutex);
  }
++
++#ifdef CONFIG_MODULES
++void jump_label_apply_nops(struct module *mod)
++{
++	struct jump_entry *iter_start = mod->jump_entries;
++	struct jump_entry *iter_stop = iter_start + mod->num_jump_entries;
++	struct jump_entry *iter;
++
++	/* if the module doesn't have jump label entries, just return */
++	if (iter_start == iter_stop)
++		return;
++
++	for (iter = iter_start; iter < iter_stop; iter++) {
++		/* Only write NOPs for arch_branch_static(). */
++		if (jump_label_init_type(iter) == JUMP_LABEL_NOP)
++			arch_jump_label_transform(iter, JUMP_LABEL_NOP);
++	}
++}
++#endif
+diff --git a/arch/mips/kernel/module.c b/arch/mips/kernel/module.c
+index 14f46d1..0c936cb 100644
+--- a/arch/mips/kernel/module.c
++++ b/arch/mips/kernel/module.c
+@@ -21,6 +21,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/jump_label.h>
  
- static inline void
-@@ -211,24 +211,28 @@ static inline void lockdep_init_map(struct lockdep_map *lock, const char *name,
-  * or they are too narrow (they suffer from a false class-split):
-  */
- #define lockdep_set_class(lock, key)				\
--	lockdep_init_map_waits(&(lock)->dep_map, #key, key, 0,	\
--			       (lock)->dep_map.wait_type_inner,	\
--			       (lock)->dep_map.wait_type_outer)
-+	lockdep_init_map_type(&(lock)->dep_map, #key, key, 0,	\
-+			      (lock)->dep_map.wait_type_inner,	\
-+			      (lock)->dep_map.wait_type_outer,	\
-+			      (lock)->dep_map.lock_type)
++extern void jump_label_apply_nops(struct module *mod);
  
- #define lockdep_set_class_and_name(lock, key, name)		\
--	lockdep_init_map_waits(&(lock)->dep_map, name, key, 0,	\
--			       (lock)->dep_map.wait_type_inner,	\
--			       (lock)->dep_map.wait_type_outer)
-+	lockdep_init_map_type(&(lock)->dep_map, name, key, 0,	\
-+			      (lock)->dep_map.wait_type_inner,	\
-+			      (lock)->dep_map.wait_type_outer,	\
-+			      (lock)->dep_map.lock_type)
+ struct mips_hi16 {
+ 	struct mips_hi16 *next;
+@@ -428,8 +429,8 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 	const Elf_Shdr *s;
+ 	char *secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
  
- #define lockdep_set_class_and_subclass(lock, key, sub)		\
--	lockdep_init_map_waits(&(lock)->dep_map, #key, key, sub,\
--			       (lock)->dep_map.wait_type_inner,	\
--			       (lock)->dep_map.wait_type_outer)
-+	lockdep_init_map_type(&(lock)->dep_map, #key, key, sub,	\
-+			      (lock)->dep_map.wait_type_inner,	\
-+			      (lock)->dep_map.wait_type_outer,	\
-+			      (lock)->dep_map.lock_type)
+-	/* Make jump label nops. */
+-	jump_label_apply_nops(me);
++	if (IS_ENABLED(CONFIG_JUMP_LABEL))
++		jump_label_apply_nops(me);
  
- #define lockdep_set_subclass(lock, sub)					\
--	lockdep_init_map_waits(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
--			       (lock)->dep_map.wait_type_inner,		\
--			       (lock)->dep_map.wait_type_outer)
-+	lockdep_init_map_type(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
-+			      (lock)->dep_map.wait_type_inner,		\
-+			      (lock)->dep_map.wait_type_outer,		\
-+			      (lock)->dep_map.lock_type)
- 
- #define lockdep_set_novalidate_class(lock) \
- 	lockdep_set_class_and_name(lock, &__lockdep_no_validate__, #lock)
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index f06b91c..e2f1794 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -5238,9 +5238,10 @@ __lock_set_class(struct lockdep_map *lock, const char *name,
- 		return 0;
+ 	INIT_LIST_HEAD(&me->arch.dbe_list);
+ 	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
+diff --git a/arch/s390/kernel/module.c b/arch/s390/kernel/module.c
+index 26125a9..2d159b3 100644
+--- a/arch/s390/kernel/module.c
++++ b/arch/s390/kernel/module.c
+@@ -548,6 +548,5 @@ int module_finalize(const Elf_Ehdr *hdr,
+ #endif /* CONFIG_FUNCTION_TRACER */
  	}
  
--	lockdep_init_map_waits(lock, name, key, 0,
--			       lock->wait_type_inner,
--			       lock->wait_type_outer);
-+	lockdep_init_map_type(lock, name, key, 0,
-+			      lock->wait_type_inner,
-+			      lock->wait_type_outer,
-+			      lock->lock_type);
- 	class = register_lock_class(lock, subclass, 0);
- 	hlock->class_idx = class - lock_classes;
+-	jump_label_apply_nops(me);
+ 	return 0;
+ }
+diff --git a/arch/sparc/kernel/module.c b/arch/sparc/kernel/module.c
+index df39580..66c45a2 100644
+--- a/arch/sparc/kernel/module.c
++++ b/arch/sparc/kernel/module.c
+@@ -208,9 +208,6 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		    const Elf_Shdr *sechdrs,
+ 		    struct module *me)
+ {
+-	/* make jump label nops */
+-	jump_label_apply_nops(me);
+-
+ 	do_patch_sections(hdr, sechdrs);
  
+ 	/* Cheetah's I-cache is fully coherent.  */
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index b98ffcf..95b9cf2 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -304,9 +304,6 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 					    tseg, tseg + text->sh_size);
+ 	}
+ 
+-	/* make jump label nops */
+-	jump_label_apply_nops(me);
+-
+ 	if (orc && orc_ip)
+ 		unwind_module_init(me, (void *)orc_ip->sh_addr, orc_ip->sh_size,
+ 				   (void *)orc->sh_addr, orc->sh_size);
+diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
+index bf1eef3..2003a09 100644
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -230,12 +230,12 @@ extern void static_key_slow_inc(struct static_key *key);
+ extern void static_key_slow_dec(struct static_key *key);
+ extern void static_key_slow_inc_cpuslocked(struct static_key *key);
+ extern void static_key_slow_dec_cpuslocked(struct static_key *key);
+-extern void jump_label_apply_nops(struct module *mod);
+ extern int static_key_count(struct static_key *key);
+ extern void static_key_enable(struct static_key *key);
+ extern void static_key_disable(struct static_key *key);
+ extern void static_key_enable_cpuslocked(struct static_key *key);
+ extern void static_key_disable_cpuslocked(struct static_key *key);
++extern enum jump_label_type jump_label_init_type(struct jump_entry *entry);
+ 
+ /*
+  * We should be using ATOMIC_INIT() for initializing .enabled, but
+@@ -303,11 +303,6 @@ static inline int jump_label_text_reserved(void *start, void *end)
+ static inline void jump_label_lock(void) {}
+ static inline void jump_label_unlock(void) {}
+ 
+-static inline int jump_label_apply_nops(struct module *mod)
+-{
+-	return 0;
+-}
+-
+ static inline void static_key_enable(struct static_key *key)
+ {
+ 	STATIC_KEY_CHECK_USE(key);
+diff --git a/kernel/jump_label.c b/kernel/jump_label.c
+index b156e15..b1ac294 100644
+--- a/kernel/jump_label.c
++++ b/kernel/jump_label.c
+@@ -508,7 +508,7 @@ void __init jump_label_init(void)
+ 
+ #ifdef CONFIG_MODULES
+ 
+-static enum jump_label_type jump_label_init_type(struct jump_entry *entry)
++enum jump_label_type jump_label_init_type(struct jump_entry *entry)
+ {
+ 	struct static_key *key = jump_entry_key(entry);
+ 	bool type = static_key_type(key);
+@@ -596,31 +596,6 @@ static void __jump_label_mod_update(struct static_key *key)
+ 	}
+ }
+ 
+-/***
+- * apply_jump_label_nops - patch module jump labels with arch_get_jump_label_nop()
+- * @mod: module to patch
+- *
+- * Allow for run-time selection of the optimal nops. Before the module
+- * loads patch these with arch_get_jump_label_nop(), which is specified by
+- * the arch specific jump label code.
+- */
+-void jump_label_apply_nops(struct module *mod)
+-{
+-	struct jump_entry *iter_start = mod->jump_entries;
+-	struct jump_entry *iter_stop = iter_start + mod->num_jump_entries;
+-	struct jump_entry *iter;
+-
+-	/* if the module doesn't have jump label entries, just return */
+-	if (iter_start == iter_stop)
+-		return;
+-
+-	for (iter = iter_start; iter < iter_stop; iter++) {
+-		/* Only write NOPs for arch_branch_static(). */
+-		if (jump_label_init_type(iter) == JUMP_LABEL_NOP)
+-			arch_jump_label_transform_static(iter, JUMP_LABEL_NOP);
+-	}
+-}
+-
+ static int jump_label_add_module(struct module *mod)
+ {
+ 	struct jump_entry *iter_start = mod->jump_entries;
