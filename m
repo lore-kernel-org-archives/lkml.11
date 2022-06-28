@@ -2,466 +2,394 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4743C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344309AbiF1NeK (ORCPT
+        id S1346149AbiF1NeZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36578 "EHLO
+        Tue, 28 Jun 2022 09:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346682AbiF1Ndo (ORCPT
+        with ESMTP id S1346590AbiF1Nc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:33:44 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9506B38F;
-        Tue, 28 Jun 2022 06:33:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656423222; x=1687959222;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=YaeCBtQatyqDjijpk5TIF7bbHrkUDXzBl7LKNogOJaE=;
-  b=icBqkWFpHWW7ytd3SfXs61igyaI6dIXmLKCXK6wMXTi0A29PCz/2AnZ7
-   6BV+N7bnkk9IoMsXu5KEk+Rxq+OkZSu4xVwr3P84QV7MO55lPKf/mqZiz
-   FkSCRpKFWC1tOJa+rC4K92KZlF2qJdaohsI2Ctzq1y6mIOUdtsF+ivmiu
-   A=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 28 Jun 2022 06:33:42 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 06:33:43 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 28 Jun 2022 06:33:41 -0700
-Received: from [10.216.26.50] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 28 Jun
- 2022 06:33:36 -0700
-Message-ID: <f6f26717-fb62-0700-cc2e-d6cfe3643e4b@quicinc.com>
-Date:   Tue, 28 Jun 2022 19:03:33 +0530
+        Tue, 28 Jun 2022 09:32:28 -0400
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26D731363;
+        Tue, 28 Jun 2022 06:32:12 -0700 (PDT)
+Received: (Authenticated sender: ash@heyquark.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1CC1320001B;
+        Tue, 28 Jun 2022 13:32:04 +0000 (UTC)
+From:   Ash Logan <ash@heyquark.com>
+To:     krzysztof.kozlowski+dt@linaro.org, paulus@samba.org,
+        mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
+        robh+dt@kernel.org, benh@kernel.crashing.org
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        j.ne@posteo.net, linkmauve@linkmauve.fr,
+        rw-r-r-0644@protonmail.com, devicetree@vger.kernel.org,
+        joel@jms.id.au
+Subject: [PATCH v3 02/12] powerpc: wiiu: device tree
+Date:   Tue, 28 Jun 2022 23:31:34 +1000
+Message-Id: <20220628133144.142185-3-ash@heyquark.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220628133144.142185-1-ash@heyquark.com>
+References: <20220622131037.57604-1-ash@heyquark.com>
+ <20220628133144.142185-1-ash@heyquark.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 4/5] firmware: qcom: scm: Add wait-queue helper functions
-Content-Language: en-US
-To:     Guru Das Srinagesh <quic_gurus@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     David Heidelberg <david@ixit.cz>,
-        Robert Marko <robimarko@gmail.com>,
-        Elliot Berman <quic_eberman@quicinc.com>
-References: <1656359076-13018-1-git-send-email-quic_gurus@quicinc.com>
- <1656359076-13018-5-git-send-email-quic_gurus@quicinc.com>
-From:   Rajendra Nayak <quic_rjendra@quicinc.com>
-In-Reply-To: <1656359076-13018-5-git-send-email-quic_gurus@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add a device tree source file for the Nintendo Wii U video game console.
 
+Signed-off-by: Ash Logan <ash@heyquark.com>
+Co-developed-by: Roberto Van Eeden <rw-r-r-0644@protonmail.com>
+Signed-off-by: Roberto Van Eeden <rw-r-r-0644@protonmail.com>
+Co-developed-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+---
+v1->v2: Style and formatting changes suggested by Rob Herring.
+ License remains GPL-2.0 as the other powerpc dtses are the same, happy
+ to change if there is a different preferred default.
+v2->v3: Re-added address-cells accidentally removed in v2.
+ Marked latte as a simple-bus, since it is.
 
-On 6/28/2022 1:14 AM, Guru Das Srinagesh wrote:
-> When the firmware (FW) supports multiple requests per VM, and the VM also
-> supports it via the `enable-multi-call` device tree flag, the floodgates
+ arch/powerpc/boot/dts/wiiu.dts | 326 +++++++++++++++++++++++++++++++++
+ 1 file changed, 326 insertions(+)
+ create mode 100644 arch/powerpc/boot/dts/wiiu.dts
 
-the bindings actually define 'allow-multi-call'
+diff --git a/arch/powerpc/boot/dts/wiiu.dts b/arch/powerpc/boot/dts/wiiu.dts
+new file mode 100644
+index 000000000000..44a5a1469095
+--- /dev/null
++++ b/arch/powerpc/boot/dts/wiiu.dts
+@@ -0,0 +1,326 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Nintendo Wii U Device Tree Source
++ *
++ * Copyright (C) 2022 The linux-wiiu Team
++ */
++
++/dts-v1/;
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "nintendo,wiiu";
++	compatible = "nintendo,wiiu";
++
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	chosen {
++		bootargs = "root=/dev/sda1 rootwait";
++	};
++
++	memory {
++		device_type = "memory";
++		reg = <0x00000000 0x02000000	/* MEM1 - 32MiB */
++		       0x08000000 0x00300000	/* MEM0 - 3MiB  */
++		       0x10000000 0x80000000>;	/* MEM2 - 2GiB  */
++	};
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* TODO: Add SMP */
++		PowerPC,espresso@0 {
++			device_type = "cpu";
++			reg = <0>;
++			clock-frequency = <1243125000>;		/* 1.243125GHz */
++			bus-frequency = <248625000>;		/* 248.625MHz core-to-bus 5x */
++			timebase-frequency = <62156250>;	/* 1/4 of the bus clock */
++			i-cache-size = <32768>; /* 32K icache */
++			i-cache-line-size = <32>;
++			i-cache-block-size = <32>;
++			i-cache-sets = <128>;
++			d-cache-size = <32768>; /* 32K dcache */
++			d-cache-line-size = <32>;
++			d-cache-block-size = <32>;
++			d-cache-sets = <128>;
++			next-level-cache = <&L2_0>;
++			L2_0:l2-cache {
++				compatible = "cache";
++				cache-level = <2>;
++				cache-unified;
++				cache-size = <0x80000>; /* 512KB L2 */
++				cache-line-size = <64>;
++				cache-block-size = <32>;
++				cache-sets = <2048>;
++			};
++		};
++	};
++
++	latte {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		compatible = "nintendo,latte", "simple-bus";
++		ranges = <0x0c000000 0x0c000000 0x00400000	/* Espresso-only registers */
++			  0x0d000000 0x0d000000 0x00200000	/* Latte AHB deivces */
++			  0x0d800000 0x0d800000 0x00800000>;	/* Latte SoC registers */
++
++		latte_gpu: gpu@c200000 {
++			compatible = "nintendo,latte-gpu7";
++			reg = <0x0c200000 0x80000>;
++			interrupts = <2>;
++			interrupt-parent = <&espresso_pic>;
++		};
++
++		espresso_pic: pic@c000078 {
++			#interrupt-cells = <1>;
++			interrupt-controller;
++
++			compatible = "nintendo,espresso-pic";
++			reg = <0x0c000078 0x18>;
++		};
++
++		latte_dsp: dsp@c005000 {
++			compatible = "nintendo,latte-dsp";
++			reg = <0x0c005000 0x200>;
++		};
++
++		ehci_0: usb@d040000 {
++			compatible = "nintendo,latte-usb-ehci", "usb-ehci";
++			reg = <0x0d040000 0x100>;
++			interrupts = <4>;
++			interrupt-parent = <&latte_pic>;
++			big-endian-regs;
++		};
++
++		ohci_0_0: usb@d050000 {
++			compatible = "nintendo,latte-usb-ohci";
++			reg = <0x0d050000 0x100>;
++			interrupts = <5>;
++			interrupt-parent = <&latte_pic>;
++
++			big-endian-regs;
++		};
++
++		ohci_0_1: usb@d060000 {
++			compatible = "nintendo,latte-usb-ohci";
++			reg = <0x0d060000 0x100>;
++			interrupts = <6>;
++			interrupt-parent = <&latte_pic>;
++
++			big-endian-regs;
++		};
++
++		ehci_1: usb@d120000 {
++			compatible = "nintendo,latte-usb-ehci", "usb-ehci";
++			reg = <0x0d120000 0x100>;
++			interrupts = <16>;
++			interrupt-parent = <&latte_pic>;
++			big-endian-regs;
++		};
++
++		ohci_1_0: usb@d130000 {
++			compatible = "nintendo,latte-usb-ohci";
++			reg = <0x0d130000 0x100>;
++			interrupts = <35>;
++			interrupt-parent = <&latte_pic>;
++
++			big-endian-regs;
++		};
++
++		ehci_2: usb@d140000 {
++			compatible = "nintendo,latte-usb-ehci", "usb-ehci";
++			reg = <0x0d140000 0x100>;
++			interrupts = <36>;
++			interrupt-parent = <&latte_pic>;
++			big-endian-regs;
++		};
++
++		ohci_2_0: usb@d150000 {
++			compatible = "nintendo,latte-usb-ohci";
++			reg = <0x0d150000 0x100>;
++			interrupts = <37>;
++			interrupt-parent = <&latte_pic>;
++
++			big-endian-regs;
++		};
++
++		sdcard_0: sdhci@d070000 {
++			compatible = "nintendo,latte-sdhci","sdhci";
++			reg = <0x0d070000 0x200>;
++			interrupts = <7>;
++			interrupt-parent = <&latte_pic>;
++		};
++
++		wifi_0: sdhci@d080000 {
++			compatible = "nintendo,latte-sdhci","sdhci";
++			reg = <0x0d080000 0x200>;
++			interrupts = <8>;
++			interrupt-parent = <&latte_pic>;
++		};
++
++		legacy_ipc: ipc@d800000 {
++			compatible = "nintendo,latte-ipc", "nintendo,hollywood-ipc";
++			reg = <0x0d800000 0x10>;
++			interrupts = <30 31>;
++			interrupt-parent = <&latte_pic>;
++		};
++
++		latte_otp: otp@d8001ec {
++			compatible = "nintendo,latte-otp";
++			reg = <0x0d8001ec 0x8>;
++		};
++
++		sata: ahci@d160400 {
++			compatible = "nintendo,latte-ahci";
++			reg = <0x0d160400 0x808>;
++
++			interrupt-parent = <&latte_pic>;
++			interrupts = <38 28>;
++		};
++
++		latte_pic: pic@d800440 {
++			#interrupt-cells = <1>;
++			interrupt-controller;
++
++			compatible = "nintendo,latte-pic";
++			reg = <0x0d800440 0x30>;
++			interrupt-parent = <&espresso_pic>;
++			interrupts = <24>;
++		};
++
++		gpio: gpio@d8000c0 {
++			#gpio-cells = <2>;
++			compatible = "nintendo,latte-gpio", "nintendo,hollywood-gpio";
++
++			reg = <0x0d8000c0 0x40>;
++			gpio-controller;
++			/* TODO: There are actually 31 AHBALL GPIOs */
++			ngpios = <24>;
++
++			gpio-line-names =
++				"POWER", "DWIFI", "FAN", "DC_DC",
++				"", "Esp10WorkAround", "", "",
++				"PADPD", "", "EEP_CS", "EEP_CLK",
++				"EEP_MOSI", "EEP_MISO", "AVE_SCL", "AVE_SDA",
++				"DEBUG0", "DEBUG1", "DEBUG2", "DEBUG3",
++				"DEBUG4", "DEBUG5", "DEBUG6", "DEBUG7";
++
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			interrupts = <10>;
++			interrupt-parent = <&latte_pic>;
++		};
++
++		gpio2: gpio@d800520 {
++			#gpio-cells = <2>;
++			compatible = "nintendo,latte-gpio", "nintendo,hollywood-gpio";
++
++			reg = <0x0d800520 0x40>;
++			gpio-controller;
++			ngpios = <7>;
++
++			gpio-line-names =
++				"FANSPEED", "SMC_SCL", "SMC_SDA", "DC_DC2",
++				"AVE_INT", "", "AVE_RESET";
++
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			interrupts = <10>;
++			interrupt-parent = <&latte_pic>;
++		};
++	};
++
++	spi_gpio: spi-gpio {
++		compatible = "spi-gpio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cs-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
++		gpio-sck = <&gpio 11 GPIO_ACTIVE_HIGH>;
++		gpio-mosi = <&gpio 12 GPIO_ACTIVE_HIGH>;
++		gpio-miso = <&gpio 13 GPIO_ACTIVE_HIGH>;
++		num-chipselects = <1>;
++
++		eeprom@0 {
++			compatible = "atmel,at93c66";
++			reg = <0>;
++			spi-max-frequency = <1000000>;
++			spi-cs-high;
++			/* TODO: wiiubrew says this is 16-bit, but I only get the correct
++			 * values in 8-bit...
++			 */
++			data-size = <8>;
++			read-only;
++
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			/* https://wiiubrew.org/wiki/Hardware/SEEPROM */
++			rng_seed: rng@12 { reg = <0x012 8>; };
++			ppc_pvr: pvr@20 { reg = <0x020 4>; };
++			seeprom_ver_str: sver-str@24 { reg = <0x024 6>; };
++			seeprom_ver: sver@2a { reg = <0x02A 2>; };
++			otp_ver: over@2c { reg = <0x02C 2>; };
++			otp_rev: orev@2e { reg = <0x02E 2>; };
++			otp_ver_str: over-str@30 { reg = <0x030 8>; };
++
++			bc_crc: bc-crc@38 { reg = <0x038 4>; };
++			bc_sz: bc-sz@3c { reg = <0x03C 2>; };
++			bc_ver: bc-ver@3e { reg = <0x03E 2>; };
++			bc_boardtype: boardtype@42 { reg = <0x042 2>; };
++			bc_boardrev: boardrev@44 { reg = <0x044 2>; };
++			bc_bootsource: bootsource@46 { reg = <0x046 2>; };
++			bc_ddr3size: ddr3size@48 { reg = <0x048 2>; };
++			bc_ddr3speed: ddr3speed@4a { reg = <0x04A 2>; };
++			bc_ppcclockmul: ppcclockmul@4c { reg = <0x04C 2>; };
++			bc_iopclockmul: iopclockmul@46 { reg = <0x04E 2>; };
++			bc_video1080p: video1080p@50 { reg = <0x050 2>; };
++			bc_ddr3vendor: ddr3vendor@52 { reg = <0x052 2>; };
++			bc_movpassivereset: movpassivereset@54 { reg = <0x054 2>; };
++			bc_syspllspd: syspllspd@56 { reg = <0x056 2>; };
++			bc_satadevice: satadevice@58 { reg = <0x058 2>; };
++			bc_consoletype: consoletype@5a { reg = <0x05A 2>; };
++			bc_deviceprescence: deviceprescence@5c { reg = <0x05C 2>; };
++
++			drive_key: drvkey@80 { reg = <0x080 16>; };
++			factory_key: fackey@90 { reg = <0x090 16>; };
++			shdd_key: shddkey@a0 { reg = <0x0A0 16>; };
++			usb_key_seed: usbkeyseed@b0 { reg = <0x0B0 16>; };
++			drive_key_flag: drvkeyf@c0 { reg = <0x0C0 2>; };
++			usb_key_flag: udbkeyf@c2 { reg = <0x0C2 2>; };
++			shdd_key_flag: shddkeyf@c4 { reg = <0x0C4 2>; };
++
++			sysprod_version: sp_ver@140 { reg = <0x140 4>; };
++			sysprod_eeprom_version: sp_ee_ver@144 { reg = <0x144 4>; };
++			sysprod_product_area: sp_parea@148 { reg = <0x148 4>; };
++			sysprod_game_region: sp_region@14c { reg = <0x14C 4>; };
++			sysprod_ntsc_pal: sp_ntscpal@150 { reg = <0x150 4>; };
++			sysprod_5ghz_country: sp_5ghz_c@154 { reg = <0x154 2>; };
++			sysprod_5ghz_country_rev: sp_5ghz_crev@156 { reg = <0x156 2>; };
++			sysprod_code: sp_code@158 { reg = <0x158 8>; };
++			sysprod_serial: sp_serial@160 { reg = <0x160 16>; };
++			sysprod_model: sp_model@170 { reg = <0x170 16>; };
++
++			prod_year: pyear@188 { reg = <0x188 2>; };
++			prod_date: pdate@18a { reg = <0x18A 2>; };
++			prod_time: ptime@18c { reg = <0x18C 2>; };
++
++			boot_params: boot_params@1c0 { reg = <0x1C0 48>; };
++		};
++	};
++
++	/* TODO make this gpio-keyed once hollywood-gpio supports interrupts */
++	gpio-keys-polled {
++		poll-interval = <50>;
++		compatible = "gpio-keys-polled";
++
++		power {
++			label = "Power Button";
++			gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
++			linux,code = <KEY_POWER>;
++		};
++	};
++};
+-- 
+2.36.1
 
-> are thrown open for them to all reach the firmware at the same time.
-> 
-> Since the firmware currently being used has limited resources, it guards
-> them with a resource lock and puts requests on a wait-queue internally
-> and signals to HLOS that it is doing so. It does this by returning two
-> new return values in addition to success or error: SCM_WAITQ_SLEEP and
-> SCM_WAITQ_WAKE.
-> 
->    1) SCM_WAITQ_SLEEP:
-> 
->    	When an SCM call receives this return value instead of success
->    	or error, FW has placed this call on a wait-queue and
->    	has signalled HLOS to put it to non-interruptible sleep. (The
-> 	mechanism to wake it back up will be described in detail in the
-> 	next patch for the sake of simplicity.)
-> 
-> 	Along with this return value, FW also passes to HLOS `wq_ctx` -
-> 	a unique number (UID) identifying the wait-queue that it has put
-> 	the call on, internally. This is to help HLOS with its own
-> 	bookkeeping to wake this sleeping call later.
-> 
-> 	Additionally, FW also passes to HLOS `smc_call_ctx` - a UID
-> 	identifying the SCM call thus being put to sleep. This is also
-> 	for HLOS' bookkeeping to wake this call up later.
-> 
-> 	These two additional values are passed via the a1 and a2
-> 	registers.
-> 
-> 	N.B.: The "ctx" in the above UID names = "context".
-> 
->    2) SCM_WAITQ_WAKE:
-> 
->    	When an SCM call receives this return value instead of success
->    	or error, FW wishes to signal HLOS to wake up a (different)
->    	previously sleeping call.
-> 
->    	FW tells HLOS which call to wake up via the additional return
->    	values `wq_ctx`, `smc_call_ctx` and `flags`. The first two have
->    	already been explained above.
-> 
->    	`flags` can be either WAKE_ONE or WAKE_ALL. Meaning, wake either
->    	one, or all, of the SCM calls that HLOS is associating with the
->    	given `wq_ctx`.
-> 
-> A sleeping SCM call can be woken up by either an interrupt that FW
-> raises, or via a SCM_WAITQ_WAKE return value for a new SCM call.
-> 
-> The handshake mechanism that HLOS uses to talk to FW about wait-queue
-> operations involves three new SMC calls. These are:
-> 
->    1) get_wq_ctx():
-> 
->      	Arguments: 	None
->      	Returns:	wq_ctx, flags, more_pending
-> 
->      	Get the wait-queue context, and wake up either one or all of the
->      	sleeping SCM calls associated with that wait-queue.
-> 
->      	Additionally, repeat this if there are more wait-queues that are
->      	ready to have their requests woken up (`more_pending`).
-> 
->    2) wq_resume(smc_call_ctx):
-> 
->    	Arguments:	smc_call_ctx
-> 
->    	HLOS needs to issue this in response to receiving an
->    	IRQ, passing to FW the same smc_call_ctx that FW
->    	receives from HLOS via the get_wq_ctx() call.
-> 
->    3) wq_wake_ack(smc_call_ctx):
-> 
->    	Arguments:	smc_call_ctx
-> 
->    	HLOS needs to issue this in response to receiving an
->    	SCM_WAITQ_WAKE, passing to FW the same smc_call_ctx that FW
->    	passed to HLOS via the SMC_WAITQ_WAKE call.
-> 
-> (Reminder that the full handshake mechanism will be detailed in the
-> subsequent patch.)
-> 
-> Also add the interrupt handler that wakes up a sleeping SCM call.
-> 
-> Signed-off-by: Guru Das Srinagesh <quic_gurus@quicinc.com>
-> ---
->   drivers/firmware/qcom_scm-smc.c |  56 +++++++++++++++++++
->   drivers/firmware/qcom_scm.c     | 118 +++++++++++++++++++++++++++++++++++++++-
->   drivers/firmware/qcom_scm.h     |  12 ++++
->   3 files changed, 185 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/firmware/qcom_scm-smc.c b/drivers/firmware/qcom_scm-smc.c
-> index 66193c2..4150da1 100644
-> --- a/drivers/firmware/qcom_scm-smc.c
-> +++ b/drivers/firmware/qcom_scm-smc.c
-> @@ -53,6 +53,62 @@ static void __scm_smc_do_quirk(const struct arm_smccc_args *smc,
->   	} while (res->a0 == QCOM_SCM_INTERRUPTED);
->   }
->   
-> +static void fill_wq_resume_args(struct arm_smccc_args *resume, u32 smc_call_ctx)
-> +{
-> +	memset(resume->args, 0, ARRAY_SIZE(resume->args));
-> +
-> +	resume->args[0] = ARM_SMCCC_CALL_VAL(ARM_SMCCC_STD_CALL,
-> +			 ARM_SMCCC_SMC_64, ARM_SMCCC_OWNER_SIP,
-> +			 SCM_SMC_FNID(QCOM_SCM_SVC_WAITQ, QCOM_SCM_WAITQ_RESUME));
-> +
-> +	resume->args[1] = QCOM_SCM_ARGS(1);
-> +
-> +	resume->args[2] = smc_call_ctx;
-> +}
-> +
-> +static void fill_wq_wake_ack_args(struct arm_smccc_args *wake_ack, u32 smc_call_ctx)
-> +{
-> +	memset(wake_ack->args, 0, ARRAY_SIZE(wake_ack->args));
-> +
-> +	wake_ack->args[0] = ARM_SMCCC_CALL_VAL(ARM_SMCCC_STD_CALL,
-> +			 ARM_SMCCC_SMC_64, ARM_SMCCC_OWNER_SIP,
-> +			 SCM_SMC_FNID(QCOM_SCM_SVC_WAITQ, QCOM_SCM_WAITQ_ACK));
-> +
-> +	wake_ack->args[1] = QCOM_SCM_ARGS(1);
-> +
-> +	wake_ack->args[2] = smc_call_ctx;
-> +}
-> +
-> +static void fill_get_wq_ctx_args(struct arm_smccc_args *get_wq_ctx)
-> +{
-> +	memset(get_wq_ctx->args, 0, ARRAY_SIZE(get_wq_ctx->args));
-> +
-> +	get_wq_ctx->args[0] = ARM_SMCCC_CALL_VAL(ARM_SMCCC_STD_CALL,
-> +			 ARM_SMCCC_SMC_64, ARM_SMCCC_OWNER_SIP,
-> +			 SCM_SMC_FNID(QCOM_SCM_SVC_WAITQ, QCOM_SCM_WAITQ_GET_WQ_CTX));
-> +}
-> +
-> +int scm_get_wq_ctx(u32 *wq_ctx, u32 *flags, u32 *more_pending)
-> +{
-> +	int ret;
-> +	struct arm_smccc_args get_wq_ctx = {0};
-> +	struct arm_smccc_res get_wq_res;
-> +
-> +	fill_get_wq_ctx_args(&get_wq_ctx);
-> +
-> +	__scm_smc_do_quirk(&get_wq_ctx, &get_wq_res);
-> +	/* Guaranteed to return only success or error, no WAITQ_* */
-> +	ret = get_wq_res.a0;
-> +	if (ret)
-> +		return ret;
-> +
-> +	*wq_ctx = get_wq_res.a1;
-> +	*flags  = get_wq_res.a2;
-> +	*more_pending = get_wq_res.a3;
-> +
-> +	return 0;
-> +}
-> +
->   static void __scm_smc_do(const struct arm_smccc_args *smc,
->   			 struct arm_smccc_res *res, bool atomic)
->   {
-> diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-> index 4046073..248126c 100644
-> --- a/drivers/firmware/qcom_scm.c
-> +++ b/drivers/firmware/qcom_scm.c
-> @@ -3,8 +3,12 @@
->    * Copyright (C) 2015 Linaro Ltd.
->    * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
->    */
-> +#define pr_fmt(fmt)     "qcom-scm: %s: " fmt, __func__
-> +
->   #include <linux/platform_device.h>
-> +#include <linux/idr.h>
->   #include <linux/init.h>
-> +#include <linux/interrupt.h>
->   #include <linux/cpumask.h>
->   #include <linux/export.h>
->   #include <linux/dma-mapping.h>
-> @@ -12,10 +16,13 @@
->   #include <linux/types.h>
->   #include <linux/qcom_scm.h>
->   #include <linux/of.h>
-> +#include <linux/of_irq.h>
->   #include <linux/of_address.h>
->   #include <linux/of_platform.h>
->   #include <linux/clk.h>
->   #include <linux/reset-controller.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/ktime.h>
->   #include <linux/arm-smccc.h>
->   
->   #include "qcom_scm.h"
-> @@ -29,12 +36,19 @@ bool qcom_scm_allow_multicall = false;
->   #define SCM_HAS_IFACE_CLK	BIT(1)
->   #define SCM_HAS_BUS_CLK		BIT(2)
->   
-> +struct qcom_scm_waitq {
-> +	struct idr idr;
-> +	spinlock_t idr_lock;
-> +	struct work_struct scm_irq_work;
-> +};
-> +
->   struct qcom_scm {
->   	struct device *dev;
->   	struct clk *core_clk;
->   	struct clk *iface_clk;
->   	struct clk *bus_clk;
->   	struct reset_controller_dev reset;
-> +	struct qcom_scm_waitq waitq;
->   
->   	u64 dload_mode_addr;
->   };
-> @@ -56,10 +70,14 @@ struct qcom_scm_mem_map_info {
->   static const u8 qcom_scm_cpu_cold_bits[QCOM_SCM_BOOT_MAX_CPUS] = {
->   	0, BIT(0), BIT(3), BIT(5)
->   };
-> +
->   static const u8 qcom_scm_cpu_warm_bits[QCOM_SCM_BOOT_MAX_CPUS] = {
->   	BIT(2), BIT(1), BIT(4), BIT(6)
->   };
->   
-> +#define QCOM_SMC_WAITQ_FLAG_WAKE_ONE	BIT(0)
-> +#define QCOM_SMC_WAITQ_FLAG_WAKE_ALL	BIT(1)
-> +
->   static const char * const qcom_scm_convention_names[] = {
->   	[SMC_CONVENTION_UNKNOWN] = "unknown",
->   	[SMC_CONVENTION_ARM_32] = "smc arm 32",
-> @@ -1266,11 +1284,92 @@ bool qcom_scm_is_available(void)
->   }
->   EXPORT_SYMBOL(qcom_scm_is_available);
->   
-> +struct completion *qcom_scm_lookup_wq(struct qcom_scm *scm, u32 wq_ctx)
-> +{
-> +	struct completion *wq = NULL;
-> +	u32 wq_ctx_idr = wq_ctx;
-> +	unsigned long flags;
-> +	int err;
-> +
-> +	spin_lock_irqsave(&scm->waitq.idr_lock, flags);
-> +	wq = idr_find(&scm->waitq.idr, wq_ctx);
-> +	if (wq)
-> +		goto out;
-> +
-> +	wq = devm_kzalloc(scm->dev, sizeof(*wq), GFP_ATOMIC);
-> +	if (!wq) {
-> +		wq = ERR_PTR(-ENOMEM);
-> +		goto out;
-> +	}
-> +
-> +	init_completion(wq);
-> +
-> +	err = idr_alloc_u32(&scm->waitq.idr, wq, &wq_ctx_idr,
-> +			    U32_MAX, GFP_ATOMIC);
-> +	if (err < 0) {
-> +		devm_kfree(scm->dev, wq);
-> +		wq = ERR_PTR(err);
-> +	}
-> +
-> +out:
-> +	spin_unlock_irqrestore(&scm->waitq.idr_lock, flags);
-> +	return wq;
-> +}
-> +
-> +void scm_waitq_flag_handler(struct completion *wq, u32 flags)
-> +{
-> +	switch (flags) {
-> +	case QCOM_SMC_WAITQ_FLAG_WAKE_ONE:
-> +		complete(wq);
-> +		break;
-> +	case QCOM_SMC_WAITQ_FLAG_WAKE_ALL:
-> +		complete_all(wq);
-> +		break;
-> +	default:
-> +		pr_err("invalid flags: %u\n", flags);
-> +	}
-> +}
-> +
-> +static void scm_irq_work(struct work_struct *work)
-> +{
-> +	int ret;
-> +	u32 wq_ctx, flags, more_pending = 0;
-> +	struct completion *wq_to_wake;
-> +	struct qcom_scm_waitq *w = container_of(work, struct qcom_scm_waitq, scm_irq_work);
-> +	struct qcom_scm *scm = container_of(w, struct qcom_scm, waitq);
-> +
-> +	do {
-> +		ret = scm_get_wq_ctx(&wq_ctx, &flags, &more_pending);
-> +		if (ret) {
-> +			pr_err("GET_WQ_CTX SMC call failed: %d\n", ret);
-> +			return;
-> +		}
-> +
-> +		wq_to_wake = qcom_scm_lookup_wq(scm, wq_ctx);
-> +		if (IS_ERR_OR_NULL(wq_to_wake)) {
-> +			pr_err("No waitqueue found for wq_ctx %d: %ld\n",
-> +					wq_ctx, PTR_ERR(wq_to_wake));
-> +			return;
-> +		}
-> +
-> +		scm_waitq_flag_handler(wq_to_wake, flags);
-> +	} while (more_pending);
-> +}
-> +
-> +static irqreturn_t qcom_scm_irq_handler(int irq, void *p)
-> +{
-> +	struct qcom_scm *scm = p;
-> +
-> +	schedule_work(&scm->waitq.scm_irq_work);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
->   static int qcom_scm_probe(struct platform_device *pdev)
->   {
->   	struct qcom_scm *scm;
->   	unsigned long clks;
-> -	int ret;
-> +	int irq, ret;
->   
->   	scm = devm_kzalloc(&pdev->dev, sizeof(*scm), GFP_KERNEL);
->   	if (!scm)
-> @@ -1333,12 +1432,28 @@ static int qcom_scm_probe(struct platform_device *pdev)
->   	if (ret)
->   		return ret;
->   
-> +	platform_set_drvdata(pdev, scm);
-> +
->   	__scm = scm;
->   	__scm->dev = &pdev->dev;
->   
-> +	spin_lock_init(&__scm->waitq.idr_lock);
-> +	idr_init(&__scm->waitq.idr);
->   	qcom_scm_allow_multicall = of_property_read_bool(__scm->dev->of_node,
->   							"allow-multi-call");
->   
-> +	INIT_WORK(&__scm->waitq.scm_irq_work, scm_irq_work);
-> +
-> +	irq = platform_get_irq(pdev, 0);
-> +	if (irq) {
-> +		ret = devm_request_threaded_irq(__scm->dev, irq, NULL,
-> +			qcom_scm_irq_handler, IRQF_ONESHOT, "qcom-scm", __scm);
-> +		if (ret < 0) {
-> +			pr_err("Failed to request qcom-scm irq: %d\n", ret);
-> +			return ret;
-> +		}
-> +	}
-> +
->   	__get_convention();
->   
->   	/*
-> @@ -1354,6 +1469,7 @@ static int qcom_scm_probe(struct platform_device *pdev)
->   
->   static void qcom_scm_shutdown(struct platform_device *pdev)
->   {
-> +	idr_destroy(&__scm->waitq.idr);
->   	/* Clean shutdown, disable download mode to allow normal restart */
->   	if (download_mode)
->   		qcom_scm_set_download_mode(false);
-> diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
-> index c0a4d6b..ae3a331 100644
-> --- a/drivers/firmware/qcom_scm.h
-> +++ b/drivers/firmware/qcom_scm.h
-> @@ -62,6 +62,11 @@ struct qcom_scm_res {
->   	u64 result[MAX_QCOM_SCM_RETS];
->   };
->   
-> +struct qcom_scm;
-> +extern struct completion *qcom_scm_lookup_wq(struct qcom_scm *scm, u32 wq_ctx);
-> +extern void scm_waitq_flag_handler(struct completion *wq, u32 flags);
-> +extern int scm_get_wq_ctx(u32 *wq_ctx, u32 *flags, u32 *more_pending);
-> +
->   #define SCM_SMC_FNID(s, c)	((((s) & 0xFF) << 8) | ((c) & 0xFF))
->   extern int __scm_smc_call(struct device *dev, const struct qcom_scm_desc *desc,
->   			  enum qcom_scm_convention qcom_convention,
-> @@ -131,6 +136,11 @@ extern int scm_legacy_call(struct device *dev, const struct qcom_scm_desc *desc,
->   #define QCOM_SCM_SMMU_CONFIG_ERRATA1		0x03
->   #define QCOM_SCM_SMMU_CONFIG_ERRATA1_CLIENT_ALL	0x02
->   
-> +#define QCOM_SCM_SVC_WAITQ			0x24
-> +#define QCOM_SCM_WAITQ_ACK			0x01
-> +#define QCOM_SCM_WAITQ_RESUME			0x02
-> +#define QCOM_SCM_WAITQ_GET_WQ_CTX		0x03
-> +
->   extern void __qcom_scm_init(void);
->   
->   /* common error codes */
-> @@ -141,6 +151,8 @@ extern void __qcom_scm_init(void);
->   #define QCOM_SCM_EINVAL_ARG	-2
->   #define QCOM_SCM_ERROR		-1
->   #define QCOM_SCM_INTERRUPTED	1
-> +#define QCOM_SCM_WAITQ_SLEEP	2
-> +#define QCOM_SCM_WAITQ_WAKE	3
->   
->   static inline int qcom_scm_remap_error(int err)
->   {
