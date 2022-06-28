@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB87AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8187CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbiF1WOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 18:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42808 "EHLO
+        id S230293AbiF1WOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 18:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiF1WOZ (ORCPT
+        with ESMTP id S229489AbiF1WO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 18:14:25 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2071.outbound.protection.outlook.com [40.107.22.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F32932EDC;
-        Tue, 28 Jun 2022 15:14:24 -0700 (PDT)
+        Tue, 28 Jun 2022 18:14:28 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80074.outbound.protection.outlook.com [40.107.8.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABDA334BA2;
+        Tue, 28 Jun 2022 15:14:26 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IV7fXN8Kc/mtxGCmkO1XbbSsayJ9Pah1bZtF/Ju+05hOZrrIW6rxlOGaE9AgJOHdiLJ7tgNo2y34GLk/7CfUeOQbfJDLP8P4lyJ+NM5acfg+7jBNGnFErNDfz26MRZqbtbWkvWj9agbafy+CgHBug4kBmDcdzSdZojpKd3JJZDbHjIWsCNR1xLpUMDYboUGqERPRdIjBZrOLcxuZcYhlsKTuJ/LWZ8e9xawuyiy6ZIygiFY0oInhtG+vMEfwdUFfmnfzYTzHPQG3N+Kdk1JQc0eNLS5kHEfd7ZKPCqMIfHZJqPG2ZY/3kKY683evGCAAzk2Q2DJrqbbJXQfbz9GemQ==
+ b=iPnmcvqNrETsshstt+Gs57zEJDswvWmu2JiN8AgqAkjZbKSyJPBp7I0+S0SfwvRRp/vRHETHpkqibGrFBIS1ICuoSHkOrpjyhzD2m7GG1VEwfFxR54jhvKIuBjC51tsYJ9yczm6/9JVdqahRIPXnltElIdvJYuxPBSwOyZk+on4vIxqpb9WpWOoTEi1JZ9TkWOlSI5GnLjMlpHjSuHwVcei4uSBNxjrqVu8Lerm+HIh6ri+/3GMuSJKO3Ii9bwLV47bd+PVP3XirYcq6GuekKWDO9+QV3d6WIS9nOeLBPSI5lsnG1yAV376K/VzapaysNchnoTnd5D0MrxDURMeqig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n2TOaa23voSbHbIev1E+i5kpuNcV3elS/tbw71Sc9dA=;
- b=nvulD4D2Z+5ziHPjih16w/OPqgZVa6FjG2BMZbOqk7RpXiNrQQ8n82eY5CpjlKa7S6pdFrfTgHbis8N0MuO2sTuM6x2LsmPMAlPgOlHB6c6kRx0TC574yo3mMyxUH3zJYkpJEDE0OduUfBZv51QAy0r4zaI0djdzOnpwEG3QW8u0cyydeEO31OQ8S18lSyflVu1tqgdNPqkSyyAw0Pi21Mh7Q2DX9GRpxD+LQkgzm7Dxa6dvRamRtglwhErBa+SALHobLMmoYuyQRYaLFgkOyO7kpQsqQv5qKan1mfEqN7j2mvRRxhRO2kWqMWdjkoZhhISevWzbf0D+R+UTF3S6Kw==
+ bh=oNBB+gwuLH9EjBRC8EkMePDCkfdtxLDNgHDR4IM0L5M=;
+ b=culEfWa2VFHBxww05uf8oa8biLZc9maRQIWlAMC/phMA6uqstfq4Q6lmIQBhjyFOU7f0GaWwcrTU3nAA8jHMXNWc/w8Kh9tbVLwpBakhbxsyob+Ios6Gai2yCUDjTbsJ6rbIqAxZcd/UiyKtpf92tSZdmRNgU2Iji25ibNClSpt1axSxCU7e02bZQfeMe9ZMt451+/dkUtiNnsIcPB2CAJy9BHBTBE/0pUV/EKI3jnj1bv6ElYA8OD5YAT2uH6+5KPtIQpwTk5eZ9Fz/AjvKmYmgDC26cwh1YrpLbLkzz6SfVW3qUIXV0VHmwaO44ui28NyhWGbnAN1/VaIynl/FPg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n2TOaa23voSbHbIev1E+i5kpuNcV3elS/tbw71Sc9dA=;
- b=qpqwumtIK3919D35Uf21+RnQ1r5mAWmO0jB4XqrPOGJ2xZ6snL4UhL768XkvcIB2JyTaVErh4umGY0ORqq9f4Li2U1ytphlu912ZkAr0AYSokiUkgA/mX2pX33nlmcKVIIAtITtuDhn5ko9aEZ08Fgqjvq5VBvc6D2iXA9MTRM2ter+/zJS45KEjLI1yOtA5BWUXd40Onmiio6Ug6QDCtj/4fJpZe1YcEaU4zu0Bdd7Yh0y5VFlQf1rPPWkz+1d85jnoC8CVW2wCBIaK6RD003dHqOL2p03hL0zHSsk/JK8evO8yLiBzZXbz7FyZVOd8WqMKJb7IqXYELEnPjGifRA==
+ bh=oNBB+gwuLH9EjBRC8EkMePDCkfdtxLDNgHDR4IM0L5M=;
+ b=JfAvV1dF/2Ja8T6QkO5tk3G5SwLeDc+jGeSdeFqiD+591mdq4+30M624shh0gDpn+tqyg4ZPPIFG+E5Jhni6CLqrixEzIIxBXspD/Nas77LkaNJ5B/o9yb71ofaw7lFD1AhXRUAPC/FrTrVCEV82Bj9StfqnWfJSAZc1Ov9lAnSfxU5BApmEwX7MVgc2GRFfStYuMso6VIYIYDBdVpnIJScPo1IgAnRBqV+lpakCJOgtuId+MFX3si/ekso7JqiyGTtGnIaU9NqxgFixldlxhFS8onhFivnvoJ+ikWC9rZdjrs0fzsAi0PedEFfGmocT/HomEQFQ9THVlFbfqmSySA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by DB6PR03MB3013.eurprd03.prod.outlook.com (2603:10a6:6:3c::28) with
+ by AS8PR03MB7399.eurprd03.prod.outlook.com (2603:10a6:20b:2e2::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Tue, 28 Jun
- 2022 22:14:20 +0000
+ 2022 22:14:24 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 22:14:20 +0000
+ 22:14:24 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -50,14 +50,11 @@ Cc:     Russell King <linux@armlinux.org.uk>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Sean Anderson <sean.anderson@seco.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
-        linux-phy@lists.infradead.org
-Subject: [PATCH net-next v2 01/35] dt-bindings: phy: Add QorIQ SerDes binding
-Date:   Tue, 28 Jun 2022 18:13:30 -0400
-Message-Id: <20220628221404.1444200-2-sean.anderson@seco.com>
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH net-next v2 03/35] dt-bindings: net: fman: Add additional interface properties
+Date:   Tue, 28 Jun 2022 18:13:32 -0400
+Message-Id: <20220628221404.1444200-4-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220628221404.1444200-1-sean.anderson@seco.com>
 References: <20220628221404.1444200-1-sean.anderson@seco.com>
@@ -68,202 +65,234 @@ X-ClientProxiedBy: BL1P222CA0011.NAMP222.PROD.OUTLOOK.COM
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3d1e0234-b661-4db6-81cc-08da59538cbf
-X-MS-TrafficTypeDiagnostic: DB6PR03MB3013:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3227cfc8-f545-4e48-d72a-08da59538ec4
+X-MS-TrafficTypeDiagnostic: AS8PR03MB7399:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4BQ5Ej6Bt6b/45hwnHw9cEqPXV3dP3UQVTKdzH2NLEWivAIohIlpvj0TcAVJy0csI2/5d/MCR8zcFvploqP9RWcXl5940BtNt9R0qAJuxub3ng/YgTxTAlbcK3rBS4w6yNrHTbTRBjlb1noG1EZ71tbAWDyV5VkHg6ZtBjPU2DgU5QvPONvtsZ6njO/ZdFe5iSx2Pi0tOLRA5yUoMGjrbNFkO+zSQQ4b4XWqQleQMgMKS6LQpty6YMWrlpF3Ko6HyQbtnw7qf8G0CZzQ/P8rvb6PqyxTEkn1TqZmGNIBlB9yVl+PY7JWXBCHczQqwHb1BX3J0ur+G+hTOYQtn72DcmRwSeLxK7/z9QPAKZnyRYY2MOzSo5hpLIdsbdfJFmof89wgZpaV4huQNOeJktDAqH+527Lwq19Rrz/Ouos5pv3odg2Hq+54hNO0+b2+Z0C1vaaiUhLziIIIVxUEquwJmMBd2YSaZedjWiQaWvh10Be2agQT54cMiTrKI+8COv3ZEgai3v88bgvjo+u6Q7qRlE2/XgMn8ZubXup3/l0w91YzjSszkDUyh7/500s96Y2XE3B25LqQrvwq/3IEZTIh/kocVsznybItb1aQTYjHtHVuKupURWk1PduxBOeRCpB+NzJzhTjACEwE+tGnHUGpXJIZKAugdUgg2qmkNM6WrnNgBdeIXrdUF5bxguARcurDfyg1jErdJWniZsmphZ1Z7QKIGdrsHYxWDl1hF8aH1SKW/wjxIhYfebpQDa3UcDNA2UVZl4wb5jhnsTcboX+WxUbIvknSjY+7YlBXJntavtSxDmvYXz66mv8ayiOXP2O10KX0V2TD/IU8JR7nIepS75O74AAMbNywSAahylz+g4M=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(39850400004)(376002)(366004)(136003)(346002)(2616005)(41300700001)(26005)(1076003)(966005)(66946007)(6666004)(8676002)(6506007)(6512007)(52116002)(186003)(38350700002)(83380400001)(44832011)(6486002)(8936002)(7416002)(66476007)(38100700002)(2906002)(66556008)(86362001)(5660300002)(54906003)(36756003)(110136005)(4326008)(316002)(478600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: OKOtJAsce2KU+Y37ei39130FhmwDWIv+A7xKvP7qMsLLn66VLOvydqWosEXKT7PGVTsuuze4EKtPvdjcnPM7QmfUk1uZVoRFTyir9oXNNdVyr/djwm+zu6jhI6viAZY67oM9viT9dRjF177JA/XtjwQg7eqbPvd0xIFmXd1sOSG3pOZlWPZ4juw09svKPme8eCTS61eRDx7D4EKu+4Dj1RYTGoJ/WldmActXyamQiq3IUTVUh4LaXKqlZ6Fff7ad/izsg2lNRGVM2NPRkiG1j4s51g8PgjgURSJuvNIG6iZRDrh4SE1MWVTvSJhSD6FH9c/fYdUNVsk/j3G5fNQ0CgE/qJOKjdFDrjd7wMvPERue0hCtK7hPTIT3D6CiNJDlzyGwbX6zMaQMv7eeS1StTBVfEbCrWv6tLdJQ0mYTZW6V2EFuOE9bDHhtTHJsbdUZVOlYwvu+ZJgkI7RCcJGQaY9Ssew9x/0bjxv8SD0K/UWXR+mFziyBnHWGP6eDUGRkqltkty8fuU9niBPuxN//kMmCJ5tKg83GB4YPeCqE2BRICaUE1riq05bEpzdiVtpkwudvdm353+WVt3LcvHp+SEqPf90K45ai7NrEI6y8rqO+t9iw0WM8fpgYuHPVt8f6KO6G+Uv5EinHgv+B63Frz/Y+X/Mu8/HoJ1slg4lV65A0lT6tO2CvtgnbQo/vT1YNORBfTxJ2Yhqj3/TxskQY5IV5KIRdevAZ3PZyWlsi6qJ5uZs4VSMh7TmGxhMYPCBE9VMLnABTuzLfrSLgxewWYArjolZTgRB9q07uDcBGXqc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(136003)(396003)(39850400004)(346002)(366004)(38100700002)(5660300002)(7416002)(44832011)(6512007)(6666004)(186003)(38350700002)(1076003)(83380400001)(86362001)(2906002)(66476007)(8936002)(6486002)(4326008)(41300700001)(8676002)(26005)(52116002)(36756003)(478600001)(66946007)(2616005)(6506007)(316002)(54906003)(66556008)(110136005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pw7IRmaMfp8kPOgleu0iwyX+kaemhCxR4+nVnFljBw4BmN09/F39oCkrQZmu?=
- =?us-ascii?Q?o6DWN9yWhkQuivh54+C1lCf7YZr/mAsdhxjWN6OPh4q1L00ek/lpqtKnNYsa?=
- =?us-ascii?Q?rLKE/SnxbLz/rVQ1Lt3eN3e8QcvMtRa1TzKGmm4O78sWqMpBBid3GEdVxE2h?=
- =?us-ascii?Q?Uih2ArU3UEEQZra7znYzaliXO63lK9gzm0Fg4PNTUFW1jC3ZQWFUSX2i7zU2?=
- =?us-ascii?Q?6Zm9pKNb3EBO2Zqa9iNJ2Lt/3PSBZEgUSxoah5gbUTUXWzP7vq7lDd4Gft9s?=
- =?us-ascii?Q?gN50rOZ/LxgQJybM86XlcvqlPLS3efqN3FKtfx1eYkfgnR3qg4ljG/T2mO8f?=
- =?us-ascii?Q?SEqPCNzf/jz3YdBLaRcO/W6CGRVz50dY2/4HXQYZb147z68w5lLjWCMdGHwB?=
- =?us-ascii?Q?FWFl2QYKltRpapnLvDRgMcgCRzE9O23fn+bdV+ayd+tuKcvzRjGIFEnl5E5J?=
- =?us-ascii?Q?PH+4OXYBZjHR9CP8Xnp+QaZooKXNTS45ha82XjRvID6QMB13xIiThqF5S6Hl?=
- =?us-ascii?Q?P0MxBTtz/AtfrWTuOTe4PYDj8PGBlzz5ilap6hsJHO+meYP3eoyUUopE690Z?=
- =?us-ascii?Q?xtKrHegwwacFsgjztR4iu6dl/RZDYfZUIaY63hNUkjiqUUyRNggsUMmsZW8O?=
- =?us-ascii?Q?LWzaAPzLoe4u0fdu/3InzxyBWpiExTa3yEFUtUMIEuChRMAu5U5RCDa0atyO?=
- =?us-ascii?Q?OD2e5vl+ePGuczsNqKcrI5Pfb/1/Ien9uNXm5Dr13X2TZsSUK0pfxIjZB0l6?=
- =?us-ascii?Q?mMG8pFXYCTUYSez1Z9K9tCMmQvRAKoL6bOzqHQY5XU+18crytoC6UyTOzHf+?=
- =?us-ascii?Q?0RwNWMg0ZDwUCAastGNrhvGDUm8gM8Q/OtTtCyRcSoG5VYCWqR7FeWfhiIYg?=
- =?us-ascii?Q?s4r99dP7dpe+Nluu+UxMrFxzp8jXXj2ghn+VnGSeYQ988Xw0dd5D2i7nOlNS?=
- =?us-ascii?Q?DVIfA5YbCTmAVipYNQevtqrgDYTvBEVSMq2udZMLmxPN/gpiR6QFxf6TJcxw?=
- =?us-ascii?Q?DxTSnl5YgB/Z0vteaqNAHtx79/vEzYoH8piNwoWamV037ExxN3UVB1vIGqGA?=
- =?us-ascii?Q?/6oqCpH5peR2fV96UynfEdVEN7TCPg3K6CuNoJsqO2w6DlIJjF1RZQAGaQuX?=
- =?us-ascii?Q?HSKt9z95qrZvYGBg5C4ltd2c7BJUw1hliNb2fN+bISSOlSCces7+zphdBZn2?=
- =?us-ascii?Q?2ct7Ozdc+lPX6NQzlbRI/1Z0cJ4uUlK/4NmTNME8hdwP1htbT7ZVk9h3WTwU?=
- =?us-ascii?Q?xsX+MDjG5yJfIR5l2osnT3ZvQmgZJiukKBuoeXxPe3GfCGIjhZmGKD7cAgwZ?=
- =?us-ascii?Q?uNudDSiotC2Zn/mBo5SzW/gkjS6vlVhwHvupM3/8UVBtLGAMyYWqpZjMupez?=
- =?us-ascii?Q?Vwv3t3xUD5t1HVb1MjkIZdoFOxfBKsUjMkcVhk+9EM/Lerlw9/2Td/+gDO+o?=
- =?us-ascii?Q?NgCCNa0lCmUVbqNPYz1RBXTEovsopLdJXxZH67QVEx+AIpTRdJKs8YORUv2k?=
- =?us-ascii?Q?dw3QKNMzAdWUgKXncXYe8sr6kS58UsUrk8NSf869Z7JzPKCl/7C37FFOT04P?=
- =?us-ascii?Q?0GU9FBEjWMga7rIr0CzM//T1fisc9YJTwrg23eO8s6PPZODHm0QqYfZUQtOj?=
- =?us-ascii?Q?RQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/u4+5wr1NlDsyNJMH65UBkqROZmbKtIc52cW21ByLmkVi5iuooQto8zSjpfi?=
+ =?us-ascii?Q?wkl5OXOicGoi6/+c1eCcg7JFAW+7gMiAH0ZnxUfnunIDsGc4BuHzqPCB79ON?=
+ =?us-ascii?Q?M0xMuVvVpN3RI/ahM7aEyDX2FZy8hGmGXXpa80DE4z9C1m0RAKniHyvX/4eH?=
+ =?us-ascii?Q?e+ikD4G4fW3KNuQG2bPiC2U1yS/C8J1dmEmAXTdyQtBl4f2/4QF8ynyatbF3?=
+ =?us-ascii?Q?3W6SG0dL9PavIAQV8mDS3lGTA/0NmDQF5p5yhqqc6kE7cbQLFtOxD7xQ2Xug?=
+ =?us-ascii?Q?LMy3BSuVt8rNQcQsrGVro1LiqJnH8jJDGklZIM+SeuckNmV7pNJAmY61XmW3?=
+ =?us-ascii?Q?lvg2VpguDNR66puqxTSgxnuonNlRJG7QG/aWq7Gdun/v1pRpUfCMl5SCxjqc?=
+ =?us-ascii?Q?2xD1Nopx81Y4K0AU2m4oYLLMT0+XpDMwSifUqVRdGjsQaHWx54PTA5NizRCw?=
+ =?us-ascii?Q?MWSdG/Hj/WyEMUO6dBk80Jj/sumeB20cugkPoCYAQCex84WX8/sRMST3rAe6?=
+ =?us-ascii?Q?AqeTt23c5i3iY40Fdv47WMNxM7bH8bg1SPuBo2mZPKG/cwoy2sCca6o4jkmG?=
+ =?us-ascii?Q?JGcH3SMx18ACZrtxwF4u/yihcwdCZNjSNJpyk8kIlikpmjZ6salEUBCRtj2p?=
+ =?us-ascii?Q?B4c9u43YU97/OH5yJV0esQHjwk5JbV+m46bnCBDeWGRjdgeBwjngVNlb4Lkr?=
+ =?us-ascii?Q?uGpSdmmOCu6ahEf7yHe57//eU/TGFpREgrTfJgJrwRXIUMbTmwQaNKEqCAUO?=
+ =?us-ascii?Q?DARTCs+9E/UYLLFMkohn0roBJ1k+OJhlS5dtDSwUYlb+SenVOCy1l4kGC/D1?=
+ =?us-ascii?Q?heOVQh+fplhskuRp2AdVFfgiS40aIvZiMJ1c9mri+cZqzud2U0zns6gZhL7k?=
+ =?us-ascii?Q?dg9dQ4LF3hl4O5snFH1iVCoYtdedzowYlrUWJWZ5f8muxhd4MuwfuOXVSFMu?=
+ =?us-ascii?Q?eM1IbAyCp7vvEzY3gAPSOVZRIFgIGBqWvpdwKQuLU2MUiMR+JqBJDa0ZlMi/?=
+ =?us-ascii?Q?jD7WcQUrC3lNKFH3P+WImnZQc3whKenbp0Qu0AtncI9P/T6j+gQ/Kf6dADgC?=
+ =?us-ascii?Q?jmd45V4i4WkkpoX+KWcw1HH5Vc7udE+Nh2AD0FPxMFgNhH/4h7vRyoWSMkkZ?=
+ =?us-ascii?Q?E/z5C3lfBF+yNd8UGXllIaBboHNg2mSSszlerJOeQ4PDNz8qCtZTjLZqggtR?=
+ =?us-ascii?Q?3mBM/G39nbQnK9F7D6NRhjrC5Yyht3P7BBiLmj8zTumWoBn5c1vntxVE9EWQ?=
+ =?us-ascii?Q?1G2M5000hPcPkge282YLfuX/1nqKD1zw8hQ24wLC3Sllxw3RTE+4aakvHS21?=
+ =?us-ascii?Q?UJgmKTrxDuuQl+9ZQkYhBAvC2oHCVZtEKn9w0EohWybww1uS9NpPfFxIpGnw?=
+ =?us-ascii?Q?F8g3ZBuD1YeXVZzDM3jtakWm+EZHWoyY9DDe4TLd8TfpkolLZ3EpxfPZxq8L?=
+ =?us-ascii?Q?mIqz2ap8isBS4PKR0pMuKnc4HfjGdC7MKWZdCpG81eRrdS0BXI/b4nsQArKP?=
+ =?us-ascii?Q?D8ugXJEa6ENCpv72KzEq7YiLdLKfvPU1hrXsU7AV7FM5UZVgMQ1EjuxoItc2?=
+ =?us-ascii?Q?CAzjiFAs+aaihbgO0kXRwWa5zdWOFtgMkLghK+ajrrS4fIrEukHu3MgXb4B5?=
+ =?us-ascii?Q?qQ=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d1e0234-b661-4db6-81cc-08da59538cbf
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3227cfc8-f545-4e48-d72a-08da59538ec4
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 22:14:20.5646
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 22:14:24.0800
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LtUQLoHLKOQIyUUFuoQnsRtp8rMbTVgG6jxHFLNARlr1y9chZUIgGxzT6OaiJ2V743ap8m23MjXGSW7xEjzIrg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR03MB3013
+X-MS-Exchange-CrossTenant-UserPrincipalName: s+S8R0JwA6VofSPTyfjfYDj+riEnyiojUAgNOPwHwzWV3y4Bhv12WCS0DvK7Pn1shdTHyEbLEIKg0SPtvp9NuQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB7399
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds a binding for the SerDes module found on QorIQ processors. The
-phy reference has two cells, one for the first lane and one for the
-last. This should allow for good support of multi-lane protocols when
-(if) they are added. There is no protocol option, because the driver is
-designed to be able to completely reconfigure lanes at runtime.
-Generally, the phy consumer can select the appropriate protocol using
-set_mode. For the most part there is only one protocol controller
-(consumer) per lane/protocol combination. The exception to this is the
-B4860 processor, which has some lanes which can be connected to
-multiple MACs. For that processor, I anticipate the easiest way to
-resolve this will be to add an additional cell with a "protocol
-controller instance" property.
+At the moment, mEMACs are configured almost completely based on the
+phy-connection-type. That is, if the phy interface is RGMII, it assumed
+that RGMII is supported. For some interfaces, it is assumed that the
+RCW/bootloader has set up the SerDes properly. This is generally OK, but
+restricts runtime reconfiguration. The actual link state is never
+reported.
 
-Each serdes has a unique set of supported protocols (and lanes). The
-support matrix is stored in the driver and is selected based on the
-compatible string. It is anticipated that a new compatible string will
-need to be added for each serdes on each SoC that drivers support is
-added for. There is no "generic" compatible string for this reason.
+To address these shortcomings, the driver will need additional
+information. First, it needs to know how to access the PCS/PMAs (in
+order to configure them and get the link status). The SGMII PCS/PMA is
+the only currently-described PCS/PMA. Add the XFI and QSGMII PCS/PMAs as
+well. The XFI (and 1GBase-KR) PCS/PMA is a c45 "phy" which sits on the
+same MDIO bus as SGMII PCS/PMA. By default they will have conflicting
+addresses, but they are also not enabled at the same time by default.
+Therefore, we can let the XFI PCS/PMA be the default when
+phy-connection-type is xgmii. This will allow for
+backwards-compatibility.
 
-There are two PLLs, each of which can be used as the master clock for
-each lane. Each PLL has its own reference. For the moment they are
-required, because it simplifies the driver implementation. Absent
-reference clocks can be modeled by a fixed-clock with a rate of 0.
+QSGMII, however, cannot work with the current binding. This is because
+the QSGMII PCS/PMAs are only present on one MAC's MDIO bus. At the
+moment this is worked around by having every MAC write to the PCS/PMA
+addresses (without checking if they are present). This only works if
+each MAC has the same configuration, and only if we don't need to know
+the status. Because the QSGMII PCS/PMA will typically be located on a
+different MDIO bus than the MAC's SGMII PCS/PMA, there is no fallback
+for the QSGMII PCS/PMA.
+
+mEMACs (across all SoCs) support the following protocols:
+
+- MII
+- RGMII
+- SGMII, 1000Base-X, and 1000Base-KX
+- 2500Base-X (aka 2.5G SGMII)
+- QSGMII
+- 10GBase-R (aka XFI) and 10GBase-KR
+- XAUI and HiGig
+
+Each line documents a set of orthogonal protocols (e.g. XAUI is
+supported if and only if HiGig is supported). Additionally,
+
+- XAUI implies support for 10GBase-R
+- 10GBase-R is supported if and only if RGMII is not supported
+- 2500Base-X implies support for 1000Base-X
+- MII implies support for RGMII
+
+To switch between different protocols, we must reconfigure the SerDes.
+This is done by using the standard phys property. We can also use it to
+validate whether different protocols are supported (e.g. using
+phy_validate). This will work for serial protocols, but not RGMII or
+MII. Additionally, we still need to be compatible when there is no
+SerDes.
+
+While we can detect 10G support by examining the port speed (as set by
+fsl,fman-10g-port), we cannot determine support for any of the other
+protocols based on the existing binding. In fact, the binding works
+against us in some respects, because pcsphy-handle is required even if
+there is no possible PCS/PMA for that MAC. To allow for backwards-
+compatibility, we use a boolean-style property for RGMII (instead of
+presence/absence-style). When the property for RGMII is missing, we will
+assume that it is supported. The exception is MII, since no existing
+device trees use it (as far as I could tell).
+
+Unfortunately, QSGMII support will be broken for old device trees. There
+is nothing we can do about this because of the PCS/PMA situation (as
+described above).
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
 Changes in v2:
-- Add #clock-cells. This will allow using assigned-clocks* to configure
-  the PLLs.
-- Allow a value of 1 for phy-cells. This allows for compatibility with
-  the similar (but according to Ioana Ciornei different enough) lynx-28g
-  binding.
-- Document phy cells in the description
-- Document the structure of the compatible strings
-- Fix example binding having too many cells in regs
-- Move compatible first
-- Refer to the device in the documentation, rather than the binding
-- Remove minItems
-- Rename to fsl,lynx-10g.yaml
-- Use list for clock-names
+- Better document how we select which PCS to use in the default case
 
- .../devicetree/bindings/phy/fsl,lynx-10g.yaml | 93 +++++++++++++++++++
- 1 file changed, 93 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/phy/fsl,lynx-10g.yaml
+ .../bindings/net/fsl,fman-dtsec.yaml          | 52 +++++++++++++++++--
+ .../devicetree/bindings/net/fsl-fman.txt      |  5 +-
+ 2 files changed, 51 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/fsl,lynx-10g.yaml b/Documentation/devicetree/bindings/phy/fsl,lynx-10g.yaml
-new file mode 100644
-index 000000000000..b5a6f631df9f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/phy/fsl,lynx-10g.yaml
-@@ -0,0 +1,93 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/phy/fsl,lynx-10g.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NXP Lynx 10G SerDes
-+
-+maintainers:
-+  - Sean Anderson <sean.anderson@seco.com>
-+
-+description: |
-+  These Lynx "SerDes" devices are found in NXP's QorIQ line of processors. The
-+  SerDes provides up to eight lanes. Each lane may be configured individually,
-+  or may be combined with adjacent lanes for a multi-lane protocol. The SerDes
-+  supports a variety of protocols, including up to 10G Ethernet, PCIe, SATA, and
-+  others. The specific protocols supported for each lane depend on the
-+  particular SoC.
-+
-+properties:
-+  compatible:
-+    description: |
-+      Each compatible is of the form "fsl,<soc-name>-serdes-<instance>".
-+      Although many registers are compatible between different SoCs, the
-+      supported protocols and lane assignments tend to be unique to each SerDes.
-+      Additionally, the method of activating protocols may also be unique.
-+      Because of this, each SerDes instance will need its own compatible string.
-+      In cases where two SoCs share the same SerDes implementation (such as the
-+      LS1046A and LS1026A), both SoCs should share the same compatible strings.
-+    enum:
-+      - fsl,ls1046a-serdes-1
-+      - fsl,ls1046a-serdes-2
-+
-+  "#clock-cells":
-+    const: 1
-+    description: |
-+      The cell contains the index of the PLL, starting from 0. Note that when
-+      assigning a rate to a PLL, the PLLs' rates are divided by 1000 to avoid
-+      overflow. A rate of 5000000 corresponds to 5GHz.
-+
-+  "#phy-cells":
-+    minimum: 1
-+    maximum: 2
-+    description: |
-+      The cells contain the following arguments:
-+      - The first lane in the group. Lanes are numbered based on the register
-+        offsets, not the I/O ports. This corresponds to the letter-based ("Lane
-+        A") naming scheme, and not the number-based ("Lane 0") naming scheme. On
-+        most SoCs, "Lane A" is "Lane 0", but not always.
-+      - Last lane. For single-lane protocols, this should be the same as the
-+        first lane.
-+      If no lanes in a SerDes can be grouped, then #phy-cells may be 1, and the
-+      first cell will specify the only lane in the group.
-+
-+  clocks:
-+    maxItems: 2
-+    description: |
-+      Clock for each PLL reference clock input.
-+
-+  clock-names:
-+    items:
-+      - enum: &clocks
-+          - ref0
-+          - ref1
-+      - enum: *clocks
-+
-+  reg:
+diff --git a/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml b/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+index 809df1589f20..ecb772258164 100644
+--- a/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
++++ b/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+@@ -85,9 +85,41 @@ properties:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description: A reference to the IEEE1588 timer
+ 
++  phys:
++    description: A reference to the SerDes lane(s)
 +    maxItems: 1
 +
-+required:
-+  - "#clock-cells"
-+  - "#phy-cells"
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - reg
++  phy-names:
++    items:
++      - const: serdes
 +
-+additionalProperties: false
+   pcsphy-handle:
+-    $ref: /schemas/types.yaml#/definitions/phandle
+-    description: A reference to the PCS (typically found on the SerDes)
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    minItems: 1
++    maxItems: 3
++    description: |
++      A reference to the various PCSs (typically found on the SerDes). If
++      pcs-names is absent, and phy-connection-type is "xgmii", then the first
++      reference will be assumed to be for "xfi". Otherwise, if pcs-names is
++      absent, then the first reference will be assumed to be for "sgmii".
 +
-+examples:
-+  - |
-+    serdes1: phy@1ea0000 {
-+      #clock-cells = <1>;
-+      #phy-cells = <2>;
-+      compatible = "fsl,ls1046a-serdes-1";
-+      reg = <0x1ea0000 0x2000>;
-+      clocks = <&clk_100mhz>, <&clk_156mhz>;
-+      clock-names = "ref0", "ref1";
-+      assigned-clocks = <&serdes1 0>;
-+      assigned-clock-rates = <5000000>;
-+    };
++  pcs-names:
++    $ref: /schemas/types.yaml#/definitions/string-array
++    minItems: 1
++    maxItems: 3
++    contains:
++      enum:
++        - sgmii
++        - qsgmii
++        - xfi
++    description: The type of each PCS in pcsphy-handle.
 +
-+...
++  rgmii:
++    enum: [0, 1]
++    description: 1 indicates RGMII is supported, and 0 indicates it is not.
++
++  mii:
++    description: If present, indicates that MII is supported.
+ 
+   tbi-handle:
+     $ref: /schemas/types.yaml#/definitions/phandle
+@@ -100,6 +132,10 @@ required:
+   - fsl,fman-ports
+   - ptp-timer
+ 
++dependencies:
++  pcs-names: [pcsphy-handle]
++  mii: [rgmii]
++
+ allOf:
+   - $ref: "ethernet-controller.yaml#"
+   - if:
+@@ -117,7 +153,11 @@ allOf:
+             const: fsl,fman-memac
+     then:
+       required:
+-        - pcsphy-handle
++        - rgmii
++    else:
++      properties:
++        rgmii: false
++        mii: false
+ 
+ unevaluatedProperties: false
+ 
+@@ -138,7 +178,11 @@ examples:
+             reg = <0xe8000 0x1000>;
+             fsl,fman-ports = <&fman0_rx_0x0c &fman0_tx_0x2c>;
+             ptp-timer = <&ptp_timer0>;
+-            pcsphy-handle = <&pcsphy4>;
++            pcsphy-handle = <&pcsphy4>, <&qsgmiib_pcs1>;
++            pcs-names = "sgmii", "qsgmii";
++            rgmii = <0>;
+             phy-handle = <&sgmii_phy1>;
+             phy-connection-type = "sgmii";
++            phys = <&serdes1 1>;
++            phy-names = "serdes";
+     };
+diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
+index b9055335db3b..bda4b41af074 100644
+--- a/Documentation/devicetree/bindings/net/fsl-fman.txt
++++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
+@@ -320,8 +320,9 @@ For internal PHY device on internal mdio bus, a PHY node should be created.
+ See the definition of the PHY node in booting-without-of.txt for an
+ example of how to define a PHY (Internal PHY has no interrupt line).
+ - For "fsl,fman-mdio" compatible internal mdio bus, the PHY is TBI PHY.
+-- For "fsl,fman-memac-mdio" compatible internal mdio bus, the PHY is PCS PHY,
+-  PCS PHY addr must be '0'.
++- For "fsl,fman-memac-mdio" compatible internal mdio bus, the PHY is PCS PHY.
++  The PCS PHY address should correspond to the value of the appropriate
++  MDEV_PORT.
+ 
+ EXAMPLE
+ 
 -- 
 2.35.1.1320.gc452695387.dirty
 
