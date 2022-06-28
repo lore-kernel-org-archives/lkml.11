@@ -2,177 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8137C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD588CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344175AbiF1JX0 (ORCPT
+        id S1343939AbiF1JYQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48198 "EHLO
+        Tue, 28 Jun 2022 05:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344152AbiF1JXS (ORCPT
+        with ESMTP id S1344173AbiF1JXt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:23:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4667E1EECA
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:23:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656408193;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ZQ8PbVRfKtLH2BnQKm5WBZD6aRMJWU7raZsWJy2qDfc=;
-        b=bxyIDItE7zdLWCgiVdyKIgEs5TAypVyRHXkS3w0XY00SNXVaEsAvh21z11s9Oml8J6aFsw
-        zIdG+XmE6sp7VzvpDyQsDndrRC6JAUKnBTisSQouBv/nvxSX3Rmt/sDTU+Ddz/oMvE4upC
-        s5nsZYmoUCw0opBjXuzgNrvkMaOGGVs=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-319-9p2IRh4zPbCDIYpVyLlwWQ-1; Tue, 28 Jun 2022 05:23:10 -0400
-X-MC-Unique: 9p2IRh4zPbCDIYpVyLlwWQ-1
-Received: by mail-wm1-f72.google.com with SMTP id v125-20020a1cac83000000b0039c832fbd02so8602976wme.4
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:23:10 -0700 (PDT)
+        Tue, 28 Jun 2022 05:23:49 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524A01EAC1
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:23:48 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so15232062pjl.5
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:23:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PQkt4wjPT/v+iF+fXDGRisMQCM0vLDWYyifuIV/OGDo=;
+        b=BGy1MI8xqjO6lduBhMa13lY37kGteP8POqCXl3BZdOwHo9Opp1aEltf4yPcfE+uJ+2
+         ITWTBRfi0L2QIwl4XxMjPM/RcSAjUuGie94NjWZ0TSq3iPSH3m7NdNUSnvWYoyrIqjjj
+         wkMqlgUCZLwlmXIWSvSo8zk4PWzCIDtGfDBMK87KLwi0vavL57ofaJpo4R+pPLDm4og/
+         /DZrlTwoxGLTO8ZDdWHkX4l9IIH9xzMH+zfkDqNK6rp+Cx7gTAIZX1rtZGL5ZZQ0ZJV3
+         kibsGCfxlIe99uHGHgCQwvo15q+zI3SrLYIcHxMgWZNMnUMQuM9WX8Afa/Ic8O+hzH9K
+         /2cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ZQ8PbVRfKtLH2BnQKm5WBZD6aRMJWU7raZsWJy2qDfc=;
-        b=64NMiqqXfVorAWYXDI6gEbY8DUZG+1UMsYXXtj3ccXQLqRF5IkAO4Xb8NIdWhZAe2q
-         4guUuKAe/NkPv5KExWksPXNa9vIJ4n3UMdJw3+d689ft00DOuuoxtKLzu3lDQUAN+YZL
-         XW/Vv8soj6/kWrAA2SksDwpbW3O+aShiNXCjPS1+hrWRlj1VQVDl3ZBTlYtlF+y/b5B+
-         zTNfIb5DJaMH1w+bk1gNi/eUg6Zo5BlpGhWi6ZLu9IknddAIBSQsrqb3aGyWCjNNZ6yz
-         zFIS25WMwjUp7ipLMoehGPmoPoBfk/W02n1AK+LjeI3MUWYDhIEaSYyHwZ/00kOk6lxG
-         7ogw==
-X-Gm-Message-State: AJIora+QAWLGw0dja2NNrBKnTYGg72VmjwP4gYG5U9RsaY7XpsoAwXIe
-        oZUdM5LIaz160y9+E7qArHurHPoTrMZasTNnRutQBg8C7uNbegNcoV8QCaYn4F5Ms5hGggDHv96
-        SARd/F6eZAw6adrFxIrGys3Or4SNG9Jmp8qpbDeyS9R8oBAD137cgaMKyLL2CdQv99Z9oGwHHDh
-        UJ
-X-Received: by 2002:adf:e68b:0:b0:21d:1c8d:9891 with SMTP id r11-20020adfe68b000000b0021d1c8d9891mr2922152wrm.37.1656408189370;
-        Tue, 28 Jun 2022 02:23:09 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1srDW/+3lydTME/MMivmI4UhbCnrKvSp+Uias0Oz8IX8uy8HiHJgBlQ1o4KdvkvMPijOCyTHA==
-X-Received: by 2002:adf:e68b:0:b0:21d:1c8d:9891 with SMTP id r11-20020adfe68b000000b0021d1c8d9891mr2922119wrm.37.1656408189104;
-        Tue, 28 Jun 2022 02:23:09 -0700 (PDT)
-Received: from vian.redhat.com ([2a0c:5a80:1b12:b300:47b0:25ba:1a2e:72ac])
-        by smtp.gmail.com with ESMTPSA id v14-20020a05600c214e00b0039c96b97359sm10021630wml.37.2022.06.28.02.23.08
+        bh=PQkt4wjPT/v+iF+fXDGRisMQCM0vLDWYyifuIV/OGDo=;
+        b=i4omTE/gpsQ8vUQcwIwwUf8xTKnPinkJ432xw3A7HxhngaHgBHsbNCviOTm9R7mYgy
+         /AgKZD/nUrweEbiLkXtiAGfKPJWclZGjSz7ikpaH7vMBE1Lg5azwFJqUKy/fZt3tKnjC
+         9jtQd128jvpQp2DhMKrVldh/OP4pxox7IclPJNaGzEYvLVmb6ZNgSyp89ImlS1iRcj5Y
+         wZz44Rwm9pj7yVcjqS9xWyjqxFPGCkf1F74ITE/vilRe9yW/Rv3Wv9Xnw41BannFL/Pn
+         kjuXVIJG0XOEblwU/JJSmxEMCr74lvGSmJDgvK7Fv2UZQZE5bbWf+xsFe6unRq7cyuTf
+         PuVw==
+X-Gm-Message-State: AJIora9SfSzkMPRGvchN95K0i98gBZXb0snkfP95HH0QOgfy6Jxk+xlW
+        9YcMnV3YclrqJxEtZHCvqFbXrQ==
+X-Google-Smtp-Source: AGRyM1ue3KkVfkoriauuRkSduIpdUzZ8CoxO4+O4HV1szaRrCPOfb8vOnORTEmnfN6gQ6hitXaQo/A==
+X-Received: by 2002:a17:90b:1d0a:b0:1ee:de8e:9d58 with SMTP id on10-20020a17090b1d0a00b001eede8e9d58mr10347710pjb.39.1656408227811;
+        Tue, 28 Jun 2022 02:23:47 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.245])
+        by smtp.gmail.com with ESMTPSA id mm9-20020a17090b358900b001ec729d4f08sm8780463pjb.54.2022.06.28.02.23.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 02:23:08 -0700 (PDT)
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     linux-kernel@vger.kernel.org, fweisbec@gmail.com
-Cc:     bristot@redhat.com, vschneid@redhat.com, cmetcalf@ezchip.com,
-        mgorman@suse.de, bsegall@google.com, rostedt@goodmis.org,
-        dietmar.eggemann@arm.com, vincent.guittot@linaro.org,
-        juri.lelli@redhat.com, peterz@infradead.org, mingo@redhat.com,
-        mtosatti@redhat.com, Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Subject: [PATCH] nohz/full, sched/rt: Fix missed tick-reenabling bug in dequeue_task_rt
-Date:   Tue, 28 Jun 2022 11:22:59 +0200
-Message-Id: <20220628092259.330171-1-nsaenzju@redhat.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 28 Jun 2022 02:23:47 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     mike.kravetz@oracle.com, david@redhat.com,
+        akpm@linux-foundation.org, corbet@lwn.net
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, duanxiongchun@bytedance.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v2 0/8] Simplify hugetlb vmemmap and improve its readability
+Date:   Tue, 28 Jun 2022 17:22:27 +0800
+Message-Id: <20220628092235.91270-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dequeue_task_rt() only decrements 'rt_rq->rt_nr_running' after having
-called sched_update_tick_dependency() preventing it from re-enabling the
-tick on systems that no longer have pending SCHED_RT tasks but have
-multiple runnable SCHED_OTHER tasks:
+This series aims to simplify hugetlb vmemmap and improve its readability
+and is based on next-20220627.
 
-  dequeue_task_rt()
-    dequeue_rt_entity()
-      dequeue_rt_stack()
-        dequeue_top_rt_rq()
-	  sub_nr_running()	// decrements rq->nr_running
-	    sched_update_tick_dependency()
-	      sched_can_stop_tick()	// checks rq->rt.rt_nr_running,
-	      ...
-        __dequeue_rt_entity()
-          dec_rt_tasks()	// decrements rq->rt.rt_nr_running
-	  ...
+v2:
+  - Collect Reviewed-ed and Acked-by.
+  - Improve patch 6's log print.
+  - Add patch 7 to improve vmemmap_dedup.rst.
+  - Add patch 8 for cleanup.
 
-Every other scheduler class performs the operation in the opposite
-order, and sched_update_tick_dependency() expects the values to be
-updated as such. So avoid the misbehaviour by inverting the order in
-which the above operations are performed in the RT scheduler.
+Muchun Song (8):
+  mm: hugetlb_vmemmap: delete hugetlb_optimize_vmemmap_enabled()
+  mm: hugetlb_vmemmap: optimize vmemmap_optimize_mode handling
+  mm: hugetlb_vmemmap: introduce the name HVO
+  mm: hugetlb_vmemmap: move vmemmap code related to HugeTLB to
+    hugetlb_vmemmap.c
+  mm: hugetlb_vmemmap: replace early_param() with core_param()
+  mm: hugetlb_vmemmap: improve hugetlb_vmemmap code readability
+  mm: hugetlb_vmemmap: move code comments to vmemmap_dedup.rst
+  mm: hugetlb_vmemmap: use PTRS_PER_PTE instead of PMD_SIZE / PAGE_SIZE
 
-Fixes: 76d92ac305f2 ("sched: Migrate sched to use new tick dependency mask model")
-Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
----
- kernel/sched/rt.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |   7 +-
+ Documentation/admin-guide/mm/hugetlbpage.rst    |   4 +-
+ Documentation/admin-guide/mm/memory-hotplug.rst |   4 +-
+ Documentation/admin-guide/sysctl/vm.rst         |   3 +-
+ Documentation/vm/vmemmap_dedup.rst              |  72 ++-
+ arch/arm64/mm/flush.c                           |  13 +-
+ fs/Kconfig                                      |  12 +-
+ include/linux/hugetlb.h                         |   7 +-
+ include/linux/mm.h                              |   7 -
+ include/linux/page-flags.h                      |  32 +-
+ include/linux/sysctl.h                          |   4 +
+ mm/hugetlb.c                                    |  15 +-
+ mm/hugetlb_vmemmap.c                            | 589 ++++++++++++++++++------
+ mm/hugetlb_vmemmap.h                            |  45 +-
+ mm/sparse-vmemmap.c                             | 399 ----------------
+ 15 files changed, 567 insertions(+), 646 deletions(-)
 
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 8c9ed96648409..55f39c8f42032 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -480,7 +480,7 @@ static inline void rt_queue_push_tasks(struct rq *rq)
- #endif /* CONFIG_SMP */
- 
- static void enqueue_top_rt_rq(struct rt_rq *rt_rq);
--static void dequeue_top_rt_rq(struct rt_rq *rt_rq);
-+static void dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count);
- 
- static inline int on_rt_rq(struct sched_rt_entity *rt_se)
- {
-@@ -601,7 +601,7 @@ static void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
- 	rt_se = rt_rq->tg->rt_se[cpu];
- 
- 	if (!rt_se) {
--		dequeue_top_rt_rq(rt_rq);
-+		dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
- 		/* Kick cpufreq (see the comment in kernel/sched/sched.h). */
- 		cpufreq_update_util(rq_of_rt_rq(rt_rq), 0);
- 	}
-@@ -687,7 +687,7 @@ static inline void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
- 
- static inline void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
- {
--	dequeue_top_rt_rq(rt_rq);
-+	dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
- }
- 
- static inline int rt_rq_throttled(struct rt_rq *rt_rq)
-@@ -1089,7 +1089,7 @@ static void update_curr_rt(struct rq *rq)
- }
- 
- static void
--dequeue_top_rt_rq(struct rt_rq *rt_rq)
-+dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count)
- {
- 	struct rq *rq = rq_of_rt_rq(rt_rq);
- 
-@@ -1100,7 +1100,7 @@ dequeue_top_rt_rq(struct rt_rq *rt_rq)
- 
- 	BUG_ON(!rq->nr_running);
- 
--	sub_nr_running(rq, rt_rq->rt_nr_running);
-+	sub_nr_running(rq, count);
- 	rt_rq->rt_queued = 0;
- 
- }
-@@ -1486,18 +1486,21 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
- static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
- {
- 	struct sched_rt_entity *back = NULL;
-+	unsigned int rt_nr_running;
- 
- 	for_each_sched_rt_entity(rt_se) {
- 		rt_se->back = back;
- 		back = rt_se;
- 	}
- 
--	dequeue_top_rt_rq(rt_rq_of_se(back));
-+	rt_nr_running = rt_rq_of_se(back)->rt_nr_running;
- 
- 	for (rt_se = back; rt_se; rt_se = rt_se->back) {
- 		if (on_rt_rq(rt_se))
- 			__dequeue_rt_entity(rt_se, flags);
- 	}
-+
-+	dequeue_top_rt_rq(rt_rq_of_se(back), rt_nr_running);
- }
- 
- static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
+
+base-commit: aab35c3d5112df6e329a1a5a5a1881e5c4ca3821
 -- 
-2.36.1
+2.11.0
 
