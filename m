@@ -2,129 +2,259 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB1DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 728CDCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232176AbiF1Q5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 12:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
+        id S231874AbiF1Q7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 12:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232303AbiF1Q4b (ORCPT
+        with ESMTP id S237313AbiF1Q6n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 12:56:31 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9D321E1C
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:56:16 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id u14so18265865qvv.2
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:56:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jqNLofw/D/PgB2PwZMkDfeM2ZVnMx72QWP1RSRdpmQo=;
-        b=pHh6mjp31yvbo8A34LLzMDENTfRddWdvKsjXFp578aFN88WyGnMogyiV3dp3/v5EVH
-         4jOMmiR2Qxitr1TmYkZbQU3o55SLX2qqGtZZUkY1NboZ5K9YVba9XWXMJ2HrBeI5rC9P
-         mahSZs2mD1JH4sHb3p/1ImusiiICFxQzG4LXA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jqNLofw/D/PgB2PwZMkDfeM2ZVnMx72QWP1RSRdpmQo=;
-        b=FwszwsTWNdBdN+UO74NfrHYM1zFEuOfk6U0Fbg7yc/kTpjuPylXxWQ1IZ5XWcifYt8
-         S5jZ9Spq9nzE5AuLGMlHY/hVrTlIJaSA+4bt4usTr/C3DEZf+fK6CoMb5jDIIBxHU8GM
-         6Rl4rF2Qik/AS1GYK8zQ0DFExf+0jQTnjW/LgU6oxuRpSTO5lJs42YmQ0TreQcAqtE78
-         QI82nRGQTq2mg5GVuV/pX0kiQErCNDCWgBzcaq9hswvKa8lky3raLstOzNAkhjpwuh/C
-         yhMY8lxG924a56tsmK5WEYEF8l2yLGD4nywgW+87oIOP4UEddpWfw2a1HRCIg9Zf690g
-         tH0w==
-X-Gm-Message-State: AJIora8O4Ev3h3Hv90VqegwNRK5/cM4grJTOjcTlmiMTiOveZ94Tbcb3
-        GhFFJAYJZb3fXJzKB4l+1355sdN7+wtyupLR
-X-Google-Smtp-Source: AGRyM1sudwCjEYgzNWIA35xMKylvU+kWeJ9NFoOzHVRhkAOGNX3RF7lsg0poVrifS0ZVdWOcv3Jl1Q==
-X-Received: by 2002:a05:6214:1c0f:b0:470:9d07:2f5d with SMTP id u15-20020a0562141c0f00b004709d072f5dmr3204675qvc.12.1656435375174;
-        Tue, 28 Jun 2022 09:56:15 -0700 (PDT)
-Received: from localhost (228.221.150.34.bc.googleusercontent.com. [34.150.221.228])
-        by smtp.gmail.com with ESMTPSA id c190-20020ae9edc7000000b006a743b360bcsm10710238qkg.136.2022.06.28.09.56.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 09:56:14 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 16:56:14 +0000
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Uladzislau Rezki <urezki@gmail.com>, rcu@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rushikesh.s.kadam@intel.com,
-        neeraj.iitr10@gmail.com, frederic@kernel.org, rostedt@goodmis.org,
-        vineeth@bitbyteword.org
-Subject: Re: [PATCH v2 8/8] rcu/kfree: Fix kfree_rcu_shrink_count() return
- value
-Message-ID: <YrsyrmDbfnkpfDEP@google.com>
-References: <20220622225102.2112026-1-joel@joelfernandes.org>
- <20220622225102.2112026-10-joel@joelfernandes.org>
- <Yrn9a5pOvhvL/eZj@pc638.lan>
- <20220627205907.GM1790663@paulmck-ThinkPad-P17-Gen-1>
- <YroelcGVNhQj91ab@google.com>
- <20220627214359.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
+        Tue, 28 Jun 2022 12:58:43 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E523033C;
+        Tue, 28 Jun 2022 09:58:42 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SGk9KX023071;
+        Tue, 28 Jun 2022 16:58:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=jJLW91B7wzmiIM8pkoGBYzEOtxCKb/elmWaiVT1q+2Y=;
+ b=HgwiT96Ha0TDJtAXdprmr2pcxokXej+As6kpV8B7zWhUaf30yy/KBli5trQPrJZcq5DV
+ gY6grKlQNwMj4q929fr2QG+yIgNmViEHuThRlOPQ4thEhu/4N9JZdUphJecjCe8C2TOY
+ AAV1I2HZSCQGaJw6Ykc8zYwlXRfX4kxuDT9Z+H9wnzJr3tlIwaxVGXXDne9GwdfL+PGD
+ uWnTSwy/2Z4Ynp4rnUSQ5M4YseRcffJBlgQLFXEj0OduTXpB/Z9IqUQepG4X8uhzY0a2
+ 3DXeArseKkdBxSEuqi/fLfNkrPLCZwHZzni5BSIOf5b4Zx2Rknd8pVdW0C2Ezx9GplGZ yg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h05f2r9dh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 16:58:30 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SGtHYI003016;
+        Tue, 28 Jun 2022 16:58:29 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h05f2r9d4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 16:58:29 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SGoETN010068;
+        Tue, 28 Jun 2022 16:58:28 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma04dal.us.ibm.com with ESMTP id 3gwt0atxfa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 16:58:28 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SGwQI424707536
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jun 2022 16:58:26 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BCB8078064;
+        Tue, 28 Jun 2022 16:58:26 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1A96B7805F;
+        Tue, 28 Jun 2022 16:58:26 +0000 (GMT)
+Received: from sbct-3.pok.ibm.com (unknown [9.47.158.153])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 28 Jun 2022 16:58:26 +0000 (GMT)
+From:   Stefan Berger <stefanb@linux.ibm.com>
+To:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     nayna@linux.ibm.com, nasastry@in.ibm.com, mpe@ellerman.id.au,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH v3 2/3] of: kexec: Refactor IMA buffer related functions to make them reusable
+Date:   Tue, 28 Jun 2022 12:58:19 -0400
+Message-Id: <20220628165820.883222-3-stefanb@linux.ibm.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220628165820.883222-1-stefanb@linux.ibm.com>
+References: <20220628165820.883222-1-stefanb@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627214359.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: RIlJOQAHslSYAvvUAzrtNCXxDnduiE6r
+X-Proofpoint-ORIG-GUID: 9ikZvveMi0gBZ8P6YEJM80Y0gVVI12XA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-28_09,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ priorityscore=1501 malwarescore=0 clxscore=1015 mlxlogscore=999
+ lowpriorityscore=0 phishscore=0 suspectscore=0 impostorscore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206280065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 02:43:59PM -0700, Paul E. McKenney wrote:
-> On Mon, Jun 27, 2022 at 09:18:13PM +0000, Joel Fernandes wrote:
-> > On Mon, Jun 27, 2022 at 01:59:07PM -0700, Paul E. McKenney wrote:
-> > > On Mon, Jun 27, 2022 at 08:56:43PM +0200, Uladzislau Rezki wrote:
-> > > > > As per the comments in include/linux/shrinker.h, .count_objects callback
-> > > > > should return the number of freeable items, but if there are no objects
-> > > > > to free, SHRINK_EMPTY should be returned. The only time 0 is returned
-> > > > > should be when we are unable to determine the number of objects, or the
-> > > > > cache should be skipped for another reason.
-> > > > > 
-> > > > > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> > > > > ---
-> > > > >  kernel/rcu/tree.c | 2 +-
-> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> > > > > index 711679d10cbb..935788e8d2d7 100644
-> > > > > --- a/kernel/rcu/tree.c
-> > > > > +++ b/kernel/rcu/tree.c
-> > > > > @@ -3722,7 +3722,7 @@ kfree_rcu_shrink_count(struct shrinker *shrink, struct shrink_control *sc)
-> > > > >  		atomic_set(&krcp->backoff_page_cache_fill, 1);
-> > > > >  	}
-> > > > >  
-> > > > > -	return count;
-> > > > > +	return count == 0 ? SHRINK_EMPTY : count;
-> > > > >  }
-> > > > >  
-> > > > >  static unsigned long
-> > > > > -- 
-> > > > > 2.37.0.rc0.104.g0611611a94-goog
-> > > > > 
-> > > > Looks good to me!
-> > > > 
-> > > > Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-> > > 
-> > > Now that you mention it, this does look independent of the rest of
-> > > the series.  I have pulled it in with Uladzislau's Reviewed-by.
-> > 
-> > Thanks Paul and Vlad!
-> > 
-> > Paul, apologies for being quiet. I have been working on the series and the
-> > review comments carefully. I appreciate your help with this work.
-> 
-> Not a problem.  After all, this stuff is changing some of the trickier
-> parts of RCU.  We must therefore assume that some significant time and
-> effort will be required to get it right.
+Refactor IMA buffer related functions to make them reusable for carrying
+TPM logs across kexec.
 
-To your point about trickier parts of RCU, the v2 series though I tested it
-before submitting is now giving me strange results with rcuscale. Sometimes
-laziness does not seem to be in effect (as pointed out by rcuscale), other
-times I am seeing stalls.
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: Mimi Zohar <zohar@linux.ibm.com>
+---
+ drivers/of/kexec.c | 99 +++++++++++++++++++++++++++++-----------------
+ 1 file changed, 62 insertions(+), 37 deletions(-)
 
-So I have to carefully look through all of this again. I am not sure why I
-was not seeing these issues with the exact same code before (frustrated).
-
-thanks,
-
- - Joel
+diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+index b9bd1cff1793..601ea9727b0e 100644
+--- a/drivers/of/kexec.c
++++ b/drivers/of/kexec.c
+@@ -115,6 +115,18 @@ static int do_get_kexec_buffer(const void *prop, int len, unsigned long *addr,
+ 	return 0;
+ }
+ 
++static int get_kexec_buffer(const char *name, unsigned long *addr, size_t *size)
++{
++	const void *prop;
++	int len;
++
++	prop = of_get_property(of_chosen, name, &len);
++	if (!prop)
++		return -ENOENT;
++
++	return do_get_kexec_buffer(prop, len, addr, size);
++}
++
+ /**
+  * ima_get_kexec_buffer - get IMA buffer from the previous kernel
+  * @addr:	On successful return, set to point to the buffer contents.
+@@ -124,19 +136,14 @@ static int do_get_kexec_buffer(const void *prop, int len, unsigned long *addr,
+  */
+ int ima_get_kexec_buffer(void **addr, size_t *size)
+ {
+-	int ret, len;
++	int ret;
+ 	unsigned long tmp_addr;
+ 	size_t tmp_size;
+-	const void *prop;
+ 
+ 	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+ 		return -ENOTSUPP;
+ 
+-	prop = of_get_property(of_chosen, "linux,ima-kexec-buffer", &len);
+-	if (!prop)
+-		return -ENOENT;
+-
+-	ret = do_get_kexec_buffer(prop, len, &tmp_addr, &tmp_size);
++	ret = get_kexec_buffer("linux,ima-kexec-buffer", &tmp_addr, &tmp_size);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -174,6 +181,28 @@ int ima_free_kexec_buffer(void)
+ 	return memblock_phys_free(addr, size);
+ }
+ 
++static int remove_buffer(void *fdt, int chosen_node, const char *name)
++{
++	int ret, len;
++	unsigned long addr;
++	size_t size;
++	const void *prop;
++
++	prop = fdt_getprop(fdt, chosen_node, name, &len);
++	if (!prop)
++		return -ENOENT;
++
++	ret = do_get_kexec_buffer(prop, len, &addr, &size);
++	fdt_delprop(fdt, chosen_node, name);
++	if (ret)
++		return ret;
++
++	ret = fdt_find_and_del_mem_rsv(fdt, addr, size);
++	if (!ret)
++		pr_debug("Remove old %s buffer reserveration", name);
++	return ret;
++}
++
+ /**
+  * remove_ima_buffer - remove the IMA buffer property and reservation from @fdt
+  *
+@@ -185,29 +214,34 @@ int ima_free_kexec_buffer(void)
+  */
+ static void remove_ima_buffer(void *fdt, int chosen_node)
+ {
+-	int ret, len;
+-	unsigned long addr;
+-	size_t size;
+-	const void *prop;
+-
+ 	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+ 		return;
+ 
+-	prop = fdt_getprop(fdt, chosen_node, "linux,ima-kexec-buffer", &len);
+-	if (!prop)
+-		return;
++	remove_buffer(fdt, chosen_node, "linux,ima-kexec-buffer");
++}
+ 
+-	ret = do_get_kexec_buffer(prop, len, &addr, &size);
+-	fdt_delprop(fdt, chosen_node, "linux,ima-kexec-buffer");
++#ifdef CONFIG_IMA_KEXEC
++static int setup_buffer(void *fdt, int chosen_node, const char *name,
++			uint64_t addr, uint64_t size)
++{
++	int ret;
++
++	if (!size)
++		return 0;
++
++	ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
++				       name, addr, size);
++	if (ret < 0)
++		return -EINVAL;
++
++	ret = fdt_add_mem_rsv(fdt, addr, size);
+ 	if (ret)
+-		return;
++		return -EINVAL;
++
++	return 0;
+ 
+-	ret = fdt_find_and_del_mem_rsv(fdt, addr, size);
+-	if (!ret)
+-		pr_debug("Removed old IMA buffer reservation.\n");
+ }
+ 
+-#ifdef CONFIG_IMA_KEXEC
+ /**
+  * setup_ima_buffer - add IMA buffer information to the fdt
+  * @image:		kexec image being loaded.
+@@ -221,23 +255,14 @@ static int setup_ima_buffer(const struct kimage *image, void *fdt,
+ {
+ 	int ret;
+ 
+-	if (!image->ima_buffer_size)
+-		return 0;
+-
+-	ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
+-				       "linux,ima-kexec-buffer",
+-				       image->ima_buffer_addr,
+-				       image->ima_buffer_size);
+-	if (ret < 0)
+-		return -EINVAL;
+-
+-	ret = fdt_add_mem_rsv(fdt, image->ima_buffer_addr,
+-			      image->ima_buffer_size);
++	ret = setup_buffer(fdt, chosen_node, "linux,ima-kexec-buffer",
++			   image->ima_buffer_addr, image->ima_buffer_size);
+ 	if (ret)
+-		return -EINVAL;
++		return ret;
+ 
+-	pr_debug("IMA buffer at 0x%llx, size = 0x%zx\n",
+-		 image->ima_buffer_addr, image->ima_buffer_size);
++	if (image->ima_buffer_addr)
++		pr_debug("IMA buffer at 0x%llx, size = 0x%zx\n",
++			 image->ima_buffer_addr, image->ima_buffer_size);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
 
