@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE560CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BE7CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243887AbiF1CW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60120 "EHLO
+        id S244021AbiF1CWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:22:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243652AbiF1CVH (ORCPT
+        with ESMTP id S243668AbiF1CVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:21:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9E024F09;
-        Mon, 27 Jun 2022 19:20:58 -0700 (PDT)
+        Mon, 27 Jun 2022 22:21:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218892496F;
+        Mon, 27 Jun 2022 19:21:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7B447CE1E0E;
-        Tue, 28 Jun 2022 02:20:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D212AC34115;
-        Tue, 28 Jun 2022 02:20:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98CB2617DA;
+        Tue, 28 Jun 2022 02:21:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05FD3C341CA;
+        Tue, 28 Jun 2022 02:21:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382854;
-        bh=8EEm0dlpGRNW+1bRE51uF+/2iljO7Ff562zYe9PwjaY=;
+        s=k20201202; t=1656382867;
+        bh=fhyhEOo91+OfWmhCpa2nf5J7I65wc6UbfKCjfRaqOlk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VKT+A9Dt6h5tXSArWh2YFiC+yYs735tniWDfnUYsZfoGewHNefDW3WFHwTgZtuslF
-         Aizfa1eAjaYdQIXoteNUy0u0JPkTzJI2MGi6axL5ePvEkJ6fG811ke8NwfEO7uuiw/
-         goTrCR6mlaxGCNTjnCq0xGHqBEG20xxJUk9lp4RO+2KgIVBxHc2Minm1IccWc3ivG2
-         izJWDqx0sdtIVmbW3sfFNT1fmp1zgRDk4lqRlj2fNQDN7qrbW6dU7/vYe4FLxcJ00E
-         CSbg+ifuTshQqcmTt33IJwFT7z7GyQ+i5qGSNyupYKgVIF7P4btsIGW0q0E7OdLl12
-         TwkQhqyC19/dA==
+        b=ZlE+BZ1nqb/duIa8augtcBgDuGUH8E7EPlnbIMmSWVjpudMDFbNwjPXicOMNV/aaN
+         6qICYR/jBfgBHujn53iTSwXPu3i3OLQbdtj2iYGvUAKgTyhGBNLJXGOHTFleCxAofH
+         eHnnq/wqFAuxoh/fZYCXZdJI7zOL9p4oqkVJRCuuleDzffRlhBKKn6gZv7GWimx8dM
+         bWFnFaN5Z8JYOFLYjEsYtd8cgI2A2Fui3OIkikIHujEK6wCVfDSynQMZMnjUJvt0rF
+         fGe57jc7YAXmYcNHu5bbGgWOPaKJ3Hqrmzq33ebdcshUWeT2LgFc9WmcgFXSpnZSNd
+         VYaoMB6Cx0hzg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Felix.Kuehling@amd.com, nirmoy.das@amd.com, jonathan.kim@amd.com,
-        matthew.auld@intel.com, kevin1.wang@amd.com, zackr@vmware.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 50/53] drm/amdgpu: Adjust logic around GTT size (v3)
-Date:   Mon, 27 Jun 2022 22:18:36 -0400
-Message-Id: <20220628021839.594423-50-sashal@kernel.org>
+Cc:     Robert Marko <robimarko@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 04/41] regulator: qcom_smd: correct MP5496 ranges
+Date:   Mon, 27 Jun 2022 22:20:23 -0400
+Message-Id: <20220628022100.595243-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220628021839.594423-1-sashal@kernel.org>
-References: <20220628021839.594423-1-sashal@kernel.org>
+In-Reply-To: <20220628022100.595243-1-sashal@kernel.org>
+References: <20220628022100.595243-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,70 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit f15345a377c6ea9c7cc74f079616af8856aff37f ]
+[ Upstream commit 122e951eb8045338089b086c8bd9b0b9afb04a92 ]
 
-Certain GL unit tests for large textures can cause problems
-with the OOM killer since there is no way to link this memory
-to a process.  This was originally mitigated (but not necessarily
-eliminated) by limiting the GTT size.  The problem is this limit
-is often too low for many modern games so just make the limit 1/2
-of system memory. The OOM accounting needs to be addressed, but
-we shouldn't prevent common 3D applications from being usable
-just to potentially mitigate that corner case.
+Currently set MP5496 Buck and LDO ranges dont match its datasheet[1].
+According to the datasheet:
+Buck range is 0.6-2.1875V with a 12.5mV step
+LDO range is 0.8-3.975V with a 25mV step.
 
-Set default GTT size to max(3G, 1/2 of system ram) by default.
+So, correct the ranges according to the datasheet[1].
 
-v2: drop previous logic and default to 3/4 of ram
-v3: default to half of ram to align with ttm
-v4: fix spelling in comment (Kent)
+[1] https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MP5496GR/document_id/6906/
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1942
-Reviewed-by: Marek Olšák <marek.olsak@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Link: https://lore.kernel.org/r/20220604193300.125758-2-robimarko@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/regulator/qcom_smd-regulator.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-index 4b9ee6e27f74..ef3ada98bdb6 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-@@ -1798,18 +1798,26 @@ int amdgpu_ttm_init(struct amdgpu_device *adev)
- 	DRM_INFO("amdgpu: %uM of VRAM memory ready\n",
- 		 (unsigned) (adev->gmc.real_vram_size / (1024 * 1024)));
+diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
+index eb974b9c0b19..507dc009f8d5 100644
+--- a/drivers/regulator/qcom_smd-regulator.c
++++ b/drivers/regulator/qcom_smd-regulator.c
+@@ -723,19 +723,19 @@ static const struct regulator_desc pms405_pldo600 = {
  
--	/* Compute GTT size, either bsaed on 3/4th the size of RAM size
-+	/* Compute GTT size, either based on 1/2 the size of RAM size
- 	 * or whatever the user passed on module init */
- 	if (amdgpu_gtt_size == -1) {
- 		struct sysinfo si;
+ static const struct regulator_desc mp5496_smpa2 = {
+ 	.linear_ranges = (struct linear_range[]) {
+-		REGULATOR_LINEAR_RANGE(725000, 0, 27, 12500),
++		REGULATOR_LINEAR_RANGE(600000, 0, 127, 12500),
+ 	},
+ 	.n_linear_ranges = 1,
+-	.n_voltages = 28,
++	.n_voltages = 128,
+ 	.ops = &rpm_mp5496_ops,
+ };
  
- 		si_meminfo(&si);
--		gtt_size = min(max((AMDGPU_DEFAULT_GTT_SIZE_MB << 20),
--			       adev->gmc.mc_vram_size),
--			       ((uint64_t)si.totalram * si.mem_unit * 3/4));
--	}
--	else
-+		/* Certain GL unit tests for large textures can cause problems
-+		 * with the OOM killer since there is no way to link this memory
-+		 * to a process.  This was originally mitigated (but not necessarily
-+		 * eliminated) by limiting the GTT size.  The problem is this limit
-+		 * is often too low for many modern games so just make the limit 1/2
-+		 * of system memory which aligns with TTM. The OOM accounting needs
-+		 * to be addressed, but we shouldn't prevent common 3D applications
-+		 * from being usable just to potentially mitigate that corner case.
-+		 */
-+		gtt_size = max((AMDGPU_DEFAULT_GTT_SIZE_MB << 20),
-+			       (u64)si.totalram * si.mem_unit / 2);
-+	} else {
- 		gtt_size = (uint64_t)amdgpu_gtt_size << 20;
-+	}
+ static const struct regulator_desc mp5496_ldoa2 = {
+ 	.linear_ranges = (struct linear_range[]) {
+-		REGULATOR_LINEAR_RANGE(1800000, 0, 60, 25000),
++		REGULATOR_LINEAR_RANGE(800000, 0, 127, 25000),
+ 	},
+ 	.n_linear_ranges = 1,
+-	.n_voltages = 61,
++	.n_voltages = 128,
+ 	.ops = &rpm_mp5496_ops,
+ };
  
- 	/* Initialize GTT memory pool */
- 	r = amdgpu_gtt_mgr_init(adev, gtt_size);
 -- 
 2.35.1
 
