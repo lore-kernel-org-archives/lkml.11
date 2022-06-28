@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83260C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1632AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242859AbiF1C33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
+        id S244505AbiF1C3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244218AbiF1CZZ (ORCPT
+        with ESMTP id S244221AbiF1CZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:25:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A713524BD1;
-        Mon, 27 Jun 2022 19:23:57 -0700 (PDT)
+        Mon, 27 Jun 2022 22:25:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02512558C;
+        Mon, 27 Jun 2022 19:24:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59F7DB81C1B;
-        Tue, 28 Jun 2022 02:23:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4309AC36AE3;
-        Tue, 28 Jun 2022 02:23:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AEE7B81C0B;
+        Tue, 28 Jun 2022 02:24:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97ED8C385A2;
+        Tue, 28 Jun 2022 02:23:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383035;
-        bh=ZdL7kXYlijASJXlGwtFrtZj74qHRNjaZa+d3EueRukQ=;
+        s=k20201202; t=1656383039;
+        bh=w7fftTG4ZtdUDNlN2kkvN6wupt+2CPYIA0HdyTf1khc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j7MrhSqhKwE5f6k1ctVnIQ4qaHGpHjBbS89dGbkZrzNlau6GTJY8/Cd7Jo8ZCINcB
-         6xNT8GI9Cu6VXrr9FMQmYv2u3ryjEbGW6VbvFDd1KV4Gz+3MQp1M1QyX9/EBk0w7G3
-         /Jg1ddM5D5KVB7UMh2jMaCI04kvfqS+B1euPA6VE19KGtzll4kZHU1yiydUT4glZ2K
-         fNqm7bN2dh49a9Gkyfyvd7KKu05GmzkDhSEMs1MWBtWxdQ9B0IpwZ8oSdB0bwFRwhK
-         7ZWAmlCj/ATTjgSynVPdeWVJWA5L+3alvUxJk/AbPg3XrD0O7pY/IwwWq0VuO6KOce
-         0KKblX++OnfRg==
+        b=VJYl3F1EItPXn1XO/MV/SZhX0S7oh4qdOU8QNOYa7BrRyYZ+NOzliuaye6yygGe2f
+         j1dq4z310w1GGroLpMU1PZquo8TxhibaNpB83altz07I8JbaTjY3PnLgP3tcu9zzYf
+         OrDhVmjoX9HJbspww3XI1HPrLOGnXYGlS8fDNwKpY+qOZhrjKlBdYFtJWmxzIuNHOd
+         1EKpxxVdRBivy6wgnzaz8AB2toYABfD6I3YVTn7+glr5OPtGBo1RgqCub5WC9zEHcH
+         SiJ36mSAmSm7dLX6igRG1ojGCqhZP+/B4IVCyeLC8sQEXnja0Qr9VQsDZv98ri6lI1
+         BxakKl+lizGGA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
-        linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 27/34] mips: lantiq: Add missing of_node_put() in irq.c
-Date:   Mon, 27 Jun 2022 22:22:34 -0400
-Message-Id: <20220628022241.595835-27-sashal@kernel.org>
+Cc:     Saud Farooqui <farooqui_saud@hotmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>, mripard@kernel.org,
+        wens@csie.org, airlied@linux.ie, daniel@ffwll.ch,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 29/34] drm/sun4i: Return if frontend is not present
+Date:   Mon, 27 Jun 2022 22:22:36 -0400
+Message-Id: <20220628022241.595835-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022241.595835-1-sashal@kernel.org>
 References: <20220628022241.595835-1-sashal@kernel.org>
@@ -52,33 +55,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Saud Farooqui <farooqui_saud@hotmail.com>
 
-[ Upstream commit 3748d2185ac4c2c6f80989672253aad909ecaf95 ]
+[ Upstream commit 85016f66af8506cb601fd4f4fde23ed327a266be ]
 
-In icu_of_init(), of_find_compatible_node() will return a node
-pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+Added return statement in sun4i_layer_format_mod_supported()
+in case frontend is not present.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Saud Farooqui <farooqui_saud@hotmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/PA4P189MB1421E93EF5F8E8E00E71B7878BB29@PA4P189MB1421.EURP189.PROD.OUTLOOK.COM
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/lantiq/irq.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/sun4i/sun4i_layer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/lantiq/irq.c b/arch/mips/lantiq/irq.c
-index 43c2f271e6ab..ee4d73d72500 100644
---- a/arch/mips/lantiq/irq.c
-+++ b/arch/mips/lantiq/irq.c
-@@ -407,6 +407,7 @@ int __init icu_of_init(struct device_node *node, struct device_node *parent)
- 		if (!ltq_eiu_membase)
- 			panic("Failed to remap eiu memory");
- 	}
-+	of_node_put(eiu_node);
+diff --git a/drivers/gpu/drm/sun4i/sun4i_layer.c b/drivers/gpu/drm/sun4i/sun4i_layer.c
+index acfbfd4463a1..d585377de2a3 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_layer.c
++++ b/drivers/gpu/drm/sun4i/sun4i_layer.c
+@@ -115,7 +115,7 @@ static bool sun4i_layer_format_mod_supported(struct drm_plane *plane,
+ 	struct sun4i_layer *layer = plane_to_sun4i_layer(plane);
  
- 	return 0;
- }
+ 	if (IS_ERR_OR_NULL(layer->backend->frontend))
+-		sun4i_backend_format_is_supported(format, modifier);
++		return sun4i_backend_format_is_supported(format, modifier);
+ 
+ 	return sun4i_backend_format_is_supported(format, modifier) ||
+ 	       sun4i_frontend_format_is_supported(format, modifier);
 -- 
 2.35.1
 
