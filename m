@@ -2,111 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD68C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DF3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346000AbiF1NPJ (ORCPT
+        id S1346086AbiF1NPc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
+        Tue, 28 Jun 2022 09:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240713AbiF1NPF (ORCPT
+        with ESMTP id S1345595AbiF1NP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:15:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DAE62C12F
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:15:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656422103;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/ZOCb43a6XtspipSZyH021F8n9v8AZtTda7ttlCF3gs=;
-        b=SNUMSmmc36xOfaswi4u3sXJLQxCxQIXimiZsbcXd2N+0UnKfXEHSINwSeOoNFZmyQ4Js0J
-        N0NYu2ZqSmUVXirYj3yqEFz0cdE/CGkIPi/f+YDH/pDrJwfnlCOJ922G2fgOnxFAUgJnzy
-        Jyx7CA5jCHkNmKpupc6xeFdZdGLMq/A=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-550-nlKef17tMHuexN_WhN-YCg-1; Tue, 28 Jun 2022 09:15:02 -0400
-X-MC-Unique: nlKef17tMHuexN_WhN-YCg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5F9CD811E7A;
-        Tue, 28 Jun 2022 13:15:01 +0000 (UTC)
-Received: from starship (unknown [10.40.194.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 45BEB492C3B;
-        Tue, 28 Jun 2022 13:14:59 +0000 (UTC)
-Message-ID: <c0051d4701ddcf00a1357f5a108acf655f813b37.camel@redhat.com>
-Subject: Re: [PATCH v6 15/17] KVM: SVM: Use target APIC ID to complete
- x2AVIC IRQs when possible
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, joro@8bytes.org, jon.grimm@amd.com,
-        wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Tue, 28 Jun 2022 16:14:58 +0300
-In-Reply-To: <cc77d885-fdf2-bac8-65d4-ab0994272548@amd.com>
-References: <20220519102709.24125-1-suravee.suthikulpanit@amd.com>
-         <20220519102709.24125-16-suravee.suthikulpanit@amd.com>
-         <b8610296-6fb7-e110-900f-4616e1e39bb4@redhat.com>
-         <d761ef283bc91002322f3cd66c124d329c25f04f.camel@redhat.com>
-         <9f3ffe16-2516-d4ec-528e-6347ef884ad5@amd.com>
-         <df464fd9b3c66059d7065acc52594d27dfe52448.camel@redhat.com>
-         <cc77d885-fdf2-bac8-65d4-ab0994272548@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+        Tue, 28 Jun 2022 09:15:27 -0400
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D822CDD1;
+        Tue, 28 Jun 2022 06:15:26 -0700 (PDT)
+Received: by mail-il1-f175.google.com with SMTP id o4so8111188ilm.9;
+        Tue, 28 Jun 2022 06:15:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=seJbEPSZZ1oPKMlcZ7LVvOigbkxOOLRfiPmd+7jzfLU=;
+        b=yustL8ueACXOIGxt1g6Okbp+1/aQZ4RhgkH/GP7ZKiaj4umFEphSDPMkhmccbBjA9W
+         ZNbVqHwVvos5zKbEPA9U7YpvbkhLmZHh0JFKp4kL9fkQT2C4LiaVkpvB9S71HbnwBk4F
+         xvTz0RNv+ubO0uYjYHbViq7IV4FUo++7deGKEzNz1FPMsZsfCevoGI+nr7kaCrxXw0Hp
+         kmA635gyUt5k8eawpPmBZAOgMn3VUvoX5XAe3s+sb7n81XjMplbowkEfFkOqr+R4sWPi
+         XlUsOxKvpKhSmlNNMAC0a7F/Ud2F3JtCo5H4iKY/GTfrV++t/RByjEfSvk0qc4LS0Wg0
+         cOLw==
+X-Gm-Message-State: AJIora/hJxjVmgDW4YwuVRNIbZO8aocQ0szoiQT4R1yjdvnAQiIgtsBB
+        +6gKs6BmhvOrtBQh43jFTg==
+X-Google-Smtp-Source: AGRyM1shbhhTUzPKXR6WRP7M3rKcxslLqTEYSXzXTb7Y4hsk6MgLaTL2jrtWoe2oVp+PvwnkU2STTQ==
+X-Received: by 2002:a05:6e02:1aaa:b0:2da:8e4b:65a5 with SMTP id l10-20020a056e021aaa00b002da8e4b65a5mr7110050ilv.71.1656422126156;
+        Tue, 28 Jun 2022 06:15:26 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id x21-20020a026f15000000b00339e452c0d2sm5899953jab.82.2022.06.28.06.15.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 06:15:25 -0700 (PDT)
+Received: (nullmailer pid 313745 invoked by uid 1000);
+        Tue, 28 Jun 2022 13:15:23 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Terry Bowman <terry.bowman@amd.com>, UNGLinuxDriver@microchip.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        devicetree@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+In-Reply-To: <20220628081709.829811-9-colin.foster@in-advantage.com>
+References: <20220628081709.829811-1-colin.foster@in-advantage.com> <20220628081709.829811-9-colin.foster@in-advantage.com>
+Subject: Re: [PATCH v11 net-next 8/9] dt-bindings: mfd: ocelot: add bindings for VSC7512
+Date:   Tue, 28 Jun 2022 07:15:23 -0600
+Message-Id: <1656422123.508891.313744.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-06-28 at 19:36 +0700, Suthikulpanit, Suravee wrote:
-> Paolo / Maxim
+On Tue, 28 Jun 2022 01:17:08 -0700, Colin Foster wrote:
+> Add devicetree bindings for SPI-controlled Ocelot chips, specifically the
+> VSC7512.
 > 
-> On 6/28/2022 3:59 PM, Maxim Levitsky wrote:
-> > > > Hi Paolo and Suravee Suthikulpanit!
-> > > > 
-> > > > Note that this patch is not needed anymore, I fixed the avic_kick_target_vcpus_fast function,
-> > > > and added the support for x2apic because it was very easy to do
-> > > > (I already needed to parse logical id for flat and cluser modes)
-> > > > 
-> > > > Best regards,
-> > > > 	Maxim Levitsky
-> > > > 
-> > > Understood. I was about to send v7 to remove this patch from the series, but too late. I'll test the current queue branch and provide update.
-> > Also this really needs a KVM unit test, to avoid breaking corner cases like
-> > sending IPI to 0xFF address, which was the reason I had to fix the
-> > avic_kick_target_vcpus_fast.
-> > 
-> > We do have 'apic' test in kvm unit tests,
-> > and I was already looking to extend it to cover more cases and to run it with AVIC's
-> > compatible settings. I hope I will be able to do this this week.
-> 
-> Thanks. Would you please CC me as well once ready?
-
-Of course!
-> 
-> > Best regards,
-> > 	Maxim Levitsky
-> 
-> I have also submitted a patch to fix the 603ccef42ce9 ("KVM: x86: SVM: fix avic_kick_target_vcpus_fast"),
-> which was queued previously.
-
-Thank you very much!
-
-Best regards,
-	Maxim Levitsky
-
-
-> 
-> Best Regards,
-> Suravee Suthikulpanit
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> ---
+>  .../devicetree/bindings/mfd/mscc,ocelot.yaml  | 160 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 161 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
 > 
 
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/mfd/mscc,ocelot.example.dtb:0:0: /example-0/spi/switch@0: failed to match any schema with compatible: ['mscc,vsc7512']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
