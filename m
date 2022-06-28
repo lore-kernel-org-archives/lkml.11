@@ -2,222 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1D7CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A82CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344482AbiF1OrV (ORCPT
+        id S1347213AbiF1OsS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 10:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        Tue, 28 Jun 2022 10:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347198AbiF1OrK (ORCPT
+        with ESMTP id S1347277AbiF1Ore (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 10:47:10 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919D42FFDA;
-        Tue, 28 Jun 2022 07:47:09 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id e40so17956375eda.2;
-        Tue, 28 Jun 2022 07:47:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dIIRV/7xVavrFkkRlTpxT9AeMVsp3yCltb4nZgV8P1s=;
-        b=qGNxf1bADOzY0oaDCwYwIYCbj/BRm3RniW/mZ+asrY9SGcUIcMECDpkK4UtWVHbbDI
-         fCTlTo9PM5Z/rnNmijNug+wKrLQyZLBzoX6ybPKlvv43gbiny9BsSkAJIG3upIUx3x3W
-         rarZFrRNv45vuEAlWH1gssTuA8V4/O+63QgL2FF6YHq3cOYHXojGzN62fWS6zjnePhMf
-         GWzoVxdZxCyCaCLXwLF/m4vtuanQ+uS+EBRDgXpzvHKuyvDDeJ0ORlKtatCryLvUHrwf
-         LCEsHG8WNgcZbd/SRgDj7+g/IAxFd7IZ1970+2Y7o6NR+QKuIQZrG65jEUzaNKD3jqwA
-         G8cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dIIRV/7xVavrFkkRlTpxT9AeMVsp3yCltb4nZgV8P1s=;
-        b=o7uFoEQaPE9b5GCcBhjzT5Nya6GRALbn3ibxoSiSnGdh5nzwaHhAA0Ja8GE8920KBB
-         UGQWk1g3qqoGn7SfwYlLqmW/UDYDhM+IgKnkZPFaL/p4F18whPHRxIDxciCT7gPI7Yr8
-         pMPadUyk8syzKfmwpBIYxsPD7ouFEmiTT81lWMvlyWV8v8KQdflsKWE8QccOA5lcHBaV
-         KDNg+GMXVifXPbGEJJwqU1WGFFp5s/vHUuE57rS1imsaYvmMe9/Q8nBFh0Or0HYosxzN
-         4qMzkBykxF0zfqxB6nI7s6AsUndyftm8gSp603e4R9h9SU3BjKrJehJkZoI0xzxK3Sn6
-         UYSA==
-X-Gm-Message-State: AJIora/aWOc4xAX2RAab0L08+R1mKasKRwXmKyhTFjCxEUj3qbdyBvjW
-        aVlyoNw+fkwhwVwAaZDED9o=
-X-Google-Smtp-Source: AGRyM1s8agwP30emipXMea2Yd5kcSZn4HD82LY6PSp7nDUobBq+OMJE80ZA0m5S5w638nDjHfKOKQw==
-X-Received: by 2002:a05:6402:320f:b0:435:7236:e312 with SMTP id g15-20020a056402320f00b004357236e312mr23890254eda.115.1656427627929;
-        Tue, 28 Jun 2022 07:47:07 -0700 (PDT)
-Received: from localhost.localdomain (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
-        by smtp.gmail.com with ESMTPSA id v10-20020a1709063bca00b006ffa19b7782sm6450420ejf.74.2022.06.28.07.47.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 07:47:06 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     David Sterba <dsterba@suse.com>, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Nick Terrell <terrelln@fb.com>, linux-btrfs@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "James E. J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        John David Anglin <dave.anglin@bell.net>,
-        linux-parisc@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        David Sterba <dsterba@suse.cz>
-Subject: [RESEND PATCH v4 1/2] highmem: Make __kunmap_{local,atomic}() take "const void *"
-Date:   Tue, 28 Jun 2022 16:46:49 +0200
-Message-Id: <20220628144649.28046-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220627111927.3ef94745aab4491901d43028@linux-foundation.org>
-References: <20220627111927.3ef94745aab4491901d43028@linux-foundation.org>
+        Tue, 28 Jun 2022 10:47:34 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61AD72ED55;
+        Tue, 28 Jun 2022 07:47:32 -0700 (PDT)
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LXS7D42dFz67tWM;
+        Tue, 28 Jun 2022 22:45:12 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Tue, 28 Jun 2022 16:47:29 +0200
+Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
+ 2022 15:47:29 +0100
+Date:   Tue, 28 Jun 2022 15:47:27 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     <ira.weiny@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        "Dave Jiang" <dave.jiang@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V12 6/9] cxl/port: Read CDAT table
+Message-ID: <20220628154727.0000021c@Huawei.com>
+In-Reply-To: <20220628041527.742333-7-ira.weiny@intel.com>
+References: <20220628041527.742333-1-ira.weiny@intel.com>
+        <20220628041527.742333-7-ira.weiny@intel.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__kunmap_ {local,atomic}() currently take pointers to void. However, this
-is semantically incorrect, since these functions do not change the memory
-their arguments point to.
+On Mon, 27 Jun 2022 21:15:24 -0700
+ira.weiny@intel.com wrote:
 
-Therefore, make this semantics explicit by modifying the
-__kunmap_{local,atomic}() prototypes to take pointers to const void.
+> From: Ira Weiny <ira.weiny@intel.com>
+> 
+> The OS will need CDAT data from CXL devices to properly set up
+> interleave sets.  Currently this is supported through a DOE mailbox
+> which supports CDAT.
+> 
+> Search the DOE mailboxes available, query CDAT data, and cache the data
+> for later parsing.
+> 
+> Provide a sysfs binary attribute to allow dumping of the CDAT.
+> 
+> Binary dumping is modeled on /sys/firmware/ACPI/tables/
+> 
+> The ability to dump this table will be very useful for emulation of real
+> devices once they become available as QEMU CXL type 3 device emulation will
+> be able to load this file in.
+> 
+> This does not support table updates at runtime. It will always provide
+> whatever was there when first cached. Handling of table updates can be
+> implemented later.
+> 
+> Finally create a complete list of CDAT defines within cdat.h for code
+> wishing to decode the CDAT table.
+> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Co-developed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
-As a side effect, compilers will likely produce more efficient code.
+One query inline, though I'm fine with it either way, just want to
+understand your logic in keeping completion when Dan suggested using
+flush_work() to achieve the same thing.
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Suggested-by: David Sterba <dsterba@suse.cz>
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
+> 
+> ---
+> Changes from V11:
+> 	Adjust for the use of DOE mailbox xarray
+> 	Dan Williams:
+> 		Remove unnecessary get/put device
+> 		Use new BIN_ATTR_ADMIN_RO macro
+> 		Flag that CDAT was supported
+> 			If there is a read error then the CDAT sysfs
+> 			will return a 0 length entry
+> 
+...
+> diff --git a/drivers/cxl/core/pci.c b/drivers/cxl/core/pci.c
+> index c4c99ff7b55e..4bd479ec0253 100644
+> --- a/drivers/cxl/core/pci.c
+> +++ b/drivers/cxl/core/pci.c
+> @@ -4,10 +4,12 @@
 
-This is a resend of the same patch CC'ed to linux-mm.
+> +static int cxl_cdat_get_length(struct device *dev,
+> +			       struct pci_doe_mb *cdat_mb,
+> +			       size_t *length)
+> +{
+> +	u32 cdat_request_pl = CDAT_DOE_REQ(0);
+> +	u32 cdat_response_pl[32];
+> +	DECLARE_COMPLETION_ONSTACK(c);
+> +	struct pci_doe_task task = {
+> +		.prot.vid = PCI_DVSEC_VENDOR_ID_CXL,
+> +		.prot.type = CXL_DOE_PROTOCOL_TABLE_ACCESS,
+> +		.request_pl = &cdat_request_pl,
+> +		.request_pl_sz = sizeof(cdat_request_pl),
+> +		.response_pl = cdat_response_pl,
+> +		.response_pl_sz = sizeof(cdat_response_pl),
+> +		.complete = cxl_doe_task_complete,
+> +		.private = &c,
+> +	};
+> +	int rc = 0;
+> +
+> +	rc = pci_doe_submit_task(cdat_mb, &task);
+> +	if (rc < 0) {
+> +		dev_err(dev, "DOE submit failed: %d", rc);
+> +		return rc;
+> +	}
+> +	wait_for_completion(&c);
 
-v3->v4: Cc Maintainers and mailing lists I had overlooked when I sent v3.
+Dan mentioned in his review that we could just use
+flush_work() and drop the completion logic and callback.
+Why didn't you go that way?  Would want to wrap it up
+in pci_doe_wait_task() or something like that.
 
-v2->v3: Fix compilation errors for ARCH=parisc.
-        Reported-by: kernel test robot <lkp@intel.com>
-
-v1->v2: Change the commit message to clearly explain why these functions
-        should require pointers to const void. The fundamental argument
-        behind the commit message changes is semantic correctness.
-        Obviously, there are no changes to the code.
-        Many thanks to David Sterba and Ira Weiny for suggestions and
-        reviews.
-
- arch/parisc/include/asm/cacheflush.h |  6 +++---
- arch/parisc/kernel/cache.c           |  2 +-
- include/linux/highmem-internal.h     | 10 +++++-----
- mm/highmem.c                         |  2 +-
- 4 files changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/arch/parisc/include/asm/cacheflush.h b/arch/parisc/include/asm/cacheflush.h
-index 8d03b3b26229..0bdee6724132 100644
---- a/arch/parisc/include/asm/cacheflush.h
-+++ b/arch/parisc/include/asm/cacheflush.h
-@@ -22,7 +22,7 @@ void flush_kernel_icache_range_asm(unsigned long, unsigned long);
- void flush_user_dcache_range_asm(unsigned long, unsigned long);
- void flush_kernel_dcache_range_asm(unsigned long, unsigned long);
- void purge_kernel_dcache_range_asm(unsigned long, unsigned long);
--void flush_kernel_dcache_page_asm(void *);
-+void flush_kernel_dcache_page_asm(const void *addr);
- void flush_kernel_icache_page(void *);
- 
- /* Cache flush operations */
-@@ -31,7 +31,7 @@ void flush_cache_all_local(void);
- void flush_cache_all(void);
- void flush_cache_mm(struct mm_struct *mm);
- 
--void flush_kernel_dcache_page_addr(void *addr);
-+void flush_kernel_dcache_page_addr(const void *addr);
- 
- #define flush_kernel_dcache_range(start,size) \
- 	flush_kernel_dcache_range_asm((start), (start)+(size));
-@@ -75,7 +75,7 @@ void flush_dcache_page_asm(unsigned long phys_addr, unsigned long vaddr);
- void flush_anon_page(struct vm_area_struct *vma, struct page *page, unsigned long vmaddr);
- 
- #define ARCH_HAS_FLUSH_ON_KUNMAP
--static inline void kunmap_flush_on_unmap(void *addr)
-+static inline void kunmap_flush_on_unmap(const void *addr)
- {
- 	flush_kernel_dcache_page_addr(addr);
- }
-diff --git a/arch/parisc/kernel/cache.c b/arch/parisc/kernel/cache.c
-index a9bc578e4c52..993999a65e54 100644
---- a/arch/parisc/kernel/cache.c
-+++ b/arch/parisc/kernel/cache.c
-@@ -549,7 +549,7 @@ extern void purge_kernel_dcache_page_asm(unsigned long);
- extern void clear_user_page_asm(void *, unsigned long);
- extern void copy_user_page_asm(void *, void *, unsigned long);
- 
--void flush_kernel_dcache_page_addr(void *addr)
-+void flush_kernel_dcache_page_addr(const void *addr)
- {
- 	unsigned long flags;
- 
-diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
-index cddb42ff0473..034b1106d022 100644
---- a/include/linux/highmem-internal.h
-+++ b/include/linux/highmem-internal.h
-@@ -8,7 +8,7 @@
- #ifdef CONFIG_KMAP_LOCAL
- void *__kmap_local_pfn_prot(unsigned long pfn, pgprot_t prot);
- void *__kmap_local_page_prot(struct page *page, pgprot_t prot);
--void kunmap_local_indexed(void *vaddr);
-+void kunmap_local_indexed(const void *vaddr);
- void kmap_local_fork(struct task_struct *tsk);
- void __kmap_local_sched_out(void);
- void __kmap_local_sched_in(void);
-@@ -89,7 +89,7 @@ static inline void *kmap_local_pfn(unsigned long pfn)
- 	return __kmap_local_pfn_prot(pfn, kmap_prot);
- }
- 
--static inline void __kunmap_local(void *vaddr)
-+static inline void __kunmap_local(const void *vaddr)
- {
- 	kunmap_local_indexed(vaddr);
- }
-@@ -121,7 +121,7 @@ static inline void *kmap_atomic_pfn(unsigned long pfn)
- 	return __kmap_local_pfn_prot(pfn, kmap_prot);
- }
- 
--static inline void __kunmap_atomic(void *addr)
-+static inline void __kunmap_atomic(const void *addr)
- {
- 	kunmap_local_indexed(addr);
- 	pagefault_enable();
-@@ -197,7 +197,7 @@ static inline void *kmap_local_pfn(unsigned long pfn)
- 	return kmap_local_page(pfn_to_page(pfn));
- }
- 
--static inline void __kunmap_local(void *addr)
-+static inline void __kunmap_local(const void *addr)
- {
- #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
- 	kunmap_flush_on_unmap(addr);
-@@ -224,7 +224,7 @@ static inline void *kmap_atomic_pfn(unsigned long pfn)
- 	return kmap_atomic(pfn_to_page(pfn));
- }
- 
--static inline void __kunmap_atomic(void *addr)
-+static inline void __kunmap_atomic(const void *addr)
- {
- #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
- 	kunmap_flush_on_unmap(addr);
-diff --git a/mm/highmem.c b/mm/highmem.c
-index 1a692997fac4..e32083e4ce0d 100644
---- a/mm/highmem.c
-+++ b/mm/highmem.c
-@@ -561,7 +561,7 @@ void *__kmap_local_page_prot(struct page *page, pgprot_t prot)
- }
- EXPORT_SYMBOL(__kmap_local_page_prot);
- 
--void kunmap_local_indexed(void *vaddr)
-+void kunmap_local_indexed(const void *vaddr)
- {
- 	unsigned long addr = (unsigned long) vaddr & PAGE_MASK;
- 	pte_t *kmap_pte;
--- 
-2.36.1
-
+> +
+> +	if (task.rv < 1)
+> +		return -EIO;
+> +
+> +	*length = cdat_response_pl[1];
+> +	dev_dbg(dev, "CDAT length %zu\n", *length);
+> +
+> +	return rc;
+> +}
+> +
