@@ -2,78 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EAFFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5B3CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230305AbiF1TfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:35:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
+        id S231623AbiF1TjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231830AbiF1TcA (ORCPT
+        with ESMTP id S229772AbiF1Tia (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:32:00 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E343AA45
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:27:19 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id r3so23948517ybr.6
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:27:19 -0700 (PDT)
+        Tue, 28 Jun 2022 15:38:30 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98CB9393C8;
+        Tue, 28 Jun 2022 12:30:45 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 184so13110203pga.12;
+        Tue, 28 Jun 2022 12:30:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=walg9+X25Qf0Q2kOl7EPuRRmD7l8R+TPYwiRkuq/taA=;
-        b=r5dhjikOjoOSTxH7twYmSKEfHqErqjhxkSM9McqWoCouOgLOQB7kvkMdEEzxx/BDX6
-         TQrjLVB6hMIfuOa9g8Jq2JmzE97r9+o77os7tKeNZgQG+gQR3fBWEr5T9i+X01s9wRKF
-         poqPtQCKU93338RDg9n0sUG/ZEqcMMUZPZnDwkORaC63HcYlFTRnittAcohjRCM8pOOF
-         g/UPD7ABIbEWrLq01pVgh4ii12ETWhUPrCA8/9LHWHuLKXXESxjWthvXPWzyjMNL6Oot
-         Hlc8iuNIiurItn418+oTScTJhM5C5ncPhx/nMRn5oHIDm7HNscLwCkwchgANUMMiViBr
-         lmvg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z2EbXlaxImLkjcvI7OS6COUyCRhMXb+wP7E5Ra/H3eM=;
+        b=UHgHNFmfLVZpYmgcsOCzsyfY9SFniLePXPzkvatFw8N/9sGNKiOndMJ5R7ViswgMe2
+         +eQYgKXpdViZtQzNAER0kQ5QzIZAuJ6F5w3yOeAV7v+S4msjYhC3Na+XCOUmbL6LslGA
+         tCfBuZ3yyc66gBkUNNANQkHn/oVRaSd/yrgGesYGB1Ndbh0gcogs8PlAdt6gcoyZVD66
+         dkIecSWY7OqniYUWZ/Ylm+fynNcPWfzeYHzh5rkYbKten3UQxztxXEEWH6WpPMfctzDd
+         vYCsTl2rPgJkiXU2xD+sDePXAIhdoThCfMuvl7zEBzg+7k6OJ84Fyv0UCSJqr84D5+5O
+         K4eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=walg9+X25Qf0Q2kOl7EPuRRmD7l8R+TPYwiRkuq/taA=;
-        b=dYTP6WkaaPDmGZf9gTMQvCdGFfQ7cRdzfDdpDOF7PMIaSy8y6pH1Kozdjrp06zlOzf
-         foY3DE3E9nJDKorOBlG9WltSTaZ0yWm/SqFQiweaoZGevOmNg1gQoE0g05FjJjOHbzaA
-         4YD12SOH8MsYIxqWoPhfd36Pl5u4FTY9xzXJIT00nSJFt3z5E3FSb/m23cVkAR1LdaE5
-         SUbssEbo6msOu7gHCNLJP0PprLF15vmxwTWY+IIpeWcXYHwZUEg6JWX7dFzBM500Ozsa
-         ikO7RzNrzvcIK3HHp3Dr3jP6J2XDBLlMWl6OUyOnuOwRhJekfMyD0YxDwKJdj7rnJpZL
-         VmYw==
-X-Gm-Message-State: AJIora9K6p447G3A9CAiSJBjG8YOP848Va8eSHuEWRKgO3m26tuZycNV
-        eaIWXCzeDzTRVBDQXpj6no1I0B4CRvZIB6K/hjMgxQ==
-X-Google-Smtp-Source: AGRyM1tix/MDbYpAocLhXqNa2cuD1sSvJJYVbcVLzqD1nAvkTSC00uKkSWSEB65C4UY4pgJ8yatan7ZYC8uyX2aYtAw=
-X-Received: by 2002:a25:e7d4:0:b0:66c:899b:49c6 with SMTP id
- e203-20020a25e7d4000000b0066c899b49c6mr21915704ybh.291.1656444414438; Tue, 28
- Jun 2022 12:26:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z2EbXlaxImLkjcvI7OS6COUyCRhMXb+wP7E5Ra/H3eM=;
+        b=gKQou4+TZksBYj5+7QAJU9Fl6QYmR8QrTZ0b36th62yPE/qI2hxzuwoTRIEkKC1fwR
+         ZrikUZHJa9EafAkbvh5bx3vRBPuvAq+1S0ee26YcCl43z9XraKVpZBX72IzAf7le19Ve
+         BYYRbMjfxkL4I8cVRC3nu6slNfrSaaRu+2SA1mdHSIAzGetQrEtrbBONI4r8bAq0Y+iE
+         oZtDh/VSGhsZOPjBsVfoDb9tp+0Qa4TgX5uONOyqO8QS9I236xeTLiWcv2luVcgbW8Tz
+         OetJelF+/Ei0BNBdbp+WiPaSDAF0EFVUn1iShwwRG375tijKz7xCHE2iZfYt9kb+wFLU
+         BEgA==
+X-Gm-Message-State: AJIora9/Lkyeox+OX9DuYENf0ZHZV3stSAPMeLvjM2lw0qD/PwpUwlYv
+        uzx87u9EhBPZmCl50bphrSecp2qTnIPRaA==
+X-Google-Smtp-Source: AGRyM1tCuEn3qozSA3GOvIaeVgjHYn7MPRp2lAqTPv3emHRUY136y48eQ9er2QZmzDHs14EskRgGcQ==
+X-Received: by 2002:a63:78ce:0:b0:40c:3c04:e3d8 with SMTP id t197-20020a6378ce000000b0040c3c04e3d8mr18918572pgc.202.1656444613695;
+        Tue, 28 Jun 2022 12:30:13 -0700 (PDT)
+Received: from laptop.hsd1.wa.comcast.net ([2601:600:8500:5f14:d627:c51e:516e:a105])
+        by smtp.gmail.com with ESMTPSA id d59-20020a17090a6f4100b001ec7ba41fe7sm209484pjk.48.2022.06.28.12.30.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 12:30:13 -0700 (PDT)
+From:   Andrei Vagin <avagin@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Andrei Vagin <avagin@gmail.com>
+Subject: [PATCH] selftests/kvm/x86_64: set rax before vmcall
+Date:   Tue, 28 Jun 2022 12:30:11 -0700
+Message-Id: <20220628193011.55403-1-avagin@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org> <20220616005333.18491-4-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220616005333.18491-4-krzysztof.kozlowski@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 28 Jun 2022 21:26:43 +0200
-Message-ID: <CACRpkdawFWN_3EYV0p2AAgu54Lu1s0YgqiSiV3136wOSfSGhrg@mail.gmail.com>
-Subject: Re: [PATCH v3 04/40] dt-bindings: pinctrl: nuvoton,wpcm450-pinctrl:
- align key node name
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     arm@kernel.org, soc@kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 2:54 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+kvm_hypercall has to place the hypercall number in rax.
 
-> gpio-keys schema requires keys to have more generic name.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Trace events show that kvm_pv_test doesn't work properly:
+     kvm_pv_test-53132: kvm_hypercall: nr 0x0 a0 0x0 a1 0x0 a2 0x0 a3 0x0
+     kvm_pv_test-53132: kvm_hypercall: nr 0x0 a0 0x0 a1 0x0 a2 0x0 a3 0x0
+     kvm_pv_test-53132: kvm_hypercall: nr 0x0 a0 0x0 a1 0x0 a2 0x0 a3 0x0
 
-Patch applied!
+With this change, it starts working as expected:
+     kvm_pv_test-54285: kvm_hypercall: nr 0x5 a0 0x0 a1 0x0 a2 0x0 a3 0x0
+     kvm_pv_test-54285: kvm_hypercall: nr 0xa a0 0x0 a1 0x0 a2 0x0 a3 0x0
+     kvm_pv_test-54285: kvm_hypercall: nr 0xb a0 0x0 a1 0x0 a2 0x0 a3 0x0
 
-Yours,
-Linus Walleij
+Signed-off-by: Andrei Vagin <avagin@gmail.com>
+---
+ tools/testing/selftests/kvm/lib/x86_64/processor.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index ead7011ee8f6..5d85e1c021da 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -1422,7 +1422,7 @@ uint64_t kvm_hypercall(uint64_t nr, uint64_t a0, uint64_t a1, uint64_t a2,
+ 
+ 	asm volatile("vmcall"
+ 		     : "=a"(r)
+-		     : "b"(a0), "c"(a1), "d"(a2), "S"(a3));
++		     : "a"(nr), "b"(a0), "c"(a1), "d"(a2), "S"(a3));
+ 	return r;
+ }
+ 
+-- 
+2.35.3
+
