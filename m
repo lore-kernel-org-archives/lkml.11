@@ -2,84 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BB1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345338AbiF1MCq (ORCPT
+        id S1345350AbiF1MDI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 08:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
+        Tue, 28 Jun 2022 08:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344929AbiF1MCZ (ORCPT
+        with ESMTP id S1344929AbiF1MDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 08:02:25 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646432E9F2
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:02:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=jL1gJrWX37x+h1++tMH8uyXq3CpESXwb4NN7kK1bpMQ=; b=FkBGuceDB+930n1nflLN+Xh7/b
-        nGOeTfqCSPCtLyf4mzzQIKy1oRKK0pbxBc2aAU5HoIJoX+1Hd7sohK11AKhh1wXaYizF/gmftDlTe
-        4DjuWlbuten+rP1bxn1aouP1Fa8TpmLs3IV/Xn2MCEqeltERbKnN6wNen4Mza3d1JOPfidENXdwGy
-        Cx3tNocWai9krfdudDHuTpyG3VU6ywmzBcP9FOjUlU4FegJaM+/mieI30TdGVtztIuAJ4s2CUg7gS
-        r7eFp4ySh5fImKKdPOdPj0cUVUpLTLT1moRiaO/ZTs6mdGM5i+GuS8LcqFdr0ijoPcwUV6dblbRmO
-        m1D2ZQ5Q==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o69uP-00E5X7-Ce; Tue, 28 Jun 2022 12:01:36 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2FBD330017D;
-        Tue, 28 Jun 2022 14:01:31 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 1AC342020A5A1; Tue, 28 Jun 2022 14:01:31 +0200 (CEST)
-Date:   Tue, 28 Jun 2022 14:01:31 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>, mmarek@suse.cz,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC][PATCH] kconfig: Add implicit CONFIG_ prefix to
- IS_ENABLED() and co
-Message-ID: <Yrrtm0rRzLMCzKiM@hirez.programming.kicks-ass.net>
-References: <YrrQOifFIiISf/3g@hirez.programming.kicks-ass.net>
- <CAK8P3a2XfzQo6emT4pXXxAjWewdP2LiAe2fOskFf-0suSmBJQQ@mail.gmail.com>
+        Tue, 28 Jun 2022 08:03:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 564DAB97
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:03:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656417783;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zXN9dl3fgirbCGdVmbSz4P1oGzXcIrM4VABDL6FQNWQ=;
+        b=PE+Vow8d7KbrqRicSbIHO5jbuqGuxTqifmJonSWG63qKoJPSHGAQqFWV7Gvm62zuSOR5AR
+        OtKhZho8HEKkD0y3GS4mQB6YTV5AM8w/1cUj9qR4Oy7p1nQm10LRiyajHa3feYtj2TsLbi
+        4NeynLZWpr4MD8PS8LKSxDZHIN1EVdk=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-629-Yd76t-zkPrygtkm46KyHvQ-1; Tue, 28 Jun 2022 08:03:01 -0400
+X-MC-Unique: Yd76t-zkPrygtkm46KyHvQ-1
+Received: by mail-wr1-f71.google.com with SMTP id j14-20020adfa54e000000b0021b8c8204easo1745617wrb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:03:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=zXN9dl3fgirbCGdVmbSz4P1oGzXcIrM4VABDL6FQNWQ=;
+        b=OqCgiqfThVJ1Y268Qjlt8jX+p4o+OlGCgaG5+IjKUtVh513yPdFnK69C5SFfL/Egq8
+         T4Q0bGfEbeNZODJp1v8q3NeQVmu+cUYes5RVtCcsemuD5T+f9J/+zREzoZn6b/fwYszO
+         jg8rHh5BQPBbkLzn2AMBS7/ee1NjbykyMhAfBfP2kja1wdKdLnHintiTW8tOxMuHVgT5
+         89sFTcKADdH4jCr5kEjMO8RkV1gNXE+hBp57mJiBH7RVIdV+JapgDRhHZVI0nQ7OVI6+
+         v6UKGo9rvghnIG36uBpnIeWto+zFRGpJpEm6KYb3MrLF+WVlhXWxH7ff0ycabGYamCkC
+         z9dA==
+X-Gm-Message-State: AJIora+EwJx8dp06e7KUbV9JLfN0pTYl3IOMd7HyTeIMy3uKbf637dO2
+        WNa5+88/Vm4LFocMvCVGRujy3UDQXapgIcEO2adplUjC3LABGk50iCvUkPdej6aemCkMmGtKnjz
+        zI535r/RnWHScTDxBTSwHU2I9uKwMKYgT+oL4Cgf2Pm1vTcvME+1/J6pzPFqr5ZOTo+6b24r/ta
+        Ld
+X-Received: by 2002:a5d:5887:0:b0:21b:ca70:f60d with SMTP id n7-20020a5d5887000000b0021bca70f60dmr12317097wrf.32.1656417780799;
+        Tue, 28 Jun 2022 05:03:00 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1t9eqJuqY/RFJQsbq4btuDnPgxRTxSsH/0pQc+gWLgk0/ru8KAoT2hMTtcP0KdWktRXSvABGA==
+X-Received: by 2002:a5d:5887:0:b0:21b:ca70:f60d with SMTP id n7-20020a5d5887000000b0021bca70f60dmr12317056wrf.32.1656417780509;
+        Tue, 28 Jun 2022 05:03:00 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id d11-20020a5d4f8b000000b0020c7ec0fdf4sm15791108wru.117.2022.06.28.05.02.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 05:02:59 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     "Dong, Eddie" <eddie.dong@intel.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Christopherson, Sean" <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 04/14] KVM: VMX: Extend VMX controls macro shenanigans
+In-Reply-To: <BL0PR11MB304264B62299D642FF906C298AB99@BL0PR11MB3042.namprd11.prod.outlook.com>
+References: <20220627160440.31857-1-vkuznets@redhat.com>
+ <20220627160440.31857-5-vkuznets@redhat.com>
+ <BL0PR11MB304264B62299D642FF906C298AB99@BL0PR11MB3042.namprd11.prod.outlook.com>
+Date:   Tue, 28 Jun 2022 14:02:59 +0200
+Message-ID: <87edz9uhak.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a2XfzQo6emT4pXXxAjWewdP2LiAe2fOskFf-0suSmBJQQ@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 01:19:17PM +0200, Arnd Bergmann wrote:
-> On Tue, Jun 28, 2022 at 11:56 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > Since IS_ENABLED() (and friends) are clearly meant to be used on
-> > CONFIG_foo symbols and IS_ENABLED(CONFIG_ is so long and almost an
-> > tautology, allow the more compact usage of: IS_ENABLED(foo).
-> >
-> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> 
-> I'd prefer to keep the more verbose usage, mainly because it makes it easier
-> to grep for a symbol. If today you do 'git grep CONFIG_PM_SLEEP', you find
-> all instances in Makefile, in #ifdef and in IS_ENABLED(), though not the
-> references in Kconfig language, which leave out the prefix.
+"Dong, Eddie" <eddie.dong@intel.com> writes:
 
-Which is why I never grep for the CONFIG_ thing to begin with, it misses
-the Kconfig site.
+>> -----Original Message-----
+>> From: Vitaly Kuznetsov <vkuznets@redhat.com>
+>> Sent: Monday, June 27, 2022 9:05 AM
+>> To: kvm@vger.kernel.org; Paolo Bonzini <pbonzini@redhat.com>;
+>> Christopherson,, Sean <seanjc@google.com>
+>> Cc: Anirudh Rayabharam <anrayabh@linux.microsoft.com>; Wanpeng Li
+>> <wanpengli@tencent.com>; Jim Mattson <jmattson@google.com>; Maxim
+>> Levitsky <mlevitsk@redhat.com>; linux-hyperv@vger.kernel.org; linux-
+>> kernel@vger.kernel.org
+>> Subject: [PATCH 04/14] KVM: VMX: Extend VMX controls macro shenanigans
+>> 
+>> When VMX controls macros are used to set or clear a control bit, make sure
+>> that this bit was checked in setup_vmcs_config() and thus is properly
+>> reflected in vmcs_config.
+>> 
 
-> If we remove the prefix for IS_ENABLED(), the same grep fails to get
-> all the results, while searching for the substring without the CONFIG_
-> prefix can end up finding false-positives by finding longer strings (e.g.
-> CONFIG_DEBUG_STACKOVERFLOW vs
-> CONFIG_HAVE_DEBUG_STACKOVERFLOW).
+...
 
-Me being used to that doesn't consider that a real issue :-) I'd much
-rather have the somewhat shorter IS_ENABLED() things.
+>
+> With this, will it be safer if we present L1 CTRL MSRs with the bits
+> KVM really uses? Do I miss something?
+
+Sean has already answered but let me present my version. Currently,
+vmcs_config has sanitized VMX control MSRs values filtering out three
+groups of features:
+- Features, which KVM doesn't know about.
+- Features, which KVM can't enable (because of eVMCS, bugs,...)
+- Features, which KVM doesn't want to enable for some reason.
+L1 VMX control MSRs should have the first two groups filtered out but
+not the third. E.g. when EPT is in use, KVM doesn't use
+CPU_BASED_CR3_LOAD_EXITING/CPU_BASED_CR3_STORE_EXITING but this doesn't
+mean that all possible L1 hypervisors are going to be happy if we filter
+these out. Same goes to e.g. CPU_BASED_RDTSC_EXITING: KVM never sets
+this for itself but nested hypervisor can.
+
+-- 
+Vitaly
+
