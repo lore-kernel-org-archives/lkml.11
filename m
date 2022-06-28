@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84275C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6568C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347412AbiF1OxF (ORCPT
+        id S1347428AbiF1OxL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 10:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
+        Tue, 28 Jun 2022 10:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347380AbiF1Ow4 (ORCPT
+        with ESMTP id S1347397AbiF1Ow6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 10:52:56 -0400
+        Tue, 28 Jun 2022 10:52:58 -0400
 Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30049.outbound.protection.outlook.com [40.107.3.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0492A326DA;
-        Tue, 28 Jun 2022 07:52:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0237326DD;
+        Tue, 28 Jun 2022 07:52:57 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BTX9ZgMxT+6pPeG6WUPFURUv5R4L645n2RI2ZYEPXsPsB0NPZCtrvM0k/uxoNmwmXAmfw/Nx8T+6lL4YM6UO+z70bKsBL3rkYP+joR9JY/WNlolRN2s0TvyOu6/KkSep+qg22ANnz5rYchqr+DKs3BfcksyRVKMzt4dYnCNmLFOBgv/8mi2/HJpckj+QmXKMXTGPh1yXrZ+WreiGJF7PpRaL8JW1Lnm8Y0cvAOS9/7e/pV4ekcfUGksPufuyU38D1G7rYOVIDzFUW/w0b3Pqa6YOJhaqTv5LLDdo9QlWkFl2GiKUNc1nnhziFubY+ubnqstdxZC0wxDpe9GGK2bzWA==
+ b=bs9ySQAafDk+XqUyCuogWd4LK+822l2et/JlbwuwSv6j4rkUlrzltM1zx9Nps0Lh7ayK+5RxiQtC5aupjW1X2VsJ2N3O5dwTtxGQmyKb21u5y0cFar6QayiNzGHfaQwERucuOyppKxn8PCUbJelqsajzUCDCupJWW3b7RBxkE153TxvRx8EtOe6RnvhnBzvoJi72vOoD/XGfk4sneh17ZUMNQWIzu3L9fOSkWWkVS4+b/WGKlptDOObYy1lbUBXmwbRtmOjfZZdgEy4qaOmii2vsn18WDyehzXFtkVuf7Izuslcvlr+mET2XHtx7/NEj2CAWPDo6Sar2g7L09U93gg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aArLl/hFze0FELKNg2HCr2tQMPwQ1NFB0ZtoBxbbu1I=;
- b=hi4dExhcGFD8rgNQEzX7mhMQcS4+bTqwW97zn1e/J1PPiNZDxNA9psIfboz0KMVWV5sqcu+KETfHr6+pr7/mK3FZw//OaGTfZuZ7ZlpOWoYJY1KeHYRiu01L+HAYMjhcNKxfBzOXEmWijoje8jdHDP8FBaapn/IM3aARY7KB5sMPsevKC9omckNQu2YkOgd6+kV1sCzABK/2Duz0NWmSIK7T9vFYeiqczpkTNPUuf9R657TWDrEc8ceRMXkYrpxX3w6EiVi6A6FZrPPJ6CQQ5f4VYFCcPqDa6/7otKaP3e8GgNagY0BWwy/6n5/7ik+NEO1sZFuKoch87HEqQzsWSA==
+ bh=HDICeUUAwwEEWAaVrYL2+O0y30yQirKOLe+a3ijqBWA=;
+ b=TKhYFLcOU1pQ+SDabvf6DtolZdc795gxJ46EBHSwbdm/WoH6L2eWL+95iHtIwMQSHfAKKddR0SestSD42T49wtQmbZKO3zpYvjja7GP9rdNpzeyjaGLkCN6rw8tumgZjlN1v7uv81q7s4PJBc76B62t+O831sma2i57YvpI0Wcaf0QdpLB7fAD4+qPoqEJDFlu09Jzea0TWiiyCMTU1KGR+fpJd71r0pXUXDdGKl+U5IrbDYxdxqXBV0g+SJwDpxqUKKVeUOCe2wTDD+IEyAS9tdYK6q14DS+zPmn5oYSHXcE3RHTIrA6yT3hL66nlhfgeglY67mQeRp2DwS/wylMg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aArLl/hFze0FELKNg2HCr2tQMPwQ1NFB0ZtoBxbbu1I=;
- b=g8xsnJV7wEglOqsKiHUzuIum0/QHsATymrXWvGUqeUo9mCXNy4O3JP9BsvMJJsPmaxfqr6Aus7YGQs6xnzIEN2dllGdgasfK/vUcw+pkkCaw8g0zTXNZs9L82fclFFRcluh+ImXMhTDqiviS2o8/MOP7rk2oRr0bE4WEz11JQUc=
+ bh=HDICeUUAwwEEWAaVrYL2+O0y30yQirKOLe+a3ijqBWA=;
+ b=cbtSFGrdJMkqVnBey3GJSSGGaooAb+ZfUpwhNN9WDPTzXbu3G9vsBi5StZsnmwUa8383ZPYJbta4S9m+lVPJgzF4UYTR4KA5LKSWI0FM1sUP+uLB4WbJvfqj2TEQRYOUT51E8qjXY6JCpJnmsAT/PisXwlpTz2XUXSvXqpqqWmk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM0PR0402MB3810.eurprd04.prod.outlook.com (2603:10a6:208:e::26) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Tue, 28 Jun
- 2022 14:52:52 +0000
+ 2022 14:52:55 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::94fe:9cbe:247b:47ea]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::94fe:9cbe:247b:47ea%7]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 14:52:52 +0000
+ 14:52:55 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -58,13 +58,13 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Maxim Kochetkov <fido_max@inbox.ru>,
         Colin Foster <colin.foster@in-advantage.com>,
         Richie Pearn <richard.pearn@nxp.com>,
-        linux-kernel@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>
-Subject: [PATCH v2 net-next 0/4] Prevent permanently closed tc-taprio gates from blocking a Felix DSA switch port
-Date:   Tue, 28 Jun 2022 17:52:34 +0300
-Message-Id: <20220628145238.3247853-1-vladimir.oltean@nxp.com>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net-next 2/4] net: dsa: felix: keep QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF) out of rmw
+Date:   Tue, 28 Jun 2022 17:52:36 +0300
+Message-Id: <20220628145238.3247853-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220628145238.3247853-1-vladimir.oltean@nxp.com>
+References: <20220628145238.3247853-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: LO4P265CA0104.GBRP265.PROD.OUTLOOK.COM
@@ -72,130 +72,115 @@ X-ClientProxiedBy: LO4P265CA0104.GBRP265.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1b465885-935f-4670-b222-08da5915e080
+X-MS-Office365-Filtering-Correlation-Id: bccabef0-e658-49c9-06f9-08da5915e286
 X-MS-TrafficTypeDiagnostic: AM0PR0402MB3810:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9fk5lLVOGmJp5Y7dnZVQLTw9j0Qt7yHtftM3BX96gYyv2QCckY1iqbicGDtASOHJZE+aUTBpUNCU1Lg46fTe6rUVoJDr0OPYyuVI06xwNxbxokh6h6mK7jJiP4kEhvbItQwPYfezQlPzWDKaP6UgdaKSJi0fLzF//8229xt2ghfFcWcBX4FFHczeET3eQU7Pg853dkFeG09y2Jr19dTCoN5K7fy0lUekGF728dIRLcSVLGOWVA3PfmEHak9RES7LdwetBOjFtsEw/IW5+euHHW5hPLOsNZSkE1uWhV6TFJgU4NBktA3hDy89dqfzgPPdf5wyhY/5ahVU0Bt4YfodpOdt+tC3XxbyQ3GQVthSJfmE/TLppGSYxMclAP18hAgSUSmWXooCe50KfrXHHSsn98j39BPUsrzS++UwSTwusjcAwXBDQPV87yjElFee3yHLvI8eM+y4EcwOHR2Ps4v65GyMTEvybijd1G6CkrK7WtzuYWrzqmqZHfqnuPVfvIgGkB8Su/X+19gSbjvEe92LfbchA606aSErQudBTf3liOPk8NlgxciD3kUQ9vCH4CmsNa1xSCw3+z9QA5otWOr+imOjFNPS+2Cq+lCRbqL5E+ZGn+GPb7oK3uSn2US2We60Zgd7KeOhRE8ARpf2UEj/mwrmlAGTPmgP6lVDddmqnpMM9hkZdvCC2n44lfWnRNGz/SaRYle5cMMKpak0KdIaBL9bYcSQooj6Z77940Qqq2GM6CVTJGDdcjrZkPhFwNqp9wPbj3viYpbv5pL94y2ry8P1h2Ac7Clg8H4yvLN6d+HC0wRfxe+sJ/zkbb9Ne0AyEV7gVqvmVHZ3PWsAoo96xA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(2616005)(38350700002)(38100700002)(41300700001)(54906003)(316002)(7416002)(44832011)(1076003)(26005)(66946007)(66476007)(6916009)(66556008)(8676002)(36756003)(4326008)(966005)(6486002)(86362001)(6512007)(2906002)(186003)(52116002)(8936002)(6666004)(478600001)(83380400001)(5660300002)(6506007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: QUiAbLuZxBXZ8O6FogDhm0xMPABP7tR4s4+v8xdmIhEUJIXGaspAHW/3SsXXErE2reItUS1zPwFJpWbz3aE8xY+/p1lQbIWBhq/gZvVAmvfMvefsk8tz4gqYEYuDT3FdfPSKF6G/FiNFlqnRBRFClX/QP3enagUIi5Id7X6i0FadmJ4mUFi57NJXvhPsrJJxiNGoQFpT8VDxXUgTdyyVVwL4zqglhtRWxTH9Iob6kXcxtYXCBQ/1h2EaMkrHtFlN7hyurk/E+2Yasp2Wu6tvv5hQUBf3r05EHLL5Y98E6/Gnh7yp1cMcrjRLVTWIXL5URfK6GDphbCUkD5xbzFesTonmHGtFr5LmdHw/aJle412h+7kmC7YCM8e4VoVksgbSyLGsjl43DXkxZQttkd+A+iI0qqpKqmZTro1Qxt+AgNfAD5mJ7NkzrHdTbO/kLYFDdWHtCoWXvmVzP16O2VmY+Vsr1EnQDJsnQvn7ZWeF9ATBvC6DvlqGfq2MAyygBWSCoNeYJsoXWm9u40xSzay/QNuJIpnamwOUINWIJyCqnSX+rMLVjLaWiuopc2sBFOhE1tKY04E8DCgKJCd8PgMigoW1Ys7dfDZVjS5ErABL34Trev49PHjl7Q+mHt0fPLRtnJbtt3dclJ74vIARf6RWLqcfidth+1Q0yHbY58TyAc3WjojzviiHQwBnHVpO4wxFNvj7HnQUjo8MmKBg1MdTpSD2QdFQweBo5MM8KBftFKnWye61YlWfH0FiP1Vq+XcRtk3+ptG4t/flRlqnfvPOSSzslVIMK2bkcoVUmaP0jOM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(2616005)(38350700002)(38100700002)(41300700001)(54906003)(316002)(7416002)(44832011)(1076003)(26005)(66946007)(66476007)(6916009)(66556008)(8676002)(36756003)(4326008)(6486002)(86362001)(6512007)(2906002)(186003)(52116002)(8936002)(6666004)(478600001)(83380400001)(5660300002)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?30ofE2UT+Wz9UXCJs5nWHw4fGYJ9xpnDN1krgZpxxPzRldWyXllQqy1nVtWS?=
- =?us-ascii?Q?piuEGoxkN/zktXMy0Z3qBfnC0s9hSuCOB6X8lwdPp4cI5YPa0LVW6314eM0+?=
- =?us-ascii?Q?Dp11LMkCJzKR9799buh7HKSYPCZ6fVrAKGiVs/T36jgAszTeqz+RFgxuQG3w?=
- =?us-ascii?Q?02j+Xrqi6F4orrYP1LXLk6Om0k0aC4R8BIz2fRoJXJnhfqyzXye0lHw7kaHS?=
- =?us-ascii?Q?fSgGJNCtD93DZJjZwJhcs8l9nP0XMrYryOkF+T4HHgGl1/rh7d5q8vKGZwNR?=
- =?us-ascii?Q?DVcLUncqC1BQfG76r9qD/segAfyWLwzwtZYKYjQrvjWlTql9JbzowpuE6a/v?=
- =?us-ascii?Q?urkbP9XSa49LrU0UY7odlhZHvwyYRHJxFNL3PeG3vtNzcu8fKUr06/RBilOi?=
- =?us-ascii?Q?401q1sttZtJWf0Aj9SSkO0EkPnFWOn/Fw+CCyxIvQKF6X5oXqZwaUcyxz0uy?=
- =?us-ascii?Q?PySzoYXBX3XXa+C6BBkUNC5S5yQ0deTJZpH6iOpLqHVBbDZFl0lE6E2IkBCG?=
- =?us-ascii?Q?HOVHkXKaabXspy1sG8gIW6FTPUi0Gnj5qXWg6Ao+i4noQBMMZeXGULewZv8v?=
- =?us-ascii?Q?0PTBm/3GG/DxFEgco9gFMw948hWCt+C5SLqeHvTvf1gNPHCURaRFDn5Eulbj?=
- =?us-ascii?Q?nHrCf49DZNzhlnNO6TQlmOMw+OEP3DQm1zV3lVYS9peKFMeMuGSsYoEYSivq?=
- =?us-ascii?Q?5joRYZ5vxSCFYYzfNrfrV+paOcioAjgg2oTtJMC/vQ/20PUJlTrqHnDEluL2?=
- =?us-ascii?Q?+o3iezSho3u++LaJkMATtp9m86kGwigoSxwsxAhubk37PrrXqmi4dPA9Dr9Q?=
- =?us-ascii?Q?cwcHCVMYB3cplWAsn24ZreS/GcaUa/L+AQDb1NHvLENF1HxekAtBRUphMmx5?=
- =?us-ascii?Q?H95pQJHZc4glus7xFxDoZBhQ7u/ue9U4fRdPaAolLz2bfS1+NotDUiSo1jEh?=
- =?us-ascii?Q?Qeo2Ol9i+vDMzdLvp051ibc2q/ZKJto35OzOYvqag6phrJZTev4FoOV3IIka?=
- =?us-ascii?Q?+SBYnga1WwWbRIdH2NJM5x8b/BBe0WwyVrbmbml1wPDyG/GwGDZ3c4/lyFpE?=
- =?us-ascii?Q?Xk6odiTHrAscBnNuY/naFnVUpriwZLqh8AO8yNVxr8DW1uG7pWoqDsyOH17p?=
- =?us-ascii?Q?5a8GMywfbfpN3zZ3sospoWk95cx4BlCyIzwzNRWuUyygctKDcmhx+mY2zdMs?=
- =?us-ascii?Q?Un53mRU6JZ/aG1n2W/ifb+5wQpRRdtZiF235wufsOCD7jioBYkhJFT6xvWnr?=
- =?us-ascii?Q?+yQjOKTlq6SHF3mjrJuiG/y32M4XVmKNLn7tuW9At+j5Zl6jpkTo46PL8BU2?=
- =?us-ascii?Q?FnwYtiJOe7xN7Io7T62q6rLhp3NpfZELBcoG16mYoET7dmXYF48iUcfUeFpB?=
- =?us-ascii?Q?V94IfEwSxP+t4J0ykbxBElFiT77dOj1yQztgn3v/SYLVITc6712LPhTeXW9G?=
- =?us-ascii?Q?XQrFWsvnQcR5kq2hydqnpUcQwRAiM2WuQbJraLgLiSWrmGgbs/JraQpqbtwC?=
- =?us-ascii?Q?LUbLmfb+xbLGK5oQuNZo8ATNJordJ3DQOoUNbo7LFTsaOQF8dBZ8gneyf/Kz?=
- =?us-ascii?Q?27BjoZEwuyiAznRyp5lif2cu4zNt/fsMm1XAqJ/8W1GIcrCzvESFCyOdZKLx?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/cIFBp9BsAAhoWfX7YI963i7h6fW874K4G8CIR3jBrRqtdWRnJtMBQJJ3dmI?=
+ =?us-ascii?Q?IJHfpHwrLEYWTvHl7laqrbaXIJVrEoTziVIa/cIBMiDQFysq1vPu/7Ne43yr?=
+ =?us-ascii?Q?dG3zlGkvXnl+/SLKrSC+lz7Z8ColFqsBWJ0OR0QpHiibZMfktU61uJDHYiy/?=
+ =?us-ascii?Q?Ob6Qtba8kdxFm0Mwqhk1uStqZ8wmwQK2DvYMq3/bCfKpQelPO8n8nR2rr/Gq?=
+ =?us-ascii?Q?VAj2lJW0q67qn0PCYI+EEspA4AEKx+9gy365/IdyY+fleOgy0YMBHqGCxQPr?=
+ =?us-ascii?Q?osV1GS0TOFOUI3cK+IzWv9Iw23ey+qiWEyCEiR/oRmilNbZBoY7RY9LkrdFV?=
+ =?us-ascii?Q?O/gKzVBxOZJwn8juX6msAFow4tPc9fLPaerV8CIYh2hdnRWsSo4HyjE3IhtP?=
+ =?us-ascii?Q?Ir/xJY1jKjypYB88TP1aMadfvR8JqcrhMSTxynmOaMHeBrdW0cznDfxuMC3p?=
+ =?us-ascii?Q?dzt1obGrdnKIzGluU0PvKgcO7r4vcum9H+u9Fx7dc2nOIhiF6GXoB9zIXy+A?=
+ =?us-ascii?Q?lbQ3ItNA/lwW1iE91kXcJvHiEDh5PT84WQJZCMy7krwzb2RRVEvJSA6UOxIF?=
+ =?us-ascii?Q?Yoj/m11FlCFWrK/aoOFlr5I8QSIWrmCYjPpaQYGMeju8+trhwnC5RkwbepOT?=
+ =?us-ascii?Q?TI9YV82bQA12BiQCm8OKuhKfzHCpyMStvdbADmrg8Naim0oyqN2+eECQwpSa?=
+ =?us-ascii?Q?W4ocO28eMOjZOik4r08RP4gWoyOBjCjrMiNs38LPM21N7ZZKGyocoRJ4u3mB?=
+ =?us-ascii?Q?XDstIjb6jPqzmI9+Db4sqP0jMUIQHHS4FrC+OmZ6UanjpjvvqDO9GUJ33jqL?=
+ =?us-ascii?Q?C3ccjyADuGSOBEMV8Xu7dZb398qZEtbh5GrTa923XsTpoe0yNmSzNqVIiwvC?=
+ =?us-ascii?Q?CLjxO2S9l9AEikgkugghq0nsDN3zsloFhUnFvd/K5t3RRsO8Lnc4X1fyquLk?=
+ =?us-ascii?Q?mfIWSB8+tnledBW0W317KLp9SsX45IWUWFh9Q7p+UKdizir0jJMOgvvYfzXP?=
+ =?us-ascii?Q?vpiIzORuQOUzkXeUkkKbwIxrPW/PXoAf7AFNhKPzD71Q3v8ljP9Th3mzy1WV?=
+ =?us-ascii?Q?U4aa++OxS/vHsyiwXmOtZMaPjktmN2LyDNqN32QcWqjl+ccxM2PMwLwhbNDm?=
+ =?us-ascii?Q?vv2eeB7NduvVxNc8ES1Dd+zpyPO3MGu/MLKYMqmAOIrWTewDsP82Jal8OQL4?=
+ =?us-ascii?Q?rA3UhY9mV1oZIXdvuDOYRysLfLGORxSiEYid5DXyEa/BW5r8L12N4ksOu6/x?=
+ =?us-ascii?Q?v8EpJJkg0zk8cMlXNoUyyJEXqfpRBdXbWB2WBb6NjNsIoINkJ8Ml2n4E4WiN?=
+ =?us-ascii?Q?4/Gwl8+k9pAfx8FqB3orCPAZyRH0OWcvFvPhMOWFbGr/XrsvG1S1elXlAFav?=
+ =?us-ascii?Q?AuJGgDg21/wORVAyvvkzLN0qTNz21UMnCpGTiUaOsDwfCI0EMcgqHSX8Pjt9?=
+ =?us-ascii?Q?chrag6F01i0RffBsb8dxe4eJxtB0ZklEobmQVee6g7kkwqyoIRCRaRx40Zn1?=
+ =?us-ascii?Q?S4SNbkXzkciWUKD3+tN7/YdM3HSJJUaOo3o3BbtYkpJiNuQ64GjrT4zHOiqo?=
+ =?us-ascii?Q?+KzsfAW6LZTXyeP/j9FIRN3knSt4KJ6RgSrjxVis4x7u5BR0x9u1ABfifgTn?=
  =?us-ascii?Q?Qg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1b465885-935f-4670-b222-08da5915e080
+X-MS-Exchange-CrossTenant-Network-Message-Id: bccabef0-e658-49c9-06f9-08da5915e286
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 14:52:52.3781
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 14:52:55.7528
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Bp/5nXStvhF2B5F3J4iDZ0K2U03HHQsaug1LmYRIkwvIRSkTaeKBJ+kqCwXP0tXr/lfKgf4LW6W9M12Zj16TIw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: J1hYZJKvnur/+DFS5oGdkIXHD7H29P8sZTmLEZLuIX+MbJ1yKR8SNn3eZCOn7hgRnL7FW3wcBMgCEZ26lS+WEg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3810
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v1->v2:
-- define PSEC_PER_NSEC in include/linux/time64.h rather than
-  include/vdso/time64.h
-- add missing #include <linux/time.h> to users of PSEC_PER_NSEC
-- move the PSEC_PER_NSEC consolidation to the last patch
+In vsc9959_tas_clock_adjust(), the INIT_GATE_STATE field is not changed,
+only the ENABLE field. Similarly for the disabling of the time-aware
+shaper in vsc9959_qos_port_tas_set().
 
-Richie Pearn reports that if we install a tc-taprio schedule on a Felix
-switch port, and that schedule has at least one gate that never opens
-(for example TC0 below):
+To reflect this, keep the QSYS_TAG_CONFIG_INIT_GATE_STATE_M mask out of
+the read-modify-write procedure to make it clearer what is the intention
+of the code.
 
-tc qdisc add dev swp1 root taprio num_tc 8 map 0 1 2 3 4 5 6 7 \
-	queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 \
-	base-time 0 sched-entry S fe 1000000 flags 0x2
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+v1->v2: none
 
-then packets classified to the permanently closed traffic class will not
-be dequeued by the egress port. They will just remain in the queue
-system, to consume resources. Frame aging does not trigger either,
-because in order for that to happen, the packets need to be eligible for
-egress scheduling in the first place, which they aren't. If that port is
-allowed to consume the entire shared buffer of the switch (as we
-configure things by default using devlink-sb), then eventually, by
-sending enough packets, the entire switch will hang.
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
 
-If we think enough about the problem, we realize that this is only a
-special case of a more general issue, and can also be reproduced with
-gates that aren't permanently closed, but are not large enough to send
-an entire frame. In that sense, a permanently closed gate is simply a
-case where all frames are oversized.
-
-The ENETC has logic to reject transmitted packets that would overrun the
-time window - see commit 285e8dedb4bd ("net: enetc: count the tc-taprio
-window drops").
-
-The Felix switch has no such thing on a per-packet basis, but it has a
-register replicated per {egress port, TC} which essentially limits the
-max MTU. A packet which exceeds the per-port-TC MTU is immediately
-discarded and therefore will not hang the port anymore (albeit, sadly,
-this only bumps a generic drop hardware counter and we cannot really
-infer the reason such as to offer a dedicated counter for these events).
-
-This patch set calculates the max MTU per {port, TC} when the tc-taprio
-config, or link speed, or port-global MTU values change. This solves the
-larger "gate too small for packet" problem, but also the original issue
-with the gate permanently closed that was reported by Richie.
-
-Q: Bug fix patch sent to net-next?
-A: Yeah, after Xiaoliang started sending bug fixes to net-next himself
-   (see https://patchwork.kernel.org/project/netdevbpf/patch/20220617032423.13852-1-xiaoliang.yang_1@nxp.com/)
-   there is absolutely no gain in targeting "net" here - I am modifying
-   the same areas of code, that have already diverged from "net", 5.19
-   and earlier. So this is why I am also taking the opportunity to
-   introduce cleanup patches, to leave things as clean as possible after
-   the rework. I'd be interested if there is a better approach to this.
-
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
-
-Vladimir Oltean (4):
-  net: dsa: felix: keep reference on entire tc-taprio config
-  net: dsa: felix: keep QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF) out of rmw
-  net: dsa: felix: drop oversized frames with tc-taprio instead of
-    hanging the port
-  time64.h: consolidate uses of PSEC_PER_NSEC
-
- drivers/net/dsa/ocelot/felix.c         |   9 +
- drivers/net/dsa/ocelot/felix.h         |   1 +
- drivers/net/dsa/ocelot/felix_vsc9959.c | 242 ++++++++++++++++++++++---
- include/linux/time64.h                 |   3 +
- include/soc/mscc/ocelot.h              |   5 +-
- net/sched/sch_taprio.c                 |   5 +-
- 6 files changed, 238 insertions(+), 27 deletions(-)
-
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 44bbbba4d528..7573254274b3 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1204,10 +1204,7 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 	mutex_lock(&ocelot->tas_lock);
+ 
+ 	if (!taprio->enable) {
+-		ocelot_rmw_rix(ocelot,
+-			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
+-			       QSYS_TAG_CONFIG_ENABLE |
+-			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++		ocelot_rmw_rix(ocelot, 0, QSYS_TAG_CONFIG_ENABLE,
+ 			       QSYS_TAG_CONFIG, port);
+ 
+ 		taprio_offload_free(ocelot_port->taprio);
+@@ -1315,10 +1312,8 @@ static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
+ 			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M,
+ 			   QSYS_TAS_PARAM_CFG_CTRL);
+ 
+-		ocelot_rmw_rix(ocelot,
+-			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
+-			       QSYS_TAG_CONFIG_ENABLE |
+-			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++		/* Disable time-aware shaper */
++		ocelot_rmw_rix(ocelot, 0, QSYS_TAG_CONFIG_ENABLE,
+ 			       QSYS_TAG_CONFIG, port);
+ 
+ 		vsc9959_new_base_time(ocelot, taprio->base_time,
+@@ -1337,11 +1332,9 @@ static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
+ 			   QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
+ 			   QSYS_TAS_PARAM_CFG_CTRL);
+ 
+-		ocelot_rmw_rix(ocelot,
+-			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF) |
++		/* Re-enable time-aware shaper */
++		ocelot_rmw_rix(ocelot, QSYS_TAG_CONFIG_ENABLE,
+ 			       QSYS_TAG_CONFIG_ENABLE,
+-			       QSYS_TAG_CONFIG_ENABLE |
+-			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
+ 			       QSYS_TAG_CONFIG, port);
+ 	}
+ 	mutex_unlock(&ocelot->tas_lock);
 -- 
 2.25.1
 
