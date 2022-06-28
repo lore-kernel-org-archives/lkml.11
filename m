@@ -2,171 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A29DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 00:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68992C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 00:57:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242192AbiF1Azk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 20:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49696 "EHLO
+        id S242221AbiF1A5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 20:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236425AbiF1Azh (ORCPT
+        with ESMTP id S235529AbiF1A5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 20:55:37 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6741D0E5;
-        Mon, 27 Jun 2022 17:55:35 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id b133so8591578qkc.6;
-        Mon, 27 Jun 2022 17:55:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=xuT7J5doI1Fzk1y+roRLQ1hNMG6KHDUXMZs++4UnW28=;
-        b=Zj+tSmAt+cy52Gjo2psozKosRNwTMqqrTnMm7mOlC08u091ipAYciRlaHXzVmfLEJl
-         huA2w53TDWBTsxlR4qJHatyDqGlgXYdiekH2ZBSlk+HwR3OgwMUZZ9pe9qHItuuVYBUV
-         snnyq6rkH8uvGRpUb2zE4rSjNjCFCs/s1QBRPcw/BFG1aSHTOynBTnhlCgVJXfguoxAP
-         srFI66nxBeWd9QySY/fwenVA7UgdEVJuRgXQzpf7SpMOczpq4ZZ6vv9ULGSy/Uq2m00l
-         yJ9H1FnyhGIAWAjFyo6yQH57kVWJwNQpZ6AHhJFJ+IGHc+hNj73UlTvMODrITwbmMxvP
-         Jh8Q==
+        Mon, 27 Jun 2022 20:57:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C96B61D309
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 17:56:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656377815;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Le9rasWFftvBUIXdCkHOfomOzNQQm9TeUsAxHwjuOAw=;
+        b=F7hi+/4lYy3BA7h7un18gCZGAj0nKtLjGo7wlZh4iZhxQh2hiKcacqsiXo5Kmigjea7t9T
+        UmQTAyso++QiR5Li5ssXYsHFTeaOFUxba9l2nNmPrb857xfAQEjL6dMoJhiLqdOkO6JTgt
+        jVQwBeQev2FEef0LQIBDHzZQIjqAEvg=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-330-INFJW7ACNp62JTNzf8KNmQ-1; Mon, 27 Jun 2022 20:56:54 -0400
+X-MC-Unique: INFJW7ACNp62JTNzf8KNmQ-1
+Received: by mail-qk1-f200.google.com with SMTP id l189-20020a37bbc6000000b006af2596c5e8so4959310qkf.14
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 17:56:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=xuT7J5doI1Fzk1y+roRLQ1hNMG6KHDUXMZs++4UnW28=;
-        b=m1FOhktT+x1TuvmcnPdohf4i7spYIh8xPlBQ67v2VO0FMpCUQPcFdzrTHuyjgdJjyf
-         PSp660q6qA1MkSinKYb1Utl0+ZjkfCwhk7TECqx0IHBjLEMkMjNfoAWkrzj8d+Q6+dHu
-         JZtM+gnzIQWyJu7ET5WGXI9fVgLMhG8FvU9HdXF7ZU97fLLf401GlQppmftcUdW+bXuU
-         3b5CGutvIKhScRzCKqys+NwDtwrVzkY9mgY5K2fnh7XBdKDqvAyEGmND5Hd233JSBwLi
-         pZvBussrI8dORUd2NETKpTmf4GAZJATGk5P//zgnZ8cs13T1ZADKvuD0p3rWy9EQdBTS
-         n7vw==
-X-Gm-Message-State: AJIora8HSA0AQhQUkpAyc0awvCv4bxK1DtGTzyHJ7kOYEuGjeTwwIrs1
-        SnfgJ7pXzddeRLE32RQjR7IEEC1cj1/sZq/sgeLXgR079dU=
-X-Google-Smtp-Source: AGRyM1sHZjoMFQeVPG8Gv1jvoLu2cljadO/fHv3IbNF7R4rjjoDYQYrK894J5Q0sNKAmdxyER1OuFmJhWrrh7zlB1Xk=
-X-Received: by 2002:a37:48b:0:b0:6af:2c49:1598 with SMTP id
- 133-20020a37048b000000b006af2c491598mr4791654qke.121.1656377735033; Mon, 27
- Jun 2022 17:55:35 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Le9rasWFftvBUIXdCkHOfomOzNQQm9TeUsAxHwjuOAw=;
+        b=z5UrRx0h6L9vHxhSSmveR/4auxMz5D6b2ofkvMhI6VQO5rx44UziTEdl3l2l3sfb99
+         bp0QUhPBzSYWyflG91fFxW2scVkFq0UB1DPSPpy+CCj382SsoKi5WnXyAEk5mcE/d6GB
+         kyYbjAYJgW0xGbA0Jj1askkVE0IRhKJ+v0zsKhLm0ENdRl6h4P9UBhGHnD/2lHD4HWCx
+         dId4eALXxKgam9vA16mhNivfx2Z0cLnTd9cNkO886DPB+JOsTTM6iolbxwfdJpzpREHQ
+         q8S1J8Xv4sIsb6jRGAYQ9jpkeIu+RzCq2aSvZPI7KDyDaJ8ThMpIh5arqbHh9f8aJ3c7
+         nzRw==
+X-Gm-Message-State: AJIora/TdSA0o1TAc09a1xV8WEEDViG+QavtpG6C5PSl7eJVvn1GHGP4
+        MdL12l5fdEmPh+U72ulJpHApFej5ZdCcFCEefLLloq5CNwgOj5Y2lQVK89TfooA9Gvj8RJ+HdWD
+        UopUpTFB5o66kfkGiXEPv5A7SLMl0SC7UUccWayaD
+X-Received: by 2002:a05:622a:1306:b0:31a:f73e:3d6d with SMTP id v6-20020a05622a130600b0031af73e3d6dmr4502026qtk.339.1656377814094;
+        Mon, 27 Jun 2022 17:56:54 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sFL8MzmxZyh2qnSdqly13+uMFK0IBDjQrSTquxB94TtYvbMTQHQ5Agm2zgV9VXjYMWhLtxVo1TwdIgig7APGY=
+X-Received: by 2002:a05:622a:1306:b0:31a:f73e:3d6d with SMTP id
+ v6-20020a05622a130600b0031af73e3d6dmr4502021qtk.339.1656377813876; Mon, 27
+ Jun 2022 17:56:53 -0700 (PDT)
 MIME-Version: 1.0
-From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
-Date:   Tue, 28 Jun 2022 08:55:24 +0800
-Message-ID: <CAABZP2wCsXG=qaZ68OwDDPA=uG-4Wb-e6WxMNuHNbJTZ1ruenA@mail.gmail.com>
-Subject: Possible problem in check-local-export during the kernel build
- process (RCU torture)
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        rcu <rcu@vger.kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        linux-kbuild@vger.kernel.org, linux-modules@vger.kernel.org,
-        linux@roeck-us.net
+References: <CAK-6q+hd-L54cqOiFNuufS2_VF5XS0R8cjQL7es8921+2u3uwQ@mail.gmail.com>
+ <20220627184232.tjfuzeir57l3h5ll@mail>
+In-Reply-To: <20220627184232.tjfuzeir57l3h5ll@mail>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Mon, 27 Jun 2022 20:56:42 -0400
+Message-ID: <CAK-6q+haOfQD8_N6pEm80BTrUXwaj07ZBcXP-EBHftpTVEc1XQ@mail.gmail.com>
+Subject: Re: sparse warnings related to kref_put_lock() and refcount_dec_and_lock()
+To:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        jacob.e.keller@intel.com, akpm@linux-foundation.org,
+        thunder.leizhen@huawei.com
+Cc:     linux-sparse@vger.kernel.org,
+        cluster-devel <cluster-devel@redhat.com>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Masahiro:
+Hi Luc and others,
 
-1. The cause of the problem
-When I am doing RCU torture test:
+On Mon, Jun 27, 2022 at 2:42 PM Luc Van Oostenryck
+<luc.vanoostenryck@gmail.com> wrote:
+>
+> On Mon, Jun 27, 2022 at 11:15:17AM -0400, Alexander Aring wrote:
+> > Hi,
+> >
+> > I recently converted to use kref_put_lock() in fs/dlm subsystem and
+> > now I get the following warning in sparse:
+> >
+> > warning: context imbalance in 'put_rsb' - unexpected unlock
+> >
+> > It seems sparse is not able to detect that there is a conditional
+> > requirement that the lock passed to kref_put_lock() (or also
+> > refcount_dec_and_lock()) is locked or not. I evaluate the return value
+> > to check if kref_put_lock() helds the lock and unlock it then. The
+> > idea is that the lock needs only to be held when the refcount is going
+> > to be zero.
+> >
+> > It seems other users unlock the lock at the release callback of
+> > kref_put_lock() and annotate the callback with "__releases()" which
+> > seems to work to avoid the sparse warning. However this works if you
+> > don't have additional stack pointers which you need to pass to the
+> > release callback.
+> >
+> > My question would be is this a known problem and a recommended way to
+> > avoid this sparse warning (maybe just for now)?
+>
+> Hi,
+>
+> I suppose that your case here can be simplified into something like:
+>
+>         if (some_condition)
+>                 take(some_lock);
+>
+>         do_stuff();
+>
+>         if (some_condition)
+>                 release(some_lock);
+>
+> Sparse issues the 'context imbalance' warning because, a priori,
+> it can't exclude that some execution will takes the lock and not
+> releases it (or the opposite). In some case, when do_stuff() is
+> very simple, sparse can see that everything is OK, but generally
+> it won't (some whole kernel analysis but the general case is
+> undecidable anyway).
+>
+> The recommended way would be to write things rather like this:
+>
+>         if (some_condition) {
+>                 take(some_lock);
+>                 do_stuff();
+>                 release(some_lock);
+>         } else {
+>                 do_stuff();
+>         }
+>
 
-#git clone https://kernel.source.codeaurora.cn/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
-#cd linux-rcu
-#git checkout remotes/origin/pmladek.2022.06.15a
-#./tools/testing/selftests/rcutorture/bin/torture.sh
+This is not an alternative for me because the lock needs to hold
+during the "some_condition". (More background is that we dealing with
+data structures here and cannot allow a get() from this data
+structures during "some_condition", the lock is preventing this)
+It is the refcount code which causes trouble here [0] and I think the
+refcount code should never call the unlock() procedure in any
+condition and leave it to the caller to call unlock() in any case.
 
-The kernel building report error something in both Dell PowerEdge R720
-and Thinkpad T14 (Amd).
+I to'ed (hope to get more attention to this) more people related to
+lib/refcount.c implementation (provided by get_maintainers.pl -f).
 
-For example:
-/mnt/rcu/linux-rcu/tools/testing/selftests/rcutorture/res/2022.06.27-10.42.37-torture#
-find . -name Make.out|xargs grep Error
-./results-rcutorture-kasan/RUDE01/Make.out:make[2]: ***
-[scripts/Makefile.build:257: kernel/trace/power-traces.o] Error 255
+>
+> The __acquires() and __releases() annotations are needed for sparse
+> to know that the annotated function always take or always release
+> some lock but won't handle conditional locks.
+>
 
-2. I trace the problem to check-local-export
-I add some echo statement in Makefile.build
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 1f01ac65c0cd..0d48a2d3efff 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -227,13 +227,21 @@ cmd_check_local_export =
-$(srctree)/scripts/check-local-export $@
+If we change the refcount code to _never_ calling unlock() for the
+specific lock, then all those foo_and_lock_bar() functions can be
+annotated with "__acquires()". This should also end in the same code?
+For me it looks like the current implementation of refcount.c is fine
+except sparse cannot figure out what's going on and maybe a reason to
+change the specific handling to the mentioned one.
 
- define rule_cc_o_c
-        $(call cmd_and_fixdep,cc_o_c)
-+       echo "after fixdep $$? $<"
-        $(call cmd,gen_ksymdeps)
-+       echo "after gen_ksymdeps $$? $<"
-        $(call cmd,check_local_export)
-+       echo "after check_local_export $$? $<"
-        $(call cmd,checksrc)
-+       echo "after checksrc $$? $<"
-        $(call cmd,checkdoc)
-+       echo "after checkdoc $$? $<"
-        $(call cmd,gen_objtooldep)
-+       echo "after gen_objtooldep $$? $<"
-        $(call cmd,gen_symversions_c)
-+       echo "after gen_symversions $$? $<"
-        $(call cmd,record_mcount)
-+       echo "after record_mcount $$? $<"
- endef
+> I hope that this is helpful to you.
+>
 
-Then I rerun the torture.sh
+I hope we will find some solution, because I don't like sparse warnings.
 
-The result show it is check_local_export did not continue in all failed builds.
+- Alex
 
-3. I trace into wait statement in check-local-export
-diff --git a/scripts/check-local-export b/scripts/check-local-export
-index da745e2743b7..d35477d95bdc 100755
---- a/scripts/check-local-export
-+++ b/scripts/check-local-export
-@@ -12,7 +12,7 @@ declare -A symbol_types
- declare -a export_symbols
+[0] https://elixir.bootlin.com/linux/v5.19-rc4/source/lib/refcount.c#L144
 
- exit_code=0
--
-+echo "check-local-export L15 ${0} ${1}"
- while read value type name
- do
-        # Skip the line if the number of fields is less than 3.
-@@ -50,9 +50,10 @@ do
-        #   done < <(${NM} --quiet ${1})
- done < <(${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } )
-
-+echo "check-local-export L53 ${0} ${1}"
- # Catch error in the process substitution
- wait $!
--
-+echo "check-local-export L56 ${0} ${1} $! $?"
- for name in "${export_symbols[@]}"
- do
-        # nm(3) says "If lowercase, the symbol is usually local"
-@@ -61,5 +62,9 @@ do
-                exit_code=1
-        fi
- done
--
-+if [ ${exit_code} -ne 0 ] ; then
-+    echo "Zhouyi Zhou"
-+    echo ${exit_code}
-+fi
-+echo "check-local-export L69 $? ${exit_code}"
- exit ${exit_code}
-
-Then I rerun the torture.sh
-
-The result show it is wait $! in all failed builds because in all failed cases,
-there is L53, but no L56
-
-4. I look into source code of wait command
-#wget http://ftp.gnu.org/gnu/bash/bash-5.0.tar.gz
-#tar zxf tar zxf bash-5.0.tar.gz
-I found that there are QUIT statements in realization of function wait_for
-
-5. My Guess
-wait statement in check-local-export may cause bash to quit
-I am very interested in this problem, but I am a rookie, I am very
-glad to proceed the investigation with your further directions.
-
-Sorry to have brought you so much trouble.
-
-
-Kind Regard
-Thank you very much
-Zhouyi
