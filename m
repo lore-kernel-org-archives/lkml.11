@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6113C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4138CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:25:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244364AbiF1CZI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32852 "EHLO
+        id S244385AbiF1CZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243550AbiF1CWB (ORCPT
+        with ESMTP id S244140AbiF1CXJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:22:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25894248D6;
-        Mon, 27 Jun 2022 19:21:43 -0700 (PDT)
+        Mon, 27 Jun 2022 22:23:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB5024F0C;
+        Mon, 27 Jun 2022 19:22:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1A61B81C15;
-        Tue, 28 Jun 2022 02:21:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04C52C34115;
-        Tue, 28 Jun 2022 02:21:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA8926184B;
+        Tue, 28 Jun 2022 02:22:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EDDAC341CC;
+        Tue, 28 Jun 2022 02:22:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382900;
-        bh=7+vAJRMgtUyHbUhQ3ZnX7OzDRmk02qzdXICIrnOXpPQ=;
+        s=k20201202; t=1656382970;
+        bh=JLS2vc7eT3IroK7sfnXoArGiiUkK3Td1ggulnMuXfEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kLdOhpI2cwqrbQrajZkKuLpg7qNyYCkG+vnq0mE6ehJGXEvzgYvmazMnXR8yfS6XQ
-         Yqmfya0+rjqKCI5ZyZ/WRkv/N+AumQ2HkMFekSUa9nA8LIV8VGsnhsId5s4/CUOioi
-         TZCJ3p7lUeg3dUPIYr4cWExXRXfHcSLX6HGR4GzpMjur4CcjnJr+Mkw61a8pmf2k2X
-         v75ty0B99pQtrnncI4W5nSH2OT3FpcZid8GcPuBcZ67fQo/3QOp513tOlZdjAz5bfw
-         cbLFIEV8loK55BuMk/GpXCTyKtjmd3VIhjHZFbq9yCynqS90latO9YsJPKjxwVBY/Z
-         7FvHljPE2nfrg==
+        b=bwQKNwQrDpguPbtZ8wSi3TTo/oPtfVl6FpTN8WDnloU0rki6vKUti5wPtiGV9GRCr
+         cod8yz8S2e6p0Xh6UhtLxWr1l01tjgyWdtxX1VVnJ9Mb/SAnonKT2TkDI2ySG0pL2l
+         tJeokpC5mS/+Wmfs8Vxt0Rj6M218Biwh6yhW2e3eUY1Zqll57ziDyuTefXV9RTAAug
+         GRN7Xx0EXAlEUi7nijeSsTifRcLptyMwVWYEqprUvv0LVKR6yDzyJRr81DOX0imP+S
+         LQ8kC0Zl/V1flEUV3N6j66M0uDwsApSkzKc2ZM6rwwIktINfvDm9UXc2n9ma+SgNWa
+         j7ekp2UsV4vqw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+Cc:     Daniil Dementev <d.dementev@ispras.ru>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
         Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, jiasheng@iscas.ac.cn,
-        gushengxian@yulong.com, nizhen@uniontech.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 15/41] ALSA: x86: intel_hdmi_audio: use pm_runtime_resume_and_get()
-Date:   Mon, 27 Jun 2022 22:20:34 -0400
-Message-Id: <20220628022100.595243-15-sashal@kernel.org>
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.10 04/34] ALSA: usb-audio: US16x08: Move overflow check before array access
+Date:   Mon, 27 Jun 2022 22:22:11 -0400
+Message-Id: <20220628022241.595835-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220628022100.595243-1-sashal@kernel.org>
-References: <20220628022100.595243-1-sashal@kernel.org>
+In-Reply-To: <20220628022241.595835-1-sashal@kernel.org>
+References: <20220628022241.595835-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,53 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Daniil Dementev <d.dementev@ispras.ru>
 
-[ Upstream commit bb30b453fedac277d66220431fd7063d9ddc10d8 ]
+[ Upstream commit 3ddbe35d9a2ebd4924d458e0246b4ba6c13bb456 ]
 
-The current code does not check for errors and does not release the
-reference on errors.
+Buffer overflow could occur in the loop "while", due to accessing an
+array element before checking the index.
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Link: https://lore.kernel.org/r/20220616222910.136854-3-pierre-louis.bossart@linux.intel.com
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Signed-off-by: Daniil Dementev <d.dementev@ispras.ru>
+Reviewed-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Link: https://lore.kernel.org/r/20220610165732.2904-1-d.dementev@ispras.ru
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/x86/intel_hdmi_audio.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ sound/usb/mixer_us16x08.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/x86/intel_hdmi_audio.c b/sound/x86/intel_hdmi_audio.c
-index b16657de9d25..fea043ec42fe 100644
---- a/sound/x86/intel_hdmi_audio.c
-+++ b/sound/x86/intel_hdmi_audio.c
-@@ -1068,7 +1068,9 @@ static int had_pcm_open(struct snd_pcm_substream *substream)
- 	intelhaddata = snd_pcm_substream_chip(substream);
- 	runtime = substream->runtime;
- 
--	pm_runtime_get_sync(intelhaddata->dev);
-+	retval = pm_runtime_resume_and_get(intelhaddata->dev);
-+	if (retval < 0)
-+		return retval;
- 
- 	/* set the runtime hw parameter with local snd_pcm_hardware struct */
- 	runtime->hw = had_pcm_hardware;
-@@ -1549,8 +1551,12 @@ static void had_audio_wq(struct work_struct *work)
- 		container_of(work, struct snd_intelhad, hdmi_audio_wq);
- 	struct intel_hdmi_lpe_audio_pdata *pdata = ctx->dev->platform_data;
- 	struct intel_hdmi_lpe_audio_port_pdata *ppdata = &pdata->port[ctx->port];
-+	int ret;
-+
-+	ret = pm_runtime_resume_and_get(ctx->dev);
-+	if (ret < 0)
-+		return;
- 
--	pm_runtime_get_sync(ctx->dev);
- 	mutex_lock(&ctx->mutex);
- 	if (ppdata->pipe < 0) {
- 		dev_dbg(ctx->dev, "%s: Event: HAD_NOTIFY_HOT_UNPLUG : port = %d\n",
+diff --git a/sound/usb/mixer_us16x08.c b/sound/usb/mixer_us16x08.c
+index bd63a9ce6a70..71f6186edcdd 100644
+--- a/sound/usb/mixer_us16x08.c
++++ b/sound/usb/mixer_us16x08.c
+@@ -637,10 +637,10 @@ static int snd_get_meter_comp_index(struct snd_us16x08_meter_store *store)
+ 		}
+ 	} else {
+ 		/* skip channels with no compressor active */
+-		while (!store->comp_store->val[
++		while (store->comp_index <= SND_US16X08_MAX_CHANNELS
++			&& !store->comp_store->val[
+ 			COMP_STORE_IDX(SND_US16X08_ID_COMP_SWITCH)]
+-			[store->comp_index - 1]
+-			&& store->comp_index <= SND_US16X08_MAX_CHANNELS) {
++			[store->comp_index - 1]) {
+ 			store->comp_index++;
+ 		}
+ 		ret = store->comp_index++;
 -- 
 2.35.1
 
