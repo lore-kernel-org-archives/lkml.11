@@ -2,92 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B712C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27930C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346231AbiF1Ncz (ORCPT
+        id S1346489AbiF1Nc7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34626 "EHLO
+        Tue, 28 Jun 2022 09:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345929AbiF1NcS (ORCPT
+        with ESMTP id S1346575AbiF1Nc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:32:18 -0400
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBDC2D1C2
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:31:29 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1656423065tqijenko
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 28 Jun 2022 21:31:03 +0800 (CST)
-X-QQ-SSF: 01400000002000G0S000B00A0000000
-X-QQ-FEAT: 4LFlwc+MlXnChWxg3oOtFJfgLn7urosoV/9rl2dk+8gxm5PSaDOW+ATgGdXwo
-        1IlJfMixzWnih6orY1V4z0UOzxhXvTCzfAUZ5HQKKsWoXzXWLJSV6hj82Ewlhe6nXlzbhE/
-        gmpovedVoA+2a1DSkKh0O1gF2SOzV9Bbj74Y9i0f2ZnNJePqj8IfLgYGM6/seRHjhJ00lfz
-        X2U54K7QgtGv1OrM2Kfs/myObSwpHy/KPU2kERdkMEvEpvmdNRIoKl8XUXdRBPZCGnSTuVr
-        aqeBsfjzn2NUxh7ntPzdsf+2fFv7n5Pmp7HeVJ4ICGvnZlqQUwT2UohDM5ZEByThQqk+oh1
-        /OYA+IUyCrJjYMUYAOx6G2/0Rc9grKYQUg/fXrsG2ZMY4zZg4eLpiy3C1tZEXaH32erz1D8
-X-QQ-GoodBg: 2
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     stable@vger.kernel.org, tony0620emma@gmail.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Meng Tang <tangmeng@uniontech.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        masterzorag <masterzorag@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.10 3/3] commit e109e3617e5d ("rtw88: rtw8821c: enable rfe 6 devices")
-Date:   Tue, 28 Jun 2022 21:30:46 +0800
-Message-Id: <20220628133046.2474-3-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220628133046.2474-1-tangmeng@uniontech.com>
-References: <20220628133046.2474-1-tangmeng@uniontech.com>
+        Tue, 28 Jun 2022 09:32:26 -0400
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3722731236;
+        Tue, 28 Jun 2022 06:31:58 -0700 (PDT)
+Received: (Authenticated sender: ash@heyquark.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 2AAE5200010;
+        Tue, 28 Jun 2022 13:31:48 +0000 (UTC)
+From:   Ash Logan <ash@heyquark.com>
+To:     krzysztof.kozlowski+dt@linaro.org, paulus@samba.org,
+        mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
+        robh+dt@kernel.org, benh@kernel.crashing.org
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        j.ne@posteo.net, linkmauve@linkmauve.fr,
+        rw-r-r-0644@protonmail.com, devicetree@vger.kernel.org,
+        joel@jms.id.au
+Subject: [PATCH v3 00/12] powerpc: Nintendo Wii U support
+Date:   Tue, 28 Jun 2022 23:31:32 +1000
+Message-Id: <20220628133144.142185-1-ash@heyquark.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220622131037.57604-1-ash@heyquark.com>
+References: <20220622131037.57604-1-ash@heyquark.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign10
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These commits can fix the problem of wifi not loading properly, so I think
-that 5.10 need to merge these commits.
+The following patches add basic support for the Nintendo Wii U video
+game console, a PowerPC system somewhat similar to the GameCube and
+Wii.
 
-Ping-Ke Shih answered[1] a question for a user about an rtl8821ce device that
-reported RFE 6, which the driver did not support. Ping-Ke suggested a possible
-fix, but the user never reported back.
+This includes:
+- devicetree source
+- bootwrapper support
+- udbg console to bootloader
+- early udbg console
+- interrupt controllers
+- platform support
+- recognition of the Espresso processor
+- workaround for the discontiguous RAM blocks
 
-A second user discovered the above thread and tested the proposed fix.
-Accordingly, I am pushing this change, even though I am not the author.
+This is enough to boot on hardware. dmesg pics (with a small hack to
+udbg-immortal, not included):
+Link: https://wiki.linux-wiiu.org/images/7/7e/Mainline-initial-dmesg1.png
+Link: https://wiki.linux-wiiu.org/images/9/91/Mainline-initial-dmesg2.png
 
-[1] https://lore.kernel.org/linux-wireless/3f5e2f6eac344316b5dd518ebfea2f95@realtek.com/
+For those who have hardware and would like to try these patches, some
+modification is required to the stock OS to allow Linux. For info:
+https://wiki.linux-wiiu.org/wiki/AdvancedSetup
 
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Reported-and-tested-by: masterzorag <masterzorag@gmail.com>
-Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220107024739.20967-1-Larry.Finger@lwfinger.net
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
----
- drivers/net/wireless/realtek/rtw88/rtw8821c.c | 1 +
- 1 file changed, 1 insertion(+)
+Some of the design choices (new platform > embedded6xx) were discussed
+previously:
+Link: https://lore.kernel.org/lkml/0020d47c-0e23-822c-33f5-ccb7ea4c1072@heyquark.com/T/
 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-index 9c8fbc96f536..cbb4c761c5cb 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-@@ -1468,6 +1468,7 @@ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
- 	[0] = RTW_DEF_RFE(8821c, 0, 0),
- 	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
- 	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
-+	[6] = RTW_DEF_RFE(8821c, 0, 0),
- };
- 
- static struct rtw_hw_reg rtw8821c_dig[] = {
+Turns out even less changes were needed than previously anticipated for
+discontiguous memory, and KUAP is yet to give trouble. Thanks to those
+who helped and discussed this.
+
+Changes since v2:
+ - Fixed some overzealous deleting in the devicetree, oops.
+ - Fixed missing declarations for some functions (thanks robots)
+ - Fixed some checkpatch warnings.
+ - Mark latte as a simple-bus and use of_platform_default_populate.
+Changes since v1:
+ - Style and formatting tweaks to the devicetree, thanks Rob Herring for
+   the review.
+
+Ash Logan (12):
+  dt-bindings: wiiu: Document the Nintendo Wii U devicetree
+  powerpc: wiiu: device tree
+  powerpc: wiiu: bootwrapper support
+  powerpc: wiiu: introduce wiiu platform
+  powerpc: wiiu: declare as non-coherent
+  powerpc: wiiu: udbg support for latteipc
+  powerpc: wiiu: espresso interrupt controller support
+  powerpc: wiiu: latte interrupt controller support
+  powerpc: espresso processor support
+  powerpc: wiiu: platform support
+  powerpc: wiiu: don't enforce flat memory
+  powerpc: wiiu: add minimal default config
+
+ .../bindings/powerpc/nintendo/wiiu.yaml       |  28 ++
+ .../powerpc/nintendo/wiiu/espresso-pic.yaml   |  42 +++
+ .../bindings/powerpc/nintendo/wiiu/gpu7.yaml  |  41 +++
+ .../powerpc/nintendo/wiiu/latte-ahci.yaml     |  43 +++
+ .../powerpc/nintendo/wiiu/latte-dsp.yaml      |  35 ++
+ .../powerpc/nintendo/wiiu/latte-pic.yaml      |  46 +++
+ .../powerpc/nintendo/wiiu/latte-sdhci.yaml    |  40 +++
+ .../bindings/powerpc/nintendo/wiiu/latte.yaml |  25 ++
+ arch/powerpc/Kconfig.debug                    |   9 +
+ arch/powerpc/boot/Makefile                    |   4 +
+ arch/powerpc/boot/dts/wiiu.dts                | 326 ++++++++++++++++++
+ arch/powerpc/boot/wiiu-head.S                 | 103 ++++++
+ arch/powerpc/boot/wiiu.c                      |  73 ++++
+ arch/powerpc/boot/wrapper                     |   4 +
+ arch/powerpc/configs/wiiu_defconfig           |   7 +
+ arch/powerpc/include/asm/udbg.h               |   1 +
+ arch/powerpc/kernel/cputable.c                |  16 +
+ arch/powerpc/kernel/head_book3s_32.S          |  20 ++
+ arch/powerpc/kernel/udbg.c                    |   3 +
+ arch/powerpc/mm/init_32.c                     |   4 +-
+ arch/powerpc/platforms/Kconfig                |   1 +
+ arch/powerpc/platforms/Kconfig.cputype        |   2 +-
+ arch/powerpc/platforms/Makefile               |   1 +
+ arch/powerpc/platforms/wiiu/Kconfig           |  22 ++
+ arch/powerpc/platforms/wiiu/Makefile          |   4 +
+ arch/powerpc/platforms/wiiu/espresso-pic.c    | 183 ++++++++++
+ arch/powerpc/platforms/wiiu/espresso-pic.h    |  59 ++++
+ arch/powerpc/platforms/wiiu/latte-pic.c       | 259 ++++++++++++++
+ arch/powerpc/platforms/wiiu/latte-pic.h       |  23 ++
+ arch/powerpc/platforms/wiiu/setup.c           |  60 ++++
+ arch/powerpc/platforms/wiiu/udbg_latteipc.c   | 124 +++++++
+ arch/powerpc/platforms/wiiu/udbg_latteipc.h   |  27 ++
+ 32 files changed, 1632 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/powerpc/nintendo/wiiu.yaml
+ create mode 100644 Documentation/devicetree/bindings/powerpc/nintendo/wiiu/espresso-pic.yaml
+ create mode 100644 Documentation/devicetree/bindings/powerpc/nintendo/wiiu/gpu7.yaml
+ create mode 100644 Documentation/devicetree/bindings/powerpc/nintendo/wiiu/latte-ahci.yaml
+ create mode 100644 Documentation/devicetree/bindings/powerpc/nintendo/wiiu/latte-dsp.yaml
+ create mode 100644 Documentation/devicetree/bindings/powerpc/nintendo/wiiu/latte-pic.yaml
+ create mode 100644 Documentation/devicetree/bindings/powerpc/nintendo/wiiu/latte-sdhci.yaml
+ create mode 100644 Documentation/devicetree/bindings/powerpc/nintendo/wiiu/latte.yaml
+ create mode 100644 arch/powerpc/boot/dts/wiiu.dts
+ create mode 100644 arch/powerpc/boot/wiiu-head.S
+ create mode 100644 arch/powerpc/boot/wiiu.c
+ create mode 100644 arch/powerpc/configs/wiiu_defconfig
+ create mode 100644 arch/powerpc/platforms/wiiu/Kconfig
+ create mode 100644 arch/powerpc/platforms/wiiu/Makefile
+ create mode 100644 arch/powerpc/platforms/wiiu/espresso-pic.c
+ create mode 100644 arch/powerpc/platforms/wiiu/espresso-pic.h
+ create mode 100644 arch/powerpc/platforms/wiiu/latte-pic.c
+ create mode 100644 arch/powerpc/platforms/wiiu/latte-pic.h
+ create mode 100644 arch/powerpc/platforms/wiiu/setup.c
+ create mode 100644 arch/powerpc/platforms/wiiu/udbg_latteipc.c
+ create mode 100644 arch/powerpc/platforms/wiiu/udbg_latteipc.h
+
+
+base-commit: 03c765b0e3b4cb5063276b086c76f7a612856a9a
 -- 
-2.20.1
-
-
+2.36.1
 
