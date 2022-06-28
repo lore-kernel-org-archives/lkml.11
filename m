@@ -2,154 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2258C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71EE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232953AbiF1Q7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 12:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        id S233037AbiF1Q7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 12:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbiF1Q7B (ORCPT
+        with ESMTP id S237236AbiF1Q6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 12:59:01 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDA0139;
-        Tue, 28 Jun 2022 09:59:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656435540; x=1687971540;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ZMmJv0Aq1HwpnPUpXeTro+xXVdnw6ntT+2+Mu0JHFpA=;
-  b=R7FNwhCwPsEWOn2V7Y72JBBh4Tlu6UgIZO4OLFOKg3IWF/FGc9YJWGRf
-   s3VnIydYFrEBNATIsocqpVOQy+1M8drp0mKn6a72fi1FoJwobD2Gu3kak
-   umCMRQgRByv8JMp0STpmPe9qyZid383PvN2/EJC/lB9NsPjaqgdJdkL3i
-   XAzDY4KeEPmopmaE5YCnWb94XJ+DqFLSkm1OrI/vQc4buTmSXrx7dDCkw
-   Jbp45nMXAe0T/L2/lg1hoanNivewMppHSgz/x62lno+hOXGGHDoKI3lc1
-   XbDpK1QO03yyIIn3wp4FC/rGSNNTUWGwFSR48/xOwNVWCsYhibvD3n4xt
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343485041"
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="343485041"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 09:58:51 -0700
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="646995337"
-Received: from iannetti-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.216.215])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 09:58:49 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Tony Lindgren <tony@atomide.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH] serial: 8250: Fix PM usage_count for console handover
-Date:   Tue, 28 Jun 2022 19:58:34 +0300
-Message-Id: <20220628165834.63044-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 28 Jun 2022 12:58:41 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28E3C0;
+        Tue, 28 Jun 2022 09:58:39 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SGl9Ww011924;
+        Tue, 28 Jun 2022 16:58:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=f4B1ImZ7XM6K5BfXq7KonhhMPz+AJbwRUxuww96TMQo=;
+ b=PfowYJaW8i8D21QiK+Wiqnx22mBSt6CMeOWjS0FGcT5z3GXZvYUoKxYLkz9I8bRB7+9i
+ IXPJvsDK5Nc3XCwj9/nomvldWPdVTDrUuf7Cue0bS8hskpjIvZKsDsJsgNaAM4W3/BEe
+ 6QSgDiX/cFeQ6v7lRANZVtUbdOyBw16K4e0lwSJzK3XZk4gyf2iem+8gJO5XGBYdV2EU
+ aEgez3Jx4vk1YyHR7mO2/qf9o0jLbss0VZhuMciLm5HPMwwmvMifrfQKTbn74YK+y4nh
+ rE6m1a/BOTfX4LPSR/FWqmy5E5hpw7RN7Gysi0Jq1cJkNcH3Sqmj5MoRAOW9MFmshZE4 1w== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h05fh0968-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 16:58:26 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SGpCrM004960;
+        Tue, 28 Jun 2022 16:58:26 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma04wdc.us.ibm.com with ESMTP id 3gwt09prnr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 16:58:26 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SGwPbu36700590
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jun 2022 16:58:25 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3483578063;
+        Tue, 28 Jun 2022 16:58:25 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9DDB27805F;
+        Tue, 28 Jun 2022 16:58:24 +0000 (GMT)
+Received: from sbct-3.pok.ibm.com (unknown [9.47.158.153])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 28 Jun 2022 16:58:24 +0000 (GMT)
+From:   Stefan Berger <stefanb@linux.ibm.com>
+To:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     nayna@linux.ibm.com, nasastry@in.ibm.com, mpe@ellerman.id.au,
+        Stefan Berger <stefanb@linux.ibm.com>
+Subject: [PATCH v3 0/3] tpm: Preserve TPM measurement log across kexec (ppc64)
+Date:   Tue, 28 Jun 2022 12:58:17 -0400
+Message-Id: <20220628165820.883222-1-stefanb@linux.ibm.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: wh3F66djYth6a8xOx_jH1HsxXCNGeG_H
+X-Proofpoint-GUID: wh3F66djYth6a8xOx_jH1HsxXCNGeG_H
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-28_09,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 phishscore=0 lowpriorityscore=0 mlxlogscore=705
+ malwarescore=0 clxscore=1011 spamscore=0 adultscore=0 suspectscore=0
+ impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206280065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When console is enabled, univ8250_console_setup() calls
-serial8250_console_setup() before .dev is set to uart_port. Therefore,
-it will not call pm_runtime_get_sync(). Later, when the actual driver
-is going to take over univ8250_console_exit() is called. As .dev is
-already set, serial8250_console_exit() makes pm_runtime_put_sync() call
-with usage count being zero triggering PM usage count warning
-(extra debug for univ8250_console_setup(), univ8250_console_exit(), and
-serial8250_register_ports()):
+The of-tree subsystem does not currently preserve the IBM vTPM 1.2 and
+vTPM 2.0 measurement logs across a kexec on ppc64. This series fixes this
+for the kexec_file_load() syscall using the flattened device tree (fdt) to
+carry the measurement log's buffer across kexec.
 
-[    0.068987] univ8250_console_setup ttyS0 nodev
-[    0.499670] printk: console [ttyS0] enabled
-[    0.717955] printk: console [ttyS0] printing thread started
-[    1.960163] serial8250_register_ports assigned dev for ttyS0
-[    1.976830] printk: console [ttyS0] disabled
-[    1.976888] printk: console [ttyS0] printing thread stopped
-[    1.977073] univ8250_console_exit ttyS0 usage:0
-[    1.977075] serial8250 serial8250: Runtime PM usage count underflow!
-[    1.977429] dw-apb-uart.6: ttyS0 at MMIO 0x4010006000 (irq = 33, base_baud = 115200) is a 16550A
-[    1.977812] univ8250_console_setup ttyS0 usage:2
-[    1.978167] printk: console [ttyS0] printing thread started
-[    1.978203] printk: console [ttyS0] enabled
+   Stefan
 
-To fix the issue, call pm_runtime_get_sync() in
-serial8250_register_ports() as soon as .dev is set for an uart_port
-if it has console enabled.
+Stefan Berger (3):
+  tpm: of: Make of-tree specific function commonly available
+  of: kexec: Refactor IMA buffer related functions to make them reusable
+  tpm/kexec: Duplicate TPM measurement log in of-tree for kexec
 
-This problem became apparent only recently because 82586a721595 ("PM:
-runtime: Avoid device usage count underflows") added the warning
-printout. I confirmed this problem also occurs with v5.18 (w/o the
-warning printout, obviously) so the recent printk kthreads are not the
-cause for this.
-
-Fixes: bedb404e91bb ("serial: 8250_port: Don't use power management for kernel console")
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
----
- drivers/tty/serial/8250/8250_core.c | 4 ++++
- drivers/tty/serial/serial_core.c    | 5 -----
- include/linux/serial_core.h         | 5 +++++
- 3 files changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 57e86133af4f..2e83e7367441 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -23,6 +23,7 @@
- #include <linux/sysrq.h>
- #include <linux/delay.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/tty.h>
- #include <linux/ratelimit.h>
- #include <linux/tty_flip.h>
-@@ -558,6 +559,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
- 
- 		up->port.dev = dev;
- 
-+		if (uart_console_enabled(&up->port))
-+			pm_runtime_get_sync(up->port.dev);
-+
- 		serial8250_apply_quirks(up);
- 		uart_add_one_port(drv, &up->port);
- 	}
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 85ef7ef00b82..3161445504bc 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2024,11 +2024,6 @@ static int uart_proc_show(struct seq_file *m, void *v)
- }
- #endif
- 
--static inline bool uart_console_enabled(struct uart_port *port)
--{
--	return uart_console(port) && (port->cons->flags & CON_ENABLED);
--}
--
- static void uart_port_spin_lock_init(struct uart_port *port)
- {
- 	spin_lock_init(&port->lock);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index b7b86ee3cb12..9d8aa139b175 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -404,6 +404,11 @@ static const bool earlycon_acpi_spcr_enable EARLYCON_USED_OR_UNUSED;
- static inline int setup_earlycon(char *buf) { return 0; }
- #endif
- 
-+static inline bool uart_console_enabled(struct uart_port *port)
-+{
-+	return uart_console(port) && (port->cons->flags & CON_ENABLED);
-+}
-+
- struct uart_port *uart_get_console(struct uart_port *ports, int nr,
- 				   struct console *c);
- int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
+ drivers/char/Makefile              |   1 +
+ drivers/char/tpm/Makefile          |   1 +
+ drivers/char/tpm/eventlog/of.c     |  31 +--
+ drivers/char/tpm/eventlog/tpm_of.c |  27 +++
+ drivers/of/kexec.c                 | 293 +++++++++++++++++++++++++----
+ include/linux/kexec.h              |   6 +
+ include/linux/of.h                 |   8 +-
+ include/linux/tpm.h                |   5 +
+ kernel/kexec_file.c                |   6 +
+ 9 files changed, 315 insertions(+), 63 deletions(-)
+ create mode 100644 drivers/char/tpm/eventlog/tpm_of.c
 
 -- 
-tg: (f287f971e256..) fix/console-usage_count (depends on: tty-next)
+2.35.1
+
