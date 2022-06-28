@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD7ECCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0790C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231874AbiF1WSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 18:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
+        id S231887AbiF1WSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 18:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbiF1WPm (ORCPT
+        with ESMTP id S231635AbiF1WPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 18:15:42 -0400
+        Tue, 28 Jun 2022 18:15:49 -0400
 Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00086.outbound.protection.outlook.com [40.107.0.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D6C38DB5;
-        Tue, 28 Jun 2022 15:15:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5686D3AA50;
+        Tue, 28 Jun 2022 15:15:11 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eGqNEFIDJ2IQn8kh1UqQm/s5+wCw26Ntpv/UWbGYf3C+l+3CXgbvaVRCCTvPHSAk3ukAxO7FCBXZUQxauhCcOiTTLiWhBK6QZMstJizXDEsqXuc6/hWheL/gvLSmU2IwnNiVfUp0m1JNlZIbouxqizAEXnJBD1IuCfuh50r2RPMFdAJMlT2jShhADxPxLB+xGe623OPgKoUlbFufQrMbxlfySlZ/jYXgm9wc7ikz+0TShxJnAuZ5oySoaHFHN2JbbbDdOD3gYnKkMd/DKiKmXEZOIu2Qeol9FRpWaM1P8tj/wBKBvUTKcIR9JC/a1Wd/dPQcNeESF2qD5G1TatQTqg==
+ b=P1QNadcAEOlSekF4vIipUr2WFxdjDIeUo3qxvGjILGoqabBDklp11k6xOj3FfrMyXD2yPUMX3mP5pAFW9dBwO7Fxrl3tigN1kXjMkDlyQJnx7+He/mbeakd5hWRtPivZtKeZ2gRGw27UOMDoLlhyWBeyXEVjCynxK14pEmXudFJHGxKdzi6a/nartleEGAl+PBgtW39tHcGNXyQbvDlTRgpl39+ZzWgcvVyxu9pq+Z3T2lditHazG350PLmfDQ2yKkn1qM3qxAU8byC0GJ/aUep4jj8/kauz4QdFgG0J34yirmkDRuQ3wYG+rvZVI4qQyz04KHUk024OeMIJbuekMQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rtA0DbriMocicsVV5jy7nkwHAoHPdx06OSTuOuqk180=;
- b=R8xS9lu5IsGvSWN7cMq4zNbXYzYjPlPMdidFGq4MZBnpaT3IdUrQQsVZQHDEiUxHIstJNb4QUlgoiuIQ/w5FmMcRGfN1gbZfo3/5pW/kYnfQ+LHg1dwLeyrIzmiKiJfK66ZJph4Pw1ZeAAj4poNlHWWyYT5mNQ2p2yt+PI0tQVaXHmQqqNUbkH9wwVOFpFUe+fTfTXQVMfplZMHKiOiKkentKC8nYJ535MqS9RNBGq7YN4Eg++3CngYxw2cR9G+IvhmQYESbrGYEPZgANqEDyD9hKAzB2B5yQHZlOF5JoVjuUGHR621yaxt7j9z0SkG6ofL6q2wNCSXR7QqFVYNwOg==
+ bh=MNP1bY9j13KooahRt99sue55XBhKiRQIhLd2AYN0Gbo=;
+ b=QE18asQcIS1K36qafQRkQBsl/UOO19QDLgfOlr7hwMnYLtbbNYDo+ysOjoGIEXwpTG7JHiXZfHXUdrNUrRJKo/hzRyDLAfFZ1yTMnoUUBze2ApLsvyHptxek6J87SBT0+/6/LYs0Ef+FXPK3+WZOmVvI8OEoDQFYEXjoi0eqjw1+nogWA8AORwDNNCcHYE8TLF6RItbOacu7U24UhjhrJ1hCqQOZt3EIC63I67izYV2w80sq1TSkvIi5dhrRfk3iKAa9By+5WKr25bDeha1TEISBqRa7VxpVUeKGxQxl4vITPjJnTDf2ByFFmaXziEajuQYRDYl24DSOY3qJeluCcQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rtA0DbriMocicsVV5jy7nkwHAoHPdx06OSTuOuqk180=;
- b=pNTEkEGR1Z11uMhmp3rfTiJMTs3oB0ADPbjVyX/+1oudZJaRC7t/1KOsbjqlZHycbpvuhiH1Io5g1i7EMRvtzRx2DugXRKBvtvv+aubKH+0JeZnoRuYzrdKxyOZyHsa+FG/y7mqnq135wHDb4+hmH9QowpHwQEroO6psqFx3mnvHlDk139/xDhKQCDB8nbQF53RCXuXnmNUxlD4f27S6RMYl3xD3LB+I3z6/dnH2hxArvVSVhePP08glZTveLYpJXKwaahDbWWYPp9XoGTXYf+tdVOOE1I3Nv25DwpWdaQG2+oDFhtbLXaRzCDNROM7zRh4VbUJXfvOQJ6wvV9htHg==
+ bh=MNP1bY9j13KooahRt99sue55XBhKiRQIhLd2AYN0Gbo=;
+ b=Hl+aNusrpwCBQsXTHQ7s78oohkn+MigCBHRxCDq2JSXi/1JHUAB18eoryRP3RkP5HChi0JaxQUxObfn58qpIVoUJ348Ve9lJbC7ELU10SscBOVlt/wG2JjeAOLbaKfVjrcdGZqR7bJz4QFd1EYlIJImWb4Gxp62t2WOiNFbYDm189qz5vuNWntrAqSTsmyWV51bf3JDxjRcvV9k1YCsOriARCYYJtL3ZFSfTY0YAWW/dg3oh5slUjeVxeatelWEAEf7SGrRk4GFAYrqR4OwRuymZRr2uyY/F+SfFE/wpr6d164p0FRG4/EBIfLjLbLRTLkUilS4XjnPtDSdkciRK8A==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by DB6PR03MB3013.eurprd03.prod.outlook.com (2603:10a6:6:3c::28) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Tue, 28 Jun
- 2022 22:14:58 +0000
+ 2022 22:15:01 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 22:14:58 +0000
+ 22:15:01 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -49,10 +49,11 @@ Cc:     Russell King <linux@armlinux.org.uk>,
         linux-arm-kernel@lists.infradead.org,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net-next v2 25/35] net: dpaa: Use mac_dev variable in dpaa_netdev_init
-Date:   Tue, 28 Jun 2022 18:13:54 -0400
-Message-Id: <20220628221404.1444200-26-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>,
+        Li Yang <leoyang.li@nxp.com>, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH net-next v2 27/35] soc: fsl: qbman: Add CGR update function
+Date:   Tue, 28 Jun 2022 18:13:56 -0400
+Message-Id: <20220628221404.1444200-28-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220628221404.1444200-1-sean.anderson@seco.com>
 References: <20220628221404.1444200-1-sean.anderson@seco.com>
@@ -63,103 +64,151 @@ X-ClientProxiedBy: BL1P222CA0011.NAMP222.PROD.OUTLOOK.COM
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4399cc67-b4d8-4530-dccb-08da5953a30a
+X-MS-Office365-Filtering-Correlation-Id: 6ad23b44-cccf-4850-d1ce-08da5953a4ee
 X-MS-TrafficTypeDiagnostic: DB6PR03MB3013:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7+1r788yuo80u7BIj3RFwtGuwZLeGqmkIlrzxft9iWHgC8s+QqOjec4BKo4JcYTGGLZ9ofHhT7tpv2prNoZHxkQ1Y1EJbpELxyPLqB36nAtMpVKZMY2MxzFgDUlvC+gQAsgbTbCA+WtEiYkNbk3liDKtbZgBQCQzimAVR1Wxw9bRzZXwgaNaG7sBLVtpJ9lPrwRq9nByRFwzSJ4012u/xjaYzJjgIpD1zoPQww+OQ62c9+oK5uI/EmRscU1dXA4yQLJJ6K5eNztbARQoUOZMNXJLObJsPlQXI+Rcptj6Hr04oATwaJd79yBvfkrrOXfVCj0vpIbSDmkWYSGLsAhmKnw/wpt4lZapTKFQ+yVTI2ArURq8mjMg9JeknPdUWww3JLyHuCIaTHuCrqi7wI1Pma66hgxjKxJ+J9aNv00lS2iM+QBEYWo4vOtUbvLDX3if/3DGh/8a1GmJPowDR0oIFs4IoH85rBUMPUPmoAGKYEqZLRyQXeBYNxjzk+GIJANRThQgQmRqsTUwOSHhX5eNFMc3aSRGGVfwuj3myLq1TsKPL56ZTD1sVeFv1dwOQJGnXALIpcr5uRym1Jkw5SrOptsNVn9VratXyJWNfp/5sJaVnLiQCZssXCX13VEEeaP8sPU5ZPcTuOjlduPpldPLniKb9XX9FRO5srcQwjiqUhMFtJRkkILVR4uVTxcCNJO+epIBYWHPRdPUY78ky96EqmWMUh+AwNRSzQjb21WWWZv6/4x4XtJ3GYEzO2jKyBmx+Kt6EXMXfWQ6TMJ/hq5GCy5I3Dl5dcYCygqQvse+EvU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(39850400004)(376002)(366004)(136003)(346002)(2616005)(41300700001)(26005)(107886003)(1076003)(66946007)(6666004)(8676002)(6506007)(6512007)(52116002)(186003)(38350700002)(83380400001)(44832011)(6486002)(8936002)(66476007)(38100700002)(2906002)(66556008)(86362001)(5660300002)(54906003)(36756003)(110136005)(4326008)(316002)(478600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: OJGIvOSzH/z3AR4aDdCnQ0U1piecJEME9y50tQqsXW+gsXxpAucNPHqOgZalvEzGyr0SPtFu6pLj6oAOWIu/4cJyuMlICKwuv6UI6tCXUEzRXvv2dWGnbXNM/K9PkulnlBHwT3gVjldhfJidHoDEobNWoHUHEvOclRi8mL2pOrXLGuXob89bhN8urmyofnB9FKXH7Vd5NRctGZftcvV/W28PjDwRJeD9nqv1vwVekGkS9S/WoeHZyZi0ZjbCBeEj4IpQTiF/deaIehdKfcFwTW+kHmajzZLx8i0pqfJTpzsZh2jEOiYfzDHDfN2oj9uObQ4AyJtAnTe4akH71nRvYLdOrYUoePjueh+gCbBqzEZ55Z3ZVkq0s0Fgdu3oGJw022beFYoL86N3qtwNLH606ione3BQr2TxNXXiKLqgXXAt83u0noTXKKch2/Pteh/IriXxH2McppvA/QKzT0C4RV5EnSWqWN8hSA/P8o579g2qHjurdiLrLbWpWWFt3QZcOi4qm9KOky0GZrAQ1HpwJHAme7WfcKD6+6khMnBF88FYqxDSpuDPWDTZM2v2mW4hCjJn2ynsCWD8LzYVgH7dSolzskzFdrciwwpYqORqL0Hg0jdcO2pr9QOcm/U56eTU5BU5HVGu9VKuc+yxLTMktSe26cZZSviv2an3XFVXXokX0D/sV700kp/DbvTTGOALpUPAT0dasHsPzOpX01MiMXwS/D4NJDSjNHUCQJ9sj/ZslmZTZw348uH8ucy/cdUPYMA5XLhet551HTLktyXMMb2+PZ8obVpZrwrGPaPbZnU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(39850400004)(376002)(366004)(136003)(346002)(2616005)(41300700001)(26005)(1076003)(66946007)(6666004)(8676002)(6506007)(6512007)(52116002)(186003)(38350700002)(83380400001)(44832011)(6486002)(8936002)(7416002)(66476007)(38100700002)(2906002)(66556008)(86362001)(5660300002)(15650500001)(54906003)(36756003)(110136005)(4326008)(316002)(478600001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HyWE6RToxTGTAnBua3iswsCbQuHVXek8DszU4/BVTuQ51xQX2+waiAZKrEz9?=
- =?us-ascii?Q?gHnurzQGkCs28ixiA+0SEtZ/y1FsQDoq+6k+m7eUYAjmMaDl18cjmQPjhO4X?=
- =?us-ascii?Q?MgIlPQM3wGUzTZbHsTV1IfvrbjtEmq5s5hBz0pctJB9b9r27Bwm9/KQoxkHs?=
- =?us-ascii?Q?XPEkT3C1NCH3NyPqOB+0ykAR3+9UIOHjf3Wv4qfhWp9wd9+rAGIWCdIQZsuQ?=
- =?us-ascii?Q?fV3HKh735wl84w6HByH91TQRnD3up0f9eL3RX8WPl3tZcszbrJY31vFBJ+My?=
- =?us-ascii?Q?06b4hwQ14qvsGdQoMY9JU3fxzmCtY+0RfMiHLqM74o3OZsG5LeXhWfj+RHLH?=
- =?us-ascii?Q?Cs33+PE3x4o2mfUH/A8/2gfYo9jlv7AYuK+PLw6N6fsBFnGXQPeaUdpnTEVL?=
- =?us-ascii?Q?hTW2mCD98AVaPB9zWKtVsNkcO8J4fQ8yAEOsRuCMmqkvv/ISA4xGuz7T1vLk?=
- =?us-ascii?Q?RxJr2y1OamEMt/sRXMfMS5AYs393RyPu6C78CdQC/hJ74KCaXx7cqNFVA9i7?=
- =?us-ascii?Q?JvpMNP8tDNHKUBf/OsUUUtN42kbApTyeGLOBm1F2dx8fblk3WLhNDw+pOAxl?=
- =?us-ascii?Q?E9x0KEkUjBKGvSjfzqAe5AT9PnWMS/E6SJNlRaFkoBcVlCMaep/CHyOuXsFQ?=
- =?us-ascii?Q?EM2x2kNTpaIWP38AOhYxkdfxhidYlsI+fF6E7Q5zvBdqBoIvWzoFnOUE99ny?=
- =?us-ascii?Q?UZDUUZFZbLTLWaldEEA8fD4RGrRhe3a+bsfKoEjGtkCQAmaaZ7E4QJRmCikU?=
- =?us-ascii?Q?Vli8Us0eh0aPfhrVVHys8ZuxNG8hL37M0NVXMgPEWS4bPInoZfqucPUJurt6?=
- =?us-ascii?Q?D3fLl6zXhfGwxcJg6KnOiWIn7pD9EgvYKtixNWVTG8OIvcph1P66RzMpR7GP?=
- =?us-ascii?Q?GYLrhrMnfjHu0QzAEOUpp1+hJyErJEKr4v+wcfcPnR4EJ6sqsJe4HD5VxGKO?=
- =?us-ascii?Q?CEFLrGabdbITcOqylHPm9LFVECkZGd/pa/iTCjmQDVgtlWTdN/nS3/9Wkjqs?=
- =?us-ascii?Q?NeMClx5b3c+c0THqSXHGznFLXB8XrNMZlHzLWzyA/jgw/qpaJJm6uW8hUpRY?=
- =?us-ascii?Q?X9fBjXAbs1Rb2PyosgQ3I25h/5lgQWmPeVEeGteMS8VDAznVALAtMvVcr6Fj?=
- =?us-ascii?Q?tdWrXoY2JyVNlosXmOW4C72WTmvk0JrNtmDYhmLjmbU9vEEdg8wwwzSARFKW?=
- =?us-ascii?Q?BRFiqH1xe1FLhqCwQiRKGE13AeK/Tcyi5E8ijDqIdxTHpC9+Xv95fcvwuk0A?=
- =?us-ascii?Q?dDjqBZCGDfwjKxqaxfo+f/ykQATEcPkkV6yGQFh2JSRJyenEvAhvruldAxxS?=
- =?us-ascii?Q?2bpFyfwEtAz+m02asOul7L1TA0Qf7Gn72z6Jaj6bl0MdOOSPro4z10KEtSlB?=
- =?us-ascii?Q?7Biq/rOB2ozUs0F5ZLrY4jhbvIeSi1KzLRhRj4r6eu0Q/05vyl2Oxiw/eC/n?=
- =?us-ascii?Q?bJRQP027nbVpkIz8+aBghgH3piQMSvzCdJxo1DpcanGoCy2/U7GKtKHi/foz?=
- =?us-ascii?Q?mESMqdqRZp2uNCuzLwlVWh/4L4cP4yLV1mE9Lm9/6bvUOzlBON3RghCygd1K?=
- =?us-ascii?Q?b2psMYWecx2e/lP+81ntHwYybBhwWhoYHwu9VXkanQfiQ8IM+Xc4UcTuvMxO?=
- =?us-ascii?Q?mA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hPySJtsRJqmbdkYkIWcuBWONSVpxZv/7v90mg61CBAUcsALhiMWzae6Yv2si?=
+ =?us-ascii?Q?2uRgDJv3WEVoJa485y2KD2gT4D1PwKY7Pa6+JgwpR+MHjCb6RKrhbf7TtMyp?=
+ =?us-ascii?Q?cl9wxK/GQuKcSkOZml75wsitzezYsnFQEqz4PJAiWAVRkOPiNiHb0XOGU0Yn?=
+ =?us-ascii?Q?uDh+bMVf3UZ9O9AJuGveVm7D7fU5WGv6RNBvvDA7rTuChzVagNAt8VZqQoJv?=
+ =?us-ascii?Q?C2PSUHgUEa/1+P90h9sQ7F8Owfoe5QmJOBM/AbP5JpJRFD1xaNrQ5oe1HbqO?=
+ =?us-ascii?Q?c5xfU1UJFR+bY9b0L52OqSMo1n9POFLBBDXpv2Qi5BedgOhgun6dcOCo6waA?=
+ =?us-ascii?Q?Irv08x9B1I0c1rTkNqfmrcd0Wn96QyBeQuimzdaV7bBTHxVbDK7Ea4OWvX2q?=
+ =?us-ascii?Q?iM2IlpLyi1kZpj9FO2Yphoxb29wqfR11by8K+VkT5a7n0Xc3+A+UCtjvsRW0?=
+ =?us-ascii?Q?y5vetRlXpBbX2x0ZZjwlSxH3OFpmmBUb95SHSYrJra1e7vsZXNAPw8cPdY+P?=
+ =?us-ascii?Q?8nDm1W6DH0VqsxbiSJDmggBZs17aqyDkWK1DE7eWCUWoawrJ2anABPBpD9p4?=
+ =?us-ascii?Q?F+tgRVHYDbBbmv8hLg/NKruT1whxADoorc+YZlNoSzQUDq7Dz6iABfw2yzpk?=
+ =?us-ascii?Q?ec/WC+Uliogt9ogAUijEK7hT7RovAeGRE/6bUIVd7T/Km5J0LP7U8JgueV9V?=
+ =?us-ascii?Q?Ese7TnDe4iky6PlR0aGEGlR0UBg9Pr5a+nkOMMrY5F6R9IECbKoCxIBcMUPv?=
+ =?us-ascii?Q?AWHXO8MFKRwOWPoa5Ko24Jlkne5GESBOQnzslNKKIfGtdjZv1CyTRiOF965T?=
+ =?us-ascii?Q?nwInHuOR2s+dwHgsBahKIAQt+P4gKTrjJPcRTibtvAVha+VLivpsqcKNcy72?=
+ =?us-ascii?Q?mVU3aO4NntsmqIbCjKJ3EzF415el1wrl3mPJCU+alFI4cqhCtlsf8emqo+0P?=
+ =?us-ascii?Q?RWPKBcRMTOqwMXesG4/7lyeffHDgc/cBqLq4dmJVRuWlJROn2OSyrghL5LPJ?=
+ =?us-ascii?Q?PZHqVjN808cMuNuTsZUmB30Lm/bxf27X/cetJYO4rwbG92QrBiEoB5WQJRBs?=
+ =?us-ascii?Q?lge38+JT2INY/ClenpsuCJlKxLoGan3oo36av948o0t+cIaGRX+Ngc15TYx+?=
+ =?us-ascii?Q?N/67MRGt66TYMtC99AaQnkyYV7kUtfMhd2u5N+Ke2PjEmdY/rhqDqmp5sBwK?=
+ =?us-ascii?Q?GBxYv98ZFv9iS50tru+L32jfDvWP3LQnQykYbFoQEEj83bmDLhgLIwdoHsl4?=
+ =?us-ascii?Q?3tSlARkGjPMezmfk5W2GAgx4Fxg5LxVlIv0XVLl88U7xveAzxOurQr7QlmYb?=
+ =?us-ascii?Q?nYhEUrO2Jn2iZ0aEX0K9k8jJTpGO9a5ewSmyFAC3hEAfJy3gSpKKTu3cBj5D?=
+ =?us-ascii?Q?TxYN44BFR9OWc9b/7C7nxLQG2dBR5gDajj3nOai3Xf/aHz7PYHnw9dqQ5Gly?=
+ =?us-ascii?Q?95/iP9urFZ5J95MLS3S0MQesODrnFjPZSaNZ2TohAeVXiskSPh3uimXJciq9?=
+ =?us-ascii?Q?qhIBDBSLekaTRTIdgo0Gf7SCqoLfrxPhZzzXOmikJQXywJyggIk1ySIC39+b?=
+ =?us-ascii?Q?0PK6IsUfH0B/KhZilBfXpA8A8ipsnHglsK4CtBJfO6W/K9hp0/yEkAcMOtto?=
+ =?us-ascii?Q?YQ=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4399cc67-b4d8-4530-dccb-08da5953a30a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6ad23b44-cccf-4850-d1ce-08da5953a4ee
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 22:14:58.0308
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 22:15:01.1712
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7C1x6grwg7Q6JoZOtnz6ExxXL0KVV8D/p3JT9+XqB7xKtt0lGmSKVxeFu92YTlEPMMNKau7TVHqQn54x9MQQPg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: aLj3zYBOO5wxfwTqWQE9+pMExXbdA060oYxIMcb3YKYMw+OhVekowaJZpzHPmZ01vRCVYak1LTYz+TSLekHxTA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR03MB3013
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several references to mac_dev in dpaa_netdev_init. Make things a
-bit more concise by adding a local variable for it.
+This adds a function to update a CGR with new parameters.
+qman_cgr_create can almost be used for this (with flags=0), but it's not
+suitable because it also registers the callback function. The _safe
+variant was modeled off of qman_cgr_delete_safe. However, we handle
+multiple arguments and a return value.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
-(no changes since v1)
+Changes in v2:
+- New
 
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/soc/fsl/qbman/qman.c | 47 ++++++++++++++++++++++++++++++++++++
+ include/soc/fsl/qman.h       |  9 +++++++
+ 2 files changed, 56 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 0ea29f83d0e4..2b1fce99c004 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -203,6 +203,7 @@ static int dpaa_netdev_init(struct net_device *net_dev,
- {
- 	struct dpaa_priv *priv = netdev_priv(net_dev);
- 	struct device *dev = net_dev->dev.parent;
-+	struct mac_device *mac_dev = priv->mac_dev;
- 	struct dpaa_percpu_priv *percpu_priv;
- 	const u8 *mac_addr;
- 	int i, err;
-@@ -216,10 +217,10 @@ static int dpaa_netdev_init(struct net_device *net_dev,
- 	}
+diff --git a/drivers/soc/fsl/qbman/qman.c b/drivers/soc/fsl/qbman/qman.c
+index eb6600aab09b..68b825ea10f1 100644
+--- a/drivers/soc/fsl/qbman/qman.c
++++ b/drivers/soc/fsl/qbman/qman.c
+@@ -2568,6 +2568,53 @@ void qman_delete_cgr_safe(struct qman_cgr *cgr)
+ }
+ EXPORT_SYMBOL(qman_delete_cgr_safe);
  
- 	net_dev->netdev_ops = dpaa_ops;
--	mac_addr = priv->mac_dev->addr;
-+	mac_addr = mac_dev->addr;
++static int qman_update_cgr(struct qman_cgr *cgr, struct qm_mcc_initcgr *opts)
++{
++	int ret;
++	unsigned long irqflags;
++	struct qman_portal *p = qman_cgr_get_affine_portal(cgr);
++
++	if (!p)
++		return -EINVAL;
++
++	spin_lock_irqsave(&p->cgr_lock, irqflags);
++	ret = qm_modify_cgr(cgr, 0, opts);
++	spin_unlock_irqrestore(&p->cgr_lock, irqflags);
++	put_affine_portal();
++	return ret;
++}
++
++struct update_cgr_params {
++	struct qman_cgr *cgr;
++	struct qm_mcc_initcgr *opts;
++	int ret;
++};
++
++static void qman_update_cgr_smp_call(void *p)
++{
++	struct update_cgr_params *params = p;
++
++	params->ret = qman_update_cgr(params->cgr, params->opts);
++}
++
++int qman_update_cgr_safe(struct qman_cgr *cgr, struct qm_mcc_initcgr *opts)
++{
++	struct update_cgr_params params = {
++		.cgr = cgr,
++		.opts = opts,
++	};
++
++	preempt_disable();
++	if (qman_cgr_cpus[cgr->cgrid] != smp_processor_id())
++		smp_call_function_single(qman_cgr_cpus[cgr->cgrid],
++					 qman_update_cgr_smp_call, &params, true);
++	else
++		params.ret = qman_update_cgr(cgr, opts);
++	preempt_enable();
++	return params.ret;
++}
++EXPORT_SYMBOL(qman_update_cgr_safe);
++
+ /* Cleanup FQs */
  
--	net_dev->mem_start = (unsigned long)priv->mac_dev->vaddr;
--	net_dev->mem_end = (unsigned long)priv->mac_dev->vaddr_end;
-+	net_dev->mem_start = (unsigned long)mac_dev->vaddr;
-+	net_dev->mem_end = (unsigned long)mac_dev->vaddr_end;
+ static int _qm_mr_consume_and_match_verb(struct qm_portal *p, int v)
+diff --git a/include/soc/fsl/qman.h b/include/soc/fsl/qman.h
+index 59eeba31c192..0d3d6beb7fdb 100644
+--- a/include/soc/fsl/qman.h
++++ b/include/soc/fsl/qman.h
+@@ -1171,6 +1171,15 @@ int qman_delete_cgr(struct qman_cgr *cgr);
+  */
+ void qman_delete_cgr_safe(struct qman_cgr *cgr);
  
- 	net_dev->min_mtu = ETH_MIN_MTU;
- 	net_dev->max_mtu = dpaa_get_max_mtu();
-@@ -246,7 +247,7 @@ static int dpaa_netdev_init(struct net_device *net_dev,
- 		eth_hw_addr_set(net_dev, mac_addr);
- 	} else {
- 		eth_hw_addr_random(net_dev);
--		err = priv->mac_dev->change_addr(priv->mac_dev->fman_mac,
-+		err = priv->mac_dev->change_addr(mac_dev->fman_mac,
- 			(const enet_addr_t *)net_dev->dev_addr);
- 		if (err) {
- 			dev_err(dev, "Failed to set random MAC address\n");
++/**
++ * qman_update_cgr_safe - Modifies a congestion group object from any CPU
++ * @cgr: the 'cgr' object to modify
++ * @opts: state of the CGR settings
++ *
++ * This will select the proper CPU and modify the CGR settings.
++ */
++int qman_update_cgr_safe(struct qman_cgr *cgr, struct qm_mcc_initcgr *opts);
++
+ /**
+  * qman_query_cgr_congested - Queries CGR's congestion status
+  * @cgr: the 'cgr' object to query
 -- 
 2.35.1.1320.gc452695387.dirty
 
