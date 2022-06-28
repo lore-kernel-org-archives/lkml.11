@@ -2,49 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C0CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 020C5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234092AbiF1SDU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 14:03:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
+        id S234133AbiF1SDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 14:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232960AbiF1SCb (ORCPT
+        with ESMTP id S233936AbiF1SCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 14:02:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797D513CC2;
-        Tue, 28 Jun 2022 11:02:30 -0700 (PDT)
+        Tue, 28 Jun 2022 14:02:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C2D13CCD;
+        Tue, 28 Jun 2022 11:02:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 420C3B81F55;
-        Tue, 28 Jun 2022 18:02:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8101CC341C8;
-        Tue, 28 Jun 2022 18:02:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E16FF61AA0;
+        Tue, 28 Jun 2022 18:02:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A651C341CE;
+        Tue, 28 Jun 2022 18:02:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656439347;
-        bh=jrzryAyM0iHSiSlBurldiYfX3CAAw6Hd79gKtg2cGBc=;
+        s=k20201202; t=1656439364;
+        bh=MWpWlqNZeOO/ShuZIfA1nr8DmytoetKzYgGqDWu40hw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fDirxLIW5TXMFJlHxn2Dm+t/IrGdaHqchEb9dm7AxQU1DqMYAanrb772v/az8EN8Q
-         6QmGnzotOzqP7KNidW2qOOH0Pzt2kx6h0c4TOD/9YzMQZAI28djn1oapr+iK3oS75T
-         N61qwihh6aapbbRJwliLJF5W4QX4ePye0h4TDjhePiltcoHgYpQqhkaF63OEvcC/Fp
-         OvK2mH6wzh+Qnm1UuEvcP7nvCe68d7CFPHCdjUGJM4SHcaRNc7sf8mOkjHZ4wYSLMc
-         s9LsHqz7BFSZOJDJBfseyxW7Y0UB0B4eLnVr1V4VIkg4ybDoGLYoD6Xn60EV+CkUS/
-         P687kPeS17Kgg==
+        b=Tav6k5BKPRN/nNxi8dHln965ShDRb/aIUNMk9hD9MyFIBeP3PxNRO+Hzec7qyF659
+         DRdtWqHXd0EvcF8PI3U5UChInC4aN8yi2+f6wZVbp9ynXs6mpp+/DCUoE6WsmBrYRU
+         VPI156L3KIYSSvCiDlGiJrfqXf/xpprHtJRkm34WIxqgx1tspDYzf797S3UI96hc3j
+         Vr+JoYjUMJpMp9JGLCtRcqcpBqU6G5fG36ZDU5wFTlufM9LLw8tKVL1Fjl8j7qG6ph
+         B15JFKNnNzo8KIFQ+nFM0OeUwXj81K1AycDKUDe4aB1ZTAmVu0Q2LFwHZ2IcPoP80i
+         YhM+/7lVtRD6A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mingwei Zhang <mizhang@google.com>,
+Cc:     Raghavendra Rao Ananta <rananta@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Andrew Jones <drjones@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, seanjc@google.com,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.18 3/3] KVM: x86/svm: add __GFP_ACCOUNT to __sev_dbg_{en,de}crypt_user()
-Date:   Tue, 28 Jun 2022 14:02:17 -0400
-Message-Id: <20220628180220.621172-3-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, maz@kernel.org,
+        shuah@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH MANUALSEL 5.10 2/2] selftests: KVM: Handle compiler optimizations in ucall
+Date:   Tue, 28 Jun 2022 14:02:37 -0400
+Message-Id: <20220628180238.621277-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220628180220.621172-1-sashal@kernel.org>
-References: <20220628180220.621172-1-sashal@kernel.org>
+In-Reply-To: <20220628180238.621277-1-sashal@kernel.org>
+References: <20220628180238.621277-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,45 +58,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mingwei Zhang <mizhang@google.com>
+From: Raghavendra Rao Ananta <rananta@google.com>
 
-[ Upstream commit ebdec859faa8cfbfef9f6c1f83d79dd6c8f4ab8c ]
+[ Upstream commit 9e2f6498efbbc880d7caa7935839e682b64fe5a6 ]
 
-Adding the accounting flag when allocating pages within the SEV function,
-since these memory pages should belong to individual VM.
+The selftests, when built with newer versions of clang, is found
+to have over optimized guests' ucall() function, and eliminating
+the stores for uc.cmd (perhaps due to no immediate readers). This
+resulted in the userspace side always reading a value of '0', and
+causing multiple test failures.
 
-No functional change intended.
+As a result, prevent the compiler from optimizing the stores in
+ucall() with WRITE_ONCE().
 
-Signed-off-by: Mingwei Zhang <mizhang@google.com>
-Message-Id: <20220623171858.2083637-1-mizhang@google.com>
+Suggested-by: Ricardo Koller <ricarkol@google.com>
+Suggested-by: Reiji Watanabe <reijiw@google.com>
+Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+Message-Id: <20220615185706.1099208-1-rananta@google.com>
+Reviewed-by: Andrew Jones <drjones@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/sev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/kvm/lib/aarch64/ucall.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 4b7d490c0b63..f20f8295fa09 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -844,7 +844,7 @@ static int __sev_dbg_encrypt_user(struct kvm *kvm, unsigned long paddr,
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+index 2f37b90ee1a9..f600311fdc6a 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+@@ -73,20 +73,19 @@ void ucall_uninit(struct kvm_vm *vm)
  
- 	/* If source buffer is not aligned then use an intermediate buffer */
- 	if (!IS_ALIGNED((unsigned long)vaddr, 16)) {
--		src_tpage = alloc_page(GFP_KERNEL);
-+		src_tpage = alloc_page(GFP_KERNEL_ACCOUNT);
- 		if (!src_tpage)
- 			return -ENOMEM;
+ void ucall(uint64_t cmd, int nargs, ...)
+ {
+-	struct ucall uc = {
+-		.cmd = cmd,
+-	};
++	struct ucall uc = {};
+ 	va_list va;
+ 	int i;
  
-@@ -865,7 +865,7 @@ static int __sev_dbg_encrypt_user(struct kvm *kvm, unsigned long paddr,
- 	if (!IS_ALIGNED((unsigned long)dst_vaddr, 16) || !IS_ALIGNED(size, 16)) {
- 		int dst_offset;
++	WRITE_ONCE(uc.cmd, cmd);
+ 	nargs = nargs <= UCALL_MAX_ARGS ? nargs : UCALL_MAX_ARGS;
  
--		dst_tpage = alloc_page(GFP_KERNEL);
-+		dst_tpage = alloc_page(GFP_KERNEL_ACCOUNT);
- 		if (!dst_tpage) {
- 			ret = -ENOMEM;
- 			goto e_free;
+ 	va_start(va, nargs);
+ 	for (i = 0; i < nargs; ++i)
+-		uc.args[i] = va_arg(va, uint64_t);
++		WRITE_ONCE(uc.args[i], va_arg(va, uint64_t));
+ 	va_end(va);
+ 
+-	*ucall_exit_mmio_addr = (vm_vaddr_t)&uc;
++	WRITE_ONCE(*ucall_exit_mmio_addr, (vm_vaddr_t)&uc);
+ }
+ 
+ uint64_t get_ucall(struct kvm_vm *vm, uint32_t vcpu_id, struct ucall *uc)
 -- 
 2.35.1
 
