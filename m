@@ -2,68 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4CEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B41AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244697AbiF1GAd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
+        id S245197AbiF1GAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 02:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235044AbiF1GAc (ORCPT
+        with ESMTP id S235044AbiF1GAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:00:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015102C664;
-        Mon, 27 Jun 2022 23:00:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3131B81C17;
-        Tue, 28 Jun 2022 06:00:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A95C3411D;
-        Tue, 28 Jun 2022 06:00:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656396028;
-        bh=29k4Ow4oNcUSrFKMbJ2975+WfuAaRON14I7dvFBkeNk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xf0rToeQPRPfD7q0e5T5XQu9pKwLF7pDRLXgyaEYzuaBK16fJeClIa4pf1a1sWhh0
-         luqcSqGI0DFLr58g4XBuKzA21noZoyfcbXcnX5/arbeqjY2glJdlGbBnUy66SfKKVv
-         DF8hePeldvOKatR4dnty92To7g+ZqoLfkpss6sRY=
-Date:   Tue, 28 Jun 2022 08:00:25 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH] PK: runtime: Redefine pm_runtime_release_supplier()
-Message-ID: <YrqY+c1NPQ+wEiUk@kroah.com>
-References: <2653259.mvXUDI8C0e@kreacher>
+        Tue, 28 Jun 2022 02:00:38 -0400
+Received: from hust.edu.cn (unknown [202.114.0.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C322C67E
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:00:36 -0700 (PDT)
+Received: from localhost.localdomain ([172.16.0.254])
+        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
+        by mx1.hust.edu.cn  with ESMTP id 25S605dn024527-25S605dq024527
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 28 Jun 2022 14:00:10 +0800
+From:   Dongliang Mu <dzm91@hust.edu.cn>
+To:     Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Steven Whitehouse <swhiteho@redhat.com>,
+        Jean Delvare <khali@linux-fr.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>, cluster-devel@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] gfs2: fix overread in the strlcpy of init_names
+Date:   Tue, 28 Jun 2022 13:59:48 +0800
+Message-Id: <20220628055949.566089-1-dzm91@hust.edu.cn>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2653259.mvXUDI8C0e@kreacher>
+Content-Transfer-Encoding: 8bit
+X-FEAS-AUTH-USER: dzm91@hust.edu.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 08:42:18PM +0200, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> 
-> Instead of passing an extra bool argument to pm_runtime_release_supplier(),
-> make its callers take care of triggering a runtime-suspend of the
-> supplier device as needed.
-> 
-> No expected functional impact.
-> 
-> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-Nice, thanks for cleaning this up.
+In init_names, strlcpy will overread the src string as the src string is
+less than GFS2_FSNAME_LEN(256).
 
-If you want to take this through your tree:
-	Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this by modifying strlcpy back to snprintf, reverting
+the commit 00377d8e3842.
 
-But if you want me to take it, please just let me know and I will.
+Fixes: 00377d8e3842 ("[GFS2] Prefer strlcpy() over snprintf()")
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+---
+ fs/gfs2/ops_fstype.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-thanks,
+diff --git a/fs/gfs2/ops_fstype.c b/fs/gfs2/ops_fstype.c
+index c9b423c874a3..ee29b50d39b9 100644
+--- a/fs/gfs2/ops_fstype.c
++++ b/fs/gfs2/ops_fstype.c
+@@ -383,8 +383,8 @@ static int init_names(struct gfs2_sbd *sdp, int silent)
+ 	if (!table[0])
+ 		table = sdp->sd_vfs->s_id;
+ 
+-	strlcpy(sdp->sd_proto_name, proto, GFS2_FSNAME_LEN);
+-	strlcpy(sdp->sd_table_name, table, GFS2_FSNAME_LEN);
++	snprintf(sdp->sd_proto_name, GFS2_FSNAME_LEN, "%s", proto);
++	snprintf(sdp->sd_table_name, GFS2_FSNAME_LEN, "%s", table);
+ 
+ 	table = sdp->sd_table_name;
+ 	while ((table = strchr(table, '/')))
+-- 
+2.35.1
 
-greg k-h
