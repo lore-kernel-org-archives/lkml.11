@@ -2,120 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB41EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50CC7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 21:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbiF1V6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 17:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
+        id S230057AbiF1V7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 17:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiF1V6r (ORCPT
+        with ESMTP id S229484AbiF1V7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 17:58:47 -0400
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995242126B
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 14:58:45 -0700 (PDT)
-Received: by mail-vk1-xa36.google.com with SMTP id j26so6607101vki.12
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 14:58:45 -0700 (PDT)
+        Tue, 28 Jun 2022 17:59:19 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1225E2251A;
+        Tue, 28 Jun 2022 14:59:19 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id q6so28450836eji.13;
+        Tue, 28 Jun 2022 14:59:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gsr4+tcY+roUGgRtfBsLjJViwTozeORRsEF6iLI2O8c=;
-        b=HsAM0rUxxxvjb0YqXNby4zGp7qL2ackwldIMeQzwN/BYg59wNx5b+HF1VjuI0M1QUL
-         txMZzsVE18hqXfsYYpdcmWJKhRZziT8z4Bs+FexBNvjqHTZhXOn8Yjg/wTSa9Y/H8Y6n
-         TyY2tkh7ke4QLjRERx7goch9JasBaZTUsPeuxNDP543SWXCFMwrXGQ0iPpDFWgZvM6TW
-         gYbhU9YRa3F/nAjvy4DD67wUUvqUxKSX6a/gzrY+/ADMpKDCojBt60oc1qRgqOBRAwhN
-         36HvsNATdoNS+zyqT5BZ8gsTmzI2QJ+faZ7+fgKgsYllKKqo1e8T0qq0j1BtKpd5TCai
-         n4xA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2rpwnPjlltrxBnhTO6X3iXYjEJte1aFjs9YX4vq4uj0=;
+        b=AY2ZtgJ+zx20TDaoSF0ooOu97YXXajZ22O4cf9ZA2B9z2f9vJ/aeB7v+c07qUEk1M5
+         vc31W2mpxCw4NmqfBVU3P/g3nlKgLEph4qUbSlL+bWAuRX6fKV+HiPNROnATM+CDSgI3
+         KA/4gGsMhWNjh3tuE8OL9eh3fLe+SszqeHS24odRQ9xVXHpOFs0EIiqpjunqsulLK8vn
+         Mx55h2+ZijNvLnT2jaehOXm9yI54ObK1wXP9Up0W6QMMOtotrGU5xLMkqqA4qXhL9nYv
+         4NCiNvcjhv7J98sjaaghu76BYrKgnrgNwy2D3szboGry+j0yPmqQqYzE9f9xhWfTLoQm
+         t8XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gsr4+tcY+roUGgRtfBsLjJViwTozeORRsEF6iLI2O8c=;
-        b=3R7xIWcKaExlB8v34+G+9EypaqJxJjm1bzkDElVUpKDLDcT/2rgAdmUK1YoWQvKF1D
-         et3cF0LL41ZS03WAoBi3TUEuyZH08PZQA1Iz+RK37cwH4EXJpEpXaYSLzqwvk2xdKd1d
-         YNCNaVNz+a0zNWADYXzO6lE+byeEf0X17Atlo/teHbDuWnSitAMhRpkiYvt62+Xt0oOI
-         9L26FjdwtOPUOXBAVp2gJPjAQRV5tdX0ztBJ7cCiz/TxxLCE0RgulQl/qvszjZ9FoYzc
-         3XTcCGan3ytZEP3bk9F0Ldi+R+Hgti/ihX12cjbC16n0OWi/KhnEaxz3/VMMSGUTLu70
-         tJ5A==
-X-Gm-Message-State: AJIora/kHXL4367aIydwNxcQiteLuAHt7eAJvWRZVAadB6EOos/CVTsE
-        W6z3EEKoei3mPqcAs0jXQfeTqgxjRZkP0dEHHlxO7Q==
-X-Google-Smtp-Source: AGRyM1s97I/toNISSZZbGxhiPclKf8DPsv3gPZ98ckqTKPQ0xeDopF7bIABUpPyFuSfw+0N9eV8473hhSHms4JMh2zA=
-X-Received: by 2002:a05:6122:714:b0:36b:ff43:3af6 with SMTP id
- 20-20020a056122071400b0036bff433af6mr2736073vki.15.1656453524515; Tue, 28 Jun
- 2022 14:58:44 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2rpwnPjlltrxBnhTO6X3iXYjEJte1aFjs9YX4vq4uj0=;
+        b=3zpL6JB294+0471SQWswTF0XzQiO/e09XjodOBFByIwuft0Ej3yZrKaO54auBmqg1n
+         PS0lixvaQ4Mi87rJCyWJgPZXZu+5BjWpf3GIS9nSXJn+ZZ6yZq0+IE9FKGULCQ6SFnHI
+         4X1D6g71GyTT86LubkkpbYACjqiTDmR64aTKiaQmA8HPomc7P2C7CJ99ev0BwJvdD21L
+         MPhMhT98TIuwbX4DluzuG2cwbH4pbW+MIp6gHpiMTPpIRDPAo4J6RC3q9aRoZ+YDScxW
+         T9M2CSBNSXxgyNCBXE4QBZgDbMGe6T+s1cGzpwSPzifL5Vd/ueoAsi2xS3QZLPUSIaNk
+         LoTA==
+X-Gm-Message-State: AJIora+F9LbQTJtpk16qlsRnNIMy6LIhW40GuU0He/hMvxDjQw6I2Z3L
+        m9lP9jPA8a20caamkmQONOU=
+X-Google-Smtp-Source: AGRyM1sIiE0XB74Yp+H8Xw9TMex5dt4RM0hniaSZS/9XDRh/Vgs1J6yF3FDW1qlimWYlo6pSVgRBeA==
+X-Received: by 2002:a17:907:9620:b0:726:9316:54b7 with SMTP id gb32-20020a170907962000b00726931654b7mr221324ejc.73.1656453557501;
+        Tue, 28 Jun 2022 14:59:17 -0700 (PDT)
+Received: from skbuf ([188.25.231.135])
+        by smtp.gmail.com with ESMTPSA id t27-20020a17090616db00b0071cbc7487e1sm6901859ejd.69.2022.06.28.14.59.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 14:59:16 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 00:59:13 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: fwnode_for_each_child_node() and OF backend discrepancy
+Message-ID: <20220628215913.d3oicaa6qkkgpdph@skbuf>
+References: <4e1d5db9dea68d82c94336a1d6aac404@walle.cc>
+ <Yrrhs3D++V79/4Jk@smile.fi.intel.com>
+ <f17d3ecfecf4491dd15b1fa092205f3f@walle.cc>
+ <CAHp75Vd6e3WwHPfyL=GP=vsoWhwGXadwQziiRRwfHPfjkX2eFg@mail.gmail.com>
+ <2f2d7685e0e43194270a310034004970@walle.cc>
+ <CAHp75VcANMjxgS6S24Zh+mz66usb6LBnQk-ENvU9JHSXXsG1DA@mail.gmail.com>
+ <9e58f421c27121977d11381530757a6e@walle.cc>
 MIME-Version: 1.0
-References: <20220624173656.2033256-1-jthoughton@google.com> <20220624173656.2033256-11-jthoughton@google.com>
-In-Reply-To: <20220624173656.2033256-11-jthoughton@google.com>
-From:   Mina Almasry <almasrymina@google.com>
-Date:   Tue, 28 Jun 2022 14:58:32 -0700
-Message-ID: <CAHS8izNO+4Nzg=rgr1R027i2Evo-UKiFEK1gQcMHtF8uxcHzeQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 10/26] hugetlb: add for_each_hgm_shift
-To:     James Houghton <jthoughton@google.com>
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Jue Wang <juew@google.com>,
-        Manish Mishra <manish.mishra@nutanix.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9e58f421c27121977d11381530757a6e@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 10:37 AM James Houghton <jthoughton@google.com> wrote:
->
-> This is a helper macro to loop through all the usable page sizes for a
-> high-granularity-enabled HugeTLB VMA. Given the VMA's hstate, it will
-> loop, in descending order, through the page sizes that HugeTLB supports
-> for this architecture; it always includes PAGE_SIZE.
->
-> Signed-off-by: James Houghton <jthoughton@google.com>
-> ---
->  mm/hugetlb.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index 8b10b941458d..557b0afdb503 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -6989,6 +6989,16 @@ bool hugetlb_hgm_enabled(struct vm_area_struct *vma)
->         /* All shared VMAs have HGM enabled. */
->         return vma->vm_flags & VM_SHARED;
->  }
-> +static unsigned int __shift_for_hstate(struct hstate *h)
-> +{
-> +       if (h >= &hstates[hugetlb_max_hstate])
-> +               return PAGE_SHIFT;
+On Tue, Jun 28, 2022 at 03:47:59PM +0200, Michael Walle wrote:
+> Horatiu, can we determine the actual number of ports (or maybe
+> determine if its a LAN9668 or a LAN9662) from the hardware itself
+> in an easy way? That way we wouldn't need a new compatible string,
+> but could use the generic "lan966x" one.
 
-h > &hstates[hugetlb_max_hstate] means that h is out of bounds, no? am
-I missing something here?
+Never seen a lan966x switch, but if it's anything like the Ocelot-1
+family, you should be able to determine the port count by reading the
+out-of-reset value of any register that contains a port mask which has
+all ones by default (any of the PGIDs in the multicast/flooding
+destinations range, or the VLAN table port masks for any VLAN ID).
 
-So is this intending to do:
+Or you can read the size of the packet buffer and infer from that which
+switch model it is, based on a driver hardcoded lookup table. I fully
+expect a switch with fewer ports to have smaller packet buffer. See
+ocelot_detect_features() for an example of registers I am talking about.
+Maybe lan966x has something similar.
 
-if (h == hstates[hugetlb_max_hstate]
-    return PAGE_SHIFT;
-
-? If so, could we write it as so?
-
-I'm also wondering why __shift_for_hstate(hstate[hugetlb_max_hstate])
-== PAGE_SHIFT? Isn't the last hstate the smallest hstate which should
-be 2MB on x86? Shouldn't this return PMD_SHIFT in that case?
-
-> +       return huge_page_shift(h);
-> +}
-> +#define for_each_hgm_shift(hstate, tmp_h, shift) \
-> +       for ((tmp_h) = hstate; (shift) = __shift_for_hstate(tmp_h), \
-> +                              (tmp_h) <= &hstates[hugetlb_max_hstate]; \
-> +                              (tmp_h)++)
->  #endif /* CONFIG_HUGETLB_HIGH_GRANULARITY_MAPPING */
->
->  /*
-> --
-> 2.37.0.rc0.161.g10f37bed90-goog
->
+Of course these are just band aids and it would still be good to modify
+the device trees with the proper
+	compatible = "microchip,lan9668-switch", "microchip,lan966x-switch";
+rather than rely on educated guesswork (which is still guesswork, after all).
