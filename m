@@ -2,83 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 713D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA68C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346681AbiF1PN6 (ORCPT
+        id S1347815AbiF1PO3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
+        Tue, 28 Jun 2022 11:14:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344472AbiF1PNo (ORCPT
+        with ESMTP id S1347648AbiF1POY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:13:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE1D24BC5;
-        Tue, 28 Jun 2022 08:13:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8966A60F12;
-        Tue, 28 Jun 2022 15:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE345C3411D;
-        Tue, 28 Jun 2022 15:13:40 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Mvf/U4H2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656429219;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BSloj0brG5bY7mdOHUoBdYMTWYdqdgpOBJQxXJWQhIs=;
-        b=Mvf/U4H250uHD//VCHHEFWF4dRnaFg8uUreDF0NEjyU7kploiNMNxYd1qnBixnjkj4vdtJ
-        +fftl9mN1dhrW3k3z8d8Fe1canDszKfF/p3MA812sAVw1NTQ+YSeEOH87Ll8MBgIBzTp4E
-        mJ/kFO2wa0G2AHHHxGQle358Cf5+Z7M=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fdb5660b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 28 Jun 2022 15:13:38 +0000 (UTC)
-Date:   Tue, 28 Jun 2022 17:13:24 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>
-Cc:     paulmck@kernel.org, rcu@vger.kernel.org, urezki@gmail.com,
-        uladzislau.rezki@sony.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <christian@brauner.io>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        linux-kernel@vger.kernel.org, wireguard@lists.zx2c4.com,
-        Theodore Ts'o <tytso@mit.edu>, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        amd-gfx@lists.freedesktop.org
-Subject: Re: CONFIG_ANDROID (was: rcu_sched detected expedited stalls in
- amdgpu after suspend)
-Message-ID: <YrsalGetwIfl8Wkw@zx2c4.com>
-References: <1656357116.rhe0mufk6a.none.ref@localhost>
- <1656357116.rhe0mufk6a.none@localhost>
- <20220627204139.GL1790663@paulmck-ThinkPad-P17-Gen-1>
- <1656379893.q9yb069erk.none@localhost>
- <20220628041252.GV1790663@paulmck-ThinkPad-P17-Gen-1>
- <1656421946.ic03168yc3.none@localhost>
+        Tue, 28 Jun 2022 11:14:24 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940E92D1CE;
+        Tue, 28 Jun 2022 08:14:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656429263; x=1687965263;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=q7FahIoKfYcG6zpF9uJ/ng+YHB8nrWgCQyPp3cp9kiw=;
+  b=H1ZZ+AtEqQq46RlOFH4t/z9YW+O9UdvQk5Tt2ejzU422aJRFqgvsShiv
+   FRSrwc8ip//n6dBAPT9PYHQK4P9EJbjpvAl4+6hzFPcgoUndlnL+55jGh
+   3H/+73rsWaj/zeqN5xEh/O0syeb1o1JFysk1Nqo5dc6ne53pCXHV7SB7/
+   8C+A4NOpIG5lLsBMk0lzrk+aHIsPxZTienWzyAGlvU7dSTZ3OuYa/HMg1
+   3GOvfUiDivDDtWvHIIVRMbBi36vssF11mDVVDAzOWIerCknZ2iPOwvGo2
+   ezGW6AAJl1mIWqmwYmXDfhBDHTdAKl5j6WGFE562sYqp9dgTXt+W/CZnI
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="165465254"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jun 2022 08:14:23 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 28 Jun 2022 08:14:22 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 28 Jun 2022 08:14:19 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <eugen.hristev@microchip.com>, <jic23@kernel.org>,
+        <lars@metafoo.de>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>
+CC:     <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v2 03/19] iio: adc: at91-sama5d2_adc: lock around oversampling and sample freq
+Date:   Tue, 28 Jun 2022 18:16:15 +0300
+Message-ID: <20220628151631.3116454-4-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
+References: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1656421946.ic03168yc3.none@localhost>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alex,
+.read_raw()/.write_raw() could be called asynchronously from user space
+or other in kernel drivers. Without locking on st->lock these could be
+called asynchronously while there is a conversion in progress. Read will
+be harmless but changing registers while conversion is in progress may
+lead to inconsistent results. Thus, to avoid this lock st->lock.
 
-On Tue, Jun 28, 2022 at 11:02:40AM -0400, Alex Xu (Hello71) wrote:
-> WireGuard and random also use CONFIG_ANDROID in a similar "proxy" way as 
-> rcu, there to see if suspends are "frequent". This seems dubious for the 
-> same reasons.
+Fixes: 27e177190891 ("iio:adc:at91_adc8xx: introduce new atmel adc driver")
+Fixes: 6794e23fa3fe ("iio: adc: at91-sama5d2_adc: add support for oversampling resolution")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/iio/adc/at91-sama5d2_adc.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-I'd be happy to take a patch in WireGuard and random.c to get rid of the
-CONFIG_ANDROID usage, if you can conduct an analysis and conclude this
-won't break anything inadvertently.
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index c3301c749164..40a95d2fd5c8 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -1542,10 +1542,10 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
+ 		ret = at91_adc_read_position(st, chan->channel,
+ 					     &tmp_val);
+ 		*val = tmp_val;
+-		mutex_unlock(&st->lock);
+-		iio_device_release_direct_mode(indio_dev);
+ 		if (ret > 0)
+ 			ret = at91_adc_adjust_val_osr(st, val);
++		mutex_unlock(&st->lock);
++		iio_device_release_direct_mode(indio_dev);
+ 
+ 		return ret;
+ 	}
+@@ -1558,10 +1558,10 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
+ 		ret = at91_adc_read_pressure(st, chan->channel,
+ 					     &tmp_val);
+ 		*val = tmp_val;
+-		mutex_unlock(&st->lock);
+-		iio_device_release_direct_mode(indio_dev);
+ 		if (ret > 0)
+ 			ret = at91_adc_adjust_val_osr(st, val);
++		mutex_unlock(&st->lock);
++		iio_device_release_direct_mode(indio_dev);
+ 
+ 		return ret;
+ 	}
+@@ -1650,16 +1650,20 @@ static int at91_adc_write_raw(struct iio_dev *indio_dev,
+ 		/* if no change, optimize out */
+ 		if (val == st->oversampling_ratio)
+ 			return 0;
++		mutex_lock(&st->lock);
+ 		st->oversampling_ratio = val;
+ 		/* update ratio */
+ 		at91_adc_config_emr(st);
++		mutex_unlock(&st->lock);
+ 		return 0;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		if (val < st->soc_info.min_sample_rate ||
+ 		    val > st->soc_info.max_sample_rate)
+ 			return -EINVAL;
+ 
++		mutex_lock(&st->lock);
+ 		at91_adc_setup_samp_freq(indio_dev, val);
++		mutex_unlock(&st->lock);
+ 		return 0;
+ 	default:
+ 		return -EINVAL;
+-- 
+2.34.1
 
-Jason
