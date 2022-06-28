@@ -2,137 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 247F6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7888DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344040AbiF1Kol (ORCPT
+        id S1343961AbiF1Kpc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 06:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
+        Tue, 28 Jun 2022 06:45:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343919AbiF1Kod (ORCPT
+        with ESMTP id S234570AbiF1Kpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 06:44:33 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E90313BE;
-        Tue, 28 Jun 2022 03:44:32 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25S8Aom8002616;
-        Tue, 28 Jun 2022 05:44:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=LBdjpKTcBhVvtkLLUBtkb/1VdJ7fQ8gDmZFGNTWayfE=;
- b=iEIo4KlO1TxLHhH1TJ5A7+OiPwNHZJTVUWKC6KC+fvIKu4KwNg7nZcibs3x/I/2rhHxy
- QrxOhHLScrGTWD3MIz5QAT680oOAXhewHFsXyubkXXJoGsfLZTg6p30RkA7P9Annw0ep
- L+6pTJr4ZXYAxlFKMcjZav4G7vDAXHY8CKZvDuh5eGF+YV9Igt+55cHqjrRMcBRM+R0k
- NZDBqXUGYH0ssc+Ort15HSTar7MCD0yll3M5F2PdKaACZxaovvmEIJQaWxE18iIfKEHk
- 9uHjBjTTniqwwkkRNeBNojR0lc/ebuujwh6865sbbuPjbec9dAoOw4qrFd60Cf8G03Kc iA== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gwxsq3rut-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 28 Jun 2022 05:44:16 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 28 Jun
- 2022 11:44:14 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Tue, 28 Jun 2022 11:44:14 +0100
-Received: from sbinding-cirrus-dsktp.ad.cirrus.com (unknown [198.90.238.163])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 8AD852A1;
-        Tue, 28 Jun 2022 10:44:14 +0000 (UTC)
-From:   Stefan Binding <sbinding@opensource.cirrus.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-CC:     <linux-acpi@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v4 2/2] ASoC: cs35l41: Read System Name from ACPI _SUB to identify firmware
-Date:   Tue, 28 Jun 2022 11:44:11 +0100
-Message-ID: <20220628104411.984551-3-sbinding@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220628104411.984551-1-sbinding@opensource.cirrus.com>
-References: <20220628104411.984551-1-sbinding@opensource.cirrus.com>
+        Tue, 28 Jun 2022 06:45:31 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319D031371;
+        Tue, 28 Jun 2022 03:45:30 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id D8D1A1FA12;
+        Tue, 28 Jun 2022 10:45:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1656413128; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=O0nt2J5ePcRV7nkaFA0OV/T6zQxmOqrbqRciI67/u2Q=;
+        b=cjo/ofZKs9v9HXQskNf/9FY0eqNF0c6Sk8dQv7JicBnP9u5FUHKJRTduoByCU49b6b81E+
+        J0w/eIhlkd/q1S9xeNY3Q4quxyHwl479Bqgq1gQ60bd9N4zgI+mX3xSNYjQYpaLHDDdamP
+        D5oUz4Sf/PEMLFKyBzPSZ4oJ4dDfzT8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1656413128;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=O0nt2J5ePcRV7nkaFA0OV/T6zQxmOqrbqRciI67/u2Q=;
+        b=NIiPhwCUaumeJpV+tRv9qaxMJE7PD/ZW7e6ORLFYG0zuZmLhsngAZLg0cHPi1ZXbjaE1zr
+        /B3814+aiuSxr9BQ==
+Received: from quack3.suse.cz (dhcp194.suse.cz [10.100.51.194])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 8D2042C141;
+        Tue, 28 Jun 2022 10:45:28 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 68E24A062F; Tue, 28 Jun 2022 12:45:28 +0200 (CEST)
+Date:   Tue, 28 Jun 2022 12:45:28 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Guowei Du <duguoweisz@gmail.com>
+Cc:     jack@suse.cz, amir73il@gmail.com, repnop@google.com,
+        brauner@kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, duguowei <duguowei@xiaomi.com>
+Subject: Re: [PATCH 6/6] fanotify: add current_user_instances node
+Message-ID: <20220628104528.no4jarh2ihm5gxau@quack3>
+References: <20220628101413.10432-1-duguoweisz@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: NtYvUKnreYSGMU-cQj4apqMn9NVo3X7I
-X-Proofpoint-ORIG-GUID: NtYvUKnreYSGMU-cQj4apqMn9NVo3X7I
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220628101413.10432-1-duguoweisz@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When loading firmware, wm_adsp uses a number of parameters to
-determine the path of the firmware and tuning files to load.
-One of these parameters is system_name.
-Add support in cs35l41 to read this system name from the ACPI
-_SUB ID in order to uniquely identify the firmware and tuning
-mapped to a particular system.
+On Tue 28-06-22 18:14:13, Guowei Du wrote:
+> From: duguowei <duguowei@xiaomi.com>
+> 
+> Add a node of sysctl, which is current_user_instances.
+> It shows current initialized group counts of system.
+> 
+> Signed-off-by: duguowei <duguowei@xiaomi.com>
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
----
- sound/soc/codecs/cs35l41.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+Hum, I'm not sure about a wider context here but the changelog is certainly
+missing a motivation of this change - why do you need this counter? In
+particular because we already do maintain (and limit) the number of
+fanotify groups each user has allocated in a particular namespace...
 
-diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
-index 8766e19d85f1..9ab016094b32 100644
---- a/sound/soc/codecs/cs35l41.c
-+++ b/sound/soc/codecs/cs35l41.c
-@@ -6,6 +6,7 @@
- //
- // Author: David Rhodes <david.rhodes@cirrus.com>
- 
-+#include <linux/acpi.h>
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/init.h>
-@@ -1142,6 +1143,24 @@ static int cs35l41_dsp_init(struct cs35l41_private *cs35l41)
- 	return ret;
- }
- 
-+static int cs35l41_probe_acpi(struct cs35l41_private *cs35l41)
-+{
-+	acpi_handle handle = ACPI_HANDLE(cs35l41->dev);
-+	const char *sub;
-+
-+	/* If there is no ACPI_HANDLE, there is no ACPI for this system, return 0 */
-+	if (!handle)
-+		return 0;
-+
-+	sub = acpi_get_subsystem_id(handle);
-+	if (IS_ERR(sub))
-+		return PTR_ERR(sub);
-+
-+	cs35l41->dsp.system_name = sub;
-+	dev_dbg(cs35l41->dev, "Susystem ID: %s\n", cs35l41->dsp.system_name);
-+	return 0;
-+}
-+
- int cs35l41_probe(struct cs35l41_private *cs35l41, const struct cs35l41_hw_cfg *hw_cfg)
- {
- 	u32 regid, reg_revid, i, mtl_revid, int_status, chipid_match;
-@@ -1270,6 +1289,10 @@ int cs35l41_probe(struct cs35l41_private *cs35l41, const struct cs35l41_hw_cfg *
- 		goto err;
- 	}
- 
-+	ret = cs35l41_probe_acpi(cs35l41);
-+	if (ret < 0)
-+		goto err;
-+
- 	ret = cs35l41_dsp_init(cs35l41);
- 	if (ret < 0)
- 		goto err;
-@@ -1316,6 +1339,7 @@ void cs35l41_remove(struct cs35l41_private *cs35l41)
- 	pm_runtime_disable(cs35l41->dev);
- 
- 	regmap_write(cs35l41->regmap, CS35L41_IRQ1_MASK1, 0xFFFFFFFF);
-+	kfree(cs35l41->dsp.system_name);
- 	wm_adsp2_remove(&cs35l41->dsp);
- 	cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type);
- 
+								Honza
+
+> ---
+>  fs/notify/fanotify/fanotify_user.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanotify_user.c
+> index c2255b440df9..39674fbffc4f 100644
+> --- a/fs/notify/fanotify/fanotify_user.c
+> +++ b/fs/notify/fanotify/fanotify_user.c
+> @@ -51,6 +51,8 @@
+>  
+>  /* configurable via /proc/sys/fs/fanotify/ */
+>  static int fanotify_max_queued_events __read_mostly;
+> +/* current initialized group count */
+> +static int fanotify_user_instances __read_mostly;
+>  
+>  #ifdef CONFIG_SYSCTL
+>  
+> @@ -86,6 +88,14 @@ static struct ctl_table fanotify_table[] = {
+>  		.proc_handler	= proc_dointvec_minmax,
+>  		.extra1		= SYSCTL_ZERO
+>  	},
+> +	{
+> +		.procname	= "current_user_instances",
+> +		.data		= &fanotify_user_instances,
+> +		.maxlen		= sizeof(int),
+> +		.mode		= 0444,
+> +		.proc_handler	= proc_dointvec_minmax,
+> +		.extra1		= SYSCTL_ZERO
+> +	},
+>  	{ }
+>  };
+>  
+> @@ -905,6 +915,8 @@ static int fanotify_release(struct inode *ignored, struct file *file)
+>  	/* matches the fanotify_init->fsnotify_alloc_group */
+>  	fsnotify_destroy_group(group);
+>  
+> +	fanotify_user_instances--;
+> +
+>  	return 0;
+>  }
+>  
+> @@ -1459,6 +1471,8 @@ SYSCALL_DEFINE2(fanotify_init, unsigned int, flags, unsigned int, event_f_flags)
+>  	if (fd < 0)
+>  		goto out_destroy_group;
+>  
+> +	fanotify_user_instances++;
+> +
+>  	return fd;
+>  
+>  out_destroy_group:
+> -- 
+> 2.36.1
+> 
 -- 
-2.25.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
