@@ -2,140 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6942C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0930BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344008AbiF1Iw1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
+        id S244771AbiF1Iw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245066AbiF1IwM (ORCPT
+        with ESMTP id S245702AbiF1IwY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:52:12 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE6E2F65C
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:52:11 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o66x2-0003sA-DF; Tue, 28 Jun 2022 10:52:04 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o66wy-003Aep-1D; Tue, 28 Jun 2022 10:52:03 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o66x0-00As72-OT; Tue, 28 Jun 2022 10:52:02 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next v2 3/4] net: dsa: microchip: add pause stats support
-Date:   Tue, 28 Jun 2022 10:51:54 +0200
-Message-Id: <20220628085155.2591201-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220628085155.2591201-1-o.rempel@pengutronix.de>
-References: <20220628085155.2591201-1-o.rempel@pengutronix.de>
+        Tue, 28 Jun 2022 04:52:24 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDDA2F675
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:52:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D22D6CE1CDB
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:52:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E165C341CF
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:52:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656406336;
+        bh=AaIcKctsIEzMKmBHpTdPbPmlHIj0HjICfR6f84Ff/oc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Ka1oqoRy+iEmVLFErMzf9zWQLCCET231/63udHFJoC8EF3oiO3a41W1hPgUjwAgA3
+         FjTOQ1PVy4GYfMqmQnBzleWsZl2dIXxH3AvOnp3FjMcVXt5BqXl8I5A8LIV/XU73FC
+         mio7y/HWHpqjpbfhjwlGS7yxBleErxGws/6HRugQbgeQwEJrI0Frr3UhZapQuwfI3a
+         C9tTXYAv3rzGKaiSRj9/JND+C3yK6FEH77LFzMXe2TbZCFvpk4fZ69uRVAhQ9/py2o
+         Ue5E1DiJV6YNkHmxWunr/Nw+YBAHACM/H5Almq4CCzjnxR2zOBlLUMla2aLC5+T1xA
+         648+cKAbr6ZMw==
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-3137316bb69so109313407b3.10
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:52:16 -0700 (PDT)
+X-Gm-Message-State: AJIora+qjaURlhX6nLm+sxuAYSEHUHfH8E3yizVaNO0W2ktGuTDy4O/K
+        zR0PlWLyH1915GSRhhf6vnp8G5r60VkjdoIHOHU=
+X-Google-Smtp-Source: AGRyM1vn6PtVIyH2WRu02X6dTQTAKErf5OrFcvq8UJJCl/Z/89z+cs37BRQGlyFyyc957kYwYbSzoPsCclgS1MK8cwg=
+X-Received: by 2002:a81:7c42:0:b0:317:7789:85aa with SMTP id
+ x63-20020a817c42000000b00317778985aamr20504436ywc.93.1656406335187; Tue, 28
+ Jun 2022 01:52:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+References: <20220627202620.961350-1-ogabbay@kernel.org> <20220627202620.961350-12-ogabbay@kernel.org>
+ <YrqhaBuzY/GkQXHx@kroah.com>
+In-Reply-To: <YrqhaBuzY/GkQXHx@kroah.com>
+From:   Oded Gabbay <ogabbay@kernel.org>
+Date:   Tue, 28 Jun 2022 11:51:48 +0300
+X-Gmail-Original-Message-ID: <CAFCwf13eVS4iETpdgRp72KoNw-X5h1Japf=pNQ-8MdQcJ4h8WQ@mail.gmail.com>
+Message-ID: <CAFCwf13eVS4iETpdgRp72KoNw-X5h1Japf=pNQ-8MdQcJ4h8WQ@mail.gmail.com>
+Subject: Re: [PATCH 11/12] habanalabs/gaudi2: add tpm attestation info uapi
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        Dani Liberman <dliberman@habana.ai>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for pause specific stats.
+On Tue, Jun 28, 2022 at 9:36 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Mon, Jun 27, 2022 at 11:26:19PM +0300, Oded Gabbay wrote:
+> > From: Dani Liberman <dliberman@habana.ai>
+> >
+> > User will provide a nonce via the ioctl, and will retrieve
+> > attestation data of the boot from the tpm, generated using given
+> > nonce.
+>
+> Why not use the normal TPM api instead of a new/custom one?  Or is this
+> not a "normal" TPM device?  If not, you should say what it really is.
+>
+> thanks,
+>
+> greg k-h
 
-Tested on ksz9477.
+Honestly, I'm not that knowledgeable about it. It is hidden behind our
+firmware code. We just provide a communication method between the
+userspace and the firmware, as the userspace can't interact directly
+with the f/w. i.e. The driver is a transparent tunnel, it doesn't
+interact with registers of the TPM device itself. The "real" driver is
+in our firmware.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/microchip/ksz_common.c | 19 +++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h |  1 +
- 2 files changed, 20 insertions(+)
+So basically we just got definitions from the f/w how to fetch the
+data from them and how to expose it to the user and that's it.
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 59582eb3bcaf..7c221ec331ee 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -586,12 +586,14 @@ static void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
- 
- void ksz_r_mib_stats64(struct ksz_device *dev, int port)
- {
-+	struct ethtool_pause_stats *pstats;
- 	struct rtnl_link_stats64 *stats;
- 	struct ksz_stats_raw *raw;
- 	struct ksz_port_mib *mib;
- 
- 	mib = &dev->ports[port].mib;
- 	stats = &mib->stats64;
-+	pstats = &mib->pause_stats;
- 	raw = (struct ksz_stats_raw *)mib->counters;
- 
- 	spin_lock(&mib->stats64_lock);
-@@ -623,6 +625,9 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
- 	stats->multicast = raw->rx_mcast;
- 	stats->collisions = raw->tx_total_col;
- 
-+	pstats->tx_pause_frames = raw->tx_pause;
-+	pstats->rx_pause_frames = raw->rx_pause;
-+
- 	spin_unlock(&mib->stats64_lock);
- }
- 
-@@ -639,6 +644,19 @@ static void ksz_get_stats64(struct dsa_switch *ds, int port,
- 	spin_unlock(&mib->stats64_lock);
- }
- 
-+static void ksz_get_pause_stats(struct dsa_switch *ds, int port,
-+				struct ethtool_pause_stats *pause_stats)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port_mib *mib;
-+
-+	mib = &dev->ports[port].mib;
-+
-+	spin_lock(&mib->stats64_lock);
-+	memcpy(pause_stats, &mib->pause_stats, sizeof(*pause_stats));
-+	spin_unlock(&mib->stats64_lock);
-+}
-+
- static void ksz_get_strings(struct dsa_switch *ds, int port,
- 			    u32 stringset, uint8_t *buf)
- {
-@@ -1248,6 +1266,7 @@ static const struct dsa_switch_ops ksz_switch_ops = {
- 	.port_mirror_add	= ksz_port_mirror_add,
- 	.port_mirror_del	= ksz_port_mirror_del,
- 	.get_stats64		= ksz_get_stats64,
-+	.get_pause_stats	= ksz_get_pause_stats,
- 	.port_change_mtu	= ksz_change_mtu,
- 	.port_max_mtu		= ksz_max_mtu,
- };
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 0e7f15efbb79..28846566028d 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -25,6 +25,7 @@ struct ksz_port_mib {
- 	u8 cnt_ptr;
- 	u64 *counters;
- 	struct rtnl_link_stats64 stats64;
-+	struct ethtool_pause_stats pause_stats;
- 	struct spinlock stats64_lock;
- };
- 
--- 
-2.30.2
+What to do in this case ? Is this considered a "real" TPM ? I imagine
+I won't be able to connect to a standard tpm driver in the kernel as
+the h/w is not exposed to me.
 
+Oded
