@@ -2,118 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8ACC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20817C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344082AbiF1JOD (ORCPT
+        id S1344086AbiF1JOi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
+        Tue, 28 Jun 2022 05:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344080AbiF1JN7 (ORCPT
+        with ESMTP id S1344088AbiF1JOd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:13:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF3512639
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:13:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 679CEB81D30
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:13:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DD88C3411D
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:13:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656407636;
-        bh=UVt5GJOzrusdiAeVz2MUCA37lIY3b+fHQP3hg2kfMTk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cmIfxhDJLXfwPbwJSF7R/NbFV3xzRGwRdSNQ6xgJwFtZphCJxFHxXEWTsfkIOh1H4
-         hFNf7wli8LbZ/K7tvqgXmlTYORA9+BuB4RHWj/28fjCP5xu/m/mdef2m+HG7W6fyLd
-         +OPYpY4MKL3xYkYE00EOFRybrChHys3OG0swabtceFlS6ZJsLoVJbFO2CrCJIE+ysU
-         d2trhurKGev2YfsSU7db/OAUaNb18Wk05TYO9NHyIu7G2Gzeg2w6xbnaw88wFh+ZZ/
-         TGnOqbo1xOnYZZBoaEbMaN/gTgmNuUNDUOn82cYREfBgHN72DSDDP54KrrKWAj1S9A
-         puHDmZsAuiGgg==
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-3176b6ed923so109855787b3.11
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:13:56 -0700 (PDT)
-X-Gm-Message-State: AJIora/+a4PLuDprDytwSvz4nxhmsqVJwV7ahCNFVdH6lQYB+QQexT6e
-        LhJt0cWIZ5dxr4xV85wVzJNE1pz24wuSG4oKPfk=
-X-Google-Smtp-Source: AGRyM1ucX/GJvdnAHB/+qsTKe08RIktILui9oKuaHPlErIW/8Z8gy8P+NjRK0m4FKAZ+wFekDMGu+c833X2Iyvb1RpQ=
-X-Received: by 2002:a81:5f54:0:b0:317:dd64:4da2 with SMTP id
- t81-20020a815f54000000b00317dd644da2mr19385203ywb.206.1656407635148; Tue, 28
- Jun 2022 02:13:55 -0700 (PDT)
+        Tue, 28 Jun 2022 05:14:33 -0400
+Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15DD120B3
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:14:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1656407672; x=1687943672;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=m7ZvDnvdd5GvaUmk2CDtIh9qIt0xOE1YKhnPo7clhXk=;
+  b=pEdfKLMZ/m0Rtqr1DBaKi1JebCkMoXyOYwBadxXpARPRUEuX7ykBp+m9
+   c0t5GlV1W5vHGRqhmKBZEbmzKjbGU31rjZZSXD3cm8S5MWsauogiChEkc
+   7wZ4EIJci/wDZTMBJBOZm0/g3K8+R3LI5ju39gbgjzW3Oe8CawgVtPp4q
+   jasLs69SrURed2mJ1uWH7g1QNIbWceTMFNkfunmnllMT5EA1KTCkrKXHw
+   RwalAeqSeV93PvQ2vlDmClV9jOtcgyV28jGtw80CpZpmsvkoFAUeJRAGU
+   vhX76gJXeBmKgj9MpdImjGWcz5XSRPp9n7SViVIbralVaew2cv5podQKQ
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,227,1650902400"; 
+   d="scan'208";a="202954162"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 28 Jun 2022 17:14:30 +0800
+IronPort-SDR: Af3MGvAApKtxwOhyv8Zy7EeLZkxH+QOad7BxnyylGS4VGF1HeIbvjtSTcbdgdjXaG2Lh6hXzgs
+ U9+fQUnLQjMWyLRgIY9sNI4BULRq/p6sF1G3XmG8wtgep4XSUFlUDQjZ+hZMeyvRgILnhJs+bH
+ 9eEFKvKnB9ZGm8Ty+rSN+TuFkt5N3Y2wz7vKrvNgCWSmxP1RCuLnSKfh6u7afYKtDz+SzFuCY+
+ 3UCXfEy3nF1VKXP0Mr6It0K0QDCNPW6E1CRwXAiCvZQbKlKHGvNzmv/8nbMW0xnpZHcbhtELlS
+ qV32qI10vTvb6hBWvhDjzA86
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Jun 2022 01:32:11 -0700
+IronPort-SDR: ggxvr5zFN8GVH1x5teq5WErLuSDSBSEdW1dgBSufj0K+Ycq3I6S9l4Vqv/MbmQNn7Wkgy7IVPF
+ IzpMxlFFwHGG5N3ym7KSsLkMpJTLEz2Eov/w3rOaSmHOOFBDRq0wlcLX7Z1xgY41IUCDzCtXVp
+ DD9omeFyAHFH0lZUG4BZJ999Y6FRwco2CmlQsVsEWLIHrJm7n01lOzke5tpByMCO1oQ8zbElqb
+ 2scMGcgFIjxZcl6u5WEb5S9426Kb8W6zJYeyFpVRVo6pYFpT/TsoeaqgxQrr1N+cTu9oHZ7hIk
+ orI=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Jun 2022 02:14:30 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LXJnd5LR4z1Rws4
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:14:29 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1656407669; x=1658999670; bh=m7ZvDnvdd5GvaUmk2CDtIh9qIt0xOE1YKhn
+        Po7clhXk=; b=n1Hpc6gcPs/kxiOVTQwyRGR+uFdty2ur8mMpVtR58Kwy2fqXmbI
+        HTEscATaBiYXrvQoDsewN6VCSm9M5MIlpqKcq/8hTcw3cjPO33agP8Xd57Tj6DFz
+        4R0ljR0v+eB5w4pbvmsQ5m12TQNrFyNz/lIFaUH0ktaZyNqS0r6+dYb80iSY2vIS
+        eAjGfzucNGjkx5UDxGIgv1ZF4t8Y8uxziilTeI0bERjb3d5G2iyT+xB/TWonmtz9
+        zODt5GChELx+M4SuiD3Cm4Kcm8I7M51ZXMYbgEjMRtCnihX/D9URy755F6CYUCq9
+        +ysvrOnAro+PSPbYDdtqx2RasqndSuvPycw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 0bCYHYgaYVOA for <linux-kernel@vger.kernel.org>;
+        Tue, 28 Jun 2022 02:14:29 -0700 (PDT)
+Received: from [10.225.163.99] (unknown [10.225.163.99])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LXJnZ4JQfz1RtVk;
+        Tue, 28 Jun 2022 02:14:26 -0700 (PDT)
+Message-ID: <ba59a0da-a982-e3eb-1cb7-6e60f80fd319@opensource.wdc.com>
+Date:   Tue, 28 Jun 2022 18:14:25 +0900
 MIME-Version: 1.0
-References: <20220627202620.961350-1-ogabbay@kernel.org> <20220627202620.961350-5-ogabbay@kernel.org>
- <Yrqg+6bBxRMmomrm@kroah.com> <CAFCwf12mXA9u8+ZE6msZL4R11DsE8SVN2GxpxOfo=_0aGnY7nQ@mail.gmail.com>
- <YrrGDbUTxyZi2hdT@kroah.com>
-In-Reply-To: <YrrGDbUTxyZi2hdT@kroah.com>
-From:   Oded Gabbay <ogabbay@kernel.org>
-Date:   Tue, 28 Jun 2022 12:13:28 +0300
-X-Gmail-Original-Message-ID: <CAFCwf12-NgU0zA2UQ6DeoctZoq1Guer79DfqHUtW2MRXeZJDAQ@mail.gmail.com>
-Message-ID: <CAFCwf12-NgU0zA2UQ6DeoctZoq1Guer79DfqHUtW2MRXeZJDAQ@mail.gmail.com>
-Subject: Re: [PATCH 04/12] habanalabs: add unsupported functions
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according
+ to shost->max_sectors
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>, joro@8bytes.org,
+        will@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
+        iommu@lists.linux.dev, linux-scsi@vger.kernel.org,
+        linuxarm@huawei.com
+References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+ <1656343521-62897-6-git-send-email-john.garry@huawei.com>
+ <b69c6112-98b7-3890-9d11-bb321a7c877a@opensource.wdc.com>
+ <6619638c-52e8-cb67-c56c-9c9d38c18161@huawei.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <6619638c-52e8-cb67-c56c-9c9d38c18161@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 12:12 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Jun 28, 2022 at 11:21:24AM +0300, Oded Gabbay wrote:
-> > On Tue, Jun 28, 2022 at 9:34 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Mon, Jun 27, 2022 at 11:26:12PM +0300, Oded Gabbay wrote:
-> > > > There are a number of new ASIC-specific functions that were added
-> > > > for Gaudi2. To make the common code work, we need to define empty
-> > > > implementations of those functions for Goya and Gaudi.
-> > > >
-> > > > Some functions will return error if called with Goya/Gaudi.
-> > > >
-> > > > Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
-> > > > ---
-> > > >  drivers/misc/habanalabs/gaudi/gaudi.c | 24 ++++++++++++++++++++++++
-> > > >  drivers/misc/habanalabs/goya/goya.c   | 24 ++++++++++++++++++++++++
-> > > >  2 files changed, 48 insertions(+)
-> > > >
-> > > > diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-> > > > index ae894335e9f8..f4581220ecd5 100644
-> > > > --- a/drivers/misc/habanalabs/gaudi/gaudi.c
-> > > > +++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-> > > > @@ -8588,6 +8588,11 @@ static void gaudi_ctx_fini(struct hl_ctx *ctx)
-> > > >       gaudi_internal_cb_pool_fini(ctx->hdev, ctx);
-> > > >  }
-> > > >
-> > > > +int gaudi_pre_schedule_cs(struct hl_cs *cs)
-> > > > +{
-> > > > +     return 0;
-> > > > +}
-> > > > +
-> > > >  static u32 gaudi_get_queue_id_for_cq(struct hl_device *hdev, u32 cq_idx)
-> > > >  {
-> > > >       return gaudi_cq_assignment[cq_idx];
-> > > > @@ -8959,6 +8964,14 @@ static void gaudi_enable_events_from_fw(struct hl_device *hdev)
-> > > >               gaudi_irq_map_table[GAUDI_EVENT_INTS_REGISTER].cpu_id);
-> > > >  }
-> > > >
-> > > > +int gaudi_ack_mmu_page_fault_or_access_error(struct hl_device *hdev,
-> > > > +                                                     u64 mmu_cap_mask)
-> > > > +{
-> > > > +     dev_err(hdev->dev, "mmu_error function is not supported\n");
-> > >
-> > > Can userspace trigger this?  if so, make it debug, as you don't want to
-> > > give userspace a way to spam the logs.
-> >
-> > Only via a debugfs node which is exposed only to root user.
-> > What is your recommendation in that case ?
->
-> What does this error message help out with?  Why not just return an
-> error and be done with it?  No need to spam the kernel log, right?
-Sure, np.  I'm with you on that.
+On 6/28/22 16:54, John Garry wrote:
+> On 28/06/2022 00:24, Damien Le Moal wrote:
+>> On 6/28/22 00:25, John Garry wrote:
+>>> ATA devices (struct ata_device) have a max_sectors field which is
+>>> configured internally in libata. This is then used to (re)configure the
+>>> associated sdev request queue max_sectors value from how it is earlier set
+>>> in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
+>>> according to shost limits, which includes host DMA mapping limits.
+>>>
+>>> Cap the ata_device max_sectors according to shost->max_sectors to respect
+>>> this shost limit.
+>>>
+>>> Signed-off-by: John Garry<john.garry@huawei.com>
+>>> Acked-by: Damien Le Moal<damien.lemoal@opensource.wdc.com>
+>> Nit: please change the patch title to "ata: libata-scsi: Cap ..."
+>>
+> 
+> ok, but it's going to be an even longer title :)
+> 
+> BTW, this patch has no real dependency on the rest of the series, so 
+> could be taken separately if you prefer.
 
-Thanks,
-Oded
->
-> thanks,
->
-> greg k-h
+Sure, you can send it separately. Adding it through the scsi tree is fine too.
+
+> 
+> Thanks,
+> John
+
+
+-- 
+Damien Le Moal
+Western Digital Research
