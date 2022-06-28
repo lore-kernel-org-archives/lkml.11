@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFCA3CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9194CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244882AbiF1CaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
+        id S240866AbiF1CaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244467AbiF1C0i (ORCPT
+        with ESMTP id S244146AbiF1C0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:26:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24DD5255B2;
-        Mon, 27 Jun 2022 19:24:17 -0700 (PDT)
+        Mon, 27 Jun 2022 22:26:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A77255BD;
+        Mon, 27 Jun 2022 19:24:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5C2461799;
-        Tue, 28 Jun 2022 02:24:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 520B7C341CB;
-        Tue, 28 Jun 2022 02:24:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2567B81C0E;
+        Tue, 28 Jun 2022 02:24:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EE11C36AE2;
+        Tue, 28 Jun 2022 02:24:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383056;
-        bh=wXcsgi2jzE/u8Y1eny3s94T5x2K7V+tOj46QM6NhC1U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lQo7ulpZij3vmBudIAHCfBRMwIXp9qRL69Nz8KYNVOHZxMWJ+CRvFygXmlXpNBQc9
-         xiWUwN7maGBL+OlxvbUh6deESYbRauQR8K93Alm24DlmGcUXPrjrcDVAneMhiu6Pym
-         MPFJTQwA/rGAL3Zh1dBVX3w8bJNi0rTq//Ka5A21wqX9wauyqbuXzGZ8p0w9KhA9A+
-         G3qYiE4Zfh8WBplhw8aRM0Vw29Wtyp2F4o19mYCcnxrc9EjRrfd/xfcN4a4a5sVVp9
-         m3Gks73lBIzOHCvpbhhkctARPjPPfnQ0HC6oft5QFhySCNmelqUv4joXcopbnqX8uG
-         wtgxooCmkgwVw==
+        s=k20201202; t=1656383063;
+        bh=nLzmZbTw2HL1O4R0LPpdJNQxpaUQEQIt/EU7J6R4EMU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BmFjlRVqJxsjqIIbbOjCKttJGxYZokIstcN6J9RGaFW+VgFdM1o2ss1zFKkG85Dwp
+         fTJd0pugBamshfantPbbAKBkHFUSI6nD2piy7qqrXStfTSHWsQW97R5V4EZqMgsV44
+         h/faQ4UyMLqnXUZ521aG9D3KWkME84I1om+gz4iEMGbbQDEPvcM59WEl2m89j1DFK3
+         lX16QymSpk92U8uAdcWqTppcJAKtjrVq1fPJMtfoIKttqks3GtsphFAgRMQd2fcN/R
+         j3D7qz7Jzm0opLtctlkSLB0g21zn8woLQK/tBdz47zglPfhbj6VIbgADa1ByjncFdv
+         LCiEA1bKf60FQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>,
-        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 01/27] spi: spi-cadence: Fix SPI CS gets toggling sporadically
-Date:   Mon, 27 Jun 2022 22:23:47 -0400
-Message-Id: <20220628022413.596341-1-sashal@kernel.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>, Melissa Wen <mwen@igalia.com>,
+        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
+        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 05/27] drm/vc4: crtc: Move the BO handling out of common page-flip callback
+Date:   Mon, 27 Jun 2022 22:23:51 -0400
+Message-Id: <20220628022413.596341-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220628022413.596341-1-sashal@kernel.org>
+References: <20220628022413.596341-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,65 +52,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 21b511ddee09a78909035ec47a6a594349fe3296 ]
+[ Upstream commit 4d12c36fb73b5c49fe2f95d06515fd9846010fd2 ]
 
-As part of unprepare_transfer_hardware, SPI controller will be disabled
-which will indirectly deassert the CS line. This will create a problem
-in some of the devices where message will be transferred with
-cs_change flag set(CS should not be deasserted).
-As per SPI controller implementation, if SPI controller is disabled then
-all output enables are inactive and all pins are set to input mode which
-means CS will go to default state high(deassert). This leads to an issue
-when core explicitly ask not to deassert the CS (cs_change = 1). This
-patch fix the above issue by checking the Slave select status bits from
-configuration register before disabling the SPI.
+We'll soon introduce another completion callback source that won't need
+to use the BO reference counting, so let's move it around to create a
+function we will be able to share between both callbacks.
 
-Signed-off-by: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
-Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-Link: https://lore.kernel.org/r/20220606062525.18447-1-amit.kumar-mahapatra@xilinx.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Melissa Wen <mwen@igalia.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220610115149.964394-11-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-cadence.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/vc4/vc4_crtc.c | 34 ++++++++++++++++++++--------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/spi/spi-cadence.c b/drivers/spi/spi-cadence.c
-index 5ac60d06c674..91cd1578ec70 100644
---- a/drivers/spi/spi-cadence.c
-+++ b/drivers/spi/spi-cadence.c
-@@ -69,6 +69,7 @@
- #define CDNS_SPI_BAUD_DIV_SHIFT		3 /* Baud rate divisor shift in CR */
- #define CDNS_SPI_SS_SHIFT		10 /* Slave Select field shift in CR */
- #define CDNS_SPI_SS0			0x1 /* Slave Select zero */
-+#define CDNS_SPI_NOSS			0x3C /* No Slave select */
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index c2ff62917c09..a977172ba26f 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -862,21 +862,8 @@ vc4_async_page_flip_complete(struct vc4_async_flip_state *flip_state)
+ 	drm_crtc_vblank_put(crtc);
+ 	drm_framebuffer_put(flip_state->fb);
  
- /*
-  * SPI Interrupt Registers bit Masks
-@@ -449,15 +450,20 @@ static int cdns_prepare_transfer_hardware(struct spi_master *master)
-  * @master:	Pointer to the spi_master structure which provides
-  *		information about the controller.
-  *
-- * This function disables the SPI master controller.
-+ * This function disables the SPI master controller when no slave selected.
-  *
-  * Return:	0 always
-  */
- static int cdns_unprepare_transfer_hardware(struct spi_master *master)
+-	/* Decrement the BO usecnt in order to keep the inc/dec calls balanced
+-	 * when the planes are updated through the async update path.
+-	 * FIXME: we should move to generic async-page-flip when it's
+-	 * available, so that we can get rid of this hand-made cleanup_fb()
+-	 * logic.
+-	 */
+-	if (flip_state->old_fb) {
+-		struct drm_gem_cma_object *cma_bo;
+-		struct vc4_bo *bo;
+-
+-		cma_bo = drm_fb_cma_get_gem_obj(flip_state->old_fb, 0);
+-		bo = to_vc4_bo(&cma_bo->base);
+-		vc4_bo_dec_usecnt(bo);
++	if (flip_state->old_fb)
+ 		drm_framebuffer_put(flip_state->old_fb);
+-	}
+ 
+ 	kfree(flip_state);
+ 
+@@ -887,8 +874,27 @@ static void vc4_async_page_flip_seqno_complete(struct vc4_seqno_cb *cb)
  {
- 	struct cdns_spi *xspi = spi_master_get_devdata(master);
-+	u32 ctrl_reg;
+ 	struct vc4_async_flip_state *flip_state =
+ 		container_of(cb, struct vc4_async_flip_state, cb.seqno);
++	struct vc4_bo *bo = NULL;
++
++	if (flip_state->old_fb) {
++		struct drm_gem_cma_object *cma_bo =
++			drm_fb_cma_get_gem_obj(flip_state->old_fb, 0);
++		bo = to_vc4_bo(&cma_bo->base);
++	}
  
--	cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
-+	/* Disable the SPI if slave is deselected */
-+	ctrl_reg = cdns_spi_read(xspi, CDNS_SPI_CR);
-+	ctrl_reg = (ctrl_reg & CDNS_SPI_CR_SSCTRL) >>  CDNS_SPI_SS_SHIFT;
-+	if (ctrl_reg == CDNS_SPI_NOSS)
-+		cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
- 
- 	return 0;
+ 	vc4_async_page_flip_complete(flip_state);
++
++	/*
++	 * Decrement the BO usecnt in order to keep the inc/dec
++	 * calls balanced when the planes are updated through
++	 * the async update path.
++	 *
++	 * FIXME: we should move to generic async-page-flip when
++	 * it's available, so that we can get rid of this
++	 * hand-made cleanup_fb() logic.
++	 */
++	if (bo)
++		vc4_bo_dec_usecnt(bo);
  }
+ 
+ /* Implements async (non-vblank-synced) page flips.
 -- 
 2.35.1
 
