@@ -2,164 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46951C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232636AbiF2I7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 04:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42114 "EHLO
+        id S231834AbiF2JAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232356AbiF2I7o (ORCPT
+        with ESMTP id S232777AbiF2JAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 04:59:44 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40EE924956;
-        Wed, 29 Jun 2022 01:59:43 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id g26so31171455ejb.5;
-        Wed, 29 Jun 2022 01:59:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Ey+1hPLWMzu03pOiFsT4/+TTM+sA5fHRsZxt3a18l5I=;
-        b=ITFrgF4tOWPEhvarmRB5prRer9hEUz+UyNGFHcwfTGVb8Iu9ut4cyieJU0oum2eSvM
-         Z7BNbjCLM32ciGEqgOGAt7TvZQjazxOM+YygBbgwnjhjYYYJ2Wx9VoLysU1iJ94izIR6
-         Bxw0IUWp6KLy/n7RGqg926kFq6jj29j3PJaXlUIotrrJ61Xf5csNYpp03WfWmkS0xDco
-         G9WP5jKLZnsQRv3rm4KWk2n9Hu+SwCfuT700IElUw1emp0EzBS9CIQIZm++CAZOvUm+f
-         CJWFt8Y0z0e5g5Jv90vt0p3lNiwAnXhlj5S9VWNfWOVvsoIO4LRu6jEhJxjB2suMC1Vh
-         9Meg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Ey+1hPLWMzu03pOiFsT4/+TTM+sA5fHRsZxt3a18l5I=;
-        b=RgxoT/J5sEJb500PAC9PnD7wGOeECmuR0QB+uN80CALXWxDGSJRaY7i+w7KPl/UuE2
-         XDj5fk0F7RPaPiTNq0/szGD/CBU2dMDP8v/RfYOI4bmrS0IEwllxv8dVNiJHHOXkmF+/
-         dpHdWMZql5KGSR7MypGhNCdr1q/2weh+X2l9mAP9AzFUYnFul5afgPT9TLM4XBbu4hAk
-         rvpZfBmVZT5s2atBimiM8a6YSHkPuHCXTukews7lq+88vCMkkeTqdZC1wvlNADiT4i0w
-         BUDCC9u2b8x2MeFw6+3Zf1BZgHYpZafd/C6iCq4XHbTXUjQYvmQM7ZuwIkUOc18nTHKs
-         HEoQ==
-X-Gm-Message-State: AJIora/G6GuOY8cekN6tMJbHOEHqxwy+yI8UURBvFgToH2Pjp+/ZoY+I
-        HAvj9tmwsgdc8mTfzJiVnNoTwle1I5ftsPccOM4=
-X-Google-Smtp-Source: AGRyM1tS17F0rorf47vhU8c0TPDYGRUlrVAu3BBSUv1DO0tbWiOYhXEPu0at2UeRXUwCcE+w/UrNYs+A6K2xfqP0bo4=
-X-Received: by 2002:a17:907:72d0:b0:726:ec43:9bb with SMTP id
- du16-20020a17090772d000b00726ec4309bbmr2032289ejc.533.1656493181431; Wed, 29
- Jun 2022 01:59:41 -0700 (PDT)
+        Wed, 29 Jun 2022 05:00:04 -0400
+Received: from eggs.gnu.org (eggs.gnu.org [IPv6:2001:470:142:3::10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F502559B;
+        Wed, 29 Jun 2022 02:00:02 -0700 (PDT)
+Received: from fencepost.gnu.org ([2001:470:142:3::e]:53108)
+        by eggs.gnu.org with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <jemarch@gnu.org>)
+        id 1o6TYF-0005Kw-9z; Wed, 29 Jun 2022 04:59:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=gnu.org;
+        s=fencepost-gnu-org; h=MIME-Version:In-Reply-To:Date:References:Subject:To:
+        From; bh=yWORYvO8IZ9m60ZBZWENFQneFKxqNCr4t6RwBfhrer8=; b=ZLZ9KuZCd2SDqrpxJkqG
+        +voaKIJHCJpC+q0cXtrUfhueCJsMy9b5IpuYNrBi1ZsisbdXzVeW8k198uXzUTQjRCqxtQApieX1R
+        MlzEblWkgl7NvdGKemQ/k3Y6sIsQ8pXgH0L9I9kRNsI8ahjLP/kmoVm8rd5IiMo9w43cFOfIxCJ0N
+        JrjZIw461zbNGHFQh2WX91YCN+NWzn5AuwvBzULSP6VED+1Z3PBxtWs+0U4riWxM4tdsFLXw6dpSx
+        c+4JxUsfnnUyIHNe7vsb93q8jyjp/aWhivj7IAs6xF58Gs0w5hd+8goOCdCYnMDHgMhurqlqUAA4C
+        t2mdmgcf0S2KPg==;
+Received: from dynamic-077-182-178-150.77.182.pool.telefonica.de ([77.182.178.150]:54142 helo=termi.gnu.org)
+        by fencepost.gnu.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <jemarch@gnu.org>)
+        id 1o6TYE-0002JL-IW; Wed, 29 Jun 2022 04:59:59 -0400
+From:   "Jose E. Marchesi" <jemarch@gnu.org>
+To:     Ruud van der Pas <ruud.vanderpas@oracle.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Bill Wendling <morbo@google.com>,
+        Vladimir Mezentsev <vladimir.mezentsev@oracle.com>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        Wenlei He <wenlei@fb.com>, Hongtao Yu <hoy@fb.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        linux-toolchains@vger.kernel.org, elena.zannoni@oracle.com
+Subject: Re: plumbers session on profiling?
+References: <CAKwvOdkyY9rsH3eViMK-_4iz_W_usumz5nD+3AhbNCVQ3FRCjA@mail.gmail.com>
+        <CAKwvOdnsZekEM77axBf67MDqQVP0n6PTKH=njSyPSWTNiWAOiA@mail.gmail.com>
+        <87mtf7z0rt.fsf@gnu.org>
+        <6F9E9D93-3913-4022-9384-D809C8EF7715@oracle.com>
+        <CAKwvOdm=_YqBpuBzouqoWHYNe6MMUE10vqF0PUkU=hcOj+UqrQ@mail.gmail.com>
+        <B0A01DE7-1B50-479A-92DF-DAFAB3F06E0F@oracle.com>
+Date:   Tue, 28 Jun 2022 19:08:48 +0200
+In-Reply-To: <B0A01DE7-1B50-479A-92DF-DAFAB3F06E0F@oracle.com> (Ruud van der
+        Pas's message of "Thu, 23 Jun 2022 23:21:07 +0200")
+Message-ID: <878rpgpvfj.fsf@gnu.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-References: <1656469212-12717-1-git-send-email-u0084500@gmail.com>
- <1656469212-12717-2-git-send-email-u0084500@gmail.com> <bc6f42d9-f821-ad0c-85c8-b4a4d2146485@linaro.org>
-In-Reply-To: <bc6f42d9-f821-ad0c-85c8-b4a4d2146485@linaro.org>
-From:   ChiYuan Huang <u0084500@gmail.com>
-Date:   Wed, 29 Jun 2022 16:59:30 +0800
-Message-ID: <CADiBU39TPVhDgZkv27mzWNMD5EVOg_jFq=_mFLa6tPZ6EwjT3g@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add rtq6056 adc support
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        cy_huang <cy_huang@richtek.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> =E6=96=BC 2022=E5=B9=
-=B46=E6=9C=8829=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=884:25=E5=AF=AB=
-=E9=81=93=EF=BC=9A
+
+[Added linux-toolchains@vger in CC]
+
+It would be interesting to have some discussion in the Toolchains track
+on building the kernel with PGO/FDO.  I have seen a raise on interest on
+the topic in several companies, but it would make very little sense if
+no kernel hacker is interested in participating... anybody?
+
+> Hi Nick,
 >
-> On 29/06/2022 04:20, cy_huang wrote:
-> > From: ChiYuan Huang <cy_huang@richtek.com>
-> >
-> > Add the documentation for Richtek rtq6056.
-> >
-> > Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-> > ---
-> > Since v2
-> > - Change the resistor property name to be generic 'shunt-resistor-micro=
--ohms'.
-> >
-> > ---
-> >  .../bindings/iio/adc/richtek,rtq6056.yaml          | 56 ++++++++++++++=
-++++++++
-> >  1 file changed, 56 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/richtek,r=
-tq6056.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.=
-yaml b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
-> > new file mode 100644
-> > index 00000000..fe45d8b
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
-> > @@ -0,0 +1,56 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/adc/richtek,rtq6056.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: RTQ6056 Bi-Directional Current and Power Monitor with 16-bit AD=
-C
-> > +
-> > +maintainers:
-> > +  - ChiYuan Huang <cy_huang@richtek.com>
-> > +
-> > +description: |
-> > +  The RTQ6056 is a high accuracy current-sense monitor with I2C and SM=
-Bus
-> > +  interface, and the device provides full information for system by re=
-ading
-> > +  out the loading current and power.
-> > +
-> > +  The device monitors both of the drops across sense resistor and the =
-BUS
-> > +  voltage, converts into the current in amperes, and power in watts th=
-rough
-> > +  internal analog-to-digital converter ADC. The programmable calibrati=
-on,
-> > +  adjustable conversion time, and averaging function are also built in=
- for
-> > +  more design flexibility.
-> > +
-> > +  Datasheet is available at
-> > +  https://www.richtek.com/assets/product_file/RTQ6056/DSQ6056-00.pdf
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: richtek,rtq6056
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  "#io-channel-cells":
-> > +    const: 1
-> > +
-> > +  shunt-resistor-micro-ohms:
-> > +    description: Shunt IN+/IN- sensing node resistor
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - "#io-channel-cells"
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    i2c {
-> > +      #address-cells =3D <1>;
-> > +      #size-cells =3D <0>;
-> > +      rtq6056@40 {
+> Apologies for the delay. It's been a busy week with gprofng related work.
 >
-> This was not fixed.
+>> If you're still considering attending Linux Plumbers conf, please
+>> submit a proposal:
+>> https://lpc.events/event/16/abstracts/
+>> Please make sure to select "Toolchains Track" as the "Track" after
+>> clicking on "Submit new abstract."
 >
-Sorry, too many changes to check. I really forgot it.
+> Thanks for asking!
 >
-> Best regards,
-> Krzysztof
+> Our presence largely depends on a discussion on kernel profiling and
+> to see what we might be able to do with gprofng regarding this.
+>
+>>From our side, the main person will be Vladimir. He knows the code
+> inside and out, but I will also try to attend such a session.
+>
+> Is there any news regarding such a session on kernel profiling?
+>
+> Kind regards, Ruud
+>
+>> 
+>>> 
+>>> Kind regards, Ruud
+>>> 
+>>>> On 24 May 2022, at 12:24, Jose E. Marchesi <jemarch@gnu.org> wrote:
+>>>> 
+>>>> 
+>>>> I am adding Ruud van der Pas in CC. He works in gprofng and would be
+>>>> willing to participate in a discussion on kernel profiling.
+>>>> 
+>>>>> (Re-sending with Vladamir's email addr fixed; sorry for the noise)
+>>>>> 
+>>>>> On Fri, Apr 15, 2022 at 10:54 AM Nick Desaulniers
+>>>>> <ndesaulniers@google.com> wrote:
+>>>>>> 
+>>>>>> Hi Sami, Bill, Jose, and Vladamir,
+>>>>>> Jose and I are currently in the planning process to put together a
+>>>>>> Kernel+Toolchain microconference track at Linux Plumbers Conference
+>>>>>> this year (Sept 12-14) in Dublin, Ireland.
+>>>>>> 
+>>>>>> Would you all be interested in leading a session discussing various
+>>>>>> profiling related topics such as:
+>>>>>> * gprofng
+>>>>>> * PGO
+>>>>>> * AutoFDO
+>>>>>> 
+>>>>>> Would others find such a discussion useful?
+>>>>>> --
+>>>>>> Thanks,
+>>>>>> ~Nick Desaulniers
+>>> 
+>> 
+>> 
+>> -- 
+>> Thanks,
+>> ~Nick Desaulniers
