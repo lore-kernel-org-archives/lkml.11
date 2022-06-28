@@ -2,118 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9FEFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAA6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347932AbiF1Peq (ORCPT
+        id S1348026AbiF1Pe6 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
+        Tue, 28 Jun 2022 11:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347931AbiF1Pec (ORCPT
+        with ESMTP id S1347906AbiF1Pes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:34:32 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BD72BB09
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:34:32 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SAPO2J011111;
-        Tue, 28 Jun 2022 10:34:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=Sg5V/JOYV9uhVr4H4c2c+mW3djbmU523MZTj9cu6wV8=;
- b=oIAqj0S1ejeZY/VaOeVQ4r+JEIpbgVNFfDmlItNO4E4k8nlFzM6UQWWbtta6liVJVuGC
- PG1hlOrYQSOWLJcoo1qKyHxttqPg/d+RAZLN9io3KCIjIW80Qc6az4t5Dx5NkYHZ1AAP
- ejOs3uLqBoLHGuONVWy/JdB0ONKJMdZqijxCGm826osH5qo2AOBnMFpq+ZSpPiE9id5n
- Lcx7VJXp92ojjEzVLQPuR5g4lr5mB5mAmXK3Dz19KDrv5bh2FQBoSw/gZzTQprzkbXqE
- Y1LJHjG51tX3GPrwK2KQwZj9I5ddXUaK/8WpPfN6LAMJ4MmmBVjkP6RlxbKwulgrZ97y eg== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gwys2mat2-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 28 Jun 2022 10:34:12 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 28 Jun
- 2022 16:34:09 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Tue, 28 Jun 2022 16:34:09 +0100
-Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 4BBCA458;
-        Tue, 28 Jun 2022 15:34:09 +0000 (UTC)
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <lgirdwood@gmail.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/4] ASoC: wm8998: Fix event generation for input mux
-Date:   Tue, 28 Jun 2022 16:34:07 +0100
-Message-ID: <20220628153409.3266932-2-ckeepax@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220628153409.3266932-1-ckeepax@opensource.cirrus.com>
-References: <20220628153409.3266932-1-ckeepax@opensource.cirrus.com>
+        Tue, 28 Jun 2022 11:34:48 -0400
+Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2829C2B24F;
+        Tue, 28 Jun 2022 08:34:47 -0700 (PDT)
+Received: by mail-qv1-f46.google.com with SMTP id 59so20583793qvb.3;
+        Tue, 28 Jun 2022 08:34:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9TFwdpU9SDvPROx3CuYdr/usbBC2kew7C8d8p5fl8bo=;
+        b=wxlTWHZ3QZc+Mpj83H0x4Q7EEQOBiQVuync4YyyqZW18qUht6yqQa9MukLrewRxTyT
+         uMy74rFCRdiN54P9NmFnEusDsJDo4k7NIAxVlG9gb4dJEn7Ugw0zC0Vq0E2QFwhbLmUv
+         xnNh14U2OxgV5Z5xbpYyAS8tp3hzbv7EHr82O0XxRxTC+ldoOA5vCvMfOyAtgPhYf9A8
+         /2DvgCTH90CjJmI+gawVlEYqzyNZGTBFnLT/2Mb1B+/Q2TiSPIo0+q1287bpeA0dujVy
+         h+hPcK+3UBv05ntd2nn0wnvPuz+1PIg77rjaT78wRfCA1dkjyFV/fNG37f7bPar4SeBy
+         VZEA==
+X-Gm-Message-State: AJIora/AG8S7E0GMTJJ/4qoB2yVQhJKMCT94+7IDK+8iONSt1BKvtJO3
+        erRvfiehrdyTa8S9Zupf1RkAgHfOiNyYHQ==
+X-Google-Smtp-Source: AGRyM1s9Q4nj4fYtHzQWb3kTl56q+sREdxY6Z2UPcNT2rORetoy2ksScOQbjZu48SzwXYzWuUaBMMA==
+X-Received: by 2002:ac8:7f15:0:b0:306:6adf:8ae9 with SMTP id f21-20020ac87f15000000b003066adf8ae9mr13543398qtk.137.1656430486116;
+        Tue, 28 Jun 2022 08:34:46 -0700 (PDT)
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
+        by smtp.gmail.com with ESMTPSA id bs7-20020a05620a470700b006af33c08e77sm4174642qkb.121.2022.06.28.08.34.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 08:34:45 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-3176b6ed923so120851677b3.11;
+        Tue, 28 Jun 2022 08:34:44 -0700 (PDT)
+X-Received: by 2002:a81:574c:0:b0:317:7c3a:45be with SMTP id
+ l73-20020a81574c000000b003177c3a45bemr21605898ywb.316.1656430484420; Tue, 28
+ Jun 2022 08:34:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: DUAm5S6FSpeKs1rQXALmeksBnOmT4jbF
-X-Proofpoint-GUID: DUAm5S6FSpeKs1rQXALmeksBnOmT4jbF
-X-Proofpoint-Spam-Reason: safe
+References: <20220624144001.95518-1-clement.leger@bootlin.com> <20220624144001.95518-16-clement.leger@bootlin.com>
+In-Reply-To: <20220624144001.95518-16-clement.leger@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 28 Jun 2022 17:34:31 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXwe0YmZr+BjArnWWALAsC28_Q+zy3F0cHMZDxOxdnCLg@mail.gmail.com>
+Message-ID: <CAMuHMdXwe0YmZr+BjArnWWALAsC28_Q+zy3F0cHMZDxOxdnCLg@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 15/16] ARM: dts: r9a06g032-rzn1d400-db: add
+ switch description
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-wm8998_inmux_put returns the value of snd_soc_dapm_mux_update_power,
-which returns a 1 if a path was found for the kcontrol. This is
-obviously different to the expected return a 1 if the control
-was updated value. This results in spurious notifications to
-user-space. Update the handling to only return a 1 when the value is
-changed.
+Hi Clément,
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
----
- sound/soc/codecs/wm8998.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+On Fri, Jun 24, 2022 at 4:42 PM Clément Léger <clement.leger@bootlin.com> wrote:
+> Add description for the switch, GMAC2 and MII converter. With these
+> definitions, the switch port 0 and 1 (MII port 5 and 4) are working on
+> RZ/N1D-DB board.
+>
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-diff --git a/sound/soc/codecs/wm8998.c b/sound/soc/codecs/wm8998.c
-index 00b59fc9b1fe0..ab5481187c710 100644
---- a/sound/soc/codecs/wm8998.c
-+++ b/sound/soc/codecs/wm8998.c
-@@ -108,6 +108,7 @@ static int wm8998_inmux_put(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	unsigned int mode_reg, mode_index;
- 	unsigned int mux, inmode, src_val, mode_val;
-+	int change, ret;
- 
- 	mux = ucontrol->value.enumerated.item[0];
- 	if (mux > 1)
-@@ -137,14 +138,20 @@ static int wm8998_inmux_put(struct snd_kcontrol *kcontrol,
- 	snd_soc_component_update_bits(component, mode_reg,
- 				      ARIZONA_IN1_MODE_MASK, mode_val);
- 
--	snd_soc_component_update_bits(component, e->reg,
--				      ARIZONA_IN1L_SRC_MASK |
--				      ARIZONA_IN1L_SRC_SE_MASK,
--				      src_val);
-+	change = snd_soc_component_update_bits(component, e->reg,
-+					       ARIZONA_IN1L_SRC_MASK |
-+					       ARIZONA_IN1L_SRC_SE_MASK,
-+					       src_val);
- 
--	return snd_soc_dapm_mux_update_power(dapm, kcontrol,
--					     ucontrol->value.enumerated.item[0],
--					     e, NULL);
-+	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol,
-+					    ucontrol->value.enumerated.item[0],
-+					    e, NULL);
-+	if (ret < 0) {
-+		dev_err(arizona->dev, "Failed to update demux power state: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return change;
- }
- 
- static const char * const wm8998_inmux_texts[] = {
--- 
-2.30.2
+Thanks for your patch!
 
+> --- a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+> +++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+> @@ -31,3 +33,118 @@ &wdt0 {
+>         timeout-sec = <60>;
+>         status = "okay";
+>  };
+> +
+> +&gmac2 {
+
+Please keep the nodes sorted (everywhere).
+
+> +&pinctrl{
+> +       pins_mdio1: pins_mdio1 {
+> +               pinmux = <
+> +                       RZN1_PINMUX(152, RZN1_FUNC_MDIO1_SWITCH)
+> +                       RZN1_PINMUX(153, RZN1_FUNC_MDIO1_SWITCH)
+> +               >;
+
+This is not a single value, but an array of 2 values.  Hence they
+should be grouped using angular brackets, to enable automatic
+validation.
+
+I will fix the above while applying, so no need to resend.
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v5.20.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
