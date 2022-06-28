@@ -2,71 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D583DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 04:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55062C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 04:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243596AbiF1EjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 00:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34516 "EHLO
+        id S243348AbiF1Elh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 00:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230356AbiF1Eiw (ORCPT
+        with ESMTP id S229922AbiF1Elg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 00:38:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6403B5;
-        Mon, 27 Jun 2022 21:38:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7796B81C18;
-        Tue, 28 Jun 2022 04:38:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB74AC3411D;
-        Tue, 28 Jun 2022 04:38:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656391129;
-        bh=nNr9e3DkyzRpISv/TUSNImIsSI6npMd6I/9ac777X9M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HkMp0hFeKN0v3bPMd8NBLbiynojp2wKWd9q+pSiqiMuT84hlmUFA6VZLCKjrQtqos
-         ZgM+MAnSPkjjWRvIUAEg/WGoRI6INZA5lfZ5tjLIrD5AQde9aOGffql8uFS9bbwY9M
-         YGXPaPWC8ExStSkoJ8RGw4w0obKQ7lGpEtw9MTH7pm6YabLdUVhr4ZJWw0EGaC0AG3
-         rGGe6IsQzw2Imdvc+7K+kruPQfKflk0IfagjgqnuQzfffF/9qrU2FRaqq9ppepA820
-         5Q8Dvdz4QX7k/RrV7CmzPHT0avyAG9ZtKDkBH8Nkap4/rjZxAnnFPltoMcgMutr5BX
-         rDt/xsYkYe0Xg==
-Date:   Mon, 27 Jun 2022 21:38:47 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Wentao_Liang <Wentao_Liang_g@163.com>,
-        "David S . Miller" <davem@davemloft.net>, jdmason@kudzu.us,
-        edumazet@google.com, pabeni@redhat.com, paskripkin@gmail.com,
-        jgg@ziepe.ca, liuhangbin@gmail.com, arnd@arndb.de,
-        christophe.jaillet@wanadoo.fr, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.18 24/53] drivers/net/ethernet/neterion/vxge:
- Fix a use-after-free bug in vxge-main.c
-Message-ID: <20220627213847.60d09e43@kernel.org>
-In-Reply-To: <20220628021839.594423-24-sashal@kernel.org>
-References: <20220628021839.594423-1-sashal@kernel.org>
-        <20220628021839.594423-24-sashal@kernel.org>
+        Tue, 28 Jun 2022 00:41:36 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9DBB417E35;
+        Mon, 27 Jun 2022 21:41:35 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 435E081BC;
+        Tue, 28 Jun 2022 04:36:23 +0000 (UTC)
+Date:   Tue, 28 Jun 2022 07:41:33 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Liang He <windhl@126.com>
+Cc:     linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm: mach-omap2: display: Fix refcount leak bug
+Message-ID: <YrqGfdGXvON+YFPr@atomide.com>
+References: <20220617145803.4050918-1-windhl@126.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220617145803.4050918-1-windhl@126.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 27 Jun 2022 22:18:10 -0400 Sasha Levin wrote:
-> From: Wentao_Liang <Wentao_Liang_g@163.com>
-> 
-> [ Upstream commit 8fc74d18639a2402ca52b177e990428e26ea881f ]
-> 
-> The pointer vdev points to a memory region adjacent to a net_device
-> structure ndev, which is a field of hldev. At line 4740, the invocation
-> to vxge_device_unregister unregisters device hldev, and it also releases
-> the memory region pointed by vdev->bar0. At line 4743, the freed memory
-> region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
-> use-after-free vulnerability. We can fix the bug by calling iounmap
-> before vxge_device_unregister.
+* Liang He <windhl@126.com> [220617 17:53]:
+> In omapdss_init_fbdev(), of_find_node_by_name() will return a node
+> pointer with refcount incremented. We should use of_node_put() when
+> it is not used anymore.
 
-This is a dud see commit 877fe9d49b74 ("Revert
-"drivers/net/ethernet/neterion/vxge: Fix a use-after-free bug in vxge-main.c"")
+Thanks applying into omap-for-v5.20/soc.
 
+Tony
