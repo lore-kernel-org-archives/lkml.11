@@ -2,91 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F44C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:04:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BB5CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234858AbiF1TE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33662 "EHLO
+        id S235780AbiF1TFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236559AbiF1TEG (ORCPT
+        with ESMTP id S235169AbiF1TEq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:04:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457903819C;
-        Tue, 28 Jun 2022 12:02:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1F67B81E05;
-        Tue, 28 Jun 2022 19:02:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CD7C3411D;
-        Tue, 28 Jun 2022 19:02:46 +0000 (UTC)
-Date:   Tue, 28 Jun 2022 15:02:45 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org
-Subject: Re: [PATCH V4 09/20] rv/monitor: wip instrumentation and
- Makefile/Kconfig entries
-Message-ID: <20220628150245.6c59ea52@gandalf.local.home>
-In-Reply-To: <4d975ef5-7e50-9241-1a3e-f0f9bad9c5b5@infradead.org>
-References: <cover.1655368610.git.bristot@kernel.org>
-        <9c05a95927c18bebcf0eb79bef15ec59667bc08c.1655368610.git.bristot@kernel.org>
-        <4d975ef5-7e50-9241-1a3e-f0f9bad9c5b5@infradead.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 28 Jun 2022 15:04:46 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AB829814;
+        Tue, 28 Jun 2022 12:04:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656443084; x=1687979084;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=N1AIQgmubreattzHLRnM0HT3Yc8fAoLHRwgDBlBS8LA=;
+  b=VHS+RJwDI+KcZ9uXXLcKfjF8faaFRG/l0XQvsCaWXKwlW1x5ZaY0iH2v
+   NNh6KGSIr+W7CVP6Fmnx13j4jcHiqkpkv5M6brC2VSNCLYt8CTibCi0x4
+   CiYiFyJrEhIKy/mhdnt097oeht0B1aMYnewAp7p/fMR59QwOml/YmZdsq
+   VkXAJQR/UrO9KlFEr+qJe7rsreBLBt3iuZltfYq2+xm3rNer4rbsFJ4gZ
+   QV5jJfaO3Op8d2+jCpIJxf7tK+RHyneutpVp0TU77jnC3bA22YDAJnNsj
+   sihrkprmfclvi8V00y20UQ9eaoW9NlGegolkPFJ9miuncpmKIj5UEHSt1
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="279369738"
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="279369738"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:04:44 -0700
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="587977804"
+Received: from staibmic-mobl1.amr.corp.intel.com (HELO [10.209.67.166]) ([10.209.67.166])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:04:43 -0700
+Message-ID: <33e38ba3-0865-8a9f-0739-af25a63d0beb@intel.com>
+Date:   Tue, 28 Jun 2022 12:03:38 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH Part2 v6 06/49] x86/sev: Add helper functions for
+ RMPUPDATE and PSMASH instruction
+Content-Language: en-US
+To:     "Kalra, Ashish" <Ashish.Kalra@amd.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Cc:     "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "jroedel@suse.de" <jroedel@suse.de>,
+        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "jmattson@google.com" <jmattson@google.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "slp@redhat.com" <slp@redhat.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "srinivas.pandruvada@linux.intel.com" 
+        <srinivas.pandruvada@linux.intel.com>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "dovmurik@linux.ibm.com" <dovmurik@linux.ibm.com>,
+        "tobin@ibm.com" <tobin@ibm.com>, "bp@alien8.de" <bp@alien8.de>,
+        "Roth, Michael" <Michael.Roth@amd.com>,
+        "vbabka@suse.cz" <vbabka@suse.cz>,
+        "kirill@shutemov.name" <kirill@shutemov.name>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "marcorr@google.com" <marcorr@google.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "alpergun@google.com" <alpergun@google.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>
+References: <cover.1655761627.git.ashish.kalra@amd.com>
+ <e4643e9d37fcb025d0aec9080feefaae5e9245d5.1655761627.git.ashish.kalra@amd.com>
+ <YrH0ca3Sam7Ru11c@work-vm>
+ <SN6PR12MB2767FBF0848B906B9F0284D28EB39@SN6PR12MB2767.namprd12.prod.outlook.com>
+ <BYAPR12MB2759910E715C69D1027CCE678EB29@BYAPR12MB2759.namprd12.prod.outlook.com>
+ <Yrrc/6x70wa14c5t@work-vm>
+ <SN6PR12MB27677062FBBF9D62C7BF41D88EB89@SN6PR12MB2767.namprd12.prod.outlook.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <SN6PR12MB27677062FBBF9D62C7BF41D88EB89@SN6PR12MB2767.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022 14:00:10 -0700
-Randy Dunlap <rdunlap@infradead.org> wrote:
-
-> On 6/16/22 01:44, Daniel Bristot de Oliveira wrote:
-> > diff --git a/kernel/trace/rv/Kconfig b/kernel/trace/rv/Kconfig
-> > index 1eafb5adcfcb..e9246b0bec9d 100644
-> > --- a/kernel/trace/rv/Kconfig
-> > +++ b/kernel/trace/rv/Kconfig
-> > @@ -26,6 +26,13 @@ menuconfig RV
-> >  	  the system behavior.
-> >  
-> >  if RV
-> > +config RV_MON_WIP
-> > +	depends on PREEMPTIRQ_TRACEPOINTS
-> > +	select DA_MON_EVENTS_IMPLICIT
-> > +	bool "WIP monitor"  
+On 6/28/22 10:57, Kalra, Ashish wrote:
+> +       /*
+> +        * RMP table entry format is not architectural and it can vary by processor and
+> +        * is defined by the per-processor PPR. Restrict SNP support on the known CPU
+> +        * model and family for which the RMP table entry format is currently defined for.
+> +        */
+> +       if (family != 0x19 || model > 0xaf)
+> +               goto nosnp;
+> +
 > 
-> Does WIP mean work-in-progress?  (It does to me.)
-> 
-> If not, please explain what it means in the help text.
+> This way SNP will only be enabled specifically on the platforms for which this RMP entry
+> format is defined in those processor's PPR. This will work for Milan and Genoa as of now.
 
-Yeah, that's exactly what I thought too ;-)
+At some point, it would be really nice if the AMD side of things could
+work to kick the magic number habit on these things.  This:
 
--- Steve
+	arch/x86/include/asm/intel-family.h
 
-> 
-> > +	help
-> > +	  Enable WIP sample monitor, this is a sample monitor that
-> > +	  illustrates the usage of per-cpu monitors.  
-> 
-> thanks.
+has been really handy.  It lets you do things like
 
+	grep INTEL_FAM6_SKYLAKE arch/x86
+
+That's a *LOT* more precise than:
+
+	egrep -i '0x5E|94' arch/x86
