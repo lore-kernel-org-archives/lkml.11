@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A27C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:43:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A75C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230233AbiF1TnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S230499AbiF1TnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232677AbiF1Tmo (ORCPT
+        with ESMTP id S231928AbiF1TmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:42:44 -0400
+        Tue, 28 Jun 2022 15:42:24 -0400
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738F53B2BC;
-        Tue, 28 Jun 2022 12:35:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597753EF05;
+        Tue, 28 Jun 2022 12:35:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1656444900; h=from:from:sender:reply-to:subject:subject:date:date:
+        s=mail; t=1656444899; h=from:from:sender:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/GI374m8HDyCwdRV9NoEhzKp27nBp7VJRaI366errsU=;
-        b=p7rTsOWcNTHZTUBI7z3YWWtV7ohh/U/HWHk17ujuwERuHi/S8y79XmvLRCPp4X0g3KIW7t
-        G59QoOpMFS+Kv4D3x6t/MIm8veKuYGDqVqvzC5xsW8dLUX8xhPpUF1sHFQugpXfL4nT1MA
-        XbQEX4Zx7cqYVgHw8unZAoq6JtO2P00=
+        bh=yujh1grN3o7CefTxugVeGaE4Abhbtk5+SE7AhEnZWWQ=;
+        b=kWcsUfWDTKRWDnabuPUWr73Dthy6mrja1T6Pkvhn47DyiA8e/Fgd6+Qja8PdcsBPQlMhxP
+        lObAd72hMk82QpUkH9fpq1hbmWaJNSqTmyLdauLmxHcq+vpGmh1Dj32xoHDCHAJJ2tVs7c
+        bsRw2V0GDdBdw/0PE5sni/58G3IdK7U=
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
         Guenter Roeck <linux@roeck-us.net>
 Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paul Cercueil <paul@crapouillou.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH 3/8] watchdog: mtk_wdt: Remove #ifdef guards for PM related functions
-Date:   Tue, 28 Jun 2022 20:34:44 +0100
-Message-Id: <20220628193449.160585-4-paul@crapouillou.net>
+        Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH 2/8] watchdog: dw_wdt: Remove #ifdef guards for PM related functions
+Date:   Tue, 28 Jun 2022 20:34:43 +0100
+Message-Id: <20220628193449.160585-3-paul@crapouillou.net>
 In-Reply-To: <20220628193449.160585-1-paul@crapouillou.net>
 References: <20220628193449.160585-1-paul@crapouillou.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam: Yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -54,53 +50,42 @@ always compiled independently of any Kconfig option, and thanks to that
 bugs and regressions are easier to catch.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-mediatek@lists.infradead.org
 ---
- drivers/watchdog/mtk_wdt.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/watchdog/dw_wdt.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
-index f0d4e3cc7459..e97787536792 100644
---- a/drivers/watchdog/mtk_wdt.c
-+++ b/drivers/watchdog/mtk_wdt.c
-@@ -401,7 +401,6 @@ static int mtk_wdt_probe(struct platform_device *pdev)
- 	return 0;
+diff --git a/drivers/watchdog/dw_wdt.c b/drivers/watchdog/dw_wdt.c
+index cd578843277e..060dae67d852 100644
+--- a/drivers/watchdog/dw_wdt.c
++++ b/drivers/watchdog/dw_wdt.c
+@@ -375,7 +375,6 @@ static irqreturn_t dw_wdt_irq(int irq, void *devid)
+ 	return IRQ_HANDLED;
  }
  
 -#ifdef CONFIG_PM_SLEEP
- static int mtk_wdt_suspend(struct device *dev)
+ static int dw_wdt_suspend(struct device *dev)
  {
- 	struct mtk_wdt_dev *mtk_wdt = dev_get_drvdata(dev);
-@@ -423,7 +422,6 @@ static int mtk_wdt_resume(struct device *dev)
+ 	struct dw_wdt *dw_wdt = dev_get_drvdata(dev);
+@@ -410,9 +409,8 @@ static int dw_wdt_resume(struct device *dev)
  
  	return 0;
  }
--#endif
+-#endif /* CONFIG_PM_SLEEP */
  
- static const struct of_device_id mtk_wdt_dt_ids[] = {
- 	{ .compatible = "mediatek,mt2712-wdt", .data = &mt2712_data },
-@@ -437,16 +435,14 @@ static const struct of_device_id mtk_wdt_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, mtk_wdt_dt_ids);
+-static SIMPLE_DEV_PM_OPS(dw_wdt_pm_ops, dw_wdt_suspend, dw_wdt_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(dw_wdt_pm_ops, dw_wdt_suspend, dw_wdt_resume);
  
--static const struct dev_pm_ops mtk_wdt_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(mtk_wdt_suspend,
--				mtk_wdt_resume)
--};
-+static DEFINE_SIMPLE_DEV_PM_OPS(mtk_wdt_pm_ops,
-+				mtk_wdt_suspend, mtk_wdt_resume);
- 
- static struct platform_driver mtk_wdt_driver = {
- 	.probe		= mtk_wdt_probe,
+ /*
+  * In case if DW WDT IP core is synthesized with fixed TOP feature disabled the
+@@ -710,7 +708,7 @@ static struct platform_driver dw_wdt_driver = {
  	.driver		= {
- 		.name		= DRV_NAME,
--		.pm		= &mtk_wdt_pm_ops,
-+		.pm		= pm_sleep_ptr(&mtk_wdt_pm_ops),
- 		.of_match_table	= mtk_wdt_dt_ids,
+ 		.name	= "dw_wdt",
+ 		.of_match_table = of_match_ptr(dw_wdt_of_match),
+-		.pm	= &dw_wdt_pm_ops,
++		.pm	= pm_sleep_ptr(&dw_wdt_pm_ops),
  	},
  };
+ 
 -- 
 2.35.1
 
