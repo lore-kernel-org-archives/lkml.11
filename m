@@ -2,385 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB16CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4DDBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346586AbiF1Oax (ORCPT
+        id S1346632AbiF1ObP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 10:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40956 "EHLO
+        Tue, 28 Jun 2022 10:31:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345211AbiF1Oav (ORCPT
+        with ESMTP id S231429AbiF1ObN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 10:30:51 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C4D3136F;
-        Tue, 28 Jun 2022 07:30:50 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id e40so17887002eda.2;
-        Tue, 28 Jun 2022 07:30:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wUmuU1T09Y9A7wJ/J6R3aOq/9g1vAxt3wiOwowyk32c=;
-        b=WL9Be7wsuM6t0JWMLBW0mha0F1hsUgW+2hy8OM5Q3KlB5vxly6XWqUrEvwYo7fwP4+
-         OaQ/Gin6wKfcgj0mB9L81ZJQok7yWF4d60/lN6a483Rwmiap+wKjMA8uuv9zv3k6DO9r
-         Z1x3lfBTEFL3N62wFuF6siz4RZhB96KopeTu8FKWBfYs/KJRIiufcHgsVSq/Jf8FvMcW
-         mjXykhk8eqVkvgDc2v9EcXL5Lm18dv1Okwa2EoHSRL62PxHRNzCruV2OSLcN6qe7eDIC
-         EUsO5gOLB8Z38vUPQXZv6WRXQPSFXigHuVgL9vFI+zSVL3PBz4cJy4ptKzRx7jI3GO3l
-         XvYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wUmuU1T09Y9A7wJ/J6R3aOq/9g1vAxt3wiOwowyk32c=;
-        b=m43r3qstrXe5gLWJMYLibLt8Yx0UKGrsUNgK7ZaysItOsZkenMsQw/Jm63/F2WBt4M
-         TZYrJWo8GnI/L/qzkCmM7a1D+IVVaUAqdPCpozmJayqQ7t7Jq2tDjj5pK3MGcfQW7RUa
-         Yl1qWGRH+TITsVHhRUxHnqufGNcOvlcAV7yF3KSHGjOrtlm8o2T5XXTU1xzIvQaKgqN7
-         9hlGSIKWumnEJvoqik99HNK2gyyCh5bSdGacrBaKvkCdky6v9SvCRitXoKE90wwzSLGM
-         cm6sJsJSjG93WYoP6s+vm+iwIDdeMW3bhlH0JHFI0xQsF6iX5zNaZ24ZjJPi+nKaXjlL
-         5Lwg==
-X-Gm-Message-State: AJIora8cV7ZeKsCbKd5VvC6mGl43WoSRGTLnkTfLbRZuOWDb+07zmlwA
-        coRwj8ozkr+ReLjGSPl0Ka147oMDb20=
-X-Google-Smtp-Source: AGRyM1vY+endgF5kxPnRW8FK3DKzgLMxl5A3d0KiNMsMLC5/gf1LnaxDOOgyTe6ASwvKcUheuGkHQQ==
-X-Received: by 2002:a05:6402:50c7:b0:435:923b:9b23 with SMTP id h7-20020a05640250c700b00435923b9b23mr24188285edb.336.1656426648713;
-        Tue, 28 Jun 2022 07:30:48 -0700 (PDT)
-Received: from [192.168.0.182] ([79.119.98.153])
-        by smtp.gmail.com with ESMTPSA id b15-20020a50e38f000000b0042dc8dd59c7sm9775482edm.51.2022.06.28.07.30.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 07:30:48 -0700 (PDT)
-Message-ID: <93ae6c3c-bfa8-115f-8062-2bb1b923eaf3@gmail.com>
-Date:   Tue, 28 Jun 2022 17:30:47 +0300
+        Tue, 28 Jun 2022 10:31:13 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC11931359;
+        Tue, 28 Jun 2022 07:31:09 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SDlQm3019202;
+        Tue, 28 Jun 2022 14:31:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=9o7EgPtGMfZk+z1MHl0qrdDzYgua2vVUlYtReRkN8dk=;
+ b=Rn8iTyBDvBkfoNStHHfWtuR1Ltfra+Rappvf2/C+eQtk7Y6aprLcnhgnXoTaY60lGeVe
+ qIzFLv5lP03CTygNNVlRPVppqlAh9fXJIP5uAr4BcRNY4D45S2gIw2EoT1lMPOne56KZ
+ lTaWbW3On7jqC3p++gYMkOrwrMzVfVM189uDktrTVTjgkp76SIQIuFFR2hbg52FAi2/6
+ dBNgRra9mGJxlFXlAUc1f59WPgVsfrmeqJi2iHsjTzKcBHeeaFUvU225+bqYPvF3mffS
+ GDZtAxNzMAsY+pXkxSzwEq2e00qv9O4ToI4FmN0Enf0HhcI4v9C+vpo6IrYtoNvJWcqS xQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h02u21r03-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 14:31:07 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SEBjsf028578;
+        Tue, 28 Jun 2022 14:31:06 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h02u21qxb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 14:31:06 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SEKfZt003924;
+        Tue, 28 Jun 2022 14:31:04 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma04ams.nl.ibm.com with ESMTP id 3gwt08w0hu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 14:31:04 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SEV10a23658946
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jun 2022 14:31:01 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 14D41A405F;
+        Tue, 28 Jun 2022 14:31:01 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C467CA405B;
+        Tue, 28 Jun 2022 14:31:00 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 28 Jun 2022 14:31:00 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v6 1/5] PCI: Clean up pci_scan_slot()
+Date:   Tue, 28 Jun 2022 16:30:56 +0200
+Message-Id: <20220628143100.3228092-2-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220628143100.3228092-1-schnelle@linux.ibm.com>
+References: <20220628143100.3228092-1-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v5 1/2] dt-bindings: iio: adc: add AD4130
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
-References: <20220620162059.1097264-1-cosmin.tanislav@analog.com>
- <20220620162059.1097264-2-cosmin.tanislav@analog.com>
- <20220628134728.GA349256-robh@kernel.org>
-From:   Cosmin Tanislav <demonsingur@gmail.com>
-In-Reply-To: <20220628134728.GA349256-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: YrEvsGhLP4QIcd6ihB1PIMGLKNhU73hL
+X-Proofpoint-ORIG-GUID: J48wQuBtRfVsSFApVgv6sg3ffZzbqk9m
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-28_07,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
+ malwarescore=0 phishscore=0 priorityscore=1501 mlxlogscore=798
+ suspectscore=0 lowpriorityscore=0 impostorscore=0 mlxscore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206280059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+While determining the next PCI function is factored out of
+pci_scan_slot() into next_fn() the former still handles the first
+function as a special case. This duplicates the code from the scan loop.
 
+Furthermore the non ARI branch of next_fn() is generally hard to
+understand and especially the check for multifunction devices is hidden
+in the handling of NULL devices for non-contiguous multifunction. It
+also signals that no further functions need to be scanned by returning
+0 via wraparound and this is a valid function number.
 
-On 6/28/22 16:47, Rob Herring wrote:
-> On Mon, Jun 20, 2022 at 07:20:58PM +0300, Cosmin Tanislav wrote:
->> AD4130-8 is an ultra-low power, high precision, measurement solution for
->> low bandwidth battery operated applications.
->>
->> The fully integrated AFE (Analog Front-End) includes a multiplexer for up
->> to 16 single-ended or 8 differential inputs, PGA (Programmable Gain
->> Amplifier), 24-bit Sigma-Delta ADC, on-chip reference and oscillator,
->> selectable filter options, smart sequencer, sensor biasing and excitation
->> options, diagnostics, and a FIFO buffer.
->>
->> Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
->> ---
->>   .../bindings/iio/adc/adi,ad4130.yaml          | 259 ++++++++++++++++++
->>   1 file changed, 259 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
->> new file mode 100644
->> index 000000000000..b72f3da07309
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
->> @@ -0,0 +1,259 @@
->> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->> +# Copyright 2022 Analog Devices Inc.
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/iio/adc/adi,ad4130.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Analog Devices AD4130 ADC device driver
->> +
->> +maintainers:
->> +  - Cosmin Tanislav <cosmin.tanislav@analog.com>
->> +
->> +description: |
->> +  Bindings for the Analog Devices AD4130 ADC. Datasheet can be found here:
->> +    https://www.analog.com/media/en/technical-documentation/data-sheets/AD4130-8.pdf
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - adi,ad4130
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  clocks:
->> +    maxItems: 1
->> +    description: phandle to the master clock (mclk)
->> +
->> +  clock-names:
->> +    items:
->> +      - const: mclk
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  interrupt-names:
->> +    description: |
->> +      Specify which interrupt pin should be configured as Data Ready / FIFO
->> +      interrupt.
->> +      Default if not supplied is int.
->> +    enum:
->> +      - int
->> +      - clk
->> +      - p2
->> +      - dout
->> +
->> +  '#address-cells':
->> +    const: 1
->> +
->> +  '#size-cells':
->> +    const: 0
->> +
->> +  refin1-supply:
->> +    description: refin1 supply. Can be used as reference for conversion.
->> +
->> +  refin2-supply:
->> +    description: refin2 supply. Can be used as reference for conversion.
->> +
->> +  avdd-supply:
->> +    description: AVDD voltage supply. Can be used as reference for conversion.
->> +
->> +  iovdd-supply:
->> +    description: IOVDD voltage supply. Used for the chip interface.
->> +
->> +  spi-max-frequency:
->> +    maximum: 5000000
->> +
->> +  adi,int-clk-out:
->> +    description: Specify if the internal clock should be exposed on the CLK pin.
->> +    type: boolean
->> +
->> +  adi,ext-clk-freq-hz:
->> +    description: Specify the frequency of the external clock.
->> +    enum: [76800, 153600]
->> +    default: 76800
->> +
->> +  adi,bipolar:
->> +    description: Specify if the device should be used in bipolar mode.
->> +    type: boolean
->> +
->> +  adi,vbias-pins:
->> +    description: Analog inputs to apply a voltage bias of (AVDD − AVSS) / 2 to.
->> +    $ref: /schemas/types.yaml#/definitions/uint32-array
->> +    maxItems: 16
->> +    items:
->> +      minimum: 0
->> +      maximum: 15
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +
->> +patternProperties:
->> +  "^channel@([0-9]|1[0-5])$":
-> 
-> Normally, unit-addresses are in hex.
+Improve upon this by transforming the conditions in next_fn() to be
+easier to understand.
 
+By changing next_fn() to return -ENODEV instead of 0 when there is no
+next function we can then handle the initial function inside the loop
+and deduplicate the shared handling. This also makes it more explicit
+that only function 0 must exist.
 
-Righhhht. Sorry about that.
+No functional change is intended.
 
-There are other offenders from us too.
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/pci/probe.c | 38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
-❯ rg -F "^channel@([0-9]|1[0-5])\$"
-Documentation/devicetree/bindings/iio/dac/adi,ltc2688.yaml
-49:  "^channel@([0-9]|1[0-5])$":
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 17a969942d37..b05d0ed83a24 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -2579,8 +2579,7 @@ struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
+ }
+ EXPORT_SYMBOL(pci_scan_single_device);
+ 
+-static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
+-			    unsigned int fn)
++static int next_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
+ {
+ 	int pos;
+ 	u16 cap = 0;
+@@ -2588,24 +2587,26 @@ static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
+ 
+ 	if (pci_ari_enabled(bus)) {
+ 		if (!dev)
+-			return 0;
++			return -ENODEV;
+ 		pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI);
+ 		if (!pos)
+-			return 0;
++			return -ENODEV;
+ 
+ 		pci_read_config_word(dev, pos + PCI_ARI_CAP, &cap);
+ 		next_fn = PCI_ARI_CAP_NFN(cap);
+ 		if (next_fn <= fn)
+-			return 0;	/* protect against malformed list */
++			return -ENODEV;	/* protect against malformed list */
+ 
+ 		return next_fn;
+ 	}
+ 
+-	/* dev may be NULL for non-contiguous multifunction devices */
+-	if (!dev || dev->multifunction)
+-		return (fn + 1) % 8;
++	if (fn >= 7)
++		return -ENODEV;
++	/* only multifunction devices may have more functions */
++	if (dev && !dev->multifunction)
++		return -ENODEV;
+ 
+-	return 0;
++	return fn + 1;
+ }
+ 
+ static int only_one_child(struct pci_bus *bus)
+@@ -2643,26 +2644,25 @@ static int only_one_child(struct pci_bus *bus)
+  */
+ int pci_scan_slot(struct pci_bus *bus, int devfn)
+ {
+-	unsigned int fn, nr = 0;
+ 	struct pci_dev *dev;
++	int fn = 0, nr = 0;
+ 
+ 	if (only_one_child(bus) && (devfn > 0))
+ 		return 0; /* Already scanned the entire slot */
+ 
+-	dev = pci_scan_single_device(bus, devfn);
+-	if (!dev)
+-		return 0;
+-	if (!pci_dev_is_added(dev))
+-		nr++;
+-
+-	for (fn = next_fn(bus, dev, 0); fn > 0; fn = next_fn(bus, dev, fn)) {
++	do {
+ 		dev = pci_scan_single_device(bus, devfn + fn);
+ 		if (dev) {
+ 			if (!pci_dev_is_added(dev))
+ 				nr++;
+-			dev->multifunction = 1;
++			if (fn > 0)
++				dev->multifunction = 1;
++		} else if (fn == 0) {
++			/* function 0 is required */
++			break;
+ 		}
+-	}
++		fn = next_fn(bus, dev, fn);
++	} while (fn >= 0);
+ 
+ 	/* Only one slot has PCIe device */
+ 	if (bus->self && nr)
+-- 
+2.32.0
 
-Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
-65:  "^channel@([0-9]|1[0-5])$":
-
-Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
-73:  "^channel@([0-9]|1[0-5])$":
-
-> 
->> +    type: object
->> +    $ref: adc.yaml
->> +    unevaluatedProperties: false
->> +
->> +    properties:
->> +      reg:
->> +        description: The channel number.
->> +        minimum: 0
->> +        maximum: 15
->> +
->> +      diff-channels:
->> +        description: |
->> +          Besides the analog inputs available, internal inputs can be used.
->> +          16: Internal temperature sensor.
->> +          17: AVSS
->> +          18: Internal reference
->> +          19: DGND
->> +          20: (AVDD − AVSS)/6+
->> +          21: (AVDD − AVSS)/6-
->> +          22: (IOVDD − DGND)/6+
->> +          23: (IOVDD − DGND)/6-
->> +          24: (ALDO − AVSS)/6+
->> +          25: (ALDO − AVSS)/6-
->> +          26: (DLDO − DGND)/6+
->> +          27: (DLDO − DGND)/6-
->> +          28: V_MV_P
->> +          29: V_MV_M
->> +        items:
->> +          minimum: 0
->> +          maximum: 29
->> +
->> +      adi,reference-select:
->> +        description: |
->> +          Select the reference source to use when converting on the
->> +          specific channel. Valid values are:
->> +          0: REFIN1(+)/REFIN1(−)
->> +          1: REFIN2(+)/REFIN2(−)
->> +          2: REFOUT/AVSS (Internal reference)
->> +          3: AVDD/AVSS
->> +          If not specified, REFIN1 is used.
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +        enum: [0, 1, 2, 3]
->> +        default: 0
->> +
->> +      adi,excitation-pin-0:
->> +        description: |
->> +          Analog input to apply excitation current to while the channel
->> +          is active.
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +        minimum: 0
->> +        maximum: 15
->> +        default: 0
->> +
->> +      adi,excitation-pin-1:
->> +        description: |
->> +          Analog input to apply excitation current to while this channel
->> +          is active.
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +        minimum: 0
->> +        maximum: 15
->> +        default: 0
->> +
->> +      adi,excitation-current-0-nanoamp:
-> 
-> This needs a new unit suffix added to dtschema.
-> 
->> +        description: |
->> +          Excitation current in nanoamps to be applied to pin specified in
->> +          adi,excitation-pin-0 while this channel is active.
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +        enum: [0, 100, 10000, 20000, 50000, 100000, 150000, 200000]
->> +        default: 0
->> +
->> +      adi,excitation-current-1-nanoamp:
->> +        description: |
->> +          Excitation current in nanoamps to be applied to pin specified in
->> +          adi,excitation-pin-1 while this channel is active.
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +        enum: [0, 100, 10000, 20000, 50000, 100000, 150000, 200000]
->> +        default: 0
->> +
->> +      adi,burnout-current-nanoamp:
->> +        description: |
->> +          Burnout current in nanoamps to be applied for this channel.
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +        enum: [0, 500, 2000, 4000]
->> +        default: 0
->> +
->> +      adi,buffered-positive:
->> +        description: Enable buffered mode for positive input.
->> +        type: boolean
->> +
->> +      adi,buffered-negative:
->> +        description: Enable buffered mode for negative input.
->> +        type: boolean
->> +
->> +    required:
->> +      - reg
->> +      - diff-channels
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/interrupt-controller/irq.h>
->> +
->> +    spi {
->> +      #address-cells = <1>;
->> +      #size-cells = <0>;
->> +
->> +      adc@0 {
->> +        compatible = "adi,ad4130";
->> +        reg = <0>;
->> +
->> +        #address-cells = <1>;
->> +        #size-cells = <0>;
->> +
->> +        spi-max-frequency = <5000000>;
->> +        interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
->> +        interrupt-parent = <&gpio>;
->> +
->> +        channel@0 {
->> +          reg = <0>;
->> +
->> +          adi,reference-select = <2>;
->> +
->> +          /* AIN8, AIN9 */
->> +          diff-channels = <8 9>;
->> +        };
->> +
->> +        channel@1 {
->> +          reg = <1>;
->> +
->> +          adi,reference-select = <2>;
->> +
->> +          /* AIN10, AIN11 */
->> +          diff-channels = <10 11>;
->> +        };
->> +
->> +        channel@2 {
->> +          reg = <2>;
->> +
->> +          adi,reference-select = <2>;
->> +
->> +          /* Temperature Sensor, DGND */
->> +          diff-channels = <16 19>;
->> +        };
->> +
->> +        channel@3 {
->> +          reg = <3>;
->> +
->> +          adi,reference-select = <2>;
->> +
->> +          /* Internal reference, DGND */
->> +          diff-channels = <18 19>;
->> +        };
->> +
->> +        channel@4 {
->> +          reg = <4>;
->> +
->> +          adi,reference-select = <2>;
->> +
->> +          /* DGND, DGND */
->> +          diff-channels = <19 19>;
->> +        };
->> +      };
->> +    };
->> -- 
->> 2.36.1
->>
->>
