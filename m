@@ -2,102 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B11BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E24C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231904AbiF1UOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 16:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50174 "EHLO
+        id S229833AbiF1UOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 16:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231828AbiF1UNu (ORCPT
+        with ESMTP id S230013AbiF1UL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 16:13:50 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7F813D64;
-        Tue, 28 Jun 2022 13:07:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=a6AnJ5JUpgsz1KJ9YhexUeYWOp5iHJCwBQ9saqPDdtA=; b=VnaHISVICqlvsTwkAW4MliAcH+
-        B5kOQBGYkOHR9O/YlEzHCKMUa5OBO76qUrCigMoSp+tNLqYtegiT3LTn6YRmj9cRVlVN83kVdJjaO
-        JKmYquyVSTibvxqOm0Va5VzPlZgaxgf2PzPoEVI1OrzsW1FO2zr+vNTYskV2OGp5lzwDnXmDyjXNj
-        GCf41sQpWwvJwVO+tKlAQYl6Kc3vPBkVCEI3oGkQyHzmudUODto0RUIzFiivhsch/Uf9b+NvNJsCi
-        rSmhPEIGEdA4Ol3SHO6d8+Ie7srm2JixdDNX9emZd7yZ/hICP1AxizvXriC7npaHtK2z5gju0N9F1
-        Elus4IGA==;
-Received: from c-73-157-219-8.hsd1.or.comcast.net ([73.157.219.8] helo=[10.0.0.153])
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o6HV3-007yNs-7R; Tue, 28 Jun 2022 20:07:53 +0000
-Message-ID: <ddb01b36-1369-f0e3-49ab-3c0a571fe708@infradead.org>
-Date:   Tue, 28 Jun 2022 13:07:51 -0700
+        Tue, 28 Jun 2022 16:11:57 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFE613DC8;
+        Tue, 28 Jun 2022 13:03:36 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id a15so12932379pfv.13;
+        Tue, 28 Jun 2022 13:03:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=O18BNoD4QYCw1F/lcnmrBO02etfQ8RJzYCuHpe3r1UU=;
+        b=WfoNeWhEisMXHw5gKjvS2MXabo67b3Z/nvM+Hu6P5rFQcz5RiovYr+SgXKFZCPAnu+
+         8SkXvBTBEMKOvbe7WIfHh9yQ9/kZ6t/pSmdnph97VMUZtsqCL4GqgZcoTMr6K0uhN8yX
+         XdNdBMYnw8MJ5S26JSmBevqE0LKT1uNeLPPektGhz41QbxTRPF5g/fuvVOLNwzfkTo1Z
+         J3zHD6GVk39F1Q+r72HGLxot8k8bkQ0eRpmtWimLlRVHTap4+2KfMYBzKU/57kLv1Gd1
+         ZORdMMbgko7I+rhIEiYd0zpEJ/laM5qNrBKxCvCS/oh/+7P/9doUelEEcnwZL02oxrGv
+         PS5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=O18BNoD4QYCw1F/lcnmrBO02etfQ8RJzYCuHpe3r1UU=;
+        b=vvwHwx1yB69hOGuG/p21ohjle6FYpruc4gYbL/Mp7x9br+IGFPcizuSzJ9mXSf6wXH
+         5ZCQ925r6cV1uHBQCCsbM/4CjvJFTPDQqJ7zU64tkqhUKWHHonFBQUl9HNecUzXAd/Id
+         9G5yWF5fJurAKNhO/oWqgH5nBLpS4JtkVJp5IgWvc5Nuw+1CFEUQuGfaI7UeJnIOQTGx
+         2sT0vdF4czZhR1hAm8a212RqcwQHclfUFiRHjzenspKeDhD1/WQLHss/Sgg3zV/B3V/c
+         MH5+2GSjGccOVQUW9IdJmXhAejTn9xC4LWYA+SrxGmY24Rh6hD76HJQR+7EUim91hgTj
+         qx+w==
+X-Gm-Message-State: AJIora8q0P5cqd05scN3yrSGowcrherTeOA14J7Ibjsi3WBsi6fStfJq
+        8x6G8fc9V3oMzNRZWMP3cm/hkX3JDx0=
+X-Google-Smtp-Source: AGRyM1tOSUOdH1tsZ10Yv3CJ6SOKVD9V7qWVI5vrnJJSlqRo4SbPIpMFUDTGM28+dy/vfss5mPwWnQ==
+X-Received: by 2002:a63:91c1:0:b0:40d:33cb:3d57 with SMTP id l184-20020a6391c1000000b0040d33cb3d57mr19527523pge.10.1656446615765;
+        Tue, 28 Jun 2022 13:03:35 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id a11-20020a170902b58b00b0015e8d4eb26esm9687241pls.184.2022.06.28.13.03.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 13:03:35 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 28 Jun 2022 13:03:34 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 6/8] watchdog: st_lpc_wdt: Remove #ifdef guards for PM
+ related functions
+Message-ID: <20220628200334.GF3633970@roeck-us.net>
+References: <20220628193449.160585-1-paul@crapouillou.net>
+ <20220628193449.160585-7-paul@crapouillou.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v11 net-next 9/9] mfd: ocelot: add support for the vsc7512
- chip via spi
-Content-Language: en-US
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-References: <20220628081709.829811-1-colin.foster@in-advantage.com>
- <20220628081709.829811-10-colin.foster@in-advantage.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220628081709.829811-10-colin.foster@in-advantage.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220628193449.160585-7-paul@crapouillou.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 28, 2022 at 08:34:47PM +0100, Paul Cercueil wrote:
+> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
+> handle the .suspend/.resume callbacks.
+> 
+> These macros allow the suspend and resume functions to be automatically
+> dropped by the compiler when CONFIG_SUSPEND is disabled, without having
+> to use #ifdef guards. Not using #ifdef guards means that the code is
+> always compiled independently of any Kconfig option, and thanks to that
+> bugs and regressions are easier to catch.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
+> Cc: linux-arm-kernel@lists.infradead.org
 
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-On 6/28/22 01:17, Colin Foster wrote:
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -962,6 +962,24 @@ config MFD_MENF21BMC
->  	  This driver can also be built as a module. If so the module
->  	  will be called menf21bmc.
+> ---
+>  drivers/watchdog/st_lpc_wdt.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/watchdog/st_lpc_wdt.c b/drivers/watchdog/st_lpc_wdt.c
+> index 14ab6559c748..39abecdb9dd1 100644
+> --- a/drivers/watchdog/st_lpc_wdt.c
+> +++ b/drivers/watchdog/st_lpc_wdt.c
+> @@ -248,7 +248,6 @@ static int st_wdog_remove(struct platform_device *pdev)
+>  	return 0;
+>  }
 >  
-> +config MFD_OCELOT
-> +	bool "Microsemi Ocelot External Control Support"
-> +	depends on SPI_MASTER
-> +	select MFD_CORE
-> +	select REGMAP_SPI
-> +	help
-> +	  Ocelot is a family of networking chips that support multiple ethernet
-> +	  and fibre interfaces. In addition to networking, they contain several
-> +	  other functions, including pictrl, MDIO, and communication with
-
-	Is that                      pinctrl,
-?
-
-> +	  external chips. While some chips have an internal processor capable of
-> +	  running an OS, others don't. All chips can be controlled externally
-> +	  through different interfaces, including SPI, I2C, and PCIe.
-> +
-> +	  Say yes here to add support for Ocelot chips (VSC7511, VSC7512,
-> +	  VSC7513, VSC7514) controlled externally.
-> +
-> +	  If unsure, say N.
-
--- 
-~Randy
+> -#ifdef CONFIG_PM_SLEEP
+>  static int st_wdog_suspend(struct device *dev)
+>  {
+>  	struct st_wdog *st_wdog = watchdog_get_drvdata(&st_wdog_dev);
+> @@ -285,16 +284,14 @@ static int st_wdog_resume(struct device *dev)
+>  
+>  	return 0;
+>  }
+> -#endif
+>  
+> -static SIMPLE_DEV_PM_OPS(st_wdog_pm_ops,
+> -			 st_wdog_suspend,
+> -			 st_wdog_resume);
+> +static DEFINE_SIMPLE_DEV_PM_OPS(st_wdog_pm_ops,
+> +				st_wdog_suspend, st_wdog_resume);
+>  
+>  static struct platform_driver st_wdog_driver = {
+>  	.driver	= {
+>  		.name = "st-lpc-wdt",
+> -		.pm = &st_wdog_pm_ops,
+> +		.pm = pm_sleep_ptr(&st_wdog_pm_ops),
+>  		.of_match_table = st_wdog_match,
+>  	},
+>  	.probe = st_wdog_probe,
+> -- 
+> 2.35.1
+> 
