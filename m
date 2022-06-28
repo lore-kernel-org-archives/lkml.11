@@ -2,105 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5136BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F42C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245404AbiF1CfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
+        id S245536AbiF1CfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245365AbiF1Cc0 (ORCPT
+        with ESMTP id S245595AbiF1Ccw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:32:26 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC6125C66;
-        Mon, 27 Jun 2022 19:30:45 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LX7qj0jdrz4yW9;
-        Tue, 28 Jun 2022 12:30:41 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1656383441;
-        bh=183Ifzju1Y8pI3+aCwyoMpycdvgHXeXxZv4hkg68xc0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=h++5nLGGTBccYZfx1SHJn33zeI2+/S1Bki3I/HQYVaw1vig8ZbGX4KK6efplC8JVK
-         aq7MmB4wP3baWpPkrIY5Qf1y/e8ZhaiLMPAT4kBY5bEGH/ci06TNSzFkIjf6+Bn1wl
-         FGH1VJ7d4VzhRUf/X/fVa165h/xQLTOl1REdOvnWJhzhK27JMHW0jV7FtzJu1Obk0K
-         n2u7sOsVeCXYkRH9nENa2mUWMHsSD1+6owR9bphsaR7VcDjERRTuGUMng2yI7EGor9
-         WarTTYKCzTHmgBQMZtjrHQTJ51J3y/rkpyDuupHfbgoCf4AwtnwlApPIB/H8im/l9l
-         vWTxkHl/8S8MQ==
-Date:   Tue, 28 Jun 2022 12:30:35 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Sebastian Reichel <sre@kernel.org>
-Cc:     Asmaa Mnebhi <asmaa@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the battery tree
-Message-ID: <20220628123035.167f28ea@canb.auug.org.au>
-In-Reply-To: <20220624124730.3516928c@canb.auug.org.au>
-References: <20220620104503.11c0f2e1@canb.auug.org.au>
-        <20220624124730.3516928c@canb.auug.org.au>
+        Mon, 27 Jun 2022 22:32:52 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2FA26119;
+        Mon, 27 Jun 2022 19:31:59 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id n16-20020a17090ade9000b001ed15b37424so11217794pjv.3;
+        Mon, 27 Jun 2022 19:31:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1D6098QXfD4lxJsJt5htd+5+E2f/T5MbElTqQLF2bHQ=;
+        b=Xdvj4ubmXrXXW04630PMNgjvs2MFg8GcDnLu/vN71vyNDvboUZKTjNJ+ZX4R5eqA8/
+         jGQHmVaYsxppLnc5jon6+XPPUAQMlD7dbQ6DORV+3FDL9LDZ6HmONcP4YCWFgQ9OPRpW
+         C8hqMJVWTmJPp7UdWhzpEegNGpEsJav8DbyO2o3UuXmat8bhJDQ4LtZ8sFO3vG8FDC1i
+         i7zj0CzqLOsVhTHGVT9fiBKfKkMWYXfaGoQHZze+7UY+FKOucuoCZ+oz/+SavgP+6+wX
+         xrEQJs6n5lCFqWpZWcxxBAOn+ZLAC60p//wK++OipoHZjVIM7MjcX6BqTMfOuM6rq7IR
+         ThYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1D6098QXfD4lxJsJt5htd+5+E2f/T5MbElTqQLF2bHQ=;
+        b=MPS94N1vgqFn1CJz5GBbJIOFJSvspzoPeupzrYcnDCoL/nrjSCU0eWJQixZ6petN+w
+         Bc/cjEPSsj7DUNP7cjr/lmevewRAA0ov+VccAL4P59nSnnZ9HahPZvKdCiLSVfVjB9X8
+         m33VtZmY9jZbDXkSgALofZmMukf59fzeKr6Od6KBfZ6k3MT3HZJPhX3CubTkRA/bAUOF
+         +RjFDf2hR0idBJNDA8qk9qSGOmPpGQNK76hxyUmk9YA3g8OBlmhJePxJVpVz9NF4wrEa
+         n9S0ZWyXMwYYf6lV3jfuiIHShPon7O6AcXCuuBLKWVfyNmMg9VZ9b+E0qbDA5+BtQmTp
+         3yTQ==
+X-Gm-Message-State: AJIora+7X2EF64q7nfJysOLH0dQih1sjeR5ydTcdCWsdFk0w4xfRrbZY
+        gb6LfnYs/4cd5FTPlRUTpIA=
+X-Google-Smtp-Source: AGRyM1ttxJ2pGSBRzNEiyuxlBlgOzbglHMzIZx6uOVYQ3UBEFzkDSnxDfhszDF01+uQiiE1gnJuH+w==
+X-Received: by 2002:a17:90a:aa10:b0:1ec:b5a7:9e23 with SMTP id k16-20020a17090aaa1000b001ecb5a79e23mr24418846pjq.191.1656383518950;
+        Mon, 27 Jun 2022 19:31:58 -0700 (PDT)
+Received: from [192.168.43.80] (subs02-180-214-232-91.three.co.id. [180.214.232.91])
+        by smtp.gmail.com with ESMTPSA id o7-20020a17090a55c700b001cd4989feebsm10235005pjm.55.2022.06.27.19.31.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 19:31:58 -0700 (PDT)
+Message-ID: <add4c89c-f774-f241-6108-2051e9d69a0e@gmail.com>
+Date:   Tue, 28 Jun 2022 09:31:53 +0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Uek7JuHLB.xW/WUpLGaHjbb";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v13 4/4] Documentation: trace/objtrace: Add documentation
+ for objtrace
+Content-Language: en-US
+To:     Jeff Xie <xiehuan09@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
+        Tom Zanussi <zanussi@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Song Chen <chensong_2000@189.cn>
+References: <20220626025604.277413-1-xiehuan09@gmail.com>
+ <20220626025604.277413-5-xiehuan09@gmail.com> <YrkSkuluNhGcMyOu@debian.me>
+ <CAEr6+EAesikgaZGCfgB4LQLkD=7rQ-LckRpNoXYq31QZ4pL9sA@mail.gmail.com>
+ <CAEr6+ECTFauRPzVAH+znERX=K4fxOyB23E=6yX6avCt8LS9MoA@mail.gmail.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <CAEr6+ECTFauRPzVAH+znERX=K4fxOyB23E=6yX6avCt8LS9MoA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/Uek7JuHLB.xW/WUpLGaHjbb
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 6/28/22 08:37, Jeff Xie wrote:
+> Hi Masami,
+> 
+> I would like to ask if I change the document like "Bagas Sanjaya"
+> rewording in the next version.
+> I don't know if I can add your Reviewed-by again, I don't know the
+> rules very well ;-)
+> 
 
-Hi all,
+In the next version roll, just mention the feedback in the patch
+changelog (but not in the patch message as would appear on git log).
 
-On Fri, 24 Jun 2022 12:47:30 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> On Mon, 20 Jun 2022 10:45:03 +1000 Stephen Rothwell <sfr@canb.auug.org.au=
-> wrote:
-> >=20
-> > After merging the battery tree, today's linux-next build (x86_64
-> > allmodconfig) failed like this:
-> >=20
-> > drivers/power/reset/pwr-mlxbf.c: In function 'pwr_mlxbf_probe':
-> > drivers/power/reset/pwr-mlxbf.c:67:15: error: implicit declaration of f=
-unction 'devm_work_autocancel' [-Werror=3Dimplicit-function-declaration]
-> >    67 |         err =3D devm_work_autocancel(dev, &priv->send_work, pwr=
-_mlxbf_send_work);
-> >       |               ^~~~~~~~~~~~~~~~~~~~
-> > cc1: all warnings being treated as errors
-> >=20
-> > Caused by commit
-> >=20
-> >   a4c0094fcf76 ("power: reset: pwr-mlxbf: add BlueField SoC power contr=
-ol driver")
-> >=20
-> > I have used the battery tree from next-20220617 for today. =20
->=20
-> I am still seeing this failure.
-
-I am still getting this failure.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Uek7JuHLB.xW/WUpLGaHjbb
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmK6Z8sACgkQAVBC80lX
-0GzPCAf9GHvzifB5AcyMJZcEIZ/RNOzafUZUidclYNN5KWYN5fXSdVTVvaJgFtdN
-4ESjGa+8Sa4TL8e8V91yGnJPh0v0nsJflton7WGpGIKTY/oImismVd1o8aX55D/U
-NYh68pVRDCAupOo9EhiJpqqyEFx8w5VhMKXso6xd7pFolGru4BdwpoPpb2zeXMB1
-/1Ws3fP9BQxzzXwoUd4RsBncYwOWt5QcC7Lc14Kxh1mFXQ47c+LCwGedXihAnBHv
-2JbF9yeJWoN9Yp8p5w+cYAiNJyhCVDJ5S/7GxJKvj9YabTjBm2lfrG0XA51/JgXf
-NT+TLl38KBxpg18G6mXBLmhMpBW0/g==
-=r89t
------END PGP SIGNATURE-----
-
---Sig_/Uek7JuHLB.xW/WUpLGaHjbb--
+-- 
+An old man doll... just what I always wanted! - Clara
