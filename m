@@ -2,141 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3FC5CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 135E1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245258AbiF1J72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
+        id S1344590AbiF1J7c (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 05:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344149AbiF1J7N (ORCPT
+        with ESMTP id S1344119AbiF1J7O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:59:13 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932122E9ED
+        Tue, 28 Jun 2022 05:59:14 -0400
+Received: from mail-wm1-x34a.google.com (mail-wm1-x34a.google.com [IPv6:2a00:1450:4864:20::34a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D9B2E9EE
         for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:59:10 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id d17so11240909wrc.10
+Received: by mail-wm1-x34a.google.com with SMTP id 6-20020a1c0206000000b003a02cd754d1so4867083wmc.9
         for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:59:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4TnV2KxyP2DV/2uDmzCbdYwAkBIDFDITNxmSAAlof8Y=;
-        b=ORXopAl49yqtPpSQXoB46D2aTOgSJnlpOKwh5Xf257b9HiSYJHzyPj5T0eWCB0dAYd
-         Nk+lIlx0wZFK262bf0RpR2W7aKgZCzHoUWyc/k2hGdEzjPyLtfXIXAs6KC30P9lHuX7n
-         8WMzdDMk3Ff4QGpr+FjaWHHXWK4ayKffTR0EqS5ay725cWWnR1nUrOWy1UsdmVXKxOj1
-         4ZxYOv2+XZ0ECFomyDdh+uixrRkdSMlwH/fm5T9xtQCj0Bxm/5Pfa8df39SJi9mtSqUa
-         UrvsOuOiUTePwYcCXl0KiMcbnG/ZsVeZT+hIFoLEGS7VdwpInYngC+U3kzH/OBTKCdDl
-         YkYA==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=y3vu5QzrDjJQpXkXaz04N0mmbkIf31DuJdXr7A4d0cQ=;
+        b=hlkFl0FCdKnwNSsiVqNE6ojnVcC41EA9ADb/MqxQgZ3EEjpsAS4LfktfOEmNvDPSqZ
+         dmZmNXOzU2+LIZqyTaIxsel1lUyb55hWHXt+2renOHmO5qRZpKboceuta65c3TzCFQRF
+         gg8arSOmwM0ZRg/YNEuCoz5CW6zOQWqHLih5nBqYprm7RMvlXFDADlerTNC/Itre6IZ+
+         QYUjtbRdmIwlqVE5SAafUw2uWeUzizcgWWykwJCTqbjw64KNdurRIlwIMQLwVcH6qCCk
+         /i7Syrf4oeLqxTPIJvKcbG0q+XbjNGtSbpoZrm4DT1tuFxr1A6JnO4kEKM7C3F7Qgk8c
+         vvfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4TnV2KxyP2DV/2uDmzCbdYwAkBIDFDITNxmSAAlof8Y=;
-        b=p0ODk109Aarm33S2kMNDcbPGkUMjFCipd3IeL4hbNxwli7oupTZCgLjOsUCFLyinIM
-         dvWyhIOYr3gNBGm7sJRCnulBhWgrD0Cd00LheFn0OKhL7CpTI3r6BW77//aD2Ov33Fll
-         3IlcOcYjWohDFcPRnzzEaLkafNK3AiXiUlHJOzlnSR/9vgsF9XcSuNztuKVt4s51KJ7D
-         oHcc08X6eHl90m8j0aFpkIALaiLCGJc3oNk7sqfaZbr/tNTev0arZ94PHUkadMHlcPMy
-         O5frwW/s2q74KWAOunsDnIH8YRDDuxGis/YoAofXOner6VZehKWBRqa7EvEoAqNHiNRD
-         DM9w==
-X-Gm-Message-State: AJIora+qKEXoltuKKbdb9iRkAzHD6jW/PeSf7J5NMTPKhmuDFT8Br4ZC
-        tVTI0ZTnzrwz6FVMpv48GqoR8A==
-X-Google-Smtp-Source: AGRyM1tH7b0VprI98Ze11HXVcKyr6F+lCSIzw+gTZdn9IA/63fU8SqeINP07L31cByN7A7UDLTymxg==
-X-Received: by 2002:a5d:59a8:0:b0:21d:1bdd:44b9 with SMTP id p8-20020a5d59a8000000b0021d1bdd44b9mr3417839wrr.7.1656410348977;
-        Tue, 28 Jun 2022 02:59:08 -0700 (PDT)
-Received: from [192.168.0.252] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id d9-20020a05600c3ac900b003a03be22f9fsm17712354wms.18.2022.06.28.02.59.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 02:59:08 -0700 (PDT)
-Message-ID: <7580e511-169e-4b9e-061d-1ef6893dcb72@linaro.org>
-Date:   Tue, 28 Jun 2022 11:59:06 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] soc: qcom: cmd-db: replace strscpy_pad() with
- strncpy()
-Content-Language: en-US
-To:     Douglas Anderson <dianders@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Matthias Kaehlcke <mka@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220627171816.v2.1.Ie7b480cd99e2c13319220cbc108caf2bcd41286b@changeid>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220627171816.v2.1.Ie7b480cd99e2c13319220cbc108caf2bcd41286b@changeid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=y3vu5QzrDjJQpXkXaz04N0mmbkIf31DuJdXr7A4d0cQ=;
+        b=HOe0sACl4s0K9aQIayu4U1NUv9mirG0vSUqZubJWzSLuep58uu1+iQdqBJcvuBusQ0
+         sv4Wqs4/WxBe5X/evOZaZvXXLkgIAqlVkt1GRbAAKobPPAwSP0XdajP7xxkzQFd0382O
+         dvITpDMnCV0zATndstIsDkFrn376iWrH+Q6be8riTsKn+ZGyxIzLvXLd08b6TAYv8zYq
+         k+MhymlM3Q30kw+6WWnWEYgBlatGVihY5iAsO4yHMHJTY78Iw6S+55viQDkio/jcHVdR
+         ycrWRHNbgt2iwdfcf3UNVQxMc+5GWq4GUhG8rIP3jhDrA6SXoyQ6Za5cNy9VyjcgJSNw
+         QBQg==
+X-Gm-Message-State: AJIora/MsExSgxUgs14EU76lpsR6O7RnkaSE5o/Py9mqu747CZJ21k43
+        UcKKeBl5qUqHIFml6PO+rRHNhzuY0w==
+X-Google-Smtp-Source: AGRyM1sLXTcWzlDsYcztP6jIu7/NWN9CWyyELGCAm2BsUsBrvTjQx5jRDWtXYnCL+4E+uAB2Gm9w1LqV1A==
+X-Received: from elver.muc.corp.google.com ([2a00:79e0:9c:201:3496:744e:315a:b41b])
+ (user=elver job=sendgmr) by 2002:a5d:4c8a:0:b0:21b:9f3a:c002 with SMTP id
+ z10-20020a5d4c8a000000b0021b9f3ac002mr16723653wrs.182.1656410349259; Tue, 28
+ Jun 2022 02:59:09 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 11:58:24 +0200
+In-Reply-To: <20220628095833.2579903-1-elver@google.com>
+Message-Id: <20220628095833.2579903-5-elver@google.com>
+Mime-Version: 1.0
+References: <20220628095833.2579903-1-elver@google.com>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v2 04/13] perf/hw_breakpoint: Mark data __ro_after_init
+From:   Marco Elver <elver@google.com>
+To:     elver@google.com, Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, linux-perf-users@vger.kernel.org,
+        x86@kernel.org, linux-sh@vger.kernel.org,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/06/2022 02:18, Douglas Anderson wrote:
-> Commit ac0126a01735 ("soc: qcom: cmd-db: replace strncpy() with
-> strscpy_pad()") breaks booting on my sc7280-herobrine-herobrine
-> device. From printouts I see that at bootup the function is called
-> with an id of "lnbclka2" which is 8 bytes big.
-> 
-> Previously all 8 bytes of this string were copied to the
-> destination. Now only 7 bytes will be copied since strscpy_pad() saves
-> a byte for '\0' termination.
-> 
-> We don't need the '\0' termination in the destination. Let's go back
-> to strncpy(). According to the warning:
->   If a caller is using non-NUL-terminated strings, strncpy() can still
->   be used, but destinations should be marked with the __nonstring
->   attribute to avoid future compiler warnings.
-> ...so we'll do that.
-> 
-> While we're at it, let's change the query array to use
-> "sizeof(ent->id)" so it can't possibly go out of sync with our later
-> copy.
-> 
-> Fixes: ac0126a01735 ("soc: qcom: cmd-db: replace strncpy() with strscpy_pad()")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-> 
-> ---
-> 
-> Changes in v2:
-> - Size array with "sizeof(ent->id)"
-> 
->  drivers/soc/qcom/cmd-db.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/soc/qcom/cmd-db.c b/drivers/soc/qcom/cmd-db.c
-> index c5137c25d819..ffd2660b2890 100644
-> --- a/drivers/soc/qcom/cmd-db.c
-> +++ b/drivers/soc/qcom/cmd-db.c
-> @@ -141,14 +141,14 @@ static int cmd_db_get_header(const char *id, const struct entry_header **eh,
->  	const struct rsc_hdr *rsc_hdr;
->  	const struct entry_header *ent;
->  	int ret, i, j;
-> -	u8 query[8];
-> +	u8 query[sizeof(ent->id)] __nonstring;
->  
->  	ret = cmd_db_ready();
->  	if (ret)
->  		return ret;
->  
->  	/* Pad out query string to same length as in DB */
+Mark read-only data after initialization as __ro_after_init.
 
-I would find useful a comment that length of the ID can be equal to
-sizeof(query)... so no one will need to increment the counter of wasted
-time on this. :)
+While we are here, turn 'constraints_initialized' into a bool.
 
-But beside that, thanks for the fix:
+Signed-off-by: Marco Elver <elver@google.com>
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+---
+ kernel/events/hw_breakpoint.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+diff --git a/kernel/events/hw_breakpoint.c b/kernel/events/hw_breakpoint.c
+index add1b9c59631..270be965f829 100644
+--- a/kernel/events/hw_breakpoint.c
++++ b/kernel/events/hw_breakpoint.c
+@@ -46,7 +46,7 @@ struct bp_cpuinfo {
+ };
+ 
+ static DEFINE_PER_CPU(struct bp_cpuinfo, bp_cpuinfo[TYPE_MAX]);
+-static int nr_slots[TYPE_MAX];
++static int nr_slots[TYPE_MAX] __ro_after_init;
+ 
+ static struct bp_cpuinfo *get_bp_info(int cpu, enum bp_type_idx type)
+ {
+@@ -62,7 +62,7 @@ static const struct rhashtable_params task_bps_ht_params = {
+ 	.automatic_shrinking = true,
+ };
+ 
+-static int constraints_initialized;
++static bool constraints_initialized __ro_after_init;
+ 
+ /* Gather the number of total pinned and un-pinned bp in a cpuset */
+ struct bp_busy_slots {
+@@ -710,7 +710,7 @@ int __init init_hw_breakpoint(void)
+ 	if (ret)
+ 		goto err;
+ 
+-	constraints_initialized = 1;
++	constraints_initialized = true;
+ 
+ 	perf_pmu_register(&perf_breakpoint, "breakpoint", PERF_TYPE_BREAKPOINT);
+ 
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
 
-> -	strscpy_pad(query, id, sizeof(query));
-> +	strncpy(query, id, sizeof(query));
->  
->  	for (i = 0; i < MAX_SLV_ID; i++) {
->  		rsc_hdr = &cmd_db_header->header[i];
-
-
-Best regards,
-Krzysztof
