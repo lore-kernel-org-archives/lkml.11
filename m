@@ -2,82 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B33CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242348AbiF1HXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54958 "EHLO
+        id S242399AbiF1HYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:24:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242305AbiF1HXP (ORCPT
+        with ESMTP id S229653AbiF1HYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:23:15 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F24286D6;
-        Tue, 28 Jun 2022 00:23:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ZN46xJfx0F1znhp+nDlAJ1g2eUoXZJqOv+162R9HeD8=; b=eG97E/B3oqw24lLG7tEOVBAvQS
-        0SF9LGFggMqBD1Fky2NGz2LEo7LHR0UnEH6Mceh97lKOCQsX5TVQRfWAeWmMfPbAuYl7FFYb3/A+4
-        5sPyrhZv6MV3v2cQejM/sUJqTXx83x9NOaSz2YQ9dCxikY6wHeWdOLWGnpf+Vx1QCYzE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o65Yj-008XL1-Il; Tue, 28 Jun 2022 09:22:53 +0200
-Date:   Tue, 28 Jun 2022 09:22:53 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v1 2/3] net: dsa: ar9331: add support for pause
- stats
-Message-ID: <YrqsTY0uUy4AwKHN@lunn.ch>
-References: <20220624125902.4068436-1-o.rempel@pengutronix.de>
- <20220624125902.4068436-2-o.rempel@pengutronix.de>
- <20220624220317.ckhx6z7cmzegvoqi@skbuf>
- <20220626171008.GA7581@pengutronix.de>
- <20220627091521.3b80a4e8@kernel.org>
- <20220627200238.en2b5zij4sakau2t@skbuf>
- <20220627200959.683de11b@kernel.org>
+        Tue, 28 Jun 2022 03:24:00 -0400
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ECF2CCB5
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:23:59 -0700 (PDT)
+Received: by mail-qv1-f53.google.com with SMTP id p31so18807075qvp.5
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:23:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k2rxzJ0m2+KTfhV/auXcP+l+48yjXUELQK7ZtTv6xyU=;
+        b=tuWbHzuOXf+V0jscGZYet6AO2cDiU1kdSJvQGrpgon1mlT1vggkRdGQTkddUINALkK
+         X4USxAwXNDX/TBrGZ2/zcstRHMS6aa9Kcit4l9I4P6S0lGnOlbDC92KlUQSqbWYa1pqw
+         mRI1XzvMpSTSOftzpTjBoRggvp9UHfdG6G3w3M1acLCIVvfE8bcDrfb4ROHMRi/bZMLO
+         zRJpWhsKBEinn56b8wPFpXx9EZ5S/tSrEirSK7SPm7/EAxbtZU7b5CF5gWYmPX6nzAc7
+         cdRIwsBOyTYIwErDfACD/QkOvfDND0EGWJb3UHY9AGS9wMfbW5GKobUUXCpSM2VUIFiv
+         GCyQ==
+X-Gm-Message-State: AJIora9TJVBI/i3qRl4Hm8CqPj2baju8DknGptDJFIFwaJBl/zYpifX4
+        zuvtEHu2TDBh14S5tnXDJ0RMWP8GSGtymA==
+X-Google-Smtp-Source: AGRyM1sM5X/QKDkeTKQgbCB39F3JjPJ3P+xucOtAveRKzyRLIYsSEtCIc9wwLlewcg+J3TEls0EIOQ==
+X-Received: by 2002:ad4:5fcd:0:b0:470:3e9c:6274 with SMTP id jq13-20020ad45fcd000000b004703e9c6274mr2540785qvb.104.1656401038667;
+        Tue, 28 Jun 2022 00:23:58 -0700 (PDT)
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
+        by smtp.gmail.com with ESMTPSA id s7-20020a05620a254700b006a65c58db99sm10729903qko.64.2022.06.28.00.23.58
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 00:23:58 -0700 (PDT)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-317710edb9dso108062577b3.0
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:23:58 -0700 (PDT)
+X-Received: by 2002:a81:a092:0:b0:318:5c89:a935 with SMTP id
+ x140-20020a81a092000000b003185c89a935mr20749995ywg.383.1656401038063; Tue, 28
+ Jun 2022 00:23:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627200959.683de11b@kernel.org>
+References: <20220628021802.4102976-1-yangyingliang@huawei.com>
+In-Reply-To: <20220628021802.4102976-1-yangyingliang@huawei.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 28 Jun 2022 09:23:45 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVjtSk9DX9_OpZfma4RuU7yfz==1C6NOPy7ZmecsyYiuQ@mail.gmail.com>
+Message-ID: <CAMuHMdVjtSk9DX9_OpZfma4RuU7yfz==1C6NOPy7ZmecsyYiuQ@mail.gmail.com>
+Subject: Re: [PATCH -next] m68k: virt: platform: fix missing
+ platform_device_unregister() on error in virt_platform_init()
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Laurent Vivier <laurent@vivier.eu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Yeah, the corrections are always iffy. I understand the doubts, and we
-> can probably leave things "under-specified" until someone with a strong
-> preference comes along. But I hope that the virt example makes it clear
-> that neither of the choices is better (SR-IOV NICs would have to start
-> adding the pause if we declare rtnl stats as inclusive).
-> 
-> I can see advantages to both counting (they are packets) and not
-> counting those frames (Linux doesn't see them, they get "invented" 
-> by HW).
-> 
-> Stats are hard.
+Hi Yang,
 
-I doubt we can define it either way. I once submitted a patch for one
-driver to make it ignore CRC bytes. It then gave the exact same counts
-as another hardware i was using, making the testing i was doing
-simpler.
+On Tue, Jun 28, 2022 at 4:08 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
+> Add the missing platform_device_unregister() before return
+> from virt_platform_init() in the error handling case.
+>
+> Fixes: 05d51e42df06 ("m68k: Introduce a virtual m68k machine")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-The patch got rejected simply because we have both, with CRC and
-without CRC, neither is correct, neither is wrong.
+Thanks for your patch!
 
-So i would keep it KISS, pause frames can be included, but i would not
-go to extra effort to include them, or to exclude them.
+> --- a/arch/m68k/virt/platform.c
+> +++ b/arch/m68k/virt/platform.c
+> @@ -35,8 +30,10 @@ static int __init virt_platform_init(void)
+>                 DEFINE_RES_MEM(virt_bi_data.rtc.mmio + 0x1000, 0x1000),
+>                 DEFINE_RES_IRQ(virt_bi_data.rtc.irq + 1),
+>         };
+> -       struct platform_device *pdev;
+> +       struct platform_device *pdev1, *pdev2;
+> +       struct platform_device *pdevs[VIRTIO_BUS_NB];
+>         unsigned int i;
+> +       int ret = 0;
+>
+>         if (!MACH_IS_VIRT)
+>                 return -ENODEV;
+> @@ -44,29 +41,40 @@ static int __init virt_platform_init(void)
+>         /* We need this to have DMA'able memory provided to goldfish-tty */
+>         min_low_pfn = 0;
+>
+> -       pdev = platform_device_register_simple("goldfish_tty",
+> -                                              PLATFORM_DEVID_NONE,
+> -                                              goldfish_tty_res,
+> -                                              ARRAY_SIZE(goldfish_tty_res));
+> -       if (IS_ERR(pdev))
+> -               return PTR_ERR(pdev);
+> +       pdev1 = platform_device_register_simple("goldfish_tty",
+> +                                               PLATFORM_DEVID_NONE,
+> +                                               goldfish_tty_res,
+> +                                               ARRAY_SIZE(goldfish_tty_res));
+> +       if (IS_ERR(pdev1))
+> +               return PTR_ERR(pdev1);
+>
+> -       pdev = platform_device_register_simple("goldfish_rtc",
+> -                                              PLATFORM_DEVID_NONE,
+> -                                              goldfish_rtc_res,
+> -                                              ARRAY_SIZE(goldfish_rtc_res));
+> -       if (IS_ERR(pdev))
+> -               return PTR_ERR(pdev);
+> +       pdev2 = platform_device_register_simple("goldfish_rtc",
+> +                                               PLATFORM_DEVID_NONE,
+> +                                               goldfish_rtc_res,
+> +                                               ARRAY_SIZE(goldfish_rtc_res));
+> +       if (IS_ERR(pdev2)) {
+> +               ret = PTR_ERR(pdev2);
+> +               goto err_unregister_tty;
+> +       }
+>
+>         for (i = 0; i < VIRTIO_BUS_NB; i++) {
+> -               int err;
+> -
+> -               err = virt_virtio_init(i);
+> -               if (err)
+> -                       return err;
+> +               pdevs[i] = virt_virtio_init(i);
+> +               if (IS_ERR(pdevs[i])) {
+> +                       ret = PTR_ERR(pdevs[i]);
+> +                       goto err_unregister_rtc_virtio;
+> +               }
+>         }
+>
+>         return 0;
+> +
+> +err_unregister_rtc_virtio:
+> +       for (--i; (int)i >= 0; i--)
+> +               platform_device_unregister(pdevs[i]);
 
-   Andrew
+I think you can easily avoid the cast ("casts are evil"):
+
+    while (i > 0)
+            platform_device_unregister(pdevs[--i]);
+
+> +       platform_device_unregister(pdev2);
+> +err_unregister_tty:
+> +       platform_device_unregister(pdev1);
+> +
+> +       return ret;
+>  }
+>
+>  arch_initcall(virt_platform_init);
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
