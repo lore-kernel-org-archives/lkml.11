@@ -2,102 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6487DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBD7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346987AbiF1Nzl (ORCPT
+        id S1346991AbiF1Nzx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60756 "EHLO
+        Tue, 28 Jun 2022 09:55:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245534AbiF1Nzi (ORCPT
+        with ESMTP id S1346983AbiF1Nzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:55:38 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956CB30F7B;
+        Tue, 28 Jun 2022 09:55:39 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9A330F64;
         Tue, 28 Jun 2022 06:55:37 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id h38so12075171vsv.7;
-        Tue, 28 Jun 2022 06:55:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0PZRrLa/gPwlZue+iihv4jMpTjI+TnuHIQB9q2n8QmY=;
-        b=M+buCNLkWBrtxZEBQcc3rM6oR4zXWbbDMmtzldqzYX8LfPZMw1gnPvDSDLkNBUZS7u
-         rIuLEubKZ2QIULizoJmhFLGWfZh+HXp7LBuWsGLqycaX0DnNYuen6F9WDmjhTgpYwgQd
-         gn+EdE4s/ggUl8LZ54UD8DNnfkbsGvoZdHoP7lm4OHG1AHAydfiLJrIOxDi0J7acoYn4
-         BDeZFSPhKvbkxW7+2rVloPMTPR6kcjecs9iJmAqXnfqx7BeX1jl3RepzJE6xScgGeh2a
-         w3ez5StsjqPwWtiMPtzKYGBp+DM7QyX07UpNop2jxXnSLnQo4/G4s+GTZpew5XR6vr19
-         /vuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0PZRrLa/gPwlZue+iihv4jMpTjI+TnuHIQB9q2n8QmY=;
-        b=uBkVJ0XPdpIiMnXAjVFlWz/FISZwTUt2A7gDao2TgEiLmFeK5eLLMpkEqArLIKAX35
-         sbOc9bM6AEtSvH93MQa3FLt4A0QqIAyDc0swSqZARK8i7h8YY//5Kc8MEOzScvx10a66
-         1d5hvrjsvl4GzsqKZIDMW0v5TFvMYp9e+aTP0rDd+kTIb+N5nsYXaPUvr7hd8tek1Cg3
-         oPHMjTkXXD/U1ChIUzhp5sJ0/552x3lKYrPyV7Ox7o0iAeSt2BsEUlUNe4Ar223uXo9y
-         AUamx+pn2+GfvCmp/IGwEP2kvEPYiZZX6W6a97zvm+XlvVsu8Kj+T7xqspM++EAKPIVJ
-         ndwA==
-X-Gm-Message-State: AJIora+RizbABiD9sG6M68eqeOYrD4qWlqDdYuntoGlXQjeGJpOZDH+2
-        8IksIxAKi2VxagYbxb9U/8i8Wd+G7Ez5kuctdEY=
-X-Google-Smtp-Source: AGRyM1shfa4wR7pziBusGHpnivBMbEG4eycmH+FjbLVz10Q0BEXDpZPb9janCInlZsR4yjIK9V/POOrH1fVkUvZ+J+8=
-X-Received: by 2002:a67:c113:0:b0:354:3ef9:3f79 with SMTP id
- d19-20020a67c113000000b003543ef93f79mr2050138vsj.3.1656424536522; Tue, 28 Jun
- 2022 06:55:36 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LXQzr47xSzkWL4;
+        Tue, 28 Jun 2022 21:53:44 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 28 Jun 2022 21:55:34 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
+ 2022 21:55:34 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>
+CC:     <conor.dooley@microchip.com>,
+        <valentina.fernandezalanis@microchip.com>,
+        <gregkh@linuxfoundation.org>
+Subject: [PATCH -next] usb: musb: mpfs: add missing  clk_disable_unprepare() in mpfs_remove()
+Date:   Tue, 28 Jun 2022 22:05:27 +0800
+Message-ID: <20220628140527.1404439-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220628101413.10432-1-duguoweisz@gmail.com> <20220628104528.no4jarh2ihm5gxau@quack3>
- <20220628104853.c3gcsvabqv2zzckd@wittgenstein> <CAC+1NxtAfbKOcW1hykyygScJgN7DsPKxLeuqNNZXLqekHgsG=Q@mail.gmail.com>
- <CAOQ4uxgtZDihnydqZ04wjm2XCYjui0nnkO0VGzyq-+ERW20pJw@mail.gmail.com> <20220628125617.pljcpsr2xkzrrpxr@quack3>
-In-Reply-To: <20220628125617.pljcpsr2xkzrrpxr@quack3>
-From:   Amir Goldstein <amir73il@gmail.com>
-Date:   Tue, 28 Jun 2022 16:55:25 +0300
-Message-ID: <CAOQ4uxjbKgEoRM4DXBq0T3-jP96FCHjUY0PLsqVE0_s-hS3xLg@mail.gmail.com>
-Subject: Re: [PATCH 6/6] fanotify: add current_user_instances node
-To:     Jan Kara <jack@suse.cz>
-Cc:     guowei du <duguoweisz@gmail.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Matthew Bobrowski <repnop@google.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        duguowei <duguowei@xiaomi.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 3:56 PM Jan Kara <jack@suse.cz> wrote:
->
-> On Tue 28-06-22 15:29:08, Amir Goldstein wrote:
-> > On Tue, Jun 28, 2022 at 2:50 PM guowei du <duguoweisz@gmail.com> wrote:
-> > >
-> > > hi, Mr Kara, Mr Brauner,
-> > >
-> > > I want to know how many fanotify readers are monitoring the fs event.
-> > > If userspace daemons monitoring all file system events are too many, maybe there will be an impact on performance.
-> >
-> > I want something else which is more than just the number of groups.
-> >
-> > I want to provide the admin the option to enumerate over all groups and
-> > list their marks and blocked events.
->
-> Listing all groups and marks makes sense to me. Often enough I was
-> extracting this information from a crashdump :).
->
-> Dumping of events may be a bit more challenging (especially as we'd need to
-> format the events which has some non-trivial implications) so I'm not 100%
-> convinced about that. I agree it might be useful but I'd have to see the
-> implementation...
->
+clock source is prepared and enabled by clk_prepare_enable()
+in probe function, but no disable or unprepare in remove.
 
-I don't really care about the events.
-I would like to list the tasks that are blocked on permission events
-and the fanotify reader process that blocks them, so that it could be killed.
+Fixes: 7a96b6ea90a4 ("usb: musb: Add support for PolarFire SoC's musb controller")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/usb/musb/mpfs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Technically, it is enough to list the blocked task pids in fanotify_fdinfo().
-But it is also low hanging to print the number of queued events
-in fanotify_fdinfo() and inotify_fdinfo().
+diff --git a/drivers/usb/musb/mpfs.c b/drivers/usb/musb/mpfs.c
+index a69ca338eace..cea2e8108867 100644
+--- a/drivers/usb/musb/mpfs.c
++++ b/drivers/usb/musb/mpfs.c
+@@ -239,6 +239,7 @@ static int mpfs_remove(struct platform_device *pdev)
+ {
+ 	struct mpfs_glue *glue = platform_get_drvdata(pdev);
+ 
++	clk_disable_unprepare(glue->clk);
+ 	platform_device_unregister(glue->musb);
+ 	usb_phy_generic_unregister(pdev);
+ 
+-- 
+2.25.1
 
-Thanks,
-Amir.
