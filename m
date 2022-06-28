@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 062A5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232353AbiF1WVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 18:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
+        id S232363AbiF1WVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 18:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232021AbiF1WV0 (ORCPT
+        with ESMTP id S232183AbiF1WV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 18:21:26 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517583EF27
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 15:18:20 -0700 (PDT)
+        Tue, 28 Jun 2022 18:21:28 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16CA23E0E4
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 15:18:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656454700; x=1687990700;
+  t=1656454702; x=1687990702;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Wwhn1mmwOqrLKB18Ehs898zvgZ734NiGBT9pQl5s9Ag=;
-  b=b/Y6PTHdBF4QzxlwhHDgiPE22C+S6xaiqk2kirGh3bzwjNHBKpcvZyGK
-   7NUvMdaxDL1RyPct2pLaRhjDVXTPzwJ2ErIsxFXr1tX+tPU+qWawIREc9
-   9xx/pgkOimWyMGJUnYKL/4S/qp7PhPZpSzGQOUzJPrDDRJ+ufnoeH5XNx
-   qog+03XAU4FFwucyTbLyJY8YvGnpSB2G8tooDSf3LA8diBJpbqNavxNb0
-   jtNTSwkC63MsbvqE4E8CWM386LgbyHHGPfsaRcc1oWa+adH6iB7WSpd8D
-   9N09HETnJnGUXeJnkrgbR13GkWIUPJBkjy4da8qtr8m9bVfqqrwSjFyOp
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="270625376"
+  bh=tc5QpgfPRVYNrwt2V5NbatO0p/HoV5dQh7dLlCzqEIg=;
+  b=fSrHMCpSlvc64n3E9ovp94zfwMUH5ygQGGM6vg5fbDPzSQ1sZ28fkyJo
+   C7vFHpOhmJ5dXCJxOEYOL/sOWvMYMPer9Un3/VG504ERMTInKaKqDusXs
+   Xf7updTc6Ajre48iATsrzBkFJDhB/GuICJ/bpRYVEp6YKakS7t2moGxqp
+   DFTT2FanqkXTElYuO10oxENIeTNg39g1H0ucU1meqGIEljAwqa1cGE17C
+   HvFgwqcF2CVgv9jxTUgqdvOF7RZLx7dZlwFOXR4flJc1RDJ/rP08d5wYg
+   qU0uX/qKBqAGSEYZMy/8mIJSz2WNQ/PDm/JVBQBOZeOW0E13Nm7uzxp+d
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="281897389"
 X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
-   d="scan'208";a="270625376"
+   d="scan'208";a="281897389"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 15:17:44 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 15:17:46 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
-   d="scan'208";a="917349911"
+   d="scan'208";a="917349918"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 28 Jun 2022 15:17:43 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 28 Jun 2022 15:17:45 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id EEF7A109; Wed, 29 Jun 2022 01:17:48 +0300 (EEST)
+        id 2F426329; Wed, 29 Jun 2022 01:17:49 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy@kernel.org>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v2 03/11] mfd: intel_soc_pmic_bxtwc: Convert to use platform_get/set_drvdata()
-Date:   Wed, 29 Jun 2022 01:17:39 +0300
-Message-Id: <20220628221747.33956-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 10/11] mfd: intel_soc_pmic_bxtwc: Drop unneeded casting
+Date:   Wed, 29 Jun 2022 01:17:46 +0300
+Message-Id: <20220628221747.33956-10-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628221747.33956-1-andriy.shevchenko@linux.intel.com>
 References: <20220628221747.33956-1-andriy.shevchenko@linux.intel.com>
@@ -56,40 +56,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have the specific helpers for platform device to set and get
-its driver data. Convert driver to use them instead of open coded
-variants.
+The casting from size_t to ssize_t is not needed in addr_store(),
+drop it.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 ---
 v2: added tag (Lee)
 
- drivers/mfd/intel_soc_pmic_bxtwc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/mfd/intel_soc_pmic_bxtwc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/mfd/intel_soc_pmic_bxtwc.c b/drivers/mfd/intel_soc_pmic_bxtwc.c
-index d43cd18f5189..540bb31128c0 100644
+index db7bda114d2d..1a80038c0e36 100644
 --- a/drivers/mfd/intel_soc_pmic_bxtwc.c
 +++ b/drivers/mfd/intel_soc_pmic_bxtwc.c
-@@ -457,7 +457,7 @@ static int bxtwc_probe(struct platform_device *pdev)
+@@ -346,7 +346,7 @@ static ssize_t addr_store(struct device *dev,
+ 	if (ret)
  		return ret;
- 	pmic->irq = ret;
  
--	dev_set_drvdata(&pdev->dev, pmic);
-+	platform_set_drvdata(pdev, pmic);
- 	pmic->dev = &pdev->dev;
- 
- 	pmic->scu = devm_intel_scu_ipc_dev_get(&pdev->dev);
-@@ -574,7 +574,7 @@ static int bxtwc_probe(struct platform_device *pdev)
- 
- static void bxtwc_shutdown(struct platform_device *pdev)
- {
--	struct intel_soc_pmic *pmic = dev_get_drvdata(&pdev->dev);
-+	struct intel_soc_pmic *pmic = platform_get_drvdata(pdev);
- 
- 	disable_irq(pmic->irq);
+-	return (ssize_t)count;
++	return count;
  }
+ 
+ static ssize_t val_show(struct device *dev,
 -- 
 2.35.1
 
