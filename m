@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 039D7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 496B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346505AbiF1Na5 (ORCPT
+        id S1346507AbiF1NbC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56744 "EHLO
+        Tue, 28 Jun 2022 09:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346419AbiF1N35 (ORCPT
+        with ESMTP id S1346425AbiF1N35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 09:29:57 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838CB2AE08
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:28:45 -0700 (PDT)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F095C2AC61
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:28:44 -0700 (PDT)
 Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXQPR5TZ2zkWy6;
-        Tue, 28 Jun 2022 21:27:23 +0800 (CST)
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LXQLs4l4CzTgHx;
+        Tue, 28 Jun 2022 21:25:09 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
- 2022 21:28:42 +0800
+ 2022 21:28:38 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <shy828301@gmail.com>, <willy@infradead.org>, <zokeefe@google.com>,
         <songmuchun@bytedance.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 09/16] mm/huge_memory: fix comment in zap_huge_pud
-Date:   Tue, 28 Jun 2022 21:28:28 +0800
-Message-ID: <20220628132835.8925-10-linmiaohe@huawei.com>
+Subject: [PATCH v2 02/16] mm/huge_memory: access vm_page_prot with READ_ONCE in remove_migration_pmd
+Date:   Tue, 28 Jun 2022 21:28:21 +0800
+Message-ID: <20220628132835.8925-3-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220628132835.8925-1-linmiaohe@huawei.com>
 References: <20220628132835.8925-1-linmiaohe@huawei.com>
@@ -45,33 +45,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The comment about deposited pgtable is borrowed from zap_huge_pmd but
-there's no deposited pgtable stuff for huge pud in zap_huge_pud. Remove
-it to avoid confusion.
+vma->vm_page_prot is read lockless from the rmap_walk, it may be updated
+concurrently. Using READ_ONCE to prevent the risk of reading intermediate
+values.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- mm/huge_memory.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ mm/huge_memory.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 7570e7681f95..b0fc3c560245 100644
+index 48ebeb02f7ce..76dc6d003245 100644
 --- a/mm/huge_memory.c
 +++ b/mm/huge_memory.c
-@@ -2013,12 +2013,7 @@ int zap_huge_pud(struct mmu_gather *tlb, struct vm_area_struct *vma,
- 	ptl = __pud_trans_huge_lock(pud, vma);
- 	if (!ptl)
- 		return 0;
--	/*
--	 * For architectures like ppc64 we look at deposited pgtable
--	 * when calling pudp_huge_get_and_clear. So do the
--	 * pgtable_trans_huge_withdraw after finishing pudp related
--	 * operations.
--	 */
-+
- 	pudp_huge_get_and_clear_full(tlb->mm, addr, pud, tlb->fullmm);
- 	tlb_remove_pud_tlb_entry(tlb, pud, addr);
- 	if (vma_is_special_huge(vma)) {
+@@ -3304,7 +3304,7 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
+ 
+ 	entry = pmd_to_swp_entry(*pvmw->pmd);
+ 	get_page(new);
+-	pmde = pmd_mkold(mk_huge_pmd(new, vma->vm_page_prot));
++	pmde = pmd_mkold(mk_huge_pmd(new, READ_ONCE(vma->vm_page_prot)));
+ 	if (pmd_swp_soft_dirty(*pvmw->pmd))
+ 		pmde = pmd_mksoft_dirty(pmde);
+ 	if (is_writable_migration_entry(entry))
 -- 
 2.23.0
 
