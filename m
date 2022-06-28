@@ -2,103 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 643CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF93FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:24:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234792AbiF1SWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 14:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59802 "EHLO
+        id S235371AbiF1SYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 14:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbiF1SWO (ORCPT
+        with ESMTP id S231200AbiF1SYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 14:22:14 -0400
-Received: from msg-4.mailo.com (ip-15.mailobj.net [213.182.54.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8595205D9;
-        Tue, 28 Jun 2022 11:22:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
-        t=1656440513; bh=k4Z+2i9WD+jikSTXosZnVFc6H51wk1bVr/qru1ER8Mw=;
-        h=X-EA-Auth:From:To:Cc:Subject:Date:Message-Id:X-Mailer:
-         MIME-Version:Content-Transfer-Encoding;
-        b=XTHI2gTW+8cBOqh5+6c8NjHkk3faQPwsrCsBFJES/Lon2pyE2H12L05BeykMx1a+K
-         Mtz4Hg/PvMiiacii41imRaosbPxBd4ZQS+TGVkjv2Qq0kvJUJk2vk93zJ1wNPaGUUP
-         ziXWSyOxnvA53pfz1iwbr+qU/yM0imTNykERfAn0=
-Received: by b-1.in.mailobj.net [192.168.90.11] with ESMTP
-        via [213.182.55.207]
-        Tue, 28 Jun 2022 20:21:53 +0200 (CEST)
-X-EA-Auth: P9/1MhC9xJ/OjcHfOiGEIDHPYKz41J4VjA2WJLWmxnB6J1symEctFWpEWJTuPYEqU8hF2fnXA4/IfZiP7rI9ACUhNn7/NR/diuzo6zoHOVQ=
-From:   Vincent Knecht <vincent.knecht@mailoo.org>
-To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vincent Knecht <vincent.knecht@mailoo.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH v1 RESEND 0/7] Fix/Add is31fl319{0,1,3} support
-Date:   Tue, 28 Jun 2022 20:21:38 +0200
-Message-Id: <20220628182147.2837180-1-vincent.knecht@mailoo.org>
-X-Mailer: git-send-email 2.35.3
+        Tue, 28 Jun 2022 14:24:36 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1282720F68;
+        Tue, 28 Jun 2022 11:24:36 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id e40so18812828eda.2;
+        Tue, 28 Jun 2022 11:24:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V2IHQlt5J2RLl/FoFe96r3K4rV7P3i767I9NfDgVrTc=;
+        b=GV/rfU1OPyjnvUFP2xmY9VGAcwE4NCx9zFE8hiEkJSxpf62s0bOrLkqD5HqicKQtqn
+         iQZhocArXrRhUeGH0eN8XxzZVWlYrJaAbsF6eacDg67FW6MwCOCt4uLYo8W69t7bJMW7
+         9Zw8/l4qkiym5eHXKHTW8F2wQtxeW/rwbnqNrWcEIrJqlj+K18E2gJCZ8XGYbEypdyrc
+         chAiu0eOzCtlGdWWo6bZCqNx8Ap1tL1cw9MBsLDvx1AgYzxZXjNFYSa8M/IEga2lcjGB
+         qH+3so5Vs4HdK8CrjaYC/fZKWqX8Gq+XHOt4DRMQUQ2uNFpKLOLwqB4givvbgBWco07E
+         yGVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V2IHQlt5J2RLl/FoFe96r3K4rV7P3i767I9NfDgVrTc=;
+        b=xEygv0a5ekittt59HTmsRe4xHsuf01YSyiT6FxmUb5BnCIN1GWuvXxS1Nz1Xq/sNNT
+         VmE4fiA8pelv0ZSf+SbEXEiuN9hqKtTJKoDkLH6IAat9ISwxjyiXT9mjsV7YTGDHC9ux
+         HH6ROpLrdpNP2lcceZI4cXbSV1NszjrGbS6s8mVOnbRsKREaj50QPskcl1vb//v5EX4c
+         gFWXp5V42fxK59QNyvn3dHinyiBHsXF5YGTqeCU9VW5KdkbJ9l+ay/0Hf0XBYmN/DndS
+         Gp9rFCCrczazhfMMLm83bodsI+csXx4FUE+xYsO+0dsL/4Ly4UAVqu+3po08Oh+FV8kF
+         kNrQ==
+X-Gm-Message-State: AJIora9ig4cW0Upd6ivtYEO/JrYhq9EpJcZRfgCuVxK+tG750HNQxJVn
+        vWk7ASpQdVM5GGWCbniwz98=
+X-Google-Smtp-Source: AGRyM1s3lzJXoDxdUPLCiy8B92PcHWC7eBdB2X8uQmr+gVObT96yCP8Dsgx7OCt8ZfGmkLJZo1qJcg==
+X-Received: by 2002:aa7:dac2:0:b0:435:76a2:4ebe with SMTP id x2-20020aa7dac2000000b0043576a24ebemr25154951eds.196.1656440674434;
+        Tue, 28 Jun 2022 11:24:34 -0700 (PDT)
+Received: from localhost.localdomain (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
+        by smtp.gmail.com with ESMTPSA id ox6-20020a170907100600b0072629ee85ecsm6682014ejb.108.2022.06.28.11.24.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 11:24:31 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Baptiste Lepers <baptiste.lepers@gmail.com>,
+        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Ira Weiny <ira.weiny@intel.com>
+Subject: [PATCH] nfs: Replace kmap() with kmap_local_page()
+Date:   Tue, 28 Jun 2022 20:24:26 +0200
+Message-Id: <20220628182426.944-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes since v1:
-- no change, resending after configuring git to accomodate
-  for smtp provider limit of 5 emails per batch
-- just change cover-letter to mention si-en chip for idol347
+The use of kmap() is being deprecated in favor of kmap_local_page().
 
-  
-The is31fl3190, is31fl3191 and is31fl3193 chips (1 or 3 PWM channels)
-cannot be handled the same as is31fl3196 and is31fl3199,
-if only because the register map is different.
-Also:
-- the software shutdown bit is reversed
-- and additional field needs to be set to enable all channels
-- the led-max-microamp current values and setting are not the same
+With kmap_local_page(), the mapping is per thread, CPU local and not
+globally visible. Furthermore, the mapping can be acquired from any context
+(including interrupts).
 
-Datasheets:
-https://lumissil.com/assets/pdf/core/IS31FL3190_DS.pdf
-https://lumissil.com/assets/pdf/core/IS31FL3191_DS.pdf
-https://lumissil.com/assets/pdf/core/IS31FL3193_DS.pdf
-https://lumissil.com/assets/pdf/core/IS31FL3196_DS.pdf
-https://lumissil.com/assets/pdf/core/IS31FL3199_DS.pdf
+Therefore, use kmap_local_page() in nfs_do_filldir() because this mapping
+is per thread, CPU local, and not globally visible.
 
-This series:
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
 
-- converts dt-bindings to dtschema, adding all si-en compatibles
-  for convenience and consistency, and adding constraints on
-  supported values for eg. reg address and led-max-microamp
+I cannot test this patch for several reasons. While these changes seem safe
+and trivial, I would feel better if people familiar with NFS could take the
+time to properly test this patch. Thank you.
 
-- changes vars, structs and defines to not use 319X suffix
-  but 3190 for 319{0,1,3} and 3196 for 319{6,9}
+ fs/nfs/dir.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-- adds fields in chipdef struct for chip-specific values
-
-- only in the last patch, adds is31fl319{0,1,3} specific values
-  so those chips can work.
-
-Tested on msm8916-alcatel-idol347, which probably has an
-si-en,sn3190 or si-en,sn3191 (only one white led indicator).
-
-Vincent Knecht (7):
-  dt-bindings: leds: Convert is31fl319x to dtschema
-  dt-bindings: leds: is31fl319x: Add missing si-en compatibles
-  leds: is31fl319x: Add missing si-en compatibles
-  dt-bindings: leds: is31fl319x: Document variants specificities
-  leds: is31fl319x: Use non-wildcard names for vars, structs and defines
-  leds: is31fl319x: Move chipset-specific values in chipdef struct
-  leds: is31fl319x: Add support for is31fl319{0,1,3} chips
-
- .../bindings/leds/issi,is31fl319x.yaml        | 193 +++++++++
- .../bindings/leds/leds-is31fl319x.txt         |  61 ---
- drivers/leds/leds-is31fl319x.c                | 406 +++++++++++++-----
- 3 files changed, 488 insertions(+), 172 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml
- delete mode 100644 Documentation/devicetree/bindings/leds/leds-is31fl319x.txt
-
+diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
+index 0c4e8dd6aa96..8b89f10d8899 100644
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -1084,7 +1084,7 @@ static void nfs_do_filldir(struct nfs_readdir_descriptor *desc,
+ 	struct nfs_cache_array *array;
+ 	unsigned int i;
+ 
+-	array = kmap(desc->page);
++	array = kmap_local_page(desc->page);
+ 	for (i = desc->cache_entry_index; i < array->size; i++) {
+ 		struct nfs_cache_array_entry *ent;
+ 
+@@ -1110,7 +1110,7 @@ static void nfs_do_filldir(struct nfs_readdir_descriptor *desc,
+ 	if (array->page_is_eof)
+ 		desc->eof = !desc->eob;
+ 
+-	kunmap(desc->page);
++	kunmap_local(array);
+ 	dfprintk(DIRCACHE, "NFS: nfs_do_filldir() filling ended @ cookie %llu\n",
+ 			(unsigned long long)desc->dir_cookie);
+ }
 -- 
-2.35.3
-
-
+2.36.1
 
