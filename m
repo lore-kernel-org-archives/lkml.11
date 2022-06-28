@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE56CCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E7FFCCA479
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235453AbiF1TCm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56596 "EHLO
+        id S235345AbiF1TCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233201AbiF1TAf (ORCPT
+        with ESMTP id S233541AbiF1TAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:00:35 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141131EEFC;
-        Tue, 28 Jun 2022 12:00:23 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id lw20so27726288ejb.4;
-        Tue, 28 Jun 2022 12:00:23 -0700 (PDT)
+        Tue, 28 Jun 2022 15:00:34 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D791CB0D;
+        Tue, 28 Jun 2022 12:00:20 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id fd6so18898459edb.5;
+        Tue, 28 Jun 2022 12:00:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DkkJV+I1xqoSsdjvbVDAbb8FThJ4wemGZq1lcjOE1/4=;
-        b=bqKdU4EHepi9SUPDDuE6qYVQOWMlNVyMjLsQMLac4oIkcAwIcoKdhFpwBuSXfEuxTY
-         lMEghLkIoeTGlsEITzdPnuHXFFPAgMwXo0VkUMAvCjB8W5Fi90NsMRKIhFZlPEvw4LOr
-         +PYAyvEmGEfgjXaOLgQ/zs7n8svEMdUVhdFUkx4itqZh65vSW38tL8IY6hyRjNAFoxdi
-         pRt8uNHLxLgKnx9yEc7ZiglfikO1mlG2+10o1deqc41x/qgujIr37OgWFqxVTHiM/3qB
-         wda9Z1riP65r2ThAWFBheEvHOCn8KYrNleqTKPIlTcn9iO2/Ei1TCyi8lnRZqLNjTMKU
-         6HNQ==
+        bh=tGCN/782OTAuVAlm4NhC1meQ0mDdrYQikPz7yxO4s3c=;
+        b=QSfKJbVUSlX701ZwcjuVu/k9eDD9nXSrrcmYKZS3Tn8WEIh1KbT9ujqQr/TR9q/lbY
+         hhBWwY5qUE4FYGbhdsX4VJ/nPqdXCJKDCx5Icqpm0zPWsTQWuNxM55LiRa9qKbnhvFLO
+         FB6h1d18kPy7imiyUyybON+0jjlO4t6S0nHu8WOzV+gkSjQPGdhGGabMpRazMDhMMNhw
+         aulkQ4N0bPSlizeG/GIL4UuzIEllkSVTyGiZKAaxeO59lFImuUxKHIlesirAXdlnc7Y/
+         aDJ83ofvZV9x/Ynu7qWECB1DWTxp9pKcEZSDO3ZQ5yue3seYDfb5nH72Tq7dF/0YYkf/
+         PwvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DkkJV+I1xqoSsdjvbVDAbb8FThJ4wemGZq1lcjOE1/4=;
-        b=himbGjpM/bFUdIZIHZgO1vgNH5EiiTNqd/41MKzBqn7Z17rkJV9z6hGPVt+oFlWRWO
-         V+gsSbHquztt1VdMqlRYJteG3VFobmq4ANhIVZs7KOcYNKOGHl/WaccqCABhMoQvE+qu
-         ZoJnHiBEDH8lL+cHSognoFyx3PPy5tbQ1k2Lsrub98pozUJ1N9EkDZeOb1WyrIRQxshU
-         FzjqIrNO3sZmJ+M9U5BznT8Lg0Zfy+CiLrcKgH/aBr7v26dNQ71QzxniE2o7FechxsKv
-         ydRiIp9ymiQOmYlX3Th3XdPxwPQJ/XT6Q9b8ERJZNK3oWPDbc7fd+m7Bz2jQkW06GJPp
-         cEyA==
-X-Gm-Message-State: AJIora/vq6dr77nj+hdC+FT1blnyTKc11kcFKXf5v/d5IMgBLjwU+rOw
-        tvQLk9W3GcSRQqTLpr43ttw3UYWadkPqRw==
-X-Google-Smtp-Source: AGRyM1tQmPVip+5n1Y8yQ2uexWKTWxnz+s41uN6RYVlElwRuwIoUnOpZ2HcMZYLug7CY5IM70sO1Kw==
-X-Received: by 2002:a17:906:b048:b0:6fe:be4a:3ecf with SMTP id bj8-20020a170906b04800b006febe4a3ecfmr19858600ejb.104.1656442822374;
-        Tue, 28 Jun 2022 12:00:22 -0700 (PDT)
+        bh=tGCN/782OTAuVAlm4NhC1meQ0mDdrYQikPz7yxO4s3c=;
+        b=ng5IuSposrxeARSu+t2TqYFDlZihUCEP26sbANbQPsnZ3P/q3YjWJh4kCM5hvifb6U
+         AakM0LehXZpgg2lM2mEXaHmk+j41D3xVArFccgHD/YwzZPBA837XWJ1w4eEZolxZzTIr
+         tARIbB6q0YgcrUr5H+uLjwh2e1bsRD77b/ffBnpyI3VHoVGWfEu9NapgInxxdPNtDMAM
+         s1+pW4wOWay2eMdzUdoW648T1AdTWTJ4NnI2TSKhG+4Fidr1kxpxRA/9+EprF99VXDQI
+         zxKtxhNbna8Ka/JL25gNdkJrZu9zwYkPiL9L2aw45MEl8TFi3/cAI4nISVOMjBQ3cWHR
+         MMyA==
+X-Gm-Message-State: AJIora8Nc0Ryd45lw1q4C+cDFqf41zPFz4X/ep3RSMyGnyDA8uqaZEwM
+        2ZNqpQw/L5lJ9TpH0sXMsUjhAvvgjKkwZw==
+X-Google-Smtp-Source: AGRyM1uA/U423K/SUXtBeAD0+1+t7dMIhzGv0ilmdOFqj8DaQ9bEOtc3QI+LwroT8+RT3KttwU+qUA==
+X-Received: by 2002:a50:fb9a:0:b0:435:6c0e:3342 with SMTP id e26-20020a50fb9a000000b004356c0e3342mr25930016edq.337.1656442819981;
+        Tue, 28 Jun 2022 12:00:19 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.12.00.21
+        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.12.00.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 12:00:21 -0700 (PDT)
+        Tue, 28 Jun 2022 12:00:19 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC net-next v3 25/29] io_uring: sendzc with fixed buffers
-Date:   Tue, 28 Jun 2022 19:56:47 +0100
-Message-Id: <672444088a4a08b3b098a0edb60d2669ec253161.1653992701.git.asml.silence@gmail.com>
+Subject: [RFC net-next v3 23/29] io_uring: allow to pass addr into sendzc
+Date:   Tue, 28 Jun 2022 19:56:45 +0100
+Message-Id: <228d4841af5eeb9a4b73955136559f18cb7e43a0.1653992701.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1653992701.git.asml.silence@gmail.com>
 References: <cover.1653992701.git.asml.silence@gmail.com>
@@ -69,111 +69,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow zerocopy sends to use fixed buffers. There is an optimisation for
-this case, the network layer don't need to reference the pages, see
-SKBFL_MANAGED_FRAG_REFS, so io_uring have to ensure validity of fixed
-buffers until the notifier is released.
+Allow to specify an address to zerocopy sends making it more like
+sendto(2).
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- fs/io_uring.c                 | 39 +++++++++++++++++++++++++++++------
- include/uapi/linux/io_uring.h |  7 +++++++
- 2 files changed, 40 insertions(+), 6 deletions(-)
+ fs/io_uring.c                 | 16 +++++++++++++++-
+ include/uapi/linux/io_uring.h |  2 +-
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 07d09d06e8ab..70b1f77ac64e 100644
+index 838030477456..a1e9405a3f1b 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -723,6 +723,7 @@ struct io_sendzc {
+@@ -722,6 +722,8 @@ struct io_sendzc {
  	size_t				len;
  	u16				slot_idx;
  	int				msg_flags;
-+	unsigned			zc_flags;
- 	int				addr_len;
- 	void __user			*addr;
++	int				addr_len;
++	void __user			*addr;
  };
-@@ -6580,11 +6581,14 @@ static int io_send(struct io_kiocb *req, unsigned int issue_flags)
- 	return 0;
- }
  
-+#define IO_SENDZC_VALID_FLAGS IORING_SENDZC_FIXED_BUF
-+
- static int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ struct io_open {
+@@ -6572,7 +6574,7 @@ static int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
  {
  	struct io_sendzc *zc = &req->msgzc;
-+	struct io_ring_ctx *ctx = req->ctx;
  
--	if (READ_ONCE(sqe->ioprio) || READ_ONCE(sqe->__pad2[0]))
-+	if (READ_ONCE(sqe->__pad2[0]))
+-	if (READ_ONCE(sqe->ioprio) || READ_ONCE(sqe->addr2) || READ_ONCE(sqe->__pad2[0]))
++	if (READ_ONCE(sqe->ioprio) || READ_ONCE(sqe->__pad2[0]))
  		return -EINVAL;
  
  	zc->buf = u64_to_user_ptr(READ_ONCE(sqe->addr));
-@@ -6596,6 +6600,20 @@ static int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	zc->addr = u64_to_user_ptr(READ_ONCE(sqe->addr2));
- 	zc->addr_len = READ_ONCE(sqe->addr_len);
- 
-+	zc->zc_flags = READ_ONCE(sqe->ioprio);
-+	if (req->msgzc.zc_flags & ~IO_SENDZC_VALID_FLAGS)
-+		return -EINVAL;
-+
-+	if (req->msgzc.zc_flags & IORING_SENDZC_FIXED_BUF) {
-+		unsigned idx = READ_ONCE(sqe->buf_index);
-+
-+		if (unlikely(idx >= ctx->nr_user_bufs))
-+			return -EFAULT;
-+		idx = array_index_nospec(idx, ctx->nr_user_bufs);
-+		req->imu = READ_ONCE(ctx->user_bufs[idx]);
-+		io_req_set_rsrc_node(req, ctx, 0);
-+	}
+@@ -6581,6 +6583,9 @@ static int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 	zc->slot_idx = READ_ONCE(sqe->notification_idx);
+ 	if (zc->msg_flags & MSG_DONTWAIT)
+ 		req->flags |= REQ_F_NOWAIT;
++	zc->addr = u64_to_user_ptr(READ_ONCE(sqe->addr2));
++	zc->addr_len = READ_ONCE(sqe->addr_len);
 +
  #ifdef CONFIG_COMPAT
  	if (req->ctx->compat)
  		zc->msg_flags |= MSG_CMSG_COMPAT;
-@@ -6633,12 +6651,21 @@ static int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
- 	msg.msg_control = NULL;
- 	msg.msg_controllen = 0;
- 	msg.msg_namelen = 0;
--	msg.msg_managed_data = 0;
-+	msg.msg_managed_data = 1;
+@@ -6590,6 +6595,7 @@ static int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
  
--	ret = import_single_range(WRITE, zc->buf, zc->len, &iov, &msg.msg_iter);
--	if (unlikely(ret))
--		return ret;
--	mm_account_pinned_pages(&notif->uarg.mmp, zc->len);
-+	if (req->msgzc.zc_flags & IORING_SENDZC_FIXED_BUF) {
-+		ret = __io_import_fixed(WRITE, &msg.msg_iter, req->imu,
-+					(u64)zc->buf, zc->len);
-+		if (unlikely(ret))
-+				return ret;
-+	} else {
-+		msg.msg_managed_data = 0;
-+		ret = import_single_range(WRITE, zc->buf, zc->len, &iov,
-+					  &msg.msg_iter);
-+		if (unlikely(ret))
+ static int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
+ {
++	struct sockaddr_storage address;
+ 	struct io_ring_ctx *ctx = req->ctx;
+ 	struct io_sendzc *zc = &req->msgzc;
+ 	struct io_notif_slot *notif_slot;
+@@ -6624,6 +6630,14 @@ static int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
+ 		return ret;
+ 	mm_account_pinned_pages(&notif->uarg.mmp, zc->len);
+ 
++	if (zc->addr) {
++		ret = move_addr_to_kernel(zc->addr, zc->addr_len, &address);
++		if (unlikely(ret < 0))
 +			return ret;
-+		mm_account_pinned_pages(&notif->uarg.mmp, zc->len);
++		msg.msg_name = (struct sockaddr *)&address;
++		msg.msg_namelen = zc->addr_len;
 +	}
- 
- 	if (zc->addr) {
- 		ret = move_addr_to_kernel(zc->addr, zc->addr_len, &address);
++
+ 	msg_flags = zc->msg_flags | MSG_ZEROCOPY;
+ 	if (issue_flags & IO_URING_F_NONBLOCK)
+ 		msg_flags |= MSG_DONTWAIT;
 diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 689aa1444cd4..69100aa71448 100644
+index 6c6f20ae5a95..689aa1444cd4 100644
 --- a/include/uapi/linux/io_uring.h
 +++ b/include/uapi/linux/io_uring.h
-@@ -274,6 +274,13 @@ enum {
- 	IORING_RSRC_UPDATE_NOTIF,
- };
- 
-+/*
-+ * IORING_OP_SENDZC flags
-+ */
-+enum {
-+	IORING_SENDZC_FIXED_BUF		= (1U << 0),
-+};
-+
- /*
-  * IO completion data structure (Completion Queue Entry)
-  */
+@@ -63,7 +63,7 @@ struct io_uring_sqe {
+ 		__u32	file_index;
+ 		struct {
+ 			__u16	notification_idx;
+-			__u16	__pad;
++			__u16	addr_len;
+ 		} __attribute__((packed));
+ 	};
+ 	union {
 -- 
 2.36.1
 
