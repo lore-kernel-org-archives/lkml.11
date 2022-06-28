@@ -2,172 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E979C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:11:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C36C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233038AbiF1HK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
+        id S240963AbiF1HMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230199AbiF1HKy (ORCPT
+        with ESMTP id S238792AbiF1HMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:10:54 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE86527166
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:10:52 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id r81-20020a1c4454000000b003a0297a61ddso7357698wma.2
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:10:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=KsqAJ7YKidd8LZmByQaDFJBwdldhoJVuguG1CDc3e00=;
-        b=EHq+1qalm5NaxwYgPHuR1r+ouWxYKWJ0zegZ1W8TttlkinLcCyWZnlRnc96nOsoGl+
-         ED60WnNpEFCnwc9soZ+RfiwEY3fImezkfDdwtQlRqmlfvYnFqdeHEjCofuXdpZjJHWy5
-         3g3xtgbbBDKTDOQKxrBcebcvyOaXjmyaQta2+bdOij8QMceMw5ug3bElYN0FhW3CSjbL
-         GJ5+9i/GKn05YWHmGw1zFYWYHRfBO90vBvsvSJYdUkkkACLEEYrDc+r30/iUq729MgM9
-         6HbGUF1IOtCzhUI7MWL89xJQctzzp6dLf+/iz5hS5jw/el0GjskEkL4DlJFR95IVNND3
-         xmsQ==
+        Tue, 28 Jun 2022 03:12:24 -0400
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7F3275ED;
+        Tue, 28 Jun 2022 00:12:23 -0700 (PDT)
+Received: by mail-ot1-f45.google.com with SMTP id 72-20020a9d064e000000b00616c2a174bcso4959937otn.8;
+        Tue, 28 Jun 2022 00:12:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=KsqAJ7YKidd8LZmByQaDFJBwdldhoJVuguG1CDc3e00=;
-        b=5ApJSVkcDCuHBBOlG+u63Eu/GFC5N6kfO0XivLQTecFUHEmhEFP1xDC3+ZY/e9nEsJ
-         7R3ANaZsjtl/bGK8mloA6LVoCQM/hpNVin2WvsHzkQXlH/qM/FkVX9XyKS4qpDJ4dSUe
-         towpUOeQZEzrXII1p43lNQiUuorLaXeoQXZhuPBf9WYV6A1vs33g1BlMg7cAhNz+VERw
-         ycjldVbTNbnxCOwwjsGjyruTmQk0/hW5CPpPhAe9sn0L3ZbLTz292thNwblkF6ZGrJcP
-         MMZkky1LNssRSjKU59k0VDPIz714d0NL1uqDLaze7YERnRGJHJFX2TBIy02en38I0K5+
-         HY8w==
-X-Gm-Message-State: AJIora/yIDeK3pp5h6HYWxs4GFVFPLTGTm+iRd1DszNbapGQYEoFz+CB
-        aYxoK5J/Xiv88VBZsm2LPxljgA==
-X-Google-Smtp-Source: AGRyM1vBLz/0auY4iqzjFWAMDY4oMb4jz5SNnbvbjqkhB6UI/LyQ2F66AcKR6WTXT6Lv1/2IJMHZ7g==
-X-Received: by 2002:a1c:7414:0:b0:3a0:201c:5b7f with SMTP id p20-20020a1c7414000000b003a0201c5b7fmr24576381wmc.170.1656400251201;
-        Tue, 28 Jun 2022 00:10:51 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:52cb:c433:b96:9ad? ([2001:861:44c0:66c0:52cb:c433:b96:9ad])
-        by smtp.gmail.com with ESMTPSA id bn14-20020a056000060e00b0021d20a43523sm667124wrb.42.2022.06.28.00.10.49
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oUnjhZMiGNi6v7nsbqYIrss5xtOvLOvLOLR2zcKJEss=;
+        b=pwgXE9ASW272OrQ+E7wc+SE/zdC/UVcnYBxOBu2c8vdTxqdsrKMf5etatU5rN3LqV6
+         ZTQ6kzJK9wLPj1yQ4YJqXr1lb3LfK2vG9Ulp12Edv/QbzCBd26BalTzHQHCdZqLkAahp
+         Fyrpaeb7PU+m+vb9uAwwA8e2T7MENtwY9bwVeFTedGdOjftdyV/f8KCW5ZtyBUjkSA7g
+         3MHNcw+JonBdn+oXwBfbufs6tT/FrYbEA25gMxj5awJvYteFd8+DdOpuUAKi0dE/xhg/
+         Jkg6qWYGio08y2L0eYGd9VlgYahjZ5EZcs5S8IYVP0a2j5PhSryccgHUlq/LUXuq/fff
+         VZuA==
+X-Gm-Message-State: AJIora8c9gX1J9zXRtsQgKi6+TqlKZ776WBgEZHA+dS1wAADNOIu1SQO
+        ZE6bsbds/9lyBfmFzrSwyjzn+FU9f1oItg==
+X-Google-Smtp-Source: AGRyM1s3Qlhtf97/24NjzMU/biTB7w/Oxmese2Z882WPUas3yKevC6g2NAF0plGs77VypkUoeoKfJg==
+X-Received: by 2002:a9d:4808:0:b0:616:b002:4516 with SMTP id c8-20020a9d4808000000b00616b0024516mr7571527otf.13.1656400343039;
+        Tue, 28 Jun 2022 00:12:23 -0700 (PDT)
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com. [209.85.210.49])
+        by smtp.gmail.com with ESMTPSA id m8-20020a4aab88000000b0041ea640396csm7302713oon.41.2022.06.28.00.12.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 00:10:50 -0700 (PDT)
-Message-ID: <123b8767-7ea4-e6fe-6d47-0f2444a88dd9@baylibre.com>
-Date:   Tue, 28 Jun 2022 09:10:48 +0200
+        Tue, 28 Jun 2022 00:12:22 -0700 (PDT)
+Received: by mail-ot1-f49.google.com with SMTP id w2-20020a056830110200b00616ce0dfcb2so3828822otq.1;
+        Tue, 28 Jun 2022 00:12:22 -0700 (PDT)
+X-Received: by 2002:a05:6902:905:b0:64a:2089:f487 with SMTP id
+ bu5-20020a056902090500b0064a2089f487mr18678075ybb.202.1656399845934; Tue, 28
+ Jun 2022 00:04:05 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] drm/bridge: imx: i.MX8 bridge drivers should depend on
- ARCH_MXC
-Content-Language: en-US
-To:     Liu Ying <victor.liu@nxp.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Marek Vasut <marex@denx.de>
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <42c542b53a1c8027b23a045045fbb7b34479913d.1656072500.git.geert+renesas@glider.be>
- <b625ba83-fee9-b668-09db-976cb3bef3ca@baylibre.com>
- <9f5b511708ca9b30ef101a46a5d1b76f03b2c4fc.camel@nxp.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <9f5b511708ca9b30ef101a46a5d1b76f03b2c4fc.camel@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220617125750.728590-1-arnd@kernel.org> <20220617125750.728590-4-arnd@kernel.org>
+ <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com> <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
+ <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com> <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
+In-Reply-To: <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 28 Jun 2022 09:03:53 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
+Message-ID: <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
+To:     Michael Schmitz <schmitzmic@gmail.com>
+Cc:     Arnd Bergmann <arnd@kernel.org>, scsi <linux-scsi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        Khalid Aziz <khalid@gonehiking.org>,
+        "Maciej W . Rozycki" <macro@orcam.me.uk>,
+        Matt Wang <wwentao@vmware.com>,
+        Miquel van Smoorenburg <mikevs@xs4all.net>,
+        Mark Salyzyn <salyzyn@android.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Denis Efremov <efremov@linux.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/06/2022 04:31, Liu Ying wrote:
-> On Mon, 2022-06-27 at 14:22 +0200, Neil Armstrong wrote:
->> Hi,
-> 
-> Hi,
-> 
->>
->> On 24/06/2022 14:10, Geert Uytterhoeven wrote:
->>> The various Freescale i.MX8 display bridges are only present on
->>> Freescale i.MX8 SoCs.  Hence add a dependency on ARCH_MXC, to
->>> prevent
->>> asking the user about these drivers when configuring a kernel
->>> without
->>> i.MX SoC support.
->>>
->>> Fixes: e60c4354840b2fe8 ("drm/bridge: imx: Add LDB support for
->>> i.MX8qm")
->>> Fixes: 3818715f62b42b5c ("drm/bridge: imx: Add LDB support for
->>> i.MX8qxp")
->>> Fixes: 96988a526c97cfbe ("drm/bridge: imx: Add i.MX8qxp pixel link
->>> to DPI support")
->>> Fixes: 1ec17c26bc06289d ("drm/bridge: imx: Add i.MX8qm/qxp display
->>> pixel link support")
->>> Fixes: 93e163a9e0392aca ("drm/bridge: imx: Add i.MX8qm/qxp pixel
->>> combiner support")
->>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->>> Reviewed-by: Liu Ying <victor.liu@nxp.com>
->>> ---
->>> v2:
->>>     - s/i.MX8MP/i.MX8/,
->>>     - Add Reviewed-by.
->>> ---
->>>    drivers/gpu/drm/bridge/imx/Kconfig | 4 ++++
->>>    1 file changed, 4 insertions(+)
->>>
->>> diff --git a/drivers/gpu/drm/bridge/imx/Kconfig
->>> b/drivers/gpu/drm/bridge/imx/Kconfig
->>> index 212a7b0e64fd8b5a..608f47f41bcd1c81 100644
->>> --- a/drivers/gpu/drm/bridge/imx/Kconfig
->>> +++ b/drivers/gpu/drm/bridge/imx/Kconfig
->>> @@ -1,3 +1,5 @@
->>> +if ARCH_MXC || COMPILE_TEST
->>> +
->>>    config DRM_IMX8QM_LDB
->>>    	tristate "Freescale i.MX8QM LVDS display bridge"
->>>    	depends on OF
->>> @@ -41,3 +43,5 @@ config DRM_IMX8QXP_PIXEL_LINK_TO_DPI
->>>    	help
->>>    	  Choose this to enable pixel link to display pixel
->>> interface(PXL2DPI)
->>>    	  found in Freescale i.MX8qxp processor.
->>> +
->>> +endif # ARCH_MXC || COMPILE_TEST
->>
->> I was wondering why those were added in drivers/gpu/drm/bridge/imx
->> since they are specific to NXP SoCs,
->> I think they should be moved in the right drm imx subsystem instead
->> of this change.
-> 
-> There are 2 directories which contain display controller drivers for
-> i.MX SoCs:
-> a. drivers/gpu/drm/imx - i.MX51/53/6qdl IPUv3, i.MX8mq DCSS and
->     i.MX8qm/qxp DPU([1], not landed yet)
-> b. drivers/gpu/drm/mxsfb - i.MX23/28/6sx/8mq LCDIF and i.MX8mp
->     LCDIFv3([2], not landed yet)
-> 
-> Bridges added in drivers/gpu/drm/bridge/imx make it possible to share
-> bridge drivers across display controllers.  I see chance to use the
-> LVDS Display Bridge(LDB) helper(imx-ldb-helper.c) for i.MX6sx LDB.
+Hi Michael,
 
-Thanks for the explanation, LGTM
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+On Tue, Jun 28, 2022 at 5:26 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
+> Am 28.06.2022 um 09:12 schrieb Michael Schmitz:
+> > On 27/06/22 20:26, Geert Uytterhoeven wrote:
+> >> On Sat, Jun 18, 2022 at 3:06 AM Michael Schmitz <schmitzmic@gmail.com>
+> >> wrote:
+> >>> Am 18.06.2022 um 00:57 schrieb Arnd Bergmann:
+> >>>> From: Arnd Bergmann <arnd@arndb.de>
+> >>>>
+> >>>> All architecture-independent users of virt_to_bus() and bus_to_virt()
+> >>>> have been fixed to use the dma mapping interfaces or have been
+> >>>> removed now.  This means the definitions on most architectures, and the
+> >>>> CONFIG_VIRT_TO_BUS symbol are now obsolete and can be removed.
+> >>>>
+> >>>> The only exceptions to this are a few network and scsi drivers for m68k
+> >>>> Amiga and VME machines and ppc32 Macintosh. These drivers work
+> >>>> correctly
+> >>>> with the old interfaces and are probably not worth changing.
+> >>> The Amiga SCSI drivers are all old WD33C93 ones, and replacing
+> >>> virt_to_bus by virt_to_phys in the dma_setup() function there would
+> >>> cause no functional change at all.
+> >> FTR, the sgiwd93 driver use dma_map_single().
+> >
+> > Thanks! From what I see, it doesn't have to deal with bounce buffers
+> > though?
+>
+> Leaving the bounce buffer handling in place, and taking a few other
+> liberties - this is what converting the easiest case (a3000 SCSI) might
+> look like. Any obvious mistakes? The mvme147 driver would be very
+> similar to handle (after conversion to a platform device).
 
-> 
-> [1]
-> https://patchwork.kernel.org/project/dri-devel/patch/20220407091156.1211923-6-victor.liu@nxp.com/
-> [2]
-> https://patchwork.kernel.org/project/dri-devel/patch/20220624180201.150417-2-marex@denx.de/
-> 
-> Regards,
-> Liu Ying
-> 
+Thanks, looks reasonable.
 
+> The driver allocates bounce buffers using kmalloc if it hits an
+> unaligned data buffer - can such buffers still even happen these days?
+
+No idea.
+
+> If I understand dma_map_single() correctly, the resulting dma handle
+> would be equally misaligned?
+>
+> To allocate a bounce buffer, would it be OK to use dma_alloc_coherent()
+> even though AFAIU memory used for DMA buffers generally isn't consistent
+> on m68k?
+>
+> Thinking ahead to the other two Amiga drivers - I wonder whether
+> allocating a static bounce buffer or a DMA pool at driver init is likely
+> to succeed if the kernel runs from the low 16 MB RAM chunk? It certainly
+> won't succeed if the kernel runs from a higher memory address, so the
+> present bounce buffer logic around amiga_chip_alloc() might still need
+> to be used here.
+>
+> Leaves the question whether converting the gvp11 and a2091 drivers is
+> actually worth it, if bounce buffers still have to be handled explicitly.
+
+A2091 should be straight-forward, as A3000 is basically A2091 on the
+motherboard (comparing the two drivers, looks like someone's been
+sprinkling mb()s over the A3000 driver).
+
+I don't have any of these SCSI host adapters (not counting the A590
+(~A2091) expansion of the old A500, which is not Linux-capable, and
+ hasn't been powered on for 20 years).
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
