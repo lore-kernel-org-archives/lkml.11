@@ -2,137 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E4ACCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:10:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344750AbiF1KJx (ORCPT
+        id S1344721AbiF1KKL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 06:09:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40658 "EHLO
+        Tue, 28 Jun 2022 06:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344742AbiF1KJu (ORCPT
+        with ESMTP id S245559AbiF1KKJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 06:09:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD542F666;
-        Tue, 28 Jun 2022 03:09:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D28ACB81D93;
-        Tue, 28 Jun 2022 10:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50878C3411D;
-        Tue, 28 Jun 2022 10:09:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656410986;
-        bh=2kqaknsisyJeDGY+X+iXUz3e7OQebOSh2VPWs+t5KCg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=q1iUDDhb4Thtudo3GzAwdrBX82kGmMRcje8fr/uXlbXAFdRnPNpKwhaAPQTN48ldn
-         DyYyBVMqYtYsOhc8Mv6OGUCgEVB53zlNXTuk4ASoWTpN9k1CkhCs3bPwYSov+WosdU
-         m5ZYQ33St0tkBwQZAXzqgVOiBBUUavpizv+AGDGIWvr6RmcpPWmtniqRh0KNqw8Yb6
-         uBYzsw1KCOvX5Di4rUvkznt7Y0KoMCFmTBrBAzkt6VzkTyfUCOTvQ0FEpEj5oYOKhW
-         UKhBXtsUGs0YhZyA2NrnTkIGQY6Ct5ofQj5YuiM5/B+wDkNH/zEOzzDfLSeGNHovR3
-         bZxgAP1IuNIVA==
-Received: by pali.im (Postfix)
-        id 69C6D7AE; Tue, 28 Jun 2022 12:09:43 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Allen Yan <yanwei@marvell.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: mvebu-uart: correctly report configured baudrate value
-Date:   Tue, 28 Jun 2022 12:09:22 +0200
-Message-Id: <20220628100922.10717-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Tue, 28 Jun 2022 06:10:09 -0400
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506B62F660;
+        Tue, 28 Jun 2022 03:10:08 -0700 (PDT)
+Received: by mail-vs1-xe2c.google.com with SMTP id o13so11507471vsn.4;
+        Tue, 28 Jun 2022 03:10:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ypk5X9iRroizin43rs7DNbFL/AnWU24H75cu00VME9k=;
+        b=Wje4NHFuGZH3pz9ZFs+rI/F44mxP2RoPSyakvvN9H1ZiHT3vb0sBYbbIGx81YTwDel
+         bVZTBIdbdnQ7uicPr8dOx9Rbeb8Axp4DjlVyKIFiZ4wRJEyTy8NdBtzrWhmEYdxAd5xn
+         bz1RLNp8UMDM2ptVovogr840EobwedQkiqiyMVosPsMEbJZUbYIM1Z9OY9FGZpr+WmEN
+         xDpwSZEoBwtX6y3Gkow3hJg3VtQ3Jbxtbc7W8zDfSraHgXE5/t2a5t1gworUCtHkr6yx
+         4an/dDv21h7mwiUkhMwQSANt1uEPpWH6S735au+OmgrV31ue1Zet58zinQzqJj4VyEBT
+         vwog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ypk5X9iRroizin43rs7DNbFL/AnWU24H75cu00VME9k=;
+        b=UZhrvt1gXB9/T/iaCQuq6ffyxJxcaKXeJwc/LfHyRewoRZt33RNfkMjU6zKsXhNCDX
+         QdKBzpFWJ/TEqB7plpBBCofOO8APS7vvt9oweB+Mvpm7cyhmRlAKf1JVXGmDPuYAOwzL
+         pGYgxHAvRcY3IZIkcUSjxc7yazOUEutNjXMeT+IWCEj4UnOt0tObaSY1yjuZ6BPfl2uC
+         38aq+Mr7zvXjUtkRq0BVRjHsT7MotYYJUJCCa42WV+ZW6T7Bbe9ZkaYQlLSVyPlMLYSM
+         l11KKM5lwPkKxhIEI7uN1R+SBE8ey7JquAqfhiuxmJ5SDLOjq401WBVio51/3sctWOic
+         mA0Q==
+X-Gm-Message-State: AJIora9WVH/UBeCppHIETgviVTlZ6h9cIOoCPxz13Dzp9U+XDJaZjqLB
+        PoaMjaCfbxhJ2/EpRodTHEcyULsM9CXfucvSWVKBK+iS+Qhw6g==
+X-Google-Smtp-Source: AGRyM1vKw0prL7Zci9bmPwVpDE/JzxuZ9tfTV+MZALrqBSUijAHZqkZyJJHh+i5SwqLQhwIuDCFstSgMtV8X77ktbr8=
+X-Received: by 2002:a05:6102:5dc:b0:354:63f1:df8d with SMTP id
+ v28-20020a05610205dc00b0035463f1df8dmr1312490vsf.72.1656411007415; Tue, 28
+ Jun 2022 03:10:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220624055825.29183-1-zhangjiachen.jaycee@bytedance.com>
+In-Reply-To: <20220624055825.29183-1-zhangjiachen.jaycee@bytedance.com>
+From:   Amir Goldstein <amir73il@gmail.com>
+Date:   Tue, 28 Jun 2022 13:09:56 +0300
+Message-ID: <CAOQ4uxjbU27gSbhndxA_ABchfv1X7Steoggto_o-Wc=5shfS7Q@mail.gmail.com>
+Subject: Re: [PATCH] fuse: writeback_cache consistency enhancement (writeback_cache_v2)
+To:     Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
+        Vivek Goyal <vgoyal@redhat.com>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        xieyongji@bytedance.com, fam.zheng@bytedance.com,
+        Miklos Szeredi <mszeredi@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
-be called with the baudrate value which was set to hardware. Linux then
-report exact values via ioctl(TCGETS2) to userspace.
+On Fri, Jun 24, 2022 at 9:03 AM Jiachen Zhang
+<zhangjiachen.jaycee@bytedance.com> wrote:
+>
+> Some users may want both the high performance of the writeback_cahe mode and
+> a little bit more consistency among FUSE mounts. In the current writeback
+> mode implementation, users of one FUSE mount can never see the file
+> expansion done by other FUSE mounts.
+>
+> Based on the suggested writeback V2 patch in the upstream mailing-list [1],
+> this commit allows the cmtime and size to be updated from server in
+> writeback mode. Compared with the writeback V2 patch in [1], this commit has
+> several differences:
+>
+>     1. Ensure c/mtime are not updated from kernel to server. IOW, the cmtime
+>     generated by kernel are just temporary values that are never flushed to
+>     server, and they can also be updated by the official server cmtime when
+>     the writeback cache is clean.
+>
+>     2. Skip mtime-based revalidation when fc->auto_inval_data is set with
+>     fc->writeback_cache_v2. Because the kernel-generated temporary cmtime
+>     are likely not equal to the offical server cmtime.
+>
+>     3. If any page is ever flushed to the server during FUSE_GETATTR
+>     handling on fuse server, even if the cache is clean when
+>     fuse_change_attributes() checks, we should not update the i_size. This
+>     is because the FUSE_GETATTR may get a staled size before the FUSE_WRITE
+>     request changes server inode size. This commit ensures this by
+>     increasing attr_version after writeback for writeback_cache_v2. In that
+>     case, we should also ensure the ordering of the attr_version updating
+>     and the fi->writepages RB-tree updating. So that if a fuse page
+>     writeback ever happens during fuse_change_attributes(), either the
+>     fi->writepages is not empty, or the attr_version is increased. So we
+>     never mistakenly update a stale file size from server to kernel.
+>
+> With this patch, writeback mode can consider the server c/mtime as the
+> official one. When inode attr is timeout or invalidated, kernel has chance
+> to see size and c/mtime modified by others.
+>
+> Together with another patch [2], a FUSE daemon is able to implement
+> close-to-open (CTO) consistency like what is done in NFS clients.
+>
+> [1] https://lore.kernel.org/linux-fsdevel/Ymfu8fGbfYi4FxQ4@miu.piliscsaba.redhat.com
+> [2] https://lore.kernel.org/linux-fsdevel/20220608104202.19461-1-zhangjiachen.jaycee@bytedance.com/
+>
+> Suggested-by: Miklos Szeredi <mszeredi@redhat.com>
+> Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+> ---
+>  fs/fuse/file.c            | 17 +++++++++++++++
+>  fs/fuse/fuse_i.h          |  3 +++
+>  fs/fuse/inode.c           | 44 +++++++++++++++++++++++++++++++++++++--
+>  include/uapi/linux/fuse.h |  5 +++++
+>  4 files changed, 67 insertions(+), 2 deletions(-)
+>
+> diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+> index 9b64e2ff1c96..35bdc7af8468 100644
+> --- a/fs/fuse/file.c
+> +++ b/fs/fuse/file.c
+> @@ -1829,6 +1829,15 @@ static void fuse_writepage_end(struct fuse_mount *fm, struct fuse_args *args,
+>                  */
+>                 fuse_send_writepage(fm, next, inarg->offset + inarg->size);
+>         }
+> +
+> +       if (fc->writeback_cache_v2)
+> +               fi->attr_version = atomic64_inc_return(&fc->attr_version);
+> +       /*
+> +        * Ensure attr_version increases before the page is move out of the
+> +        * writepages rb-tree.
+> +        */
+> +       smp_mb();
+> +
+>         fi->writectr--;
+>         fuse_writepage_finish(fm, wpa);
+>         spin_unlock(&fi->lock);
+> @@ -1858,10 +1867,18 @@ static struct fuse_file *fuse_write_file_get(struct fuse_inode *fi)
+>
+>  int fuse_write_inode(struct inode *inode, struct writeback_control *wbc)
+>  {
+> +       struct fuse_conn *fc = get_fuse_conn(inode);
+>         struct fuse_inode *fi = get_fuse_inode(inode);
+>         struct fuse_file *ff;
+>         int err;
+>
+> +       /*
+> +        * Kernel c/mtime should not be updated to the server in the
+> +        * writeback_cache_v2 mode as server c/mtime are official.
+> +        */
+> +       if (fc->writeback_cache_v2)
+> +               return 0;
+> +
+>         /*
+>          * Inode is always written before the last reference is dropped and
+>          * hence this should not be reached from reclaim.
+> diff --git a/fs/fuse/fuse_i.h b/fs/fuse/fuse_i.h
+> index 488b460e046f..47de36146fb8 100644
+> --- a/fs/fuse/fuse_i.h
+> +++ b/fs/fuse/fuse_i.h
+> @@ -654,6 +654,9 @@ struct fuse_conn {
+>         /* show legacy mount options */
+>         unsigned int legacy_opts_show:1;
+>
+> +       /* Improved writeback cache policy */
+> +       unsigned writeback_cache_v2:1;
+> +
 
-Change mvebu_uart_baud_rate_set() function to return baudrate value which
-was set to hardware and propagate this value to above mentioned functions.
+Seeing that writeback_cache_v2 depends on writeback_cache
+I wonder whether that will not be better represented as:
 
-With this change userspace would see precise value in termios c_ospeed
-field.
+        /** write-back cache policy (default is write-through) */
+-       unsigned writeback_cache:1;
++      unsigned writeback_cache:2;
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
----
- drivers/tty/serial/mvebu-uart.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 0429c2a54290..93489fe334d0 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -470,14 +470,14 @@ static void mvebu_uart_shutdown(struct uart_port *port)
- 	}
- }
- 
--static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
-+static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- {
- 	unsigned int d_divisor, m_divisor;
- 	unsigned long flags;
- 	u32 brdv, osamp;
- 
- 	if (!port->uartclk)
--		return -EOPNOTSUPP;
-+		return 0;
- 
- 	/*
- 	 * The baudrate is derived from the UART clock thanks to divisors:
-@@ -548,7 +548,7 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- 			(m_divisor << 16) | (m_divisor << 24);
- 	writel(osamp, port->membase + UART_OSAMP);
- 
--	return 0;
-+	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
- }
- 
- static void mvebu_uart_set_termios(struct uart_port *port,
-@@ -587,15 +587,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
- 	max_baud = port->uartclk / 80;
- 
- 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
--	if (mvebu_uart_baud_rate_set(port, baud)) {
--		/* No clock available, baudrate cannot be changed */
--		if (old)
--			baud = uart_get_baud_rate(port, old, NULL,
--						  min_baud, max_baud);
--	} else {
--		tty_termios_encode_baud_rate(termios, baud, baud);
--		uart_update_timeout(port, termios->c_cflag, baud);
--	}
-+	baud = mvebu_uart_baud_rate_set(port, baud);
-+
-+	/* In case baudrate cannot be changed, report previous old value */
-+	if (baud == 0 && old)
-+		baud = tty_termios_baud_rate(old);
- 
- 	/* Only the following flag changes are supported */
- 	if (old) {
-@@ -606,6 +602,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
- 		termios->c_cflag |= CS8;
- 	}
- 
-+	if (baud != 0) {
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+		uart_update_timeout(port, termios->c_cflag, baud);
-+	}
-+
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
--- 
-2.20.1
+Looking at the recently added handle_killpriv_v2, I also wonder
+if that would not have been better.
 
+Vivek,
+is handle_killpriv_v2 really independent of handle_killpriv?
+Seeing test like these worry me as they are inviting bugs:
+
+                if (!fc->handle_killpriv && !fc->handle_killpriv_v2) {
+
+Thanks,
+Amir.
