@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD982C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A076C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345552AbiF1L2l (ORCPT
+        id S1345558AbiF1L2q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52618 "EHLO
+        Tue, 28 Jun 2022 07:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345459AbiF1L2S (ORCPT
+        with ESMTP id S1345496AbiF1L2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:28:18 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FC7B863;
-        Tue, 28 Jun 2022 04:28:17 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id u12so25057171eja.8;
-        Tue, 28 Jun 2022 04:28:16 -0700 (PDT)
+        Tue, 28 Jun 2022 07:28:20 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B85B410543;
+        Tue, 28 Jun 2022 04:28:18 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id r18so9230163edb.9;
+        Tue, 28 Jun 2022 04:28:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8kX3dUaWuulkCwAMYcRWq/5OXE7N5XumBNg6KTJej40=;
-        b=XsIH+2HQO1P1rHXYTPerAkTGiIM2ijXN6e2a8nA1YzRXVJbepZFT2gr/QLqLOsdi+U
-         R6G1p3JiVf6mXXRNy2NwloPk+XpjErzFnhr9+k90lHUa87Hw8EtMPJv2yTM0jvL5jxIy
-         cg3XL87XUQuJOf2cG+9nqf5K1DHKQ+mKiVBvUSyODcI2i/WNvHG5edVqsGJ1J348XXk8
-         J97p/fwJN94dnl6V9doQJxzxuZbfvkOO23QWSPDehyMLfsm/H33kznaTuk0VMa0a47k1
-         4sGwUw1gascOFrbo6akRUDX+vbAX3Kwt74m+SlY72fmFvNUUh5mTVdylQ8v35dmhAqxx
-         kUeg==
+        bh=wSWuOS2cAYv5FuJkZUEc6ND5j48qnvL32xgmlNFYci4=;
+        b=FvZMPG4RvTvduiJLbxdgkpBmHO0eivfuDB3c9SxChryaMNJW+RHsG0LmEDG9Dw19sU
+         +7kHR0ctkFPFGOzNyssScuN0/V6YJe1/jvh9gInfgAzF6JsMIKuFIEyXLrCsof1hI6uN
+         ZkQgi842QELzR98SBpzr4fT6W/EvvNFPTkJlL2EMmHMiuCjvTXVkGI+ZQgEeXhmKYkdd
+         zFWcZrdkpewXgyHVxaAEbaXRvd+LMr44fGqNdY4wToMrbyw8vJdaEaDMhAE92k31vfoq
+         igJWVXzBZ29TByMze6b7uWTfch6DYTBA4eItcWvNKFVAqGqKk/g6Vzz4ucX1bg8aMnps
+         vSsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8kX3dUaWuulkCwAMYcRWq/5OXE7N5XumBNg6KTJej40=;
-        b=kWCY0F0Ujbf/uOlPvLp5WSk+h6hs7gbEttnuRdF8zqD6CV6s8FBtVx7bDhGj5Rv9/T
-         eBLc/Jd7MY00SL33az7h9osn3R93VPb6XhwrgV18ZTR+kQNqSjTi2SKq0ai2plcNA/rj
-         AY2hiyQfDted9HvDfPW/8xDiQk+6gsDZuHJKmc4Kcenwj64WjGY69fv/B9J3rfFzXva0
-         BH3Hlt4TqW2252p2u5I/jttaK6X+u1+vfX2DNIrVwh2mp3KZacGj3SUi8taqwonbGDFT
-         VjVBe+OLHFUcg/k1lI0qTJvaRcmvRW2rQ3I/vg5CO86B0F5E1L8+zyktJHqxt/GDrRRY
-         LqXQ==
-X-Gm-Message-State: AJIora+eyUUANRUqzM/9qjuG7jNSy8SLo5vdXGVx6NA/x6G0onWf2fYT
-        qivp/yE+sh5ZhAYv8jmxW74=
-X-Google-Smtp-Source: AGRyM1skiyvCQpAlrk4WuoP4RqWyZwZfLZtvvrUmns96lKuveEOF6JxVfQfbbceXtsM4XMNcuXhTAg==
-X-Received: by 2002:a17:906:7315:b0:711:db45:af4c with SMTP id di21-20020a170906731500b00711db45af4cmr16554359ejc.412.1656415696584;
-        Tue, 28 Jun 2022 04:28:16 -0700 (PDT)
+        bh=wSWuOS2cAYv5FuJkZUEc6ND5j48qnvL32xgmlNFYci4=;
+        b=zA+DBYjucJ6qe1DQ5fnduSRYG/JU41PaVOASftNJxEur2G0GSyt1Zw3NouOLbWsgsQ
+         tpgaxqYKyMVtBIIu1wZlYEUSExWJ6ilwboJibjjy7TOCZ1T+0B+xd3pgLIXYXpR80Iby
+         uzlC3HKVNIJiBpoPaSPwi7xF+Z3LkvzAlEvvT/Xix69YCXoZbelTbdOTWEauwpAn5Sas
+         iftMp9ZQ4syjiu12loojI7LGiUxg7CAg5eqMIpGdgL29pIwQipWJquDSQhabu5ohIHcB
+         Nk5tqB+vxhRq9Ksoplxrq91Rk4v6n4rvo1VmbJZ6tSy+9pYz4sJ+WroWoexd3nwrKkE0
+         nA8Q==
+X-Gm-Message-State: AJIora+MlmDy8YjMpGgNnnjUtzHBIuE5Pbk+s+U6pl5AqRG1I/Wg3ZsT
+        sNlS/s9k3o6XpLQm0U9OjkM=
+X-Google-Smtp-Source: AGRyM1tN9+xICqng9ViA9oB4fb9cf2sQb53hvOku9jNJTaaO+oR/dcUdswOIf+hv1Nr6y/+uWwoFfw==
+X-Received: by 2002:aa7:c7c4:0:b0:431:75d6:6b3 with SMTP id o4-20020aa7c7c4000000b0043175d606b3mr22099442eds.280.1656415698324;
+        Tue, 28 Jun 2022 04:28:18 -0700 (PDT)
 Received: from localhost.localdomain (dynamic-095-114-061-215.95.114.pool.telefonica.de. [95.114.61.215])
-        by smtp.googlemail.com with ESMTPSA id h6-20020aa7cdc6000000b00435720b7a1csm9456318edw.20.2022.06.28.04.28.15
+        by smtp.googlemail.com with ESMTPSA id h6-20020aa7cdc6000000b00435720b7a1csm9456318edw.20.2022.06.28.04.28.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 04:28:16 -0700 (PDT)
+        Tue, 28 Jun 2022 04:28:17 -0700 (PDT)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, tlanger@maxlinear.com,
         rtanwar@maxlinear.com, miquel.raynal@bootlin.com, richard@nod.at,
         vigneshr@ti.com,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH RFC v1 6/8] mtd: rawnand: intel: Remove unused nand_pa member from ebu_nand_cs
-Date:   Tue, 28 Jun 2022 13:27:29 +0200
-Message-Id: <20220628112731.2041976-7-martin.blumenstingl@googlemail.com>
+Subject: [PATCH RFC v1 8/8] mtd: rawnand: intel: Use devm_platform_ioremap_resource_byname()
+Date:   Tue, 28 Jun 2022 13:27:31 +0200
+Message-Id: <20220628112731.2041976-9-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628112731.2041976-1-martin.blumenstingl@googlemail.com>
 References: <20220628112731.2041976-1-martin.blumenstingl@googlemail.com>
@@ -67,34 +67,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The nand_pa member from struct ebu_nand_cs is only written but never
-read. Remove this unused and unneeded member.
+Switch from open-coded platform_get_resource_byname() and
+devm_ioremap_resource() to devm_platform_ioremap_resource_byname() where
+possible to simplify the code.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/mtd/nand/raw/intel-nand-controller.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/mtd/nand/raw/intel-nand-controller.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/mtd/nand/raw/intel-nand-controller.c b/drivers/mtd/nand/raw/intel-nand-controller.c
-index 3df16d5ecae8..de4f85368988 100644
+index e486db11ecc3..d4a0987e93ac 100644
 --- a/drivers/mtd/nand/raw/intel-nand-controller.c
 +++ b/drivers/mtd/nand/raw/intel-nand-controller.c
-@@ -106,7 +106,6 @@
+@@ -592,13 +592,11 @@ static int ebu_nand_probe(struct platform_device *pdev)
+ 	ebu_host->dev = dev;
+ 	nand_controller_init(&ebu_host->controller);
  
- struct ebu_nand_cs {
- 	void __iomem *chipaddr;
--	dma_addr_t nand_pa;
- 	u32 addr_sel;
- };
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "ebunand");
+-	ebu_host->ebu = devm_ioremap_resource(&pdev->dev, res);
++	ebu_host->ebu = devm_platform_ioremap_resource_byname(pdev, "ebunand");
+ 	if (IS_ERR(ebu_host->ebu))
+ 		return PTR_ERR(ebu_host->ebu);
  
-@@ -626,7 +625,6 @@ static int ebu_nand_probe(struct platform_device *pdev)
- 	ebu_host->cs[cs].chipaddr = devm_ioremap_resource(dev, res);
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "hsnand");
+-	ebu_host->hsnand = devm_ioremap_resource(&pdev->dev, res);
++	ebu_host->hsnand = devm_platform_ioremap_resource_byname(pdev, "hsnand");
+ 	if (IS_ERR(ebu_host->hsnand))
+ 		return PTR_ERR(ebu_host->hsnand);
+ 
+@@ -620,8 +618,8 @@ static int ebu_nand_probe(struct platform_device *pdev)
+ 	ebu_host->cs_num = cs;
+ 
+ 	resname = devm_kasprintf(dev, GFP_KERNEL, "nand_cs%d", cs);
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, resname);
+-	ebu_host->cs[cs].chipaddr = devm_ioremap_resource(dev, res);
++	ebu_host->cs[cs].chipaddr = devm_platform_ioremap_resource_byname(pdev,
++									  resname);
  	if (IS_ERR(ebu_host->cs[cs].chipaddr))
  		return PTR_ERR(ebu_host->cs[cs].chipaddr);
--	ebu_host->cs[cs].nand_pa = res->start;
  
- 	ebu_host->clk = devm_clk_get(dev, NULL);
- 	if (IS_ERR(ebu_host->clk))
 -- 
 2.36.1
 
