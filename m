@@ -2,111 +2,295 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC68C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:09:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3845C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:09:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240824AbiF1HJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
+        id S230217AbiF1HJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiF1HJM (ORCPT
+        with ESMTP id S239845AbiF1HJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:09:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEBAB1F7;
-        Tue, 28 Jun 2022 00:09:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04115B81C52;
-        Tue, 28 Jun 2022 07:09:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64907C3411D;
-        Tue, 28 Jun 2022 07:09:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656400148;
-        bh=KnezzPTo8Q9ZlvqT1K8y4aDTmHK/lvlmr89a7q7X7AY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bwWKIZpcQgl01V43jknNke+c7QERjiyVYr/1S+vMI76fgbiPRCCtanZJj8p6+GE2W
-         UGOwEWmm63w/OvylJOo7FZFgc1BTkHRybjZJj1eOntMjPuA/8ZVXwBQHFlGWXlgLAO
-         fiffY81sAwbmN+5uRO0xJH40HKesOhTFpit9LXLA=
-Date:   Tue, 28 Jun 2022 09:09:05 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Heiko Carstens <hca@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: Re: [PATCH 5.18 112/181] vmcore: convert copy_oldmem_page() to take
- an iov_iter
-Message-ID: <YrqpEZV3yu31t6E2@kroah.com>
-References: <20220627111944.553492442@linuxfoundation.org>
- <20220627111947.945731832@linuxfoundation.org>
- <YrnaYJA675eGIy03@osiris>
+        Tue, 28 Jun 2022 03:09:15 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B012BB1F7;
+        Tue, 28 Jun 2022 00:09:14 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 07:09:12 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1656400153;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jy+XD8mz3VN2o4J93LZY58fy3wWA/2D2rYBycdqgE3Y=;
+        b=VYFOgEcFpTunWGY78MJd9ksH2o+W7h+tSwJ3XL212fwsOCa6DCnB/A9kcwDhh0hvG0a4/y
+        6gk+rp7bYLWJCmCAAmpk1Wojs+0C2RlGt/FWoypks260HYm0L7DRYKMA0nIDENzI3noI0k
+        a48O1A7Uia/GQcrHH9eVGQ8g8plvhArfmAqVHdKL12Di+if8DKSHLzhn/lwdqThZyRopG9
+        /IwCutn6ByFbIQn21Q1e11kThznlB/UrrogJGd/buB4DyHdj/bmiQs34sFNuyJRZ/2v98Z
+        Qm2TLJKf7KzLtYLvPjildnrLwh7gehCu8kMsvEh6bPdzGP1vV840BadwE+8k0Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1656400153;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jy+XD8mz3VN2o4J93LZY58fy3wWA/2D2rYBycdqgE3Y=;
+        b=BFxiW9nUoUD122GOoi6aDoNrWjCw0fxCFdT5Z+RArFI3hEYADHmeKYZfYk/2NxPwjwlNGV
+        WjrwuxHt4225FzCg==
+From:   "tip-bot2 for Ard Biesheuvel" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: locking/core] jump_label: make initial NOP patching the special case
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Mark Rutland <mark.rutland@arm.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220615154142.1574619-4-ardb@kernel.org>
+References: <20220615154142.1574619-4-ardb@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrnaYJA675eGIy03@osiris>
+Message-ID: <165640015213.4207.5782268583305110396.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 06:27:12PM +0200, Heiko Carstens wrote:
-> On Mon, Jun 27, 2022 at 01:21:25PM +0200, Greg Kroah-Hartman wrote:
-> > From: Matthew Wilcox (Oracle) <willy@infradead.org>
-> > 
-> > [ Upstream commit 5d8de293c224896a4da99763fce4f9794308caf4 ]
-> > 
-> > Patch series "Convert vmcore to use an iov_iter", v5.
-> > 
-> > For some reason several people have been sending bad patches to fix
-> > compiler warnings in vmcore recently.  Here's how it should be done.
-> > Compile-tested only on x86.  As noted in the first patch, s390 should take
-> > this conversion a bit further, but I'm not inclined to do that work
-> > myself.
-> > 
-> > This patch (of 3):
-> > 
-> > Instead of passing in a 'buf' and 'userbuf' argument, pass in an iov_iter.
-> > s390 needs more work to pass the iov_iter down further, or refactor, but
-> > I'd be more comfortable if someone who can test on s390 did that work.
-> > 
-> > It's more convenient to convert the whole of read_from_oldmem() to take an
-> > iov_iter at the same time, so rename it to read_from_oldmem_iter() and add
-> > a temporary read_from_oldmem() wrapper that creates an iov_iter.
-> > 
-> > Link: https://lkml.kernel.org/r/20220408090636.560886-1-bhe@redhat.com
-> > Link: https://lkml.kernel.org/r/20220408090636.560886-2-bhe@redhat.com
-> > Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> > Signed-off-by: Baoquan He <bhe@redhat.com>
-> > Reviewed-by: Christoph Hellwig <hch@lst.de>
-> > Cc: Heiko Carstens <hca@linux.ibm.com>
-> > Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-> > Signed-off-by: Sasha Levin <sashal@kernel.org>
-> > ---
-> >  arch/arm/kernel/crash_dump.c     | 27 +++-------------
-> >  arch/arm64/kernel/crash_dump.c   | 29 +++--------------
-> >  arch/ia64/kernel/crash_dump.c    | 32 +++----------------
-> >  arch/mips/kernel/crash_dump.c    | 27 +++-------------
-> >  arch/powerpc/kernel/crash_dump.c | 35 +++------------------
-> >  arch/riscv/kernel/crash_dump.c   | 26 +++------------
-> >  arch/s390/kernel/crash_dump.c    | 13 +++++---
-> >  arch/sh/kernel/crash_dump.c      | 29 +++--------------
-> >  arch/x86/kernel/crash_dump_32.c  | 29 +++--------------
-> >  arch/x86/kernel/crash_dump_64.c  | 41 +++++++-----------------
-> >  fs/proc/vmcore.c                 | 54 ++++++++++++++++++++------------
-> >  include/linux/crash_dump.h       |  9 +++---
-> >  12 files changed, 91 insertions(+), 260 deletions(-)
-> 
-> This one breaks s390. You would also need to apply the following two commits:
-> 
-> cc02e6e21aa5 ("s390/crash: add missing iterator advance in copy_oldmem_page()")
-> af2debd58bd7 ("s390/crash: make copy_oldmem_page() return number of bytes copied")
+The following commit has been merged into the locking/core branch of tip:
 
-Both of them are also in the 5.18-rc queue here, right?
+Commit-ID:     7e6b9db27de9f69a705c1a046d45882c768e16c3
+Gitweb:        https://git.kernel.org/tip/7e6b9db27de9f69a705c1a046d45882c768e16c3
+Author:        Ard Biesheuvel <ardb@kernel.org>
+AuthorDate:    Wed, 15 Jun 2022 17:41:42 +02:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Fri, 24 Jun 2022 09:48:55 +02:00
 
-thanks,
+jump_label: make initial NOP patching the special case
 
-greg k-h
+Instead of defaulting to patching NOP opcodes at init time, and leaving
+it to the architectures to override this if this is not needed, switch
+to a model where doing nothing is the default. This is the common case
+by far, as only MIPS requires NOP patching at init time. On all other
+architectures, the correct encodings are emitted by the compiler and so
+no initial patching is needed.
+
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220615154142.1574619-4-ardb@kernel.org
+---
+ Documentation/staging/static-keys.rst |  3 ---
+ arch/arc/kernel/jump_label.c          | 13 -------------
+ arch/arm/kernel/jump_label.c          |  6 ------
+ arch/arm64/kernel/jump_label.c        | 11 -----------
+ arch/mips/include/asm/jump_label.h    |  2 ++
+ arch/parisc/kernel/jump_label.c       | 11 -----------
+ arch/riscv/kernel/jump_label.c        | 12 ------------
+ arch/s390/kernel/jump_label.c         |  5 -----
+ arch/x86/kernel/jump_label.c          | 13 -------------
+ include/linux/jump_label.h            |  2 --
+ kernel/jump_label.c                   | 14 +++++---------
+ 11 files changed, 7 insertions(+), 85 deletions(-)
+
+diff --git a/Documentation/staging/static-keys.rst b/Documentation/staging/static-keys.rst
+index 38290b9..b0a519f 100644
+--- a/Documentation/staging/static-keys.rst
++++ b/Documentation/staging/static-keys.rst
+@@ -201,9 +201,6 @@ static_key->entry field makes use of the two least significant bits.
+ * ``void arch_jump_label_transform(struct jump_entry *entry, enum jump_label_type type)``,
+     see: arch/x86/kernel/jump_label.c
+ 
+-* ``__init_or_module void arch_jump_label_transform_static(struct jump_entry *entry, enum jump_label_type type)``,
+-    see: arch/x86/kernel/jump_label.c
+-
+ * ``struct jump_entry``,
+     see: arch/x86/include/asm/jump_label.h
+ 
+diff --git a/arch/arc/kernel/jump_label.c b/arch/arc/kernel/jump_label.c
+index b8600dc..70b74a5 100644
+--- a/arch/arc/kernel/jump_label.c
++++ b/arch/arc/kernel/jump_label.c
+@@ -96,19 +96,6 @@ void arch_jump_label_transform(struct jump_entry *entry,
+ 	flush_icache_range(entry->code, entry->code + JUMP_LABEL_NOP_SIZE);
+ }
+ 
+-void arch_jump_label_transform_static(struct jump_entry *entry,
+-				      enum jump_label_type type)
+-{
+-	/*
+-	 * We use only one NOP type (1x, 4 byte) in arch_static_branch, so
+-	 * there's no need to patch an identical NOP over the top of it here.
+-	 * The generic code calls 'arch_jump_label_transform' if the NOP needs
+-	 * to be replaced by a branch, so 'arch_jump_label_transform_static' is
+-	 * never called with type other than JUMP_LABEL_NOP.
+-	 */
+-	BUG_ON(type != JUMP_LABEL_NOP);
+-}
+-
+ #ifdef CONFIG_ARC_DBG_JUMP_LABEL
+ #define SELFTEST_MSG	"ARC: instruction generation self-test: "
+ 
+diff --git a/arch/arm/kernel/jump_label.c b/arch/arm/kernel/jump_label.c
+index 303b3ab..eb9c24b 100644
+--- a/arch/arm/kernel/jump_label.c
++++ b/arch/arm/kernel/jump_label.c
+@@ -27,9 +27,3 @@ void arch_jump_label_transform(struct jump_entry *entry,
+ {
+ 	__arch_jump_label_transform(entry, type, false);
+ }
+-
+-void arch_jump_label_transform_static(struct jump_entry *entry,
+-				      enum jump_label_type type)
+-{
+-	__arch_jump_label_transform(entry, type, true);
+-}
+diff --git a/arch/arm64/kernel/jump_label.c b/arch/arm64/kernel/jump_label.c
+index fc98037..faf88ec 100644
+--- a/arch/arm64/kernel/jump_label.c
++++ b/arch/arm64/kernel/jump_label.c
+@@ -26,14 +26,3 @@ void arch_jump_label_transform(struct jump_entry *entry,
+ 
+ 	aarch64_insn_patch_text_nosync(addr, insn);
+ }
+-
+-void arch_jump_label_transform_static(struct jump_entry *entry,
+-				      enum jump_label_type type)
+-{
+-	/*
+-	 * We use the architected A64 NOP in arch_static_branch, so there's no
+-	 * need to patch an identical A64 NOP over the top of it here. The core
+-	 * will call arch_jump_label_transform from a module notifier if the
+-	 * NOP needs to be replaced by a branch.
+-	 */
+-}
+diff --git a/arch/mips/include/asm/jump_label.h b/arch/mips/include/asm/jump_label.h
+index 3185fd3..c5c6864 100644
+--- a/arch/mips/include/asm/jump_label.h
++++ b/arch/mips/include/asm/jump_label.h
+@@ -8,6 +8,8 @@
+ #ifndef _ASM_MIPS_JUMP_LABEL_H
+ #define _ASM_MIPS_JUMP_LABEL_H
+ 
++#define arch_jump_label_transform_static arch_jump_label_transform
++
+ #ifndef __ASSEMBLY__
+ 
+ #include <linux/types.h>
+diff --git a/arch/parisc/kernel/jump_label.c b/arch/parisc/kernel/jump_label.c
+index d2f3cb1..e253b13 100644
+--- a/arch/parisc/kernel/jump_label.c
++++ b/arch/parisc/kernel/jump_label.c
+@@ -42,14 +42,3 @@ void arch_jump_label_transform(struct jump_entry *entry,
+ 
+ 	patch_text(addr, insn);
+ }
+-
+-void arch_jump_label_transform_static(struct jump_entry *entry,
+-				      enum jump_label_type type)
+-{
+-	/*
+-	 * We use the architected NOP in arch_static_branch, so there's no
+-	 * need to patch an identical NOP over the top of it here. The core
+-	 * will call arch_jump_label_transform from a module notifier if the
+-	 * NOP needs to be replaced by a branch.
+-	 */
+-}
+diff --git a/arch/riscv/kernel/jump_label.c b/arch/riscv/kernel/jump_label.c
+index 20e0905..e669475 100644
+--- a/arch/riscv/kernel/jump_label.c
++++ b/arch/riscv/kernel/jump_label.c
+@@ -39,15 +39,3 @@ void arch_jump_label_transform(struct jump_entry *entry,
+ 	patch_text_nosync(addr, &insn, sizeof(insn));
+ 	mutex_unlock(&text_mutex);
+ }
+-
+-void arch_jump_label_transform_static(struct jump_entry *entry,
+-				      enum jump_label_type type)
+-{
+-	/*
+-	 * We use the same instructions in the arch_static_branch and
+-	 * arch_static_branch_jump inline functions, so there's no
+-	 * need to patch them up here.
+-	 * The core will call arch_jump_label_transform  when those
+-	 * instructions need to be replaced.
+-	 */
+-}
+diff --git a/arch/s390/kernel/jump_label.c b/arch/s390/kernel/jump_label.c
+index d764f0d..e808bb8 100644
+--- a/arch/s390/kernel/jump_label.c
++++ b/arch/s390/kernel/jump_label.c
+@@ -80,8 +80,3 @@ void arch_jump_label_transform_apply(void)
+ {
+ 	text_poke_sync();
+ }
+-
+-void __init_or_module arch_jump_label_transform_static(struct jump_entry *entry,
+-						       enum jump_label_type type)
+-{
+-}
+diff --git a/arch/x86/kernel/jump_label.c b/arch/x86/kernel/jump_label.c
+index 68f091b..f5b8ef0 100644
+--- a/arch/x86/kernel/jump_label.c
++++ b/arch/x86/kernel/jump_label.c
+@@ -146,16 +146,3 @@ void arch_jump_label_transform_apply(void)
+ 	text_poke_finish();
+ 	mutex_unlock(&text_mutex);
+ }
+-
+-static enum {
+-	JL_STATE_START,
+-	JL_STATE_NO_UPDATE,
+-	JL_STATE_UPDATE,
+-} jlstate __initdata_or_module = JL_STATE_START;
+-
+-__init_or_module void arch_jump_label_transform_static(struct jump_entry *entry,
+-				      enum jump_label_type type)
+-{
+-	if (jlstate == JL_STATE_UPDATE)
+-		jump_label_transform(entry, type, 1);
+-}
+diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
+index 2003a09..570831c 100644
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -220,8 +220,6 @@ extern void jump_label_lock(void);
+ extern void jump_label_unlock(void);
+ extern void arch_jump_label_transform(struct jump_entry *entry,
+ 				      enum jump_label_type type);
+-extern void arch_jump_label_transform_static(struct jump_entry *entry,
+-					     enum jump_label_type type);
+ extern bool arch_jump_label_transform_queue(struct jump_entry *entry,
+ 					    enum jump_label_type type);
+ extern void arch_jump_label_transform_apply(void);
+diff --git a/kernel/jump_label.c b/kernel/jump_label.c
+index b1ac294..714ac4c 100644
+--- a/kernel/jump_label.c
++++ b/kernel/jump_label.c
+@@ -332,17 +332,13 @@ static int __jump_label_text_reserved(struct jump_entry *iter_start,
+ 	return 0;
+ }
+ 
+-/*
+- * Update code which is definitely not currently executing.
+- * Architectures which need heavyweight synchronization to modify
+- * running code can override this to make the non-live update case
+- * cheaper.
+- */
+-void __weak __init_or_module arch_jump_label_transform_static(struct jump_entry *entry,
+-					    enum jump_label_type type)
++#ifndef arch_jump_label_transform_static
++static void arch_jump_label_transform_static(struct jump_entry *entry,
++					     enum jump_label_type type)
+ {
+-	arch_jump_label_transform(entry, type);
++	/* nothing to do on most architectures */
+ }
++#endif
+ 
+ static inline struct jump_entry *static_key_entries(struct static_key *key)
+ {
