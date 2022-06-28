@@ -2,102 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA3FAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81B39C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343673AbiF1Gyu (ORCPT
+        id S1343588AbiF1Gzl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33920 "EHLO
+        Tue, 28 Jun 2022 02:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343882AbiF1Gyh (ORCPT
+        with ESMTP id S229548AbiF1Gzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:54:37 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C1C275C1;
-        Mon, 27 Jun 2022 23:54:25 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Tue, 28 Jun 2022 02:55:38 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B7E22BCE
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:55:37 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LXFgw56zCz4xXF;
-        Tue, 28 Jun 2022 16:54:20 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1656399261;
-        bh=0NJ4j4WvNJDzrwmj/CN0sV8UZ28t5xB8MJ/OmMV4XTo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=vGcMyZv797hXDs0chsaLHdoNUZ9XbE0SogHC9xnavHiAmENzX1E6p6qYzQC5aHCm9
-         0XgzO2HmI5WOVFpCExVoZJ9xku66NQbQszc7F+/XoUygq+FO6yPFqZGpJLyBkfWKHe
-         U+k2wRa674kuLk/OjCbdmF5sWA4XvYC4VUGah4gbkNbDgCOQAksGdFbwEq4Tb8ID2N
-         UM0LNkWnVXDaG0yIMLfxSafqhQ2eWelK3lrXjbmePAZdWm27wK6CoN/eBgWMiFszwW
-         85h4emtGGqzffLN655x1hTsk6okD3jvWXSmFCgRmGgdRDMbMteLYztH8Al7vi8ga0N
-         uexB9NmHrjvfg==
-Date:   Tue, 28 Jun 2022 16:54:19 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yanteng Si <siyanteng@loongson.cn>
-Subject: linux-next: manual merge of the mm-stable tree with the jc_docs
- tree
-Message-ID: <20220628165419.0bbe7b0f@canb.auug.org.au>
+        (Authenticated sender: bbrezillon)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 271F46601856;
+        Tue, 28 Jun 2022 07:55:36 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656399336;
+        bh=CQRz8B+bkCZiBSEzDEK0Y9ZfKFUVGt+3EPrz6C/F4nY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=O+RMMaj3oBnqHjdgpSOaqa6f+tPOSOEwu1KRsgBClppDzGAMEKwdrouboQx1xoaHj
+         Qt+dZ4yKEZJuqujtaMAVddWovXt20NWHKAJk4g6wgUKdk0GGQqIN4EKsHbsn7uta/r
+         vAgkHTcgjTso4dwIzGHXoC32yWxpoz/MdOj40AkpVK02QSQU+uEcgq98mEviu9pxEB
+         e5MJWzaTT0AghPFLD1KGjSold/SE/VkhEkiqPn+zB3S6HZSDTNSZhNjQAro6lZUZpM
+         wdvT+GFW980Thc3wInmUjDug9aPLc1alUgWp+QabbGjpZlvOi17SI8wWq2OmabedMG
+         97P8/KZ0wvB2w==
+Date:   Tue, 28 Jun 2022 08:55:33 +0200
+From:   Boris Brezillon <boris.brezillon@collabora.com>
+To:     Yu Liao <liaoyu15@huawei.com>
+Cc:     <emma@anholt.net>, <mripard@kernel.org>, <eric@anholt.net>,
+        <bbrezillon@kernel.org>, <liwei391@huawei.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] drm/vc4: fix dereference before NULL check
+Message-ID: <20220628085533.7b7885fb@collabora.com>
+In-Reply-To: <20220628063657.3169049-1-liaoyu15@huawei.com>
+References: <20220628063657.3169049-1-liaoyu15@huawei.com>
+Organization: Collabora
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/LjNpbVvD=ixMdp9ECtpNiSb";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/LjNpbVvD=ixMdp9ECtpNiSb
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, 28 Jun 2022 14:36:57 +0800
+Yu Liao <liaoyu15@huawei.com> wrote:
 
-Hi all,
+> The "perfmon" pointer is equal to the return value of idr_find
+> which may be NULL, access by vc4_perfmon_get before checking if
+> it was NULL. Fix this by dereferencing "perfmon" after "perfmon"
+> has been null checked.
+> 
+> Addresses-Coverity: ("Dereference before null check")
+> Fixes: 65101d8c9108 ("drm/vc4: Expose performance counters to userspace")
+> Signed-off-by: Yu Liao <liaoyu15@huawei.com>
 
-Today's linux-next merge of the mm-stable tree got a conflict in:
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
 
-  Documentation/translations/zh_CN/vm/page_migration.rst
-  Documentation/translations/zh_CN/vm/vmalloced-kernel-stacks.rst
+> ---
+>  drivers/gpu/drm/vc4/vc4_perfmon.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/vc4/vc4_perfmon.c b/drivers/gpu/drm/vc4/vc4_perfmon.c
+> index c7f5adb6bcf8..ca969b8c7dde 100644
+> --- a/drivers/gpu/drm/vc4/vc4_perfmon.c
+> +++ b/drivers/gpu/drm/vc4/vc4_perfmon.c
+> @@ -17,13 +17,17 @@
+>  
+>  void vc4_perfmon_get(struct vc4_perfmon *perfmon)
+>  {
+> -	struct vc4_dev *vc4 = perfmon->dev;
+> +	struct vc4_dev *vc4;
+> +
+> +	if (!perfmon)
+> +		return;
+> +
+> +	vc4 = perfmon->dev;
+>  
+>  	if (WARN_ON_ONCE(vc4->is_vc5))
+>  		return;
+>  
+> -	if (perfmon)
+> -		refcount_inc(&perfmon->refcnt);
+> +	refcount_inc(&perfmon->refcnt);
+>  }
+>  
+>  void vc4_perfmon_put(struct vc4_perfmon *perfmon)
 
-between commits:
-
-  3f39b3d70fcd ("docs/zh_CN: add vm page_migration translation")
-  17c260504f6f ("docs/zh_CN: add vm vmalloced-kernel-stacks translation")
-
-from the jc_docs tree and commit:
-
-  ee65728e103b ("docs: rename Documentation/vm to Documentation/mm")
-
-from the mm-stable tree.
-
-I fixed it up (I moved the files into the "mm" directory) and can carry
-the fix as necessary. This is now fixed as far as linux-next is
-concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the
-conflicting tree to minimise any particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/LjNpbVvD=ixMdp9ECtpNiSb
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmK6pZsACgkQAVBC80lX
-0GzAKgf/RNkS3lMrZhLcOGbH98yQsKr+Wb/edot0XXyElhs5QoR+fOVDWCCzg1rI
-OJRanZhtLDSDRknrZmkXGLaPXXNhqzmU26q1aPLn8Y9UhXaPIxBdzIsCbyJg8Dj6
-nMYdAreKwR/i5cFAqbWNWebaF2wNbUGioA3YasxHoPoNMcF1katvJ2wEG6sX2jKW
-FjmbXcl3cJ0RsTX3UWQhwYvh3PFjP7kiobPG+FkDmJmyfLIk3szQjZJRyc23bWR6
-0hAvf1qqhFEvZ/uaWH/0aTiF5cLBZ2sTZHgmfOxiZbAlDR/Wl7gS+Rk1kkV3MY91
-N+3felnUba0xKA3yLoCgmKLIEnFH8w==
-=aavn
------END PGP SIGNATURE-----
-
---Sig_/LjNpbVvD=ixMdp9ECtpNiSb--
