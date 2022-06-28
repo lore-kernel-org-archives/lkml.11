@@ -2,103 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB92FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C448CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347057AbiF1OoJ (ORCPT
+        id S1347091AbiF1Ooy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 10:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53538 "EHLO
+        Tue, 28 Jun 2022 10:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234461AbiF1OoG (ORCPT
+        with ESMTP id S234461AbiF1Oox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 10:44:06 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5986C2CDF0;
-        Tue, 28 Jun 2022 07:44:04 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4LXS5s52D1z9tS9;
-        Tue, 28 Jun 2022 16:44:01 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id qwEg0otRXnJ0; Tue, 28 Jun 2022 16:44:01 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4LXS5s4DTHz9tS5;
-        Tue, 28 Jun 2022 16:44:01 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 81BC98B787;
-        Tue, 28 Jun 2022 16:44:01 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 2tY5ei-4Xxwn; Tue, 28 Jun 2022 16:44:01 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.132])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4CE348B765;
-        Tue, 28 Jun 2022 16:44:01 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 25SEhpji2927453
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 16:43:51 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 25SEhnbD2927421;
-        Tue, 28 Jun 2022 16:43:49 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        stable@vger.kernel.org
-Subject: [PATCH] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
-Date:   Tue, 28 Jun 2022 16:43:35 +0200
-Message-Id: <0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.36.1
+        Tue, 28 Jun 2022 10:44:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A240F2C101;
+        Tue, 28 Jun 2022 07:44:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E729B81E1B;
+        Tue, 28 Jun 2022 14:44:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2931C3411D;
+        Tue, 28 Jun 2022 14:44:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656427489;
+        bh=znnZhND4MStS8axD7DZM63GETTGWg85blo0qWJFB8GA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uQO7rcBZRYhmXeHnTT48ArPTQjIZwXE+CIKGT7tBR/2gWhgtq33DrXd/PiRp5P3Ua
+         75+a0cTOQmiueyuTi01tUB1C4hsSkaL+4RQeuX446zEqWzuPGmnFNCcNTgAEFdNoK1
+         ejkT87qmo0HCTo+WVht65m2EwF0KmZMqvBD4oiBeT3Ar/G7+C0UiiUEB0t99CPvPa1
+         wqCY6BXy+x8NuhO3XLl+Ww+xFz554dA8ZGMYBCXjZAqJ3+LXj4OW/zdMwBXjNF4VWA
+         lyNV44TIBaR3EJ4Rvcmh/KkszSi2Ho8oa2D6JMk3vT0+L+W8BelRRZwPnEDX81/TRd
+         EpBDBU/FQimUw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 9A1BF4096F; Tue, 28 Jun 2022 11:44:46 -0300 (-03)
+Date:   Tue, 28 Jun 2022 11:44:46 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Song Liu <songliubraving@fb.com>,
+        Hao Luo <haoluo@google.com>,
+        Milian Wolff <milian.wolff@kdab.com>, bpf@vger.kernel.org,
+        Blake Jones <blakejones@google.com>
+Subject: Re: [PATCH 1/6] perf offcpu: Fix a build failure on old kernels
+Message-ID: <YrsT3iw+FEXb6kxF@kernel.org>
+References: <20220624231313.367909-1-namhyung@kernel.org>
+ <20220624231313.367909-2-namhyung@kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1656427414; l=1247; s=20211009; h=from:subject:message-id; bh=ifo0bnPDj6AxZwjI6HQHIwja6hG48ZAS1d00mjOTv94=; b=LI5KoZ/TMmHMpVg8pCjmo4Vpb+Xn5NN0gCK6ZEJKijwGWqmqeibnbdg6FPrjleVAsDQezxIeq29Z C9/0gHlRCMV30QkQu9yMGSnizGvmtbLuTF6Uyk8MfEDrWkNQ1IAM
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220624231313.367909-2-namhyung@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On FSL_BOOK3E, _PAGE_RW is defined with two bits, one for user and one
-for supervisor. As soon as one of the two bits is set, the page has
-to be display as RW. But the way it is implemented today requires both
-bits to be set in order to display it as RW.
+Em Fri, Jun 24, 2022 at 04:13:08PM -0700, Namhyung Kim escreveu:
+> Old kernels have task_struct which contains "state" field and newer
+> kernels have "__state".  While the get_task_state() in the BPF code
+> handles that in some way, it assumed the current kernel has the new
+> definition and it caused a build error on old kernels.
+> 
+> We should not assume anything and access them carefully.  Do not use
+> the task struct directly and access them using new and old definitions
+> in a row.
 
-Instead of display RW when _PAGE_RW bits are set and R otherwise,
-reverse the logic and display R when _PAGE_RW bits are all 0 and
-RW otherwise.
+I added a:
 
-This change has no impact on other platforms as _PAGE_RW is a single
-bit on all of them.
+Fixes: edc41a1099c2d08c ("perf record: Enable off-cpu analysis with BPF")
 
-Fixes: 8eb07b187000 ("powerpc/mm: Dump linux pagetables")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/mm/ptdump/shared.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Ok?
 
-diff --git a/arch/powerpc/mm/ptdump/shared.c b/arch/powerpc/mm/ptdump/shared.c
-index 03607ab90c66..f884760ca5cf 100644
---- a/arch/powerpc/mm/ptdump/shared.c
-+++ b/arch/powerpc/mm/ptdump/shared.c
-@@ -17,9 +17,9 @@ static const struct flag_info flag_array[] = {
- 		.clear	= "    ",
- 	}, {
- 		.mask	= _PAGE_RW,
--		.val	= _PAGE_RW,
--		.set	= "rw",
--		.clear	= "r ",
-+		.val	= 0,
-+		.set	= "r ",
-+		.clear	= "rw",
- 	}, {
- 		.mask	= _PAGE_EXEC,
- 		.val	= _PAGE_EXEC,
+- Arnaldo
+ 
+> Reported-by: Ian Rogers <irogers@google.com>
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> ---
+>  tools/perf/util/bpf_skel/off_cpu.bpf.c | 20 ++++++++++++++------
+>  1 file changed, 14 insertions(+), 6 deletions(-)
+> 
+> diff --git a/tools/perf/util/bpf_skel/off_cpu.bpf.c b/tools/perf/util/bpf_skel/off_cpu.bpf.c
+> index 792ae2847080..cc6d7fd55118 100644
+> --- a/tools/perf/util/bpf_skel/off_cpu.bpf.c
+> +++ b/tools/perf/util/bpf_skel/off_cpu.bpf.c
+> @@ -71,6 +71,11 @@ struct {
+>  	__uint(max_entries, 1);
+>  } cgroup_filter SEC(".maps");
+>  
+> +/* new kernel task_struct definition */
+> +struct task_struct___new {
+> +	long __state;
+> +} __attribute__((preserve_access_index));
+> +
+>  /* old kernel task_struct definition */
+>  struct task_struct___old {
+>  	long state;
+> @@ -93,14 +98,17 @@ const volatile bool uses_cgroup_v1 = false;
+>   */
+>  static inline int get_task_state(struct task_struct *t)
+>  {
+> -	if (bpf_core_field_exists(t->__state))
+> -		return BPF_CORE_READ(t, __state);
+> +	/* recast pointer to capture new type for compiler */
+> +	struct task_struct___new *t_new = (void *)t;
+>  
+> -	/* recast pointer to capture task_struct___old type for compiler */
+> -	struct task_struct___old *t_old = (void *)t;
+> +	if (bpf_core_field_exists(t_new->__state)) {
+> +		return BPF_CORE_READ(t_new, __state);
+> +	} else {
+> +		/* recast pointer to capture old type for compiler */
+> +		struct task_struct___old *t_old = (void *)t;
+>  
+> -	/* now use old "state" name of the field */
+> -	return BPF_CORE_READ(t_old, state);
+> +		return BPF_CORE_READ(t_old, state);
+> +	}
+>  }
+>  
+>  static inline __u64 get_cgroup_id(struct task_struct *t)
+> -- 
+> 2.37.0.rc0.161.g10f37bed90-goog
+
 -- 
-2.36.1
 
+- Arnaldo
