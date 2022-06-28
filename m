@@ -2,180 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A576CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE5BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348011AbiF1POu (ORCPT
+        id S1348072AbiF1PO4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:14:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48020 "EHLO
+        Tue, 28 Jun 2022 11:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347972AbiF1POf (ORCPT
+        with ESMTP id S1347435AbiF1POi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:14:35 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8EE2DA9A;
-        Tue, 28 Jun 2022 08:14:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656429274; x=1687965274;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=HWcDf5a5gBp8qOH5HkYU1nMmwszw1YOekY+IkOXMEF4=;
-  b=sFfUV9+seoy54VUmDT4gbmeywCGoZ5lOfuPSsOqLCldBNVRpIO8OkHpR
-   +BT/xrmKYD1ISf1w2h7FB5dAHIM3A5S3Gc9Jxt6/Jv89QUPYELckQTTAI
-   U2DRXkDzWGbw4ezJZgclcRtSJiWYnv91JvHcUqqhnd9Qa3yzlizp7aseR
-   EVDwcvNR27DF6f4uzUJoe6nBG4c1iYuzC4esyIEDw0wSH4tPVPVFzIUUM
-   Szqa1jl0xR9Wx8Buc/tnEgGp801/thiBr8oFDpAGRdNbRQ1RxUgD65UVA
-   7NNXGFOyR0VnS2S6yRDpdRzpO6pMBB/dLfpRwLx8vWMdagucIlOlPW7j1
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="165465314"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jun 2022 08:14:33 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 28 Jun 2022 08:14:33 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 28 Jun 2022 08:14:29 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <eugen.hristev@microchip.com>, <jic23@kernel.org>,
-        <lars@metafoo.de>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>
-CC:     <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v2 06/19] iio: adc: at91-sama5d2_adc: handle different EMR.OSR for different hw versions
-Date:   Tue, 28 Jun 2022 18:16:18 +0300
-Message-ID: <20220628151631.3116454-7-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
-References: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
+        Tue, 28 Jun 2022 11:14:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7493B2DD4B;
+        Tue, 28 Jun 2022 08:14:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D3C6B81E39;
+        Tue, 28 Jun 2022 15:14:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8FA6C341CA;
+        Tue, 28 Jun 2022 15:14:33 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="oLBJ0YWa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656429272;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CFZhZs8TzfzhOTKeWs1ZB/BO0Gr0GcTW1JXaKhw0cNw=;
+        b=oLBJ0YWausVKY98yJMGJi14g8DZQmo795ECFKy0bXdC3gn8kE7fPyn2iZBLY5T8kXFAtOQ
+        TfSMcFphCQX1ayLkldM2Hn5jja6e/tV69p70/MKVvjR0vmyB/QWVDzaZiF6OIA7RPKKw8K
+        ehIu96WEX6EQY/m5z+GtZhmKI/ZqseA=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5481adc8 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 28 Jun 2022 15:14:31 +0000 (UTC)
+Date:   Tue, 28 Jun 2022 17:14:27 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Gregory Erwin <gregerwin256@gmail.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Rui Salvaterra <rsalvaterra@gmail.com>,
+        stable <stable@vger.kernel.org>
+Subject: Re: [PATCH v6] ath9k: sleep for less time when unregistering hwrng
+Message-ID: <Yrsa09vW8AfpJNda@zx2c4.com>
+References: <20220627113749.564132-1-Jason@zx2c4.com>
+ <20220627120735.611821-1-Jason@zx2c4.com>
+ <87y1xib8pv.fsf@toke.dk>
+ <CAO+Okf5r-rVVqwYiCHXEt_jh0StmVoUikqYfSn7y3QpGZMR3Vg@mail.gmail.com>
+ <CAHmME9o4m5MNvDtQUc3OiYLVzNgk3u2i0EF4NhNV4uifZZLJ3g@mail.gmail.com>
+ <CAHmME9prgW60P+CO1JSdf5o1hBh8JtciBxcYm25ZO6oTCkwkxg@mail.gmail.com>
+ <YrrdTcRCKBt15HLz@gondor.apana.org.au>
+ <CAHmME9qm49R6i8Y9LpQXPuxEoTZx2nFSizxX-VEH6UDfLEji1g@mail.gmail.com>
+ <YrrujrAlLwhzbn0m@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YrrujrAlLwhzbn0m@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SAMA7G5 introduces 64 and 256 oversampling rates. Due to this EMR.OSR is 3
-bits long. Change the code to reflect this. Commit prepares the code
-for the addition of 64 and 256 oversampling rates.
+Hi Herbert,
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/iio/adc/at91-sama5d2_adc.c | 31 +++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 13 deletions(-)
+On Tue, Jun 28, 2022 at 02:05:34PM +0200, Jason A. Donenfeld wrote:
+> Hi again,
+> 
+> On Tue, Jun 28, 2022 at 12:55:57PM +0200, Jason A. Donenfeld wrote:
+> > > Oh wait you're checking kthread_should_stop before the schedule
+> > > call instead of afterwards, that would do it.
+> > 
+> > Oh, that's a really good observation, thank you! 
+> 
+> Wait, no. I already am kthread_should_stop() it afterwards. That
+> "continue" goes to the top of the loop, which checks it in the while()
+> statement. So something else is amiss. I guess I'll investigate.
 
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index cd2b8190a8da..692707b6e3e3 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -138,8 +138,7 @@ struct at91_adc_reg_layout {
- /* Extended Mode Register */
- 	u16				EMR;
- /* Extended Mode Register - Oversampling rate */
--#define AT91_SAMA5D2_EMR_OSR(V)			((V) << 16)
--#define AT91_SAMA5D2_EMR_OSR_MASK		GENMASK(17, 16)
-+#define AT91_SAMA5D2_EMR_OSR(V, M)		(((V) << 16) & (M))
- #define AT91_SAMA5D2_EMR_OSR_1SAMPLES		0
- #define AT91_SAMA5D2_EMR_OSR_4SAMPLES		1
- #define AT91_SAMA5D2_EMR_OSR_16SAMPLES		2
-@@ -403,6 +402,7 @@ static const struct at91_adc_reg_layout sama7g5_layout = {
-  * @max_index:		highest channel index (highest index may be higher
-  *			than the total channel number)
-  * @hw_trig_cnt:	number of possible hardware triggers
-+ * @osr_mask:		oversampling ratio bitmask on EMR register
-  */
- struct at91_adc_platform {
- 	const struct at91_adc_reg_layout	*layout;
-@@ -414,6 +414,7 @@ struct at91_adc_platform {
- 	unsigned int				max_channels;
- 	unsigned int				max_index;
- 	unsigned int				hw_trig_cnt;
-+	unsigned int				osr_mask;
- };
- 
- /**
-@@ -612,6 +613,7 @@ static const struct at91_adc_platform sama5d2_platform = {
- 	.max_index = AT91_SAMA5D2_MAX_CHAN_IDX,
- #define AT91_SAMA5D2_HW_TRIG_CNT	3
- 	.hw_trig_cnt = AT91_SAMA5D2_HW_TRIG_CNT,
-+	.osr_mask = GENMASK(17, 16),
- };
- 
- static const struct at91_adc_platform sama7g5_platform = {
-@@ -627,6 +629,7 @@ static const struct at91_adc_platform sama7g5_platform = {
- 	.max_index = AT91_SAMA7G5_MAX_CHAN_IDX,
- #define AT91_SAMA7G5_HW_TRIG_CNT	3
- 	.hw_trig_cnt = AT91_SAMA7G5_HW_TRIG_CNT,
-+	.osr_mask = GENMASK(18, 16),
- };
- 
- static int at91_adc_chan_xlate(struct iio_dev *indio_dev, int chan)
-@@ -725,30 +728,32 @@ static void at91_adc_eoc_ena(struct at91_adc_state *st, unsigned int channel)
- 		at91_adc_writel(st, EOC_IER, BIT(channel));
- }
- 
--static void at91_adc_config_emr(struct at91_adc_state *st)
-+static void at91_adc_config_emr(struct at91_adc_state *st,
-+				u32 oversampling_ratio)
- {
- 	/* configure the extended mode register */
- 	unsigned int emr = at91_adc_readl(st, EMR);
-+	unsigned int osr_mask = st->soc_info.platform->osr_mask;
- 
- 	/* select oversampling per single trigger event */
- 	emr |= AT91_SAMA5D2_EMR_ASTE(1);
- 
- 	/* delete leftover content if it's the case */
--	emr &= ~AT91_SAMA5D2_EMR_OSR_MASK;
-+	emr &= ~osr_mask;
- 
- 	/* select oversampling ratio from configuration */
--	switch (st->oversampling_ratio) {
-+	switch (oversampling_ratio) {
- 	case AT91_OSR_1SAMPLES:
--		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_1SAMPLES) &
--		       AT91_SAMA5D2_EMR_OSR_MASK;
-+		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_1SAMPLES,
-+					    osr_mask);
- 		break;
- 	case AT91_OSR_4SAMPLES:
--		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_4SAMPLES) &
--		       AT91_SAMA5D2_EMR_OSR_MASK;
-+		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_4SAMPLES,
-+					    osr_mask);
- 		break;
- 	case AT91_OSR_16SAMPLES:
--		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_16SAMPLES) &
--		       AT91_SAMA5D2_EMR_OSR_MASK;
-+		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_16SAMPLES,
-+					    osr_mask);
- 		break;
- 	}
- 
-@@ -1658,7 +1663,7 @@ static int at91_adc_write_raw(struct iio_dev *indio_dev,
- 		mutex_lock(&st->lock);
- 		st->oversampling_ratio = val;
- 		/* update ratio */
--		at91_adc_config_emr(st);
-+		at91_adc_config_emr(st, val);
- 		mutex_unlock(&st->lock);
- 		iio_device_release_direct_mode(indio_dev);
- 		return 0;
-@@ -1838,7 +1843,7 @@ static void at91_adc_hw_init(struct iio_dev *indio_dev)
- 	at91_adc_setup_samp_freq(indio_dev, st->soc_info.min_sample_rate);
- 
- 	/* configure extended mode register */
--	at91_adc_config_emr(st);
-+	at91_adc_config_emr(st, st->oversampling_ratio);
- }
- 
- static ssize_t at91_adc_get_fifo_state(struct device *dev,
--- 
-2.34.1
+I worked out a solution for the "larger problem" now. It's a bit
+involved, but not too bad. I'll post a patch shortly.
 
+Jason
