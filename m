@@ -2,53 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E044C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BEB6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344413AbiF1JrN (ORCPT
+        id S1344420AbiF1JrR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:47:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39400 "EHLO
+        Tue, 28 Jun 2022 05:47:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344023AbiF1Jqf (ORCPT
+        with ESMTP id S244939AbiF1Jqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 05:46:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40CC025C46;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E1A25C4C;
         Tue, 28 Jun 2022 02:46:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5498617D1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D54DB617CF;
         Tue, 28 Jun 2022 09:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B0E1C341E5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77708C341EE;
         Tue, 28 Jun 2022 09:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656409590;
-        bh=zRrTJI5mHEi/MLTyZxsw5CNr5hJaKcUuODBWP1DC3l4=;
+        bh=KmE1n0kBTzhMcDi/Es4qlC1RvvMz696gfPuCpCdCwXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fS3ETSceg+fLzbhZENlP+0ErwVNTGxMysl2vqr7sIIs2Gpi7RO/XjlyjP9JNKr9WO
-         A2u406AE/dyf9/QkakqOYWQmGBqkM5+pwJwxi1CGYk/Pv8uWttp4XNLpwiUqMMS78l
-         x+sq+pwaSwUGexlkQeOQKJWQUdsm1YLIc/vAS80Qp79pYid56rrT9xI9YAWYo1QRET
-         jS49Xvl34UdDY/U+ApzFexIL6tOegjAhy1ca7S38z37mkUpSn9NTNUUU0XGBM+Uvrs
-         SXqN7p9OdthvV+DaiQUccUNYRu3i1mhwt9EKEBSYbRA3ldID3q2xaoMxgRJ9+as8Xr
-         XQuQ/ewJuI7pw==
+        b=gwuiQNtLKte3nUdoCxdKSDOuRdlj/40+1HS65mhF7M/yFot3TsdTn7O24tvybSWgC
+         W8ISK3Ms8GdYha5G8nCAt23Yoswo5flJ6O7ezyLVvU+w/yIfP5bYo2xCXCIvS9hmrb
+         S759Ga4sNfLrqyuwTyZZm/4mersiFwGydZr9UQPPhYtZJWpUAOv+X4uX19/5REBqjI
+         1Qb/C2iiZ9mWBoXMilbVTGb1KIP4iaxbGqJ+AVrR7tl2cbPtQ5DYRptfDeEkfBxfo8
+         gBjJPj0o96jsYKUX719G8Rq+8DKqK3LZH9jxhS1gPPZy9ZzwV9cbT401X7Z3UFIz4+
+         tzfM/QEtoo3xg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o67nf-005HFb-UR;
+        id 1o67nf-005HFG-Rk;
         Tue, 28 Jun 2022 10:46:27 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         "Jonathan Corbet" <corbet@lwn.net>,
-        "Liam R. Howlett" <Liam.Howlett@Oracle.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH 15/22] mm: document maple tree pointer at unmap_vmas() at memory.c
-Date:   Tue, 28 Jun 2022 10:46:19 +0100
-Message-Id: <d2690118414c5458c448348cc94f831d8e8444ce.1656409369.git.mchehab@kernel.org>
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        David Zhang <dingchen.zhang@amd.com>,
+        Evan Quan <evan.quan@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        Kenneth Feng <kenneth.feng@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Zhan Liu <zhan.liu@amd.com>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 11/22] drm: amd: amd_shared.h: Add missing doc for PP_GFX_DCS_MASK
+Date:   Tue, 28 Jun 2022 10:46:15 +0100
+Message-Id: <3aee446a0e396fe3f338f270746939f6e803a4de.1656409369.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656409369.git.mchehab@kernel.org>
 References: <cover.1656409369.git.mchehab@kernel.org>
@@ -58,37 +69,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A maple tree pointer parameter was added at unmap_vmas() without
-description:
+This symbol is missing documentation:
 
-	mm/memory.c:1729: warning: Function parameter or member 'mt' not described in 'unmap_vmas'
+	drivers/gpu/drm/amd/include/amd_shared.h:224: warning: Enum value 'PP_GFX_DCS_MASK' not described in enum 'PP_FEATURE_MASK'
 
-Document it it.
+Document it.
 
-Fixes: 5966e5c968b2 ("mm: remove the vma linked list")
-Fixes: f8acc5e9581e ("Maple Tree: add new data structure")
+Fixes: 680602d6c2d6 ("drm/amd/pm: enable DCS")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/22] at: https://lore.kernel.org/all/cover.1656409369.git.mchehab@kernel.org/
 
- mm/memory.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/amd/include/amd_shared.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/mm/memory.c b/mm/memory.c
-index e3d3596068f2..771b61444507 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -1707,6 +1707,8 @@ static void unmap_single_vma(struct mmu_gather *tlb,
- /**
-  * unmap_vmas - unmap a range of memory covered by a list of vma's
-  * @tlb: address of the caller's struct mmu_gather
-+ * @mt: maple tree pointer. A maple tree is a RCU-safe range based B-tree
-+ *	designed to use modern processor cache efficiently
-  * @vma: the starting vma
-  * @start_addr: virtual address at which to start unmapping
-  * @end_addr: virtual address at which to end unmapping
+diff --git a/drivers/gpu/drm/amd/include/amd_shared.h b/drivers/gpu/drm/amd/include/amd_shared.h
+index bcdf7453a403..2e02a6fc1717 100644
+--- a/drivers/gpu/drm/amd/include/amd_shared.h
++++ b/drivers/gpu/drm/amd/include/amd_shared.h
+@@ -193,6 +193,7 @@ enum amd_powergating_state {
+  * @PP_ACG_MASK: Adaptive clock generator.
+  * @PP_STUTTER_MODE: Stutter mode.
+  * @PP_AVFS_MASK: Adaptive voltage and frequency scaling.
++ * @PP_GFX_DCS_MASK: GFX Async DCS.
+  *
+  * To override these settings on boot, append amdgpu.ppfeaturemask=<mask> to
+  * the kernel's command line parameters. This is usually done through a system's
 -- 
 2.36.1
 
