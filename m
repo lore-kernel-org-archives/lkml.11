@@ -2,197 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C909C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D9DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231344AbiF1Wmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 18:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
+        id S231488AbiF1WnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 18:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiF1Wmx (ORCPT
+        with ESMTP id S231468AbiF1WnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 18:42:53 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA8F3A712;
-        Tue, 28 Jun 2022 15:42:52 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:36676)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o6Juy-0058HI-1R; Tue, 28 Jun 2022 16:42:48 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:57884 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o6Juw-000UzI-RZ; Tue, 28 Jun 2022 16:42:47 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Alexander Gordeev <agordeev@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
-        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-        <20220505182645.497868-12-ebiederm@xmission.com>
-        <YrHA5UkJLornOdCz@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-        <877d5ajesi.fsf@email.froward.int.ebiederm.org>
-        <YrHgo8GKFPWwoBoJ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-        <87y1xk8zx5.fsf@email.froward.int.ebiederm.org>
-        <YrtKReO2vIiX8VVU@tuxmaker.boeblingen.de.ibm.com>
-Date:   Tue, 28 Jun 2022 17:42:22 -0500
-In-Reply-To: <YrtKReO2vIiX8VVU@tuxmaker.boeblingen.de.ibm.com> (Alexander
-        Gordeev's message of "Tue, 28 Jun 2022 20:36:53 +0200")
-Message-ID: <87czess94h.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 28 Jun 2022 18:43:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A2951EB
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 15:43:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656456183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=N3IX/gTlOzcMhZyH2BrZr3zTeEd5GIRlks/xcDq+XFo=;
+        b=UfvPTzD41rvXA2l9B+CbhVkJqRJQggq9FUrcbPFORqNxFiCSoEbZiQQwuAw950cY2EjQMG
+        u4I+X+ejjBTWO79oPQ26bY8mqPw2X6AVvEkQgt/TuQEr0E/y2K9nnOVQ/VHPdgM5HXmpVE
+        plxWVM5gugHMPuHzTjuv6Mx8tp8Gt3M=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-621-HRMjf2mqM--EoK4jeMcX0A-1; Tue, 28 Jun 2022 18:43:02 -0400
+X-MC-Unique: HRMjf2mqM--EoK4jeMcX0A-1
+Received: by mail-qk1-f200.google.com with SMTP id m15-20020a05620a290f00b006a74cf760b2so14853555qkp.20
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 15:43:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=N3IX/gTlOzcMhZyH2BrZr3zTeEd5GIRlks/xcDq+XFo=;
+        b=ZhA0Ggk5c9xN0S0HVb5cdavoxwDmeroePLTN71s3diJuI4WKsUnXySidqaFES850JC
+         D4CIMPaDhgntzVMSbbv83sqQnwyP/xG9kd4qFP50l52HJNt9vwZlgg9SzqXqnQpYwELH
+         p5DFgGoksyliR+hSpNKIj2FSQCBchawKC4bk2xYFCw2QXNr9MiISXBH6ZJZZjywUDLQh
+         SsTENzWEKixawtJaop4wrAnYHgSrx0a2exAVdhDEzyyokMUpq3JwhNMa7/76m4CdxaQZ
+         1OY3WTm2WHkVR25OP3TaJkB/loMm6wiQUfHYBuVH7NibH2arzBu4dRfPExknN3OaCor0
+         RefA==
+X-Gm-Message-State: AJIora+UlYha+AdkbqpMY3uwkVUbIqSkSPUoJDcBxxGXQ8V9UM10vkmX
+        KKLDFAoK9cesMIn6N/5HVqI8LqkhjF1SiHSAMYwm9nYO7qmSb+4FXwl/mbsGIQpMu6ybj/04Nxv
+        rCVz5lMtVj5mSqiePEQFw1J58
+X-Received: by 2002:ac8:5b85:0:b0:31c:b896:fb7d with SMTP id a5-20020ac85b85000000b0031cb896fb7dmr286291qta.188.1656456181279;
+        Tue, 28 Jun 2022 15:43:01 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vOE0vK9uPK65DjDEw777VflVFI5uUmbAR0W0EzUmbV9uksIeb1t92cVYt8toPcx1d0/to2gQ==
+X-Received: by 2002:ac8:5b85:0:b0:31c:b896:fb7d with SMTP id a5-20020ac85b85000000b0031cb896fb7dmr286269qta.188.1656456180961;
+        Tue, 28 Jun 2022 15:43:00 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id f1-20020a05620a280100b006a71c420460sm13022378qkp.22.2022.06.28.15.42.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 15:42:59 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 15:42:55 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang
+ support")
+Message-ID: <20220628224255.w4lmzalkx3qejuyg@treble>
+References: <YrLtpixBqWDmZT/V@debian>
+ <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
+ <YrMu5bdhkPzkxv/X@dev-arch.thelio-3990X>
+ <CAHk-=wjTS9OJzggD8=tqtj0DoRCKhjjhpYWoB=bPQAv3QMa+eA@mail.gmail.com>
+ <YrNQrPNF/XfriP99@debian>
+ <CAHk-=wjje8UdsQ_mjGVF4Bc_TcjAWRgOps7E_Cytg4xTbXfyig@mail.gmail.com>
+ <CAKwvOdmQKo4tZRLWxK2tTvd+OEtUmKJM7XiijLAF8JWMeUzFMA@mail.gmail.com>
+ <CAKwvOdnfRnqBF8exO-Y1ooX=67TrO_8fSzgZwvUtidN_P31hzw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1o6Juw-000UzI-RZ;;;mid=<87czess94h.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+S1iu9v81AzGxBg+K7lPcv87U80HJrcrw=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v4 12/12] sched,signal,ptrace: Rework TASK_TRACED,
- TASK_STOPPED state
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdnfRnqBF8exO-Y1ooX=67TrO_8fSzgZwvUtidN_P31hzw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alexander Gordeev <agordeev@linux.ibm.com> writes:
+On Thu, Jun 23, 2022 at 04:33:35PM -0700, Nick Desaulniers wrote:
+> On Wed, Jun 22, 2022 at 3:40 PM Nick Desaulniers
+> <ndesaulniers@google.com> wrote:
+> >
+> > On Wed, Jun 22, 2022 at 10:49 AM Linus Torvalds
+> > <torvalds@linux-foundation.org> wrote:
+> > >
+> > > On Wed, Jun 22, 2022 at 12:26 PM Sudip Mukherjee
+> > > <sudipm.mukherjee@gmail.com> wrote:
+> > > >
+> > > > Tried it after applying your patch. There was no build failure, but some warnings:
+> > >
+> > > So some of those objtool warnings are, I think, because clang does odd
+> > > and crazy things for when it decides "this is not reachable" code.
+> > >
+> > > I don't much like it, and neither does objtool, but it is what it is.
+> > > When clang decides "I'm calling a function that cannot return", it
+> > > will have a "call" instruction and then it will just fall off the face
+> > > of the earth after that.
 
-> On Sat, Jun 25, 2022 at 11:34:46AM -0500, Eric W. Biederman wrote:
->> I haven't gotten as far as reproducing this but I have started giving
->> this issue some thought.
->> 
->> This entire thing smells like a memory barrier is missing somewhere.
->> However by definition the lock implementations in linux provide all the
->> needed memory barriers, and in the ptrace_stop and ptrace_check_attach
->> path I don't see cases where these values are sampled outside of a lock
->> except in wait_task_inactive.  Does doing that perhaps require a
->> barrier? 
->> 
->> The two things I can think of that could shed light on what is going on
->> is enabling lockdep, to enable the debug check in signal_wake_up_state
->> and verifying bits of state that should be constant while the task
->> is frozen for ptrace are indeed constant when task is frozen for ptrace.
->> Something like my patch below.
->> 
->> If you could test that when you have a chance that would help narrow
->> down what is going on.
->> 
->> Thank you,
->> Eric
->> 
->> diff --git a/kernel/ptrace.c b/kernel/ptrace.c
->> index 156a99283b11..6467a2b1c3bc 100644
->> --- a/kernel/ptrace.c
->> +++ b/kernel/ptrace.c
->> @@ -268,9 +268,13 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
->>  	}
->>  	read_unlock(&tasklist_lock);
->>  
->> -	if (!ret && !ignore_state &&
->> -	    WARN_ON_ONCE(!wait_task_inactive(child, __TASK_TRACED)))
->> +	if (!ret && !ignore_state) {
->> +		WARN_ON_ONCE(!(child->jobctl & JOBCTL_PTRACE_FROZEN));
->> +		WARN_ON_ONCE(!(child->joctctl & JOBCTL_TRACED));
->> +		WARN_ON_ONCE(READ_ONCE(child->__state) != __TASK_TRACED);
->> +		WARN_ON_ONCE(!wait_task_inactive(child, __TASK_TRACED));
->>  		ret = -ESRCH;
->> +	}
->>  
->>  	return ret;
->>  }
->
-> I modified your chunk a bit - hope that is what you had in mind:
+FWIW, GCC does the same thing for calls to __noreturn functions.  After
+the call it just "falls off the face of the earth".  So there's nothing
+special about Clang here.
 
-Yes.
+> Looks like these are actually from calls to
+> __ubsan_handle_divrem_overflow which is __noreturn when panic_on_warn
+> is set by the corresponding config.  I wonder if we should be
+> unconditionally adding __ubsan_handle_divrem_overflow to the allow
+> list `global_noreturns` in tools/objtool/check.c?  It seems like the
+> kconfig defines aren't passed through to the tools/ sources.
+> 
+> List of fallthrough warnings from allmodconfig for reference:
+> https://lore.kernel.org/lkml/YrNQrPNF%2FXfriP99@debian/
 
-> diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-> index 156a99283b11..f0e9a9a4d63c 100644
-> --- a/kernel/ptrace.c
-> +++ b/kernel/ptrace.c
-> @@ -268,9 +268,19 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
->  	}
->  	read_unlock(&tasklist_lock);
->  
-> -	if (!ret && !ignore_state &&
-> -	    WARN_ON_ONCE(!wait_task_inactive(child, __TASK_TRACED)))
-> -		ret = -ESRCH;
-> +	if (!ret && !ignore_state) {
-> +		unsigned int __state;
-> +
-> +		WARN_ON_ONCE(!(child->jobctl & JOBCTL_PTRACE_FROZEN));
-> +		WARN_ON_ONCE(!(child->jobctl & JOBCTL_TRACED));
-> +		__state = READ_ONCE(child->__state);
-> +		if (__state != __TASK_TRACED) {
-> +			pr_err("%s(%d) __state %x", __FUNCTION__, __LINE__, __state);
-> +			WARN_ON_ONCE(1);
-> +		}
-> +		if (WARN_ON_ONCE(!wait_task_inactive(child, __TASK_TRACED)))
-> +			ret = -ESRCH;
-> +	}
->  
->  	return ret;
->  }
->
->
-> When WARN_ON_ONCE(1) hits the child __state is always zero/TASK_RUNNING,
-> as reported by the preceding pr_err(). Yet, in the resulting core dump
-> it is always __TASK_TRACED.
+As discussed with Nick on IRC, the problem highlighted by the
+fallthrough warnings seems to be a mismatch in expectations as to
+whether __ubsan_handle_divrem_overflow() is noreturn.
 
-Did you enable CONFIG_LOCKDEP?  I am just wanting to ensure
-that every caller of signal_wake_up_state was holding siglock.
+When Clang inserts calls to it, it assumes it's noreturn.  But in fact
+its kernel implementation can actually return, if !panic_on_warn.
 
-> Removing WARN_ON_ONCE(1) while looping until (__state != __TASK_TRACED)
-> confirms the unexpected __state is always TASK_RUNNING. It never observed
-> more than one iteration and gets printed once in 30-60 mins.
+So it needs to be changed to *never* return, otherwise hilarity will
+ensue when it returns and "falls off the face of the earth".
 
-Hmm.  This does smell lock a missing barrier.
+And then objtool needs to be told that it's in fact noreturn.
 
-> So probably when the condition is entered __state is TASK_RUNNING more
-> often, but gets overwritten with __TASK_TRACED pretty quickly. Which kind
-> of consistent with my previous observation that kernel/sched/core.c:3305
-> is where return 0 makes wait_task_inactive() fail.
->
-> No other WARN_ON_ONCE() hit ever.
+So, something like this:
 
-Yes.  This smells like something is missing.
 
-I am completely rusty at rolling barriers by hand but does something
-like the below clear up those mysterious warnings?
-
-diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index 156a99283b11..cb85bcf84640 100644
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -202,6 +202,7 @@ static bool ptrace_freeze_traced(struct task_struct *task)
- 	spin_lock_irq(&task->sighand->siglock);
- 	if (task_is_traced(task) && !looks_like_a_spurious_pid(task) &&
- 	    !__fatal_signal_pending(task)) {
-+		smp_rmb();
- 		task->jobctl |= JOBCTL_PTRACE_FROZEN;
- 		ret = true;
- 	}
-diff --git a/kernel/signal.c b/kernel/signal.c
-index edb1dc9b00dc..bcd576e9de66 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -2233,6 +2233,7 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
- 		return exit_code;
+diff --git a/lib/ubsan.c b/lib/ubsan.c
+index 36bd75e33426..d257baa62721 100644
+--- a/lib/ubsan.c
++++ b/lib/ubsan.c
+@@ -177,6 +177,7 @@ void __ubsan_handle_divrem_overflow(void *_data, void *lhs, void *rhs)
+ 		pr_err("division by zero\n");
  
- 	set_special_state(TASK_TRACED);
-+	smp_wmb();
- 	current->jobctl |= JOBCTL_TRACED;
+ 	ubsan_epilogue();
++	panic("can't return from __ubsan_handle_divrem_overflow()");
+ }
+ EXPORT_SYMBOL(__ubsan_handle_divrem_overflow);
  
- 	/*
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 864bb9dd3584..6f67d48fb3e4 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -187,6 +187,7 @@ static bool __dead_end_function(struct objtool_file *file, struct symbol *func,
+ 		"__invalid_creds",
+ 		"cpu_startup_entry",
+ 		"__ubsan_handle_builtin_unreachable",
++		"__ubsan_handle_divrem_overflow",
+ 		"ex_handler_msr_mce",
+ 	};
+ 
 
-Eric
