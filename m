@@ -2,92 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63528C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD62C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346097AbiF1NPn (ORCPT
+        id S1346117AbiF1NPs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39200 "EHLO
+        Tue, 28 Jun 2022 09:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346071AbiF1NPb (ORCPT
+        with ESMTP id S1346085AbiF1NPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:15:31 -0400
-Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEE33135C;
-        Tue, 28 Jun 2022 06:15:28 -0700 (PDT)
-Received: by mail-io1-f42.google.com with SMTP id u20so12765660iob.8;
-        Tue, 28 Jun 2022 06:15:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=eoO/x7bu4aRqXGjs88nzeRONL3YMYzeWgMsbV8yMbpY=;
-        b=GqnlDCteBaxHcmNyqFKO4yDJRQ7CFaXvj6C56+crQit8n8o1bnesLY6XQM0o3tx4zP
-         sg52qHkT0infg/vWhL3TWXQZmqHTikespCPh1YkkNmiEhtRcP7KSvnNik1skvYi5od0w
-         ctJ0o9ZhYk6n9bohAas3P/LAzeYJWukv1bQKyJjQ1AeABmXH5w6TnpYAZudCcVCInNsR
-         Y+pkJd8ZomHss5OfsjCY8vX+IpMJ72XQeyMhNGOx8vVJ+sA8N4yDZxlYRMetPpu5UujG
-         LHWTl7VX3lHhnMNTcyTmrWAUFxYbDh/6GkNwQ6sFMhWMvrtsWGfOyFR0r40E78LVd3Uu
-         06Yg==
-X-Gm-Message-State: AJIora8lNdb+rDGn/geC6qdY4fSqH2GzikO5BFT94woGNbFBrwj1GeQY
-        l8Yng8NZoyo3Xd6V8FrmG1yo1UVXAA==
-X-Google-Smtp-Source: AGRyM1uLRQIsoQb/m55If6Pna11BMZb9W0F/Ss94rf+Kxx2UN5mK1VltXoovNGgZqa3DJA5DrrhtYQ==
-X-Received: by 2002:a6b:3f8a:0:b0:672:77f8:c000 with SMTP id m132-20020a6b3f8a000000b0067277f8c000mr9507935ioa.11.1656422128117;
-        Tue, 28 Jun 2022 06:15:28 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id b15-20020a056602218f00b00669b2ffad32sm6640154iob.54.2022.06.28.06.15.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 06:15:27 -0700 (PDT)
-Received: (nullmailer pid 313748 invoked by uid 1000);
-        Tue, 28 Jun 2022 13:15:23 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     miquel.raynal@bootlin.com, richard@nod.at, tlanger@maxlinear.com,
-        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
-        vigneshr@ti.com, linux-kernel@vger.kernel.org,
-        rtanwar@maxlinear.com
-In-Reply-To: <20220628112731.2041976-2-martin.blumenstingl@googlemail.com>
-References: <20220628112731.2041976-1-martin.blumenstingl@googlemail.com> <20220628112731.2041976-2-martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH RFC v1 1/8] dt-bindings: mtd: intel: lgm-nand: Fix compatible string
-Date:   Tue, 28 Jun 2022 07:15:23 -0600
-Message-Id: <1656422123.522235.313747.nullmailer@robh.at.kernel.org>
+        Tue, 28 Jun 2022 09:15:32 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6682CDC4;
+        Tue, 28 Jun 2022 06:15:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656422130; x=1687958130;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DzEwiScb7BUaJPJtWXZ4e9gxvyvur5LuNHvwmcTiF0o=;
+  b=VvPbtgvxGNRkSBxmldT3YDxIHH69KmfrIf9YPsYMvMxcsaUhzxXXCsd3
+   tJ1jLt34gmBiOdhw/y82K+q3u0dgEwRwSbpB70ePWdJuGZWC+PtBqJ1H5
+   fGvluMDCXGXE7nUfmFU3JE/3/XQ/fKUKlP7sQQZni+l+XxD49ZFM+GCg2
+   M=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 28 Jun 2022 06:15:28 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 06:15:28 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 28 Jun 2022 06:15:27 -0700
+Received: from [10.216.26.50] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 28 Jun
+ 2022 06:15:21 -0700
+Message-ID: <173717b1-9cd9-9298-3a20-7dd3d95339af@quicinc.com>
+Date:   Tue, 28 Jun 2022 18:45:18 +0530
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 4/4] arm64: dts: qcom: sdm845: Add CPU BWMON
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Andy Gross <agross@kernel.org>, Georgi Djakov <djakov@kernel.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Will Deacon" <will@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Thara Gopinath" <thara.gopinath@linaro.org>
+References: <20220601101140.170504-1-krzysztof.kozlowski@linaro.org>
+ <20220601101140.170504-5-krzysztof.kozlowski@linaro.org>
+ <bc423d7b-df03-d4e2-2898-0873db710943@quicinc.com>
+ <64eb52ee-b3ac-3d94-cfce-ceb1c88dddb6@linaro.org>
+ <042cb765-113b-9335-edae-595addf50dd0@quicinc.com>
+ <23320e3c-40c3-12bb-0a1c-7e659a1961f2@linaro.org>
+ <YrfSWw9Wpq5TsRUt@builder.lan>
+ <47e1fcb4-237b-b880-b1b2-3910cc19e727@linaro.org>
+ <59b5115e-0fe5-dbe1-552b-c29e771c0583@quicinc.com>
+ <c43d4c9e-54d6-7b00-0ff7-e114850302ad@linaro.org>
+From:   Rajendra Nayak <quic_rjendra@quicinc.com>
+In-Reply-To: <c43d4c9e-54d6-7b00-0ff7-e114850302ad@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 13:27:24 +0200, Martin Blumenstingl wrote:
-> The driver which was added at the same time as the dt-bindings uses the
-> compatible string "intel,lgm-ebunand". Use the same compatible string
-> also in the dt-bindings.
+
+
+On 6/28/2022 4:20 PM, Krzysztof Kozlowski wrote:
+> On 28/06/2022 12:36, Rajendra Nayak wrote:
+>>
+>> On 6/27/2022 6:09 PM, Krzysztof Kozlowski wrote:
+>>> On 26/06/2022 05:28, Bjorn Andersson wrote:
+>>>> On Thu 23 Jun 07:58 CDT 2022, Krzysztof Kozlowski wrote:
+>>>>
+>>>>> On 23/06/2022 08:48, Rajendra Nayak wrote:
+>>>>>>>>> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>>>>>>>>> index 83e8b63f0910..adffb9c70566 100644
+>>>>>>>>> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>>>>>>>>> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>>>>>>>>> @@ -2026,6 +2026,60 @@ llcc: system-cache-controller@1100000 {
+>>>>>>>>>      			interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>>>>      		};
+>>>>>>>>>      
+>>>>>>>>> +		pmu@1436400 {
+>>>>>>>>> +			compatible = "qcom,sdm845-cpu-bwmon";
+>>>>>>>>> +			reg = <0 0x01436400 0 0x600>;
+>>>>>>>>> +
+>>>>>>>>> +			interrupts = <GIC_SPI 581 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>>>> +
+>>>>>>>>> +			interconnects = <&gladiator_noc MASTER_APPSS_PROC 3 &mem_noc SLAVE_EBI1 3>,
+>>>>>>>>> +					<&osm_l3 MASTER_OSM_L3_APPS &osm_l3 SLAVE_OSM_L3>;
+>>>>>>>>> +			interconnect-names = "ddr", "l3c";
+>>>>>>>>
+>>>>>>>> Is this the pmu/bwmon instance between the cpu and caches or the one between the caches and DDR?
+>>>>>>>
+>>>>>>> To my understanding this is the one between CPU and caches.
+>>>>>>
+>>>>>> Ok, but then because the OPP table lists the DDR bw first and Cache bw second, isn't the driver
+>>>>>> ending up comparing the bw values thrown by the pmu against the DDR bw instead of the Cache BW?
+>>>>>
+>>>>> I double checked now and you're right.
+>>>>>
+>>>>>> Atleast with my testing on sc7280 I found this to mess things up and I always was ending up at
+>>>>>> higher OPPs even while the system was completely idle. Comparing the values against the Cache bw
+>>>>>> fixed it.(sc7280 also has a bwmon4 instance between the cpu and caches and a bwmon5 between the cache
+>>>>>> and DDR)
+>>>>>
+>>>>> In my case it exposes different issue - under performance. Somehow the
+>>>>> bwmon does not report bandwidth high enough to vote for high bandwidth.
+>>>>>
+>>>>> After removing the DDR interconnect and bandwidth OPP values I have for:
+>>>>> sysbench --threads=8 --time=60 --memory-total-size=20T --test=memory
+>>>>> --memory-block-size=4M run
+>>>>>
+>>>>> 1. Vanilla: 29768 MB/s
+>>>>> 2. Vanilla without CPU votes: 8728 MB/s
+>>>>> 3. Previous bwmon (voting too high): 32007 MB/s
+>>>>> 4. Fixed bwmon 24911 MB/s
+>>>>> Bwmon does not vote for maximum L3 speed:
+>>>>> bwmon report 9408 MB/s (thresholds set: <9216000 15052801>
+>>>>> )
+>>>>> osm l3 aggregate 14355 MBps -> 897 MHz, level 7, bw 14355 MBps
+>>>>>
+>>>>> Maybe that's just problem with missing governor which would vote for
+>>>>> bandwidth rounding up or anticipating higher needs.
+>>>>>
+>>>>>>>> Depending on which one it is, shouldn;t we just be scaling either one and not both the interconnect paths?
+>>>>>>>
+>>>>>>> The interconnects are the same as ones used for CPU nodes, therefore if
+>>>>>>> we want to scale both when scaling CPU, then we also want to scale both
+>>>>>>> when seeing traffic between CPU and cache.
+>>>>>>
+>>>>>> Well, they were both associated with the CPU node because with no other input to decide on _when_
+>>>>>> to scale the caches and DDR, we just put a mapping table which simply mapped a CPU freq to a L3 _and_
+>>>>>> DDR freq. So with just one input (CPU freq) we decided on what should be both the L3 freq and DDR freq.
+>>>>>>
+>>>>>> Now with 2 pmu's, we have 2 inputs, so we can individually scale the L3 based on the cache PMU
+>>>>>> counters and DDR based on the DDR PMU counters, no?
+>>>>>>
+>>>>>> Since you said you have plans to add the other pmu support as well (bwmon5 between the cache and DDR)
+>>>>>> how else would you have the OPP table associated with that pmu instance? Would you again have both the
+>>>>>> L3 and DDR scale based on the inputs from that bwmon too?
+>>>>>
+>>>>> Good point, thanks for sharing. I think you're right. I'll keep only the
+>>>>> l3c interconnect path.
+>>>>>
+>>>>
+>>>> If I understand correctly, <&osm_l3 MASTER_OSM_L3_APPS &osm_l3
+>>>> SLAVE_OSM_L3> relates to the L3 cache speed, which sits inside the CPU
+>>>> subsystem. As such traffic hitting this cache will not show up in either
+>>>> bwmon instance.
+>>>>
+>>>> The path <&gladiator_noc MASTER_APPSS_PROC 3 &mem_noc SLAVE_EBI1 3>
+>>>> affects the DDR frequency. So the traffic measured by the cpu-bwmon
+>>>> would be the CPU subsystems traffic that missed the L1/L2/L3 caches and
+>>>> hits the memory bus towards DDR.
+>>
+>> That seems right, looking some more into the downstream code and register definitions
+>> I see the 2 bwmon instances actually lie on the path outside CPU SS towards DDR,
+>> first one (bwmon4) is between the CPUSS and LLCC (system cache) and the second one
+>> (bwmon5) between LLCC and DDR. So we should use the counters from bwmon4 to
+>> scale the CPU-LLCC path (and not L3), on sc7280 that would mean splitting the
+>> <&gem_noc MASTER_APPSS_PROC 3 &mc_virt SLAVE_EBI1 3> into
+>> <&gem_noc MASTER_APPSS_PROC 3 &gem_noc SLAVE_LLCC 3> (voting based on the bwmon4 inputs)
+>> and <&mc_virt MASTER_LLCC 3 &mc_virt SLAVE_EBI1 3> (voting based on the bwmon5 inputs)
+>> and similar for sdm845 too.
+>>
+>> L3 should perhaps still be voted based on the cpu freq as done today.
 > 
-> Fixes: 2f9cea8eae44f5 ("dt-bindings: mtd: Add Nand Flash Controller support for Intel LGM SoC")
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
->  Documentation/devicetree/bindings/mtd/intel,lgm-nand.yaml | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> This would mean that original bandwidth values (800 - 7216 MB/s) were
+> correct. However we have still your observation that bwmon kicks in very
+> fast and my measurements that sampled bwmon data shows bandwidth ~20000
+> MB/s.
+
+Right, thats because the bandwidth supported between the cpu<->llcc path is much higher
+than the DDR frequencies. For instance on sc7280, I see (2288 - 15258 MB/s) for LLCC while
+the DDR max is 8532 MB/s.
+
 > 
-
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/mtd/intel,lgm-nand.yaml: $id: relative path/filename doesn't match actual path or filename
-	expected: http://devicetree.org/schemas/mtd/intel,lgm-nand.yaml#
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+> 
+> Best regards,
+> Krzysztof
