@@ -2,259 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E349CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F76EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:59:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbiF1I6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
+        id S245665AbiF1I7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:59:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242244AbiF1I6d (ORCPT
+        with ESMTP id S243923AbiF1I7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:58:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742B4B4B;
-        Tue, 28 Jun 2022 01:58:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1B1D61548;
-        Tue, 28 Jun 2022 08:58:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4475EC3411D;
-        Tue, 28 Jun 2022 08:58:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656406711;
-        bh=5S9xPKZrc7nmOZmYexyOwDlb74dnXm3mkY7WwiGdm34=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WpXPbMzf1KsgHn5mb3ndtqAD+Fvn6oLjzotcwyKdV/vq2FuGmc+Abnshd3Vl/6Ast
-         YlmP3fvwCeEO3vbMtyU+0CSCIxqxuuyxGBfvYBJviLXkLBfM6inzPc527Due+CivO3
-         0q+KYNZp3RLZr7xFAyG6UYJzeTCXAlnMdtDVIdpXhzsvXafB69D8tgDLRXXKPOuvDF
-         7zodsPotdl/4BiOqWoVkGOMYNmK5CL7FW2+eZe+kpgC5S/m9Y9LTrSaqVqJFNJg1ak
-         SsfL9TsaTtHQrx0lLu1rREfzE3jZdCBNr+jobK/k0rnsoED5Aw5H5eIcgXOmDdLHSs
-         33nYHYEOXer4A==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1o673C-0004EL-OM; Tue, 28 Jun 2022 10:58:27 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH] clk: qcom: gcc-sc8280xp: use phy-mux clock for PCIe
-Date:   Tue, 28 Jun 2022 10:57:07 +0200
-Message-Id: <20220628085707.16214-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Tue, 28 Jun 2022 04:59:13 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB19EAB;
+        Tue, 28 Jun 2022 01:59:12 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25S8kK8r025506;
+        Tue, 28 Jun 2022 08:59:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=NJGYOtCXqHINCz1gB/ROdNxdoURtR0qXerIDni39BIE=;
+ b=Kj+D2AaGJBMJ2oysdaOAHdGC4Xw5hPyNYSRJyduqCHNem7sdGRDBmBqfb4aybAAya9BN
+ Kq8J/w9FBPaULVjCUyVqCqp4yDINdBDDRN2K+kQO9qZzAuPBhdDjp2mIVeVwp9I5Yyd7
+ K9eMbZq7Ua1WGv+aY1KOAmfqnJ1dwPH04YMcoqvviBBcCp0kFDmrPOxvCh5fsuCTfNDM
+ rd2bwR43taZqlSuAbR/DUPreg68AqEutAUFeADkpbZ7MerZm84tRh2+LJ9h95L3Yq0Gj
+ 2dmiAS6I2fBDBOWX1Don1xYFpOwTv1vPIEro7+Xv5rNQUUxIhhRG60ixKc2Pypg090jd DQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyxdy0a8h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 08:59:11 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25S8vmYY023106;
+        Tue, 28 Jun 2022 08:59:10 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyxdy0a7h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 08:59:10 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25S8ogvN017242;
+        Tue, 28 Jun 2022 08:59:08 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 3gwt08vhef-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 08:59:08 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25S8x5Gm22216990
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jun 2022 08:59:05 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AE5A1A4054;
+        Tue, 28 Jun 2022 08:59:05 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 276FEA405B;
+        Tue, 28 Jun 2022 08:59:04 +0000 (GMT)
+Received: from [9.171.42.158] (unknown [9.171.42.158])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 28 Jun 2022 08:59:03 +0000 (GMT)
+Message-ID: <207a01aa-d92c-4a17-7b2f-aed59da4ce09@linux.ibm.com>
+Date:   Tue, 28 Jun 2022 10:59:03 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v10 2/3] KVM: s390: guest support for topology function
+Content-Language: en-US
+To:     Pierre Morel <pmorel@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
+        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
+        seiden@linux.ibm.com, nrb@linux.ibm.com
+References: <20220620125437.37122-1-pmorel@linux.ibm.com>
+ <20220620125437.37122-3-pmorel@linux.ibm.com>
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+In-Reply-To: <20220620125437.37122-3-pmorel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 860zfobV2qBY6qSuhgetDywiU7s0RGhA
+X-Proofpoint-ORIG-GUID: Zm5aoLnQUkF1x_3ZV6vOGLl-qLAwG7PX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-27_09,2022-06-24_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
+ priorityscore=1501 phishscore=0 lowpriorityscore=0 impostorscore=0
+ mlxlogscore=999 malwarescore=0 adultscore=0 mlxscore=0 spamscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206280035
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new phy-mux clock implementation for the PCIe pipe clock muxes
-so that the pipe clock source is set to the QMP PHY PLL when the
-downstream pipe clock is enabled and restored to the always-on XO when
-it is again disabled.
+On 6/20/22 14:54, Pierre Morel wrote:
+> We report a topology change to the guest for any CPU hotplug.
+> 
+> The reporting to the guest is done using the Multiprocessor
+> Topology-Change-Report (MTCR) bit of the utility entry in the guest's
+> SCA which will be cleared during the interpretation of PTF.
+> 
+> On every vCPU creation we set the MCTR bit to let the guest know the
+> next time he uses the PTF with command 2 instruction that the
+> topology changed and that he should use the STSI(15.1.x) instruction
+> to get the topology details.
+> 
+> STSI(15.1.x) gives information on the CPU configuration topology.
+> Let's accept the interception of STSI with the function code 15 and
+> let the userland part of the hypervisor handle it when userland
+> support the CPU Topology facility.
+> 
+> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+> ---
+>  arch/s390/include/asm/kvm_host.h | 11 ++++++++---
+>  arch/s390/kvm/kvm-s390.c         | 27 ++++++++++++++++++++++++++-
+>  arch/s390/kvm/priv.c             | 15 +++++++++++----
+>  arch/s390/kvm/vsie.c             |  3 +++
+>  4 files changed, 48 insertions(+), 8 deletions(-)
+> 
+[...]
 
-This is needed to prevent the corresponding GDSC from hanging when
-enabling or disabling the PCIe power domain, something which requires a
-ticking source.
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index 8fcb56141689..95b96019ca8e 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -1691,6 +1691,25 @@ static int kvm_s390_get_cpu_model(struct kvm *kvm, struct kvm_device_attr *attr)
+>  	return ret;
+>  }
+> 
+> +/**
+> + * kvm_s390_sca_set_mtcr
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/clk/qcom/gcc-sc8280xp.c | 121 ++++++++------------------------
- 1 file changed, 31 insertions(+), 90 deletions(-)
+I wonder if there is a better name, kvm_s390_report_topology_change maybe?
 
-diff --git a/drivers/clk/qcom/gcc-sc8280xp.c b/drivers/clk/qcom/gcc-sc8280xp.c
-index f186ddf6954e..a2f3ffcc5849 100644
---- a/drivers/clk/qcom/gcc-sc8280xp.c
-+++ b/drivers/clk/qcom/gcc-sc8280xp.c
-@@ -20,6 +20,7 @@
- #include "clk-regmap.h"
- #include "clk-regmap-divider.h"
- #include "clk-regmap-mux.h"
-+#include "clk-regmap-phy-mux.h"
- #include "common.h"
- #include "gdsc.h"
- #include "reset.h"
-@@ -82,11 +83,6 @@ enum {
- 	P_GCC_USB4_PHY_PCIE_PIPEGMUX_CLK_SRC,
- 	P_GCC_USB4_PHY_PIPEGMUX_CLK_SRC,
- 	P_GCC_USB4_PHY_SYS_PIPEGMUX_CLK_SRC,
--	P_PCIE_2A_PIPE_CLK,
--	P_PCIE_2B_PIPE_CLK,
--	P_PCIE_3A_PIPE_CLK,
--	P_PCIE_3B_PIPE_CLK,
--	P_PCIE_4_PIPE_CLK,
- 	P_QUSB4PHY_1_GCC_USB4_RX0_CLK,
- 	P_QUSB4PHY_1_GCC_USB4_RX1_CLK,
- 	P_QUSB4PHY_GCC_USB4_RX0_CLK,
-@@ -351,56 +347,6 @@ static const struct clk_parent_data gcc_parent_data_9[] = {
- 	{ .hw = &gcc_gpll0_out_even.clkr.hw },
- };
- 
--static const struct parent_map gcc_parent_map_10[] = {
--	{ P_PCIE_2A_PIPE_CLK, 0 },
--	{ P_BI_TCXO, 2 },
--};
--
--static const struct clk_parent_data gcc_parent_data_10[] = {
--	{ .index = DT_PCIE_2A_PIPE_CLK },
--	{ .index = DT_BI_TCXO },
--};
--
--static const struct parent_map gcc_parent_map_11[] = {
--	{ P_PCIE_2B_PIPE_CLK, 0 },
--	{ P_BI_TCXO, 2 },
--};
--
--static const struct clk_parent_data gcc_parent_data_11[] = {
--	{ .index = DT_PCIE_2B_PIPE_CLK },
--	{ .index = DT_BI_TCXO },
--};
--
--static const struct parent_map gcc_parent_map_12[] = {
--	{ P_PCIE_3A_PIPE_CLK, 0 },
--	{ P_BI_TCXO, 2 },
--};
--
--static const struct clk_parent_data gcc_parent_data_12[] = {
--	{ .index = DT_PCIE_3A_PIPE_CLK },
--	{ .index = DT_BI_TCXO },
--};
--
--static const struct parent_map gcc_parent_map_13[] = {
--	{ P_PCIE_3B_PIPE_CLK, 0 },
--	{ P_BI_TCXO, 2 },
--};
--
--static const struct clk_parent_data gcc_parent_data_13[] = {
--	{ .index = DT_PCIE_3B_PIPE_CLK },
--	{ .index = DT_BI_TCXO },
--};
--
--static const struct parent_map gcc_parent_map_14[] = {
--	{ P_PCIE_4_PIPE_CLK, 0 },
--	{ P_BI_TCXO, 2 },
--};
--
--static const struct clk_parent_data gcc_parent_data_14[] = {
--	{ .index = DT_PCIE_4_PIPE_CLK },
--	{ .index = DT_BI_TCXO },
--};
--
- static const struct parent_map gcc_parent_map_15[] = {
- 	{ P_BI_TCXO, 0 },
- 	{ P_GCC_GPLL0_OUT_MAIN, 1 },
-@@ -741,77 +687,72 @@ static const struct clk_parent_data gcc_parent_data_41[] = {
- 	{ .index = DT_USB4_PHY_GCC_USB4_PCIE_PIPE_CLK },
- };
- 
--static struct clk_regmap_mux gcc_pcie_2a_pipe_clk_src = {
-+static struct clk_regmap_phy_mux gcc_pcie_2a_pipe_clk_src = {
- 	.reg = 0x9d05c,
--	.shift = 0,
--	.width = 2,
--	.parent_map = gcc_parent_map_10,
- 	.clkr = {
- 		.hw.init = &(const struct clk_init_data) {
- 			.name = "gcc_pcie_2a_pipe_clk_src",
--			.parent_data = gcc_parent_data_10,
--			.num_parents = ARRAY_SIZE(gcc_parent_data_10),
--			.ops = &clk_regmap_mux_closest_ops,
-+			.parent_data = &(const struct clk_parent_data){
-+				.index = DT_PCIE_2A_PIPE_CLK,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_regmap_phy_mux_ops,
- 		},
- 	},
- };
- 
--static struct clk_regmap_mux gcc_pcie_2b_pipe_clk_src = {
-+static struct clk_regmap_phy_mux gcc_pcie_2b_pipe_clk_src = {
- 	.reg = 0x9e05c,
--	.shift = 0,
--	.width = 2,
--	.parent_map = gcc_parent_map_11,
- 	.clkr = {
- 		.hw.init = &(const struct clk_init_data) {
- 			.name = "gcc_pcie_2b_pipe_clk_src",
--			.parent_data = gcc_parent_data_11,
--			.num_parents = ARRAY_SIZE(gcc_parent_data_11),
--			.ops = &clk_regmap_mux_closest_ops,
-+			.parent_data = &(const struct clk_parent_data){
-+				.index = DT_PCIE_2B_PIPE_CLK,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_regmap_phy_mux_ops,
- 		},
- 	},
- };
- 
--static struct clk_regmap_mux gcc_pcie_3a_pipe_clk_src = {
-+static struct clk_regmap_phy_mux gcc_pcie_3a_pipe_clk_src = {
- 	.reg = 0xa005c,
--	.shift = 0,
--	.width = 2,
--	.parent_map = gcc_parent_map_12,
- 	.clkr = {
- 		.hw.init = &(const struct clk_init_data) {
- 			.name = "gcc_pcie_3a_pipe_clk_src",
--			.parent_data = gcc_parent_data_12,
--			.num_parents = ARRAY_SIZE(gcc_parent_data_12),
--			.ops = &clk_regmap_mux_closest_ops,
-+			.parent_data = &(const struct clk_parent_data){
-+				.index = DT_PCIE_3A_PIPE_CLK,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_regmap_phy_mux_ops,
- 		},
- 	},
- };
- 
--static struct clk_regmap_mux gcc_pcie_3b_pipe_clk_src = {
-+static struct clk_regmap_phy_mux gcc_pcie_3b_pipe_clk_src = {
- 	.reg = 0xa205c,
--	.shift = 0,
--	.width = 2,
--	.parent_map = gcc_parent_map_13,
- 	.clkr = {
- 		.hw.init = &(const struct clk_init_data) {
- 			.name = "gcc_pcie_3b_pipe_clk_src",
--			.parent_data = gcc_parent_data_13,
--			.num_parents = ARRAY_SIZE(gcc_parent_data_13),
--			.ops = &clk_regmap_mux_closest_ops,
-+			.parent_data = &(const struct clk_parent_data){
-+				.index = DT_PCIE_3B_PIPE_CLK,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_regmap_phy_mux_ops,
- 		},
- 	},
- };
- 
--static struct clk_regmap_mux gcc_pcie_4_pipe_clk_src = {
-+static struct clk_regmap_phy_mux gcc_pcie_4_pipe_clk_src = {
- 	.reg = 0x6b05c,
--	.shift = 0,
--	.width = 2,
--	.parent_map = gcc_parent_map_14,
- 	.clkr = {
- 		.hw.init = &(const struct clk_init_data) {
- 			.name = "gcc_pcie_4_pipe_clk_src",
--			.parent_data = gcc_parent_data_14,
--			.num_parents = ARRAY_SIZE(gcc_parent_data_14),
--			.ops = &clk_regmap_mux_closest_ops,
-+			.parent_data = &(const struct clk_parent_data){
-+				.index = DT_PCIE_4_PIPE_CLK,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_regmap_phy_mux_ops,
- 		},
- 	},
- };
--- 
-2.35.1
+> + * @kvm: guest KVM description
+> + *
+> + * Is only relevant if the topology facility is present,
+> + * the caller should check KVM facility 11
+> + *
+> + * Updates the Multiprocessor Topology-Change-Report to signal
+> + * the guest with a topology change.
+> + */
+> +static void kvm_s390_sca_set_mtcr(struct kvm *kvm)
+> +{
+
+Do we need a sca_lock read_section here? If we don't why not?
+Did not see one up the stack, but I might have overlooked something.
+
+> +	struct bsca_block *sca = kvm->arch.sca; /* SCA version doesn't matter */
+> +
+> +	ipte_lock(kvm);
+> +	sca->utility |= SCA_UTILITY_MTCR;
+> +	ipte_unlock(kvm);
+> +}
+> +
+
+[...]
 
