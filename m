@@ -2,235 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E42D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8773CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245223AbiF1GEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42150 "EHLO
+        id S245220AbiF1GEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 02:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245200AbiF1GEF (ORCPT
+        with ESMTP id S229574AbiF1GEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:04:05 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626741162
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:04:04 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id n1so16004772wrg.12
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:04:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QNXhUtdlTQcrmyW6lCM6JlWYrPfy+A90YPaeQHo/QNs=;
-        b=q7ClShnc9Wdx2N4ezAYB802OSiVV+20WR+VEvCc7CTBDiILDvn43BBkvL9M147fMnj
-         eQUHaLlsUk65VO6BUHOSNHC+JI5zKh1Cc6BxzGUfT8u7vGKVNmNUt6Q36Uwydna5/1m1
-         lsNsz1CMwwkFomKXzxj2naGpfSyyvKzpTk1SEbVBIy/oSCz4ArkHU/nFRMLpv2fxvmPY
-         CVZaoBkmsG4XYMA6HDg9jfne34cBkD7ZojMJNSVRkbcCYzuhSXDhEgGis6sbWrm6mCO/
-         lF9ir4KpI8Qyz2KA3qeBYhsfY9DzSYToI8sexB4/igLCkMkehEAlCC/DwCZ2jf0eyZtz
-         eARg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QNXhUtdlTQcrmyW6lCM6JlWYrPfy+A90YPaeQHo/QNs=;
-        b=L3X0P0qVFBq+ZsBOKyYSR5pLJmioDVOOjHPHmpB1kPtgjT7qku3vjV3QXjXnTwgOXG
-         glxQ5bkvgohWxuDQKh2rxfkUKwYwohBGJSwpqbUUqdIMq6IJlgsvnxqmeyhBShA8sWvM
-         rzZ4L3BRsisKQ+sdeV1Qordi9ahtWZOQNyGYujRBF060Z2st62yNmh+nFHB+Rx7log/X
-         rITSaUAgo8gtRtq4R3WZokHo9FUTP4gceWTfuRbjxYyN+pe3nbkHUstSo+G2xfBSXhOP
-         4Q0xxcTYnOHHcTHm7N6zgctLIm5DmH6wfHtYV1Ydro9EB71mViuwaP63n4UtS0yq3QmK
-         0gEQ==
-X-Gm-Message-State: AJIora/W/9Wma8375q46Ym/ljex6JaiyXpbAxLa+H3oyz8MBMwogB5q7
-        PFBu6Cpk8OAynK1m3tUfBU8PZdqCF3MCMVRGrBwphA==
-X-Google-Smtp-Source: AGRyM1vqGSv/ZWVZq0AFK2J1K439V0xy8ILUWkxiv95//jJ/AW+9QD8jCH6wzg9wiqvrK8Dp6tZFUktxkDSXf3h5n0k=
-X-Received: by 2002:a05:6000:a1e:b0:21b:8c8d:3cb5 with SMTP id
- co30-20020a0560000a1e00b0021b8c8d3cb5mr16013841wrb.372.1656396242834; Mon, 27
- Jun 2022 23:04:02 -0700 (PDT)
+        Tue, 28 Jun 2022 02:04:52 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5691B2315F;
+        Mon, 27 Jun 2022 23:04:51 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id D354681BC;
+        Tue, 28 Jun 2022 05:59:38 +0000 (UTC)
+Date:   Tue, 28 Jun 2022 09:04:49 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Liang He <windhl@126.com>
+Cc:     linux@armlinux.org.uk, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH] arm/mach-omap2: Fix refcount leak bug in omap_hwmod.c
+Message-ID: <YrqaAXkreWHg0MVc@atomide.com>
+References: <20220618014747.4055279-1-windhl@126.com>
+ <YrqKKBflkZKRHwXW@atomide.com>
+ <4b994fd6.3db9.181a8ddb1e9.Coremail.windhl@126.com>
 MIME-Version: 1.0
-References: <20220610194435.2268290-1-yosryahmed@google.com>
- <20220610194435.2268290-5-yosryahmed@google.com> <40114462-d5e2-ab07-7af9-5e60180027f9@fb.com>
-In-Reply-To: <40114462-d5e2-ab07-7af9-5e60180027f9@fb.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Mon, 27 Jun 2022 23:03:26 -0700
-Message-ID: <CAJD7tkaeR=QFRqq4B-abyYRrJ0p4FB9aDg7ESNvo9GS2KMS-4w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 4/8] bpf: Introduce cgroup iter
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4b994fd6.3db9.181a8ddb1e9.Coremail.windhl@126.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 9:14 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 6/10/22 12:44 PM, Yosry Ahmed wrote:
-> > From: Hao Luo <haoluo@google.com>
+* Liang He <windhl@126.com> [220628 05:47]:
+> 
+> 
+> At 2022-06-28 12:57:12, "Tony Lindgren" <tony@atomide.com> wrote:
+> >Hi,
 > >
-> > Cgroup_iter is a type of bpf_iter. It walks over cgroups in two modes:
+> >* Liang He <windhl@126.com> [220618 04:43]:
+> >> In _init(), of_find_node_by_name() will return a node pointer with
+> >> refcount incremented. We should use of_node_put() in fail path or
+> >> when it is not used anymore.
+> >> 
+> >> NOTE: As the ref will be passed from 'bus' to 'np' by the xx_lookup(),
+> >> in normal exit path, we should call of_node_put() at the end use of 'np',
+> >> not the end use of 'bus'.
 > >
-> >   - walking a cgroup's descendants.
-> >   - walking a cgroup's ancestors.
+> >Looks correct to me. What about missing of_node_put() for
+> >of_get_next_child() also in the _init() function?
 > >
-> > When attaching cgroup_iter, one can set a cgroup to the iter_link
-> > created from attaching. This cgroup is passed as a file descriptor and
-> > serves as the starting point of the walk. If no cgroup is specified,
-> > the starting point will be the root cgroup.
+> >Regards,
 > >
-> > For walking descendants, one can specify the order: either pre-order or
-> > post-order. For walking ancestors, the walk starts at the specified
-> > cgroup and ends at the root.
-> >
-> > One can also terminate the walk early by returning 1 from the iter
-> > program.
-> >
-> > Note that because walking cgroup hierarchy holds cgroup_mutex, the iter
-> > program is called with cgroup_mutex held.
-> >
-> > Signed-off-by: Hao Luo <haoluo@google.com>
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > ---
-> >   include/linux/bpf.h            |   8 ++
-> >   include/uapi/linux/bpf.h       |  21 +++
-> >   kernel/bpf/Makefile            |   2 +-
-> >   kernel/bpf/cgroup_iter.c       | 235 +++++++++++++++++++++++++++++++++
-> >   tools/include/uapi/linux/bpf.h |  21 +++
-> >   5 files changed, 286 insertions(+), 1 deletion(-)
-> >   create mode 100644 kernel/bpf/cgroup_iter.c
-> >
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index 8e6092d0ea956..48d8e836b9748 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -44,6 +44,7 @@ struct kobject;
-> >   struct mem_cgroup;
-> >   struct module;
-> >   struct bpf_func_state;
-> > +struct cgroup;
-> >
-> >   extern struct idr btf_idr;
-> >   extern spinlock_t btf_idr_lock;
-> > @@ -1590,7 +1591,14 @@ int bpf_obj_get_user(const char __user *pathname, int flags);
-> >       int __init bpf_iter_ ## target(args) { return 0; }
-> >
-> >   struct bpf_iter_aux_info {
-> > +     /* for map_elem iter */
-> >       struct bpf_map *map;
-> > +
-> > +     /* for cgroup iter */
-> > +     struct {
-> > +             struct cgroup *start; /* starting cgroup */
-> > +             int order;
-> > +     } cgroup;
-> >   };
-> >
-> [...]
-> > +
-> > +static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
-> > +{
-> > +     struct cgroup_iter_priv *p = seq->private;
-> > +
-> > +     mutex_lock(&cgroup_mutex);
-> > +
-> > +     /* support only one session */
-> > +     if (*pos > 0)
-> > +             return NULL;
-> > +
-> > +     ++*pos;
-> > +     p->terminate = false;
-> > +     if (p->order == BPF_ITER_CGROUP_PRE)
-> > +             return css_next_descendant_pre(NULL, p->start_css);
-> > +     else if (p->order == BPF_ITER_CGROUP_POST)
-> > +             return css_next_descendant_post(NULL, p->start_css);
-> > +     else /* BPF_ITER_CGROUP_PARENT_UP */
-> > +             return p->start_css;
-> > +}
-> > +
-> > +static int __cgroup_iter_seq_show(struct seq_file *seq,
-> > +                               struct cgroup_subsys_state *css, int in_stop);
-> > +
-> > +static void cgroup_iter_seq_stop(struct seq_file *seq, void *v)
-> > +{
-> > +     /* pass NULL to the prog for post-processing */
-> > +     if (!v)
-> > +             __cgroup_iter_seq_show(seq, NULL, true);
-> > +     mutex_unlock(&cgroup_mutex);
-> > +}
-> > +
-> > +static void *cgroup_iter_seq_next(struct seq_file *seq, void *v, loff_t *pos)
-> > +{
-> > +     struct cgroup_subsys_state *curr = (struct cgroup_subsys_state *)v;
-> > +     struct cgroup_iter_priv *p = seq->private;
-> > +
-> > +     ++*pos;
-> > +     if (p->terminate)
-> > +             return NULL;
-> > +
-> > +     if (p->order == BPF_ITER_CGROUP_PRE)
-> > +             return css_next_descendant_pre(curr, p->start_css);
-> > +     else if (p->order == BPF_ITER_CGROUP_POST)
-> > +             return css_next_descendant_post(curr, p->start_css);
-> > +     else
-> > +             return curr->parent;
-> > +}
-> > +
-> > +static int __cgroup_iter_seq_show(struct seq_file *seq,
-> > +                               struct cgroup_subsys_state *css, int in_stop)
-> > +{
-> > +     struct cgroup_iter_priv *p = seq->private;
-> > +     struct bpf_iter__cgroup ctx;
-> > +     struct bpf_iter_meta meta;
-> > +     struct bpf_prog *prog;
-> > +     int ret = 0;
-> > +
-> > +     /* cgroup is dead, skip this element */
-> > +     if (css && cgroup_is_dead(css->cgroup))
-> > +             return 0;
-> > +
-> > +     ctx.meta = &meta;
-> > +     ctx.cgroup = css ? css->cgroup : NULL;
-> > +     meta.seq = seq;
-> > +     prog = bpf_iter_get_info(&meta, in_stop);
-> > +     if (prog)
-> > +             ret = bpf_iter_run_prog(prog, &ctx);
->
-> Do we need to do anything special to ensure bpf program gets
-> up-to-date stat from ctx.cgroup?
+> >Tony
+> 
+> Thanks, Tony.
+> 
+> I have found this bug but not send the patch for of_get_next_child()
+> as I am collecting other OF function related bugs and I have been told that it is better 
+> to collect all similar bugs in same directory, then finally report them.
 
-Later patches in the series add cgroup_flush_rstat() kfunc which
-flushes cgroup stats that use rstat (e.g. memcg stats). It can be
-called directly from the bpf program if needed.
+Well in this case while you review a single function, it's usually better
+to fix similar issues to avoid having to review the same function multiple
+times. Of course if the patch becomes hard to read, then it makes sense
+to split it into several patches.
 
-It would be better to leave this to the bpf program, it's an
-unnecessary toll to flush the stats for any cgroup_iter program, that
-could be not accessing stats, or stats that are not maintained using
-rstat.
+> So I will send a new patch for both of the two missing 'put' bugs caused by
+> of_find_xxx() and of_get_xxx() in omap_hwmod.c
 
->
-> > +
-> > +     /* if prog returns > 0, terminate after this element. */
-> > +     if (ret != 0)
-> > +             p->terminate = true;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> [...]
+Please just update this patch so we have _init() completely reviewed for
+similar issues and is not left only partially patched.
+
+Regards,
+
+Tony
