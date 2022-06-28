@@ -2,208 +2,343 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C36EFCCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 17:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A187C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 17:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232725AbiF1Rnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 13:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59160 "EHLO
+        id S232474AbiF1Rqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 13:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233186AbiF1Rna (ORCPT
+        with ESMTP id S231186AbiF1Rqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 13:43:30 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A3C5F8A
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:43:19 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id c6-20020a17090abf0600b001eee794a478so6008677pjs.1
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:43:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Rr14SIHqelCsw7/8K+Wlj+54peZR7WyMvbQmB8Ja3NY=;
-        b=Cq1OgaFxbIxuOWrZxydWl+elvVBphIjnA9sULhzOr1/yJjIph4P+OzxGZW/ULc3m3L
-         PsCCWLOP5R0hhcN3KfgZ8ySfYB71jfKRht4g6Ik8J9UmNoJ1DfAI5PuvvpiIsu82k9B+
-         QAJogtytZTQRX9gCm1wsQasycg3s8xO5IWNRV0nfVhC0pyKW58UzWlUycX5ujqNG3fFK
-         FuitU7yTem/JhqTm91xjEuXFMCk97gWoQj/E+JIznBJCu3N2L5zrNAWOzJdVR/8+jH68
-         d73TvBMizVcFKfnLGh2jpy/Bhcg7o6mjTDfmQ0KNZSlCM3fWLsUD3BfzYsOLbCxNkuol
-         877Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Rr14SIHqelCsw7/8K+Wlj+54peZR7WyMvbQmB8Ja3NY=;
-        b=JlEifj4RErtYZ2Oj6+GrYJEM9XZrsToOkbDfAmHXEFDhLBtkF/tmG5c3zfbo/6zlWc
-         wBxIVBv5Qy+8luzNT/O0B4n6tVXC+qD94ZYPHDwXCtQprUbWUNxf5Hx9/FhzudkDh2x5
-         kUHCapUAENnBuy+znAEStzQUJZ8bG/LCZJoMq2fKAiLj4rg4ZVLgxLhoylrtuo9v41r3
-         BVz6vQC4r/YIDNAgrXwHNO59IGdA/X1TttM6Qwp2YVC3+bgt2oTtvKK7aI/rXSvMWXtk
-         tEK1LYrMVHv0L6HWCU9PziyzHDw4hjUbjua8VDe6TW4uLFLGEBtRZyY/8FUKcHszlAHG
-         xaxA==
-X-Gm-Message-State: AJIora8AWeY4gvrBlmb2MLzJxcc/LByqvNCS5uNRXDaF+KKwJ2o1U8yn
-        P1uejJ8S8XMtFSscejy2vw7oOQ==
-X-Google-Smtp-Source: AGRyM1uYOy8dhkDmhkatcxtbjx7rsFzSefCxT7PvAMOulrJ/YRzJQytlLiNSsgFJZlcy1Fkjd7YBkA==
-X-Received: by 2002:a17:902:da83:b0:16a:7ca5:36c1 with SMTP id j3-20020a170902da8300b0016a7ca536c1mr6167452plx.81.1656438199296;
-        Tue, 28 Jun 2022 10:43:19 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b005255165be67sm9862029pfh.23.2022.06.28.10.43.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 10:43:18 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 11:43:16 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     bjorn.andersson@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH V3 4/6] remoteproc: imx_rproc: support kicking Mcore from
- Linux for i.MX8QXP
-Message-ID: <20220628174316.GC1942439@p14s>
-References: <20220517064937.4033441-1-peng.fan@oss.nxp.com>
- <20220517064937.4033441-5-peng.fan@oss.nxp.com>
+        Tue, 28 Jun 2022 13:46:49 -0400
+Received: from msg-2.mailo.com (msg-2.mailo.com [213.182.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F119646F;
+        Tue, 28 Jun 2022 10:46:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
+        t=1656438394; bh=jaifRDKARn26CuG6wwtkAbXozOoc3KYqDojL1g2HFjc=;
+        h=X-EA-Auth:From:To:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding;
+        b=WGEauOxB/y4+EemEkMk8B8ny/U8vwpUjkgFWrxhiQtXHgTnayN7l2sfapBP7r0BqF
+         Prg2jHJ3Cx5EAglW1iLSX7LPnB4HKy82H0TDO5sEr94Fir+neC9Cb8vIKKIToqtjzv
+         0uvxXSi7bfDaGGWem9u56x2P4gqyqp3KXnM415eo=
+Received: by b-3.in.mailobj.net [192.168.90.13] with ESMTP
+        via [213.182.55.207]
+        Tue, 28 Jun 2022 19:46:33 +0200 (CEST)
+X-EA-Auth: SMNlrXtMLL+l+mcigbJk//zgozEtyccs1PzQbrC3XWML1C75CAyPve5TJz1Olra16RrW+DJnJlOLy69hSt2ofpdJLxsml7RD1ZhkzPR8lY8=
+From:   Vincent Knecht <vincent.knecht@mailoo.org>
+To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vincent Knecht <vincent.knecht@mailoo.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1 5/7] leds: is31fl319x: Use non-wildcard names for vars, structs and defines
+Date:   Tue, 28 Jun 2022 19:46:22 +0200
+Message-Id: <20220628174627.2821722-1-vincent.knecht@mailoo.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220628174124.2819238-1-vincent.knecht@mailoo.org>
+References: <20220628174124.2819238-1-vincent.knecht@mailoo.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517064937.4033441-5-peng.fan@oss.nxp.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 02:49:35PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> When M4 is in the same hardware partition with Cortex-A, it
-> could be start/stop by Linux.
-> 
-> Added power domain to make sure M4 could run, it requires several power
-> domains to work. Make clk always optional for i.MX8QXP, because
-> SCFW handles it when power up M4 core.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/remoteproc/imx_rproc.c | 69 +++++++++++++++++++++++++++++++++-
->  1 file changed, 67 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
-> index 2e751fc90760..49cce9dd55c7 100644
-> --- a/drivers/remoteproc/imx_rproc.c
-> +++ b/drivers/remoteproc/imx_rproc.c
-> @@ -16,6 +16,7 @@
->  #include <linux/of_reserved_mem.h>
->  #include <linux/of_device.h>
->  #include <linux/platform_device.h>
-> +#include <linux/pm_domain.h>
->  #include <linux/regmap.h>
->  #include <linux/remoteproc.h>
->  #include <linux/workqueue.h>
-> @@ -96,6 +97,10 @@ struct imx_rproc {
->  	struct notifier_block		rproc_nb;
->  	u32				rproc_pt;	/* partition id */
->  	u32				rsrc_id;	/* resource id */
-> +	u32				entry;		/* cpu start address */
-> +	int                             num_pd;
-> +	struct device                   **pd_dev;
-> +	struct device_link              **pd_dev_link;
->  };
->  
->  static const struct imx_rproc_att imx_rproc_att_imx93[] = {
-> @@ -335,6 +340,9 @@ static int imx_rproc_start(struct rproc *rproc)
->  		arm_smccc_smc(IMX_SIP_RPROC, IMX_SIP_RPROC_START, 0, 0, 0, 0, 0, 0, &res);
->  		ret = res.a0;
->  		break;
-> +	case IMX_RPROC_SCU_API:
-> +		ret = imx_sc_pm_cpu_start(priv->ipc_handle, priv->rsrc_id, true, priv->entry);
-> +		break;
->  	default:
->  		return -EOPNOTSUPP;
->  	}
-> @@ -364,6 +372,9 @@ static int imx_rproc_stop(struct rproc *rproc)
->  		if (res.a1)
->  			dev_info(dev, "Not in wfi, force stopped\n");
->  		break;
-> +	case IMX_RPROC_SCU_API:
-> +		ret = imx_sc_pm_cpu_start(priv->ipc_handle, priv->rsrc_id, false, priv->entry);
-> +		break;
->  	default:
->  		return -EOPNOTSUPP;
->  	}
-> @@ -724,6 +735,56 @@ static int imx_rproc_partition_notify(struct notifier_block *nb,
->  	return 0;
->  }
->  
-> +static int imx_rproc_attach_pd(struct imx_rproc *priv)
-> +{
-> +	struct device *dev = priv->dev;
-> +	int ret, i;
-> +
-> +	priv->num_pd = of_count_phandle_with_args(dev->of_node, "power-domains",
-> +						  "#power-domain-cells");
-> +	if (priv->num_pd < 0)
-> +		return priv->num_pd;
-> +
-> +	if (!priv->num_pd)
-> +		return 0;
-> +
-> +	priv->pd_dev = devm_kmalloc_array(dev, priv->num_pd, sizeof(*priv->pd_dev), GFP_KERNEL);
-> +	if (!priv->pd_dev)
-> +		return -ENOMEM;
-> +
-> +	priv->pd_dev_link = devm_kmalloc_array(dev, priv->num_pd, sizeof(*priv->pd_dev_link),
-> +					       GFP_KERNEL);
-> +
-> +	if (!priv->pd_dev_link)
-> +		return -ENOMEM;
-> +
-> +	for (i = 0; i < priv->num_pd; i++) {
-> +		priv->pd_dev[i] = dev_pm_domain_attach_by_id(dev, i);
-> +		if (IS_ERR(priv->pd_dev[i])) {
-> +			ret = PTR_ERR(priv->pd_dev[i]);
-> +			goto detach_pd;
-> +		}
-> +
-> +		priv->pd_dev_link[i] = device_link_add(dev, priv->pd_dev[i], DL_FLAG_STATELESS |
-> +						       DL_FLAG_PM_RUNTIME | DL_FLAG_RPM_ACTIVE);
-> +		if (!priv->pd_dev_link[i]) {
-> +			dev_pm_domain_detach(priv->pd_dev[i], false);
-> +			ret = -EINVAL;
-> +			goto detach_pd;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +
-> +detach_pd:
-> +	while (--i >= 0) {
-> +		device_link_del(priv->pd_dev_link[i]);
-> +		dev_pm_domain_detach(priv->pd_dev[i], false);
+In order to add real support for is31fl3190, is31fl3191 and is31fl3193,
+rename variant-dependent elements to not use 319X where needed.
 
-Same here - why are these not called during driver removal and along the error
-path in probe()?
+3190 suffix is used for is31fl3190, is31fl3191 and is31fl3193 circuits.
+3196 suffix is used for is31fl3196 and is31fl3199.
 
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->  static int imx_rproc_detect_mode(struct imx_rproc *priv)
->  {
->  	struct regmap_config config = { .name = "imx-rproc" };
-> @@ -758,8 +819,12 @@ static int imx_rproc_detect_mode(struct imx_rproc *priv)
->  		 * If Mcore resource is not owned by Acore partition, It is kicked by ROM,
->  		 * and Linux could only do IPC with Mcore and nothing else.
->  		 */
-> -		if (imx_sc_rm_is_resource_owned(priv->ipc_handle, priv->rsrc_id))
-> -			return 0;
-> +		if (imx_sc_rm_is_resource_owned(priv->ipc_handle, priv->rsrc_id)) {
-> +			if (of_property_read_u32(dev->of_node, "fsl,entry-address", &priv->entry))
-> +				return -EINVAL;
-> +
-> +			return imx_rproc_attach_pd(priv);
-> +		}
->  
->  		priv->rproc->state = RPROC_DETACHED;
->  		priv->rproc->recovery_disabled = true;
-> -- 
-> 2.25.1
-> 
+Those two groups have different register maps, current settings and even
+a different interpretation of the software shutdown bit:
+https://lumissil.com/assets/pdf/core/IS31FL3190_DS.pdf
+https://lumissil.com/assets/pdf/core/IS31FL3191_DS.pdf
+https://lumissil.com/assets/pdf/core/IS31FL3193_DS.pdf
+https://lumissil.com/assets/pdf/core/IS31FL3196_DS.pdf
+https://lumissil.com/assets/pdf/core/IS31FL3199_DS.pdf
+
+Rename variables, stuctures and defines in preparation of the splitting.
+No functional nor behaviour change.
+
+Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
+---
+ drivers/leds/leds-is31fl319x.c | 142 ++++++++++++++++-----------------
+ 1 file changed, 71 insertions(+), 71 deletions(-)
+
+diff --git a/drivers/leds/leds-is31fl319x.c b/drivers/leds/leds-is31fl319x.c
+index 0db5d4988131..1dd5c3d4ad74 100644
+--- a/drivers/leds/leds-is31fl319x.c
++++ b/drivers/leds/leds-is31fl319x.c
+@@ -21,39 +21,39 @@
+ 
+ /* register numbers */
+ #define IS31FL319X_SHUTDOWN		0x00
+-#define IS31FL319X_CTRL1		0x01
+-#define IS31FL319X_CTRL2		0x02
+-#define IS31FL319X_CONFIG1		0x03
+-#define IS31FL319X_CONFIG2		0x04
+-#define IS31FL319X_RAMP_MODE		0x05
+-#define IS31FL319X_BREATH_MASK		0x06
+-#define IS31FL319X_PWM(channel)		(0x07 + channel)
+-#define IS31FL319X_DATA_UPDATE		0x10
+-#define IS31FL319X_T0(channel)		(0x11 + channel)
+-#define IS31FL319X_T123_1		0x1a
+-#define IS31FL319X_T123_2		0x1b
+-#define IS31FL319X_T123_3		0x1c
+-#define IS31FL319X_T4(channel)		(0x1d + channel)
+-#define IS31FL319X_TIME_UPDATE		0x26
+-#define IS31FL319X_RESET		0xff
+-
+-#define IS31FL319X_REG_CNT		(IS31FL319X_RESET + 1)
++#define IS31FL3196_CTRL1		0x01
++#define IS31FL3196_CTRL2		0x02
++#define IS31FL3196_CONFIG1		0x03
++#define IS31FL3196_CONFIG2		0x04
++#define IS31FL3196_RAMP_MODE		0x05
++#define IS31FL3196_BREATH_MASK		0x06
++#define IS31FL3196_PWM(channel)		(0x07 + channel)
++#define IS31FL3196_DATA_UPDATE		0x10
++#define IS31FL3196_T0(channel)		(0x11 + channel)
++#define IS31FL3196_T123_1		0x1a
++#define IS31FL3196_T123_2		0x1b
++#define IS31FL3196_T123_3		0x1c
++#define IS31FL3196_T4(channel)		(0x1d + channel)
++#define IS31FL3196_TIME_UPDATE		0x26
++#define IS31FL3196_RESET		0xff
++
++#define IS31FL3196_REG_CNT		(IS31FL3196_RESET + 1)
+ 
+ #define IS31FL319X_MAX_LEDS		9
+ 
+ /* CS (Current Setting) in CONFIG2 register */
+-#define IS31FL319X_CONFIG2_CS_SHIFT	4
+-#define IS31FL319X_CONFIG2_CS_MASK	0x7
+-#define IS31FL319X_CONFIG2_CS_STEP_REF	12
++#define IS31FL3196_CONFIG2_CS_SHIFT	4
++#define IS31FL3196_CONFIG2_CS_MASK	0x7
++#define IS31FL3196_CONFIG2_CS_STEP_REF	12
+ 
+-#define IS31FL319X_CURRENT_MIN		((u32)5000)
+-#define IS31FL319X_CURRENT_MAX		((u32)40000)
+-#define IS31FL319X_CURRENT_STEP		((u32)5000)
+-#define IS31FL319X_CURRENT_DEFAULT	((u32)20000)
++#define IS31FL3196_CURRENT_MIN		((u32)5000)
++#define IS31FL3196_CURRENT_MAX		((u32)40000)
++#define IS31FL3196_CURRENT_STEP		((u32)5000)
++#define IS31FL3196_CURRENT_DEFAULT	((u32)20000)
+ 
+ /* Audio gain in CONFIG2 register */
+-#define IS31FL319X_AUDIO_GAIN_DB_MAX	((u32)21)
+-#define IS31FL319X_AUDIO_GAIN_DB_STEP	((u32)3)
++#define IS31FL3196_AUDIO_GAIN_DB_MAX	((u32)21)
++#define IS31FL3196_AUDIO_GAIN_DB_STEP	((u32)3)
+ 
+ /*
+  * regmap is used as a cache of chip's register space,
+@@ -111,7 +111,7 @@ static const struct of_device_id of_is31fl319x_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, of_is31fl319x_match);
+ 
+-static int is31fl319x_brightness_set(struct led_classdev *cdev,
++static int is31fl3196_brightness_set(struct led_classdev *cdev,
+ 				     enum led_brightness brightness)
+ {
+ 	struct is31fl319x_led *led = container_of(cdev, struct is31fl319x_led,
+@@ -127,7 +127,7 @@ static int is31fl319x_brightness_set(struct led_classdev *cdev,
+ 	mutex_lock(&is31->lock);
+ 
+ 	/* update PWM register */
+-	ret = regmap_write(is31->regmap, IS31FL319X_PWM(chan), brightness);
++	ret = regmap_write(is31->regmap, IS31FL3196_PWM(chan), brightness);
+ 	if (ret < 0)
+ 		goto out;
+ 
+@@ -141,7 +141,7 @@ static int is31fl319x_brightness_set(struct led_classdev *cdev,
+ 		 * the current setting, we read from the regmap cache
+ 		 */
+ 
+-		ret = regmap_read(is31->regmap, IS31FL319X_PWM(i), &pwm_value);
++		ret = regmap_read(is31->regmap, IS31FL3196_PWM(i), &pwm_value);
+ 		dev_dbg(&is31->client->dev, "%s read %d: ret=%d: %d\n",
+ 			__func__, i, ret, pwm_value);
+ 		on = ret >= 0 && pwm_value > LED_OFF;
+@@ -157,10 +157,10 @@ static int is31fl319x_brightness_set(struct led_classdev *cdev,
+ 	if (ctrl1 > 0 || ctrl2 > 0) {
+ 		dev_dbg(&is31->client->dev, "power up %02x %02x\n",
+ 			ctrl1, ctrl2);
+-		regmap_write(is31->regmap, IS31FL319X_CTRL1, ctrl1);
+-		regmap_write(is31->regmap, IS31FL319X_CTRL2, ctrl2);
++		regmap_write(is31->regmap, IS31FL3196_CTRL1, ctrl1);
++		regmap_write(is31->regmap, IS31FL3196_CTRL2, ctrl2);
+ 		/* update PWMs */
+-		regmap_write(is31->regmap, IS31FL319X_DATA_UPDATE, 0x00);
++		regmap_write(is31->regmap, IS31FL3196_DATA_UPDATE, 0x00);
+ 		/* enable chip from shut down */
+ 		ret = regmap_write(is31->regmap, IS31FL319X_SHUTDOWN, 0x01);
+ 	} else {
+@@ -190,14 +190,14 @@ static int is31fl319x_parse_child_dt(const struct device *dev,
+ 	if (ret < 0 && ret != -EINVAL) /* is optional */
+ 		return ret;
+ 
+-	led->max_microamp = IS31FL319X_CURRENT_DEFAULT;
++	led->max_microamp = IS31FL3196_CURRENT_DEFAULT;
+ 	ret = of_property_read_u32(child, "led-max-microamp",
+ 				   &led->max_microamp);
+ 	if (!ret) {
+-		if (led->max_microamp < IS31FL319X_CURRENT_MIN)
++		if (led->max_microamp < IS31FL3196_CURRENT_MIN)
+ 			return -EINVAL;	/* not supported */
+ 		led->max_microamp = min(led->max_microamp,
+-					  IS31FL319X_CURRENT_MAX);
++					  IS31FL3196_CURRENT_MAX);
+ 	}
+ 
+ 	return 0;
+@@ -271,7 +271,7 @@ static int is31fl319x_parse_dt(struct device *dev,
+ 	ret = of_property_read_u32(np, "audio-gain-db", &is31->audio_gain_db);
+ 	if (!ret)
+ 		is31->audio_gain_db = min(is31->audio_gain_db,
+-					  IS31FL319X_AUDIO_GAIN_DB_MAX);
++					  IS31FL3196_AUDIO_GAIN_DB_MAX);
+ 
+ 	return 0;
+ 
+@@ -285,55 +285,55 @@ static bool is31fl319x_readable_reg(struct device *dev, unsigned int reg)
+ 	return false;
+ }
+ 
+-static bool is31fl319x_volatile_reg(struct device *dev, unsigned int reg)
++static bool is31fl3196_volatile_reg(struct device *dev, unsigned int reg)
+ { /* volatile registers are not cached */
+ 	switch (reg) {
+-	case IS31FL319X_DATA_UPDATE:
+-	case IS31FL319X_TIME_UPDATE:
+-	case IS31FL319X_RESET:
++	case IS31FL3196_DATA_UPDATE:
++	case IS31FL3196_TIME_UPDATE:
++	case IS31FL3196_RESET:
+ 		return true; /* always write-through */
+ 	default:
+ 		return false;
+ 	}
+ }
+ 
+-static const struct reg_default is31fl319x_reg_defaults[] = {
+-	{ IS31FL319X_CONFIG1, 0x00},
+-	{ IS31FL319X_CONFIG2, 0x00},
+-	{ IS31FL319X_PWM(0), 0x00},
+-	{ IS31FL319X_PWM(1), 0x00},
+-	{ IS31FL319X_PWM(2), 0x00},
+-	{ IS31FL319X_PWM(3), 0x00},
+-	{ IS31FL319X_PWM(4), 0x00},
+-	{ IS31FL319X_PWM(5), 0x00},
+-	{ IS31FL319X_PWM(6), 0x00},
+-	{ IS31FL319X_PWM(7), 0x00},
+-	{ IS31FL319X_PWM(8), 0x00},
++static const struct reg_default is31fl3196_reg_defaults[] = {
++	{ IS31FL3196_CONFIG1, 0x00},
++	{ IS31FL3196_CONFIG2, 0x00},
++	{ IS31FL3196_PWM(0), 0x00},
++	{ IS31FL3196_PWM(1), 0x00},
++	{ IS31FL3196_PWM(2), 0x00},
++	{ IS31FL3196_PWM(3), 0x00},
++	{ IS31FL3196_PWM(4), 0x00},
++	{ IS31FL3196_PWM(5), 0x00},
++	{ IS31FL3196_PWM(6), 0x00},
++	{ IS31FL3196_PWM(7), 0x00},
++	{ IS31FL3196_PWM(8), 0x00},
+ };
+ 
+-static struct regmap_config regmap_config = {
++static struct regmap_config is31fl3196_regmap_config = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
+-	.max_register = IS31FL319X_REG_CNT,
++	.max_register = IS31FL3196_REG_CNT,
+ 	.cache_type = REGCACHE_FLAT,
+ 	.readable_reg = is31fl319x_readable_reg,
+-	.volatile_reg = is31fl319x_volatile_reg,
+-	.reg_defaults = is31fl319x_reg_defaults,
+-	.num_reg_defaults = ARRAY_SIZE(is31fl319x_reg_defaults),
++	.volatile_reg = is31fl3196_volatile_reg,
++	.reg_defaults = is31fl3196_reg_defaults,
++	.num_reg_defaults = ARRAY_SIZE(is31fl3196_reg_defaults),
+ };
+ 
+-static inline int is31fl319x_microamp_to_cs(struct device *dev, u32 microamp)
++static inline int is31fl3196_microamp_to_cs(struct device *dev, u32 microamp)
+ { /* round down to nearest supported value (range check done by caller) */
+-	u32 step = microamp / IS31FL319X_CURRENT_STEP;
++	u32 step = microamp / IS31FL3196_CURRENT_STEP;
+ 
+-	return ((IS31FL319X_CONFIG2_CS_STEP_REF - step) &
+-		IS31FL319X_CONFIG2_CS_MASK) <<
+-		IS31FL319X_CONFIG2_CS_SHIFT; /* CS encoding */
++	return ((IS31FL3196_CONFIG2_CS_STEP_REF - step) &
++		IS31FL3196_CONFIG2_CS_MASK) <<
++		IS31FL3196_CONFIG2_CS_SHIFT; /* CS encoding */
+ }
+ 
+-static inline int is31fl319x_db_to_gain(u32 dezibel)
++static inline int is31fl3196_db_to_gain(u32 dezibel)
+ { /* round down to nearest supported value (range check done by caller) */
+-	return dezibel / IS31FL319X_AUDIO_GAIN_DB_STEP;
++	return dezibel / IS31FL3196_AUDIO_GAIN_DB_STEP;
+ }
+ 
+ static int is31fl319x_probe(struct i2c_client *client,
+@@ -343,7 +343,7 @@ static int is31fl319x_probe(struct i2c_client *client,
+ 	struct device *dev = &client->dev;
+ 	int err;
+ 	int i = 0;
+-	u32 aggregated_led_microamp = IS31FL319X_CURRENT_MAX;
++	u32 aggregated_led_microamp = IS31FL3196_CURRENT_MAX;
+ 
+ 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
+ 		return -EIO;
+@@ -365,7 +365,7 @@ static int is31fl319x_probe(struct i2c_client *client,
+ 	}
+ 
+ 	is31->client = client;
+-	is31->regmap = devm_regmap_init_i2c(client, &regmap_config);
++	is31->regmap = devm_regmap_init_i2c(client, &is31fl3196_regmap_config);
+ 	if (IS_ERR(is31->regmap)) {
+ 		dev_err(&client->dev, "failed to allocate register map\n");
+ 		err = PTR_ERR(is31->regmap);
+@@ -375,7 +375,7 @@ static int is31fl319x_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, is31);
+ 
+ 	/* check for write-reply from chip (we can't read any registers) */
+-	err = regmap_write(is31->regmap, IS31FL319X_RESET, 0x00);
++	err = regmap_write(is31->regmap, IS31FL3196_RESET, 0x00);
+ 	if (err < 0) {
+ 		dev_err(&client->dev, "no response from chip write: err = %d\n",
+ 			err);
+@@ -393,9 +393,9 @@ static int is31fl319x_probe(struct i2c_client *client,
+ 		    is31->leds[i].max_microamp < aggregated_led_microamp)
+ 			aggregated_led_microamp = is31->leds[i].max_microamp;
+ 
+-	regmap_write(is31->regmap, IS31FL319X_CONFIG2,
+-		     is31fl319x_microamp_to_cs(dev, aggregated_led_microamp) |
+-		     is31fl319x_db_to_gain(is31->audio_gain_db));
++	regmap_write(is31->regmap, IS31FL3196_CONFIG2,
++		     is31fl3196_microamp_to_cs(dev, aggregated_led_microamp) |
++		     is31fl3196_db_to_gain(is31->audio_gain_db));
+ 
+ 	for (i = 0; i < is31->cdef->num_leds; i++) {
+ 		struct is31fl319x_led *led = &is31->leds[i];
+@@ -404,7 +404,7 @@ static int is31fl319x_probe(struct i2c_client *client,
+ 			continue;
+ 
+ 		led->chip = is31;
+-		led->cdev.brightness_set_blocking = is31fl319x_brightness_set;
++		led->cdev.brightness_set_blocking = is31fl3196_brightness_set;
+ 
+ 		err = devm_led_classdev_register(&client->dev, &led->cdev);
+ 		if (err < 0)
+-- 
+2.35.3
+
+
+
