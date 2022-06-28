@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1415C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE51ACCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243872AbiF1CWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33360 "EHLO
+        id S243908AbiF1CWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243638AbiF1CVD (ORCPT
+        with ESMTP id S243656AbiF1CVH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:21:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F2A24F02;
-        Mon, 27 Jun 2022 19:20:51 -0700 (PDT)
+        Mon, 27 Jun 2022 22:21:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3722F101E5;
+        Mon, 27 Jun 2022 19:21:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5124B81C00;
-        Tue, 28 Jun 2022 02:20:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91363C385A9;
-        Tue, 28 Jun 2022 02:20:47 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 878B1CE1DCC;
+        Tue, 28 Jun 2022 02:20:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C50BCC385A9;
+        Tue, 28 Jun 2022 02:20:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382849;
-        bh=fnbjg2y5q4ORZyOyzWa2ckHS44WEdmOAUqXEWcMqugI=;
+        s=k20201202; t=1656382857;
+        bh=d4yHdwcIVcHGy3DfNH08m8dj2XE0tK+LPYMKfYq2wJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ka2Up4koD9AAuSD6T8RqcnF0V/6UYnJG6MyPk2oUtP8uC6Z/dm/0kn5Vc9NWWA0ZS
-         jeaH3+Bpi6ZO/LMf3Ct++cIciM+sUXUe3s/ce539vInxug7CDqKBt43F7dm/wj2hI5
-         E8DD/vlnyDEmpZG86C2DWTvMFsn+9lKT+ZFzXaqITIwbVa0UdC+d12ap7bh6djbEqi
-         TnC1lEa1EJJoJIJMjKbMV3zfgGJ8MFURdfg2bVtQG8PLf8hSAn8H3QSn3jtvSdnRuM
-         clx5Fywu0BWJg7TYQUjsNaObkJq5L9tP8/8cmM55X+s8Snu0n07LqyvG8+A9tNNGnz
-         4Ur0Q6aVLl5yQ==
+        b=b4ks9HAVBx2GaWJaBdHk9vcBDEXyyI2l+CWjs8xrbCPDnsKOdwQ0HyJvtXEEIocel
+         anvVBqDm3eTUcAgdyKBFnBrT3MrDPy6WYYSyaFVQAdMHmENDsyDfl84LwQhriIbgji
+         aWMBHEBU811MrmfkF340ZoFCCu2cGLdtw3vpDQgBtcxnr1Xubi/NU/Za2EURLlpwTy
+         KWPmUT9i6Doa0gZ2+ilIcylic1u0P2QjXmOlGxzn8APVGyoj4CMesSKxFMSXEuYaLL
+         qsQb3lQa9w3qGptWoFPKwD1LHIsT6BXjjegyTIxrb09cxcvUJroZmUEHVL1YhIuDGM
+         D4jiNniK/Uaxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, llvm@lists.linux.dev,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, leon@kernel.org,
-        jiri@nvidia.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 49/53] hinic: Replace memcpy() with direct assignment
-Date:   Mon, 27 Jun 2022 22:18:35 -0400
-Message-Id: <20220628021839.594423-49-sashal@kernel.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
+        linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 52/53] gpio: grgpio: Fix device removing
+Date:   Mon, 27 Jun 2022 22:18:38 -0400
+Message-Id: <20220628021839.594423-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628021839.594423-1-sashal@kernel.org>
 References: <20220628021839.594423-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,52 +55,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 1e70212e031528918066a631c9fdccda93a1ffaa ]
+[ Upstream commit c1c2a15c2b5379ea8e44dcdcc298e3de42076ba0 ]
 
-Under CONFIG_FORTIFY_SOURCE=y and CONFIG_UBSAN_BOUNDS=y, Clang is bugged
-here for calculating the size of the destination buffer (0x10 instead of
-0x14). This copy is a fixed size (sizeof(struct fw_section_info_st)), with
-the source and dest being struct fw_section_info_st, so the memcpy should
-be safe, assuming the index is within bounds, which is UBSAN_BOUNDS's
-responsibility to figure out.
+If a platform device's remove callback returns non-zero, the device core
+emits a warning and still removes the device and calls the devm cleanup
+callbacks.
 
-Avoid the whole thing and just do a direct assignment. This results in
-no change to the executable code.
+So it's not save to not unregister the gpiochip because on the next request
+to a GPIO the driver accesses kfree()'d memory. Also if an IRQ triggers,
+the freed memory is accessed.
 
-[This is a duplicate of commit 2c0ab32b73cf ("hinic: Replace memcpy()
- with direct assignment") which was applied to net-next.]
+Instead rely on the GPIO framework to ensure that after gpiochip_remove()
+all GPIOs are freed and so the corresponding IRQs are unmapped.
 
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Tom Rix <trix@redhat.com>
-Cc: llvm@lists.linux.dev
-Link: https://github.com/ClangBuiltLinux/linux/issues/1592
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Tested-by: Nathan Chancellor <nathan@kernel.org> # build
-Link: https://lore.kernel.org/r/20220616052312.292861-1-keescook@chromium.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This is a preparation for making platform remove callbacks return void.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_devlink.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/gpio/gpio-grgpio.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
-index 60ae8bfc5f69..1749d26f4bef 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
-@@ -43,9 +43,7 @@ static bool check_image_valid(struct hinic_devlink_priv *priv, const u8 *buf,
+diff --git a/drivers/gpio/gpio-grgpio.c b/drivers/gpio/gpio-grgpio.c
+index 23d447e17a67..6ad0466828f4 100644
+--- a/drivers/gpio/gpio-grgpio.c
++++ b/drivers/gpio/gpio-grgpio.c
+@@ -434,25 +434,13 @@ static int grgpio_probe(struct platform_device *ofdev)
+ static int grgpio_remove(struct platform_device *ofdev)
+ {
+ 	struct grgpio_priv *priv = platform_get_drvdata(ofdev);
+-	int i;
+-	int ret = 0;
+-
+-	if (priv->domain) {
+-		for (i = 0; i < GRGPIO_MAX_NGPIO; i++) {
+-			if (priv->uirqs[i].refcnt != 0) {
+-				ret = -EBUSY;
+-				goto out;
+-			}
+-		}
+-	}
  
- 	for (i = 0; i < fw_image->fw_info.fw_section_cnt; i++) {
- 		len += fw_image->fw_section_info[i].fw_section_len;
--		memcpy(&host_image->image_section_info[i],
--		       &fw_image->fw_section_info[i],
--		       sizeof(struct fw_section_info_st));
-+		host_image->image_section_info[i] = fw_image->fw_section_info[i];
- 	}
+ 	gpiochip_remove(&priv->gc);
  
- 	if (len != fw_image->fw_len ||
+ 	if (priv->domain)
+ 		irq_domain_remove(priv->domain);
+ 
+-out:
+-	return ret;
++	return 0;
+ }
+ 
+ static const struct of_device_id grgpio_match[] = {
 -- 
 2.35.1
 
