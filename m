@@ -2,155 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A15C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:08:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B17AEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243315AbiF1CIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
+        id S243357AbiF1CNI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242861AbiF1CI1 (ORCPT
+        with ESMTP id S243489AbiF1CMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:08:27 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960FF12D3A
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 19:08:26 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LX7Fz4qq4zSh8T;
-        Tue, 28 Jun 2022 10:04:55 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 10:08:22 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
- 2022 10:08:21 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-m68k@lists.linux-m68k.org>
-CC:     <laurent@vivier.eu>, <geert@linux-m68k.org>
-Subject: [PATCH -next] m68k: virt: platform: fix missing platform_device_unregister() on error in virt_platform_init()
-Date:   Tue, 28 Jun 2022 10:18:02 +0800
-Message-ID: <20220628021802.4102976-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 27 Jun 2022 22:12:53 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A90520BF5;
+        Mon, 27 Jun 2022 19:12:51 -0700 (PDT)
+X-UUID: d477a8a8031d42e0affb3f744de6740e-20220628
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.7,REQID:4300e45c-23cf-415b-b936-bf23a4128f10,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:87442a2,CLOUDID:49e2fed5-5d6d-4eaf-a635-828a3ee48b7c,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: d477a8a8031d42e0affb3f744de6740e-20220628
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <peter.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 871487344; Tue, 28 Jun 2022 10:12:48 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Tue, 28 Jun 2022 10:12:46 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Tue, 28 Jun 2022 10:12:46 +0800
+From:   <peter.wang@mediatek.com>
+To:     <matthias.bgg@gmail.com>, <len.brown@intel.com>, <pavel@ucw.cz>,
+        <rafael@kernel.org>, <gregkh@linuxfoundation.org>,
+        <stanley.chu@mediatek.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <martin.petersen@oracle.com>, <avri.altman@wdc.com>,
+        <alim.akhtar@samsung.com>, <jejb@linux.ibm.com>
+CC:     <wsd_upstream@mediatek.com>, <linux-mediatek@lists.infradead.org>,
+        <peter.wang@mediatek.com>, <chun-hung.wu@mediatek.com>,
+        <alice.chao@mediatek.com>, <cc.chou@mediatek.com>,
+        <chaotian.jing@mediatek.com>, <jiajie.hao@mediatek.com>,
+        <powen.kao@mediatek.com>, <qilin.tan@mediatek.com>,
+        <lin.gui@mediatek.com>, <tun-yu.yu@mediatek.com>
+Subject: [PATCH v2] PM-runtime: Check supplier_preactivated before release supplier
+Date:   Tue, 28 Jun 2022 10:12:44 +0800
+Message-ID: <20220628021244.17281-1-peter.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing platform_device_unregister() before return
-from virt_platform_init() in the error handling case.
+From: Peter Wang <peter.wang@mediatek.com>
 
-Fixes: 05d51e42df06 ("m68k: Introduce a virtual m68k machine")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+With divice link of DL_FLAG_PM_RUNTIME, if consumer call pm_runtime_get_suppliers
+to prevent supplier enter suspend, pm_runtime_release_supplier should
+check supplier_preactivated before let supplier enter suspend.
+
+Signed-off-by: Peter Wang <peter.wang@mediatek.com>
 ---
- arch/m68k/virt/platform.c | 58 ++++++++++++++++++++++-----------------
- 1 file changed, 33 insertions(+), 25 deletions(-)
+ drivers/base/power/runtime.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/m68k/virt/platform.c b/arch/m68k/virt/platform.c
-index cb820f19a221..64236364a3ec 100644
---- a/arch/m68k/virt/platform.c
-+++ b/arch/m68k/virt/platform.c
-@@ -8,20 +8,15 @@
+diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+index 676dc72d912d..08bbc4561e60 100644
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -337,8 +337,10 @@ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+ 	struct device_link *link;
  
- #define VIRTIO_BUS_NB	128
- 
--static int __init virt_virtio_init(unsigned int id)
-+static struct platform_device * __init virt_virtio_init(unsigned int id)
- {
- 	const struct resource res[] = {
- 		DEFINE_RES_MEM(virt_bi_data.virtio.mmio + id * 0x200, 0x200),
- 		DEFINE_RES_IRQ(virt_bi_data.virtio.irq + id),
- 	};
--	struct platform_device *pdev;
- 
--	pdev = platform_device_register_simple("virtio-mmio", id,
-+	return platform_device_register_simple("virtio-mmio", id,
- 					       res, ARRAY_SIZE(res));
--	if (IS_ERR(pdev))
--		return PTR_ERR(pdev);
--
--	return 0;
- }
- 
- static int __init virt_platform_init(void)
-@@ -35,8 +30,10 @@ static int __init virt_platform_init(void)
- 		DEFINE_RES_MEM(virt_bi_data.rtc.mmio + 0x1000, 0x1000),
- 		DEFINE_RES_IRQ(virt_bi_data.rtc.irq + 1),
- 	};
--	struct platform_device *pdev;
-+	struct platform_device *pdev1, *pdev2;
-+	struct platform_device *pdevs[VIRTIO_BUS_NB];
- 	unsigned int i;
-+	int ret = 0;
- 
- 	if (!MACH_IS_VIRT)
- 		return -ENODEV;
-@@ -44,29 +41,40 @@ static int __init virt_platform_init(void)
- 	/* We need this to have DMA'able memory provided to goldfish-tty */
- 	min_low_pfn = 0;
- 
--	pdev = platform_device_register_simple("goldfish_tty",
--					       PLATFORM_DEVID_NONE,
--					       goldfish_tty_res,
--					       ARRAY_SIZE(goldfish_tty_res));
--	if (IS_ERR(pdev))
--		return PTR_ERR(pdev);
-+	pdev1 = platform_device_register_simple("goldfish_tty",
-+						PLATFORM_DEVID_NONE,
-+						goldfish_tty_res,
-+						ARRAY_SIZE(goldfish_tty_res));
-+	if (IS_ERR(pdev1))
-+		return PTR_ERR(pdev1);
- 
--	pdev = platform_device_register_simple("goldfish_rtc",
--					       PLATFORM_DEVID_NONE,
--					       goldfish_rtc_res,
--					       ARRAY_SIZE(goldfish_rtc_res));
--	if (IS_ERR(pdev))
--		return PTR_ERR(pdev);
-+	pdev2 = platform_device_register_simple("goldfish_rtc",
-+						PLATFORM_DEVID_NONE,
-+						goldfish_rtc_res,
-+						ARRAY_SIZE(goldfish_rtc_res));
-+	if (IS_ERR(pdev2)) {
-+		ret = PTR_ERR(pdev2);
-+		goto err_unregister_tty;
+ 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+-				device_links_read_lock_held())
+-		pm_runtime_release_supplier(link, try_to_suspend);
++				device_links_read_lock_held()) {
++		if (!link->supplier_preactivated)
++			pm_runtime_release_supplier(link, try_to_suspend);
 +	}
- 
- 	for (i = 0; i < VIRTIO_BUS_NB; i++) {
--		int err;
--
--		err = virt_virtio_init(i);
--		if (err)
--			return err;
-+		pdevs[i] = virt_virtio_init(i);
-+		if (IS_ERR(pdevs[i])) {
-+			ret = PTR_ERR(pdevs[i]);
-+			goto err_unregister_rtc_virtio;
-+		}
- 	}
- 
- 	return 0;
-+
-+err_unregister_rtc_virtio:
-+	for (--i; (int)i >= 0; i--)
-+		platform_device_unregister(pdevs[i]);
-+	platform_device_unregister(pdev2);
-+err_unregister_tty:
-+	platform_device_unregister(pdev1);
-+
-+	return ret;
  }
  
- arch_initcall(virt_platform_init);
+ static void rpm_put_suppliers(struct device *dev)
 -- 
-2.25.1
+2.18.0
 
