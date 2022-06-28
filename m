@@ -2,102 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD0CCCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CEABCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346557AbiF1NcY (ORCPT
+        id S1345783AbiF1Nct (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
+        Tue, 28 Jun 2022 09:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237387AbiF1Nbf (ORCPT
+        with ESMTP id S1345195AbiF1NcR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:31:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B507A2A71F
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:31:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656423064;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=u55Q3Jca+qOXXIBqB4TXnLGHs1HcaTUob8yIUpePALU=;
-        b=Oo5Q5GO05igY7JAInvgV1GFWRYtG1zmsJEq1IqSdfaGJPvCCn4zqjTTeosmBWLPMrhL7sB
-        o90BcRVm0ieMgzxV6zfJG59lRm9SQd6JDebJhsHCCM2Od+UInqSh2oRI79DfSr1u1diWf5
-        Shoh0PPis6rNnbLRfNrXPAObpUqpfA0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-325-i5Y-yA-hNpycuk-FDu2J_Q-1; Tue, 28 Jun 2022 09:31:00 -0400
-X-MC-Unique: i5Y-yA-hNpycuk-FDu2J_Q-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0A4D5811E80;
-        Tue, 28 Jun 2022 13:31:00 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1503E2026D07;
-        Tue, 28 Jun 2022 13:30:57 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: x86: Fully initialize 'struct kvm_lapic_irq' in kvm_pv_kick_cpu_op()
-Date:   Tue, 28 Jun 2022 15:30:57 +0200
-Message-Id: <20220628133057.107344-1-vkuznets@redhat.com>
+        Tue, 28 Jun 2022 09:32:17 -0400
+Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B42592CDD3
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:31:27 -0700 (PDT)
+X-QQ-mid: bizesmtp78t1656423060trmfx83z
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 28 Jun 2022 21:30:57 +0800 (CST)
+X-QQ-SSF: 01400000002000G0S000B00A0000000
+X-QQ-FEAT: zCqO8hPdPe7z4KFAQ2d/MgTLxnUx5zs48XI+5lOMBR/3ecyAbEqg7rDeyhyQS
+        71wY5Ql/Ee4gWGv8+i42FfBLRjYaIa2Bmrp86AFCRcdQ4kOl3QwiiUZfObwBPr8yVwaDikj
+        U6h+iw6Tt/nt+gxiQhRzjRQIvRlFTUyGYHM52g8VeZBBg1B5lR5Ts8YU9mGatG8q9NSyEH3
+        oE4X9G1ZYMYUPE/fq+YkxeuFJia9WAzJSr7Z1nawwYo1J4RFey+CPr03PlSrgvOytYh/D66
+        9f9Pf0ovgMFzg4BcTRO8E8om+nTfBzVhCuxA/UrzZqH6wZnwjEFWyHsTb6ALtG1zG2kqAkF
+        Ji8NUAdHFvSNWF6Ehkm2icY1TD0SWn2MAVKgeFIQEyX6vk/QySv9Zp+Y9nn6A==
+X-QQ-GoodBg: 2
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     stable@vger.kernel.org, tony0620emma@gmail.com,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guo-Feng Fan <vincent_fann@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH 5.10 2/3] commit b789e3fe7047 ("rtw88: 8821c: support RFE type4 wifi NIC")
+Date:   Tue, 28 Jun 2022 21:30:45 +0800
+Message-Id: <20220628133046.2474-2-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220628133046.2474-1-tangmeng@uniontech.com>
+References: <20220628133046.2474-1-tangmeng@uniontech.com>
 MIME-Version: 1.0
-Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign10
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'vector' and 'trig_mode' fields of 'struct kvm_lapic_irq' are left
-uninitialized in kvm_pv_kick_cpu_op(). While these fields are normally
-not needed for APIC_DM_REMRD, they're still referenced by
-__apic_accept_irq() for trace_kvm_apic_accept_irq(). Fully initialize
-the structure to avoid consuming random stack memory.
+From: Guo-Feng Fan <vincent_fann@realtek.com>
 
-Fixes: a183b638b61c ("KVM: x86: make apic_accept_irq tracepoint more generic")
-Reported-by: syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+RFE type4 is a new NIC which has one RF antenna shares with BT.
+RFE type4 HW is the same as RFE type2 but attaching antenna to
+aux antenna connector.
+
+RFE type2 attach antenna to main antenna connector.
+Load the same parameter as RFE type2 when initializing NIC.
+
+Signed-off-by: Guo-Feng Fan <vincent_fann@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210922023637.9357-1-pkshih@realtek.com
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- arch/x86/kvm/x86.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 567d13405445..8a98608dad4f 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9340,15 +9340,17 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
-  */
- static void kvm_pv_kick_cpu_op(struct kvm *kvm, int apicid)
- {
--	struct kvm_lapic_irq lapic_irq;
--
--	lapic_irq.shorthand = APIC_DEST_NOSHORT;
--	lapic_irq.dest_mode = APIC_DEST_PHYSICAL;
--	lapic_irq.level = 0;
--	lapic_irq.dest_id = apicid;
--	lapic_irq.msi_redir_hint = false;
-+	struct kvm_lapic_irq lapic_irq = {
-+		.vector = 0,
-+		.delivery_mode = APIC_DM_REMRD,
-+		.dest_mode = APIC_DEST_PHYSICAL,
-+		.level = false,
-+		.trig_mode = 0,
-+		.shorthand = APIC_DEST_NOSHORT,
-+		.dest_id = apicid,
-+		.msi_redir_hint = false
-+	};
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+index 4514c4e8ee58..9c8fbc96f536 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -300,7 +300,8 @@ static void rtw8821c_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
+ 	if (channel <= 14) {
+ 		if (rtwdev->efuse.rfe_option == 0)
+ 			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLG);
+-		else if (rtwdev->efuse.rfe_option == 2)
++		else if (rtwdev->efuse.rfe_option == 2 ||
++			 rtwdev->efuse.rfe_option == 4)
+ 			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_BTG);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(6), 0x1);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, 0x64, 0xf, 0xf);
+@@ -737,6 +738,15 @@ static void rtw8821c_coex_cfg_ant_switch(struct rtw_dev *rtwdev, u8 ctrl_type,
+ 	if (switch_status == coex_dm->cur_switch_status)
+ 		return;
  
--	lapic_irq.delivery_mode = APIC_DM_REMRD;
- 	kvm_irq_delivery_to_apic(kvm, NULL, &lapic_irq, NULL);
- }
++	if (coex_rfe->wlg_at_btg) {
++		ctrl_type = COEX_SWITCH_CTRL_BY_BBSW;
++
++		if (coex_rfe->ant_switch_polarity)
++			pos_type = COEX_SWITCH_TO_WLA;
++		else
++			pos_type = COEX_SWITCH_TO_WLG_BT;
++	}
++
+ 	coex_dm->cur_switch_status = switch_status;
  
+ 	if (coex_rfe->ant_switch_diversity &&
+@@ -1457,6 +1467,7 @@ static const struct rtw_intf_phy_para_table phy_para_table_8821c = {
+ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
+ 	[0] = RTW_DEF_RFE(8821c, 0, 0),
+ 	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
++	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+ };
+ 
+ static struct rtw_hw_reg rtw8821c_dig[] = {
 -- 
-2.35.3
+2.20.1
+
+
 
