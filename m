@@ -2,139 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE577C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 03:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38ACAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 03:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243432AbiF1Deo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 23:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
+        id S243421AbiF1Dh3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 23:37:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243262AbiF1Dej (ORCPT
+        with ESMTP id S243263AbiF1DhT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 23:34:39 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5825E2315F
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 20:34:38 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d5so9871693plo.12
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 20:34:38 -0700 (PDT)
+        Mon, 27 Jun 2022 23:37:19 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E38824F0B;
+        Mon, 27 Jun 2022 20:37:18 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id x1-20020a17090abc8100b001ec7f8a51f5so14545730pjr.0;
+        Mon, 27 Jun 2022 20:37:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=pZ+/evlGnsJ8jD6C9tMwnqlQXDJt8JhJGnpn4OPCdjs=;
-        b=ZKbAeK5dLgm2DXSIg5wecdROkd4oaR5bX00Hgrpx3CycC+gycPH90r8HsP89MIggwQ
-         Tgue21oNaVdD1QixnmeuatxNcsmJG4xKnv5Gp+DxvrMF89AnWKUGEelvc0PlxtyZQ98G
-         gRIANjbvmLyMraCLSQKxlpOsnPK+SulUvHUW7egM/R2LRJjKiT5EpDedRPJxzTVsmiol
-         iQyxuXdUdrSqbd4vg9WhMKMZGwzXpEjFJdSGjQZIDiX08h4PJTmF0avQSLtwZfOnSyX8
-         OcFZz2Kc/mQjCSMoB6dKyXJXSiNEZOxcLLNhniWqQszFiShJRUMnJs8r8vqXCcFFYZFe
-         CJ2w==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=G2ZI6aMz7mjHuacv2TpkSw0NDmBUe+64bYW0SIydJ1c=;
+        b=qWSblFa8OsXeRRuOE0A/MhNHBxZKjTtnAjA3B92NuHrFB/xQ73Fq7JAKZUSMerimfT
+         lBSSFX/cc7HP+4o4G7SOWtrqiLpi4rHj+7ziQmJ35u3jjOOm2e9ac+evtsQMtVrwuZ1h
+         a9SX3SXZu+eo1UC2XDtg2s/Pu83GBvFAdf4C/tWCKkcVqS6taZRukb8hRGey3TmfV0HB
+         FcJRkmGlhU9w+CtES91WezFc/koimMNnM+sIWw0Uv8lVDjCBwiKzsnwM45X25OQhTS9/
+         2ZwjgfwJMOEVBvLs5Xii9V84Y6XJDH2AP4+l1Va9ssEOCMJ7YbT6u9tnFbHhGz7+/q+a
+         CCyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pZ+/evlGnsJ8jD6C9tMwnqlQXDJt8JhJGnpn4OPCdjs=;
-        b=EN5GGiQajD+yLmrdCnxpAKL8V9wL30DLqEqmrjCsNWKNYR9yG0rS8wBEEWqoX4IK54
-         P+qR3R+UOablLWSxhQ3A7gbLozJy5PdTh+CR/npjOu38m8Ym30ogpIZIwIoih9Ly/2cL
-         /lS8loO3uaPTK/wJXSCso7NugmBb3PY7wW4M911XwvWs3J1ANU49U1DQL3R/AxVUHa+9
-         GkvDRowyH70VOYSJm1+bMKMln/Mutx3plHpzSZ+Sbytug41vgVhwWgiSfg22bjkw2f4D
-         lh2Q5OhYbZjIyKN2hAGsZRYA/APU9HvARjCT2slwO+nq5BMuqH1zFbCKIxcN5Y4rt01C
-         kNTQ==
-X-Gm-Message-State: AJIora/aMx13cFr4bbnxap9reQYtR1V2LqbfhZBJ/zsL9K4J6iqsJ7ft
-        DSndBhn+7hpSR9vLzHdjkp2/Wg==
-X-Google-Smtp-Source: AGRyM1uTk/gqugCXTP+8MBHLnYa3VLEn9+TuUj54C7lV4fs/Sl3H+2Kf2QtAKD6V0UZkAx7Wg9hRgg==
-X-Received: by 2002:a17:90b:3ece:b0:1ed:13a9:8531 with SMTP id rm14-20020a17090b3ece00b001ed13a98531mr24513558pjb.183.1656387277925;
-        Mon, 27 Jun 2022 20:34:37 -0700 (PDT)
-Received: from [10.4.214.173] ([139.177.225.253])
-        by smtp.gmail.com with ESMTPSA id j10-20020aa78d0a000000b00522c3f34362sm8036655pfe.215.2022.06.27.20.34.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 20:34:37 -0700 (PDT)
-Message-ID: <f3d8aabe-3d02-8851-b5e9-b0dcdb7c0b6e@bytedance.com>
-Date:   Tue, 28 Jun 2022 11:34:29 +0800
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=G2ZI6aMz7mjHuacv2TpkSw0NDmBUe+64bYW0SIydJ1c=;
+        b=1XfD09bXED5IvhCs0K8qkQNjYUR79k1eMB4BPXi1b0CCI5GTPnw1dEu8qsKqUk4vA+
+         Nj+215lWmHtkn+ipP5udkK3PW5s1iQl/JOOquaVtKlixfYzR/uR1oT84kdLk7mrALZDO
+         K2cbmGHK9BzTyo8+xGt/XbZABJlN3DsFa8XY/J/rTpp3PvqiZYYIcrQoOofeioLAZhE4
+         2hHdH3xsgPSVVGNKNPcJvJk+CBcV2IdkjMIs6Kvw14rgGWRMal19EcivyTM8nTzWGvbM
+         R8Imjh53GW/LJsdGDo3Bk6rSsSr/VY8OjtBNYK4ELv2r+B+0qplm11PmU1Y+pjqnVANo
+         mPNQ==
+X-Gm-Message-State: AJIora+hxluwgSu3RiYe1R3Y8LDuK6xX/ztrYfvsTcVybCS8jln8OuGT
+        twfdlhoiaYymHII3Lp6OMrQ=
+X-Google-Smtp-Source: AGRyM1v/JF9sZ/ij650I5WlKuyttuPJ8uAaz2+f1pjdmNhjhPRS105MXj2fjZLNNlVjiJJn/+TK2KA==
+X-Received: by 2002:a17:90a:aa96:b0:1ea:3780:c3dc with SMTP id l22-20020a17090aaa9600b001ea3780c3dcmr25121973pjq.241.1656387437966;
+        Mon, 27 Jun 2022 20:37:17 -0700 (PDT)
+Received: from fedora ([103.230.148.187])
+        by smtp.gmail.com with ESMTPSA id im22-20020a170902bb1600b0016a3f9e528asm2912212plb.57.2022.06.27.20.37.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 20:37:16 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 09:07:11 +0530
+From:   Gautam Menghani <gautammenghani201@gmail.com>
+To:     sj@kernel.org
+Cc:     skhan@linuxfoundation.org, damon@lists.linux.dev,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] kselftests/damon: add support for cases where debugfs
+ cannot be read
+Message-ID: <Yrp3ZwF4Q/xPDrwG@fedora>
+References: <20220625200334.83818-1-sj@kernel.org>
+ <7d6b7de6-4609-e6ca-0a88-1f9799c70769@linuxfoundation.org>
+ <Yrn6BxU298rzjiak@fedora>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH] mm: hugetlb: kill set_huge_swap_pte_at()
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     mike.kravetz@oracle.com, songmuchun@bytedance.com,
-        akpm@linux-foundation.org, catalin.marinas@arm.com,
-        will@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <20220626145717.53572-1-zhengqi.arch@bytedance.com>
- <YrnBm9FGizF1iLsW@casper.infradead.org>
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-In-Reply-To: <YrnBm9FGizF1iLsW@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yrn6BxU298rzjiak@fedora>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/6/27 22:41, Matthew Wilcox wrote:
-> On Sun, Jun 26, 2022 at 10:57:17PM +0800, Qi Zheng wrote:
->> The commit e5251fd43007 ("mm/hugetlb: introduce set_huge_swap_pte_at()
->> helper") add set_huge_swap_pte_at() to handle swap entries on
->> architectures that support hugepages consisting of contiguous ptes.
->> And currently the set_huge_swap_pte_at() is only overridden by arm64.
+Cc'ing everyone as I forgot to group reply before. Also, I have included the 
+example outputs in this reply.
+On Tue, Jun 28, 2022 at 12:12:15AM +0530, Gautam Menghani wrote:
+> On Mon, Jun 27, 2022 at 11:00:18AM -0600, Shuah Khan wrote:
+> > On 6/25/22 2:03 PM, SeongJae Park wrote:
+> > > Hi Gautam,
+> > > 
+> > > On Sun, 26 Jun 2022 01:22:45 +0530 Gautam <gautammenghani201@gmail.com> wrote:
+> > > 
+> > > > The kernel is in lockdown mode when secureboot is enabled and hence
+> > > > debugfs cannot be used. Add support for this and other general cases
+> > > > where debugfs cannot be read and communicate the same to the user before
+> > > > running tests.
+> > > > 
+> > > > Signed-off-by: Gautam <gautammenghani201@gmail.com>
+> > > 
+> > > Reviewed-by: SeongJae Park <sj@kernel.org>
+> > > 
+> > > 
+> > > Thanks,
+> > > SJ
+> > > 
+> > > > ---
+> > > > Changes in v2:
+> > > > 1. Modify the error message to account for general cases.
+> > > > 2. Change the return code so that the test is skipped.
+> > > > 
+> > > > Changes in v3:
+> > > > 1. Change the name of variable holding the error message.
+> > > > 
+> > > > Changes in v4:
+> > > > 1. Correct the mode of the source file.
+> > > > 
+> > > >   tools/testing/selftests/damon/_chk_dependency.sh | 10 ++++++++++
+> > > >   1 file changed, 10 insertions(+)
+> > > > 
+> > > > diff --git a/tools/testing/selftests/damon/_chk_dependency.sh b/tools/testing/selftests/damon/_chk_dependency.sh
+> > > > index 0189db81550b..0328ac0b5a5e 100644
+> > > > --- a/tools/testing/selftests/damon/_chk_dependency.sh
+> > > > +++ b/tools/testing/selftests/damon/_chk_dependency.sh
+> > > > @@ -26,3 +26,13 @@ do
+> > > >   		exit 1
+> > > >   	fi
+> > > >   done
+> > > > +
+> > > > +permission_error="Operation not permitted"
+> > > > +for f in attrs target_ids monitor_on
+> > > > +do
+> > > > +	status=$( cat "$DBGFS/$f" 2>&1 )
+> > > > +	if [ "${status#*$permission_error}" != "$status" ]; then
+> > > > +		echo "Permission for reading $DBGFS/$f denied; maybe secureboot enabled?"
+> > 
+> > btw - does this run as a regular user or does it need root privilege?
+> > If so add a test for that and skip with a message.
 > 
-> Bleh.  I hate the way we handle these currently.
+> Yes this condition is reachable only with root user. If damon tests are run
+> as regular user, the root check condition already skips the tests.
 > 
->> +static inline struct folio *hugetlb_swap_entry_to_folio(swp_entry_t entry)
->> +{
->> +	VM_BUG_ON(!is_migration_entry(entry) && !is_hwpoison_entry(entry));
->> +
->> +	return page_folio(pfn_to_page(swp_offset(entry)));
->> +}
+> Tests output as regular user:
+> +TAP version 13
+> +1..6
+> +# selftests: damon: debugfs_attrs.sh
+> +# Run as root
+> +ok 1 selftests: damon: debugfs_attrs.sh # SKIP
+> +# selftests: damon: debugfs_schemes.sh
+> +# Run as root
 > 
-> We haven't needed a pfn_to_folio() yet, but perhaps we should have one?
-
-Hi,
-
-IMO, it would be better to have a pfn_to_folio(), which can save the
-redundant page_folio() call in the current case.
-
-But this is not related to the current patch, maybe it can be a
-separate optimization patch.
-
+> Tests output as root user:
+> +TAP version 13
+> +1..6
+> +# selftests: damon: debugfs_attrs.sh
+> +# Permission for reading /sys/kernel/debug/damon/attrs denied; maybe secureboot enabled?
+> +ok 1 selftests: damon: debugfs_attrs.sh # SKIP
+> +# selftests: damon: debugfs_schemes.sh
+> +# Permission for reading /sys/kernel/debug/damon/attrs denied; maybe secureboot enabled?
 > 
-> Related, how should we store migration entries for multi-order folios
-> in the page tables?  We can either encode the individual page in
-> question, or we can encode the folio.  Do we need to support folios
-> being mapped askew (ie unaligned), or will folios always be mapped
-> aligned?
-
-Do we currently have a scenario where we need to use skew mapped folios?
-Maybe it can be used in pte-mapped THP? Hmm, I have no idea.
-
+> Is any change needed in this patch?
 > 
->> +	if (!pte_present(pte)) {
->> +		struct folio *folio;
->> +
->> +		folio = hugetlb_swap_entry_to_folio(pte_to_swp_entry(pte));
->> +		ncontig = num_contig_ptes(folio_size(folio), &pgsize);
->> +
->> +		for (i = 0; i < ncontig; i++, ptep++)
->> +			set_pte_at(mm, addr, ptep, pte);
->> +		return;
->> +	}
-> 
-> It seems like a shame to calculate folio_size() only to turn it into a
-> number of pages.  Don't you want to just use:
-> 
-> 		ncontig = folio_nr_pages(folio);
-
-We can't use folio_nr_pages() here, because for PMD_SIZE we only need
-one entry instead of the PTRS_PER_PTE entries returned by
-folio_nr_pages().
-
-Thanks,
-Qi
-
-> 
-
--- 
-Thanks,
-Qi
+> > > > +		exit $ksft_skip
+> > > > +	fi
+> > > > +done
+> > > > -- 
+> > > > 2.36.1
+> > > 
+> > thanks,
+> > -- Shuah
