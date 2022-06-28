@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF8ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5598C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244996AbiF1CbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
+        id S244828AbiF1CbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244548AbiF1C1P (ORCPT
+        with ESMTP id S244582AbiF1C13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F175325C4D;
-        Mon, 27 Jun 2022 19:24:48 -0700 (PDT)
+        Mon, 27 Jun 2022 22:27:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302D924F1A;
+        Mon, 27 Jun 2022 19:24:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DFD161853;
-        Tue, 28 Jun 2022 02:24:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E24D6C341CA;
-        Tue, 28 Jun 2022 02:24:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE291B81C13;
+        Tue, 28 Jun 2022 02:24:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC462C36AF2;
+        Tue, 28 Jun 2022 02:24:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383088;
-        bh=Kqi3E0HjV/M/rUHNNJDAxMFwMxUuQgRy5Fn4G8zuY/I=;
+        s=k20201202; t=1656383090;
+        bh=0ydoFsSSnPq2SDesOa8Ok98z1wzYk4h/L7swhoWtm6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G1rapj8TbhPkB2BZAY1Mtu18fnlkg+ylqHBazgwT6nS8ii2nufMKJFVVgZWrSeXaB
-         uGyFj3521afEiD0yasQ3vOxyHX9wuAYkVAoQLwctbqyVZ5SItb35mXQUzCXsuvLg7k
-         /3mMU26qu2XP+W9WfEBj6hvEETfVXpaGWlw1JQl+Rt5GIeaiDL5obzdhgEQ1M7+kcz
-         5HZOdaLisa13M2vD1BxK4BdpBcAIbI0bv5WxNjFyYNtmeAvPrWXxKiZ+plSmpvvB+Q
-         Isf1aCdTfELgFlHPhbEAssDfw1V/MPPVz2q/5kynEEPhWcGsD5BUaT7siktTfJQvV/
-         v/jITPq6fAC5Q==
+        b=kJS+B5YE0BxoPDsuKuFOI9N+Zj+LnfZyyW/58OhkdEGX6+G5Zd7BWh2EvSyULcbYG
+         uTSCWO6YVIgKF2iSzRYwni2oAwgWKzOqeis7o6UY1qZ31k2vjTgE620qs1d1Er5+1I
+         mplwy4U0q/wBfna5mHmOkYtMbJfFSUia2dT46MxsYizwI+9abK3uoFSgcFfDNF6a9h
+         +8ypRk4RGCbWrygYZ+MOY6sEgxRTFewPmjzVBbao1gYyQhKRTu5hGEW1vxOpZq1wcb
+         zZgvZrd8wxrRJ/j1+Gs5qL/1uh88xAp2Ydnb8ubiog7Z/L9BjiGs4OaJ2CHoLC6j3M
+         xJjb8kO38Us4A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hyunwoo Kim <imv4bel@gmail.com>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>, yangyingliang@huawei.com,
-        yang.lee@linux.alibaba.com, cai.huoqing@linux.dev,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.4 13/27] video: fbdev: pxa3xx-gcu: Fix integer overflow in pxa3xx_gcu_write
-Date:   Mon, 27 Jun 2022 22:23:59 -0400
-Message-Id: <20220628022413.596341-13-sashal@kernel.org>
+Cc:     Filipe Manana <fdmanana@suse.com>, Boris Burkov <boris@bur.io>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>, clm@fb.com,
+        josef@toxicpanda.com, linux-btrfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 15/27] btrfs: do not BUG_ON() on failure to migrate space when replacing extents
+Date:   Mon, 27 Jun 2022 22:24:01 -0400
+Message-Id: <20220628022413.596341-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022413.596341-1-sashal@kernel.org>
 References: <20220628022413.596341-1-sashal@kernel.org>
@@ -52,34 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyunwoo Kim <imv4bel@gmail.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-[ Upstream commit a09d2d00af53b43c6f11e6ab3cb58443c2cac8a7 ]
+[ Upstream commit 650c9caba32a0167a018cca0fab32a2965d23513 ]
 
-In pxa3xx_gcu_write, a count parameter of type size_t is passed to words of
-type int.  Then, copy_from_user() may cause a heap overflow because it is used
-as the third argument of copy_from_user().
+At btrfs_replace_file_extents(), if we fail to migrate reserved metadata
+space from the transaction block reserve into the local block reserve,
+we trigger a BUG_ON(). This is because it should not be possible to have
+a failure here, as we reserved more space when we started the transaction
+than the space we want to migrate. However having a BUG_ON() is way too
+drastic, we can perfectly handle the failure and return the error to the
+caller. So just do that instead, and add a WARN_ON() to make it easier
+to notice the failure if it ever happens (which is particularly useful
+for fstests, and the warning will trigger a failure of a test case).
 
-Signed-off-by: Hyunwoo Kim <imv4bel@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Reviewed-by: Boris Burkov <boris@bur.io>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/pxa3xx-gcu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/file.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
-index 7c4694d70dac..15162b37f302 100644
---- a/drivers/video/fbdev/pxa3xx-gcu.c
-+++ b/drivers/video/fbdev/pxa3xx-gcu.c
-@@ -382,7 +382,7 @@ pxa3xx_gcu_write(struct file *file, const char *buff,
- 	struct pxa3xx_gcu_batch	*buffer;
- 	struct pxa3xx_gcu_priv *priv = to_pxa3xx_gcu_priv(file);
+diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
+index 1279359ed172..db29bd901eef 100644
+--- a/fs/btrfs/file.c
++++ b/fs/btrfs/file.c
+@@ -2583,7 +2583,8 @@ int btrfs_punch_hole_range(struct inode *inode, struct btrfs_path *path,
  
--	int words = count / 4;
-+	size_t words = count / 4;
+ 	ret = btrfs_block_rsv_migrate(&fs_info->trans_block_rsv, rsv,
+ 				      min_size, false);
+-	BUG_ON(ret);
++	if (WARN_ON(ret))
++		goto out_trans;
+ 	trans->block_rsv = rsv;
  
- 	/* Does not need to be atomic. There's a lock in user space,
- 	 * but anyhow, this is just for statistics. */
+ 	cur_offset = start;
+@@ -2654,7 +2655,8 @@ int btrfs_punch_hole_range(struct inode *inode, struct btrfs_path *path,
+ 
+ 		ret = btrfs_block_rsv_migrate(&fs_info->trans_block_rsv,
+ 					      rsv, min_size, false);
+-		BUG_ON(ret);	/* shouldn't happen */
++		if (WARN_ON(ret))
++			break;
+ 		trans->block_rsv = rsv;
+ 
+ 		if (!clone_info) {
 -- 
 2.35.1
 
