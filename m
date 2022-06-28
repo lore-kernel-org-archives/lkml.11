@@ -2,106 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A29ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01193C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243173AbiF1H7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:59:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
+        id S243457AbiF1H7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243121AbiF1H7F (ORCPT
+        with ESMTP id S243381AbiF1H7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:59:05 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECE01145B
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:59:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=UBub0aQrCBJIDUEBVquFwPWBRxEAkuA9d+EzYexwvls=; b=wEECVkQuIW0fyDMwcdKQQ6uSYd
-        n6B0t6s8ej8uDb7HwGiNOXxa73gBiF1JttoDAaTMBHQdawJ72Q51CFToqJsmZ9MKNJxhYSCIw2gWI
-        pQuZEkBvQOeEtGgCwpGjI//62MsSmlYSDoxkWv3PI8IM4Kp/wvOuCoj/hW8jZdq6tJUESqEtKUsAj
-        +35e4UXDcyzHRbx7XUSqoBkxNmIKGLYxDAsKRqhNZCdfS7Ckh1j2D/1hIymRApNWMQK6UxLBy805l
-        rbjJ3/mVB4O6xj4ez7pR9Y5JBCsCzj8LUruokY1i19fDuPSy78fr7102a6qvMBg/EW39F75lKMqEO
-        rNmS4jhw==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o667R-00C6CY-KQ; Tue, 28 Jun 2022 07:58:45 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 52B273003B0;
-        Tue, 28 Jun 2022 09:58:43 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 19614203BF71D; Tue, 28 Jun 2022 09:58:43 +0200 (CEST)
-Date:   Tue, 28 Jun 2022 09:58:43 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Wedson Almeida Filho <wedsonaf@google.com>
-Cc:     Tejun Heo <tj@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Oleg Nesterov <oleg@redhat.com>
-Subject: Re: [PATCH 3/3] kthread: Stop abusing TASK_UNINTERRUPTIBLE
- (INCOMPLETE)
-Message-ID: <Yrq0swWUDQL2DPXc@hirez.programming.kicks-ass.net>
-References: <CAHk-=whX_=BNZ4kVEAu2NV3CMnhwsuYTyE65FQXUMx8VPNOAOA@mail.gmail.com>
- <87ilonuti2.fsf_-_@email.froward.int.ebiederm.org>
- <871qvbutex.fsf_-_@email.froward.int.ebiederm.org>
- <CAHk-=wg9eqtrpYrjJ=yobkwkTimWFtiDd_JOfADttG0fyAJrqg@mail.gmail.com>
- <YrjAJN7dDJ9R7Ocu@mtj.duckdns.org>
- <Yrlavf4Ymnz4T3LM@hirez.programming.kicks-ass.net>
- <YrlmOA/Xd+U7+b2E@mtj.duckdns.org>
- <YrnxHBoi6sO0vqV0@google.com>
- <Yrop5Wzc72GIREVv@hirez.programming.kicks-ass.net>
- <YrpMIcECVOMPVpJN@google.com>
+        Tue, 28 Jun 2022 03:59:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CF01145B
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:59:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BDBF60F40
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 07:59:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD9C9C3411D;
+        Tue, 28 Jun 2022 07:59:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656403145;
+        bh=JlHZRvNeuPAR9wk+beT+xWy5Hdyw9LBkS/k8Jq5Jvus=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=umwjtXui2y/QZCygfh/MJtMzKxmaIfZjdNYELWuvP12XjQWdp4Wwwh28ghOzUy4QI
+         Enn+6t5rAl4PbWQ+z3x6+uF2T/1ZEhfDq/w9FUqIit5asKYdgqKRhuHBB3PftKM9oF
+         +tOFCpkVe30+06uGIf392ZX67GYAEKk2aw7FP1YfI3GOXjD0OjFtD53m9HKzFbQD3L
+         UhWLXtiCvzzQI5uL+cxoku4peWWkZZCT3WPZ9/Hx1kCkrfwcz4chotTrBJEyHP3d5i
+         nV67254I33W2lX0Uf0bzIH1R14MvlNKiInH1fGSELF2ROHe5F/fLAAOKLsfIyVpk9I
+         g6EmSA7Srdf/g==
+Message-ID: <bba33935-1e5f-ccc4-9bbf-2ebf7d136bac@kernel.org>
+Date:   Tue, 28 Jun 2022 15:59:01 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrpMIcECVOMPVpJN@google.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [f2fs-dev] [PATCH 2/3] f2fs: run GCs synchronously given user
+ requests
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+References: <20220617223106.3517374-1-jaegeuk@kernel.org>
+ <20220617223106.3517374-2-jaegeuk@kernel.org>
+ <c45a9c8b-c73a-76bc-6725-5d7e48e7a3f2@kernel.org>
+ <Yq+kiXPyBsXgdYb2@google.com>
+ <27138a10-a6b2-edad-1985-687a95b9039b@kernel.org>
+ <YrNKMDAgB1/vtoxi@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YrNKMDAgB1/vtoxi@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 12:32:33AM +0000, Wedson Almeida Filho wrote:
-> On Tue, Jun 28, 2022 at 12:06:29AM +0200, Peter Zijlstra wrote:
-> > On Mon, Jun 27, 2022 at 06:04:12PM +0000, Wedson Almeida Filho wrote:
-> > 
-> > >   let new_thread = task::new_paused(|| pr_info!("Hello world\n"))?;
-> > 
-> > I'm still having a really hard time with this Rust stuff, the above
-> > looks like a syntax error and random characters to me :/
+On 2022/6/23 0:58, Jaegeuk Kim wrote:
+> On 06/22, Chao Yu wrote:
+>> On 2022/6/20 6:34, Jaegeuk Kim wrote:
+>>> On 06/19, Chao Yu wrote:
+>>>> On 2022/6/18 6:31, Jaegeuk Kim wrote:
+>>>>> When users set GC_URGENT or GC_MID, they expected to do GCs right away.
+>>>>> But, there's a condition to bypass it. Let's indicate we need to do now
+>>>>> in the thread.
+>>>>
+>>>> .should_migrate_blocks is used to force migrating blocks in full
+>>>> section, so what is the condition here? GC should not never select
+>>>> a full section, right?
+>>>
+>>> I think it'll move a full section given .victim_segno is not NULL_SEGNO,
+>>> as __get_victim will give a dirty segment all the time. wdyt?
+>>
+>> However, in gc_thread_fun() victim_segno is NULL_SEGNO all the time.
 > 
-> Peter, I meant to ask in my previous email: setting aside the syntax for
-> a moment, do you have an opinion on the sort of things that Rust allows
-> us to enforce at compile time (as exemplified in the new_paused()
-> fragment)?
+> What do you mean? The gc_thread thread sets NULL_SEGNO, which prevents
+> from selecting the full section. But, f2fs_ioc_flush_device will set the
+> segno to move, and f2fs_resize_fs calls do_garbage_collect directly.
 
-So I used to do quite a lot of C++ in a previous life; I think I'm more
-or less familiar with a lot of the things Rust offers, except it is a
-lot stricter. C++ allows you to do the right thing, but also allows you
-to take your own foot off (a bit like C, except you can make an even
-bigger mess of things), where Rust tries really hard to protect the
-foot.
+Yes, but I didn't get why this patch updates .should_migrate_blocks for
+gc_thread_func() case? If this is added to avoid breaking from below condition,
+I guess it's not necessary, since victim selected from gc_thread_func() will
+always be dirty, so get_valid_blocks(sbi, segno, true) == BLKS_PER_SEC(sbi)
+will be false anyway? or am I missing something?
 
-The one thing I dread is compile times, C++ is bad, but given Rust has
-to do even more compile time enforcement it'll suck worse. And I'm
-already not using clang because it's so much worse than gcc.
+		/*
+		 * stop BG_GC if there is not enough free sections.
+		 * Or, stop GC if the segment becomes fully valid caused by
+		 * race condition along with SSR block allocation.
+		 */
+		if ((gc_type == BG_GC && has_not_enough_free_secs(sbi, 0, 0)) ||
+			(!force_migrate && get_valid_blocks(sbi, segno, true) ==
+							BLKS_PER_SEC(sbi)))
+			return submitted;
 
-I've just not had *any* time to actually look at Rust in any detail :/
+Thanks,
 
-But given I'm the kind of idiot that does tree-wide cleanups just
-because it's the right thing, I'm bound to run into it sooner rather
-than later, and then I'll curse my way through having to learn it just
-to get crap done I expect ...
-
-Anyway; from what I understand Rust is a fair way away from core code.
+> 
+>>
+>> I guess .should_migrate_blocks should only be set to true for
+>> F2FS_IOC_FLUSH_DEVICE/F2FS_IOC_RESIZE_FS case? rather than GC_URGENT or GC_MID
+>> case? See commit 7dede88659df ("f2fs: fix to allow migrating fully valid segment").
+>>
+>> Thanks,
+>>
+>>>
+>>>>
+>>>> Thanks,
+>>>>
+>>>>>
+>>>>> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+>>>>> ---
+>>>>>     fs/f2fs/gc.c | 8 ++++++--
+>>>>>     1 file changed, 6 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+>>>>> index d5fb426e0747..f4aa3c88118b 100644
+>>>>> --- a/fs/f2fs/gc.c
+>>>>> +++ b/fs/f2fs/gc.c
+>>>>> @@ -37,7 +37,6 @@ static int gc_thread_func(void *data)
+>>>>>     	unsigned int wait_ms;
+>>>>>     	struct f2fs_gc_control gc_control = {
+>>>>>     		.victim_segno = NULL_SEGNO,
+>>>>> -		.should_migrate_blocks = false,
+>>>>>     		.err_gc_skipped = false };
+>>>>>     	wait_ms = gc_th->min_sleep_time;
+>>>>> @@ -113,7 +112,10 @@ static int gc_thread_func(void *data)
+>>>>>     				sbi->gc_mode == GC_URGENT_MID) {
+>>>>>     			wait_ms = gc_th->urgent_sleep_time;
+>>>>>     			f2fs_down_write(&sbi->gc_lock);
+>>>>> +			gc_control.should_migrate_blocks = true;
+>>>>>     			goto do_gc;
+>>>>> +		} else {
+>>>>> +			gc_control.should_migrate_blocks = false;
+>>>>>     		}
+>>>>>     		if (foreground) {
+>>>>> @@ -139,7 +141,9 @@ static int gc_thread_func(void *data)
+>>>>>     		if (!foreground)
+>>>>>     			stat_inc_bggc_count(sbi->stat_info);
+>>>>> -		sync_mode = F2FS_OPTION(sbi).bggc_mode == BGGC_MODE_SYNC;
+>>>>> +		sync_mode = F2FS_OPTION(sbi).bggc_mode == BGGC_MODE_SYNC ||
+>>>>> +				sbi->gc_mode == GC_URGENT_HIGH ||
+>>>>> +				sbi->gc_mode == GC_URGENT_MID;
+>>>>>     		/* foreground GC was been triggered via f2fs_balance_fs() */
+>>>>>     		if (foreground)
