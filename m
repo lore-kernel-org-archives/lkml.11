@@ -2,172 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8C13C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 318BAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343733AbiF1GnA (ORCPT
+        id S1343555AbiF1GnX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50968 "EHLO
+        Tue, 28 Jun 2022 02:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343623AbiF1Gmj (ORCPT
+        with ESMTP id S245213AbiF1GnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:42:39 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 575C726AC6;
-        Mon, 27 Jun 2022 23:42:35 -0700 (PDT)
-X-UUID: 7e03ed20222940d6844cd5bc1e17f222-20220628
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:afafa65f-2c04-4a56-b8c9-a3e66b72495c,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.7,REQID:afafa65f-2c04-4a56-b8c9-a3e66b72495c,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:87442a2,CLOUDID:3a4806d6-5d6d-4eaf-a635-828a3ee48b7c,C
-        OID:65e80b9b2c5b,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 7e03ed20222940d6844cd5bc1e17f222-20220628
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 609913103; Tue, 28 Jun 2022 14:42:28 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 28 Jun 2022 14:42:26 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 28 Jun 2022 14:42:26 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 28 Jun 2022 14:42:26 +0800
-Message-ID: <63abbd99c5d95daea7126328252e98a4b8cde2d9.camel@mediatek.com>
-Subject: Re: [PATCH v12 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 28 Jun 2022 14:42:26 +0800
-In-Reply-To: <20220627080341.5087-6-rex-bc.chen@mediatek.com>
-References: <20220627080341.5087-1-rex-bc.chen@mediatek.com>
-         <20220627080341.5087-6-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 28 Jun 2022 02:43:21 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53460BF6F
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:43:20 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id b12-20020a17090a6acc00b001ec2b181c98so14855679pjm.4
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:43:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=s9TUIBPvRcRxZmOZ/UKmL2STsX4RkuAASajSfCd6Jwo=;
+        b=k1iqEHVEnLSQedel9PTf1jmE6vwsF2fufvd423d/FatBfr62j4GLx9uTphZocJsD2X
+         t9swjbnwfX2TYX27zr3ExGrxMmK6Yvst1YES64DfOUgIubs/+txIaKhbyqxG04K4FF32
+         10unYr7lRp3R7tg3DDTOtumvwvuyZbRNtksC4lFzOTu0xPWjZqRYTS2KfjTK9CjrIGVW
+         uA/9lK6N0wmW0pEi7MOamzht9CHaRTqaerW6wnyLSGMdmjRzZVzf6eB6UYFvHffKP214
+         QELFv2nXLIvPtMH6YFSUzGXvLnbXg8285mEbfXLR7Sb4QuxDCXYTf1q9QBcKe+46I1zx
+         CLBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=s9TUIBPvRcRxZmOZ/UKmL2STsX4RkuAASajSfCd6Jwo=;
+        b=ASK3UAALTpwcfRY9W4HvEmQiuaB4vdn3I1j7gfyr4rAieMsBQUL+JZbmB64qy79fN3
+         Ly4E82oG+z6CPObRXgDED3HYp4zcf4kWa1ybtU9OE5Flj7KwKd3qrp0Hh/74pv2mxsjf
+         9aDHdZ9bnKHXlA5RLiARAlGUYPecAZB6IITmFfRJFec5P/1QGlFjZwNc8gA1ZAaSMQ06
+         Upo2N/p9UACW7YM8LyReTx4qnlPwx00/pusRVcKsr18LPvV8HT9M2EsCPokGHu2WgcJj
+         yJ7aEDeKBXCyYU/P6ThnSJrxGstW/ALEosVTkqXxARyeRREIuKkN4+xCgv/AIOkG+MoR
+         qJSQ==
+X-Gm-Message-State: AJIora+F57iw6h6ZdpPbJ3XBVvdFwH8V4IfTY1bl26ovf7oQM870U5LS
+        NtTZQa4PT+dFV0XkJCI+Url0
+X-Google-Smtp-Source: AGRyM1vZCMBeqIqeJwz0Z/dkETp7U0TOTadYMxdCF6m7UB503Afk9laZJZeM1ax4GiQzFjSdh7PBsg==
+X-Received: by 2002:a17:902:f543:b0:16a:54c6:78d0 with SMTP id h3-20020a170902f54300b0016a54c678d0mr2183859plf.28.1656398599724;
+        Mon, 27 Jun 2022 23:43:19 -0700 (PDT)
+Received: from thinkpad ([27.111.75.159])
+        by smtp.gmail.com with ESMTPSA id u2-20020a170902714200b0016a522915e5sm8376804plm.83.2022.06.27.23.43.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 23:43:19 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 12:13:13 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Minghuan Lian <minghuan.Lian@nxp.com>,
+        Mingkai Hu <mingkai.hu@nxp.com>, Roy Zang <roy.zang@nxp.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH RESEND v5 13/18] PCI: dwc: Add start_link/stop_link
+ inliners
+Message-ID: <20220628064313.GF23601@thinkpad>
+References: <20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru>
+ <20220624143428.8334-14-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220624143428.8334-14-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
+On Fri, Jun 24, 2022 at 05:34:23PM +0300, Serge Semin wrote:
+> There are several places in the generic DW PCIe code where the
+> platform-specific PCIe link start/stop methods are called after making
+> sure the ops handler and the callbacks are specified. Instead of repeating
+> the same pattern over and over let's define the static-inline methods in
+> the DW PCIe header file and use them in the relevant parts of the driver.
+> 
+> Note returning a negative error from the EP link start procedure if the
+> start_link pointer isn't specified doesn't really make much sense since
+> it's perfectly normal to have such a platform. Moreover even
+> pci_epc_start() doesn't fail if no epc->ops->start callback is spotted. As
+> a side-effect of this modification we can set the generic DW PCIe and
+> Layerscape EP platform drivers free from the empty start_link callbacks
+> and as such entirely dummy dw_pcie_ops instances.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-On Mon, 2022-06-27 at 16:03 +0800, Bo-Chen Chen wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+Thanks,
+Mani
+
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > 
-> This patch adds a embedded displayport driver for the MediaTek mt8195
-> SoC.
-> 
-> It supports the MT8195, the embedded DisplayPort units. It offers
-> DisplayPort 1.4 with up to 4 lanes.
-> 
-> The driver creates a child device for the phy. The child device will
-> never exist without the parent being active. As they are sharing a
-> register range, the parent passes a regmap pointer to the child so
-> that
-> both can work with the same register range. The phy driver sets
-> device
-> data that is read by the parent to get the phy device that can be
-> used
-> to control the phy properties.
-> 
-> This driver is based on an initial version by
-> Jitao shi <jitao.shi@mediatek.com>
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> [Bo-Chen: Cleanup the drivers and modify comments from reviewers]
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
 > ---
-
-[snip]
-
-> +
-> +static int mtk_dp_training(struct mtk_dp *mtk_dp)
+> 
+> Changelog v4:
+> - This is a new patch created on the v4 lap of the series.
+> ---
+>  drivers/pci/controller/dwc/pci-layerscape-ep.c    | 12 ------------
+>  drivers/pci/controller/dwc/pcie-designware-ep.c   |  8 ++------
+>  drivers/pci/controller/dwc/pcie-designware-host.c | 10 ++++------
+>  drivers/pci/controller/dwc/pcie-designware-plat.c | 10 ----------
+>  drivers/pci/controller/dwc/pcie-designware.h      | 14 ++++++++++++++
+>  5 files changed, 20 insertions(+), 34 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pci-layerscape-ep.c b/drivers/pci/controller/dwc/pci-layerscape-ep.c
+> index 39f4664bd84c..ad99707b3b99 100644
+> --- a/drivers/pci/controller/dwc/pci-layerscape-ep.c
+> +++ b/drivers/pci/controller/dwc/pci-layerscape-ep.c
+> @@ -32,15 +32,6 @@ struct ls_pcie_ep {
+>  	const struct ls_pcie_ep_drvdata *drvdata;
+>  };
+>  
+> -static int ls_pcie_establish_link(struct dw_pcie *pci)
+> -{
+> -	return 0;
+> -}
+> -
+> -static const struct dw_pcie_ops dw_ls_pcie_ep_ops = {
+> -	.start_link = ls_pcie_establish_link,
+> -};
+> -
+>  static const struct pci_epc_features*
+>  ls_pcie_ep_get_features(struct dw_pcie_ep *ep)
+>  {
+> @@ -106,19 +97,16 @@ static const struct dw_pcie_ep_ops ls_pcie_ep_ops = {
+>  
+>  static const struct ls_pcie_ep_drvdata ls1_ep_drvdata = {
+>  	.ops = &ls_pcie_ep_ops,
+> -	.dw_pcie_ops = &dw_ls_pcie_ep_ops,
+>  };
+>  
+>  static const struct ls_pcie_ep_drvdata ls2_ep_drvdata = {
+>  	.func_offset = 0x20000,
+>  	.ops = &ls_pcie_ep_ops,
+> -	.dw_pcie_ops = &dw_ls_pcie_ep_ops,
+>  };
+>  
+>  static const struct ls_pcie_ep_drvdata lx2_ep_drvdata = {
+>  	.func_offset = 0x8000,
+>  	.ops = &ls_pcie_ep_ops,
+> -	.dw_pcie_ops = &dw_ls_pcie_ep_ops,
+>  };
+>  
+>  static const struct of_device_id ls_pcie_ep_of_match[] = {
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
+> index 7ad349c32082..15b8059544e3 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-ep.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
+> @@ -435,8 +435,7 @@ static void dw_pcie_ep_stop(struct pci_epc *epc)
+>  	struct dw_pcie_ep *ep = epc_get_drvdata(epc);
+>  	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
+>  
+> -	if (pci->ops && pci->ops->stop_link)
+> -		pci->ops->stop_link(pci);
+> +	dw_pcie_stop_link(pci);
+>  }
+>  
+>  static int dw_pcie_ep_start(struct pci_epc *epc)
+> @@ -444,10 +443,7 @@ static int dw_pcie_ep_start(struct pci_epc *epc)
+>  	struct dw_pcie_ep *ep = epc_get_drvdata(epc);
+>  	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
+>  
+> -	if (!pci->ops || !pci->ops->start_link)
+> -		return -EINVAL;
+> -
+> -	return pci->ops->start_link(pci);
+> +	return dw_pcie_start_link(pci);
+>  }
+>  
+>  static const struct pci_epc_features*
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+> index 2f13eec4812d..c49a3bde7a2a 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-host.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+> @@ -409,8 +409,8 @@ int dw_pcie_host_init(struct pcie_port *pp)
+>  
+>  	dw_pcie_setup_rc(pp);
+>  
+> -	if (!dw_pcie_link_up(pci) && pci->ops && pci->ops->start_link) {
+> -		ret = pci->ops->start_link(pci);
+> +	if (!dw_pcie_link_up(pci)) {
+> +		ret = dw_pcie_start_link(pci);
+>  		if (ret)
+>  			goto err_free_msi;
+>  	}
+> @@ -427,8 +427,7 @@ int dw_pcie_host_init(struct pcie_port *pp)
+>  	return 0;
+>  
+>  err_stop_link:
+> -	if (pci->ops && pci->ops->stop_link)
+> -		pci->ops->stop_link(pci);
+> +	dw_pcie_stop_link(pci);
+>  
+>  err_free_msi:
+>  	if (pp->has_msi_ctrl)
+> @@ -444,8 +443,7 @@ void dw_pcie_host_deinit(struct pcie_port *pp)
+>  	pci_stop_root_bus(pp->bridge->bus);
+>  	pci_remove_root_bus(pp->bridge->bus);
+>  
+> -	if (pci->ops && pci->ops->stop_link)
+> -		pci->ops->stop_link(pci);
+> +	dw_pcie_stop_link(pci);
+>  
+>  	if (pp->has_msi_ctrl)
+>  		dw_pcie_free_msi(pp);
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-plat.c b/drivers/pci/controller/dwc/pcie-designware-plat.c
+> index 0c5de87d3cc6..abf1afac6064 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-plat.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-plat.c
+> @@ -36,15 +36,6 @@ static const struct of_device_id dw_plat_pcie_of_match[];
+>  static const struct dw_pcie_host_ops dw_plat_pcie_host_ops = {
+>  };
+>  
+> -static int dw_plat_pcie_establish_link(struct dw_pcie *pci)
+> -{
+> -	return 0;
+> -}
+> -
+> -static const struct dw_pcie_ops dw_pcie_ops = {
+> -	.start_link = dw_plat_pcie_establish_link,
+> -};
+> -
+>  static void dw_plat_pcie_ep_init(struct dw_pcie_ep *ep)
+>  {
+>  	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
+> @@ -140,7 +131,6 @@ static int dw_plat_pcie_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  
+>  	pci->dev = dev;
+> -	pci->ops = &dw_pcie_ops;
+>  
+>  	dw_plat_pcie->pci = pci;
+>  	dw_plat_pcie->mode = mode;
+> diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
+> index 7d6e9b7576be..8ba239292634 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware.h
+> +++ b/drivers/pci/controller/dwc/pcie-designware.h
+> @@ -365,6 +365,20 @@ static inline void dw_pcie_dbi_ro_wr_dis(struct dw_pcie *pci)
+>  	dw_pcie_writel_dbi(pci, reg, val);
+>  }
+>  
+> +static inline int dw_pcie_start_link(struct dw_pcie *pci)
 > +{
-> +	bool training_done = false;
-> +	short max_retry = 50;
-> +	int ret = 0;
+> +	if (pci->ops && pci->ops->start_link)
+> +		return pci->ops->start_link(pci);
 > +
-> +	do {
-> +		switch (mtk_dp->train_state) {
-> +		case MTK_DP_TRAIN_STATE_TRAINING:
-> +			ret = mtk_dp_train_start(mtk_dp);
-> +			if (!ret)
-> +				mtk_dp->train_state =
-> MTK_DP_TRAIN_STATE_NORMAL;
-> +			break;
-> +		case MTK_DP_TRAIN_STATE_NORMAL:
-> +			mtk_dp_video_config(mtk_dp);
-> +			mtk_dp_video_enable(mtk_dp, true);
-> +			training_done = true;
-> +			break;
-> +		default:
-> +			break;
-> +		}
-> +
-> +		if (ret) {
-> +			if (ret == -EAGAIN)
-> +				continue;
-> +			/*
-> +			 * If we get any other error number, it doesn't
-> +			 * make any sense to keep iterating.
-> +			 */
-> +			break;
-> +		}
-> +	} while (!training_done || --max_retry);
-> +
-> +	return ret;
+> +	return 0;
 > +}
+> +
+> +static inline void dw_pcie_stop_link(struct dw_pcie *pci)
+> +{
+> +	if (pci->ops && pci->ops->stop_link)
+> +		pci->ops->stop_link(pci);
+> +}
+> +
+>  #ifdef CONFIG_PCIE_DW_HOST
+>  irqreturn_t dw_handle_msi_irq(struct pcie_port *pp);
+>  void dw_pcie_setup_rc(struct pcie_port *pp);
+> -- 
+> 2.35.1
+> 
 
-This function could re rewritten as:
-
-static bool mtk_dp_training(struct mtk_dp *mtk_dp)
-{
-	short max_retry = 50;
-
-	do {
-		ret = mtk_dp_train_start(mtk_dp);
-		if (!ret)
-			break;
-		else if (ret != -EAGAIN)
-			return false;
-	} while (--max_retry);
-
-	if (!max_retry)
-		return false;
-
-	mtk_dp_video_config(mtk_dp);
-	mtk_dp_video_enable(mtk_dp, true);
-
-	return true;
-}
-
-Regards,
-CK
-
-
-
+-- 
+மணிவண்ணன் சதாசிவம்
