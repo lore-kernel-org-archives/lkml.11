@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4E1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A10FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231417AbiF1TzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
+        id S232495AbiF1TzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232494AbiF1Tu7 (ORCPT
+        with ESMTP id S232141AbiF1Tu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:50:59 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B5D2E09A;
-        Tue, 28 Jun 2022 12:49:57 -0700 (PDT)
+        Tue, 28 Jun 2022 15:50:58 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4952C11D;
+        Tue, 28 Jun 2022 12:49:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445797; x=1687981797;
+  t=1656445793; x=1687981793;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=9Ah1nON265YzupnBokZWEAPrUTKFeqbKYbnG7bxwujc=;
-  b=jwhXTTPL30RP0omRzUFU22r8Yf9xPM/I6tu8rjW1UH7q6Sv1HjWTCtt5
-   Vo+f1XqD+IrkNxKDGNieFdMG3arpimjIrx6OglobAdvUEeoZQxC9jTtMx
-   b3+Q53oroBwN7cQ4tuWYnUIy/cNZeLcqW2+lOmRdWrT9jpqfgyvAj7KPc
-   ed8lfyg1KnguQ+EdUUa7Qzdxl/42MByB41u+ntiB5tzJY1YRhBMq4KxEp
-   1dmJeI+XDH8Ol1oBls2exCoIuskSfgrEW0X/Y77n7R2wjvjKFxZATdU8r
-   O+t3PQpqMZZvJQAYbAYwUGPtLe5cEA0KpYOWBggEsJ+dXLAuWdf1wpHo9
+  bh=7sizNGB2psf+Qq79FGgS+INcdvERhbHoOrovj1ZDfPY=;
+  b=M/JQpYwzZJwJYLF9Tj5DbVX/0AwPNHPJB73ZyBrBDIdwyHCe49XBwpR5
+   NgPfT55GO0dHoPYWA8eIO1XipcSEop4RGgEbj90jSUDC/j8AtQye8Kz3a
+   yRRIJ2lX096Zwl9nkc/d1dI12k8xMX9U2NrQXg7CaAVKQPQ4OpVTactsB
+   ECbtAaZa90vepE9sn+IYWrliZrLyBN57h39Mg5Mf0xZmSxInI6ySCFi+P
+   DjRE2AsqqU26JByo0Mseb8piFLX0OEiZ8QMN5eIskMR1KfNPjoHWShBTg
+   +YGPx9FztLnCnYbwpD05jmNx6IVx7oGj+oeiyDGWnwu6lyF8z9Mx3wpql
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="280596029"
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="262242993"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="280596029"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:57 -0700
+   d="scan'208";a="262242993"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:53 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="594927639"
+   d="scan'208";a="836809532"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga007.fm.intel.com with ESMTP; 28 Jun 2022 12:49:53 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 28 Jun 2022 12:49:49 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9h022013;
-        Tue, 28 Jun 2022 20:49:51 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9e022013;
+        Tue, 28 Jun 2022 20:49:47 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -65,9 +65,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 43/52] net, xdp: build XDP generic metadata on Generic (skb) XDP path
-Date:   Tue, 28 Jun 2022 21:48:03 +0200
-Message-Id: <20220628194812.1453059-44-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 40/52] net, xdp: add an RCU version of xdp_attachment_setup()
+Date:   Tue, 28 Jun 2022 21:48:00 +0200
+Message-Id: <20220628194812.1453059-41-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
@@ -77,131 +77,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that the core has the routine to make XDP generic metadata from
-the skb fields and &net_device stores meta_thresh, provide XDP
-generic metadata to BPF programs running on Generic/skb XDP path.
-skb fields are being updated from the metadata after BPF program
-exits (if it's still there).
+Currently, xdp_attachment_setup() uses plain assignments and puts
+the previous BPF program before updating the pointer, rendering
+itself dangerous for program hot-swaps due to pointer tearing and
+potential use-after-free's.
+At the same time, &xdp_attachment_info comes handy to use it in
+drivers as a main container including hotpath -- the BTF ID and meta
+threshold values are now being used there as well, not speaking of
+reducing some boilerplate code.
+Add an RCU-protected pointer to XDP program to that structure and an
+RCU version of xdp_attachment_setup(), which will make sure that all
+the values were not corrupted and that old BPF program was freed
+only after the pointer was updated. The only thing left is that RCU
+read critical sections might happen in between each assignment, but
+since the relations between XDP prog, BTF ID and meta threshold are
+not vital, it's totally fine to allow this.
+A caller must ensure it's being executed under the RTNL lock. Reader
+sides must ensure they're being executed under the RCU read lock.
+Once all the current users of xdp_attachment_setup() are switched to
+the RCU-aware version (with appropriate adjustments), the "regular"
+one will be removed.
+Partially inspired by commit fe45386a2082 ("net/mlx5e: Use RCU to
+protect rq->xdp_prog").
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- net/bpf/dev.c | 51 +++++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 47 insertions(+), 4 deletions(-)
+ include/net/xdp.h |  7 ++++++-
+ net/bpf/core.c    | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+), 1 deletion(-)
 
-diff --git a/net/bpf/dev.c b/net/bpf/dev.c
-index 350ebdc783a0..f4187b357a0c 100644
---- a/net/bpf/dev.c
-+++ b/net/bpf/dev.c
-@@ -1,7 +1,20 @@
- // SPDX-License-Identifier: GPL-2.0-only
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 5762ce18885f..49e562e4fcca 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -379,7 +379,10 @@ int xdp_reg_mem_model(struct xdp_mem_info *mem,
+ void xdp_unreg_mem_model(struct xdp_mem_info *mem);
  
-+#include <net/xdp_meta.h>
- #include <trace/events/xdp.h>
+ struct xdp_attachment_info {
+-	struct bpf_prog *prog;
++	union {
++		struct bpf_prog __rcu *prog_rcu;
++		struct bpf_prog *prog;
++	};
+ 	union {
+ 		__le64 btf_id_le;
+ 		u64 btf_id;
+@@ -391,6 +394,8 @@ struct xdp_attachment_info {
+ struct netdev_bpf;
+ void xdp_attachment_setup(struct xdp_attachment_info *info,
+ 			  struct netdev_bpf *bpf);
++void xdp_attachment_setup_rcu(struct xdp_attachment_info *info,
++			      struct netdev_bpf *bpf);
  
-+enum {
-+	GENERIC_XDP_META_GEN,
-+
-+	/* Must be last */
-+	GENERIC_XDP_META_NONE,
-+	__GENERIC_XDP_META_NUM,
-+};
-+
-+static const char * const generic_xdp_meta_types[__GENERIC_XDP_META_NUM] = {
-+	[GENERIC_XDP_META_GEN]	= "struct xdp_meta_generic",
-+};
-+
- DEFINE_STATIC_KEY_FALSE(generic_xdp_needed_key);
+ #define DEV_MAP_BULK_SIZE XDP_BULK_QUEUE_SIZE
  
- static struct netdev_rx_queue *netif_get_rxqueue(struct sk_buff *skb)
-@@ -27,17 +40,33 @@ static struct netdev_rx_queue *netif_get_rxqueue(struct sk_buff *skb)
- 	return rxqueue;
+diff --git a/net/bpf/core.c b/net/bpf/core.c
+index 65f25019493d..d444d0555057 100644
+--- a/net/bpf/core.c
++++ b/net/bpf/core.c
+@@ -557,6 +557,34 @@ void xdp_attachment_setup(struct xdp_attachment_info *info,
  }
+ EXPORT_SYMBOL_GPL(xdp_attachment_setup);
  
-+static void generic_xdp_handle_meta(struct xdp_buff *xdp, struct sk_buff *skb,
-+				    const struct xdp_attachment_info *info)
++/**
++ * xdp_attachment_setup_rcu - an RCU-powered version of xdp_attachment_setup()
++ * @info: pointer to the target container
++ * @bpf: pointer to the container passed to ::ndo_bpf()
++ *
++ * Protects sensitive values with RCU to allow program how-swaps without
++ * stopping an interface. Write side (this) must be called under the RTNL lock
++ * and reader sides must fetch any data only under the RCU read lock -- old BPF
++ * program will be freed only after a critical section is finished (see
++ * bpf_prog_put()).
++ */
++void xdp_attachment_setup_rcu(struct xdp_attachment_info *info,
++			      struct netdev_bpf *bpf)
 +{
-+	if (xdp->data_end - xdp->data < READ_ONCE(info->meta_thresh))
-+		return;
++	struct bpf_prog *old_prog;
 +
-+	switch (READ_ONCE(info->drv_cookie)) {
-+	case GENERIC_XDP_META_GEN:
-+		xdp_build_meta_generic_from_skb(skb);
-+		xdp->data_meta = skb_metadata_end(skb) - skb_metadata_len(skb);
-+		break;
-+	default:
-+		break;
-+	}
++	ASSERT_RTNL();
++
++	old_prog = rcu_replace_pointer(info->prog_rcu, bpf->prog,
++				       lockdep_rtnl_is_held());
++	WRITE_ONCE(info->btf_id, bpf->btf_id);
++	WRITE_ONCE(info->meta_thresh, bpf->meta_thresh);
++
++	if (old_prog)
++		bpf_prog_put(old_prog);
 +}
++EXPORT_SYMBOL_GPL(xdp_attachment_setup_rcu);
 +
- u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, struct xdp_buff *xdp,
- 			     struct bpf_prog *xdp_prog)
+ struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp)
  {
- 	void *orig_data, *orig_data_end, *hard_start;
- 	struct net_device *dev = skb->dev;
- 	struct netdev_rx_queue *rxqueue;
-+	u32 metalen, orig_metalen, act;
- 	bool orig_bcast, orig_host;
- 	u32 mac_len, frame_sz;
- 	__be16 orig_eth_type;
- 	struct ethhdr *eth;
--	u32 metalen, act;
- 	int off;
- 
- 	/* The XDP program wants to see the packet starting at the MAC
-@@ -62,6 +91,9 @@ u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, struct xdp_buff *xdp,
- 	orig_bcast = is_multicast_ether_addr_64bits(eth->h_dest);
- 	orig_eth_type = eth->h_proto;
- 
-+	generic_xdp_handle_meta(xdp, skb, &dev->xdp_info);
-+	orig_metalen = xdp->data - xdp->data_meta;
-+
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
- 
- 	/* check if bpf_xdp_adjust_head was used */
-@@ -105,11 +137,15 @@ u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, struct xdp_buff *xdp,
- 	case XDP_REDIRECT:
- 	case XDP_TX:
- 		__skb_push(skb, mac_len);
--		break;
-+		fallthrough;
- 	case XDP_PASS:
- 		metalen = xdp->data - xdp->data_meta;
--		if (metalen)
-+		if (metalen != orig_metalen)
- 			skb_metadata_set(skb, metalen);
-+		if (metalen)
-+			xdp_populate_skb_meta_generic(skb);
-+		else if (orig_metalen)
-+			skb_metadata_nocomp_clear(skb);
- 		break;
- 	}
- 
-@@ -244,10 +280,15 @@ static void dev_disable_gro_hw(struct net_device *dev)
- static int generic_xdp_install(struct net_device *dev, struct netdev_bpf *xdp)
- {
- 	bool old = !!rtnl_dereference(dev->xdp_info.prog_rcu);
--	int ret = 0;
-+	int ret;
- 
- 	switch (xdp->command) {
- 	case XDP_SETUP_PROG:
-+		ret = xdp_meta_match_id(generic_xdp_meta_types, xdp->btf_id);
-+		if (ret < 0)
-+			return ret;
-+
-+		WRITE_ONCE(dev->xdp_info.drv_cookie, ret);
- 		xdp_attachment_setup_rcu(&dev->xdp_info, xdp);
- 
- 		if (old && !xdp->prog) {
-@@ -257,6 +298,8 @@ static int generic_xdp_install(struct net_device *dev, struct netdev_bpf *xdp)
- 			dev_disable_lro(dev);
- 			dev_disable_gro_hw(dev);
- 		}
-+
-+		ret = 0;
- 		break;
- 
- 	default:
+ 	unsigned int metasize, totsize;
 -- 
 2.36.1
 
