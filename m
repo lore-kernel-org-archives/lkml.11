@@ -2,88 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71BB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF69DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344385AbiF1JuR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43316 "EHLO
+        id S242421AbiF1Ju1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 05:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241460AbiF1JuN (ORCPT
+        with ESMTP id S241460AbiF1JuZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:50:13 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B96DC8
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:50:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656409813; x=1687945813;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EMA9/2kguHnQyf44jaUpIuGsTVx9ehFERtpHBeOXGic=;
-  b=mbKJj3voNsMMC2aFuZWMGEfoJMqHktqsy7l118EDpGMIg0AXnAn7mzPd
-   4PIznzki/QPoQP9piZFjyk4qtPSYjqJvQhQj4+1pAmu5oE6McZ6HNDgYz
-   nA3Sw/XTs3bgt70lrbuNo7LXdVoGjdXRlWeVzRf6xOcSnr1TrSL1LIGv7
-   cDUDKpBqHK1Om+w0l3SPx9Z2JeZgPxoWTBxlnZXzz9HHPR2wFueLQZ2R8
-   CqlveAoKyhuqPZPc1OqXg2hbuVEh+OusnvsIIreotHkPvg20r0oX1B05R
-   /aXtZy3NLpWtjSKxHbwWjiT/dkrCmYA1ueaZi9VvdHciWI0kiANjl3nwl
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="282430593"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="282430593"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 02:50:12 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="658070480"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 02:50:11 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o67rE-000wfu-L9;
-        Tue, 28 Jun 2022 12:50:08 +0300
-Date:   Tue, 28 Jun 2022 12:50:08 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/9] mfd: intel_soc_pmic_crc: Merge Intel PMIC core to
- crc
-Message-ID: <YrrO0CQVv6hj1AB0@smile.fi.intel.com>
-References: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
- <Yrmr175fsQi6ToEY@google.com>
+        Tue, 28 Jun 2022 05:50:25 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F0AB82
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:50:23 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXKXP60h0zdZqY;
+        Tue, 28 Jun 2022 17:48:05 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
+ 2022 17:50:20 +0800
+From:   Xu Qiang <xuqiang36@huawei.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>, <elic@nvidia.com>,
+        <si-wei.liu@oracle.com>, <parav@nvidia.com>
+CC:     <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <xuqiang36@huawei.com>,
+        <rui.xiang@huawei.com>
+Subject: [PATCH -next] vdpa/mlx5: Use eth_zero_addr() to assign zero address
+Date:   Tue, 28 Jun 2022 09:44:18 +0000
+Message-ID: <20220628094418.27973-1-xuqiang36@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yrmr175fsQi6ToEY@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 02:08:39PM +0100, Lee Jones wrote:
-> On Thu, 16 Jun 2022, Andy Shevchenko wrote:
+Using eth_zero_addr() to assign zero address insetad of
+memset().
 
-...
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
+---
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> >  drivers/mfd/intel_soc_pmic_core.c | 160 -----------------------------
-> >  drivers/mfd/intel_soc_pmic_core.h |  25 -----
-> >  drivers/mfd/intel_soc_pmic_crc.c  | 162 ++++++++++++++++++++++++++++--
-> >  4 files changed, 157 insertions(+), 193 deletions(-)
-> >  delete mode 100644 drivers/mfd/intel_soc_pmic_core.c
-> >  delete mode 100644 drivers/mfd/intel_soc_pmic_core.h
-> 
-> Can you submit this again with the -M flag please.
-
-This is done with this flag. Basically for the last several years I do my
-submissions with that flag.
-
-Anything else I can do?
-
-> Trying to figure out what exactly changed is proving challenging.
-
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index e85c1d71f4ed..f738c78ef446 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1457,8 +1457,8 @@ static int mlx5_vdpa_add_mac_vlan_rules(struct mlx5_vdpa_net *ndev, u8 *mac,
+ 
+ 	*ucast = rule;
+ 
+-	memset(dmac_c, 0, ETH_ALEN);
+-	memset(dmac_v, 0, ETH_ALEN);
++	eth_zero_addr(dmac_c);
++	eth_zero_addr(dmac_v);
+ 	dmac_c[0] = 1;
+ 	dmac_v[0] = 1;
+ 	rule = mlx5_add_flow_rules(ndev->rxft, spec, &flow_act, &dest, 1);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
