@@ -2,222 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13533C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D79CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbiF1TmA convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
+        id S231830AbiF1TmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229897AbiF1Tle (ORCPT
+        with ESMTP id S231584AbiF1Tlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:41:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD521EC73;
-        Tue, 28 Jun 2022 12:33:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E7A7B81F8E;
-        Tue, 28 Jun 2022 19:33:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3799EC341C6;
-        Tue, 28 Jun 2022 19:32:58 +0000 (UTC)
-Date:   Tue, 28 Jun 2022 15:32:56 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Gabriele Paoloni <gpaoloni@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-trace-devel@vger.kernel.org
-Subject: Re: [PATCH V4 18/20] rv/monitor: Add safe watchdog monitor
-Message-ID: <20220628153256.65dc84dd@gandalf.local.home>
-In-Reply-To: <17ade9e2-8fbe-ea80-93c1-9f1e291805b6@roeck-us.net>
-References: <cover.1655368610.git.bristot@kernel.org>
-        <6366fdc89d65b8d9b14ccd1e42fa0d793fbe9f73.1655368610.git.bristot@kernel.org>
-        <168af019-70d1-3237-dc9c-56a82beb5990@roeck-us.net>
-        <04ca385b-47dc-5535-419e-1b814a383d1a@kernel.org>
-        <CA+wEVJbvcMZbCroO2_rdVxLvYkUo-ePxCwsp5vbDpoqys4HGWQ@mail.gmail.com>
-        <17ade9e2-8fbe-ea80-93c1-9f1e291805b6@roeck-us.net>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 28 Jun 2022 15:41:35 -0400
+X-Greylist: delayed 1159 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 28 Jun 2022 12:33:15 PDT
+Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22AC3AA7F;
+        Tue, 28 Jun 2022 12:33:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=1D+m0J17+AOFZu/sjCxpjPd9WVInKbq2xNS5/rhbdKM=; b=d9+mYUPpF8akd6kIrdxjM9Ca+I
+        0lSLAjt5JEInLiHH0NBLtwVI7ryCOfI7iV30IOaPYTemJ9x0WEQRQQnE5KmfQeFyjomfyRKYmuNzi
+        izruzrUUqhQaW8x2i+t3uOdv7ZEKH+Y9hbT/RcBVyedEU5bNuC0edurzjQdh6oPQiJBDWIylnG7T/
+        HF0AoPc43dv0grj+dtD+tR+Guajl7MonTi10ACuk1KVoMRWdobOts7VreIp1zLlmaVLxaXGuPKObj
+        pI3DenwbP3zhA0ebKP7/MyhyMYWnr90+AVa7yf2UQGy4qeV0eO1INy3STK5+47CRxyRwC0SEZf/+3
+        GUmnWvJQ==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1o6Geo-0005Mm-4C; Tue, 28 Jun 2022 21:13:54 +0200
+Received: from [2001:a61:2a49:8301:9e5c:8eff:fe01:8578]
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1o6Gen-000TYv-VP; Tue, 28 Jun 2022 21:13:53 +0200
+Message-ID: <66134443-a400-15ca-ea92-691e3c269b5c@metafoo.de>
+Date:   Tue, 28 Jun 2022 21:13:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] i2c: cadence: Unregister the clk notifier in error path
+Content-Language: en-US
+To:     Satish Nagireddy <satish.nagireddy@getcruise.com>, wsa@kernel.org
+Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com
+References: <20220628191216.39459-1-satish.nagireddy@getcruise.com>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+In-Reply-To: <20220628191216.39459-1-satish.nagireddy@getcruise.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26587/Tue Jun 28 10:07:12 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022 16:53:54 -0700
-Guenter Roeck <linux@roeck-us.net> wrote:
+On 6/28/22 21:12, Satish Nagireddy wrote:
+> This patch ensures that the clock notifier is unregistered
+> when driver probe is returning error.
+>
+> Signed-off-by: Satish Nagireddy <satish.nagireddy@getcruise.com>
 
-> >      >> +
-> >      >> +struct automaton_safe_wtd automaton_safe_wtd = {
-> >      >> +    .state_names = {
-> >      >> +        "init",
-> >      >> +        "closed_running",
-> >      >> +        "closed_running_nwo",
-> >      >> +        "nwo",
-> >      >> +        "opened",
-> >      >> +        "opened_nwo",
-> >      >> +        "reopened",
-> >      >> +        "safe",
-> >      >> +        "safe_nwo",
-> >      >> +        "set",
-> >      >> +        "set_nwo",
-> >      >> +        "started",
-> >      >> +        "started_nwo",
-> >      >> +        "stoped"
-> >      >> +    },
-> >      >> +    .event_names = {
-> >      >> +        "close",
-> >      >> +        "nowayout",
-> >      >> +        "open",
-> >      >> +        "other_threads",
-> >      >> +        "ping",
-> >      >> +        "set_safe_timeout",
-> >      >> +        "start",
-> >      >> +        "stop"
-> >      >> +    },
-> >      >> +    .function = {
+Thanks! Looks good.
 
-I think it could become much more readable if you added comments here that
-show what each column is. That way, we do not need to try to remember it.
+Tested-by: Lars-Peter Clausen <lars@metafoo.de>
 
-And maybe even a diagram in the comments. If we can automate the generating
-of an ASCII DFA diagram then that would be awesome too :-)
+> ---
+>   drivers/i2c/busses/i2c-cadence.c | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+> index b4c1ad19cdae..3d6f8ee355bf 100644
+> --- a/drivers/i2c/busses/i2c-cadence.c
+> +++ b/drivers/i2c/busses/i2c-cadence.c
+> @@ -1338,6 +1338,7 @@ static int cdns_i2c_probe(struct platform_device *pdev)
+>   	return 0;
+>   
+>   err_clk_dis:
+> +	clk_notifier_unregister(id->clk, &id->clk_rate_change_nb);
+>   	clk_disable_unprepare(id->clk);
+>   	pm_runtime_disable(&pdev->dev);
+>   	pm_runtime_set_suspended(&pdev->dev);
 
-> >      >> +        {                          -1,                nwo_safe_wtd,             opened_safe_wtd,               init_safe_wtd,                          -1,                          -1,                         -1,                          -1 },
-> >      >> +        {                          -1, closed_running_nwo_safe_wtd,           reopened_safe_wtd,     closed_running_safe_wtd,                          -1,                          -1,                         -1,                          -1 },
-> >      >> +        {                          -1, closed_running_nwo_safe_wtd,        started_nwo_safe_wtd, closed_running_nwo_safe_wtd,                          -1,                          -1,                         -1,                          -1 },
-> >      >> +        {                          -1,                nwo_safe_wtd,         opened_nwo_safe_wtd,                nwo_safe_wtd,                          -1,                          -1,                         -1,                          -1 },
-> >      >> +        {               init_safe_wtd,                          -1,                          -1,                          -1,                          -1,                          -1,           started_safe_wtd,                          -1 },
-> >      >> +        {                nwo_safe_wtd,                          -1,                          -1,                          -1,                          -1,                          -1,       started_nwo_safe_wtd,                          -1 },
-> >      >> +        {     closed_running_safe_wtd,                          -1,                          -1,                          -1,                          -1,                set_safe_wtd,                          1,             opened_safe_wtd },
-> >      >> +        {     closed_running_safe_wtd,                          -1,                          -1,                          -1,               safe_safe_wtd,                          -1,                          1,             stoped_safe_wtd },
-> >      >> +        { closed_running_nwo_safe_wtd,                          -1,                          -1,                          -1,           safe_nwo_safe_wtd,                          -1,                         -1,                          -1 },
-> >      >> +        {                          -1,                          -1,                          -1,                          -1,               safe_safe_wtd,                          -1,                         -1,                          -1 },
-> >      >> +        {                          -1,                          -1,                          -1,                          -1,           safe_nwo_safe_wtd,                          -1,                         -1,                          -1 },
-> >      >> +        {     closed_running_safe_wtd,                          -1,                          -1,                          -1,                          -1,                set_safe_wtd,                         -1,             stoped_safe_wtd },
-> >      >> +        { closed_running_nwo_safe_wtd,                          -1,                          -1,                          -1,                          -1,            set_nwo_safe_wtd,                         -1,                          -1 },
-> >      >> +        {               init_safe_wtd,                          -1,                          -1,                          -1,                          -1,                          -1,                         -1,                          -1 },
-> >      >> +    },
-> >      >> +    .initial_state = init_safe_wtd,
-> >      >> +    .final_states = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },  
-> >      >
-> >      > I find this event table all but impossible to verify.  
-> > 
-> >     It is a matrix. Lines are states, and columns are events.
-> > 
-> >     On a given state/line, receiving a given event/column, the data is the next
-> >     state/row.
-> >   
-> 
-> I am aware of that, and I did program state machines before.
-> 
-> >     For instance, let's say "init" (row 0), event "nwo" (column 1), and the next
-> >     state is the "nwo" (row 3).
-> > 
-> >     -1 means invalid/blocked state (yeah, maybe it is better to have an #define
-> >     INVALID_STATE -1).
-> > 
-> >     This is the C representation of an automaton, following the formal definition of
-> >     a deterministic automaton. I've added an explanation of this representation in
-> >     the documentation (patch 15, file da_monitor_synthesis.rst).
-> > 
-> >     A deeper look into this subject is here (peer-reviewed conference paper at
-> >     Software Engineer and Formal Methods 2019):
-> >     https://bristot.me/wp-content/uploads/2019/09/paper.pdf <https://bristot.me/wp-content/uploads/2019/09/paper.pdf>
-> > 
-> >     One could translate it back to the automaton's graphical format... to a format
-> >     of by a tool used to analyze automaton properties... that is the good point of
-> >     using a well-established formalism. (The bad part is that they are often
-> >     boring... c'est la vie :-)).
-> >   
-> 
-> If the above state machine fails, no one but the authors will be able to even
-> remotely figure out what happened, and if the watchdog driver is at fault or
-> its monitor. It is a state machine making assumptions about state transitions,
-> sure, but who knows if those asssumptions are even remotely correct or match
-> reality. For example, I have no idea if the lack of a 'ping' function is handled
-> correctly,  if the lack of a 'stop' function is handled correctly, or what
-> happens if any of the driver functions returns an error.
-> 
-> I already found three assumptions which do not or not necessarily match
-> reality:
-> 
-> - The function to read the remaining timeout is optional and must not be
->    used unconditionally, and its lack is not an error.
-> - The requested timeout (and pretimeout) do not have to match the actually
->    configured timeout, and userspace must not rely on the assumption that
->    the values match.
-> - The code assumes that the process opening the watchdog and the process
->    accessing it are the same. While that is in general the case, it might
->    well be that some application opens the watchdog and then handles it
->    from a child process.
-> 
-> And that is just after briefly browsing through the code.
-> 
-> I am open to suggestions from others, but at this point I have serious doubts
-> that this code is maintainable in the kernel.
-> 
 
-Let me give some background on this. Various safety critical users
-(automotive, power plants, etc) are looking at using Linux in the field.
-Obviously, Linux itself is too big to verify properly. In fact, even small
-OSs that say they are verifiable seldom are. Part of the solution is to add
-a way to check that Linux is running as expected, and be able to detect
-when it is not. When that happens, you fall into a "fail-safe" mode (for
-example, if you have an autonomous driving vehicle, it could sound an alarm
-and inform the driver to go into manual mode, or it is going to simply
-"pull over". Note, this is just a hypothetical example, not something I've
-seen in reality).
-
-But to implement this, you need to verify the verifier. In this case, the
-watchdog timer is what verifies that Linux is running properly. It is
-possible to verify parts of the kernel when you limit the inputs of the
-kernel. This means we are not trying to verify all use cases of the
-watchdog timer. That would be pretty much impossible, or take decades to
-complete. We only need to verify the use cases used in safety critical
-systems.
-
-Do not confuse this with static analyzers or other general purpose tooling
-to find bugs. This is not the purpose of the run time verify. It is just to
-prove that certain use cases will perform as expected, given a limited
-input.
-
-Years ago there was an interview with Linus where he was asked if he would
-trust Linux in real-time safety critical projects. And Linus's response was
-something to the effect that he would, as those projects have a very
-limited use case, and the code that actually gets run is not as big as you
-would think. And that code can be verified.
-
-That's exactly what we are doing here. There are very strict standards on
-what is considered safe for safety critical projects and by limiting the
-use cases of the code we are verifying, we can achieve those objectives.
-
-But your complaint about not being able to read or understand the table is
-legitimate, and that needs to be addressed. And what the limiting input is
-must also be commented as well, that way people will not get confused when
-they see a legitimate use case not covered by the DFA.
-
-Action Items:
- 1. Add column title to the matrix. 
- 2. Ideally, also add an ASCII DFA diagram.
- 3. And finally, comment what the range of inputs are (what use cases are
-    being covered).
-
--- Steve
