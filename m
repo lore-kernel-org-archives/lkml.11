@@ -2,106 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A80FCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:06:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFDC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235883AbiF1TGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
+        id S235121AbiF1TGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235728AbiF1TFb (ORCPT
+        with ESMTP id S235003AbiF1TG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:05:31 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA131C122
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:05:26 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-101ec2d6087so18322583fac.3
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:05:26 -0700 (PDT)
+        Tue, 28 Jun 2022 15:06:29 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE3419026;
+        Tue, 28 Jun 2022 12:06:28 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id o9so18895784edt.12;
+        Tue, 28 Jun 2022 12:06:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7rpepXQ7MoTX7jgDnqruqbXS4kYEhIFVMSPcRo6CMIA=;
-        b=RV7tV4wMrVTS377CAAvh/1t4rSKEiJ9YCis3oRYHCpC5gvZQAd3ijGt+qx8y87XQ2v
-         HXkrHQzQxl2HRzs18pxWd2A85m2uYNAcZxFWAlpABXhyi9DxAenGhLMGDhFngZ8gQRN3
-         kciJtTxPZxw9pvlhSwDOsizpYRv/gZN2C8c+YXAz4JybN8i/Z0vXS5WsXqucQ6XI2k+m
-         fQjWHlU7w4GcFDubH0GQTf2UKu9PsD7hG+XBVm7OWzS3NrhX8KyT+KlRYV1vIotVOls8
-         Hi3GROfyujIRuOm65SJ9D5cA3POeVvdoBFpBjSJsY836MmT1R7vS0IVRF8AExAv6f9kk
-         H/vg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KX9jc9OA6lP47XCbfqQxmVV0wzSC5gcouuvPJAXYRUg=;
+        b=OeDPzwRN8aS7Z6+5YNW5bt5XPl4FCy4QSVBhHJqxN329d25togrn5Rb1NNwd76i84L
+         B7xuSHHkGYWmcMb72Ql9C1HHMuyDl0oLivOWUjBnjy+MhG5oI4ttDaHp+DrEtDmzLXKM
+         3I9mJ/zzY+Lu79fKWUWJsefzfuhR0co68/X7oNURoG2oFjlDaa5g3WbCDIDlVQ4V8ki8
+         scEY8bTCO98WA+OJNk4HK44hhbSnySavnduolO8CTBdlYa0NtRhGuBujZ/HTf811tvOr
+         ZwuFRLxfM55Qju0O44wFstrGCn6c8YB6ekWCCR063OnSafM8s0ISjE4kalUi/AhBJCMS
+         srHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7rpepXQ7MoTX7jgDnqruqbXS4kYEhIFVMSPcRo6CMIA=;
-        b=p25KVtfoNV19vNIUzIwftAMMjRsztOrRbaLE39XgoH5Pph6ucvKxjuBlEr7qDsPHCw
-         qOuoTBPoIPEPc1VdR88PMWXMssCSYGUBDLEuBheXMQygJ/SHIlyuhJTicFRgIecgpGTO
-         11FUp4N8RVUouAnbkvcQbzZgtHr15YVzuaIrkCRJAqO/02EYxr1p79QriBMuU0eYmnZd
-         W9FQqjEr/7M9Mtkk331q4JiJKyqV/pqIB3yHo05V/pa1OoHVcVLPw3MnuhkzQCskqogp
-         BgoZUJqmdejLsMSjotuwCuFl2m2fKWi3KLdTvhftGtakkW3QH3Z6BOwhVgJBIiGIO/IG
-         HgLw==
-X-Gm-Message-State: AJIora/auAww/j1+tqnip0ABnXrL1cNiQqUzKpq0kSoB4r/nUAo5CgwQ
-        8GIQ5I1iNrZaEu568Jn2jb02vA==
-X-Google-Smtp-Source: AGRyM1tOoQ4XHySVoKEHg7PMnDK8eOS/21P2AH31NPdXic4KRq7OI36aPs3Ti5RkN9Wy9jcYVCwbZg==
-X-Received: by 2002:a05:6870:231d:b0:10b:7a0e:1be6 with SMTP id w29-20020a056870231d00b0010b7a0e1be6mr691329oao.114.1656443125781;
-        Tue, 28 Jun 2022 12:05:25 -0700 (PDT)
-Received: from eze-laptop ([190.190.187.68])
-        by smtp.gmail.com with ESMTPSA id 127-20020aca0785000000b00334c2e81dfbsm131742oih.0.2022.06.28.12.05.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 12:05:25 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 16:05:19 -0300
-From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-To:     Sebastian Fricke <sebastian.fricke@collabora.com>
-Cc:     linux-media@vger.kernel.org, kernel@collabora.com,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Ricardo Ribalda <ribalda@chromium.org>,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: Fix incorrect P010 chroma order description
-Message-ID: <YrtQ70tLrPgeZWzz@eze-laptop>
-References: <20220627071224.16787-1-sebastian.fricke@collabora.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KX9jc9OA6lP47XCbfqQxmVV0wzSC5gcouuvPJAXYRUg=;
+        b=qy8tOiWJBQjY4bz0BYh9/SoPlXSSFNlptY44CSRNU91lLn5iHmkUNOrQGDcfp0FHFP
+         38taXzFfh7AABq2fzs0SR+tjH11q+dpnMD77GUEL/1H4xzjTRs8tYuai4jBR+c+6C87N
+         iWjfwlTwB9u16aVCg2uFtwYP6etmGuntz/864ruE4FmdbHpx7sJRq62tM1jKfYfgLTd+
+         WvsAScopOoHLArmIL/y0KALgVd3fv99Of4ROk5tLiqy1VG2MoSsXWaO/SOon+0qsAk0p
+         lfkuE+NE44kY3LNE5nynY5GsLr9RHp0Ewdh1HX/LlHE7bAaV/c0BKQgBluEuTvxFEy4n
+         E/sg==
+X-Gm-Message-State: AJIora9aorrHBFHVV5zDTGNJGKYpynY3X/AOxq3nRJO7qGQzzwQaYj8g
+        Z9EKsffHtto7AqeRC9eMXAvlByVyxd7P3g==
+X-Google-Smtp-Source: AGRyM1sSzYaK9iGyQTc/eWqkAAzNRoyNyfBKpAgLFqlWhy6E8+LGYGZqYRdUO6xlkdXZwdgSpDdelw==
+X-Received: by 2002:aa7:c6d9:0:b0:435:706a:4578 with SMTP id b25-20020aa7c6d9000000b00435706a4578mr25592987eds.24.1656443187198;
+        Tue, 28 Jun 2022 12:06:27 -0700 (PDT)
+Received: from [192.168.8.198] (188.28.125.106.threembb.co.uk. [188.28.125.106])
+        by smtp.gmail.com with ESMTPSA id p26-20020a1709061b5a00b00727c6da57cesm103090ejg.147.2022.06.28.12.06.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 12:06:26 -0700 (PDT)
+Message-ID: <4963e756-506b-d705-d00e-183ba468d894@gmail.com>
+Date:   Tue, 28 Jun 2022 20:03:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627071224.16787-1-sebastian.fricke@collabora.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC net-next v3 00/29] io_uring zerocopy send
+Content-Language: en-US
+To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
+References: <cover.1653992701.git.asml.silence@gmail.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <cover.1653992701.git.asml.silence@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 09:12:23AM +0200, Sebastian Fricke wrote:
-> The chroma order of P010 is `CbCr`,
-> match with the descriptions in `include/uapi/linux/videodev2.h` and the
-> documentation.
-> 
-> Fixes: 5374d8fb75f31 Add P010 video format
-> 
-> Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+On 6/28/22 19:56, Pavel Begunkov wrote:
+> The third iteration of patches for zerocopy io_uring sends. I fixed
+> all known issues since the previous version and reshuffled io_uring
+> patches, but the net/ code didn't change much. I think it's ready
+> and will send it as a non-RFC soon.
 
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Please ignore, it's a wrong version and shouldn't be RFC
 
-> ---
->  drivers/media/v4l2-core/v4l2-ioctl.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-> index e2526701294e..e03362c8aef9 100644
-> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
-> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-> @@ -1306,7 +1306,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
->  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
->  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
->  	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
-> -	case V4L2_PIX_FMT_P010:		descr = "10-bit Y/CrCb 4:2:0"; break;
-> +	case V4L2_PIX_FMT_P010:		descr = "10-bit Y/CbCr 4:2:0"; break;
->  	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/CbCr 4:2:0 (4x4 Linear)"; break;
->  	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
->  	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
-> -- 
-> 2.25.1
-> 
+-- 
+Pavel Begunkov
