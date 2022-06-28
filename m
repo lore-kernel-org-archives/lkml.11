@@ -2,88 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E7DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245621AbiF1HvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45810 "EHLO
+        id S245635AbiF1HvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245607AbiF1HvC (ORCPT
+        with ESMTP id S244517AbiF1HvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:51:02 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F721171
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:51:00 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id q9so16376533wrd.8
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:51:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FPuG2slX+fgnrij7UFSAjejroSuyzdpt+S2NxTs06r4=;
-        b=ms+DL1wuK8oZDIA1k/Phb+J3PG+BjucVp/a/8c+3ABKUt1yU4IYe1i7yTrZv+ru8WY
-         coDJwPsFyU/b213bbdPwkEmXGSBk7dCdZnRdBJrX5wNVa3N63+RSTT+RmYDPDhsKucsz
-         dG07nuD3ygNO5w0AvJCk/lBAymKgnzn6P0BzoTSDB62kYXsMQj0F18U5w/9Yzl3s/NaV
-         mplVKXuUPxrNN7SWUhKZ9j1YtpIqgXU8czDZDcIoO1S3k4x7ZI1oyKgSxqHgjK5Et8G5
-         23OjOJcgAjhXvHoA2H5IH33lOv+4vL6o4g0twneVOe2Y332BJyiDt1/WkpeMQQp4JvWj
-         td/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FPuG2slX+fgnrij7UFSAjejroSuyzdpt+S2NxTs06r4=;
-        b=WjWbgzdRSty9mumsHMlxPiHU6ywG03qdoSdCJ7bJspr4pHuzvSH8HvL7wraywqGplp
-         3PeullDU1JtcxGLVWdL3eP44cITighGB0lZZ9llziiE+ofxxUAK7OqDWMDw2S/oDlQ+w
-         zl+liaYSCAwTHo/lLxJLkPxHObypTZdyjFZamjH8eUp0Ark4PHSoKSXuQc6KK/JkGndW
-         pZTroqdh8Ez+5PCKxelKcArRslGCPhgI8CO7XDyGCTgFwYcUn4isIMd3z7U9gcTSMs9o
-         3Z4KaFNRKZct+/NYk2YKRrU8evGh/pXlNZjKX3sgFkLsKsCie3d9q/AbJrbHYTR7yqTG
-         UBFw==
-X-Gm-Message-State: AJIora8/uJp5yWSVpWNziKI8qDEgo/FgPjOxvJRkO0vkYUjaHwp8OOv4
-        /gB3nxzS41Mka27MnIcMEYQSVKutvXYa8g==
-X-Google-Smtp-Source: AGRyM1s+1Y2n+Dlb2cgUwS4/ez4e+dqiSQiRFZBd1i7u/YwBXsk4xreCIaxAwl8AEWTKNkag9hr6Fg==
-X-Received: by 2002:a5d:414a:0:b0:21b:81fd:6b7f with SMTP id c10-20020a5d414a000000b0021b81fd6b7fmr7126184wrq.309.1656402659016;
-        Tue, 28 Jun 2022 00:50:59 -0700 (PDT)
-Received: from [192.168.0.252] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id c17-20020a05600c0ad100b003973ea7e725sm28172553wmr.0.2022.06.28.00.50.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 00:50:50 -0700 (PDT)
-Message-ID: <93925a1d-19ca-9643-ca13-8de3a4e9ae0a@linaro.org>
-Date:   Tue, 28 Jun 2022 09:50:33 +0200
+        Tue, 28 Jun 2022 03:51:17 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE02810E9
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:51:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656402676; x=1687938676;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=FJBy6FgvJEwn50wjmSbZUlBDcUm+kWzWPvFi7OvFkYc=;
+  b=P216LkZ+XohM2xk0xSe2IX+0ZBZ8PE5wP1lhzrUFFEMCWwpw7odO+1TJ
+   +LS18dXqZewt/lL2ERQhN8HHQQKGHWVEXqszgPW62DWQf0MJj8SMqqY+W
+   nBbf5LDIElyWdp+FLF/TF4E1kchvvWsHgIVTuVkQOS/JwxFLJEFltEo4V
+   zcAbvzLPCNJsFmLf7jIjnx2aB3opstmQwrsQUXZ88ut49AKN2fdvqjLA0
+   bAgTh8Atu+6I1XW+j5bVMIJVMnFX9pAHRLMSv9sJ/BB32Uje90PTriZnP
+   lZTIbFuSw2qAJPBrgRuleP7QMJ7SFH1DzLeR8gqOuscmSgI4aUktSXQP7
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="262077397"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="262077397"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 00:51:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="717353032"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 28 Jun 2022 00:51:15 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o660A-0009ig-BS;
+        Tue, 28 Jun 2022 07:51:14 +0000
+Date:   Tue, 28 Jun 2022 15:51:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [ogabbay:gaudi2 52/61] include/linux/compiler_types.h:352:45: error:
+ call to '__compiletime_assert_472' declared with attribute error:
+ FIELD_PREP: value too large for the field
+Message-ID: <202206281521.an2oHn7p-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] dt-bindings: nfc: nxp,nci: drop Charles Gorand's mail
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220628070959.187734-1-michael@walle.cc>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220628070959.187734-1-michael@walle.cc>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/06/2022 09:09, Michael Walle wrote:
-> Mails to Charles get an auto reply, that he is no longer working at
-> Eff'Innov technologies. Remove the entry.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml | 1 -
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git gaudi2
+head:   a76819ab38942fcb341142a55e9dc81f3eaf08e3
+commit: c10382b410679f3d49f3e143c98b21e17877ad60 [52/61] habanalabs: add gaudi2 asic-specific code
+config: arc-randconfig-r015-20220627 (https://download.01.org/0day-ci/archive/20220628/202206281521.an2oHn7p-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=c10382b410679f3d49f3e143c98b21e17877ad60
+        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
+        git fetch --no-tags ogabbay gaudi2
+        git checkout c10382b410679f3d49f3e143c98b21e17877ad60
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:9758:6: warning: no previous prototype for 'gaudi2_set_asic_funcs' [-Wmissing-prototypes]
+    9758 | void gaudi2_set_asic_funcs(struct hl_device *hdev)
+         |      ^~~~~~~~~~~~~~~~~~~~~
+   In file included from <command-line>:
+   In function 'gaudi2_arm_cq_monitor',
+       inlined from 'gaudi2_send_job_to_kdma' at drivers/misc/habanalabs/gaudi2/gaudi2.c:5764:2:
+>> include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_472' declared with attribute error: FIELD_PREP: value too large for the field
+     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |                                             ^
+   include/linux/compiler_types.h:333:25: note: in definition of macro '__compiletime_assert'
+     333 |                         prefix ## suffix();                             \
+         |                         ^~~~~~
+   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
+     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
+      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+         |                                     ^~~~~~~~~~~~~~~~~~
+   include/linux/bitfield.h:68:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
+      68 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?           \
+         |                 ^~~~~~~~~~~~~~~~
+   include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CHECK'
+     114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");    \
+         |                 ^~~~~~~~~~~~~~~~
+   drivers/misc/habanalabs/gaudi2/gaudi2.c:5748:20: note: in expansion of macro 'FIELD_PREP'
+    5748 |         mon_arm |= FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_MASK_MASK, mask);
+         |                    ^~~~~~~~~~
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+vim +/__compiletime_assert_472 +352 include/linux/compiler_types.h
 
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  338  
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  339  #define _compiletime_assert(condition, msg, prefix, suffix) \
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  340  	__compiletime_assert(condition, msg, prefix, suffix)
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  341  
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  342  /**
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  343   * compiletime_assert - break build and emit msg if condition is false
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  344   * @condition: a compile-time constant condition to check
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  345   * @msg:       a message to emit if condition is false
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  346   *
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  347   * In tradition of POSIX assert, this macro will break the build if the
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  348   * supplied condition is *false*, emitting the supplied error message if the
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  349   * compiler has support to do so.
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  350   */
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  351  #define compiletime_assert(condition, msg) \
+eb5c2d4b45e3d2 Will Deacon 2020-07-21 @352  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  353  
 
-Best regards,
-Krzysztof
+:::::: The code at line 352 was first introduced by commit
+:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
+
+:::::: TO: Will Deacon <will@kernel.org>
+:::::: CC: Will Deacon <will@kernel.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
