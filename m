@@ -2,153 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D6FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF2E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245272AbiF1GCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
+        id S245209AbiF1GEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 02:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245211AbiF1GCa (ORCPT
+        with ESMTP id S243718AbiF1GEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:02:30 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2073.outbound.protection.outlook.com [40.107.113.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F182CC81
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:02:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=US4/3ALE+GaxBKiUEG42EAkv1Lu/KngJPS/CejhpTCPAsiqre3qJGheTDLHLvYq49a+TdxnLY5s/kGRZJnkAG8e7mB8gZbMXvHR+i01qYdtllVfBY5rDXtpO5Y9ZkVNhSQ3oninFuWcew5kZLDTNm96ieV34gxIJS6Ok7G9nNqQBxR0u6ZuCAaXem95p1OzfGVz7WNnIWMLqbAqMX+TlV92UClxVhegU711rP7ZS2oXd4sV2H/TxnraMO7RUfMSx5sYzvUqkt4pHsQgWSXw46LJBMvK9VhgXg7y/A7uvo4ddCTs3jXQrAa32Qwl11bY+WGc8WT7bvDa/iwi4b63LHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3lZ1p3sr/fWt0dZ6IEfElTkvxPtzVYPt6ynpBmpA5EQ=;
- b=QABEkrjJ1+14WOEUCvYSAjs2DGTBylXk9i8TOHL4rJiGcG9Dlhw0mu8M9liJPIgTbwZbmKEVKcR7s1ah6fkmQGKiEKP0po0SXFYFZkTXZhPyDpINuI06I8i965RArYHjBEF3/3JZKUqWtpjiiv2tMn9dmWgqME22IH4VX3QzSARvGgD238RjW6tw8jEJeEnEcoi8BHOrbO0ZdSkblW/FpxEuR7q8TvUdh1so7X2pb62c5vShsTmYaYDjuRZZkncQ62JySPyBOzZY5udHHfE5rPaFLvC8/lCWosSijz9kqe+k8lGIRLJP9iP44WYYUIy3/rcxSMo+TqgtiPIrQ8aYeQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
- header.d=nec.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3lZ1p3sr/fWt0dZ6IEfElTkvxPtzVYPt6ynpBmpA5EQ=;
- b=eNY/yWkpxH9NrqJXfe9thHIyXLdFhaobQmwuBrgHDBbGnEghVg9SMxNRw/qqSsmej5REYl2Ipi/LcRiM8viZWG7Bo/rGSOhONw5AIcIRLK99MWmrujysRFuZJFLtfxY0I6yHeDWma5dNSgVvKwVi2e9nqspwlQPMjk9uaMxWVVo=
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com (2603:1096:400:13c::10)
- by TY2PR01MB5291.jpnprd01.prod.outlook.com (2603:1096:404:7b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Tue, 28 Jun
- 2022 06:02:26 +0000
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::5d07:3dbc:2b8c:d836]) by TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::5d07:3dbc:2b8c:d836%7]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 06:02:26 +0000
-From:   =?utf-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPo+OAgOebtOS5nyk=?= 
-        <naoya.horiguchi@nec.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-CC:     Naoya Horiguchi <nao.horiguchi@gmail.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 7/9] mm, hwpoison: make __page_handle_poison returns
- int
-Thread-Topic: [PATCH v2 7/9] mm, hwpoison: make __page_handle_poison returns
- int
-Thread-Index: AQHYh1xdL+6bOgbea0+h6tPs9sNjt61i+p6AgAFf3YA=
-Date:   Tue, 28 Jun 2022 06:02:26 +0000
-Message-ID: <20220628060209.GA2204868@hori.linux.bs1.fc.nec.co.jp>
-References: <20220623235153.2623702-1-naoya.horiguchi@linux.dev>
- <20220623235153.2623702-8-naoya.horiguchi@linux.dev>
- <ecbcdd7e-b21f-315b-7eff-1eb692e320f7@huawei.com>
-In-Reply-To: <ecbcdd7e-b21f-315b-7eff-1eb692e320f7@huawei.com>
-Accept-Language: ja-JP, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nec.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ae409257-4657-4aee-767d-08da58cbc6d6
-x-ms-traffictypediagnostic: TY2PR01MB5291:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CCYroKghYACwO/S2i5VvojZjs9Dp1q0juBHoUpBalSmuGT4r4MjOlsYdXZJWdecsu+S06q6lL6Lo6DW5D5QaDXjHoVf7QQNQqvwKvWMoGp3nvaChtnvVb8+sdHTVhCltgRHrq8BAhDdXBPna46O12S7LW/P9bLQ08Ejziz5bxei9svocaWv4rXpRjuBX7bwN3148XJ8+mIJWubjYEMOneMHLZE/a0/UIcUX2juP3CNgDQf4XZyHS0PgAWd7p/tJNxWpEHYYT6Z9rEvwbAqaAjRflyPOdEQ8eK5SHR3Vy3PmnzYiEEm7ZZ0PELBr6D4fatORA8g0e3kQs8sc2XuZcxLun4VbjTLJ0PT8tVN/h8OkkWu6mYNPY/MpBDrrxU7I3k536fCEwt5B6eEo0gJo9JbNZ0AnKLwubUg9deP4Fwl9h4BEtHmeSWcJj11Iq6dGLaBa864iep9EJmTYmA8od6ckrFVa6tFtJ5wexK8J5zZvaIC5EkzFywVo0QGTfjvjLZnLH1kV9Qokk1VGD8i6YeRWS4Je8+Huvp96l8sRdYfyxjlzqkrj2DdzxM+aH+UeiIJwXvsN+7l1b6iGU6r4yR5eR//+4UjDVH6cu5d4AgpPtzezmCJaO7WY44bqz6Kn/GMVIMMiEGL8raAlb7b18oZ+ogtoiNkfMi0bT1RFrbextlDLitHkG1UwYXKDt5ej0/anhMq3J/Tsyh+pUH6o6fWjzpXJ5W0dazf9SJPc3jRqdBjvs8jGFUDT0/hWD/EG36/XogLHX881u0QWXekfFCyD45IDRUtnIdMDHk9TgvBaPV0A7ON6iel1JNdI5fT15mTubagAEzcy7ODjmu8a+6w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWPR01MB8591.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(136003)(396003)(39860400002)(376002)(186003)(41300700001)(26005)(55236004)(6916009)(38070700005)(53546011)(76116006)(54906003)(8676002)(6506007)(66946007)(83380400001)(6512007)(1076003)(9686003)(82960400001)(478600001)(38100700002)(5660300002)(85182001)(4744005)(33656002)(4326008)(86362001)(2906002)(7416002)(966005)(66476007)(122000001)(8936002)(316002)(71200400001)(66556008)(6486002)(66446008)(64756008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dFJ1cDNjbG5sTW9wSStkOU5WWTJGUUx2ZnEyU2VWeDVtcjNOdm9OUkNTWFRa?=
- =?utf-8?B?REorU0lyc2FrVUd4b0RZMjk5WU5aRzN1ZjkzOGpCcDJ0My9NbVE5MUNEZzYr?=
- =?utf-8?B?eUxnSzdYQVY1amQ1Z09rcUVvYUhJSGk1SzRYOG1lZ1JYS0pwWHdTb1BvM091?=
- =?utf-8?B?c2UyMDhiTzQ4L2ZKUHpyeTZKSHhUd1ZEbDZVdUlMQmF2ZkdUN3ZzaVViN1Vh?=
- =?utf-8?B?QlBNT1ZKNGVoSnl1NGNYZDI1Y09zK2RudGZrVmJ3T3dGbkxVRHluSzlrczl3?=
- =?utf-8?B?dXNhTFhkRTJlc0dveE1BNW5oRVJzeEozWC9CVURFS0ZTS0d5TXoxaDVIZjd3?=
- =?utf-8?B?T0JrQlZtcThvOEFqbGEvaW52MHo2YmxUUEtpMmVHUThubDJkYVJtN0VyMlQx?=
- =?utf-8?B?SEk3R1VteHN2OXJvSlJhYUpoZTFIZWpQOG9pc1dRc0RlNDA1NkVUeE1sQ2F6?=
- =?utf-8?B?LzQ5QXE3MGNMWDBBbkkvQTlLSitqelNCM0p0dXRCSndlWGZGS0VTeTZCMVJU?=
- =?utf-8?B?Nk9oOG9ET0oyWnlzbzYwaStDV25kei9ZT0k2S3lRM2tiU3BSemR3ZzZMNXRy?=
- =?utf-8?B?Z1RVWnpNTVE4WnpMbnRxQXplS3JSa0hDWW9pVXVkTnQ4bW1wdnlsK0tuY1hj?=
- =?utf-8?B?eW5JYzhwelFneWNUZUlVcElheDBrWW56aFplU2lJWGtid0I5Z1VDbnhVcnFi?=
- =?utf-8?B?dlhEUDlRM3k4dFYzbSsvOFVhRytBN1lUbnNnTG83VlpWdnFWdVFiYTBta0wr?=
- =?utf-8?B?UmtLdXpIdkxsSEx5UktsdzRRY0d5d2NaaVNYVzNtRGVHRHlVZ0l1emk2WHlZ?=
- =?utf-8?B?c3hrdmw2QTNVeW9ES2RpOGN6V2dlY1ExT2JMSGhucjArWmZKOVpyT1JuNnpO?=
- =?utf-8?B?MExGd1YzZkFrY1daa3RSek5zbVJyVDh2VkVzcG04aG9aeTludno1aXZSaHh1?=
- =?utf-8?B?VUZBYUZRekFseU9tVlA4QTk1TkJrRkg2QWRtR2lzMDJjL3I5WGtHZ2pQUlN0?=
- =?utf-8?B?SDJWVWdkRk4rQ3Z6MU9TeWdiSEZxdzdXMTZHUlFLdjVEOEpabW4zOG92d1FG?=
- =?utf-8?B?TzZoTDgrS29KUlgyS3VkaHZHeFhaTjJzWGlwekw5WW5nUWlHODJrK2FkZnF2?=
- =?utf-8?B?OWNzV1gzVnYrcHF4a3NTQjdMWWxXQXVmek1ydzJISXhqWTBKZUtjeHZFTFZO?=
- =?utf-8?B?TUVSNEZJSmhIRDVETmhmNndTS3dCNGQ2UXIvdXBUSW9Vc3RkMG9kQ0FwR3Jo?=
- =?utf-8?B?MVFUSkg0MVJ6RkswVWJIa00yQWlkZXZDelNBL1hpZUVoNHh3RVBobmlzMDBx?=
- =?utf-8?B?SlJWTHJlOHgvNkxtME5FZDdNYXUxNWNKNncwaHhCdldXVWZQWlA0Mk12TjFX?=
- =?utf-8?B?VnZ4NWsxenlsYmg4U0VNV3U2V0EzekFiekNYMUlrUENYZitSM2tqNHBSZzdh?=
- =?utf-8?B?U25ncjBDUWdpUWdjaTY5aE40NzNCL20ra1MwWkkrWno2dW5VK2d0TVNzeHE2?=
- =?utf-8?B?VHVUampaVmJLTEJPVTdVRnk0NWJ2OU44VDdoZmxwMDBCck5QSUNJcStHZDZX?=
- =?utf-8?B?T0w0SUxvRmQ2UFZmUjRwZ1NUY2kvMGVSY0lyMzVBMU4xb01tQ2cyQkNpd0FJ?=
- =?utf-8?B?U09EVnFYeHp3S2tLKzdTOUdQYUFtVk05bGpZMEw2SC9qTjRmWHJrTW54Y3FG?=
- =?utf-8?B?MmF4WlNNNFQveGtCc2JvcTNKMk8yVkRRMUF1QzhRZmlyaExya1FDaDhjam9x?=
- =?utf-8?B?bFlLZjdvblVrTGZ4Ykl2eTVhRzVKWWZDczZHU1hZUEFsbEJ2dkhQdDE1SXFQ?=
- =?utf-8?B?Qi9lS0hxaDVINDl6Tnd3UVc5Rm9QdmNGb1RIaHhVa1l6TjluQ0t2ZXhSYis3?=
- =?utf-8?B?K0pQd3ZXMXBhYWRHczVOeER0V3ZRT0JxVGxRa3FwWUxHY08yQSs3aFNWOXBk?=
- =?utf-8?B?OXprOUk1UEJxOWI5T3dBbXdGTlRva2RBMCtuOUxWbjh5aFpNbklIRjB3R1Jl?=
- =?utf-8?B?MEMwOHI2akJaSE9lbVNqWlBpVjg4VG1KWEllZ24zUGJSTm1yczZlY2dwdEE2?=
- =?utf-8?B?RFViV01XMllJUFBVUlVXb1B0ZjBEd2RwRUV0Ty8vczNiaWpIZnBoVStIUkd3?=
- =?utf-8?B?dXNkSDZQNnB3L0xUdCtvWTZiNWhuSzRTa3ZhTXptcmR1aWQzVmowT1hZU3Yr?=
- =?utf-8?B?Zmc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6501F10DF2AB194C85CC38C1157B9D0A@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Tue, 28 Jun 2022 02:04:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADE7724976
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:03:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656396237;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jojm8owdIPd57DqUsyTCYbMvjfqLhEZ7p337DessMhw=;
+        b=Vy27jers5ATUUqcR4vZWQgdk3C7KTIcczKC8hY/DVBPfVo9d3eWROiM43bQ4L/RbmqcUiJ
+        XcpPiaq17E5JLhP9BiUx9ExIAPBkbJe7OEBh/s954iUDGAl/ZZauMyMsm6NEQ4eJkD/Cyv
+        MFYDP0xndEqTEErNz4zTQQlnaC3D2OM=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-357-UJITFzJINNiGd6PHoxprkA-1; Tue, 28 Jun 2022 02:03:51 -0400
+X-MC-Unique: UJITFzJINNiGd6PHoxprkA-1
+Received: by mail-lj1-f198.google.com with SMTP id i23-20020a2e9417000000b0025a739223d1so1341078ljh.4
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:03:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jojm8owdIPd57DqUsyTCYbMvjfqLhEZ7p337DessMhw=;
+        b=QRnqYtgiUAyg924GkPqqZ61fWwVhVkShzLgnvGnpA0I5SwHMRkJDPBQtQwFOmd5UlZ
+         Y/YdYpzT8PEIaPe8aDHS8XGm2vyrQChTI/fy/E/iSCUxLAQuoubgx6ImUfHsKtCQxzf5
+         xbkZZbRod/ADJ/hWtb55IGcwbTCPrX9MAg5A6nF7eA3iKCmNtnwNPpWiKT3b+2n+n/mQ
+         G1IoLSNXSCbONPCWrdKoHZOv3OUMAr3CGDiA0VRFMFzPjvVfLeCXC0nasfKKrTAaU7NN
+         GZUpLhX5Z0MyN1POdtnBvGTkNS/YC0wr7DcOXq41stG+DIqEKLV+Hh56aQQzkRJmM+HL
+         OmCw==
+X-Gm-Message-State: AJIora9xNc5U/8ywJLLRSDKccYVgq+uPBhN/5Mt7wUeEwX6Z7oxXj3Cm
+        aZFWeSPxAskx8u3K/623aukvERqAll7/jiKHfU0x50iiOXQjYj9I5DEbxePRbpzj2YTPWxVMhfo
+        NqTHa+c2EyFRREhqrivPwjZKgI63SIjLqhGIbQc7N
+X-Received: by 2002:a05:6512:158d:b0:47f:718c:28b5 with SMTP id bp13-20020a056512158d00b0047f718c28b5mr11014876lfb.397.1656396229764;
+        Mon, 27 Jun 2022 23:03:49 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1ttN7m3IIazB5XFNBYra5MYuT99xrYQLK1rinkFlncZPVZF3VEP4596me4R5XLWsBLm/x2c/ff8xAWx9m14eOo=
+X-Received: by 2002:a05:6512:158d:b0:47f:718c:28b5 with SMTP id
+ bp13-20020a056512158d00b0047f718c28b5mr11014864lfb.397.1656396229558; Mon, 27
+ Jun 2022 23:03:49 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nec.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYWPR01MB8591.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ae409257-4657-4aee-767d-08da58cbc6d6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2022 06:02:26.3583
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lWrSECEN+FA/gq72cQjUU/RJjIBtoTxFW37b9j+/DhQBdmOMZWERfuCJn3ihMXcFHR+PhXJ7Dr/LkPCPQqMsXQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB5291
+References: <20220626090409.1011144-1-lulu@redhat.com> <20220626055420-mutt-send-email-mst@kernel.org>
+ <CACLfguVMfqAiCVoNVr7J8ooQa35tNJOSK-XHqsdE3hdXsfOZ+A@mail.gmail.com>
+ <20220627055826-mutt-send-email-mst@kernel.org> <CACGkMEugJQY-QsnekKHWSdaG0H03qFxdmu+O1tQKMge65bFmHw@mail.gmail.com>
+ <20220628014642-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220628014642-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 28 Jun 2022 14:03:38 +0800
+Message-ID: <CACGkMEvt9QVvZb+gEuynazGmEM-j22QdiEH_V-oWD1=NZQS+5g@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] vhost: Add rbtree vdpa_mem_tree to saved the
+ counted mem
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Cindy Lu <lulu@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gTW9uLCBKdW4gMjcsIDIwMjIgYXQgMDU6MDI6NDdQTSArMDgwMCwgTWlhb2hlIExpbiB3cm90
-ZToNCj4gT24gMjAyMi82LzI0IDc6NTEsIE5hb3lhIEhvcmlndWNoaSB3cm90ZToNCj4gPiBGcm9t
-OiBOYW95YSBIb3JpZ3VjaGkgPG5hb3lhLmhvcmlndWNoaUBuZWMuY29tPg0KPiA+IA0KPiA+IF9f
-cGFnZV9oYW5kbGVfcG9pc29uKCkgcmV0dXJucyBib29sIHRoYXQgc2hvd3Mgd2hldGhlcg0KPiA+
-IHRha2VfcGFnZV9vZmZfYnVkZHkoKSBoYXMgcGFzc2VkIG9yIG5vdCBub3cuICBCdXQgd2Ugd2ls
-bCB3YW50IHRvDQo+ID4gZGlzdGluZ3Vpc2ggYW5vdGhlciBjYXNlIG9mICJkaXNzb2x2ZSBoYXMg
-cGFzc2VkIGJ1dCB0YWtpbmcgb2ZmIGZhaWxlZCINCj4gPiBieSBpdHMgcmV0dXJuIHZhbHVlLiBT
-byBjaGFuZ2UgdGhlIHR5cGUgb2YgdGhlIHJldHVybiB2YWx1ZS4NCj4gPiBObyBmdW5jdGlvbmFs
-IGNoYW5nZS4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBOYW95YSBIb3JpZ3VjaGkgPG5hb3lh
-LmhvcmlndWNoaUBuZWMuY29tPg0KPiA+IC0tLQ0KLi4uDQo+ID4gQEAgLTE2OTgsOCArMTcwNCw3
-IEBAIHN0YXRpYyBpbnQgdHJ5X21lbW9yeV9mYWlsdXJlX2h1Z2V0bGIodW5zaWduZWQgbG9uZyBw
-Zm4sIGludCBmbGFncywgaW50ICpodWdldGxiDQo+ID4gIAkgKi8NCj4gPiAgCWlmIChyZXMgPT0g
-MCkgew0KPiA+ICAJCXVubG9ja19wYWdlKGhlYWQpOw0KPiA+IC0JCXJlcyA9IE1GX0ZBSUxFRDsN
-Cj4gDQo+IEl0IHNlZW1zIHRoZSBwcmV2aW91cyBkaXNjdXNzaW9uIGluIFsxXSBpcyBtaXNzZWQu
-IEJ1dCB0aGF0IGRvZXNuJ3QgbWF0dGVyIGFzIHBvaW50ZWQgb3V0IGJ5IFsxXS4gOikNCg0KU29y
-cnkgZm9yIG1pc3NpbmcgdGhpcywgSSB1cGRhdGVkIHRoaXMgbGluZSB0byBiZSByZW1vdmVkIGlu
-IHBhdGNoIDgvOS4NCg0KPiANCj4gUmV2aWV3ZWQtYnk6IE1pYW9oZSBMaW4gPGxpbm1pYW9oZUBo
-dWF3ZWkuY29tPg0KDQpUaGFuayB5b3UuDQoNCi0gTmFveWEgSG9yaWd1Y2hpDQoNCj4gDQo+IFRo
-YW5rcy4NCj4gDQo+IFsxXTogaHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMjIvNi84LzEw
+On Tue, Jun 28, 2022 at 1:58 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Tue, Jun 28, 2022 at 11:54:27AM +0800, Jason Wang wrote:
+> > On Mon, Jun 27, 2022 at 6:01 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > On Mon, Jun 27, 2022 at 04:12:57PM +0800, Cindy Lu wrote:
+> > > > On Sun, Jun 26, 2022 at 6:01 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > >
+> > > > > On Sun, Jun 26, 2022 at 05:04:08PM +0800, Cindy Lu wrote:
+> > > > > > We count pinned_vm as follow in vhost-vDPA
+> > > > > >
+> > > > > > lock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+> > > > > > if (npages + atomic64_read(&dev->mm->pinned_vm) > lock_limit) {
+> > > > > >          ret = -ENOMEM;
+> > > > > >          goto unlock;
+> > > > > > }
+> > > > > > This means if we have two vDPA devices for the same VM the pages
+> > > > > > would be counted twice. So we add a tree to save the page that
+> > > > > > counted and we will not count it again.
+> > > > > >
+> > > > > > Add vdpa_mem_tree to saved the mem that already counted.
+> > > > > > use a hlist to saved the root for vdpa_mem_tree.
+> > > > > >
+> > > > > > Signed-off-by: Cindy Lu <lulu@redhat.com>
+> > > > > > ---
+> > > > > >  drivers/vhost/vhost.c | 63 +++++++++++++++++++++++++++++++++++++++++++
+> > > > > >  drivers/vhost/vhost.h |  1 +
+> > > > > >  2 files changed, 64 insertions(+)
+> > > > > >
+> > > > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > > > > index 40097826cff0..4ca8b1ed944b 100644
+> > > > > > --- a/drivers/vhost/vhost.c
+> > > > > > +++ b/drivers/vhost/vhost.c
+> > > > > > @@ -32,6 +32,8 @@
+> > > > > >  #include <linux/kcov.h>
+> > > > > >
+> > > > > >  #include "vhost.h"
+> > > > > > +#include <linux/hashtable.h>
+> > > > > > +#include <linux/jhash.h>
+> > > > > >
+> > > > > >  static ushort max_mem_regions = 64;
+> > > > > >  module_param(max_mem_regions, ushort, 0444);
+> > > > > > @@ -49,6 +51,14 @@ enum {
+> > > > > >  #define vhost_used_event(vq) ((__virtio16 __user *)&vq->avail->ring[vq->num])
+> > > > > >  #define vhost_avail_event(vq) ((__virtio16 __user *)&vq->used->ring[vq->num])
+> > > > > >
+> > > > > > +struct vhost_vdpa_rbtree_node {
+> > > > > > +     struct hlist_node node;
+> > > > > > +     struct rb_root_cached vdpa_mem_tree;
+> > > > > > +     struct mm_struct *mm_using;
+> > > > > > +};
+> > > > > > +static DECLARE_HASHTABLE(vhost_vdpa_rbtree_hlist, 8);
+> > > > > > +int vhost_vdpa_rbtree_hlist_status;
+> > > > > > +
+> > > > > >  #ifdef CONFIG_VHOST_CROSS_ENDIAN_LEGACY
+> > > > > >  static void vhost_disable_cross_endian(struct vhost_virtqueue *vq)
+> > > > > >  {
+> > > > >
+> > > > > Are you trying to save some per-mm information here?
+> > > > > Can't we just add it to mm_struct?
+> > > > >
+> > > > yes, this is a per-mm information, but I have checked with jason before,
+> > > > seems it maybe difficult to change the mm_struct in upstream
+> > > > so I add an to add a hlist  instead
+> > > > Thanks
+> > > > Cindy
+> > >
+> > > Difficult how?
+> >
+> > It is only useful for vDPA probably. Though it could be used by VFIO
+> > as well, VFIO does pinning/accounting at the container level and it
+> > has been there for years.
+>
+> Yes it's been there, I'm not sure this means it's perfect.
+> Also, rdma guys might be interested too I guess?
+
+It looks to me they plan to go to iommufd as well.
+
+>
+> > vDPA have an implicit "container" the
+> > mm_struct, but the accounting is done per device right now.
+> >
+> > In the future, when vDPA switches to iommufd, it can be then solved at
+> > iommufd level.
+>
+> So is it even worth fixing now?
+
+Not sure, but I guess it's better. (Or we need to teach the libvirt to
+have special care on this).
+
+>
+> > And if we do this in mm, it will bring extra overheads.
+> >
+> > Thanks
+>
+> Pointer per mm, not too bad ...
+
+Unless we enable it unconditionally, it requires a lot of tree
+operations at least.
+
+Thanks
+
+>
+> > > You get more scrutiny if you try, for sure,
+> > > and you need to need to generalize it enough that it looks
+> > > useful outside the driver. But I guess that's good?
+> > >
+> > > > >
+> > > > >
+> > > > > > @@ -571,6 +581,51 @@ static void vhost_detach_mm(struct vhost_dev *dev)
+> > > > > >       dev->mm = NULL;
+> > > > > >  }
+> > > > > >
+> > > > > > +struct rb_root_cached *vhost_vdpa_get_mem_tree(struct mm_struct *mm)
+> > > > > > +{
+> > > > > > +     struct vhost_vdpa_rbtree_node *rbtree_root = NULL;
+> > > > > > +     struct rb_root_cached *vdpa_tree;
+> > > > > > +     u32 key;
+> > > > > > +
+> > > > > > +     /* No hased table, init one */
+> > > > > > +     if (vhost_vdpa_rbtree_hlist_status == 0) {
+> > > > > > +             hash_init(vhost_vdpa_rbtree_hlist);
+> > > > > > +             vhost_vdpa_rbtree_hlist_status = 1;
+> > > > > > +     }
+> > > > > > +
+> > > > > > +     key = jhash_1word((u64)mm, JHASH_INITVAL);
+> > > > > > +     hash_for_each_possible(vhost_vdpa_rbtree_hlist, rbtree_root, node,
+> > > > > > +                            key) {
+> > > > > > +             if (rbtree_root->mm_using == mm)
+> > > > > > +                     return &(rbtree_root->vdpa_mem_tree);
+> > > > > > +     }
+> > > > > > +     rbtree_root = kmalloc(sizeof(*rbtree_root), GFP_KERNEL);
+> > > > > > +     if (!rbtree_root)
+> > > > > > +             return NULL;
+> > > > > > +     rbtree_root->mm_using = mm;
+> > > > > > +     rbtree_root->vdpa_mem_tree = RB_ROOT_CACHED;
+> > > > > > +     hash_add(vhost_vdpa_rbtree_hlist, &rbtree_root->node, key);
+> > > > > > +     vdpa_tree = &(rbtree_root->vdpa_mem_tree);
+> > > > > > +     return vdpa_tree;
+> > > > > > +}
+> > > > > > +
+> > > > > > +void vhost_vdpa_relase_mem_tree(struct mm_struct *mm)
+> > > > > > +{
+> > > > > > +     struct vhost_vdpa_rbtree_node *rbtree_root = NULL;
+> > > > > > +     u32 key;
+> > > > > > +
+> > > > > > +     key = jhash_1word((u64)mm, JHASH_INITVAL);
+> > > > > > +
+> > > > > > +     /* No hased table, init one */
+> > > > > > +     hash_for_each_possible(vhost_vdpa_rbtree_hlist, rbtree_root, node,
+> > > > > > +                            key) {
+> > > > > > +             if (rbtree_root->mm_using == mm) {
+> > > > > > +                     hash_del(&rbtree_root->node);
+> > > > > > +                     kfree(rbtree_root);
+> > > > > > +             }
+> > > > > > +     }
+> > > > > > +}
+> > > > > > +
+> > > > > >  /* Caller should have device mutex */
+> > > > > >  long vhost_dev_set_owner(struct vhost_dev *dev)
+> > > > > >  {
+> > > > > > @@ -605,6 +660,11 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
+> > > > > >       err = vhost_dev_alloc_iovecs(dev);
+> > > > > >       if (err)
+> > > > > >               goto err_cgroup;
+> > > > > > +     dev->vdpa_mem_tree = vhost_vdpa_get_mem_tree(dev->mm);
+> > > > > > +     if (dev->vdpa_mem_tree == NULL) {
+> > > > > > +             err = -ENOMEM;
+> > > > > > +             goto err_cgroup;
+> > > > > > +     }
+> > > > > >
+> > > > > >       return 0;
+> > > > > >  err_cgroup:
+> > > > > > @@ -613,6 +673,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
+> > > > > >               dev->worker = NULL;
+> > > > > >       }
+> > > > > >  err_worker:
+> > > > > > +     vhost_vdpa_relase_mem_tree(dev->mm);
+> > > > > >       vhost_detach_mm(dev);
+> > > > > >       dev->kcov_handle = 0;
+> > > > > >  err_mm:
+> > > > > > @@ -710,6 +771,8 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > > > > >               dev->worker = NULL;
+> > > > > >               dev->kcov_handle = 0;
+> > > > > >       }
+> > > > > > +
+> > > > > > +     vhost_vdpa_relase_mem_tree(dev->mm);
+> > > > > >       vhost_detach_mm(dev);
+> > > > > >  }
+> > > > > >  EXPORT_SYMBOL_GPL(vhost_dev_cleanup);
+> > > > > > diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> > > > > > index d9109107af08..84de33de3abf 100644
+> > > > > > --- a/drivers/vhost/vhost.h
+> > > > > > +++ b/drivers/vhost/vhost.h
+> > > > > > @@ -160,6 +160,7 @@ struct vhost_dev {
+> > > > > >       int byte_weight;
+> > > > > >       u64 kcov_handle;
+> > > > > >       bool use_worker;
+> > > > > > +     struct rb_root_cached *vdpa_mem_tree;
+> > > > > >       int (*msg_handler)(struct vhost_dev *dev, u32 asid,
+> > > > > >                          struct vhost_iotlb_msg *msg);
+> > > > > >  };
+> > > > > > --
+> > > > > > 2.34.3
+> > > > >
+> > >
+>
+
