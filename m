@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA3EACCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F35BCCA487
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343516AbiF1CdZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        id S245596AbiF1Ccx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244783AbiF1C2A (ORCPT
+        with ESMTP id S244756AbiF1C15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:28:00 -0400
+        Mon, 27 Jun 2022 22:27:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076052496F;
-        Mon, 27 Jun 2022 19:26:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4560722B08;
+        Mon, 27 Jun 2022 19:26:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99F486191F;
-        Tue, 28 Jun 2022 02:26:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C7BBC341D0;
-        Tue, 28 Jun 2022 02:26:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D024361799;
+        Tue, 28 Jun 2022 02:26:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B32C9C341CC;
+        Tue, 28 Jun 2022 02:26:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383179;
-        bh=dxf6P89JwAiPzQgE1dRrN3c+9gq9AygE1Ghaar7OH48=;
+        s=k20201202; t=1656383168;
+        bh=IWw4aMICN7+gP5SfZFCyAcon0APYnT3cIIcG3y/tfvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KncpKXG26SQWlDQHsWbLM7M88A/yWVfvZtpgjLRF/RuIMMtPHzsBy4aqdU5804Uth
-         I+TwEogP9E9+t5f4lDJQ9w1VlUMcOdVxob9sMfaJvfOSUNQE9az9hWIXZbbXkeRQmb
-         LwOs2Ncw5yi1LgjEgBe0fCD19163xUQCePxn/nSKrM71Hd1jlxatFAtUJ+HSV1kzrY
-         K9a0AKuRSPf7gQpLnF5aM1n8D/zOnxfcLzc+nYuxrp8p3fb74JwsnDjFq0piz3LyMC
-         UhvLbekDj3kEjTAI6IOiuvdQSfj7wx/pP3pZr3AlvBV0wMJ7fWgD1ea6Yzvhy0dAV1
-         fLp/OXAt1256g==
+        b=kfiQG32N/Hxu65BTWTNpn5LxT992Nw7RXn8y5wCm43qEEeY95qCEeTzR69LoCE5nF
+         RXFGvBbtcoPM5OPH73nXsSslfdxkhqoYaaxu7HQ3INvHTE74qy8/xGDmdXePTjDafI
+         dmOLxUi9cjExqyX+WcrknwBS3lEmMU/wjev8GET7bN3lczSX00rGvJFl3YpRUPeDZ/
+         +SbAix3W81CEln1VXtFbkGPCIDAolbxKQU6wFuzYFSG31Rg8VOPJSq3e9YJWSzcMx7
+         Y9KI24UzwYdM6r9ItLeKo84pBdaq8hQtWHobBAaVgALyGW2+sZdFirNvd2dXeGqh60
+         U5vd4lpCNQFrw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 02/17] spi: cadence: Detect transmit FIFO depth
-Date:   Mon, 27 Jun 2022 22:26:00 -0400
-Message-Id: <20220628022615.596977-2-sashal@kernel.org>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>, mripard@kernel.org,
+        wens@csie.org, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: [PATCH AUTOSEL 4.19 20/22] drm/sun4i: Add DMA mask and segment size
+Date:   Mon, 27 Jun 2022 22:25:15 -0400
+Message-Id: <20220628022518.596687-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220628022615.596977-1-sashal@kernel.org>
-References: <20220628022615.596977-1-sashal@kernel.org>
+In-Reply-To: <20220628022518.596687-1-sashal@kernel.org>
+References: <20220628022518.596687-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,115 +55,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-[ Upstream commit 7b40322f7183a92c4303457528ae7cda571c60b9 ]
+[ Upstream commit f5aa16807aa4f99293044944590dde81364f434f ]
 
-The depth of the transmit FIFO for the Cadence SPI controller is currently
-hardcoded to 128. But the depth is a synthesis configuration parameter of
-the core and can vary between different SoCs.
+Kernel occasionally complains that there is mismatch in segment size
+when trying to render HW decoded videos and rendering them directly with
+sun4i DRM driver. Following message can be observed on H6 SoC:
 
-If the configured FIFO size is less than 128 the driver will busy loop in
-the cdns_spi_fill_tx_fifo() function waiting for FIFO space to become
-available.
+[  184.298308] ------------[ cut here ]------------
+[  184.298326] DMA-API: sun4i-drm display-engine: mapping sg segment longer than device claims to support [len=6144000] [max=65536]
+[  184.298364] WARNING: CPU: 1 PID: 382 at kernel/dma/debug.c:1162 debug_dma_map_sg+0x2b0/0x350
+[  184.322997] CPU: 1 PID: 382 Comm: ffmpeg Not tainted 5.19.0-rc1+ #1331
+[  184.329533] Hardware name: Tanix TX6 (DT)
+[  184.333544] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  184.340512] pc : debug_dma_map_sg+0x2b0/0x350
+[  184.344882] lr : debug_dma_map_sg+0x2b0/0x350
+[  184.349250] sp : ffff800009f33a50
+[  184.352567] x29: ffff800009f33a50 x28: 0000000000010000 x27: ffff000001b86c00
+[  184.359725] x26: ffffffffffffffff x25: ffff000005d8cc80 x24: 0000000000000000
+[  184.366879] x23: ffff80000939ab18 x22: 0000000000000001 x21: 0000000000000001
+[  184.374031] x20: 0000000000000000 x19: ffff0000018a7410 x18: ffffffffffffffff
+[  184.381186] x17: 0000000000000000 x16: 0000000000000000 x15: ffffffffffffffff
+[  184.388338] x14: 0000000000000001 x13: ffff800009534e86 x12: 6f70707573206f74
+[  184.395493] x11: 20736d69616c6320 x10: 000000000000000a x9 : 0000000000010000
+[  184.402647] x8 : ffff8000093b6d40 x7 : ffff800009f33850 x6 : 000000000000000c
+[  184.409800] x5 : ffff0000bf997940 x4 : 0000000000000000 x3 : 0000000000000027
+[  184.416953] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff000003960e80
+[  184.424106] Call trace:
+[  184.426556]  debug_dma_map_sg+0x2b0/0x350
+[  184.430580]  __dma_map_sg_attrs+0xa0/0x110
+[  184.434687]  dma_map_sgtable+0x28/0x4c
+[  184.438447]  vb2_dc_dmabuf_ops_map+0x60/0xcc
+[  184.442729]  __map_dma_buf+0x2c/0xd4
+[  184.446321]  dma_buf_map_attachment+0xa0/0x130
+[  184.450777]  drm_gem_prime_import_dev+0x7c/0x18c
+[  184.455410]  drm_gem_prime_fd_to_handle+0x1b8/0x214
+[  184.460300]  drm_prime_fd_to_handle_ioctl+0x2c/0x40
+[  184.465190]  drm_ioctl_kernel+0xc4/0x174
+[  184.469123]  drm_ioctl+0x204/0x420
+[  184.472534]  __arm64_sys_ioctl+0xac/0xf0
+[  184.476474]  invoke_syscall+0x48/0x114
+[  184.480240]  el0_svc_common.constprop.0+0x44/0xec
+[  184.484956]  do_el0_svc+0x2c/0xc0
+[  184.488283]  el0_svc+0x2c/0x84
+[  184.491354]  el0t_64_sync_handler+0x11c/0x150
+[  184.495723]  el0t_64_sync+0x18c/0x190
+[  184.499397] ---[ end trace 0000000000000000 ]---
 
-Depending on the length and speed of the transfer it can spin for a
-significant amount of time. The cdns_spi_fill_tx_fifo() function is called
-from the drivers interrupt handler, so it can leave interrupts disabled for
-a prolonged amount of time.
+Fix that by setting DMA mask and segment size.
 
-In addition the read FIFO will also overflow and data will be discarded.
-
-To avoid this detect the actual size of the FIFO and use that rather than
-the hardcoded value.
-
-To detect the FIFO size the FIFO threshold register is used. The register
-is sized so that it can hold FIFO size - 1 as its maximum value. Bits that
-are not needed to hold the threshold value will always read 0. By writing
-0xffff to the register and then reading back the value in the register we
-get the FIFO size.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Link: https://lore.kernel.org/r/20220527091143.3780378-1-lars@metafoo.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220620181333.650301-1-jernej.skrabec@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-cadence.c | 27 +++++++++++++++++++++++----
- 1 file changed, 23 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/sun4i/sun4i_drv.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/spi/spi-cadence.c b/drivers/spi/spi-cadence.c
-index 810f92a0ef7c..b41fdaa6982d 100644
---- a/drivers/spi/spi-cadence.c
-+++ b/drivers/spi/spi-cadence.c
-@@ -97,9 +97,6 @@
- #define CDNS_SPI_ER_ENABLE	0x00000001 /* SPI Enable Bit Mask */
- #define CDNS_SPI_ER_DISABLE	0x0 /* SPI Disable Bit Mask */
- 
--/* SPI FIFO depth in bytes */
--#define CDNS_SPI_FIFO_DEPTH	128
--
- /* Default number of chip select lines */
- #define CDNS_SPI_DEFAULT_NUM_CS		4
- 
-@@ -115,6 +112,7 @@
-  * @rx_bytes:		Number of bytes requested
-  * @dev_busy:		Device busy flag
-  * @is_decoded_cs:	Flag for decoder property set or not
-+ * @tx_fifo_depth:	Depth of the TX FIFO
+diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
+index 57f61ec4bc6b..2fdc83f7fb05 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_drv.c
++++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+@@ -11,6 +11,7 @@
   */
- struct cdns_spi {
- 	void __iomem *regs;
-@@ -128,6 +126,7 @@ struct cdns_spi {
- 	int rx_bytes;
- 	u8 dev_busy;
- 	u32 is_decoded_cs;
-+	unsigned int tx_fifo_depth;
- };
  
- struct cdns_spi_device_data {
-@@ -313,7 +312,7 @@ static void cdns_spi_fill_tx_fifo(struct cdns_spi *xspi)
- {
- 	unsigned long trans_cnt = 0;
+ #include <linux/component.h>
++#include <linux/dma-mapping.h>
+ #include <linux/kfifo.h>
+ #include <linux/of_graph.h>
+ #include <linux/of_reserved_mem.h>
+@@ -378,6 +379,13 @@ static int sun4i_drv_probe(struct platform_device *pdev)
  
--	while ((trans_cnt < CDNS_SPI_FIFO_DEPTH) &&
-+	while ((trans_cnt < xspi->tx_fifo_depth) &&
- 	       (xspi->tx_bytes > 0)) {
+ 	INIT_KFIFO(list.fifo);
  
- 		/* When xspi in busy condition, bytes may send failed,
-@@ -534,6 +533,24 @@ static void cdns_spi_cleanup(struct spi_device *spi)
- 
- }
- 
-+/**
-+ * cdns_spi_detect_fifo_depth - Detect the FIFO depth of the hardware
-+ * @xspi:	Pointer to the cdns_spi structure
-+ *
-+ * The depth of the TX FIFO is a synthesis configuration parameter of the SPI
-+ * IP. The FIFO threshold register is sized so that its maximum value can be the
-+ * FIFO size - 1. This is used to detect the size of the FIFO.
-+ */
-+static void cdns_spi_detect_fifo_depth(struct cdns_spi *xspi)
-+{
-+	/* The MSBs will get truncated giving us the size of the FIFO */
-+	cdns_spi_write(xspi, CDNS_SPI_THLD, 0xffff);
-+	xspi->tx_fifo_depth = cdns_spi_read(xspi, CDNS_SPI_THLD) + 1;
++	/*
++	 * DE2 and DE3 cores actually supports 40-bit addresses, but
++	 * driver does not.
++	 */
++	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
++	dma_set_max_seg_size(&pdev->dev, UINT_MAX);
 +
-+	/* Reset to default */
-+	cdns_spi_write(xspi, CDNS_SPI_THLD, 0x1);
-+}
-+
- /**
-  * cdns_spi_probe - Probe method for the SPI driver
-  * @pdev:	Pointer to the platform_device structure
-@@ -608,6 +625,8 @@ static int cdns_spi_probe(struct platform_device *pdev)
- 	if (ret < 0)
- 		xspi->is_decoded_cs = 0;
- 
-+	cdns_spi_detect_fifo_depth(xspi);
-+
- 	/* SPI controller initializations */
- 	cdns_spi_init_hw(xspi);
- 
+ 	for (i = 0;; i++) {
+ 		struct device_node *pipeline = of_parse_phandle(np,
+ 								"allwinner,pipelines",
 -- 
 2.35.1
 
