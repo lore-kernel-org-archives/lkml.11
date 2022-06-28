@@ -2,84 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A22EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:38:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 514D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345870AbiF1Mic (ORCPT
+        id S1345470AbiF1MjM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 08:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        Tue, 28 Jun 2022 08:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344722AbiF1Mib (ORCPT
+        with ESMTP id S1344722AbiF1MjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 08:38:31 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC3B2DABF;
-        Tue, 28 Jun 2022 05:38:27 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 1F9A63F38A;
-        Tue, 28 Jun 2022 12:38:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1656419905;
-        bh=PlJGMxqqZX0JynyKbbC2D1kesVnUtHM3lue6u6DvQ60=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=T9srd950/DVx1FwCt2QdEgiWz9YJ+ah9UjHwSZFXz7n9STBn5q6jXx3fRu10QzKah
-         +FzKoQPiSGlrRvhRQqbTVa/i9IsqM558XH8GV+Pa7aPJkSnUJBTEtd7DgKVITzH/2Q
-         7K1YmrlnQyDVD2gmLqt+d3GgYei8XmMTRrMXj5xPHRQQ6mUY92OuSb7YmYy1SOIKRp
-         hb2UhKAXrBVSjmZp1KLCtea+lo6YIYzQWVcKCba6CmwrGs4uApNFblc6vlgHbMouOF
-         +x9O3QP9WqHKZoREzp4cOyl0qJj1IJprvq2sNj7HHwIFjkc0oPHmpRStynbVOPgTBH
-         w9Ac0+y/lFP7A==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     hdegoede@redhat.com, markgross@kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Jorge Lopez <jorge.lopez2@hp.com>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] platform/x86: hp-wmi: Ignore Sanitization Mode event
-Date:   Tue, 28 Jun 2022 20:37:26 +0800
-Message-Id: <20220628123726.250062-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 28 Jun 2022 08:39:09 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D852C2ED49
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:39:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656419948; x=1687955948;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=xH+zDbWm9NnK+jA1wnqDI01ZjKwfPCHuUTs1IQUIh5U=;
+  b=SKsRqnCrxFPq9RextccGAYul1UbiUaA9qE9j3RTMa6n4pkH6R1E0haKY
+   +qCWstF8WngQKspmDkMQP5t5Ieh92hfG+/u31gapG0abmJyrMvau8Ba70
+   /zaNCS8+q8DBiaB2nJNnBK1pIlXa7LjvnrPWdUwJIQlUkrf9ZQU84Ct/c
+   eKhmv1iup4pJBRSuzyA7t9xUjYch+3ZXt0CrfAjv5NERcwpasDjQy8aXg
+   t4B9G0HyGxoIQzjeol0DdZHCUyyWCvPAshzU76iLkdUuakZRaNL5sh7t4
+   Lk1etFyVJQJ/RBbZYn3P4xOmFGQyqtP+7EejZAa82JPbBrhB7h00X2CdD
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281766486"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="281766486"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 05:39:08 -0700
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="646897670"
+Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64]) ([10.249.169.64])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 05:39:05 -0700
+Message-ID: <e311ead5-776b-ad71-5ad9-98f9ab6e569a@linux.intel.com>
+Date:   Tue, 28 Jun 2022 20:39:04 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>, iommu@lists.linux.dev,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 0/6] iommu/vt-d: Reset DMAR_UNITS_SUPPORTED
+Content-Language: en-US
+To:     Joerg Roedel <joro@8bytes.org>, Steve Wahl <steve.wahl@hpe.com>,
+        Kevin Tian <kevin.tian@intel.com>
+References: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After system resume the hp-wmi driver may complain:
-[ 702.620180] hp_wmi: Unknown event_id - 23 - 0x0
+On 2022/6/25 20:51, Lu Baolu wrote:
+> Hi folks,
+> 
+> This is a follow-up series of changes proposed by this patch:
+> 
+> https://lore.kernel.org/linux-iommu/20220615183650.32075-1-steve.wahl@hpe.com/
+> 
+> It removes several static arrays of size DMAR_UNITS_SUPPORTED and sets
+> the DMAR_UNITS_SUPPORTED to 1024.
+> 
+> Please help review and suggest.
 
-According to HP it means 'Sanitization Mode' and it's harmless to just
-ignore the event.
+This series is also available on github:
 
-Cc: Jorge Lopez <jorge.lopez2@hp.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- drivers/platform/x86/hp-wmi.c | 3 +++
- 1 file changed, 3 insertions(+)
+https://github.com/LuBaolu/intel-iommu/commits/vtd-next-for-v5.20
 
-diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
-index 0d8cb22e30df9..bc7020e9df9e8 100644
---- a/drivers/platform/x86/hp-wmi.c
-+++ b/drivers/platform/x86/hp-wmi.c
-@@ -89,6 +89,7 @@ enum hp_wmi_event_ids {
- 	HPWMI_BACKLIT_KB_BRIGHTNESS	= 0x0D,
- 	HPWMI_PEAKSHIFT_PERIOD		= 0x0F,
- 	HPWMI_BATTERY_CHARGE_PERIOD	= 0x10,
-+	HPWMI_SANITIZATION_MODE		= 0x17,
- };
- 
- /*
-@@ -853,6 +854,8 @@ static void hp_wmi_notify(u32 value, void *context)
- 		break;
- 	case HPWMI_BATTERY_CHARGE_PERIOD:
- 		break;
-+	case HPWMI_SANITIZATION_MODE:
-+		break;
- 	default:
- 		pr_info("Unknown event_id - %d - 0x%x\n", event_id, event_data);
- 		break;
--- 
-2.36.1
+Best regards,
+baolu
+
+> 
+> Best regards,
+> baolu
+> 
+> Lu Baolu (6):
+>    iommu/vt-d: Remove unused domain_get_iommu()
+>    iommu/vt-d: Use IDA interface to manage iommu sequence id
+>    iommu/vt-d: Refactor iommu information of each domain
+>    iommu/vt-d: Add VTD_FLAG_IOMMU_PROBED flag
+>    iommu/vt-d: Remove global g_iommus array
+>    iommu/vt-d: Make DMAR_UNITS_SUPPORTED default 1024
+> 
+>   include/linux/dmar.h        |   6 +-
+>   drivers/iommu/intel/iommu.h |  29 ++++--
+>   drivers/iommu/intel/dmar.c  |  33 ++-----
+>   drivers/iommu/intel/iommu.c | 188 ++++++++++++++----------------------
+>   drivers/iommu/intel/pasid.c |   2 +-
+>   drivers/iommu/intel/svm.c   |   2 +-
+>   6 files changed, 103 insertions(+), 157 deletions(-)
+> 
 
