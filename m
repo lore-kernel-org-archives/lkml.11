@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EACB4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77425CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343568AbiF1Cdd (ORCPT
+        id S1343670AbiF1Cdl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
+        Mon, 27 Jun 2022 22:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244808AbiF1C2C (ORCPT
+        with ESMTP id S244848AbiF1C2L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:28:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5203926114;
-        Mon, 27 Jun 2022 19:26:29 -0700 (PDT)
+        Mon, 27 Jun 2022 22:28:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE1124F3A;
+        Mon, 27 Jun 2022 19:26:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11AA7B81C0A;
-        Tue, 28 Jun 2022 02:26:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70BCAC385A5;
-        Tue, 28 Jun 2022 02:26:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACFF661934;
+        Tue, 28 Jun 2022 02:26:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E19FC341CA;
+        Tue, 28 Jun 2022 02:26:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383186;
-        bh=zrAyaFapqko+OKphU5GEF1mHMbCDxCUYsWwHGUS7jsg=;
+        s=k20201202; t=1656383210;
+        bh=f8urQyhZfNDI/vhswW1hvS7izR56LtuFpYxvqdIwRGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t4hXigOaqTpl/Vb8LEWm8z1b3nJ2Z1amgZgN6k9aKG1aS1JXtp70tJX9ukbrGKtSk
-         ZIfU3lMkZ46HA40cT9Vb8O2nQmFNnKhItf1HKe9qF+s8vfOqf05UkyuRnI4WmMZJsg
-         bOnfyHoslmPPCF2qKe3xiKpn4HJpfis94GkElJNVHInDR04+N6qhECgwCGdf+XrgUQ
-         ERjXP0+mGPtkkqdkD5GDoeVZsORfLvwRIK8xPkD0amhTWus45riDLiOLdZwi4xjEKk
-         vURM2JMqw/Ud/20ZP32e0gdN9SMQCYG19tsv3NPKyLUpxsoSTtLCu3usqWK0dQBRGK
-         dZcqMalDSwzew==
+        b=rsfhvMCKtPf7wWu1cO0mseI5X+WEjJZhL2k7N+ywFQ7Gri7N27q43tQKOlPPalCHp
+         mFUE1A3piQIi1G3Fo8+vUpJoSiYDOWiGMXs8RMoqibh3FDf/SuczixrKeKowXSNnBy
+         pNidXoMV+N10ijjko4/u1j7LwUw0Qdlq98ggQH+xhOHffw0cDAwg/qTNZSkp6MdxBj
+         sYmJ8WLc6xL2dp9lYkTLqBrxEYJlcAeRcOMoemDSrkzKuGacfe2hkwx8sPwrSgDyB+
+         BjbQ/aSqXCtkkLOQ6mIp4npRmxkpdTL7azPjpx+jB9h4YPjSSwYG0Z1/ETagPyrNF8
+         lmJY6/+yXePng==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, nizhen@uniontech.com,
-        jiasheng@iscas.ac.cn, gushengxian@yulong.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.14 05/17] ALSA: x86: intel_hdmi_audio: enable pm_runtime and set autosuspend delay
-Date:   Mon, 27 Jun 2022 22:26:03 -0400
-Message-Id: <20220628022615.596977-5-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
+        xkernel.wang@foxmail.com, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 14/17] mips: lantiq: xway: Fix refcount leak bug in sysctrl
+Date:   Mon, 27 Jun 2022 22:26:12 -0400
+Message-Id: <20220628022615.596977-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022615.596977-1-sashal@kernel.org>
 References: <20220628022615.596977-1-sashal@kernel.org>
@@ -57,51 +53,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit e87c65aeb46ca4f5b7dc08531200bcb8a426c62e ]
+[ Upstream commit 76695592711ef1e215cc24ed3e1cd857d7fc3098 ]
 
-The existing code uses pm_runtime_get_sync/put_autosuspend, but
-pm_runtime was not explicitly enabled. The autosuspend delay was not
-set either, the value is set to 5s since HDMI is rather painful to
-resume.
+In ltq_soc_init(), of_find_compatible_node() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Link: https://lore.kernel.org/r/20220616222910.136854-2-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/x86/intel_hdmi_audio.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/mips/lantiq/xway/sysctrl.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/sound/x86/intel_hdmi_audio.c b/sound/x86/intel_hdmi_audio.c
-index bf894087e5fa..84ac01b6e93d 100644
---- a/sound/x86/intel_hdmi_audio.c
-+++ b/sound/x86/intel_hdmi_audio.c
-@@ -42,6 +42,8 @@
- #include <drm/intel_lpe_audio.h>
- #include "intel_hdmi_audio.h"
+diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
+index 1b1142c7bb85..454f10a8db50 100644
+--- a/arch/mips/lantiq/xway/sysctrl.c
++++ b/arch/mips/lantiq/xway/sysctrl.c
+@@ -439,6 +439,10 @@ void __init ltq_soc_init(void)
+ 			of_address_to_resource(np_ebu, 0, &res_ebu))
+ 		panic("Failed to get core resources");
  
-+#define INTEL_HDMI_AUDIO_SUSPEND_DELAY_MS  5000
++	of_node_put(np_pmu);
++	of_node_put(np_cgu);
++	of_node_put(np_ebu);
 +
- #define for_each_pipe(card_ctx, pipe) \
- 	for ((pipe) = 0; (pipe) < (card_ctx)->num_pipes; (pipe)++)
- #define for_each_port(card_ctx, port) \
-@@ -1885,8 +1887,11 @@ static int hdmi_lpe_audio_probe(struct platform_device *pdev)
- 	pdata->notify_audio_lpe = notify_audio_lpe;
- 	spin_unlock_irq(&pdata->lpe_audio_slock);
- 
-+	pm_runtime_set_autosuspend_delay(&pdev->dev, INTEL_HDMI_AUDIO_SUSPEND_DELAY_MS);
- 	pm_runtime_use_autosuspend(&pdev->dev);
-+	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_mark_last_busy(&pdev->dev);
-+	pm_runtime_idle(&pdev->dev);
- 
- 	dev_dbg(&pdev->dev, "%s: handle pending notification\n", __func__);
- 	for_each_port(card_ctx, port) {
+ 	if (!request_mem_region(res_pmu.start, resource_size(&res_pmu),
+ 				res_pmu.name) ||
+ 		!request_mem_region(res_cgu.start, resource_size(&res_cgu),
 -- 
 2.35.1
 
