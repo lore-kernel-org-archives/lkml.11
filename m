@@ -2,169 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF635C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A61DDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230016AbiF1T2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38866 "EHLO
+        id S232334AbiF1T2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiF1T1G (ORCPT
+        with ESMTP id S231565AbiF1T1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:27:06 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E4C2F6
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:25:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656444331; x=1687980331;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=XKO1O2JaQBQyKUjcq5oTvNhtKJLLW78qPNkpHlDvDZk=;
-  b=XOCuWyXR8ffRFovyr2wvY3bbv831vE2pO3e1nX4k+/yqVe/hlunnOVae
-   IE23NwwMOdfcTgU8OoF5QEFxviv/bOLWc0sHh7Ne1HX2KG8m6M393q29N
-   PA2uAg2VuhW8jI7gDld3rJ0hDKxy+O9JlKn+lSNKrf9+UlnqKOaPeFRLO
-   6VVqWgj8XXa0uy3P1/wsNZBEAqXVGYeAm4bT7PsZy2Sf1qATvF1vIIKDj
-   eec5syC3ujFSK3ChRSShaC4JZvBr64jv9iUKT7a+9ISz6UtEj1WfdWHMh
-   vx1FppywOFfCdIUxMLHQJrQEgsxBJ4xU8n4pjnIv1RrEumy4gXyNaeL3u
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="279374736"
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="279374736"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:25:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="647050362"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 28 Jun 2022 12:25:30 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o6Gq1-000AYQ-Ik;
-        Tue, 28 Jun 2022 19:25:29 +0000
-Date:   Wed, 29 Jun 2022 03:25:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:perf/core] BUILD SUCCESS
- 119a784c81270eb88e573174ed2209225d646656
-Message-ID: <62bb558f.QXeNTUpZkct/xmcN%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 28 Jun 2022 15:27:31 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00782EA5
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:25:40 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id q11so18514645oih.10
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:25:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=+10FmmpqDQ0iNQ5Hk+84+aEcJCyKp/8SCF4Ixa+q6vY=;
+        b=iWoHl7bZvWLVEdyAkVHFeVQz5J5DMUAU7JZsWGv75MVdaQTPO4PjFEa73jbyeZ0a7T
+         xYdBhRWVXlgotRQhwz40G1SjZEJIh0jhxk77xoO/+75mFRYfwlh72OamED42p/y7jKds
+         eSCzvfYTzsMBJbT6sDnsmjSTUrcXfo223xgGo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=+10FmmpqDQ0iNQ5Hk+84+aEcJCyKp/8SCF4Ixa+q6vY=;
+        b=ULZmEP6+1fqlhqTEs6kQ94THzMX6iPi6b/pobETzPdP7vS8D2bfKQxottSGBeguRSX
+         kr0UdcAlJvFoJ/48Kn9oykICPsLfndV4Hnbhqoxa6BdX56xlepcPs+AL07kx5ESysFYd
+         Dm0QJAQNquDyMYTR3Hk1fePIGkA/kTAlekK7SEwZOozjgs+JQug18p4IlcQ04YPMkr4z
+         c6qB8BjYUHaVQaFj95UJxGn2MSYMpPLfx8j+Y/cl21f1r+0S1FCVdkhg5x6JsUjxjhMZ
+         SzSR2WoFp+cUYZ9FoJUmfvfCx4g3FM21OExhEl/WQkqHFQAByxudV9zt2oo8+p4Squh0
+         p4Kg==
+X-Gm-Message-State: AJIora+iACntr3qU53fFpxNDHToFC8rBTFoO0fSr/g4GD/TU3LbDZM6u
+        bks9m5M+2ew6CiEhr0Hl1z5C9fN0ZSVchtbxIpZ8Kg==
+X-Google-Smtp-Source: AGRyM1uK9sCuCgSQeIp27nBgEZ2sQNBvuCqqCtZe9EH/XnmRvoODP7KKek4LsMwjVWsoM1WCvJ7STbiQ7QLirJs4Wok=
+X-Received: by 2002:a05:6808:171c:b0:334:9342:63ef with SMTP id
+ bc28-20020a056808171c00b00334934263efmr822636oib.63.1656444340248; Tue, 28
+ Jun 2022 12:25:40 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 28 Jun 2022 14:25:39 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20220622173605.1168416-6-pmalani@chromium.org>
+References: <20220622173605.1168416-1-pmalani@chromium.org> <20220622173605.1168416-6-pmalani@chromium.org>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 28 Jun 2022 14:25:39 -0500
+Message-ID: <CAE-0n517BB8YbN5AZG6M3ZrZGOJDV=+t0R9d8wD+gVqO1aD1Xg@mail.gmail.com>
+Subject: Re: [PATCH v5 5/9] drm/bridge: anx7625: Add typec_mux_set callback function
+To:     Prashant Malani <pmalani@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Pin-Yen Lin <treapking@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Allen Chen <allen.chen@ite.com.tw>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/core
-branch HEAD: 119a784c81270eb88e573174ed2209225d646656  perf/core: Add a new read format to get a number of lost samples
+Quoting Prashant Malani (2022-06-22 10:34:34)
+> From: Pin-Yen Lin <treapking@chromium.org>
+>
+> Add the callback function when the driver receives state
+> changes of the Type-C port. The callback function configures the
+> crosspoint switch of the anx7625 bridge chip, which can change the
+> output pins of the signals according to the port state.
 
-i386-tinyconfig vmlinux size:
+Can this be combined with the previous two patches? They really don't
+stand alone because the previous two patches are adding stubs that are
+filled out later.
 
-===========================================================================================================================================
- TOTAL  TEXT  __perf_read_group_add()  perf_output_read_group()                                                                            
-===========================================================================================================================================
-  +310  +309                      +98                       +78  119a784c8127 perf/core: Add a new read format to get a number of lost sam 
-  +310  +309                      +98                       +78  b13baccc3850..119a784c8127 (ALL COMMITS)                                  
-===========================================================================================================================================
+> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> index bd21f159b973..5992fc8beeeb 100644
+> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/slab.h>
+>  #include <linux/types.h>
+> +#include <linux/usb/typec_dp.h>
+>  #include <linux/usb/typec_mux.h>
+>  #include <linux/workqueue.h>
+>
+> @@ -2582,9 +2583,64 @@ static void anx7625_runtime_disable(void *data)
+>         pm_runtime_disable(data);
+>  }
+>
+> +static void anx7625_set_crosspoint_switch(struct anx7625_data *ctx,
+> +                                         enum typec_orientation orientation)
+> +{
+> +       if (orientation == TYPEC_ORIENTATION_NORMAL) {
+> +               anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_0,
+> +                                 SW_SEL1_SSRX_RX1 | SW_SEL1_DPTX0_RX2);
+> +               anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_1,
+> +                                 SW_SEL2_SSTX_TX1 | SW_SEL2_DPTX1_TX2);
+> +       } else if (orientation == TYPEC_ORIENTATION_REVERSE) {
+> +               anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_0,
+> +                                 SW_SEL1_SSRX_RX2 | SW_SEL1_DPTX0_RX1);
+> +               anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_1,
+> +                                 SW_SEL2_SSTX_TX2 | SW_SEL2_DPTX1_TX1);
+> +       }
+> +}
+> +
+> +static void anx7625_typec_two_ports_update(struct anx7625_data *ctx)
+> +{
+> +       if (ctx->typec_ports[0].dp_connected && ctx->typec_ports[1].dp_connected)
+> +               /* Both ports available, do nothing to retain the current one. */
+> +               return;
+> +       else if (ctx->typec_ports[0].dp_connected)
+> +               anx7625_set_crosspoint_switch(ctx, TYPEC_ORIENTATION_NORMAL);
+> +       else if (ctx->typec_ports[1].dp_connected)
+> +               anx7625_set_crosspoint_switch(ctx, TYPEC_ORIENTATION_REVERSE);
+> +}
+> +
+>  static int anx7625_typec_mux_set(struct typec_mux_dev *mux,
+>                                  struct typec_mux_state *state)
+>  {
+> +       struct anx7625_port_data *data = typec_mux_get_drvdata(mux);
+> +       struct anx7625_data *ctx = data->ctx;
+> +       struct device *dev = &ctx->client->dev;
+> +       bool new_dp_connected, old_dp_connected;
+> +
+> +       if (ctx->num_typec_switches == 1)
 
-elapsed time: 722m
-
-configs tested: 84
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-i386                 randconfig-c001-20220627
-arm                          pxa910_defconfig
-mips                      maltasmvp_defconfig
-mips                           ip32_defconfig
-arm                         vf610m4_defconfig
-mips                        vocore2_defconfig
-sh                           se7750_defconfig
-sh                         ap325rxa_defconfig
-openrisc                 simple_smp_defconfig
-sh                          rsk7201_defconfig
-sh                          sdk7780_defconfig
-sh                 kfr2r09-romimage_defconfig
-mips                         tb0226_defconfig
-m68k                       bvme6000_defconfig
-arm                        mini2440_defconfig
-arm                      integrator_defconfig
-arm                          simpad_defconfig
-sh                         apsh4a3a_defconfig
-arm                          exynos_defconfig
-ia64                             allmodconfig
-x86_64               randconfig-k001-20220627
-arc                              allyesconfig
-alpha                            allyesconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-sh                               allmodconfig
-i386                                defconfig
-i386                             allyesconfig
-x86_64               randconfig-a013-20220627
-x86_64               randconfig-a012-20220627
-x86_64               randconfig-a016-20220627
-x86_64               randconfig-a015-20220627
-x86_64               randconfig-a011-20220627
-x86_64               randconfig-a014-20220627
-i386                 randconfig-a012-20220627
-i386                 randconfig-a011-20220627
-i386                 randconfig-a013-20220627
-i386                 randconfig-a014-20220627
-i386                 randconfig-a015-20220627
-i386                 randconfig-a016-20220627
-s390                 randconfig-r044-20220627
-riscv                randconfig-r042-20220627
-arc                  randconfig-r043-20220627
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                           rhel-8.3-syz
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-
-clang tested configs:
-arm                        multi_v5_defconfig
-powerpc                     skiroot_defconfig
-powerpc                     ppa8548_defconfig
-mips                           rs90_defconfig
-arm                           spitz_defconfig
-powerpc                     tqm5200_defconfig
-mips                        bcm63xx_defconfig
-arm                     am200epdkit_defconfig
-powerpc                      acadia_defconfig
-mips                           ip27_defconfig
-arm                        neponset_defconfig
-powerpc                     ksi8560_defconfig
-i386                 randconfig-a002-20220627
-i386                 randconfig-a004-20220627
-i386                 randconfig-a003-20220627
-i386                 randconfig-a001-20220627
-i386                 randconfig-a005-20220627
-i386                 randconfig-a006-20220627
-x86_64               randconfig-a002-20220627
-x86_64               randconfig-a003-20220627
-x86_64               randconfig-a001-20220627
-x86_64               randconfig-a005-20220627
-x86_64               randconfig-a004-20220627
-x86_64               randconfig-a006-20220627
-hexagon              randconfig-r041-20220627
-hexagon              randconfig-r045-20220627
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+How do we handle the case where the usb-c-connector is directly
+connected to the RX1/TX1 and RX2/TX2 pins? This device would be an
+orientation (normal/reverse) and mode switch (usb/dp) in that scenario,
+but this code is written in a way that the orientation switch isn't
+going to flip the crosspoint switch for the different pin assignments.
