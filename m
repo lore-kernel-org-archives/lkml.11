@@ -2,59 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84154C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8875DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:37:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245727AbiF1GhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42048 "EHLO
+        id S245357AbiF1Ghd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 02:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343545AbiF1Ggp (ORCPT
+        with ESMTP id S245668AbiF1GhW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:36:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A8F5FD1
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:36:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 531E26193E
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:36:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36482C3411D;
-        Tue, 28 Jun 2022 06:36:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656398187;
-        bh=6XoUp0iXdNcV2PCtIVIQaSjMJHqgxXdRjqglHkwSmDg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oTVKGcId5JD8ODvdqM3K6/SeWZ2Qj88MO5Hlz+OzMswg0Ag/3q8WnF4mvi/ZZ85qu
-         Hjmucy8Ge3HqbFMl3PoUpl9nSws7cMypqA6ACv05am+WPZXSzmOki+4JTkMej7dvDi
-         StHDTdIJHWOMI4+J9Cl5nGJVOIpsB+PuA1AO4GOg=
-Date:   Tue, 28 Jun 2022 08:36:24 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Oded Gabbay <ogabbay@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Dani Liberman <dliberman@habana.ai>
-Subject: Re: [PATCH 11/12] habanalabs/gaudi2: add tpm attestation info uapi
-Message-ID: <YrqhaBuzY/GkQXHx@kroah.com>
-References: <20220627202620.961350-1-ogabbay@kernel.org>
- <20220627202620.961350-12-ogabbay@kernel.org>
+        Tue, 28 Jun 2022 02:37:22 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA9360C0
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:37:20 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id i8-20020a17090aee8800b001ecc929d14dso11713317pjz.0
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:37:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=MqYzMC6Te7mlb10SfH+/fm3WKhKw2/0wG3c+ugfn1go=;
+        b=VYt1p89pFqNN9bWhxz+uiIHDDeaKUiThIHYcnA3b6Q4sCoqKFrmOFAxouoIAWIxv44
+         oq8cvexu8JvcOLvcIXP9I5RyTGv362pdNfYZwTygLrkaEqO638k0VWF/o9Wpm055Bg10
+         DnYSOANLA9hPxynYyV5/H3G6vOZtIGGi5PszUJGmZa3X/BHzrlE+Kot5hiYhV+MPO2Fx
+         K2boW1z1Bk1hZevFYBwwCsKiCfNxz7b4chZ9GVKugCHC5vfweIK4+3/3PnFMqOAR62LX
+         6ZOKltumQ1QVzeIrVzrPG3tKmfA3UmRUGnkNK2JEo+sZix5pdW5+siZZ5Ur7hrvMc31h
+         zUwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=MqYzMC6Te7mlb10SfH+/fm3WKhKw2/0wG3c+ugfn1go=;
+        b=2p7F5BPYeZO2FygJMfzF49CI5J7psQHGCG7vzk33PI5s4/gKQwwa/G+ACQL/8LaDBG
+         jMbqVfYv+tGlL4hul3bgWbXpdKUyhHVUCAyIraL5BeDJEiIdJB2wjFzYy7sssxm/kgcC
+         hVmuAFVj7K+E/kgVlH/ZELhrx4hvaSgVLFEtGjHfYrS05Bm8/eniiwrax6pPZtVJenUY
+         +Ubaw6mY6bZkD/0iHSire6eAdCfyS2eQJwPY+f/tWGQdlSmf4zL06eFu015ywcsto//i
+         w68LyaUo4DMawqH3kn10IsLmGeeYv+UT39tUDB8R4iCLDBHY5atnrKdSGlCdNdnRPnlz
+         Fxjw==
+X-Gm-Message-State: AJIora+Hwvl2OzW9/AkPFd3A4SDUcNHlCNhDMocsy8cPLUymjQ9K8EZJ
+        FE3dCU/wKWx6otgQjL/IyZIiHfzkAvFk
+X-Google-Smtp-Source: AGRyM1vJHZiVEQTsGRo0ArrFYMPWcuuPYuc/iE6XO49ONg9YiUMf82xLNF5Fiq6EeD6/DYROMCi4Kg==
+X-Received: by 2002:a17:902:c948:b0:16a:58f4:c142 with SMTP id i8-20020a170902c94800b0016a58f4c142mr2168340pla.103.1656398239965;
+        Mon, 27 Jun 2022 23:37:19 -0700 (PDT)
+Received: from thinkpad ([27.111.75.159])
+        by smtp.gmail.com with ESMTPSA id x5-20020a1709029a4500b001678e9670d8sm8388858plv.2.2022.06.27.23.37.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 23:37:19 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 12:07:14 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Vidya Sagar <vidyas@nvidia.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v5 06/18] PCI: dwc: Enable CDM-check independently
+ from the num_lanes value
+Message-ID: <20220628063714.GC23601@thinkpad>
+References: <20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru>
+ <20220624143428.8334-7-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220627202620.961350-12-ogabbay@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220624143428.8334-7-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 11:26:19PM +0300, Oded Gabbay wrote:
-> From: Dani Liberman <dliberman@habana.ai>
+On Fri, Jun 24, 2022 at 05:34:16PM +0300, Serge Semin wrote:
+> Currently the embedded CDM IOs consistency check-engine is enabled only if
+> the num_lanes field of dw_pcie structure is set to non-zero value. It's
+> definitely wrong since the CDM checking has nothing to do with the PCIe
+> lanes settings, while that feature will be left disabled for the platforms
+> which expect it being enabled and prefer keeping the default lanes setup.
+> Let's fix that by enabling the CDM-check feature before the num_lanes
+> parameter is handled.
 > 
-> User will provide a nonce via the ioctl, and will retrieve
-> attestation data of the boot from the tpm, generated using given
-> nonce.
+> Fixes: 07f123def73e ("PCI: dwc: Add support to enable CDM register check")
 
-Why not use the normal TPM api instead of a new/custom one?  Or is this
-not a "normal" TPM device?  If not, you should say what it really is.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-thanks,
+Thanks,
+Mani
 
-greg k-h
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> 
+> ---
+> 
+> Changelog v4:
+> - This is a new patch created on v4 lap of the series.
+> ---
+>  drivers/pci/controller/dwc/pcie-designware.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+> index 347251bf87d0..5848cc520b52 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware.c
+> @@ -740,6 +740,13 @@ void dw_pcie_setup(struct dw_pcie *pci)
+>  	val |= PORT_LINK_DLL_LINK_EN;
+>  	dw_pcie_writel_dbi(pci, PCIE_PORT_LINK_CONTROL, val);
+>  
+> +	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
+> +		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
+> +		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
+> +		       PCIE_PL_CHK_REG_CHK_REG_START;
+> +		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
+> +	}
+> +
+>  	of_property_read_u32(np, "num-lanes", &pci->num_lanes);
+>  	if (!pci->num_lanes) {
+>  		dev_dbg(pci->dev, "Using h/w default number of lanes\n");
+> @@ -786,11 +793,4 @@ void dw_pcie_setup(struct dw_pcie *pci)
+>  		break;
+>  	}
+>  	dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, val);
+> -
+> -	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
+> -		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
+> -		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
+> -		       PCIE_PL_CHK_REG_CHK_REG_START;
+> -		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
+> -	}
+>  }
+> -- 
+> 2.35.1
+> 
+
+-- 
+மணிவண்ணன் சதாசிவம்
