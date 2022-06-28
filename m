@@ -2,115 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B3FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239726AbiF1LeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58928 "EHLO
+        id S1345200AbiF1LfC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 07:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344431AbiF1LeF (ORCPT
+        with ESMTP id S236261AbiF1LfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:34:05 -0400
+        Tue, 28 Jun 2022 07:35:01 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB0C2FFCA
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:34:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DF32FFE8;
+        Tue, 28 Jun 2022 04:34:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656416044; x=1687952044;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=WyQ7Lhg64UA7faLJ8umQR8gY+ay9xEU5cNZImGlhWOk=;
-  b=g++m3x6mmFxR0QSm6D15pTqOF+Bz7OH4dxd+KDBmDMAeF1IwxolEjvx2
-   unj9GxSg6s0ecAnT6VWQhXU3wFzAaLoPIb+3G87x8oJl5j1k2b9Qw1LyD
-   ihTZrgmcJGmg5wP9i+AeVuhcU976MHMKU1zOfZx6Gs3lQPuCv4uxdJGjh
-   KfLSAZklpY3je0MHU+0tt22m1Qfu6VER1Ps8cQzsniu5tilogNFFiFN5V
-   SRxbBKahkWSNiefbUQQJ4hlsdI1kyGYXBR+CRZ6PVtK133lqn6W+3y9i/
-   Vdr1J7r74wM/ozri+vQY3irsM43iKBkXTHfyJn5FPPd/Rhk6WLWgIBVci
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270465406"
+  t=1656416099; x=1687952099;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=SeZjE9dIzHv7ak+kD31OSIPBtrgZc4gdk0+yPRC0Dmw=;
+  b=aVmPdVZ0U7rOMKOnO4RH8tSKt3bbJ7zuTqa3TXZFl2xWtXbR6EARU3H2
+   u5wVk8CHpJ8Uom3ACfBjKJJUYK0EMoKj36JnSzE6AeW6Nbna+J70ujkPk
+   DKeM0j1TQWUt9oSjnmb9J80o2DCnvWm3HiyMFn1D68Oy0PTSVpu65FE0b
+   WJNI/kq+Ywhs9denZYwfFvAFhPwc11A4xci/8Je3A5gbwOrouf+sM+Hi1
+   FqtkJ+J0ACRQmrTRIum/4JAWFQS4aV8KPpEHPh7k8Hj/9ypdA5npXSQe3
+   WltpAkA5euINWTLuaZNxfN3h7fywBDYWY2oHgxpPjXVrQG6ff8BiUl1PS
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270465555"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="270465406"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:34:03 -0700
+   d="scan'208";a="270465555"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:34:59 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646877561"
-Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64]) ([10.249.169.64])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:33:59 -0700
-Message-ID: <89130952-155c-38f0-3318-1c071562661f@linux.intel.com>
-Date:   Tue, 28 Jun 2022 19:33:57 +0800
+   d="scan'208";a="680009884"
+Received: from nherzalx-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.96.221])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:34:57 -0700
+Message-ID: <2ecd255ac85fac7ffa1b90975c9e08f11ddee149.camel@intel.com>
+Subject: Re: [PATCH v7 029/102] KVM: TDX: allocate/free TDX vcpu structure
+From:   Kai Huang <kai.huang@intel.com>
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>
+Date:   Tue, 28 Jun 2022 23:34:55 +1200
+In-Reply-To: <dad0333516bcdb0fdeccc9d1483299aeae8d80fd.1656366338.git.isaku.yamahata@intel.com>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+         <dad0333516bcdb0fdeccc9d1483299aeae8d80fd.1656366338.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v9 04/11] iommu: Add sva iommu_domain support
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
-References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
- <20220621144353.17547-5-baolu.lu@linux.intel.com>
- <BN9PR11MB5276FA1A1A8C20786D958C048CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
- <42825be5-e24c-0f95-f49d-5f50d608506d@linux.intel.com>
- <BN9PR11MB527679FF12B6D990A5E596A88CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527679FF12B6D990A5E596A88CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/28 16:50, Tian, Kevin wrote:
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Tuesday, June 28, 2022 1:41 PM
->>>>    struct iommu_domain {
->>>>    	unsigned type;
->>>>    	const struct iommu_domain_ops *ops;
->>>>    	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
->>>> -	iommu_fault_handler_t handler;
->>>> -	void *handler_token;
->>>>    	struct iommu_domain_geometry geometry;
->>>>    	struct iommu_dma_cookie *iova_cookie;
->>>> +	union {
->>>> +		struct {	/* IOMMU_DOMAIN_DMA */
->>>> +			iommu_fault_handler_t handler;
->>>> +			void *handler_token;
->>>> +		};
->>> why is it DMA domain specific? What about unmanaged
->>> domain? Unrecoverable fault can happen on any type
->>> including SVA. Hence I think above should be domain type
->>> agnostic.
->> The report_iommu_fault() should be replaced by the new
->> iommu_report_device_fault(). Jean has already started this work.
->>
->> https://lore.kernel.org/linux-iommu/Yo4Nw9QyllT1RZbd@myrica/
->>
->> Currently this is only for DMA domains, hence Robin suggested to make it
->> exclude with the SVA domain things.
->>
->> https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-
->> 68305f683349@arm.com/
-> Then it's worthy a comment that those two fields are for
-> some legacy fault reporting stuff and DMA type only.
+On Mon, 2022-06-27 at 14:53 -0700, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+>=20
+> The next step of TDX guest creation is to create vcpu.  Allocate TDX vcpu
+> structures, initialize it.  Allocate pages of TDX vcpu for the TDX module=
+.
+>=20
+> In the case of the conventional case, cpuid is empty at the initializatio=
+n.
+> and cpuid is configured after the vcpu initialization.  Because TDX
+> supports only X2APIC mode, cpuid is forcibly initialized to support X2API=
+C
+> on the vcpu initialization.
 
-The iommu_fault and SVA fields are exclusive. The former is used for
-unrecoverable DMA remapping faults, while the latter is only interested
-in the recoverable page faults.
+The patch title and commit message of this patch are identical to the previ=
+ous
+patch.
 
-I will update the commit message with above explanation. Does this work
-for you?
+What happened? Did you forget to squash two patches together?
+=20
+>=20
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>  arch/x86/kvm/vmx/main.c    | 40 ++++++++++++++++++++++++++++++++++----
+>  arch/x86/kvm/vmx/x86_ops.h |  8 ++++++++
+>  2 files changed, 44 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+> index 067f5de56c53..4f4ed4ad65a7 100644
+> --- a/arch/x86/kvm/vmx/main.c
+> +++ b/arch/x86/kvm/vmx/main.c
+> @@ -73,6 +73,38 @@ static void vt_vm_free(struct kvm *kvm)
+>  		return tdx_vm_free(kvm);
+>  }
+> =20
+> +static int vt_vcpu_precreate(struct kvm *kvm)
+> +{
+> +	if (is_td(kvm))
+> +		return 0;
+> +
+> +	return vmx_vcpu_precreate(kvm);
+> +}
+> +
+> +static int vt_vcpu_create(struct kvm_vcpu *vcpu)
+> +{
+> +	if (is_td_vcpu(vcpu))
+> +		return tdx_vcpu_create(vcpu);
+> +
+> +	return vmx_vcpu_create(vcpu);
+> +}
+> +
+> +static void vt_vcpu_free(struct kvm_vcpu *vcpu)
+> +{
+> +	if (is_td_vcpu(vcpu))
+> +		return tdx_vcpu_free(vcpu);
+> +
+> +	return vmx_vcpu_free(vcpu);
+> +}
+> +
+> +static void vt_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+> +{
+> +	if (is_td_vcpu(vcpu))
+> +		return tdx_vcpu_reset(vcpu, init_event);
+> +
+> +	return vmx_vcpu_reset(vcpu, init_event);
+> +}
+> +
+>  static int vt_mem_enc_ioctl(struct kvm *kvm, void __user *argp)
+>  {
+>  	if (!is_td(kvm))
+> @@ -98,10 +130,10 @@ struct kvm_x86_ops vt_x86_ops __initdata =3D {
+>  	.vm_destroy =3D vt_vm_destroy,
+>  	.vm_free =3D vt_vm_free,
+> =20
+> -	.vcpu_precreate =3D vmx_vcpu_precreate,
+> -	.vcpu_create =3D vmx_vcpu_create,
+> -	.vcpu_free =3D vmx_vcpu_free,
+> -	.vcpu_reset =3D vmx_vcpu_reset,
+> +	.vcpu_precreate =3D vt_vcpu_precreate,
+> +	.vcpu_create =3D vt_vcpu_create,
+> +	.vcpu_free =3D vt_vcpu_free,
+> +	.vcpu_reset =3D vt_vcpu_reset,
+> =20
+>  	.prepare_switch_to_guest =3D vmx_prepare_switch_to_guest,
+>  	.vcpu_load =3D vmx_vcpu_load,
+> diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
+> index ef6115ae0e88..42b634971544 100644
+> --- a/arch/x86/kvm/vmx/x86_ops.h
+> +++ b/arch/x86/kvm/vmx/x86_ops.h
+> @@ -138,6 +138,10 @@ int tdx_vm_init(struct kvm *kvm);
+>  void tdx_mmu_release_hkid(struct kvm *kvm);
+>  void tdx_vm_free(struct kvm *kvm);
+> =20
+> +int tdx_vcpu_create(struct kvm_vcpu *vcpu);
+> +void tdx_vcpu_free(struct kvm_vcpu *vcpu);
+> +void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event);
+> +
+>  int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
+>  #else
+>  static inline int tdx_hardware_setup(struct kvm_x86_ops *x86_ops) { retu=
+rn 0; }
+> @@ -150,6 +154,10 @@ static inline void tdx_mmu_release_hkid(struct kvm *=
+kvm) {}
+>  static inline void tdx_flush_shadow_all_private(struct kvm *kvm) {}
+>  static inline void tdx_vm_free(struct kvm *kvm) {}
+> =20
+> +static inline int tdx_vcpu_create(struct kvm_vcpu *vcpu) { return -EOPNO=
+TSUPP; }
+> +static inline void tdx_vcpu_free(struct kvm_vcpu *vcpu) {}
+> +static inline void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event=
+) {}
+> +
+>  static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { ret=
+urn -EOPNOTSUPP; }
+>  #endif
+> =20
 
-Best regards,
-baolu
