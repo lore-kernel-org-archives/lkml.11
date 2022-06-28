@@ -2,58 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C72D6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 05:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A94BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 05:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244400AbiF1FLM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 01:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
+        id S244263AbiF1FLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 01:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232767AbiF1FLJ (ORCPT
+        with ESMTP id S244420AbiF1FLX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 01:11:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AC09FCF;
-        Mon, 27 Jun 2022 22:11:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D08B61784;
-        Tue, 28 Jun 2022 05:11:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 205F3C341C6;
-        Tue, 28 Jun 2022 05:11:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656393067;
-        bh=gRITldOs4wFjJJ/Yq+ASt8gLd+uLO3gYyD/lQOZHrqc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hg/plIKhrf8qrDSTcJYKhT1RGIr4RqDfcYcCSW3eMK10FeVlkwyDLCHfbgMiqB5Wk
-         JwEfFYAqNZPov9K81/sAvff2wXm1RhWjJqa+qTglgwHESfNDkupNnOCaI6JgzxCzzs
-         ujt4GgSegDKOxupcXcQVtmk09aI4OOXHGrluD5Xc5BIjjJwbBBNF9Vh/5G9tsYc8pW
-         VJcUmpyr09GOSzm8ixltVD+kTm7i3E+6KfuP8S2nMTVPJkIpeSMI64hUEcYByaXTVH
-         cimlXr7ypucRtrCfLcZFZCYlkffbUcXuxWH+9XxWotNFPWBaUfx6bvKa1IrKpGP2BG
-         T/b3TtnqHGKQA==
-Date:   Mon, 27 Jun 2022 22:11:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jianglei Nie <niejianglei2021@163.com>
-Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: sfp: fix memory leak in sfp_probe()
-Message-ID: <20220627221105.5a5feb7c@kernel.org>
-In-Reply-To: <20220624044941.1807118-1-niejianglei2021@163.com>
-References: <20220624044941.1807118-1-niejianglei2021@163.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Tue, 28 Jun 2022 01:11:23 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3728A1B4;
+        Mon, 27 Jun 2022 22:11:21 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id w24so11438146pjg.5;
+        Mon, 27 Jun 2022 22:11:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=vnGv6vDn6qnrKuuz+/Sh2Rg6no8kgH/1Xp8PSIsPGhg=;
+        b=am8dQ7vXTYHhEFPkccT6o/AlWUm5T1XoBhfUVhVjo0xjrvv+Ja72tXivfz8P8XrL2i
+         iuypwtFq9gAiCocYQHgKZsjCOJX3ojIy906qjVFUEpHI1FepxH5NyyeEjIpTbIY1IHdk
+         pHgzaf9h6OyP/0voGgf6hNv9zZHOCvRdzRwxQddaY1SP8X6GzPbCuWO38I0wrUIqC88L
+         eUr64MOInloAxqHhZUhSg+dPMYeMfSozWVh70aBX4VB67yYzCMag9Jt7YCfTrG4lWKv+
+         rLRoJMw5FlnWoIIvCVARN+hME7afseplwuKnMVsb+p/u3+hs/qU/sOXfAs2pZNAmAs0C
+         sVMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=vnGv6vDn6qnrKuuz+/Sh2Rg6no8kgH/1Xp8PSIsPGhg=;
+        b=1VQhuwDY5JxsC77jYyycRmXLqHu4rvkkTxseG3kRdlIhCLu5Is8Mlpm5wt2g62ZJw7
+         OYa1upOfx6RbPMpe/HevlGAoVqHhSl7fmBBlEenzVnEh0/OtkYymSwkFaPiEhtFtuHGQ
+         q3dyo/SdeYE0n2ajOYTJsuvpmrUMmKQSdJmXNzslWl9zXwsfsoc6Jg5/wdceaBDb/zAK
+         I8eDCH07PDPcTzJakwZjpQW5+KQD45oK1IEOh1AheuR+4Uzq3uw3QmXjHiMwm60QcZ04
+         eg21FR5CzRvphL7k0zMAIBMixboVM/wYVO8zanAebMKSZKP86CK4eszZST1Oo+na8RLE
+         zIjA==
+X-Gm-Message-State: AJIora/6SVWOJG3yM40FYsUC1ig4hnjB7GPTV8TNDAQ+oDn1U+ybO1+L
+        5366ocTXLDRidB8XJOgFwXA=
+X-Google-Smtp-Source: AGRyM1thi22W1H9JgV0MovDTCGGD2x9ERpjK0ECtuGEiLxeaGI13bl+mLS+wUQMsuNmqoC6zeKQH5w==
+X-Received: by 2002:a17:90b:4b8c:b0:1ec:c7b8:7cb9 with SMTP id lr12-20020a17090b4b8c00b001ecc7b87cb9mr24863418pjb.86.1656393081076;
+        Mon, 27 Jun 2022 22:11:21 -0700 (PDT)
+Received: from localhost.localdomain ([2401:4900:1f29:4aa9:50e7:2716:415:b90c])
+        by smtp.googlemail.com with ESMTPSA id n17-20020a170903405100b0016a25ba1f46sm8051002pla.256.2022.06.27.22.11.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 27 Jun 2022 22:11:20 -0700 (PDT)
+From:   Vishal Badole <badolevishal1116@gmail.com>
+To:     sboyd@kernel.org
+Cc:     mturquette@baylibre.com, inux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, chinmoyghosh2001@gmail.com,
+        mintupatel89@gmail.com, vimal.kumar32@gmail.com,
+        Vishal Badole <badolevishal1116@gmail.com>
+Subject: [PATCH v3] Common clock: To list active consumers of clocks
+Date:   Tue, 28 Jun 2022 10:38:42 +0530
+Message-Id: <1656392922-11428-1-git-send-email-badolevishal1116@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <20220624010550.582BBC341C7@smtp.kernel.org>
+References: <20220624010550.582BBC341C7@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 24 Jun 2022 12:49:41 +0800 Jianglei Nie wrote:
-> sfp_probe() allocates a memory chunk from sfp with sfp_alloc(). When
-> devm_add_action() fails, sfp is not freed, which leads to a memory leak.
-> 
-> We should use devm_add_action_or_reset() instead of devm_add_action().
+This feature lists the clock consumer's name and per-user enable count
+in clock summary. Using this feature user can easily check which device
+has acquired a perticular clock and it is enabled by respective device
+or not.
+for example:
+debian@beaglebone:~$ cat /sys/kernel/debug/clk/clk_summary
+                      enable  prepare  protect                           duty  hardware                            per-user
+   clock               count    count    count    rate   accuracy phase cycle    enable   consumer                    count
+----------------------------------------------------------------------------------------------------------------------------
+ clk_mcasp0_fixed         0        0        0    24576000      0     0  50000     Y      deviceless                      0
+                                                                                         deviceless                      0
+    clk_mcasp0            0        0        0    24576000      0     0  50000     N          simple-audio-card,cpu           0
+                                                                                             deviceless                      0
 
-Please add a Fixes tag referencing the commit which added the bug.
-The subject for the next version should be start with [PATCH net v3].
+Co-developed-by: Chinmoy Ghosh <chinmoyghosh2001@gmail.com>
+Signed-off-by: Chinmoy Ghosh <chinmoyghosh2001@gmail.com>
+Co-developed-by: Mintu Patel <mintupatel89@gmail.com>
+Signed-off-by: Mintu Patel <mintupatel89@gmail.com>
+Co-developed-by: Vimal Kumar <vimal.kumar32@gmail.com>
+Signed-off-by: Vimal Kumar <vimal.kumar32@gmail.com>
+Signed-off-by: Vishal Badole <badolevishal1116@gmail.com>
+---
+ drivers/clk/clk.c | 46 +++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 35 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index ed11918..6c4249e 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -102,6 +102,7 @@ struct clk {
+ 	unsigned long min_rate;
+ 	unsigned long max_rate;
+ 	unsigned int exclusive_count;
++	unsigned int enable_count;
+ 	struct hlist_node clks_node;
+ };
+ 
+@@ -1015,6 +1016,10 @@ void clk_disable(struct clk *clk)
+ 		return;
+ 
+ 	clk_core_disable_lock(clk->core);
++
++	if (clk->enable_count > 0)
++		clk->enable_count--;
++
+ }
+ EXPORT_SYMBOL_GPL(clk_disable);
+ 
+@@ -1176,10 +1181,16 @@ EXPORT_SYMBOL_GPL(clk_restore_context);
+  */
+ int clk_enable(struct clk *clk)
+ {
++	int ret;
++
+ 	if (!clk)
+ 		return 0;
+ 
+-	return clk_core_enable_lock(clk->core);
++	ret = clk_core_enable_lock(clk->core);
++	if (!ret)
++		clk->enable_count++;
++
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(clk_enable);
+ 
+@@ -2960,28 +2971,41 @@ static void clk_summary_show_one(struct seq_file *s, struct clk_core *c,
+ 				 int level)
+ {
+ 	int phase;
++	struct clk *clk_user;
++	int multi_node = 0;
+ 
+-	seq_printf(s, "%*s%-*s %7d %8d %8d %11lu %10lu ",
++	seq_printf(s, "%*s%-*s %-7d %-8d %-8d %-11lu %-10lu ",
+ 		   level * 3 + 1, "",
+-		   30 - level * 3, c->name,
++		   35 - level * 3, c->name,
+ 		   c->enable_count, c->prepare_count, c->protect_count,
+ 		   clk_core_get_rate_recalc(c),
+ 		   clk_core_get_accuracy_recalc(c));
+ 
+ 	phase = clk_core_get_phase(c);
+ 	if (phase >= 0)
+-		seq_printf(s, "%5d", phase);
++		seq_printf(s, "%-5d", phase);
+ 	else
+ 		seq_puts(s, "-----");
+ 
+-	seq_printf(s, " %6d", clk_core_get_scaled_duty_cycle(c, 100000));
++	seq_printf(s, " %-6d", clk_core_get_scaled_duty_cycle(c, 100000));
+ 
+ 	if (c->ops->is_enabled)
+-		seq_printf(s, " %9c\n", clk_core_is_enabled(c) ? 'Y' : 'N');
++		seq_printf(s, " %5c ", clk_core_is_enabled(c) ? 'Y' : 'N');
+ 	else if (!c->ops->enable)
+-		seq_printf(s, " %9c\n", 'Y');
++		seq_printf(s, " %5c ", 'Y');
+ 	else
+-		seq_printf(s, " %9c\n", '?');
++		seq_printf(s, " %5c ", '?');
++
++	hlist_for_each_entry(clk_user, &c->clks, clks_node) {
++		seq_printf(s, "%*s%-*s  %-4d\n",
++			   level * 3 + 2 + 105 * multi_node, "",
++			   30,
++			   clk_user->dev_id ? clk_user->dev_id : "deviceless",
++			   clk_user->enable_count);
++
++		multi_node = 1;
++	}
++
+ }
+ 
+ static void clk_summary_show_subtree(struct seq_file *s, struct clk_core *c,
+@@ -3002,9 +3026,9 @@ static int clk_summary_show(struct seq_file *s, void *data)
+ 	struct clk_core *c;
+ 	struct hlist_head **lists = (struct hlist_head **)s->private;
+ 
+-	seq_puts(s, "                                 enable  prepare  protect                                duty  hardware\n");
+-	seq_puts(s, "   clock                          count    count    count        rate   accuracy phase  cycle    enable\n");
+-	seq_puts(s, "-------------------------------------------------------------------------------------------------------\n");
++	seq_puts(s, "                                 enable  prepare  protect                                duty  hardware                            per-user\n");
++	seq_puts(s, "   clock                          count    count    count        rate   accuracy phase  cycle    enable   consumer                    count\n");
++	seq_puts(s, "-------------------------------------------------------------------------------------------------------------------------------------------\n");
+ 
+ 	clk_prepare_lock();
+ 
+-- 
+2.7.4
+
