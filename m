@@ -2,86 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB38C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0AA7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbiF1PZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56088 "EHLO
+        id S1347521AbiF1PZI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 11:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346653AbiF1PYx (ORCPT
+        with ESMTP id S1347827AbiF1PYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:24:53 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B7B2DAB5;
-        Tue, 28 Jun 2022 08:24:48 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id r133so13221204iod.3;
-        Tue, 28 Jun 2022 08:24:48 -0700 (PDT)
+        Tue, 28 Jun 2022 11:24:54 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EADB27FFB;
+        Tue, 28 Jun 2022 08:24:53 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id u12-20020a05600c210c00b003a02b16d2b8so7809274wml.2;
+        Tue, 28 Jun 2022 08:24:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eLyuLD15Aw0Be/kq7JIpgE2do6KM/UKTXxIdVTRE3sc=;
-        b=qERk90jaQ3zsjXchyCff82HyevmOvxF4+R6XNB0yFggouQ4mUlgCpwCcOdwCxw5x7k
-         zsXNYwVPpWZ8aJy79efKYk7M0MSLdGkV79eAbAvUq5sYpmvYFn5JjJRXOFMrU8Mvl2od
-         A0KeaSjEG1WmET6j4ouMZqBCzQ3/jroUCPwXBi6XTvPb/1EHk/f7ZGeQxVlb0/eqoo+q
-         vD7TRhvoAuU4sQUwHV9I9lK4WmfTjr6e2NVxCwh8kl1E31o9zOF2C6SoWWo7aXi5FNT6
-         Qf87jozrVf7NjIPhYGiu5/O48Yb0bH9imTvh1wL2Vp7iSMhKKS6EDaqs8R4enoGyAFt7
-         HGag==
+        bh=WcFMAgdziIll53iZkb94h130Il19T6Y6bJm+DbymwFQ=;
+        b=JWdJ7nbLyzMBpijhEbXM7MypI0Qlwif+4xUbm0g9g+V/YVYSQIr0HmZpbz0eQcrndB
+         mI2sAXvt/7l4TRY8ta671E+/2mL5XMGpL6BwPmet6b5Fb9JOZp+b9w3Bu++slccELRS2
+         IcwWVvLlGH7Z/03Hip3s7OmCQialQeepCw7V5W4Uz3c48QUEV7hNO0vyVJP9dZTzfUT2
+         zxzWbVANWZSglzHw9Yj8nBHWbXeK7A0AVb3PEgGMABpE85vPtf+LW7Z3/PeBDuMMzN71
+         sl+tyLIpNadpjeyYTWTAefP80ypI+HVbHB8PuuMg0MxCz4ee9TaTAUaHHuT/2SIXuMnW
+         D4mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eLyuLD15Aw0Be/kq7JIpgE2do6KM/UKTXxIdVTRE3sc=;
-        b=VwWsqbE+iGaJq3XHzaCY4eYGrY1Ru0NoFbZaT6Z261cgL+IOKcqF9Tq9Q42bm8LUNF
-         ifKTm5JREt66RksHtRTA5K5wLUpiygm0hh0l2VsqjToHlOTeLOivrihOj7c566empnrd
-         KHLGPX4zkjEV2yV3z3zwy9IbZiy5/1yWJcWYhJMSJ04h3NFzwDX3d+2hhMdGvNHBilTn
-         PugwQgW/0h95XspHmqhFbwkrvfKrr0gytSwcHDFqO/KVMy9Z9k4zTU5/f3+CSKAVE+/3
-         ySB0ZVXkhWrUM1dpYg8w0IOEFvhRuFWqORmL5RUjqFqLV8O0vg0vczk7SMm0pl3VkXRx
-         sv5w==
-X-Gm-Message-State: AJIora9JKxegb/WlapMsDZCm7cl90YVjb7zUOjTqmy/0BHZNAJDw51RM
-        1rQbUo0nNm46SCyCDHgzwzWf8ikkaniBkQ==
-X-Google-Smtp-Source: AGRyM1ur49F6ppP1KpfkrUv5BG+7OUqsCfEqHbgDFghyK1MNyzHYSTMXncripVNXUchzJ3K67vQaGw==
-X-Received: by 2002:a05:6638:4195:b0:33c:ae8e:c240 with SMTP id az21-20020a056638419500b0033cae8ec240mr4193770jab.269.1656429888118;
-        Tue, 28 Jun 2022 08:24:48 -0700 (PDT)
-Received: from localhost.localdomain (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id p18-20020a056638217200b00339cae5cb8fsm6222596jak.103.2022.06.28.08.24.44
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 Jun 2022 08:24:47 -0700 (PDT)
-From:   Schspa Shi <schspa@gmail.com>
-To:     alex.williamson@redhat.com, cohuck@redhat.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Schspa Shi <schspa@gmail.com>
-Subject: [PATCH v2] vfio: Clear the caps->buf to NULL after free
-Date:   Tue, 28 Jun 2022 23:24:29 +0800
-Message-Id: <20220628152429.286-1-schspa@gmail.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        bh=WcFMAgdziIll53iZkb94h130Il19T6Y6bJm+DbymwFQ=;
+        b=7Rkq3vQHrdKZSYJZFRp/AOOQhdg9ysMrP82P7Z8s/gXSVYxIkZzLv38iaN+NU/lwzm
+         ur6IvFANwJkT/nSHSgIRHOe0avcTbu8Ei9i+dlyUUKtlKU3CRUM+k2amHfvcvR5fW2BG
+         n31/KOSaoeBddEAIk3Z4rg/U3fYZIaXIx8e5WBlRzE5LX8SQphSEFzMMFCWM5BqCuV1w
+         Nkqcr5JYV6evJx1ciORqRJBgFft/5JM0yunEg+GfNraM5bShh/0SS2zI9n75v9apAFMX
+         MVtdxJBA1JEhZ6EzMi6HWqEgKtTjkE7c9JpVK4+r1sKSwnQ/zF7KHA9u93Rq60yTjxgK
+         0O2A==
+X-Gm-Message-State: AJIora86WNUZpUrNbtus/tMm9lxLfCqfJKcpwnc6Cgi4Ti+CndNdy9an
+        zCnIwX5NKBkRHjEBuvGZfK0=
+X-Google-Smtp-Source: AGRyM1s/PznpZYnHETKAA6z+rPhfFUEY5Vbrhkca4T46fq9s4fRBlaZnd3AovhnmDAp0qaQq/vgLbQ==
+X-Received: by 2002:a1c:ac83:0:b0:39c:87fc:5797 with SMTP id v125-20020a1cac83000000b0039c87fc5797mr162568wme.13.1656429892193;
+        Tue, 28 Jun 2022 08:24:52 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id 3-20020a05600c230300b003973c54bd69sm21564221wmo.1.2022.06.28.08.24.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 08:24:51 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] media: atomisp: clean up for-loop, remove redundant assignment to variable i
+Date:   Tue, 28 Jun 2022 16:24:51 +0100
+Message-Id: <20220628152451.184416-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-API vfio_info_cap_add will free caps->buf, clear it to NULL after
-free.
+There is a for-loop that initializes variable i but does not use it; the
+assignment is redundant and can be removed. The proceeding assignment to
+pointer fw can also be moved into the for-loop to clean up the code.
 
-Signed-off-by: Schspa Shi <schspa@gmail.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- drivers/vfio/vfio.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/media/atomisp/pci/sh_css.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 61e71c1154be..a0fb93866f61 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -1812,6 +1812,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
- 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
- 	if (!buf) {
- 		kfree(caps->buf);
-+		caps->buf = NULL;
- 		caps->size = 0;
- 		return ERR_PTR(-ENOMEM);
- 	}
+diff --git a/drivers/staging/media/atomisp/pci/sh_css.c b/drivers/staging/media/atomisp/pci/sh_css.c
+index 1d605e533e29..576dffa9d2cb 100644
+--- a/drivers/staging/media/atomisp/pci/sh_css.c
++++ b/drivers/staging/media/atomisp/pci/sh_css.c
+@@ -3510,8 +3510,7 @@ create_host_acc_pipeline(struct ia_css_pipe *pipe)
+ 	if (pipe->config.acc_extension)
+ 		pipe->pipeline.pipe_qos_config = 0;
+ 
+-	fw = pipe->vf_stage;
+-	for (i = 0; fw; fw = fw->next) {
++	for (fw = pipe->vf_stage; fw; fw = fw->next) {
+ 		err = sh_css_pipeline_add_acc_stage(&pipe->pipeline, fw);
+ 		if (err)
+ 			goto ERR;
 -- 
-2.24.3 (Apple Git-128)
+2.35.3
 
