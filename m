@@ -2,182 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98160C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:17:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 100F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344781AbiF1LRZ (ORCPT
+        id S1344902AbiF1LSy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
+        Tue, 28 Jun 2022 07:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344574AbiF1LRX (ORCPT
+        with ESMTP id S1345454AbiF1LSJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:17:23 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9832DA80
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:17:19 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXMTp2KqRzkWfG;
-        Tue, 28 Jun 2022 19:15:58 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 19:17:17 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 19:17:16 +0800
-Message-ID: <88e574b4-3191-8c0f-1dc3-7c54c426142c@huawei.com>
-Date:   Tue, 28 Jun 2022 19:17:15 +0800
+        Tue, 28 Jun 2022 07:18:09 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E0CCFA;
+        Tue, 28 Jun 2022 04:18:08 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SBENMi030294;
+        Tue, 28 Jun 2022 11:18:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=s2tecT5NkWFR+AMcnuSlYE3BxfjRsEHcAzcdT3QzzNM=;
+ b=FeM0WobmYtaJyjr3LVJxjXVGgsJxFC6iFORNiujKvBAOh3V+3/uLD3ga/NPgREJkYzVv
+ ImbgFVmGzhhqQlXGk09PQvyIevIWGy48N1Lp649yBh8A9H57g1OYLBbthjeeaQ6riHx1
+ FY+Ou4apVFhkNqw1YnzvepDycEAVZL28d/5Qo2ayxsY2ZzD8PIPnPIEmNKHf2VRZgGfl
+ 8RjKyuX6qMNiCBie9lln5h6Ngguga1Y10vOgdjXVVaQJPEM0pGN7jlyg1r6qx94s1NOH
+ BPGlLdtHobmADOumCP6oAYuM59vEsNmyrGRFIZiZdmT7+dB1X6wQ3Dj83LmzmTdcbuYX Bw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h00kb832u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 11:18:05 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SBGLrW006925;
+        Tue, 28 Jun 2022 11:18:05 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h00kb8329-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 11:18:05 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SB54EX005702;
+        Tue, 28 Jun 2022 11:18:03 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gwt08vqn5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 11:18:03 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SBI0lC22348222
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jun 2022 11:18:00 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 46E7FAE045;
+        Tue, 28 Jun 2022 11:18:00 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A5B2DAE051;
+        Tue, 28 Jun 2022 11:17:58 +0000 (GMT)
+Received: from [9.171.41.104] (unknown [9.171.41.104])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 28 Jun 2022 11:17:58 +0000 (GMT)
+Message-ID: <3bde716c-0432-cf2d-6057-2d60fb86c3e8@linux.ibm.com>
+Date:   Tue, 28 Jun 2022 13:22:26 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH -next v6 00/10]arm64: add machine check safe support
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v9 17/21] vfio-pci/zdev: add open/close device hooks
 Content-Language: en-US
-To:     Tong Tiangen <tongtiangen@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Alexander Viro" <viro@zeniv.linux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>
-CC:     <linuxppc-dev@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-References: <20220621072638.1273594-1-tongtiangen@huawei.com>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <20220621072638.1273594-1-tongtiangen@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220606203325.110625-1-mjrosato@linux.ibm.com>
+ <20220606203325.110625-18-mjrosato@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220606203325.110625-18-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 8XOJy1_v7XTjGRREvuJ48lgxv2DAmHpF
+X-Proofpoint-GUID: 8qh8hc_BBG9W-qQwYiAmmiYNSVUfNtXd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-28_06,2022-06-24_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 mlxlogscore=999 malwarescore=0 suspectscore=0
+ phishscore=0 clxscore=1015 priorityscore=1501 impostorscore=0 spamscore=0
+ mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206280046
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 2022/6/21 15:26, Tong Tiangen wrote:
-> With the increase of memory capacity and density, the probability of
-> memory error increases. The increasing size and density of server RAM
-> in the data center and cloud have shown increased uncorrectable memory
-> errors.
->
-> Currently, the kernel has a mechanism to recover from hardware memory
-> errors. This patchset provides an new recovery mechanism.
->
-> For arm64, the hardware memory error handling is do_sea() which divided
-> into two cases:
->   1. The user state consumed the memory errors, the solution is kill the
->      user process and isolate the error page.
->   2. The kernel state consumed the memory errors, the solution is panic.
->
-> For case 2, Undifferentiated panic maybe not the optimal choice, it can be
-> handled better, in some scenarios, we can avoid panic, such as uaccess, if the
-> uaccess fails due to memory error, only the user process will be affected,
-> kill the user process and isolate the user page with hardware memory errors
-> is a better choice.
->
-> This patchset can be divided into two parts:
->   1. Patch 1~6    - do some restructuring to arm64 extable.
->   2. Patch 7~10   - arm64 add support for machine check safe framework,
->   then ,add two specific scenarios(uaccess/cow) to machine check safe.
 
-It's a good to see more RAS feature on arm64, and we do meet some panic
+On 6/6/22 22:33, Matthew Rosato wrote:
+> During vfio-pci open_device, pass the KVM associated with the vfio group
+> (if one exists).  This is needed in order to pass a special indicator
+> (GISA) to firmware to allow zPCI interpretation facilities to be used
+> for only the specific KVM associated with the vfio-pci device.  During
+> vfio-pci close_device, unregister the notifier.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 
-during copy_from/to_user and CoW processing in our production, for series，
 
-Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
 
->
-> Since V5:
->   1. Add patch2/3 to add uaccess assembly helpers.
->   2. Optimize the implementation logic of arm64_do_kernel_sea() in patch8.
->   3. Remove kernel access fixup in patch9.
->   All suggestion are from Mark.
->
-> Since V4:
->   1. According Michael's suggestion, add patch5.
->   2. According Mark's suggestiog, do some restructuring to arm64
->   extable, then a new adaptation of machine check safe support is made based
->   on this.
->   3. According Mark's suggestion, support machine check safe in do_mte() in
->   cow scene.
->   4. In V4, two patches have been merged into -next, so V5 not send these
->   two patches.
->
-> Since V3:
->   1. According to Robin's suggestion, direct modify user_ldst and
->   user_ldp in asm-uaccess.h and modify mte.S.
->   2. Add new macro USER_MC in asm-uaccess.h, used in copy_from_user.S
->   and copy_to_user.S.
->   3. According to Robin's suggestion, using micro in copy_page_mc.S to
->   simplify code.
->   4. According to KeFeng's suggestion, modify powerpc code in patch1.
->   5. According to KeFeng's suggestion, modify mm/extable.c and some code
->   optimization.
->
-> Since V2:
->   1. According to Mark's suggestion, all uaccess can be recovered due to
->      memory error.
->   2. Scenario pagecache reading is also supported as part of uaccess
->      (copy_to_user()) and duplication code problem is also solved.
->      Thanks for Robin's suggestion.
->   3. According Mark's suggestion, update commit message of patch 2/5.
->   4. According Borisllav's suggestion, update commit message of patch 1/5.
->
-> Since V1:
->   1.Consistent with PPC/x86, Using CONFIG_ARCH_HAS_COPY_MC instead of
->     ARM64_UCE_KERNEL_RECOVERY.
->   2.Add two new scenes, cow and pagecache reading.
->   3.Fix two small bug(the first two patch).
->
-> V1 in here:
-> https://lore.kernel.org/lkml/20220323033705.3966643-1-tongtiangen@huawei.com/
->
-> Tong Tiangen (10):
->    arm64: extable: add new extable type EX_TYPE_KACCESS_ERR_ZERO support
->    arm64: asm-extable: move data fields
->    arm64: asm-extable: add asm uacess helpers
->    arm64: extable: make uaaccess helper use extable type
->      EX_TYPE_UACCESS_ERR_ZERO
->    arm64: extable: move _cond_extable to _cond_uaccess_extable
->    arm64: extable: cleanup redundant extable type EX_TYPE_FIXUP
->    Add generic fallback version of copy_mc_to_user()
->    arm64: add support for machine check error safe
->    arm64: add uaccess to machine check safe
->    arm64: add cow to machine check safe
->
->   arch/arm64/Kconfig                   |  1 +
->   arch/arm64/include/asm/asm-extable.h | 84 ++++++++++++++++++-------
->   arch/arm64/include/asm/asm-uaccess.h | 12 ++--
->   arch/arm64/include/asm/assembler.h   |  8 ++-
->   arch/arm64/include/asm/extable.h     |  1 +
->   arch/arm64/include/asm/mte.h         |  4 ++
->   arch/arm64/include/asm/page.h        | 10 +++
->   arch/arm64/include/asm/uaccess.h     | 94 ++++++++++++++--------------
->   arch/arm64/lib/Makefile              |  2 +
->   arch/arm64/lib/copy_page_mc.S        | 82 ++++++++++++++++++++++++
->   arch/arm64/lib/mte.S                 | 19 ++++++
->   arch/arm64/mm/copypage.c             | 41 +++++++++---
->   arch/arm64/mm/extable.c              | 21 ++++++-
->   arch/arm64/mm/fault.c                | 29 ++++++++-
->   arch/powerpc/include/asm/uaccess.h   |  1 +
->   arch/x86/include/asm/uaccess.h       |  1 +
->   include/linux/highmem.h              |  8 +++
->   include/linux/uaccess.h              |  9 +++
->   mm/memory.c                          |  2 +-
->   19 files changed, 339 insertions(+), 90 deletions(-)
->   create mode 100644 arch/arm64/lib/copy_page_mc.S
->
+-- 
+Pierre Morel
+IBM Lab Boeblingen
