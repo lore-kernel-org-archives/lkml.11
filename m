@@ -2,83 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E55C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 17:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA945CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 17:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233237AbiF1RnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 13:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
+        id S232439AbiF1Rnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 13:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232291AbiF1Rm1 (ORCPT
+        with ESMTP id S232370AbiF1Rn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 13:42:27 -0400
-Received: from msg-4.mailo.com (ip-15.mailobj.net [213.182.54.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECAB033A14
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
-        t=1656438124; bh=OnG6BofeKIcOc3qBoOMQcWAYSD8krtB0UZjVBxSp6Og=;
-        h=X-EA-Auth:From:To:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding;
-        b=T0+6VErB5jbKrEjomgXIeIsknFef3JQPYzhkg1bBU9jJyefocJlhw/Jp5VTngbTUK
-         mVKi6mHtLfq5Se+AfNNdV4tNl6t1dAMG2FpDXvcjzV/v7038B38d538cJ1fIgRdTgK
-         CabFGneYdgMF4Kxqc4b1PkVoKlltIY8ad1HJw9RQ=
-Received: by b-1.in.mailobj.net [192.168.90.11] with ESMTP
-        via [213.182.55.207]
-        Tue, 28 Jun 2022 19:42:04 +0200 (CEST)
-X-EA-Auth: PH4grJEO8TOqTmekSPslVqqoFQlyfaOfmUq1RfpuhDt7gw8sZlxGgcOPZzjX8gWscH5YPWWS+sp1wh7kd9t01dIpPO9PgPxhxkj8VcLarRk=
-From:   Vincent Knecht <vincent.knecht@mailoo.org>
-To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vincent Knecht <vincent.knecht@mailoo.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 3/7] leds: is31fl319x: Add missing si-en compatibles
-Date:   Tue, 28 Jun 2022 19:41:18 +0200
-Message-Id: <20220628174124.2819238-4-vincent.knecht@mailoo.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220628174124.2819238-1-vincent.knecht@mailoo.org>
-References: <20220628174124.2819238-1-vincent.knecht@mailoo.org>
+        Tue, 28 Jun 2022 13:43:29 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D01614B;
+        Tue, 28 Jun 2022 10:43:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656438206; x=1687974206;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oqQEHZSZnB1ysITahdByQ/ZJdEYFVM8ux9v2Esj+wt4=;
+  b=wxiCkFoeAmdCY76Sf1pnysFaqWE7W/VDjcwga8E0hYB8HN7xUJcvSMka
+   q2+wVnniMYn5FkDfSnk8d9vSGJ6tBfDJEZR+g3HOOAdk/TPkF5oL8GRkk
+   ASgZGk3wAnpSBpkYOz4PoD/c2yMXjBTJDGMbfArC3W6hrmgBErYKOHfDJ
+   g=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 28 Jun 2022 10:43:19 -0700
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 10:43:18 -0700
+Received: from quicinc.com (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 28 Jun
+ 2022 10:43:18 -0700
+Date:   Tue, 28 Jun 2022 10:43:17 -0700
+From:   Guru Das Srinagesh <quic_gurus@quicinc.com>
+To:     Rajendra Nayak <quic_rjendra@quicinc.com>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "David Heidelberg" <david@ixit.cz>,
+        Robert Marko <robimarko@gmail.com>,
+        Elliot Berman <quic_eberman@quicinc.com>
+Subject: Re: [PATCH 4/5] firmware: qcom: scm: Add wait-queue helper functions
+Message-ID: <20220628174317.GA17687@quicinc.com>
+References: <1656359076-13018-1-git-send-email-quic_gurus@quicinc.com>
+ <1656359076-13018-5-git-send-email-quic_gurus@quicinc.com>
+ <f6f26717-fb62-0700-cc2e-d6cfe3643e4b@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <f6f26717-fb62-0700-cc2e-d6cfe3643e4b@quicinc.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add si-en compatibles for all chip variants.
+On Jun 28 2022 19:03, Rajendra Nayak wrote:
+> 
+> 
+> On 6/28/2022 1:14 AM, Guru Das Srinagesh wrote:
+> >When the firmware (FW) supports multiple requests per VM, and the VM also
+> >supports it via the `enable-multi-call` device tree flag, the floodgates
+> 
+> the bindings actually define 'allow-multi-call'
 
-Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
----
- drivers/leds/leds-is31fl319x.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Good catch, will fix this typo in the next patchset!
 
-diff --git a/drivers/leds/leds-is31fl319x.c b/drivers/leds/leds-is31fl319x.c
-index 4161b9dd7e48..0db5d4988131 100644
---- a/drivers/leds/leds-is31fl319x.c
-+++ b/drivers/leds/leds-is31fl319x.c
-@@ -102,6 +102,10 @@ static const struct of_device_id of_is31fl319x_match[] = {
- 	{ .compatible = "issi,is31fl3193", .data = &is31fl3193_cdef, },
- 	{ .compatible = "issi,is31fl3196", .data = &is31fl3196_cdef, },
- 	{ .compatible = "issi,is31fl3199", .data = &is31fl3199_cdef, },
-+	{ .compatible = "si-en,sn3190",    .data = &is31fl3190_cdef, },
-+	{ .compatible = "si-en,sn3191",    .data = &is31fl3190_cdef, },
-+	{ .compatible = "si-en,sn3193",    .data = &is31fl3193_cdef, },
-+	{ .compatible = "si-en,sn3196",    .data = &is31fl3196_cdef, },
- 	{ .compatible = "si-en,sn3199",    .data = &is31fl3199_cdef, },
- 	{ }
- };
-@@ -432,6 +436,10 @@ static const struct i2c_device_id is31fl319x_id[] = {
- 	{ "is31fl3193" },
- 	{ "is31fl3196" },
- 	{ "is31fl3199" },
-+	{ "sn3190" },
-+	{ "sn3191" },
-+	{ "sn3193" },
-+	{ "sn3196" },
- 	{ "sn3199" },
- 	{},
- };
--- 
-2.35.3
+Thank you.
 
-
-
+Guru Das.
