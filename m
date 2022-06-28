@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E68C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C45C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244743AbiF1CeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40410 "EHLO
+        id S245042AbiF1CeJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:34:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244876AbiF1C2P (ORCPT
+        with ESMTP id S244872AbiF1C2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:28:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447A5252B6;
-        Mon, 27 Jun 2022 19:27:13 -0700 (PDT)
+        Mon, 27 Jun 2022 22:28:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9A426136;
+        Mon, 27 Jun 2022 19:27:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5CA961956;
-        Tue, 28 Jun 2022 02:27:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B113C341CB;
-        Tue, 28 Jun 2022 02:27:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5068FB81A5B;
+        Tue, 28 Jun 2022 02:27:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA2F1C36AE5;
+        Tue, 28 Jun 2022 02:27:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383232;
-        bh=tiXH/T7g462YrC81TWBszoTWj9vCYXtfXO+RNyErlGg=;
+        s=k20201202; t=1656383223;
+        bh=De71Q6KPiXPBoR+9AleU9zxny28K3+huMQeadpr9NMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkKOigCJ47AF90eBC0S/PyUXbat6hueTExgV+gPkME0Ty+QmVb5VHYbcu9gEvQsx8
-         6c96kU+mFWkxtxzO74TRY5HaEqJPumiQk8TU1RcIryT9VJ01KARblIDnVHintqfzhv
-         Ezbr8qIPsfEL0yr3x8AL3h5oFMkviqqOykHapbS9KkvSnZWgrXstvpPnnFqaXsOJa7
-         40OUjbfn97jmN7UdVWkvEnM0Ex3zoM6/YFRG8hQ6folRlRkYr1J+KEh7d9q4Ry18sc
-         WBQaWIxn0uDTC1TBl0O5NeXvWwxA4vbLF0GWDE3TIo1Ing3caaVtLh8yReee5KOvpS
-         OYnWw923+Xbrg==
+        b=rsupFD8XKoQPIRAdxDpfY9vEnVvEInspM0Io2aFwx/WwdZRw3gDImVKbr8brGTJkM
+         KVban4zaKI14igQc2dX+LIUlXcxIDH/Nh4DuqDOHmPGtkhyoVhuTe0cQTRcN/nqQh+
+         EAF8KfZq1pVq4Z8Ljx5QsK4AepSTtt9skVyjiY1dlEfutDmvafha4UI5prNGOzVRcv
+         W3I8ehcPJ1fgRrbJtjlNIuL23kZDwotTeWl/UDNPwtngQFXaF3GiIhQ+jjMpqliaHG
+         teteex/8crA1wMtUW6N5nIvEjzQBohh3JEUgnAOhVuSQ4vdobdrjcq6ceaw4B4gYNb
+         biPZClFCvB74g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Cvek <petrcvekcz@gmail.com>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>, mbroemme@libmpq.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.9 06/13] video: fbdev: intelfb: Use aperture size from pci_resource_len
-Date:   Mon, 27 Jun 2022 22:26:50 -0400
-Message-Id: <20220628022657.597208-6-sashal@kernel.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>, Melissa Wen <mwen@igalia.com>,
+        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
+        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.9 03/13] drm/vc4: crtc: Use an union to store the page flip callback
+Date:   Mon, 27 Jun 2022 22:26:47 -0400
+Message-Id: <20220628022657.597208-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022657.597208-1-sashal@kernel.org>
 References: <20220628022657.597208-1-sashal@kernel.org>
@@ -51,54 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Cvek <petrcvekcz@gmail.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 25c9a15fb7bbfafb94dd3b4e3165c18b8e1bd039 ]
+[ Upstream commit 2523e9dcc3be91bf9fdc0d1e542557ca00bbef42 ]
 
-Aperture size for i9x5 variants is determined from PCI base address.
+We'll need to extend the vc4_async_flip_state structure to rely on
+another callback implementation, so let's move the current one into a
+union.
 
-	if (pci_resource_start(pdev, 2) & 0x08000000)
-		*aperture_size = MB(128);
-	...
-
-This condition is incorrect as 128 MiB address can have the address
-set as 0x?8000000 or 0x?0000000. Also the code can be simplified to just
-use pci_resource_len().
-
-The true settings of the aperture size is in the MSAC register, which
-could be used instead. However the value is used only as an info message,
-so it doesn't matter.
-
-Signed-off-by: Petr Cvek <petrcvekcz@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Reviewed-by: Melissa Wen <mwen@igalia.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220610115149.964394-10-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/intelfb/intelfbhw.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/vc4/vc4_crtc.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/video/fbdev/intelfb/intelfbhw.c b/drivers/video/fbdev/intelfb/intelfbhw.c
-index d31ed4e2c46f..3aa93565e935 100644
---- a/drivers/video/fbdev/intelfb/intelfbhw.c
-+++ b/drivers/video/fbdev/intelfb/intelfbhw.c
-@@ -199,13 +199,11 @@ int intelfbhw_get_memory(struct pci_dev *pdev, int *aperture_size,
- 	case PCI_DEVICE_ID_INTEL_945GME:
- 	case PCI_DEVICE_ID_INTEL_965G:
- 	case PCI_DEVICE_ID_INTEL_965GM:
--		/* 915, 945 and 965 chipsets support a 256MB aperture.
--		   Aperture size is determined by inspected the
--		   base address of the aperture. */
--		if (pci_resource_start(pdev, 2) & 0x08000000)
--			*aperture_size = MB(128);
--		else
--			*aperture_size = MB(256);
-+		/*
-+		 * 915, 945 and 965 chipsets support 64MB, 128MB or 256MB
-+		 * aperture. Determine size from PCI resource length.
-+		 */
-+		*aperture_size = pci_resource_len(pdev, 2);
- 		break;
- 	default:
- 		if ((tmp & INTEL_GMCH_MEM_MASK) == INTEL_GMCH_MEM_64M)
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index 51d34e7275ab..9d97f535a4d6 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -717,17 +717,17 @@ struct vc4_async_flip_state {
+ 	struct drm_framebuffer *fb;
+ 	struct drm_pending_vblank_event *event;
+ 
+-	struct vc4_seqno_cb cb;
++	union {
++		struct vc4_seqno_cb seqno;
++	} cb;
+ };
+ 
+ /* Called when the V3D execution for the BO being flipped to is done, so that
+  * we can actually update the plane's address to point to it.
+  */
+ static void
+-vc4_async_page_flip_complete(struct vc4_seqno_cb *cb)
++vc4_async_page_flip_complete(struct vc4_async_flip_state *flip_state)
+ {
+-	struct vc4_async_flip_state *flip_state =
+-		container_of(cb, struct vc4_async_flip_state, cb);
+ 	struct drm_crtc *crtc = flip_state->crtc;
+ 	struct drm_device *dev = crtc->dev;
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
+@@ -749,6 +749,14 @@ vc4_async_page_flip_complete(struct vc4_seqno_cb *cb)
+ 	up(&vc4->async_modeset);
+ }
+ 
++static void vc4_async_page_flip_seqno_complete(struct vc4_seqno_cb *cb)
++{
++	struct vc4_async_flip_state *flip_state =
++		container_of(cb, struct vc4_async_flip_state, cb.seqno);
++
++	vc4_async_page_flip_complete(flip_state);
++}
++
+ /* Implements async (non-vblank-synced) page flips.
+  *
+  * The page flip ioctl needs to return immediately, so we grab the
+@@ -794,8 +802,8 @@ static int vc4_async_page_flip(struct drm_crtc *crtc,
+ 	drm_atomic_set_fb_for_plane(plane->state, fb);
+ 	plane->fb = fb;
+ 
+-	vc4_queue_seqno_cb(dev, &flip_state->cb, bo->seqno,
+-			   vc4_async_page_flip_complete);
++	vc4_queue_seqno_cb(dev, &flip_state->cb.seqno, bo->seqno,
++			   vc4_async_page_flip_seqno_complete);
+ 
+ 	/* Driver takes ownership of state on successful async commit. */
+ 	return 0;
 -- 
 2.35.1
 
