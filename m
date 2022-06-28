@@ -2,117 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6DFCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B04CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345970AbiF1MvQ (ORCPT
+        id S1345983AbiF1Mv0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 08:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
+        Tue, 28 Jun 2022 08:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240685AbiF1MvO (ORCPT
+        with ESMTP id S1345976AbiF1MvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 08:51:14 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D50228E12;
-        Tue, 28 Jun 2022 05:51:13 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-3176b6ed923so115539847b3.11;
-        Tue, 28 Jun 2022 05:51:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CH4Pyqj8qPmLBBURKSPKNXwIf78EfOj9Be5JNsbd8XM=;
-        b=deAEahjwrHbwfkQvJGhjE6repNNVh4eFNXQleZTBkNEFCYFe2wVgqh1M4cYNsVB3+T
-         qw8/tmDv3eOW2gHe+FpDVnMYKHcybPPA2wuXoA0aW/13r7EOmfY0I/V3WgAVGZiMs5h8
-         Q/6Z78eUd49B2FWnfOlyxXLWaJSf7zcayPGwzab8lM8i44AR/7S8yDVxUzH/IXuCOw57
-         WWdfxd6yPc39eHwWlD1zMnXnPBLEW8ZwhrinOn/H4hAXHsw0iUDy2NhGDlcMmj9XNSe+
-         JxDlXTjbPKy0CrPhD4f462cdPEWyDnbXGnb33QLaBAXeYzshiGSBvXUjhjYupzBjgMoH
-         nPcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CH4Pyqj8qPmLBBURKSPKNXwIf78EfOj9Be5JNsbd8XM=;
-        b=U1yJRJiCcT+w8QAwBep8P6hLQkX4AzG4E3YoHaI0hnVlkvBGOF9YvgSSROjWAuNUEv
-         DL2EtSbOvrAaYVxYkSwxcpJDOyg8de3K1XxdLBd69iQQUUj5xA0lu7MWU91PDvFOX/N2
-         QQHTDjSh/72HQ2uYutpFLr3SWexvDXrIUm7yuRsQj+s+D3azMqviYxI1x7z0fyWPeqgn
-         /wtAYDPlH1MLJQWP1h9W5bH5IIr7VOMHGNO4U22Eo8MA8LE86VDvjrlPgKpOgNmUNO3v
-         EmBnIAcGfvRj2uENTBmCDuR5GFwm5Tc/XPMPYfigwYkKJKT3l5DuiEhnex3c6vMo/tYS
-         GJZQ==
-X-Gm-Message-State: AJIora9cxoCTeBJQc0pX0eiuCbJE18CHqU2rPmrpBE7lPxZssazLP9GT
-        K1zcRZ53373top90iSYgXVrFEVSgNkLu3vtCg2k=
-X-Google-Smtp-Source: AGRyM1u78nzO/495LmpCbD3jzYw8jhD6TT86tdZOiYA5F6G7CuTbiqjb1VQ4pyl5h5lxl4EKmsU9zWLtaaOs2RwWTbM=
-X-Received: by 2002:a81:468b:0:b0:318:4cac:6576 with SMTP id
- t133-20020a81468b000000b003184cac6576mr20543609ywa.277.1656420672775; Tue, 28
- Jun 2022 05:51:12 -0700 (PDT)
+        Tue, 28 Jun 2022 08:51:19 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDCB29CA2;
+        Tue, 28 Jun 2022 05:51:18 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-118-164.nat.spd-mgts.ru [109.252.118.164])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 7ABBC6601856;
+        Tue, 28 Jun 2022 13:51:14 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656420677;
+        bh=QW35y0ngxo74XEIz+a+5lGVgqnaeMkyQSyje1iFHTww=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=VIJvhDUJcm5yDx9PlWKbGQ74WtOgaDIRlnuWjRl3RSZ92ypNqOuh2I3bpjSz7OH4H
+         JGvnNJC8zmFqC7hT5uFxiAW5Dx635g6KUOblvf4uNCAiNufzsiyVGYH0HJTP6nChNV
+         uH74sFdDAuum+u5SJdOOqnitGC6cxSx+PBAfF6ZBFwIz6UCVPzpKzW6K802UU551PJ
+         9gd/kmz/LZafsmptA87YaQCQzcdNPvE77r/6v9FAzKaet4EK+0nCX6vqvEl0rlf6Gm
+         x1dq3kWwXK4S3yHxdJSm0xbxWEB4B/hMoLiQTHj6uc6GXhuywUCwPy1p9MPet+qr/A
+         GRvQWmyiyl8nA==
+Message-ID: <17318333-d9b1-9184-4147-7e3123a6fccb@collabora.com>
+Date:   Tue, 28 Jun 2022 15:51:11 +0300
 MIME-Version: 1.0
-References: <20220628081709.829811-1-colin.foster@in-advantage.com> <20220628081709.829811-2-colin.foster@in-advantage.com>
-In-Reply-To: <20220628081709.829811-2-colin.foster@in-advantage.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 28 Jun 2022 14:50:36 +0200
-Message-ID: <CAHp75VevH4LODkF4AELH=E5tQRZZ8LjbWN62sA14PydLMeDRgA@mail.gmail.com>
-Subject: Re: [PATCH v11 net-next 1/9] mfd: ocelot: add helper to get regmap
- from a resource
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v6 00/22] Add generic memory shrinker to VirtIO-GPU and
+ Panfrost DRM drivers
+Content-Language: en-US
+To:     Robin Murphy <robin.murphy@arm.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Qiang Yu <yuq825@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-tegra@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, kernel@collabora.com
+References: <20220526235040.678984-1-dmitry.osipenko@collabora.com>
+ <49cc6f0c-e90e-8edd-52e7-4188620e2c28@arm.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <49cc6f0c-e90e-8edd-52e7-4188620e2c28@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 10:17 AM Colin Foster
-<colin.foster@in-advantage.com> wrote:
->
-> Several ocelot-related modules are designed for MMIO / regmaps. As such,
-> they often use a combination of devm_platform_get_and_ioremap_resource and
-> devm_regmap_init_mmio.
->
-> Operating in an MFD might be different, in that it could be memory mapped,
-> or it could be SPI, I2C... In these cases a fallback to use IORESOURCE_REG
-> instead of IORESOURCE_MEM becomes necessary.
->
-> When this happens, there's redundant logic that needs to be implemented in
-> every driver. In order to avoid this redundancy, utilize a single function
-> that, if the MFD scenario is enabled, will perform this fallback logic.
+On 6/28/22 15:31, Robin Murphy wrote:
+> [  100.511411]
+> ==================================================================
+> [  100.511419] BUG: KASAN: use-after-free in irq_work_single+0xa4/0x110
+> [  100.511445] Write of size 4 at addr ffff0000107f5830 by task
+> glmark2-es2-drm/280
+> [  100.511458]
+> [  100.511464] CPU: 1 PID: 280 Comm: glmark2-es2-drm Not tainted
+> 5.19.0-rc3+ #400
+> [  100.511479] Hardware name: ARM LTD ARM Juno Development Platform/ARM
+> Juno Development Platform, BIOS EDK II Sep  3 2019
+> [  100.511489] Call trace:
+> [  100.511494]  dump_backtrace+0x1e4/0x1f0
+> [  100.511512]  show_stack+0x20/0x70
+> [  100.511523]  dump_stack_lvl+0x8c/0xb8
+> [  100.511543]  print_report+0x16c/0x668
+> [  100.511559]  kasan_report+0x80/0x208
+> [  100.511574]  kasan_check_range+0x100/0x1b8
+> [  100.511590]  __kasan_check_write+0x34/0x60
+> [  100.511607]  irq_work_single+0xa4/0x110
+> [  100.511619]  irq_work_run_list+0x6c/0x88
+> [  100.511632]  irq_work_run+0x28/0x48
+> [  100.511644]  ipi_handler+0x254/0x468
+> [  100.511664]  handle_percpu_devid_irq+0x11c/0x518
+> [  100.511681]  generic_handle_domain_irq+0x50/0x70
+> [  100.511699]  gic_handle_irq+0xd4/0x118
+> [  100.511711]  call_on_irq_stack+0x2c/0x58
+> [  100.511725]  do_interrupt_handler+0xc0/0xc8
+> [  100.511741]  el1_interrupt+0x40/0x68
+> [  100.511754]  el1h_64_irq_handler+0x18/0x28
+> [  100.511767]  el1h_64_irq+0x64/0x68
+> [  100.511778]  irq_work_queue+0xc0/0xd8
+> [  100.511790]  drm_sched_entity_fini+0x2c4/0x3b0
+> [  100.511805]  drm_sched_entity_destroy+0x2c/0x40
+> [  100.511818]  panfrost_job_close+0x44/0x1c0
+> [  100.511833]  panfrost_postclose+0x38/0x60
+> [  100.511845]  drm_file_free.part.0+0x33c/0x4b8
+> [  100.511862]  drm_close_helper.isra.0+0xc0/0xd8
+> [  100.511877]  drm_release+0xe4/0x1e0
+> [  100.511891]  __fput+0xf8/0x390
+> [  100.511904]  ____fput+0x18/0x28
+> [  100.511917]  task_work_run+0xc4/0x1e0
+> [  100.511929]  do_exit+0x554/0x1168
+> [  100.511945]  do_group_exit+0x60/0x108
+> [  100.511960]  __arm64_sys_exit_group+0x34/0x38
+> [  100.511977]  invoke_syscall+0x64/0x180
+> [  100.511993]  el0_svc_common.constprop.0+0x13c/0x170
+> [  100.512012]  do_el0_svc+0x48/0xe8
+> [  100.512028]  el0_svc+0x5c/0xe0
+> [  100.512038]  el0t_64_sync_handler+0xb8/0xc0
+> [  100.512051]  el0t_64_sync+0x18c/0x190
+> [  100.512064]
 
-> +       regs = devm_platform_get_and_ioremap_resource(pdev, index, &res);
-> +
-> +       if (!res)
-> +               return ERR_PTR(-ENOENT);
+This one shall be fixed by [1] that is not in the RC kernel yet, please
+use linux-next.
 
-This needs a comment why the original error code from devm_ call above
-is not good here.
-
-> +       else if (IS_ERR(regs))
-> +               return ERR_CAST(regs);
-> +       else
-> +               return devm_regmap_init_mmio(&pdev->dev, regs, config);
-> +}
-
-'else' is redundant in all cases above.
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20220628&id=7d64c40a7d96190d9d06e240305389e025295916
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Best regards,
+Dmitry
