@@ -2,186 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A44C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80389CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343766AbiF1H4c (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51842 "EHLO
+        id S242994AbiF1H5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230434AbiF1H4b (ORCPT
+        with ESMTP id S1343816AbiF1H5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:56:31 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B411581C;
-        Tue, 28 Jun 2022 00:56:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656402990; x=1687938990;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=S8NYqKZWJ95vXvA9MpHwV3qXnaZ8/CF+EBJ0kgg+LhM=;
-  b=RLmw9SoNs1N2nqyiSQcyX8x4erdFIsdpNzqlfTE+VAS7rGEua4YfOS9O
-   eMVV2RYO7w1RzCpXs48mIk/75x/wKsfgP+lpSIk30Wj6gVbnLPx824AE2
-   0qbfMX4lWr426uDm4pT2zed2X+RWdxq2rFm8Ibea6bu3eIYXVZAgc+f3c
-   QoyC8qF4waO93Zu8NmDj9ylwBKg/n5fPD7xhnHf0GZ5l6QnYzhKZAa81N
-   fCcXjErP8L3q+F3YHmFoOzuC1sCMW4qc2uP2yQeAyQmYOJxWSfnmswSOU
-   sIP5iUA1CHlMEY27jPJKhSEdqW31lDOXw4uIQzDOzKBAqjSemw/rrqoMQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="261471815"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="261471815"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 00:56:16 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646804862"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.62.204])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 00:56:14 -0700
-Message-ID: <bd0f9fb2-c641-5ad1-c70c-45a9a6e80642@intel.com>
-Date:   Tue, 28 Jun 2022 10:56:11 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.9.1
-Subject: Re: [PATCHv2] mmc: block: Add single read for 4k sector cards
-Content-Language: en-US
-To:     =?UTF-8?Q?Christian_L=c3=b6hle?= <CLoehle@hyperstone.com>,
-        Avri Altman <Avri.Altman@wdc.com>,
-        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <6e379c703fe149e1923b31df1a33701e@hyperstone.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <6e379c703fe149e1923b31df1a33701e@hyperstone.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 28 Jun 2022 03:57:38 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59B51573B
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:57:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R591e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=cruzzhao@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VHgOW1q_1656403054;
+Received: from rt2b04371.sqa.tbc.tbsite.net(mailfrom:CruzZhao@linux.alibaba.com fp:SMTPD_---0VHgOW1q_1656403054)
+          by smtp.aliyun-inc.com;
+          Tue, 28 Jun 2022 15:57:34 +0800
+From:   Cruz Zhao <CruzZhao@linux.alibaba.com>
+To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] sched/core: Make tasks with the same cookie pairs on SMT siblings
+Date:   Tue, 28 Jun 2022 15:57:25 +0800
+Message-Id: <1656403045-100840-4-git-send-email-CruzZhao@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1656403045-100840-1-git-send-email-CruzZhao@linux.alibaba.com>
+References: <1656403045-100840-1-git-send-email-CruzZhao@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/06/22 18:29, Christian Löhle wrote:
-> Cards with 4k native sector size may only be read 4k-aligned,
-> accommodate for this in the single read recovery and use it.
+If the number of tasks in the runqueue of SMT siblings are equal, we call
+the core balanced, otherwise unbalanced. If the core is balanced, everytime
+we pick next task, we can pick a pair of tasks with the same cookie for
+each SMT sibling, and forceidle will be avoided.
 
-Thanks for the patch.
+ - Migrate the task if source core and destination core can balance
+     If ck->nr_running of src_cpu is the highest among the source core, and
+     ck->nr_running of dst_cpu is the lowest among the destination core,
+     migrate the task.
 
-> 
-> Fixes: 81196976ed946 (mmc: block: Add blk-mq support)
-> Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+ - Select cookie matched idle CPU or idle CPU with the lowest
+   ck->nr_running among the core
+     In the fast path of task wakeup, if ck->nr_running of the cpu is the
+     lowest among the core, we can select this cpu to wake up.
 
-FYI checkpatch says:
+ - Find cookie matched idlest CPU or cookie matched CPU with the lowest
+   ck->nr_running among the core
+     In the slow path of task wakeup, if ck->nr_running of the cpu is the
+     lowest among the core, we can select this cpu to wake up.
 
-WARNING: From:/Signed-off-by: email name mismatch: 'From: "Christian Löhle" <CLoehle@hyperstone.com>' != 'Signed-off-by: Christian Loehle <cloehle@hyperstone.com>'
+Signed-off-by: Cruz Zhao <CruzZhao@linux.alibaba.com>
+---
+ kernel/sched/fair.c  |  4 ++--
+ kernel/sched/sched.h | 65 +++++++++++++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 61 insertions(+), 8 deletions(-)
 
-> ---
->  drivers/mmc/core/block.c | 25 ++++++++++++-------------
->  1 file changed, 12 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
-> index f4a1281658db..a75a208ce203 100644
-> --- a/drivers/mmc/core/block.c
-> +++ b/drivers/mmc/core/block.c
-> @@ -176,7 +176,7 @@ static inline int mmc_blk_part_switch(struct mmc_card *card,
->  				      unsigned int part_type);
->  static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
->  			       struct mmc_card *card,
-> -			       int disable_multi,
-> +			       int recovery_mode,
->  			       struct mmc_queue *mq);
->  static void mmc_blk_hsq_req_done(struct mmc_request *mrq);
->  
-> @@ -1302,7 +1302,7 @@ static void mmc_blk_eval_resp_error(struct mmc_blk_request *brq)
->  }
->  
->  static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
-> -			      int disable_multi, bool *do_rel_wr_p,
-> +			      int recovery_mode, bool *do_rel_wr_p,
->  			      bool *do_data_tag_p)
->  {
->  	struct mmc_blk_data *md = mq->blkdata;
-> @@ -1372,8 +1372,8 @@ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
->  		 * at a time in order to accurately determine which
->  		 * sectors can be read successfully.
->  		 */
-> -		if (disable_multi)
-> -			brq->data.blocks = 1;
-> +		if (recovery_mode)
-> +			brq->data.blocks = mmc_large_sector(card) ? 8 : 1;
-
-I suggest changing to use queue_physical_block_size() here and further below
-
-			brq->data.blocks = queue_physical_block_size(req->q) >> SECTOR_SHIFT;
-
->  
->  		/*
->  		 * Some controllers have HW issues while operating
-> @@ -1590,7 +1590,7 @@ static int mmc_blk_cqe_issue_rw_rq(struct mmc_queue *mq, struct request *req)
->  
->  static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
->  			       struct mmc_card *card,
-> -			       int disable_multi,
-> +			       int recovery_mode,
->  			       struct mmc_queue *mq)
->  {
->  	u32 readcmd, writecmd;
-> @@ -1599,7 +1599,7 @@ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
->  	struct mmc_blk_data *md = mq->blkdata;
->  	bool do_rel_wr, do_data_tag;
->  
-> -	mmc_blk_data_prep(mq, mqrq, disable_multi, &do_rel_wr, &do_data_tag);
-> +	mmc_blk_data_prep(mq, mqrq, recovery_mode, &do_rel_wr, &do_data_tag);
->  
->  	brq->mrq.cmd = &brq->cmd;
->  
-> @@ -1690,7 +1690,7 @@ static int mmc_blk_fix_state(struct mmc_card *card, struct request *req)
->  
->  #define MMC_READ_SINGLE_RETRIES	2
->  
-> -/* Single sector read during recovery */
-> +/* Single (native) sector read during recovery */
->  static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
->  {
->  	struct mmc_queue_req *mqrq = req_to_mmc_queue_req(req);
-> @@ -1698,6 +1698,7 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
->  	struct mmc_card *card = mq->card;
->  	struct mmc_host *host = card->host;
->  	blk_status_t error = BLK_STS_OK;
-> +	size_t bytes_per_read = mmc_large_sector(card) ? 4096 : 512;
-
-	size_t bytes_per_read = queue_physical_block_size(req->q);
-
->  
->  	do {
->  		u32 status;
-> @@ -1732,13 +1733,13 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
->  		else
->  			error = BLK_STS_OK;
->  
-> -	} while (blk_update_request(req, error, 512));
-> +	} while (blk_update_request(req, error, bytes_per_read));
->  
->  	return;
->  
->  error_exit:
->  	mrq->data->bytes_xfered = 0;
-> -	blk_update_request(req, BLK_STS_IOERR, 512);
-> +	blk_update_request(req, BLK_STS_IOERR, bytes_per_read);
->  	/* Let it try the remaining request again */
->  	if (mqrq->retries > MMC_MAX_RETRIES - 1)
->  		mqrq->retries = MMC_MAX_RETRIES - 1;
-> @@ -1879,10 +1880,8 @@ static void mmc_blk_mq_rw_recovery(struct mmc_queue *mq, struct request *req)
->  		return;
->  	}
->  
-> -	/* FIXME: Missing single sector read for large sector size */
-> -	if (!mmc_large_sector(card) && rq_data_dir(req) == READ &&
-> -	    brq->data.blocks > 1) {
-> -		/* Read one sector at a time */
-> +	if (rq_data_dir(req) == READ && brq->data.blocks > 1) {
-> +		/* Read one (native) sector at a time */
->  		mmc_blk_read_single(mq, req);
->  		return;
->  	}
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 78795a9..c18a716 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6096,7 +6096,7 @@ static int wake_affine(struct sched_domain *sd, struct task_struct *p,
+ 	for_each_cpu_and(i, sched_group_span(group), p->cpus_ptr) {
+ 		struct rq *rq = cpu_rq(i);
+ 
+-		if (!sched_core_cookie_match(rq, p))
++		if (!sched_core_cookie_match(NULL, rq, p))
+ 			continue;
+ 
+ 		if (sched_idle_cpu(i))
+@@ -7681,7 +7681,7 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
+ 	 * Don't migrate task if the task's cookie does not match
+ 	 * with the destination CPU's core cookie.
+ 	 */
+-	if (!sched_core_cookie_match(cpu_rq(env->dst_cpu), p))
++	if (!(sched_core_cookie_match(env->src_rq, env->dst_rq, p)))
+ 		return 1;
+ 
+ 	if (sysctl_sched_migration_cost == 0)
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index d852c67..ee0e558 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1195,6 +1195,56 @@ struct sched_core_cookie {
+ };
+ 
+ /*
++ * When tasks with the same cookie can make pairs on SMT siblings, forceidle can be
++ * avoided a lot, so when wake up and load balance, we try to make and keep the pairs
++ * with the same cookie on SMT siblings.
++ */
++static inline bool
++sched_core_make_pair_balance(struct rq *src_rq, struct rq *dst_rq, struct task_struct *p)
++{
++	struct sched_core_cookie *ck = (struct sched_core_cookie *)p->core_cookie;
++	unsigned int src_cpu, dst_cpu, t;
++	unsigned int src_nr_running, dst_nr_running;
++
++	if (!ck)
++		return true;
++
++	/*
++	 * When load balance, if ck->nr_running on src_cpu is less than that on SMT
++	 * siblings, don't migrate the task.
++	 */
++	if (src_rq) {
++		if (!sched_core_enabled(src_rq))
++			return true;
++		src_cpu = cpu_of(src_rq);
++		src_nr_running = *per_cpu_ptr(ck->nr_running, src_cpu);
++		for_each_cpu(t, cpu_smt_mask(src_cpu)) {
++			if (t == src_cpu)
++				continue;
++			if (*per_cpu_ptr(ck->nr_running, t) >= src_nr_running)
++				return false;
++		}
++
++	}
++
++	/*
++	 * If task p can make pair the cookied task with p->core_cookie on the
++	 * dst core, we can wake up task p on dst_rq, or migrate it to dst_rq.
++	 */
++	dst_cpu = cpu_of(dst_rq);
++	dst_nr_running = *per_cpu_ptr(ck->nr_running, dst_cpu);
++	for_each_cpu(t, cpu_smt_mask(dst_cpu)) {
++		if (t == dst_cpu)
++			continue;
++		if (*per_cpu_ptr(ck->nr_running, t) <= dst_nr_running)
++			return false;
++	}
++
++	return true;
++}
++
++
++/*
+  * Helpers to check if the CPU's core cookie matches with the task's cookie
+  * when core scheduling is enabled.
+  * A special case is that the task's cookie always matches with CPU's core
+@@ -1206,19 +1256,21 @@ static inline bool sched_cpu_cookie_match(struct rq *rq, struct task_struct *p)
+ 	if (!sched_core_enabled(rq))
+ 		return true;
+ 
+-	return rq->core->core_cookie == p->core_cookie;
++	return rq->core->core_cookie == p->core_cookie ||
++		sched_core_make_pair_balance(NULL, rq, p);
+ }
+ 
+-static inline bool sched_core_cookie_match(struct rq *rq, struct task_struct *p)
++static inline bool
++sched_core_cookie_match(struct rq *src_rq, struct rq *dst_rq, struct task_struct *p)
+ {
+ 	bool idle_core = true;
+ 	int cpu;
+ 
+ 	/* Ignore cookie match if core scheduler is not enabled on the CPU. */
+-	if (!sched_core_enabled(rq))
++	if (!sched_core_enabled(dst_rq))
+ 		return true;
+ 
+-	for_each_cpu(cpu, cpu_smt_mask(cpu_of(rq))) {
++	for_each_cpu(cpu, cpu_smt_mask(cpu_of(dst_rq))) {
+ 		if (!available_idle_cpu(cpu)) {
+ 			idle_core = false;
+ 			break;
+@@ -1229,7 +1281,8 @@ static inline bool sched_core_cookie_match(struct rq *rq, struct task_struct *p)
+ 	 * A CPU in an idle core is always the best choice for tasks with
+ 	 * cookies.
+ 	 */
+-	return idle_core || rq->core->core_cookie == p->core_cookie;
++	return idle_core || dst_rq->core->core_cookie == p->core_cookie ||
++		sched_core_make_pair_balance(src_rq, dst_rq, p);
+ }
+ 
+ static inline bool sched_group_cookie_match(struct rq *rq,
+@@ -1243,7 +1296,7 @@ static inline bool sched_group_cookie_match(struct rq *rq,
+ 		return true;
+ 
+ 	for_each_cpu_and(cpu, sched_group_span(group), p->cpus_ptr) {
+-		if (sched_core_cookie_match(rq, p))
++		if (sched_core_cookie_match(NULL, rq, p))
+ 			return true;
+ 	}
+ 	return false;
+-- 
+1.8.3.1
 
