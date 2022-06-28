@@ -2,107 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53839CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:44:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B421CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344539AbiF1Mox (ORCPT
+        id S1345170AbiF1MpW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 08:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
+        Tue, 28 Jun 2022 08:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240118AbiF1Mov (ORCPT
+        with ESMTP id S232057AbiF1MpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 08:44:51 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477B419C17;
-        Tue, 28 Jun 2022 05:44:51 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SCOqbr017601;
-        Tue, 28 Jun 2022 12:44:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=P3twaWHhDTd77mVpF/4CwpTAPR0IiybHjJNeSDkRcL0=;
- b=YwrWAEqSsTmlqynz7lKcfShqsKBIFgU9CMueffzw0g3d3QFZbrujWziXJwmMcte0tS3s
- PomybUJhf2QQKm9wsQQKOSu13v/4Fik9EiUbSv90l6Q+YIRiINfn/iEzkjfEIz3Xs22Z
- yOg83164CET4v2Ary85VNBelO6NSMqcrXslYCVGINCpZGLJ3/dOELlavoZzAx7cR9SUy
- 664wqGPZIoQjgFPFbIygtKsHYudwhnfRwpQQ4rsbx67zJCI6qyfZl9mjD3YSN+uRbb9Y
- sXJP1lHQN5bldDX18PznxAH5Kj+2q7x58i9NLF66hfLvuPDBXEv5YwhVWix+EMkLtbrK Jw== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h00j82jgq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 12:44:47 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SCavjf020511;
-        Tue, 28 Jun 2022 12:44:45 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04ams.nl.ibm.com with ESMTP id 3gwt08vuhw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 12:44:45 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SCiggb13042154
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jun 2022 12:44:42 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2BFE35204F;
-        Tue, 28 Jun 2022 12:44:42 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.7.238])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 8D4B05204E;
-        Tue, 28 Jun 2022 12:44:41 +0000 (GMT)
-Date:   Tue, 28 Jun 2022 14:44:40 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     Zhang Jiaming <jiaming@nfschina.com>
-Cc:     hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, jwi@linux.ibm.com, bblock@linux.ibm.com,
-        davem@davemloft.net, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        renyu@nfschina.com
-Subject: Re: [PATCH] s390/qdio: Fix spelling mistake
-Message-ID: <Yrr3uGLBIm8KLiLN@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <20220623060543.12870-1-jiaming@nfschina.com>
+        Tue, 28 Jun 2022 08:45:19 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0C11D0DC;
+        Tue, 28 Jun 2022 05:45:18 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id z19so17350163edb.11;
+        Tue, 28 Jun 2022 05:45:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NSdZnX0hvMtHWH81+COi+h5G1VU1bB160uGR/aWIxoc=;
+        b=ZuwUCgXkzV6GPaEzIaa25s+tFkgTNnNH/N4tpQWEToYTlYJTB2+H0vKOPlpqc+We/I
+         9muIHC4zfx+RqpIhwaI4nFIqST44WUDJQOwINb/y6HM/jRPb+CEUXou6Ao1ngrOilOHR
+         3FqdfmwQLHkaxr9Pb1/THb2yqeTJ80DJAUrQyJCAXhPYbykj7sNqB5nkjD7M29c1T6Wx
+         fXXp960dzrvdMHFQtPDkShyvp3zCmYGw7AsCIwU1PECpo2tA2ehZYj6USB4QiSNlF7fi
+         WHTst0bWB6bP8eBUpOgf5Z8/x1trm9fDjlxcR86KGw7JgSVl/PakEFnoRrCj+7OmAUXN
+         /K5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NSdZnX0hvMtHWH81+COi+h5G1VU1bB160uGR/aWIxoc=;
+        b=dA8/K9OpK0onIfVe/D5OaJ6cgmLbAQ8x3KNr50YJKsrv4VopfQt/bwqDGYp/VFioG4
+         Ima9n+yZ1GPj+U43abOHMz30eVC4WWBVL3gMUlsf2UWJtFwzkh/BedGsr2sC2y0ZILHJ
+         ufozkorXy5nbWoEVMYAoOycJyI9vulSi/bxyT23t8HPszHH1g7YMz4NQ+oj/jYHy60GF
+         /757rFKth9fyWnmkuSqg/7rV6J9+WqBsQUufYywsVhTSzuHyqGhfdl5L2lBoa9WJupY7
+         wFo5N6JAsFf+2F+eKajWrrjJA8z/Gp7Jfdo6/OkE4TkfYQn5v1hvsmGcu2owgZCzjPN4
+         TpLw==
+X-Gm-Message-State: AJIora/wqifllP3xfpULO5L1Wg/c8/xIaWjNITc4qiI7DrsNyEZAyJDN
+        gvwl1IAehzP9XuFIwHir1HA=
+X-Google-Smtp-Source: AGRyM1t5437mq08RGvn4Hh37j6wWEZKSJ9YjRbyOr1AGeK+h/hUdNQ8ChmJv6Ixh2qm6pxEZIj9wvA==
+X-Received: by 2002:a05:6402:2786:b0:435:da07:14cb with SMTP id b6-20020a056402278600b00435da0714cbmr22792909ede.408.1656420316598;
+        Tue, 28 Jun 2022 05:45:16 -0700 (PDT)
+Received: from localhost.localdomain (dynamic-095-114-061-215.95.114.pool.telefonica.de. [95.114.61.215])
+        by smtp.googlemail.com with ESMTPSA id f13-20020a170906824d00b00726e108b566sm622871ejx.173.2022.06.28.05.45.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 05:45:16 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        p.zabel@pengutronix.de
+Cc:     linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        vkoul@kernel.org, kishon@ti.com, rtanwar@maxlinear.com,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v1 0/9] reset: replace reset-lantiq with reset-intel-gw
+Date:   Tue, 28 Jun 2022 14:44:32 +0200
+Message-Id: <20220628124441.2385023-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220623060543.12870-1-jiaming@nfschina.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: p5I7pTmnw_MLQL_-Hj5SgjsTUXCH1NHu
-X-Proofpoint-ORIG-GUID: p5I7pTmnw_MLQL_-Hj5SgjsTUXCH1NHu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-28_07,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 impostorscore=0 suspectscore=0 mlxlogscore=871
- clxscore=1011 phishscore=0 bulkscore=0 spamscore=0 priorityscore=1501
- mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206280052
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 02:05:43PM +0800, Zhang Jiaming wrote:
-> Change 'defineable' to 'definable'.
-> Change 'paramater' to 'parameter'.
-> 
-> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
-> ---
->  arch/s390/include/asm/qdio.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/s390/include/asm/qdio.h b/arch/s390/include/asm/qdio.h
-> index 54ae2dc65e3b..2f983e0b95e0 100644
-> --- a/arch/s390/include/asm/qdio.h
-> +++ b/arch/s390/include/asm/qdio.h
-> @@ -133,9 +133,9 @@ struct slibe {
->   * @sb_count: number of storage blocks
->   * @sba: storage block element addresses
->   * @dcount: size of storage block elements
-> - * @user0: user defineable value
-> - * @res4: reserved paramater
-> - * @user1: user defineable value
-> + * @user0: user definable value
-> + * @res4: reserved parameter
-> + * @user1: user definable value
->   */
->  struct qaob {
->  	u64 res0[6];
+Hello,
 
-Applied, thanks!
+in the discussion when the reset-intel-gw driver was added it came up
+that the IP in the Intel LGM SoCs is backwards compatible with the older
+Lantiq SoCs. This series removes the reset-lantiq driver and replaces it
+with the reset-intel-gw driver.
+
+The transition is relatively straight forward:
+- compatible strings from the old bindings (from
+  Documentation/devicetree/bindings/mips/lantiq/rcu.txt) are moved over
+  to intel,rcu-gw.yaml
+- missing compatible strings (for Amazon-SE, Danube and xRX100) are
+  added directly to intel,rcu-gw.yaml
+- update the driver to map the registers using syscon on legacy SoCs as
+  some RCU registers are shared with various peripherals (there's nested
+  USB PHYs and other peripherals have endianness configuration registers
+  in the RCU register space)
+- update the .dts(i) files (I already prepared patches for downstream
+  OpenWrt, which is the only known user of these SoCs)
+
+Patch #3 (dt-bindings for the reset controller) depends on patch #1
+(dt-bindings for the USB2 PHYs). I think it would be easiest to also
+take patch #1 through the reset tree since it's a simple txt -> yaml
+conversion.
+If needed I can send patch #9 separately so it can go through the MIPS
+tree.
+
+PS: I Cc'ed Rahul Tanwar who has previously stepped up as a maintainer
+for the drivers on the Intel LGM SoCs, which is where the reset-intel-gw
+driver was introduced. He's now with MaxLinear who took over Intel's
+AnyWAN department (where the LGM SoCs were developed) in 2020.
+
+
+Martin Blumenstingl (9):
+  dt-bindings: phy: lantiq: xway-rcu-usb2-phy: Convert to YAML
+  dt-bindings: reset: intel,rcu-gw: Allow up to three global reset items
+  dt-bindings: reset: intel,rcu-gw: Update bindings for "legacy" SoCs
+  dt-bindings: mips: lantiq: rcu: Remove binding documentation
+  reset: intel: Allow enabling the driver on "LANTIQ" (MIPS) platforms
+  reset: intel: Add and update compatible strings Lantiq SoCs
+  reset: intel: Use syscon_node_to_regmap on legacy SoCs
+  reset: lantiq: Remove driver as it has been replaced by reset-intel-gw
+  mips: dts: lantiq: Update the RCU node to match the intel,rcu-gw
+    binding
+
+ .../devicetree/bindings/mips/lantiq/rcu.txt   |  69 ------
+ .../phy/lantiq,xway-rcu-usb2-phy.yaml         |  68 ++++++
+ .../bindings/phy/phy-lantiq-rcu-usb2.txt      |  40 ----
+ .../bindings/reset/intel,rcu-gw.yaml          |  88 +++++++-
+ arch/mips/boot/dts/lantiq/danube.dtsi         |  20 +-
+ drivers/reset/Kconfig                         |  11 +-
+ drivers/reset/Makefile                        |   1 -
+ drivers/reset/reset-intel-gw.c                |  36 ++-
+ drivers/reset/reset-lantiq.c                  | 210 ------------------
+ 9 files changed, 197 insertions(+), 346 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mips/lantiq/rcu.txt
+ create mode 100644 Documentation/devicetree/bindings/phy/lantiq,xway-rcu-usb2-phy.yaml
+ delete mode 100644 Documentation/devicetree/bindings/phy/phy-lantiq-rcu-usb2.txt
+ delete mode 100644 drivers/reset/reset-lantiq.c
+
+-- 
+2.36.1
+
