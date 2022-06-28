@@ -2,131 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19318CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:45:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F8B5CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345790AbiF1OpA (ORCPT
+        id S1347149AbiF1Op4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 10:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
+        Tue, 28 Jun 2022 10:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347100AbiF1Oo4 (ORCPT
+        with ESMTP id S240816AbiF1Opz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 10:44:56 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCF132CCBE
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 07:44:55 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id b23so15169342ljh.7
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 07:44:55 -0700 (PDT)
+        Tue, 28 Jun 2022 10:45:55 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4B62E6A6;
+        Tue, 28 Jun 2022 07:45:55 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id w19-20020a17090a8a1300b001ec79064d8dso16166726pjn.2;
+        Tue, 28 Jun 2022 07:45:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xYNtEachczg7r/XXNrPpniIU6MTplkzQm/H7US5uhak=;
-        b=ht86O9eM8J4P2PZl+KtFbHC+gZPW6NGiN4v8P9Rgy3+MOPpO2yYFyJgHvaOmDgiNgH
-         /p5vSOz3x44RtyJLVLOWXHtd4RctYsU5AD77eH1lLYGzoJq1nXE6Wn1aS/nh9PsIqaSM
-         SgZX0tkOqwnEOJQZtltTQjauhUHkZ+y8964HnCXWW/ZxxVAcJz9JkVyoEfND2Y4j0TCl
-         jjtAfvyG4Y9kaCrb3/mP1aNnKNJTlHOByqk1r/9LFGYSktJmBW9fDRNUyV5C47qOh4LU
-         EP1xu8f//aX5sdjOiopNc8mHWVwa45OZNsR0Yrue3dH93LCUvFB7lshaMpzR2gSAsFYP
-         pdBA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=C2TU20f4wyf+zfFLwfO6epS0rxwd11FopiHGQ1fLJg0=;
+        b=Qbk41NY+109uhYB0wE2Vp9QhBtBKgM28fP5hp2db400M31o0U2JNe04q/578gXbzmC
+         H7FB0pW50UtrLqOcthINdYew44afyKK0FyL5bTDtuhcvECfHT4Owex35U70tq0XO7pDB
+         KBGxa/5jTZHaXCJ9PYO/+kt54KqhQJOOIH7jQ/w3t5iA5oySbw+qFiw8TOWIjSnxBy2g
+         zq4tC7yXWT4kwWSvm8uK1ztLdu8gNQ88yM26qaac76k6GqUMF1e5sN10b1DSbk131PPq
+         McMfFYsTzKdWukS4Nsri0JJ9siX3ZoLkbvpHNc1Sfu1SslHwAaqKdReuLHjN0CbeJyK7
+         FWFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xYNtEachczg7r/XXNrPpniIU6MTplkzQm/H7US5uhak=;
-        b=BwvHnmAgE8xEoRhwW4VrKRaHH7wRwGEUSz2QUTQyLZrfJ4cNGdWJewkcnJ99aTu9S+
-         QPz6dkvdfY+kUZCNrkrvAHet8IBWxPnMg6WpUwjrmJIbzRAZvdiInyoM1V4yyuQl6Bth
-         mNMJ4SzYZYjdB2cA8V8Vn+kOOXku0Tu61wx/lRG+kxT7+qNw8otSQcxeJnDrYCwWfMW5
-         SKMAn2u5hpZa9bRfCvruGWRo9CaPwb6hJCDnWIJCcbIw3cpIVhDN+zHfDJlyYv/Pd8dy
-         gR7WaDWoKIKJCVOOEhrpD+PoH3i+z/mRml6eIt7RdGMerDj1CQzra+T8KHxp9Hrsed9n
-         tvrg==
-X-Gm-Message-State: AJIora86WrLux53GDDADBMgNtM+22/WL65IF7/CUKTMZV4JUIYAuDbIh
-        276/yqyz1vBVCs8Z02tbDT+UT2iS05QP6t82mUbm8Q==
-X-Google-Smtp-Source: AGRyM1vkmnuA2FUnqSW9JeJGsv4yNApnR2Dfl5iKx6TmhoRHbVhtZKhKo6yaFA07EoXj3LStjfnAsF7IPGkdhQBdH38=
-X-Received: by 2002:a2e:8ec9:0:b0:25a:754d:db39 with SMTP id
- e9-20020a2e8ec9000000b0025a754ddb39mr9908848ljl.4.1656427492555; Tue, 28 Jun
- 2022 07:44:52 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=C2TU20f4wyf+zfFLwfO6epS0rxwd11FopiHGQ1fLJg0=;
+        b=RhGcEhFYcf12Ldpzm23xCNBUlm0VnWBAkXr1ChCuku/2HAkZfhnrju67tdQw85WM3l
+         i8YI5QZVHfv0ITds+M6ZYTHFVZR45XdR6TmWX1OK9c2mgpYSj3jLPINAwl+O68qdUuVa
+         0+fyEzgYiajpQ40GRGJewa9fPnKK0e9PE+ukLoga4xJ+8I8093TusBrRPsFssRZwfwhK
+         zA5ECQcGK8r2WcT3Hy2O3Zr9OW7e4e1MhEfvTXQgOqQa1LC8AzxAn6l2NJPr2ehyksTb
+         N/izD+/XuD4IiR1cES7sHKZVg+GL7iQ+fuaugLdNkXiEKW+2e8yZ0N1DgHtBEA0/vsGC
+         +dJQ==
+X-Gm-Message-State: AJIora+tz4VIY5jGz6p8HU98JNOqrTirrdZGetkn71Rf7BVwiy7/we4x
+        fUW96L14f+nPsg6J9wddzkw=
+X-Google-Smtp-Source: AGRyM1vV84aJuh8gGSEdhBSzQNEe3Hud6oMcLzucjqsa5H4gWdc/CaYL7BIILLS7iOowABQZ/gB9xg==
+X-Received: by 2002:a17:903:2452:b0:16a:3b58:48fd with SMTP id l18-20020a170903245200b0016a3b5848fdmr5288887pls.67.1656427554722;
+        Tue, 28 Jun 2022 07:45:54 -0700 (PDT)
+Received: from ?IPV6:2600:8802:b00:4a48:c569:fa46:5b43:1b1e? ([2600:8802:b00:4a48:c569:fa46:5b43:1b1e])
+        by smtp.gmail.com with ESMTPSA id h6-20020a170902680600b00163ffe73300sm9386192plk.137.2022.06.28.07.45.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 07:45:54 -0700 (PDT)
+Message-ID: <b43dde07-84da-c0a2-2aef-163cdbfecf26@gmail.com>
+Date:   Tue, 28 Jun 2022 07:45:53 -0700
 MIME-Version: 1.0
-References: <20220628095833.2579903-1-elver@google.com> <20220628095833.2579903-10-elver@google.com>
-In-Reply-To: <20220628095833.2579903-10-elver@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 28 Jun 2022 16:44:41 +0200
-Message-ID: <CACT4Y+bzcWQUspDws-rKJNcOxceg-XOQzunuwsQBuPH5KMqJXA@mail.gmail.com>
-Subject: Re: [PATCH v2 09/13] locking/percpu-rwsem: Add percpu_is_write_locked()
- and percpu_is_read_locked()
-To:     Marco Elver <elver@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, linux-perf-users@vger.kernel.org,
-        x86@kernel.org, linux-sh@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v2 1/4] net: dsa: add get_pause_stats support
+Content-Language: en-US
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        UNGLinuxDriver@microchip.com
+References: <20220628085155.2591201-1-o.rempel@pengutronix.de>
+ <20220628085155.2591201-2-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220628085155.2591201-2-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 at 11:59, Marco Elver <elver@google.com> wrote:
->
-> Implement simple accessors to probe percpu-rwsem's locked state:
-> percpu_is_write_locked(), percpu_is_read_locked().
->
-> Signed-off-by: Marco Elver <elver@google.com>
 
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
 
-> ---
-> v2:
-> * New patch.
-> ---
->  include/linux/percpu-rwsem.h  | 6 ++++++
->  kernel/locking/percpu-rwsem.c | 6 ++++++
->  2 files changed, 12 insertions(+)
->
-> diff --git a/include/linux/percpu-rwsem.h b/include/linux/percpu-rwsem.h
-> index 5fda40f97fe9..36b942b67b7d 100644
-> --- a/include/linux/percpu-rwsem.h
-> +++ b/include/linux/percpu-rwsem.h
-> @@ -121,9 +121,15 @@ static inline void percpu_up_read(struct percpu_rw_semaphore *sem)
->         preempt_enable();
->  }
->
-> +extern bool percpu_is_read_locked(struct percpu_rw_semaphore *);
->  extern void percpu_down_write(struct percpu_rw_semaphore *);
->  extern void percpu_up_write(struct percpu_rw_semaphore *);
->
-> +static inline bool percpu_is_write_locked(struct percpu_rw_semaphore *sem)
-> +{
-> +       return atomic_read(&sem->block);
-> +}
-> +
->  extern int __percpu_init_rwsem(struct percpu_rw_semaphore *,
->                                 const char *, struct lock_class_key *);
->
-> diff --git a/kernel/locking/percpu-rwsem.c b/kernel/locking/percpu-rwsem.c
-> index 5fe4c5495ba3..213d114fb025 100644
-> --- a/kernel/locking/percpu-rwsem.c
-> +++ b/kernel/locking/percpu-rwsem.c
-> @@ -192,6 +192,12 @@ EXPORT_SYMBOL_GPL(__percpu_down_read);
->         __sum;                                                          \
->  })
->
-> +bool percpu_is_read_locked(struct percpu_rw_semaphore *sem)
-> +{
-> +       return per_cpu_sum(*sem->read_count) != 0;
-> +}
-> +EXPORT_SYMBOL_GPL(percpu_is_read_locked);
-> +
->  /*
->   * Return true if the modular sum of the sem->read_count per-CPU variable is
->   * zero.  If this sum is zero, then it is stable due to the fact that if any
-> --
-> 2.37.0.rc0.161.g10f37bed90-goog
->
+On 6/28/2022 1:51 AM, Oleksij Rempel wrote:
+> Add support for pause stats
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
