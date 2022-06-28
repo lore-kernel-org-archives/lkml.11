@@ -2,132 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6247C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 735DFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbiF1UNO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 16:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47532 "EHLO
+        id S229459AbiF1UNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 16:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230297AbiF1ULz (ORCPT
+        with ESMTP id S229709AbiF1UMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 16:11:55 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EB43A73F;
-        Tue, 28 Jun 2022 13:03:07 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id e63so13212339pgc.5;
-        Tue, 28 Jun 2022 13:03:07 -0700 (PDT)
+        Tue, 28 Jun 2022 16:12:02 -0400
+Received: from mail-vk1-xa2e.google.com (mail-vk1-xa2e.google.com [IPv6:2607:f8b0:4864:20::a2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23B0B7F8
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:04:08 -0700 (PDT)
+Received: by mail-vk1-xa2e.google.com with SMTP id a15so1447129vkl.10
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:04:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rEFNBAp2rK8tG0znpxJYCMRlWPc6NvbqoMLW4LzSJfk=;
-        b=MIGeY0RhS9CN40/vGDp7FQeaUW55mq9Qr4KpwEyoE3Q77hTZfXkuDJ/d6Wk0MHz8Uf
-         ivnaaF1YKNJVw5ssrdAsQAhuNpvvzA/l4t92b5OzTe2qBq+o+JyQqiAIFXPIXuOoV6pO
-         UbwVoDi6XKK7wH4GtCzsoDxqDUmbB5fFVfQs1+UzLMgf9oY7+tzMV9z8F4WV4lGoxsnt
-         fnmRaIRpgR8MLN2Q8KXFutIS0K/RI4DoFub81Hy+Ib7b3uZ+KL+I+3P5fyDFRWFk4ubc
-         GdeUPoT+S50BaRUJCUBu0MzmGZpvicdgXql0+hwY20sdsSqspWf0a8/Nm02Y1d0Gxbqk
-         LX3Q==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p/B/lKMrNzso4spSPSsCwZNEn4kBXQBTjSLYuB7ZnRI=;
+        b=mxjGCIOfoAmyxfccoTVGTAkTulE4wTRYdtQ0NYkKSucODYFSn4CXTYOLJsAq9ElhQv
+         uunT5HmitaiA9fw9pTRw0VGQqrXPDlrqRAWNugtfmQXGziYg9gYeZs/TcsE04j56wCa2
+         DqZcs9mpLd//uRQnfjfJT6O8MfdNpyP0L0YeDVwJO3wKKgrFDZG38eg5ER9ruT/SoC8B
+         YU6irY89WDJqBvR5ysy4PjbUMhRh4gb7q3K/6V76QdXMaSpuVoA2r7ArJDwTANaVswum
+         V1GRSDLx3CpAHnRP+ZMBe1GL/5GRQWwAOPU91cU+NXDLLFoN0yN9rY2XvKzXKfJJ/w8b
+         sxvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=rEFNBAp2rK8tG0znpxJYCMRlWPc6NvbqoMLW4LzSJfk=;
-        b=P9mkQRIUTLCF1YvC6xf1JivbDmj1swKsUTHoYghmGdVXXThi8RzkCaANNf4iRhfoOv
-         XM0SRecP3DadqPmlmRrMqMG5NxI1mO/8h9x375F68TEY5PdeiN5NuRjEPhD1fYx23Wib
-         ck9NLmXWNM2746L1pdBt1XPyYn4py6n1W/cBlfGXIQ2HKFtOoMB3IVIoNDK0mPfYXAtn
-         zUp37iCAA+ZoW3464yvcWi+47zBWkX/39gb0kEcR+KI0vRBUcpYmY3o1s+1ma753b/rx
-         2iHCKzC12Hc8SbGUlAiiOAZQDeUaTBBGOH+SS4Dg+8ihtg5qq9rMU5gwulObfygcHfl5
-         pSjQ==
-X-Gm-Message-State: AJIora9QaxN7OcZFByy9tfNgu88gXhJLi8dmHaa4aVEPw8P3iJpUSYVt
-        suTHtceRIg35FlRmMyK535I=
-X-Google-Smtp-Source: AGRyM1ubUd6iMiZ5FInUp79X9UHmw0Zc+5SomdCP0cuuxV5u0WVcVO0qFx8FQl68HaZHGEPi7qRnUg==
-X-Received: by 2002:a63:b444:0:b0:40c:f936:a21a with SMTP id n4-20020a63b444000000b0040cf936a21amr19713224pgu.37.1656446587334;
-        Tue, 28 Jun 2022 13:03:07 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id t4-20020a17090340c400b001616723b8ddsm9651148pld.45.2022.06.28.13.03.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 13:03:06 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 28 Jun 2022 13:03:05 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: Re: [PATCH 4/8] watchdog: s3c2410_wdt: Remove #ifdef guards for PM
- related functions
-Message-ID: <20220628200305.GD3633970@roeck-us.net>
-References: <20220628193449.160585-1-paul@crapouillou.net>
- <20220628193449.160585-5-paul@crapouillou.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p/B/lKMrNzso4spSPSsCwZNEn4kBXQBTjSLYuB7ZnRI=;
+        b=2XzbMhHPIYhoS1m2iDVY6GAYxvgWRbNTYhvhiksg6wn3TYFTePVyxO9XEFC7b32wT9
+         yxxvAqI5i6Zy0ly7oqmZ6Ig0uNGNIn/veQsU+dftu0K2CZRDGU1xMWdOZmi/9YiAqj0r
+         1RAUtMZvXiVlqRS9cJk6r9d+RzW/+7AdAaPT8mw7Ah904zlSwjU+I1bO2REm6DHs5o8N
+         Oa+AQu9FrINz8jOkj3d3F5+YRHCRhe66gqok74bjqb7qL5kYvd7aBPQ72XljTI1u3ckL
+         041vPGIYYUyw/d0lhYldNFA13rnpcxrWUbC9Jpzf5n5QMTs7XBFmBKnm6mWaGo+ca/h2
+         ajbw==
+X-Gm-Message-State: AJIora+CGHjHeFebXPwisJl5bL7vzeNZk5fKSAo/ohyYn+NoVCTMNWsb
+        YRkKpch7oYRD8/Hhs4O9ZYZTcffzkfuxr0AHXzovRg==
+X-Google-Smtp-Source: AGRyM1vPxcUSK6LIJdPh1va54HjoTAEorgGghWfusEMooGmXSA3C+Yy0DGKnB8TyAI3/Iaynh2pv8HFkBaKtY3sFGr8=
+X-Received: by 2002:a1f:aac7:0:b0:35e:1c45:def with SMTP id
+ t190-20020a1faac7000000b0035e1c450defmr2577667vke.35.1656446647926; Tue, 28
+ Jun 2022 13:04:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220628193449.160585-5-paul@crapouillou.net>
+References: <20220624173656.2033256-1-jthoughton@google.com>
+ <20220624173656.2033256-6-jthoughton@google.com> <d2ac6c08-5d73-828b-9e14-64ef03ff87dd@nutanix.com>
+In-Reply-To: <d2ac6c08-5d73-828b-9e14-64ef03ff87dd@nutanix.com>
+From:   Mina Almasry <almasrymina@google.com>
+Date:   Tue, 28 Jun 2022 13:03:55 -0700
+Message-ID: <CAHS8izPt+h59x1em6z7YbKg+u2f1fMyx6EZ0gwSZ_xu7AM6S-g@mail.gmail.com>
+Subject: Re: [RFC PATCH 05/26] hugetlb: add CONFIG_HUGETLB_HIGH_GRANULARITY_MAPPING
+To:     "manish.mishra" <manish.mishra@nutanix.com>
+Cc:     James Houghton <jthoughton@google.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Xu <peterx@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Jue Wang <juew@google.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 08:34:45PM +0100, Paul Cercueil wrote:
-> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
-> handle the .suspend/.resume callbacks.
-> 
-> These macros allow the suspend and resume functions to be automatically
-> dropped by the compiler when CONFIG_SUSPEND is disabled, without having
-> to use #ifdef guards. Not using #ifdef guards means that the code is
-> always compiled independently of any Kconfig option, and thanks to that
-> bugs and regressions are easier to catch.
-> 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Cc: Alim Akhtar <alim.akhtar@samsung.com>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-samsung-soc@vger.kernel.org
+On Mon, Jun 27, 2022 at 5:29 AM manish.mishra <manish.mishra@nutanix.com> wrote:
+>
+>
+> On 24/06/22 11:06 pm, James Houghton wrote:
+> > This adds the Kconfig to enable or disable high-granularity mapping. It
+> > is enabled by default for architectures that use
+> > ARCH_WANT_GENERAL_HUGETLB.
+> >
+> > There is also an arch-specific config ARCH_HAS_SPECIAL_HUGETLB_HGM which
+> > controls whether or not the architecture has been updated to support
+> > HGM if it doesn't use general HugeTLB.
+> >
+> > Signed-off-by: James Houghton <jthoughton@google.com>
+> reviewed-by:manish.mishra@nutanix.com
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Mostly minor nits,
 
-> ---
->  drivers/watchdog/s3c2410_wdt.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/watchdog/s3c2410_wdt.c b/drivers/watchdog/s3c2410_wdt.c
-> index 6db22f2e3a4f..95919392927f 100644
-> --- a/drivers/watchdog/s3c2410_wdt.c
-> +++ b/drivers/watchdog/s3c2410_wdt.c
-> @@ -845,8 +845,6 @@ static void s3c2410wdt_shutdown(struct platform_device *dev)
->  	s3c2410wdt_stop(&wdt->wdt_device);
->  }
->  
-> -#ifdef CONFIG_PM_SLEEP
-> -
->  static int s3c2410wdt_suspend(struct device *dev)
->  {
->  	int ret;
-> @@ -885,10 +883,9 @@ static int s3c2410wdt_resume(struct device *dev)
->  
->  	return 0;
->  }
-> -#endif
->  
-> -static SIMPLE_DEV_PM_OPS(s3c2410wdt_pm_ops, s3c2410wdt_suspend,
-> -			s3c2410wdt_resume);
-> +static DEFINE_SIMPLE_DEV_PM_OPS(s3c2410wdt_pm_ops,
-> +				s3c2410wdt_suspend, s3c2410wdt_resume);
->  
->  static struct platform_driver s3c2410wdt_driver = {
->  	.probe		= s3c2410wdt_probe,
-> @@ -897,7 +894,7 @@ static struct platform_driver s3c2410wdt_driver = {
->  	.id_table	= s3c2410_wdt_ids,
->  	.driver		= {
->  		.name	= "s3c2410-wdt",
-> -		.pm	= &s3c2410wdt_pm_ops,
-> +		.pm	= pm_sleep_ptr(&s3c2410wdt_pm_ops),
->  		.of_match_table	= of_match_ptr(s3c2410_wdt_match),
->  	},
->  };
-> -- 
-> 2.35.1
-> 
+Reviewed-by: Mina Almasry <almasrymina@google.com>
+
+> > ---
+> >   fs/Kconfig | 7 +++++++
+> >   1 file changed, 7 insertions(+)
+> >
+> > diff --git a/fs/Kconfig b/fs/Kconfig
+> > index 5976eb33535f..d76c7d812656 100644
+> > --- a/fs/Kconfig
+> > +++ b/fs/Kconfig
+> > @@ -268,6 +268,13 @@ config HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON
+> >         to enable optimizing vmemmap pages of HugeTLB by default. It can then
+> >         be disabled on the command line via hugetlb_free_vmemmap=off.
+> >
+> > +config ARCH_HAS_SPECIAL_HUGETLB_HGM
+
+Nit: would have preferred just ARCH_HAS_HUGETLB_HGM, as ARCH implies
+arch-specific.
+
+> > +     bool
+> > +
+> > +config HUGETLB_HIGH_GRANULARITY_MAPPING
+> > +     def_bool ARCH_WANT_GENERAL_HUGETLB || ARCH_HAS_SPECIAL_HUGETLB_HGM
+
+Nit: would have preferred to go with either HGM _or_
+HIGH_GRANULARITY_MAPPING (or whatever new name comes up), rather than
+both, for consistency's sake.
+
+> > +     depends on HUGETLB_PAGE
+> > +
+> >   config MEMFD_CREATE
+> >       def_bool TMPFS || HUGETLBFS
+> >
