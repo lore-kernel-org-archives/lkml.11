@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C998AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:55:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232359AbiF1TzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44860 "EHLO
+        id S233706AbiF1TzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232487AbiF1Tu7 (ORCPT
+        with ESMTP id S232495AbiF1Tu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 15:50:59 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB8E2DD78;
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C319B2DD7B;
         Tue, 28 Jun 2022 12:49:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1656445796; x=1687981796;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ht3UfTVIR3bDx+pf/6oyHp02PGIIQJZ5QLXufKfdPmY=;
-  b=IfKOPtkyuqHWDCMOUAHZUPZrJUwZHn089HW50CTQ6lgSkjU6uTeoEimT
-   7b6ahgE79FxFAGVq13uGEyJqfN5QvTA3md4TQUboSIg/QJ9wu/QP205Vm
-   M6HsD+zUeLUSOB5vyx/Nlbwp58aLCkGa3hQ04FGOKD+luP6Pq+q9X0AD5
-   y+jtZvE8mVvrnw5zfRyVgWWc8I1Tu1OB3XhC8IyJjRg4M9w/B/YyBOaMy
-   htIblI4JbrfK9PdmGSMEUe8tdao8AwnS/uEf0QHX+7WasXQiljHPR+Dbt
-   XnnqlJIy6Uena6/vrm/anv/Hfh4Zq68krycShv3mGnQrErg6ZvGg0ce7Z
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343523339"
+  bh=g8Auyiv6wHbONHbwKT22jacyNDfM23OeRa/UWJqi3CM=;
+  b=YdjyG9s+lBgEx52Mi0a3xSijbBo66ikErxkPW+n3P7LM4lonlSWU35e6
+   p+thIwS3/BYJRLD4P+oOt7lninnwgGVcAlbK0aBA2u1Lrvc3t+bIXlQUg
+   7LDJBg5dmeqtDzQlGO5Ib9ai/UCM+JYsu0xoRoblijEpc/jd3ttgOeJUf
+   1y/MDyyrviQpTDIvCNd+wHjhLpHJpdwy9TOFuelfrKxuSp6YflzE7xlJa
+   wqioBeOdP8JBda73K4GqUeedPyP8IR3vuMIsIt8I77tsZOIG16fFWZyhH
+   Rrh1pzawgeya0e+mZCFGxTqvEvXNfNzrpUJnO+RQylwFFPm7VxILQcU4Y
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="345828494"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="343523339"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:53 -0700
+   d="scan'208";a="345828494"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="658257552"
+   d="scan'208";a="680182656"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga004.fm.intel.com with ESMTP; 28 Jun 2022 12:49:47 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 28 Jun 2022 12:49:51 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9d022013;
-        Tue, 28 Jun 2022 20:49:45 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9g022013;
+        Tue, 28 Jun 2022 20:49:49 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -65,9 +65,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 39/52] net, xdp: make &xdp_attachment_info a bit more useful in drivers
-Date:   Tue, 28 Jun 2022 21:47:59 +0200
-Message-Id: <20220628194812.1453059-40-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 42/52] net, xdp: shortcut skb->dev in bpf_prog_run_generic_xdp()
+Date:   Tue, 28 Jun 2022 21:48:02 +0200
+Message-Id: <20220628194812.1453059-43-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
@@ -77,37 +77,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new field which will store an arbitrary 'driver cookie', the
-closest usage is to store enum there corresponding to the metadata
-types supported by a driver to shortcut them on hotpath.
-In fact, it's just reusing the 4-byte padding at the end.
-Also, make it possible to store BTF ID in LE rather than CPU
-byteorder, so that drivers could save some cycles on [potential]
-byteswapping on hotpath.
+It's being used 3 times and more to come. Fetch it onto the stack
+to reduce jumping back and forth.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- include/net/xdp.h | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/bpf/dev.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index d1fd809655be..5762ce18885f 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -380,8 +380,12 @@ void xdp_unreg_mem_model(struct xdp_mem_info *mem);
+diff --git a/net/bpf/dev.c b/net/bpf/dev.c
+index cc43f73929f3..350ebdc783a0 100644
+--- a/net/bpf/dev.c
++++ b/net/bpf/dev.c
+@@ -31,6 +31,7 @@ u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, struct xdp_buff *xdp,
+ 			     struct bpf_prog *xdp_prog)
+ {
+ 	void *orig_data, *orig_data_end, *hard_start;
++	struct net_device *dev = skb->dev;
+ 	struct netdev_rx_queue *rxqueue;
+ 	bool orig_bcast, orig_host;
+ 	u32 mac_len, frame_sz;
+@@ -57,7 +58,7 @@ u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, struct xdp_buff *xdp,
+ 	orig_data_end = xdp->data_end;
+ 	orig_data = xdp->data;
+ 	eth = (struct ethhdr *)xdp->data;
+-	orig_host = ether_addr_equal_64bits(eth->h_dest, skb->dev->dev_addr);
++	orig_host = ether_addr_equal_64bits(eth->h_dest, dev->dev_addr);
+ 	orig_bcast = is_multicast_ether_addr_64bits(eth->h_dest);
+ 	orig_eth_type = eth->h_proto;
  
- struct xdp_attachment_info {
- 	struct bpf_prog *prog;
--	u64 btf_id;
-+	union {
-+		__le64 btf_id_le;
-+		u64 btf_id;
-+	};
- 	u32 meta_thresh;
-+	u32 drv_cookie;
- };
+@@ -86,11 +87,11 @@ u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, struct xdp_buff *xdp,
+ 	eth = (struct ethhdr *)xdp->data;
+ 	if ((orig_eth_type != eth->h_proto) ||
+ 	    (orig_host != ether_addr_equal_64bits(eth->h_dest,
+-						  skb->dev->dev_addr)) ||
++						  dev->dev_addr)) ||
+ 	    (orig_bcast != is_multicast_ether_addr_64bits(eth->h_dest))) {
+ 		__skb_push(skb, ETH_HLEN);
+ 		skb->pkt_type = PACKET_HOST;
+-		skb->protocol = eth_type_trans(skb, skb->dev);
++		skb->protocol = eth_type_trans(skb, dev);
+ 	}
  
- struct netdev_bpf;
+ 	/* Redirect/Tx gives L2 packet, code that will reuse skb must __skb_pull
 -- 
 2.36.1
 
