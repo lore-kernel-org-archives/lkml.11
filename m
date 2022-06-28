@@ -2,101 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C72C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B78C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:13:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245267AbiF1JMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39700 "EHLO
+        id S1344053AbiF1JNo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 05:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343576AbiF1JMt (ORCPT
+        with ESMTP id S1343880AbiF1JNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:12:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58503120B3
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:12:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9BE4616ED
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:12:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AD9AC3411D;
-        Tue, 28 Jun 2022 09:12:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656407568;
-        bh=iXFPnwpsNa8MD5kdunG0bfFdOHKw1ogSnvL2uaEK/o4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HlytBUTDP5a3dvid0CXhnwbOI3fPrJ2n+cfIibWmjWBNdjOEHJZvDgpCpDOSN/I5N
-         t39hmpZX+c5cJeT1Or0SLMVVIbD9/fa6XQhmZSUYMAK70K5iRqygejGoeRaQLs3Cd7
-         rIko6zH4ljQ3+AXWN83jJN+C9AY3Yzx9WncleAWM=
-Date:   Tue, 28 Jun 2022 11:12:45 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Oded Gabbay <ogabbay@kernel.org>
-Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 04/12] habanalabs: add unsupported functions
-Message-ID: <YrrGDbUTxyZi2hdT@kroah.com>
-References: <20220627202620.961350-1-ogabbay@kernel.org>
- <20220627202620.961350-5-ogabbay@kernel.org>
- <Yrqg+6bBxRMmomrm@kroah.com>
- <CAFCwf12mXA9u8+ZE6msZL4R11DsE8SVN2GxpxOfo=_0aGnY7nQ@mail.gmail.com>
+        Tue, 28 Jun 2022 05:13:41 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DD01144E;
+        Tue, 28 Jun 2022 02:13:40 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id j6so11455375vsi.0;
+        Tue, 28 Jun 2022 02:13:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wv4IhbUoJIJ6FY8emeu2nW/quqmYxyRnsn5FkPiw4hM=;
+        b=EzWMZ77YFY0QGPdpz46oi8T7nOWoLIkf6/KE4+cmbk5ODTDvp8q0QRth+hH0Q1uzom
+         0RpTfSdTBPc79umzb36z68zyYmi3jrYVpAN+Xgu+UyIV2pX8pNY4wW7YRzReOXYDp3xC
+         oz3mX5+9BdUtWmdjySu6aS60ftRpS8mzCrhATGHXO43o0SNcTNwm5CPAi3ELnSI+S3v1
+         XVNPdIN84lTAw/BFO5+6iwG7Nzxo2W7YZ/DJMh/X3O8hr9p4hciktmmr2FMmCnUEXz8o
+         vyBul5126M1Tk4ofXcFnTrmgSXrbvBVM/qJczYRYznuBifIVgdgJA0XlUkip/rKQPAbh
+         cybA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wv4IhbUoJIJ6FY8emeu2nW/quqmYxyRnsn5FkPiw4hM=;
+        b=vShH6eimGqD3xUEaWTyvfoTI0TMbPx0wul2Aho8/a6XeSsTJmBvaKaCvI0W+wJ4Ab6
+         RXgJDirkuhIrdE8IJ1i9tm/BmUmk4CcnBTmHhFQBPB4yaXkBYDY4cKqcIG/ze7Sqc2yt
+         A7xTraOoqJLokd2K/w6NTdq4xnprsjdR2DzyAdZCJ1pomeC5v/Ytab5PVCHKhUD/Jlum
+         92toC14v2k5IU2yrHzroKTUagvhePIJ+ns8qSNjcJWjrRZSaag3APJ5aOQSHZtJQwfD6
+         OpU6ZC3Ou2iYhFKgtkMeFrk0DB9SDV0WafGaa0jzB/r1F3djhuVSyXGnEoLJsYKfcJ4Z
+         oIvQ==
+X-Gm-Message-State: AJIora/IupFCPotZbgdArDpEj6y2Z336LPCEaVyT9necv5T756meGXf1
+        gV0FEU7JANM7+ok+8TiSKstgeL32bu28IPpQN4A=
+X-Google-Smtp-Source: AGRyM1vpIbFyTcoQg+rofP4ZBNZFA6aslHM3rI7Dr+AESiZaQ3H14jdwbjRmBCSGsBBwVIQ6suNq9u3mmZo9cDAN6tE=
+X-Received: by 2002:a67:fa01:0:b0:354:3136:c62e with SMTP id
+ i1-20020a67fa01000000b003543136c62emr809435vsq.2.1656407619656; Tue, 28 Jun
+ 2022 02:13:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFCwf12mXA9u8+ZE6msZL4R11DsE8SVN2GxpxOfo=_0aGnY7nQ@mail.gmail.com>
+References: <20220628081731.22411-1-duguoweisz@gmail.com>
+In-Reply-To: <20220628081731.22411-1-duguoweisz@gmail.com>
+From:   Amir Goldstein <amir73il@gmail.com>
+Date:   Tue, 28 Jun 2022 12:13:28 +0300
+Message-ID: <CAOQ4uxjufy39fONi+2div2tF0YBfbexjtT3KzKWT2NrPxVbWag@mail.gmail.com>
+Subject: Re: [PATCH 5/5] fanotify: add inline modifier
+To:     Guowei Du <duguoweisz@gmail.com>
+Cc:     Jan Kara <jack@suse.cz>, Matthew Bobrowski <repnop@google.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        duguowei <duguowei@xiaomi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 11:21:24AM +0300, Oded Gabbay wrote:
-> On Tue, Jun 28, 2022 at 9:34 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Mon, Jun 27, 2022 at 11:26:12PM +0300, Oded Gabbay wrote:
-> > > There are a number of new ASIC-specific functions that were added
-> > > for Gaudi2. To make the common code work, we need to define empty
-> > > implementations of those functions for Goya and Gaudi.
-> > >
-> > > Some functions will return error if called with Goya/Gaudi.
-> > >
-> > > Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
-> > > ---
-> > >  drivers/misc/habanalabs/gaudi/gaudi.c | 24 ++++++++++++++++++++++++
-> > >  drivers/misc/habanalabs/goya/goya.c   | 24 ++++++++++++++++++++++++
-> > >  2 files changed, 48 insertions(+)
-> > >
-> > > diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-> > > index ae894335e9f8..f4581220ecd5 100644
-> > > --- a/drivers/misc/habanalabs/gaudi/gaudi.c
-> > > +++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-> > > @@ -8588,6 +8588,11 @@ static void gaudi_ctx_fini(struct hl_ctx *ctx)
-> > >       gaudi_internal_cb_pool_fini(ctx->hdev, ctx);
-> > >  }
-> > >
-> > > +int gaudi_pre_schedule_cs(struct hl_cs *cs)
-> > > +{
-> > > +     return 0;
-> > > +}
-> > > +
-> > >  static u32 gaudi_get_queue_id_for_cq(struct hl_device *hdev, u32 cq_idx)
-> > >  {
-> > >       return gaudi_cq_assignment[cq_idx];
-> > > @@ -8959,6 +8964,14 @@ static void gaudi_enable_events_from_fw(struct hl_device *hdev)
-> > >               gaudi_irq_map_table[GAUDI_EVENT_INTS_REGISTER].cpu_id);
-> > >  }
-> > >
-> > > +int gaudi_ack_mmu_page_fault_or_access_error(struct hl_device *hdev,
-> > > +                                                     u64 mmu_cap_mask)
-> > > +{
-> > > +     dev_err(hdev->dev, "mmu_error function is not supported\n");
-> >
-> > Can userspace trigger this?  if so, make it debug, as you don't want to
-> > give userspace a way to spam the logs.
-> 
-> Only via a debugfs node which is exposed only to root user.
-> What is your recommendation in that case ?
+On Tue, Jun 28, 2022 at 11:17 AM Guowei Du <duguoweisz@gmail.com> wrote:
+>
+> From: duguowei <duguowei@xiaomi.com>
+>
+> No functional change.
+> This patch only makes a little change for compiling.
 
-What does this error message help out with?  Why not just return an
-error and be done with it?  No need to spam the kernel log, right?
+There is no reason to do that.
+The compiler does that based on the user's optimization preference.
 
-thanks,
+Thanks,
+Amir.
 
-greg k-h
+>
+> Signed-off-by: duguowei <duguowei@xiaomi.com>
+> ---
+>  fs/notify/fanotify/fanotify.c | 16 +++++++---------
+>  1 file changed, 7 insertions(+), 9 deletions(-)
+>
+> diff --git a/fs/notify/fanotify/fanotify.c b/fs/notify/fanotify/fanotify.c
+> index 4f897e109547..a32752350e0e 100644
+> --- a/fs/notify/fanotify/fanotify.c
+> +++ b/fs/notify/fanotify/fanotify.c
+> @@ -18,12 +18,12 @@
+>
+>  #include "fanotify.h"
+>
+> -static bool fanotify_path_equal(struct path *p1, struct path *p2)
+> +static inline bool fanotify_path_equal(struct path *p1, struct path *p2)
+>  {
+>         return p1->mnt == p2->mnt && p1->dentry == p2->dentry;
+>  }
+>
+> -static unsigned int fanotify_hash_path(const struct path *path)
+> +static inline unsigned int fanotify_hash_path(const struct path *path)
+>  {
+>         return hash_ptr(path->dentry, FANOTIFY_EVENT_HASH_BITS) ^
+>                 hash_ptr(path->mnt, FANOTIFY_EVENT_HASH_BITS);
+> @@ -35,20 +35,18 @@ static inline bool fanotify_fsid_equal(__kernel_fsid_t *fsid1,
+>         return fsid1->val[0] == fsid2->val[0] && fsid1->val[1] == fsid2->val[1];
+>  }
+>
+> -static unsigned int fanotify_hash_fsid(__kernel_fsid_t *fsid)
+> +static inline unsigned int fanotify_hash_fsid(__kernel_fsid_t *fsid)
+>  {
+>         return hash_32(fsid->val[0], FANOTIFY_EVENT_HASH_BITS) ^
+>                 hash_32(fsid->val[1], FANOTIFY_EVENT_HASH_BITS);
+>  }
+>
+> -static bool fanotify_fh_equal(struct fanotify_fh *fh1,
+> +static inline bool fanotify_fh_equal(struct fanotify_fh *fh1,
+>                               struct fanotify_fh *fh2)
+>  {
+> -       if (fh1->type != fh2->type || fh1->len != fh2->len)
+> -               return false;
+> -
+> -       return !fh1->len ||
+> -               !memcmp(fanotify_fh_buf(fh1), fanotify_fh_buf(fh2), fh1->len);
+> +       return fh1->type == fh2->type && fh1->len == fh2->len &&
+> +               (!fh1->len ||
+> +                !memcmp(fanotify_fh_buf(fh1), fanotify_fh_buf(fh2), fh1->len));
+>  }
+>
+>  static unsigned int fanotify_hash_fh(struct fanotify_fh *fh)
+> --
+> 2.36.1
+>
