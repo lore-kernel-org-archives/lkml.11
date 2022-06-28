@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC8C0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:35:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229682AbiF1Qfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 12:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
+        id S238854AbiF1Qf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 12:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235950AbiF1Qeq (ORCPT
+        with ESMTP id S236373AbiF1Qeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 12:34:46 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6937B3205F
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:31:51 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id mf9so27027782ejb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:31:51 -0700 (PDT)
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC163207E
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:31:53 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id h23so26831376ejj.12
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:31:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bs1pDxoqSwxHo6PhPuLte63s3qeUlbVxYb0CgUg+DU4=;
-        b=b0U8IUi53H55fQXPVpT7iWqKz2mI5/X9m8w4K55yp+aofkZ+sHFsvMtY/c+YH02gS+
-         C87rxW+fRKL1bImKBIRqvxd0JYMhVBSMJ3Vh3xkFvK08bpOK2Hj4TvEgeP+L22sApAOA
-         rd0/6qM4ofM/J7pKsV9wkYxdeOO9hqSYmwfaU=
+        bh=lfqn0geMWlo2m+epnZ6MFo0Gce8D/c5YwbUMrCOB20U=;
+        b=hdJIVy+sH8SAoKYHCd0pK6GgiKA/ahM/vAB/B8teozlaamYqheunsZs7xFoeexFBo5
+         Q//2O2BW0K1zPYL27x7Xos72HdJS1VSW9cS0bDlSRac6Qx88hlTzme38l0Mgdb7RFMK2
+         oQs8Xx3Lioqg8OxdDWfNnFITPUgQBVb0ZoOSY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bs1pDxoqSwxHo6PhPuLte63s3qeUlbVxYb0CgUg+DU4=;
-        b=eKPArFj+sD9W+Tiy16t6AQBV1szPRM//xDXjfh0zZwbvtVUym0fxMRpQe5Q2jD50f4
-         oVX27GOuvqTubtejI06EUpeYxgcxjSaLmNPGxEuam456aFyEapF9f16SfLnrqx5+V7jf
-         g+FyS3y4xQRn31Po/zNWkMsksvV0EiKRMFb20S3MiwgqpIE4dJDciu4I5cy0PePhFKOs
-         wmsGopf1u7XHBz2pY6+Du23BQ70+koWl8MHQ8eg94+dPVZQpksXz3qSCIDucrDuz9dRe
-         L6Y8dfyrlFvRVuPbKsF8RDQ6RB4EqwTUhs5TrhEVXeUrq308AylB9/88/y3NJyZl2thl
-         L92g==
-X-Gm-Message-State: AJIora+yDTK1pfNxQW6KBgiqDMJNef3dusfqc2KsMyoaIG5JP1cvFpj8
-        /qK2aB54T0PbekzfA4gaoKzq61yX6VkpUw==
-X-Google-Smtp-Source: AGRyM1u8k6DgrYmdGpKNDatzVFC7pbSEg6/eS3j6frJXw1YqoEM06/Q9Nd4fEzKvJKZY3sHlHq7cvw==
-X-Received: by 2002:a17:906:604f:b0:718:e9e8:9d2a with SMTP id p15-20020a170906604f00b00718e9e89d2amr18166762ejj.315.1656433909538;
-        Tue, 28 Jun 2022 09:31:49 -0700 (PDT)
+        bh=lfqn0geMWlo2m+epnZ6MFo0Gce8D/c5YwbUMrCOB20U=;
+        b=kpABRJPD//6n40uqYjsyeAtC1NlXd7z8WP/JRf27l+VeOTn/tMvuPl9Bq7glcl5D9K
+         0OOu+VLQudUYGeVDgO1jhKS+4BVvjQtAMIXv58MD5G/VJfR5a/84el3Q1AJXpf/vwTiD
+         T2gNAJTLZI2RA92K2af44Y4bMTzs6zAa61sfL41sHEeRRZyyvNMHYjXHPByC3qL0HqGd
+         AVX0I95OlR/tU5Cn5aTHMF1qcjqgyWA9pDa9jGfYVZCsls7r6kcVNtvSioHST6iWMCmL
+         WltaVP4vCxP/HNH54IcBSBlsPy5RajFXh5FIGulv5miv8tLLkih20S+4wYw4KtPiwyLh
+         65XQ==
+X-Gm-Message-State: AJIora/iGfvempGkAWJ5VeRq1N090/8wKyw0n5PJEtN0q5W1tb+uoXym
+        JcVMUdpF7bJYesdIKVwMRtrJcmZXMjjNNA==
+X-Google-Smtp-Source: AGRyM1va/ANdVjEy/roqJmN6w30prNjI7JbBTV/MjmBAoyOEiqjmkf272znx6kVqX5sIAKnC+tiOkg==
+X-Received: by 2002:a17:907:948a:b0:726:f3d7:c7d6 with SMTP id dm10-20020a170907948a00b00726f3d7c7d6mr1288628ejc.2.1656433912584;
+        Tue, 28 Jun 2022 09:31:52 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id b20-20020a0564021f1400b0042e15364d14sm9916952edb.8.2022.06.28.09.31.48
+        by smtp.gmail.com with ESMTPSA id b20-20020a0564021f1400b0042e15364d14sm9916952edb.8.2022.06.28.09.31.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 09:31:48 -0700 (PDT)
+        Tue, 28 Jun 2022 09:31:51 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     michael@amarulasolutions.com,
@@ -58,9 +58,9 @@ Cc:     michael@amarulasolutions.com,
         Paolo Abeni <pabeni@redhat.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v5 01/12] can: slcan: use the BIT() helper
-Date:   Tue, 28 Jun 2022 18:31:25 +0200
-Message-Id: <20220628163137.413025-2-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v5 03/12] can: slcan: use the alloc_can_skb() helper
+Date:   Tue, 28 Jun 2022 18:31:27 +0200
+Message-Id: <20220628163137.413025-4-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220628163137.413025-1-dario.binacchi@amarulasolutions.com>
 References: <20220628163137.413025-1-dario.binacchi@amarulasolutions.com>
@@ -70,29 +70,155 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the BIT() helper instead of an explicit shift.
+It is used successfully by most (if not all) CAN device drivers. It
+allows to remove replicated code.
 
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+
 ---
 
-(no changes since v1)
+(no changes since v3)
 
- drivers/net/can/slcan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v3:
+- Increment the error counter in case of decoding failure.
+
+Changes in v2:
+- Put the data into the allocated skb directly instead of first
+  filling the "cf" on the stack and then doing a memcpy().
+
+ drivers/net/can/slcan.c | 70 +++++++++++++++++++----------------------
+ 1 file changed, 33 insertions(+), 37 deletions(-)
 
 diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index 64a3aee8a7da..b37d35c2a23a 100644
+index 6162a9c21672..c39580b142e0 100644
 --- a/drivers/net/can/slcan.c
 +++ b/drivers/net/can/slcan.c
-@@ -413,7 +413,7 @@ static int slc_open(struct net_device *dev)
- 	if (sl->tty == NULL)
- 		return -ENODEV;
+@@ -54,6 +54,7 @@
+ #include <linux/kernel.h>
+ #include <linux/workqueue.h>
+ #include <linux/can.h>
++#include <linux/can/dev.h>
+ #include <linux/can/skb.h>
+ #include <linux/can/can-ml.h>
  
--	sl->flags &= (1 << SLF_INUSE);
-+	sl->flags &= BIT(SLF_INUSE);
- 	netif_start_queue(dev);
- 	return 0;
+@@ -143,85 +144,80 @@ static struct net_device **slcan_devs;
+ static void slc_bump(struct slcan *sl)
+ {
+ 	struct sk_buff *skb;
+-	struct can_frame cf;
++	struct can_frame *cf;
+ 	int i, tmp;
+ 	u32 tmpid;
+ 	char *cmd = sl->rbuff;
+ 
+-	memset(&cf, 0, sizeof(cf));
++	skb = alloc_can_skb(sl->dev, &cf);
++	if (unlikely(!skb)) {
++		sl->dev->stats.rx_dropped++;
++		return;
++	}
+ 
+ 	switch (*cmd) {
+ 	case 'r':
+-		cf.can_id = CAN_RTR_FLAG;
++		cf->can_id = CAN_RTR_FLAG;
+ 		fallthrough;
+ 	case 't':
+ 		/* store dlc ASCII value and terminate SFF CAN ID string */
+-		cf.len = sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
++		cf->len = sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
+ 		sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN] = 0;
+ 		/* point to payload data behind the dlc */
+ 		cmd += SLC_CMD_LEN + SLC_SFF_ID_LEN + 1;
+ 		break;
+ 	case 'R':
+-		cf.can_id = CAN_RTR_FLAG;
++		cf->can_id = CAN_RTR_FLAG;
+ 		fallthrough;
+ 	case 'T':
+-		cf.can_id |= CAN_EFF_FLAG;
++		cf->can_id |= CAN_EFF_FLAG;
+ 		/* store dlc ASCII value and terminate EFF CAN ID string */
+-		cf.len = sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
++		cf->len = sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
+ 		sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN] = 0;
+ 		/* point to payload data behind the dlc */
+ 		cmd += SLC_CMD_LEN + SLC_EFF_ID_LEN + 1;
+ 		break;
+ 	default:
+-		return;
++		goto decode_failed;
+ 	}
+ 
+ 	if (kstrtou32(sl->rbuff + SLC_CMD_LEN, 16, &tmpid))
+-		return;
++		goto decode_failed;
+ 
+-	cf.can_id |= tmpid;
++	cf->can_id |= tmpid;
+ 
+ 	/* get len from sanitized ASCII value */
+-	if (cf.len >= '0' && cf.len < '9')
+-		cf.len -= '0';
++	if (cf->len >= '0' && cf->len < '9')
++		cf->len -= '0';
+ 	else
+-		return;
++		goto decode_failed;
+ 
+ 	/* RTR frames may have a dlc > 0 but they never have any data bytes */
+-	if (!(cf.can_id & CAN_RTR_FLAG)) {
+-		for (i = 0; i < cf.len; i++) {
++	if (!(cf->can_id & CAN_RTR_FLAG)) {
++		for (i = 0; i < cf->len; i++) {
+ 			tmp = hex_to_bin(*cmd++);
+ 			if (tmp < 0)
+-				return;
+-			cf.data[i] = (tmp << 4);
++				goto decode_failed;
++
++			cf->data[i] = (tmp << 4);
+ 			tmp = hex_to_bin(*cmd++);
+ 			if (tmp < 0)
+-				return;
+-			cf.data[i] |= tmp;
++				goto decode_failed;
++
++			cf->data[i] |= tmp;
+ 		}
+ 	}
+ 
+-	skb = dev_alloc_skb(sizeof(struct can_frame) +
+-			    sizeof(struct can_skb_priv));
+-	if (!skb)
+-		return;
+-
+-	skb->dev = sl->dev;
+-	skb->protocol = htons(ETH_P_CAN);
+-	skb->pkt_type = PACKET_BROADCAST;
+-	skb->ip_summed = CHECKSUM_UNNECESSARY;
+-
+-	can_skb_reserve(skb);
+-	can_skb_prv(skb)->ifindex = sl->dev->ifindex;
+-	can_skb_prv(skb)->skbcnt = 0;
+-
+-	skb_put_data(skb, &cf, sizeof(struct can_frame));
+-
+ 	sl->dev->stats.rx_packets++;
+-	if (!(cf.can_id & CAN_RTR_FLAG))
+-		sl->dev->stats.rx_bytes += cf.len;
++	if (!(cf->can_id & CAN_RTR_FLAG))
++		sl->dev->stats.rx_bytes += cf->len;
+ 
+ 	netif_rx(skb);
++	return;
++
++decode_failed:
++	sl->dev->stats.rx_errors++;
++	dev_kfree_skb(skb);
  }
+ 
+ /* parse tty input stream */
 -- 
 2.32.0
 
