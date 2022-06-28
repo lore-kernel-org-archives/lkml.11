@@ -2,195 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78202C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B6ADC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245312AbiF1IbC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
+        id S243105AbiF1IbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235287AbiF1IbA (ORCPT
+        with ESMTP id S245258AbiF1IbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:31:00 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9789A26542;
+        Tue, 28 Jun 2022 04:31:01 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B033626AC5
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:31:00 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 9so11506959pgd.7
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:31:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2TpQEUwBlGb88p4IGzi7coXlKXR6VM/Rxu7edgxZRdk=;
+        b=aDHAR+gThE7DCHiMc4w+Xv3mkdu4rkVcgXPF4v+8X8PUvOGiD8/v36X1k4A6RW/uNs
+         Wcs/s0KQGad+czgeUL1BFEdgFXjpzIGT9VHf1J3Btmuqn5TWE1SO9k3Ub1Cuj2wPXdjP
+         oiHmgyW3Mo1xkPaGmn+cEOLw9ylL/C2D5qGfZNSwOS4wUGIXKAQsYoRB3mscXSt9hez0
+         6DsC1Mnw75dCIc/sU+YFSvQTk+9Ik1HJc+8FpUxpk7njKXZhvdr8dGLt8h34iV3XUKkz
+         zAJL1cMHV+FtKiGWoDgKggTNoEugbHIL95tfX/HdtkUF9FBTCUSyWxKu+o8Z230rCi/n
+         5IJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2TpQEUwBlGb88p4IGzi7coXlKXR6VM/Rxu7edgxZRdk=;
+        b=eLHF4dUEi3xxAJb83BRIqH/r4q0BCJY+yYt3l/krF5ZGbpZPu1t3sBro47hIzXk1ia
+         F9+e4Vt10hbg8BxkgTDAD/egwms9xUdtM64ykUHVkfGUsOFxdqsU+eyY4r853RJ/p2BI
+         9SiAGAtKbSkqkPfqWFmwMuYUYyKHOfBe/bZxox1rWoGngwK8Z+jh385g/TtI5Sq6/yFw
+         uqaxJHZ8st4q7KfEiNQ7P2YZwoGgJCqwpez95Lb+j4TVmXp+rSeTJPbtxkvvzOadcNLv
+         XL7q1kqKhL14vCs+wKzLNX7tEML3GwbbJdi7/NVlkoB4p3geW7YhgKSb0iMlRFg64KA6
+         mbkA==
+X-Gm-Message-State: AJIora8bA6KshoyomLay/4bOzltRFHvZI+EeBPEYNfXxE0HJW7FqlMnZ
+        bAHDid4pjQCqJjM6iBr3WHs=
+X-Google-Smtp-Source: AGRyM1t7VQLkR1oO3Z/OyJLVwJsR2RoJKs4ViIJTiEBeq57yqGnKG7zKU0eZOc74hdIrVGHSNEbuIg==
+X-Received: by 2002:a05:6a00:1489:b0:525:b83f:b32f with SMTP id v9-20020a056a00148900b00525b83fb32fmr3542633pfu.25.1656405059955;
         Tue, 28 Jun 2022 01:30:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656405059; x=1687941059;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=BLR/tvh2tTSFmGfg3EntkRSWD9GhsnLxCEf0hX4nxP4=;
-  b=EWMJqjX0A+IeIrl87BtJkWKrJZp70fpSQWUJwEejPG1Db2pWK5UMK/aS
-   tiwLEpLoFcuuIgqBHdux64h7b3Tg8XCaTufwZqyRXhkPibUGT2CreRdV8
-   iW6alu5YVpICB+sKEpOuiPfVuwGEDwOEnhGl1eIcF8idtE8xAc0/PSxMm
-   86a+Hs9P4d9hdzC1fx7Qy86k+s/9uV61P6HkITxlekyCsbc1soMdg7y6l
-   dv6f6UtdNM+0dkJLYgJeAxgMrMvF+h4XYHM5aw28m66hpqIWfu+TFMim0
-   JAxKgauj6EOUvp06zvzmVWZOy7z7hmbDP5/YO+eMuo3x//kXKA9Iqu4vu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="264715857"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="264715857"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:30:57 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646817911"
-Received: from xiaoyaol-hp-g830.ccr.corp.intel.com (HELO [10.249.174.143]) ([10.249.174.143])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:30:55 -0700
-Message-ID: <dd6a51df-995c-6793-3988-b096188cd447@intel.com>
-Date:   Tue, 28 Jun 2022 16:30:53 +0800
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id u9-20020a170902e5c900b0016760c06b76sm250708plf.194.2022.06.28.01.30.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 01:30:59 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 17:30:57 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Openrisc <openrisc@lists.librecores.org>,
+        Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] irqchip: or1k-pic: Undefine mask_ack for level triggered
+ hardware
+Message-ID: <Yrq8QaYRfcnRJcKP@antec>
+References: <20220628012854.681220-1-shorne@gmail.com>
+ <877d512o0a.wl-maz@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.10.0
-Subject: Re: [PATCH v7 025/102] KVM: TDX: initialize VM with TDX specific
- parameters
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <cb901b3a0eb475d7a33507318c1ba95120fc425e.1656366338.git.isaku.yamahata@intel.com>
-From:   Xiaoyao Li <xiaoyao.li@intel.com>
-In-Reply-To: <cb901b3a0eb475d7a33507318c1ba95120fc425e.1656366338.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <877d512o0a.wl-maz@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/28/2022 5:53 AM, isaku.yamahata@intel.com wrote:
-> From: Xiaoyao Li <xiaoyao.li@intel.com>
+On Tue, Jun 28, 2022 at 09:25:25AM +0100, Marc Zyngier wrote:
+> On Tue, 28 Jun 2022 02:28:54 +0100,
+> Stafford Horne <shorne@gmail.com> wrote:
+> > 
+> > The mask_ack operation clears the interrupt by writing to the PICSR
+> > register.  This we don't want for level triggered interrupt because
+> > it does not actually clear the interrupt on the source hardware.
+> > 
+> > This was causing issues in qemu with multi core setups where
+> > interrupts would continue to fire even though they had been cleared in
+> > PICSR.
+> > 
+> > Just remove the mask_ack operation.
+> > 
+> > Signed-off-by: Stafford Horne <shorne@gmail.com>
+> > ---
+> > Note,
+> > 
+> > I currently have this queued with openrisc fixes for 5.19-rcX.  If this is ok
+> > with the IRQ maintainers I would like to have this merged via the OpenRISC
+> > queue.
+> > 
+> >  drivers/irqchip/irq-or1k-pic.c | 1 -
+> >  1 file changed, 1 deletion(-)
+> > 
+> > diff --git a/drivers/irqchip/irq-or1k-pic.c b/drivers/irqchip/irq-or1k-pic.c
+> > index 49b47e787644..f289ccd95291 100644
+> > --- a/drivers/irqchip/irq-or1k-pic.c
+> > +++ b/drivers/irqchip/irq-or1k-pic.c
+> > @@ -66,7 +66,6 @@ static struct or1k_pic_dev or1k_pic_level = {
+> >  		.name = "or1k-PIC-level",
+> >  		.irq_unmask = or1k_pic_unmask,
+> >  		.irq_mask = or1k_pic_mask,
+> > -		.irq_mask_ack = or1k_pic_mask_ack,
+> >  	},
+> >  	.handle = handle_level_irq,
+> >  	.flags = IRQ_LEVEL | IRQ_NOPROBE,
 > 
-> TDX requires additional parameters for TDX VM for confidential execution to
-> protect its confidentiality of its memory contents and its CPU state from
-> any other software, including VMM. When creating guest TD VM before
-> creating vcpu, the number of vcpu, TSC frequency (that is same among
-> vcpus. and it can't be changed.)  CPUIDs which is emulated by the TDX
-> module. It means guest can trust those CPUIDs. and sha384 values for
-> measurement.
+> Acked-by: Marc Zyngier <maz@kernel.org>
 > 
-> Add new subcommand, KVM_TDX_INIT_VM, to pass parameters for TDX guest.  It
-> assigns encryption key to the TDX guest for memory encryption.  TDX
-> encrypts memory per-guest bases.  It assigns device model passes per-VM
-> parameters for the TDX guest.  The maximum number of vcpus, tsc frequency
-> (TDX guest has fised VM-wide TSC frequency. not per-vcpu.  The TDX guest
-> can not change it.), attributes (production or debug), available extended
-> features (which is reflected into guest XCR0, IA32_XSS MSR), cpuids, sha384
-> measurements, and etc.
-> 
-> This subcommand is called before creating vcpu and KVM_SET_CPUID2, i.e.
-> cpuids configurations aren't available yet.  So CPUIDs configuration values
-> needs to be passed in struct kvm_init_vm.  It's device model responsibility
-> to make this cpuid config for KVM_TDX_INIT_VM and KVM_SET_CPUID2.
-> 
-> Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->   arch/x86/include/asm/kvm_host.h       |   2 +
->   arch/x86/include/asm/tdx.h            |   3 +
->   arch/x86/include/uapi/asm/kvm.h       |  33 +++++
->   arch/x86/kvm/vmx/tdx.c                | 206 ++++++++++++++++++++++++++
->   arch/x86/kvm/vmx/tdx.h                |  23 +++
->   tools/arch/x86/include/uapi/asm/kvm.h |  33 +++++
->   6 files changed, 300 insertions(+)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 342decc69649..81638987cdb9 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -1338,6 +1338,8 @@ struct kvm_arch {
->   	 * the global KVM_MAX_VCPU_IDS may lead to significant memory waste.
->   	 */
->   	u32 max_vcpu_ids;
-> +
-> +	gfn_t gfn_shared_mask;
+> Feel free to take this via your tree.
 
-I think it's better to put in a seperate patch or the patch that 
-consumes it.
+Thanks,
 
->   };
->   
-...
-
-> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-> index 2a9dfd54189f..1273b60a1a00 100644
-> --- a/arch/x86/kvm/vmx/tdx.c
-> +++ b/arch/x86/kvm/vmx/tdx.c
-> @@ -438,6 +438,209 @@ int tdx_dev_ioctl(void __user *argp)
->   	return 0;
->   }
->   
-> +/*
-> + * cpuid entry lookup in TDX cpuid config way.
-> + * The difference is how to specify index(subleaves).
-> + * Specify index to TDX_CPUID_NO_SUBLEAF for CPUID leaf with no-subleaves.
-> + */
-> +static const struct kvm_cpuid_entry2 *tdx_find_cpuid_entry(
-> +	const struct kvm_cpuid2 *cpuid, u32 function, u32 index)
-> +{
-> +	int i;
-> +
-> +
-
-superfluous line
-
-> +	/* In TDX CPU CONFIG, TDX_CPUID_NO_SUBLEAF means index = 0. */
-> +	if (index == TDX_CPUID_NO_SUBLEAF)
-> +		index = 0;
-> +
-> +	for (i = 0; i < cpuid->nent; i++) {
-> +		const struct kvm_cpuid_entry2 *e = &cpuid->entries[i];
-> +
-> +		if (e->function == function &&
-> +		    (e->index == index ||
-> +		     !(e->flags & KVM_CPUID_FLAG_SIGNIFCANT_INDEX)))
-> +			return e;
-> +	}
-> +	return NULL;
-> +}
-
-no need for kvm_tdx->tsc_khz field. We have kvm->arch.default_tsc_khz.
-It seems kvm_tdx->tsc_khz is not used in the following patches.
-
-...
-
-> +
-> +	kvm_tdx->tsc_offset = td_tdcs_exec_read64(kvm_tdx, TD_TDCS_EXEC_TSC_OFFSET);
-> +	kvm_tdx->attributes = td_params->attributes;
-> +	kvm_tdx->xfam = td_params->xfam;
-> +	kvm_tdx->tsc_khz = TDX_TSC_25MHZ_TO_KHZ(td_params->tsc_frequency);
-> +	kvm->max_vcpus = td_params->max_vcpus;
-> +
-> +	if (td_params->exec_controls & TDX_EXEC_CONTROL_MAX_GPAW)
-> +		kvm->arch.gfn_shared_mask = gpa_to_gfn(BIT_ULL(51));
-> +	else
-> +		kvm->arch.gfn_shared_mask = gpa_to_gfn(BIT_ULL(47));
-> +
-
-....
-
-> diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
-> index a9ea3573be1b..779dfd683d66 100644
-> --- a/tools/arch/x86/include/uapi/asm/kvm.h
-> +++ b/tools/arch/x86/include/uapi/asm/kvm.h
-> @@ -531,6 +531,7 @@ struct kvm_pmu_event_filter {
->   /* Trust Domain eXtension sub-ioctl() commands. */
->   enum kvm_tdx_cmd_id {
->   	KVM_TDX_CAPABILITIES = 0,
-> +	KVM_TDX_INIT_VM,
->   
->   	KVM_TDX_CMD_NR_MAX,
->   };
-> @@ -576,4 +577,36 @@ struct kvm_tdx_capabilities {
->   	struct kvm_tdx_cpuid_config cpuid_configs[0];
->   };
->   
-> +struct kvm_tdx_init_vm {
-> +	__u64 attributes;
-> +	__u32 max_vcpus;
-> +	__u32 tsc_khz;
-
-it needs to align with arch/x86/include/uapi/asm/kvm.h that @tsc_khz 
-needs to be removed.
-
-
+-Stafford
