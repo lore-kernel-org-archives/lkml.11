@@ -2,86 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B60AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D3EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348200AbiF1QAb (ORCPT
+        id S1348069AbiF1QB5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 12:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
+        Tue, 28 Jun 2022 12:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348192AbiF1QAQ (ORCPT
+        with ESMTP id S1348246AbiF1QBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 12:00:16 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0426E37A20
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:00:00 -0700 (PDT)
-Received: from zn.tnic (p200300ea97156a99329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9715:6a99:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 775EA1EC018C;
-        Tue, 28 Jun 2022 17:59:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1656431994;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=BrUtUlmZIekyNsj7MCySV2fHm1RFiOXl4lfKJ2ufHxo=;
-        b=k372JxwoJjO9Djfi1xWfGmz0/Kc/GnqsOQWn0+ieBdyMkAupyeshYY98S08j8Xhz82DPgV
-        aJBUvI50RBLGMviKzHW1lyUmQNWrrR265R2eea7sjaMGQemimIFjy0M8PEOgEeE4C/1hoq
-        A55seH/qk6Vz/0f6GsPNwFFAj8H7AJI=
-Date:   Tue, 28 Jun 2022 17:59:54 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Luck, Tony" <tony.luck@intel.com>
-Cc:     "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        Yazen Ghannam <yazen.ghannam@amd.com>
-Subject: Re: [PATCH] RAS/CEC: Reduce default threshold to offline a page to
- "2"
-Message-ID: <Yrsleko0MnGtwaaR@zn.tnic>
-References: <20220607212015.175591-1-tony.luck@intel.com>
- <YrnBWjkX82OhXAtL@zn.tnic>
- <7da92773f7084c57814f7ef4d033bc53@intel.com>
+        Tue, 28 Jun 2022 12:01:40 -0400
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A724C37A25;
+        Tue, 28 Jun 2022 09:01:10 -0700 (PDT)
+Received: by mail-yb1-f177.google.com with SMTP id h187so20775304ybg.0;
+        Tue, 28 Jun 2022 09:01:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uMaNSGappz9cVeuRcW4qtSkksstkuegRFciPogPxfeA=;
+        b=eNcr80joiHxSsl/WU6Ybw6Cx00dOPVYcXTPn9RTDLCLVBnpioDFDNg0/Wb8NqrDP5k
+         gdmKB8lI1joM7RPA0D6ifDQHMffltGcvDR1dnSDrJP7ocvqBm1+fUazS5dVOlaVYl2z3
+         E7dxg70yKj+U45h/kRdS2oq1ba/lWlXv2ORqZTuP92+pNaKghgeMT/lurGvvEsmJ1sFk
+         IDQhkyd4FU5qcoJsxy8Y4TRwj6h0dc+SgPd29nhbI0Bszp/wRbD7NNh0K8MmrKbz76UN
+         3wt0yQuOdRNffaDhOSErEt+37hvGz5YcEtx5hYHmKHKREBKkIgtusw3InpM6eF1QCUQ9
+         Ydzg==
+X-Gm-Message-State: AJIora+sMu2K3nS8VrwKEe1W95OpDVMEAubWArXgaT+LCCtNTwTc46t4
+        vy20ynQ+X5u1d5DGvG72jyIUYPLsfPMg7J8ticUJOI5G
+X-Google-Smtp-Source: AGRyM1sOcSK9b/Nj+VspQSDrsUymMTlRPLzI4yS3poWbUnMORZXDxAHCqwzEs2ctY23x80/nitc/60D3nv4ifrctIIs=
+X-Received: by 2002:a05:6902:1141:b0:669:3f2a:c6bb with SMTP id
+ p1-20020a056902114100b006693f2ac6bbmr19131037ybu.365.1656432069677; Tue, 28
+ Jun 2022 09:01:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <7da92773f7084c57814f7ef4d033bc53@intel.com>
+References: <2653259.mvXUDI8C0e@kreacher> <YrqY+c1NPQ+wEiUk@kroah.com>
+In-Reply-To: <YrqY+c1NPQ+wEiUk@kroah.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 28 Jun 2022 18:00:58 +0200
+Message-ID: <CAJZ5v0i=stVf+igcmQmeiFSndOrBhegG1mJjku5OmojPzw5VhA@mail.gmail.com>
+Subject: Re: [PATCH] PK: runtime: Redefine pm_runtime_release_supplier()
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 05:27:57PM +0000, Luck, Tony wrote:
-> Existing default is 1023 ... which is not a good choice for anyone (except
-> perhaps ostriches that want to bury their heads in the sand an ignore marginal
-> DIMMs for as long as possible).
+On Tue, Jun 28, 2022 at 8:00 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Mon, Jun 27, 2022 at 08:42:18PM +0200, Rafael J. Wysocki wrote:
+> > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> >
+> > Instead of passing an extra bool argument to pm_runtime_release_supplier(),
+> > make its callers take care of triggering a runtime-suspend of the
+> > supplier device as needed.
+> >
+> > No expected functional impact.
+> >
+> > Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>
+> Nice, thanks for cleaning this up.
+>
+> If you want to take this through your tree:
+>         Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>
+> But if you want me to take it, please just let me know and I will.
 
-Why isn't that a good choice?
+I'll take care of it myself.
 
-I'm sure there are error rates where this fits just fine.
-
-> So changing the threshold to "2" would be an improvement in at least
-> being right for one vendor, instead of wrong for all.
-
-So I'm pretty sure that is not needed on AMD at all.
-
-> Linux already had a hook in the GHES code to take an error record from
-> the platform and offline a page. So this "smart" code could be done
-> by BIOS or BMC just providing the resulting list of pages that should
-> be taken offline to Linux.
-
-So my worry is some firmware agent interfering with our recovery
-strategy. And reportedly, there are people who don't like the firmware
-recovery at all and prefer it all is done in the OS.
-
-Which then makes it a problem of how to synchronize with the firmware
-about who does what in RAS. And we don't have any API here...
-
-Anyway, this is just a worry I have from watching where it all goes
-to.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Thank you!
