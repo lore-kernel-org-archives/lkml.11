@@ -2,202 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E8DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D36C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234736AbiF1NaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57792 "EHLO
+        id S1346407AbiF1Naf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 09:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346487AbiF1N3Q (ORCPT
+        with ESMTP id S1345932AbiF1N3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:29:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD4FF237CB
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:28:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656422900;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PH7wMQRYi1ZWFVxyL/3d+sZ7rcf181kH7ObPj88vxe0=;
-        b=eEXCB/MoBLqnh92nEeSne77fxFddg2yvS1k0BqkOhyb8QxRXE6iZKtI9px23Q9mETIbV8s
-        dYHHAcN/8Azx3AVcm0JsKn9/1Nbt35GKfnhSJqR++vkhu1PE0q7WkSSYPk7tEoKsZDgvLe
-        ckpwAV6EYKlhy/4uTSAcSwHQOQrCz+I=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-37-95GnzQXIOnuKPvNwV7MzrQ-1; Tue, 28 Jun 2022 09:28:17 -0400
-X-MC-Unique: 95GnzQXIOnuKPvNwV7MzrQ-1
-Received: by mail-wm1-f71.google.com with SMTP id k5-20020a05600c0b4500b003941ca130f9so5117653wmr.0
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:28:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PH7wMQRYi1ZWFVxyL/3d+sZ7rcf181kH7ObPj88vxe0=;
-        b=L/ENOSREOxguuc5Id4BYh4eXNapBDCqFur9jRYsSwFAPpRQjnAf3vfRxqnRz68hfkz
-         w3Ki+LS31S3svzbvcahnI+3jWSz7hZC89tLTVYqwnuWMjWjgufT8xtG0oPAEC8vTQwmr
-         UGKm11Lyrl/oMp91Q/EY4ZSVaX4wzakAjTR3LD2akH04ki0pJvmIF2SAr128+SDZhPbA
-         UWGQbNHDuhsVBrSKv3LkdTF8t8AEMN2is6A32Msx2Sx+imYjhLddqP1h+gR4Qvrm1LWN
-         FunshmJ5o5bu9vqIVjZTedGV/Tyv/Um8AwjyyVZd7dTVUpAiw3BjprXDXhN2Z9QKCAa7
-         9flg==
-X-Gm-Message-State: AJIora8hASRfsDTdYuTicE//8aN6Y07yJNBrz+2hDgPHxko5UmsbQkYG
-        u4IZSgWXXdrcOquyQzJ4XPq2hjRCo28TVh6iDdh5EtAyD3via8anWuhZTnxEXhKI5c6Mju3Y3nB
-        0XqH4IO2n0gJ3QRJL9kAUo42V
-X-Received: by 2002:a5d:5047:0:b0:21b:92b2:f34f with SMTP id h7-20020a5d5047000000b0021b92b2f34fmr17127817wrt.677.1656422896237;
-        Tue, 28 Jun 2022 06:28:16 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tqVf5A7KSxbTw31AFhCSUb6QIduyx0h8n4yb62+NQ1QBxlS5VZpJjh7TfSMSbhzJ+0xSz+Vw==
-X-Received: by 2002:a5d:5047:0:b0:21b:92b2:f34f with SMTP id h7-20020a5d5047000000b0021b92b2f34fmr17127781wrt.677.1656422895955;
-        Tue, 28 Jun 2022 06:28:15 -0700 (PDT)
-Received: from work-vm (cpc109025-salf6-2-0-cust480.10-2.cable.virginm.net. [82.30.61.225])
-        by smtp.gmail.com with ESMTPSA id w9-20020a5d6089000000b0020e5b4ebaecsm13771290wrt.4.2022.06.28.06.28.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 06:28:15 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 14:28:12 +0100
-From:   "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-To:     Ashish Kalra <Ashish.Kalra@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        linux-crypto@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        jroedel@suse.de, thomas.lendacky@amd.com, hpa@zytor.com,
-        ardb@kernel.org, pbonzini@redhat.com, seanjc@google.com,
-        vkuznets@redhat.com, jmattson@google.com, luto@kernel.org,
-        dave.hansen@linux.intel.com, slp@redhat.com, pgonda@google.com,
-        peterz@infradead.org, srinivas.pandruvada@linux.intel.com,
-        rientjes@google.com, dovmurik@linux.ibm.com, tobin@ibm.com,
-        bp@alien8.de, michael.roth@amd.com, vbabka@suse.cz,
-        kirill@shutemov.name, ak@linux.intel.com, tony.luck@intel.com,
-        marcorr@google.com, sathyanarayanan.kuppuswamy@linux.intel.com,
-        alpergun@google.com, jarkko@kernel.org
-Subject: Re: [PATCH Part2 v6 36/49] KVM: SVM: Add support to handle GHCB GPA
- register VMGEXIT
-Message-ID: <YrsB7G4NSgJ+vKVw@work-vm>
-References: <cover.1655761627.git.ashish.kalra@amd.com>
- <c2c4d365b4616c83ab2fb91b7c89d13535de8c0a.1655761627.git.ashish.kalra@amd.com>
+        Tue, 28 Jun 2022 09:29:52 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58D9115C
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:28:40 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LXQLs0xq0zTgDj;
+        Tue, 28 Jun 2022 21:25:09 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
+ 2022 21:28:38 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <shy828301@gmail.com>, <willy@infradead.org>, <zokeefe@google.com>,
+        <songmuchun@bytedance.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH v2 01/16] mm/huge_memory: use flush_pmd_tlb_range in move_huge_pmd
+Date:   Tue, 28 Jun 2022 21:28:20 +0800
+Message-ID: <20220628132835.8925-2-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220628132835.8925-1-linmiaohe@huawei.com>
+References: <20220628132835.8925-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c2c4d365b4616c83ab2fb91b7c89d13535de8c0a.1655761627.git.ashish.kalra@amd.com>
-User-Agent: Mutt/2.2.6 (2022-06-05)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Ashish Kalra (Ashish.Kalra@amd.com) wrote:
-> From: Brijesh Singh <brijesh.singh@amd.com>
-> 
-> SEV-SNP guests are required to perform a GHCB GPA registration. Before
-> using a GHCB GPA for a vCPU the first time, a guest must register the
-> vCPU GHCB GPA. If hypervisor can work with the guest requested GPA then
-> it must respond back with the same GPA otherwise return -1.
-> 
-> On VMEXIT, Verify that GHCB GPA matches with the registered value. If a
-> mismatch is detected then abort the guest.
-> 
-> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
-> ---
->  arch/x86/include/asm/sev-common.h |  8 ++++++++
->  arch/x86/kvm/svm/sev.c            | 27 +++++++++++++++++++++++++++
->  arch/x86/kvm/svm/svm.h            |  7 +++++++
->  3 files changed, 42 insertions(+)
-> 
-> diff --git a/arch/x86/include/asm/sev-common.h b/arch/x86/include/asm/sev-common.h
-> index 539de6b93420..0a9055cdfae2 100644
-> --- a/arch/x86/include/asm/sev-common.h
-> +++ b/arch/x86/include/asm/sev-common.h
-> @@ -59,6 +59,14 @@
->  #define GHCB_MSR_AP_RESET_HOLD_RESULT_POS	12
->  #define GHCB_MSR_AP_RESET_HOLD_RESULT_MASK	GENMASK_ULL(51, 0)
->  
-> +/* Preferred GHCB GPA Request */
-> +#define GHCB_MSR_PREF_GPA_REQ		0x010
-> +#define GHCB_MSR_GPA_VALUE_POS		12
-> +#define GHCB_MSR_GPA_VALUE_MASK		GENMASK_ULL(51, 0)
+ARCHes with special requirements for evicting THP backing TLB entries can
+implement flush_pmd_tlb_range. Otherwise also, it can help optimize TLB
+flush in THP regime. Using flush_pmd_tlb_range to take advantage of this
+in move_huge_pmd.
 
-Are the magic 51's in here fixed ?
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Zach O'Keefe <zokeefe@google.com>
+---
+ mm/huge_memory.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Dave
-
-> +#define GHCB_MSR_PREF_GPA_RESP		0x011
-> +#define GHCB_MSR_PREF_GPA_NONE		0xfffffffffffff
-> +
->  /* GHCB GPA Register */
->  #define GHCB_MSR_REG_GPA_REQ		0x012
->  #define GHCB_MSR_REG_GPA_REQ_VAL(v)			\
-> diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> index c70f3f7e06a8..6de48130e414 100644
-> --- a/arch/x86/kvm/svm/sev.c
-> +++ b/arch/x86/kvm/svm/sev.c
-> @@ -3331,6 +3331,27 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
->  				  GHCB_MSR_INFO_MASK, GHCB_MSR_INFO_POS);
->  		break;
->  	}
-> +	case GHCB_MSR_PREF_GPA_REQ: {
-> +		set_ghcb_msr_bits(svm, GHCB_MSR_PREF_GPA_NONE, GHCB_MSR_GPA_VALUE_MASK,
-> +				  GHCB_MSR_GPA_VALUE_POS);
-> +		set_ghcb_msr_bits(svm, GHCB_MSR_PREF_GPA_RESP, GHCB_MSR_INFO_MASK,
-> +				  GHCB_MSR_INFO_POS);
-> +		break;
-> +	}
-> +	case GHCB_MSR_REG_GPA_REQ: {
-> +		u64 gfn;
-> +
-> +		gfn = get_ghcb_msr_bits(svm, GHCB_MSR_GPA_VALUE_MASK,
-> +					GHCB_MSR_GPA_VALUE_POS);
-> +
-> +		svm->sev_es.ghcb_registered_gpa = gfn_to_gpa(gfn);
-> +
-> +		set_ghcb_msr_bits(svm, gfn, GHCB_MSR_GPA_VALUE_MASK,
-> +				  GHCB_MSR_GPA_VALUE_POS);
-> +		set_ghcb_msr_bits(svm, GHCB_MSR_REG_GPA_RESP, GHCB_MSR_INFO_MASK,
-> +				  GHCB_MSR_INFO_POS);
-> +		break;
-> +	}
->  	case GHCB_MSR_TERM_REQ: {
->  		u64 reason_set, reason_code;
->  
-> @@ -3381,6 +3402,12 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
->  		return 1;
->  	}
->  
-> +	/* SEV-SNP guest requires that the GHCB GPA must be registered */
-> +	if (sev_snp_guest(svm->vcpu.kvm) && !ghcb_gpa_is_registered(svm, ghcb_gpa)) {
-> +		vcpu_unimpl(&svm->vcpu, "vmgexit: GHCB GPA [%#llx] is not registered.\n", ghcb_gpa);
-> +		return -EINVAL;
-> +	}
-> +
->  	ret = sev_es_validate_vmgexit(svm, &exit_code);
->  	if (ret)
->  		return ret;
-> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-> index c80352c9c0d6..54ff56cb6125 100644
-> --- a/arch/x86/kvm/svm/svm.h
-> +++ b/arch/x86/kvm/svm/svm.h
-> @@ -206,6 +206,8 @@ struct vcpu_sev_es_state {
->  	 */
->  	u64 ghcb_sw_exit_info_1;
->  	u64 ghcb_sw_exit_info_2;
-> +
-> +	u64 ghcb_registered_gpa;
->  };
->  
->  struct vcpu_svm {
-> @@ -334,6 +336,11 @@ static inline bool sev_snp_guest(struct kvm *kvm)
->  	return sev_es_guest(kvm) && sev->snp_active;
->  }
->  
-> +static inline bool ghcb_gpa_is_registered(struct vcpu_svm *svm, u64 val)
-> +{
-> +	return svm->sev_es.ghcb_registered_gpa == val;
-> +}
-> +
->  static inline void vmcb_mark_all_dirty(struct vmcb *vmcb)
->  {
->  	vmcb->control.clean = 0;
-> -- 
-> 2.25.1
-> 
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 7b7eedc6d5dd..48ebeb02f7ce 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -1849,7 +1849,7 @@ bool move_huge_pmd(struct vm_area_struct *vma, unsigned long old_addr,
+ 		pmd = move_soft_dirty_pmd(pmd);
+ 		set_pmd_at(mm, new_addr, new_pmd, pmd);
+ 		if (force_flush)
+-			flush_tlb_range(vma, old_addr, old_addr + PMD_SIZE);
++			flush_pmd_tlb_range(vma, old_addr, old_addr + PMD_SIZE);
+ 		if (new_ptl != old_ptl)
+ 			spin_unlock(new_ptl);
+ 		spin_unlock(old_ptl);
 -- 
-Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+2.23.0
 
