@@ -2,137 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84636C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBFCCCA483
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243795AbiF1ITT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43590 "EHLO
+        id S244394AbiF1ITa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243873AbiF1IS4 (ORCPT
+        with ESMTP id S243889AbiF1IS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:18:56 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383282DA8E;
-        Tue, 28 Jun 2022 01:17:15 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id k129so5446562wme.0;
-        Tue, 28 Jun 2022 01:17:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rvtNK3NUMkA8CEKQZP6QnJui/bz93uaFnF6matKQyQM=;
-        b=cxAglpNwSh89Nnir5pAQ7ttQI2O9psUBx/mFiwgkBjNaiztLg+9vV2idAHUlq65XHu
-         2kg7maDDPRYq60w8hevSYnMBCGoc2b7LP7uC+vPgY9HTvgXd/pAGwaiT2/AmoO5NvPZQ
-         Pw7C3O5PHfDYdY7BTZPz9ueL5C+B5EpwGRstFjXazmSVuJBiY2orpEj+r8yFfP1FcWvm
-         f2J46zgVt0BFOB/gWI5RnOheRBehRsZCKhi0NDRko8AHLaYt0aqV/bSZEibKuC5bAAaT
-         /QuUPpPssS4xW8xM4+y6XFwxGEjT9rG/KA9H2/lgoItG7buGO0SC5KKJ38Zuj8QY9Y9e
-         uVsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rvtNK3NUMkA8CEKQZP6QnJui/bz93uaFnF6matKQyQM=;
-        b=WezqgjzZqX7FYUWaEamf2hj8Onyuh9aRlnin0SrmMffvafiVRGsdxlf8NLp8fcVxHK
-         sfFLSNPhiwLwrdH2PgFevUjDAZ7q7AZ/ZihEt7mqSFl3v053tkTQ8jMgRcOPvQ3mFEop
-         xyP31QZPFoEpuvAyQzImqeZYQOE91Gg3I/LI0U07p9ITHWWoboUQ+np40xB0Hp30CPjq
-         RP818RERdjKylZSaRa0s+4vLsTjYnpEyxY/K6o5mXernIPb+gP7b7qBXJ0+laRV9KETY
-         XKF6BGbKKfwBbsRpTws67DWZRdXQaQ8cQcKVLqSI7Wm1SdKHaULdToyyHCrHfGeGWQ9j
-         qMqA==
-X-Gm-Message-State: AJIora+yW9VyYOOKyeJz4LfmTCEymtvZpNXqZmKcNAMLyTas2vDt03//
-        6HTIPF0cSbLGyF1k4yGpjCg=
-X-Google-Smtp-Source: AGRyM1uRSYDZ9aC5Z8EfsD/JtEoL1Mk+C1NLf+4DXGkBtIFLknP8eoN1sBhSiqy97pj2VMo4RrXs0A==
-X-Received: by 2002:a05:600c:a42:b0:39c:9086:8a34 with SMTP id c2-20020a05600c0a4200b0039c90868a34mr24969500wmq.169.1656404233695;
-        Tue, 28 Jun 2022 01:17:13 -0700 (PDT)
-Received: from krava (net-109-116-206-47.cust.vodafonedsl.it. [109.116.206.47])
-        by smtp.gmail.com with ESMTPSA id y10-20020a1c4b0a000000b0039c587342d8sm20620836wma.3.2022.06.28.01.17.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 01:17:13 -0700 (PDT)
-From:   olsajiri@gmail.com
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>, To: Ian Rogers <irogers@google.com>;
-Date:   Tue, 28 Jun 2022 10:17:10 +0200
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH] perf bpf: 8 byte align bpil data
-Message-ID: <Yrq5Bun3Nmb1vrW3@krava>
-References: <20220614014714.1407239-1-irogers@google.com>
+        Tue, 28 Jun 2022 04:18:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9F72CE3C;
+        Tue, 28 Jun 2022 01:17:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8774C6120E;
+        Tue, 28 Jun 2022 08:17:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FCB0C3411D;
+        Tue, 28 Jun 2022 08:17:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656404242;
+        bh=yGob1Vr8BR4JA5385szP2YP45oWt14YDHpLRa/YTWAo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MFUMNSyqnFUnmN9rqIYktD7pS6DyDfzyFQ3/DpQ8Vu1R2iGJMAiJwN7eiC24Y7CXv
+         4HJmXB2WlJQ4kijwghtS7WzQmySeFEfKmEHP4YnGL12CkP+0u9vjmels5gUMkjLnsv
+         fvdYa+42pIq+3w/XiQ8GkcfbY8n5F4O/fHFQRtKNCAuL6FMLJpMkCAAt/8AGq7F39J
+         K4k4xS8uhXlzM19PK8jGdYl/IFsj3oTOfUanjwtB3Tl4M8EazO+J57YAslQCCzNPZb
+         BWjHdQdOeRBeptv07mhvw4KAhlVXBQ2Q/hon3+IB9oirpCBsAeUYruOKed3ksK6gqv
+         gCKPOyspzpAuQ==
+From:   guoren@kernel.org
+To:     palmer@rivosinc.com, arnd@arndb.de, mingo@redhat.com,
+        will@kernel.org, longman@redhat.com, boqun.feng@gmail.com
+Cc:     linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
+Subject: [PATCH V7 0/5] riscv: Add qspinlock support with combo style
+Date:   Tue, 28 Jun 2022 04:17:02 -0400
+Message-Id: <20220628081707.1997728-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614014714.1407239-1-irogers@google.com>
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 06:47:14PM -0700, Ian Rogers wrote:
-> bpil data is accessed assuming 64-bit alignment resulting in undefined
-> behavior as the data is just byte aligned. With an -fsanitize=undefined
-> build the following errors are observed:
+From: Guo Ren <guoren@linux.alibaba.com>
 
-I need to add -w to get the clean build with that, do you see that as well?
+Enable qspinlock and meet the requirements mentioned in a8ad07e5240c9
+("asm-generic: qspinlock: Indicate the use of mixed-size atomics").
 
-  $ make EXTRA_CFLAGS='-fsanitize=undefined -w'
+RISC-V LR/SC pairs could provide a strong/weak forward guarantee that
+depends on micro-architecture. And RISC-V ISA spec has given out
+several limitations to let hardware support strict forward guarantee
+(RISC-V User ISA - 8.3 Eventual Success of Store-Conditional
+Instructions):
+We restricted the length of LR/SC loops to fit within 64 contiguous
+instruction bytes in the base ISA to avoid undue restrictions on
+instruction cache and TLB size and associativity. Similarly, we
+disallowed other loads and stores within the loops to avoid restrictions
+on data-cache associativity in simple implementations that track the
+reservation within a private cache. The restrictions on branches and
+jumps limit the time that can be spent in the sequence. Floating-point
+operations and integer multiply/divide were disallowed to simplify the
+operating system’s emulation of these instructions on implementations
+lacking appropriate hardware support.
+Software is not forbidden from using unconstrained LR/SC sequences, but
+portable software must detect the case that the sequence repeatedly
+fails, then fall back to an alternate code sequence that does not rely
+on an unconstrained LR/SC sequence. Implementations are permitted to
+unconditionally fail any unconstrained LR/SC sequence.
 
-> 
-> $ sudo perf record -a sleep 1
-> util/bpf-event.c:310:22: runtime error: load of misaligned address 0x55f61084520f for type '__u64', which requires 8 byte alignment
-> 0x55f61084520f: note: pointer points here
->  a8 fe ff ff 3c  51 d3 c0 ff ff ff ff 04  84 d3 c0 ff ff ff ff d8  aa d3 c0 ff ff ff ff a4  c0 d3 c0
->              ^
-> util/bpf-event.c:311:20: runtime error: load of misaligned address 0x55f61084522f for type '__u32', which requires 4 byte alignment
-> 0x55f61084522f: note: pointer points here
->  ff ff ff ff c7  17 00 00 f1 02 00 00 1f  04 00 00 58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00
->              ^
-> util/bpf-event.c:198:33: runtime error: member access within misaligned address 0x55f61084523f for type 'const struct bpf_func_info', which requires 4 byte alignment
-> 0x55f61084523f: note: pointer points here
->  58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00 3b 00 00 00 ab  02 00 00 44 00 00 00 14  03 00 00
+eg:
+Some riscv hardware such as BOOMv3 & XiangShan could provide strict &
+strong forward guarantee (The cache line would be kept in an exclusive
+state for Backoff cycles, and only this core's interrupt could break
+the LR/SC pair).
+Qemu riscv give a weak forward guarantee by wrong implementation
+currently [1].
 
+Add combo spinlock (ticket & queued) support
+Some architecture has a flexible requirement on the type of spinlock.
+Some LL/SC architectures of ISA don't force micro-arch to give a strong
+forward guarantee. Thus different kinds of memory model micro-arch would
+come out in one ISA. The ticket lock is suitable for exclusive monitor
+designed LL/SC micro-arch with limited cores and "!NUMA". The
+queue-spinlock could deal with NUMA/large-scale scenarios with a strong
+forward guarantee designed LL/SC micro-arch.
 
-and I'm also getting another error in:
+The first version of patch was made in 2019.1 [2].
 
-[root@krava perf]# ./perf record -a sleep 1
-util/synthetic-events.c:1202:11: runtime error: member access within misaligned address 0x00000286f7ea for type 'struct perf_record_record_cpu_map', which requires 8 byte alignment
-0x00000286f7ea: note: pointer points here
- 20 00  01 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00
-              ^ 
-util/synthetic-events.c:1203:18: runtime error: member access within misaligned address 0x00000286f7ea for type 'struct perf_record_record_cpu_map', which requires 8 byte alignment
-0x00000286f7ea: note: pointer points here
- 20 00  01 00 01 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00
-              ^ 
-util/synthetic-events.c:1206:46: runtime error: member access within misaligned address 0x00000286f7ea for type 'struct perf_record_record_cpu_map', which requires 8 byte alignment
-0x00000286f7ea: note: pointer points here
- 20 00  01 00 01 00 08 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00
-              ^ 
-/home/jolsa/kernel/linux-perf/tools/include/asm-generic/bitops/atomic.h:10:29: runtime error: load of misaligned address 0x00000286f7f2 for type 'long unsigned int', which requires 8 byte alignment
-0x00000286f7f2: note: pointer points here
- 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  51 00 00 00 00 00
-              ^ 
+[1] https://github.com/qemu/qemu/blob/master/target/riscv/insn_trans/trans_rva.c.inc
+[2] https://lore.kernel.org/linux-riscv/20190211043829.30096-1-michaeljclark@mac.com/#r
 
-are you going to address this one as well?
+Change V7:
+ - Add combo spinlock (ticket & queued) support
+ - Rename ticket_spinlock.h
+ - Remove unnecessary atomic_read in ticket_spin_value_unlocked  
 
+Change V6:
+ - Fixup Clang compile problem Reported-by: kernel test robot
+   <lkp@intel.com>
+ - Cleanup asm-generic/spinlock.h
+ - Remove changelog in patch main comment part, suggested by
+   Conor.Dooley@microchip.com
+ - Remove "default y if NUMA" in Kconfig
 
-the reason for this one is that 'data' in struct perf_record_cpu_map_data
-is not alligned(8), so that's why I raised the question in my other reply ;-)
+Change V5:
+ - Update comment with RISC-V forward guarantee feature.
+ - Back to V3 direction and optimize asm code.
 
-I wonder we should mark all tools/lib/perf/include/perf/event.h types
-as packed to prevent any compiler padding
+Change V4:
+ - Remove custom sub-word xchg implementation
+ - Add ARCH_USE_QUEUED_SPINLOCKS_XCHG32 in locking/qspinlock
 
-thanks,
-jirka
+Change V3:
+ - Coding convention by Peter Zijlstra's advices
+
+Change V2:
+ - Coding convention in cmpxchg.h
+ - Re-implement short xchg
+ - Remove char & cmpxchg implementations
+
+Guo Ren (2):
+  asm-generic: spinlock: Move qspinlock & ticket-lock into generic
+    spinlock.h
+  riscv: Add qspinlock support
+
+Guo Ren (5):
+  asm-generic: ticket-lock: Remove unnecessary atomic_read
+  asm-generic: ticket-lock: Use the same struct definitions with qspinlock
+  asm-generic: ticket-lock: Move into ticket_spinlock.h
+  asm-generic: spinlock: Add combo spinlock (ticket & queued)
+  riscv: Add qspinlock support
+
+ arch/riscv/Kconfig                    |  9 +++
+ arch/riscv/include/asm/Kbuild         |  2 +
+ arch/riscv/include/asm/cmpxchg.h      | 17 +++++
+ arch/riscv/kernel/setup.c             |  4 ++
+ include/asm-generic/spinlock.h        | 81 +++++++++++++----------
+ include/asm-generic/spinlock_types.h  | 12 +---
+ include/asm-generic/ticket_spinlock.h | 92 +++++++++++++++++++++++++++
+ kernel/locking/qspinlock.c            |  2 +
+ 8 files changed, 174 insertions(+), 45 deletions(-)
+ create mode 100644 include/asm-generic/ticket_spinlock.h
+
+-- 
+2.36.1
+
