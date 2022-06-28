@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D81C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D0D1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245323AbiF1CcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
+        id S245329AbiF1CcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244691AbiF1C1r (ORCPT
+        with ESMTP id S244703AbiF1C1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861AD25E9B;
-        Mon, 27 Jun 2022 19:25:31 -0700 (PDT)
+        Mon, 27 Jun 2022 22:27:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9147A25EAA;
+        Mon, 27 Jun 2022 19:25:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 412C5B81C0E;
-        Tue, 28 Jun 2022 02:25:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDDAC385A2;
-        Tue, 28 Jun 2022 02:25:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E2E361753;
+        Tue, 28 Jun 2022 02:25:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F805C341CA;
+        Tue, 28 Jun 2022 02:25:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383128;
-        bh=2GFNxfbfgJwBO/JnDWPtSFfZrOQJgMiGWEiqxbP9VBY=;
+        s=k20201202; t=1656383134;
+        bh=mZedR6n3Ii7TaYEeShSvXW3M+fV7pwYm20s84Bcb1DI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oCVAx/ooXyf4V8T35kLlEm8ae+HDlkmZEgl+apevAkvxdC5e8PI44tuZhtX+q8xNI
-         GdBQqdLDldVqcCfw7pWTtmlADDw2UFMl/SLYymwMINd0P0YyT4hmtfweQCyEoafckX
-         1KupPN5bez3jkTetlb6y8ST9VyvxUK7xYkvFwCkQV6qO4WphF9H+RpBBby7vu6kOcf
-         1OgIbuupuTf1ZJzomEuNzdKa5ObaeHjEYyarrwUgmA4VC/6fykbdho6sHmBmtcZGLb
-         aRu3HQ/F25fFSiNcfnbMRJZ9dyWrYCYue7/Tp7OgUQ2/jf6DNKavuAMaW4SVf52ODN
-         n76ARRJg5nJGw==
+        b=ChyImcULTAj2kPai7dBPpo8nBP/Ft8HD4L0xuJnMANupzn/f5WaXYdz9pU6Vd06DU
+         Q8NDJnhJ29SiXOC4ezSD0hpHl/sWSi0DWvqhofdwyALj7mv++PGW6GxzmVt8S+V7a6
+         d0chsOS6z/1Qxnakq+zWuZzIf9A6iwD6ZQgodNh0hTAEIIPjO/arDWLaNMB7R3xej0
+         Ru7r3MCE4dzg4E+Vv1lJHhwH81fOulmMtAjKpCQuCdzJut/wZ4yzFYmiroika5abaw
+         UzA2XJCxgKFVMPYQ964RYJX4laRWkESTfdNvsUGtG46rMdomLww6Y/kd6J36pl/nAC
+         iWFV6iJR3Z48A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxime Ripard <maxime@cerno.tech>, Melissa Wen <mwen@igalia.com>,
-        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
-        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.19 05/22] drm/vc4: crtc: Move the BO handling out of common page-flip callback
-Date:   Mon, 27 Jun 2022 22:25:00 -0400
-Message-Id: <20220628022518.596687-5-sashal@kernel.org>
+Cc:     Xu Jia <xujia39@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, ajk@comnets.uni-bremen.de,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 07/22] hamradio: 6pack: fix array-index-out-of-bounds in decode_std_command()
+Date:   Mon, 27 Jun 2022 22:25:02 -0400
+Message-Id: <20220628022518.596687-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022518.596687-1-sashal@kernel.org>
 References: <20220628022518.596687-1-sashal@kernel.org>
@@ -52,77 +53,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Xu Jia <xujia39@huawei.com>
 
-[ Upstream commit 4d12c36fb73b5c49fe2f95d06515fd9846010fd2 ]
+[ Upstream commit 2b04495e21cdb9b45c28c6aeb2da560184de20a3 ]
 
-We'll soon introduce another completion callback source that won't need
-to use the BO reference counting, so let's move it around to create a
-function we will be able to share between both callbacks.
+Hulk Robot reports incorrect sp->rx_count_cooked value in decode_std_command().
+This should be caused by the subtracting from sp->rx_count_cooked before.
+It seems that sp->rx_count_cooked value is changed to 0, which bypassed the
+previous judgment.
 
-Reviewed-by: Melissa Wen <mwen@igalia.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220610115149.964394-11-maxime@cerno.tech
+The situation is shown below:
+
+         (Thread 1)			|  (Thread 2)
+decode_std_command()		| resync_tnc()
+...					|
+if (rest == 2)			|
+	sp->rx_count_cooked -= 2;	|
+else if (rest == 3)			| ...
+					| sp->rx_count_cooked = 0;
+	sp->rx_count_cooked -= 1;	|
+for (i = 0; i < sp->rx_count_cooked; i++) // report error
+	checksum += sp->cooked_buf[i];
+
+sp->rx_count_cooked is a shared variable but is not protected by a lock.
+The same applies to sp->rx_count. This patch adds a lock to fix the bug.
+
+The fail log is shown below:
+=======================================================================
+UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:925:31
+index 400 is out of range for type 'unsigned char [400]'
+CPU: 3 PID: 7433 Comm: kworker/u10:1 Not tainted 5.18.0-rc5-00163-g4b97bac0756a #2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xcd/0x134
+ ubsan_epilogue+0xb/0x50
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c
+ sixpack_receive_buf+0xfda/0x1330
+ tty_ldisc_receive_buf+0x13e/0x180
+ tty_port_default_receive_buf+0x6d/0xa0
+ flush_to_ldisc+0x213/0x3f0
+ process_one_work+0x98f/0x1620
+ worker_thread+0x665/0x1080
+ kthread+0x2e9/0x3a0
+ ret_from_fork+0x1f/0x30
+ ...
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xu Jia <xujia39@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_crtc.c | 34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+ drivers/net/hamradio/6pack.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
-index 9152d4d9c5d7..c85af9f54e0d 100644
---- a/drivers/gpu/drm/vc4/vc4_crtc.c
-+++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -851,21 +851,8 @@ vc4_async_page_flip_complete(struct vc4_async_flip_state *flip_state)
- 	drm_crtc_vblank_put(crtc);
- 	drm_framebuffer_put(flip_state->fb);
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 87094189af74..4b7bfaa97076 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -99,6 +99,7 @@ struct sixpack {
  
--	/* Decrement the BO usecnt in order to keep the inc/dec calls balanced
--	 * when the planes are updated through the async update path.
--	 * FIXME: we should move to generic async-page-flip when it's
--	 * available, so that we can get rid of this hand-made cleanup_fb()
--	 * logic.
--	 */
--	if (flip_state->old_fb) {
--		struct drm_gem_cma_object *cma_bo;
--		struct vc4_bo *bo;
--
--		cma_bo = drm_fb_cma_get_gem_obj(flip_state->old_fb, 0);
--		bo = to_vc4_bo(&cma_bo->base);
--		vc4_bo_dec_usecnt(bo);
-+	if (flip_state->old_fb)
- 		drm_framebuffer_put(flip_state->old_fb);
--	}
+ 	unsigned int		rx_count;
+ 	unsigned int		rx_count_cooked;
++	spinlock_t		rxlock;
  
- 	kfree(flip_state);
+ 	int			mtu;		/* Our mtu (to spot changes!) */
+ 	int			buffsize;       /* Max buffers sizes */
+@@ -570,6 +571,7 @@ static int sixpack_open(struct tty_struct *tty)
+ 	sp->dev = dev;
  
-@@ -876,8 +863,27 @@ static void vc4_async_page_flip_seqno_complete(struct vc4_seqno_cb *cb)
- {
- 	struct vc4_async_flip_state *flip_state =
- 		container_of(cb, struct vc4_async_flip_state, cb.seqno);
-+	struct vc4_bo *bo = NULL;
-+
-+	if (flip_state->old_fb) {
-+		struct drm_gem_cma_object *cma_bo =
-+			drm_fb_cma_get_gem_obj(flip_state->old_fb, 0);
-+		bo = to_vc4_bo(&cma_bo->base);
-+	}
+ 	spin_lock_init(&sp->lock);
++	spin_lock_init(&sp->rxlock);
+ 	refcount_set(&sp->refcnt, 1);
+ 	sema_init(&sp->dead_sem, 0);
  
- 	vc4_async_page_flip_complete(flip_state);
-+
-+	/*
-+	 * Decrement the BO usecnt in order to keep the inc/dec
-+	 * calls balanced when the planes are updated through
-+	 * the async update path.
-+	 *
-+	 * FIXME: we should move to generic async-page-flip when
-+	 * it's available, so that we can get rid of this
-+	 * hand-made cleanup_fb() logic.
-+	 */
-+	if (bo)
-+		vc4_bo_dec_usecnt(bo);
+@@ -945,6 +947,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 			sp->led_state = 0x60;
+ 			/* fill trailing bytes with zeroes */
+ 			sp->tty->ops->write(sp->tty, &sp->led_state, 1);
++			spin_lock_bh(&sp->rxlock);
+ 			rest = sp->rx_count;
+ 			if (rest != 0)
+ 				 for (i = rest; i <= 3; i++)
+@@ -962,6 +965,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 				sp_bump(sp, 0);
+ 			}
+ 			sp->rx_count_cooked = 0;
++			spin_unlock_bh(&sp->rxlock);
+ 		}
+ 		break;
+ 	case SIXP_TX_URUN: printk(KERN_DEBUG "6pack: TX underrun\n");
+@@ -991,8 +995,11 @@ sixpack_decode(struct sixpack *sp, const unsigned char *pre_rbuff, int count)
+ 			decode_prio_command(sp, inbyte);
+ 		else if ((inbyte & SIXP_STD_CMD_MASK) != 0)
+ 			decode_std_command(sp, inbyte);
+-		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK)
++		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK) {
++			spin_lock_bh(&sp->rxlock);
+ 			decode_data(sp, inbyte);
++			spin_unlock_bh(&sp->rxlock);
++		}
+ 	}
  }
  
- /* Implements async (non-vblank-synced) page flips.
 -- 
 2.35.1
 
