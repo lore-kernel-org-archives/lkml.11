@@ -2,89 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73233CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9857C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346962AbiF1Nww (ORCPT
+        id S1346968AbiF1NxH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57382 "EHLO
+        Tue, 28 Jun 2022 09:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346915AbiF1Nwt (ORCPT
+        with ESMTP id S1346964AbiF1NxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:52:49 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D544B25
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:52:49 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31bf327d4b5so28369937b3.13
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:52:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9upcBG0MMkWjokT486LIbH25iwXepLGTqHnlYogNOEY=;
-        b=NcSg2PNgj9jzoGvu0M+Ne6MJkj3SU7Cyyf74+X1VWhPOM/JZ3QtfuYLUlbRYnpUKfD
-         j9zSF7BulNjjY5isG6haWnfY7PSEa1HpcHMPmkq7ICp/nQYMN9yns9a4wrNOxGsWIV5N
-         fj/TFcRcnckkPIvIFrw4rr6LAWgozasMh2vTJRfQM9v493ghlTY8LrkUiUsRYUsaGCFV
-         EcnzeXjBJ1Yjh3LhbHmqq+gaA+NoUMv3pzTU2VH6Rv5En0kSMFODZmIIbplwYUbXSBiV
-         dZTTrTa6XY7oLPZGTWGVZxmPV124tcc7Q7BqM9YPsERic4J9U8CzTPOJZboaKIM6WxaT
-         c/Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9upcBG0MMkWjokT486LIbH25iwXepLGTqHnlYogNOEY=;
-        b=keKr136Mxyt5IpGlz1NCC92km+U2VpLfH0Sw62i6kdPmnZaQ/qCHqacHGvat+ZBQgR
-         bmPvpRA7U9ONn2/gufvXrGooJOnfsUd75sM7ghOQeCC2XN0i24LZxlDn2qcR4KFwZ3mO
-         Uv6UxPJwX5lPqcn0EWv0N/5pKtpwK4G1lD/5v3hfrGOVT6Fw/BpYDasPzZa1x4WDLkJ7
-         NDXSNHydewqBPAU70H6nMPlJjjzIltR+Lehoe5zCsNhjJ8Eik3SmNIXTyZQ7bcEQR+fy
-         k/57hVOr1XQGIzvieRXGCmWmWJelpM2rIiRjQgY7ZBDFe3ImA71XXE738FyNxqo/+OIi
-         0quQ==
-X-Gm-Message-State: AJIora8lBf+SdWxzUkNwIxaVErufKjUwkmfTcitHHOJDzYhobYF1QU97
-        DR/xCKSq8TsnVMw48lnWL0ukulGJLugJM60LThoI+g==
-X-Google-Smtp-Source: AGRyM1svsZstAnVyKZcSo4aSnNDXoorFrsgBhav2DdlBbI8yV5im1Z5GT7JHDXDdnUYGFMbclrnWlsJ6mdvr9wNdUuk=
-X-Received: by 2002:a81:d05:0:b0:317:76a1:9507 with SMTP id
- 5-20020a810d05000000b0031776a19507mr21678625ywn.151.1656424368411; Tue, 28
- Jun 2022 06:52:48 -0700 (PDT)
+        Tue, 28 Jun 2022 09:53:04 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B1B7650
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:53:01 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LXQwN0hKQz1L8k5;
+        Tue, 28 Jun 2022 21:50:44 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 28 Jun 2022 21:52:59 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
+ 2022 21:52:58 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linuxppc-dev@lists.ozlabs.org>
+CC:     <michael@walle.cc>, <arnd@arndb.de>, <shawnguo@kernel.org>
+Subject: [PATCH -next 2/2] soc: fsl: guts: check return value after calling of_iomap() in fsl_guts_get_soc_uid()
+Date:   Tue, 28 Jun 2022 22:02:49 +0800
+Message-ID: <20220628140249.1073809-2-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220628140249.1073809-1-yangyingliang@huawei.com>
+References: <20220628140249.1073809-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-References: <20220613054310.21186-1-a-govindraju@ti.com>
-In-Reply-To: <20220613054310.21186-1-a-govindraju@ti.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 28 Jun 2022 15:52:37 +0200
-Message-ID: <CACRpkdZB1T1cKQcNDiriCdeQuHGMH-9BvV=a9mP21YENThA-bQ@mail.gmail.com>
-Subject: Re: [PATCH v3] gpio: davinci: Add support for system suspend/resume PM
-To:     Aswath Govindraju <a-govindraju@ti.com>
-Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Devarsh Thakkar <devarsht@ti.com>, Keerthy <j-keerthy@ti.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 7:43 AM Aswath Govindraju <a-govindraju@ti.com> wrote:
+of_iomap() may return NULL, so we need check the return value.
 
-> From: Devarsh Thakkar <devarsht@ti.com>
->
-> Add support for system suspend/resume PM hooks, save the
-> register context of all the required gpio registers on suspend
-> and restore context on the resume.
->
-> Signed-off-by: Devarsh Thakkar <devarsht@ti.com>
-> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Fixes: 786dde1e59d7 ("soc: fsl: guts: add serial_number support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/soc/fsl/guts.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Hijacking thread!
+diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
+index 8038c599ad83..6bf3e6a980ff 100644
+--- a/drivers/soc/fsl/guts.c
++++ b/drivers/soc/fsl/guts.c
+@@ -126,6 +126,10 @@ static u64 fsl_guts_get_soc_uid(const char *compat, unsigned int offset)
+ 		return 0;
+ 
+ 	sfp_base = of_iomap(np, 0);
++	if (!sfp_base) {
++		of_node_put(np);
++		return 0;
++	}
+ 
+ 	uid = ioread32(sfp_base + offset);
+ 	uid <<= 32;
+-- 
+2.25.1
 
-Aswath, if you are testing DaVinci boards can you look at these two
-patches:
-https://lore.kernel.org/linux-gpio/20220507124536.171930-1-linus.walleij@linaro.org/
-https://lore.kernel.org/linux-gpio/20220507124536.171930-2-linus.walleij@linaro.org/
-
-I resend them every new kernel release but they never get merged :D
-
-If you can test them, maybe I can queue them directly for the SoC
-tree.
-
-Yours,
-Linus Walleij
