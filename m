@@ -2,250 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C2EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345868AbiF1Obg (ORCPT
+        id S1346966AbiF1Obj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 10:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
+        Tue, 28 Jun 2022 10:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346607AbiF1ObN (ORCPT
+        with ESMTP id S1346593AbiF1ObO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 10:31:13 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04D93136F;
-        Tue, 28 Jun 2022 07:31:11 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SEGBTo025583;
-        Tue, 28 Jun 2022 14:31:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=VKd5vFUiEKfuRcGuSWKwzFHHhQa5vtGA/lkq5v9/Zc8=;
- b=AwrylcZ8OiN4cylxePE9S2U9ckLoQvPLDc39blAe6HKudsqSEobPZBDInyFxo+fBMpB6
- PTlvkmNEhT6ekYgukre8PZ4cHv45rAUMHO09bN4u+iKgXaPmcOrF4U4lUAG7OUXIvLER
- k5YLnmMBTUlojBartgmTJ5jTh4FATZF1Ojfph7y8qU3VjF7bDqCfF/egEaqgH+8KQ+DN
- g63NGJxpOMufBpNB/4rCR62xxR48KCxvogprvR57Y59a4unwCVfdJQ2BtbjxB8rxSV9h
- oR4T0LXwTxiGYah10al4uKg2jJt3vqpD6kbGufmD74YeNJvXxVmtW9LhLuYL3nGNPWCw /g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h01tjcj33-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 14:31:09 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SELUi1027522;
-        Tue, 28 Jun 2022 14:31:08 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h01tjcj0q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 14:31:07 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SEK7mO003204;
-        Tue, 28 Jun 2022 14:31:05 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04fra.de.ibm.com with ESMTP id 3gwt093qmr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 14:31:05 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SEV9tF32375268
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jun 2022 14:31:09 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 49743A4060;
-        Tue, 28 Jun 2022 14:31:02 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0C12AA405B;
-        Tue, 28 Jun 2022 14:31:02 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 28 Jun 2022 14:31:01 +0000 (GMT)
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>
-Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v6 5/5] s390/pci: allow zPCI zbus without a function zero
-Date:   Tue, 28 Jun 2022 16:31:00 +0200
-Message-Id: <20220628143100.3228092-6-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220628143100.3228092-1-schnelle@linux.ibm.com>
-References: <20220628143100.3228092-1-schnelle@linux.ibm.com>
+        Tue, 28 Jun 2022 10:31:14 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7071313B6;
+        Tue, 28 Jun 2022 07:31:10 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id l68so2438512wml.3;
+        Tue, 28 Jun 2022 07:31:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W3FrRSzola/6d2s6+3NlNmyXpbzz7fjJBWvTI0zjpR0=;
+        b=O1qKfkWq5p1z37oLP77kUFCk/yIJ+czZuO+4mUY0shUQ051DSmC17ZpjeVds0c1seT
+         p235CruZHRx2eRHoqDSRE/BnByFShu4WqCOY30xUyvyEj57Zz9ueMDyvWjBwePP1uLId
+         pKkAiuiBbYk9RGNq1E1cUHhtr6Pn6TZcanrbhMzGXfYgpfalVnpqLpBMIyg6lb2iOe6G
+         mzTKPtwAIDL1Lpfe0U4nUnSkJlDwnpIStANsiTIadNEMZSg43wsZ0F1vk+xked7CFy2o
+         C9x9StjsxQqpB9i8K0CDQnJGSXwpbvkkO5OoBHaFxXT55nThcpz9eA2dR53DglEzbgYu
+         LQIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W3FrRSzola/6d2s6+3NlNmyXpbzz7fjJBWvTI0zjpR0=;
+        b=4qkk09iNIyMrMPJapKm0D98jw6xbqgrhrRrJcJy5svbQgmH448m+Dl/9rJuG8TN9uf
+         9ab3DRIk+pFmrPZ6HCj4Q5SQHpm30H5+qjaCJPoMysvmzMcJDkZ6WrRJQJlKNsi0s3tV
+         fRi/P5Rl7a+v7wJtcAgw9RDAsgSKGRTOFA7OHmQUzNob7hsAYTR8cvz7HMdIIxQQ+/8o
+         eSvbh6v1fURYITRurcRsm5y/Sg1JqlBvQrBzjTX7IpWCQJiOzvswQNvdldQvdJxlveqa
+         AX41FaxBCU1iST/HS8IELkF1s/DLfzL4sAsvJs2PcLWddPv0+4cQFSJnsC1WAD1EumU0
+         iJEw==
+X-Gm-Message-State: AJIora8T9xSUfYzl/dF64Vuc9L7zw3rObEaRGx3zxugQIt4Bo4sM7568
+        EPFl8zPqCndioFXq0HdWV4bZKrlAHy/DjJrqK/kOHqXsLKo=
+X-Google-Smtp-Source: AGRyM1vsJ8HpmSLep3t0IGNy7NGpKsYYvqVtWm7n6bCarsKMWPn7TkA/FN5szzoslotKf/U+eQXaUEGUuzTYFJUIFn4=
+X-Received: by 2002:a1c:4c13:0:b0:39c:5a6b:8540 with SMTP id
+ z19-20020a1c4c13000000b0039c5a6b8540mr26840109wmf.106.1656426669377; Tue, 28
+ Jun 2022 07:31:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: DYJPCg_yuXbk0H054LV_HkrMCPAs3Mgy
-X-Proofpoint-ORIG-GUID: SdfcWOrgatVhN_WSQNJlwvproutzaJbX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-28_07,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- priorityscore=1501 phishscore=0 adultscore=0 malwarescore=0
- lowpriorityscore=0 clxscore=1015 bulkscore=0 spamscore=0 mlxlogscore=896
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206280059
+References: <20220628054539.33187-1-schspa@gmail.com> <c230ccdc-b20d-32a6-c3cb-715698d06945@roeck-us.net>
+In-Reply-To: <c230ccdc-b20d-32a6-c3cb-715698d06945@roeck-us.net>
+From:   Schspa Shi <schspa@gmail.com>
+Date:   Tue, 28 Jun 2022 22:30:57 +0800
+Message-ID: <CAMA88Tr=TXiT7zCMbnKKp+B-O-us103rsTurEcpwtsqHPXOJTg@mail.gmail.com>
+Subject: Re: [PATCH] watchdog: dw_wdt: Fix buffer overflow when get timeout
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     wim@linux-watchdog.org, linux-watchdog@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the zPCI code block PCI bus creation and probing of a zPCI
-zbus unless there is a PCI function with devfn 0. This is always the
-case for the PCI functions with hidden RID but may keep PCI functions
-from a multi-function PCI device with RID information invisible until
-the function 0 becomes visible. Worse as a PCI bus is necessary to even
-present a PCI hotplug slot even that remains invisible.
+Guenter Roeck <linux@roeck-us.net> writes:
 
-With the probing of these so called isolated PCI functions enabled for
-s390 in common code this restriction is no longer necessary. On network
-cards with multiple ports and a PF per port this also allows using each
-port on its own while still providing the physical PCI topology
-information in the devfn needed to associate VFs with their parent PF.
+> On 6/27/22 22:45, Schspa Shi wrote:
+>> The top_val can be obtained from device-tree, if it is not configured
+>> correctly, there will be buffer overflow.
+>> Signed-off-by: Schspa Shi <schspa@gmail.com>
+>> ---
+>>   drivers/watchdog/dw_wdt.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>> diff --git a/drivers/watchdog/dw_wdt.c b/drivers/watchdog/dw_wdt.c
+>> index cd578843277e..1f8605c0d712 100644
+>> --- a/drivers/watchdog/dw_wdt.c
+>> +++ b/drivers/watchdog/dw_wdt.c
+>> @@ -155,6 +155,9 @@ static unsigned int dw_wdt_get_min_timeout(struct dw_wdt *dw_wdt)
+>>                      break;
+>>      }
+>>   +  if (WARN_ON_ONCE(idx == DW_WDT_NUM_TOPS))
+>> +            idx = DW_WDT_NUM_TOPS - 1;
+>> +
+> dw_wdt_get_min_timeout() returns the lowest non-0 configurable timeout.
+> The  last entry in the timeout array must not be 0, meaning there must
+> be at least one entry in the array where the timeout is not 0. Therefore
+> this situation can not happen.
+>
 
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- arch/s390/pci/pci_bus.c | 82 ++++++++++-------------------------------
- 1 file changed, 20 insertions(+), 62 deletions(-)
+Yes, I have seen this, you are correct, sorry for the bad patch.
 
-diff --git a/arch/s390/pci/pci_bus.c b/arch/s390/pci/pci_bus.c
-index 5d77acbd1c87..6a8da1b742ae 100644
---- a/arch/s390/pci/pci_bus.c
-+++ b/arch/s390/pci/pci_bus.c
-@@ -145,9 +145,6 @@ int zpci_bus_scan_bus(struct zpci_bus *zbus)
- 	struct zpci_dev *zdev;
- 	int devfn, rc, ret = 0;
- 
--	if (!zbus->function[0])
--		return 0;
--
- 	for (devfn = 0; devfn < ZPCI_FUNCTIONS_PER_BUS; devfn++) {
- 		zdev = zbus->function[devfn];
- 		if (zdev && zdev->state == ZPCI_FN_STATE_CONFIGURED) {
-@@ -184,26 +181,26 @@ void zpci_bus_scan_busses(void)
- 
- /* zpci_bus_create_pci_bus - Create the PCI bus associated with this zbus
-  * @zbus: the zbus holding the zdevices
-- * @f0: function 0 of the bus
-+ * @fr: PCI root function that will determine the bus's domain, and bus speeed
-  * @ops: the pci operations
-  *
-- * Function zero is taken as a parameter as this is used to determine the
-- * domain, multifunction property and maximum bus speed of the entire bus.
-+ * The PCI function @fr determines the domain (its UID), multifunction property
-+ * and maximum bus speed of the entire bus.
-  *
-  * Return: 0 on success, an error code otherwise
-  */
--static int zpci_bus_create_pci_bus(struct zpci_bus *zbus, struct zpci_dev *f0, struct pci_ops *ops)
-+static int zpci_bus_create_pci_bus(struct zpci_bus *zbus, struct zpci_dev *fr, struct pci_ops *ops)
- {
- 	struct pci_bus *bus;
- 	int domain;
- 
--	domain = zpci_alloc_domain((u16)f0->uid);
-+	domain = zpci_alloc_domain((u16)fr->uid);
- 	if (domain < 0)
- 		return domain;
- 
- 	zbus->domain_nr = domain;
--	zbus->multifunction = f0->rid_available;
--	zbus->max_bus_speed = f0->max_bus_speed;
-+	zbus->multifunction = fr->rid_available;
-+	zbus->max_bus_speed = fr->max_bus_speed;
- 
- 	/*
- 	 * Note that the zbus->resources are taken over and zbus->resources
-@@ -303,47 +300,6 @@ void pcibios_bus_add_device(struct pci_dev *pdev)
- 	}
- }
- 
--/* zpci_bus_create_hotplug_slots - Add hotplug slot(s) for device added to bus
-- * @zdev: the zPCI device that was newly added
-- *
-- * Add the hotplug slot(s) for the newly added PCI function. Normally this is
-- * simply the slot for the function itself. If however we are adding the
-- * function 0 on a zbus, it might be that we already registered functions on
-- * that zbus but could not create their hotplug slots yet so add those now too.
-- *
-- * Return: 0 on success, an error code otherwise
-- */
--static int zpci_bus_create_hotplug_slots(struct zpci_dev *zdev)
--{
--	struct zpci_bus *zbus = zdev->zbus;
--	int devfn, rc = 0;
--
--	rc = zpci_init_slot(zdev);
--	if (rc)
--		return rc;
--	zdev->has_hp_slot = 1;
--
--	if (zdev->devfn == 0 && zbus->multifunction) {
--		/* Now that function 0 is there we can finally create the
--		 * hotplug slots for those functions with devfn != 0 that have
--		 * been parked in zbus->function[] waiting for us to be able to
--		 * create the PCI bus.
--		 */
--		for  (devfn = 1; devfn < ZPCI_FUNCTIONS_PER_BUS; devfn++) {
--			zdev = zbus->function[devfn];
--			if (zdev && !zdev->has_hp_slot) {
--				rc = zpci_init_slot(zdev);
--				if (rc)
--					return rc;
--				zdev->has_hp_slot = 1;
--			}
--		}
--
--	}
--
--	return rc;
--}
--
- static int zpci_bus_add_device(struct zpci_bus *zbus, struct zpci_dev *zdev)
- {
- 	int rc = -EINVAL;
-@@ -352,21 +308,19 @@ static int zpci_bus_add_device(struct zpci_bus *zbus, struct zpci_dev *zdev)
- 		pr_err("devfn %04x is already assigned\n", zdev->devfn);
- 		return rc;
- 	}
-+
- 	zdev->zbus = zbus;
- 	zbus->function[zdev->devfn] = zdev;
- 	zpci_nb_devices++;
- 
--	if (zbus->bus) {
--		if (zbus->multifunction && !zdev->rid_available) {
--			WARN_ONCE(1, "rid_available not set for multifunction\n");
--			goto error;
--		}
--
--		zpci_bus_create_hotplug_slots(zdev);
--	} else {
--		/* Hotplug slot will be created once function 0 appears */
--		zbus->multifunction = 1;
-+	if (zbus->multifunction && !zdev->rid_available) {
-+		WARN_ONCE(1, "rid_available not set for multifunction\n");
-+		goto error;
- 	}
-+	rc = zpci_init_slot(zdev);
-+	if (rc)
-+		goto error;
-+	zdev->has_hp_slot = 1;
- 
- 	return 0;
- 
-@@ -400,7 +354,11 @@ int zpci_bus_device_register(struct zpci_dev *zdev, struct pci_ops *ops)
- 			return -ENOMEM;
- 	}
- 
--	if (zdev->devfn == 0) {
-+	if (!zbus->bus) {
-+		/* The UID of the first PCI function registered with a zpci_bus
-+		 * is used as the domain number for that bus. Currently there
-+		 * is exactly one zpci_bus per domain.
-+		 */
- 		rc = zpci_bus_create_pci_bus(zbus, zdev, ops);
- 		if (rc)
- 			goto error;
+>>      return dw_wdt->timeouts[idx].sec;
+>>   }
+>>   @@ -178,6 +181,9 @@ static unsigned int dw_wdt_get_timeout(struct dw_wdt
+>> *dw_wdt)
+>>                      break;
+>>      }
+>>   +  if (WARN_ON_ONCE(idx == DW_WDT_NUM_TOPS))
+>> +            idx = DW_WDT_NUM_TOPS - 1;
+>> +
+>
+> idx is derived from a top_val value written into WDOG_TIMEOUT_RANGE_REG_OFFSET,
+> and the value written is derived from an entry in the timeouts array.
+> This array contains an entry for each possible top_val. While the array is not
+> sorted by top_val, dw_wdt_handle_tops() still guarantees that an entry exists.
+>
+> I do not see how bad devicetree data can circumvent that. If it does, please
+> provide an example and explain.
+>
+
+My bad, there is no problem.
+
+> Thanks,
+> Guenter
+
+
 -- 
-2.32.0
-
+BRs
+Schspa Shi
