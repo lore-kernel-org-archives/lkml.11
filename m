@@ -2,110 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A666CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1578C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243547AbiF1I3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52836 "EHLO
+        id S241524AbiF1Iaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245275AbiF1I31 (ORCPT
+        with ESMTP id S239316AbiF1Iad (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:29:27 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF1120F4F;
-        Tue, 28 Jun 2022 01:29:25 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25S8Mxn2000892;
-        Tue, 28 Jun 2022 08:29:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=H66WiVgYJSfTkHDmL3/sFeorS3m4uX8oKcUy2teFCuk=;
- b=Q+as9L48PKczmUJiCKfE5nUu+K/6m8AyyRyh4e98mfFRenjNk7AuxttuqKR+W/oZMWM8
- JtOf+MSk+T+bvZyneLbBImvrAoVDeumF3+7eRDJL8RT/D98H7TlKddlCaMyEfsIQ/Bdy
- hQUOePbg3FrCPyXnqIq+YggMlvWJJvwBKfkwSN65Uu+w7K+UUymKDPgPzml09G+SFIUj
- L7aeHPCJ4o5XcyAgH0XLoAOdT150UcScc/4y8Gfm8WPoIRGzlv9PJigyJLNPj0We6x+4
- aAbWcdwZfYYTG/qwA1TxrTgs51Px5pN7940NIjUcBQpQC5vv3qArHnWwc9yWOdLDIqzF gA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyx37g3bp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 08:29:12 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25S8QELD021800;
-        Tue, 28 Jun 2022 08:29:11 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gyx37g3an-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 08:29:11 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25S8LikJ006126;
-        Tue, 28 Jun 2022 08:29:09 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma05fra.de.ibm.com with ESMTP id 3gwt093bbf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 08:29:09 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25S8T6kL21430654
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jun 2022 08:29:06 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5D44E4C044;
-        Tue, 28 Jun 2022 08:29:06 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C55B24C052;
-        Tue, 28 Jun 2022 08:29:05 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.7.238])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 28 Jun 2022 08:29:05 +0000 (GMT)
-Date:   Tue, 28 Jun 2022 10:29:04 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: Re: [PATCH 5.18 112/181] vmcore: convert copy_oldmem_page() to take
- an iov_iter
-Message-ID: <Yrq70Ctw3UYPFnzC@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <20220627111944.553492442@linuxfoundation.org>
- <20220627111947.945731832@linuxfoundation.org>
- <YrnaYJA675eGIy03@osiris>
- <YrqpEZV3yu31t6E2@kroah.com>
+        Tue, 28 Jun 2022 04:30:33 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59B925EBA
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:30:31 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-31bf327d4b5so19563427b3.13
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:30:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e5Z/hG8NSQiNO2xEelBjBj++4NPTXkLY1E3WsIfZuUI=;
+        b=cFOT1JeSSqICBH1zsjVCn1t4/wd9526VEQ9A7gSgpYHLbvn2rhoMbjLoeB6tj9iewe
+         AdkecZgznE2OlgxJVBf+K5LIK1jfo3uTZjJciW4QBx7tGdAVy7sfhelYyFvIhLEXle4R
+         193RO7PBOkJT0a4ggra0cRHnp3jrtgdKbvlZVn0I7gWyBW3YaGmstvc/iD3877IBDudl
+         +zN4eg8tCA6O+k1W488D2HRbGUFsjC3CM5hc883woRtiCTjyeZgDj4oddUM02NRy8pyX
+         KN9M8thFWr4NWu3KWX05nx8tgySBNRE4e6GipfTrsvuW/F2A/30OvVYyI6IqG2eQ25dJ
+         Yjkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e5Z/hG8NSQiNO2xEelBjBj++4NPTXkLY1E3WsIfZuUI=;
+        b=5kWjKp8kKSca03Ho4gQSHw8TvJ1sXMK59g/8gORVxTvSzRTXuiZh/FnbwiVgmDgZd0
+         FjKzmQBDgrHBMfB4LIelX1GQ04ipScu4bAX/pTplEJ3FMlXd6xHUOUipxr73mNBnbDb5
+         VYyJx8qTsGlm8cKBzQuFcbVrHe9lwQaQNfBkn79vwNRcTtkH42ZCRBi9zmoZrkZojGQG
+         pZ5Uq1Ldd7mr4ZeaaOCt0DJm9Upgby3b84J+qMPiahg7qSlVJQJlhz8D/NI1dsh6H9fZ
+         A4Eev7N+i/81E4JTVayVPSQCjxoyDdNIct8HlWXfML339+OqKUXA4nmuHnnjr8CEPOKZ
+         dDNQ==
+X-Gm-Message-State: AJIora9FvtGn4jxirIZxq17uxdBLPMUG1oi6qkH5Qfa4a/Jpl1Copdt2
+        0/r8Pj4ZzjdE7HVbUY6TgU9oY7VShzFQVo8y2gr3Cg==
+X-Google-Smtp-Source: AGRyM1uKl2WU9AxFxQXaBRZSVk2Jbhtzgz+hPFdf2a+y8B4wMh0z4Qb4XsuZBsPg7IrlqHvLAYY5VnUpxXIbYIjzF14=
+X-Received: by 2002:a0d:eace:0:b0:317:87ac:b3a8 with SMTP id
+ t197-20020a0deace000000b0031787acb3a8mr20429857ywe.126.1656405031018; Tue, 28
+ Jun 2022 01:30:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrqpEZV3yu31t6E2@kroah.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: X9f3dPd963n_9EjhM7D0NyKbsc1XVVis
-X-Proofpoint-ORIG-GUID: wbQFeLqpb4lU4rwBL1-sV31_x19UzbDv
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-27_09,2022-06-24_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
- clxscore=1011 adultscore=0 malwarescore=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 bulkscore=0 mlxlogscore=740 suspectscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206280033
+References: <1655462819-28801-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+In-Reply-To: <1655462819-28801-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 28 Jun 2022 10:30:19 +0200
+Message-ID: <CACRpkdbgFaPxE+ZtSBPLdOeM_vj_qgf__Mk1Yb4KSWrzpup2Ug@mail.gmail.com>
+Subject: Re: [PATCH 0/4] pinctrl: pinctrl-zynqmp: Add tri-state configuration support
+To:     Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
+        git@xilinx.com, saikrishna12468@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 09:09:05AM +0200, Greg Kroah-Hartman wrote:
-> > This one breaks s390. You would also need to apply the following two commits:
-> > 
-> > cc02e6e21aa5 ("s390/crash: add missing iterator advance in copy_oldmem_page()")
-> > af2debd58bd7 ("s390/crash: make copy_oldmem_page() return number of bytes copied")
-> 
-> Both of them are also in the 5.18-rc queue here, right?
+On Fri, Jun 17, 2022 at 12:47 PM Sai Krishna Potthuri
+<lakshmi.sai.krishna.potthuri@xilinx.com> wrote:
 
-Yes, these are:
+> This series update the Xilinx firmware, ZynqMP dt-binding and ZynqMP
+> pinctrl driver to handle 'output-enable' and 'bias-high-impedance'
+> configurations. As part of these configurations, ZynqMP pinctrl driver
+> takes care of pin tri-state setting.
+> Also fix the kernel doc warning in ZynqMP pinctrl driver.
+>
+> Note: Resending the series as i see this series didn't went out due
+> to some issue with my mail client. Please ignore if this series is
+> already received.
+>
+> Sai Krishna Potthuri (4):
+>   firmware: xilinx: Add configuration values for tri-state
+>   dt-bindings: pinctrl-zynqmp: Add output-enable configuration
+>   pinctrl: pinctrl-zynqmp: Add support for output-enable and
+>     bias-high-impedance
+>   pinctrl: pinctrl-zynqmp: Fix kernel-doc warning
 
-	[PATCH 5.18 113/181] s390/crash: add missing iterator advance in copy_oldmem_page() Greg Kroah-Hartman
-	[PATCH 5.18 114/181] s390/crash: make copy_oldmem_page() return number of bytes copied Greg Kroah-Hartman
+Excellent work, patches applied!
 
-> thanks,
-> 
-> greg k-h
+Yours,
+Linus Walleij
