@@ -2,118 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F63C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9091DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233584AbiF1SsX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 14:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47402 "EHLO
+        id S233635AbiF1Sto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 14:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231192AbiF1SsV (ORCPT
+        with ESMTP id S232025AbiF1Stm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 14:48:21 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4211A1AF38
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 11:48:21 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id n12so12865661pfq.0
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 11:48:21 -0700 (PDT)
+        Tue, 28 Jun 2022 14:49:42 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA941248FD;
+        Tue, 28 Jun 2022 11:49:41 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id cw10so27669631ejb.3;
+        Tue, 28 Jun 2022 11:49:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2ZFJGLWfARwse3I0qcbyHYAl+J8ZxqGlNp9EqF8Gt/4=;
-        b=GcO0xSWTb1ngfjkZ8sUq94xD+QADBUfR+xEyDAxWGq2RsJsen2Y6E7nUoeF90QyEVQ
-         JcOklYDKGIn630R8J5w7kVqK1tkQh6/fCb20+xc0qKQZXlWDNMdD+C9qaU8iHreNKkhu
-         Qo9hPak8Ky7gG4m367+HnTi9Pq4v2UMtDMUjhJWR8Rucp58BZSZoZe06S1yRZ1p21v7W
-         Xa2xPt+7bcY7lXz4nC9ODghyGMtYFTz18MYZMcXPkmawhZMqVnSl+qnDgQrFvwmVfxOz
-         dA5pPoNxD0uGWNfYD3DgZ0+vA9QCnrSboz6itLf5sY6gjykq2ukBKo+6daDQq1UT6Faq
-         72sg==
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5ObwhxGoXe2ARX6DreYdA3iy7rl42wiy5qX/jBWrSpM=;
+        b=nVGPtX9pniV/ybRejCUwJ7N9XYru7cWW5qzGh+AqY8r9tZZsUf9eDP8ACkL7Ylnh77
+         qcP5ANLB+fYXAwnzbpLalaxIvQnz7SxhfXFsejmUIoQXWDj6jFPgVuLl9lNEu5SJp8k7
+         CAVYc+5O2CVvaEArqAd7yDh3LTLBhT5pMEsxPWvmMPn2z18Z+0jlIKBzF4TgUXlYPlDk
+         91YUJBZE+1Ilhqp5SWx9guw20ewvZel8IbfMQiMy57BUisnkMCx8Z1y78YJSq5hrQlpJ
+         C1obfYnCvy38qBBu1Lrcr0EDDVUifm0pl5Toywvj0pEyxgEdtKfRHjwXnxmhP/Hhod3W
+         moRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2ZFJGLWfARwse3I0qcbyHYAl+J8ZxqGlNp9EqF8Gt/4=;
-        b=qr2kYw90PF0M7l2cJIwIUQ6j6vykUHSujYoB4LTPlwhPI8NXk++FEfSbnnbBheBU23
-         ASEOuvGSzli/f+vA9trugmDyPqX/t3OaQgmqhIl9zxxC57Ull/j93cy6HGUGObM7MLK6
-         17uoqbErCOg6hHk9KLCZ6WO/QBqV0JZShjVgLKfXF/saEs+ZizfuMzR11adJUR0wEbEX
-         3QxNpNf4g7GiBkhZoH7r+fmXtH/k5DIYRu9UvT2qOSO6Wq976tgw0ryO9k/vm1omsP+L
-         pX2ksVayysHAPjsREmM4BAGXtw5rWuK+KSkQNW/LM7DTtT5lxGjkLiStSRNhGcIZN4cY
-         0ICA==
-X-Gm-Message-State: AJIora9MuRQSXq2qd5YoBIxcLSmouJt6rJ7tOqfBLcoVO2GpHKJRqX6a
-        sEGJA5Qu+V+5N+P4TOFc3iawBCAUyTkpv3/Ra2g=
-X-Google-Smtp-Source: AGRyM1vl8i2+u/2GpoyflXi20qGW2LyjziGmL1IJ6Gl1HeMIS+2byGoaqomAzKOgxHlNrXYjLa3e4gBGdK9VLPJESQw=
-X-Received: by 2002:a65:6aa3:0:b0:40c:889d:4f16 with SMTP id
- x3-20020a656aa3000000b0040c889d4f16mr19029190pgu.106.1656442100828; Tue, 28
- Jun 2022 11:48:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5ObwhxGoXe2ARX6DreYdA3iy7rl42wiy5qX/jBWrSpM=;
+        b=xioUlA1D32acYj61dQMPZP16O2ADYCqBfudPL+c0zBc2k4CDtC80TxPl4gW3GCWsZB
+         YMOnfKZPgilF4TUMZQn17L9z+46gXJQaTVXuy3vqLqWM2GdSdH4W1KK+O4B2MX9VG6HO
+         bUX+4t6InNtxnYQ7DlajzErClWWaFOxi0PtJvWfx8LOEpZCMYqcT2KYrTCQRDGNpEdOe
+         ehoIy6tZv5CRN0L5bJe9NKyoFLwJi/+YEhCBL/7mYZLMgaYRO8zWllHKPjP2ZKkEueUD
+         oEQm0NfSMk/xhqpoCCA8X0MEdM57ObzTipkbONyjzhl/JvR/UmdwQ8lSVV25SANs77eD
+         xTAA==
+X-Gm-Message-State: AJIora+TbjQklnbnk9WbiAfqtOAAKjQ5AywJ4yfCdAiECU2fCQk9wTK1
+        tAp6AP1j8Nb3JLqrK4oTQQw=
+X-Google-Smtp-Source: AGRyM1t+WIYcP7ofsz0WZlACCfJz8MlGeYIB1VazUOXiK1PyGbMd+9sYo6v4vwUtXqoYKfii2vXGmQ==
+X-Received: by 2002:a17:906:2bc2:b0:726:d02f:dea with SMTP id n2-20020a1709062bc200b00726d02f0deamr4392270ejg.60.1656442180000;
+        Tue, 28 Jun 2022 11:49:40 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9747593edw.90.2022.06.28.11.49.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 11:49:39 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: [PATCH v3 0/4] Krait Documentation conversion
+Date:   Tue, 28 Jun 2022 20:41:33 +0200
+Message-Id: <20220628184137.21678-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220627161132.33256-1-jose.exposito89@gmail.com>
-In-Reply-To: <20220627161132.33256-1-jose.exposito89@gmail.com>
-From:   Tales <tales.aparecida@gmail.com>
-Date:   Tue, 28 Jun 2022 15:47:44 -0300
-Message-ID: <CAGVoLp47kQTuMJWVGtY-KMPf=opv3ted7MkbooEbdb2UWZqevg@mail.gmail.com>
-Subject: Re: [PATCH 0/4] KUnit tests for RGB565 conversion
-To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-Cc:     javierm@redhat.com, davidgow@google.com, dlatypov@google.com,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        jani.nikula@linux.intel.com,
-        =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>,
-        isabbasso@riseup.net, magalilemes00@gmail.com,
-        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em seg., 27 de jun. de 2022 =C3=A0s 13:13, Jos=C3=A9 Exp=C3=B3sito
-<jose.exposito89@gmail.com> escreveu:
->
-> Hello everyone,
->
-> This series is a follow up of the XRGB8888 to RGB332 conversion KUnit tes=
-ts.
->
-> The first 3 patches refactor the existing test to make them agnostic of t=
-he target format and add support for "swab".
->
-> The last patch adds the RGB565 conversion values, and shows how more form=
-ats will be easily added in the future.
->
-> Thank you very much in advance for your feedback,
-> Jos=C3=A9 Exp=C3=B3sito
->
-> Jos=C3=A9 Exp=C3=B3sito (4):
->   drm/format-helper: Rename test cases to make them more generic
->   drm/format-helper: Transform tests to be agnostic of target format
->   drm/format-helper: Add support for conversion functions with swab
->   drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb565()
->
->  .../gpu/drm/tests/drm_format_helper_test.c    | 231 +++++++++++++++---
->  1 file changed, 196 insertions(+), 35 deletions(-)
->
->
-> base-commit: 6fde8eec71796f3534f0c274066862829813b21f
-> prerequisite-patch-id: 8a16f4c8004d6161035eaea275c8eafaa0ac927e
-> prerequisite-patch-id: 53fded2a49e6212b546db76ec52563a683752e65
-> prerequisite-patch-id: 294b0ca27a6ee57096c8f097c0572336b8a2d583
-> prerequisite-patch-id: 5e05bfc5287d16c207bfc616b2776ad72eb4ab29
-> prerequisite-patch-id: e94560be85dffb62a5b3cf58d1f0fc3d278ad806
-> prerequisite-patch-id: a471df39c7b32c69dd2b138a7d0af015ea42e00a
-> --
-> 2.25.1
+This series convert the krait-cc and the kpps-acc/gcc Documentation to
+yaml.
 
+This series comes form a split of a bigger series that got too big and
+now hard to review.
 
-Tested with "./tools/testing/kunit/kunit.py run
---kunitconfig=3Ddrivers/gpu/drm/tests --arch=3Dx86_64", "... --arch=3Di386"
-and baremetal on x86_64 to be sure; everything looks fine, but I feel
-like some patches could be squashed, though.
+While they are still more or less wrong and doesn't really reflect real
+driver implementation, they are converted to prepare for a fixup later
+when dts and driver are finally fixed.
 
-Tested-by: Tales L. Aparecida <tales.aparecida@gmail.com>
+Minor changes are done to the kpss-gcc driver and minor fixes are done to
+the various affected dts to fix dtbs_check warning with the new introduced
+schema.
 
-Inspiring work, Jos=C3=A9, keep it up!
-Best regards, Tales
+v3:
+- Update all Sob
+- Rework kpss-gcc Documentation with the new finding
+- Fix dtbs_check warning
+v2:
+- Fix bot error by adding missing #clock-cells
+
+Changelog for previous series "Modernize rest of the krait drivers"
+that was split to smaller series (only Documentation changes):
+v7:
+- Rework kpss-gcc Documentation (split patch for pure conversion and
+  tweaks)
+v6:
+- Address comments from Rob
+- Fix warning from make dtbs_check
+v5:
+- Address comments from Krzysztof
+v4:
+- Fix more dt-bindings bug errors
+v3:
+- Split Documentation files for kpss and krait-cc
+v2:
+- fix missing new line on patch 16 (krait-cc patch)
+
+Christian Marangi (4):
+  dt-bindings: clock: Convert qcom,krait-cc to yaml
+  dt-bindings: arm: msm: Convert kpss-acc driver Documentation to yaml
+  dt-bindings: arm: msm: Rework kpss-gcc driver Documentation to yaml
+  ARM: dts: qcom: fix various wrong definition for kpss-gcc node
+
+ .../bindings/arm/msm/qcom,kpss-acc.txt        | 49 ----------
+ .../bindings/arm/msm/qcom,kpss-acc.yaml       | 94 +++++++++++++++++++
+ .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ---------
+ .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 89 ++++++++++++++++++
+ .../bindings/clock/qcom,krait-cc.txt          | 34 -------
+ .../bindings/clock/qcom,krait-cc.yaml         | 59 ++++++++++++
+ arch/arm/boot/dts/qcom-apq8064.dtsi           |  2 +-
+ arch/arm/boot/dts/qcom-ipq8064.dtsi           |  4 +-
+ arch/arm/boot/dts/qcom-mdm9615.dtsi           |  2 +-
+ arch/arm/boot/dts/qcom-msm8660.dtsi           |  2 +-
+ arch/arm/boot/dts/qcom-msm8960.dtsi           |  7 +-
+ 11 files changed, 252 insertions(+), 134 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+
+-- 
+2.36.1
+
