@@ -2,122 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B2DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F04FDCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346697AbiF1NlA (ORCPT
+        id S1346707AbiF1NlX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44402 "EHLO
+        Tue, 28 Jun 2022 09:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346688AbiF1Nk4 (ORCPT
+        with ESMTP id S1346654AbiF1NlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:40:56 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C603827CFE
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:40:53 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-50-YWi63-uoNrW8kmPB3ciyCQ-1; Tue, 28 Jun 2022 14:40:35 +0100
-X-MC-Unique: YWi63-uoNrW8kmPB3ciyCQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Tue, 28 Jun 2022 14:38:07 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Tue, 28 Jun 2022 14:38:07 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Christian Brauner' <brauner@kernel.org>,
-        Ralph Corderoy <ralph@inputplus.co.uk>
-CC:     Matthew Wilcox <willy@infradead.org>,
-        Nate Karstens <nate.karstens@garmin.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        "Jeff Layton" <jlayton@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        "Arnd Bergmann" <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        "Ivan Kokshaysky" <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Changli Gao <xiaosuo@gmail.com>
-Subject: RE: [PATCH v2] Implement close-on-fork
-Thread-Topic: [PATCH v2] Implement close-on-fork
-Thread-Index: AQHYivDThpuxuu360k2l3JKLwphwnK1k0dbQ
-Date:   Tue, 28 Jun 2022 13:38:07 +0000
-Message-ID: <35d0facc934748f995c2e7ab695301f7@AcuMS.aculab.com>
-References: <20200515152321.9280-1-nate.karstens@garmin.com>
- <20220618114111.61EC71F981@orac.inputplus.co.uk>
- <Yq4qIxh5QnhQZ0SJ@casper.infradead.org>
- <20220619104228.A9789201F7@orac.inputplus.co.uk>
- <20220628131304.gbiqqxamg6pmvsxf@wittgenstein>
-In-Reply-To: <20220628131304.gbiqqxamg6pmvsxf@wittgenstein>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Tue, 28 Jun 2022 09:41:21 -0400
+Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E68325E9B;
+        Tue, 28 Jun 2022 06:41:19 -0700 (PDT)
+Received: by mail-io1-f47.google.com with SMTP id y18so12856950iof.2;
+        Tue, 28 Jun 2022 06:41:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mwOBShGTICMgOdqz3MT5Sv+scZgbcai7ONXkEa1E170=;
+        b=svx3We+T9dCliv7EEPUxeFnewO6crVYP9ncfoMOFoUn9xQtPbwRvePw939bGy4di4g
+         lTl+KjySkmT3GJW3V5Qxl3aBt9ytWNS9etCbzQb9DbpkKGw3O9+6Tx5lBM5KXIx/R/QY
+         ImW+R9cMAWOyZnRr7YRlKO4/UUGUrl7Wf+7oAcoMt4CRNVuZXJdY2SV6IBhpS+etBbVf
+         L2FAlZlOzXx/WyMYETgIYGMXLxdStkOXAuliBXbR99Qub6Sgn6bHEB3UB8yG9zxGWONA
+         FoouAFHr+XWuBCxP4tvk5WYsdgrQ9q+18/GuW7lDe9B4jr5q6P2URQqPy9fMjSUMeBhi
+         tiPA==
+X-Gm-Message-State: AJIora+fhvGhVjewFFzvlUNzINpp9jAlzYV5PU8Hd+DX8dvW8y/9CeX9
+        rlVtLCLhmrKuBbZG4c2fJQ==
+X-Google-Smtp-Source: AGRyM1vezFgpYiRSAOEMIGspLW0FyDakiQT+VyWz3hQV83fc87ID8ATA7tp7O9Lc6ulOVPgPAdG4Sg==
+X-Received: by 2002:a05:6638:2481:b0:331:e12a:5e32 with SMTP id x1-20020a056638248100b00331e12a5e32mr11010467jat.90.1656423678724;
+        Tue, 28 Jun 2022 06:41:18 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id c13-20020a02330d000000b00334748f85easm6124556jae.106.2022.06.28.06.41.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 06:41:18 -0700 (PDT)
+Received: (nullmailer pid 348635 invoked by uid 1000);
+        Tue, 28 Jun 2022 13:41:15 -0000
+Date:   Tue, 28 Jun 2022 07:41:15 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Alain Volmat <alain.volmat@foss.st.com>
+Cc:     wsa@kernel.org, mark.rutland@arm.com,
+        pierre-yves.mordret@foss.st.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        fabrice.gasnier@foss.st.com, amelie.delaunay@foss.st.com
+Subject: Re: [PATCH 1/4] dt-bindings: i2c: st,stm32-i2c: don't mandate a
+ reset line
+Message-ID: <20220628134115.GA345270-robh@kernel.org>
+References: <20220620105405.145959-1-alain.volmat@foss.st.com>
+ <20220620105405.145959-2-alain.volmat@foss.st.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220620105405.145959-2-alain.volmat@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogQ2hyaXN0aWFuIEJyYXVuZXINCj4gU2VudDogMjggSnVuZSAyMDIyIDE0OjEzDQo+IA0K
-PiBPbiBTdW4sIEp1biAxOSwgMjAyMiBhdCAxMTo0MjoyOEFNICswMTAwLCBSYWxwaCBDb3JkZXJv
-eSB3cm90ZToNCj4gPiBIaSBNYXR0aGV3LCB0aGFua3MgZm9yIHJlcGx5aW5nLg0KPiA+DQo+ID4g
-PiA+IFRoZSBuZWVkIGZvciBPX0NMT0ZPUksgbWlnaHQgYmUgbWFkZSBtb3JlIGNsZWFyIGJ5IGxv
-b2tpbmcgYXQgYQ0KPiA+ID4gPiBsb25nLXN0YW5kaW5nIEdvIGlzc3VlLCBpLmUuIHVucmVsYXRl
-ZCB0byBzeXN0ZW0oMyksIHdoaWNoIHdhcyBzdGFydGVkDQo+ID4gPiA+IGluIDIwMTcgYnkgUnVz
-cyBDb3ggd2hlbiBoZSBzdW1tZWQgdXAgdGhlIGN1cnJlbnQgcmFjZS1jb25kaXRpb24NCj4gPiA+
-ID4gYmVoYXZpb3VyIG9mIHRyeWluZyB0byBleGVjdmUoMikgYSBuZXdseSBjcmVhdGVkIGZpbGU6
-DQo+ID4gPiA+IGh0dHBzOi8vZ2l0aHViLmNvbS9nb2xhbmcvZ28vaXNzdWVzLzIyMzE1Lg0KPiA+
-ID4NCj4gPiA+IFRoZSBwcm9ibGVtIGlzIHRoYXQgcGVvcGxlIGFkdm9jYXRpbmcgZm9yIE9fQ0xP
-Rk9SSyB1bmRlcnN0YW5kIGl0cw0KPiA+ID4gdmFsdWUsIGJ1dCBub3QgaXRzIGNvc3QuICBPdGhl
-ciBnb29nbGUgZW1wbG95ZWVzIGhhdmUgYSBzeXN0ZW0gd2hpY2gNCj4gPiA+IGhhcyBsaXRlcmFs
-bHkgbWlsbGlvbnMgb2YgZmlsZSBkZXNjcmlwdG9ycyBpbiBhIHNpbmdsZSBwcm9jZXNzLg0KPiA+
-ID4gSGF2aW5nIHRvIG1haW50YWluIHRoaXMgZXh0cmEgc3RhdGUgcGVyLWZkIGlzIGEgY29zdCB0
-aGV5IGRvbid0IHdhbnQNCj4gPiA+IHRvIHBheSAoYW5kIGhhdmUgYmVlbiBxdWl0ZSB2b2NhbCBh
-Ym91dCBlYXJsaWVyIGluIHRoaXMgdGhyZWFkKS4NCj4gPg0KPiA+IFNvIGRvIHlvdSBhZ3JlZSB0
-aGUgdXNlcnNwYWNlIGlzc3VlIGlzIGJlc3Qgc29sdmVkIGJ5ICpfQ0xPRk9SSyBhbmQgdGhlDQo+
-ID4gcHJvYmxlbSBpcyBob3cgdG8gaW1wbGVtZW50ICpfQ0xPRk9SSyBhdCBhbiBhY2NlcHRhYmxl
-IGNvc3Q/DQo+ID4NCj4gPiBPVE9IIERhdmlkIExhaWdodCB3YXMgbWFraW5nIHN1Z2dlc3Rpb25z
-IG9uIG1vdmluZyB0aGUgbG9hZCB0byB0aGUNCj4gPiBmb3JrL2V4ZWMgcGF0aCBlYXJsaWVyIGlu
-IHRoZSB0aHJlYWQsIGJ1dCBPVE9IIEFsIFZpcm8gbWVudGlvbmVkIGENCj4gPiDigJhwb3J0YWJs
-ZSBzb2x1dGlvbuKAmSwgdGhvdWdoIHRoYXQgY291bGQgaGF2ZSBiZWVuIHRvIGEgc3BlY2lmaWMg
-aXNzdWUNCj4gPiByYXRoZXIgdGhhbiB0aGUgbW9yZSBnZW5lcmFsIGNhc2UuDQo+ID4NCj4gPiBI
-b3cgd291bGQgeW91IHJlY29tbWVuZCBhcHByb2FjaGluZyBhbiBhY2NlcHRhYmxlIGNvc3QgaXMg
-cHJvZ3Jlc3NlZD8NCj4gPiBJdGVyYXRlIG9uIHBhdGNoIHZlcnNpb25zPyAgT3BlbiBhIGJ1Z3pp
-bGxhLmtlcm5lbC5vcmcgZm9yIGNlbnRyYWwNCj4gPiB0cmFja2luZyBhbmQgbGlua2luZyBmcm9t
-IHRoZSBvdGhlciBwcm9qZWN0cz8gIC4uPw0KPiANCj4gUXVvdGluZyBmcm9tIHRoYXQgZ28gdGhy
-ZWFkDQo+IA0KPiAiSWYgdGhlIE9TIGhhZCBhICJjbG9zZSBhbGwgZmRzIGFib3ZlIHgiLCB3ZSBj
-b3VsZCB1c2UgdGhhdC4gKEkgZG9uJ3Qga25vdyBvZiBhbnkgdGhhdCBkbywgYnV0IGl0IHN1cmUN
-Cj4gd291bGQgaGVscC4pIg0KPiANCj4gU28gd2h5IGNhbid0IHRoaXMgYmUgc29sdmVkIHdpdGg6
-DQo+IGNsb3NlX3JhbmdlKGZkX2ZpcnN0LCBmZF9sYXN0LCBDTE9TRV9SQU5HRV9DTE9FWEVDIHwg
-Q0xPU0VfUkFOR0VfVU5TSEFSRSk/DQo+IGUuZy4NCj4gY2xvc2VfcmFuZ2UoMTAwLCB+MFUsIENM
-T1NFX1JBTkdFX0NMT0VYRUMgfCBDTE9TRV9SQU5HRV9VTlNIQVJFKT8NCg0KVGhhdCBpcyBhIHJl
-bGF0aXZlbHkgcmVjZW50IGxpbnV4IHN5c3RlbSBjYWxsLg0KQWx0aG91Z2ggaXQgY2FuIGJlICht
-b3N0bHkpIGVtdWxhdGVkIGJ5IHJlYWRpbmcgL3Byb2MvZmQNCi0gYnV0IHRoYXQgbWF5IG5vdCBi
-ZSBtb3VudGVkLg0KDQpJbiBhbnkgY2FzZSBhbm90aGVyIHRocmVhZCBjYW4gb3BlbiBhbiBmZCBi
-ZXR3ZWVuIHRoZSBjbG9zZV9yYW5nZSgpDQphbmQgZm9yaygpIGNhbGxzLg0KDQooSSBjYW4ndCBy
-ZW1lbWJlciB3aGF0IEkgc2FpZCBiZWZvcmUgOi0pDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVk
-IEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5l
-cywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+On Mon, Jun 20, 2022 at 12:54:02PM +0200, Alain Volmat wrote:
+> Update the dt-bindings of the i2c-stm32 drivers to avoid the
+> needs for a reset property in the device-tree.
 
+That is clear from the diff, but why. Some chips don't have a reset? 
+If so, this should be combined with patch 2 as part of changes needed 
+for a new version.
+
+> 
+> Signed-off-by: Alain Volmat <alain.volmat@foss.st.com>
+> ---
+>  Documentation/devicetree/bindings/i2c/st,stm32-i2c.yaml | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/st,stm32-i2c.yaml b/Documentation/devicetree/bindings/i2c/st,stm32-i2c.yaml
+> index dccbb18b6dc0..8879144fbbfb 100644
+> --- a/Documentation/devicetree/bindings/i2c/st,stm32-i2c.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/st,stm32-i2c.yaml
+> @@ -94,7 +94,6 @@ required:
+>    - compatible
+>    - reg
+>    - interrupts
+> -  - resets
+>    - clocks
+>  
+>  unevaluatedProperties: false
+> -- 
+> 2.25.1
+> 
+> 
