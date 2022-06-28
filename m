@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6468C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616BDCCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244186AbiF1CYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:24:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
+        id S244336AbiF1CYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243937AbiF1CXH (ORCPT
+        with ESMTP id S244133AbiF1CXH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 22:23:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08908240AE;
-        Mon, 27 Jun 2022 19:22:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBDA24943;
+        Mon, 27 Jun 2022 19:22:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0FF56CE1E23;
-        Tue, 28 Jun 2022 02:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70ACAC341CD;
-        Tue, 28 Jun 2022 02:22:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA3DD6185C;
+        Tue, 28 Jun 2022 02:22:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC1BC34115;
+        Tue, 28 Jun 2022 02:22:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382957;
-        bh=yH1up8tKSedcQtZ55q2RFNHgxh9aMD9iPVtn439Iq7Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZiZjampbvYDvpRee/hzBgJLbbTeYBvYjVADFN7mfpzVq8XGqoJUVVOmPJMaUbiN5c
-         AdS5k191tqGv7c8iKtrZEsNH8I9hUqLsItJJaRWwiywbmmCXwcZGX39h7SBwD6Qx/a
-         MghifMXQh0hYEXZIKwCayhHvKmLm7QbhTdh6vbACvI7Q3r4G8G+kmm/PebvPEAdh/Y
-         aCrL40e0vw3tLAVymppDb3TpGmG7zB+4Z3dt3jXtVywIwNMCyHtWqWuS316mW8tVFf
-         DQcfxHV/VeoNP0EZ52qS+yQYFU9PyBfg1G9JzgemInPPmYcmf/TejyyOam9oRUPijK
-         0Z84PHPIZu13A==
+        s=k20201202; t=1656382964;
+        bh=1lnzaHrP8/Nz40BDmWvhOM2XuhI02Wl0KrII2CAXXCU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=aeMvU36yIXCqEijvlelJCe1C60yQ2uubCn/jMLzU1bQlms62onpBYDIZjEg1ESLr+
+         gVa+4Tgq3Gw4lm6t/P+Z7hGe56MTW2S4zLNFjPnmKTOskPoBDgKJ1wvb/d9yrxS/IZ
+         Lj4h5putrO09EhYr4h0K5Btc4KuHotxNXALohe2Y9fza/sm/dTJy0a1SFK0T1CiFdA
+         kjk3ZT/PEJ3grJOU/i3D5ymkzcWJ58UZSATLEwhhqof4NXSE75XDYBCD8Pr/3to/U9
+         2q3DS0xX1lduZ+UDvNuCu8WCP1w95E9HYmNiU3OsR5+sarvU72PBa1zRa0l43MkqQu
+         vOJJ3ZmxJ/o2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Leo Savernik <l.savernik@aon.at>, Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 39/41] nvme: add a bogus subsystem NQN quirk for Micron MTFDKBA2T0TFH
-Date:   Mon, 27 Jun 2022 22:20:58 -0400
-Message-Id: <20220628022100.595243-39-sashal@kernel.org>
+Cc:     Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 01/34] spi: spi-cadence: Fix SPI CS gets toggling sporadically
+Date:   Mon, 27 Jun 2022 22:22:08 -0400
+Message-Id: <20220628022241.595835-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220628022100.595243-1-sashal@kernel.org>
-References: <20220628022100.595243-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,34 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Savernik <l.savernik@aon.at>
+From: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
 
-[ Upstream commit 41f38043f884c66af4114a7109cf540d6222f450 ]
+[ Upstream commit 21b511ddee09a78909035ec47a6a594349fe3296 ]
 
-The Micron MTFDKBA2T0TFH device reports the same subsysem NQN for
-all devices.  Add a quick to ignore it.
+As part of unprepare_transfer_hardware, SPI controller will be disabled
+which will indirectly deassert the CS line. This will create a problem
+in some of the devices where message will be transferred with
+cs_change flag set(CS should not be deasserted).
+As per SPI controller implementation, if SPI controller is disabled then
+all output enables are inactive and all pins are set to input mode which
+means CS will go to default state high(deassert). This leads to an issue
+when core explicitly ask not to deassert the CS (cs_change = 1). This
+patch fix the above issue by checking the Slave select status bits from
+configuration register before disabling the SPI.
 
-Signed-off-by: Leo Savernik <l.savernik@aon.at>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+Link: https://lore.kernel.org/r/20220606062525.18447-1-amit.kumar-mahapatra@xilinx.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/spi/spi-cadence.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 3ddd24a42043..ce56016b44dd 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3346,6 +3346,8 @@ static const struct pci_device_id nvme_id_table[] = {
- 	{ PCI_DEVICE(0x1cc1, 0x8201),   /* ADATA SX8200PNP 512GB */
- 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS |
- 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
-+	 { PCI_DEVICE(0x1344, 0x5407), /* Micron Technology Inc NVMe SSD */
-+		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN },
- 	{ PCI_DEVICE(0x1c5c, 0x1504),   /* SK Hynix PC400 */
- 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
- 	{ PCI_DEVICE(0x15b7, 0x2001),   /*  Sandisk Skyhawk */
+diff --git a/drivers/spi/spi-cadence.c b/drivers/spi/spi-cadence.c
+index ceb16e70d235..90b18c32f859 100644
+--- a/drivers/spi/spi-cadence.c
++++ b/drivers/spi/spi-cadence.c
+@@ -69,6 +69,7 @@
+ #define CDNS_SPI_BAUD_DIV_SHIFT		3 /* Baud rate divisor shift in CR */
+ #define CDNS_SPI_SS_SHIFT		10 /* Slave Select field shift in CR */
+ #define CDNS_SPI_SS0			0x1 /* Slave Select zero */
++#define CDNS_SPI_NOSS			0x3C /* No Slave select */
+ 
+ /*
+  * SPI Interrupt Registers bit Masks
+@@ -449,15 +450,20 @@ static int cdns_prepare_transfer_hardware(struct spi_master *master)
+  * @master:	Pointer to the spi_master structure which provides
+  *		information about the controller.
+  *
+- * This function disables the SPI master controller.
++ * This function disables the SPI master controller when no slave selected.
+  *
+  * Return:	0 always
+  */
+ static int cdns_unprepare_transfer_hardware(struct spi_master *master)
+ {
+ 	struct cdns_spi *xspi = spi_master_get_devdata(master);
++	u32 ctrl_reg;
+ 
+-	cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
++	/* Disable the SPI if slave is deselected */
++	ctrl_reg = cdns_spi_read(xspi, CDNS_SPI_CR);
++	ctrl_reg = (ctrl_reg & CDNS_SPI_CR_SSCTRL) >>  CDNS_SPI_SS_SHIFT;
++	if (ctrl_reg == CDNS_SPI_NOSS)
++		cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
