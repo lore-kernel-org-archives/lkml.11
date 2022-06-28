@@ -2,373 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8916BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235364AbiF1SXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 14:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59894 "EHLO
+        id S234773AbiF1SXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 14:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234773AbiF1SWU (ORCPT
+        with ESMTP id S231223AbiF1SXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 14:22:20 -0400
-Received: from msg-4.mailo.com (ip-15.mailobj.net [213.182.54.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E489120BFA;
-        Tue, 28 Jun 2022 11:22:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
-        t=1656440529; bh=2s8nJyuQ+/Ud0yK9ExncnZIwC5tTDS0OFfRS0EBqJeA=;
-        h=X-EA-Auth:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding;
-        b=iNriVY/HNn0Dvh8SLLrqBXGlPwMiXnX9IfxTYDVzR6twc07iB6r8rgop0a8zmeXb5
-         DaGVDClGjxokQAbpRHsqfXDg5Bf9GYFXWhKVvs5SdL0UCSYXhomnAPREfCYxYCOog/
-         0TjV4B9V0VD+V4eMhVZ8sIRNfKFMsNO0MLMhjDbI=
-Received: by b-5.in.mailobj.net [192.168.90.15] with ESMTP
-        via [213.182.55.207]
-        Tue, 28 Jun 2022 20:22:09 +0200 (CEST)
-X-EA-Auth: fQzGCWanxJn9KuxukwC4Mvol9osREWIgDHkJZZ8P5S4B1HroX8yA6mZ5iAmjZzP+Ww1oCTC+z8Bc6Uuarp92WvH+CMY3wqnLxhLg9kEE9TY=
-From:   Vincent Knecht <vincent.knecht@mailoo.org>
-To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Tue, 28 Jun 2022 14:23:41 -0400
+Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CC920F68;
+        Tue, 28 Jun 2022 11:23:40 -0700 (PDT)
+Received: by mail-il1-f182.google.com with SMTP id 9so8723471ill.5;
+        Tue, 28 Jun 2022 11:23:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=L8dLhWtyP9bNEnDeqAVxELfE92uyIseUX2/6UItTECE=;
+        b=Qwhq3o8IUIDFSOtksKehPoloqk+eMlkHSqnDO1uNr3XkvK9wkeAhGLrsBfdrXa/JuL
+         8gAnWZyVLs/WuGnFsS71+uqPFEo6/d2QYv8oQl1P1f0gcX33iEC16Bm8nhD+EjdN87wB
+         bONqp5TWDBVZukoXW5BOlg6buZDCSLxtc+gp/I8q6ePmg6L8BJLESRO+Xof/qA7eOkFh
+         eGgegOflFWqj2faPs+IEx8dNdwXxldVElZp9EuprWjHYBUmIe6tJfhDR0AGjHMx7/NnB
+         qeILTl/NyM3l8kgqhadXot6Su+Sj653a53ISwIwYCM8bU6nXBS0W3IGKvpO6IhPi63nG
+         z4IQ==
+X-Gm-Message-State: AJIora93t2v2RQlalEa8PnbK3xQ7R62XzwsJ+GR037Ea6WcuEf8RGbRT
+        IX91tDj8b8G9yoLk3BItAQ==
+X-Google-Smtp-Source: AGRyM1tXG8m32MD61k1cJ7tHSHABYN3CwZrRXoFc256eZb145SpZpYocyNn4hj/9uDJtyfBZfDaJrg==
+X-Received: by 2002:a92:ccc6:0:b0:2d9:445b:4f2f with SMTP id u6-20020a92ccc6000000b002d9445b4f2fmr11230557ilq.32.1656440619931;
+        Tue, 28 Jun 2022 11:23:39 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id h19-20020a056638063300b00339dc6d8f9bsm6575938jar.50.2022.06.28.11.23.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 11:23:39 -0700 (PDT)
+Received: (nullmailer pid 742574 invoked by uid 1000);
+        Tue, 28 Jun 2022 18:23:36 -0000
+Date:   Tue, 28 Jun 2022 12:23:36 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Allen Chen <allen.chen@ite.com.tw>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vincent Knecht <vincent.knecht@mailoo.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH v1 RESEND 6/7] leds: is31fl319x: Move chipset-specific values in chipdef struct
-Date:   Tue, 28 Jun 2022 20:21:44 +0200
-Message-Id: <20220628182147.2837180-7-vincent.knecht@mailoo.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220628182147.2837180-1-vincent.knecht@mailoo.org>
-References: <20220628182147.2837180-1-vincent.knecht@mailoo.org>
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: Re: [PATCH v5 1/9] dt-bindings: usb: Add Type-C switch binding
+Message-ID: <20220628182336.GA711518-robh@kernel.org>
+References: <20220622173605.1168416-1-pmalani@chromium.org>
+ <20220622173605.1168416-2-pmalani@chromium.org>
+ <20220627210407.GA2905757-robh@kernel.org>
+ <CACeCKackdbDZrk5fk7qyMwSdTdzyTS=m1vHPFnQOj672W=2nOA@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACeCKackdbDZrk5fk7qyMwSdTdzyTS=m1vHPFnQOj672W=2nOA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow setting chips' specifics in chipdef struct by adding fields for:
-- the reset register address
-- a pointer to a regmap_config struct
-- a pointer to a brightness_set function
-- current default, min and max values
-- a boolean to distinguish 319{0,1,3} and 319{6,9} chips
-and use those fields in places where distinction has to be made.
+On Mon, Jun 27, 2022 at 02:43:39PM -0700, Prashant Malani wrote:
+> Hello Rob,
+> 
+> On Mon, Jun 27, 2022 at 2:04 PM Rob Herring <robh@kernel.org> wrote:
+> >
+> > On Wed, Jun 22, 2022 at 05:34:30PM +0000, Prashant Malani wrote:
+> > > Introduce a binding which represents a component that can control the
+> > > routing of USB Type-C data lines as well as address data line
+> > > orientation (based on CC lines' orientation).
+> > >
+> > > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> > > Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> > > Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> > > Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> > > ---
+> > >
+> > > Changes since v4:
+> > > - Added Reviewed-by tags.
+> > > - Patch moved to 1/9 position (since Patch v4 1/7 and 2/7 were
+> > >   applied to usb-next)
+> > >
+> > > Changes since v3:
+> > > - No changes.
+> > >
+> > > Changes since v2:
+> > > - Added Reviewed-by and Tested-by tags.
+> > >
+> > > Changes since v1:
+> > > - Removed "items" from compatible.
+> > > - Fixed indentation in example.
+> > >
+> > >  .../devicetree/bindings/usb/typec-switch.yaml | 74 +++++++++++++++++++
+> > >  1 file changed, 74 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.yaml
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/usb/typec-switch.yaml b/Documentation/devicetree/bindings/usb/typec-switch.yaml
+> > > new file mode 100644
+> > > index 000000000000..78b0190c8543
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/usb/typec-switch.yaml
+> > > @@ -0,0 +1,74 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/usb/typec-switch.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: USB Type-C Switch
+> > > +
+> > > +maintainers:
+> > > +  - Prashant Malani <pmalani@chromium.org>
+> > > +
+> > > +description:
+> > > +  A USB Type-C switch represents a component which routes USB Type-C data
+> > > +  lines to various protocol host controllers (e.g USB, VESA DisplayPort,
+> > > +  Thunderbolt etc.) depending on which mode the Type-C port, port partner
+> > > +  and cable are operating in. It can also modify lane routing based on
+> > > +  the orientation of a connected Type-C peripheral.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    const: typec-switch
+> > > +
+> > > +  mode-switch:
+> > > +    type: boolean
+> > > +    description: Specify that this switch can handle alternate mode switching.
+> > > +
+> > > +  orientation-switch:
+> > > +    type: boolean
+> > > +    description: Specify that this switch can handle orientation switching.
+> > > +
+> > > +  ports:
+> > > +    $ref: /schemas/graph.yaml#/properties/ports
+> > > +    description: OF graph binding modelling data lines to the Type-C switch.
+> > > +
+> > > +    properties:
+> > > +      port@0:
+> > > +        $ref: /schemas/graph.yaml#/properties/port
+> > > +        description: Link between the switch and a Type-C connector.
+> > > +
+> > > +    required:
+> > > +      - port@0
+> > > +
+> > > +required:
+> > > +  - compatible
+> > > +  - ports
+> > > +
+> > > +anyOf:
+> > > +  - required:
+> > > +      - mode-switch
+> > > +  - required:
+> > > +      - orientation-switch
+> > > +
+> > > +additionalProperties: true
+> > > +
+> > > +examples:
+> > > +  - |
+> > > +    drm-bridge {
+> > > +        usb-switch {
+> > > +            compatible = "typec-switch";
+> >
+> > Unless this child is supposed to represent what the parent output is
+> > connected to, this is just wrong as, at least for the it6505 chip, it
+> > doesn't know anything about Type-C functionality. The bridge is
+> > just a protocol converter AFAICT.
+> 
+> I'll let Pin-Yen comment on the specifics of the it6505 chip.
 
-The fields for 319{0,1,3} still point to 319{6,9} values.
-No functional change.
+We're all waiting...
 
-Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
----
- drivers/leds/leds-is31fl319x.c | 206 ++++++++++++++++++++-------------
- 1 file changed, 123 insertions(+), 83 deletions(-)
+> > If the child node represents what the output is connected to (like a
+> > bus), then yes that is a pattern we have used.
+> 
+> For the anx7625 case, the child node does represent what the output is connected
+> to (the usb-c-connector via the switch). Does that not qualify? Or do you mean
+> the child node should be a usb-c-connector itself?
+> 
+> > For example, a panel
+> > represented as child node of a display controller. However, that only
+> > works for simple cases, and is a pattern we have gotten away from in
+> > favor of using the graph binding.
+> 
+> The child node will still use a OF graph binding to connect to the
+> usb-c-connector.
+> Is that insufficient to consider a child node usage here?
+> By "using the graph binding", do you mean "only use the top-level ports" ?
+> I'm trying to clarify this, so that it will inform future versions and patches.
 
-diff --git a/drivers/leds/leds-is31fl319x.c b/drivers/leds/leds-is31fl319x.c
-index 1dd5c3d4ad74..eb8601a203a8 100644
---- a/drivers/leds/leds-is31fl319x.c
-+++ b/drivers/leds/leds-is31fl319x.c
-@@ -78,38 +78,56 @@ struct is31fl319x_chip {
- 
- struct is31fl319x_chipdef {
- 	int num_leds;
-+	u8 reset_reg;
-+	const struct regmap_config *is31fl319x_regmap_config;
-+	int (*brightness_set)(struct led_classdev *cdev, enum led_brightness brightness);
-+	u32 current_default;
-+	u32 current_min;
-+	u32 current_max;
-+	bool is_3196or3199;
- };
- 
--static const struct is31fl319x_chipdef is31fl3190_cdef = {
--	.num_leds = 1,
--};
--
--static const struct is31fl319x_chipdef is31fl3193_cdef = {
--	.num_leds = 3,
--};
-+static bool is31fl319x_readable_reg(struct device *dev, unsigned int reg)
-+{ /* we have no readable registers */
-+	return false;
-+}
- 
--static const struct is31fl319x_chipdef is31fl3196_cdef = {
--	.num_leds = 6,
--};
-+static bool is31fl3196_volatile_reg(struct device *dev, unsigned int reg)
-+{ /* volatile registers are not cached */
-+	switch (reg) {
-+	case IS31FL3196_DATA_UPDATE:
-+	case IS31FL3196_TIME_UPDATE:
-+	case IS31FL3196_RESET:
-+		return true; /* always write-through */
-+	default:
-+		return false;
-+	}
-+}
- 
--static const struct is31fl319x_chipdef is31fl3199_cdef = {
--	.num_leds = 9,
-+static const struct reg_default is31fl3196_reg_defaults[] = {
-+	{ IS31FL3196_CONFIG1, 0x00},
-+	{ IS31FL3196_CONFIG2, 0x00},
-+	{ IS31FL3196_PWM(0), 0x00},
-+	{ IS31FL3196_PWM(1), 0x00},
-+	{ IS31FL3196_PWM(2), 0x00},
-+	{ IS31FL3196_PWM(3), 0x00},
-+	{ IS31FL3196_PWM(4), 0x00},
-+	{ IS31FL3196_PWM(5), 0x00},
-+	{ IS31FL3196_PWM(6), 0x00},
-+	{ IS31FL3196_PWM(7), 0x00},
-+	{ IS31FL3196_PWM(8), 0x00},
- };
- 
--static const struct of_device_id of_is31fl319x_match[] = {
--	{ .compatible = "issi,is31fl3190", .data = &is31fl3190_cdef, },
--	{ .compatible = "issi,is31fl3191", .data = &is31fl3190_cdef, },
--	{ .compatible = "issi,is31fl3193", .data = &is31fl3193_cdef, },
--	{ .compatible = "issi,is31fl3196", .data = &is31fl3196_cdef, },
--	{ .compatible = "issi,is31fl3199", .data = &is31fl3199_cdef, },
--	{ .compatible = "si-en,sn3190",    .data = &is31fl3190_cdef, },
--	{ .compatible = "si-en,sn3191",    .data = &is31fl3190_cdef, },
--	{ .compatible = "si-en,sn3193",    .data = &is31fl3193_cdef, },
--	{ .compatible = "si-en,sn3196",    .data = &is31fl3196_cdef, },
--	{ .compatible = "si-en,sn3199",    .data = &is31fl3199_cdef, },
--	{ }
-+static struct regmap_config is31fl3196_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = IS31FL3196_REG_CNT,
-+	.cache_type = REGCACHE_FLAT,
-+	.readable_reg = is31fl319x_readable_reg,
-+	.volatile_reg = is31fl3196_volatile_reg,
-+	.reg_defaults = is31fl3196_reg_defaults,
-+	.num_reg_defaults = ARRAY_SIZE(is31fl3196_reg_defaults),
- };
--MODULE_DEVICE_TABLE(of, of_is31fl319x_match);
- 
- static int is31fl3196_brightness_set(struct led_classdev *cdev,
- 				     enum led_brightness brightness)
-@@ -175,9 +193,69 @@ static int is31fl3196_brightness_set(struct led_classdev *cdev,
- 	return ret;
- }
- 
-+static const struct is31fl319x_chipdef is31fl3190_cdef = {
-+	.num_leds = 1,
-+	.reset_reg = IS31FL3196_RESET,
-+	.is31fl319x_regmap_config = &is31fl3196_regmap_config,
-+	.brightness_set = is31fl3196_brightness_set,
-+	.current_default = IS31FL3196_CURRENT_DEFAULT,
-+	.current_min = IS31FL3196_CURRENT_MIN,
-+	.current_max = IS31FL3196_CURRENT_MAX,
-+	.is_3196or3199 = true,
-+};
-+
-+static const struct is31fl319x_chipdef is31fl3193_cdef = {
-+	.num_leds = 3,
-+	.reset_reg = IS31FL3196_RESET,
-+	.is31fl319x_regmap_config = &is31fl3196_regmap_config,
-+	.brightness_set = is31fl3196_brightness_set,
-+	.current_default = IS31FL3196_CURRENT_DEFAULT,
-+	.current_min = IS31FL3196_CURRENT_MIN,
-+	.current_max = IS31FL3196_CURRENT_MAX,
-+	.is_3196or3199 = true,
-+};
-+
-+static const struct is31fl319x_chipdef is31fl3196_cdef = {
-+	.num_leds = 6,
-+	.reset_reg = IS31FL3196_RESET,
-+	.is31fl319x_regmap_config = &is31fl3196_regmap_config,
-+	.brightness_set = is31fl3196_brightness_set,
-+	.current_default = IS31FL3196_CURRENT_DEFAULT,
-+	.current_min = IS31FL3196_CURRENT_MIN,
-+	.current_max = IS31FL3196_CURRENT_MAX,
-+	.is_3196or3199 = true,
-+};
-+
-+static const struct is31fl319x_chipdef is31fl3199_cdef = {
-+	.num_leds = 9,
-+	.reset_reg = IS31FL3196_RESET,
-+	.is31fl319x_regmap_config = &is31fl3196_regmap_config,
-+	.brightness_set = is31fl3196_brightness_set,
-+	.current_default = IS31FL3196_CURRENT_DEFAULT,
-+	.current_min = IS31FL3196_CURRENT_MIN,
-+	.current_max = IS31FL3196_CURRENT_MAX,
-+	.is_3196or3199 = true,
-+};
-+
-+static const struct of_device_id of_is31fl319x_match[] = {
-+	{ .compatible = "issi,is31fl3190", .data = &is31fl3190_cdef, },
-+	{ .compatible = "issi,is31fl3191", .data = &is31fl3190_cdef, },
-+	{ .compatible = "issi,is31fl3193", .data = &is31fl3193_cdef, },
-+	{ .compatible = "issi,is31fl3196", .data = &is31fl3196_cdef, },
-+	{ .compatible = "issi,is31fl3199", .data = &is31fl3199_cdef, },
-+	{ .compatible = "si-en,sn3190",    .data = &is31fl3190_cdef, },
-+	{ .compatible = "si-en,sn3191",    .data = &is31fl3190_cdef, },
-+	{ .compatible = "si-en,sn3193",    .data = &is31fl3193_cdef, },
-+	{ .compatible = "si-en,sn3196",    .data = &is31fl3196_cdef, },
-+	{ .compatible = "si-en,sn3199",    .data = &is31fl3199_cdef, },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, of_is31fl319x_match);
-+
- static int is31fl319x_parse_child_dt(const struct device *dev,
- 				     const struct device_node *child,
--				     struct is31fl319x_led *led)
-+				     struct is31fl319x_led *led,
-+				     struct is31fl319x_chip *is31)
- {
- 	struct led_classdev *cdev = &led->cdev;
- 	int ret;
-@@ -190,14 +268,14 @@ static int is31fl319x_parse_child_dt(const struct device *dev,
- 	if (ret < 0 && ret != -EINVAL) /* is optional */
- 		return ret;
- 
--	led->max_microamp = IS31FL3196_CURRENT_DEFAULT;
-+	led->max_microamp = is31->cdef->current_default;
- 	ret = of_property_read_u32(child, "led-max-microamp",
- 				   &led->max_microamp);
- 	if (!ret) {
--		if (led->max_microamp < IS31FL3196_CURRENT_MIN)
-+		if (led->max_microamp < is31->cdef->current_min)
- 			return -EINVAL;	/* not supported */
- 		led->max_microamp = min(led->max_microamp,
--					  IS31FL3196_CURRENT_MAX);
-+					is31->cdef->current_max);
- 	}
- 
- 	return 0;
-@@ -258,7 +336,7 @@ static int is31fl319x_parse_dt(struct device *dev,
- 			goto put_child_node;
- 		}
- 
--		ret = is31fl319x_parse_child_dt(dev, child, led);
-+		ret = is31fl319x_parse_child_dt(dev, child, led, is31);
- 		if (ret) {
- 			dev_err(dev, "led %u DT parsing failed\n", reg);
- 			goto put_child_node;
-@@ -268,10 +346,12 @@ static int is31fl319x_parse_dt(struct device *dev,
- 	}
- 
- 	is31->audio_gain_db = 0;
--	ret = of_property_read_u32(np, "audio-gain-db", &is31->audio_gain_db);
--	if (!ret)
--		is31->audio_gain_db = min(is31->audio_gain_db,
--					  IS31FL3196_AUDIO_GAIN_DB_MAX);
-+	if (is31->cdef->is_3196or3199) {
-+		ret = of_property_read_u32(np, "audio-gain-db", &is31->audio_gain_db);
-+		if (!ret)
-+			is31->audio_gain_db = min(is31->audio_gain_db,
-+						  IS31FL3196_AUDIO_GAIN_DB_MAX);
-+	}
- 
- 	return 0;
- 
-@@ -280,48 +360,6 @@ static int is31fl319x_parse_dt(struct device *dev,
- 	return ret;
- }
- 
--static bool is31fl319x_readable_reg(struct device *dev, unsigned int reg)
--{ /* we have no readable registers */
--	return false;
--}
--
--static bool is31fl3196_volatile_reg(struct device *dev, unsigned int reg)
--{ /* volatile registers are not cached */
--	switch (reg) {
--	case IS31FL3196_DATA_UPDATE:
--	case IS31FL3196_TIME_UPDATE:
--	case IS31FL3196_RESET:
--		return true; /* always write-through */
--	default:
--		return false;
--	}
--}
--
--static const struct reg_default is31fl3196_reg_defaults[] = {
--	{ IS31FL3196_CONFIG1, 0x00},
--	{ IS31FL3196_CONFIG2, 0x00},
--	{ IS31FL3196_PWM(0), 0x00},
--	{ IS31FL3196_PWM(1), 0x00},
--	{ IS31FL3196_PWM(2), 0x00},
--	{ IS31FL3196_PWM(3), 0x00},
--	{ IS31FL3196_PWM(4), 0x00},
--	{ IS31FL3196_PWM(5), 0x00},
--	{ IS31FL3196_PWM(6), 0x00},
--	{ IS31FL3196_PWM(7), 0x00},
--	{ IS31FL3196_PWM(8), 0x00},
--};
--
--static struct regmap_config is31fl3196_regmap_config = {
--	.reg_bits = 8,
--	.val_bits = 8,
--	.max_register = IS31FL3196_REG_CNT,
--	.cache_type = REGCACHE_FLAT,
--	.readable_reg = is31fl319x_readable_reg,
--	.volatile_reg = is31fl3196_volatile_reg,
--	.reg_defaults = is31fl3196_reg_defaults,
--	.num_reg_defaults = ARRAY_SIZE(is31fl3196_reg_defaults),
--};
--
- static inline int is31fl3196_microamp_to_cs(struct device *dev, u32 microamp)
- { /* round down to nearest supported value (range check done by caller) */
- 	u32 step = microamp / IS31FL3196_CURRENT_STEP;
-@@ -343,7 +381,7 @@ static int is31fl319x_probe(struct i2c_client *client,
- 	struct device *dev = &client->dev;
- 	int err;
- 	int i = 0;
--	u32 aggregated_led_microamp = IS31FL3196_CURRENT_MAX;
-+	u32 aggregated_led_microamp;
- 
- 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
- 		return -EIO;
-@@ -365,7 +403,7 @@ static int is31fl319x_probe(struct i2c_client *client,
- 	}
- 
- 	is31->client = client;
--	is31->regmap = devm_regmap_init_i2c(client, &is31fl3196_regmap_config);
-+	is31->regmap = devm_regmap_init_i2c(client, is31->cdef->is31fl319x_regmap_config);
- 	if (IS_ERR(is31->regmap)) {
- 		dev_err(&client->dev, "failed to allocate register map\n");
- 		err = PTR_ERR(is31->regmap);
-@@ -375,7 +413,7 @@ static int is31fl319x_probe(struct i2c_client *client,
- 	i2c_set_clientdata(client, is31);
- 
- 	/* check for write-reply from chip (we can't read any registers) */
--	err = regmap_write(is31->regmap, IS31FL3196_RESET, 0x00);
-+	err = regmap_write(is31->regmap, is31->cdef->reset_reg, 0x00);
- 	if (err < 0) {
- 		dev_err(&client->dev, "no response from chip write: err = %d\n",
- 			err);
-@@ -388,14 +426,16 @@ static int is31fl319x_probe(struct i2c_client *client,
- 	 * But the chip does not allow to limit individual LEDs.
- 	 * So we take minimum from all subnodes for safety of hardware.
- 	 */
-+	aggregated_led_microamp = is31->cdef->current_max;
- 	for (i = 0; i < is31->cdef->num_leds; i++)
- 		if (is31->leds[i].configured &&
- 		    is31->leds[i].max_microamp < aggregated_led_microamp)
- 			aggregated_led_microamp = is31->leds[i].max_microamp;
- 
--	regmap_write(is31->regmap, IS31FL3196_CONFIG2,
--		     is31fl3196_microamp_to_cs(dev, aggregated_led_microamp) |
--		     is31fl3196_db_to_gain(is31->audio_gain_db));
-+	if (is31->cdef->is_3196or3199)
-+		regmap_write(is31->regmap, IS31FL3196_CONFIG2,
-+			     is31fl3196_microamp_to_cs(dev, aggregated_led_microamp) |
-+			     is31fl3196_db_to_gain(is31->audio_gain_db));
- 
- 	for (i = 0; i < is31->cdef->num_leds; i++) {
- 		struct is31fl319x_led *led = &is31->leds[i];
-@@ -404,7 +444,7 @@ static int is31fl319x_probe(struct i2c_client *client,
- 			continue;
- 
- 		led->chip = is31;
--		led->cdev.brightness_set_blocking = is31fl3196_brightness_set;
-+		led->cdev.brightness_set_blocking = is31->cdef->brightness_set;
- 
- 		err = devm_led_classdev_register(&client->dev, &led->cdev);
- 		if (err < 0)
--- 
-2.35.3
+What I want to see is block diagrams of possible h/w with different 
+scenarios and then what the binding looks like in those cases. The 
+switching/muxing could be in the SoC, a bridge chip, a Type C 
+controller, a standalone mux chip, or ????. If you want a somewhat 
+genericish binding, then you need to consider all of these.
 
+I don't really have the b/w to work thru all this (and switch/mux is 
+just one part of dealing with Type-C). This is just one of about a 
+hundred patches I get to review a week.
 
-
+Rob
