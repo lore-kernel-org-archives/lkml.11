@@ -2,260 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43420C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06452CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345432AbiF1Med (ORCPT
+        id S1345102AbiF1Mfg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 08:34:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
+        Tue, 28 Jun 2022 08:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241951AbiF1Mea (ORCPT
+        with ESMTP id S230459AbiF1Mff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 08:34:30 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B2E2DABC
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:34:29 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id n12so11948751pfq.0
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:34:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RXjGJANRhboFJY9ZSMgCfYYQ5paGis0Mw1doE2djBic=;
-        b=ir0wkb7OuNhe4C+0zGVLpgjw5wtOSmzqW2EKn5h+5Bgs/6AQbvc3jNe060ecvX+15U
-         +vMKfVAiqK2lev8hPtfX+QOuNhXy0HcfR88qikQs7F8JfSj4ogHeEwVYBapU18RcyNYJ
-         wF8Z/85XXf2063uKlmPiQJyrgBmXdMd6iwddOmWnqRzMj24rRJHYWOYpbtoxp6C2TFPd
-         1Ry5psIhoLUacTnbhrtIt8/5OSCUA+FXcE0LiExnhuZ9L162qsnBmNQ0HnTaRHeCWRQY
-         T6ljcv56UTdyMcUyiLXgkBLKKMLfDcLfswMdUvdakK4OeYM2R3WfGDbl3GfR5YggO3lh
-         f6uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RXjGJANRhboFJY9ZSMgCfYYQ5paGis0Mw1doE2djBic=;
-        b=iEDDxV/DXqNkcw8A7RexMiVKNmgT6Qzx5oskZuxXJMfgTykMb1ptniZj9JiHL9FOm5
-         HXubnnmHY0SdJmYSqBm1bDXztYbKxvSvOvCRCRQ8bVDb3tvfgMZ5gPf5btJBzCXAeW3I
-         y8eeSWQg4qyzD1hOEFc0uHUgifoPQAAqvNXckZ6RAw6EUsIKC8vAhkk8/n9IoLef0/TL
-         vvJ5r26XjaVceEUgJfp8JNPBT+4w95r6c2k5VK6rsnWOY0ABKW1nXi1vIwbrb3ms18YM
-         CvSm5EpFj8xy8PKqj7Xk0d3d7oQaDrH/LBXqYtGNK8aSaYcdgIu7+b1BeM5CzmZ+kYIu
-         KQrw==
-X-Gm-Message-State: AJIora9LzHc4Gcz5hGTqS9L+j8mc83bD+hKdlZzFInhhNhPSjN03/HqY
-        D6toDIKeLHvYGkQ42DvN44PjiQ==
-X-Google-Smtp-Source: AGRyM1ukW3BiNU8LZqsGv56vK/sC3TSPLZoklOzI5wlL7g14JI5KkH5VN3cpjQonCbii8uMjwN8o4A==
-X-Received: by 2002:a63:2213:0:b0:3fe:7f8:c917 with SMTP id i19-20020a632213000000b003fe07f8c917mr17102889pgi.406.1656419668619;
-        Tue, 28 Jun 2022 05:34:28 -0700 (PDT)
-Received: from [10.255.246.56] ([139.177.225.232])
-        by smtp.gmail.com with ESMTPSA id z11-20020aa7888b000000b0052516db7123sm9333082pfe.35.2022.06.28.05.34.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 05:34:28 -0700 (PDT)
-Message-ID: <a10e9aea-4c9a-f248-d4c7-a69d9143a461@bytedance.com>
-Date:   Tue, 28 Jun 2022 20:34:23 +0800
+        Tue, 28 Jun 2022 08:35:35 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570A72ED77;
+        Tue, 28 Jun 2022 05:35:34 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SCHCh0006869;
+        Tue, 28 Jun 2022 12:35:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=VzTRDib4zHd2FCU5EB+yWfonZTP7xYq8c8GPvJz6Hrs=;
+ b=HPp4Ym3KfCxqGjisBYbAiWWX1hq7ezYIHhUU9QOYS28uxvSJ7OwP6jeZukK1z36RWi6F
+ QP6RBcPZ/gJWQnicU9qZiGQ9TMxfsbAkidz/LmthAf26akmiUj+Gz0qVZgfgmAdBiz1q
+ 75I/vQm9RucbtkFVoX7x9JnJiG9HCE5FoIMbWVvxb/pEo0UdhkJPFx5BxZv3dpWz9SZj
+ tYce6DyITtObQLdBdJmAQHxDRe53nMGNnAxFYU5HKjZ947C+MqzFJGishx5wAHgi1u27
+ s/gMu46HUoYJ5WXBqVNTyo2700rf7jJ3AQRDA6fqt2AtMOQqZhUXpDGV3ZA7j4dGHBsU lQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h01h1rj8x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 12:35:31 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SCJRgS017268;
+        Tue, 28 Jun 2022 12:35:30 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h01h1rj82-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 12:35:30 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SCKc8u001772;
+        Tue, 28 Jun 2022 12:35:28 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 3gwt08vu62-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 12:35:28 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SCZPUm23986648
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jun 2022 12:35:25 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6BFFAA405B;
+        Tue, 28 Jun 2022 12:35:25 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5794BA4054;
+        Tue, 28 Jun 2022 12:35:24 +0000 (GMT)
+Received: from [9.171.60.225] (unknown [9.171.60.225])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 28 Jun 2022 12:35:24 +0000 (GMT)
+Message-ID: <c98e7c10-272c-2bbb-6909-046d57d721d1@linux.ibm.com>
+Date:   Tue, 28 Jun 2022 14:35:23 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH] sched: remove redundant cpu_cgrp_subsys->fork()
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v9 00/21] KVM: s390: enable zPCI for interpretive
+ execution
 Content-Language: en-US
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, rdunlap@infradead.org,
-        vschneid@redhat.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220622094831.22948-1-zhouchengming@bytedance.com>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <20220622094831.22948-1-zhouchengming@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220606203325.110625-1-mjrosato@linux.ibm.com>
+ <f86e2e05-114a-cc9e-8f3a-96b36889063d@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <f86e2e05-114a-cc9e-8f3a-96b36889063d@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 7kXy1VyFvROoymAGsQ27TyveRw3QZZwH
+X-Proofpoint-ORIG-GUID: pBNTNyMgnNoCtr5oFZikyJQjgjvEXW8u
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-28_06,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 phishscore=0 adultscore=0 suspectscore=0
+ impostorscore=0 clxscore=1011 spamscore=0 mlxlogscore=999 mlxscore=0
+ bulkscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206280048
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, friendly ping...
+Am 27.06.22 um 22:57 schrieb Matthew Rosato:
+> On 6/6/22 4:33 PM, Matthew Rosato wrote:
+>> Enable interpretive execution of zPCI instructions + adapter interruption
+>> forwarding for s390x KVM vfio-pci.  This is done by triggering a routine
+>> when the VFIO group is associated with the KVM guest, transmitting to
+>> firmware a special token (GISA designation) to enable that specific guest
+>> for interpretive execution on that zPCI device.  Load/store interpreation
+>> enablement is then controlled by userspace (based upon whether or not a
+>> SHM bit is placed in the virtual function handle).  Adapter Event
+>> Notification interpretation is controlled from userspace via a new KVM
+>> ioctl.
+>>
+>> By allowing intepretation of zPCI instructions and firmware delivery of
+>> interrupts to guests, we can reduce the frequency of guest SIE exits for
+>> zPCI.
+>>
+>>  From the perspective of guest configuration, you passthrough zPCI devices
+>> in the same manner as before, with intepretation support being used by
+>> default if available in kernel+qemu.
+>>
+>> Will follow up with a link the most recent QEMU series.
+>>
+>> Changelog v8->v9:
+>> - Rebase on top of 5.19-rc1, adjust ioctl and capability defines
+>> - s/kzdev = 0/kzdev = NULL/ (Alex)
+>> - rename vfio_pci_zdev_open to vfio_pci_zdev_open_device (Jason)
+>> - rename vfio_pci_zdev_release to vfio_pci_zdev_close_device (Jason)
+>> - make vfio_pci_zdev_close_device return void, instead WARN_ON or ignore
+>>    errors in lower level function (kvm_s390_pci_unregister_kvm) (Jason)
+>> - remove notifier accidentally left in struct zpci_dev + associated
+>>    include statment (Jason)
+>> - Remove patch 'KVM: s390: introduce CPU feature for zPCI Interpretation'
+>>    based on discussion in QEMU thread.
+>>
+> 
+> Ping -- I'm hoping this can make the next merge window, but there are still 2 patches left without any review tag (16 & 17).
 
-Thanks.
-
-
-On 2022/6/22 17:48, Chengming Zhou wrote:
-> We use cpu_cgrp_subsys->fork() to set task group for the new fair task
-> in cgroup_post_fork().
-> 
-> Since commit b1e8206582f9 ("sched: Fix yet more sched_fork() races")
-> has already set task group for the new fair task in sched_cgroup_fork(),
-> so cpu_cgrp_subsys->fork() can be removed.
-> 
->   cgroup_can_fork()	--> pin parent's sched_task_group
->   sched_cgroup_fork()
->     __set_task_cpu	--> set task group
->   cgroup_post_fork()
->     ss->fork() := cpu_cgroup_fork()	--> set again
-> 
-> After this change, task_change_group_fair() only need to care about
-> task cgroup migration, make the code much simplier.
-> 
-> This patch move the task se depth setting to set_task_rq(), which
-> is called when task moves across CPUs/groups, is a better place than
-> attach_entity_cfs_rq(). The latter is also used when change task's
-> sched_class, in which case the group/depth doesn't change actually.
-> 
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> ---
->  kernel/sched/core.c  | 27 ++++-----------------------
->  kernel/sched/fair.c  | 31 +------------------------------
->  kernel/sched/sched.h |  6 ++----
->  3 files changed, 7 insertions(+), 57 deletions(-)
-> 
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index c16f8cc5de08..f44bc5b889ab 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -481,8 +481,7 @@ sched_core_dequeue(struct rq *rq, struct task_struct *p, int flags) { }
->   *				p->se.load, p->rt_priority,
->   *				p->dl.dl_{runtime, deadline, period, flags, bw, density}
->   *  - sched_setnuma():		p->numa_preferred_nid
-> - *  - sched_move_task()/
-> - *    cpu_cgroup_fork():	p->sched_task_group
-> + *  - sched_move_task():	p->sched_task_group
->   *  - uclamp_update_active()	p->uclamp*
->   *
->   * p->state <- TASK_*:
-> @@ -10098,7 +10097,7 @@ void sched_release_group(struct task_group *tg)
->  	spin_unlock_irqrestore(&task_group_lock, flags);
->  }
->  
-> -static void sched_change_group(struct task_struct *tsk, int type)
-> +static void sched_change_group(struct task_struct *tsk)
->  {
->  	struct task_group *tg;
->  
-> @@ -10114,7 +10113,7 @@ static void sched_change_group(struct task_struct *tsk, int type)
->  
->  #ifdef CONFIG_FAIR_GROUP_SCHED
->  	if (tsk->sched_class->task_change_group)
-> -		tsk->sched_class->task_change_group(tsk, type);
-> +		tsk->sched_class->task_change_group(tsk);
->  	else
->  #endif
->  		set_task_rq(tsk, task_cpu(tsk));
-> @@ -10145,7 +10144,7 @@ void sched_move_task(struct task_struct *tsk)
->  	if (running)
->  		put_prev_task(rq, tsk);
->  
-> -	sched_change_group(tsk, TASK_MOVE_GROUP);
-> +	sched_change_group(tsk);
->  
->  	if (queued)
->  		enqueue_task(rq, tsk, queue_flags);
-> @@ -10223,23 +10222,6 @@ static void cpu_cgroup_css_free(struct cgroup_subsys_state *css)
->  	sched_unregister_group(tg);
->  }
->  
-> -/*
-> - * This is called before wake_up_new_task(), therefore we really only
-> - * have to set its group bits, all the other stuff does not apply.
-> - */
-> -static void cpu_cgroup_fork(struct task_struct *task)
-> -{
-> -	struct rq_flags rf;
-> -	struct rq *rq;
-> -
-> -	rq = task_rq_lock(task, &rf);
-> -
-> -	update_rq_clock(rq);
-> -	sched_change_group(task, TASK_SET_GROUP);
-> -
-> -	task_rq_unlock(rq, task, &rf);
-> -}
-> -
->  static int cpu_cgroup_can_attach(struct cgroup_taskset *tset)
->  {
->  	struct task_struct *task;
-> @@ -11136,7 +11118,6 @@ struct cgroup_subsys cpu_cgrp_subsys = {
->  	.css_released	= cpu_cgroup_css_released,
->  	.css_free	= cpu_cgroup_css_free,
->  	.css_extra_stat_show = cpu_extra_stat_show,
-> -	.fork		= cpu_cgroup_fork,
->  	.can_attach	= cpu_cgroup_can_attach,
->  	.attach		= cpu_cgroup_attach,
->  	.legacy_cftypes	= cpu_legacy_files,
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 8bed75757e65..fdb9125fe34e 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -11325,14 +11325,6 @@ static void attach_entity_cfs_rq(struct sched_entity *se)
->  {
->  	struct cfs_rq *cfs_rq = cfs_rq_of(se);
->  
-> -#ifdef CONFIG_FAIR_GROUP_SCHED
-> -	/*
-> -	 * Since the real-depth could have been changed (only FAIR
-> -	 * class maintain depth value), reset depth properly.
-> -	 */
-> -	se->depth = se->parent ? se->parent->depth + 1 : 0;
-> -#endif
-> -
->  	/* Synchronize entity with its cfs_rq */
->  	update_load_avg(cfs_rq, se, sched_feat(ATTACH_AGE_LOAD) ? 0 : SKIP_AGE_LOAD);
->  	attach_entity_load_avg(cfs_rq, se);
-> @@ -11431,15 +11423,7 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
->  }
->  
->  #ifdef CONFIG_FAIR_GROUP_SCHED
-> -static void task_set_group_fair(struct task_struct *p)
-> -{
-> -	struct sched_entity *se = &p->se;
-> -
-> -	set_task_rq(p, task_cpu(p));
-> -	se->depth = se->parent ? se->parent->depth + 1 : 0;
-> -}
-> -
-> -static void task_move_group_fair(struct task_struct *p)
-> +static void task_change_group_fair(struct task_struct *p)
->  {
->  	detach_task_cfs_rq(p);
->  	set_task_rq(p, task_cpu(p));
-> @@ -11451,19 +11435,6 @@ static void task_move_group_fair(struct task_struct *p)
->  	attach_task_cfs_rq(p);
->  }
->  
-> -static void task_change_group_fair(struct task_struct *p, int type)
-> -{
-> -	switch (type) {
-> -	case TASK_SET_GROUP:
-> -		task_set_group_fair(p);
-> -		break;
-> -
-> -	case TASK_MOVE_GROUP:
-> -		task_move_group_fair(p);
-> -		break;
-> -	}
-> -}
-> -
->  void free_fair_sched_group(struct task_group *tg)
->  {
->  	int i;
-> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> index 317480d535b0..8433e22da3ab 100644
-> --- a/kernel/sched/sched.h
-> +++ b/kernel/sched/sched.h
-> @@ -1901,6 +1901,7 @@ static inline void set_task_rq(struct task_struct *p, unsigned int cpu)
->  	set_task_rq_fair(&p->se, p->se.cfs_rq, tg->cfs_rq[cpu]);
->  	p->se.cfs_rq = tg->cfs_rq[cpu];
->  	p->se.parent = tg->se[cpu];
-> +	p->se.depth = tg->se[cpu] ? tg->se[cpu]->depth + 1 : 0;
->  #endif
->  
->  #ifdef CONFIG_RT_GROUP_SCHED
-> @@ -2163,11 +2164,8 @@ struct sched_class {
->  
->  	void (*update_curr)(struct rq *rq);
->  
-> -#define TASK_SET_GROUP		0
-> -#define TASK_MOVE_GROUP		1
-> -
->  #ifdef CONFIG_FAIR_GROUP_SCHED
-> -	void (*task_change_group)(struct task_struct *p, int type);
-> +	void (*task_change_group)(struct task_struct *p);
->  #endif
->  };
->  
+Yes, I will queue this (as is). Ideally you would rebase this on top of kvm/next but I can also do while applying.
+Let me know if you want to respin with the Nits from Pierre.
