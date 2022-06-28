@@ -2,119 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A04C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C23C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343806AbiF1Iye (ORCPT
+        id S1344038AbiF1Iy6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52056 "EHLO
+        Tue, 28 Jun 2022 04:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241584AbiF1Iyc (ORCPT
+        with ESMTP id S1344019AbiF1Iy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:54:32 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9B42DA80
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:54:31 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9F98D2027B3;
-        Tue, 28 Jun 2022 10:54:30 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 66FCA2027C9;
-        Tue, 28 Jun 2022 10:54:30 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 3A9FD1802204;
-        Tue, 28 Jun 2022 16:54:29 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     shengjiu.wang@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        nicoleotsuka@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: fsl_micfil: change micfil default settings
-Date:   Tue, 28 Jun 2022 16:39:49 +0800
-Message-Id: <1656405589-29850-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 28 Jun 2022 04:54:57 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8382DA90;
+        Tue, 28 Jun 2022 01:54:56 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id t21so11432092pfq.1;
+        Tue, 28 Jun 2022 01:54:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WC8mCwxcFPmaNTe2dlW1gLIl9Or1Z5lRzz4HZt059cU=;
+        b=KQaVeMvIK6tuqnHSMdPgFQMzEqe69xzapzWGFSkXXSzGpslkQZiKvpkndmQmbvsQcF
+         3eXYDi6vX572wjK1KHg1/m0lgsL0BzcS+4uH0x/bLsxCuBZ0gndhW9kk5MVotcXKys3i
+         2883cqdlYnIiUEZAG9lnMss+hKV11KcDexX/q8Ck+9JV6hztDT62MxRvojYqjflEzzhm
+         eHcphQSn19g19YEIhpvYD3KwbPVQ6+oOqM+oTYDLgrXk7uYO4/1y81riptgqSYbbFpHX
+         0bnzAlRt0K6NiVw/GrbUWMXmhakslOMse/ynaMzUje6+r4G45B6SoUDy7JC+HjB3lEbn
+         xIEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WC8mCwxcFPmaNTe2dlW1gLIl9Or1Z5lRzz4HZt059cU=;
+        b=zZ5+VjCVAwkOxpe2NuTMsYwalWQW/w6ykY2R2y0/A1Kw8p3eSX6a5FTkDDmVspofYn
+         fouDG4dhtIOiUKX7vaGwc1N2Poqw0rSP0IML0Y6DUVJrwl38fiaCZ87yV4COcdYFww2F
+         ItiSebpF5/Zg+C5YFSNAj9a0qTk1FWWQ5/LIRyiX9ZTOTC0uk4611BMSzAUUxpAcpyjU
+         JURh9uSAhSEk6pVhmH+21e20CTDsZSkD4SMDAf9+7C6sN41SzpzVjbd8QeBWEq/mH4At
+         +mFT1lJQmGK2iUJdqMo00y0W/pP8U124x0rIktFEyPXQsip7Z9hgHkhZ2539Tozm5kvV
+         EWXQ==
+X-Gm-Message-State: AJIora+uFeR1Oh4vU4OriBk75uCcMCJEBwG0BkC6LuhbDVd/XpBYNPVV
+        QvZdmgY8qvSnYzfj2bhF5Ko=
+X-Google-Smtp-Source: AGRyM1uiulusMvDPUmm/nYRbHm8DSfvspJVNvlbmGIdRAexX4Kc34/cplPHlah8MfxNGVhbXo74LZQ==
+X-Received: by 2002:a63:f413:0:b0:40d:ba87:53f8 with SMTP id g19-20020a63f413000000b0040dba8753f8mr14812732pgi.193.1656406496018;
+        Tue, 28 Jun 2022 01:54:56 -0700 (PDT)
+Received: from chrome.huaqin.com ([101.78.151.222])
+        by smtp.gmail.com with ESMTPSA id r9-20020a17090a0ac900b001e095a5477bsm11120939pje.33.2022.06.28.01.54.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 01:54:55 -0700 (PDT)
+From:   Rex Nie <rexnie3@gmail.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, spanda@codeaurora.org, dianders@chromium.org,
+        devicetree@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh@kernel.org>, Rex Nie <rexnie3@gmail.com>
+Subject: [PATCH 2/2] dt-bindings: display: simple: Add InnoLux n140hca-eac panel
+Date:   Tue, 28 Jun 2022 16:54:48 +0800
+Message-Id: <20220628085448.2147440-1-rexnie3@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previous default settings resulted in loose dynamic
-range and low sound level.
-New default configuration changes:
-- outgain = 2
-- quality mode = VLOW0
-- dc remover = bypass
+Add support for InnoLux n140hca-eac display panel. It is a 14" eDP panel
+with 1920x1080 display resolution.
 
-Signed-off-by: Irina Patru <ioana-irina.patru@nxp.com>
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Signed-off-by: Rex Nie <rexnie3@gmail.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- sound/soc/fsl/fsl_micfil.c | 22 ++++++++++++++++++----
- sound/soc/fsl/fsl_micfil.h |  9 +++++++++
- 2 files changed, 27 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/display/panel/panel-simple.yaml         | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/fsl/fsl_micfil.c b/sound/soc/fsl/fsl_micfil.c
-index 25c647ae080a..18ab80b68752 100644
---- a/sound/soc/fsl/fsl_micfil.c
-+++ b/sound/soc/fsl/fsl_micfil.c
-@@ -48,6 +48,7 @@ struct fsl_micfil {
- 	char name[32];
- 	int irq[MICFIL_IRQ_LINES];
- 	enum quality quality;
-+	int dc_remover;
- };
- 
- struct fsl_micfil_soc_data {
-@@ -336,12 +337,25 @@ static const struct snd_soc_dai_ops fsl_micfil_dai_ops = {
- static int fsl_micfil_dai_probe(struct snd_soc_dai *cpu_dai)
- {
- 	struct fsl_micfil *micfil = dev_get_drvdata(cpu_dai->dev);
--	int ret;
-+	struct device *dev = cpu_dai->dev;
-+	unsigned int val = 0;
-+	int ret, i;
-+
-+	micfil->quality = QUALITY_VLOW0;
- 
--	micfil->quality = QUALITY_MEDIUM;
-+	/* set default gain to 2 */
-+	regmap_write(micfil->regmap, REG_MICFIL_OUT_CTRL, 0x22222222);
- 
--	/* set default gain to max_gain */
--	regmap_write(micfil->regmap, REG_MICFIL_OUT_CTRL, 0x77777777);
-+	/* set DC Remover in bypass mode*/
-+	for (i = 0; i < MICFIL_OUTPUT_CHANNELS; i++)
-+		val |= MICFIL_DC_BYPASS << MICFIL_DC_CHX_SHIFT(i);
-+	ret = regmap_update_bits(micfil->regmap, REG_MICFIL_DC_CTRL,
-+				 MICFIL_DC_CTRL_CONFIG, val);
-+	if (ret) {
-+		dev_err(dev, "failed to set DC Remover mode bits\n");
-+		return ret;
-+	}
-+	micfil->dc_remover = MICFIL_DC_BYPASS;
- 
- 	snd_soc_dai_init_dma_data(cpu_dai, NULL,
- 				  &micfil->dma_params_rx);
-diff --git a/sound/soc/fsl/fsl_micfil.h b/sound/soc/fsl/fsl_micfil.h
-index 053caba3caf3..d60285dd07bc 100644
---- a/sound/soc/fsl/fsl_micfil.h
-+++ b/sound/soc/fsl/fsl_micfil.h
-@@ -73,6 +73,15 @@
- #define MICFIL_FIFO_STAT_FIFOX_OVER(ch)	BIT(ch)
- #define MICFIL_FIFO_STAT_FIFOX_UNDER(ch)	BIT((ch) + 8)
- 
-+/* MICFIL DC Remover Control Register -- REG_MICFIL_DC_CTRL */
-+#define MICFIL_DC_CTRL_CONFIG          GENMASK(15, 0)
-+#define MICFIL_DC_CHX_SHIFT(ch)        ((ch) << 1)
-+#define MICFIL_DC_CHX(ch)              GENMASK((((ch) << 1) + 1), ((ch) << 1))
-+#define MICFIL_DC_CUTOFF_21HZ          0
-+#define MICFIL_DC_CUTOFF_83HZ          1
-+#define MICFIL_DC_CUTOFF_152Hz         2
-+#define MICFIL_DC_BYPASS               3
-+
- /* MICFIL HWVAD0 Control 1 Register -- REG_MICFIL_VAD0_CTRL1*/
- #define MICFIL_VAD0_CTRL1_CHSEL		GENMASK(26, 24)
- #define MICFIL_VAD0_CTRL1_CICOSR	GENMASK(19, 16)
+diff --git a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
+index a5568d1dc272..51e573615aab 100644
+--- a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
++++ b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
+@@ -186,6 +186,8 @@ properties:
+       - innolux,n116bge
+         # InnoLux 13.3" FHD (1920x1080) eDP TFT LCD panel
+       - innolux,n125hce-gn1
++        # InnoLux 14" FHD (1920x1080) eDP TFT LCD panel
++      - innolux,n140hca-eac
+         # InnoLux 15.6" WXGA TFT LCD panel
+       - innolux,n156bge-l21
+         # Innolux Corporation 7.0" WSVGA (1024x600) TFT LCD panel
 -- 
-2.17.1
+2.25.1
 
