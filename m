@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 173ABC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 683B4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245271AbiF1Cba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
+        id S245277AbiF1Cbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244608AbiF1C1b (ORCPT
+        with ESMTP id S244624AbiF1C1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:31 -0400
+        Mon, 27 Jun 2022 22:27:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5206D24F08;
-        Mon, 27 Jun 2022 19:24:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A49F25C73;
+        Mon, 27 Jun 2022 19:25:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2A8B61753;
-        Tue, 28 Jun 2022 02:24:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 790D9C341CB;
-        Tue, 28 Jun 2022 02:24:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC6606170D;
+        Tue, 28 Jun 2022 02:25:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7123AC34115;
+        Tue, 28 Jun 2022 02:25:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383098;
-        bh=gxqFE2JGfA0kqHJ6QXAXaLRWqFcJWzSctSXECB910/o=;
+        s=k20201202; t=1656383105;
+        bh=tBw7QvR15M6Y4jhKI36OkO2sI08Qgw/3y3KcRr2GDzs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vFxATT1gFFsFL6+HFE7ug0K1sMv4sGBdWWpJ2j5Z9lUKFIWxW516I6hGTtnhoMy2o
-         W8S9OA1+XX6ryVHNgmAUebKcYmHknsfQwDmydvKc+r0xCuFShjE9FGaAILC/6PNfdB
-         5mbBozpVGNzPxUgwvOFDnTNgnRiLgujmFTZeaknkRwA5Ipm66WsvT4gYpXDqrX3faP
-         8r4wj0KT/lkU0fgjYptdu4h1fHng5Fd5oN78lDnVfbvSPrcA+HC46BfiL5e9eSMqlD
-         k2HGfTkEDzv4DZBr8B2VFsdQ1b963eGCrZvXu44CLdtmojxNVpNPT2kNImcEpkWFO3
-         NikjKbA/rhqOA==
+        b=gzrubjUfIN9U9hw5zmh7b6WWG8LtACrNvaW/7/Z3L4/YWen4z9GOmhPWAaf0yNz7l
+         jY4AU4oQv5lDDo3mo9ter6Sb7aPozKnW6mNmEhohqufGQzDVJ9yQ7W+71bKZWC5F0n
+         XlKqPYKw/w/CU0f94TeG9WccbIv7FJy/2CaavydJwZABGFo/uhK07MNALOUE3NsZcJ
+         kldM9YAj2VLUhVTaH13thmL6bNA6TWbVgff9NQHfCKpDiHU9m69z9x6fcZP8sGXtXC
+         fokLlbbPmVrAUMJSxJfSPWvFd5Z0+mcE3RJLGBFFlZeRGrawLeL3HFh4HNmIAKzQG4
+         WBGzAemGzAGSg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Liang He <windhl@126.com>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
-        xkernel.wang@foxmail.com, wangborong@cdjrlc.com,
+        Sasha Levin <sashal@kernel.org>, yangtiezhu@loongson.cn,
         linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 19/27] mips: lantiq: falcon: Fix refcount leak bug in sysctrl
-Date:   Mon, 27 Jun 2022 22:24:05 -0400
-Message-Id: <20220628022413.596341-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 21/27] mips/pic32/pic32mzda: Fix refcount leak bugs
+Date:   Mon, 27 Jun 2022 22:24:07 -0400
+Message-Id: <20220628022413.596341-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022413.596341-1-sashal@kernel.org>
 References: <20220628022413.596341-1-sashal@kernel.org>
@@ -55,36 +54,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 72a2af539fff975caadd9a4db3f99963569bd9c9 ]
+[ Upstream commit eb9e9bc4fa5fb489c92ec588b3fb35f042ba6d86 ]
 
-In ltq_soc_init(), of_find_compatible_node() will return a node pointer
-with refcount incremented. We should use of_node_put() when it is not
+of_find_matching_node(), of_find_compatible_node() and
+of_find_node_by_path() will return node pointers with refcout
+incremented. We should call of_node_put() when they are not
 used anymore.
 
 Signed-off-by: Liang He <windhl@126.com>
 Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/lantiq/falcon/sysctrl.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/mips/pic32/pic32mzda/init.c | 7 ++++++-
+ arch/mips/pic32/pic32mzda/time.c | 3 +++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/lantiq/falcon/sysctrl.c b/arch/mips/lantiq/falcon/sysctrl.c
-index a2837a54d972..07a33bc891a9 100644
---- a/arch/mips/lantiq/falcon/sysctrl.c
-+++ b/arch/mips/lantiq/falcon/sysctrl.c
-@@ -208,6 +208,12 @@ void __init ltq_soc_init(void)
- 			of_address_to_resource(np_sysgpe, 0, &res_sys[2]))
- 		panic("Failed to get core resources");
+diff --git a/arch/mips/pic32/pic32mzda/init.c b/arch/mips/pic32/pic32mzda/init.c
+index f232c77ff526..0b2cd87b33d3 100644
+--- a/arch/mips/pic32/pic32mzda/init.c
++++ b/arch/mips/pic32/pic32mzda/init.c
+@@ -123,13 +123,18 @@ static int __init pic32_of_prepare_platform_data(struct of_dev_auxdata *lookup)
+ 		np = of_find_compatible_node(NULL, NULL, lookup->compatible);
+ 		if (np) {
+ 			lookup->name = (char *)np->name;
+-			if (lookup->phys_addr)
++			if (lookup->phys_addr) {
++				of_node_put(np);
+ 				continue;
++			}
+ 			if (!of_address_to_resource(np, 0, &res))
+ 				lookup->phys_addr = res.start;
++			of_node_put(np);
+ 		}
+ 	}
  
-+	of_node_put(np_status);
-+	of_node_put(np_ebu);
-+	of_node_put(np_sys1);
-+	of_node_put(np_syseth);
-+	of_node_put(np_sysgpe);
++	of_node_put(root);
 +
- 	if ((request_mem_region(res_status.start, resource_size(&res_status),
- 				res_status.name) < 0) ||
- 		(request_mem_region(res_ebu.start, resource_size(&res_ebu),
+ 	return 0;
+ }
+ 
+diff --git a/arch/mips/pic32/pic32mzda/time.c b/arch/mips/pic32/pic32mzda/time.c
+index 905ec1d86928..f4b533c2e94c 100644
+--- a/arch/mips/pic32/pic32mzda/time.c
++++ b/arch/mips/pic32/pic32mzda/time.c
+@@ -32,6 +32,9 @@ static unsigned int pic32_xlate_core_timer_irq(void)
+ 		goto default_map;
+ 
+ 	irq = irq_of_parse_and_map(node, 0);
++
++	of_node_put(node);
++
+ 	if (!irq)
+ 		goto default_map;
+ 
 -- 
 2.35.1
 
