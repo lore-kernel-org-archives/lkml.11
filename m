@@ -2,114 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0FFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343928AbiF1CuK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:50:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40600 "EHLO
+        id S243501AbiF1CuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343806AbiF1Ctt (ORCPT
+        with ESMTP id S1343818AbiF1Ctv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:49:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6752210EF
+        Mon, 27 Jun 2022 22:49:51 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B813AE65
         for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 19:49:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F19FCB81BC2
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:49:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE526C341CB;
-        Tue, 28 Jun 2022 02:49:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656384584;
-        bh=FGTtufHlSSn22mtv5KHuJ8CCy43ei44B5IZOaQE6nj0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hoRudwxAbT4YXEPpp4wlMC5u1bDx62NHBReqZD7kRJLlyLDzCkIHpTMDYSnkrPPU0
-         mYN9Lj6xMdwm5FIshXQvluB+l9rSKlcwVIEmW8zw9+WC8fQZpk2ftqRG3aLE+mcVZr
-         YGF+XEyCwhzN4c6DPgoWDxBbJ0F2OpxBIcthWbwl/wJwOdMtWgd2m+1EBhHCp8vGZe
-         a91W+qrxOz5Cn6nkC77jwKXQefHohOLrulW5R3iJs8J7BvrjJY2qNPWl0V1C2KSlAO
-         ZvtnBxn74MlHUjB/KIAVoyW0W57dbxrklY+5TaPunAwp+TfTtW/AXYfKdMLaEaRCW4
-         gHygqWepTh6Wg==
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     bleung@chromium.org, groeck@chromium.org
-Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH 10/11] platform/chrome: cros_ec_proto: add Kunit test for empty payload
-Date:   Tue, 28 Jun 2022 02:49:12 +0000
-Message-Id: <20220628024913.1755292-11-tzungbi@kernel.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220628024913.1755292-1-tzungbi@kernel.org>
-References: <20220628024913.1755292-1-tzungbi@kernel.org>
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-101e1a33fe3so15351813fac.11
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 19:49:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxtx.org; s=google;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=omhesUeqSl6JODFUBkHgNv2EMm6rR/1o7aoGMnPTWAc=;
+        b=KRRqPxOE6TtTEnKo4/F9m2Kq/wHr7oCufMYzyjfVPFKzj7QN1FR52G83rdmffkNOu0
+         8E4S4ZDaJ2JiwIfTpVsa2sFP6qclOcdt9BZYj9qDYMS9CjsiDQ31VaUdU+iofhxLdOA/
+         gjniueTH8mpQr2Gb3Ru84pwE80Nl1ja+cYnPA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=omhesUeqSl6JODFUBkHgNv2EMm6rR/1o7aoGMnPTWAc=;
+        b=r9CPaQzDPmFj5SehFFepUkI7XeIIaKLDSHoHcIEebolFmcm7C/yz6oey8jTHZYuW5m
+         5E5kahuIKctc9mARtoRnH4neLGVLPuWSkcPpFn+Y1XEu5gSj8hdzpK6LN8BjHmkc1kno
+         93n0FR8kQ8i316WQOMmbe5OQGAmfFrXf0Y0d6peZg4olY3R0Wkca0pqq8CKLiAVWikZ4
+         X5hmINd1V2zrKSlgYM7hXvCdwGENH627kjemI4HLDIaelfqvzAy89+FRgk4X5fQfN28t
+         B08UBV8WOg82BSN3spU+pUvQbPzWXkPpjxqrDFRO2WO9Z6sIkfFzAurXSSzHJlsRU0j0
+         r7NQ==
+X-Gm-Message-State: AJIora8DNqXIyc3aUxehxICRvApcUBgnzlDcxr2RjXtPaWuAIy3xsmsv
+        nz/FqRwrN6198tT07LSDgA4uzA==
+X-Google-Smtp-Source: AGRyM1uH55IwiERIY2IjWQ3oihHykzMB6Fx6gt+EEsvFU3RsRMNVUHvx2/sZ7VVZLkYphtLL2TtsFw==
+X-Received: by 2002:a05:6870:5809:b0:101:ce10:b267 with SMTP id r9-20020a056870580900b00101ce10b267mr12329014oap.83.1656384586506;
+        Mon, 27 Jun 2022 19:49:46 -0700 (PDT)
+Received: from fedora64.linuxtx.org (99-47-93-78.lightspeed.rcsntx.sbcglobal.net. [99.47.93.78])
+        by smtp.gmail.com with ESMTPSA id w70-20020acaad49000000b003351fa55a58sm6217794oie.16.2022.06.27.19.49.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 19:49:45 -0700 (PDT)
+Sender: Justin Forbes <jmforbes@linuxtx.org>
+Date:   Mon, 27 Jun 2022 21:49:43 -0500
+From:   Justin Forbes <jforbes@fedoraproject.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 000/181] 5.18.8-rc1 review
+Message-ID: <YrpsRzmt+O4/gvdi@fedora64.linuxtx.org>
+References: <20220627111944.553492442@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627111944.553492442@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cros_ec_wait_until_complete() sends EC_CMD_GET_COMMS_STATUS which expects
-to receive sizeof(struct ec_response_get_comms_status) from
-cros_ec_xfer_command().
+On Mon, Jun 27, 2022 at 01:19:33PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.8 release.
+> There are 181 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 29 Jun 2022 11:19:09 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.8-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Add Kunit test and expect to receive an error code when
-cros_ec_xfer_command() returns 0.
+Tested rc1 against the Fedora build system (aarch64, armv7, ppc64le,
+s390x, x86_64), and boot tested x86_64. No regressions noted.
 
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
----
- drivers/platform/chrome/cros_ec_proto_test.c | 31 ++++++++++++++++++++
- 1 file changed, 31 insertions(+)
-
-diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-index 2a6b099fbfd9..7d45e5022221 100644
---- a/drivers/platform/chrome/cros_ec_proto_test.c
-+++ b/drivers/platform/chrome/cros_ec_proto_test.c
-@@ -1934,6 +1934,36 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_return_error(struct kunit *t
- 	KUNIT_EXPECT_EQ(test, cros_kunit_ec_pkt_xfer_mock_called, 2);
- }
- 
-+static void cros_ec_proto_test_cmd_xfer_in_progress_return0(struct kunit *test)
-+{
-+	struct cros_ec_proto_test_priv *priv = test->priv;
-+	struct cros_ec_device *ec_dev = &priv->ec_dev;
-+	struct ec_xfer_mock *mock;
-+	int ret;
-+	struct cros_ec_command msg;
-+
-+	memset(&msg, 0, sizeof(msg));
-+
-+	ec_dev->pkt_xfer = cros_kunit_ec_pkt_xfer_mock;
-+
-+	/* For the first host command to return EC_RES_IN_PROGRESS. */
-+	{
-+		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_IN_PROGRESS, 0);
-+		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-+	}
-+
-+	/* For EC_CMD_GET_COMMS_STATUS. */
-+	{
-+		mock = cros_kunit_ec_xfer_mock_add(test, 0);
-+		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-+	}
-+
-+	ret = cros_ec_cmd_xfer(ec_dev, &msg);
-+	KUNIT_EXPECT_EQ(test, ret, -EPROTO);
-+
-+	KUNIT_EXPECT_EQ(test, cros_kunit_ec_pkt_xfer_mock_called, 2);
-+}
-+
- static void cros_ec_proto_test_release(struct device *dev)
- {
- }
-@@ -2013,6 +2043,7 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
- 	KUNIT_CASE(cros_ec_proto_test_cmd_xfer_in_progress_retries_status_processing),
- 	KUNIT_CASE(cros_ec_proto_test_cmd_xfer_in_progress_xfer_error),
- 	KUNIT_CASE(cros_ec_proto_test_cmd_xfer_in_progress_return_error),
-+	KUNIT_CASE(cros_ec_proto_test_cmd_xfer_in_progress_return0),
- 	{}
- };
- 
--- 
-2.37.0.rc0.161.g10f37bed90-goog
-
+Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
