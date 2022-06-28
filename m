@@ -2,144 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AED59CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 417A2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbiF1Ukx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 16:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57094 "EHLO
+        id S230073AbiF1UpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 16:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230409AbiF1Ukv (ORCPT
+        with ESMTP id S229626AbiF1UpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 16:40:51 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC982248D2
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:40:45 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id y10-20020a9d634a000000b006167f7ce0c5so10632059otk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:40:45 -0700 (PDT)
+        Tue, 28 Jun 2022 16:45:03 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F133C2657D
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:45:01 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id c6-20020a17090abf0600b001eee794a478so6458723pjs.1
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:45:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=g7DzDcGO0C//Tm2mK6aKPbRwKZWmv3UtbhY+R8SWnp0=;
-        b=KWNEvpPfmo2SmKf5bhaztGdiQA6tvFbLTUxtrhK6rIjkzfNXr0keJwbndIKL9tV+kc
-         GJvLAH4zZhqCxZY5XcSqSB007mXJECoqbN7dcQdel3VfCXDBC+smGP7zRPJ+jnJwH0lC
-         EKUm1ID9cMqQTYUrXSF130ZWwW3VemS6uvCCk=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=klHwOIrGUdoErqjay96x3dFn9GkD+dj20qf/FYcK12c=;
+        b=X1i5WzweIaOt4XY1kmRXEbKZUdnuCT+fLaExkoVCRnE3JAsx/bTF0pDmO2QTDtm8Fw
+         A5+awOokJJ59Cmj/cp0AOFgthP2Uyl5ZBd90AcTwerYAX+tnuYJZi+5iW2WVqxVUHUKu
+         9lYxUaOFtveWIpTFFupPy07e0u15Jhpf+6A22ZzQ3VWy4iTaXdFxbTLLBMOkY7VfEVcl
+         uNdwGBa6P0p6k31C9gp0jqSHZ2SsTHspthrB5+WmguUodkpRMeaplWfelsjlypPqdVY5
+         UEPfPh3kE6PLyKNtF3hcx75UlE1306/bY+L+2+zCgDFOPp8OvQveDB7cvYRLWGRXD6s7
+         +Dyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=g7DzDcGO0C//Tm2mK6aKPbRwKZWmv3UtbhY+R8SWnp0=;
-        b=VSCAM8kohrkk9Gjn+kuBnL7eP1IpEE/cHMmPx0euhcKX8HWibh0qGtVb1BjIve7NJ9
-         I6gMIf9TitTnj6rUli9OnAvrFeE16fsFDFa8nVtWLeNn7vmMUpVdJwBrz++J8WFA72V1
-         9+nCS7HiLUm2JLqFM8VeuattzRqXIgrNe26Rktzmc2X4mUEhMpYF73ehdsEPqnUi8oqd
-         DOPH6efM3oAolum3kE70aXKpTLNj7hatF4kj91kJ78yxFyUm2mPzURCHZcMMkty3xPP8
-         H30gIGME2KVP5GuUM2AZUKNqatvKCAbN/1yk67dYpwZ6gxKUUUxpcU3d8RwyanupqDF5
-         V8eg==
-X-Gm-Message-State: AJIora/fHQjkNkxdYHo4eWqgm70gza30h8kwKaB8qU9Fbj4xRoUiRNLY
-        WaJfeYjfqDfn4LfBDKqHKoAqrODRwzxmsJGkSE1D5xgjwKU=
-X-Google-Smtp-Source: AGRyM1tGIqN+N5fxU26uQPwuhb/+Q+PPDxiV9zB3lkXobvidTtjy4ULjamLp4gDIpHvSTR5pfmD19QEOr8obxLOLWwA=
-X-Received: by 2002:a9d:6484:0:b0:60b:eb0b:4054 with SMTP id
- g4-20020a9d6484000000b0060beb0b4054mr9324278otl.159.1656448844842; Tue, 28
- Jun 2022 13:40:44 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 28 Jun 2022 15:40:44 -0500
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=klHwOIrGUdoErqjay96x3dFn9GkD+dj20qf/FYcK12c=;
+        b=Kr8jxJNQcASSL7h+3TWVXg7w2Nr2clr+PZ++pPFAfr8RZE/+yXTc0JWZxEeERrCBED
+         nyTcIjSaNz6UKYtqT9z7MPdvir9viHswFKijL5PKASgES6YyvIfzJy0kneYM8Yup9YVi
+         YDPZgO6IA1tTHoopoT1QXDvnkhRe5FJqqCNacpGcrWXCNSkSaO6zLXS7LjalgX0v/L3B
+         D2y+rsdu7kkuKn+83lK8Z/F37V5Yd+W9Tr3eateRKICEeSbDPjuDLs96Pudt9BDXqSxo
+         6WEnYPYv/abiUD7jjzEIMKqvSJB7+jdsevGQuaPDmJTuQnIp81Iw8PCsq8PQCXy+Yuzz
+         NKTw==
+X-Gm-Message-State: AJIora9xVt9VINkt0eXaiUDJFMYuBK4MhRwtaOH6evWUXw8nhcEB5vuh
+        vGIb3VctpHJM2/Ckre0B6X5x2m6hHDE=
+X-Google-Smtp-Source: AGRyM1thlfN+vY8bV/1O836jKS536CGQUOb+TlJKrsUHmr0aLtbqVvyJN8rXzGMMSYz/3jZsbw1VXw==
+X-Received: by 2002:a17:902:ac90:b0:16a:1c0d:b586 with SMTP id h16-20020a170902ac9000b0016a1c0db586mr6790829plr.155.1656449101406;
+        Tue, 28 Jun 2022 13:45:01 -0700 (PDT)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id 8-20020aa79208000000b0050dc76281e0sm5578951pfo.186.2022.06.28.13.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 13:45:01 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 05:44:59 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, openrisc@lists.librecores.org
+Subject: Re: [PATCH] wireguard: selftests: support OpenRISC
+Message-ID: <YrtoS7ZUnKUg8Soz@antec>
+References: <20220628000210.763674-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-In-Reply-To: <CACeCKafR8hFke_tc2=1VGDNF-CFrZoAG1aUKuxGJG-6pd37hbg@mail.gmail.com>
-References: <20220622173605.1168416-1-pmalani@chromium.org>
- <20220622173605.1168416-6-pmalani@chromium.org> <CAE-0n517BB8YbN5AZG6M3ZrZGOJDV=+t0R9d8wD+gVqO1aD1Xg@mail.gmail.com>
- <CACeCKafR8hFke_tc2=1VGDNF-CFrZoAG1aUKuxGJG-6pd37hbg@mail.gmail.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Tue, 28 Jun 2022 15:40:44 -0500
-Message-ID: <CAE-0n50XbO5Wu4-429Ao05A4QrbSXoi1wBjTpGFjKm3pZj1Ybg@mail.gmail.com>
-Subject: Re: [PATCH v5 5/9] drm/bridge: anx7625: Add typec_mux_set callback function
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Pin-Yen Lin <treapking@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
-        <nfraprado@collabora.com>, Allen Chen <allen.chen@ite.com.tw>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220628000210.763674-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Prashant Malani (2022-06-28 12:48:11)
-> On Tue, Jun 28, 2022 at 12:25 PM Stephen Boyd <swboyd@chromium.org> wrote:
-> >
-> > Quoting Prashant Malani (2022-06-22 10:34:34)
-> > > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > > index bd21f159b973..5992fc8beeeb 100644
-> > > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-[..]
-> > > +
-> > > +       if (ctx->num_typec_switches == 1)
-> >
-> > How do we handle the case where the usb-c-connector is directly
-> > connected to the RX1/TX1 and RX2/TX2 pins? This device would be an
-> > orientation (normal/reverse) and mode switch (usb/dp) in that scenario,
-> > but this code is written in a way that the orientation switch isn't
-> > going to flip the crosspoint switch for the different pin assignments.
->
-> If all 4 SS lanes are connected to 1 usb-c-connector; there would be
-> just 1 "typec-switch" node.
-> In that case, the DT would only specify it as an "orientation-switch"
-> and register
-> an orientation-switch with the Type-C framework. The orientation switch would
-> pretty much do what the mode-switch callback does here (configuring
-> the crosspoint
-> switch).
-> One could also register a "mode-switch" there but it wouldn't do
-> anything (all 4 lanes are already
-> connected so there is nothing to re-route in the crosspoint switch).
-> Hence the above "if" check.
+On Tue, Jun 28, 2022 at 02:02:10AM +0200, Jason A. Donenfeld wrote:
+> Stafford and I have been using this to shake out OpenRISC bugs, and it's
+> been a great help, so it's time OpenRISC support for the WireGuard test
+> suite is made into a proper commit. The QEMU changes necessary for this
+> to work should also be around the corner now, and they seem some what
+> stationary in their interface too.
+> 
+> Cc: Stafford Horne <shorne@gmail.com>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Would we still want to route the DP traffic out if the pin assignment
-didn't have DP? Does the hardware support some mode where the DP traffic
-is shutdown? Or maybe the HPD pin needs to be quieted unless DP is
-assigned?
+Hello,
 
-I suppose none of those things matter though as long as there is some
-typec switch registered here so that the driver can be informed of the
-pin assignment. Is it right that the "mode-switch" property is only
-required in DT if this device is going to control the mode of the
-connector, i.e. USB+DP, or just DP? Where this device can't do that
-because it doesn't support only DP.
+I am not sure what happened to my reply on this yesterday, but I did have this
+queued for 5.19 fixes.  However, as we just discussed there are still some soft
+lockup issues that cause 'rcu: INFO: rcu_preempt detected stalls' noise.
 
->
-> Unfortunately, I don't have hardware which connects all 4 SS lanes
-> from 1 Type-C port
-> to the anx7625, so I didn't add the orientation switch handling to the
-> driver (since I have no way of verifying it).
+I will hold off sending this upstream for now.
 
-Alright. Maybe add a TODO then so it's more obvious that orientation
-isn't handled.
+Example isssues:
+ - https://א.cc/x3Vt402T
+ - https://xn--4db.cc/bKiNzmFE
 
->
-> Regarding DP alt-mode pin assignments : I think anx7625 will only support Pin D
-> (only 2 lane DP, no 4 lane DP).
->
-
-Makes sense. Thanks!
+-Stafford
