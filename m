@@ -2,67 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65245C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 01:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F1FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 01:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242712AbiF1BBA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 21:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
+        id S242812AbiF1BDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 21:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242638AbiF1BAt (ORCPT
+        with ESMTP id S242854AbiF1BCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 21:00:49 -0400
+        Mon, 27 Jun 2022 21:02:34 -0400
 Received: from sonic316-27.consmr.mail.ne1.yahoo.com (sonic316-27.consmr.mail.ne1.yahoo.com [66.163.187.153])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A1E22B0F
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 18:00:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1656378046; bh=+QAFuIueFFODNFCIp51vXXsF16uaRjSDQ9f4wbnX1/Y=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=NsyTbaEAp67PjdMh+i04Uy8c68uB3vm9Uuo61kVmui1SSdWoGTsCSxf6aEgMWP61eJ3jyIMEUpzcjpxGk0QTxoRTSWji50OBKNt+K9n7cJ8pkdPjpw1MXooDmfKMVgqK/2aUyCMC3l2itI1PjO7A47kciMWCo9XxyZwtJBBek+31RVhwxFJ7cU+vl8DjHU3eAmO2jYukgFb610+wxGhjDDKvVnYv4RAjkLBtuAd2h5BcrONmUAnp/BXYEaCx+CcJHRzXRA851PqHxQSqw8l4TuduyZhP4j3+rf9b8eqA5kp8PXyKbxcCB59BxlqU1mGu1Lppp2ETB39n6fAWqpSNjg==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1656378046; bh=bquD8fiVhrpPKojfjzVDPS7dI2DuWubLptqP3gwsz3+=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=XxrV0nr9qW2acFNAfgpCP1tLdOTcj834eo4hCFThPQWA1cmidyCtaEGb+jKQbEs/HlZioD6VrYErsHnZrJEEyFpZ35nz1h/JrWGn4gcfbLe1M9aeWdjDUt/3PKT3ZSTAWpOPMzRS957o58+FAzpOuhca+0xESFCeNQGNBzLUrIE3stR7MrUv8HQasJzJnhcfhUXRlEBKYMwpGNX6D/+d1Q9TyvIj1BQ4OluCY0QFmwHirAo6ldYlnU6L6SEVjmNQB6F4kcXHS3BXKKPdUOyzxTMAbeKjIwEmn/4UwCf/bPA/Yo7BTz7zAr4g85eby2iR3bdWxT9WXykb/SNLwuZiwQ==
-X-YMail-OSG: aHyCj6gVM1nnfNMIW5n5ndOy0qFRTs8ohyE5BIpltz.XCrqSedpIRx7k7qmS7.e
- 7t.kQEeMV8EDxhibTIWy6MsMY_q5.gyOU3rBqy2mOna8Dtj50P3ImeclEdHnzImm0gw7FvZojiiY
- YfAjSQNuBF5dD2vEZnwt8KUoDiOvp4aCNCJpiKVtxLMOTd.f.FV6LNcS.teSdAh72yMP0xq7bRNy
- uG3wEpUy_RLRaAKn8PFyHxX9hMY_Nu18quG0zmTY7DjDsNaZ7A6abr5YZ8KCe1EuwQ.yFeHrkFjG
- 49Lm7VRV8r2WTavnULqu6eRO7Co4IU0FFC8MZ1ITugNZIQYoRgke.c7lzJOPOW8fvDjtMtzNH41b
- A.MSHr0y7KZ1rMz_XDCkTFeKGsvhIdXVk6tH7M1J3kev0h2E7DYh_7ZJi9wxWxrN_YyLGik6b22T
- FD9oExF_V_rJGLhdGtkOBrUs26kSYckrFLgduYpwOwWL6Hi6XLKfoVk6u1bPfa0melLnB.loyoIy
- y8NL3RWIqXYm2AY.HUOgkbjhqsj95Ejzlns2p_rcQNtXu.TsExxqdFsiTy8C.kEo9qOZ.FdjRX.P
- M_qkEYigYZozskcLjSkgdudGdik2o_zCv7LR29iF.nIZ0FVDNEChSXk07Lvrc6TimJNodf.XZ7NU
- xHNBPIzRjBB31cYjbOvXTwAWX7LATtR2nyhfpLjJWsEZ1n8caCmyoc1UexGwvh2QOiQgmsibqQcA
- SuXuV22rlBFYWP_kJABgZ32ygvmQnQMO.4HKnFc34HO6CNADyhDBXRgfNbsCIdM0kzH0sNfPmsoC
- D1vuhlhfOYofpkiSPKMcQ3Kn6PRqry6nBcXZzet77mXq6ADzYmXIlye03ZFBBHkPYGR4FyOjF3nq
- OuuPuZjVjlu_2sxq1rOaZ_Mf2MhyKuKe6mDSpDNlIJhL9nrCSGxlJ63m1qwShiCvUnlWraZmljvj
- XSAtILeae9J_r8oVs4LbL3TQOu.sbednYGflZMWNBOm36ZrJcQFUPDxTxS.uE7aIu9G2fBIPgVQu
- 4IKeWzBkgdjiZiZwPABs8miko5mcqe2ELhVoENSukMQnylH5hUrmuG4.eJwzHmqhX43kGwKHzEaA
- fr3RmwjyDl8XfzkAPD5Z5.2zJdyjdCKcx_TWK.5P_XMS_5OLm8T0Rphk_FWDB5ss52Is0aPXmdeP
- OWeEX8Ph4_5dFQ__wQ2MkJI0jHrF8bz2MSC5Fxk7PdytpubezjB7xP1nmSWs1F31pud3fy0Yr4s3
- GCDcY4EhIeobRor6t0SQoSlWox9HorhTNhpEGtqiUqiwqapb8_kkIY.OsBGu74LzS6bARYID3kIn
- 8rha2irtxsle2YWg8GGJv8Z.KWoZpD2q9_geOWgoHTqfYlNUKxSHZswTfqzJSbqi_eiKMbbAy6NZ
- YG0Sd24uORAY5g7DcVcHMgZVN2YA7GSBdal5LTQsNT7fFSXRvYikmh.ifT5jPSTUlqPvM.wc3HVO
- 5e_ES23zFcRd07bEo0v7Mk3BS5_uLYyA1CKMqtQwkstTtmT98e82.wk2LMc9.DZ.TS95Q9cyAfR.
- ZpyP3NJTiuP8hJ9c9cthKM3owTMzo4jlMX3ZiGS2Lgkt5FIGJxV0bmL_k08TU1Dn_tt6yEY3COC4
- zq.teNzNAkVHr_6f8IIr.CszzF_YG8jQ_YTySqc8CyfL2ZdQKJ1Cvc94dyK6FS_BbZHLP_2T2Ava
- r4BieLE72pUR.nARVbVOMLKxKu4aCrCx3rI0xaI5DMqDUdqLl7KC2xbj_snY0CZ1q.uLd82OGNPW
- Owj5ZPtdgDFmkr7_lvODbYeJT2EjcIxkOxcwn.qgzfUVpGBrK_DxTp1bx1LoDnoiDmdnUJNzq_28
- OK2TN0bGdLWTMe6Zb8_2Xdgkhk65oHC99az18wnZdUEymoeZ59EbxTDgtj.hrvguPTek5j6RienL
- 8cX5Y4d9kcthk7DGc3_BoKbrseqoDYNcAQ7cXHuYUcxq60d4A4IFe3LDO7LOvDPdgxuKp0gpeLlt
- G8nGapE1ZbBopTNvS54C_zVGOiJDaejehADlDrPoLoEbcZXGDF20d9ERk6c_lgjIstlT4L32ExXK
- aduB9WbYV5jvSYQ63QJs1wluPq8FmuHljkwtjVJQ3UzU1ChLfqWHCNMV8MlS8Zp.ILvKi_Sxgyin
- V2qDf8_i7wSHYmehqfp208YKMYlH7_c10452P3JH86AAdKaKCVpLji6zPwlf2mG7QBgxzPWfhHhy
- IQJGtcsOE7LxfeecSY.M9uxO5FS0NnjgE523Q.KH_1v3BZ4l.IirgmPe4tiLLODEF3R1u5LMWY1e
- PaDaiQsU-
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C861E22B2A
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 18:02:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1656378151; bh=z3jiL2tCAI8K9XeufR5jyTcN598SmLsZZztorcUuBNM=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=XIUprzOOn613dOmiS1XbrYT4yPlc6d55MhS5QawvlPhdb4CoW5J06pi2WPHJHVwTyGZdR50J7qT5hgA/2VAQ6ZdgfZQWTTFItITg1QK5iywfcJNCAJOZ1t/krOXN1hTJGoVgjS+0KhA9zM0eTxI5XkWaiVVPWA4sthY1c0/dR61a33YWWT16FRZRTq29x5eITTADTr3YC4E4PVIzFiC0gxvSEGZMZoXAfC8YqMAGn53V9P9EqHMiXd65Msxf06fbBl7jkbtk3aLgM447/w2iQb8xBTYmcR4okVRXVH0VXADk7eYnwdQbB/qvVu9J2SQuAv/U2pCePhf1YGQQEYvudA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1656378151; bh=NNZ8jDM4uDDZqf6115zwAN06m2X+w/j043teU3HyfDP=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=cJm2kcoyOEhHvzjH6mAsyAYE7ar/ZswJXp6ZkW/t+OIDk06L2SggO4AYLORlTMmHvskNTMQUXjfh/DlcBY9RRobuQ2hvnIt1GEjXkof78kQzLstidJdU5taGFnBrMmP0v4SJInGNXhoN9FZm3KDG5NmbLgg0aiOSFKH+rJidQEVYbwETSxKhmJXdNn3QhLU55GAzxI/8jRIZfsKlVc9iynT0GPfr7r/HK3NHaZ+qcsVgi4up7T/mlE0UiuxMNfjocMe48VoU9eWk+NqMoZU0Xcwh5ZVI7a9tFa1Cn8vevc7vPEncUtzNL9PL6dViyDqGMDz+E2IwOvOOuNlQLbop1g==
+X-YMail-OSG: 6AvIDGcVM1kGIjMnTaPeAbSRNjUbhRHB0lUa7MF.sbYvlB45vlC6b0F5oyMxRtu
+ 6gujOHQPCcfKq1Qf0B72_ZucWzWi.48cI69nuG.6LuZ9TOiVzSMIXgdbKnV2wVCNRgT8Br_2.GoV
+ giuODmTQMjGksOTQgK2AxhhrB9e5Qhj9aAr_GbDbqnTDB3LR9xzMRuj3WHFPicgJYfO7v8NaW5gf
+ zMCmZWEioDf0FJimiUBAdKhex2SWvJK7LWRa.qM5IGst8OSvwsUh.zbE5gv8pmXYN22niYvIFQ4.
+ cxX45dpPpRwNeVGoo0lzDXGoDdm4zMexhhHwV02SwgtyJOa6pp0WOyoKbMB5Gt4jqAstGIEUeVij
+ 6yCw9TwTSmxuLnABOj_.25PAn8X.dvHmocGDbK.12fqGaF9Szf.63hDea5.to9P2m8VS94P.BkjF
+ aDJAid.jmOAUjrgDCztCXCk.ykemTpKQHJ5IoBY46kYu9J2LnX1m02VkgGtUuSPKAcHr4OYOEq5u
+ yNv.RjpSV2QoSUSSy20ZLhwAEo8.iegZ6odZ4X_qzPOq_sqgRW9INhhIZKBnuHSoaGFc2XfBK9Qp
+ QTBHe0t22iHcQn6KhzawX8tvEODfUI8C5lCw2A88DUL4GIEDy6Sh9HjWUy7crqzrAfSCU0YVIizj
+ SlWSvUmgAD8SS8.o76UPuKFbUo9wl0rITZNI5e15l7tQY74J6IfPHFBuD4mtLt0asTdYRwSrFwfJ
+ iLdhyhQjhoTZDFBotbunksFe3pigpmUahDTVXZ4u82h.r8tOB282cIYWI0klcN8Ws9YkPWklpu8U
+ fHqkoVLksOosTEwz5nYe1u6aU40h0o2kFpdrGrrfcMWnhk6fHd6WFMwufKo.3n1xNyNlCShFavmc
+ 3LUF.klGnEuD74kZl6nC7OPFoUv73RsOILQX4gbi2tkPwr.mjDFsjne2qKvOn55Xkve9_RnDJUGs
+ MFWbBkw4pn9odrZGnTFbkxIZaN1p_h4.s_PTlKvOekqPvPs.aUkFRk1ENPGrEwRWlj4lp.Yu6m_p
+ MOua9gilxjMynHGV9sU.fXzT837SL1i2E3J_YD1H.fHQ6RfILTUQgx0apgxCwZ0KC2qkwRjpJ2Zl
+ bcYQDk4eM.ebwA5BElA630Trvj5Ucbzl5ifvHoycaEPP6Dex23GhxV6G5Plt17J1yXmnNmV9vo7T
+ rkEH7qasEHRyLxxKF3CJSLuMEVMXN5JP7PKUWnqF2Tk2Z.5.El6upeOuq9minSpCzqGy4gF1a7iW
+ HTMY6kbbLFj7O9oDw0uOPMqfMMjdgw0.pVbGdFp8QU9nBIuPoJiCSe1t2oYPk_oUxTxhd6yDlJH.
+ bFQFhtZlcp1DjgzlWHil40uG8TUOGe9sECTMDwsdEBn2eu4AhpMFNKmUSjTKEbpJCh1oz70ZHDSB
+ uGApgIfiPYKy1V7buBUFkyAMLhj8LVgeByd25ZZf7oM3AUDbCqy4e8ivxgD9VUm6HdXDaOlfET.B
+ 2RU1fvxmZ2bq2rCjmwZPQB2SokdsBkLZHdPR._.B5kF8FDN53bP_qq34gxMmo_qAbvypyNdbFuKZ
+ BYjkiShaUBH2rrT56eb3o24E78CiqI7sZQznxLlHIF4LklxUpPncpFM4bWxhD_QZalR0ChHfzOZt
+ hcARMEsjRmJ8gtgSdPBVBDa3XZmGVhhFk6LId1aB_4GF7_Y4KkkED49MB6zMdXrjoeSppUA2fLre
+ RTytQ8E2jbyczVWBBgCKINIrxXOzzhUXXeGkYVxhMiWwJ5DIiCqVqN04hCg0lU.m_o6wN9PCWUAL
+ E5KviX5dG1sITPnz8WV27h8zWy_lNTBKbzX0vHNXt4xKMccbAq25fkhZaXK_B4.exQ1gBNC9hMXQ
+ FuDQ.3lxy56rqSc8cgrpRndv2nVPl2cwTKP8AVrGXin14pg30dVXWYpXPOtHW5TnoZrT884O1Rqh
+ RhUWdefwyyOdVbat_Z0obfQju7Uuq9rnfdt5ADnqFvy0__LdxoUL1IR64O.cgz9xERBeeBfhaq5H
+ ZpOxXSeHK5HtbMqhTgsoGFunEngAi5VjQDFdlniMZEuZ9DCVt0LrBz31hzTBK_sTZujuyU8zR6TN
+ yozckMq1TVeOwJS.KqcjiehH.nHpxXJmSPhOWuHivdZuAWUlf3bvFsjhu7qgZBQwEFDgboyB81l2
+ lZnj.w9JCHFw.PGvp36CAadNixwU76TOffauHQcVwrwQypHGiDiJ7hl3PyyDjNKbig4U5ruTPQ5w
+ Q27rUC7vIsLkZmJH_AAJNVCs3M_rDqTeseAZVajD7S53AtDpN.4pdG.3ZbkGNGHpcAVdDj7uWum2
+ qicBMEKiR.4mIzN5mBRIyWdu8kGjKrkH9S9j_74vreI9VXEPSskqF2DXLdc4A1Fs-
 X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Tue, 28 Jun 2022 01:00:46 +0000
-Received: by hermes--production-bf1-7f5f59bd5b-wjb4g (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 2eb209f35c81771290ca3d956ba58232;
-          Tue, 28 Jun 2022 01:00:43 +0000 (UTC)
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Tue, 28 Jun 2022 01:02:31 +0000
+Received: by hermes--production-bf1-7f5f59bd5b-wm5tz (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID dbf52cafe43ef47006ff0c558ab03737;
+          Tue, 28 Jun 2022 01:02:23 +0000 (UTC)
 From:   Casey Schaufler <casey@schaufler-ca.com>
 To:     casey.schaufler@intel.com, jmorris@namei.org,
         linux-security-module@vger.kernel.org, selinux@vger.kernel.org
 Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
         keescook@chromium.org, john.johansen@canonical.com,
         penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v37 05/33] IMA: avoid label collisions with stacked LSMs
-Date:   Mon, 27 Jun 2022 17:55:43 -0700
-Message-Id: <20220628005611.13106-6-casey@schaufler-ca.com>
+        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: [PATCH v37 08/33] LSM: Use lsmblob in security_secctx_to_secid
+Date:   Mon, 27 Jun 2022 17:55:46 -0700
+Message-Id: <20220628005611.13106-9-casey@schaufler-ca.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628005611.13106-1-casey@schaufler-ca.com>
 References: <20220628005611.13106-1-casey@schaufler-ca.com>
@@ -72,305 +73,283 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Integrity measurement may filter on security module information
-and needs to be clear in the case of multiple active security
-modules which applies. Provide a boot option ima_rules_lsm= to
-allow the user to specify an active security module to apply
-filters to. If not specified, use the first registered module
-that supports the audit_rule_match() LSM hook. Allow the user
-to specify in the IMA policy an lsm= option to specify the
-security module to use for a particular rule.
+Change the security_secctx_to_secid interface to use a lsmblob
+structure in place of the single u32 secid in support of
+module stacking. Change its callers to do the same.
 
+The security module hook is unchanged, still passing back a secid.
+The infrastructure passes the correct entry from the lsmblob.
+
+Acked-by: Paul Moore <paul@paul-moore.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-To: Mimi Zohar <zohar@linux.ibm.com>
-To: linux-integrity@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: netfilter-devel@vger.kernel.org
+To: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- Documentation/ABI/testing/ima_policy |  8 +++-
- include/linux/security.h             | 14 +++---
- security/integrity/ima/ima_policy.c  | 70 +++++++++++++++++++++++++---
- security/security.c                  | 35 +++++++++++---
- 4 files changed, 108 insertions(+), 19 deletions(-)
+ include/linux/security.h          | 26 ++++++++++++++++++--
+ kernel/cred.c                     |  4 +---
+ net/netfilter/nft_meta.c          | 10 ++++----
+ net/netfilter/xt_SECMARK.c        |  7 +++++-
+ net/netlabel/netlabel_unlabeled.c | 23 +++++++++++-------
+ security/security.c               | 40 ++++++++++++++++++++++++++-----
+ 6 files changed, 85 insertions(+), 25 deletions(-)
 
-diff --git a/Documentation/ABI/testing/ima_policy b/Documentation/ABI/testing/ima_policy
-index db17fc8a0c9f..bac75acc24ba 100644
---- a/Documentation/ABI/testing/ima_policy
-+++ b/Documentation/ABI/testing/ima_policy
-@@ -26,7 +26,7 @@ Description:
- 				[uid=] [euid=] [gid=] [egid=]
- 				[fowner=] [fgroup=]]
- 			lsm:	[[subj_user=] [subj_role=] [subj_type=]
--				 [obj_user=] [obj_role=] [obj_type=]]
-+				 [obj_user=] [obj_role=] [obj_type=] [lsm=]]
- 			option:	[digest_type=] [template=] [permit_directio]
- 				[appraise_type=] [appraise_flag=]
- 				[appraise_algos=] [keyrings=]
-@@ -138,6 +138,12 @@ Description:
- 
- 			measure subj_user=_ func=FILE_CHECK mask=MAY_READ
- 
-+		It is possible to explicitly specify which security
-+		module a rule applies to using lsm=.  If the security
-+		module specified is not active on the system the rule
-+		will be rejected.  If lsm= is not specified the first
-+		security module registered on the system will be assumed.
-+
- 		Example of measure rules using alternate PCRs::
- 
- 			measure func=KEXEC_KERNEL_CHECK pcr=4
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 5b7a21237fea..5b0b2a596cee 100644
+index 823880ba613e..8e09302bded7 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -1987,25 +1987,27 @@ static inline void security_audit_rule_free(struct audit_lsm_rules *lsmrules)
- #endif /* CONFIG_AUDIT */
+@@ -201,6 +201,27 @@ static inline bool lsmblob_equal(const struct lsmblob *bloba,
+ extern int lsm_name_to_slot(char *name);
+ extern const char *lsm_slot_to_name(int slot);
  
- #if defined(CONFIG_IMA_LSM_RULES) && defined(CONFIG_SECURITY)
--int ima_filter_rule_init(u32 field, u32 op, char *rulestr, void **lsmrule);
--int ima_filter_rule_match(u32 secid, u32 field, u32 op, void *lsmrule);
--void ima_filter_rule_free(void *lsmrule);
-+int ima_filter_rule_init(u32 field, u32 op, char *rulestr, void **lsmrule,
-+			 int lsmslot);
-+int ima_filter_rule_match(u32 secid, u32 field, u32 op, void *lsmrule,
-+			  int lsmslot);
-+void ima_filter_rule_free(void *lsmrule, int lsmslot);
- 
- #else
- 
- static inline int ima_filter_rule_init(u32 field, u32 op, char *rulestr,
--					   void **lsmrule)
-+				       void **lsmrule, int lsmslot)
- {
- 	return 0;
- }
- 
- static inline int ima_filter_rule_match(u32 secid, u32 field, u32 op,
--					    void *lsmrule)
-+					void *lsmrule, int lsmslot)
- {
- 	return 0;
- }
- 
--static inline void ima_filter_rule_free(void *lsmrule)
-+static inline void ima_filter_rule_free(void *lsmrule, int lsmslot)
- { }
- 
- #endif /* defined(CONFIG_IMA_LSM_RULES) && defined(CONFIG_SECURITY) */
-diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
-index 73917413365b..b04733a5d066 100644
---- a/security/integrity/ima/ima_policy.c
-+++ b/security/integrity/ima/ima_policy.c
-@@ -93,6 +93,8 @@ struct ima_rule_entry {
- 		void *rule;	/* LSM file metadata specific */
- 		char *args_p;	/* audit value */
- 		int type;	/* audit type */
-+		int rules_lsm;	/* which LSM rule applies to */
-+		bool lsm_specific;	/* true if lsm is specified */
- 	} lsm[MAX_LSM_RULES];
- 	char *fsname;
- 	struct ima_rule_opt_list *keyrings; /* Measure keys added to these keyrings */
-@@ -285,6 +287,30 @@ static int __init default_appraise_policy_setup(char *str)
- }
- __setup("ima_appraise_tcb", default_appraise_policy_setup);
- 
-+static int default_rules_lsm __ro_after_init = LSMBLOB_INVALID;
-+
-+static int __init ima_rules_lsm_init(char *str)
++/**
++ * lsmblob_value - find the first non-zero value in an lsmblob structure.
++ * @blob: Pointer to the data
++ *
++ * This needs to be used with extreme caution, as the cases where
++ * it is appropriate are rare.
++ *
++ * Return the first secid value set in the lsmblob.
++ * There should only be one.
++ */
++static inline u32 lsmblob_value(const struct lsmblob *blob)
 +{
-+	const char *oldstr;
-+	int newdrl;
-+
-+	newdrl = lsm_name_to_slot(str);
-+	if (newdrl >= 0) {
-+		default_rules_lsm = newdrl;
-+		return 1;
-+	}
-+
-+	oldstr = lsm_slot_to_name(default_rules_lsm);
-+	if (oldstr) {
-+		pr_err("default ima rule lsm \"%s\" not registered, continue using \"%s\"",
-+		str, oldstr);
-+		return 1;
-+	}
-+
-+	return 1;
-+}
-+__setup("ima_rules_lsm=", ima_rules_lsm_init);
-+
- static struct ima_rule_opt_list *ima_alloc_rule_opt_list(const substring_t *src)
- {
- 	struct ima_rule_opt_list *opt_list;
-@@ -356,7 +382,8 @@ static void ima_lsm_free_rule(struct ima_rule_entry *entry)
- 	int i;
- 
- 	for (i = 0; i < MAX_LSM_RULES; i++) {
--		ima_filter_rule_free(entry->lsm[i].rule);
-+		ima_filter_rule_free(entry->lsm[i].rule,
-+				     entry->lsm[i].rules_lsm);
- 		kfree(entry->lsm[i].args_p);
- 	}
- }
-@@ -407,7 +434,8 @@ static struct ima_rule_entry *ima_lsm_copy_rule(struct ima_rule_entry *entry)
- 
- 		ima_filter_rule_init(nentry->lsm[i].type, Audit_equal,
- 				     nentry->lsm[i].args_p,
--				     &nentry->lsm[i].rule);
-+				     &nentry->lsm[i].rule,
-+				     entry->lsm[i].rules_lsm);
- 		if (!nentry->lsm[i].rule)
- 			pr_warn("rule for LSM \'%s\' is undefined\n",
- 				nentry->lsm[i].args_p);
-@@ -623,14 +651,16 @@ static bool ima_match_rules(struct ima_rule_entry *rule,
- 			security_inode_getsecid(inode, &osid);
- 			rc = ima_filter_rule_match(osid, rule->lsm[i].type,
- 						   Audit_equal,
--						   rule->lsm[i].rule);
-+						   rule->lsm[i].rule,
-+						   rule->lsm[i].rules_lsm);
- 			break;
- 		case LSM_SUBJ_USER:
- 		case LSM_SUBJ_ROLE:
- 		case LSM_SUBJ_TYPE:
- 			rc = ima_filter_rule_match(secid, rule->lsm[i].type,
- 						   Audit_equal,
--						   rule->lsm[i].rule);
-+						   rule->lsm[i].rule,
-+						   rule->lsm[i].rules_lsm);
- 			break;
- 		default:
- 			break;
-@@ -1026,7 +1056,7 @@ enum policy_opt {
- 	Opt_digest_type,
- 	Opt_appraise_type, Opt_appraise_flag, Opt_appraise_algos,
- 	Opt_permit_directio, Opt_pcr, Opt_template, Opt_keyrings,
--	Opt_label, Opt_err
-+	Opt_lsm, Opt_label, Opt_err
- };
- 
- static const match_table_t policy_tokens = {
-@@ -1074,6 +1104,7 @@ static const match_table_t policy_tokens = {
- 	{Opt_pcr, "pcr=%s"},
- 	{Opt_template, "template=%s"},
- 	{Opt_keyrings, "keyrings=%s"},
-+	{Opt_lsm, "lsm=%s"},
- 	{Opt_label, "label=%s"},
- 	{Opt_err, NULL}
- };
-@@ -1093,7 +1124,8 @@ static int ima_lsm_rule_init(struct ima_rule_entry *entry,
- 	entry->lsm[lsm_rule].type = audit_type;
- 	result = ima_filter_rule_init(entry->lsm[lsm_rule].type, Audit_equal,
- 				      entry->lsm[lsm_rule].args_p,
--				      &entry->lsm[lsm_rule].rule);
-+				      &entry->lsm[lsm_rule].rule,
-+				      entry->lsm[lsm_rule].rules_lsm);
- 	if (!entry->lsm[lsm_rule].rule) {
- 		pr_warn("rule for LSM \'%s\' is undefined\n",
- 			entry->lsm[lsm_rule].args_p);
-@@ -1833,6 +1865,23 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
- 						 &(template_desc->num_fields));
- 			entry->template = template_desc;
- 			break;
-+		case Opt_lsm: {
-+			int i;
-+
-+			result = lsm_name_to_slot(args[0].from);
-+			if (result < 0) {
-+				for (i = 0; i < MAX_LSM_RULES; i++)
-+					entry->lsm[i].args_p = NULL;
-+				result = -EINVAL;
-+				break;
-+			}
-+			for (i = 0; i < MAX_LSM_RULES; i++) {
-+				entry->lsm[i].rules_lsm = result;
-+				entry->lsm[i].lsm_specific = true;
-+			}
-+			result = 0;
-+			break;
-+			}
- 		case Opt_err:
- 			ima_log_string(ab, "UNKNOWN", p);
- 			result = -EINVAL;
-@@ -1878,6 +1927,7 @@ ssize_t ima_parse_add_rule(char *rule)
- 	struct ima_rule_entry *entry;
- 	ssize_t result, len;
- 	int audit_info = 0;
 +	int i;
- 
- 	p = strsep(&rule, "\n");
- 	len = strlen(p) + 1;
-@@ -1895,6 +1945,11 @@ ssize_t ima_parse_add_rule(char *rule)
- 
- 	INIT_LIST_HEAD(&entry->list);
- 
-+	for (i = 0; i < MAX_LSM_RULES; i++) {
-+		entry->lsm[i].rules_lsm = default_rules_lsm;
-+		entry->lsm[i].lsm_specific = false;
-+	}
 +
- 	result = ima_parse_rule(p, entry);
- 	if (result) {
- 		ima_free_rule(entry);
-@@ -2205,6 +2260,9 @@ int ima_policy_show(struct seq_file *m, void *v)
- 					   entry->lsm[i].args_p);
- 				break;
- 			}
-+			if (entry->lsm[i].lsm_specific)
-+				seq_printf(m, pt(Opt_lsm),
-+				    lsm_slot_to_name(entry->lsm[i].rules_lsm));
- 			seq_puts(m, " ");
- 		}
++	for (i = 0; i < LSMBLOB_ENTRIES; i++)
++		if (blob->secid[i])
++			return blob->secid[i];
++
++	return 0;
++}
++
+ /* These functions are in security/commoncap.c */
+ extern int cap_capable(const struct cred *cred, struct user_namespace *ns,
+ 		       int cap, unsigned int opts);
+@@ -531,7 +552,8 @@ int security_setprocattr(const char *lsm, const char *name, void *value,
+ int security_netlink_send(struct sock *sk, struct sk_buff *skb);
+ int security_ismaclabel(const char *name);
+ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen);
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid);
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob);
+ void security_release_secctx(char *secdata, u32 seclen);
+ void security_inode_invalidate_secctx(struct inode *inode);
+ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -1386,7 +1408,7 @@ static inline int security_secid_to_secctx(u32 secid, char **secdata, u32 *secle
+ 
+ static inline int security_secctx_to_secid(const char *secdata,
+ 					   u32 seclen,
+-					   u32 *secid)
++					   struct lsmblob *blob)
+ {
+ 	return -EOPNOTSUPP;
+ }
+diff --git a/kernel/cred.c b/kernel/cred.c
+index 3925d38f49f4..adea727744f4 100644
+--- a/kernel/cred.c
++++ b/kernel/cred.c
+@@ -791,14 +791,12 @@ EXPORT_SYMBOL(set_security_override);
+ int set_security_override_from_ctx(struct cred *new, const char *secctx)
+ {
+ 	struct lsmblob blob;
+-	u32 secid;
+ 	int ret;
+ 
+-	ret = security_secctx_to_secid(secctx, strlen(secctx), &secid);
++	ret = security_secctx_to_secid(secctx, strlen(secctx), &blob);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	lsmblob_init(&blob, secid);
+ 	return set_security_override(new, &blob);
+ }
+ EXPORT_SYMBOL(set_security_override_from_ctx);
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index ac4859241e17..fc0028c9e33d 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -860,21 +860,21 @@ static const struct nla_policy nft_secmark_policy[NFTA_SECMARK_MAX + 1] = {
+ 
+ static int nft_secmark_compute_secid(struct nft_secmark *priv)
+ {
+-	u32 tmp_secid = 0;
++	struct lsmblob blob;
+ 	int err;
+ 
+-	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &tmp_secid);
++	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &blob);
+ 	if (err)
+ 		return err;
+ 
+-	if (!tmp_secid)
++	if (!lsmblob_is_set(&blob))
+ 		return -ENOENT;
+ 
+-	err = security_secmark_relabel_packet(tmp_secid);
++	err = security_secmark_relabel_packet(lsmblob_value(&blob));
+ 	if (err)
+ 		return err;
+ 
+-	priv->secid = tmp_secid;
++	priv->secid = lsmblob_value(&blob);
+ 	return 0;
+ }
+ 
+diff --git a/net/netfilter/xt_SECMARK.c b/net/netfilter/xt_SECMARK.c
+index 498a0bf6f044..87ca3a537d1c 100644
+--- a/net/netfilter/xt_SECMARK.c
++++ b/net/netfilter/xt_SECMARK.c
+@@ -42,13 +42,14 @@ secmark_tg(struct sk_buff *skb, const struct xt_secmark_target_info_v1 *info)
+ 
+ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
+ {
++	struct lsmblob blob;
+ 	int err;
+ 
+ 	info->secctx[SECMARK_SECCTX_MAX - 1] = '\0';
+ 	info->secid = 0;
+ 
+ 	err = security_secctx_to_secid(info->secctx, strlen(info->secctx),
+-				       &info->secid);
++				       &blob);
+ 	if (err) {
+ 		if (err == -EINVAL)
+ 			pr_info_ratelimited("invalid security context \'%s\'\n",
+@@ -56,6 +57,10 @@ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
+ 		return err;
  	}
+ 
++	/* xt_secmark_target_info can't be changed to use lsmblobs because
++	 * it is exposed as an API. Use lsmblob_value() to get the one
++	 * value that got set by security_secctx_to_secid(). */
++	info->secid = lsmblob_value(&blob);
+ 	if (!info->secid) {
+ 		pr_info_ratelimited("unable to map security context \'%s\'\n",
+ 				    info->secctx);
+diff --git a/net/netlabel/netlabel_unlabeled.c b/net/netlabel/netlabel_unlabeled.c
+index 8490e46359ae..f3e2cde76919 100644
+--- a/net/netlabel/netlabel_unlabeled.c
++++ b/net/netlabel/netlabel_unlabeled.c
+@@ -880,7 +880,7 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -904,13 +904,18 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* netlbl_unlhsh_add will be changed to pass a struct lsmblob *
++	 * instead of a u32 later in this patch set. security_secctx_to_secid()
++	 * will only be setting one entry in the lsmblob struct, so it is
++	 * safe to use lsmblob_value() to get that one value. */
++
+ 	return netlbl_unlhsh_add(&init_net,
+-				 dev_name, addr, mask, addr_len, secid,
+-				 &audit_info);
++				 dev_name, addr, mask, addr_len,
++				 lsmblob_value(&blob), &audit_info);
+ }
+ 
+ /**
+@@ -931,7 +936,7 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -953,13 +958,15 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* security_secctx_to_secid() will only put one secid into the lsmblob
++	 * so it's safe to use lsmblob_value() to get the secid. */
+ 	return netlbl_unlhsh_add(&init_net,
+-				 NULL, addr, mask, addr_len, secid,
+-				 &audit_info);
++				 NULL, addr, mask, addr_len,
++				 lsmblob_value(&blob), &audit_info);
+ }
+ 
+ /**
 diff --git a/security/security.c b/security/security.c
-index 37c14572501e..141922732d10 100644
+index d3b28a6b9248..08ed7acf4205 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2722,19 +2722,42 @@ int security_audit_rule_match(u32 secid, u32 field, u32 op,
-  * The integrity subsystem uses the same hooks as
-  * the audit subsystem.
-  */
--int ima_filter_rule_init(u32 field, u32 op, char *rulestr, void **lsmrule)
-+int ima_filter_rule_init(u32 field, u32 op, char *rulestr, void **lsmrule,
-+			 int lsmslot)
- {
--	return call_int_hook(audit_rule_init, 0, field, op, rulestr, lsmrule);
-+	struct security_hook_list *hp;
-+
-+	hlist_for_each_entry(hp, &security_hook_heads.audit_rule_init, list)
-+		if (hp->lsmid->slot == lsmslot)
-+			return hp->hook.audit_rule_init(field, op, rulestr,
-+							lsmrule);
-+
-+	return 0;
+@@ -2205,10 +2205,22 @@ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen)
  }
+ EXPORT_SYMBOL(security_secid_to_secctx);
  
--void ima_filter_rule_free(void *lsmrule)
-+void ima_filter_rule_free(void *lsmrule, int lsmslot)
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid)
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob)
  {
--	call_void_hook(audit_rule_free, lsmrule);
+-	*secid = 0;
+-	return call_int_hook(secctx_to_secid, 0, secdata, seclen, secid);
 +	struct security_hook_list *hp;
++	int rc;
 +
-+	hlist_for_each_entry(hp, &security_hook_heads.audit_rule_free, list) {
-+		if (hp->lsmid->slot == lsmslot) {
-+			hp->hook.audit_rule_free(lsmrule);
-+			return;
-+		}
++	lsmblob_init(blob, 0);
++	hlist_for_each_entry(hp, &security_hook_heads.secctx_to_secid, list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.secctx_to_secid(secdata, seclen,
++					      &blob->secid[hp->lsmid->slot]);
++		if (rc != 0)
++			return rc;
 +	}
- }
- 
--int ima_filter_rule_match(u32 secid, u32 field, u32 op, void *lsmrule)
-+int ima_filter_rule_match(u32 secid, u32 field, u32 op, void *lsmrule,
-+			  int lsmslot)
- {
--	return call_int_hook(audit_rule_match, 0, secid, field, op, lsmrule);
-+	struct security_hook_list *hp;
-+
-+	hlist_for_each_entry(hp, &security_hook_heads.audit_rule_match, list)
-+		if (hp->lsmid->slot == lsmslot)
-+			return hp->hook.audit_rule_match(secid, field, op,
-+							 lsmrule);
-+
 +	return 0;
  }
- #endif /* CONFIG_IMA_LSM_RULES */
+ EXPORT_SYMBOL(security_secctx_to_secid);
+ 
+@@ -2359,10 +2371,26 @@ int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
+ 				optval, optlen, len);
+ }
+ 
+-int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
++int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
++				     u32 *secid)
+ {
+-	return call_int_hook(socket_getpeersec_dgram, -ENOPROTOOPT, sock,
+-			     skb, secid);
++	struct security_hook_list *hp;
++	int rc = -ENOPROTOOPT;
++
++	/*
++	 * Only one security module should provide a real hook for
++	 * this. A stub or bypass like is used in BPF should either
++	 * (somehow) leave rc unaltered or return -ENOPROTOOPT.
++	 */
++	hlist_for_each_entry(hp, &security_hook_heads.socket_getpeersec_dgram,
++			     list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.socket_getpeersec_dgram(sock, skb, secid);
++		if (rc != -ENOPROTOOPT)
++			break;
++	}
++	return rc;
+ }
+ EXPORT_SYMBOL(security_socket_getpeersec_dgram);
  
 -- 
 2.36.1
