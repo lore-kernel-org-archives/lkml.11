@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 854A7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 861C9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243402AbiF1CTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        id S243428AbiF1CTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243340AbiF1CTG (ORCPT
+        with ESMTP id S243384AbiF1CTH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:19:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AEC237D9;
-        Mon, 27 Jun 2022 19:19:04 -0700 (PDT)
+        Mon, 27 Jun 2022 22:19:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A1C237F6;
+        Mon, 27 Jun 2022 19:19:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99CDFB81C0D;
-        Tue, 28 Jun 2022 02:19:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17A36C341CE;
-        Tue, 28 Jun 2022 02:19:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 613F5617C2;
+        Tue, 28 Jun 2022 02:19:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8991BC34115;
+        Tue, 28 Jun 2022 02:19:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382742;
-        bh=k2HAsM0l+ykreE/fJNuXcsyKeFWV2M4YiasqmrUvriE=;
+        s=k20201202; t=1656382745;
+        bh=5PvSbFxfARNIms1HUogdyCCmeKDNTtcnuleYeP753Qk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HxB2hf3tK1DeD3exhiTofPy4+D812wQWe9cM1yfEfpPFNU+UHOmsSxrtjEI8nGJZk
-         aYuS2wjuvHNL9fVUxsjUPboD8/r/60pmxN39nlHdzI0MI8L1mL6vPZoah+dmOwzOUA
-         Jv5f8IixjvMGiF7TaotWhX+avYlODD7EWxk/uslQV9tZPdzFv3VJYVjsav+J0R+Iqi
-         069eBQSHkERTFj9dcPOL4G0a6f/IeM8kJsHjx8SEG0gAiW14VwSUCsV6q7fpuaHQWj
-         bdR7k6CWaXAr9KTyeHj8ZSp6pNXb5NWuRSIk30HcC9KDxxWRa+4aBSHv/LMMpzeLL3
-         ueojVvSJnwnKw==
+        b=K4qy32ZGmRsX8JJGQn4tMJogA0rxCxH62YV6CyKtduoizcuFzoEfDgu0ukZmbg+yB
+         PKU91rRlNoebgxxv84l+DTuZJG+F6fIf/6fuftqkPT74MzlrigqNm1+JE6Tc49cBYv
+         /jU6BQ93v3uhfNl3qNCSbFD/ekB5ooflo05z6hIpC1abYRX3yt3pnFPeluJiwgOQ6P
+         IP3DmI1D/7mdMfvLb2AF3sjYNSWwGNZhsRvfNuYCsWORoTc+C+/Hm43RAmOfNS6jx7
+         WhydqvCyhEMw1fk+Zv73r5JtCKrrl91NvIAptQhMbQVi1pSuP/3DFphgJGzJQvI1FP
+         MJ0So/sIZmt4w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Maxime Ripard <maxime@cerno.tech>, Melissa Wen <mwen@igalia.com>,
         Sasha Levin <sashal@kernel.org>, emma@anholt.net,
         mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
         dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 10/53] drm/vc4: plane: Prevent async update if we don't have a dlist
-Date:   Mon, 27 Jun 2022 22:17:56 -0400
-Message-Id: <20220628021839.594423-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.18 12/53] drm/vc4: crtc: Move the BO handling out of common page-flip callback
+Date:   Mon, 27 Jun 2022 22:17:58 -0400
+Message-Id: <20220628021839.594423-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628021839.594423-1-sashal@kernel.org>
 References: <20220628021839.594423-1-sashal@kernel.org>
@@ -54,44 +54,75 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit cb468c7d84d174ab9cd638be9f5b3f1ba2b311a0 ]
+[ Upstream commit 4d12c36fb73b5c49fe2f95d06515fd9846010fd2 ]
 
-The vc4 planes are setup in hardware by creating a hardware descriptor
-in a dedicated RAM. As part of the process to setup a plane in KMS, we
-thus need to allocate some part of that dedicated RAM to store our
-descriptor there.
-
-The async update path will just reuse the descriptor already allocated
-for that plane and will modify it directly in RAM to match whatever has
-been asked for.
-
-In order to do that, it will compare the descriptor for the old plane
-state and the new plane state, will make sure they fit in the same size,
-and check that only the position or buffer address have changed.
+We'll soon introduce another completion callback source that won't need
+to use the BO reference counting, so let's move it around to create a
+function we will be able to share between both callbacks.
 
 Reviewed-by: Melissa Wen <mwen@igalia.com>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220610115149.964394-2-maxime@cerno.tech
+Link: https://lore.kernel.org/r/20220610115149.964394-11-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_plane.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/vc4/vc4_crtc.c | 34 ++++++++++++++++++++--------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
-index 920a9eefe426..ac91898f7ad5 100644
---- a/drivers/gpu/drm/vc4/vc4_plane.c
-+++ b/drivers/gpu/drm/vc4/vc4_plane.c
-@@ -1321,6 +1321,10 @@ static int vc4_plane_atomic_async_check(struct drm_plane *plane,
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index 3669d7a06439..9956db71ad46 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -796,21 +796,8 @@ vc4_async_page_flip_complete(struct vc4_async_flip_state *flip_state)
+ 	drm_crtc_vblank_put(crtc);
+ 	drm_framebuffer_put(flip_state->fb);
  
- 	old_vc4_state = to_vc4_plane_state(plane->state);
- 	new_vc4_state = to_vc4_plane_state(new_plane_state);
+-	/* Decrement the BO usecnt in order to keep the inc/dec calls balanced
+-	 * when the planes are updated through the async update path.
+-	 * FIXME: we should move to generic async-page-flip when it's
+-	 * available, so that we can get rid of this hand-made cleanup_fb()
+-	 * logic.
+-	 */
+-	if (flip_state->old_fb) {
+-		struct drm_gem_cma_object *cma_bo;
+-		struct vc4_bo *bo;
+-
+-		cma_bo = drm_fb_cma_get_gem_obj(flip_state->old_fb, 0);
+-		bo = to_vc4_bo(&cma_bo->base);
+-		vc4_bo_dec_usecnt(bo);
++	if (flip_state->old_fb)
+ 		drm_framebuffer_put(flip_state->old_fb);
+-	}
+ 
+ 	kfree(flip_state);
+ }
+@@ -819,8 +806,27 @@ static void vc4_async_page_flip_seqno_complete(struct vc4_seqno_cb *cb)
+ {
+ 	struct vc4_async_flip_state *flip_state =
+ 		container_of(cb, struct vc4_async_flip_state, cb.seqno);
++	struct vc4_bo *bo = NULL;
 +
-+	if (!new_vc4_state->hw_dlist)
-+		return -EINVAL;
++	if (flip_state->old_fb) {
++		struct drm_gem_cma_object *cma_bo =
++			drm_fb_cma_get_gem_obj(flip_state->old_fb, 0);
++		bo = to_vc4_bo(&cma_bo->base);
++	}
+ 
+ 	vc4_async_page_flip_complete(flip_state);
 +
- 	if (old_vc4_state->dlist_count != new_vc4_state->dlist_count ||
- 	    old_vc4_state->pos0_offset != new_vc4_state->pos0_offset ||
- 	    old_vc4_state->pos2_offset != new_vc4_state->pos2_offset ||
++	/*
++	 * Decrement the BO usecnt in order to keep the inc/dec
++	 * calls balanced when the planes are updated through
++	 * the async update path.
++	 *
++	 * FIXME: we should move to generic async-page-flip when
++	 * it's available, so that we can get rid of this
++	 * hand-made cleanup_fb() logic.
++	 */
++	if (bo)
++		vc4_bo_dec_usecnt(bo);
+ }
+ 
+ /* Implements async (non-vblank-synced) page flips.
 -- 
 2.35.1
 
