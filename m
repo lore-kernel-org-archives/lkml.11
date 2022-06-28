@@ -2,88 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E777C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 972E4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344026AbiF1Jpx (ORCPT
+        id S1344141AbiF1Jp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38570 "EHLO
+        Tue, 28 Jun 2022 05:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239715AbiF1Jpp (ORCPT
+        with ESMTP id S241493AbiF1Jpr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:45:45 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B39225C41
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:45:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656409545; x=1687945545;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Lo9iE3GxTeZNZVSB5e8Qr73INosN6zd+S8p+RW0/J+E=;
-  b=QJRAiVzRDx8OVvg4bu6vchPllvMh11I+6ZPTww2WSA4jMay/xb+UzcTn
-   et2TWmIaRNFM8oAjEL6TbrCqL4QRPmSrkAI8GRwmcQGwCBYKrv8ZC16yn
-   KM7b3LNsHFi95zBe6lZ0tAOlZ5/nD3WVw+CqTk5tLqbCOX1BM2wKvjpi1
-   z8XxDNcGu+xxQ/PCx8OwUSSbwaD1XwzV3D6Lwy/rEJQF/VpSAnkH1wjps
-   nDlzOZomonDu1nkIrc19WcqfzWFalK9MgjHH5K+ncXuBdwGpPERfQ/nyc
-   mV+L07cvaEIprZde5B+xqsR5yoGpimiOViaHBJNdC7FB6SsRCGVqfA9sd
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="280454568"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="280454568"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 02:45:45 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="732688577"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 02:45:44 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o67mv-000wfe-72;
-        Tue, 28 Jun 2022 12:45:41 +0300
-Date:   Tue, 28 Jun 2022 12:45:40 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 01/11] mfd: intel_soc_pmic_bxtwc: Don't shadow error
- codes in show()/store()
-Message-ID: <YrrNxEIMuYLpzCd1@smile.fi.intel.com>
-References: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
- <Yrlyw1eMFy4kd0JB@google.com>
+        Tue, 28 Jun 2022 05:45:47 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D6B25C40;
+        Tue, 28 Jun 2022 02:45:45 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LXKR36CH6z1L8hM;
+        Tue, 28 Jun 2022 17:43:27 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
+ 2022 17:45:41 +0800
+From:   Xu Qiang <xuqiang36@huawei.com>
+To:     <srini.raju@purelifi.com>, <kvalo@kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <xuqiang36@huawei.com>,
+        <rui.xiang@huawei.com>
+Subject: [PATCH -next] wifi: plfxlc: Use eth_zero_addr() to assign zero address
+Date:   Tue, 28 Jun 2022 09:39:39 +0000
+Message-ID: <20220628093939.27063-1-xuqiang36@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yrlyw1eMFy4kd0JB@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 10:05:07AM +0100, Lee Jones wrote:
-> On Thu, 16 Jun 2022, Andy Shevchenko wrote:
+Using eth_zero_addr() to assign zero address insetad of memset().
 
-...
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
+---
+ drivers/net/wireless/purelifi/plfxlc/usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > +	ret = kstrtoul(buf, 0, &bxtwc_reg_addr);
-> > +	if (ret) {
-> >  		dev_err(dev, "Invalid register address\n");
-> 
-> Is that really what failure means, on every failure?
-> 
->   "Returns 0 on success, -ERANGE on overflow and -EINVAL on parsing
->    error."
-
-As far as I can see in either case the address is invalid.
-Basically we may drop this confusing error message here, if
-this what you prefer.
-
-> > -		return -EINVAL;
-> > +		return ret;
-> >  	}
-
+diff --git a/drivers/net/wireless/purelifi/plfxlc/usb.c b/drivers/net/wireless/purelifi/plfxlc/usb.c
+index 8519cf0adfff..39e54b3787d6 100644
+--- a/drivers/net/wireless/purelifi/plfxlc/usb.c
++++ b/drivers/net/wireless/purelifi/plfxlc/usb.c
+@@ -562,7 +562,7 @@ static void sta_queue_cleanup_timer_callb(struct timer_list *t)
+ 		if (tx->station[sidx].flag & STATION_HEARTBEAT_FLAG) {
+ 			tx->station[sidx].flag ^= STATION_HEARTBEAT_FLAG;
+ 		} else {
+-			memset(tx->station[sidx].mac, 0, ETH_ALEN);
++			eth_zero_addr(tx->station[sidx].mac);
+ 			tx->station[sidx].flag = 0;
+ 		}
+ 	}
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
