@@ -2,65 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B21CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB88CCA479
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233235AbiF1UWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 16:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34772 "EHLO
+        id S232985AbiF1UWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 16:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232299AbiF1UVj (ORCPT
+        with ESMTP id S232208AbiF1UVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 16:21:39 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8EF410D2
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:33 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id n12-20020a9d64cc000000b00616ebd87fc4so1707482otl.7
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:33 -0700 (PDT)
+        Tue, 28 Jun 2022 16:21:37 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8653D1D6
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:30 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id w193so18738647oie.5
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=86x1pCfc8rA3POoegBiHBkAv35qybvdQxmmuFQbL0RY=;
-        b=A6HkriEQVjr8xBuNaJxh8JbFRPp03vxUK0kdmszuwswcz3UumF7ltjqYHiPb5zguuv
-         kldVj/3VuIudYRuWWPOEGV6Ww2HO28uttd9nIej6BtkFUbARrqboOl5omXaEJDKUcbGu
-         NUlwAlhXGlPx/UJp+osIXmBD/cPWvb2j8b7fXR7gLBNBjLVXlkG4ZaFrII8ajmpj0FoY
-         /JDZTYHD3BuNjGJlSA6uaDsxtI1x3L7PA3m5oUGeENCqHfD3e4S+97nSMTbF2cYPcIAs
-         CiOqVKtC7EX+AM1w0fLIG/zKfFdSdTBYR5rKHSf3kzm/p4JdypB2ck6X1LNCNlgimwK8
-         V0fw==
+        bh=N0YiwTB5Lzrx5Idx6QrshGkTc9HqjV5relJPYoRStTk=;
+        b=g/3vrQcchq4kooUu20T9KbQIxXKpLeQOijcueNHFCafx+EJyK3+54EwZDipg54Nx6G
+         VU5gvK8p2FpcvT/uape/TLThvTEJkzEGpD/RYa699UxO0MueLXXMtpNKffkII+uvHsPG
+         Sd0sEg+/AXu9TN4Di3xmJIf57O6imnMViYGCU3ImRv8m5EWqb81gkNRvR5AOi195BD6s
+         feYOjaQAk+uNkBTCFNAZo2GIl9keI31UfE/lRzhMhVVCXrBIQhSFoYqdXQ80cGSI4Jo2
+         Co3E5XRKJ3wCD8nv29EyW5NfialfZxZ6UUMdSe/Sn7ScucuhvixhOABwbqr+bIBSLYFf
+         s+nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=86x1pCfc8rA3POoegBiHBkAv35qybvdQxmmuFQbL0RY=;
-        b=nkObqEd55VIraAE3hpvCpjGWz9Bav6jAVXb304NGwAA7JaGC46oOLxo+PK1dcH2Flj
-         Q4uPEs+ZtvHjgf3ap0aIAdofkZHR+xIjUfOHRwR86EruSkLbMHteR052IVEXAe5IgsPr
-         gh7dwYvzaFu53O/Kdydj/JuV/JtnzArL2sM2TbJM7gl8Qzetcp3sD0cJ8VP4boNby4GP
-         0qMOT/EM+5EVrsnGR/Diiwad24suA3HNEbbMwd4V35r+I0GRyr0HqbC+WldJIdGA9LbP
-         n8r4wS7BGDHkU2cQBalz3inOo0/ZPWUZU6Wb0JZjk5wxnpisq7ZzD/GJ1KKgJlreLiUJ
-         lXqA==
-X-Gm-Message-State: AJIora84DdHiaG3Gc3QzUP36XOcivS/2P/ABmUPdNmbONUtJe4eR/NBN
-        J02ApD5mFiEiwgm5ofwU3VCXX5q5ZmLRfg==
-X-Google-Smtp-Source: AGRyM1v2wSkt8bjJkTtoUzltW4b6g1kt7GztuslhqRHJPErlzBtKH9XduvJ8939ewp16ELTmMuJOQQ==
-X-Received: by 2002:a9d:6ac4:0:b0:616:b183:c7e6 with SMTP id m4-20020a9d6ac4000000b00616b183c7e6mr9307839otq.353.1656447572712;
-        Tue, 28 Jun 2022 13:19:32 -0700 (PDT)
+        bh=N0YiwTB5Lzrx5Idx6QrshGkTc9HqjV5relJPYoRStTk=;
+        b=T2hCA7JJVDC9ki/Xhqa+fpw87Vb7rlhMCgTewEtohzKFoO15rn+OSL1zunXZcm6KEm
+         q7H+ft3QLUbqV83clnv9/vTvFElKNDYrDhbrrILdcJ/5lTimI+8916SvUetrLkEWyHuN
+         w7CdvWtbM+f807Ge0yNKNH1S2wniaCO9+k80AI+NBvGoZ7eg5bhurZ76GdZikbdHGMsO
+         zhbreoFf9lombvcsuIYrW5elFhnAeD98vUMCjXN08jj8MS2TGRqerRGgoqRCIVoWk9p7
+         A+sYglmEKDS+AbwBgHBZwGlnz1BacmsoG2hy0drFWmLSB3wexBO9x2OwqMUWCxIof2jy
+         JO1A==
+X-Gm-Message-State: AJIora8TTMi2IcRwFRDMf5ZZT9/sv+QNEK2Bp7LWUkjqpvRPIsejtzSZ
+        fY3/6xt12+WDroBxaAHVxXax/g==
+X-Google-Smtp-Source: AGRyM1sayXBpFlqlsyzHRDsKb9iKdp5I9/c1DrxmlcZOsE7L1zswG61hqMQPBubjaor3cm3c4bSMYQ==
+X-Received: by 2002:a05:6808:f94:b0:32f:6378:d8b5 with SMTP id o20-20020a0568080f9400b0032f6378d8b5mr917133oiw.171.1656447570030;
+        Tue, 28 Jun 2022 13:19:30 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id a12-20020a056870d60c00b000f30837129esm9536923oaq.55.2022.06.28.13.19.31
+        by smtp.gmail.com with ESMTPSA id a12-20020a056870d60c00b000f30837129esm9536923oaq.55.2022.06.28.13.19.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 13:19:32 -0700 (PDT)
+        Tue, 28 Jun 2022 13:19:29 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
+To:     Todor Tomov <todor.too@gmail.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-media@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Del Regno <angelogioacchino.delregno@somainline.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: (subset) [PATCH v2] arm64: dts: qcom: align OPP table names with DT schema
-Date:   Tue, 28 Jun 2022 15:19:03 -0500
-Message-Id: <165644753306.10525.17507331661457165326.b4-ty@linaro.org>
+        Robert Foss <robert.foss@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: Re: (subset) [PATCH 1/4] media: dt-bindings: qcom,sdm660-camss: document interconnects
+Date:   Tue, 28 Jun 2022 15:19:01 -0500
+Message-Id: <165644753308.10525.1413224152892133110.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220627093250.84391-1-krzysztof.kozlowski@linaro.org>
-References: <20220627093250.84391-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220509144714.144154-1-krzysztof.kozlowski@linaro.org>
+References: <20220509144714.144154-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -68,21 +71,22 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 27 Jun 2022 11:32:50 +0200, Krzysztof Kozlowski wrote:
-> DT schema expects names of operating points tables to start with
-> "opp-table":
+On Mon, 9 May 2022 16:47:11 +0200, Krzysztof Kozlowski wrote:
+> Document the interconnect properties used in the Qualcomm CAMSS on
+> SDM660:
 > 
->   ipq6018-cp01-c1.dtb: cpu_opp_table: $nodename:0: 'cpu_opp_table' does not match '^opp-table(-[a-z0-9]+)?$'
+>   sdm630-sony-xperia-nile-discovery.dtb: camss@ca00000: 'interconnect-names', 'interconnects' do not match any of the regexes: 'pinctrl-[0-9]+'
 > 
-> Use hyphens instead of underscores, fix the names to match DT schema or
-> remove the prefix entirely when it is not needed.
 > 
-> [...]
 
 Applied, thanks!
 
-[1/1] arm64: dts: qcom: align OPP table names with DT schema
-      commit: 0e3e654696074b304302c7cc2a67314b7875f1ae
+[2/4] arm64: dts: qcom: sdm630: order clocks according to bindings
+      commit: e8881372ccc6ff5a86bddeb4ebc248ff892d2ffc
+[3/4] arm64: dts: qcom: sdm630: order regs according to bindings
+      commit: 7908dcc8be2db90c9d9bbcbd5fb021f935b76b26
+[4/4] arm64: dts: qcom: sdm630: order interrupts according to bindings
+      commit: cb0b68537713208824af74f2b1dbae22e8e52f82
 
 Best regards,
 -- 
