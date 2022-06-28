@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7577C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F86C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:09:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234959AbiF1THD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34528 "EHLO
+        id S233846AbiF1TJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234515AbiF1TGk (ORCPT
+        with ESMTP id S233536AbiF1TJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:06:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DB919036;
-        Tue, 28 Jun 2022 12:06:39 -0700 (PDT)
+        Tue, 28 Jun 2022 15:09:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E5AD11475;
+        Tue, 28 Jun 2022 12:09:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA578B81E05;
-        Tue, 28 Jun 2022 19:06:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FDE4C3411D;
-        Tue, 28 Jun 2022 19:06:35 +0000 (UTC)
-Date:   Tue, 28 Jun 2022 15:06:34 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org
-Subject: Re: [PATCH V4 13/20] rv/reactor: Add the panic reactor
-Message-ID: <20220628150634.30c511aa@gandalf.local.home>
-In-Reply-To: <67e522ab57e64eee313af508a8c70f3cce33e525.1655368610.git.bristot@kernel.org>
-References: <cover.1655368610.git.bristot@kernel.org>
-        <67e522ab57e64eee313af508a8c70f3cce33e525.1655368610.git.bristot@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C089CB81F65;
+        Tue, 28 Jun 2022 19:09:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34E57C341C6;
+        Tue, 28 Jun 2022 19:09:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656443342;
+        bh=vyOSRFaeOHg/nlsNMOcqGK6kvTCU3fo60wFj/4X1Q9s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pVAfkfEeuF5/S6JxTRpRbMjqjB1mzr9IML9oX7D8h4c1egD7DPSqsw7LEzC6AFRMZ
+         AZF0Rvt9w/2UTEEx2G5LGgErQzTmXB8rOCE8MJZGq251Fj6dj4wO8/LXnYcuU3k5Fg
+         7WKjhjcFfwje1aTfVeIXXaCre8R+lxKZgpmDvUtnAAvwTUtO4RXtAsGZKI61/6ZG84
+         pAIkH6/u2EYsz0HiRCdF7Ej3RP8VTvxdRyuAnRi1Y4QqYX6+KwPg7IBhVzMseiKWOz
+         GttMSOZiQIjxaBMGC/S1nXDLsDEYBao5ZnQfrmQgZosY5Ghkj4UnJFdASaHiJHUaOM
+         0vyBTi/brLYSg==
+Date:   Tue, 28 Jun 2022 12:09:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH] dt-bindings: nfc: nxp,nci: drop Charles Gorand's mail
+Message-ID: <20220628120901.693b1470@kernel.org>
+In-Reply-To: <20220628182635.GA748152-robh@kernel.org>
+References: <20220628070959.187734-1-michael@walle.cc>
+        <20220628182635.GA748152-robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,59 +53,19 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022 10:44:55 +0200
-Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
-
-> Sample reactor that panics the system when an exception is found. This
-> is useful both to capture a vmcore, or to fail-safe a critical system.
+On Tue, 28 Jun 2022 12:26:35 -0600 Rob Herring wrote:
+> On Tue, 28 Jun 2022 09:09:59 +0200, Michael Walle wrote:
+> > Mails to Charles get an auto reply, that he is no longer working at
+> > Eff'Innov technologies. Remove the entry.
+> > 
+> > Signed-off-by: Michael Walle <michael@walle.cc>
+> > ---
+> >  Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml | 1 -
+> >  1 file changed, 1 deletion(-)
+> >   
 > 
-> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Marco Elver <elver@google.com>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Shuah Khan <skhan@linuxfoundation.org>
-> Cc: Gabriele Paoloni <gpaoloni@redhat.com>
-> Cc: Juri Lelli <juri.lelli@redhat.com>
-> Cc: Clark Williams <williams@redhat.com>
-> Cc: linux-doc@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-trace-devel@vger.kernel.org
-> Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-> ---
->  kernel/trace/rv/Kconfig         |  8 ++++++
->  kernel/trace/rv/Makefile        |  1 +
->  kernel/trace/rv/reactor_panic.c | 44 +++++++++++++++++++++++++++++++++
->  3 files changed, 53 insertions(+)
->  create mode 100644 kernel/trace/rv/reactor_panic.c
-> 
-> diff --git a/kernel/trace/rv/Kconfig b/kernel/trace/rv/Kconfig
-> index be8e3dab0a52..91a17b13a080 100644
-> --- a/kernel/trace/rv/Kconfig
-> +++ b/kernel/trace/rv/Kconfig
-> @@ -60,4 +60,12 @@ config RV_REACT_PRINTK
->  	  Enables the printk reactor. The printk reactor emmits a printk()
->  	  message if an exception is found.
->  
-> +config RV_REACT_PANIC
-> +	bool "Panic reactor"
-> +	depends on RV_REACTORS
-> +	default y if RV_REACTORS
+> Applied, thanks!
 
-Just put default y if it already depends on RV_REACTORS.
-
--- Steve
-
-> +	help
-> +	  Enables the panic reactor. The panic reactor emmits a printk()
-> +	  message if an exception is found and panic()s the system.
-> +
->  endif # RV
-> diff --git a/kernel/trace/rv/Makefile b/kernel/trace/rv/Makefile
+I thought you said you prefer binding changes to go thru relevant
+trees. Not that I care which way the default is but let's stick 
+to one.
