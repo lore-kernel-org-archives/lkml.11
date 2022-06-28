@@ -2,191 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E32C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344033AbiF1IqC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41502 "EHLO
+        id S244929AbiF1Isw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343939AbiF1Ipu (ORCPT
+        with ESMTP id S239151AbiF1Iso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:45:50 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC742DD59;
-        Tue, 28 Jun 2022 01:45:23 -0700 (PDT)
+        Tue, 28 Jun 2022 04:48:44 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324C02E9FA;
+        Tue, 28 Jun 2022 01:48:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656405923; x=1687941923;
+  t=1656406123; x=1687942123;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=bo/E4btYumeo3V4vdBSaofslPgRUpYOLcJoSzJYvuOw=;
-  b=mO+UnOxjweyJOku9mOjjaQz5ktbSwuUX3XYnQskfurZBDaZ63xHXPZzb
-   A0GohAg28UJt3VmDOEf6NfdVg9slENEyKcnKRSQ0W2tAaBXZPN6tb06qZ
-   lWd6Fr3APjb8ICiuBxELxW1ryk5W6LGVAQBb8QfUt2hOMcDvPkWe1UvaT
-   yPZVx6rdaEpGyYxIncspuX1noAMwGhnVoKHHyVvv8TRGfVvJcO8FFmcqo
-   ELTHCvX4Kx5NBrFkY4JK+G8ELzhOtORgEURR+Qbx1UFl85+4gey7oEURZ
-   Hl2r3xVZ2KAA/PZPgQ+K4L75/nNPryXNBlbA4HTA049iRNcV+dinv5Qox
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270426298"
+  bh=3ErLlCdyFcGPrWBqJpelBqlWZkqPma1a3SBE5gm7ZPk=;
+  b=nwi6Wwz1DFXTNEfOYuU9E9ESaAn3mDy65/IypDlO15KXvnvSC9mOV3rF
+   r5tI1D0Htn3l5QqxabbJBfXpLeraC7aUJavHpPHqmoDh/m0wzSr+Mqb75
+   h72jdQNuus50bkiQAReeaW4F/JtVopfv7dXz/nYQUAoF4V0Po6173mt0t
+   NmLCxjt2E0dvuVxXBP0h4pWQCGW8DMpNHTkL7pD2p3992RLcQgbfLQxsi
+   hhpdEEviv66h52V9Q4GXjJh4u8WOyF0jnaMvdlhXKYgpnwGPKjm+z7eUN
+   UO1gKHLceI7jaau/qFZtCJqZDtWyg6tUZ/jhXGVJzHoSAgWqFIEYanAjK
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="264719526"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="270426298"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:45:23 -0700
+   d="scan'208";a="264719526"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:48:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="540417688"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 28 Jun 2022 01:45:19 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o66qV-0009mQ-8m;
-        Tue, 28 Jun 2022 08:45:19 +0000
-Date:   Tue, 28 Jun 2022 16:44:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Casey Schaufler <casey@schaufler-ca.com>,
-        casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, casey@schaufler-ca.com,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        paul@paul-moore.com, stephen.smalley.work@gmail.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v37 18/33] LSM: Use lsmcontext in
- security_dentry_init_security
-Message-ID: <202206281633.LuFVQ9tq-lkp@intel.com>
-References: <20220628005611.13106-19-casey@schaufler-ca.com>
+   d="scan'208";a="594697752"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga007.fm.intel.com with ESMTP; 28 Jun 2022 01:48:38 -0700
+Date:   Tue, 28 Jun 2022 16:40:24 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     michal.simek@xilinx.com, hao.wu@intel.com, trix@redhat.com,
+        mdf@kernel.org, gregkh@linuxfoundation.org, ronak.jain@xilinx.com,
+        rajan.vaja@xilinx.com, abhyuday.godhasara@xilinx.com,
+        piyush.mehta@xilinx.com, harsha.harsha@xilinx.com,
+        lakshmi.sai.krishna.potthuri@xilinx.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, git@xilinx.com
+Subject: Re: [PATCH v2 3/3] fpga: zynqmp-fpga: Adds status interface
+Message-ID: <20220628084024.GB2442728@yilunxu-OptiPlex-7050>
+References: <20220621092833.1057408-1-nava.manne@xilinx.com>
+ <20220621092833.1057408-4-nava.manne@xilinx.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220628005611.13106-19-casey@schaufler-ca.com>
+In-Reply-To: <20220621092833.1057408-4-nava.manne@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Casey,
+On Tue, Jun 21, 2022 at 02:58:33PM +0530, Nava kishore Manne wrote:
+> Adds status interface for zynqmp-fpga, It's a read only
+> interface which allows the user to get the PL status.
+> 
+> Usage:
+> To read the PL configuration status
+>         cat /sys/class/fpga_manager/<fpga>/status
+> 
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> ---
+> Changes for v2:
+>               - Updated status messages handling logic as suggested by Xu Yilun.
+> 
+>  drivers/fpga/zynqmp-fpga.c | 53 ++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 53 insertions(+)
+> 
+> diff --git a/drivers/fpga/zynqmp-fpga.c b/drivers/fpga/zynqmp-fpga.c
+> index c60f20949c47..e194bba91d3f 100644
+> --- a/drivers/fpga/zynqmp-fpga.c
+> +++ b/drivers/fpga/zynqmp-fpga.c
+> @@ -14,6 +14,19 @@
+>  
+>  /* Constant Definitions */
+>  #define IXR_FPGA_DONE_MASK	BIT(3)
+> +#define READ_DMA_SIZE		256U
+> +
+> +/* Error Register */
+> +#define IXR_FPGA_ERR_CRC_ERR		BIT(0)
+> +#define IXR_FPGA_ERR_SECURITY_ERR	BIT(16)
+> +
+> +/* Signal Status Register. For details refer ug570 */
+> +#define IXR_FPGA_END_OF_STARTUP		BIT(4)
+> +#define IXR_FPGA_GST_CFG_B		BIT(5)
+> +#define IXR_FPGA_INIT_B_INTERNAL	BIT(11)
+> +#define IXR_FPGA_DONE_INTERNAL_SIGNAL	BIT(13)
+> +
+> +#define IXR_FPGA_CONFIG_STAT_OFFSET	7U
+>  
+>  /**
+>   * struct zynqmp_fpga_priv - Private data structure
+> @@ -77,8 +90,48 @@ static enum fpga_mgr_states zynqmp_fpga_ops_state(struct fpga_manager *mgr)
+>  	return FPGA_MGR_STATE_UNKNOWN;
+>  }
+>  
+> +static ssize_t zynqmp_fpga_ops_status(struct fpga_manager *mgr, char *buf)
+> +{
+> +	unsigned int *kbuf, reg_val;
+> +	dma_addr_t dma_addr;
+> +	ssize_t len = 0;
+> +	int ret;
+> +
+> +	kbuf = dma_alloc_coherent(mgr->dev.parent, READ_DMA_SIZE,
+> +				  &dma_addr, GFP_KERNEL);
+> +	if (!kbuf)
+> +		return -ENOMEM;
+> +
+> +	ret = zynqmp_pm_fpga_read(IXR_FPGA_CONFIG_STAT_OFFSET, dma_addr,
+> +				  PM_FPGA_READ_CONFIG_REG, &reg_val);
+> +	if (ret) {
+> +		len += sprintf(buf + len, "firmware error\n");
+> +		goto free_dmabuf;
+> +	}
+> +
+> +	if (reg_val & IXR_FPGA_ERR_CRC_ERR)
+> +		len += sprintf(buf + len, "reconfig CRC error\n");
+> +	if (reg_val & IXR_FPGA_ERR_SECURITY_ERR)
+> +		len += sprintf(buf + len, "reconfig security error\n");
+> +	if (!(reg_val & IXR_FPGA_INIT_B_INTERNAL))
+> +		len += sprintf(buf + len, "Device Initialization error\n");
+> +	if (!(reg_val & IXR_FPGA_DONE_INTERNAL_SIGNAL))
+> +		len += sprintf(buf + len, "Device internal signal error\n");
+> +	if (!(reg_val & IXR_FPGA_GST_CFG_B))
+> +		len += sprintf(buf + len,
+> +			       "All I/Os are placed in High-Z state\n");
+> +	if (!(reg_val & IXR_FPGA_END_OF_STARTUP))
+> +		len += sprintf(buf + len, "Device sequence error\n");
 
-I love your patch! Yet something to improve:
+Expressing multiple lines of data is discouraged, one value or an array
+of values is OK. For more details, see
+Documentation/filesystems/sysfs.rst
 
-[auto build test ERROR on pcmoore-audit/next]
-[also build test ERROR on pcmoore-selinux/next linus/master v5.19-rc4 next-20220627]
-[cannot apply to jmorris-security/next-testing]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Thanks,
+Yilun
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220628-095614
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git next
-config: x86_64-randconfig-r022-20220627 (https://download.01.org/0day-ci/archive/20220628/202206281633.LuFVQ9tq-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/c930a07cebde69363d3633fba8bd4cac46dd1520
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220628-095614
-        git checkout c930a07cebde69363d3633fba8bd4cac46dd1520
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   security/security.c: In function 'security_setprocattr':
->> security/security.c:2319:45: error: 'lsm_slotlist' undeclared (first use in this function); did you mean 'lsm_slot'?
-    2319 |                         if (!strcmp(termed, lsm_slotlist[slot]->lsm)) {
-         |                                             ^~~~~~~~~~~~
-         |                                             lsm_slot
-   security/security.c:2319:45: note: each undeclared identifier is reported only once for each function it appears in
-   security/security.c:2285:21: warning: variable 'slotname' set but not used [-Wunused-but-set-variable]
-    2285 |         const char *slotname;
-         |                     ^~~~~~~~
-   At top level:
-   security/security.c:763:12: warning: 'lsm_sock_alloc' defined but not used [-Wunused-function]
-     763 | static int lsm_sock_alloc(struct sock *sock, gfp_t priority)
-         |            ^~~~~~~~~~~~~~
-
-
-vim +2319 security/security.c
-
-20510f2f4e2dab James Morris    2007-10-16  2266  
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2267  /**
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2268   * security_setprocattr - Set process attributes via /proc
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2269   * @lsm: name of module involved, or NULL
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2270   * @name: name of the attribute
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2271   * @value: value to set the attribute to
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2272   * @size: size of the value
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2273   *
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2274   * Set the process attribute for the specified security module
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2275   * to the specified value. Note that this can only be used to set
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2276   * the process attributes for the current, or "self" process.
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2277   * The /proc code has already done this check.
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2278   *
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2279   * Returns 0 on success, an appropriate code otherwise.
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2280   */
-6d9c939dbe4d0b Casey Schaufler 2018-09-21  2281  int security_setprocattr(const char *lsm, const char *name, void *value,
-6d9c939dbe4d0b Casey Schaufler 2018-09-21  2282  			 size_t size)
-20510f2f4e2dab James Morris    2007-10-16  2283  {
-6d9c939dbe4d0b Casey Schaufler 2018-09-21  2284  	struct security_hook_list *hp;
-c930a07cebde69 Casey Schaufler 2022-06-27  2285  	const char *slotname;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2286  	char *termed;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2287  	char *copy;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2288  	int *ilsm = current->security;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2289  	int rc = -EINVAL;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2290  	int slot = 0;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2291  
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2292  	if (!strcmp(name, "interface_lsm")) {
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2293  		/*
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2294  		 * Change the "interface_lsm" value only if all the security
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2295  		 * modules that support setting a procattr allow it.
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2296  		 * It is assumed that all such security modules will be
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2297  		 * cooperative.
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2298  		 */
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2299  		if (size == 0)
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2300  			return -EINVAL;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2301  
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2302  		hlist_for_each_entry(hp, &security_hook_heads.setprocattr,
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2303  				     list) {
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2304  			rc = hp->hook.setprocattr(name, value, size);
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2305  			if (rc < 0 && rc != LSM_RET_DEFAULT(setprocattr))
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2306  				return rc;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2307  		}
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2308  
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2309  		rc = -EINVAL;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2310  
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2311  		copy = kmemdup_nul(value, size, GFP_KERNEL);
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2312  		if (copy == NULL)
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2313  			return -ENOMEM;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2314  
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2315  		termed = strsep(&copy, " \n");
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2316  
-c930a07cebde69 Casey Schaufler 2022-06-27  2317  		for (slot = 0; slot < lsm_slot; slot++) {
-c930a07cebde69 Casey Schaufler 2022-06-27  2318  			slotname = lsm_slot_to_name(slot);
-a87b0b9fe463f0 Casey Schaufler 2022-06-27 @2319  			if (!strcmp(termed, lsm_slotlist[slot]->lsm)) {
-c930a07cebde69 Casey Schaufler 2022-06-27  2320  				*ilsm = slot;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2321  				rc = size;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2322  				break;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2323  			}
-c930a07cebde69 Casey Schaufler 2022-06-27  2324  		}
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2325  
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2326  		kfree(termed);
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2327  		return rc;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2328  	}
-6d9c939dbe4d0b Casey Schaufler 2018-09-21  2329  
-6d9c939dbe4d0b Casey Schaufler 2018-09-21  2330  	hlist_for_each_entry(hp, &security_hook_heads.setprocattr, list) {
-ac35545bc102bf Casey Schaufler 2022-06-27  2331  		if (lsm != NULL && strcmp(lsm, hp->lsmid->lsm))
-6d9c939dbe4d0b Casey Schaufler 2018-09-21  2332  			continue;
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2333  		if (lsm == NULL && *ilsm != LSMBLOB_INVALID &&
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2334  		    *ilsm != hp->lsmid->slot)
-a87b0b9fe463f0 Casey Schaufler 2022-06-27  2335  			continue;
-6d9c939dbe4d0b Casey Schaufler 2018-09-21  2336  		return hp->hook.setprocattr(name, value, size);
-6d9c939dbe4d0b Casey Schaufler 2018-09-21  2337  	}
-98e828a0650f34 KP Singh        2020-03-29  2338  	return LSM_RET_DEFAULT(setprocattr);
-20510f2f4e2dab James Morris    2007-10-16  2339  }
-20510f2f4e2dab James Morris    2007-10-16  2340  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +
+> +free_dmabuf:
+> +	dma_free_coherent(mgr->dev.parent, READ_DMA_SIZE, buf, dma_addr);
+> +
+> +	return len;
+> +}
+> +
+>  static const struct fpga_manager_ops zynqmp_fpga_ops = {
+>  	.state = zynqmp_fpga_ops_state,
+> +	.status = zynqmp_fpga_ops_status,
+>  	.write_init = zynqmp_fpga_ops_write_init,
+>  	.write = zynqmp_fpga_ops_write,
+>  };
+> -- 
+> 2.25.1
