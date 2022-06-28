@@ -2,195 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A94BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 05:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C05C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 05:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244263AbiF1FLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 01:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53798 "EHLO
+        id S244811AbiF1FOf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 01:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244420AbiF1FLX (ORCPT
+        with ESMTP id S244680AbiF1FOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 01:11:23 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3728A1B4;
-        Mon, 27 Jun 2022 22:11:21 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id w24so11438146pjg.5;
-        Mon, 27 Jun 2022 22:11:21 -0700 (PDT)
+        Tue, 28 Jun 2022 01:14:05 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441D3275C7
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 22:13:33 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id 59so18538144qvb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 22:13:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vnGv6vDn6qnrKuuz+/Sh2Rg6no8kgH/1Xp8PSIsPGhg=;
-        b=am8dQ7vXTYHhEFPkccT6o/AlWUm5T1XoBhfUVhVjo0xjrvv+Ja72tXivfz8P8XrL2i
-         iuypwtFq9gAiCocYQHgKZsjCOJX3ojIy906qjVFUEpHI1FepxH5NyyeEjIpTbIY1IHdk
-         pHgzaf9h6OyP/0voGgf6hNv9zZHOCvRdzRwxQddaY1SP8X6GzPbCuWO38I0wrUIqC88L
-         eUr64MOInloAxqHhZUhSg+dPMYeMfSozWVh70aBX4VB67yYzCMag9Jt7YCfTrG4lWKv+
-         rLRoJMw5FlnWoIIvCVARN+hME7afseplwuKnMVsb+p/u3+hs/qU/sOXfAs2pZNAmAs0C
-         sVMQ==
+        d=me-ssier-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=kF0TVeiT2haFltgoqbJILN1oxVvcGv4SSoCvDNYOas8=;
+        b=wSlIqbm7D6ZerdlLJ7QM4QdLjWQzMufmBqkQfMnYG12junSlU39G1nPk/pkIir30Y1
+         5PL7HAtt/Fp/iOKKKZOXOXy/NVOdA9LXZmfl2dLxwtqfR0B7Z3Pi27Ku3FrM0BvF0Jnw
+         GI/ZADuR91XhP5k3OIcn/2g81tIjlhT6w1E+snEuTCZ2m5vY0xTF5tVUMp7CEaQdcHBF
+         RawtGe4Jh2iqbMhNiVPji4gA8gRzBomGLwKTQEtSqUbfQ7GjV5RwdzG9epw+i1UDMY7L
+         Hu7rKwfaMR7R3vXdSzqEKAEQAKJv95RouSMsvySZ7VfMBh6c/FkTE1t/d9TTt4lQbZOV
+         S22Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=vnGv6vDn6qnrKuuz+/Sh2Rg6no8kgH/1Xp8PSIsPGhg=;
-        b=1VQhuwDY5JxsC77jYyycRmXLqHu4rvkkTxseG3kRdlIhCLu5Is8Mlpm5wt2g62ZJw7
-         OYa1upOfx6RbPMpe/HevlGAoVqHhSl7fmBBlEenzVnEh0/OtkYymSwkFaPiEhtFtuHGQ
-         q3dyo/SdeYE0n2ajOYTJsuvpmrUMmKQSdJmXNzslWl9zXwsfsoc6Jg5/wdceaBDb/zAK
-         I8eDCH07PDPcTzJakwZjpQW5+KQD45oK1IEOh1AheuR+4Uzq3uw3QmXjHiMwm60QcZ04
-         eg21FR5CzRvphL7k0zMAIBMixboVM/wYVO8zanAebMKSZKP86CK4eszZST1Oo+na8RLE
-         zIjA==
-X-Gm-Message-State: AJIora/6SVWOJG3yM40FYsUC1ig4hnjB7GPTV8TNDAQ+oDn1U+ybO1+L
-        5366ocTXLDRidB8XJOgFwXA=
-X-Google-Smtp-Source: AGRyM1thi22W1H9JgV0MovDTCGGD2x9ERpjK0ECtuGEiLxeaGI13bl+mLS+wUQMsuNmqoC6zeKQH5w==
-X-Received: by 2002:a17:90b:4b8c:b0:1ec:c7b8:7cb9 with SMTP id lr12-20020a17090b4b8c00b001ecc7b87cb9mr24863418pjb.86.1656393081076;
-        Mon, 27 Jun 2022 22:11:21 -0700 (PDT)
-Received: from localhost.localdomain ([2401:4900:1f29:4aa9:50e7:2716:415:b90c])
-        by smtp.googlemail.com with ESMTPSA id n17-20020a170903405100b0016a25ba1f46sm8051002pla.256.2022.06.27.22.11.18
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Jun 2022 22:11:20 -0700 (PDT)
-From:   Vishal Badole <badolevishal1116@gmail.com>
-To:     sboyd@kernel.org
-Cc:     mturquette@baylibre.com, inux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, chinmoyghosh2001@gmail.com,
-        mintupatel89@gmail.com, vimal.kumar32@gmail.com,
-        Vishal Badole <badolevishal1116@gmail.com>
-Subject: [PATCH v3] Common clock: To list active consumers of clocks
-Date:   Tue, 28 Jun 2022 10:38:42 +0530
-Message-Id: <1656392922-11428-1-git-send-email-badolevishal1116@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <20220624010550.582BBC341C7@smtp.kernel.org>
-References: <20220624010550.582BBC341C7@smtp.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=kF0TVeiT2haFltgoqbJILN1oxVvcGv4SSoCvDNYOas8=;
+        b=SktN2K6dy5o8hNS4tQNyWccGq6Q9o+gMsPsaVrI3jVfNon67AMpNN1EIqQ5uNcn/ZR
+         7OWh7QWxYkQIQNM0xeyqBMcN4YOG1eqzlb+RJTr7v4of/aUMYA0UymH2Gk+ooQgQCmoR
+         WzSD0P7KwjL+9MY6vFSYo3HaY9RXGp/fKmMORO+Grbr8bqeKQIGoeRlFbhvvXwmuiB6H
+         lMup21zXXesOVTyl0I4wnYk+00f7W1kZmpcvpZLDqXvvy14yNSq8zVgAm9m7P/eXF6yS
+         cYNm/XAIwlptSXkBSGTLsg9xD+5aYiZTWQrdfy112yA1v+Q6lqT2/cMoZnnwT02QNDZW
+         g57w==
+X-Gm-Message-State: AJIora/FqGEC7zJx0wC15OnH+ghZhcYhyQEPafFcXtF0zsHSD1qhOQri
+        fv7O4BQ3VA9cW4bEoftgncCAoxlKpx3w4N2/qBQ=
+X-Google-Smtp-Source: AGRyM1tbhNbLSVOTeFsQrWeXL+JQWb00FEOxr1G6HLMQ7x9eqY3vuSw7GeagoX3shKYWmDut4EmlgA==
+X-Received: by 2002:a05:622a:1791:b0:317:76d8:d17f with SMTP id s17-20020a05622a179100b0031776d8d17fmr12128764qtk.82.1656393211680;
+        Mon, 27 Jun 2022 22:13:31 -0700 (PDT)
+Received: from [192.168.2.14] (bras-base-stggpq3702w-grc-11-142-115-210-184.dsl.bell.ca. [142.115.210.184])
+        by smtp.gmail.com with ESMTPSA id 14-20020ac8594e000000b00304fc3d144esm8937106qtz.1.2022.06.27.22.13.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 22:13:31 -0700 (PDT)
+Message-ID: <6025678c-e94a-6966-e298-82fad658a889@me.ssier.org>
+Date:   Tue, 28 Jun 2022 01:13:30 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-US
+To:     linux-kernel@vger.kernel.org
+Cc:     tglx@linutronix.de, Andrew.Cooper3@citrix.com, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        regressions@lists.linux.dev, Alexandre Messier <alex@me.ssier.org>
+From:   Alexandre Messier <alex@me.ssier.org>
+Subject: [REGRESSION] Unable to unlock encrypted disk starting with kernel
+ 5.19-rc1+
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This feature lists the clock consumer's name and per-user enable count
-in clock summary. Using this feature user can easily check which device
-has acquired a perticular clock and it is enabled by respective device
-or not.
-for example:
-debian@beaglebone:~$ cat /sys/kernel/debug/clk/clk_summary
-                      enable  prepare  protect                           duty  hardware                            per-user
-   clock               count    count    count    rate   accuracy phase cycle    enable   consumer                    count
-----------------------------------------------------------------------------------------------------------------------------
- clk_mcasp0_fixed         0        0        0    24576000      0     0  50000     Y      deviceless                      0
-                                                                                         deviceless                      0
-    clk_mcasp0            0        0        0    24576000      0     0  50000     N          simple-audio-card,cpu           0
-                                                                                             deviceless                      0
+Hello,
 
-Co-developed-by: Chinmoy Ghosh <chinmoyghosh2001@gmail.com>
-Signed-off-by: Chinmoy Ghosh <chinmoyghosh2001@gmail.com>
-Co-developed-by: Mintu Patel <mintupatel89@gmail.com>
-Signed-off-by: Mintu Patel <mintupatel89@gmail.com>
-Co-developed-by: Vimal Kumar <vimal.kumar32@gmail.com>
-Signed-off-by: Vimal Kumar <vimal.kumar32@gmail.com>
-Signed-off-by: Vishal Badole <badolevishal1116@gmail.com>
----
- drivers/clk/clk.c | 46 +++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 35 insertions(+), 11 deletions(-)
+I tested 5.19-rc4 on my system that is currently running 5.18.0, and came
+across an issue when unlocking the encrypted rootfs disk at startup. The error
+message is:
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index ed11918..6c4249e 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -102,6 +102,7 @@ struct clk {
- 	unsigned long min_rate;
- 	unsigned long max_rate;
- 	unsigned int exclusive_count;
-+	unsigned int enable_count;
- 	struct hlist_node clks_node;
- };
- 
-@@ -1015,6 +1016,10 @@ void clk_disable(struct clk *clk)
- 		return;
- 
- 	clk_core_disable_lock(clk->core);
-+
-+	if (clk->enable_count > 0)
-+		clk->enable_count--;
-+
- }
- EXPORT_SYMBOL_GPL(clk_disable);
- 
-@@ -1176,10 +1181,16 @@ EXPORT_SYMBOL_GPL(clk_restore_context);
-  */
- int clk_enable(struct clk *clk)
- {
-+	int ret;
-+
- 	if (!clk)
- 		return 0;
- 
--	return clk_core_enable_lock(clk->core);
-+	ret = clk_core_enable_lock(clk->core);
-+	if (!ret)
-+		clk->enable_count++;
-+
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(clk_enable);
- 
-@@ -2960,28 +2971,41 @@ static void clk_summary_show_one(struct seq_file *s, struct clk_core *c,
- 				 int level)
- {
- 	int phase;
-+	struct clk *clk_user;
-+	int multi_node = 0;
- 
--	seq_printf(s, "%*s%-*s %7d %8d %8d %11lu %10lu ",
-+	seq_printf(s, "%*s%-*s %-7d %-8d %-8d %-11lu %-10lu ",
- 		   level * 3 + 1, "",
--		   30 - level * 3, c->name,
-+		   35 - level * 3, c->name,
- 		   c->enable_count, c->prepare_count, c->protect_count,
- 		   clk_core_get_rate_recalc(c),
- 		   clk_core_get_accuracy_recalc(c));
- 
- 	phase = clk_core_get_phase(c);
- 	if (phase >= 0)
--		seq_printf(s, "%5d", phase);
-+		seq_printf(s, "%-5d", phase);
- 	else
- 		seq_puts(s, "-----");
- 
--	seq_printf(s, " %6d", clk_core_get_scaled_duty_cycle(c, 100000));
-+	seq_printf(s, " %-6d", clk_core_get_scaled_duty_cycle(c, 100000));
- 
- 	if (c->ops->is_enabled)
--		seq_printf(s, " %9c\n", clk_core_is_enabled(c) ? 'Y' : 'N');
-+		seq_printf(s, " %5c ", clk_core_is_enabled(c) ? 'Y' : 'N');
- 	else if (!c->ops->enable)
--		seq_printf(s, " %9c\n", 'Y');
-+		seq_printf(s, " %5c ", 'Y');
- 	else
--		seq_printf(s, " %9c\n", '?');
-+		seq_printf(s, " %5c ", '?');
-+
-+	hlist_for_each_entry(clk_user, &c->clks, clks_node) {
-+		seq_printf(s, "%*s%-*s  %-4d\n",
-+			   level * 3 + 2 + 105 * multi_node, "",
-+			   30,
-+			   clk_user->dev_id ? clk_user->dev_id : "deviceless",
-+			   clk_user->enable_count);
-+
-+		multi_node = 1;
-+	}
-+
- }
- 
- static void clk_summary_show_subtree(struct seq_file *s, struct clk_core *c,
-@@ -3002,9 +3026,9 @@ static int clk_summary_show(struct seq_file *s, void *data)
- 	struct clk_core *c;
- 	struct hlist_head **lists = (struct hlist_head **)s->private;
- 
--	seq_puts(s, "                                 enable  prepare  protect                                duty  hardware\n");
--	seq_puts(s, "   clock                          count    count    count        rate   accuracy phase  cycle    enable\n");
--	seq_puts(s, "-------------------------------------------------------------------------------------------------------\n");
-+	seq_puts(s, "                                 enable  prepare  protect                                duty  hardware                            per-user\n");
-+	seq_puts(s, "   clock                          count    count    count        rate   accuracy phase  cycle    enable   consumer                    count\n");
-+	seq_puts(s, "-------------------------------------------------------------------------------------------------------------------------------------------\n");
- 
- 	clk_prepare_lock();
- 
--- 
-2.7.4
+device-mapper: reload ioctl on nvme0n1p3_crypt (254:0) failed: No such file or directory
 
+The kernel log shows:
+
+device-mapper: table: 254:0: crypt: Error allocating crypto tfm (-ENOENT)
+device-mapper: ioctl: error adding target to table
+
+I tested the previous 5.19-rcX, and the issue started happening with 5.19-rc1.
+A bisection between 5.18.0 and 5.19-rc1 identifies the following commit:
+
+8ad7e8f69695 ("x86/fpu/xsave: Support XSAVEC in the kernel")
+
+I reverted that commit on top of 5.19-rc4, and unlocking the encrypted disk
+works again.
+
+Some more information about the system:
+- CPU is AMD Ryzen 5700G
+- Userspace is Debian Sid
+- The encrypted disk setup is a default encrypted rootfs, as configured by the
+  standard Debian installer
+
+Please let me know if more information is needed, or if some tests are needed
+to be run.
+
+Thanks,
+Alex
+
+#regzbot introduced 8ad7e8f69695
