@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D931C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E459CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347718AbiF1PDG (ORCPT
+        id S1347709AbiF1PDK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38798 "EHLO
+        Tue, 28 Jun 2022 11:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347691AbiF1PCy (ORCPT
+        with ESMTP id S1347695AbiF1PCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:02:54 -0400
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA6433E91
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:53 -0700 (PDT)
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 25SEohsN006863
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:51 -0700
+        Tue, 28 Jun 2022 11:02:55 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304BC33E38
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:54 -0700 (PDT)
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SEdFhQ030169
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:53 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=vTcz7CZ5Xy/EbxsuhtZpx3SZHM8cYYbE6e4zhycs9lc=;
- b=fXoi82n7Qk/U7XG6cdk5KxgMKxBwHCXZGAPtFBItNNao/N5A918riJ2mnEuwHFrM5lLr
- WYMnfodlkzgJJkWvxtwSFJwZtncpWL1E87eOfOcrq5DOz4+XvtarWkCFrSKfbPCoP9tv
- ZQvbXjkev9lF0HQPTYJOU86cszH41xRYn2E= 
+ bh=GhUO5GqGv+DbKPtClNBIaCznVrmxio+cvLQXkR92xOo=;
+ b=P7Zo9DXOH/pSsHHphilUequlMJmNVXTEOODghSi9E/AM2iAY0D/2jtx4h01a+fyRzOZ0
+ tiEFWtulHfEsPcW27dlvVSOzKSPwsRrz2M3ZJlRKjMMUtMD60rRTBwyMJe+IQYxynlyt
+ EeWEJ+qs9GC8lnCWML3ZY8P5GNSYg/X6tUM= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3h03ru036y-1
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h03kf05qx-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:51 -0700
-Received: from twshared14577.08.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:53 -0700
+Received: from twshared17349.03.ash7.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Tue, 28 Jun 2022 08:02:50 -0700
+ 15.1.2375.28; Tue, 28 Jun 2022 08:02:51 -0700
 Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
-        id 07168244BBD5; Tue, 28 Jun 2022 08:02:37 -0700 (PDT)
+        id 10BBC244BBD9; Tue, 28 Jun 2022 08:02:38 -0700 (PDT)
 From:   Dylan Yudaken <dylany@fb.com>
 To:     Jens Axboe <axboe@kernel.dk>,
         Pavel Begunkov <asml.silence@gmail.com>,
         <io-uring@vger.kernel.org>
 CC:     <Kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
         Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH for-next 5/8] io_uring: clean up io_poll_check_events return values
-Date:   Tue, 28 Jun 2022 08:02:25 -0700
-Message-ID: <20220628150228.1379645-6-dylany@fb.com>
+Subject: [PATCH for-next 7/8] io_uring: add IORING_RECV_MULTISHOT flag
+Date:   Tue, 28 Jun 2022 08:02:27 -0700
+Message-ID: <20220628150228.1379645-8-dylany@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220628150228.1379645-1-dylany@fb.com>
 References: <20220628150228.1379645-1-dylany@fb.com>
@@ -52,110 +52,42 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Zi8QT9wEl0aP1Freu0OPfLMk9XqTWpdY
-X-Proofpoint-GUID: Zi8QT9wEl0aP1Freu0OPfLMk9XqTWpdY
+X-Proofpoint-GUID: hbWfyTlD4qseGonWdOuvS9in1rvgc277
+X-Proofpoint-ORIG-GUID: hbWfyTlD4qseGonWdOuvS9in1rvgc277
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-28_08,2022-06-28_01,2022-06-22_01
+ definitions=2022-06-28_07,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The values returned are a bit confusing, where 0 and 1 have implied
-meaning, so add some definitions for them.
+Introduce multishot recv flag which will be used for multishot
+recv/recvmsg
 
 Signed-off-by: Dylan Yudaken <dylany@fb.com>
 ---
- io_uring/poll.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ include/uapi/linux/io_uring.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/io_uring/poll.c b/io_uring/poll.c
-index fa25b88a7b93..fc3a5789d303 100644
---- a/io_uring/poll.c
-+++ b/io_uring/poll.c
-@@ -192,6 +192,11 @@ static void io_poll_remove_entries(struct io_kiocb *=
-req)
- 	rcu_read_unlock();
- }
+diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.=
+h
+index 09e7c3b13d2d..1e5bdb323184 100644
+--- a/include/uapi/linux/io_uring.h
++++ b/include/uapi/linux/io_uring.h
+@@ -259,8 +259,13 @@ enum io_uring_op {
+  *				or receive and arm poll if that yields an
+  *				-EAGAIN result, arm poll upfront and skip
+  *				the initial transfer attempt.
++ *
++ * IORING_RECV_MULTISHOT	Multishot recv. Sets IORING_CQE_F_MORE if
++ *				the handler will continue to report
++ *				CQEs on behalf of the same SQE.
+  */
+ #define IORING_RECVSEND_POLL_FIRST	(1U << 0)
++#define IORING_RECV_MULTISHOT	(1U << 1)
 =20
-+enum {
-+	IOU_POLL_DONE =3D 0,
-+	IOU_POLL_NO_ACTION =3D 1,
-+};
-+
  /*
-  * All poll tw should go through this. Checks for poll events, manages
-  * references, does rewait, etc.
-@@ -214,10 +219,11 @@ static int io_poll_check_events(struct io_kiocb *re=
-q, bool *locked)
-=20
- 		/* tw handler should be the owner, and so have some references */
- 		if (WARN_ON_ONCE(!(v & IO_POLL_REF_MASK)))
--			return 0;
-+			return IOU_POLL_DONE;
- 		if (v & IO_POLL_CANCEL_FLAG)
- 			return -ECANCELED;
-=20
-+		/* the mask was stashed in __io_poll_execute */
- 		if (!req->cqe.res) {
- 			struct poll_table_struct pt =3D { ._key =3D req->apoll_events };
- 			req->cqe.res =3D vfs_poll(req->file, &pt) & req->apoll_events;
-@@ -226,7 +232,7 @@ static int io_poll_check_events(struct io_kiocb *req,=
- bool *locked)
- 		if ((unlikely(!req->cqe.res)))
- 			continue;
- 		if (req->apoll_events & EPOLLONESHOT)
--			return 0;
-+			return IOU_POLL_DONE;
-=20
- 		/* multishot, just fill a CQE and proceed */
- 		if (!(req->flags & REQ_F_APOLL_MULTISHOT)) {
-@@ -238,7 +244,7 @@ static int io_poll_check_events(struct io_kiocb *req,=
- bool *locked)
- 				return -ECANCELED;
- 		} else {
- 			ret =3D io_poll_issue(req, locked);
--			if (ret)
-+			if (ret < 0)
- 				return ret;
- 		}
-=20
-@@ -248,7 +254,7 @@ static int io_poll_check_events(struct io_kiocb *req,=
- bool *locked)
- 		 */
- 	} while (atomic_sub_return(v & IO_POLL_REF_MASK, &req->poll_refs));
-=20
--	return 1;
-+	return IOU_POLL_NO_ACTION;
- }
-=20
- static void io_poll_task_func(struct io_kiocb *req, bool *locked)
-@@ -256,12 +262,11 @@ static void io_poll_task_func(struct io_kiocb *req,=
- bool *locked)
- 	int ret;
-=20
- 	ret =3D io_poll_check_events(req, locked);
--	if (ret > 0)
-+	if (ret =3D=3D IOU_POLL_NO_ACTION)
- 		return;
-=20
--	if (!ret) {
-+	if (ret =3D=3D IOU_POLL_DONE) {
- 		struct io_poll *poll =3D io_kiocb_to_cmd(req);
--
- 		req->cqe.res =3D mangle_poll(req->cqe.res & poll->events);
- 	} else {
- 		req->cqe.res =3D ret;
-@@ -280,7 +285,7 @@ static void io_apoll_task_func(struct io_kiocb *req, =
-bool *locked)
- 	int ret;
-=20
- 	ret =3D io_poll_check_events(req, locked);
--	if (ret > 0)
-+	if (ret =3D=3D IOU_POLL_NO_ACTION)
- 		return;
-=20
- 	io_poll_remove_entries(req);
+  * accept flags stored in sqe->ioprio
 --=20
 2.30.2
 
