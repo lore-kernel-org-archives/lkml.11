@@ -2,109 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1840C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC65DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345117AbiF1Lgt (ORCPT
+        id S1345238AbiF1Lh2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60960 "EHLO
+        Tue, 28 Jun 2022 07:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiF1Lgr (ORCPT
+        with ESMTP id S1343937AbiF1Lh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:36:47 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFAF4326F2;
-        Tue, 28 Jun 2022 04:36:46 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id A8CAE22246;
-        Tue, 28 Jun 2022 13:36:44 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1656416204;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=za8uTTYx8zFPk1Ng0Xyp1mSh2osnL3ssrrojyyayo04=;
-        b=lHtroMucaHy91RglKDxtz8KfYfdTkDypNHaOuDniKsEcg1oSpJakww1A9ZsQRDDzQMxmqn
-        kGlVoX7XYWdcwQgQxg4NQH141viaDiZgkPsezNCgHTyKV9YVcClKgoWgrgvf3vQSDHi/UF
-        ZdHhPcanYwYElIjr9YOrj78V+G+Wmj0=
+        Tue, 28 Jun 2022 07:37:26 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042E232EF6
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:37:25 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id i8-20020a056e020d8800b002d931252904so7244192ilj.23
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:37:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=nXYR0Ni31x3OMa5NpiTlTGP/nRt/blFERdaKnOstPZI=;
+        b=Y+Ub3vp1EQ5cXDMzkHOLkyHkiqWeHgCCoAuLntftnLpoJofzFnOU0MthnuwPKV32qB
+         IbKqunXSEXn8MUE4ebFs9GKvzZN6F/EefJAvr6L8SWncGy2hSUXo0SYfX7WiEagE8jPL
+         yNZeVC8aF7TVHPFooPQKwEsOLQYehudicQNlVsoQsJUUrLVa0ANVGcKXxUEFXiH5bP5l
+         Qxm50+mHT8RAkuXJ72f1jkvNdqGBjqj7Tl7DjRlmAODyLwgzG4AOGQqS9LYi0UugdmwW
+         RMUsKKjhBUJMGWOEGimhZreXZq5W14jSbpYm+XJydH4sZp6AUmvEOWTNj22KGEafpKAY
+         h7+g==
+X-Gm-Message-State: AJIora9KWwL1h4FwsV/1JVRaFPaPsyVfUxJkDQ6jQH1gfqh/ES7qE3Nt
+        Nmz1VBeXmZTgnLZdPdCtoVY3ULP8qrPV3aZs/s/yZx64OIN9
+X-Google-Smtp-Source: AGRyM1sVZemfDWn3mXh7IBcwFhV34fnWynfNnE9Yv6qJ2uq0lb4iea99NY0NIkd1DWvz6VYk0CbKSWWq6sZxIu+PdzePo+NrP3uw
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 28 Jun 2022 13:36:44 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: fwnode_for_each_child_node() and OF backend discrepancy
-In-Reply-To: <Yrrhs3D++V79/4Jk@smile.fi.intel.com>
-References: <4e1d5db9dea68d82c94336a1d6aac404@walle.cc>
- <Yrrhs3D++V79/4Jk@smile.fi.intel.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <f17d3ecfecf4491dd15b1fa092205f3f@walle.cc>
-X-Sender: michael@walle.cc
+X-Received: by 2002:a05:6638:1926:b0:33c:7d9:221f with SMTP id
+ p38-20020a056638192600b0033c07d9221fmr9808990jal.154.1656416244349; Tue, 28
+ Jun 2022 04:37:24 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 04:37:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d8420a05e28075ea@google.com>
+Subject: [syzbot] KMSAN: uninit-value in kvm_irq_delivery_to_apic_fast
+From:   syzbot <syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com>
+To:     bp@alien8.de, dave.hansen@linux.intel.com, glider@google.com,
+        hpa@zytor.com, jmattson@google.com, joro@8bytes.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mingo@redhat.com, pbonzini@redhat.com, seanjc@google.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-06-28 13:10, schrieb Andy Shevchenko:
-> On Mon, Jun 27, 2022 at 02:49:51PM +0200, Michael Walle wrote:
->> Hi,
->> 
->> I tired to iterate over all child nodes, regardless if they are 
->> available
->> or not. Now there is that handy fwnode_for_each_child_node() (and the
->> fwnode_for_each_available_child_node()). The only thing is the OF 
->> backend
->> already skips disabled nodes [1], making fwnode_for_each_child_node() 
->> and
->> fwnode_for_each_available_child_node() behave the same with the OF 
->> backend.
->> 
->> Doesn't seem to be noticed by anyone for now. I'm not sure how to fix 
->> that
->> one. fwnode_for_each_child_node() and also 
->> fwnode_get_next_child_node() are
->> used by a handful of drivers. I've looked at some, but couldn't decide
->> whether they really want to iterate over all child nodes or just the 
->> enabled
->> ones.
->> 
->> Any thoughts?
-> 
-> It was discussed at least twice this year (in regard to some new IIO 
-> drivers)
-> and Rob told that iterating over disabled (not available) nodes in OF 
-> kinda
-> legacy/design mistake. That's why device_for_each_child_node() goes 
-> only
-> over available nodes only.
+Hello,
 
-Mh, but then the fwnode_for_each_child_node() is very misleading, esp.
-with the presence of fwnode_for_each_available_child_node().
+syzbot found the following issue on:
 
-> So, why do you need to iterate over disabled ones?
+HEAD commit:    4b28366af7d9 x86: kmsan: enable KMSAN builds for x86
+git tree:       https://github.com/google/kmsan.git master
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=126a4b60080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d14e10a167d1c585
+dashboard link: https://syzkaller.appspot.com/bug?extid=d6caa905917d353f0d07
+compiler:       clang version 15.0.0 (https://github.com/llvm/llvm-project.git 610139d2d9ce6746b3c617fb3e2f7886272d26ff), GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14d596c4080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10bcf08ff00000
 
-I was trying to fix the lan966x driver [1] which doesn't work if there
-are disabled nodes in between. My steps would have been:
-  (1) change fwnode_for_each_available_child_node() to
-      fwnode_for_each_child_node(), maybe with a fixes tag, as it's
-      easy to backport
-  (2) introduce new compatibles and deduce the number of ports
-      according to the compatible string and not by counting
-      the child nodes.
-  (3) keep the old behavior for the legacy compatible and mark it
-      as deprecated in the binding
-  (4) move the device tree over to the new compatible string
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com
 
--michael
+L1TF CPU bug present and SMT on, data leak possible. See CVE-2018-3646 and https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/l1tf.html for details.
+=====================================================
+BUG: KMSAN: uninit-value in kvm_apic_set_irq arch/x86/kvm/lapic.c:634 [inline]
+BUG: KMSAN: uninit-value in kvm_irq_delivery_to_apic_fast+0x7a7/0x990 arch/x86/kvm/lapic.c:1044
+ kvm_apic_set_irq arch/x86/kvm/lapic.c:634 [inline]
+ kvm_irq_delivery_to_apic_fast+0x7a7/0x990 arch/x86/kvm/lapic.c:1044
+ kvm_irq_delivery_to_apic+0xdb/0xe40 arch/x86/kvm/irq_comm.c:54
+ kvm_pv_kick_cpu_op+0xd1/0x100 arch/x86/kvm/x86.c:9155
+ kvm_emulate_hypercall+0xee7/0x1340 arch/x86/kvm/x86.c:9285
+ __vmx_handle_exit+0x101f/0x1710 arch/x86/kvm/vmx/vmx.c:6237
+ vmx_handle_exit+0x38/0x1f0 arch/x86/kvm/vmx/vmx.c:6254
+ vcpu_enter_guest+0x4733/0x52d0 arch/x86/kvm/x86.c:10366
+ vcpu_run+0x794/0x1230 arch/x86/kvm/x86.c:10455
+ kvm_arch_vcpu_ioctl_run+0x11fe/0x1b30 arch/x86/kvm/x86.c:10659
+ kvm_vcpu_ioctl+0xcd4/0x1980 arch/x86/kvm/../../../virt/kvm/kvm_main.c:3948
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl+0x222/0x400 fs/ioctl.c:856
+ __x64_sys_ioctl+0x92/0xd0 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-[1] 
-https://elixir.bootlin.com/linux/v5.19-rc4/source/drivers/net/ethernet/microchip/lan966x/lan966x_main.c#L1029
+Local variable lapic_irq created at:
+ kvm_pv_kick_cpu_op+0x46/0x100 arch/x86/kvm/x86.c:9146
+ kvm_emulate_hypercall+0xee7/0x1340 arch/x86/kvm/x86.c:9285
+
+CPU: 1 PID: 3490 Comm: syz-executor407 Not tainted 5.19.0-rc3-syzkaller-30868-g4b28366af7d9 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
