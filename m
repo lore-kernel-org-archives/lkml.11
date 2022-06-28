@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CA3CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244037AbiF1CXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33410 "EHLO
+        id S244148AbiF1CXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243810AbiF1CWB (ORCPT
+        with ESMTP id S243811AbiF1CWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 22:22:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55DF24BE9;
-        Mon, 27 Jun 2022 19:21:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2965324958;
+        Mon, 27 Jun 2022 19:21:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CAB4B81C15;
-        Tue, 28 Jun 2022 02:21:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C038C341CD;
-        Tue, 28 Jun 2022 02:21:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA5EF617D4;
+        Tue, 28 Jun 2022 02:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56FDC341CC;
+        Tue, 28 Jun 2022 02:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382897;
-        bh=I4P51u70MRnmBJQMos5aLd8Z74zYgyUALfCAgyocsYA=;
+        s=k20201202; t=1656382902;
+        bh=pqFvgJ8fBTY304BDoI8GuIDGiLlPge7h5+NmN2eyUEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nvNDgwfPai7633z0fEchd5+s7OlCcYvFYknpvRqCZ/GUGVAD4qJYw5921zeiK1wJo
-         ZyhP8IISynLsY9+uYhKNuJK/hjllM2L/t90mtgmOtCVtqWrcW/xGGs0Z5OZzt5ilyD
-         6kt5hb4UxsRRLTzEQZzMAnV70t01c+ar+RP/lgUFMgcFK69Cj3XpXkmxHvHwcWN1s6
-         +BNoSs5bU4IqvDBnH5LsdIaz2MqUN7sIHtdKwuvI7fgj7E0MeXySGH4GV9mAXfd4xM
-         rayD3kKbhi21N8i6ezdtxCSsyNFMnQl4+4OxqaNXqqpoku8IcHxpfdV6KWLrjJfown
-         WFaIqhZ9q7u8A==
+        b=D+XE0F0E2Tw3xRm5aOEERB3Ki6WgdJ2sg3JcdSm7HQjzQ+Gg+KFJvYy/k4zHX6qOo
+         tGvR16WoOSx5jBeL6nKuJ/zisL9mczllzCYXO0qijDzHPAagPOrv5wiza7q5AuloMo
+         KpXBLnySnyyTE47dPlzTepH1kUc7vUB8oTWejr2oyzUGLqpV/MYAHq9nYcy9I62+O1
+         6T1oqN/S9HRd5bXhqagsYwn++ECH9KdsTCe9zTc2JzGmmglHDB/hYST9cV14Rcj2gP
+         f+WwHi+qptibsuyfE+71piTfm5baUmoEoop3anvOeSQoN5A1vgbjDF5PLbB9feAVjC
+         Fl/ZkHnX3/k9w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, gushengxian@yulong.com,
-        nizhen@uniontech.com, jiasheng@iscas.ac.cn,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 14/41] ALSA: x86: intel_hdmi_audio: enable pm_runtime and set autosuspend delay
-Date:   Mon, 27 Jun 2022 22:20:33 -0400
-Message-Id: <20220628022100.595243-14-sashal@kernel.org>
+Cc:     Xu Jia <xujia39@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, ajk@comnets.uni-bremen.de,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 16/41] hamradio: 6pack: fix array-index-out-of-bounds in decode_std_command()
+Date:   Mon, 27 Jun 2022 22:20:35 -0400
+Message-Id: <20220628022100.595243-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022100.595243-1-sashal@kernel.org>
 References: <20220628022100.595243-1-sashal@kernel.org>
@@ -56,51 +53,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Xu Jia <xujia39@huawei.com>
 
-[ Upstream commit e87c65aeb46ca4f5b7dc08531200bcb8a426c62e ]
+[ Upstream commit 2b04495e21cdb9b45c28c6aeb2da560184de20a3 ]
 
-The existing code uses pm_runtime_get_sync/put_autosuspend, but
-pm_runtime was not explicitly enabled. The autosuspend delay was not
-set either, the value is set to 5s since HDMI is rather painful to
-resume.
+Hulk Robot reports incorrect sp->rx_count_cooked value in decode_std_command().
+This should be caused by the subtracting from sp->rx_count_cooked before.
+It seems that sp->rx_count_cooked value is changed to 0, which bypassed the
+previous judgment.
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Link: https://lore.kernel.org/r/20220616222910.136854-2-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+The situation is shown below:
+
+         (Thread 1)			|  (Thread 2)
+decode_std_command()		| resync_tnc()
+...					|
+if (rest == 2)			|
+	sp->rx_count_cooked -= 2;	|
+else if (rest == 3)			| ...
+					| sp->rx_count_cooked = 0;
+	sp->rx_count_cooked -= 1;	|
+for (i = 0; i < sp->rx_count_cooked; i++) // report error
+	checksum += sp->cooked_buf[i];
+
+sp->rx_count_cooked is a shared variable but is not protected by a lock.
+The same applies to sp->rx_count. This patch adds a lock to fix the bug.
+
+The fail log is shown below:
+=======================================================================
+UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:925:31
+index 400 is out of range for type 'unsigned char [400]'
+CPU: 3 PID: 7433 Comm: kworker/u10:1 Not tainted 5.18.0-rc5-00163-g4b97bac0756a #2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xcd/0x134
+ ubsan_epilogue+0xb/0x50
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c
+ sixpack_receive_buf+0xfda/0x1330
+ tty_ldisc_receive_buf+0x13e/0x180
+ tty_port_default_receive_buf+0x6d/0xa0
+ flush_to_ldisc+0x213/0x3f0
+ process_one_work+0x98f/0x1620
+ worker_thread+0x665/0x1080
+ kthread+0x2e9/0x3a0
+ ret_from_fork+0x1f/0x30
+ ...
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xu Jia <xujia39@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/x86/intel_hdmi_audio.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/hamradio/6pack.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/sound/x86/intel_hdmi_audio.c b/sound/x86/intel_hdmi_audio.c
-index 42add5df37fd..b16657de9d25 100644
---- a/sound/x86/intel_hdmi_audio.c
-+++ b/sound/x86/intel_hdmi_audio.c
-@@ -33,6 +33,8 @@
- #include <drm/intel_lpe_audio.h>
- #include "intel_hdmi_audio.h"
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 36a9fbb70402..ac2e79f0a928 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -99,6 +99,7 @@ struct sixpack {
  
-+#define INTEL_HDMI_AUDIO_SUSPEND_DELAY_MS  5000
-+
- #define for_each_pipe(card_ctx, pipe) \
- 	for ((pipe) = 0; (pipe) < (card_ctx)->num_pipes; (pipe)++)
- #define for_each_port(card_ctx, port) \
-@@ -1813,8 +1815,11 @@ static int __hdmi_lpe_audio_probe(struct platform_device *pdev)
- 	pdata->notify_audio_lpe = notify_audio_lpe;
- 	spin_unlock_irq(&pdata->lpe_audio_slock);
+ 	unsigned int		rx_count;
+ 	unsigned int		rx_count_cooked;
++	spinlock_t		rxlock;
  
-+	pm_runtime_set_autosuspend_delay(&pdev->dev, INTEL_HDMI_AUDIO_SUSPEND_DELAY_MS);
- 	pm_runtime_use_autosuspend(&pdev->dev);
-+	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_mark_last_busy(&pdev->dev);
-+	pm_runtime_idle(&pdev->dev);
+ 	int			mtu;		/* Our mtu (to spot changes!) */
+ 	int			buffsize;       /* Max buffers sizes */
+@@ -565,6 +566,7 @@ static int sixpack_open(struct tty_struct *tty)
+ 	sp->dev = dev;
  
- 	dev_dbg(&pdev->dev, "%s: handle pending notification\n", __func__);
- 	for_each_port(card_ctx, port) {
+ 	spin_lock_init(&sp->lock);
++	spin_lock_init(&sp->rxlock);
+ 	refcount_set(&sp->refcnt, 1);
+ 	init_completion(&sp->dead);
+ 
+@@ -913,6 +915,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 			sp->led_state = 0x60;
+ 			/* fill trailing bytes with zeroes */
+ 			sp->tty->ops->write(sp->tty, &sp->led_state, 1);
++			spin_lock_bh(&sp->rxlock);
+ 			rest = sp->rx_count;
+ 			if (rest != 0)
+ 				 for (i = rest; i <= 3; i++)
+@@ -930,6 +933,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 				sp_bump(sp, 0);
+ 			}
+ 			sp->rx_count_cooked = 0;
++			spin_unlock_bh(&sp->rxlock);
+ 		}
+ 		break;
+ 	case SIXP_TX_URUN: printk(KERN_DEBUG "6pack: TX underrun\n");
+@@ -959,8 +963,11 @@ sixpack_decode(struct sixpack *sp, const unsigned char *pre_rbuff, int count)
+ 			decode_prio_command(sp, inbyte);
+ 		else if ((inbyte & SIXP_STD_CMD_MASK) != 0)
+ 			decode_std_command(sp, inbyte);
+-		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK)
++		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK) {
++			spin_lock_bh(&sp->rxlock);
+ 			decode_data(sp, inbyte);
++			spin_unlock_bh(&sp->rxlock);
++		}
+ 	}
+ }
+ 
 -- 
 2.35.1
 
