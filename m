@@ -2,299 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32579C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347561AbiF1Otm (ORCPT
+        id S1347574AbiF1Oty (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 10:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
+        Tue, 28 Jun 2022 10:49:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347551AbiF1Otg (ORCPT
+        with ESMTP id S1347570AbiF1Otu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 10:49:36 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140C631224
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 07:49:35 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4LXSD20w20z9tV9;
-        Tue, 28 Jun 2022 16:49:22 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id pmtXh_qfM3gG; Tue, 28 Jun 2022 16:49:22 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4LXSCy59Zsz9tVB;
-        Tue, 28 Jun 2022 16:49:18 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 93C5A8B788;
-        Tue, 28 Jun 2022 16:49:18 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id xt-MdVA7bk3j; Tue, 28 Jun 2022 16:49:18 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.132])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 29DB08B787;
-        Tue, 28 Jun 2022 16:49:18 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 25SEnDQn2928214
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 16:49:13 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 25SEnDXK2928198;
-        Tue, 28 Jun 2022 16:49:13 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>, dja@axtens.net
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v1 4/6] powerpc/64e: Move virtual memory closer to linear memory
-Date:   Tue, 28 Jun 2022 16:48:57 +0200
-Message-Id: <4b225168031449fc34fc7132f3923cc8dc54af60.1656427701.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <8d6c5859a45935d6e1a336da4dc20be421e8cea7.1656427701.git.christophe.leroy@csgroup.eu>
-References: <8d6c5859a45935d6e1a336da4dc20be421e8cea7.1656427701.git.christophe.leroy@csgroup.eu>
+        Tue, 28 Jun 2022 10:49:50 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27053139A;
+        Tue, 28 Jun 2022 07:49:48 -0700 (PDT)
+Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LXS9s3pcfz6H6pP;
+        Tue, 28 Jun 2022 22:47:29 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 28 Jun 2022 16:49:46 +0200
+Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
+ 2022 15:49:46 +0100
+Date:   Tue, 28 Jun 2022 15:49:42 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     <ira.weiny@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        "Dave Jiang" <dave.jiang@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V12 7/9] cxl/port: Introduce cxl_cdat_valid()
+Message-ID: <20220628154942.00002064@Huawei.com>
+In-Reply-To: <20220628041527.742333-8-ira.weiny@intel.com>
+References: <20220628041527.742333-1-ira.weiny@intel.com>
+        <20220628041527.742333-8-ira.weiny@intel.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1656427736; l=8104; s=20211009; h=from:subject:message-id; bh=rLHlD8KkBGgAnEOoljlDdEz+yunGULO/PeDHpayEOqk=; b=pcuy21y/eihMnBI9prpxklfcd/xmg2wfzANO9ltHP9zxCz2pDMkhlUQywHPAoVkrT3wul6E+fZsE hRvlPsaQCHnZX4PxbP3y7/QolECrYgb2MLR1Gwz/MqD4KfrfPFDd
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Today nohash/64 have linear memory based at 0xc000000000000000 and
-virtual memory based at 0x8000000000000000.
+On Mon, 27 Jun 2022 21:15:25 -0700
+ira.weiny@intel.com wrote:
 
-In order to implement KASAN, we need to regroup both areas.
+> From: Ira Weiny <ira.weiny@intel.com>
+> 
+> The CDAT data is protected by a checksum and should be the proper
+> length.
+> 
+> Introduce cxl_cdat_valid() to validate the data.  While at it check and
+> store the sequence number.
+> 
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> 
+Minor ordering comment.  With that tidied up
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Move virtual memmory at 0xc000100000000000.
 
-This complicates a bit TLB miss handlers. Until now, memory region
-was easily identified with the 4 higher bits of address:
-- 0 ==> User
-- c ==> Linear Memory
-- 8 ==> Virtual Memory
+> diff --git a/drivers/cxl/core/pci.c b/drivers/cxl/core/pci.c
+> index 4bd479ec0253..6d775cc3dca1 100644
+> --- a/drivers/cxl/core/pci.c
+> +++ b/drivers/cxl/core/pci.c
+> @@ -532,6 +532,40 @@ static int cxl_cdat_get_length(struct device *dev,
+>  	return rc;
+>  }
+>  
+> +static bool cxl_cdat_valid(struct device *dev, struct cxl_cdat *cdat)
+> +{
+> +	u32 *table = cdat->table;
+> +	u8 *data8 = cdat->table;
+> +	u32 length, seq;
+> +	u8 check;
+> +	int i;
+> +
+> +	length = FIELD_GET(CDAT_HEADER_DW0_LENGTH, table[0]);
+> +	if ((length < CDAT_HEADER_LENGTH_BYTES) || (length > cdat->length)) {
+> +		dev_err(dev, "CDAT Invalid length %u (%zu-%zu)\n", length,
+> +			CDAT_HEADER_LENGTH_BYTES, cdat->length);
+> +		return false;
+> +	}
+> +
+> +	for (check = 0, i = 0; i < length; i++)
+> +		check += data8[i];
+> +
+> +	dev_dbg(dev, "CDAT length %u CS %u\n", length, check);
+> +	if (check != 0) {
+> +		dev_err(dev, "CDAT Invalid checksum %u\n", check);
+> +		return false;
+> +	}
+> +
+> +	seq = FIELD_GET(CDAT_HEADER_DW3_SEQUENCE, table[3]);
+> +	/* Store the sequence for now. */
+> +	if (cdat->seq != seq) {
+> +		dev_info(dev, "CDAT seq change %x -> %x\n", cdat->seq, seq);
+> +		cdat->seq = seq;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+>  static int cxl_cdat_read_table(struct device *dev,
+>  			       struct pci_doe_mb *cdat_mb,
+>  			       struct cxl_cdat *cdat)
+> @@ -579,6 +613,8 @@ static int cxl_cdat_read_table(struct device *dev,
+>  
+>  	} while (entry_handle != CXL_DOE_TABLE_ACCESS_LAST_ENTRY);
+>  
+> +	if (!rc && !cxl_cdat_valid(dev, cdat))
+> +		return -EIO;
 
-Now we need to rely on the 20 higher bits, with:
-- 0xxxx ==> User
-- c0000 ==> Linear Memory
-- c0001 ==> Virtual Memory
+I'd prefer those handled separately as flow is more readable if error
+handling always out of line.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/include/asm/nohash/64/pgtable.h |  2 +-
- arch/powerpc/mm/nohash/tlb_low_64e.S         | 64 +++++++++++---------
- 2 files changed, 38 insertions(+), 28 deletions(-)
+	if (rc)
+		return rc;
 
-diff --git a/arch/powerpc/include/asm/nohash/64/pgtable.h b/arch/powerpc/include/asm/nohash/64/pgtable.h
-index db9770995f7c..76a144b58f9b 100644
---- a/arch/powerpc/include/asm/nohash/64/pgtable.h
-+++ b/arch/powerpc/include/asm/nohash/64/pgtable.h
-@@ -25,7 +25,7 @@
- /*
-  * Define the address range of the kernel non-linear virtual area
-  */
--#define KERN_VIRT_START ASM_CONST(0x8000000000000000)
-+#define KERN_VIRT_START ASM_CONST(0xc000100000000000)
- #define KERN_VIRT_SIZE	ASM_CONST(0x0000100000000000)
- 
- /*
-diff --git a/arch/powerpc/mm/nohash/tlb_low_64e.S b/arch/powerpc/mm/nohash/tlb_low_64e.S
-index a59485c549a7..68ffbfdba894 100644
---- a/arch/powerpc/mm/nohash/tlb_low_64e.S
-+++ b/arch/powerpc/mm/nohash/tlb_low_64e.S
-@@ -213,10 +213,11 @@ itlb_miss_kernel_bolted:
- tlb_miss_kernel_bolted:
- 	mfspr	r10,SPRN_MAS1
- 	ld	r14,PACA_KERNELPGD(r13)
--	cmpldi	cr0,r15,8		/* Check for vmalloc region */
-+	srdi	r15,r16,44		/* get kernel region */
-+	andi.	r15,r15,1		/* Check for vmalloc region */
- 	rlwinm	r10,r10,0,16,1		/* Clear TID */
- 	mtspr	SPRN_MAS1,r10
--	beq+	tlb_miss_common_bolted
-+	bne+	tlb_miss_common_bolted
- 
- tlb_miss_fault_bolted:
- 	/* We need to check if it was an instruction miss */
-@@ -498,7 +499,9 @@ tlb_miss_huge_e6500:
- 
- tlb_miss_kernel_e6500:
- 	ld	r14,PACA_KERNELPGD(r13)
--	cmpldi	cr1,r15,8		/* Check for vmalloc region */
-+	srdi	r15,r16,44		/* get kernel region */
-+	xoris	r15,r15,0xc		/* Check for vmalloc region */
-+	cmplwi	cr1,r15,1
- 	beq+	cr1,tlb_miss_common_e6500
- 
- tlb_miss_fault_e6500:
-@@ -532,16 +535,18 @@ itlb_miss_fault_e6500:
- 	 */
- 	mfspr	r14,SPRN_ESR
- 	mfspr	r16,SPRN_DEAR		/* get faulting address */
--	srdi	r15,r16,60		/* get region */
--	cmpldi	cr0,r15,0xc		/* linear mapping ? */
-+	srdi	r15,r16,44		/* get region */
-+	xoris	r15,r15,0xc
-+	cmpldi	cr0,r15,0		/* linear mapping ? */
- 	beq	tlb_load_linear		/* yes -> go to linear map load */
-+	cmpldi	cr1,r15,1		/* vmalloc mapping ? */
- 
- 	/* The page tables are mapped virtually linear. At this point, though,
- 	 * we don't know whether we are trying to fault in a first level
- 	 * virtual address or a virtual page table address. We can get that
- 	 * from bit 0x1 of the region ID which we have set for a page table
- 	 */
--	andi.	r10,r15,0x1
-+	andis.	r10,r15,0x1
- 	bne-	virt_page_table_tlb_miss
- 
- 	std	r14,EX_TLB_ESR(r12);	/* save ESR */
-@@ -553,7 +558,7 @@ itlb_miss_fault_e6500:
- 
- 	/* We do the user/kernel test for the PID here along with the RW test
- 	 */
--	cmpldi	cr0,r15,0		/* Check for user region */
-+	srdi.	r15,r16,60		/* Check for user region */
- 
- 	/* We pre-test some combination of permissions to avoid double
- 	 * faults:
-@@ -577,10 +582,9 @@ itlb_miss_fault_e6500:
- 	beq	normal_tlb_miss_user
- 	/* XXX replace the RMW cycles with immediate loads + writes */
- 1:	mfspr	r10,SPRN_MAS1
--	cmpldi	cr0,r15,8		/* Check for vmalloc region */
- 	rlwinm	r10,r10,0,16,1		/* Clear TID */
- 	mtspr	SPRN_MAS1,r10
--	beq+	normal_tlb_miss
-+	beq+	cr1,normal_tlb_miss
- 
- 	/* We got a crappy address, just fault with whatever DEAR and ESR
- 	 * are here
-@@ -606,16 +610,18 @@ itlb_miss_fault_e6500:
- 	 *
- 	 * Faulting address is SRR0 which is already in r16
- 	 */
--	srdi	r15,r16,60		/* get region */
--	cmpldi	cr0,r15,0xc		/* linear mapping ? */
-+	srdi	r15,r16,44		/* get region */
-+	xoris	r15,r15,0xc
-+	cmpldi	cr0,r15,0		/* linear mapping ? */
- 	beq	tlb_load_linear		/* yes -> go to linear map load */
-+	cmpldi	cr1,r15,1		/* vmalloc mapping ? */
- 
- 	/* We do the user/kernel test for the PID here along with the RW test
- 	 */
- 	li	r11,_PAGE_PRESENT|_PAGE_BAP_UX	/* Base perm */
- 	oris	r11,r11,_PAGE_ACCESSED@h
- 
--	cmpldi	cr0,r15,0			/* Check for user region */
-+	srdi.	r15,r16,60			/* Check for user region */
- 	std	r14,EX_TLB_ESR(r12)		/* write crazy -1 to frame */
- 	beq	normal_tlb_miss_user
- 
-@@ -623,10 +629,9 @@ itlb_miss_fault_e6500:
- 	oris	r11,r11,_PAGE_ACCESSED@h
- 	/* XXX replace the RMW cycles with immediate loads + writes */
- 	mfspr	r10,SPRN_MAS1
--	cmpldi	cr0,r15,8			/* Check for vmalloc region */
- 	rlwinm	r10,r10,0,16,1			/* Clear TID */
- 	mtspr	SPRN_MAS1,r10
--	beq+	normal_tlb_miss
-+	beq+	cr1,normal_tlb_miss
- 
- 	/* We got a crappy address, just fault */
- 	TLB_MISS_EPILOG_ERROR
-@@ -659,10 +664,11 @@ normal_tlb_miss:
- 	 * NOTE: For 64K pages, we do things slightly differently in
- 	 * order to handle the weird page table format used by linux
- 	 */
--	ori	r10,r15,0x1
-+	srdi	r15,r16,44
-+	oris	r10,r15,0x1
- 	rldicl	r14,r16,64-(PAGE_SHIFT-3),PAGE_SHIFT-3+4
--	sldi	r15,r10,60
--	clrrdi	r14,r14,3
-+	sldi	r15,r10,44
-+	clrrdi	r14,r14,19
- 	or	r10,r15,r14
- 
- 	ld	r14,0(r10)
-@@ -763,6 +769,7 @@ normal_tlb_miss_access_fault:
-  */
- virt_page_table_tlb_miss:
- 	/* Are we hitting a kernel page table ? */
-+	srdi	r15,r16,60
- 	andi.	r10,r15,0x8
- 
- 	/* The cool thing now is that r10 contains 0 for user and 8 for kernel,
-@@ -791,7 +798,8 @@ virt_page_table_tlb_miss:
- 	/* Now, we need to walk the page tables. First check if we are in
- 	 * range.
- 	 */
--	rldicl.	r10,r16,64-(VPTE_INDEX_SIZE+3),VPTE_INDEX_SIZE+3+4
-+	rldicl	r10,r16,64-(VPTE_INDEX_SIZE+3),VPTE_INDEX_SIZE+3+4
-+	cmpldi	r10,0x80
- 	bne-	virt_page_table_tlb_miss_fault
- 
- 	/* Get the PGD pointer */
-@@ -910,23 +918,24 @@ virt_page_table_tlb_miss_whacko_fault:
- 	 */
- 	mfspr	r14,SPRN_ESR
- 	mfspr	r16,SPRN_DEAR		/* get faulting address */
--	srdi	r11,r16,60		/* get region */
--	cmpldi	cr0,r11,0xc		/* linear mapping ? */
-+	srdi	r11,r16,44		/* get region */
-+	xoris	r11,r11,0xc
-+	cmpldi	cr0,r11,0		/* linear mapping ? */
- 	beq	tlb_load_linear		/* yes -> go to linear map load */
-+	cmpldi	cr1,r11,1		/* vmalloc mapping ? */
- 
- 	/* We do the user/kernel test for the PID here along with the RW test
- 	 */
--	cmpldi	cr0,r11,0		/* Check for user region */
-+	srdi.	r11,r16,60		/* Check for user region */
- 	ld	r15,PACAPGD(r13)	/* Load user pgdir */
- 	beq	htw_tlb_miss
- 
- 	/* XXX replace the RMW cycles with immediate loads + writes */
- 1:	mfspr	r10,SPRN_MAS1
--	cmpldi	cr0,r11,8		/* Check for vmalloc region */
- 	rlwinm	r10,r10,0,16,1		/* Clear TID */
- 	mtspr	SPRN_MAS1,r10
- 	ld	r15,PACA_KERNELPGD(r13)	/* Load kernel pgdir */
--	beq+	htw_tlb_miss
-+	beq+	cr1,htw_tlb_miss
- 
- 	/* We got a crappy address, just fault with whatever DEAR and ESR
- 	 * are here
-@@ -952,19 +961,20 @@ virt_page_table_tlb_miss_whacko_fault:
- 	 *
- 	 * Faulting address is SRR0 which is already in r16
- 	 */
--	srdi	r11,r16,60		/* get region */
--	cmpldi	cr0,r11,0xc		/* linear mapping ? */
-+	srdi	r11,r16,44		/* get region */
-+	xoris	r11,r11,0xc
-+	cmpldi	cr0,r11,0		/* linear mapping ? */
- 	beq	tlb_load_linear		/* yes -> go to linear map load */
-+	cmpldi	cr1,r11,1		/* vmalloc mapping ? */
- 
- 	/* We do the user/kernel test for the PID here along with the RW test
- 	 */
--	cmpldi	cr0,r11,0			/* Check for user region */
-+	srdi.	r11,r16,60		/* Check for user region */
- 	ld	r15,PACAPGD(r13)		/* Load user pgdir */
- 	beq	htw_tlb_miss
- 
- 	/* XXX replace the RMW cycles with immediate loads + writes */
- 1:	mfspr	r10,SPRN_MAS1
--	cmpldi	cr0,r11,8			/* Check for vmalloc region */
- 	rlwinm	r10,r10,0,16,1			/* Clear TID */
- 	mtspr	SPRN_MAS1,r10
- 	ld	r15,PACA_KERNELPGD(r13)		/* Load kernel pgdir */
--- 
-2.36.1
+	if (!cxl_cdata_valid)
+		return -EIO;
+
+	return 0;
+
+>  	return rc;
+>  }
+>  
 
