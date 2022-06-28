@@ -2,97 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACED1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 05:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 055B8CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 05:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244625AbiF1FHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 01:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
+        id S244471AbiF1FKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 01:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244452AbiF1FHW (ORCPT
+        with ESMTP id S244420AbiF1FKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 01:07:22 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272C126557;
-        Mon, 27 Jun 2022 22:07:21 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id u14so15848322qvv.2;
-        Mon, 27 Jun 2022 22:07:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6LGq2IOtr3wrbTYQOuYFuy95/cBwscd+ZPy+Qt3fU+g=;
-        b=KoyMtUNL/7s8XblbT4O7Cbs5pUTeIj0oXFDDUDfq5ZwVb6A5759hHSfc0Y9NYdhqKx
-         EF8QY4OjKom1+oyiFhVOPDU1JGULRCgED91rLfaCaxLhJ5sXyEqN5yj6iIf36azEsYqd
-         O6Z0DM7uoFVIUQHpoekdCwVhNTdN+oyLWc0/fKPSCVEbNv4LPSpAT5HQ4zCJqcNB1O4D
-         HNZH4NEb31TM58OTwnY6X/7tXTZ1Gnpz8BuhIATs+Ge5cTKuaOQBA0PIwU5SPwsBNhpq
-         aeCV8LLdajh++6cju+wUTziwyg9EMhds8nOlscH22UOJTixCzBGJzI5GTp47WukUCfm5
-         zstg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6LGq2IOtr3wrbTYQOuYFuy95/cBwscd+ZPy+Qt3fU+g=;
-        b=kD5H+Kv7k7bAiTXmsbkiiZU97zZ7NLx9HlIaZHt8MYYTAXmWi5iB7cIW8TNxRm6Yi3
-         sPAdo/GbJl/RQxcGdbDXgTcE/MYkhba0F+fdjE7JGdi8gecE+W5EvIgHsHKCrTGLXv+0
-         nvdZm0TBPkDYM0sM9rEJ0Rszne58eT6eUWggtDA0lwlynsZqRnquvmBG3lAmefRXhtc7
-         yC5icp+VzX8hX5ZOYx/LyvuO7Ynw+zim5BL7GUynX/YL2CRTqcZ3Hf9BMMe/J4Ruyhnw
-         W23p8zuiwISQIcvzc/H5rBepz3eKhM/qqB1PXa9BMHeBoiozU9vmueMLpVWrfzfq33ar
-         xpGQ==
-X-Gm-Message-State: AJIora8A/tOfa1qThwC9roi5qYMgfaRnNKhBf/+8NpXiaOPCR+mS/x5B
-        fe6LtcPSb7YtzxMPxrg3mHsU5DJaRhNjBw==
-X-Google-Smtp-Source: AGRyM1vPeAIlmEq/cTeJIB8FK8mvxHIQogf7q8nuoRdm61kg419fcGv5xhQOjseURic1kAu43x4YQw==
-X-Received: by 2002:a05:6214:19ec:b0:470:90a2:26ab with SMTP id q12-20020a05621419ec00b0047090a226abmr2293813qvc.2.1656392840232;
-        Mon, 27 Jun 2022 22:07:20 -0700 (PDT)
-Received: from MBP.hobot.cc (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id b20-20020ae9eb14000000b006aee8580a37sm9948348qkg.10.2022.06.27.22.07.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Jun 2022 22:07:19 -0700 (PDT)
-From:   Schspa Shi <schspa@gmail.com>
-To:     alex.williamson@redhat.com, cohuck@redhat.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zhaohui.shi@horizon.ai, Schspa Shi <schspa@gmail.com>
-Subject: [PATCH] vfio: Fix double free for caps->buf
-Date:   Tue, 28 Jun 2022 13:07:11 +0800
-Message-Id: <20220628050711.74945-1-schspa@gmail.com>
-X-Mailer: git-send-email 2.29.0
+        Tue, 28 Jun 2022 01:10:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B551A19D;
+        Mon, 27 Jun 2022 22:10:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1B1861793;
+        Tue, 28 Jun 2022 05:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 428D6C341C6;
+        Tue, 28 Jun 2022 05:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656393013;
+        bh=bFNHVHxRqYMso2Y2PSbMSeU3nkzi4kEh4g5HSEhFO/k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QB+WvP4R+I3D7hjl3aOcByBEpRg/zrVZxJ6B/goUDokWixtqlNeI1pm6XYsvWR1nw
+         XOJgdzN3SgMyhAN8HDXeLRPNdDSAi5/RI0laqCIcdc3pFN9rgiTCDqhIW5I7Tv5PB/
+         ttsSIqUxIct+xdagIDC6zcaRbVDdRzeVzkswNbzfoG5tiCu5M6VRyszne1IrCBLTbr
+         M4dNko3VQZ3cKHbbGb2vso9jTTF1VjbN7fr2J41VYABBYIkZ8JUO4J9rITQTlBniw4
+         T8nIQwizO+NEfpmjeD5dltQ84jtWFg6S3zLwK+xJyhlIOAA1fSMIAMZoBbhOub21t/
+         ogA5Ffsc4z8OA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2737DE49BBA;
+        Tue, 28 Jun 2022 05:10:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] MAINTAINERS: nfc: drop Charles Gorand from NXP-NCI
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165639301315.30025.1234136499894457983.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Jun 2022 05:10:13 +0000
+References: <20220626200039.4062784-1-michael@walle.cc>
+In-Reply-To: <20220626200039.4062784-1-michael@walle.cc>
+To:     Michael Walle <michael@walle.cc>
+Cc:     krzysztof.kozlowski@linaro.org, linux-kernel@vger.kernel.org,
+        linux-nfc@lists.01.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a double free, if vfio_iommu_dma_avail_build_caps
-calls failed.
+Hello:
 
-The following call path will call vfio_info_cap_add multiple times
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-vfio_iommu_type1_get_info
-	if (!ret)
-		ret = vfio_iommu_dma_avail_build_caps(iommu, &caps);
+On Sun, 26 Jun 2022 22:00:39 +0200 you wrote:
+> Mails to Charles get an auto reply, that he is no longer working at
+> Eff'Innov technologies. Drop the entry and mark the driver as orphaned.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  MAINTAINERS | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 
-	if (!ret)
-		ret = vfio_iommu_iova_build_caps(iommu, &caps);
+Here is the summary with links:
+  - MAINTAINERS: nfc: drop Charles Gorand from NXP-NCI
+    https://git.kernel.org/netdev/net/c/6b9f1d46fdad
 
-If krealloc failed on vfio_info_cap_add, there will be a double free.
-
-Signed-off-by: Schspa Shi <schspa@gmail.com>
----
- drivers/vfio/vfio.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 61e71c1154be..a0fb93866f61 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -1812,6 +1812,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
- 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
- 	if (!buf) {
- 		kfree(caps->buf);
-+		caps->buf = NULL;
- 		caps->size = 0;
- 		return ERR_PTR(-ENOMEM);
- 	}
+You are awesome, thank you!
 -- 
-2.29.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
