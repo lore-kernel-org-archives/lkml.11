@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F865C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:01:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82633C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:01:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235043AbiF1TBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
+        id S232641AbiF1TBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234067AbiF1TAW (ORCPT
+        with ESMTP id S234310AbiF1TA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:00:22 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E3CDF05;
-        Tue, 28 Jun 2022 11:59:59 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id ay16so27701169ejb.6;
-        Tue, 28 Jun 2022 11:59:58 -0700 (PDT)
+        Tue, 28 Jun 2022 15:00:26 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4909765B;
+        Tue, 28 Jun 2022 12:00:08 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id c65so18908157edf.4;
+        Tue, 28 Jun 2022 12:00:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=z2Qv20zedNy8g3sQlLE59sUUdbI93Xy4dZXDehfqyts=;
-        b=TeqIfzcjTVc2mRM1U5TeziQ35hQIeROIcT4yvbV5HXHOIoy0hEaZP4/bExTXk/tyYu
-         uKFvG5wD6xNr1HN3kr0y48w0qtn2fAWU5dwOmZCmFV/j3dnNVtjN7G9u2svX2DHrS2nJ
-         jDZqqVn1mmOBVS/rbDaXXGB589qsANnvgop/ga+HA+C/utXlatrdcHjhaw4I3zVSyiKx
-         lO4e7tU7u9pMF8ygDjsk55XuW4g/F2b3Gtj0gSKbZD2zjPbha2M51Nl6PxH3UZkNDHcn
-         GjlruiXzYDKMVqRTlNDLcgI9QybI8VS99Duc6CxPwkBg/PgkXk/bquZvTthzFvfBNEYC
-         xMOA==
+        bh=h75qpnVIOBkauWn8J3X7YKBCKHImJX+zNFdRExDFoHs=;
+        b=ka2eRn+/WtfG/myqqKawD5QFwCJoWSJfeOfoyHs9WGQ9SjgwYtf0+PwDijc4+N1dkz
+         Q1NwVa20WM3fviOcG+qYQJrKRMQxwr9KhmIkYFx2N781FhGFxty8pZOoS3ejCzZwjKTN
+         2PbuXgi6IWlkcnDpnOEnC7e4ht28Lw8EIzQEgJvm0JD3zDifZXyqiXoieZe/QVJgaNEQ
+         OZ4T2iho8CICMri7n1/7puniFnDSm9Arqdpgb6IkpHZghK+A0jZCPvPHGnmW1afTfcSW
+         0YgAu5fcYjuo9A0ESuYN9qHxZSxl0gt/M6mCCRso/Fc6hQ7uj/prEPz7NhIfyqYB2Gc6
+         Z+jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z2Qv20zedNy8g3sQlLE59sUUdbI93Xy4dZXDehfqyts=;
-        b=Wcu1UqhOOGcNXixPMPVX/dwwx/nLQFtspxNFfOCxc7jAfap8cEVDX6wdNeFBs+zMlG
-         8wHSzHcXAz0s4YvoZa8zGOPut22FwkeJFXRKy29BeX4xPQ/B/cLSDuvA4hQ4nSNhg0Zy
-         CisRuWeiqWqx76ZmBH2L3kj0Fe2vsZvkZIo69oSOI0RlZhKkj/yAmQ1wOxyrKpoAVJ/+
-         FhLvsSF/4BnFj11CihzNfyRIiJEHiu5FWdyJMy50g/WJaHl4R6wfwbX7l91rcrehQAqN
-         qGBNVJP54kLy2KPj19C3v2NK6hPOlzp9JDna1CtMu5XQr5iZ3FEFOlvL3W42msH7AAzJ
-         EaDQ==
-X-Gm-Message-State: AJIora/LcEmLBgeDvqZ3gswiV2EvbRoh6Mhhna8nCtEbHGYK8NY786gD
-        QL642ROcPl8CML4xpiHar0YEmHXgf7Mk9w==
-X-Google-Smtp-Source: AGRyM1sb/hLLgQxmWZ9et/0ID1KiNvoqUq/Gi7gZXrgCBmhaXijCGgppkjA8RDKs3Px+si88wnwFng==
-X-Received: by 2002:a17:906:14d:b0:711:ffc4:3932 with SMTP id 13-20020a170906014d00b00711ffc43932mr19100498ejh.321.1656442797275;
-        Tue, 28 Jun 2022 11:59:57 -0700 (PDT)
+        bh=h75qpnVIOBkauWn8J3X7YKBCKHImJX+zNFdRExDFoHs=;
+        b=VPnfJkFV+wYLGUpengBGXEi3zi25q1tALeanvtep0r+BOc56UKQICsObZNw/1KM4QH
+         N4s6HkX9ykK9J5T7ZFko8FX9RbFviipusv4RxXDriqJ/rOcrdJHaiSAAD9olJTVxKxLW
+         kcCM+eeYdrdGFRgpaThcfaMex/mE+UKZA0neWEiyCPisjtvw/2p3qytBWMa5sQ8FuzbW
+         RtttiJhqOv/GV7LPnSdFS3O7PYUBSJy1iQZAa+8V5OULdnN9gpIhm6WSnM0Oj8SeJ+aO
+         z5nzGjES7EPQpCHbaNeJrxUH6Rh/3aZhQ0c6DKkMC/n+sXjLVNEDwpAJaIPYy7iKmUke
+         1NEw==
+X-Gm-Message-State: AJIora+s7F9w8l35IJGXBt9nTkq03Nbp9Vx6+Z+B/E/dnW1Kq8O4umKt
+        LItaNM/fgy07oP8BJijC+GuqQgsJpDymZw==
+X-Google-Smtp-Source: AGRyM1sU7nw1K6Rsocdf52of8qspW3fyrA1OmAFouOsXXPzfXcHOVeVha+CJZgDvP3ntUV2TuhANnw==
+X-Received: by 2002:a05:6402:254c:b0:435:c541:fc8d with SMTP id l12-20020a056402254c00b00435c541fc8dmr25331254edb.385.1656442806885;
+        Tue, 28 Jun 2022 12:00:06 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.11.59.56
+        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.12.00.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 11:59:56 -0700 (PDT)
+        Tue, 28 Jun 2022 12:00:06 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC net-next v3 04/29] skbuff: carry external ubuf_info in msghdr
-Date:   Tue, 28 Jun 2022 19:56:26 +0100
-Message-Id: <1634a40ad0cf05eeee8dd9e88d89f1558704bf2c.1653992701.git.asml.silence@gmail.com>
+Subject: [RFC net-next v3 12/29] tcp: kill extra io_uring's uarg refcounting
+Date:   Tue, 28 Jun 2022 19:56:34 +0100
+Message-Id: <c3414a501553038eec00021de01ac2cf6b052cf8.1653992701.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1653992701.git.asml.silence@gmail.com>
 References: <cover.1653992701.git.asml.silence@gmail.com>
@@ -69,104 +69,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make possible for network in-kernel callers like io_uring to pass in a
-custom ubuf_info by setting it in a new field of struct msghdr.
+io_uring guarantees that passed in uarg stays alive until we return from
+sendmsg, so no need to temporarily refcount-pin it in
+tcp_sendmsg_locked().
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- fs/io_uring.c          | 4 ++++
- include/linux/socket.h | 7 +++++++
- net/compat.c           | 2 ++
- net/socket.c           | 6 ++++++
- 4 files changed, 19 insertions(+)
+ net/ipv4/tcp.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 8e75539fdc1d..6a57a5ae18fb 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -6230,6 +6230,8 @@ static int io_send(struct io_kiocb *req, unsigned int issue_flags)
- 	msg.msg_control = NULL;
- 	msg.msg_controllen = 0;
- 	msg.msg_namelen = 0;
-+	msg.msg_ubuf = NULL;
-+	msg.msg_managed_data = false;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 832c1afcdbe7..3482c934eec8 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1207,7 +1207,6 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
  
- 	flags = sr->msg_flags;
- 	if (issue_flags & IO_URING_F_NONBLOCK)
-@@ -6500,6 +6502,8 @@ static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
- 	msg.msg_flags = 0;
- 	msg.msg_controllen = 0;
- 	msg.msg_iocb = NULL;
-+	msg.msg_ubuf = NULL;
-+	msg.msg_managed_data = false;
+ 		if (msg->msg_ubuf) {
+ 			uarg = msg->msg_ubuf;
+-			net_zcopy_get(uarg);
+ 			zc = sk->sk_route_caps & NETIF_F_SG;
+ 		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
+ 			uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
+@@ -1437,7 +1436,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 		tcp_push(sk, flags, mss_now, tp->nonagle, size_goal);
+ 	}
+ out_nopush:
+-	net_zcopy_put(uarg);
++	if (uarg && !msg->msg_ubuf)
++		net_zcopy_put(uarg);
+ 	return copied + copied_syn;
  
- 	flags = sr->msg_flags;
- 	if (force_nonblock)
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 17311ad9f9af..ba84ee614d5a 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -66,9 +66,16 @@ struct msghdr {
- 	};
- 	bool		msg_control_is_user : 1;
- 	bool		msg_get_inq : 1;/* return INQ after receive */
-+	/*
-+	 * The data pages are pinned and won't be released before ->msg_ubuf
-+	 * is released. ->msg_iter should point to a bvec and ->msg_ubuf has
-+	 * to be non-NULL.
-+	 */
-+	bool		msg_managed_data : 1;
- 	unsigned int	msg_flags;	/* flags on received message */
- 	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
- 	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
-+	struct ubuf_info *msg_ubuf;
- };
- 
- struct user_msghdr {
-diff --git a/net/compat.c b/net/compat.c
-index 210fc3b4d0d8..435846fa85e0 100644
---- a/net/compat.c
-+++ b/net/compat.c
-@@ -80,6 +80,8 @@ int __get_compat_msghdr(struct msghdr *kmsg,
- 		return -EMSGSIZE;
- 
- 	kmsg->msg_iocb = NULL;
-+	kmsg->msg_ubuf = NULL;
-+	kmsg->msg_managed_data = false;
- 	*ptr = msg.msg_iov;
- 	*len = msg.msg_iovlen;
- 	return 0;
-diff --git a/net/socket.c b/net/socket.c
-index 2bc8773d9dc5..0963a02b1472 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2106,6 +2106,8 @@ int __sys_sendto(int fd, void __user *buff, size_t len, unsigned int flags,
- 	msg.msg_control = NULL;
- 	msg.msg_controllen = 0;
- 	msg.msg_namelen = 0;
-+	msg.msg_ubuf = NULL;
-+	msg.msg_managed_data = false;
- 	if (addr) {
- 		err = move_addr_to_kernel(addr, addr_len, &address);
- 		if (err < 0)
-@@ -2171,6 +2173,8 @@ int __sys_recvfrom(int fd, void __user *ubuf, size_t size, unsigned int flags,
- 	msg.msg_namelen = 0;
- 	msg.msg_iocb = NULL;
- 	msg.msg_flags = 0;
-+	msg.msg_ubuf = NULL;
-+	msg.msg_managed_data = false;
- 	if (sock->file->f_flags & O_NONBLOCK)
- 		flags |= MSG_DONTWAIT;
- 	err = sock_recvmsg(sock, &msg, flags);
-@@ -2409,6 +2413,8 @@ int __copy_msghdr_from_user(struct msghdr *kmsg,
- 		return -EMSGSIZE;
- 
- 	kmsg->msg_iocb = NULL;
-+	kmsg->msg_ubuf = NULL;
-+	kmsg->msg_managed_data = false;
- 	*uiov = msg.msg_iov;
- 	*nsegs = msg.msg_iovlen;
- 	return 0;
+ do_error:
+@@ -1446,7 +1446,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 	if (copied + copied_syn)
+ 		goto out;
+ out_err:
+-	net_zcopy_put_abort(uarg, true);
++	if (uarg && !msg->msg_ubuf)
++		net_zcopy_put_abort(uarg, true);
+ 	err = sk_stream_error(sk, flags, err);
+ 	/* make sure we wake any epoll edge trigger waiter */
+ 	if (unlikely(tcp_rtx_and_write_queues_empty(sk) && err == -EAGAIN)) {
 -- 
 2.36.1
 
