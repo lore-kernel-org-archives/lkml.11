@@ -2,226 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 460F0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8486AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345263AbiF1LsL (ORCPT
+        id S1344692AbiF1LsT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:48:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38112 "EHLO
+        Tue, 28 Jun 2022 07:48:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345355AbiF1LrZ (ORCPT
+        with ESMTP id S1344482AbiF1Lrx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:47:25 -0400
-Received: from forward501j.mail.yandex.net (forward501j.mail.yandex.net [IPv6:2a02:6b8:0:801:2::111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3403207F;
-        Tue, 28 Jun 2022 04:46:58 -0700 (PDT)
-Received: from vla5-169af227e802.qloud-c.yandex.net (vla5-169af227e802.qloud-c.yandex.net [IPv6:2a02:6b8:c18:3523:0:640:169a:f227])
-        by forward501j.mail.yandex.net (Yandex) with ESMTP id 60737624139;
-        Tue, 28 Jun 2022 14:46:57 +0300 (MSK)
-Received: from vla3-178a3f795968.qloud-c.yandex.net (vla3-178a3f795968.qloud-c.yandex.net [2a02:6b8:c15:2584:0:640:178a:3f79])
-        by vla5-169af227e802.qloud-c.yandex.net (mxback/Yandex) with ESMTP id RtX9GFYHRZ-kumWQbta;
-        Tue, 28 Jun 2022 14:46:57 +0300
-X-Yandex-Fwd: 2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1656416817;
-        bh=EDkgTYXqCHYjbvERnqJf2pJgEiUWEp1aF8bjZ/VqbsU=;
-        h=In-Reply-To:References:Date:Subject:Cc:To:From:Message-Id;
-        b=INebxkcjGQQpnsfSoAtCkFIBdbIiqVzL0BcPkF1qFQdB6i5OevjTmdM24rEd0c5Sj
-         UldiHM4iBqBrXXW8x3yq2rdN3D8uceAJm6baqO2CpcmUoE6hwJDBNcykvXqJxVG2wV
-         IlS0YwdAwAZzk6+Wv05haZdu/c/415jVbvGpxHsQ=
-Authentication-Results: vla5-169af227e802.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
-Received: by vla3-178a3f795968.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id s5dKAuvn1y-ksMC9AYW;
-        Tue, 28 Jun 2022 14:46:56 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     linux@yadro.com, Genevieve Chan <genevieve.chan@starfivetech.com>,
-        =?UTF-8?q?Jo=C3=A3o=20M=C3=A1rio=20Domingos?= 
-        <joao.mario@tecnico.ulisboa.pt>,
-        Nikita Shubin <n.shubin@yadro.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH v5] perf arch events: riscv sbi firmware std event files
-Date:   Tue, 28 Jun 2022 14:45:57 +0300
-Message-Id: <20220628114625.166665-4-nikita.shubin@maquefel.me>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220628114625.166665-1-nikita.shubin@maquefel.me>
-References: <20220628114625.166665-1-nikita.shubin@maquefel.me>
+        Tue, 28 Jun 2022 07:47:53 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC310B0F;
+        Tue, 28 Jun 2022 04:47:52 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-31780ad7535so113920627b3.8;
+        Tue, 28 Jun 2022 04:47:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bBnFmZjZIoNFqqriC+iwFPBKJU61baPmyAFFIDagDFE=;
+        b=S5ySAPM3rocgZ/Ugszd1CJjXHRh/k51KEH6B+k1RaIub/lWTQSBPNs58VeCF0R88K1
+         tYGbwPBeKSKFou3r31LBzjOr3wFpuCiggyWWhCwjRvdX1zA9uSKSLMLVEtsdah3CUMCw
+         V3qB56dC/4DTnToVxBehqbA/CYk/XiuI7E//GHJlFiaGTWwhkLaUePbr8AbbM5WRhPmk
+         UJettY4vD6qoFbFMxlVATsEKXF55MR/u/bfsaAGQfl8zDJpE3ntCAk/t4NfdCamsUT1z
+         1IUj/p3F6T1awGq9UIJrZMhJW9JEDZ72Tpue7pLvnxGjWoJJ+/rFoFuFlByJrMK2kWVZ
+         0/mA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bBnFmZjZIoNFqqriC+iwFPBKJU61baPmyAFFIDagDFE=;
+        b=kXl3wB7VtGpc69cgCcjx4Kev6L0Cm0SQzH8BnzV+PzuWV0qp5DHlZiNgmF+nzivBqN
+         Su50n/VBp3UHPjxMaI9tj+1OuP0ln9zv/M+g+3YHtO5EE/i7Mz/E7tcLV2vs1L4v8+2c
+         WEDsVuk9pbt6ynZOCsiYzo+odA4TfXMlQDonOM8n1SXr+0Mjwvidu5J+4Dlxu30YFhxh
+         cKNAchnlDKn6bZgZCqwkYOHbzM4OHa9lGuLRq2LWWQ4XCck/KPHFRDxS2niSduFJSUFL
+         Gu+WY8Nt3JmUG9lczvkEdRNV2bmf1B3jbAYfR2LBfZw1gs6mOP1TpYzqtcVWlYymUc8I
+         4rqQ==
+X-Gm-Message-State: AJIora/a1V54jHEVZqoQHcl+ZQmQqrNHF8FqUgK4WnJmWY9bZSrvcgPN
+        yCyiqR2O6ak/K/jha/K/aEnrLhfMcv/BIi3Xzx+UEJdX8PiCjg==
+X-Google-Smtp-Source: AGRyM1sI77zIPf/cv6+E7ghaqhb46auVskCT8U9VnPQcDZuNWFZhpI/LTOpehqZbUIHMZAMPVhomR3UMPvaQ7nGOgFg=
+X-Received: by 2002:a81:2386:0:b0:317:6586:8901 with SMTP id
+ j128-20020a812386000000b0031765868901mr20837201ywj.195.1656416872035; Tue, 28
+ Jun 2022 04:47:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <1655458375-30478-1-git-send-email-u0084500@gmail.com>
+ <1655458375-30478-3-git-send-email-u0084500@gmail.com> <CAHp75VfEQ6tu4-NQKwA+63Ae5busUwV+ZRqD6BtbUA+EkCZnWw@mail.gmail.com>
+ <CADiBU3-wO0-0c9y-GpE15ra2AqkAG-ftqTh+hCvYEY-TojZ-pg@mail.gmail.com>
+ <CAHp75VeBdgbyDQXEYb9ZZdi3AU=vPw6aKGWbNLnuA_QoN4LE4A@mail.gmail.com> <CADiBU3_jgoc9ZuVuVH_cvSeQkghOeUDxzLE_VZFtZ9eaTWeqgA@mail.gmail.com>
+In-Reply-To: <CADiBU3_jgoc9ZuVuVH_cvSeQkghOeUDxzLE_VZFtZ9eaTWeqgA@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 28 Jun 2022 13:47:15 +0200
+Message-ID: <CAHp75VejsNhgee0exMGzo3dqFxi8udO2GUbCTz9iNFJ7wZGvRw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] iio: adc: Add rtq6056 support
+To:     ChiYuan Huang <u0084500@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        cy_huang <cy_huang@richtek.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Shubin <n.shubin@yadro.com>
+On Fri, Jun 24, 2022 at 5:39 AM ChiYuan Huang <u0084500@gmail.com> wrote:
+> Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B46=E6=
+=9C=8819=E6=97=A5 =E9=80=B1=E6=97=A5 =E4=B8=8B=E5=8D=886:38=E5=AF=AB=E9=81=
+=93=EF=BC=9A
+> > On Sat, Jun 18, 2022 at 5:16 PM ChiYuan Huang <u0084500@gmail.com> wrot=
+e:
+> > > Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B46=
+=E6=9C=8818=E6=97=A5 =E9=80=B1=E5=85=AD =E5=87=8C=E6=99=A81:08=E5=AF=AB=E9=
+=81=93=EF=BC=9A
+> > > > On Fri, Jun 17, 2022 at 11:37 AM cy_huang <u0084500@gmail.com> wrot=
+e:
 
-Firmware events are defined by "RISC-V Supervisor Binary Interface
-Specification", which means they should be always available as long as
-firmware supports >= 0.3.0 SBI.
+...
 
-Expose them to arch std events, so they can be reused by particular
-PMU bindings.
+> > > > > +       struct device *dev;
+> > > > > +       struct regmap *regmap;
+> > > >
+> > > > Swapping these two might give less code in the generated binary. Ha=
+ve
+> > > > you run bloat-o-meter?
+> > > >
+> > > I never know about this tool.
+> > > I'll check it before I submit the next revision.
+> > > Thanks for the reminding.
+> > >
+> > > But from Jonathan's reply, I may remove 'struct regmap *regmap'.
+> > > If all function need the 'regmap', a local variable 'regmap' need to
+> > > be declared.
+> > > To use struct regmap *regmap =3D dev_get_regmap(dev, NULL) is more ef=
+fective.
+> >
+> > It's fine, but you may experiment with bloat-o-meter even in that case
+> > out of curiosity.
+> >
+> I tred to only swap these two line for *dev and *regmap.
+> Check the below two cases
+> 1. bloat-o-meter with rtq6056 as the builtin
+> add/remove: 0/0 grow/shrink: 0/0 up/down: 0/0 (0)
+> Function                                     old     new   delta
+> Total: Before=3D24428680, After=3D24428680, chg +0.00%
+> 2. size tool with rtq6056 as the kernel build
+>    text    data     bss     dec     hex filename
+>    5261    1155       0    6416    1910 drivers/iio/adc/rtq6056-adc.ko.ol=
+d
+>    text    data     bss     dec     hex filename
+>    5261    1155       0    6416    1910 drivers/iio/adc/rtq6056-adc.ko
+>
+> It's weird that there's no difference.
+>
+> Do I misunderstand something?
 
-Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
----
-v4->v5:
-- changed EventCode to ConfigCode, as 63 bit exceeds event code format
----
- .../arch/riscv/riscv-sbi-firmware.json        | 134 ++++++++++++++++++
- 1 file changed, 134 insertions(+)
- create mode 100644 tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
+Nope, it means that in _current_ code this makes no change. Feel free
+to go with your variant if you prefer.
 
-diff --git a/tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json b/tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
-new file mode 100644
-index 000000000000..b9d305f1ada8
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
-@@ -0,0 +1,134 @@
-+[
-+  {
-+    "PublicDescription": "Misaligned load trap",
-+    "ConfigCode": "0x8000000000000000",
-+    "EventName": "FW_MISALIGNED_LOAD",
-+    "BriefDescription": "Misaligned load trap event"
-+  },
-+  {
-+    "PublicDescription": "Misaligned store trap",
-+    "ConfigCode": "0x8000000000000001",
-+    "EventName": "FW_MISALIGNED_STORE",
-+    "BriefDescription": "Misaligned store trap event"
-+  },
-+  {
-+    "PublicDescription": "Load access trap",
-+    "ConfigCode": "0x8000000000000002",
-+    "EventName": "FW_ACCESS_LOAD",
-+    "BriefDescription": "Load access trap event"
-+  },
-+  {
-+    "PublicDescription": "Store access trap",
-+    "ConfigCode": "0x8000000000000003",
-+    "EventName": "FW_ACCESS_STORE",
-+    "BriefDescription": "Store access trap event"
-+  },
-+  {
-+    "PublicDescription": "Illegal instruction trap",
-+    "ConfigCode": "0x8000000000000004",
-+    "EventName": "FW_ILLEGAL_INSN",
-+    "BriefDescription": "Illegal instruction trap event"
-+  },
-+  {
-+    "PublicDescription": "Set timer event",
-+    "ConfigCode": "0x8000000000000005",
-+    "EventName": "FW_SET_TIMER",
-+    "BriefDescription": "Set timer event"
-+  },
-+  {
-+    "PublicDescription": "Sent IPI to other HART event",
-+    "ConfigCode": "0x8000000000000006",
-+    "EventName": "FW_IPI_SENT",
-+    "BriefDescription": "Sent IPI to other HART event"
-+  },
-+  {
-+    "PublicDescription": "Received IPI from other HART event",
-+    "ConfigCode": "0x8000000000000007",
-+    "EventName": "FW_IPI_RECEIVED",
-+    "BriefDescription": "Received IPI from other HART event"
-+  },
-+  {
-+    "PublicDescription": "Sent FENCE.I request to other HART event",
-+    "ConfigCode": "0x8000000000000008",
-+    "EventName": "FW_FENCE_I_SENT",
-+    "BriefDescription": "Sent FENCE.I request to other HART event"
-+  },
-+  {
-+    "PublicDescription": "Received FENCE.I request from other HART event",
-+    "ConfigCode": "0x8000000000000009",
-+    "EventName": "FW_FENCE_I_RECEIVED",
-+    "BriefDescription": "Received FENCE.I request from other HART event"
-+  },
-+  {
-+    "PublicDescription": "Sent SFENCE.VMA request to other HART event",
-+    "ConfigCode": "0x80000000000000a",
-+    "EventName": "FW_SFENCE_VMA_SENT",
-+    "BriefDescription": "Sent SFENCE.VMA request to other HART event"
-+  },
-+  {
-+    "PublicDescription": "Received SFENCE.VMA request from other HART event",
-+    "ConfigCode": "0x800000000000000b",
-+    "EventName": "FW_SFENCE_VMA_RECEIVED",
-+    "BriefDescription": "Received SFENCE.VMA request from other HART event"
-+  },
-+  {
-+    "PublicDescription": "Sent SFENCE.VMA with ASID request to other HART event",
-+    "ConfigCode": "0x800000000000000c",
-+    "EventName": "FW_SFENCE_VMA_RECEIVED",
-+    "BriefDescription": "Sent SFENCE.VMA with ASID request to other HART event"
-+  },
-+  {
-+    "PublicDescription": "Received SFENCE.VMA with ASID request from other HART event",
-+    "ConfigCode": "0x800000000000000d",
-+    "EventName": "FW_SFENCE_VMA_ASID_RECEIVED",
-+    "BriefDescription": "Received SFENCE.VMA with ASID request from other HART event"
-+  },
-+  {
-+    "PublicDescription": "Sent HFENCE.GVMA request to other HART event",
-+    "ConfigCode": "0x800000000000000e",
-+    "EventName": "FW_HFENCE_GVMA_SENT",
-+    "BriefDescription": "Sent HFENCE.GVMA request to other HART event"
-+  },
-+  {
-+    "PublicDescription": "Received HFENCE.GVMA request from other HART event",
-+    "ConfigCode": "0x800000000000000f",
-+    "EventName": "FW_HFENCE_GVMA_RECEIVED",
-+    "BriefDescription": "Received HFENCE.GVMA request from other HART event"
-+  },
-+  {
-+    "PublicDescription": "Sent HFENCE.GVMA with VMID request to other HART event",
-+    "ConfigCode": "0x8000000000000010",
-+    "EventName": "FW_HFENCE_GVMA_VMID_SENT",
-+    "BriefDescription": "Sent HFENCE.GVMA with VMID request to other HART event"
-+  },
-+  {
-+    "PublicDescription": "Received HFENCE.GVMA with VMID request from other HART event",
-+    "ConfigCode": "0x8000000000000011",
-+    "EventName": "FW_HFENCE_GVMA_VMID_RECEIVED",
-+    "BriefDescription": "Received HFENCE.GVMA with VMID request from other HART event"
-+  },
-+  {
-+    "PublicDescription": "Sent HFENCE.VVMA request to other HART event",
-+    "ConfigCode": "0x8000000000000012",
-+    "EventName": "FW_HFENCE_VVMA_SENT",
-+    "BriefDescription": "Sent HFENCE.VVMA request to other HART event"
-+  },
-+  {
-+    "PublicDescription": "Received HFENCE.VVMA request from other HART event",
-+    "ConfigCode": "0x8000000000000013",
-+    "EventName": "FW_HFENCE_VVMA_RECEIVED",
-+    "BriefDescription": "Received HFENCE.VVMA request from other HART event"
-+  },
-+  {
-+    "PublicDescription": "Sent HFENCE.VVMA with ASID request to other HART event",
-+    "ConfigCode": "0x8000000000000014",
-+    "EventName": "FW_HFENCE_VVMA_ASID_SENT",
-+    "BriefDescription": "Sent HFENCE.VVMA with ASID request to other HART event"
-+  },
-+  {
-+    "PublicDescription": "Received HFENCE.VVMA with ASID request from other HART event",
-+    "ConfigCode": "0x8000000000000015",
-+    "EventName": "FW_HFENCE_VVMA_ASID_RECEIVED",
-+    "BriefDescription": "Received HFENCE.VVMA with ASID request from other HART event"
-+  }
-+]
--- 
-2.30.2
-
+--=20
+With Best Regards,
+Andy Shevchenko
