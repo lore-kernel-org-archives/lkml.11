@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E647CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234013AbiF1SDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 14:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47860 "EHLO
+        id S232617AbiF1SDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 14:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232772AbiF1SCa (ORCPT
+        with ESMTP id S233930AbiF1SCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 14:02:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1253E12AF1;
-        Tue, 28 Jun 2022 11:02:27 -0700 (PDT)
+        Tue, 28 Jun 2022 14:02:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4975512AF1;
+        Tue, 28 Jun 2022 11:02:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 765B1CE219F;
-        Tue, 28 Jun 2022 18:02:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D38AC3411D;
-        Tue, 28 Jun 2022 18:02:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09754B81F39;
+        Tue, 28 Jun 2022 18:02:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C900FC341C6;
+        Tue, 28 Jun 2022 18:02:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656439343;
-        bh=cAL7cSlopyAfoe9ePy3AVZXWDpqa/7WVl3RSZd8S3bI=;
+        s=k20201202; t=1656439361;
+        bh=B6I9ywm6he85dPxmbtWsc9fEdjf0MDmn5OyItYXcUX4=;
         h=From:To:Cc:Subject:Date:From;
-        b=mus5m3U1fKb4931jTyiurB47tvXX5JPxmq6yLOKqpkPBpy0t3k9+zRX0h2LiW51qv
-         i8unuLfiBT0lrYHvw1koheTiUZx4/19Z+oO/A785HMLj4MTcTsI4bt5WajY8z9efw8
-         mnlBZ9ATgqPh33szfh7+rcl1LALXwP3AKKEJERissQng3jPLc0EJfyvCwU/0Q2XBaH
-         Lxm9/SBW78szE2IFhBu6rSJRoPF5EDNzwd7p7Lq0hRfjDxfv6VW4td9f89Tr+ZPM8c
-         NVxB2qhKULqcL+trOEM64Y7meXBLsSHCPASF9ppNjsgBESbgBF8VivYDFnxTmHFo1z
-         8u4xZhuRbnNZw==
+        b=hsTe46LC7Izix15UV45Y7PjNRzBT4Py2WA/535HRkkFI4fvTo/6APfG9Da08CfPpR
+         laaeEMlO6il5ZusV2TnutWh0ZH09J7UWsOwpaMh92BnzZ+MZXhSEgz9s4xZw0AREZP
+         r/jeVdSOJN/Zm6nZFQEET0MdwYXqJf3SLxx1GSQrADedwCucm3FxynNKwauaO/m5hQ
+         cIDYClaCPzJ37A6gu9J762hwnf8Ac/yOVCEJAGYRFpGFQwQ761xmneaHuYRAWC2xPz
+         YuC0CIYYbyQmzfT8t1VXdXtcDnmQD9qlt6t/3IKR87Sag+yCfZlZzTQTNFzVx6YDAz
+         WVP98qwP3LqkQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Dmitry Klochkov <kdmitry556@gmail.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, raspl@linux.ibm.com,
-        borntraeger@linux.ibm.com, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.18 1/3] tools/kvm_stat: fix display of error when multiple processes are found
-Date:   Tue, 28 Jun 2022 14:02:15 -0400
-Message-Id: <20220628180220.621172-1-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, borntraeger@linux.ibm.com,
+        raspl@linux.ibm.com, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.10 1/2] tools/kvm_stat: fix display of error when multiple processes are found
+Date:   Tue, 28 Jun 2022 14:02:36 -0400
+Message-Id: <20220628180238.621277-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 X-stable: review
@@ -92,7 +92,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/tools/kvm/kvm_stat/kvm_stat b/tools/kvm/kvm_stat/kvm_stat
-index 5a5bd74f55bd..9c366b3a676d 100755
+index b0bf56c5f120..a1efcfbd8b9e 100755
 --- a/tools/kvm/kvm_stat/kvm_stat
 +++ b/tools/kvm/kvm_stat/kvm_stat
 @@ -1646,7 +1646,8 @@ Press any other key to refresh statistics immediately.
