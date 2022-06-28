@@ -2,86 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96458CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:16:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348092AbiF1PP7 (ORCPT
+        id S1348211AbiF1PQD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
+        Tue, 28 Jun 2022 11:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348103AbiF1PP1 (ORCPT
+        with ESMTP id S1348161AbiF1PP2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:15:27 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5189F3190C;
-        Tue, 28 Jun 2022 08:15:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656429317; x=1687965317;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=LEsflcyVfhw7OuN1kmNKDveU6IFbC/8KIJgDXAVZUU0=;
-  b=BNVp958DLFRBhKF2RpZLehHNXUhM16uQ6y/nE/ffHCMALnn7tJPG9rew
-   iuuHMgn+MbxZbDb9YrKaXnZdQiNfpYz2d9KZ7dcsh6jxFVf0VPMaApn5t
-   OoQWcq9VX/IPNzK+yEWZ43fNeXRi5GsNd10B56Vvwh5Nb1ATyqt2tuNNf
-   vOBoSPKg51mv+SlzK8P9HoTdr/pqEUBGuKgvpgEgCEq2sIMBikaygb55Y
-   ucYxaaVLsxdBCKxLCwic9PTrDPz7LciQ5IbTClf08JC14CPj3Y6OLz0C8
-   sp6wqMBB5odvuLkd4kpobTfyFff+y8Y6pC4lbkceu0uTfVJ9/NcpZglaX
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="179860215"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jun 2022 08:15:16 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 28 Jun 2022 08:15:08 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 28 Jun 2022 08:15:05 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <eugen.hristev@microchip.com>, <jic23@kernel.org>,
-        <lars@metafoo.de>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>
-CC:     <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 16/19] dt-bindings: iio: adc: at91-sama5d2_adc: add id for temperature channel
-Date:   Tue, 28 Jun 2022 18:16:28 +0300
-Message-ID: <20220628151631.3116454-17-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
-References: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
+        Tue, 28 Jun 2022 11:15:28 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1778432053
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:15:19 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id i25so12661090wrc.13
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:15:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8kVNWHrBL0GiaNqy7pXs9TTaPLwVW5aeut18uIqtgkc=;
+        b=Lur6rtWdWtsnC+SAMWRIoyGTCnfrArnoVRT/JoKQA1MBFjN7wKpLHEMLSnukDEMMHU
+         Ay8mffu3ExD+WOLzoMZ+p+JZ0ihbmQHBW6GWjmYKXBoeoe0FBG0XJ7G9Gj7v5Haq+GO3
+         Q4N96g0vvP7TUEYJcVhsixklEsMkotlZak7Lw+VD8LfCJ+ePdug2NU13uZZa4uLEPlGY
+         R1LHApvvD7Xx1zetSoSWWfwOIYLhCIdnAERf7Bj6mgMQXZar+tZqeEOkuMD/O/XWIa7q
+         K+OFjxGLNiNhPL9R9aMgdJuBzRu/VIrMkviyPILGE1JV+wYAVrZ32Z/g1Y0yuXXmJN41
+         0Myw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8kVNWHrBL0GiaNqy7pXs9TTaPLwVW5aeut18uIqtgkc=;
+        b=XsymbFzg/pMONQ974KXUS+FVjf2kD5RcFGPVujBLM72wxxrJjaygEghON1EHvBUpnW
+         g6Ts+X4o5VTRWThP7nnJYzZrIhtJ0mR0Dpu0TS4xyf7k87gN1EEjsNAamxxfIycYP2kb
+         U24WqftLX3f6MSEH8fhrmmhUBs2dQvPaQW99f0Ztq6ZmNSQKt0pkqHj/F6pWWob7uwX+
+         aeijSob7gls0VC6xzlWainytVD5ksttra77AagDrjGk2Fxe3rTt4he+1+rfilaAQxS7N
+         LWKbgl3eqd0H2Rp9KgLyEPTRXJOpNquCpRhThsDiiMWgeR4HXbaLP9HIhtcnL+j4zA6J
+         CXuw==
+X-Gm-Message-State: AJIora90YNLcgKQgPAKhccMVVvQcDVQpQJHFLIW/aUEEGCWERhDTFEUt
+        w6BCo5m17OJAnVtMa9gKgBNHeEPBbBW/cMqBrQ3fZw==
+X-Google-Smtp-Source: AGRyM1vzfRMZwSSEMuW4Vd1zY8jVZxxwz2LtHYL1OrjbU/xaztX9Iy32yiJySZYdl72ksriuNPl+C/SvWFQ9AuqsVYs=
+X-Received: by 2002:a5d:544c:0:b0:21b:a288:f98c with SMTP id
+ w12-20020a5d544c000000b0021ba288f98cmr17779907wrv.300.1656429317400; Tue, 28
+ Jun 2022 08:15:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220614014714.1407239-1-irogers@google.com> <Yrq5Bun3Nmb1vrW3@krava>
+In-Reply-To: <Yrq5Bun3Nmb1vrW3@krava>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 28 Jun 2022 08:15:04 -0700
+Message-ID: <CAP-5=fXNJjRxGCE=mH22bLg1mNXMRgL_px4=-=8Zq-DLUXbxTg@mail.gmail.com>
+Subject: Re: [PATCH] perf bpf: 8 byte align bpil data
+To:     olsajiri@gmail.com
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ID for temperature channel of AT91 SAMA5D2 ADC.
+On Tue, Jun 28, 2022 at 1:41 AM <olsajiri@gmail.com> wrote:
+>
+> On Mon, Jun 13, 2022 at 06:47:14PM -0700, Ian Rogers wrote:
+> > bpil data is accessed assuming 64-bit alignment resulting in undefined
+> > behavior as the data is just byte aligned. With an -fsanitize=undefined
+> > build the following errors are observed:
+>
+> I need to add -w to get the clean build with that, do you see that as well?
+>
+>   $ make EXTRA_CFLAGS='-fsanitize=undefined -w'
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Acked-by: Rob Herring <robh@kernel.org>
----
- include/dt-bindings/iio/adc/at91-sama5d2_adc.h | 3 +++
- 1 file changed, 3 insertions(+)
+I don't recall needing this, but I was stacking fixes which may explain it.
 
-diff --git a/include/dt-bindings/iio/adc/at91-sama5d2_adc.h b/include/dt-bindings/iio/adc/at91-sama5d2_adc.h
-index 70f99dbdbb42..866d36530583 100644
---- a/include/dt-bindings/iio/adc/at91-sama5d2_adc.h
-+++ b/include/dt-bindings/iio/adc/at91-sama5d2_adc.h
-@@ -13,4 +13,7 @@
- /* pressure channel index */
- #define AT91_SAMA5D2_ADC_P_CHANNEL		26
- 
-+/* SAMA7G5 Temperature sensor channel index. */
-+#define AT91_SAMA7G5_ADC_TEMP_CHANNEL		31
-+
- #endif
--- 
-2.34.1
+> >
+> > $ sudo perf record -a sleep 1
+> > util/bpf-event.c:310:22: runtime error: load of misaligned address 0x55f61084520f for type '__u64', which requires 8 byte alignment
+> > 0x55f61084520f: note: pointer points here
+> >  a8 fe ff ff 3c  51 d3 c0 ff ff ff ff 04  84 d3 c0 ff ff ff ff d8  aa d3 c0 ff ff ff ff a4  c0 d3 c0
+> >              ^
+> > util/bpf-event.c:311:20: runtime error: load of misaligned address 0x55f61084522f for type '__u32', which requires 4 byte alignment
+> > 0x55f61084522f: note: pointer points here
+> >  ff ff ff ff c7  17 00 00 f1 02 00 00 1f  04 00 00 58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00
+> >              ^
+> > util/bpf-event.c:198:33: runtime error: member access within misaligned address 0x55f61084523f for type 'const struct bpf_func_info', which requires 4 byte alignment
+> > 0x55f61084523f: note: pointer points here
+> >  58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00 3b 00 00 00 ab  02 00 00 44 00 00 00 14  03 00 00
+>
+>
+> and I'm also getting another error in:
+>
+> [root@krava perf]# ./perf record -a sleep 1
+> util/synthetic-events.c:1202:11: runtime error: member access within misaligned address 0x00000286f7ea for type 'struct perf_record_record_cpu_map', which requires 8 byte alignment
+> 0x00000286f7ea: note: pointer points here
+>  20 00  01 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00
+>               ^
+> util/synthetic-events.c:1203:18: runtime error: member access within misaligned address 0x00000286f7ea for type 'struct perf_record_record_cpu_map', which requires 8 byte alignment
+> 0x00000286f7ea: note: pointer points here
+>  20 00  01 00 01 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00
+>               ^
+> util/synthetic-events.c:1206:46: runtime error: member access within misaligned address 0x00000286f7ea for type 'struct perf_record_record_cpu_map', which requires 8 byte alignment
+> 0x00000286f7ea: note: pointer points here
+>  20 00  01 00 01 00 08 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00
+>               ^
+> /home/jolsa/kernel/linux-perf/tools/include/asm-generic/bitops/atomic.h:10:29: runtime error: load of misaligned address 0x00000286f7f2 for type 'long unsigned int', which requires 8 byte alignment
+> 0x00000286f7f2: note: pointer points here
+>  00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  51 00 00 00 00 00
+>               ^
+>
+> are you going to address this one as well?
+>
+>
+> the reason for this one is that 'data' in struct perf_record_cpu_map_data
+> is not alligned(8), so that's why I raised the question in my other reply ;-)
+>
+> I wonder we should mark all tools/lib/perf/include/perf/event.h types
+> as packed to prevent any compiler padding
 
+I already sent out a fix and some improvements related to this:
+https://lore.kernel.org/lkml/20220614143353.1559597-1-irogers@google.com/
+Could you take a look?
+
+I'm not sure about aligned and packed. I tried to minimize it in the
+change above. The issue is that taking the address of a variable in a
+packed struct results in an unaligned pointer. To address this in the
+fix above I changed the functions to pass pointers to the whole
+struct.
+
+Thanks,
+Ian
+
+> thanks,
+> jirka
