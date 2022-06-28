@@ -2,117 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F747C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234888AbiF1QaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 12:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49068 "EHLO
+        id S236356AbiF1QaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 12:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345817AbiF1Q27 (ORCPT
+        with ESMTP id S1348445AbiF1Q3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 12:28:59 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F8639B88;
-        Tue, 28 Jun 2022 09:19:39 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 71344C0006;
-        Tue, 28 Jun 2022 16:19:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656433178;
+        Tue, 28 Jun 2022 12:29:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4E183AA7C
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:21:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656433286;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2Fr78hu1IzNkGovgp2ZyKWev5AVil0eVFYUNZCvLcQo=;
-        b=fCpk88xbvNBWFuPmASyduxc/42gf75Kb6dAIspiVcyyVpy977pyhaznBFNFwEhxYCsaLOo
-        lQzTL5/OOF9P88UP8itE44u4yNTb21E1erTUjc+trJQ27D2u8l/SMXaSDkh0vO2+Q6X2cG
-        aVzD0i5xhwN0sWx4jzTt7uUx3sXi3j/0LBcrl2e7I716/6nfGm3PTdPQCdumKA1Hv8jho6
-        ohQbKptnGjinSeiTxR30j0X6ka2eu16f4xdsFJKn/lJC4mGxua0cJBXEDVrExCAJNrZNwc
-        cUFTbPUFzKp9ueOO8fvFlkIH3fZ4fDrX+os9be0BtkYpZ6u2kBEK2pVyu1Z9yw==
-Date:   Tue, 28 Jun 2022 18:18:46 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH net-next v9 06/16] dt-bindings: net: dsa: add bindings
- for Renesas RZ/N1 Advanced 5 port switch
-Message-ID: <20220628181846.05cf88b6@fixe.home>
-In-Reply-To: <CAMuHMdU9fpY5b9GGFYQ50KmFNu35J5d129F=9=LYZEN82R=cfw@mail.gmail.com>
-References: <20220624144001.95518-1-clement.leger@bootlin.com>
-        <20220624144001.95518-7-clement.leger@bootlin.com>
-        <CAMuHMdU9fpY5b9GGFYQ50KmFNu35J5d129F=9=LYZEN82R=cfw@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        bh=1k3CBwOlDNKLLgVJWLqKeFaKpZTZnO4zAu76Qx9GG0o=;
+        b=T6SUE3v/UmAusFMCs/XvzNt4AwfIQypqqoPAeajwWcziDRZIp5QnB4wnUIRexk7BNFsWGy
+        HxC0IeJtn0UeVDLsZbrfeRqWIYHKz0asRIbEtoP0TCkCjkQa/J4sFufTA4Zuv6jMtjtMqZ
+        Hup7rQqwDP85jBAzoI7gVaZuZYifl0U=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-673-xiprpjSmOpiT3HmDPXSdTg-1; Tue, 28 Jun 2022 12:21:25 -0400
+X-MC-Unique: xiprpjSmOpiT3HmDPXSdTg-1
+Received: by mail-wm1-f71.google.com with SMTP id m17-20020a05600c3b1100b003a04a2f4936so3283929wms.6
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 09:21:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1k3CBwOlDNKLLgVJWLqKeFaKpZTZnO4zAu76Qx9GG0o=;
+        b=mOYuJGe/uRFj7jswHEnEq8Zcg+3Zyu8ymZZD5omfu8gocN+06I60Eld6Ixuxk7dvzA
+         LSQV7E7bPq0fB/tzLt8Fntu5FHr0/bVfYcgtL40iPOiqataQqQ4OP+PzZkCUZ2r+6vg2
+         FRpzDDQLe1CwbO5kO+lgX2vgz7g6kNLSESgDrgzSnuxeE2j3mXL8nyz8TElCno519jam
+         y0G12YjEorNxxZhPeGZwkaIFbOOVEeePDhridhT3EHNqQh3o6WkutcsoeeTrFebybgcB
+         1+r9URqVzhGrWWgXG0Gza/u0dyVQcMzgzNCcnGdyKrfiX8gkHnjrSVsjoY/R8BTEM4U0
+         r9FQ==
+X-Gm-Message-State: AJIora/n79xXuYjcKPD3gZ1p5MTnulsMM+1sHCfYULMqGI4hoE0T1Mw7
+        VPMObLzgXBHAoah63KIAQvcP9tBfXa5VGI7loWbfNUmZVN6pdqaT/olOl7phnSp8HDQnDQePrzv
+        U7rNibTam7LqFb9rLfU8zRBw=
+X-Received: by 2002:a05:6000:168b:b0:21b:a2c1:c93d with SMTP id y11-20020a056000168b00b0021ba2c1c93dmr19798232wrd.358.1656433283820;
+        Tue, 28 Jun 2022 09:21:23 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uu+nFvJHR79Zm6a20l826vX97rS7XFvJDCMz5epAWBPHZ04E38/KxhS9TcdigmR+mZjbPDqg==
+X-Received: by 2002:a05:6000:168b:b0:21b:a2c1:c93d with SMTP id y11-20020a056000168b00b0021ba2c1c93dmr19798215wrd.358.1656433283636;
+        Tue, 28 Jun 2022 09:21:23 -0700 (PDT)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id a17-20020adffb91000000b0020c5253d907sm14249763wrr.83.2022.06.28.09.21.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 09:21:22 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 17:21:22 +0100
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     mcgrof@kernel.org, christophe.leroy@csgroup.eu, cl@linux.com,
+        mbenes@suse.cz, akpm@linux-foundation.org, jeyu@kernel.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        void@manifault.com, atomlin@atomlin.com, allen.lkml@gmail.com,
+        joe@perches.com, msuchanek@suse.de, oleksandr@natalenko.name,
+        jason.wessel@windriver.com, pmladek@suse.com, neelx@redhat.com,
+        daniel.thompson@linaro.org, hch@infradead.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>
+Subject: Re: [PATCH v11 10/14] module: kallsyms: Fix suspicious rcu usage
+Message-ID: <20220628162122.v7s3z24icwavur6y@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220310102413.3438665-1-atomlin@redhat.com>
+ <20220310102413.3438665-11-atomlin@redhat.com>
+ <20220627235612.4796c837@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220627235612.4796c837@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Tue, 28 Jun 2022 17:37:57 +0200,
-Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
+On Mon 2022-06-27 23:56 -0400, Steven Rostedt wrote:
+> > +	preempt_enable();
+> 
+>         ^^^^^^^^^^^^^^^^^
+> 
+> This just introduced an unbounded latency and will fail PREEMPT_RT.
+> 
 
-> > +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-> > @@ -0,0 +1,134 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/dsa/renesas,rzn1-a5psw.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Renesas RZ/N1 Advanced 5 ports ethernet switch
-> > +
-> > +maintainers:
-> > +  - Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > +
-> > +description: |
-> > +  The advanced 5 ports switch is present on the Renesas RZ/N1 SoC fami=
-ly and
-> > +  handles 4 ports + 1 CPU management port. =20
->=20
-> While diving deeper into the RZ/N1 documentation, I noticed the switch
-> has 4 interrupts, which are currently not described in the bindings.
-> Presumably the driver has no need to use them, but as DT describes
-> hardware, I think it would be good to submit follow-up patches for
-> bindings and DTS to add the interrupts.
+Hi Steve,
 
-Noted ;)
+Sorry about that!
 
-Cl=C3=A9ment
+If I understand correctly, there is absolutely no need to explicitly
+disable preemption in this context. I will use: rcu_read_lock() and
+rcu_read_unlock(), respectively, which will then be suitable for the
+preemptible RCU implementation.
 
->=20
-> Thanks!
->=20
-> Gr{oetje,eeting}s,
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Kind regards,
+
+-- 
+Aaron Tomlin
+
