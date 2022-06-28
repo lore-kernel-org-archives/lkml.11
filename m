@@ -2,286 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BB1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345295AbiF1MCn (ORCPT
+        id S1345338AbiF1MCq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 08:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        Tue, 28 Jun 2022 08:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345165AbiF1MCd (ORCPT
+        with ESMTP id S1344929AbiF1MCZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 08:02:33 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7712EA24
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:02:31 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        Tue, 28 Jun 2022 08:02:25 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646432E9F2
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:02:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=jL1gJrWX37x+h1++tMH8uyXq3CpESXwb4NN7kK1bpMQ=; b=FkBGuceDB+930n1nflLN+Xh7/b
+        nGOeTfqCSPCtLyf4mzzQIKy1oRKK0pbxBc2aAU5HoIJoX+1Hd7sohK11AKhh1wXaYizF/gmftDlTe
+        4DjuWlbuten+rP1bxn1aouP1Fa8TpmLs3IV/Xn2MCEqeltERbKnN6wNen4Mza3d1JOPfidENXdwGy
+        Cx3tNocWai9krfdudDHuTpyG3VU6ywmzBcP9FOjUlU4FegJaM+/mieI30TdGVtztIuAJ4s2CUg7gS
+        r7eFp4ySh5fImKKdPOdPj0cUVUpLTLT1moRiaO/ZTs6mdGM5i+GuS8LcqFdr0ijoPcwUV6dblbRmO
+        m1D2ZQ5Q==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o69uP-00E5X7-Ce; Tue, 28 Jun 2022 12:01:36 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id C3B38660184F;
-        Tue, 28 Jun 2022 13:02:29 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656417750;
-        bh=zNEAitTxqpTa6w1mAZhs+XcqE/Shqwgw6vOI8uxrafY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kA6HW3K5Wu3J9ADp6WCzs2EnF5F4f/tqvBaICY/tgpwiun0P/CBIWppSwUkhcZ0Jv
-         3dgAA1fU1L/pEpU5dDEm/X8gGkrOBpaQH3EQPHFMDj0+ymhUBwRtm7/y7YjFRcJmuf
-         1iTEQfNIAtlWoXI8HUT1HdOtNDPx8SWIywOTuDQPe9gPIZLuK+SQ7clDutRuQRkXy4
-         gpyqS/YzTy/eVclmc9hjLcCmXI1Vlsw6AthxAygBIuSowJ3e9dBN+HrO7VTr/iCY1t
-         gIRQxt/Ri1oCYtbf0Xt050TwXFfGICStjPtbv5maYcLdzXSXTmgYmN/jmS0tuqIzQt
-         TL639fgBibysg==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     matthias.bgg@gmail.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, wenst@chromium.org,
-        alyssa.rosenzweig@collabora.com, nfraprado@collabora.com,
-        dmitry.osipenko@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v3] soc: mediatek: Introduce mediatek-regulator-coupler driver
-Date:   Tue, 28 Jun 2022 14:02:24 +0200
-Message-Id: <20220628120224.81180-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2FBD330017D;
+        Tue, 28 Jun 2022 14:01:31 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 1AC342020A5A1; Tue, 28 Jun 2022 14:01:31 +0200 (CEST)
+Date:   Tue, 28 Jun 2022 14:01:31 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>, mmarek@suse.cz,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC][PATCH] kconfig: Add implicit CONFIG_ prefix to
+ IS_ENABLED() and co
+Message-ID: <Yrrtm0rRzLMCzKiM@hirez.programming.kicks-ass.net>
+References: <YrrQOifFIiISf/3g@hirez.programming.kicks-ass.net>
+ <CAK8P3a2XfzQo6emT4pXXxAjWewdP2LiAe2fOskFf-0suSmBJQQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a2XfzQo6emT4pXXxAjWewdP2LiAe2fOskFf-0suSmBJQQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This driver currently deals with GPU-SRAM regulator coupling, ensuring
-that the SRAM voltage is always between a specific range of distance to
-the GPU voltage, depending on the SoC, necessary in order to achieve
-system stability across the full range of supported GPU frequencies.
+On Tue, Jun 28, 2022 at 01:19:17PM +0200, Arnd Bergmann wrote:
+> On Tue, Jun 28, 2022 at 11:56 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> >
+> > Since IS_ENABLED() (and friends) are clearly meant to be used on
+> > CONFIG_foo symbols and IS_ENABLED(CONFIG_ is so long and almost an
+> > tautology, allow the more compact usage of: IS_ENABLED(foo).
+> >
+> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> 
+> I'd prefer to keep the more verbose usage, mainly because it makes it easier
+> to grep for a symbol. If today you do 'git grep CONFIG_PM_SLEEP', you find
+> all instances in Makefile, in #ifdef and in IS_ENABLED(), though not the
+> references in Kconfig language, which leave out the prefix.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
----
+Which is why I never grep for the CONFIG_ thing to begin with, it misses
+the Kconfig site.
 
-Changes in v3:
- - Added braces to else-if branch
+> If we remove the prefix for IS_ENABLED(), the same grep fails to get
+> all the results, while searching for the substring without the CONFIG_
+> prefix can end up finding false-positives by finding longer strings (e.g.
+> CONFIG_DEBUG_STACKOVERFLOW vs
+> CONFIG_HAVE_DEBUG_STACKOVERFLOW).
 
-Changes in v2:
- - Added check for n_coupled
- - Added check for vgpu to enforce attaching to vgpu<->sram coupling only
-
-Context:
-This driver is one of the pieces of a bigger puzzle, aiming to finally
-enable Dynamic Voltage/Frequency Scaling for Mali GPUs found on MediaTek
-SoCs on the fully open source graphics stack (Panfrost driver).
-
-No devicetree bindings are provided because this does not require any
-driver-specific binding at all.
-
-Last but not least: it was chosen to have this driver enabled for
-( ARCH_MEDIATEK && REGULATOR ) without really giving a free configuration
-choice because, once the DVFS mechanism will be fully working, using one
-of the listed MediaTek SoCs *without* this coupling mechanism *will* lead
-to unstabilities and system crashes.
-For COMPILE_TEST, choice is given for obvious reasons.
-
- drivers/soc/mediatek/Kconfig                 |   5 +
- drivers/soc/mediatek/Makefile                |   1 +
- drivers/soc/mediatek/mtk-regulator-coupler.c | 159 +++++++++++++++++++
- 3 files changed, 165 insertions(+)
- create mode 100644 drivers/soc/mediatek/mtk-regulator-coupler.c
-
-diff --git a/drivers/soc/mediatek/Kconfig b/drivers/soc/mediatek/Kconfig
-index 3c3eedea35f7..cfa24fc6287b 100644
---- a/drivers/soc/mediatek/Kconfig
-+++ b/drivers/soc/mediatek/Kconfig
-@@ -43,6 +43,11 @@ config MTK_PMIC_WRAP
- 	  on different MediaTek SoCs. The PMIC wrapper is a proprietary
- 	  hardware to connect the PMIC.
- 
-+config MTK_REGULATOR_COUPLER
-+	bool "MediaTek SoC Regulator Coupler" if COMPILE_TEST
-+	default ARCH_MEDIATEK
-+	depends on REGULATOR
-+
- config MTK_SCPSYS
- 	bool "MediaTek SCPSYS Support"
- 	default ARCH_MEDIATEK
-diff --git a/drivers/soc/mediatek/Makefile b/drivers/soc/mediatek/Makefile
-index 0e9e703c931a..8c0ddacbcde8 100644
---- a/drivers/soc/mediatek/Makefile
-+++ b/drivers/soc/mediatek/Makefile
-@@ -3,6 +3,7 @@ obj-$(CONFIG_MTK_CMDQ) += mtk-cmdq-helper.o
- obj-$(CONFIG_MTK_DEVAPC) += mtk-devapc.o
- obj-$(CONFIG_MTK_INFRACFG) += mtk-infracfg.o
- obj-$(CONFIG_MTK_PMIC_WRAP) += mtk-pmic-wrap.o
-+obj-$(CONFIG_MTK_REGULATOR_COUPLER) += mtk-regulator-coupler.o
- obj-$(CONFIG_MTK_SCPSYS) += mtk-scpsys.o
- obj-$(CONFIG_MTK_SCPSYS_PM_DOMAINS) += mtk-pm-domains.o
- obj-$(CONFIG_MTK_MMSYS) += mtk-mmsys.o
-diff --git a/drivers/soc/mediatek/mtk-regulator-coupler.c b/drivers/soc/mediatek/mtk-regulator-coupler.c
-new file mode 100644
-index 000000000000..ad2ed42aa697
---- /dev/null
-+++ b/drivers/soc/mediatek/mtk-regulator-coupler.c
-@@ -0,0 +1,159 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Voltage regulators coupler for MediaTek SoCs
-+ *
-+ * Copyright (C) 2022 Collabora, Ltd.
-+ * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-+ */
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/init.h>
-+#include <linux/kernel.h>
-+#include <linux/of.h>
-+#include <linux/regulator/coupler.h>
-+#include <linux/regulator/driver.h>
-+#include <linux/regulator/machine.h>
-+#include <linux/suspend.h>
-+
-+#define to_mediatek_coupler(x)	container_of(x, struct mediatek_regulator_coupler, coupler)
-+
-+struct mediatek_regulator_coupler {
-+	struct regulator_coupler coupler;
-+	struct regulator_dev *vsram_rdev;
-+};
-+
-+/*
-+ * We currently support only couples of not more than two vregs and
-+ * modify the vsram voltage only when changing voltage of vgpu.
-+ *
-+ * This function is limited to the GPU<->SRAM voltages relationships.
-+ */
-+static int mediatek_regulator_balance_voltage(struct regulator_coupler *coupler,
-+					      struct regulator_dev *rdev,
-+					      suspend_state_t state)
-+{
-+	struct mediatek_regulator_coupler *mrc = to_mediatek_coupler(coupler);
-+	int max_spread = rdev->constraints->max_spread[0];
-+	int vsram_min_uV = mrc->vsram_rdev->constraints->min_uV;
-+	int vsram_max_uV = mrc->vsram_rdev->constraints->max_uV;
-+	int vsram_target_min_uV, vsram_target_max_uV;
-+	int min_uV = 0;
-+	int max_uV = INT_MAX;
-+	int ret;
-+
-+	/*
-+	 * If the target device is on, setting the SRAM voltage directly
-+	 * is not supported as it scales through its coupled supply voltage.
-+	 *
-+	 * An exception is made in case the use_count is zero: this means
-+	 * that this is the first time we power up the SRAM regulator, which
-+	 * implies that the target device has yet to perform initialization
-+	 * and setting a voltage at that time is harmless.
-+	 */
-+	if (rdev == mrc->vsram_rdev) {
-+		if (rdev->use_count == 0)
-+			return regulator_do_balance_voltage(rdev, state, true);
-+
-+		return -EPERM;
-+	}
-+
-+	ret = regulator_check_consumers(rdev, &min_uV, &max_uV, state);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (min_uV == 0) {
-+		ret = regulator_get_voltage_rdev(rdev);
-+		if (ret < 0)
-+			return ret;
-+		min_uV = ret;
-+	}
-+
-+	ret = regulator_check_voltage(rdev, &min_uV, &max_uV);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * If we're asked to set a voltage less than VSRAM min_uV, set
-+	 * the minimum allowed voltage on VSRAM, as in this case it is
-+	 * safe to ignore the max_spread parameter.
-+	 */
-+	vsram_target_min_uV = max(vsram_min_uV, min_uV + max_spread);
-+	vsram_target_max_uV = min(vsram_max_uV, vsram_target_min_uV + max_spread);
-+
-+	/* Make sure we're not out of range */
-+	vsram_target_min_uV = min(vsram_target_min_uV, vsram_max_uV);
-+
-+	pr_debug("Setting voltage %d-%duV on %s (minuV %d)\n",
-+		 vsram_target_min_uV, vsram_target_max_uV,
-+		 rdev_get_name(mrc->vsram_rdev), min_uV);
-+
-+	ret = regulator_set_voltage_rdev(mrc->vsram_rdev, vsram_target_min_uV,
-+					 vsram_target_max_uV, state);
-+	if (ret)
-+		return ret;
-+
-+	/* The sram voltage is now balanced: update the target vreg voltage */
-+	return regulator_do_balance_voltage(rdev, state, true);
-+}
-+
-+static int mediatek_regulator_attach(struct regulator_coupler *coupler,
-+				     struct regulator_dev *rdev)
-+{
-+	struct mediatek_regulator_coupler *mrc = to_mediatek_coupler(coupler);
-+	const char *rdev_name = rdev_get_name(rdev);
-+
-+	/*
-+	 * If we're getting a coupling of more than two regulators here and
-+	 * this means that this is surely not a GPU<->SRAM couple: in that
-+	 * case, we may want to use another coupler implementation, if any,
-+	 * or the generic one: the regulator core will keep walking through
-+	 * the list of couplers when any .attach_regulator() cb returns 1.
-+	 */
-+	if (rdev->coupling_desc.n_coupled > 2)
-+		return 1;
-+
-+	if (strstr(rdev_name, "sram")) {
-+		if (mrc->vsram_rdev)
-+			return -EINVAL;
-+		mrc->vsram_rdev = rdev;
-+	} else if (!strstr(rdev_name, "vgpu") && !strstr(rdev_name, "Vgpu")) {
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mediatek_regulator_detach(struct regulator_coupler *coupler,
-+				     struct regulator_dev *rdev)
-+{
-+	struct mediatek_regulator_coupler *mrc = to_mediatek_coupler(coupler);
-+
-+	if (rdev == mrc->vsram_rdev)
-+		mrc->vsram_rdev = NULL;
-+
-+	return 0;
-+}
-+
-+static struct mediatek_regulator_coupler mediatek_coupler = {
-+	.coupler = {
-+		.attach_regulator = mediatek_regulator_attach,
-+		.detach_regulator = mediatek_regulator_detach,
-+		.balance_voltage = mediatek_regulator_balance_voltage,
-+	},
-+};
-+
-+static int mediatek_regulator_coupler_init(void)
-+{
-+	if (!of_machine_is_compatible("mediatek,mt8183") &&
-+	    !of_machine_is_compatible("mediatek,mt8186") &&
-+	    !of_machine_is_compatible("mediatek,mt8192"))
-+		return 0;
-+
-+	return regulator_coupler_register(&mediatek_coupler.coupler);
-+}
-+arch_initcall(mediatek_regulator_coupler_init);
-+
-+MODULE_AUTHOR("AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>");
-+MODULE_DESCRIPTION("MediaTek Regulator Coupler driver");
-+MODULE_LICENSE("GPL");
--- 
-2.35.1
-
+Me being used to that doesn't consider that a real issue :-) I'd much
+rather have the somewhat shorter IS_ENABLED() things.
