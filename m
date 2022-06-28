@@ -2,132 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F982C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D40CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346800AbiF1Nnj (ORCPT
+        id S1346773AbiF1Nnv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
+        Tue, 28 Jun 2022 09:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346854AbiF1Nnf (ORCPT
+        with ESMTP id S1346861AbiF1Nnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:43:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1BC05C61
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:43:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656423812;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cW2a4YUNnUssvuoOmnrQqPk0B+mOaabUamfGI9ndHfY=;
-        b=iGnJ9cWTdXbBgN9FDDK7iw6X6juJbQ1i79/zPeCDVumV7i19Xjt9bzA3EmKd6VFs3P8yd4
-        WpGPh79arViMEhZEJYMalLwEvr97VMT3Q6FAxSpWMoXJ22HyXunniPVNt0k4H0Ktb/sa0A
-        li45ygz6dtNBufl8hjFKOW5vMEqAEFA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-386-OLBmRs1BN464TwGQg1zc_w-1; Tue, 28 Jun 2022 09:43:29 -0400
-X-MC-Unique: OLBmRs1BN464TwGQg1zc_w-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 677023C16187;
-        Tue, 28 Jun 2022 13:43:28 +0000 (UTC)
-Received: from starship (unknown [10.40.194.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A4F7404E4C8;
-        Tue, 28 Jun 2022 13:43:26 +0000 (UTC)
-Message-ID: <a5fe4ca7a412c7e4970d7c0d48b17cefcd91833c.camel@redhat.com>
-Subject: Re: [PATCH v6 00/17] Introducing AMD x2AVIC and hybrid-AVIC modes
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Tue, 28 Jun 2022 16:43:25 +0300
-In-Reply-To: <84d30ead-7c8e-1f81-aa43-8a959e3ae7d0@amd.com>
-References: <20220519102709.24125-1-suravee.suthikulpanit@amd.com>
-         <84d30ead-7c8e-1f81-aa43-8a959e3ae7d0@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Tue, 28 Jun 2022 09:43:39 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31DB818B2B
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:43:38 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id c6-20020a17090abf0600b001eee794a478so5268690pjs.1
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:43:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1981ByijFES4Z51VKfKpaqL9mzBb3Klm3MJNFz1LN/Q=;
+        b=iMtXOFUICTVdHSxy2et3XQLWdCcymKIrE960JXJYygPsX5hsTLgbjSqlUp1MZ0oKJj
+         GZ9FKM1BFHNVuCEzkdqzhTvB3jSr0s7hIYI4u7Bm6ALCT3IoE/xYDEmiTE018aJaWO21
+         N8aEK79WNO3k+e2nm2zmHYMDSdOblAmciiv4c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1981ByijFES4Z51VKfKpaqL9mzBb3Klm3MJNFz1LN/Q=;
+        b=kUmJW2uVyhhVAd6Jabi49q+cSaNFuQy9AbdvV4JUDcZkoDkr7nvOh1mpEgyLYEvnsd
+         qJShqyEdjbsuga2S3uZGho/kHoYKUdSUWdW6aI84XeprrrOfdJuEkRLyHuvmKIWTXeBf
+         mNeE2gBk7GSzr45oC1X3VrYeiysybwiT7Np70WY6b93xjuduatHHH6cUvI45zxy09s6u
+         hY37QkPY/k2RP1mBbEOLBEk3kaqYc1kauxmgRUjRh82J7OTchD4a11bPnfI0VCYwI7xL
+         rmJ37o0tR3XSVBefOEMtPnE6crOZtLFZlZ21fv6469xtc2VYMVuDFXOZ0UXAHJmB0bpa
+         YmDg==
+X-Gm-Message-State: AJIora97PEfs9p1myMXnKuwPYSrekhTlyLRLFE7JO04VycmqBnvzrY+k
+        VMpSWfZwbneBsW3JAEKro04dDg==
+X-Google-Smtp-Source: AGRyM1vROI5ZbSMg9ZLu8nsfvS9fFnxl9Zl5EGmk1xq1YkMOpWjVrGZOnWDOJo4m81UOSjjVVba8XQ==
+X-Received: by 2002:a17:90a:ab16:b0:1ed:2251:a878 with SMTP id m22-20020a17090aab1600b001ed2251a878mr22439498pjq.231.1656423817685;
+        Tue, 28 Jun 2022 06:43:37 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:18c2:6594:17be:c241])
+        by smtp.gmail.com with ESMTPSA id 22-20020aa79116000000b00527af57598fsm3107197pfh.43.2022.06.28.06.43.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 06:43:37 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] soc: qcom: cmd-db: replace strscpy_pad() with strncpy()
+Date:   Tue, 28 Jun 2022 06:43:13 -0700
+Message-Id: <20220628064301.v3.1.Ie7b480cd99e2c13319220cbc108caf2bcd41286b@changeid>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-06-28 at 20:20 +0700, Suthikulpanit, Suravee wrote:
-> Maxim,
-> 
-> On 5/19/2022 5:26 PM, Suravee Suthikulpanit wrote:
-> > Introducing support for AMD x2APIC virtualization. This feature is
-> > indicated by the CPUID Fn8000_000A EDX[14], and it can be activated
-> > by setting bit 31 (enable AVIC) and bit 30 (x2APIC mode) of VMCB
-> > offset 60h.
-> > 
-> > With x2AVIC support, the guest local APIC can be fully virtualized in
-> > both xAPIC and x2APIC modes, and the mode can be changed during runtime.
-> > For example, when AVIC is enabled, the hypervisor set VMCB bit 31
-> > to activate AVIC for each vCPU. Then, it keeps track of each vCPU's
-> > APIC mode, and updates VMCB bit 30 to enable/disable x2APIC
-> > virtualization mode accordingly.
-> > 
-> > Besides setting bit VMCB bit 30 and 31, for x2AVIC, kvm_amd driver needs
-> > to disable interception for the x2APIC MSR range to allow AVIC hardware
-> > to virtualize register accesses.
-> > 
-> > This series also introduce a partial APIC virtualization (hybrid-AVIC)
-> > mode, where APIC register accesses are trapped (i.e. not virtualized
-> > by hardware), but leverage AVIC doorbell for interrupt injection.
-> > This eliminates need to disable x2APIC in the guest on system without
-> > x2AVIC support. (Note: suggested by Maxim)
-> > 
-> > Testing for v5:
-> >    * Test partial AVIC mode by launching a VM with x2APIC mode
-> >    * Tested booting a Linux VM with x2APIC physical and logical modes upto 512 vCPUs.
-> >    * Test the following nested SVM test use cases:
-> > 
-> >               L0     |    L1   |   L2
-> >         ----------------------------------
-> >                 AVIC |    APIC |    APIC
-> >                 AVIC |    APIC |  x2APIC
-> >          hybrid-AVIC |  x2APIC |    APIC
-> >          hybrid-AVIC |  x2APIC |  x2APIC
-> >               x2AVIC |    APIC |    APIC
-> >               x2AVIC |    APIC |  x2APIC
-> >               x2AVIC |  x2APIC |    APIC
-> >               x2AVIC |  x2APIC |  x2APIC
-> 
-> With the commit 3743c2f02517 ("KVM: x86: inhibit APICv/AVIC on changes to APIC ID or APIC base"),
-> APICV/AVIC is now inhibit when the guest kernel boots w/ option "nox2apic" or "x2apic_phys"
-> due to APICV_INHIBIT_REASON_APIC_ID_MODIFIED.
-> 
-> These cases used to work. In theory, we should be able to allow AVIC works in this case.
-> Is there a way to modify logic in kvm_lapic_xapic_id_updated() to allow these use cases
-> to work w/ APICv/AVIC?
-> 
-> Best Regards,
-> Suravee
-> 
+Commit ac0126a01735 ("soc: qcom: cmd-db: replace strncpy() with
+strscpy_pad()") breaks booting on my sc7280-herobrine-herobrine
+device. From printouts I see that at bootup the function is called
+with an id of "lnbclka2" which is 8 bytes big.
 
-This seems very strange, I assume you test the kvm/queue of today,
+Previously all 8 bytes of this string were copied to the
+destination. Now only 7 bytes will be copied since strscpy_pad() saves
+a byte for '\0' termination.
 
-which contains a fix for a typo I had in the list of inhibit reasons
-(commit 5bdae49fc2f689b5f896b54bd9230425d3643dab - KVM: SEV: fix misplaced closing parenthesis)
+We don't need the '\0' termination in the destination. Let's go back
+to strncpy(). According to the warning:
+  If a caller is using non-NUL-terminated strings, strncpy() can still
+  be used, but destinations should be marked with the __nonstring
+  attribute to avoid future compiler warnings.
+...so we'll do that.
 
+While we're at it, let's change the query array to use
+"sizeof(ent->id)" so it can't possibly go out of sync with our later
+copy.
 
-Could you share more details on the test? How many vCPUs in the guest, is x2apic exposed to the guest?
+Fixes: ac0126a01735 ("soc: qcom: cmd-db: replace strncpy() with strscpy_pad()")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
 
+Changes in v3:
+- Add comment that query isn't necessarily '\0' terminated.
 
-Looking through the code the the __x2apic_disable, touches the MSR_IA32_APICBASE so I would expect
-the APICV_INHIBIT_REASON_APIC_BASE_MODIFIED inhibit to be triggered and not APICV_INHIBIT_REASON_APIC_ID_MODIFIED
+Changes in v2:
+- Size array with "sizeof(ent->id)"
 
+ drivers/soc/qcom/cmd-db.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-I don't see yet how the x2apic_phys can trigger these inhibits.
-
-Best regards,
-	Maxim Levitsky
+diff --git a/drivers/soc/qcom/cmd-db.c b/drivers/soc/qcom/cmd-db.c
+index c5137c25d819..629a7188b576 100644
+--- a/drivers/soc/qcom/cmd-db.c
++++ b/drivers/soc/qcom/cmd-db.c
+@@ -141,14 +141,18 @@ static int cmd_db_get_header(const char *id, const struct entry_header **eh,
+ 	const struct rsc_hdr *rsc_hdr;
+ 	const struct entry_header *ent;
+ 	int ret, i, j;
+-	u8 query[8];
++	u8 query[sizeof(ent->id)] __nonstring;
+ 
+ 	ret = cmd_db_ready();
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Pad out query string to same length as in DB */
+-	strscpy_pad(query, id, sizeof(query));
++	/*
++	 * Pad out query string to same length as in DB. NOTE: the output
++	 * query string is not necessarily '\0' terminated if it bumps up
++	 * against the max size. That's OK and expected.
++	 */
++	strncpy(query, id, sizeof(query));
+ 
+ 	for (i = 0; i < MAX_SLV_ID; i++) {
+ 		rsc_hdr = &cmd_db_header->header[i];
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
 
