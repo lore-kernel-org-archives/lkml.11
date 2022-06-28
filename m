@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57AA4CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 532E9CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:30:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244676AbiF1CaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
+        id S244902AbiF1Ca2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244472AbiF1C0i (ORCPT
+        with ESMTP id S244307AbiF1C0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:26:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0078248F4;
-        Mon, 27 Jun 2022 19:24:22 -0700 (PDT)
+        Mon, 27 Jun 2022 22:26:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47FA24BF0;
+        Mon, 27 Jun 2022 19:24:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7617AB81C10;
-        Tue, 28 Jun 2022 02:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50729C385A2;
-        Tue, 28 Jun 2022 02:24:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FE8E61799;
+        Tue, 28 Jun 2022 02:24:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71289C341D4;
+        Tue, 28 Jun 2022 02:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383060;
-        bh=hwJBwdalUayAZ8Ey4wibUrKwxJOXcB6iJ1Xwl1XLv/4=;
+        s=k20201202; t=1656383066;
+        bh=/F6BUw+Sh4FJw5Go2ezyISs3lQbyhPGnRIo/Of42iuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l/XshtJ0p4DpMzCZj1/uvX0A2Vf9Rz7Xxqj7XtPqc9bkNoR0P5Ot3M1z984f5fmAi
-         eieKPWIZw1KHj/1NIK45sQ68zxeEeb5MofvcMWhFe8C9wO3XFfud/8SC8wSBBzhcp1
-         WGzSvnlZIqSxfL7n6DsAL5kvTyqn+cUCkju0/3kbU5dx6srCyWRkOCBy3Vx0KJ02lk
-         2LvC21HI0gXp6BN/zqcuR9iMHwW4ERlGntHdMn/U0xcC8DKwMKdKH1tGHAAZrr3h1p
-         q3E+WXD3s0YZgLZ905Ucwwxr8UL6/5eGDVxgXPGOBhq+56SRM1x8bfA7lEBOtU6LQp
-         rZgQv19Paed+g==
+        b=muDZUbTgM+Enro6lgD2NLGiTcogQB5/v1IASFztCaLukQa1YkwS5UhvUm+h0vmTv6
+         UQ3jyUIc7l/lXk2Wa2zFMlVzkLAgu41kqfM6b3BviHjWnS+eh+/914HJ0SGqNd4DoZ
+         Gzhx3ammTg89I+p+1VvNgJcGYO42Cee/E4eObV2hg0LLosiIAzTT1Q6E2+lQ3CV5ds
+         i0urLMoLgpOlh4/2v0Bw3/LTU5Bb7V8Vwg4LT/TdWkPWuW96J6ZPesopPuVZkuwt08
+         NIaMdeLUROiuM3RXx9Aeds/M5NkHgDrBqbtjOh5YBhmqL6hJuorsOB2gzPbaz043i9
+         LaHpYSsm6/A9g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniil Dementev <d.dementev@ispras.ru>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
         Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.4 03/27] ALSA: usb-audio: US16x08: Move overflow check before array access
-Date:   Mon, 27 Jun 2022 22:23:49 -0400
-Message-Id: <20220628022413.596341-3-sashal@kernel.org>
+        perex@perex.cz, tiwai@suse.com, jiasheng@iscas.ac.cn,
+        nizhen@uniontech.com, gushengxian@yulong.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.4 06/27] ALSA: x86: intel_hdmi_audio: enable pm_runtime and set autosuspend delay
+Date:   Mon, 27 Jun 2022 22:23:52 -0400
+Message-Id: <20220628022413.596341-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022413.596341-1-sashal@kernel.org>
 References: <20220628022413.596341-1-sashal@kernel.org>
@@ -52,42 +56,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniil Dementev <d.dementev@ispras.ru>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 3ddbe35d9a2ebd4924d458e0246b4ba6c13bb456 ]
+[ Upstream commit e87c65aeb46ca4f5b7dc08531200bcb8a426c62e ]
 
-Buffer overflow could occur in the loop "while", due to accessing an
-array element before checking the index.
+The existing code uses pm_runtime_get_sync/put_autosuspend, but
+pm_runtime was not explicitly enabled. The autosuspend delay was not
+set either, the value is set to 5s since HDMI is rather painful to
+resume.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
-
-Signed-off-by: Daniil Dementev <d.dementev@ispras.ru>
-Reviewed-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Link: https://lore.kernel.org/r/20220610165732.2904-1-d.dementev@ispras.ru
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Link: https://lore.kernel.org/r/20220616222910.136854-2-pierre-louis.bossart@linux.intel.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/mixer_us16x08.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ sound/x86/intel_hdmi_audio.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/sound/usb/mixer_us16x08.c b/sound/usb/mixer_us16x08.c
-index c6c834ac83ac..5e4aa1207c1b 100644
---- a/sound/usb/mixer_us16x08.c
-+++ b/sound/usb/mixer_us16x08.c
-@@ -637,10 +637,10 @@ static int snd_get_meter_comp_index(struct snd_us16x08_meter_store *store)
- 		}
- 	} else {
- 		/* skip channels with no compressor active */
--		while (!store->comp_store->val[
-+		while (store->comp_index <= SND_US16X08_MAX_CHANNELS
-+			&& !store->comp_store->val[
- 			COMP_STORE_IDX(SND_US16X08_ID_COMP_SWITCH)]
--			[store->comp_index - 1]
--			&& store->comp_index <= SND_US16X08_MAX_CHANNELS) {
-+			[store->comp_index - 1]) {
- 			store->comp_index++;
- 		}
- 		ret = store->comp_index++;
+diff --git a/sound/x86/intel_hdmi_audio.c b/sound/x86/intel_hdmi_audio.c
+index a314f13e3292..f16e936559c3 100644
+--- a/sound/x86/intel_hdmi_audio.c
++++ b/sound/x86/intel_hdmi_audio.c
+@@ -33,6 +33,8 @@
+ #include <drm/intel_lpe_audio.h>
+ #include "intel_hdmi_audio.h"
+ 
++#define INTEL_HDMI_AUDIO_SUSPEND_DELAY_MS  5000
++
+ #define for_each_pipe(card_ctx, pipe) \
+ 	for ((pipe) = 0; (pipe) < (card_ctx)->num_pipes; (pipe)++)
+ #define for_each_port(card_ctx, port) \
+@@ -1843,8 +1845,11 @@ static int hdmi_lpe_audio_probe(struct platform_device *pdev)
+ 	pdata->notify_audio_lpe = notify_audio_lpe;
+ 	spin_unlock_irq(&pdata->lpe_audio_slock);
+ 
++	pm_runtime_set_autosuspend_delay(&pdev->dev, INTEL_HDMI_AUDIO_SUSPEND_DELAY_MS);
+ 	pm_runtime_use_autosuspend(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
+ 	pm_runtime_mark_last_busy(&pdev->dev);
++	pm_runtime_idle(&pdev->dev);
+ 
+ 	dev_dbg(&pdev->dev, "%s: handle pending notification\n", __func__);
+ 	for_each_port(card_ctx, port) {
 -- 
 2.35.1
 
