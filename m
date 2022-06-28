@@ -2,74 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBD7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4826AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346991AbiF1Nzx (ORCPT
+        id S1346998AbiF1Nz7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60780 "EHLO
+        Tue, 28 Jun 2022 09:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346983AbiF1Nzj (ORCPT
+        with ESMTP id S1346012AbiF1Nz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:55:39 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9A330F64;
-        Tue, 28 Jun 2022 06:55:37 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LXQzr47xSzkWL4;
-        Tue, 28 Jun 2022 21:53:44 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 21:55:34 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
- 2022 21:55:34 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-CC:     <conor.dooley@microchip.com>,
-        <valentina.fernandezalanis@microchip.com>,
-        <gregkh@linuxfoundation.org>
-Subject: [PATCH -next] usb: musb: mpfs: add missing  clk_disable_unprepare() in mpfs_remove()
-Date:   Tue, 28 Jun 2022 22:05:27 +0800
-Message-ID: <20220628140527.1404439-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 28 Jun 2022 09:55:57 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE1531528
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:55:56 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-317710edb9dso118413087b3.0
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:55:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kxOhQolvwduRWfHp8nzmrFY1G8WxOuz7AW66OC89GlU=;
+        b=aIvg8hbrgemKNvg22KLNdqF1iZoyHZJHvQ+cI+1v3vreL1Y0S/gmjfQZRi5rozr2NI
+         n3Mg0QxI1maN80y0myC76XImJj4HD1RLw+ZsrntlrYTIRfINOWrtKjFTl9j9pEHxTRIH
+         CaBkZBYNtfv0LqzNEIAyMsaDTCLdG2X6M1ur4zd4FD3M5OM94hTv3E7iOtT+YeLF4fcX
+         JYs2H7JNSAHpqyUrfpPnrRfedI/SjA36/E3kp3426It+zCbbrtRlghG2I36Tpgby2rLC
+         H7jxp/FZGvL0IT50hh9/1jInVjASJeRXbayWWnpkHzeO4EHnOwgTCJxIv8xpsKUGrzDx
+         kxTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kxOhQolvwduRWfHp8nzmrFY1G8WxOuz7AW66OC89GlU=;
+        b=1K1HyoPU08IMZtkUHrPBHZb1ShFX6jBpPbVUemVj9SlvhyDoCagjRKFgeTfukN4VfH
+         bzk/0hi1S8QohrTkA0J27GKux0tAx83DQaBpyFpgs+eAsRTCb3X683yaNqJUip2O17qH
+         H71/dNOR/zwDuatympUo5Q2uw2Djo+CfnbR70wX5cwvlRHAPKkdUryfdZtlL4JZt2OLm
+         HgL3vqOjwP/XyIcjA4SsN7YPmPQYgQm8chTXp2qOkCAsQgAGUlf3kNOtEfwLA7C7KvRQ
+         75J3rXsw7zRgGkmhCiScLmPupDhDhMb2e5E/SafWs22OEA6spqOBqq+j3oHtmih9ADXc
+         osXQ==
+X-Gm-Message-State: AJIora/ypr67RDO5WYftMS4m5xG7Wja3kCszoolaUdTCADy8b2N2BBrB
+        MZ7q4IO2krYRLNoc8tAxPM/N3V8ydQaZbdJtsP1vIw==
+X-Google-Smtp-Source: AGRyM1szGG02RfG3EL5P+6lP1i3HtBscAKZM0qaNbzmp3Aol7aLOgPMpcWX50uoxmoqOY7esyzE1BBj3sY16WXS+L74=
+X-Received: by 2002:a0d:e20a:0:b0:317:ce36:a3a0 with SMTP id
+ l10-20020a0de20a000000b00317ce36a3a0mr22354878ywe.448.1656424555304; Tue, 28
+ Jun 2022 06:55:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+References: <20220624081022.32384-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220624081022.32384-1-krzysztof.kozlowski@linaro.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 28 Jun 2022 15:55:44 +0200
+Message-ID: <CACRpkdabjb45WNLPa6gRDiCDm0u1swDpYq3D1pju4HmcCetoYA@mail.gmail.com>
+Subject: Re: [GIT PULL][PATCH] pinctrl: samsung: do not use bindings header
+ with constants
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <snawrocki@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clock source is prepared and enabled by clk_prepare_enable()
-in probe function, but no disable or unprepare in remove.
+On Fri, Jun 24, 2022 at 10:10 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> The Samsung SoC pin controller driver uses only three defines from the
+> bindings header with pin configuration register values, which proves
+> the point that this header is not a proper bindings-type abstraction
+> layer with IDs.
+>
+> Define the needed register values directly in the driver and stop using
+> the bindings header.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Chanho Park <chanho61.park@samsung.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> Link: https://lore.kernel.org/r/20220605160508.134075-8-krzysztof.kozlowski@linaro.org
 
-Fixes: 7a96b6ea90a4 ("usb: musb: Add support for PolarFire SoC's musb controller")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/usb/musb/mpfs.c | 1 +
- 1 file changed, 1 insertion(+)
+Patch applied.
 
-diff --git a/drivers/usb/musb/mpfs.c b/drivers/usb/musb/mpfs.c
-index a69ca338eace..cea2e8108867 100644
---- a/drivers/usb/musb/mpfs.c
-+++ b/drivers/usb/musb/mpfs.c
-@@ -239,6 +239,7 @@ static int mpfs_remove(struct platform_device *pdev)
- {
- 	struct mpfs_glue *glue = platform_get_drvdata(pdev);
- 
-+	clk_disable_unprepare(glue->clk);
- 	platform_device_unregister(glue->musb);
- 	usb_phy_generic_unregister(pdev);
- 
--- 
-2.25.1
-
+Yours,
+Linus Walleij
