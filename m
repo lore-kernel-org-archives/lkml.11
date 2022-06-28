@@ -2,105 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E418BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB47AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345191AbiF1MKU (ORCPT
+        id S1345232AbiF1MKv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 08:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40346 "EHLO
+        Tue, 28 Jun 2022 08:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345177AbiF1MKT (ORCPT
+        with ESMTP id S1345177AbiF1MKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 08:10:19 -0400
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C89340E1
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:10:17 -0700 (PDT)
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 25SCA1Fj015030
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 21:10:01 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 25SCA1Fj015030
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1656418202;
-        bh=JffHlLZUherizBJLBM6/lGEJp5Xw5S7lrKLMg+knO2w=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BeUghGFX90w9S5IO0k+SelnLeP+l3MRYfC5E0ae08BxwWRIn3M4wDSO4PjtNk1mZh
-         1Z2Ar7YltBJQIXdPrpIGcCwlQFyqFjAhL7Gh6cCxl7CGhOjpzsTuRi3IiOIt0tnEOj
-         EVD7zGvg47oprs/TIZ6syY+ojGgI8suZvcHfLuK9aE1cja1xY466dOjQ+OQsO4hUo+
-         T42W6ktWrc+txo6xMCZz10DMXRZiWWND0AP3VtzysE1gROO5DXp1hbEy4XcXEpaD7z
-         ylaezMY3F0Gsc67hOJ1D4JV0LQsq0/GhAk7R63U4D2ccdLw2SiQpkXy4iteTky/8Ke
-         4ogscDZiMxErg==
-X-Nifty-SrcIP: [209.85.221.42]
-Received: by mail-wr1-f42.google.com with SMTP id r20so17415809wra.1
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:10:01 -0700 (PDT)
-X-Gm-Message-State: AJIora+jIrh/4jQGwSERBoQmXA9XXsxpRJN5rjvEYFJsvyRL7DBNNIkR
-        qAhNGjrhf7T0x+DR/YBKdVRq62hmUbCpNT6eQk8=
-X-Google-Smtp-Source: AGRyM1tpiwttX8FqPdH5q1m75vQCfluEK71LeFogIy0H3hH7HeevJfBA58bpbgRZ6aatq5fza6yuAwfbPQ2jIvK/h9Q=
-X-Received: by 2002:adf:f5ce:0:b0:21b:832c:80dd with SMTP id
- k14-20020adff5ce000000b0021b832c80ddmr17211750wrp.235.1656418200142; Tue, 28
- Jun 2022 05:10:00 -0700 (PDT)
+        Tue, 28 Jun 2022 08:10:49 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCC33465E;
+        Tue, 28 Jun 2022 05:10:46 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXNgT2nJgzkWn9;
+        Tue, 28 Jun 2022 20:09:25 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
+ 2022 20:10:44 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <thierry.reding@gmail.com>, <jonathanh@nvidia.com>,
+        <digetx@gmail.com>
+CC:     <linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] soc/tegra: fuse: Add missing DMADEVICES dependency
+Date:   Tue, 28 Jun 2022 20:10:39 +0800
+Message-ID: <20220628121039.21640-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-References: <YrrQOifFIiISf/3g@hirez.programming.kicks-ass.net>
- <CAK8P3a2XfzQo6emT4pXXxAjWewdP2LiAe2fOskFf-0suSmBJQQ@mail.gmail.com> <Yrrtm0rRzLMCzKiM@hirez.programming.kicks-ass.net>
-In-Reply-To: <Yrrtm0rRzLMCzKiM@hirez.programming.kicks-ass.net>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 28 Jun 2022 21:09:15 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATdKXX5fnNCrJEj9dLgew5f4geCKai5gOrTMWR=vYT0UA@mail.gmail.com>
-Message-ID: <CAK7LNATdKXX5fnNCrJEj9dLgew5f4geCKai5gOrTMWR=vYT0UA@mail.gmail.com>
-Subject: Re: [RFC][PATCH] kconfig: Add implicit CONFIG_ prefix to IS_ENABLED()
- and co
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Michal Marek <mmarek@suse.cz>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 9:02 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Tue, Jun 28, 2022 at 01:19:17PM +0200, Arnd Bergmann wrote:
-> > On Tue, Jun 28, 2022 at 11:56 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> > >
-> > > Since IS_ENABLED() (and friends) are clearly meant to be used on
-> > > CONFIG_foo symbols and IS_ENABLED(CONFIG_ is so long and almost an
-> > > tautology, allow the more compact usage of: IS_ENABLED(foo).
-> > >
-> > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> >
-> > I'd prefer to keep the more verbose usage, mainly because it makes it easier
-> > to grep for a symbol. If today you do 'git grep CONFIG_PM_SLEEP', you find
-> > all instances in Makefile, in #ifdef and in IS_ENABLED(), though not the
-> > references in Kconfig language, which leave out the prefix.
->
-> Which is why I never grep for the CONFIG_ thing to begin with, it misses
-> the Kconfig site.
->
-> > If we remove the prefix for IS_ENABLED(), the same grep fails to get
-> > all the results, while searching for the substring without the CONFIG_
-> > prefix can end up finding false-positives by finding longer strings (e.g.
-> > CONFIG_DEBUG_STACKOVERFLOW vs
-> > CONFIG_HAVE_DEBUG_STACKOVERFLOW).
->
-> Me being used to that doesn't consider that a real issue :-) I'd much
-> rather have the somewhat shorter IS_ENABLED() things.
+WARNING: unmet direct dependencies detected for TEGRA20_APB_DMA
+  Depends on [n]: DMADEVICES [=n] && (ARCH_TEGRA [=y] || COMPILE_TEST [=n])
+  Selected by [y]:
+  - SOC_TEGRA_FUSE [=y] && ARCH_TEGRA [=y] && ARCH_TEGRA_2x_SOC [=y]
 
+TEGRA20_APB_DMA depends on DMADEVICES, so SOC_TEGRA_FUSE also should depends on it
+before select it.
 
+Fixes: 19d41e5e9c68 ("soc/tegra: fuse: Add APB DMA dependency for Tegra20")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/soc/tegra/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-
-One more thing worth mentioning, this patch does
-not even work correctly.
-
-
-scripts/basic/fixdep.c searches for CONFIG_ prefix.
-This works nicely, and there is no reason to lose this simplicity.
-
-
-NACK.
-
+diff --git a/drivers/soc/tegra/Kconfig b/drivers/soc/tegra/Kconfig
+index 5725c8ef0406..2b6ba0f798fa 100644
+--- a/drivers/soc/tegra/Kconfig
++++ b/drivers/soc/tegra/Kconfig
+@@ -135,6 +135,7 @@ endif
+ config SOC_TEGRA_FUSE
+ 	def_bool y
+ 	depends on ARCH_TEGRA
++	depends on DMADEVICES
+ 	select SOC_BUS
+ 	select TEGRA20_APB_DMA if ARCH_TEGRA_2x_SOC
+ 
 -- 
-Best Regards
-Masahiro Yamada
+2.17.1
+
