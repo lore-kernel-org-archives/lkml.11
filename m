@@ -2,53 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C68CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA6BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:46:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344342AbiF1Jqt (ORCPT
+        id S1344347AbiF1Jqy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
+        Tue, 28 Jun 2022 05:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343770AbiF1Jqd (ORCPT
+        with ESMTP id S1343913AbiF1Jqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 05:46:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DD125C72;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF1325C73;
         Tue, 28 Jun 2022 02:46:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73E05617C0;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69785617BB;
         Tue, 28 Jun 2022 09:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 357E2C341D2;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 326AEC341CE;
         Tue, 28 Jun 2022 09:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656409590;
-        bh=E1S37wDKTg+xS0E091LgAEWJ/wC5uO4LpBsUrtsrhqg=;
+        bh=/pVDv47pHcbB0gI2Mal+afS7TWigkjO6bV5Qn+g/Q90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nq+0AY3LCA0eoc4pLTKACsNle3YgbtmWHzZjyu3omVZgbS6g9Ga+k1qfSd9P6I8vy
-         /LEOo3hLEILda4Cy4B27lhFo4ditj4Gl+nKUe1IaBXQSJbQmANAPDSbcc0mbsEMQ4L
-         YJIHjA6c1R7cSx1QUmFP8WxiPe3V7Sxp6rBjP9c4QMXHblo0ZC16TKGPkVrvtURkie
-         pKYOPRzxYowoRNvh/LOBg/mlCVaQ35iGnEj3Ots023/0bSDALfYJOM9xMSy7BRLhxe
-         Hq40GV0sON0Itzgzqltku6pZRb/4LZ82nJJrkYFR04FRJ+Cly6nq6GUM+Pf22dpr7/
-         wnLs/UF7vk0dQ==
+        b=KfzyXVXg2vrOXJT2eg0g+QkyLyfSUpuP0oKskeI1VnHoHc1lfzPAK2EmbaHXxKPcL
+         K5PcUfjEh3LC6cQBJjxi9xRimB4MWdkeThC60+oeht7mvJ18tNRBW+pZwNKtE0QwsQ
+         OM472nkjtd8L62ZOwqtuEbri7Ys1aGEHReh2HSj+foCjvQX6mz2ZBERG8bsXgluBrm
+         +30MTfAX7f4HeLhFCHzhp9J9uf+St2Dazah1E3hvS3tC3nQ8MKkAikpOsk9ogdrdg6
+         zTEJDNkuqjN+vGBCP4DJNlElMQ2iWPLYmRJ5topmkzzRxAz+gBTwL81zUZoFZ7RFvz
+         4xJxSqL3t4hew==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o67nf-005HFQ-T9;
+        id 1o67nf-005HEp-LB;
         Tue, 28 Jun 2022 10:46:27 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 13/22] drm: scheduler: add a missing kernel-doc parameter
-Date:   Tue, 28 Jun 2022 10:46:17 +0100
-Message-Id: <e0a1fd8942a0e13ecf391ccd5634759d2281e2c2.1656409369.git.mchehab@kernel.org>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 02/22] net: mac80211: add a missing comma at kernel-doc markup
+Date:   Tue, 28 Jun 2022 10:46:06 +0100
+Message-Id: <11c1bdb861d89c93058fcfe312749b482851cbdb.1656409369.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656409369.git.mchehab@kernel.org>
 References: <cover.1656409369.git.mchehab@kernel.org>
@@ -58,10 +60,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a description for struct device at drm_sched_init(), in order
-to solve this warning:
+The lack of the comma makes it to not parse the function parameter:
+	include/net/mac80211.h:6250: warning: Function parameter or member 'vif' not described in 'ieee80211_channel_switch_disconnect'
 
-	drivers/gpu/drm/scheduler/sched_main.c:999: warning: Function parameter or member 'dev' not described in 'drm_sched_init'
+Fix it.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -69,21 +71,22 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/22] at: https://lore.kernel.org/all/cover.1656409369.git.mchehab@kernel.org/
 
- drivers/gpu/drm/scheduler/sched_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/net/mac80211.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/scheduler/sched_main.c b/drivers/gpu/drm/scheduler/sched_main.c
-index 76fd2904c7c6..b45bd8473e9e 100644
---- a/drivers/gpu/drm/scheduler/sched_main.c
-+++ b/drivers/gpu/drm/scheduler/sched_main.c
-@@ -987,6 +987,7 @@ static int drm_sched_main(void *param)
-  *		used
-  * @score: optional score atomic shared with other schedulers
-  * @name: name used for debugging
-+ * @dev: pointer to struct device
+diff --git a/include/net/mac80211.h b/include/net/mac80211.h
+index 27f24ac0426d..c0557142343f 100644
+--- a/include/net/mac80211.h
++++ b/include/net/mac80211.h
+@@ -6238,7 +6238,7 @@ void ieee80211_chswitch_done(struct ieee80211_vif *vif, bool success);
+ 
+ /**
+  * ieee80211_channel_switch_disconnect - disconnect due to channel switch error
+- * @vif &struct ieee80211_vif pointer from the add_interface callback.
++ * @vif: &struct ieee80211_vif pointer from the add_interface callback.
+  * @block_tx: if %true, do not send deauth frame.
   *
-  * Return 0 on success, otherwise error code.
-  */
+  * Instruct mac80211 to disconnect due to a channel switch error. The channel
 -- 
 2.36.1
 
