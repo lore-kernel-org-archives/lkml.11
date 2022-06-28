@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C5FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235269AbiF1TCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
+        id S235297AbiF1TC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232704AbiF1TAb (ORCPT
+        with ESMTP id S233559AbiF1TAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:00:31 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA3C1A049;
-        Tue, 28 Jun 2022 12:00:17 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id h23so27614715ejj.12;
-        Tue, 28 Jun 2022 12:00:16 -0700 (PDT)
+        Tue, 28 Jun 2022 15:00:34 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8691D1CB07;
+        Tue, 28 Jun 2022 12:00:20 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id sb34so27624996ejc.11;
+        Tue, 28 Jun 2022 12:00:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oOGRlNTNJY51QXUFrfFxWPWq7Z2HbWhlV6gca7goiwg=;
-        b=ja4zCRNwBj18hSgwwv3X4sTg9KeDiSX5k7tdpGg2AIfifMAq2k8bNeD6F8wq7iLqY6
-         XzbD8QyWyA2I70EYpBJTNaq+oUkBUqa1Rverg2GeYp6AcKCs3GtPDJIZ6gb7WKVK9hOE
-         a+AtX+C7xK0aHc1pHgCj/6SLT3K247sGTaRRx9pI6/QyClV/uYVuTvk61nPzVD2Tdh+T
-         moyg1fG21eK4S9goKmnXS0diOAG2+hOu1jNy1EaKaP+sHh+B868gatFkqqpMZ7SUFJe1
-         sVPziRScbE367FS6TVL/3RnvGT6tt7kYYm4iZH3yHc8IQwobSfD1x6SyApXFyfnMLiTw
-         F1yQ==
+        bh=HYd55O2NdGLO2Euqz1Nyab6aWjt/DTgixsVymNAk6zI=;
+        b=GSK4pU182c9jv4Pa9k0QjVW35qbkMOQ/h9jCjetCYwu/R3LP0mTfoPowza+903LW5G
+         e8fXxUrGqr0gbmnnKjC9xJQCiLrnmGXSLaVcwptfbd/APhuwGXzFVv8CSQ1MlFUpXC0r
+         MNfFw64H1qREZflEXEhkKEN3UR1sVd3my9ZZEUWt8K/eNRBRYCkmFQ+9AU7OdtmargIz
+         c/wAP+qmwpnj/Fh1Gy3Dy+BX4RZJP2iTfq0evYLdPa6tZyYAkXjkh+5t2zz8+i/XgAdN
+         /igFpNVAHcbgwhsP2+QubjUIdYnQyYPVlawovbSZX9xMf8sUrJSRJ6yua3ewfWZwKBRR
+         c4Cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oOGRlNTNJY51QXUFrfFxWPWq7Z2HbWhlV6gca7goiwg=;
-        b=6Zk7Mm88XXSBGic+E2KX+S5CN7oe5ReZFAtNPhTMjyuqvKdp0fHr/LUs0XtyRLs1jg
-         DZQzZqocNQozYtkLeqmD4wpGE5gw5R+njsI5YQ4YdKf1AdyBzlmpUf0Z9KCflm4BwmeV
-         e8EV9fKKY0Aq5w3Ucvr791uhD+SDYM5IQwR2ma04A+encN00ZFwdc+ITTrR1EpbkfkB2
-         //Yajcfmv1GOBBoZzBWedBuNxy6IqUmbypkJgEu5eVs8qo+OwlxOKB3r/Lj9yzaV4liO
-         QfauZS4gQyqGB0db/Iml7Wr+WAjvsy7i4/+Q7igS0egxuocN9Bh1OzA9HUtusSIyTOmP
-         o3dg==
-X-Gm-Message-State: AJIora/pu8vtIPqlzB7eEgQ8yUURMsKPZoWRtyRljfNkYof41Qu8VVFD
-        H0JLguWmYLSWJ9v/2+gkKhBRk8XFXpErLg==
-X-Google-Smtp-Source: AGRyM1unAJh+uP60Gs7yhxS83ZH+GB3ChuXyJeXrL9PJ4d+W7MTYnnkWAxVGJ71q+zRqfgbI/jQ8Ew==
-X-Received: by 2002:a17:906:9c82:b0:6df:c5f0:d456 with SMTP id fj2-20020a1709069c8200b006dfc5f0d456mr19574221ejc.287.1656442816320;
-        Tue, 28 Jun 2022 12:00:16 -0700 (PDT)
+        bh=HYd55O2NdGLO2Euqz1Nyab6aWjt/DTgixsVymNAk6zI=;
+        b=ht5Btv4eO9SijPMIEa1+vROHrEQVPHpmMgdDu9+Mvu+uonbR7IQgQckXl5iUfCuH1b
+         x6NA02y/yur216u04HwfvLtIobqjVZwYXN5e4GXP9j5SD4a02FxR7qu7H+MKPiORrdkz
+         C5YR9KZkGFdXns1deCQoSfJUHV2hcCD2VIoeHCvDKqUqKr7gQVNjk42EB1GyR9YZL4+n
+         j05T8uonCcD+ITG7UwfpXhDkOLoW3wh86LONK8g5SNOK53paLzeIgt8QmWhGGV2TQkYF
+         VVuY/Kb/keO+1lSRtOW60gIfwBkYXjr09R2h0kAM/Ht72q2lUUMQpuxp7vNwUejdpvWM
+         8RxQ==
+X-Gm-Message-State: AJIora/0jcaVT5/7y34sRpalafBdv12ZMTgSSRiWJINc5YR8H0Zl+fOU
+        pUE7crhxllgOAHILuBT7ZM60C+uydugugg==
+X-Google-Smtp-Source: AGRyM1sXQrywrdrTVmgueASf2Qn31JLvNysMxcPp/uHviEe8RykMLE3ipLNyiqZhXRPxIUSKZJiTlg==
+X-Received: by 2002:a17:907:94d2:b0:722:e4fa:89f7 with SMTP id dn18-20020a17090794d200b00722e4fa89f7mr18101861ejc.603.1656442818800;
+        Tue, 28 Jun 2022 12:00:18 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.12.00.15
+        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.12.00.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 12:00:15 -0700 (PDT)
+        Tue, 28 Jun 2022 12:00:18 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC net-next v3 20/29] io_uring: add zc notification flush requests
-Date:   Tue, 28 Jun 2022 19:56:42 +0100
-Message-Id: <dcde76fb17478a0555771647105e57ee7b1b12bf.1653992701.git.asml.silence@gmail.com>
+Subject: [RFC net-next v3 22/29] io_uring: account locked pages for non-fixed zc
+Date:   Tue, 28 Jun 2022 19:56:44 +0100
+Message-Id: <7b68f8a5291bc512a225b5a876384ebd4dcda1dd.1653992701.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1653992701.git.asml.silence@gmail.com>
 References: <cover.1653992701.git.asml.silence@gmail.com>
@@ -69,112 +69,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Overlay notification control onto IORING_OP_RSRC_UPDATE (former
-IORING_OP_FILES_UPDATE). It allows to flush a range of zc notifications
-from slots with indexes [sqe->off, sqe->off+sqe->len). If sqe->arg is
-not zero, it also copies sqe->arg as a new tag for all flushed
-notifications.
-
-Note, it doesn't flush a notification of a slot if there was no requests
-attached to it (since last flush or registration).
+Fixed buffers are RLIMIT_MEMLOCK accounted, however it doesn't cover iovec
+based zerocopy sends. Do the accounting on the io_uring side.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- fs/io_uring.c                 | 47 +++++++++++++++++++++++++++++++++++
- include/uapi/linux/io_uring.h |  1 +
- 2 files changed, 48 insertions(+)
+ fs/io_uring.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index e9fc7e076c7f..a88c9c73ed1d 100644
+index 4a1a1d43e9b3..838030477456 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -1284,6 +1284,7 @@ static const struct io_op_def io_op_defs[] = {
- 	[IORING_OP_RSRC_UPDATE] = {
- 		.audit_skip		= 1,
- 		.iopoll			= 1,
-+		.ioprio			= 1,
- 	},
- 	[IORING_OP_STATX] = {
- 		.audit_skip		= 1,
-@@ -2953,6 +2954,16 @@ static void io_notif_slot_flush(struct io_notif_slot *slot)
- 		io_notif_complete(notif);
- }
- 
-+static inline void io_notif_slot_flush_submit(struct io_notif_slot *slot,
-+					      unsigned int issue_flags)
-+{
-+	if (!(issue_flags & IO_URING_F_UNLOCKED)) {
-+		slot->notif->task = current;
-+		io_get_task_refs(1);
-+	}
-+	io_notif_slot_flush(slot);
-+}
-+
- static __cold int io_notif_unregister(struct io_ring_ctx *ctx)
- 	__must_hold(&ctx->uring_lock)
+@@ -2825,7 +2825,13 @@ static void __io_notif_complete_tw(struct callback_head *cb)
  {
-@@ -8286,6 +8297,40 @@ static int io_rsrc_update_prep(struct io_kiocb *req,
- 	return 0;
- }
+ 	struct io_notif *notif = container_of(cb, struct io_notif, task_work);
+ 	struct io_ring_ctx *ctx = notif->ctx;
++	struct mmpin *mmp = &notif->uarg.mmp;
  
-+static int io_notif_update(struct io_kiocb *req, unsigned int issue_flags)
-+{
-+	struct io_ring_ctx *ctx = req->ctx;
-+	unsigned len = req->rsrc_update.nr_args;
-+	unsigned idx_end, idx = req->rsrc_update.offset;
-+	int ret = 0;
-+
-+	io_ring_submit_lock(ctx, issue_flags);
-+	if (unlikely(check_add_overflow(idx, len, &idx_end))) {
-+		ret = -EOVERFLOW;
-+		goto out;
++	if (unlikely(mmp->user)) {
++		atomic_long_sub(mmp->num_pg, &mmp->user->locked_vm);
++		free_uid(mmp->user);
++		mmp->user = NULL;
 +	}
-+	if (unlikely(idx_end > ctx->nr_notif_slots)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	for (; idx < idx_end; idx++) {
-+		struct io_notif_slot *slot = &ctx->notif_slots[idx];
-+
-+		if (!slot->notif)
-+			continue;
-+		if (req->rsrc_update.arg)
-+			slot->tag = req->rsrc_update.arg;
-+		io_notif_slot_flush_submit(slot, issue_flags);
-+	}
-+out:
-+	io_ring_submit_unlock(ctx, issue_flags);
-+	if (ret < 0)
-+		req_set_fail(req);
-+	__io_req_complete(req, issue_flags, ret, 0);
-+	return 0;
-+}
-+
- static int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
- {
- 	struct io_ring_ctx *ctx = req->ctx;
-@@ -8315,6 +8360,8 @@ static int io_rsrc_update(struct io_kiocb *req, unsigned int issue_flags)
- 	switch (req->rsrc_update.type) {
- 	case IORING_RSRC_UPDATE_FILES:
- 		return io_files_update(req, issue_flags);
-+	case IORING_RSRC_UPDATE_NOTIF:
-+		return io_notif_update(req, issue_flags);
- 	}
- 	return -EINVAL;
- }
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 5f574558b96c..19b9d7a2da29 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -266,6 +266,7 @@ enum io_uring_op {
-  */
- enum {
- 	IORING_RSRC_UPDATE_FILES,
-+	IORING_RSRC_UPDATE_NOTIF,
- };
+ 	if (likely(notif->task)) {
+ 		io_put_task(notif->task, 1);
+ 		notif->task = NULL;
+@@ -6616,6 +6622,7 @@ static int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
+ 	ret = import_single_range(WRITE, zc->buf, zc->len, &iov, &msg.msg_iter);
+ 	if (unlikely(ret))
+ 		return ret;
++	mm_account_pinned_pages(&notif->uarg.mmp, zc->len);
  
- /*
+ 	msg_flags = zc->msg_flags | MSG_ZEROCOPY;
+ 	if (issue_flags & IO_URING_F_NONBLOCK)
 -- 
 2.36.1
 
